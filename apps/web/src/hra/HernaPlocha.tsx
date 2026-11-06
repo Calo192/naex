@@ -49,7 +49,7 @@ import type {
   ZobrataVerejne,
   Zdvih,
 } from "@naex/core";
-import { KONSTANTY, jeCoTahat, jeFinaleNaNastenke, cigaretyZaPas, spakov, efektyPrehry, hrozbaKliatob, mozeEsteNaex, textHrozbyKliatob, textyEfektovPrehry, cenaKliatby, battleOutcome, prebytokNaRozdelenie, nahladPitky, pocet, tvar, vyhladDlhov, evaluateLine, pocitadloBitky, pitkaPredBitkou, hrozbaNaex, krokStavby, planVykladania, barterCena, limitBuduceKolo, limitZhromazdenia, lineState, nahladZajatia, prevahaStran, krajeStran, dovodZakazuFajcit, defOf, jednotaZakazuje, cenaFajceniaHraca, naexLimitMinuty as naexLimitMinutyHraca, sMojimiSkrytymiNaex, sPrilozenou, maAkciuPecene, vystrahaPecene, nahladNaexNaKartu, najhorsiaOdpovedNaNaex, cenaTahu, nahladVylozenia, moznostiNaexVPohlade, zablokovaneStrany, NASTROJ_PRI_LOKALITE, favourStarsieho, krokRozdelenia, cieleOdpovede, maxZoSenku, bodyRozdelenia, printedSides, poskodenieBitky, rozpisPoskodenia, prahyHraca, scorecardStarsieho, stavKraja, stavkaBitky, stavZavislosti, stranyLokality, vidiVolbuSupera, hraVPitke, cakaSBzdochou, opponentOf, majitelPresvedcenej, moznostiAkcie, cenaAkcieUplna, zdvihyPreAkcie, navrhRozdelenia, pohladPoRozdeleni, priazenHraca, priazenSila, pultStarsich, spakyTeraz, NAZVY_ZON, reciNizsie, vazniNaVyhru } from "@naex/core";
+import { odhadSpakovKola, type StavOdhadu, KONSTANTY, jeCoTahat, jeFinaleNaNastenke, cigaretyZaPas, spakov, efektyPrehry, hrozbaKliatob, mozeEsteNaex, textHrozbyKliatob, textyEfektovPrehry, cenaKliatby, battleOutcome, prebytokNaRozdelenie, nahladPitky, pocet, tvar, vyhladDlhov, evaluateLine, pocitadloBitky, pitkaPredBitkou, hrozbaNaex, krokStavby, planVykladania, barterCena, limitBuduceKolo, limitZhromazdenia, lineState, nahladZajatia, prevahaStran, krajeStran, dovodZakazuFajcit, defOf, jednotaZakazuje, cenaFajceniaHraca, naexLimitMinuty as naexLimitMinutyHraca, sMojimiSkrytymiNaex, sPrilozenou, maAkciuPecene, vystrahaPecene, nahladNaexNaKartu, najhorsiaOdpovedNaNaex, cenaTahu, nahladVylozenia, moznostiNaexVPohlade, zablokovaneStrany, NASTROJ_PRI_LOKALITE, favourStarsieho, krokRozdelenia, cieleOdpovede, maxZoSenku, bodyRozdelenia, printedSides, poskodenieBitky, rozpisPoskodenia, prahyHraca, scorecardStarsieho, stavKraja, stavkaBitky, stavZavislosti, stranyLokality, vidiVolbuSupera, hraVPitke, cakaSBzdochou, opponentOf, majitelPresvedcenej, moznostiAkcie, cenaAkcieUplna, zdvihyPreAkcie, navrhRozdelenia, pohladPoRozdeleni, priazenHraca, priazenSila, pultStarsich, spakyTeraz, NAZVY_ZON, reciNizsie, vazniNaVyhru } from "@naex/core";
 import type { Moment, ActionSums, DopadyNahladu, KliatbyNahladu, NahladNaexNaKartu, PrebytokNahladu, NahladVylozenia, PolozkaVykladania, Rod, Slot, StranaLinie, VystrahaPecene } from "@naex/core";
 import { IkonaAkcie } from "../karta/IkonaAkcie.tsx";
 import { KoniecHry } from "./KoniecHry.tsx";
@@ -68,7 +68,7 @@ import { useStolVHlavicke, useStrazOdchodu } from "../lib/odchod.ts";
 import { HlavickaPartie } from "./HlavickaPartie.tsx";
 import { skupinyBalicka } from "./doberaciBalicek.ts";
 import { SkratkyNapoveda, escVratiNavrh, tlacidloNavratu, useSkratky, type VrstvyPreEsc } from "./skratky.tsx";
-import { klucFazy, predvolenyRezim, vyberSpravu, type RezimStran } from "./bar.ts";
+import { vyberSpravu, type RezimStran } from "./bar.ts";
 import { KARTA_MIN as NASTENKA_KARTA_MIN, rozmerNastenky, type ListokNaVyber } from "./rozlozenieNastenky.ts";
 import { prepniVyber, rozdelenieStavby } from "./stavbaSenku.ts";
 import { JednotnyBar, type StranaBaru } from "./JednotnyBar.tsx";
@@ -98,6 +98,7 @@ import {
   IkonaKarty,
   IkonaPoldeci,
   OdhadBaru,
+  OdhadKola,
   PriebehKola,
   tipOdhadu,
   type BitkaPanelProps,
@@ -4849,14 +4850,15 @@ export function HernaPlocha({
           poBitke: b?.damage != null ? null : efektyPoBitke(zaklad),
           ukazHrozbu: setUkazHrozbu,
           priazne: priazneOdhadu(),
+          // Počas bitky je výplata už v popolníkoch; telefón má vlastný odznak bez špakov.
+          spaky:
+            b?.damage != null || mobil || naSirku || (view.faza !== "zhromazdenie" && view.faza !== "pitka")
+              ? null
+              : odhadSpakovKola(data, { ...stol, spakyNaSekere: view.spakyNaSekere, lokalitaOtocena: lokalitaNavrh?.otocena ?? view.lokalitaOtocena } as StavOdhadu, lineEval, odhad),
         };
-  // Strany jednotného baru (Michal 2026-10-25): aktivované akcie, alebo karty na vyloženie.
-  // Kým hráč neklikne na odhad, režim určí fáza; ručné prepnutie platí do konca fázy.
-  const klucRezimu = klucFazy(view.kolo, view.faza, view.pitkaCislo);
-  const [rezimRucne, setRezimRucne] = useState<{ readonly kluc: string; readonly rezim: RezimStran } | null>(null);
+  // Strany jednotného baru sú vždy aktivované akcie (Michal 2026-11-06); počty kariet sú v dlaždici Karty.
   // Na mobile sú akcie v celom paneli bitky pod barom — strany baru nesú len karty.
-  const rezimStran: RezimStran = mobil ? "karty" : rezimRucne?.kluc === klucRezimu ? rezimRucne.rezim : predvolenyRezim(view.faza);
-  const prepniStrany = (): void => setRezimRucne({ kluc: klucRezimu, rezim: rezimStran === "akcie" ? "karty" : "akcie" });
+  const rezimStran: RezimStran = mobil ? "karty" : "akcie";
   const bitkaPanel = bitkaProps === null || !mobil ? null : <BitkaPanel {...bitkaProps} />;
 
   // ---- väzni (v9) a priazeň (Michal 2026-10-16) -----------------------------
@@ -5309,10 +5311,24 @@ export function HernaPlocha({
     setKartyZalozka(z);
     setVrstva("karty");
   };
+  // Veľké číslo dlaždice Karty (Michal 2026-11-06): v Zhromaždení, čo ešte vyloží; inde limit toho nasledujúceho.
+  const vylozenePocet = (p: PlayerId): KartyDlazdica["vylozi"] => {
+    const zs = view.zhromazdenieStav;
+    const vyloz = p === ja ? "vyložíš" : "vyloží";
+    if (view.faza === "zhromazdenie" && zs !== null) return { cislo: zs.zostavaLimit[p], popis: vyloz, tip: `ešte ${vyloz} ${kariet(zs.zostavaLimit[p])}` };
+    if (view.faza === "volbaCiela" || view.faza === "draft") {
+      const n = limitZhromazdenia(view, p);
+      return { cislo: n, popis: vyloz, tip: `v Zhromaždení ${vyloz} ${kariet(n)}` };
+    }
+    const dalsiaPitka = view.faza === "pitka" && view.pitkaCislo < view.pitkyCelkom;
+    const n = dalsiaPitka ? limitZhromazdenia(view, p) : limitBuduceKolo(view, p, false, data);
+    return { cislo: n, popis: "ďalej", tip: `${dalsiaPitka ? "ďalšie Zhromaždenie" : "ďalšie kolo"}: ${kariet(n)}` };
+  };
   const kartyDlazdica = (p: PlayerId): KartyDlazdica => ({
     otvorena: vrstva === "karty" && kartyHrac === p,
     otvor: () => otvorKarty(p),
     navrhy: p === ja ? vylozenia.filter((x) => x.ciel === "priznanie" || x.ciel === "dedicstvo").length : 0,
+    vylozi: vylozenePocet(p),
     ciel:
       p !== ja || cielDlazdice === null
         ? null
@@ -5454,6 +5470,36 @@ export function HernaPlocha({
   );
   // Režim „karty“ (Michal 2026-10-25): povinne počet kariet — zvyšných na vyloženie alebo
   // v ruke podľa fázy; nič, čo už je inde na stole (cigarety, poldeci sú v bare hráča).
+  // Stav pod menom v bare (Michal 2026-11-06): čo niesol režim „karty“ a na dlaždici nie je.
+  const stavStrany = (p: PlayerId): { readonly text: string; readonly tip?: string } | null => {
+    if (view.koniec !== null) return null;
+    const zs = view.zhromazdenieStav;
+    const ps = view.pitkaStav;
+    if (view.faza === "zhromazdenie" && zs !== null) {
+      if (zs.pasoval[p]) return { text: tvar(rodHracaP(p), "pasoval", "pasovala", "pas") };
+      if (zs.zostavaLimit[p] === 0) return { text: "všetko vonku" };
+      return null;
+    }
+    if (view.faza === "pitka" && ps !== null) {
+      const skryte = p === ja && mojeSkryteNaex.size > 0;
+      const naex = (ps.naexPocet?.[p] ?? 0) > 0;
+      const odkryte = ps.hotovy[0] && ps.hotovy[1];
+      if (ps.reakcia === p) return { text: "odpovedá", tip: p === ja ? "Odpovedáš na NA EX." : "Odpovedá na NA EX." };
+      if (cakaSBzdochou(ps, p)) return { text: "čaká · Bzdocha", tip: `S Bzdochou hrá Pitku až po ${p === ja ? menoHraca(super_) : "tebe"} a uvidí ${p === ja ? "jeho" : "tvoje"} NA EX.` };
+      if (ps.hotovy[p] && !odkryte && p !== ja && vidimVolbuSupera) return { text: `✓ NA EX ${superoveSkryteNaex.size > 0 ? `×${superoveSkryteNaex.size}` : "nie"}`, tip: "Vďaka Bzdoche vidíš jeho voľbu NA EX ešte pred odkrytím." };
+      if (ps.hotovy[p] && !odkryte && p !== ja) return { text: "✓ NA EX?", tip: "Či a kam dal NA EX, uvidíš pri odkrytí, keď skončíš aj ty." };
+      if (ps.hotovy[p]) return { text: `✓ ${naex || skryte ? "po NA EX" : odkryte ? "bez NA EX" : "koniec"}` };
+      if (skryte) return { text: "NA EX skryto", tip: "Súper tvoje NA EX nevidí, odkryje sa, keď obaja skončíte Pitku." };
+      if (naex) return { text: "NA EX dal" };
+      return null;
+    }
+    if (view.faza === "draft" && draft !== null) {
+      if (draft.krok === "stavba") return { text: draft.vybral[p] ? `✓ ${tvar(rodHracaP(p), "vybral", "vybrala", "vybrané")}` : "stavia šenok" };
+      if (draft.krok === "beranie" && draft.hotovo[p]) return { text: `✓ ${tvar(rodHracaP(p), "skončil", "skončila", "koniec")}` };
+      if (draft.noveKarty[p] > 0) return { text: `+${draft.noveKarty[p]} zo šenku` };
+    }
+    return null;
+  };
   const kartyBaru = (p: PlayerId): ReactNode => {
     const casti: ReactNode[] = [];
     const pozn = (kluc: string, text: ReactNode, title?: string): void => {
@@ -5531,12 +5577,14 @@ export function HernaPlocha({
   const stranaBaru = (p: PlayerId): StranaBaru => ({
     meno: p === ja ? "ty" : menoHraca(p),
     naTahu: naTahuStrana(p),
+    stav: stavStrany(p),
     akcie: <AkcieStrany sums={lineEval.sums[p]} zdroje={lineEval.zdroje[p]} rozpis={rozpis[p]} sada={sada} menoKarty={menoKarty} sNazvom />,
     karty: kartyBaru(p),
   });
-  const prepnutNa = rezimStran === "akcie" ? "karty na vyloženie" : "aktivované akcie";
   const stredBaru: ReactNode =
-    bitkaProps !== null ? (
+    bitkaProps !== null && !mobil && !naSirku ? (
+      <OdhadKola {...bitkaProps} />
+    ) : bitkaProps !== null ? (
       <>
         <OdhadBaru {...bitkaProps} />
         {stavka !== null && <StavkaBitky stavka={stavka} kratko />}
@@ -5909,14 +5957,13 @@ export function HernaPlocha({
         desi={osVListe ? null : desi}
         nastroje={osVListe ? null : nastrojeStola}
         rezim={rezimStran}
-        prepni={prepniStrany}
         stred={stredBaru}
-        tip={bitkaProps !== null ? tipOdhadu(bitkaProps, stavka, prepnutNa) : { nadpis: "Strany baru", text: `Klik ukáže na stranách baru ${prepnutNa}.` }}
+        tip={bitkaProps !== null ? tipOdhadu(bitkaProps, stavka, textUctuPitky) : null}
         ja={stranaBaru(ja)}
         su={stranaBaru(super_)}
         sprava={spravaBaru}
         zrusChybu={zrusChybu}
-        bezPrepinaca={mobil || naSirku}
+        mobil={mobil || naSirku}
         onOdhad={naSirku && bitkaProps !== null ? () => setDetailOdhadu(true) : undefined}
       >
         {skratky.napoveda && <SkratkyNapoveda onZavri={skratky.zavriNapovedu} />}

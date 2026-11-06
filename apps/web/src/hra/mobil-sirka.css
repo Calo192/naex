@@ -86,8 +86,7 @@ html.stol-na-sirku .obsah:has(> .hra) {
 }
 
 .hra.mobil-sirka:not(.stol-scroll) .jbar-strana,
-.hra.mobil-sirka:not(.stol-scroll) .jbar-os,
-.hra.mobil-sirka:not(.stol-scroll) .jbar-cip {
+.hra.mobil-sirka:not(.stol-scroll) .jbar-os {
   display: none;
 }
 

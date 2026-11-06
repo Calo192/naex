@@ -25,7 +25,7 @@
 /* ---- horný riadok: strana | odhad + správa | strana ---- */
 .jbar-st {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(420px, auto) minmax(0, 1fr);
+  grid-template-columns: minmax(0, 1fr) minmax(0, auto) minmax(0, 1fr);
   min-width: 0;
 }
 
@@ -36,8 +36,6 @@
   min-width: 0;
   padding: 0 12px;
   overflow: hidden;
-  /* Čo sa nevojde, mizne k stredu baru — vidno, že pokračuje (celé je na stole). */
-  mask-image: linear-gradient(90deg, #000 calc(100% - 14px), transparent);
 }
 
 .jbar-strana.ja {
@@ -49,7 +47,6 @@
   --efekt-farba: var(--su);
   flex-direction: row-reverse;
   box-shadow: inset -4px 0 var(--su);
-  mask-image: linear-gradient(270deg, #000 calc(100% - 14px), transparent);
 }
 
 .jbar-kto {
@@ -275,34 +272,230 @@ button.jbar-odhad::before {
   color: var(--tlmeny);
 }
 
-/* Segmentový čip „akcie | karty“ — aby bolo vidno, že klik prepína strany. */
-.jbar-cip {
-  display: inline-flex;
-  flex: none;
-  align-self: center;
-  overflow: hidden;
-  border: 1px solid var(--okraj-svetly);
-  border-radius: 999px;
-  font-size: 0.7rem;
-  line-height: 1.35;
+/* Stavová správa: pevné miesto pod odhadom, jeden riadok, celé znenie pri myši. */
+/* ---- odhad kola (Michal 2026-11-06, mock Špaky na krajoch) ---- */
+.jbar-odhad:has(> .jk) {
+  align-items: center;
 }
 
-.jbar-cip > span {
-  padding: 0 8px;
+.jk {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  white-space: nowrap;
+}
+
+.jk-kraj {
+  display: flex;
+  flex: none;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  min-width: 44px;
+}
+
+.jk-kraj b {
+  font: 800 1.34rem/1 var(--nadpis);
+  font-variant-numeric: tabular-nums;
+}
+
+.jk-kraj.ja b {
+  color: var(--ja);
+}
+
+.jk-kraj.su b {
+  color: var(--su);
+}
+
+.jk-kraj small {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  font-size: 0.6rem;
+  line-height: 1;
+  letter-spacing: 0.04em;
   color: var(--tlmeny);
 }
 
-.jbar-cip > span.zap {
-  background: var(--akcent);
-  color: var(--na-akcente);
-  font-weight: 800;
+.jk-kraj small .ikona-spaku {
+  width: 18px;
+  height: 9px;
+  fill: currentColor;
 }
 
-.jbar-odhad:hover .jbar-cip {
-  border-color: var(--akcent);
+.jk-riadky {
+  display: grid;
+  grid-template-columns: auto auto auto auto auto;
+  align-items: center;
+  column-gap: 6px;
+  row-gap: 5px;
+  padding: 0 11px;
+  border-inline: 1px solid color-mix(in srgb, var(--lesk) 13%, transparent);
 }
 
-/* Stavová správa: pevné miesto pod odhadom, jeden riadok, celé znenie pri myši. */
+.jk-riadky .jbar-nadpis {
+  text-align: right;
+}
+
+.jk-cislo {
+  min-width: 1.2em;
+  font: 800 0.9rem/1 var(--nadpis);
+  font-variant-numeric: tabular-nums;
+  text-align: center;
+}
+
+.jk-cislo.vedie {
+  font-size: 1.06rem;
+}
+
+.jk-cislo.ja {
+  color: var(--ja);
+}
+
+.jk-cislo.su {
+  color: var(--su);
+}
+
+.jk-pas {
+  position: relative;
+  width: 96px;
+  height: 12px;
+  background: color-mix(in srgb, #000 calc(var(--tma) * 38%), transparent);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--lesk) 10%, transparent);
+}
+
+.jk-pas::after {
+  content: "";
+  position: absolute;
+  top: -2px;
+  bottom: -2px;
+  left: 50%;
+  width: 2px;
+  margin-left: -1px;
+  background: var(--text);
+}
+
+.jk-pas i {
+  position: absolute;
+  top: 1px;
+  bottom: 1px;
+}
+
+.jk-pas i.ja {
+  right: 50%;
+  background: var(--ja);
+}
+
+.jk-pas i.su {
+  left: 50%;
+  background: var(--su);
+}
+
+.jk-verdikt {
+  min-width: 7.2em;
+  padding-left: 4px;
+  font: 800 0.82rem/1.1 var(--pismo);
+  text-align: left;
+}
+
+.jk-verdikt.vyhravam {
+  color: var(--zelena);
+}
+
+.jk-verdikt.prehravam {
+  color: var(--cervena-text);
+}
+
+.jk-verdikt.remiza {
+  color: var(--akcent);
+}
+
+/* Ústupok pri veľa akciách (ustupkyBaru.ts): verdikt je v nápovede, pás kratší. */
+.jbar-stred[data-uzky] .jk-verdikt {
+  display: none;
+}
+
+.jbar-stred[data-uzky] .jk-pas {
+  width: 48px;
+}
+
+.jbar-stred.s-chybou {
+  background: color-mix(in srgb, var(--cervena-text) 20%, var(--plocha-3));
+}
+
+.jbar-sprava-miesto.prazdne {
+  display: none;
+}
+
+/* Rozpis špakov v nápovede stredu baru. */
+.tip-spaky {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto auto;
+  column-gap: 12px;
+  row-gap: 2px;
+  margin-top: 4px;
+  padding-top: 6px;
+  border-top: 1px solid var(--okraj);
+  font-variant-numeric: tabular-nums;
+}
+
+.tip-spaky > :nth-child(3n + 2),
+.tip-spaky > :nth-child(3n) {
+  text-align: right;
+}
+
+.tip-spaky .spolu {
+  padding-top: 2px;
+  border-top: 1px solid var(--okraj);
+}
+
+/* Akcie v strane: rad cez celú šírku, keď sa nezmestí, dva rady menších piktogramov (ustupkyBaru.ts). */
+.jbar .jbar-obsah.jbar-akcie {
+  flex: 1;
+  align-self: stretch;
+  align-content: center;
+}
+
+.jbar .jbar-akcie[data-husto] {
+  flex-wrap: wrap;
+  gap: 2px 3px;
+}
+
+.jbar .jbar-akcie[data-husto] .efekt {
+  gap: 3px;
+  padding: 0 5px 0 0;
+  border-radius: 5px;
+}
+
+.jbar .jbar-akcie[data-husto] .efekt-ikona {
+  width: calc((var(--jbar-h1) - 8px) / 2);
+  height: calc((var(--jbar-h1) - 8px) / 2);
+}
+
+.jbar .jbar-akcie[data-husto] .efekt-ikona .ikona-akcie {
+  border-radius: 4px;
+}
+
+.jbar .jbar-akcie[data-husto] .efekt-hodnota {
+  font-size: 0.88rem;
+}
+
+.jbar .jbar-akcie[data-husto] :is(.efekt-nazov, .efekt-zmeny) {
+  display: none;
+}
+
+.jbar .efekt[hidden] {
+  display: none;
+}
+
+.jbar .jbar-vic {
+  align-self: center;
+  padding: 1px 7px;
+  font: 800 0.88rem/1.3 var(--nadpis);
+  color: var(--text);
+  cursor: help;
+}
+
 .jbar-sprava-miesto {
   display: flex;
   justify-content: center;
@@ -1227,7 +1420,7 @@ button.jbar-odhad::before {
 /* Odhad v bubline Melichara na užšom okne bez riadku „ešte môže“ — inak by Melicharovi ostal
    úzky stĺpec a krátka veta by išla na tri strany (1366 × 650). Celý odhad je v nápovede kópie. */
 @media (min-width: 761px) and (max-width: 1599px) {
-  .jbar-odhad-kopia .hrozba-bitky-riadok {
+  .jbar-odhad-kopia :is(.hrozba-bitky-riadok, .jk-verdikt) {
     display: none;
   }
 }

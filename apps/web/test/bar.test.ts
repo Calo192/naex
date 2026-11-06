@@ -1,28 +1,8 @@
-// Jednotný bar nad stolom (Michal 2026-10-25, mock V2): režim strán podľa fázy,
-// ručné prepnutie do konca fázy a jediná stavová správa s prednosťou chyby.
+// Jednotný bar nad stolom (Michal 2026-10-25, mock V2): jediná stavová správa s prednosťou chyby
+// (na počítači od 2026-11-06 ostala len chyba, JednotnyBar.tsx) a Melichar v bare.
 
 import { describe, expect, it } from "vitest";
-import { castiVety, klucFazy, moznostiKvizu, predvolenyRezim, rezimMelichara, rozdelNaStrany, vetyTextu, vyberSpravu } from "../src/hra/bar.ts";
-
-describe("režim strán baru", () => {
-  it("v Zhromaždení ukazuje karty na vyloženie, v Pitke a bitke akcie", () => {
-    expect(predvolenyRezim("zhromazdenie")).toBe("karty");
-    expect(predvolenyRezim("pitka")).toBe("akcie");
-    expect(predvolenyRezim("bitka")).toBe("akcie");
-  });
-
-  it("vo voľbe cieľa a v drafte (línia je prázdna) karty", () => {
-    expect(predvolenyRezim("volbaCiela")).toBe("karty");
-    expect(predvolenyRezim("draft")).toBe("karty");
-  });
-
-  it("ručné prepnutie platí do konca fázy — každé Zhromaždenie a Pitka zvlášť", () => {
-    expect(klucFazy(2, "pitka", 1)).toBe(klucFazy(2, "pitka", 1));
-    expect(klucFazy(2, "pitka", 1)).not.toBe(klucFazy(2, "pitka", 2));
-    expect(klucFazy(2, "pitka", 1)).not.toBe(klucFazy(2, "zhromazdenie", 1));
-    expect(klucFazy(2, "bitka", 2)).not.toBe(klucFazy(3, "bitka", 2));
-  });
-});
+import { castiVety, moznostiKvizu, rezimMelichara, rozdelNaStrany, vetyTextu, vyberSpravu } from "../src/hra/bar.ts";
 
 describe("stavová správa baru", () => {
   it("naraz len jedna: chyba má prednosť pred účtom Pitky a ten pred súperovým ťahom", () => {

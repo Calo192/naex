@@ -1,14 +1,16 @@
 // Jednotný bar nad stolom (Michal 2026-10-25, mock V2 „Os dole, správa pod verdiktom“).
-// Hore: tvoja strana | odhad bitky, prepínač strán a stavová správa | súperova strana.
+// Hore: tvoja strana | odhad kola | súperova strana (Michal 2026-11-06: strany vždy akcie, bez správy súpera;
+// chyba ťahu na chvíľu preberie stred). Telefón si nechal svoj odznak a správy.
 // Dole: os kola ako pravítko nad stolom, vydesení a Log · ? — len na mobile a v prehrávači;
 // pri stole je os v strede hlavičky webu (Michal 2026-10-27, dizajn timeline-lista A) a bar má jeden riadok.
 // Výška je vo všetkých fázach aj režimoch rovnaká (hra.css, .jbar) — stôl pod ním neskáče.
 
-import { useEffect, useRef, useState, type ReactNode } from "react";
+import { useEffect, useLayoutEffect, useRef, useState, type ReactNode } from "react";
 import { createPortal } from "react-dom";
 import { useTip, type TipObsah } from "../karta/Tip.tsx";
 import type { RezimMelichara, RezimStran, SpravaBaru } from "./bar.ts";
 import { ID_MIESTA_MELICHARA } from "./MelicharBar.tsx";
+import { rozmiestniAkcie } from "./ustupkyBaru.ts";
 
 export interface StranaBaru {
   /** „ty“ alebo meno súpera. */
@@ -17,6 +19,8 @@ export interface StranaBaru {
   readonly karty: ReactNode;
   /** Kto je na rade — len nenápadne, stôl to povie farbou (Michal 2026-10-25). */
   readonly naTahu: boolean;
+  /** Stav pod menom (pas, NA EX skryto, stavia šenok); má prednosť pred „na ťahu“. */
+  readonly stav?: { readonly text: string; readonly tip?: string } | null;
 }
 
 export interface JednotnyBarProps {
@@ -25,16 +29,15 @@ export interface JednotnyBarProps {
   readonly desi: ReactNode | null;
   readonly nastroje: ReactNode | null;
   readonly rezim: RezimStran;
-  readonly prepni: () => void;
-  /** Riadok stredu: odhad bitky, inak cieľ kola. */
+  /** Riadok stredu: odhad kola, inak cieľ. */
   readonly stred: ReactNode;
   readonly tip: TipObsah | null;
   readonly ja: StranaBaru;
   readonly su: StranaBaru;
   readonly sprava: SpravaBaru | null;
   readonly zrusChybu?: (() => void) | undefined;
-  /** Na mobile strany ukazujú len karty — akcie sú v celom paneli bitky pod barom. */
-  readonly bezPrepinaca?: boolean;
+  /** Telefón: strany ukazujú len karty a správy ostávajú; akcie sú v celom paneli bitky pod barom. */
+  readonly mobil?: boolean;
   /** Telefón na šírku: ťuk na odznak odhadu ukáže okno s celým odhadom (nápoveda pod myšou tam nie je). */
   readonly onOdhad?: (() => void) | undefined;
   /** Plávajúce pod barom (zoznam skratiek). */
@@ -50,29 +53,52 @@ interface ZobrazenaSprava {
 function Strana({ s, kto, rezim }: { readonly s: StranaBaru; readonly kto: "ja" | "su"; readonly rezim: RezimStran }) {
   return (
     <div className={`jbar-strana ${kto}${s.naTahu ? " na-tahu" : ""}`}>
-      <span className="jbar-kto" title={s.naTahu ? `${s.meno} — na ťahu` : s.meno}>
+      <span className="jbar-kto" title={s.stav?.tip ?? (s.naTahu ? `${s.meno} — na ťahu` : s.meno)}>
         {s.meno}
-        {s.naTahu && <small className="jbar-na-tahu">na ťahu</small>}
+        {s.stav != null ? <small className="jbar-na-tahu">{s.stav.text}</small> : s.naTahu && <small className="jbar-na-tahu">na ťahu</small>}
       </span>
-      <span className={`jbar-obsah ${rezim === "akcie" ? "efekty jbar-akcie" : "jbar-karty"}`}>{rezim === "akcie" ? s.akcie : s.karty}</span>
+      {rezim === "akcie" ? (
+        <span className="jbar-obsah efekty jbar-akcie">
+          {s.akcie}
+          <span className="efekt jbar-vic" hidden />
+        </span>
+      ) : (
+        <span className="jbar-obsah jbar-karty">{s.karty}</span>
+      )}
     </div>
   );
 }
 
-export function JednotnyBar({ os, desi, nastroje, rezim, prepni, stred, tip, ja, su, sprava, zrusChybu, bezPrepinaca = false, onOdhad, children }: JednotnyBarProps) {
+export function JednotnyBar({ os, desi, nastroje, rezim, stred, tip, ja, su, sprava, zrusChybu, mobil = false, onOdhad, children }: JednotnyBarProps) {
   const { tip: okno, ukaz, skry } = useTip();
   // Kým nepríde nová správa, stará ostane stlmená (mock V2) — miesto nikdy neskáče prázdne
   // a hráč si ju ešte dočíta. Chyba po potvrdení zmizne celá.
   const [zobrazena, setZobrazena] = useState<ZobrazenaSprava | null>(null);
+  // Na počítači ostala v bare len chyba ťahu (Michal 2026-11-06: správy súpera nikto nečíta).
+  const spravaBaru = mobil || sprava?.druh === "chyba" ? sprava : null;
   useEffect(() => {
     setZobrazena((z) => {
-      if (sprava === null) return z === null || z.sprava.druh === "chyba" ? null : z.stara ? z : { ...z, stara: true };
-      if (z !== null && !z.stara && z.sprava.druh === sprava.druh && z.sprava.text === sprava.text) return z;
-      return { sprava, id: (z?.id ?? 0) + 1, stara: false };
+      if (spravaBaru === null) return z === null || z.sprava.druh === "chyba" ? null : z.stara ? z : { ...z, stara: true };
+      if (z !== null && !z.stara && z.sprava.druh === spravaBaru.druh && z.sprava.text === spravaBaru.text) return z;
+      return { sprava: spravaBaru, id: (z?.id ?? 0) + 1, stara: false };
     });
-  }, [sprava?.druh, sprava?.text]);
+  }, [spravaBaru?.druh, spravaBaru?.text]);
   const z = zobrazena;
-  const prepnutNa = rezim === "akcie" ? "karty na vyloženie" : "aktivované akcie";
+  const chybaVStrede = !mobil && z?.sprava.druh === "chyba";
+  // Klik pripne nápovedu odhadu, aby sa dala čítať bez držania myši (mock: „mouseover alebo klik“).
+  const [pripnuty, setPripnuty] = useState(false);
+  // Strany sa rozsúvajú podľa skutočnej šírky pri každom vykreslení aj pri zmene okna.
+  const barRef = useRef<HTMLElement>(null);
+  useLayoutEffect(() => {
+    if (barRef.current !== null && rezim === "akcie") rozmiestniAkcie(barRef.current);
+  });
+  useEffect(() => {
+    const el = barRef.current;
+    if (el === null || rezim !== "akcie") return;
+    const ro = new ResizeObserver(() => rozmiestniAkcie(el));
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, [rezim]);
   // Keď hovorí Melichar (jeho bublina je v mieste baru), bar skryje svoje riadky — os ostane,
   // keď na ňu ukazuje; odhad, o ktorom hovorí, sa vloží do jeho bubliny.
   const miestoRef = useRef<HTMLDivElement>(null);
@@ -95,8 +121,9 @@ export function JednotnyBar({ os, desi, nastroje, rezim, prepni, stred, tip, ja,
   const sOsou = os !== null || desi !== null || nastroje !== null;
   return (
     <header
+      ref={barRef}
       className={`jbar rezim-${rezim}${sOsou ? "" : " bez-osi"}${mel === null ? "" : ` mel-hovori mel-${mel.rezim}`}`}
-      aria-label={sOsou ? "Priebeh kola a odhad bitky" : "Odhad bitky"}
+      aria-label={sOsou ? "Priebeh kola a odhad" : "Odhad kola"}
     >
       <div className="jbar-mel-miesto" id={ID_MIESTA_MELICHARA} ref={miestoRef} />
       {mel?.rezim === "odhad" &&
@@ -109,31 +136,39 @@ export function JednotnyBar({ os, desi, nastroje, rezim, prepni, stred, tip, ja,
         )}
       <div className="jbar-st" hidden={mel !== null}>
         <Strana s={ja} kto="ja" rezim={rezim} />
-        <div className="jbar-stred">
-          <button
-            type="button"
-            className="jbar-odhad"
-            data-prepni-strany=""
-            data-vyucba="odhad"
-            aria-pressed={rezim === "karty"}
-            aria-label={onOdhad !== undefined ? "Odhad bitky — ťuk ukáže podrobnosti" : bezPrepinaca ? undefined : `Strany baru: ${rezim === "akcie" ? "akcie" : "karty"} — klik prepne na ${prepnutNa}`}
-            disabled={bezPrepinaca && onOdhad === undefined}
-            onClick={onOdhad ?? prepni}
-            onMouseEnter={(e) => onOdhad === undefined && tip !== null && ukaz(e.currentTarget, tip)}
-            onMouseLeave={skry}
-            onFocus={(e) => onOdhad === undefined && tip !== null && ukaz(e.currentTarget, tip)}
-            onBlur={skry}
-          >
-            {stred}
-            {!bezPrepinaca && (
-              <span className="jbar-cip" aria-hidden="true">
-                <span className={rezim === "akcie" ? "zap" : ""}>akcie</span>
-                <span className={rezim === "karty" ? "zap" : ""}>karty</span>
-              </span>
-            )}
-          </button>
+        <div className={`jbar-stred${chybaVStrede ? " s-chybou" : ""}`}>
+          {!chybaVStrede && (
+            <button
+              type="button"
+              className="jbar-odhad"
+              data-vyucba="odhad"
+              aria-label={onOdhad !== undefined ? "Odhad bitky — ťuk ukáže podrobnosti" : "Odhad kola — klik pripne podrobnosti"}
+              disabled={onOdhad === undefined && (mobil || tip === null)}
+              onClick={(e) => {
+                if (onOdhad !== undefined) {
+                  onOdhad();
+                  return;
+                }
+                if (tip === null) return;
+                if (pripnuty) skry();
+                else ukaz(e.currentTarget, tip);
+                setPripnuty(!pripnuty);
+              }}
+              onMouseEnter={(e) => onOdhad === undefined && tip !== null && ukaz(e.currentTarget, tip)}
+              onMouseLeave={() => {
+                if (!pripnuty) skry();
+              }}
+              onFocus={(e) => onOdhad === undefined && tip !== null && ukaz(e.currentTarget, tip)}
+              onBlur={() => {
+                setPripnuty(false);
+                skry();
+              }}
+            >
+              {stred}
+            </button>
+          )}
           {okno}
-          <div className="jbar-sprava-miesto" role="status" aria-live="polite">
+          <div className={`jbar-sprava-miesto${!mobil && z === null ? " prazdne" : ""}`} role="status" aria-live="polite">
             {z !== null && (
               <span
                 key={z.id}

@@ -39,7 +39,7 @@ export interface OdhadSpakov {
   readonly obrat: readonly [number, number] | null;
 }
 
-type StavOdhadu = VerejnyStav & { readonly spakyNaSekere: number; readonly lokalitaOtocena: boolean };
+export type StavOdhadu = VerejnyStav & { readonly spakyNaSekere: number; readonly lokalitaOtocena: boolean };
 
 /** Rozpis oboch hráčov, keď bitku vyhrá `vitaz` a Nakladačku má ako `nakladackaBodov`. */
 function rozpisVysledku(data: GameData, s: StavOdhadu, linia: LineEval, makke: readonly [number, number], vitaz: PlayerId | null, nakladackaBodov: number): readonly [RozpisOdhadu, RozpisOdhadu] {

@@ -141,7 +141,7 @@ body.vyucba-bezi .ruka-rad > .tahatelna:not(:hover) > .kl[data-vyucba-zvyraznene
 /* U4: odhad, stávku a vydesenie výučba ukáže, až keď o nich Melichar hovorí (playtest: pri prvých
    krokoch ich nikto nechápal). Z pásu kola zmiznú celé — skryté zaberali miesto a pás orezal
    „Zhromaždenie 1 z 2“ (1920 × 1080). */
-body.vyucba-bezi:not(.vyucba-odhad) .jbar-odhad > :not(.jbar-cip),
+body.vyucba-bezi:not(.vyucba-odhad) .jbar-odhad > *,
 body.vyucba-bezi:not(.vyucba-vydesenie) .jbar-desi {
   visibility: hidden;
 }

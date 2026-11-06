@@ -1,5 +1,4 @@
-// Obsah dlaždíc dosky v strede zvislo aj vodorovne a tri počty v Kartách pod sebou
-// (Michal 2026-10-30). Stráž CSS, nech sa pri zlúčení vetiev pravidlá potichu nestratia;
+// Obsah dlaždíc dosky v strede zvislo aj vodorovne (Michal 2026-10-30) a dlaždica Karty (2026-11-06). Stráž CSS, nech sa pri zlúčení vetiev pravidlá potichu nestratia;
 // polohu na stole overili snímky pri 1920, 1600, 1440 a 1366 px.
 
 import { readFileSync } from "node:fs";
@@ -20,12 +19,14 @@ describe("dlaždice dosky", () => {
     );
   });
 
-  it("Karty: nadpis a počty v strede dlaždice", () => {
-    expect(hra).toMatch(new RegExp(`\\.doska \\.zdroj-karty:not\\(\\.ako-ciel\\) \\{\\s*display: grid;\\s*grid-template-columns: ${STRED};\\s*align-content: safe center;`));
+  it("Karty (Michal 2026-11-06): veľké číslo a ruka s priznanými v strede dlaždice", () => {
+    expect(hra).toMatch(/
+.karty-prehlad {[^}]*align-items: center;s*justify-content: center;/);
+    expect(hra).toMatch(/
+.karty-rad {[^}]*text-align: left;/);
   });
 
-  it("počty v Kartách: čísla doprava v jednom stĺpci, slová od jedného okraja", () => {
-    expect(hra).toMatch(/\n\.karty-pocty \{[^}]*text-align: left;/);
-    expect(hra).toMatch(/\n\.karty-pocty b \{[^}]*min-width: 1\.6em;[^}]*text-align: right;/);
+  it("Karty: súperova dlaždica nie je zrkadlená, veľké číslo je vľavo na oboch stranách", () => {
+    expect(hra).not.toMatch(/.superova[^{]*.karty-(prehlad|vylozi|rad)/);
   });
 });

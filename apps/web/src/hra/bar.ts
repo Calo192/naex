@@ -1,24 +1,9 @@
 // Jednotný bar nad stolom (Michal 2026-10-25, mock V2 „Os dole, správa pod verdiktom“):
 // nahradil os kola, pás fázy aj riadok bitky. Hore strana | odhad bitky + stavová
-// správa | strana, dole os kola. Strany ukazujú buď aktivované akcie, alebo karty
-// na vyloženie; každá informácia je v bare len raz.
-
-import type { Phase } from "@naex/core";
+// správa | strana, dole os kola. Na počítači strany ukazujú vždy aktivované akcie, na telefóne
+// karty (Michal 2026-11-06); každá informácia je v bare len raz.
 
 export type RezimStran = "akcie" | "karty";
-
-/**
- * Režim strán, kým hráč neklikne (Michal 2026-10-25): v Zhromaždení sa rozhoduje, koľko
- * kariet ešte vyložiť, v Pitke a bitke rozhodujú akcie. Voľba cieľa a draft línie nemajú.
- */
-export function predvolenyRezim(faza: Phase): RezimStran {
-  return faza === "pitka" || faza === "bitka" ? "akcie" : "karty";
-}
-
-/** Ručné prepnutie platí do konca fázy — každé Zhromaždenie a Pitka sú fázou zvlášť. */
-export function klucFazy(kolo: number, faza: Phase, pitkaCislo: number): string {
-  return `${kolo}:${faza}:${faza === "zhromazdenie" || faza === "pitka" ? pitkaCislo : 0}`;
-}
 
 export type DruhSpravy = "chyba" | "ucet" | "super";
 
