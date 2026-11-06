@@ -11,7 +11,9 @@
 //  - pri vykladaní, NA EX, hádke a Nakladačke si zahrá
 //    dopredu na kópii stavu tým istým jadrom (apply, evaluateLine): po svojom
 //    ťahu dohrá Zhromaždenie, v ktorom obaja vykladajú chamtivo,
-//  - drobné voľby (draft, fajčenie, priznanie, limit ruky…) robí pravidlami.
+//  - drobné voľby (draft, fajčenie, priznanie, limit ruky…) robí pravidlami,
+//  - cigarety, ruku a poldeci ráta ako špaky vo finále (uzitokRuky, uzitokCigariet, uzitokPoldeci):
+//    finále platí 1 špak za bod Nakladačky bez stropu, vedúci bez rezervy ho prehrá.
 //
 // Férovosť: bot beží na serveri a dostane celý GameState, ale skôr než
 // začne počítať, skryté informácie zamieša (zahmliStav): súperova ruka sa
@@ -154,8 +156,10 @@ const VAHA_AKCIE: Readonly<Record<Action, number>> = {
   Dlh: -0.8,
   PoškodeniePečene: -0.5,
   Obmedzenie: 0.3,
-  Cigareta: 0.4,
-  Vízia: 0.15,
+  // Cigareta a Vízia dajú kartu v každej Pitke, nielen raz za bitku (partia 17: Michal 23 aktívnych
+  // Cigariet a 15 Vízií, bot 1 a 3, cigarety mimo pasov 38 : 3).
+  Cigareta: 0.9,
+  Vízia: 0.8,
   Poldeci: 0.5,
   // v10.3: Posilnenie proti Posilneniu je Forsáž (obe karty ×2) — už nikdy nie je hluché.
   Posilnenie: 0.7,
@@ -163,7 +167,7 @@ const VAHA_AKCIE: Readonly<Record<Action, number>> = {
   // (turnaj stredna 200 partií: 0.45 proti 0.3 — 110 : 86 výhier; 0.6 nepridá).
   Odpor: 0.45,
   // v8.4: Robota bez Dlhu dá špak — nikdy nie je hluchá.
-  Robota: 0.6,
+  Robota: 0.9,
   // Pakt sa v súčtoch nikdy neobjaví — na spoji sa premení na akciu partnera.
   Pakt: 0,
 };
@@ -294,15 +298,27 @@ const PRIAZEN_ZA_BITKU = {
 /** Pravdepodobnosť, že priazeň vydrží do ďalšej bitky (Nakladačka markery hýbe). */
 const VYDRZ_PRIAZNE = 0.6;
 
-/** Hodnota karty v balíčku — čím vyššia, tým radšej ju bot má. */
-export function hodnotaKarty(data: GameData, karta: CardInstance): number {
+/** Akcie, ktoré sa vracajú počas zvyšku hry — tým viac, čím je hry viac; vo finále skoro nič. */
+const HOSPODARSKE: ReadonlySet<Action> = new Set<Action>(["Cigareta", "Vízia", "Obmedzenie", "Poldeci"]);
+
+function nasobokHospodarstva(kolPoTejto: number | undefined): number {
+  if (kolPoTejto === undefined) return 1;
+  return kolPoTejto === 0 ? 0.2 : Math.min(2, 0.75 + 0.25 * kolPoTejto);
+}
+
+/**
+ * Hodnota karty v balíčku — čím vyššia, tým radšej ju bot má. `kolPoTejto`: koľko bitiek po tejto
+ * ešte príde; skoro v hre je cigareta a karta navyše vždy viac než v poslednom kole.
+ */
+export function hodnotaKarty(data: GameData, karta: CardInstance, kolPoTejto?: number): number {
   if (karta.defId === "cirhoza") return -3;
   // Absťák (v9.1): mŕtvy ťah a −1 tuhé v každej bitke, kým je v balíčku.
   if (karta.defId === "abstak") return -2;
   const def = defOf(data, karta);
   const strany = printedSides(data, karta);
   let akcie = 0;
-  for (const slot of [...strany.left, ...strany.right]) if (slot !== null) akcie += VAHA_AKCIE[slot];
+  const hospodarstvo = nasobokHospodarstva(kolPoTejto);
+  for (const slot of [...strany.left, ...strany.right]) if (slot !== null) akcie += VAHA_AKCIE[slot] * (HOSPODARSKE.has(slot) ? hospodarstvo : 1);
   // Aktivuje sa zhruba polovica akcií — páruje sa vždy len jedna hrana. Pakt (v7) má
   // hodnotu akcie, ktorú dostane do páru — v priemere asi ako Robota.
   for (const slot of [...strany.left, ...strany.right]) if (slot === "Pakt") akcie += 0.3;
@@ -466,7 +482,78 @@ function vykupneVOdhade(s: GameState, p: PlayerId, cigarety: number = s.hraci[p]
 /** Čo hráča p stojí minúť n cigariet: ich úžitok v hre a výkupné, o ktoré príde. */
 function cenaCigariet(k: Kontext, s: GameState, p: PlayerId, n: number): number {
   const c = s.hraci[p].cigarety;
-  return n * 0.3 * k.buducnost * k.povaha.zdroje + k.povaha.body * (vykupneVOdhade(s, p, c) - vykupneVOdhade(s, p, c - n));
+  return k.povaha.zdroje * (uzitokCigariet(s, c) - uzitokCigariet(s, c - n)) + k.povaha.body * (vykupneVOdhade(s, p, c) - vykupneVOdhade(s, p, c - n));
+}
+
+// ---------------------------------------------------------------------------
+// Rezerva na finále (Michal 2026-11-06): finále platí Nakladačku 1 špak za bod bez stropu a 1 špak
+// za každú kartu v línii, takže vedúci bez kariet a cigariet ho prehrá aj o 40 špakov. Karta a
+// cigareta preto do posledného kola neslabnú; slabnú, až keď ich už nebude kde minúť. Hodnoty sú
+// v špakoch a ladí ich turnaj (tools/bot/kola.ts, súper hromadic).
+
+/** Čo prinesie karta navyše zahraná vo finále: jej tuhé a špak za kartu v línii. */
+const KARTA_VO_FINALE = 4;
+/** Koľko kariet si hráč za kolo najviac dotiahne z balíčka (dobratie a fajčenie), hrubý odhad. */
+const KARIET_ZA_KOLO = 3;
+/** Koľko kariet z ruky a možností ťahu výpočet dopredu skúša — s plnou rukou by bot ťahal priveľmi dlho. */
+const KARIET_VO_VYPOCTE = 6;
+const MOZNOSTI_VO_VYPOCTE = 6;
+/** Vykladaní (Zhromaždení), ktoré odhad ráta vo finále, kým nevie, koľko Pitiek bude. */
+const ODHAD_VYKLADANI = 3;
+
+/**
+ * Váha rezervy podľa toho, koľko bitiek ostáva do finále. Skoro v hre je väčšia, lebo cigareta a karta
+ * z prvých kôl sa úročia: súper, ktorý K1–K2 obetuje za zdroje, porážal bota 38 : 20, ako v partii 17.
+ */
+function vahaRezervy(s: GameState): number {
+  const n = kolPoTomto(s);
+  return n <= 1 ? 1 : n === 2 ? 1.1 : 1.25;
+}
+
+/** Vykladania tejto bitky po tom, ktoré práve beží (finále: či sa kartu ešte dá zahrať). */
+function vykladaniPotom(s: GameState): number {
+  if (s.faza === "zhromazdenie") return Math.max(0, s.pitkyCelkom - s.pitkaCislo - 1);
+  if (s.faza === "pitka") return Math.max(0, s.pitkyCelkom - s.pitkaCislo);
+  if (s.faza === "bitka") return 0;
+  return ODHAD_VYKLADANI;
+}
+
+/**
+ * Úžitok ruky v špakoch. Kariet, ktoré sa dajú vyložiť, je vo finále (vykladania × limit), nad to
+ * karta veľa nepridá — ale nie je to strop, len klesajúci úžitok.
+ */
+function uzitokRuky(s: GameState, p: PlayerId, karty: number): number {
+  const finale = kolPoTomto(s) === 0;
+  const vykladani = finale ? vykladaniPotom(s) : ODHAD_VYKLADANI;
+  if (vykladani === 0) return 0;
+  const kapacita = Math.max(2, vykladani * (s.hraci[p].poldeciPlne + 1));
+  const plna = Math.min(karty, kapacita);
+  const navyse = Math.max(0, karty - kapacita);
+  return (finale ? 1 : vahaRezervy(s)) * KARTA_VO_FINALE * (plna + 0.25 * navyse);
+}
+
+/**
+ * Úžitok cigariet v špakoch: prvé dve sú karta istá (šenok, prvé fajčenie), ďalšie karta za 1 až
+ * 2 cigarety, a nad desať sa už nemajú kde minúť — preto sa nemajú hromadiť do výkupného 5 : 1.
+ */
+function uzitokCigariet(s: GameState, cigarety: number): number {
+  const c = Math.max(0, cigarety);
+  const krivka = Math.min(c, 2) + 0.7 * Math.max(0, Math.min(c, 6) - 2) + 0.3 * Math.max(0, Math.min(c, 10) - 6) + 0.1 * Math.max(0, c - 10);
+  if (kolPoTomto(s) > 0) return vahaRezervy(s) * KARTA_VO_FINALE * 0.6 * krivka;
+  // Finále: cigareta je už len fajčenie pred ďalším vykladaním. V každej Pitke prvá karta za 1,
+  // druhá za 2, tretia za 3 — preto cigaretu navyše ceníme čoraz menej a nič z nej nešetríme.
+  const pitky = vykladaniPotom(s);
+  if (pitky === 0) return 0;
+  const prve = Math.min(c, pitky);
+  const druhe = Math.min(Math.max(0, c - pitky), 2 * pitky);
+  const tretie = Math.min(Math.max(0, c - 3 * pitky), 3 * pitky);
+  return 0.9 * KARTA_VO_FINALE * (prve + druhe / 2 + tretie / 3);
+}
+
+/** Úžitok plných poldeci: limit vykladania — prvé dva sú najcennejšie. Výkupné ráta rozdielBodov. */
+function uzitokPoldeci(s: GameState, plne: number): number {
+  const v = Math.min(plne, 2) * 1.3 + 1.1 * Math.max(0, plne - 2);
+  return kolPoTomto(s) > 0 ? v : vykladaniPotom(s) > 0 ? 0.6 * v : 0;
 }
 
 /** Bitky o lokalitu, ktoré ešte prídu po tejto. */
@@ -555,7 +642,11 @@ function hodnotaBitky(k: Kontext, s: GameState, q: PlayerId, ostrost: number): n
       let w = 0;
       // Výkupné: cigareta z Pitky a poldeci otočený v bitke na plný sú na konci hry aj špaky.
       const vykupne = k.povaha.body * vahaVykupneho(s);
-      w += (0.3 * k.buducnost + vykupne / KONSTANTY.CIGARIET_ZA_SPAK) * Math.max(0, (sp.Cigareta ?? 0) - (so.Obmedzenie ?? 0));
+      const cigareta = k.povaha.zdroje * (uzitokCigariet(s, h.cigarety + 1) - uzitokCigariet(s, h.cigarety));
+      // Línia sa vyhodnotí v každej zvyšnej Pitke kola, cigareta aj Vízia sa teda rátajú toľkokrát.
+      const pitky = Math.max(1, Math.min(3, s.pitkyCelkom - s.pitkaCislo + (s.faza === "pitka" ? 1 : 0)));
+      w += pitky * (cigareta + vykupne / KONSTANTY.CIGARIET_ZA_SPAK) * Math.max(0, (sp.Cigareta ?? 0) - (so.Obmedzenie ?? 0));
+      w += pitky * k.povaha.zdroje * (uzitokRuky(s, p, h.ruka.length + 1) - uzitokRuky(s, p, h.ruka.length)) * (sp["Vízia"] ?? 0);
       // Robota (v8.4): za každý Dlh, ktorý nemá čo spáliť, špak (Fúrik páli viac).
       const furik = h.dedicstvo.filter((x) => x.defId === "furik").length;
       w += k.povaha.body * Math.max(0, (sp.Robota ?? 0) * (1 + furik) - h.dlhy);
@@ -580,9 +671,9 @@ function hodnotaZdrojov(k: Kontext, s: GameState, p: PlayerId): number {
   const f = k.buducnost;
   let v = 0;
   // Poldeci z NA EX limit nezvyšuje (v4), po bitke ostane vypitý ako ostatné.
-  v += (1.0 * h.poldeciPlne + 0.35 * (h.poldeciVypite + s.strany.flat().filter((pl) => pl.naexBy === p).length)) * f;
-  v += 0.3 * h.cigarety * f;
-  v += 0.3 * h.ruka.length * f;
+  v += uzitokPoldeci(s, h.poldeciPlne) + 0.35 * (h.poldeciVypite + s.strany.flat().filter((pl) => pl.naexBy === p).length) * f;
+  v += uzitokCigariet(s, h.cigarety);
+  v += uzitokRuky(s, p, h.ruka.length);
   v *= k.povaha.zdroje;
   // Absťák (v9.1): karta v balíčku — o ranu menej v každej bitke a mŕtvy ťah.
   let postih = 0.7 * verejneAbstaky(s, p);
@@ -819,11 +910,15 @@ function sKartou(data: GameData, s: GameState, q: PlayerId, v: Vylozenie): GameS
 /** Najlepšie vyloženie hráča q podľa odhadu bitky, alebo null, keď žiadne nepomôže. */
 function najlepsieVylozenie(k: Kontext, s: GameState, ruka: readonly CardInstance[], q: PlayerId, limit: number): Vylozenie | null {
   const pred = hodnotaBitky(k, s, q, 0.9);
-  const cenaKarty = 0.3 * k.buducnost;
+  // Karta z ruky a cigareta, ktorú by za ňu dal pas (kartyZaPas).
+  const c = s.hraci[q].cigarety;
+  const cenaKarty = k.povaha.zdroje * (uzitokRuky(s, q, ruka.length) - uzitokRuky(s, q, ruka.length - 1) + (limit > 0 ? uzitokCigariet(s, c + 1) - uzitokCigariet(s, c) : 0));
   let najlepsie: Vylozenie | null = null;
   let najlepsiaHodnota = pred + 0.05;
   const videne = new Set<string>();
-  for (const karta of ruka) {
+  const nKol = kolPoTomto(s);
+  const skusane = ruka.length <= KARIET_VO_VYPOCTE ? ruka : [...ruka].sort((a, b) => hodnotaKarty(k.data, b, nKol) - hodnotaKarty(k.data, a, nKol)).slice(0, KARIET_VO_VYPOCTE);
+  for (const karta of skusane) {
     if (jeKliatbaBezAkcii(k.data, karta)) continue;
     for (const kam of cieleVykladania(k.data, s.strany, q, karta, limit, false, cielLokalitaId(s))) {
       if (kam !== "vlastna" && kam !== "superova") continue;
@@ -1100,7 +1195,8 @@ function priemernaKarta(data: GameData, state: GameState, ja: PlayerId): number 
   const h = state.hraci[ja];
   const vsetky = [...h.ruka, ...h.doberaci, ...h.odhadzovaci];
   if (vsetky.length === 0) return 0;
-  return vsetky.reduce((a, x) => a + hodnotaKarty(data, x), 0) / vsetky.length;
+  const n = kolPoTomto(state);
+  return vsetky.reduce((a, x) => a + hodnotaKarty(data, x, n), 0) / vsetky.length;
 }
 
 function draft(v: Volba): Command | null {
@@ -1108,37 +1204,43 @@ function draft(v: Volba): Command | null {
   const d = state.draftStav;
   if (d === null) return null;
   if (d.krok === "stavba") {
-    // Najlepšie karty do šenku (inak ich tam dá súper). Útočník berie zo šenku
-    // druhý (v9.2) — ďalšie dobré radšej pošle naspodok, než by ich podal súperovi.
-    const vsetky = [...d.balicky[ja]].sort((a, b) => hodnotaKarty(data, b) - hodnotaKarty(data, a));
+    // Naspodok vlastného balíčka dá silné karty: odtiaľ si ich dotiahne fajčením a dobraním a súper
+    // ich nedostane; do šenku, z ktorého berú obaja, ide slabšia polovica (partia 17: bot s 0 cigaretami
+    // ponúkal to najlepšie súperovi s 11). Keď je balíček dlhý a do konca hry sa naspodok nedotiahne
+    // (najviac asi 3 karty za kolo) a cigariet má viac než súper, silné dá do šenku a kúpi si ich.
+    const n = kolPoTomto(state);
+    const vsetky = [...d.balicky[ja]].sort((a, b) => hodnotaKarty(data, b, n) - hodnotaKarty(data, a, n));
     const krok = krokStavby(vsetky.length);
-    const doSenku = vsetky.slice(0, krok.doSenku);
-    const zvysok = vsetky.slice(krok.doSenku);
-    const odhod = state.utocnik !== ja ? zvysok.slice(zvysok.length - krok.odhod) : zvysok.slice(0, krok.odhod);
+    const h = state.hraci[ja];
+    const nedotiahne = h.doberaci.length >= KARIET_ZA_KOLO * (n + 1);
+    const kupi = h.cigarety >= 2 && h.cigarety > state.hraci[opponentOf(ja)].cigarety;
+    const silneDoSenku = nedotiahne && kupi;
+    const odhod = silneDoSenku ? vsetky.slice(krok.doSenku) : vsetky.slice(0, krok.odhod);
+    const doSenku = silneDoSenku ? vsetky.slice(0, krok.doSenku) : vsetky.slice(krok.odhod);
     return { type: "stavbaSenku", doSenku: doSenku.map((x) => x.uid), odhod: odhod.map((x) => x.uid) };
   }
   // Branie zo šenku (Michal 2026-10-19): 1 karta za cigaretu, 2 karty za 3.
-  const ponuka = [...state.senok].sort((a, b) => hodnotaKarty(data, b) - hodnotaKarty(data, a));
+  const nKol = kolPoTomto(state);
+  const ponuka = [...state.senok].sort((a, b) => hodnotaKarty(data, b, nKol) - hodnotaKarty(data, a, nKol));
   const najlepsia = ponuka[0];
   if (najlepsia === undefined) return { type: "draftStop" };
   const druha = ponuka[1];
-  // Zisk karty do balíčka oproti tomu, čo stojí. Cigareta je platidlo
-  // (šenok, Dedičstvo, Kšefty) a na konci hry výkupné (5 za špak).
+  // Zisk karty oproti tomu, čo stojí: karta v ruke je špaky vo finále, kvalita oproti priemeru balíčka navrch.
   const { k } = v;
   const h = state.hraci[ja];
   const priemer = priemernaKarta(data, state, ja);
-  const balicek = h.ruka.length + h.doberaci.length + h.odhadzovaci.length;
-  // V poslednom kole karta zo šenku pomôže už len v tejto bitke; cigareta ostáva do bodovania.
-  const posledne = kolPoTomto(state) === 0;
-  const zisk = (x: CardInstance | undefined): number =>
-    x === undefined ? 0 : (hodnotaKarty(data, x) - priemer + 0.5 + (balicek < 10 && !posledne ? 0.6 : 0)) * (posledne ? 0.6 : 1);
+  const ruka = h.ruka.length;
+  const zisk = (x: CardInstance | undefined, poradie: number): number =>
+    x === undefined ? 0 : hodnotaKarty(data, x, nKol) - priemer + k.povaha.zdroje * (uzitokRuky(state, ja, ruka + poradie + 1) - uzitokRuky(state, ja, ruka + poradie));
   const mozne = (uids: readonly number[]): Command | null =>
     v.legal.find((c) => c.type === "draftBer" && c.uids.length === uids.length && uids.every((u) => c.uids.includes(u))) ?? null;
   const jedna = mozne([najlepsia.uid]);
   const dve = druha === undefined ? null : mozne([najlepsia.uid, druha.uid]);
-  const zaJednu = zisk(najlepsia) - cenaCigariet(k, state, ja, KONSTANTY.CENA_SENKU[1] ?? 1);
-  const zaDve = zisk(najlepsia) + zisk(druha) - cenaCigariet(k, state, ja, KONSTANTY.CENA_SENKU[2] ?? 3);
-  if (dve !== null && zaDve > 0 && zaDve > zaJednu) return dve;
+  const zaJednu = zisk(najlepsia, 0) - cenaCigariet(k, state, ja, KONSTANTY.CENA_SENKU[1] ?? 1);
+  const zaDve = zisk(najlepsia, 0) + zisk(druha, 1) - cenaCigariet(k, state, ja, KONSTANTY.CENA_SENKU[2] ?? 3);
+  // Keď súper prestal, je to posledný ťah brania — po jednej by už nebolo kedy.
+  const posledny = d.hotovo[opponentOf(ja)];
+  if (dve !== null && zaDve > 0 && (posledny || zaDve > zaJednu)) return dve;
   if (jedna !== null && zaJednu > 0) return jedna;
   return { type: "draftStop" };
 }
@@ -1179,6 +1281,7 @@ function zhromazdenie(v: Volba): Command | null {
   // Vykladanie: každú možnosť dohrá nanečisto (obaja chamtivo) a ohodnotí.
   const videne = new Set<string>();
   const moznosti: Command[] = [];
+  const vylozenia: Command[] = [];
   for (const cmd of v.legal) {
     if (cmd.type === "pass" || cmd.type === "vypit") {
       moznosti.push(cmd);
@@ -1190,8 +1293,19 @@ function zhromazdenie(v: Volba): Command | null {
     const kluc = `${karta.defId}/${karta.leftLayout}/${karta.rightLayout}/${cmd.target}/${cmd.type}`;
     if (videne.has(kluc)) continue;
     videne.add(kluc);
-    moznosti.push(cmd);
+    vylozenia.push(cmd);
   }
+  // S plnou rukou sa celý výpočet robí len pre najsľubnejšie vyloženia (odhad bitky bez dohrania Zhromaždenia).
+  const vzorka = v.vzorky[0] ?? state;
+  const odhad = (cmd: Command): number => {
+    try {
+      return hodnotaBitky(k, apply(data, vzorka, cmd, ja).state, ja, 0.9);
+    } catch {
+      return Number.NEGATIVE_INFINITY;
+    }
+  };
+  if (vylozenia.length <= MOZNOSTI_VO_VYPOCTE) moznosti.push(...vylozenia);
+  else moznosti.push(...vylozenia.map((cmd) => ({ cmd, h: odhad(cmd) })).sort((a, b) => b.h - a.h).slice(0, MOZNOSTI_VO_VYPOCTE).map((x) => x.cmd));
   // Záverečná: blok súperovej odpovede na tej strane už dohrá dohrajZhromazdenie
   // (súper za ňu nepriloží); utajenie karty do konca Pitky má malú cenu navyše.
   const sZaverecnou = (po: GameState): number =>
@@ -1206,6 +1320,9 @@ function zhromazdenie(v: Volba): Command | null {
   };
   return najlepsi(v, moznosti, (po) => hodnotaStavu(k, dohrajZhromazdenie(k, po), 0.9) + sZaverecnou(po) + spalene(po));
 }
+
+/** O koľko musí byť NA EX lepšie, keď ho súper s Bzdochou uvidí skôr, než dohrá Pitku — hrubý odhad. */
+const BZDOCHA_NAEX = 1;
 
 /** Koľko z hodnoty súperovej karty v balíčku zarobí jej spálenie (Poľovník) — hrubý odhad. */
 const SPALENIE_ZA_KARTU = 0.5;
@@ -1283,17 +1400,17 @@ function pitka(v: Volba): Command | null {
   if (finale && refill !== undefined && vykupneHraca({ poldeciPlne: h.poldeciPlne + 1, cigarety: h.cigarety - KONSTANTY.REFILL_CENA }, skryte).spaky > vykupneTeraz) {
     return refill;
   }
-  // Fajčenie zdražie s každým v tej istej Pitke (1, 2, 3… cigarety, 2026-10-27): drahšie len s tenkou rukou.
+  // Doliatie a barter: plný poldeci je limit vykladania a na konci výkupné; oproti cigaretám, ktoré stojí.
+  const zdroje = k.povaha.zdroje;
+  const ziskPoldeci = zdroje * (uzitokPoldeci(state, h.poldeciPlne + 1) - uzitokPoldeci(state, h.poldeciPlne)) + k.povaha.body * vahaVykupneho(state) * KONSTANTY.SPAKY_ZA_POLDECI;
+  if (!finale && refill !== undefined && ziskPoldeci > cenaCigariet(k, state, ja, KONSTANTY.REFILL_CENA)) return refill;
+  if (barter !== undefined && (finale ? vykladaniPotom(state) > 0 : true) && ziskPoldeci > cenaCigariet(k, state, ja, KONSTANTY.BARTER_CENA)) return barter;
+  // Fajčenie: karta v ruke proti cigaretám (cena v jednej Pitke rastie 1, 2, 3…). Vo finále po
+  // poslednom vykladaní už karta nič nedá, a cigareta môže byť špak z výkupného.
   const cenaFajc = cenaFajceniaHraca(state, ja);
-  const fajcenieStoji = finale && vykupneHraca({ poldeciPlne: h.poldeciPlne, cigarety: h.cigarety - cenaFajc }, skryte).spaky < vykupneTeraz && h.ruka.length > 0;
-  const fajcitDo = h.ruka.length <= 2 ? 3 : h.ruka.length < 4 ? 2 : 0;
-  if (barter !== undefined && h.poldeciPlne + h.poldeciVypite < 5 && k.buducnost > 0.3) {
-    return barter;
-  }
-  if (refill !== undefined && k.buducnost > 0.3) return refill;
-  if (smoke !== undefined && !fajcenieStoji && maCoTahat && cenaFajc <= fajcitDo && h.ruka.length < 4 && h.cigarety >= cenaFajc + 2) return smoke;
-  // v5: fajčí sa len v Pitke — s prázdnou rukou si kartu na ďalšie kolo dober aj za poslednú cigaretu navyše.
-  if (smoke !== undefined && !fajcenieStoji && maCoTahat && cenaFajc <= fajcitDo && h.ruka.length <= 2 && h.cigarety >= cenaFajc + 1) return smoke;
+  const fajcenieStoji = finale && vykladaniPotom(state) === 0 && vykupneHraca({ poldeciPlne: h.poldeciPlne, cigarety: h.cigarety - cenaFajc }, skryte).spaky < vykupneTeraz;
+  const ziskKarty = zdroje * (uzitokRuky(state, ja, h.ruka.length + 1) - uzitokRuky(state, ja, h.ruka.length));
+  if (smoke !== undefined && !fajcenieStoji && maCoTahat && ziskKarty > cenaCigariet(k, state, ja, cenaFajc)) return smoke;
 
   // Kšeft (v7): zahrá si ho nanečisto; berie, keď stav zlepší viac než o povahový prah.
   const ksefty = v.legal.filter((c) => c.type === "kseft");
@@ -1330,7 +1447,9 @@ function pitka(v: Volba): Command | null {
       if (krcmaVyzaduje(data, state, ja)) return best;
       const s0 = v.vzorky[0] ?? state;
       const bez = hodnotaStavu(k, sNaexNaKartach(s0), 1.5);
-      if (priemer(v, best, poOdpovedi) > bez + k.povaha.prahRiziko) return best;
+      // Súperova Bzdocha: NA EX vidí skôr, než dohrá svoju časť Pitky — prekvapenie je preč.
+      const vidno = p.bzdocha === su ? BZDOCHA_NAEX : 0;
+      if (priemer(v, best, poOdpovedi) > bez + k.povaha.prahRiziko + vidno) return best;
     }
   }
   // Koniec ťahu v Pitke: nakŕmiť Chuť fajčením, keď je to lacné, inak príde Absťák (v9.1).

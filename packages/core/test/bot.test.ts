@@ -13,6 +13,7 @@ import {
   POVAHY,
   apply,
   favourStarsieho,
+  hodnotaKarty,
   legalCommands,
   loadGameData,
   mozeHrat,
@@ -270,6 +271,97 @@ describe("offline protihráč — výkupné zdrojov (2026-10-27)", () => {
       const s: GameState = { ...s0, hraci: [s0.hraci[0], { ...s0.hraci[1], nerestiTotoKolo: 6 }] };
       expect(legalCommands(data, s, 0).some((c) => c.type === "smoke")).toBe(true);
       expect(tahBota(data, s, 0, 5, { povaha: povaha.id }).type, povaha.id).not.toBe("smoke");
+    }
+  });
+});
+
+describe("offline protihráč — celá partia vrátane finále (Michal 2026-11-06)", () => {
+  const karta = (uid: number, defId: string): CardInstance => ({ uid, defId, leftLayout: 0, rightLayout: 0 });
+
+  /** Branie zo šenku v kole `kolo` strednej hry (6 = finále), bot (hráč 0) na ťahu. */
+  function vDrafte(kolo: number, senok: readonly string[], h: Partial<GameState["hraci"][0]>): GameState {
+    const s0 = setupGame(data, 21, { lokalit: DLZKY_HRY.stredna });
+    const hrac = { ...s0.hraci[0], ...h };
+    return {
+      ...s0,
+      faza: "draft",
+      kolo,
+      utocnik: 0,
+      strany: [[], []],
+      ciel: { typ: kolo >= 6 ? "finale" : "lokalita", lokalita: s0.lokalityVHre[0] as CardInstance },
+      senok: senok.map((id, i) => karta(990100 + i, id)),
+      hraci: [hrac, s0.hraci[1]],
+      draftStav: { krok: "beranie", balicky: [[], []], vyber: [null, null], naTahu: 0, hotovo: [false, false], noveKarty: [0, 0] },
+    };
+  }
+
+  /** Pitka finále, ešte príde ďalšie Zhromaždenie (pitkaCislo < pitkyCelkom). */
+  function vPitkeFinale(h: Partial<GameState["hraci"][0]>): GameState {
+    const s0 = setupGame(data, 11, { lokalit: DLZKY_HRY.stredna });
+    const hrac = { ...s0.hraci[0], doberaci: [karta(990200, "pijan"), karta(990201, "pijan"), karta(990202, "pijan")], ...h };
+    return {
+      ...s0,
+      faza: "pitka",
+      kolo: 6,
+      utocnik: 1,
+      strany: [[], []],
+      ciel: { typ: "finale", lokalita: s0.lokalityVHre[0] as CardInstance },
+      pitkyCelkom: 4,
+      pitkaCislo: 1,
+      hraci: [hrac, s0.hraci[1]],
+      pitkaStav: { naTahu: 0, hotovy: [false, false], naexPouzity: [false, false], fajcenie: [0, 0], reakcia: null, postarka: [false, false], starosta: [false, false], naexPocet: [0, 0], vykup: [false, false] },
+    };
+  }
+
+  const vzate = (s: GameState, c: Command): string[] => (c.type === "draftBer" ? c.uids.map((u) => s.senok.find((x) => x.uid === u)?.defId ?? "?") : []);
+
+  it("do šenku dá slabšiu polovicu, silné karty si nechá naspodok balíčka (partia 17, #44, #70, #153)", () => {
+    let s = setupGame(data, 31, { lokalit: DLZKY_HRY.stredna });
+    let rng = rngSeed(5);
+    for (let i = 0; i < 200 && !(s.faza === "draft" && s.draftStav?.krok === "stavba"); i++) {
+      const p = kto(s) as PlayerId;
+      const [n, r] = rngInt(rng, 2 ** 31);
+      rng = r;
+      s = apply(data, s, tahBota(data, s, p, n), p).state;
+    }
+    const d = s.draftStav;
+    if (d === null) throw new Error("Stavba šenku nenastala.");
+    for (const p of [0, 1] as const) {
+      const cmd = tahBota(data, s, p, 3);
+      if (cmd.type !== "stavbaSenku") throw new Error(cmd.type);
+      const hodnoty = (uids: readonly number[]): number[] => uids.map((u) => hodnotaKarty(data, d.balicky[p].find((x) => x.uid === u) as CardInstance, 5));
+      expect(Math.min(...hodnoty(cmd.odhod))).toBeGreaterThanOrEqual(Math.max(...hodnoty(cmd.doSenku)));
+    }
+  });
+
+  it("skoro v hre berie kartu, ktorá sype cigarety, vo finále kartu, ktorá bije (partia 17, #19)", () => {
+    for (const povaha of POVAHY) {
+      const senok = ["masiar", "stryko_z_ameriky"];
+      const skoro = vDrafte(2, senok, { cigarety: 1, ruka: [karta(990300, "pijan")] });
+      expect(vzate(skoro, tahBota(data, skoro, 0, 5, { povaha: povaha.id }))[0], povaha.id).toBe("stryko_z_ameriky");
+      const finale = vDrafte(6, senok, { cigarety: 1, ruka: [karta(990300, "pijan")] });
+      expect(vzate(finale, tahBota(data, finale, 0, 5, { povaha: povaha.id }))[0], povaha.id).toBe("masiar");
+    }
+  });
+
+  it("vo finále cigarety mení na karty, nedrží ich na výkupné 5 : 1", () => {
+    for (const povaha of POVAHY) {
+      const s = vDrafte(6, ["masiar", "vandal", "pes", "polovnik"], { cigarety: 6, ruka: [karta(990300, "pijan")] });
+      expect(tahBota(data, s, 0, 5, { povaha: povaha.id }).type, povaha.id).toBe("draftBer");
+    }
+  });
+
+  it("s kopou cigariet pred finále kupuje, nehromadí", () => {
+    for (const povaha of POVAHY) {
+      const s = vDrafte(5, ["masiar", "vandal", "pes", "polovnik"], { cigarety: 15, ruka: [karta(990300, "pijan"), karta(990301, "pijan")] });
+      expect(tahBota(data, s, 0, 5, { povaha: povaha.id }).type, povaha.id).toBe("draftBer");
+    }
+  });
+
+  it("vo finále pred ďalším vykladaním fajčí aj poslednú cigaretu (partia 17, #162)", () => {
+    for (const povaha of POVAHY) {
+      const s = vPitkeFinale({ cigarety: 1, poldeciPlne: 0, poldeciVypite: 0, ruka: [karta(990300, "milujuca_manzelka")] });
+      expect(tahBota(data, s, 0, 5, { povaha: povaha.id }).type, povaha.id).toBe("smoke");
     }
   });
 });

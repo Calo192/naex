@@ -2,7 +2,7 @@
 //
 //   node --experimental-strip-types --no-warnings tools/bot/turnaj.ts [partii] [super] [dlzka] [povaha]
 //
-// super: nahodny (predvolený) | chamtivy | bot | bot:<povaha> | stary:<priečinok>. Bot (povaha,
+// super: nahodny (predvolený) | chamtivy | hromadic | ekonom | bot | bot:<povaha> | stary:<priečinok>. Bot (povaha,
 // predvolene stamgast) hrá striedavo za hráča 1 a 2. Povahy: stamgast, rapavy_fero, teta_gizka.
 // Chamtivý vykladá kartu s najväčším okamžitým rozdielom tuhého poškodenia,
 // NA EX nedáva, zvyšok hrá náhodne — latka „hráč, ktorý vie vykladať“.
@@ -32,6 +32,8 @@ import {
   setupGame,
   tahBota,
 } from "../../packages/core/src/index.ts";
+
+import { ekonom, hromadic } from "./hromadic.ts";
 
 const citaj = (s: string): unknown => JSON.parse(readFileSync(new URL(`../../packages/core/data/${s}`, import.meta.url), "utf8"));
 const data = loadGameData(citaj("cards.json"), citaj("elders.json"), citaj("scorecards.json"));
@@ -116,6 +118,10 @@ for (let i = 0; i < partii; i++) {
           cmd.type === "place" ? `place:${cmd.target}` : cmd.type === "prebytok" && (cmd.zajatia?.length ?? 0) > 0 ? "prebytok:zajatie" : cmd.type === "reci" && (cmd.presvedcenia?.length ?? 0) > 0 ? "reci:presvedcenie" : cmd.type;
         typyTahov.set(typ, (typyTahov.get(typ) ?? 0) + 1);
       }
+    } else if (superTyp === "hromadic") {
+      cmd = hromadic(data, s, p, seed);
+    } else if (superTyp === "ekonom") {
+      cmd = ekonom(data, s, p, seed);
     } else if (superTyp === "chamtivy") {
       cmd = chamtivy(s, p, seed);
     } else {
