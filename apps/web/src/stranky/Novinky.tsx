@@ -9,7 +9,7 @@
 // server, návštevníkovi bez účtu prehliadač).
 
 import { useEffect, useMemo, useState, type MouseEvent } from "react";
-import { api } from "../lib/api.ts";
+import { api, textChyby } from "../lib/api.ts";
 import { NOVINKY_VIDENE, citajVidene, ulozVidene } from "../lib/novinky.ts";
 import { Odkaz, useTitulok } from "../lib/router.tsx";
 import { Hlaska, Nacitavanie } from "../komponenty.tsx";
@@ -81,7 +81,7 @@ export function Novinky() {
         // Prvá návšteva bez účtu: niet od čoho rátať, inak by bolo všetko „nové“ — východisko sa uloží hneď.
         if (v === null && r.novinky.length > 0) ulozVidene(najnovsia(r.novinky));
       })
-      .catch((e: unknown) => setChyba(e instanceof Error ? e.message : String(e)));
+      .catch((e: unknown) => setChyba(textChyby(e)));
   }, []);
 
   // Odkaz zvonka (#novinka-12, napr. „hotovo · v Novinkách“ v Spätnej väzbe) novinku rozbalí.
@@ -151,7 +151,7 @@ export function Novinky() {
     api
       .post("/novinky/videne", { po })
       .then(hotovo)
-      .catch((e: unknown) => setChyba(e instanceof Error ? e.message : String(e)))
+      .catch((e: unknown) => setChyba(textChyby(e)))
       .finally(() => setPosiela(false));
   };
 

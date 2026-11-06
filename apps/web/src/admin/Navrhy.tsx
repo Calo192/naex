@@ -4,6 +4,7 @@ import { useState } from "react";
 import type { KartaNavrh } from "@naex/tvorba";
 import { slug, variant, variantyKarty } from "@naex/tvorba";
 import { KartaLico } from "../karta/KartaLico.tsx";
+import { textChyby } from "../lib/api.ts";
 import { Odkaz, chod, useTitulok } from "../lib/router.tsx";
 import { Hlaska } from "../komponenty.tsx";
 import { problemyNavrhov, useAdmin, zmeneneOdZverejnenia } from "./stav.tsx";
@@ -39,7 +40,7 @@ export function Navrhy() {
       await ulozKartu({ ...k, id, nazov: `${k.nazov} (kópia)` });
       chod(`/admin/karty/${id}`);
     } catch (e) {
-      setChyba(e instanceof Error ? e.message : String(e));
+      setChyba(textChyby(e));
     }
   };
 
@@ -48,7 +49,7 @@ export function Navrhy() {
     try {
       await zmazKartu(k.id);
     } catch (e) {
-      setChyba(e instanceof Error ? e.message : String(e));
+      setChyba(textChyby(e));
     }
   };
 

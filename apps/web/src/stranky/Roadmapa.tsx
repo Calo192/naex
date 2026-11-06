@@ -6,7 +6,7 @@
 // návrhy z playtestov sa do Prijímača dostanú samy (server, roadmapa.ts).
 
 import { useCallback, useEffect, useRef, useState, type CSSProperties, type DragEvent, type FormEvent, type KeyboardEvent } from "react";
-import { api } from "../lib/api.ts";
+import { api, textChyby } from "../lib/api.ts";
 import { Odkaz } from "../lib/router.tsx";
 import { Hlaska, Nacitavanie } from "../komponenty.tsx";
 
@@ -193,7 +193,7 @@ function Detail({
         if (nova) zavri();
         else setUprava(false);
       })
-      .catch((err: unknown) => setChyba(err instanceof Error ? err.message : String(err)));
+      .catch((err: unknown) => setChyba(textChyby(err)));
   };
 
   const zmaz = () => {
@@ -204,7 +204,7 @@ function Detail({
         ulozene();
         zavri();
       })
-      .catch((err: unknown) => setChyba(err instanceof Error ? err.message : String(err)));
+      .catch((err: unknown) => setChyba(textChyby(err)));
   };
 
   const vStlpci = nova ? [] : vsetky.filter((q) => q.stlpec === p.stlpec);
@@ -520,7 +520,7 @@ export function Roadmapa({ onPocty }: { readonly onPocty?: (p: PoctyRoadmapy) =>
         setData(d);
         setChyba(null);
       })
-      .catch((e: unknown) => setChyba(e instanceof Error ? e.message : String(e)));
+      .catch((e: unknown) => setChyba(textChyby(e)));
   }, []);
   useEffect(nacitaj, [nacitaj]);
 
@@ -547,7 +547,7 @@ export function Roadmapa({ onPocty }: { readonly onPocty?: (p: PoctyRoadmapy) =>
         .post(`/roadmapa/${id}/presun`, { stlpec, pred })
         .then(nacitaj)
         .catch((e: unknown) => {
-          setChyba(e instanceof Error ? e.message : String(e));
+          setChyba(textChyby(e));
           nacitaj();
         });
       requestAnimationFrame(() => document.querySelector<HTMLElement>(`.rm-polozka[data-id="${id}"]`)?.focus());

@@ -8,7 +8,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { loadGameData, opponentOf, type ClientState, type Event, type PlayerId } from "@naex/core";
 import eldersJson from "@naex/core/data/elders.json";
 import scorecardsJson from "@naex/core/data/scorecards.json";
-import { api } from "../lib/api.ts";
+import { api, textChyby } from "../lib/api.ts";
 import { Odkaz, chod, useTitulok } from "../lib/router.tsx";
 import { useSada } from "../lib/sada.tsx";
 import { Nacitavanie } from "../komponenty.tsx";
@@ -110,7 +110,7 @@ export function Prehravac({ id }: { readonly id: number }) {
         if (z.ja !== null) setMiesto(z.ja);
         setN((x) => Math.min(x, z.pocet));
       })
-      .catch((e: unknown) => zive && setChyba(e instanceof Error ? e.message : String(e)));
+      .catch((e: unknown) => zive && setChyba(textChyby(e)));
     return () => {
       zive = false;
     };
@@ -139,7 +139,7 @@ export function Prehravac({ id }: { readonly id: number }) {
         // Ďalší krok vopred, nech prehrávanie nečaká na server.
         if (n < zoznam.pocet) void nacitaj(n + 1, miesto).catch(() => undefined);
       })
-      .catch((e: unknown) => zive && setChyba(e instanceof Error ? e.message : String(e)));
+      .catch((e: unknown) => zive && setChyba(textChyby(e)));
     history.replaceState(null, "", `${location.pathname}?krok=${n}`);
     return () => {
       zive = false;

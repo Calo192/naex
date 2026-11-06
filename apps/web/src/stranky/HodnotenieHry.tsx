@@ -6,7 +6,7 @@
 // formulár s 12 kritériami sa otvorí v dialógu.
 
 import { useEffect, useRef, useState, type FormEvent } from "react";
-import { api } from "../lib/api.ts";
+import { api, textChyby } from "../lib/api.ts";
 import { datum } from "../lib/datum.ts";
 import { Odkaz } from "../lib/router.tsx";
 import { Hlaska } from "../komponenty.tsx";
@@ -51,7 +51,7 @@ export function HodnotenieHry({ smiePisat, kompaktne = false }: { readonly smieP
         setUlozene({ znamky: m.znamky ?? {}, cas: m.cas });
         setZnamky(m.znamky ?? {});
       })
-      .catch((e: unknown) => setChyba(e instanceof Error ? e.message : String(e)));
+      .catch((e: unknown) => setChyba(textChyby(e)));
   }, []);
 
   useEffect(() => {
@@ -75,7 +75,7 @@ export function HodnotenieHry({ smiePisat, kompaktne = false }: { readonly smieP
         setUlozene({ znamky, cas: r.cas });
         setHotovo(true);
       })
-      .catch((err: unknown) => setChyba(err instanceof Error ? err.message : String(err)))
+      .catch((err: unknown) => setChyba(textChyby(err)))
       .finally(() => setPosiela(false));
   };
 

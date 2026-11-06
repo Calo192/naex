@@ -1,7 +1,7 @@
 // Prihlásenie, registrácia a profil (herné meno, avatar, heslo).
 
 import { useEffect, useRef, useState, type FormEvent } from "react";
-import { api, mediaUrl } from "../lib/api.ts";
+import { api, mediaUrl, textChyby } from "../lib/api.ts";
 import { nacitajObrazok, stvorec } from "../lib/obrazky.ts";
 import { Odkaz, chod, useTitulok } from "../lib/router.tsx";
 import { navratZ } from "../lib/navrat.ts";
@@ -46,7 +46,7 @@ export function Prihlasenie({ zrejuca = null }: { readonly zrejuca?: { readonly 
   const [chyba, setChyba] = useState<string | null>(null);
   const [caka, setCaka] = useState(false);
   const doVypalenej = (cesta?: string): void => {
-    prepniInstanciu("vypalena", cesta).catch((err: unknown) => setChyba(err instanceof Error ? err.message : String(err)));
+    prepniInstanciu("vypalena", cesta).catch((err: unknown) => setChyba(textChyby(err)));
   };
 
   const odosli = async (e: FormEvent) => {
@@ -59,7 +59,7 @@ export function Prihlasenie({ zrejuca = null }: { readonly zrejuca?: { readonly 
       // V Zrejúcej ostane hráč na stránke, ktorú otvoril.
       if (zrejuca === null || location.pathname === "/prihlasenie") chod(navratZ(location.search) ?? "/hra", true);
     } catch (err) {
-      setChyba(err instanceof Error ? err.message : String(err));
+      setChyba(textChyby(err));
     } finally {
       setCaka(false);
     }
@@ -153,7 +153,7 @@ export function Registracia() {
       // S návratom (pozvánka do miestnosti) rovno späť, inak nováčik začína profilom.
       chod(navratZ(location.search) ?? "/profil?novy=1", true);
     } catch (err) {
-      setChyba(err instanceof Error ? err.message : String(err));
+      setChyba(textChyby(err));
     } finally {
       setCaka(false);
     }
@@ -211,7 +211,7 @@ export function Profil() {
 
   if (ja === null) return null;
 
-  const chyba = (err: unknown) => setSprava({ druh: "chyba", text: err instanceof Error ? err.message : String(err) });
+  const chyba = (err: unknown) => setSprava({ druh: "chyba", text: textChyby(err) });
 
   const ulozMeno = async (e: FormEvent) => {
     e.preventDefault();

@@ -3,7 +3,7 @@
 // každé právo overí sám — tu sa len nastavuje.
 
 import { useEffect, useState } from "react";
-import { api } from "../lib/api.ts";
+import { api, textChyby } from "../lib/api.ts";
 import { NAZOV_UROVNE, RANKY_HRACOV, type Pravo, type Rola } from "../lib/ucet.tsx";
 import { Hlaska } from "../komponenty.tsx";
 
@@ -31,7 +31,7 @@ export function RankyPrava({ poZmene }: { readonly poZmene: () => void }) {
         setN(r);
         setPostup({ deci: String(r.postup.deci), sedmicka: String(r.postup.sedmicka) });
       })
-      .catch((e: unknown) => setChyba(e instanceof Error ? e.message : String(e)));
+      .catch((e: unknown) => setChyba(textChyby(e)));
   useEffect(nacitaj, []);
 
   const uloz = async (telo: object) => {
@@ -43,7 +43,7 @@ export function RankyPrava({ poZmene }: { readonly poZmene: () => void }) {
       nacitaj();
       poZmene();
     } catch (e) {
-      setChyba(e instanceof Error ? e.message : String(e));
+      setChyba(textChyby(e));
     }
   };
 

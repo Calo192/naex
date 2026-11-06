@@ -3,7 +3,7 @@
 // či účet s e-mailom existuje.
 
 import { useEffect, useState, type FormEvent } from "react";
-import { api } from "../lib/api.ts";
+import { api, textChyby } from "../lib/api.ts";
 import { Odkaz, chod, useTitulok } from "../lib/router.tsx";
 import { useUcet, type Pouzivatel } from "../lib/ucet.tsx";
 import { Hlaska, Nacitavanie, Pole } from "../komponenty.tsx";
@@ -24,7 +24,7 @@ export function ZabudnuteHeslo() {
       const r = await api.post<{ sprava: string }>("/obnova-hesla", { email });
       setOdoslane(r.sprava);
     } catch (err) {
-      setChyba(err instanceof Error ? err.message : String(err));
+      setChyba(textChyby(err));
     } finally {
       setCaka(false);
     }
@@ -77,7 +77,7 @@ export function NoveHeslo() {
     api
       .post<{ platny: boolean }>("/obnova-hesla/over", { token })
       .then((r) => setPlatny(r.platny))
-      .catch((err: unknown) => setChyba(err instanceof Error ? err.message : String(err)));
+      .catch((err: unknown) => setChyba(textChyby(err)));
   }, [token]);
 
   const odosli = async (e: FormEvent) => {
@@ -93,7 +93,7 @@ export function NoveHeslo() {
       nastav(r.pouzivatel);
       chod("/profil?obnovene=1", true);
     } catch (err) {
-      setChyba(err instanceof Error ? err.message : String(err));
+      setChyba(textChyby(err));
     } finally {
       setCaka(false);
     }

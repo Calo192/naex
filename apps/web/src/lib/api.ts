@@ -38,6 +38,9 @@ async function volaj<T>(metoda: string, cesta: string, telo?: unknown, typ?: str
   return data as T;
 }
 
+/** Text chyby na zobrazenie — ChybaApi nesie hlášku servera, ostatné chyby svoj text. */
+export const textChyby = (e: unknown): string => (e instanceof Error ? e.message : String(e));
+
 export const api = {
   get: <T>(cesta: string) => volaj<T>("GET", cesta),
   post: <T>(cesta: string, telo?: unknown, typ?: string) => volaj<T>("POST", cesta, telo, typ),

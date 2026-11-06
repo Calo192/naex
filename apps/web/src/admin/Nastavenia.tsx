@@ -4,6 +4,7 @@
 import { useState } from "react";
 import type { Kategoria, Nastavenia as NastaveniaT } from "@naex/tvorba";
 import { pastelHex, rozlozOdtiene } from "@naex/tvorba";
+import { textChyby } from "../lib/api.ts";
 import { useTitulok } from "../lib/router.tsx";
 import { Hlaska, Pole } from "../komponenty.tsx";
 import { useAdmin } from "./stav.tsx";
@@ -33,7 +34,7 @@ export function Nastavenia() {
       await f();
       setSprava({ druh: "ok", text: ok });
     } catch (e) {
-      setSprava({ druh: "chyba", text: e instanceof Error ? e.message : String(e) });
+      setSprava({ druh: "chyba", text: textChyby(e) });
     } finally {
       setCaka(false);
     }

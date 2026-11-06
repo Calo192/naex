@@ -5,7 +5,7 @@
 // a detail partií len vlastník a správca. AI playtester je hráčom skrytý (404).
 
 import { useEffect, useState, type ReactNode } from "react";
-import { api } from "../../lib/api.ts";
+import { api, textChyby } from "../../lib/api.ts";
 import { Odkaz, useTitulok } from "../../lib/router.tsx";
 import { NAZOV_UROVNE, RANKY_HRACOV, useUcet, type Pouzivatel, type Rola } from "../../lib/ucet.tsx";
 import { Avatar, Hlaska, Nacitavanie } from "../../komponenty.tsx";
@@ -47,7 +47,7 @@ function useProfilApi(id: number, filter: FilterPartii, obnov: number): { profil
     api
       .get<ProfilApi>(`/hraci/${id}?filter=${filter}`)
       .then((p) => zive && setProfil(p))
-      .catch((e: unknown) => zive && setChyba(e instanceof Error ? e.message : String(e)));
+      .catch((e: unknown) => zive && setChyba(textChyby(e)));
     return () => {
       zive = false;
     };
@@ -64,7 +64,7 @@ function usePartie(id: number, filter: FilterPartii, limit: number, povolene: bo
     api
       .get<PartieApi>(`/hraci/${id}/partie?filter=${filter}&od=0&limit=${limit}`)
       .then((d) => zive && setData(d))
-      .catch((e: unknown) => zive && setChyba(e instanceof Error ? e.message : String(e)));
+      .catch((e: unknown) => zive && setChyba(textChyby(e)));
     return () => {
       zive = false;
     };

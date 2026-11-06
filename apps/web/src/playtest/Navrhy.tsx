@@ -5,7 +5,7 @@
 // overí (zabralo / nezabralo). Rovnako sem chodia návrhy dizajnérov webu.
 
 import { useEffect, useState, type FormEvent } from "react";
-import { api } from "../lib/api.ts";
+import { api, textChyby } from "../lib/api.ts";
 import { Odkaz, useTitulok } from "../lib/router.tsx";
 import { useUcet } from "../lib/ucet.tsx";
 import { Hlaska, Nacitavanie } from "../komponenty.tsx";
@@ -123,7 +123,7 @@ function NavrhKarta({ n, zmenene }: { readonly n: Navrh; readonly zmenene: (n: N
       await api.patch(`/admin/navrhy/${n.id}`, { stav, volba, poznamka });
       zmenene({ ...n, stav, volba, poznamka });
     } catch (err) {
-      setChyba(err instanceof Error ? err.message : String(err));
+      setChyba(textChyby(err));
     } finally {
       setPosiela(false);
     }
@@ -285,7 +285,7 @@ function ArchivNavrhu({ n, zmenene }: { readonly n: Navrh; readonly zmenene: (n:
       await api.post(`/admin/navrhy/${n.id}/vrat`, {});
       zmenene({ ...n, archiv: null });
     } catch (e) {
-      setChyba(e instanceof Error ? e.message : String(e));
+      setChyba(textChyby(e));
       setPosiela(false);
     }
   };
@@ -314,7 +314,7 @@ export function Navrhy() {
     api
       .get<{ navrhy: Navrh[] }>("/admin/navrhy")
       .then((d) => setNavrhy(d.navrhy))
-      .catch((e: unknown) => setChyba(e instanceof Error ? e.message : String(e)));
+      .catch((e: unknown) => setChyba(textChyby(e)));
   }, []);
 
   if (navrhy === null) return chyba !== null ? <Hlaska>{chyba}</Hlaska> : <Nacitavanie />;

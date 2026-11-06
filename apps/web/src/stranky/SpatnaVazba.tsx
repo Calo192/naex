@@ -7,7 +7,7 @@
 // predvolene skryté) a čistý zoznam; v boku kompaktné „Ohodnoť hru“.
 
 import { useCallback, useEffect, useRef, useState, type FormEvent } from "react";
-import { api } from "../lib/api.ts";
+import { api, textChyby } from "../lib/api.ts";
 import { Odkaz, useTitulok } from "../lib/router.tsx";
 import { jeSpravca, maPravo, useUcet, type Pouzivatel } from "../lib/ucet.tsx";
 import { Avatar, Hlaska, Nacitavanie } from "../komponenty.tsx";
@@ -716,7 +716,7 @@ export function SpatnaVazba() {
   const tlacidloPisat = useRef<HTMLButtonElement>(null);
   const spravca = ja !== null && jeSpravca(ja.rola);
 
-  const ukazChybu = useCallback((e: unknown) => setChyba(e instanceof Error ? e.message : String(e)), []);
+  const ukazChybu = useCallback((e: unknown) => setChyba(textChyby(e)), []);
 
   const obnov = useCallback(() => {
     const q = new URLSearchParams({ triedenie, stav: zalozka });

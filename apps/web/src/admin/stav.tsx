@@ -4,7 +4,7 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
 import type { AkciaDef, BodovaciaKarta, IkonaBodovania, KartaNavrh, Kategoria, KlucoveSlovo, Nastavenia, Vzhlad } from "@naex/tvorba";
 import { chybyNavrhu, neznameAkcie } from "@naex/tvorba";
-import { api, mediaUrl } from "../lib/api.ts";
+import { api, mediaUrl, textChyby } from "../lib/api.ts";
 import { nacitajObrazok, zmensene } from "../lib/obrazky.ts";
 
 export interface AdminObsah {
@@ -63,7 +63,7 @@ export function AdminProvider({ children }: { readonly children: ReactNode }) {
       setObsah(await api.get<AdminObsah>("/admin/obsah"));
       setChyba(null);
     } catch (e) {
-      setChyba(e instanceof Error ? e.message : String(e));
+      setChyba(textChyby(e));
     }
   }, []);
 
