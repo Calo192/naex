@@ -55,8 +55,8 @@ export function medziobrazovka(
       nadpis: "Hádka",
       text:
         hd.vitaz === ja
-          ? `Vyhral si hádku ${skore} — o ${hd.velkost}. Vyber starších: ich priazeň pôjde k tebe, pole stojí 1–4 podľa zóny, najviac na silu 3. Platí do konca kola, už v tejto bitke; markery sa nehýbu.`
-          : `${S} vyhral hádku ${skore} — o ${hd.velkost} — a berie si priazne starších k sebe do konca kola. Markery sa nehýbu; potom príde poškodenie.`,
+          ? `Vyhral si hádku ${skore} — o ${hd.velkost}. Po bitke ju rozdelíš na svoje reči pri starších (${CENA_POLA}). Priazne sa nemenia.`
+          : `${S} vyhral hádku ${skore} — o ${hd.velkost} — a po bitke ju rozdelí na svoje reči pri starších. Priazne sa nemenia; teraz príde poškodenie.`,
     };
   }
   if (bitkaKola !== null || (view.faza === "bitka" && view.bitkaStav?.krok !== "prebytok")) {
@@ -64,7 +64,7 @@ export function medziobrazovka(
       kluc: `${bitkaKola ?? view.kolo}|bitka`,
       nadnadpis: `Kolo ${bitkaKola ?? view.kolo}`,
       nadpis: "Bitka",
-      text: "Najprv hádka: Pohoršenia a Povery sú mäkké poškodenie — kto ho má viac, posunie priazne starších k sebe do konca kola (marker sa nehýbe). Potom poškodenie: viac tuhého (Rana, Pecka, Petelica) vyhráva bitku a špaky, rozdiel tuhého je Nakladačka na posun starších.",
+      text: "Najprv hádka: Pohoršenia a Povery sú mäkké poškodenie — kto ho má viac, vyhral hádku a po bitke ju rozdelí na svoje reči. Potom poškodenie: viac tuhého (Rana, Pecka, Petelica) vyhráva bitku a špaky, rozdiel tuhého je Nakladačka na strach víťaza.",
     };
   }
   const obranca = view.utocnik !== ja;

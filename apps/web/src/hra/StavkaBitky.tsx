@@ -8,7 +8,7 @@ import { IkonaSpaku } from "./Spaky.tsx";
 
 const VYSVETLENIE =
   "Víťaz bitky dostane 1 špak za každú kartu v línii (na oboch stranách, v čase bitky), aspoň 1, " +
-  "a k tomu špaky zo sekery. Starší platia za strach až na konci kola za stupeň udržaný od minulého kola — tomu, koho sa boja, nech bitku vyhrá ktokoľvek. " +
+  "a k tomu špaky zo sekery. Starší bodujú hneď po bitke: víťaz za vrch teplomera, porazený len za reči. " +
   "Každá ďalšia karta v línii zvýši stávku o 1.";
 
 export function StavkaBitky({ stavka, kratko = false }: { readonly stavka: Stavka; readonly kratko?: boolean }) {

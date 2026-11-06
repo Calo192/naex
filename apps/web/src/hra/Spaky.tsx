@@ -537,8 +537,7 @@ export function SpakyBitky({
   }[] = [
     { kluc: "bitka", nazov: "za bitku", h: b.zaBitku, pozn: zaBitku },
     ...((b.robota?.[0] ?? 0) + (b.robota?.[1] ?? 0) > 0 ? [{ kluc: "robota", nazov: "Robota — Dlhy nemala čo spáliť", h: robotaBitky(b) }] : []),
-    // v8.3: starší platia na konci kola za udržané stupne — obom, nech bitku vyhral ktokoľvek.
-    { kluc: "starsi", nazov: "za starších — udržaný strach (koniec kola)", h: b.zaStarsich, pozn: zaStarsich, pod: true },
+    { kluc: "starsi", nazov: "za starších (po bitke)", h: b.zaStarsich, pozn: zaStarsich, pod: true },
     ...(b.prebytok[0] + b.prebytok[1] > 0 ? [{ kluc: "prebytok", nazov: jeFinaleNaNastenke(b) ? "Nakladačka (finále)" : "prebytok", h: b.prebytok }] : []),
     ...(b.exekutor[0] + b.exekutor[1] > 0 ? [{ kluc: "exekutor", nazov: "Exekútor", h: [-b.exekutor[0], -b.exekutor[1]] as const }] : []),
   ];

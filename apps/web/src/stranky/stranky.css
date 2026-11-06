@@ -1121,9 +1121,17 @@ button.cip.aktivny {
   font-variant-numeric: tabular-nums;
 }
 
+.stupnica-riadok {
+  display: grid;
+  grid-template-columns: 9em minmax(0, 260px);
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+
 .stupnica-velka {
   display: grid;
-  grid-template-columns: repeat(7, 1fr);
+  grid-template-columns: repeat(4, 1fr);
   gap: 6px;
 }
 
@@ -1157,23 +1165,6 @@ button.cip.aktivny {
   border-color: #fff;
   box-shadow: 0 0 0 3px var(--akcent), 0 0 18px rgba(233, 173, 69, 0.7);
   transform: scale(1.12);
-}
-
-.stupnica-popis {
-  display: flex;
-  justify-content: space-between;
-  font-size: 0.82rem;
-  color: var(--slaby);
-  margin-top: 6px;
-}
-
-/* Krígeľ (priazeň) zvýhodneného na konci stupnice — vo farbe hráča ako v hre (výkričníky farbí .ikona-strachu). */
-.stupnica-priazen.moje {
-  color: var(--ja);
-}
-
-.stupnica-priazen.superove {
-  color: var(--su);
 }
 
 .limit-ovladanie {
