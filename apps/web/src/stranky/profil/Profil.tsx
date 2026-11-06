@@ -10,12 +10,12 @@ import { Odkaz, useTitulok } from "../../lib/router.tsx";
 import { NAZOV_UROVNE, RANKY_HRACOV, useUcet, type Pouzivatel, type Rola } from "../../lib/ucet.tsx";
 import { Avatar, Hlaska, Nacitavanie } from "../../komponenty.tsx";
 import { HlavaStranky } from "../../HlavaStranky.tsx";
+import { datum } from "../../lib/datum.ts";
 import { tvar } from "../../lib/jazyk.ts";
 import { BilanciaPruh, CisloFrajeriny, GrafFrajeriny, Statistiky } from "../Statistiky.tsx";
 import {
   SKRATKA_VYSLEDKU,
   TEXT_VYSLEDKU,
-  datum,
   hodnotaMetriky,
   trvanie,
   znamienko,

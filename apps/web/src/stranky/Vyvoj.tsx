@@ -11,7 +11,8 @@ import { chod, Odkaz, useTitulok } from "../lib/router.tsx";
 import { maPravo, useUcet } from "../lib/ucet.tsx";
 import { Hlaska, Nacitavanie } from "../komponenty.tsx";
 import { HlavaStranky } from "../HlavaStranky.tsx";
-import { GrafZnamok, MiniGraf, TabulkaVyvoja, cislo, hodnota, kratkyDen, terajsiaHodnota, type BodVyvoja, type Vyvoj } from "./GrafZnamok.tsx";
+import { kratkyDen } from "../lib/datum.ts";
+import { GrafZnamok, MiniGraf, TabulkaVyvoja, cislo, hodnota, terajsiaHodnota, type BodVyvoja, type Vyvoj } from "./GrafZnamok.tsx";
 import { Roadmapa, type PoctyRoadmapy } from "./Roadmapa.tsx";
 import "./vyvoj.css";
 

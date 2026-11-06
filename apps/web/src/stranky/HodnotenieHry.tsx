@@ -7,6 +7,7 @@
 
 import { useEffect, useRef, useState, type FormEvent } from "react";
 import { api } from "../lib/api.ts";
+import { datum } from "../lib/datum.ts";
 import { Odkaz } from "../lib/router.tsx";
 import { Hlaska } from "../komponenty.tsx";
 import "./vyvoj.css";
@@ -30,8 +31,6 @@ const rovnake = (a: Znamky, b: Znamky): boolean => {
   const ka = Object.keys(a);
   return ka.length === Object.keys(b).length && ka.every((k) => a[k] === b[k]);
 };
-
-const datum = (cas: number): string => new Date(cas).toLocaleDateString("sk-SK", { day: "numeric", month: "numeric", year: "numeric" });
 
 export function HodnotenieHry({ smiePisat, kompaktne = false }: { readonly smiePisat: boolean; readonly kompaktne?: boolean }) {
   const dialog = useRef<HTMLDialogElement>(null);

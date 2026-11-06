@@ -127,8 +127,6 @@ export interface DetailPartieApi {
 export const TEXT_VYSLEDKU: Readonly<Record<Vysledok, string>> = { vyhra: "výhra", prehra: "prehra", remiza: "remíza" };
 export const SKRATKA_VYSLEDKU: Readonly<Record<Vysledok, string>> = { vyhra: "V", prehra: "P", remiza: "R" };
 
-export const datum = (cas: number): string => new Date(cas).toLocaleDateString("sk-SK", { day: "numeric", month: "numeric", year: "numeric" });
-
 export function trvanie(ms: number): string {
   const min = Math.round(ms / 60000);
   if (min < 1) return "< 1 min";

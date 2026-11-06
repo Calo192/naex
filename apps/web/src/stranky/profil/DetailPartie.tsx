@@ -15,7 +15,8 @@ import { KrcmovyUcet } from "../../hra/KrcmovyUcet.tsx";
 import { UcetSpakov } from "../../hra/UcetSpakov.tsx";
 import { Nastenka } from "../../hra/Spaky.tsx";
 import { tvar } from "../../lib/jazyk.ts";
-import { TEXT_VYSLEDKU, datum, trvanie, type DetailPartieApi } from "./typy.ts";
+import { datum } from "../../lib/datum.ts";
+import { TEXT_VYSLEDKU, trvanie, type DetailPartieApi } from "./typy.ts";
 import "./profil.css";
 
 /** Body oboch po kolách ako dve čiary (ty a súper). */

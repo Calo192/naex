@@ -12,6 +12,7 @@ import { Odkaz, useTitulok } from "../lib/router.tsx";
 import { jeSpravca, maPravo, useUcet, type Pouzivatel } from "../lib/ucet.tsx";
 import { Avatar, Hlaska, Nacitavanie } from "../komponenty.tsx";
 import { HlavaStranky } from "../HlavaStranky.tsx";
+import { kratkyDen } from "../lib/datum.ts";
 import { tvar } from "../lib/jazyk.ts";
 import { HodnotenieHry } from "./HodnotenieHry.tsx";
 import "./statistiky.css";
@@ -121,11 +122,6 @@ function ulozUkazAi(v: boolean): void {
     // súkromné okno — voľba platí len do obnovenia stránky
   }
 }
-
-const kratkyDen = (datum: string): string => {
-  const d = new Date(`${datum}T12:00:00`);
-  return `${d.getDate()}. ${d.getMonth() + 1}.`;
-};
 
 /** Titul názoru bez nadpisu (pred 2026-10-27): prvá veta textu, zvyšok je ukážka. */
 function titulZTextu(text: string): { readonly titul: string; readonly ukazka: string } {

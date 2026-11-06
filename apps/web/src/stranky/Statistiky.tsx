@@ -4,12 +4,13 @@
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import type { Action, StatistikyHraca } from "@naex/core";
 import { rozlozRod } from "@naex/core";
+import { datum } from "../lib/datum.ts";
 import { tvar } from "../lib/jazyk.ts";
 import { Odkaz } from "../lib/router.tsx";
 import { useSada } from "../lib/sada.tsx";
 import { Avatar } from "../komponenty.tsx";
 import { IkonaAkcie } from "../karta/IkonaAkcie.tsx";
-import { TEXT_VYSLEDKU, datum, trvanie, znamienko, type Vysledok } from "./profil/typy.ts";
+import { TEXT_VYSLEDKU, trvanie, znamienko, type Vysledok } from "./profil/typy.ts";
 import "./statistiky.css";
 
 // ---- tvar odpovede /api/hraci/:id -------------------------------------------
