@@ -1,5 +1,5 @@
 {
- "source": "tvorca kariet 2026-11-06T11:24:28.348Z — rozpracovaný stav (Zrejúca) nad zverejnenou sadou v45 živého webu, bez karty Dlh; mäkké akcie 9 kariet, Kostol v11.7, Cigareta na útočných kartách a Liberál (Michal 2026-11-06)",
+ "source": "tvorca kariet 2026-11-06T20:55:19.205Z — rozpracovaný stav (Zrejúca) nad zverejnenou sadou v45 živého webu, bez karty Dlh; mäkké akcie 9 kariet, Kostol v11.7, Cigareta na útočných kartách, Liberál a lokality v11.13 (Michal 2026-11-06)",
  "actions": [
   "Cigareta",
   "Dlh",
@@ -492,7 +492,7 @@
    "tags": [
     "Lokalita"
    ],
-   "effect_text": "Bitka: Za každé svoje Zviera v súperovom kraji máš 1 tuhé poškodenie navyše.",
+   "effect_text": "Bitka: Za každé svoje Zviera v línii máš 2 tuhé poškodenia navyše.",
    "triggers": [
     "Bitka"
    ],
@@ -1663,15 +1663,14 @@
      2
     ],
     "actions": {
-     "Petelica": 1,
-     "Robota": 1
+     "Robota": 2
     },
     "allowed": {
      "1": [
       "Robota"
      ],
      "3": [
-      "Petelica"
+      "Robota"
      ]
     },
     "name": "pri váhe"
@@ -1683,14 +1682,14 @@
     ],
     "actions": {
      "Dlh": 1,
-     "Robota": 1
+     "Petelica": 1
     },
     "allowed": {
      "1": [
       "Dlh"
      ],
      "3": [
-      "Robota"
+      "Petelica"
      ]
     },
     "name": "za plotom"
@@ -1708,7 +1707,7 @@
    "tags": [
     "Lokalita"
    ],
-   "effect_text": "Pitka: Fajčiť smie len hráč, ktorého Občan alebo Starešina leží najďalej od lokality.",
+   "effect_text": "Pitka: Prvé fajčenie každého hráča v tejto Pitke je zadarmo.",
    "triggers": [
     "Pitka"
    ],
@@ -1736,15 +1735,14 @@
      2
     ],
     "actions": {
-     "Cigareta": 1,
-     "Obmedzenie": 1
+     "Rana": 2
     },
     "allowed": {
      "0": [
-      "Obmedzenie"
+      "Rana"
      ],
      "3": [
-      "Cigareta"
+      "Rana"
      ]
     },
     "name": "za budovou"
@@ -1822,11 +1820,11 @@
     ],
     "actions": {
      "Dlh": 1,
-     "Petelica": 1
+     "Poldeci": 1
     },
     "allowed": {
      "0": [
-      "Petelica"
+      "Poldeci"
      ],
      "2": [
       "Dlh"
@@ -1989,13 +1987,12 @@
      3
     ],
     "actions": {
-     "Posilnenie": 1,
-     "Viera": 1,
+     "Viera": 2,
      "Vízia": 1
     },
     "allowed": {
      "0": [
-      "Posilnenie"
+      "Viera"
      ],
      "1": [
       "Viera"
@@ -2012,18 +2009,18 @@
     ],
     "actions": {
      "Pakt": 1,
-     "PoškodeniePečene": 1,
-     "Viera": 1
+     "Pohoršenie": 1,
+     "Povera": 1
     },
     "allowed": {
      "1": [
       "Pakt"
      ],
      "2": [
-      "PoškodeniePečene"
+      "Povera"
      ],
      "3": [
-      "Viera"
+      "Pohoršenie"
      ]
     },
     "name": "pri vchode"
@@ -2243,11 +2240,11 @@
      3
     ],
     "actions": {
-     "Pecka": 1
+     "Viera": 1
     },
     "allowed": {
      "1": [
-      "Pecka"
+      "Viera"
      ]
     },
     "name": "pri kaplnke"
@@ -2259,11 +2256,11 @@
      3
     ],
     "actions": {
-     "Cigareta": 1
+     "Pecka": 1
     },
     "allowed": {
      "2": [
-      "Cigareta"
+      "Pecka"
      ]
     },
     "name": "pod mostom"
@@ -2281,9 +2278,9 @@
    "tags": [
     "Lokalita"
    ],
-   "effect_text": "Kšeft: Za 3 cigarety presuň 1 svoj priznaný Dlh medzi súperove priznané.",
+   "effect_text": "Pitka: Cigarety a Dlhy získané v Pitke sa rátajú dvakrát.",
    "triggers": [
-    "Kšeft"
+    "Pitka"
    ],
    "left": {
     "blocked": [
@@ -2311,19 +2308,19 @@
      3
     ],
     "actions": {
-     "Cigareta": 1,
-     "Dlh": 1,
-     "Odpor": 1
+     "Odpor": 1,
+     "Pohoršenie": 1,
+     "Povera": 1
     },
     "allowed": {
      "0": [
       "Odpor"
      ],
      "1": [
-      "Dlh"
+      "Pohoršenie"
      ],
      "2": [
-      "Cigareta"
+      "Povera"
      ]
     },
     "name": "na chodbe"
@@ -2352,11 +2349,11 @@
      3
     ],
     "actions": {
-     "Pohoršenie": 1
+     "Robota": 1
     },
     "allowed": {
      "1": [
-      "Pohoršenie"
+      "Robota"
      ]
     },
     "name": "pri pulte"
@@ -2390,7 +2387,7 @@
    "tags": [
     "Lokalita"
    ],
-   "effect_text": "Bitka: Aj porazený dostane špaky — 1 za každú svoju kartu v línii.",
+   "effect_text": "Bitka: Každý hráč dostane špaky len za svoje karty v línii, aj víťaz.",
    "triggers": [
     "Bitka"
    ],
@@ -2421,9 +2418,8 @@
      3
     ],
     "actions": {
-     "Cigareta": 1,
-     "Poldeci": 1,
-     "Povera": 1
+     "Cigareta": 2,
+     "Poldeci": 1
     },
     "allowed": {
      "0": [
@@ -2433,7 +2429,7 @@
       "Cigareta"
      ],
      "2": [
-      "Povera"
+      "Cigareta"
      ]
     },
     "name": "pred vchodom"
@@ -2460,8 +2456,7 @@
      3
     ],
     "actions": {
-     "Poldeci": 1,
-     "Posilnenie": 1,
+     "Poldeci": 2,
      "PoškodeniePečene": 1
     },
     "allowed": {
@@ -2472,7 +2467,7 @@
       "Poldeci"
      ],
      "2": [
-      "Posilnenie"
+      "Poldeci"
      ]
     },
     "name": "pri sudoch"
@@ -2482,19 +2477,19 @@
      3
     ],
     "actions": {
-     "Cigareta": 1,
-     "Poldeci": 1,
-     "PoškodeniePečene": 1
+     "Pecka": 1,
+     "Posilnenie": 1,
+     "Rana": 1
     },
     "allowed": {
      "0": [
-      "Poldeci"
+      "Pecka"
      ],
      "1": [
-      "PoškodeniePečene"
+      "Rana"
      ],
      "2": [
-      "Cigareta"
+      "Posilnenie"
      ]
     },
     "name": "na schodoch"
@@ -2512,7 +2507,7 @@
    "tags": [
     "Lokalita"
    ],
-   "effect_text": "Zhromaždenie: Karty s tagom Pracujúci nemíňajú limit vykladania.",
+   "effect_text": "Zhromaždenie: Karty s akciou Robota nemíňajú limit vykladania.",
    "triggers": [
     "Zhromaždenie"
    ],
@@ -2544,14 +2539,14 @@
     "actions": {
      "Obmedzenie": 1,
      "Odpor": 1,
-     "PoškodeniePečene": 1
+     "Pohoršenie": 1
     },
     "allowed": {
      "0": [
       "Obmedzenie"
      ],
      "1": [
-      "PoškodeniePečene"
+      "Pohoršenie"
      ],
      "2": [
       "Odpor"
@@ -2572,7 +2567,7 @@
    "tags": [
     "Lokalita"
    ],
-   "effect_text": "Prehra: Smieš vyložiť jeden Nástroj z ruky alebo zo šenku do Dedičstva bez platenia.",
+   "effect_text": "Prehra: Vezmi si do ruky 1 kartu zo svojho odhadzovacieho balíčka.",
    "triggers": [
     "Prehra"
    ],
@@ -3331,7 +3326,7 @@
    "tags": [
     "Lokalita"
    ],
-   "effect_text": "Kšeft: Za 1 cigaretu si vezmi do ruky vrchnú kartu zo súperovho odhadzovacieho balíčka.",
+   "effect_text": "Kšeft: Za 2 cigarety si zober do Dedičstva kartu Nástroja zo šenku. Do šenku sa dotiahne nová karta Nástroja.",
    "triggers": [
     "Kšeft"
    ],
@@ -3341,15 +3336,14 @@
      3
     ],
     "actions": {
-     "Pecka": 1,
-     "Robota": 1
+     "Vízia": 2
     },
     "allowed": {
      "0": [
-      "Robota"
+      "Vízia"
      ],
      "2": [
-      "Pecka"
+      "Vízia"
      ]
     },
     "name": "pri vreciach"
@@ -3360,15 +3354,15 @@
      3
     ],
     "actions": {
-     "Cigareta": 1,
-     "Dlh": 1
+     "Pecka": 1,
+     "Posilnenie": 1
     },
     "allowed": {
      "0": [
-      "Cigareta"
+      "Pecka"
      ],
      "2": [
-      "Dlh"
+      "Posilnenie"
      ]
     },
     "name": "pri strážnici"
@@ -3396,11 +3390,11 @@
      "Dlh": 1,
      "Pecka": 1,
      "Petelica": 1,
-     "Povera": 1
+     "Rana": 1
     },
     "allowed": {
      "0": [
-      "Povera"
+      "Rana"
      ],
      "1": [
       "Petelica"
@@ -3417,17 +3411,16 @@
    "right": {
     "blocked": [],
     "actions": {
-     "Petelica": 1,
-     "Pohoršenie": 1,
+     "Pohoršenie": 2,
      "PoškodeniePečene": 1,
-     "Rana": 1
+     "Povera": 1
     },
     "allowed": {
      "0": [
-      "Rana"
+      "Pohoršenie"
      ],
      "1": [
-      "Petelica"
+      "Povera"
      ],
      "2": [
       "PoškodeniePečene"
@@ -3458,14 +3451,14 @@
    "left": {
     "blocked": [],
     "actions": {
-     "Cigareta": 1,
      "Dlh": 1,
      "Pecka": 1,
+     "Posilnenie": 1,
      "Rana": 1
     },
     "allowed": {
      "0": [
-      "Cigareta"
+      "Posilnenie"
      ],
      "1": [
       "Pecka"
@@ -3482,23 +3475,23 @@
    "right": {
     "blocked": [],
     "actions": {
-     "Dlh": 1,
-     "Pecka": 1,
-     "PoškodeniePečene": 1,
+     "Obmedzenie": 1,
+     "Pohoršenie": 1,
+     "Povera": 1,
      "Robota": 1
     },
     "allowed": {
      "0": [
-      "Pecka"
+      "Pohoršenie"
      ],
      "1": [
       "Robota"
      ],
      "2": [
-      "Dlh"
+      "Povera"
      ],
      "3": [
-      "PoškodeniePečene"
+      "Obmedzenie"
      ]
     },
     "name": "v pracovni"
@@ -3547,23 +3540,22 @@
    "right": {
     "blocked": [],
     "actions": {
-     "Dlh": 1,
-     "Pecka": 1,
+     "Obmedzenie": 1,
      "Rana": 1,
-     "Robota": 1
+     "Robota": 2
     },
     "allowed": {
      "0": [
       "Rana"
      ],
      "1": [
-      "Pecka"
+      "Robota"
      ],
      "2": [
       "Robota"
      ],
      "3": [
-      "Dlh"
+      "Obmedzenie"
      ]
     },
     "name": "v zadnej miestnosti"
