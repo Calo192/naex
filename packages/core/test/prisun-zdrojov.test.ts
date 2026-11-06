@@ -111,7 +111,8 @@ describe("platba nie je prísun", () => {
   });
 
   it("fajčenie zaplatí cez knihu ako platba", () => {
-    const fajcenie = KROKY.filter((k) => k.cmd.type === "smoke");
+    // Prvé fajčenie na Benzínke je zadarmo (v11.13), z neho platba nie je.
+    const fajcenie = KROKY.filter((k) => k.cmd.type === "smoke" && !(k.pred.ciel?.lokalita?.defId === "benzinka" && k.pred.pitkaStav?.fajcenie[k.kto] === 0));
     expect(fajcenie.length).toBeGreaterThan(0);
     for (const { events, kto } of fajcenie) {
       expect(events.some((e) => e.type === "zmenaCigariet" && e.hrac === kto && e.zdroj === "platba" && e.suma < 0)).toBe(true);
@@ -186,7 +187,7 @@ describe("čakajúci prísun a náhľad Pitky", () => {
       const v = events.find((e) => e.type === "pitkaVysledok");
       if (v === undefined || v.type !== "pitkaVysledok") continue;
       pitiek++;
-      const rozpis = prisunZUdalosti(events.filter((e) => e.type !== "zmenaCigariet" || e.zdroj === "akcie" || e.zdroj === "obmedzenie"));
+      const rozpis = prisunZUdalosti(events.filter((e) => e.type !== "zmenaCigariet" || e.zdroj === "akcie" || e.zdroj === "obmedzenie" || e.zdroj === "obecnyUrad"));
       expect([rozpis[0]?.suma ?? 0, rozpis[1]?.suma ?? 0]).toEqual([v.cigarety[0], v.cigarety[1]]);
     }
     expect(pitiek).toBeGreaterThan(10);

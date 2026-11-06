@@ -17,10 +17,10 @@ export function StavkaBitky({ stavka, kratko = false }: { readonly stavka: Stavk
     stavka.herna[0] > 0 ? `${stavka.herna[0]} z Herne` : null,
   ].filter((x) => x !== null);
   const sekera = casti.length > 0 ? ` (z toho ${casti.join(", ")})` : "";
-  // Kultúrny dom (v8): aj porazený dostane špaky za svoje karty v línii.
+  // Kultúrny dom (v11.13): každý hráč dostane špaky len za svoje karty v línii, aj víťaz.
   const kd =
     stavka.porazenemu[0] + stavka.porazenemu[1] > 0
-      ? ` Kultúrny dom: aj porazený dostane 1 špak za každú svoju kartu v línii — ty pri prehre +${stavka.porazenemu[0]}, súper +${stavka.porazenemu[1]}.`
+      ? ` Kultúrny dom: každý dostane špaky len za svoje karty v línii, aj víťaz — ty pri prehre +${stavka.porazenemu[0]}, súper +${stavka.porazenemu[1]}.`
       : "";
   const titul = `Táto bitka (${pocet(stavka.karty, "karta", "karty", "kariet")} v línii): tvoja výhra +${stavka.vyhra} špakov${sekera}, súperova +${-stavka.prehra}.${kd} ${VYSVETLENIE}`;
   // Hlavička stola: len „o +3 / +3“ s ohorkom — celé znenie v nápovede.

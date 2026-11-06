@@ -431,7 +431,7 @@ export const KAPITOLY: readonly Kapitola[] = [
         <ul>
           <li>
             <P k="fajcenie">Fajčenie</P> — karta z balíčka hneď; len v Pitke, kým ju neskončíš, v Zhromaždení nie. Prvé fajčenie
-            v Pitke stojí 1 cigaretu, druhé 2, tretie 3… a každá Pitka začína znova od 1.
+            v Pitke stojí 1 cigaretu, druhé 2, tretie 3… a každá Pitka začína znova od 1. Na Benzínke je prvé fajčenie v každej Pitke zadarmo.
           </li>
           <li>
             <P k="doliatie">Doliatie</P> — v Pitke za 2 cigarety otočíš vypitý poldeci späť na plný (nie s Vínkom v Dedičstve).
@@ -499,7 +499,7 @@ export const KAPITOLY: readonly Kapitola[] = [
         <H3 id="cena-abstak">Neresti, Chuť a Absťák</H3>
         <p>
           <P k="nerest">Nerest</P> je len to, čo vypiješ a vyfajčíš: <strong>Vypiť</strong> v Zhromaždení 1, každé <strong>NA EX 2</strong>{" "}
-          (je to väčšia dávka) a každá vyfajčená cigareta 1 (druhé fajčenie v Pitke za 2 cigarety teda 2).
+          (je to väčšia dávka) a každá vyfajčená cigareta 1 (druhé fajčenie v Pitke za 2 cigarety teda 2; fajčenie zadarmo nič).
           Doliatie, barter, šenok, Záverečná, Dedičstvo ani cigarety za Kšefty lokalít nerest nie sú.
         </p>
         <p>
@@ -595,7 +595,7 @@ export const KAPITOLY: readonly Kapitola[] = [
             <strong>Výsledok</strong> — víťaz (pri remíze rozhodnú Absťáky, potom Dlhy), inak sekera.
           </li>
           <li>
-            <strong>Špaky za bitku</strong> — víťaz dostane špak za každú kartu v línii (na Kultúrnom dome aj porazený za svoje); kto vyhral hádku a prehral bitku, dostane špak za každú svoju kartu; vo finále aj špak za každý bod Nakladačky a víťaz hádky za každý bod hádky; lokalita ide na nástenku.
+            <strong>Špaky za bitku</strong> — víťaz dostane špak za každú kartu v línii (na Kultúrnom dome každý hráč len za svoje, aj víťaz); kto vyhral hádku a prehral bitku, dostane špak za každú svoju kartu; vo finále aj špak za každý bod Nakladačky a víťaz hádky za každý bod hádky; lokalita ide na nástenku.
           </li>
           <li>
             <strong>Starší bodujú</strong> podľa stavu pred zdvihnutím — stupne majú hodnotu 1 / 2 / 2 a dostane ich ten, kto ich drží: obaja za svoje reči, víťaz navyše za svoj strach bez stupňov, ktoré obsadil súper.
@@ -621,7 +621,7 @@ export const KAPITOLY: readonly Kapitola[] = [
             <strong>Veštica</strong> — porazený s Vešticou vymení kartu medzi doberacími balíčkami.
           </li>
           <li>
-            <strong>Cintorín</strong> — porazený v bitke o Cintorín smie dať jeden Nástroj z ruky alebo zo šenku do Dedičstva zadarmo.
+            <strong>Cintorín</strong> — porazený v bitke o Cintorín si smie vziať do ruky 1 kartu zo svojho odhadzovacieho balíčka.
           </li>
           <li>
             <strong>Cigarety, Výhra a Prehra</strong> — porazený dostane 1 cigaretu (pri sekere a po finále nikto), Kmotor (kto má jeho priazeň, tomu prejdú 2 / 3 / 4 priznané Dlhy k súperovi), Fajčiar
@@ -952,23 +952,23 @@ export const KAPITOLY: readonly Kapitola[] = [
         <tbody>
           <tr><td>Krčma</td><td>Pitka</td><td>Kto má plný poldeci a kam ho dať, musí dať NA EX. Prah Cirhózy je obom o 2 vyšší.</td></tr>
           <tr><td>Kostol</td><td>Zhromaždenie, Pitka</td><td>Nikto nesmie vypiť (v ťahu len jedna karta). NA EX len na poslednú kartu línie, najďalej od Kostola — na jednom alebo druhom konci.</td></tr>
-          <tr><td>Benzínka</td><td>Pitka</td><td>Fajčiť smie len hráč, ktorého Občan alebo Starešina leží najďalej od lokality (pri rovnosti nikto).</td></tr>
+          <tr><td>Benzínka</td><td>Pitka</td><td>Prvé fajčenie každého hráča v každej Pitke je zadarmo, ďalšie stojí 2, potom 3.</td></tr>
           <tr><td>Zastávka</td><td>Pitka</td><td>Po prvej Pitke kola si každý vezme zadarmo 1 kartu zo šenku — najprv útočník, potom obranca (z prázdneho šenku nič).</td></tr>
-          <tr><td>Lesná cesta</td><td>Bitka</td><td>+1 tuhé za každé tvoje Zviera v súperovom kraji.</td></tr>
+          <tr><td>Lesná cesta</td><td>Bitka</td><td>Za každé tvoje Zviera v línii, na ktorejkoľvek strane, 2 tuhé navyše.</td></tr>
           <tr><td>Ihrisko</td><td>Bitka</td><td>V každom kraji +2 tuhé tomu, kto tam má viac svojich Občanov, Zvierat a Starešinov (Dvojčatá za dve) — spolu až +4.</td></tr>
           <tr><td>Zberný dvor</td><td>Kšeft</td><td>Za 1 cigaretu ľubovoľná karta z tvojho odhadzovacieho balíčka do ruky.</td></tr>
           <tr><td>Most</td><td>Zhromaždenie, Pitka</td><td>Karty len na vlastnú stranu, aj odpoveď na NA EX.</td></tr>
           <tr><td>Kar</td><td>Pitka</td><td>Poškodenie pečene za NA EX dostane súper hráča, ktorý ho dal.</td></tr>
-          <tr><td>Cintorín</td><td>Prehra</td><td>Porazený smie vyložiť jeden Nástroj z ruky alebo zo šenku do Dedičstva bez platenia (pri sekere nikto).</td></tr>
-          <tr><td>Obecný úrad</td><td>Kšeft</td><td>Za 3 cigarety presuň 1 svoj priznaný Dlh medzi súperove priznané.</td></tr>
+          <tr><td>Cintorín</td><td>Prehra</td><td>Porazený si smie vziať do ruky 1 kartu zo svojho odhadzovacieho balíčka (pri sekere nikto).</td></tr>
+          <tr><td>Obecný úrad</td><td>Pitka</td><td>Cigarety a Dlhy získané v Pitke sa obom rátajú dvakrát: (akcie − Obmedzenie) × 2. Platby a cigarety za pas nie.</td></tr>
           <tr><td>Jednota</td><td>Pitka</td><td>Kto má viac priznaných Dlhov, nesmie v tejto Pitke fajčiť ani dolievať.</td></tr>
-          <tr><td>Sklad</td><td>Kšeft</td><td>Za 1 cigaretu vrchná karta súperovho odhadzovacieho balíčka do tvojej ruky.</td></tr>
+          <tr><td>Sklad</td><td>Kšeft</td><td>Za 2 cigarety Nástroj zo šenku do Dedičstva; do šenku príde z Náradia nový Nástroj.</td></tr>
           <tr><td>Poľovnícka chata</td><td>Furt</td><td>Aktívne Rany, Pecky a Petelice z hrán sa rátajú dvakrát (len finále).</td></tr>
           <tr><td>Predsedova vila</td><td>Kšeft</td><td>Za 2 cigarety pridaj svoje reči pri jednom staršom o stupeň (len finále).</td></tr>
           <tr><td>Herňa</td><td>Bitka</td><td>Víťaz dostane navyše toľko špakov, koľko má porazený priznaných Dlhov (len finále).</td></tr>
-          <tr><td>Kultúrny dom</td><td>Bitka</td><td>Obaja získajú špaky: víťaz dostane špak za každú kartu v línii ako inde, porazený 1 špak za každú svoju kartu v línii.</td></tr>
+          <tr><td>Kultúrny dom</td><td>Bitka</td><td>Každý hráč dostane špaky len za svoje karty v línii, aj víťaz.</td></tr>
           <tr><td>Vínna pivnica</td><td>Pitka</td><td>NA EX až dvakrát za Pitku.</td></tr>
-          <tr><td>Družstvo</td><td>Zhromaždenie</td><td>Pracujúci nemíňajú limit vykladania.</td></tr>
+          <tr><td>Družstvo</td><td>Zhromaždenie</td><td>Karty s akciou Robota nemíňajú limit vykladania.</td></tr>
         </tbody>
       </table>
     ),
@@ -1001,8 +1001,8 @@ export const KAPITOLY: readonly Kapitola[] = [
           </thead>
           <tbody>
             <tr><td>Vyhratá bitka</td><td>1 za každú kartu v línii na oboch stranách (aj finále), aspoň 1; k tomu špaky zo sekery</td></tr>
-            <tr><td>Prehratá bitka o Kultúrny dom</td><td>1 za každú svoju kartu v línii</td></tr>
-            <tr><td>Vyhraná hádka pri prehratej bitke alebo sekere</td><td>1 za každú svoju kartu v línii; sčíta sa s Kultúrnym domom</td></tr>
+            <tr><td>Bitka o Kultúrny dom</td><td>víťaz aj porazený 1 za každú svoju kartu v línii</td></tr>
+            <tr><td>Vyhraná hádka pri prehratej bitke alebo sekere</td><td>1 za každú svoju kartu v línii; na Kultúrnom dome nie druhýkrát</td></tr>
             <tr><td>Starší po bitke</td><td>stupne žltá 1, oranžová 2, červená 2 dostane, kto ich drží: víťaz za svoj strach bez stupňov, ktoré obsadil súper, obaja pri každej bitke za svoje reči; kto prehral hádku, tomu reči klesnú zospodu o stupeň</td></tr>
             <tr><td>Finále: Nakladačka a hádka</td><td>víťaz bitky 1 za bod Nakladačky, víťaz hádky 1 za bod hádky</td></tr>
             <tr><td>Krádež pri zajatí</td><td>zlodej dostane a okradnutý stratí špaky za okradnutého najvyšší marker pri zajatom staršom (1 / 3 / 5), najviac koľko má</td></tr>

@@ -52,7 +52,7 @@ export function textZakladu(b: Pick<BitkaNaNastenke, "karty" | "pitky">): string
   return b.karty !== undefined ? `${pocet(b.karty, "karta", "karty", "kariet")} v línii` : pocet(b.pitky, "Pitka", "Pitky", "Pitiek");
 }
 
-/** Kultúrny dom (v8): špaky porazeného za jeho karty v línii; inak 0. */
+/** Kultúrny dom: špaky porazeného za jeho karty v línii; inak 0. */
 export function spakyPorazeneho(b: BitkaNaNastenke): number {
   if (b.vitaz === null || b.lokalita?.defId !== "kulturny_dom") return 0;
   return b.zaBitku[opponentOf(b.vitaz)] - (b.noviny ?? 0);
@@ -206,7 +206,7 @@ function NastenkaObsah({ nastenka, zostava, ciel, ja, mena, avatary, karta, meno
             : `${nazov}: ešte sa o ňu nehralo`
         : vitaz === null
           ? `${nazov} (kolo ${b.kolo}): sekera — ${b.prepadlo > 0 ? `${spakov(b.prepadlo)} prepadlo` : vzal !== null ? `${spakov(zaklad)} vzal víťaz ďalšej bitky (${kto(vzal)})` : `${spakov(zaklad)} čaká na víťaza ďalšej bitky`}`
-          : `${nazov} (kolo ${b.kolo}): ${vitaz === ja ? "tvoja výhra" : `výhra – ${mena[vitaz]}`}, za lokalitu ${spakov(zisk)}; za bitku ${b.zaBitku[vitaz]} (${b.karty !== undefined ? "1 za kartu v línii" : "1 za Pitku"}, ${textZakladu(b)})${pozn.length > 0 ? ` (${pozn.join(", ")})` : ""}`;
+          : `${nazov} (kolo ${b.kolo}): ${vitaz === ja ? "tvoja výhra" : `výhra – ${mena[vitaz]}`}, za lokalitu ${spakov(zisk)}; za bitku ${b.zaBitku[vitaz]} (${b.lokalita?.defId === "kulturny_dom" ? "1 za svoju kartu v línii, Kultúrny dom" : `${b.karty !== undefined ? "1 za kartu v línii" : "1 za Pitku"}, ${textZakladu(b)}`})${pozn.length > 0 ? ` (${pozn.join(", ")})` : ""}`;
     if (vyber !== undefined && l.stav === "caka" && l.lokalita !== null) {
       const naklon = `${((i * 37) % 5) - 2}deg`;
       if (listokVyberu !== null) {
@@ -623,7 +623,8 @@ export function poznamkaZaBitku(b: BitkaNaNastenke, p: PlayerId): string {
   if (b.zaBitku[p] === 0) return "";
   if (b.vitaz !== null && b.vitaz !== p && spakyPorazeneho(b) > 0) return "svoje karty (Kultúrny dom)";
   if (b.vitaz !== null && b.vitaz !== p && (b.noviny ?? 0) > 0) return "Dlhy víťaza (Noviny)";
-  const casti = [textZakladu(b)];
+  // Kultúrny dom (v11.13): aj víťaz len za svoje karty, nie za celú líniu.
+  const casti = [b.lokalita?.defId === "kulturny_dom" ? "svoje karty (Kultúrny dom)" : textZakladu(b)];
   if (b.abstakZrazka > 0) casti.push(`−${b.abstakZrazka} Absťák`);
   const herna = spakyZaHernu(b);
   if (herna > 0) casti.push(`+${herna} Dlhy (Herňa)`);

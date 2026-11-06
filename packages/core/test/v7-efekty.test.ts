@@ -348,21 +348,14 @@ describe("Pitka (v7)", () => {
     expect([...h.ruka, ...h.doberaci, ...h.odhadzovaci].some((k) => k.defId === "cirhoza")).toBe(true);
   });
 
-  it("Jednota: kto má viac priznaných Dlhov, nesmie fajčiť ani dolievať; Benzínka: fajčí len najďalej", () => {
+  it("Jednota: kto má viac priznaných Dlhov, nesmie fajčiť ani dolievať; Benzínka nikomu fajčiť nezakáže", () => {
     const s = sHracom(sHracom(vPitke("jednota", [[], []]), 0, { dlhy: 2, cigarety: 9, poldeciVypite: 1 }), 1, { dlhy: 1 });
     const legal = legalCommands(data, s, 0);
     expect(legal.some((c) => c.type === "smoke" || c.type === "refillPoldeci")).toBe(false);
     const b = sHracom(vPitke("benzinka", [[lezi(inst("zamocnik"), 0), lezi(inst("vandal"), 0)], [lezi(inst("masiar"), 1)]]), 0, { cigarety: 5 });
     expect(legalCommands(data, b, 0).some((c) => c.type === "smoke")).toBe(true);
     const b1 = { ...sHracom(b, 1, { cigarety: 5 }), pitkaStav: pitkaStav(1) };
-    expect(legalCommands(data, b1, 1).some((c) => c.type === "smoke")).toBe(false);
-  });
-
-  it("Benzínka: pri rovnakej vzdialenosti nefajčí nikto (Michal 2026-10-27)", () => {
-    const b = sHracom(sHracom(vPitke("benzinka", [[lezi(inst("zamocnik"), 0)], [lezi(inst("masiar"), 1)]]), 0, { cigarety: 5 }), 1, { cigarety: 5 });
-    expect(legalCommands(data, b, 0).some((c) => c.type === "smoke")).toBe(false);
-    expect(legalCommands(data, { ...b, pitkaStav: pitkaStav(1) }, 1).some((c) => c.type === "smoke")).toBe(false);
-    expect(() => apply(data, b, { type: "smoke" }, 0)).toThrow(/Benzínka/);
+    expect(legalCommands(data, b1, 1).some((c) => c.type === "smoke")).toBe(true);
   });
 
   it("Bzdocha: kto vyberá NA EX po súperovi, vidí jeho skryté NA EX — inak nie", () => {
@@ -424,16 +417,15 @@ describe("Zhromaždenie a Nástup (v7)", () => {
 });
 
 describe("Kšeft (v7)", () => {
-  it("Poštárka a Vychovávateľka v línii od v9 Kšeft nemajú (len väzeň); Obecný úrad, Zberný dvor", () => {
+  it("Poštárka a Vychovávateľka v línii od v9 Kšeft nemajú (len väzeň); Obecný úrad Kšeft nemá (v11.13), Zberný dvor áno", () => {
     const post = inst("postarka");
     const vych = inst("vychovavatelka");
     const s = sHracom(vPitke("zastavka", [[lezi(post, 0), lezi(vych, 0)], []]), 0, { doberaci: [inst("masiar"), inst("vandal")], cigarety: 4 });
     expect(legalCommands(data, s, 0).some((c) => c.type === "kseft")).toBe(false);
 
     const su = sHracom(vPitke("obecny_urad", [[], []]), 0, { cigarety: 3, dlhy: 1 });
-    const lok = su.ciel!.lokalita!;
-    const pu = apply(data, su, { type: "kseft", uid: lok.uid }, 0).state;
-    expect([dlhy(pu, 0), dlhy(pu, 1)]).toEqual([0, dlhy(su, 1) + 1]);
+    expect(legalCommands(data, su, 0).some((c) => c.type === "kseft")).toBe(false);
+    expect(() => apply(data, su, { type: "kseft", uid: su.ciel!.lokalita!.uid }, 0)).toThrow(/Kšeft/);
 
     const karta = inst("masiar");
     const sz = sHracom(vPitke("zberny_dvor", [[], []]), 0, { cigarety: 1, odhadzovaci: [karta] });
@@ -570,43 +562,42 @@ describe("Cintorín — Pozostalosť (Michal 2026-10-27, Pohreb zrušený)", () 
     return s;
   }
 
-  it("porazený dá Nástroj z ruky do Dedičstva zadarmo; spoločná cena Dedičstva rastie", () => {
-    const puska = inst("puska");
-    const s = poCintorin(sHracom(vPitke("cintorin", [[lezi(inst("zamocnik"), 0)], silna(3)]), 0, { ruka: [puska, inst("pijan")], cigarety: 0 }));
+  it("porazený si vezme kartu zo svojho odhadzovacieho balíčka do ruky; cena Dedičstva sa nemení", () => {
+    const pijan = inst("pijan");
+    const s = poCintorin(sHracom(vPitke("cintorin", [[lezi(inst("zamocnik"), 0)], silna(3)]), 0, { odhadzovaci: [pijan, inst("masiar")], cigarety: 0 }));
     expect(s.bitkaStav?.krok).toBe("cintorin");
     expect(s.bitkaStav?.caka).toBe(0);
     const legal = legalCommands(data, s, 0);
-    expect(legal).toEqual(expect.arrayContaining([{ type: "cintorin", uid: puska.uid }, { type: "cintorin", uid: null }]));
-    const po = apply(data, s, { type: "cintorin", uid: puska.uid }, 0).state;
-    expect(po.hraci[0].dedicstvo.map((k) => k.uid)).toContain(puska.uid);
-    expect(po.hraci[0].cigarety).toBeGreaterThanOrEqual(s.hraci[0].cigarety) // zadarmo (cigarety za prebytok prídu až po Cintoríne);
-    expect(po.dedicstvaVylozene).toBe(s.dedicstvaVylozene + 1);
+    expect(legal).toEqual(expect.arrayContaining([{ type: "cintorin", uid: pijan.uid }, { type: "cintorin", uid: null }]));
+    const po = apply(data, s, { type: "cintorin", uid: pijan.uid }, 0).state;
+    expect(po.hraci[0].ruka.map((k) => k.uid)).toContain(pijan.uid);
+    expect(po.hraci[0].odhadzovaci.map((k) => k.uid)).not.toContain(pijan.uid);
+    expect(po.dedicstvaVylozene).toBe(s.dedicstvaVylozene);
   });
 
-  it("porazený smie vziať Nástroj aj zo šenku — zo šenku zmizne", () => {
-    const vidly = inst("vidly");
+  it("voľba nič: karta ostáva v balíčku; cudziu kartu server odmietne", () => {
+    const pijan = inst("pijan");
+    const cudzia = inst("vidly");
     const base = vPitke("cintorin", [[lezi(inst("zamocnik"), 0)], silna(3)]);
-    const s = poCintorin(sHracom({ ...base, senok: [...base.senok, vidly] }, 0, { ruka: [inst("pijan")] }));
+    const s = poCintorin(sHracom(sHracom({ ...base, senok: [...base.senok, cudzia] }, 0, { odhadzovaci: [pijan] }), 1, { odhadzovaci: [] }));
     expect(s.bitkaStav?.caka).toBe(0);
-    expect(legalCommands(data, s, 0)).toContainEqual({ type: "cintorin", uid: vidly.uid });
-    const po = apply(data, s, { type: "cintorin", uid: vidly.uid }, 0).state;
-    expect(po.hraci[0].dedicstvo.map((k) => k.uid)).toContain(vidly.uid);
-    expect(po.senok.map((k) => k.uid)).not.toContain(vidly.uid);
+    expect(() => apply(data, s, { type: "cintorin", uid: cudzia.uid }, 0)).toThrow(/odhadzovacom/);
+    const po = apply(data, s, { type: "cintorin", uid: null }, 0).state;
+    expect(po.hraci[0].ruka.map((k) => k.uid)).not.toContain(pijan.uid);
+    expect(po.hraci[0].odhadzovaci.map((k) => k.uid)).toContain(pijan.uid);
     // Víťaz Cintorín nevyužije.
-    expect(() => apply(data, s, { type: "cintorin", uid: vidly.uid }, 1)).toThrow();
+    expect(() => apply(data, s, { type: "cintorin", uid: pijan.uid }, 1)).toThrow();
   });
 
-  it("bez Nástroja v ruke aj v šenku, na inej lokalite a pri sekere sa Cintorín preskočí", () => {
-    const bez = poCintorin(sHracom(vPitke("cintorin", [[lezi(inst("zamocnik"), 0)], silna(3)]), 0, { ruka: [inst("pijan")] }));
+  it("s prázdnym odhadzovacím balíčkom, na inej lokalite a pri sekere sa Cintorín preskočí", () => {
+    const bez = poCintorin(sHracom(vPitke("cintorin", [[lezi(inst("zamocnik"), 0)], silna(3)]), 0, { ruka: [inst("pijan")], odhadzovaci: [] }));
     expect(bez.bitkaStav?.krok === "cintorin" && bez.bitkaStav.caka !== null).toBe(false);
-    const inde = poCintorin(sHracom(vPitke("zastavka", [[lezi(inst("zamocnik"), 0)], silna(3)]), 0, { ruka: [inst("puska")] }));
+    const inde = poCintorin(sHracom(vPitke("zastavka", [[lezi(inst("zamocnik"), 0)], silna(3)]), 0, { odhadzovaci: [inst("pijan")] }));
     expect(inde.bitkaStav?.krok === "cintorin" && inde.bitkaStav.caka !== null).toBe(false);
     // Sekera: prázdna línia, rovnako Absťákov aj Dlhov — porazený nie je.
-    const s = sHracom(sHracom(vPitke("cintorin", [[], []]), 0, { ruka: [inst("puska")] }), 1, { ruka: [inst("vidly")] });
+    const s = sHracom(sHracom(vPitke("cintorin", [[], []]), 0, { odhadzovaci: [inst("pijan")] }), 1, { odhadzovaci: [inst("masiar")] });
     const sekera = poCintorin(s);
     expect(sekera.nastenka.at(-1)?.vitaz).toBeNull();
     expect(sekera.bitkaStav?.krok === "cintorin" && sekera.bitkaStav.caka !== null).toBe(false);
-    expect(sekera.hraci[0].dedicstvo).toHaveLength(0);
-    expect(sekera.hraci[1].dedicstvo).toHaveLength(0);
   });
 });

@@ -961,7 +961,7 @@ function moznosti(v: ClientState): string[] {
       const zakazFajc = dovodZakazuFajcit(DATA, v, ja);
       if (zakazFajc !== null) out.push(`(${zakazFajc})`);
       else if (h.cigarety >= cenaFajc && jeCoTahat(h.doberaciPocet, h.odhadzovaci.length)) {
-        c({ type: "smoke", pocet: 1 }, `fajči za ${cigariet(cenaFajc)} — hneď si doberieš kartu (ťah nekončí); ďalšie fajčenie v tejto Pitke o cigaretu drahšie`);
+        c({ type: "smoke", pocet: 1 }, cenaFajc === 0 ? `fajči zadarmo (Benzínka: prvé fajčenie v Pitke) — hneď si doberieš kartu (ťah nekončí); ďalšie v tejto Pitke za 2 cigarety` : `fajči za ${cigariet(cenaFajc)} — hneď si doberieš kartu (ťah nekončí); ďalšie fajčenie v tejto Pitke o cigaretu drahšie`);
       }
       const cenaBarteru = barterCena(DATA, v, ja);
       if (h.cigarety >= cenaBarteru) c({ type: "barter" }, `barter ${cenaBarteru} cigariet → nový plný poldeci navyše`);
@@ -982,12 +982,8 @@ function moznosti(v: ClientState): string[] {
         if (lok !== null && !pouzite.includes(lok.uid)) {
           if (lok.defId === "zberny_dvor" && h.cigarety >= KONSTANTY.EFEKT.ZBERNY_DVOR_CENA)
             for (const k of h.odhadzovaci) c({ type: "kseft", uid: lok.uid, kartaUid: k.uid }, `KŠEFT Zberný dvor: za ${KONSTANTY.EFEKT.ZBERNY_DVOR_CENA} cigaretu ${popisKarty(k)} z tvojho odhadzovacieho balíčka do ruky (raz za Pitku)`);
-          if (lok.defId === "obecny_urad" && h.cigarety >= KONSTANTY.EFEKT.URAD_CENA && h.dlhy > 0)
-            c({ type: "kseft", uid: lok.uid }, `KŠEFT Obecný úrad: za ${KONSTANTY.EFEKT.URAD_CENA} cigarety presuň 1 svoj priznaný Dlh medzi súperove priznané (raz za Pitku)`);
-          const supOdh = v.hraci[su].odhadzovaci;
-          const vrchna = supOdh[supOdh.length - 1];
-          if (lok.defId === "sklad" && h.cigarety >= 1 && vrchna !== undefined)
-            c({ type: "kseft", uid: lok.uid }, `KŠEFT Sklad: za 1 cigaretu si vezmi vrchnú kartu súperovho odhadzovacieho balíčka ${popisKarty(vrchna)} do ruky — odteraz je tvoja (raz za Pitku)`);
+          if (lok.defId === "sklad" && h.cigarety >= KONSTANTY.EFEKT.SKLAD_CENA)
+            for (const k of v.senok) if ((DATA.cards.get(k.defId)?.tags ?? []).includes("Nástroj")) c({ type: "kseft", uid: lok.uid, kartaUid: k.uid }, `KŠEFT Sklad: za ${cigariet(KONSTANTY.EFEKT.SKLAD_CENA)} ${popisKarty(k)} zo šenku do Dedičstva (raz za Pitku; do šenku príde z Náradia nový Nástroj)`);
           // Predsedova vila (v11): moje reči o stupeň nad vyšší z mojich markerov — tá istá podmienka ako jadro.
           if (lok.defId === "predsedova_vila" && h.cigarety >= VILA_CENA) {
             for (const e of v.starsi) {
@@ -1021,13 +1017,9 @@ function moznosti(v: ClientState): string[] {
         out.push(`{"type":"vestica","moja":I,"jeho":J}   — Veštica: vymeň kartu I zo svojho doberacieho balíčka za kartu J zo súperovho (zoznamy vyššie); balíčky sa potom zamiešajú`);
       }
       if (b?.krok === "cintorin") {
-        // Cintorín (Michal 2026-10-27, Pozostalosť): porazený dá Nástroj z ruky alebo zo šenku do Dedičstva zadarmo.
-        for (const [kde, karty] of [["z ruky", v.ruka], ["zo šenku", v.senok]] as const) {
-          for (const k of karty) {
-            if ((DATA.cards.get(k.defId)?.tags ?? []).includes("Nástroj")) c({ type: "cintorin", uid: k.uid }, `Cintorín: ${meno(k.defId)} ${kde} do Dedičstva zadarmo (cena Dedičstva pre oboch aj tak stúpne)`);
-          }
-        }
-        c({ type: "cintorin", uid: null }, "Cintorín: nič nedávať do Dedičstva");
+        // Cintorín (v11.13): porazený si smie vziať do ruky 1 kartu zo svojho odhadzovacieho balíčka.
+        for (const k of v.hraci[ja].odhadzovaci) c({ type: "cintorin", uid: k.uid }, `Cintorín: ${popisKarty(k)} z tvojho odhadzovacieho balíčka do ruky`);
+        c({ type: "cintorin", uid: null }, "Cintorín: nič si nevziať");
       }
       // Rozdelenie (v11): víťaz bitky Nakladačku na svoj strach, víťaz hádky hádku na svoje reči —
       // jedným zámerom s celým rozdelením; server prijme len úplné (overRozdelenie v jadre).

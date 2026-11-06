@@ -172,6 +172,9 @@ export class Robot {
           const linia = [...view.strany[0], ...view.strany[1]];
           const ciel = linia.find((pl) => pl.playedBy === ja && ciele.has(pl.card.uid)) ?? linia.find((pl) => ciele.has(pl.card.uid));
           if (ciel !== undefined) return { type: "naex", uid: ciel.card.uid };
+          // Súperova Záverečná lícom dole v strany nie je, a predsa je cieľ — Krčma by skipNaex odmietla.
+          const naRube = (view.zaverecne ?? []).find((z) => ciele.has(z.uid));
+          if (naRube !== undefined) return { type: "naex", uid: naRube.uid };
         }
         return { type: "skipNaex" };
       }

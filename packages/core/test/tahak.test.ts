@@ -97,7 +97,9 @@ describe("ťahák AI hráčov sedí s constants.ts", () => {
     ],
     ["Dlh ako počítadlo (v8.2), Absťák karta (v9.1)", "**Dlh je počítadlo, nie karta**"],
     ["Strýko (v7)", `(${KONSTANTY.EFEKT.STRYKO_CENA} cigarety → v bitke kola +1 Rana)`],
-    ["Obecný úrad (v7)", `Obecný úrad (v7 Kšeft: ${KONSTANTY.EFEKT.URAD_CENA} cigarety`],
+    ["Sklad (v11.13)", `Sklad (v11.13 Kšeft: ${KONSTANTY.EFEKT.SKLAD_CENA} cigarety → Nástroj zo šenku do Dedičstva`],
+    ["Lesná cesta (v11.13)", `Lesná cesta (v11.13: ${KONSTANTY.EFEKT.LESNA_CESTA_TUHE} tuhé za každé svoje Zviera v línii`],
+    ["Benzínka (v11.13)", `Benzínka (v11.13: prvé fajčenie v každej Pitke zadarmo, ďalšie ${cenaFajcenia(1)}, ${cenaFajcenia(2)}…`],
   ])("%s", (_, ocakavane) => {
     expect(tahak).toContain(ocakavane);
   });

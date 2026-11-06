@@ -123,15 +123,15 @@ describe("v6 bod 1–5: špaky za bitku a za starších, poradie bitky", () => {
 
 });
 
-describe("v8: Kultúrny dom „Obaja bodujú“ (návrh #29)", () => {
+describe("v11.13: Kultúrny dom — každý len za svoje karty", () => {
   const s0 = setupGame(data, 5);
 
-  it("víťaz dostane špaky za všetky karty v línii, porazený za svoje; Nakladačka sa rozdeľuje ako inde (v11 víťaz)", () => {
+  it("víťaz aj porazený dostanú len za svoje karty v línii; Nakladačka sa rozdeľuje ako inde (v11 víťaz)", () => {
     const s = predPoskodenim({ ciel: lokalita(s0, "kulturny_dom"), sums: [{ Rana: 5 }, {}], karty: [2, 3] });
     const { state: st, events } = pohorsenie(s);
-    expect(st.nastenka.at(-1)).toMatchObject({ vitaz: 0, karty: 5, zaBitku: [5, 3], zaStarsich: [0, 0], prebytok: [0, 0] });
-    expect(st.spaky).toEqual([5, 3]);
-    expect(events.some((e) => e.type === "log" && e.text.startsWith("Kultúrny dom: aj porazený hráč 2 dostáva 3 špaky"))).toBe(true);
+    expect(st.nastenka.at(-1)).toMatchObject({ vitaz: 0, karty: 5, zaBitku: [2, 3], zaStarsich: [0, 0], prebytok: [0, 0] });
+    expect(st.spaky).toEqual([2, 3]);
+    expect(events.some((e) => e.type === "log" && e.text.startsWith("Kultúrny dom: porazený hráč 2 dostáva 3 špaky"))).toBe(true);
     // Prebytok 5 sa nemení na špaky — rozdeľuje ho porazený.
     expect(st.bitkaStav).toMatchObject({ krok: "prebytok", caka: 0, prebytokDrzi: 0, prebytokZostava: 5 });
   });

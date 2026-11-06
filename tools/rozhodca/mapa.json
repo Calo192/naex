@@ -980,7 +980,7 @@
       "pravidlo": "Na začiatku bitky Krčmárka otočí vypitý poldeci (bez Absťáku a NA EX) a Dievčina spáli priznané Dlhy a seba.",
       "stav": "pokryte",
       "testy": [
-        "packages/core/test/playtest-055944.test.ts › Benzínka: nikto nesmie fajčiť; Krčmárka po bitke otočí vypitý poldeci (Michal 2026-10-20)"
+        "packages/core/test/playtest-055944.test.ts › Benzínka: fajčiť sa smie, prvé je zadarmo (v11.13); Krčmárka po bitke otočí vypitý poldeci (Michal 2026-10-20)"
       ]
     },
     {
@@ -1010,7 +1010,7 @@
     {
       "id": "11.exekutor.nepali",
       "paragraf": "11. Kliatby, priznanie, Exekútor › Exekútor",
-      "pravidlo": "Priznané Dlhy pália len Robota a Exekútor; Obecný úrad, Podvodník a Kmotor ich presúvajú súperovi.",
+      "pravidlo": "Priznané Dlhy pália len Robota a Exekútor; Podvodník a Kmotor ich presúvajú súperovi.",
       "stav": "na-overenie",
       "testy": [],
       "poznamka": "Efekty v7 (2026-10-27, plan.md 14) zmenili kartu alebo pravidlo — testy starého znenia odpojené; nové v packages/core/test/v7-efekty.test.ts."
@@ -1181,9 +1181,9 @@
       "pravidlo": "Cintorín (Prehra, Michal 2026-10-27): porazený smie dať jeden Nástroj z ruky alebo zo šenku do Dedičstva zadarmo; cena Dedičstva sa zvýši; pri sekere nikto.",
       "stav": "pokryte",
       "testy": [
-        "packages/core/test/v7-efekty.test.ts › porazený dá Nástroj z ruky do Dedičstva zadarmo; spoločná cena Dedičstva rastie",
-        "packages/core/test/v7-efekty.test.ts › porazený smie vziať Nástroj aj zo šenku — zo šenku zmizne",
-        "packages/core/test/v7-efekty.test.ts › bez Nástroja v ruke aj v šenku, na inej lokalite a pri sekere sa Cintorín preskočí"
+        "packages/core/test/v7-efekty.test.ts › porazený si vezme kartu zo svojho odhadzovacieho balíčka do ruky; cena Dedičstva sa nemení",
+        "packages/core/test/v7-efekty.test.ts › voľba nič: karta ostáva v balíčku; cudziu kartu server odmietne",
+        "packages/core/test/v7-efekty.test.ts › s prázdnym odhadzovacím balíčkom, na inej lokalite a pri sekere sa Cintorín preskočí"
       ]
     },
     {
@@ -1476,12 +1476,12 @@
       "pravidlo": "Benzínka (Pitka): nikto nesmie fajčiť; lokalitu už neprepadá.",
       "stav": "na-overenie",
       "testy": [],
-      "poznamka": "v5 (2026-10-25): pravidlo sa zmenilo — rozhodca ho prejde znova a doplní testy (jadro v5: packages/core/test/pravidla-v5.test.ts). Testy v4: packages/core/test/playtest-055944.test.ts › Benzínka: nikto nesmie fajčiť; Krčmárka po bitke otočí vypitý poldeci (Michal 2026-10-20); packages/core/test/hodnota-lokality.test.ts › Benzínka má rovnakú hodnotu ako iné lokality (od 2026-10-20 už neprepadá)."
+      "poznamka": "v5 (2026-10-25): pravidlo sa zmenilo — rozhodca ho prejde znova a doplní testy (jadro v5: packages/core/test/pravidla-v5.test.ts). Testy v4: packages/core/test/playtest-055944.test.ts › Benzínka: fajčiť sa smie, prvé je zadarmo (v11.13); Krčmárka po bitke otočí vypitý poldeci (Michal 2026-10-20); packages/core/test/hodnota-lokality.test.ts › Benzínka má rovnakú hodnotu ako iné lokality (od 2026-10-20 už neprepadá)."
     },
     {
       "id": "15.lokalita.lesna-cesta-ihrisko",
       "paragraf": "15. Lokality",
-      "pravidlo": "Lesná cesta +1 tuhé za každé svoje Zviera v súperovom kraji (v7, bez stropu); Ihrisko +2 za každý kraj s prevahou kariet, Dvojčatá za dve (v8).",
+      "pravidlo": "Lesná cesta 2 tuhé za každé svoje Zviera v línii (v11.13, bez stropu); Ihrisko +2 za každý kraj s prevahou kariet, Dvojčatá za dve (v8).",
       "stav": "pokryte",
       "testy": [
         "packages/core/test/lokality-20261020.test.ts › Ihrisko: +2 za každú stranu, kde má hráč viac svojich kariet — teda až 4",
@@ -1517,11 +1517,11 @@
     {
       "id": "15.lokalita.druzstvo",
       "paragraf": "15. Lokality",
-      "pravidlo": "Družstvo: karty s tagom Pracujúci nemíňajú limit vykladania.",
+      "pravidlo": "Družstvo: karty s akciou Robota nemíňajú limit vykladania (v11.13).",
       "stav": "pokryte",
       "testy": [
-        "packages/core/test/lokality-20261020.test.ts › Pracujúci ide aj pri vyčerpanom limite, iná karta nie",
-        "packages/core/test/lokality-20261020.test.ts › návrh ťahu: dvaja Pracujúci pri limite 1 (za Vypiť), bez Družstva nie"
+        "packages/core/test/lokality-20261020.test.ts › karta s Robotou ide aj pri vyčerpanom limite, iná karta nie",
+        "packages/core/test/lokality-20261020.test.ts › návrh ťahu: dve karty s Robotou pri limite 1 (za Vypiť), bez Družstva nie"
       ]
     },
     {
@@ -1580,7 +1580,7 @@
       "pravidlo": "Krčmárka: pri bitke bez Absťáku a bez NA EX v kole sa vypitý poldeci otočí na plný.",
       "stav": "pokryte",
       "testy": [
-        "packages/core/test/playtest-055944.test.ts › Benzínka: nikto nesmie fajčiť; Krčmárka po bitke otočí vypitý poldeci (Michal 2026-10-20)"
+        "packages/core/test/playtest-055944.test.ts › Benzínka: fajčiť sa smie, prvé je zadarmo (v11.13); Krčmárka po bitke otočí vypitý poldeci (Michal 2026-10-20)"
       ]
     },
     {
@@ -2007,10 +2007,10 @@
     {
       "id": "15.lokalita.kulturny-dom",
       "paragraf": "15. Lokality",
-      "pravidlo": "Kultúrny dom (v8, Obaja bodujú): víťaz špaky za všetky karty v línii, porazený 1 špak za každú svoju kartu v línii; Nakladačka sa rozdeľuje ako inde.",
+      "pravidlo": "Kultúrny dom (v11.13): každý hráč dostane špaky len za svoje karty v línii, aj víťaz; Nakladačka sa rozdeľuje ako inde.",
       "stav": "pokryte",
       "testy": [
-        "packages/core/test/spaky-v6.test.ts › víťaz dostane špaky za všetky karty v línii, porazený za svoje; Nakladačka sa rozdeľuje ako inde (porazený)",
+        "packages/core/test/spaky-v6.test.ts › víťaz aj porazený dostanú len za svoje karty v línii; Nakladačka sa rozdeľuje ako inde (v11 víťaz)",
         "packages/core/test/spaky-v6.test.ts › pri sekere na Kultúrnom dome nikto nie je porazený — karty idú na sekeru ako inde",
         "packages/core/test/lokality-20261020.test.ts › Kultúrny dom (v8): Nakladačka sa rozdeľuje ako inde — vyberá porazený (súper držiteľa)"
       ]
@@ -2161,7 +2161,7 @@
         "packages/core/test/v7-efekty.test.ts › Veterinár v línii od v9 pečeň okolia nemaže — jeho efekt je len Kšeft väzňa",
         "packages/core/test/v7-efekty.test.ts › Kar: pečeň za NA EX dostane súper toho, kto ho dal",
         "packages/core/test/v7-efekty.test.ts › Cintorín: nová Cirhóza je hneď priznaná",
-        "packages/core/test/v7-efekty.test.ts › Jednota: kto má viac priznaných Dlhov, nesmie fajčiť ani dolievať; Benzínka: fajčí len najďalej",
+        "packages/core/test/v7-efekty.test.ts › Jednota: kto má viac priznaných Dlhov, nesmie fajčiť ani dolievať; Benzínka nikomu fajčiť nezakáže",
         "packages/core/test/v7-efekty.test.ts › Bzdocha: kto vyberá NA EX po súperovi, vidí jeho skryté NA EX — inak nie",
         "packages/core/test/v7-efekty.test.ts › Krabička cigariet: za každé 2 cigarety, ktoré súper vyfajčí, karta navyše",
         "packages/core/test/v7-efekty.test.ts › Krčmárka v línii od v9 odpoveď na NA EX nezakazuje (jej efekt je Kšeft väzňa)"
@@ -2170,12 +2170,12 @@
     {
       "id": "16.karta.v7.nastup-kseft",
       "paragraf": "16. Výklad kariet",
-      "pravidlo": "Nástup s voľbou (Starosta, Kapybara, Živnostník, Anonymný alkoholik), Autobusár, Kšefty Poštárky, Vychovávateľky, Obecného úradu a Zberného dvora, prebudený starší s Kšeftom.",
+      "pravidlo": "Nástup s voľbou (Starosta, Kapybara, Živnostník, Anonymný alkoholik), Autobusár, Kšefty Poštárky, Vychovávateľky a Zberného dvora, prebudený starší s Kšeftom.",
       "stav": "pokryte",
       "testy": [
         "packages/core/test/v7-efekty.test.ts › Autobusár v línii od v9 cigarety za pas neberie (jeho efekt je Kšeft väzňa)",
         "packages/core/test/v7-efekty.test.ts › Starosta v línii od v9 Nástup nemá; Kapybara (marker k stredu), Živnostník (Nástroj za neho), Anonymný alkoholik (Cirhózy)",
-        "packages/core/test/v7-efekty.test.ts › Poštárka a Vychovávateľka v línii od v9 Kšeft nemajú (len väzeň); Obecný úrad, Zberný dvor",
+        "packages/core/test/v7-efekty.test.ts › Poštárka a Vychovávateľka v línii od v9 Kšeft nemajú (len väzeň); Obecný úrad Kšeft nemá (v11.13), Zberný dvor áno",
         "packages/core/test/v7-efekty.test.ts › v9: prebudenie zaniklo — Poštárka na kraji stupnice Kšeft nedáva"
       ]
     },

@@ -90,7 +90,7 @@ describe("rekapitulácia Pitky", () => {
             expect(r.zadlzenie.dlhy[p]).toBe(vysledok?.dlhy[p]);
             expect(r.zadlzenie.dlhy[p]).toBe(Math.floor(zadlzeniePitky(r, p) / r.zadlzenie.prah[p]));
             expect(r.cigarety.zisk[p]).toBe(vysledok?.cigarety[p]);
-            expect(r.cigarety.zisk[p]).toBe(r.cigarety.akcie[p] - r.cigarety.obmedzenie[p] + r.cigarety.cigorky[p]);
+            expect(r.cigarety.zisk[p]).toBe(r.cigarety.akcie[p] - r.cigarety.obmedzenie[p] + r.cigarety.cigorky[p] + (r.cigarety.urad?.[p] ?? 0));
             expect(r.cigarety.cigorky[p]).toBeGreaterThanOrEqual(0);
             // Všetka pečeň Pitky: celé prahy = Cirhózy (aj z NA EX pri odkrytí), zvyšok prepadne.
             expect(r.pecen.cirhozy[p]).toBe(cirhozy[p]);
@@ -102,6 +102,8 @@ describe("rekapitulácia Pitky", () => {
             expect(podrobne("PoškodeniePečene")).toBe(r.pecen.poskodenie[p]);
             expect(podrobne("Poldeci")).toBe(r.pecen.poldeci[p]);
             expect(podrobne("Cigareta")).toBe(r.cigarety.akcie[p]);
+            // Obecný úrad (v11.13): (akcie − Obmedzenie) × 2, nie akcie × 2 − Obmedzenie.
+            if (r.cigarety.urad !== undefined) expect(r.cigarety.urad[p]).toBe(r.cigarety.akcie[p] - r.cigarety.obmedzenie[p]);
             expect(podrobne("Vízia")).toBe(r.vizia[p]);
           }
           // Zvyšok pečene pod prahom motor po Pitke vynuluje (log dokonciPitku); zadĺženie

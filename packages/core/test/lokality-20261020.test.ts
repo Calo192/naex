@@ -101,8 +101,8 @@ describe("Most: karty len na vlastnú stranu", () => {
   });
 });
 
-describe("Družstvo: Pracujúci nemíňajú limit vykladania", () => {
-  it("Pracujúci ide aj pri vyčerpanom limite, iná karta nie", () => {
+describe("Družstvo: karty s akciou Robota nemíňajú limit vykladania", () => {
+  it("karta s Robotou ide aj pri vyčerpanom limite, iná karta nie", () => {
     const zamocnik = inst("zamocnik");
     const pijan = inst("pijan");
     expect(cieleVykladania(data, [[], []], 0, zamocnik, 0, true, "druzstvo")).toContain("vlastna");
@@ -113,10 +113,10 @@ describe("Družstvo: Pracujúci nemíňajú limit vykladania", () => {
     expect(po.strany[0].map((pl) => pl.card.uid)).toEqual([zamocnik.uid]);
   });
 
-  it("návrh ťahu: dvaja Pracujúci pri limite 1 (za Vypiť), bez Družstva nie", () => {
+  it("návrh ťahu: dve karty s Robotou pri limite 1 (za Vypiť), bez Družstva nie", () => {
     const polozky = [
       { karta: inst("zamocnik"), ciel: "vlastna" as const },
-      { karta: inst("zivnostnik"), ciel: "vlastna" as const },
+      { karta: inst("zahradkar"), ciel: "vlastna" as const },
     ];
     const druzstvo = vZhromazdeni("druzstvo", polozky.map((x) => x.karta), 1);
     expect(planVykladania(data, druzstvo, 0, 1, polozky).chyba).toBeNull();
@@ -159,16 +159,16 @@ describe("Vínna pivnica, Jednota, Obecný úrad, Kultúrny dom", () => {
 // --- Bitka --------------------------------------------------------------------
 
 describe("Lesná cesta a Ihrisko: tuhé za karty na stranách", () => {
-  it("Lesná cesta (v7): +1 za každé svoje Zviera v súperovom kraji, bez stropu; Občan a Nástroj sa nerátajú", () => {
+  it("Lesná cesta (v11.13): 2 tuhé za každé svoje Zviera v línii, na ktorejkoľvek strane; Občan a Nástroj sa nerátajú", () => {
     const s = vKole("lesna_cesta");
     const jedna: GameState = { ...s, strany: [[], [na(inst("pijan"), 0), na(inst("pes"), 0), na(inst("puska"), 0)]] };
-    expect(bitkaMody(data, jedna, 0).tuheBonus).toBe(1);
-    const tri: GameState = { ...s, strany: [[], [na(inst("pes"), 0), na(inst("cierna_macka"), 0), na(inst("pes"), 0)]] };
-    expect(bitkaMody(data, tri, 0).tuheBonus).toBe(3);
+    expect(bitkaMody(data, jedna, 0).tuheBonus).toBe(2);
+    const tri: GameState = { ...s, strany: [[na(inst("cierna_macka"), 0)], [na(inst("pes"), 0), na(inst("pes"), 0)]] };
+    expect(bitkaMody(data, tri, 0).tuheBonus).toBe(6);
     expect(bitkaMody(data, tri, 1).tuheBonus).toBe(0);
     // Rozpis pre panel bitky menuje zdroj bonusu a zrážku za Absťáky (karty v balíčku, v9.1).
     const [r0] = rozpisPoskodenia(data, sHracom(tri, 0, { odhadzovaci: [inst("abstak")] }), [{}, {}]);
-    expect(r0.bonusy).toContainEqual({ zdroj: "lesna_cesta", hodnota: 3 });
+    expect(r0.bonusy).toContainEqual({ zdroj: "lesna_cesta", hodnota: 6 });
     expect(r0.zrazky).toContainEqual({ zdroj: "abstak", hodnota: 1 });
   });
 
@@ -189,9 +189,9 @@ describe("Lesná cesta a Ihrisko: tuhé za karty na stranách", () => {
   });
 });
 
-describe("Cintorín: porazený dá Nástroj z ruky do Dedičstva zadarmo", () => {
+describe("Cintorín: porazený si vezme kartu zo svojho odhadzovacieho balíčka", () => {
   /** Bitka čaká na Cintorín porazeného (hráč 0). */
-  function naCintorine(defId: string, ruka: readonly CardInstance[]): GameState {
+  function naCintorine(defId: string, odhadzovaci: readonly CardInstance[]): GameState {
     const s = vKole(defId);
     const bitka: BitkaStav = {
       krok: "cintorin",
@@ -208,24 +208,24 @@ describe("Cintorín: porazený dá Nástroj z ruky do Dedičstva zadarmo", () =>
       spalit: [],
       vesticaHotova: true,
     };
-    return sHracom({ ...s, faza: "bitka", bitkaStav: bitka }, 0, { ruka, cigarety: 0 });
+    return sHracom({ ...s, faza: "bitka", bitkaStav: bitka }, 0, { odhadzovaci, cigarety: 0 });
   }
 
-  it("Cintorín čaká na porazeného; Nástroj ide do Dedičstva bez cigariet a cena Dedičstva rastie", () => {
-    const puska = inst("puska");
-    const s = naCintorine("cintorin", [puska, inst("pijan")]);
+  it("Cintorín čaká na porazeného; karta zo šrotu ide do ruky bez cigariet a cena Dedičstva sa nemení", () => {
+    const pijan = inst("pijan");
+    const s = naCintorine("cintorin", [pijan, inst("puska")]);
     expect(s.bitkaStav?.krok).toBe("cintorin");
     expect(s.bitkaStav?.caka).toBe(0);
-    expect(legalCommands(data, s, 0)).toEqual(expect.arrayContaining([{ type: "cintorin", uid: puska.uid }, { type: "cintorin", uid: null }]));
+    expect(legalCommands(data, s, 0)).toEqual(expect.arrayContaining([{ type: "cintorin", uid: pijan.uid }, { type: "cintorin", uid: null }]));
     const pred = s.dedicstvaVylozene;
-    const po = apply(data, s, { type: "cintorin", uid: puska.uid }, 0).state;
-    expect(po.hraci[0].dedicstvo.map((k) => k.uid)).toContain(puska.uid);
+    const po = apply(data, s, { type: "cintorin", uid: pijan.uid }, 0).state;
+    expect(po.hraci[0].ruka.map((k) => k.uid)).toContain(pijan.uid);
     // Cigarety neplatí; 1 dostane ako porazený (v11).
     expect(po.hraci[0].cigarety).toBe(KONSTANTY.CIGARETY_PORAZENEMU);
-    expect(po.dedicstvaVylozene).toBe(pred + 1);
+    expect(po.dedicstvaVylozene).toBe(pred);
   });
 
-  // Preskočenie Cintorína (bez Nástroja, iná lokalita, sekera) stráži v7-efekty.test.ts.
+  // Preskočenie Cintorína (prázdny šrot, iná lokalita, sekera) stráži v7-efekty.test.ts.
 });
 
 

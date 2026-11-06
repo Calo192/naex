@@ -3237,3 +3237,21 @@ Staré znenie §10 Krádež pri zajatí:
 > overí hneď po rozdelení.
 
 Staré znenie presvedčenia: 5 bodov hádky, súper má pri staršom vyšší strach, reči na červenej, reči po presvedčení zaniknú.
+
+## v11.13 — Lokality (Michal 2026-11-06, Zrejúca)
+
+Sedem lokalít dostalo nový efekt a sada v55 nové hrany; 2 na 2 a Päta, Lakeť, Otočka sú odteraz len v Zrejúcej. Dôvod a nové znenie: `docs/PRAVIDLA.md`, Zmeny v11.13 a §15.
+
+Staré znenia §15:
+
+> | Lesná cesta | Bitka | +1 tuhé za každé **svoje Zviera** v súperovom kraji, bez stropu. |
+> | Cintorín | Prehra | Porazený smie vyložiť jeden Nástroj z ruky alebo zo šenku do Dedičstva bez platenia; spoločná cena Dedičstva sa zvýši ako vždy (§12). Pri sekere nikto. |
+> | Benzínka | Pitka | Fajčiť smie len hráč, ktorého Občan alebo Starešina leží **najďalej od lokality** (index na strane, na ktorejkoľvek strane, skrytá Záverečná sa neráta). Pri rovnakej vzdialenosti nefajčí nikto (Michal 2026-10-27). |
+> | Sklad | Kšeft | Za 1 cigaretu (od v9.1 nie nerest) vrchná karta **súperovho** odhadzovacieho balíčka do tvojej ruky — odteraz je tvoja; pri prázdnom sa nedá. Kraje pri vreciach / pri strážnici. |
+> | Obecný úrad | Kšeft | Za 3 cigarety (od v9.1 nie nerest) presuň 1 svoj priznaný Dlh medzi súperove priznané. Robota tu páli 1 Dlh ako inde. |
+> | Kultúrny dom | Bitka | **Obaja získajú špaky** (v8, Michal 2026-10-28, návrh #29): víťaz dostane špaky za všetky karty v línii ako inde, porazený 1 špak za každú svoju kartu v línii (svoju partiu, na ktorejkoľvek strane). Pri sekere nikto nie je porazený — špaky kola idú na sekeru ako inde. Nakladačka sa rozdeľuje ako inde (§9.4). |
+> | Družstvo | Zhromaždenie | Karty s tagom Pracujúci nemíňajú limit vykladania. |
+
+Staré znenie §9.4: „Na Kultúrnom dome dostane aj porazený 1 špak za každú svoju kartu v línii (§15).“
+
+Staré znenie §7: „Na Benzínke sa nefajčí (§15).“ Kšeft mali aj Obecný úrad (3 cigarety, presun 1 priznaného Dlhu k súperovi) a Sklad (1 cigareta, vrchná karta súperovho odhadzovacieho balíčka; presvedčeného staršieho preskočil).

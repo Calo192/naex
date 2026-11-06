@@ -362,6 +362,7 @@ export function riadkyTextuPitky(r: RekapitulaciaPitky, odpovede: readonly Odpov
     const casti: CastTextu[] = [tucne(`+${c.zisk[p]}`), { t: "akcie", akcie: [["Cigareta", c.akcie[p]]] }];
     if (c.obmedzenie[p] > 0) casti.push(text("−"), { t: "akcie", akcie: [["Obmedzenie", c.obmedzenie[p]]], zrusene: true });
     if (c.cigorky[p] > 0) casti.push(text(`+ ${c.cigorky[p]} Cigorky`));
+    if ((c.urad?.[p] ?? 0) > 0) casti.push(text(`+ ${c.urad?.[p] ?? 0} Obecný úrad`));
     out.push({ druh: "cigarety", kto: p, casti, krok: 3 });
   }
   for (const p of [ja, su]) {
@@ -1253,7 +1254,8 @@ export function RekapitulaciaPitkyVrstva({ r, ja, mena, nadpis, menoKarty, pikto
     const c = r.cigarety;
     const a = c.akcie[kto];
     const obm = c.obmedzenie[kto];
-    const bunky = [...Array<string>(a - obm).fill(""), ...Array<string>(obm).fill("obm"), ...Array<string>(c.cigorky[kto]).fill("z-cigorky")];
+    const urad = c.urad?.[kto] ?? 0;
+    const bunky = [...Array<string>(a - obm + urad).fill(""), ...Array<string>(obm).fill("obm"), ...Array<string>(c.cigorky[kto]).fill("z-cigorky")];
     return bunka(
       s,
       a,
@@ -1278,7 +1280,7 @@ export function RekapitulaciaPitkyVrstva({ r, ja, mena, nadpis, menoKarty, pikto
       <Cip trieda={c.zisk[kto] > 0 ? "zisk" : "nic"}>
         +{c.zisk[kto]} {ikona("Cigareta")}
       </Cip>,
-      `${a} ${nazov("Cigareta")} − ${obm} súperovo ${nazov("Obmedzenie")}${c.cigorky[kto] > 0 ? ` + ${c.cigorky[kto]} Cigorky` : ""}`,
+      `${a} ${nazov("Cigareta")} − ${obm} súperovo ${nazov("Obmedzenie")}${c.cigorky[kto] > 0 ? ` + ${c.cigorky[kto]} Cigorky` : ""}${urad > 0 ? ` + ${urad} Obecný úrad` : ""}`,
     );
   };
   const vizia = r.vizia[0] + r.vizia[1] > 0;

@@ -48,7 +48,7 @@ export interface CislaHraca {
   readonly cervene: number;
   readonly cervenychNaVyhru: number;
   readonly cirhozyNepriznane: number;
-  /** Ďalšia vyfajčená cigareta v tejto Pitke (1, 2, 3…). */
+  /** Ďalšia vyfajčená cigareta v tejto Pitke (1, 2, 3…; Benzínka 0, 2, 3…). */
   readonly cenaFajcenia: number;
   /** Nový plný poldeci za cigarety. */
   readonly cenaBarteru: number;
@@ -278,7 +278,7 @@ export function detailZdroja(zdroj: ZdrojStlpca, c: CislaHraca, ja: boolean, pri
         riadky: [
           ["cigarety", String(c.cigarety)],
           ...riadkyPrisunu(prisun),
-          ["fajčenie teraz", `${c.cenaFajcenia} cig.`],
+          ["fajčenie teraz", c.cenaFajcenia === 0 ? "zadarmo" : `${c.cenaFajcenia} cig.`],
           ["doliať poldeci", `${KONSTANTY.REFILL_CENA} cig.`],
           ["nový poldeci", `${c.cenaBarteru} cig.`],
           ["Nástroj do Dedičstva", `${c.cenaDedicstva} cig.`],

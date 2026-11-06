@@ -33,7 +33,8 @@ function prejdiBitky(pri: (o: OdhadSpakov, z: BitkaNaNastenke) => void): number 
       if (vysledok?.rekap !== undefined && po.koniec === null) {
         const linia = evaluateLine(data, lineState(state));
         // Efekty na začiatku bitky a skryté NA EX menia súčty oproti stavu pred ťahom — také bitky sa nedajú porovnať.
-        const rovnakaLinia = JSON.stringify(linia.sums) === JSON.stringify(vysledok.sums);
+        // Skrytá Záverečná sa otočí až v bitke a jej efekt (Kôň páli viac Dlhov) súčty nezmení, ale čísla áno.
+        const rovnakaLinia = JSON.stringify(linia.sums) === JSON.stringify(vysledok.sums) && !state.strany.some((st) => st.some((pl) => pl.zaverecna === true));
         const zaznam = po.nastenka[po.nastenka.length - 1];
         if (rovnakaLinia && zaznam !== undefined && zaznam.karty === kartyBitky(state).spolu) {
           const hraci = [

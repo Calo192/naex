@@ -93,7 +93,6 @@ export function kseftyNaStole(data: GameData, view: ClientState): KseftNaStole[]
 
 function kseftyPitky(data: GameData, view: ClientState): KseftNaStole[] {
   const ja = view.ja;
-  const su = opponentOf(ja);
   const pitka = view.pitkaStav;
   if (view.faza !== "pitka" || pitka === null || pitka.reakcia !== null || pitka.hotovy[ja]) return [];
   const h = view.hraci[ja];
@@ -147,16 +146,16 @@ function kseftyPitky(data: GameData, view: ClientState): KseftNaStole[] {
       pouzity,
       akcia,
     });
-    if (lok.defId === "sklad")
+    if (lok.defId === "sklad") {
+      const c = KONSTANTY.EFEKT.SKLAD_CENA;
+      const nastroje = view.senok.filter((k) => data.cards.get(k.defId)?.tags.includes("Nástroj") === true);
       out.push(
-        spolu(1, "karta súpera", "Kšeft Skladu: za cigaretu vrchná karta súperovho odhadzovacieho balíčka do tvojej ruky.", view.hraci[su].odhadzovaci.length === 0 ? "Súperov odhadzovací balíček je prázdny." : null, {
-          typ: "prikaz",
-          prikaz: { type: "kseft", uid },
+        spolu(c, "Nástroj do Dedičstva", `Kšeft Skladu: za ${cigariet(c)} si vezmeš zo šenku Nástroj do Dedičstva (namiesto jeho ceny). Do šenku príde z Náradia nový Nástroj.`, nastroje.length === 0 ? "V šenku nie je Nástroj." : null, {
+          typ: "volba",
+          nadpis: "Kšeft Skladu · Nástroj zo šenku",
+          riadky: nastroje.map((k) => ({ kluc: String(k.uid), meno: meno(k.defId), vpravo: { text: "do Dedičstva", prikaz: { type: "kseft", uid, kartaUid: k.uid } } })),
         }),
       );
-    if (lok.defId === "obecny_urad") {
-      const c = KONSTANTY.EFEKT.URAD_CENA;
-      out.push(spolu(c, "Dlh súperovi", `Kšeft Obecného úradu: za ${cigariet(c)} presunieš 1 svoj priznaný Dlh medzi súperove priznané.`, h.dlhy > 0 ? null : "Nemáš priznaný Dlh.", { typ: "prikaz", prikaz: { type: "kseft", uid } }));
     }
     if (lok.defId === "zberny_dvor") {
       const c = KONSTANTY.EFEKT.ZBERNY_DVOR_CENA;

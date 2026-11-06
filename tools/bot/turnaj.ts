@@ -21,6 +21,8 @@ import {
   DLZKY_HRY,
   POVAHY,
   apply,
+  bezLimituDruzstva,
+  defOf,
   evaluateLine,
   legalCommands,
   lineState,
@@ -121,6 +123,16 @@ for (let i = 0; i < partii; i++) {
         const typ =
           cmd.type === "place" ? `place:${cmd.target}` : cmd.type === "prebytok" && (cmd.zajatia?.length ?? 0) > 0 ? "prebytok:zajatie" : cmd.type === "reci" && (cmd.presvedcenia?.length ?? 0) > 0 ? "reci:presvedcenie" : cmd.type;
         typyTahov.set(typ, (typyTahov.get(typ) ?? 0) + 1);
+        // Efekty lokalít (v11.13) navyše pod menom lokality — fajčenie, Kšeft, vyloženie bez limitu, karta z Cintorína.
+        const lok = s.ciel?.lokalita?.defId;
+        const polozena = cmd.type === "place" ? s.hraci[p].ruka.find((k) => k.uid === cmd.uid) : undefined;
+        const efekt =
+          lok === "benzinka" && cmd.type === "smoke" && (s.pitkaStav?.fajcenie[p] ?? 0) === 0 ? "benzinka:fajcenie-zadarmo" :
+          lok === "sklad" && cmd.type === "kseft" && cmd.uid === s.ciel?.lokalita?.uid ? "sklad:kseft" :
+          cmd.type === "cintorin" ? (cmd.uid === null ? "cintorin:nic" : "cintorin:karta") :
+          lok === "druzstvo" && polozena !== undefined && bezLimituDruzstva(lok, defOf(data, polozena)) ? "druzstvo:bez-limitu" :
+          null;
+        if (efekt !== null) typyTahov.set(efekt, (typyTahov.get(efekt) ?? 0) + 1);
       }
     } else if (superTyp === "hromadic") {
       cmd = hromadic(data, s, p, seed);

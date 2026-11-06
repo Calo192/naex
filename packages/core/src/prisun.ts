@@ -22,6 +22,7 @@ export const NAZVY_ZDROJOV_PRISUNU: Readonly<Record<ZdrojPrisunu, string>> = {
   podvodnik: "Podvodník",
   policajtka: "Policajtka",
   postarka: "Poštárka",
+  obecnyUrad: "Obecný úrad",
   zaciatokKola: "Začiatok kola",
   jogurt: "Jogurt",
   doliatie: "Doliatie",
@@ -68,8 +69,10 @@ export function prisunZUdalosti(events: readonly Event[], druh: DruhPrisunu = "c
 /** Riadky čakajúceho prísunu z náhľadu Pitky (nahladPitky). */
 export function riadkyCakajuceho(c: CigaretyPitky): readonly RiadokPrisunu[] {
   if (c.akcie === 0) return [];
-  const akcie: RiadokPrisunu = { zdroj: "akcie", suma: c.akcie };
-  return c.obmedzenie === 0 ? [akcie] : [akcie, { zdroj: "obmedzenie", suma: -c.obmedzenie }];
+  const riadky: RiadokPrisunu[] = [{ zdroj: "akcie", suma: c.akcie }];
+  if (c.obmedzenie > 0) riadky.push({ zdroj: "obmedzenie", suma: -c.obmedzenie });
+  if ((c.urad ?? 0) > 0) riadky.push({ zdroj: "obecnyUrad", suma: c.urad ?? 0 });
+  return riadky;
 }
 
 /** Riadky čakajúcich poldeci z náhľadu Pitky — len to, čo akcie naozaj otočia. */

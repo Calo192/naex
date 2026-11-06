@@ -51,12 +51,15 @@ describe("stavkaBitky", () => {
       const st = stavkaBitky(view);
       if (st === null) return;
       expect(st.karty).toBe(kartyBitky(view).spolu);
-      if (view.ciel?.lokalita?.defId !== "kulturny_dom") expect(st.porazenemu).toEqual([0, 0]);
+      const kulturnyDom = view.ciel?.lokalita?.defId === "kulturny_dom";
+      if (!kulturnyDom) expect(st.porazenemu).toEqual([0, 0]);
       expect(st.naSekere).toBe(view.spakyNaSekere);
       // Strach platí za udržanie na konci kola, nech vyhrá ktokoľvek (v8.3) — v stávke nie je.
       // Noviny (Titulka, 2026-10-28) víťazovi nič neberú; Herňa (v7) pridá za Dlhy porazeného.
-      expect(st.vyhra).toBe(Math.max(1, st.karty) + view.spakyNaSekere + st.herna[0]);
-      expect(-st.prehra).toBe(Math.max(1, st.karty) + view.spakyNaSekere + st.herna[1]);
+      // Kultúrny dom (v11.13): víťaz len za svoje karty.
+      const zaKarty = (p: 0 | 1): number => Math.max(1, kulturnyDom ? kartyBitky(view).vlastne[p] : st.karty);
+      expect(st.vyhra).toBe(zaKarty(view.ja) + view.spakyNaSekere + st.herna[0]);
+      expect(-st.prehra).toBe(zaKarty(view.ja === 0 ? 1 : 0) + view.spakyNaSekere + st.herna[1]);
       porovnane++;
     });
     expect(porovnane).toBeGreaterThan(10);

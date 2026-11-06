@@ -97,10 +97,10 @@ describe("Kšefty pod kartou", () => {
   });
 
   it("málo cigariet: tlačidlo ostane, povie prečo; schopnosť väzňa nič nestojí", () => {
-    const { s } = sKseftami(zaklad, { lok: "obecny_urad", vazni: ["postarka"], cigarety: 1, poldeci: 0 });
+    const { s } = sKseftami(zaklad, { lok: "sklad", vazni: ["postarka"], cigarety: 1, poldeci: 0 });
     const ksefty = kseftyNaStole(data, viewFor(data, s, ja));
     expect(ksefty.find((k) => k.druh === "karta")?.dovod).toMatch(/2 cigarety, máš 1/);
-    expect(ksefty.find((k) => k.druh === "lokalita")?.dovod).toMatch(/3 cigarety, máš 1/);
+    expect(ksefty.find((k) => k.druh === "lokalita")?.dovod).toMatch(/2 cigarety, máš 1/);
     expect(ksefty.find((k) => k.druh === "vazen")?.dovod).toBeNull();
   });
 

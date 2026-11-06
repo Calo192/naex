@@ -123,10 +123,10 @@ export function stavkaText(data: GameData, v: ClientState): string | null {
   };
   const kd =
     st.porazenemu[0] + st.porazenemu[1] > 0
-      ? ` Kultúrny dom: aj porazený dostane 1 špak za každú svoju kartu v línii — ty pri prehre +${st.porazenemu[0]}, súper pri prehre +${st.porazenemu[1]}.`
+      ? ` Kultúrny dom: každý dostane špaky len za svoje karty v línii, aj víťaz — ty pri prehre +${st.porazenemu[0]}, súper pri prehre +${st.porazenemu[1]}.`
       : "";
   // v11.11: stávka nevie, kto vyhrá hádku — pravidlo pripomenie, čísla dá odhad bitky.
-  const hadka = " Kto vyhrá hádku a prehrá bitku (alebo je sekera), dostane navyše 1 špak za každú svoju kartu v línii.";
+  const hadka = v.ciel?.lokalita?.defId === "kulturny_dom" ? " Pri sekere dostane víťaz hádky hneď 1 špak za každú svoju kartu v línii." : " Kto vyhrá hádku a prehrá bitku (alebo je sekera), dostane navyše 1 špak za každú svoju kartu v línii.";
   return `Stávka (${st.karty} ${st.karty === 1 ? "karta" : st.karty <= 4 ? "karty" : "kariet"} v línii): tvoja výhra +${spakov(st.vyhra)}${rozpis(st.naSekere, st.herna[0])}, súperova výhra +${spakov(-st.prehra)}${rozpis(st.naSekere, st.herna[1])}.${kd}${hadka}`;
 }
 

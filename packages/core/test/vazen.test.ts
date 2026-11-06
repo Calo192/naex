@@ -313,7 +313,7 @@ describe("§10 presvedčenie pri rozdelení hádky (v11.12)", () => {
     expect(kdeJe(t, karta(0).uid)).toEqual(["odhadzovaci0"]);
   });
 
-  it("efekty, ktoré menia majiteľa (Hrobár, Veštica, Sklad), presvedčeného preskočia", () => {
+  it("efekty, ktoré menia majiteľa (Hrobár, Veštica), presvedčeného preskočia", () => {
     const s = vRozdeleni("reci", 1, 1, { 0: { strach: [2, 3], presvedcil: 0 } }, (x) => sKartou(x, 0, 0, "odhadzovaci"));
     expect(stavSchopnostiVazna(s, 1).superovOdhadzovaci.some((k) => k.uid === karta(0).uid)).toBe(false);
     // Veštica: porazený (hráč 1) nesmie vymeniť presvedčeného z môjho doberacieho balíčka.

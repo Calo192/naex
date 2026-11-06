@@ -324,6 +324,38 @@
         "natoc\\w*[^.!?]{0,40}obranc"
       ],
       "pozn": "v11.11: obranca vyberá, natočí víťaz hádky z minulého kola; v prvom kole a po remíze ten, kto vyberá. Vypálená ešte hrá v11.6, kým sa nevypáli"
+    },
+    {
+      "pojem": "Kšeft Obecného úradu",
+      "vzory": [
+        "obecn\\w* urad\\w*[^.!?]{0,80}(?:presun|kseft)",
+        "(?:presun|kseft)\\w*[^.!?]{0,80}obecn\\w* urad"
+      ],
+      "pozn": "v11.13: Obecný úrad je Pitka, cigarety a Dlhy získané v Pitke sa rátajú dvakrát. Vypálená ešte hrá v11.6, kým sa nevypáli"
+    },
+    {
+      "pojem": "starý Kšeft Skladu",
+      "vzory": [
+        "sklad\\w*[^.!?]{0,80}(?:vrchn|superov\\w* odhadzovac)",
+        "(?:vrchn|superov\\w* odhadzovac)\\w*[^.!?]{0,80}sklad"
+      ],
+      "pozn": "v11.13: Sklad = za 2 cigarety Nástroj zo šenku do Dedičstva. Vypálená ešte hrá v11.6, kým sa nevypáli"
+    },
+    {
+      "pojem": "Benzínka najďalej",
+      "vzory": [
+        "benzink\\w*[^.!?]{0,80}(?:najdalej|nefajci|nesmie fajcit|fajcit smie)",
+        "(?:najdalej|nefajci|nesmie fajcit|fajcit smie)\\w*[^.!?]{0,80}benzink"
+      ],
+      "pozn": "v11.13: na Benzínke je prvé fajčenie v každej Pitke zadarmo. Vypálená ešte hrá v11.6, kým sa nevypáli"
+    },
+    {
+      "pojem": "Cintorín Nástroj",
+      "vzory": [
+        "cintorin\\w*[^.!?]{0,80}(?:nastroj|dedicstv)",
+        "(?:nastroj|dedicstv)\\w*[^.!?]{0,80}cintorin"
+      ],
+      "pozn": "v11.13: na Cintoríne si porazený vezme do ruky kartu zo svojho odhadzovacieho balíčka. Vypálená ešte hrá v11.6, kým sa nevypáli"
     }
   ],
   "karty": [

@@ -208,6 +208,8 @@ export interface RekapitulaciaPitky {
     /** Súperove Obmedzenia, ktoré naozaj ubrali (najviac toľko, koľko mal Cigariet). */
     readonly obmedzenie: Dvojica;
     readonly cigorky: Dvojica;
+    /** Obecný úrad (v11.13): druhá polovica prísunu; v starších záznamoch chýba. */
+    readonly urad?: Dvojica;
     readonly zisk: Dvojica;
   };
   /** Aktívne Vízie — koľko vrchných kariet hráč prezrie. */
@@ -410,6 +412,8 @@ export interface VstupRekapitulaciePitky {
   readonly cirhozy: Dvojica;
   /** Cigarety z vyhodnotenia (cigaretyZPitky). */
   readonly cigarety: Dvojica;
+  /** Z toho druhá polovica z Obecného úradu (v11.13). */
+  readonly cigaretyUrad?: Dvojica;
 }
 
 export function rekapitulaciaPitky(data: GameData, v: VstupRekapitulaciePitky): RekapitulaciaPitky {
@@ -430,7 +434,13 @@ export function rekapitulaciaPitky(data: GameData, v: VstupRekapitulaciePitky): 
       cirhozy: v.cirhozy,
     },
     // Cigorky (Dedičstvo) Obmedzenie neuberie — sú to cigarety nad rámec akcií.
-    cigarety: { akcie, obmedzenie, cigorky: dvojica((p) => v.cigarety[p] - (akcie[p] - obmedzenie[p])), zisk: v.cigarety },
+    cigarety: {
+      akcie,
+      obmedzenie,
+      cigorky: dvojica((p) => v.cigarety[p] - (akcie[p] - obmedzenie[p]) - (v.cigaretyUrad?.[p] ?? 0)),
+      ...(v.cigaretyUrad !== undefined && (v.cigaretyUrad[0] > 0 || v.cigaretyUrad[1] > 0) ? { urad: v.cigaretyUrad } : {}),
+      zisk: v.cigarety,
+    },
     vizia: dvojica((p) => nula(sums[p].Vízia)),
     // Dlh a pečeň ukazujú prírastky z kariet na stole (Liberál, Veterinár, Manželka ich menia).
     akcie: akcieRekapitulacie(v.linia, AKCIE_PITKY, (p, a) =>

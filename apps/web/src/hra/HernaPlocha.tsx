@@ -49,7 +49,7 @@ import type {
   ZobrataVerejne,
   Zdvih,
 } from "@naex/core";
-import { opisReci, sReciNizsie, sRadom, ktoNatacaLokalitu, odhadSpakovKola, type StavOdhadu, riadkyCakajuceho, riadkyCakajucichPoldeci, KONSTANTY, jeCoTahat, jeFinaleNaNastenke, cigaretyZaPas, spakov, efektyPrehry, hrozbaKliatob, mozeEsteNaex, textHrozbyKliatob, textyEfektovPrehry, cenaKliatby, battleOutcome, prebytokNaRozdelenie, nahladPitky, pocet, tvar, vyhladDlhov, evaluateLine, pocitadloBitky, pitkaPredBitkou, hrozbaNaex, krokStavby, planVykladania, barterCena, limitBuduceKolo, limitZhromazdenia, lineState, nahladZajatia, prevahaStran, krajeStran, dovodZakazuFajcit, defOf, jednotaZakazuje, cenaFajceniaHraca, naexLimitMinuty as naexLimitMinutyHraca, sMojimiSkrytymiNaex, sPrilozenou, vystrahaPecene, nahladNaexNaKartu, najhorsiaOdpovedNaNaex, cenaTahu, nahladVylozenia, moznostiNaexVPohlade, zablokovaneStrany, NASTROJ_PRI_LOKALITE, favourStarsieho, krokRozdelenia, cieleOdpovede, maxZoSenku, bodyRozdelenia, printedSides, poskodenieBitky, rozpisPoskodenia, prahyHraca, scorecardStarsieho, stavKraja, stavkaBitky, stavZavislosti, stranyLokality, vidiVolbuSupera, hraVPitke, cakaSBzdochou, opponentOf, majitelPresvedcenej, moznostiAkcie, cenaAkcieUplna, zdvihyPreAkcie, navrhRozdelenia, pohladPoRozdeleni, priazenHraca, priazenSila, pultStarsich, spakyTeraz, NAZVY_ZON, reciNizsie, vazniNaVyhru } from "@naex/core";
+import { prveFajcenieZadarmo, opisReci, sReciNizsie, sRadom, ktoNatacaLokalitu, odhadSpakovKola, type StavOdhadu, riadkyCakajuceho, riadkyCakajucichPoldeci, KONSTANTY, jeCoTahat, jeFinaleNaNastenke, cigaretyZaPas, spakov, efektyPrehry, hrozbaKliatob, mozeEsteNaex, textHrozbyKliatob, textyEfektovPrehry, cenaKliatby, battleOutcome, prebytokNaRozdelenie, nahladPitky, pocet, tvar, vyhladDlhov, evaluateLine, pocitadloBitky, pitkaPredBitkou, hrozbaNaex, krokStavby, planVykladania, barterCena, limitBuduceKolo, limitZhromazdenia, lineState, nahladZajatia, prevahaStran, krajeStran, dovodZakazuFajcit, defOf, jednotaZakazuje, cenaFajceniaHraca, naexLimitMinuty as naexLimitMinutyHraca, sMojimiSkrytymiNaex, sPrilozenou, vystrahaPecene, nahladNaexNaKartu, najhorsiaOdpovedNaNaex, cenaTahu, nahladVylozenia, moznostiNaexVPohlade, zablokovaneStrany, NASTROJ_PRI_LOKALITE, favourStarsieho, krokRozdelenia, cieleOdpovede, maxZoSenku, bodyRozdelenia, printedSides, poskodenieBitky, rozpisPoskodenia, prahyHraca, scorecardStarsieho, stavKraja, stavkaBitky, stavZavislosti, stranyLokality, vidiVolbuSupera, hraVPitke, cakaSBzdochou, opponentOf, majitelPresvedcenej, moznostiAkcie, cenaAkcieUplna, zdvihyPreAkcie, navrhRozdelenia, pohladPoRozdeleni, priazenHraca, priazenSila, pultStarsich, spakyTeraz, NAZVY_ZON, reciNizsie, vazniNaVyhru } from "@naex/core";
 import type { Moment, ActionSums, DopadyNahladu, KliatbyNahladu, NahladNaexNaKartu, PrebytokNahladu, NahladVylozenia, PolozkaVykladania, Rod, Slot, StranaLinie, VystrahaPecene } from "@naex/core";
 import { IkonaAkcie } from "../karta/IkonaAkcie.tsx";
 import { KoniecHry } from "./KoniecHry.tsx";
@@ -2774,7 +2774,7 @@ export function HernaPlocha({
   const zonaTriedy = (ciel: string, zaklad: string): string =>
     [zaklad, jeCiel(ciel) ? "ciel-zona" : "", nadCielom(ciel) ? "nad-cielom" : ""].join(" ");
 
-  // ---- klikanie na karty v línii (NA EX cieľ, Benzínka) -------------------
+  // ---- klikanie na karty v línii (NA EX cieľ) -------------------
   const klikLinia = (_majitel: PlayerId, uid: number): (() => void) | undefined => {
     if (mode.typ === "naexCiel") {
       if (!naexCiele.has(uid)) return undefined;
@@ -4273,7 +4273,7 @@ export function HernaPlocha({
               kluc: "fajcit",
               // Pečiatka ukazuje, čo hráč dostane (Michal 2026-10-27): cena v cigaretách → karta.
               zisk: <IkonaKarty zakaz={zakazFajc !== null} />,
-              nazov: "fajčiť",
+              nazov: cenaFajc === 0 ? "fajčiť zadarmo" : "fajčiť",
               cena: cenaFajc,
               dovod: zakazFajc !== null
                 ? zakazFajc
@@ -4282,7 +4282,10 @@ export function HernaPlocha({
                   : !jeCoTahat(hracJa.doberaciPocet, hracJa.odhadzovaci.length)
                     ? "Nemáš z čoho ťahať — doberací aj odhadzovací balíček sú prázdne."
                     : null,
-              tip: `Fajčiť za ${cigariet(cenaFajc)}: hneď si doberieš kartu. Ďalšie fajčenie v tejto Pitke stojí ${cigariet(cenaFajceniaHraca(view, ja, 2) - cenaFajc)}, nová Pitka začína od ${cigariet(KONSTANTY.CENA_FAJCENIA_ZAKLAD)}. Každá vyfajčená cigareta je nerest.`,
+              tip:
+                cenaFajc === 0
+                  ? `Benzínka: prvé fajčenie v každej Pitke je zadarmo, hneď si doberieš kartu. Ďalšie v tejto Pitke stojí ${cigariet(cenaFajceniaHraca(view, ja, 2))}. Nerest je len vyfajčená cigareta, zadarmo žiadna.`
+                  : `Fajčiť za ${cigariet(cenaFajc)}: hneď si doberieš kartu. Ďalšie fajčenie v tejto Pitke stojí ${cigariet(cenaFajceniaHraca(view, ja, 2) - cenaFajc)}, nová Pitka začína ${prveFajcenieZadarmo(view) ? "zadarmo" : `od ${cigariet(KONSTANTY.CENA_FAJCENIA_ZAKLAD)}`}. Každá vyfajčená cigareta je nerest.`,
               akcia: () => cmd({ type: "smoke", pocet: 1 }),
             })}
             {pecatNakupu({
@@ -4533,23 +4536,17 @@ export function HernaPlocha({
           };
         }
         if (b.krok === "cintorin") {
-          // Cintorín (Michal 2026-10-27, Pozostalosť): porazený dá Nástroj z ruky alebo zo šenku do Dedičstva zadarmo.
-          const jeNastroj = (k: CardInstance): boolean => (data.cards.get(k.defId)?.tags ?? []).includes("Nástroj");
-          const nastroje = [...view.ruka.filter(jeNastroj), ...view.senok.filter(jeNastroj)];
-          const zoSenkuUid = new Set(view.senok.map((k) => k.uid));
+          // Cintorín (v11.13): porazený si smie vziať do ruky 1 kartu zo svojho odhadzovacieho balíčka.
           return {
             nadpis: "Cintorín",
             text: (
               <span className="zberatel-text">
                 <span>
-                  {tvar(rodHracaP(ja), "Prehral si na Cintoríne", "Prehrala si na Cintoríne", "Prehra na Cintoríne")}: jeden Nástroj z ruky alebo zo šenku smieš dať do Dedičstva <strong>zadarmo</strong> (ďalšie Dedičstvo aj tak
-                  zdražie pre oboch). Klikni naň, alebo nič.
+                  {tvar(rodHracaP(ja), "Prehral si na Cintoríne", "Prehrala si na Cintoríne", "Prehra na Cintoríne")}: jednu kartu zo svojho odhadzovacieho balíčka si smieš vziať <strong>do ruky</strong>. Klikni na ňu, alebo nič.
                 </span>
                 <span className="zberatel-ponuka">
-                  {nastroje.map((k) => (
-                    <span key={k.uid} title={zoSenkuUid.has(k.uid) ? "zo šenku" : "z ruky"}>
-                      {karta({ karta: k, sirka: 84, onClick: () => posli({ type: "cintorin", uid: k.uid }) })}
-                    </span>
+                  {view.hraci[ja].odhadzovaci.map((k) => (
+                    <span key={k.uid}>{karta({ karta: k, sirka: 84, onClick: () => posli({ type: "cintorin", uid: k.uid }) })}</span>
                   ))}
                 </span>
               </span>

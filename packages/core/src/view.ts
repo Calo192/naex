@@ -786,7 +786,7 @@ export interface StavkaBitky {
   readonly vyhra: number;
   /** Súperove špaky, keď vyhrá on (záporné číslo z môjho pohľadu). */
   readonly prehra: number;
-  /** Kultúrny dom (v8): špaky porazeného za jeho karty v línii [moje pri prehre, súperove pri jeho prehre]. */
+  /** Kultúrny dom (v11.13): špaky porazeného za jeho karty v línii [moje pri prehre, súperove pri jeho prehre]. */
   readonly porazenemu: readonly [number, number];
   /** Herňa (v7): koľko z výhry [moja, súperova] je za priznané Dlhy porazeného. */
   readonly herna: readonly [number, number];

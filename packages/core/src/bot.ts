@@ -25,7 +25,7 @@
 // Čisté a deterministické ako zvyšok jadra — náhoda ide zo semienka, ktoré
 // dá volajúci (server).
 
-import type { Action, CardInstance, Favour, PlayerId } from "./types.ts";
+import type { Action, CardDef, CardInstance, Favour, PlayerId } from "./types.ts";
 import { ALL_FAVOURS, opponentOf, timMiesta } from "./types.ts";
 import type { GameData } from "./data.ts";
 import { defOf, printedSides } from "./data.ts";
@@ -36,7 +36,7 @@ import { KONSTANTY, vazniNaVyhru } from "./constants.ts";
 import { abstakyVBitke, spakyPriExekucii, zhoriPriExekucii } from "./battle.ts";
 import type { ElderState } from "./elders.ts";
 import { kradezZaZajatie, noveReci, priazenPre, spakyOdStarsieho, spakyZaReci, spakyZaStrach, spakyZaStupen, strachZ, vydesil } from "./elders.ts";
-import { jeCielLokalita, partiaHraca } from "./effects.ts";
+import { jeCielLokalita, nasobokPitky, partiaHraca } from "./effects.ts";
 import { stranyLokality } from "./hrany.ts";
 import { stavZavislosti } from "./zavislost.ts";
 import type { Command, GameState } from "./engine.ts";
@@ -689,13 +689,13 @@ const VYHRA_HNED = 200;
 
 /**
  * Karty v línii v stávke bitky (v8): víťaz dostane 1 špak za každú, takže pri
- * šanci `sanca` je to 2 × karty × (sanca − ½). Na Kultúrnom dome dostane porazený
- * svoje karty: stávka je len raz karty a navyše polovica rozdielu vlastných kariet.
+ * šanci `sanca` je to 2 × karty × (sanca − ½). Na Kultúrnom dome (v11.13) dostane každý
+ * len za svoje karty bez ohľadu na výsledok: ráta sa rozdiel vlastných kariet, nie šanca.
  */
 function kartyVStavke(s: GameState, q: PlayerId, sanca: number): number {
   const karty = kartyBitky(s);
   if (!jeCielLokalita(s, "kulturny_dom")) return 2 * karty.spolu * (sanca - 0.5);
-  return karty.spolu * (sanca - 0.5) + 0.5 * (karty.vlastne[q] - karty.vlastne[opponentOf(q)]);
+  return karty.vlastne[q] - karty.vlastne[opponentOf(q)];
 }
 
 /**
@@ -742,7 +742,8 @@ function hodnotaBitky(k: Kontext, s: GameState, q: PlayerId, ostrost: number): n
       const cigareta = k.povaha.zdroje * (uzitokCigariet(s, h.cigarety + 1) - uzitokCigariet(s, h.cigarety));
       // Línia sa vyhodnotí v každej zvyšnej Pitke kola, cigareta aj Vízia sa teda rátajú toľkokrát.
       const pitky = Math.max(1, Math.min(3, s.pitkyCelkom - s.pitkaCislo + (s.faza === "pitka" ? 1 : 0)));
-      w += pitky * (cigareta + vykupne / KONSTANTY.CIGARIET_ZA_SPAK) * Math.max(0, (sp.Cigareta ?? 0) - (so.Obmedzenie ?? 0));
+      const nasobok = nasobokPitky(s);
+      w += pitky * nasobok * (cigareta + vykupne / KONSTANTY.CIGARIET_ZA_SPAK) * Math.max(0, (sp.Cigareta ?? 0) - (so.Obmedzenie ?? 0));
       w += pitky * k.povaha.zdroje * (uzitokRuky(s, p, h.ruka.length + 1) - uzitokRuky(s, p, h.ruka.length)) * (sp["Vízia"] ?? 0);
       // Robota (v8.4): za každý Dlh, ktorý nemá čo spáliť, špak (Fúrik páli viac).
       const furik = h.dedicstvo.filter((x) => x.defId === "furik").length;
@@ -754,7 +755,7 @@ function hodnotaBitky(k: Kontext, s: GameState, q: PlayerId, ostrost: number): n
       const prah = prahyHraca(data, s, p).cirhoza;
       const pecen = h.pecen + (sp.PoškodeniePečene ?? 0) + (sp.Poldeci ?? 0);
       const blizko = pecen % prah === prah - 1 ? 0.4 : 0;
-      w -= nasobokKliatieb(k, p) * (1.5 * (sp.Dlh ?? 0) + 0.15 * pecen + blizko);
+      w -= nasobokKliatieb(k, p) * (1.5 * nasobok * (sp.Dlh ?? 0) + 0.15 * pecen + blizko);
       // Škodca (Darina) sa teší z každej pečene súpera, nielen z tej, čo dorazí k prahu.
       if (p !== k.ja) w -= (k.povaha.skoda ?? 0) * 0.5 * pecen;
       if (p === k.ja && k.povaha.akcie !== undefined) {
@@ -1286,6 +1287,30 @@ function hodnotaNatocenia(v: Volba, lok: CardInstance, otocena: boolean): number
   return 0.6 * hodnotaHrany(hrany.kTebe) - 0.4 * hodnotaHrany(hrany.kSuperovi);
 }
 
+/**
+ * Efekty lokalít v11.13 pri voľbe cieľa: hrany ich nevidia, a tak by bot tieto lokality nevybral nikdy.
+ * Hrubé odhady, sila sa neladila.
+ */
+function hodnotaEfektuLokality(v: Volba, lok: CardInstance): number {
+  const h = v.state.hraci[v.ja];
+  const vRuke = (podmienka: (def: CardDef) => boolean): number => h.ruka.filter((x) => podmienka(defOf(v.data, x))).length;
+  switch (lok.defId) {
+    case "lesna_cesta":
+      return vRuke((d) => d.tags.includes("Zviera"));
+    case "druzstvo":
+      return 0.7 * vRuke((d) => (d.left.actions.Robota ?? 0) + (d.right.actions.Robota ?? 0) > 0);
+    case "sklad":
+      return h.cigarety >= KONSTANTY.EFEKT.SKLAD_CENA ? 1.5 : 0;
+    case "cintorin":
+      return h.odhadzovaci.some((x) => !defOf(v.data, x).tags.includes("Kliatba")) ? 1.5 : 0;
+    case "kulturny_dom":
+      // Špaky bez ohľadu na výsledok: kto má plnú ruku, narobí si ich viac.
+      return h.ruka.length >= 3 ? 1.5 : 0;
+    default:
+      return 0;
+  }
+}
+
 /** v11.11: bot ako víťaz minulej hádky natočí lokalitu, ktorú vybral súper, k sebe. */
 function natocenieCiela(v: Volba): Command | null {
   const lok = v.state.ciel?.lokalita;
@@ -1304,8 +1329,7 @@ function volbaCiela(v: Volba): Command | null {
     if (cmd.type !== "chooseLocation") continue;
     const lok = state.lokalityVHre.find((x) => x.uid === cmd.uid);
     if (lok === undefined) continue;
-    let h = natacam ? hodnotaNatocenia(v, lok, cmd.otocena) : Math.min(hodnotaNatocenia(v, lok, false), hodnotaNatocenia(v, lok, true));
-    if (lok.defId === "lesna_cesta" && verejneAbstaky(state, ja) > 0) h += 0.5;
+    const h = (natacam ? hodnotaNatocenia(v, lok, cmd.otocena) : Math.min(hodnotaNatocenia(v, lok, false), hodnotaNatocenia(v, lok, true))) + hodnotaEfektuLokality(v, lok);
     if (h > lokalitaV) {
       lokalitaV = h;
       lokalita = cmd;
@@ -1537,6 +1561,8 @@ function pitka(v: Volba): Command | null {
   const cenaFajc = cenaFajceniaHraca(state, ja);
   const fajcenieStoji = finale && vykladaniPotom(state) === 0 && vykupneHraca({ poldeciPlne: h.poldeciPlne, cigarety: h.cigarety - cenaFajc }, skryte).spaky < vykupneTeraz;
   const ziskKarty = zdroje * (uzitokRuky(state, ja, h.ruka.length + 1) - uzitokRuky(state, ja, h.ruka.length));
+  // Benzínka (v11.13): prvé fajčenie je zadarmo — karta nič nestojí, kým sa dá ešte vyložiť.
+  if (smoke !== undefined && cenaFajc === 0 && maCoTahat && !(finale && vykladaniPotom(state) === 0)) return smoke;
   if (smoke !== undefined && !fajcenieStoji && maCoTahat && ziskKarty > cenaCigariet(k, state, ja, cenaFajc)) return smoke;
 
   // Kšeft (v7): zahrá si ho nanečisto; berie, keď stav zlepší viac než o povahový prah.
@@ -1632,13 +1658,14 @@ function bitka(v: Volba): Command | null {
       return priemer(jedna, s, ohodnot) + schopnosti >= priemer(jedna, bez, ohodnot) + k.povaha.prahStarsi ? s : bez;
     }
     case "cintorin": {
-      // Cintorín: zadarmo do Dedičstva najcennejší Nástroj z ruky alebo zo šenku.
+      // Cintorín (v11.13): najcennejšia karta z vlastného odhadzovacieho balíčka; kliatby tam nechá.
       let best: Command | null = null;
-      let bestV = 0;
+      let bestV = Number.NEGATIVE_INFINITY;
       for (const cmd of v.legal) {
         if (cmd.type !== "cintorin" || cmd.uid === null) continue;
-        const karta = [...h.ruka, ...state.senok].find((x) => x.uid === cmd.uid);
-        const hodnota = karta === undefined ? 0 : 1 + (DEDICSTVO[karta.defId] ?? 0);
+        const karta = h.odhadzovaci.find((x) => x.uid === cmd.uid);
+        if (karta === undefined || defOf(k.data, karta).tags.includes("Kliatba")) continue;
+        const hodnota = hodnotaKartyPreMna(k, karta);
         if (hodnota > bestV) {
           bestV = hodnota;
           best = cmd;

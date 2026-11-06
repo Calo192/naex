@@ -154,11 +154,16 @@ export const KONSTANTY = {
     VDOVA_ODHOD_ZA_CHLAPA: 1,
     /** Krabička cigariet (v7): za každých toľko cigariet, ktoré súper vyfajčí, 1 karta. */
     CIGORKY_ZA_KARTU: 2,
-    /** Kšefty v7 (plan.md 14.0): Strýko, Obecný úrad. */
+    /** Kšeft Strýka (v7, plan.md 14.0). */
     STRYKO_CENA: 2,
     /** Kšeft Predavačky (Michal 2026-11-02): za toľko cigariet 1 karta z doberacieho balíčka. */
     PREDAVACKA_CENA: 1,
-    URAD_CENA: 3,
+    /** Kšeft Skladu (v11.13): za toľko cigariet Nástroj zo šenku do Dedičstva. */
+    SKLAD_CENA: 2,
+    /** Lesná cesta (v11.13): tuhé navyše za každé svoje Zviera v línii. */
+    LESNA_CESTA_TUHE: 2,
+    /** Obecný úrad (v11.13): cigarety a Dlhy získané v Pitke sa rátajú toľkokrát. */
+    OBECNY_URAD_NASOBOK: 2,
   },
 
   /**
@@ -294,7 +299,7 @@ export const VERZIA_PRAVIDIEL = "v11";
  * vždy odzrkadľovať správanie nasadenej hry (Michal 2026-10-31). Značka partií
  * (VERZIA_PRAVIDIEL) sa pri dávke nemení, táto áno.
  */
-export const VERZIA_PRAVIDIEL_PRESNA = "v11.12";
+export const VERZIA_PRAVIDIEL_PRESNA = "v11.13";
 /** Odkedy platí VERZIA_PRAVIDIEL_PRESNA — hráč ho vidí na stránke Pravidlá. */
 export const PRAVIDLA_PLATNE_OD = "2026-11-06";
 export type DlzkaHry = keyof typeof DLZKY_HRY;

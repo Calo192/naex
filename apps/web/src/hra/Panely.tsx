@@ -654,7 +654,8 @@ export function HracDoska({
                   {kto} {hrac.cigarety} · {doNovehoPoldeci}
                 </span>
                 Platíš nimi šenok a Dedičstvo; v Pitke na svojom ťahu fajčíš: karta za 1 cigaretu, ďalšia v tej istej Pitke za 2, potom 3…
-                {view.faza === "pitka" && ` (${ja ? "tvoje" : "jeho"} ďalšie teraz za ${cenaFajceniaHraca(view, p)})`}. Doliatie poldeci stojí {KONSTANTY.REFILL_CENA}, nový poldeci {cenaNovehoPoldeci}{ja && " — v Pitke ich máš na hrane stola"}. Na konci hry každých {KONSTANTY.CIGARIET_ZA_SPAK} cigariet = 1 špak (výkupné).
+                {jeCielLokalita(view, "benzinka") && " (Benzínka: prvé v každej Pitke zadarmo)"}
+                {view.faza === "pitka" && ` (${ja ? "tvoje" : "jeho"} ďalšie teraz ${cenaFajceniaHraca(view, p) === 0 ? "zadarmo" : `za ${cenaFajceniaHraca(view, p)}`})`}. Doliatie poldeci stojí {KONSTANTY.REFILL_CENA}, nový poldeci {cenaNovehoPoldeci}{ja && " — v Pitke ich máš na hrane stola"}. Na konci hry každých {KONSTANTY.CIGARIET_ZA_SPAK} cigariet = 1 špak (výkupné).
               </>
             ),
           }}

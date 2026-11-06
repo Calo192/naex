@@ -251,7 +251,9 @@ function sKseftami(s: GameState, p: PlayerId, lok: string, vazni: readonly strin
     ...(pouzite.includes(e.karta.defId) ? { pouzita: true as const } : {}),
   }));
   const sOdh = s.hraci[su].odhadzovaci.length > 0 ? s.hraci[su] : { ...s.hraci[su], odhadzovaci: [{ uid: uid++, defId: "pijan", leftLayout: 0, rightLayout: 0 }, { uid: uid++, defId: "ministrant", leftLayout: 0, rightLayout: 0 }] };
-  const h = { ...s.hraci[p], cigarety: Math.max(s.hraci[p].cigarety, 9), poldeciPlne: Math.max(s.hraci[p].poldeciPlne, 3), dlhy: Math.max(s.hraci[p].dlhy, 1) };
+  // Doberací balíček pre fajčenie a Predavačku — v prvej Pitke býva prázdny.
+  const doberaci = s.hraci[p].doberaci.length > 0 ? s.hraci[p].doberaci : [{ uid: uid++, defId: "pijan", leftLayout: 0, rightLayout: 0 }, { uid: uid++, defId: "masiar", leftLayout: 0, rightLayout: 0 }];
+  const h = { ...s.hraci[p], doberaci, cigarety: Math.max(s.hraci[p].cigarety, 9), poldeciPlne: Math.max(s.hraci[p].poldeciPlne, 3), dlhy: Math.max(s.hraci[p].dlhy, 1) };
   const ciel = s.ciel === null || s.ciel.lokalita == null ? s.ciel : { ...s.ciel, lokalita: { ...s.ciel.lokalita, defId: lok } };
   return {
     ...s,

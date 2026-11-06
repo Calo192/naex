@@ -20,7 +20,7 @@ import {
   sPrilozenou,
   zablokovaneStrany,
 } from "./engine.ts";
-import { efektPotlaceny, naexPecenSuperovi, partiaHraca, soferiBezNaex, svokraRany, traktoristkyBezPrevahy } from "./effects.ts";
+import { efektPotlaceny, naexPecenSuperovi, nasobokPitky, partiaHraca, soferiBezNaex, svokraRany, traktoristkyBezPrevahy } from "./effects.ts";
 import { opponentOf } from "./types.ts";
 import type { LineEval } from "./partia.ts";
 import { evaluateLine } from "./partia.ts";
@@ -59,7 +59,7 @@ export function vyhladDlhov(data: GameData, stol: StolNahladu, dalsiePitky: numb
   // D6 (v7): zvyšok zadĺženia sa medzi Pitkami nemaže — sčíta sa za všetky Pitky.
   // Výherný automat (Dedičstvo, v7): v poslednej Pitke kola Dlh za kus.
   // Traktoristka bez prevahy v jej kraji: Dlh na začiatku bitky (zacniBitku).
-  const automat = (p: PlayerId): number => stol.hraci[p].dedicstvo.filter((k) => k.defId === "vyherny_automat").length + traktoristkyBezPrevahy(data, stol, p);
+  const automat = (p: PlayerId): number => stol.hraci[p].dedicstvo.filter((k) => k.defId === "vyherny_automat").length * nasobokPitky(stol) + traktoristkyBezPrevahy(data, stol, p);
   const noveDlhy = ([0, 1] as const).map((p) => Math.floor((nahlad[p].zadlzenie + nahlad[p].zadlzenieZoStola * (1 + dalsiePitky)) / nahlad[p].prahDlhu) + automat(p)) as [number, number];
   const kapacita = paleneDlhyVBitke(data, stol);
   const pre = (p: PlayerId): DlhyDoBitky => {
@@ -156,8 +156,8 @@ export function dopadyNahladu(
   const stav = (s: ClientState, p: PlayerId, dalsie: number) => {
     const sums = evaluateLine(data, lineState(s)).sums;
     // Vo Vízii je táto Pitka už vyhodnotená — ako nahladPitky.
-    const tato = s.vizia === null ? cigaretyZPitky(sums)[p] : 0;
-    const dalej = cigaretyZPitky(sums)[p] * dalsie;
+    const tato = s.vizia === null ? cigaretyZPitky(sums, nasobokPitky(s))[p] : 0;
+    const dalej = cigaretyZPitky(sums, nasobokPitky(s))[p] * dalsie;
     // Šofér (v11.5): cigaretu dá na začiatku bitky, keď majiteľ v kole nedal NA EX.
     const sofer = s.faza === "bitka" ? 0 : soferiBezNaex(s, p);
     return {
@@ -181,7 +181,6 @@ export function dopadyNahladu(
  * Stôl tak, ako ho bitka uvidí pri poškodení: priznané Dlhy po Pitkách kola
  * (Dlh sa hneď prizná); Robota a Exekútor prídu až po poškodení (Michal 2026-10-28).
  * Priznané Dlhy súpera sú strop mäkkého — náhľad ich predtým bral spred Pitky.
- * Benzínku nepredvída.
  */
 export function stolPriPoskodeni(data: GameData, s: ClientState, dalsiePitky: number): ClientState {
   if (s.faza !== "pitka" && s.faza !== "zhromazdenie") return s;
@@ -430,7 +429,7 @@ export interface EfektyPrehry {
 
 /**
  * Efekty Prehra podľa stola teraz — ten istý výber kariet ako koniecBitky
- * (odkrytá karta v partii porazeného, nie spálená Benzínkou ani umlčaná) a tie
+ * (odkrytá karta v partii porazeného, nie spálená ani umlčaná) a tie
  * isté aktívne akcie (evaluateLine). Motor ich ráta až po tom, čo sa poldeci
  * z NA EX vypijú a zmiznú z kariet — NA EX ich teda nemení, Výtržník áno.
  */

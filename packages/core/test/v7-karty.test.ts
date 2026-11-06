@@ -146,14 +146,6 @@ describe("Kšeft (v7)", () => {
   });
 
 
-  it("Sklad: za cigaretu vrchná karta zo súperovho odhadzovacieho balíčka do ruky", () => {
-    const x = inst("masiar");
-    const s = sHracom(sHracom(vPitke("sklad", [[], []]), 1, { odhadzovaci: [inst("pijan"), x] }), 0, { cigarety: 1 });
-    const po = apply(data, s, { type: "kseft", uid: s.ciel!.lokalita!.uid }, 0).state;
-    expect(po.hraci[0].ruka.map((k) => k.uid)).toContain(x.uid);
-    expect(po.hraci[1].odhadzovaci).toHaveLength(1);
-    expect(po.hraci[0].cigarety).toBe(0);
-  });
 
   // Predsedova vila v11 (reči o stupeň) stráži strach-reci.test.ts.
 });

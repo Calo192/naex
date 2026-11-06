@@ -127,9 +127,10 @@ describe("§9.4 víťaz hádky dostane špaky za svoje karty (v11.11)", () => {
     expect(po.spakyNaSekere).toBe(5);
   });
 
-  it("Kultúrny dom: špaky porazeného za svoje karty sa s výhrou hádky sčítajú", () => {
-    expect(za(pred([3, 0], 1, "kulturny_dom"))).toEqual([5, 4]);
-    expect(za(pred([3, 0], 0, "kulturny_dom"))).toEqual([5, 2]);
+  it("Kultúrny dom (v11.13): každý len za svoje karty, výhra hádky nepridá druhýkrát", () => {
+    // Hráč 0 má v línii 3 karty, hráč 1 dve.
+    expect(za(pred([3, 0], 1, "kulturny_dom"))).toEqual([3, 2]);
+    expect(za(pred([3, 0], 0, "kulturny_dom"))).toEqual([3, 2]);
   });
 
 });

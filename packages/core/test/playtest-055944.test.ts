@@ -177,7 +177,7 @@ describe("Benzínka, Dievčina na vydaj a Krčmárka pri bitke", () => {
   const kuric = makeDef("kuric", C4, C4, { tags: ["Občan", "Chlap"] });
   const sada = sadaS(kuric);
 
-  it("Benzínka: nikto nesmie fajčiť; Krčmárka po bitke otočí vypitý poldeci (Michal 2026-10-20)", () => {
+  it("Benzínka: fajčiť sa smie, prvé je zadarmo (v11.13); Krčmárka po bitke otočí vypitý poldeci (Michal 2026-10-20)", () => {
     const s0 = setupSBalickom(sada, 21);
     const benzinka = s0.lokalityVHre.find((k) => k.defId === "benzinka") ?? inst("benzinka");
     const k = (): CardInstance => instanceFor(sada, "kuric", C4, C4);
@@ -195,8 +195,7 @@ describe("Benzínka, Dievčina na vydaj a Krčmárka pri bitke", () => {
     };
     s = { ...s, hraci: [{ ...s.hraci[0], cigarety: 3 }, { ...s.hraci[1], cigarety: 3 }] };
     const p = naTahu(s)!;
-    expect(legalCommands(sada, s, p).some((c) => c.type === "smoke")).toBe(false);
-    expect(() => apply(sada, s, { type: "smoke", pocet: 1 }, p)).toThrow(/Benzínka/);
+    expect(legalCommands(sada, s, p).some((c) => c.type === "smoke")).toBe(true);
     // Dohraj Pitky.
     while (s.faza === "pitka" || s.faza === "zhromazdenie") {
       s = apply(sada, s, { type: s.faza === "zhromazdenie" ? "pass" : "skipNaex" }, naTahu(s)!).state;
