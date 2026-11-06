@@ -50,5 +50,6 @@ export function polozkaVitriny(a: PolozkaVitrinyApi, ikony: readonly IkonaBodova
     ziskane: ziskany ? najvyssi : null,
     postup: a.postup === null || prah === undefined ? null : { hodnota: a.postup.hodnota, prah, aktualna: a.postup.aktualna },
     vzacnost: ziskany ? textVzacnosti(a, a.rank) : null,
+    legacy: a.legacy,
   };
 }

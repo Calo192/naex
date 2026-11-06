@@ -20,6 +20,7 @@ import {
   naTahu,
   noveAchievementy,
   noveStatistiky,
+  platneStitky,
   popisRanku,
   pripocitajKarieru,
   rankZaHodnotu,
@@ -28,6 +29,7 @@ import {
   setupGame,
   stitkyPartie,
   zapisTah,
+  ziskatelne,
   zoznamMetrik,
 } from "../src/index.ts";
 
@@ -222,7 +224,7 @@ describe("achievementy — všetky metriky", () => {
     for (const seed of [51, 52, 53]) {
       // Vyradená povaha: staré výhry musia ostať čitateľné; aj nové povahy majú metriku.
       expect(metriky.map((m) => m.id)).toEqual(expect.arrayContaining(["vyhraNad.stamgast", "vyhraNad.igor"]));
-      const kontext = { botPovaha: "stamgast", superi: ["hrac-b", "hrac-a"] as const };
+      const kontext = { botPovaha: "igor", superi: ["hrac-b", "hrac-a"] as const };
       let s = setupGame(data, seed);
       let rng = rngSeed(seed);
       let stav = noveAchievementy();
@@ -250,12 +252,35 @@ describe("achievementy — všetky metriky", () => {
         expect(hodnota("najvacsiaRuka", p)).toBeGreaterThan(0);
         expect(hodnota("kartyVLinii", p)).toBeGreaterThan(0);
         expect(hodnota("vyhra", p)).toBe(vitaz === p ? 1 : undefined);
-        expect(hodnota("vyhraNad.stamgast", p)).toBe(vitaz === p ? 1 : undefined);
+        expect(hodnota("vyhraNad.igor", p)).toBe(vitaz === p ? 1 : undefined);
+        expect(hodnota("vyhraNad.stamgast", p)).toBeUndefined();
         expect(hodnota("porazenePovahy", p)).toBe(vitaz === p ? 1 : undefined);
         expect(hodnota("seriaVyhier", p)).toBe(vitaz === null ? 0 : vitaz === p ? 1 : 0);
         expect(stitkyPartie(stav, p, katalog.achievementy.find((a) => a.metrika === "rozniSuperi") as Achievement)).toEqual([kontext.superi[p]]);
       }
     }
+  });
+
+  it("legacy: nezíska sa ani nesleduje, nie je v „chýbalo málo“; vyradená povaha sa nepočíta medzi porazené", () => {
+    const k = nacitajAchievementy({
+      achievementy: [
+        ach({ id: "stara", metrika: "dohrataPartia", rozsah: "partia", prahy: [1], legacy: true }),
+        ach({ id: "nova", metrika: "dohrataPartia", rozsah: "partia", prahy: [1] }),
+        ach({ id: "lepsia", metrika: "vyhra", rozsah: "partia", prahy: [1] }),
+      ],
+    });
+    expect(k.achievementy.map((a) => a.legacy)).toEqual([true, false, false]);
+    expect(ziskatelne(k).map((a) => a.id)).toEqual(["nova", "lepsia"]);
+    const { zisky, stav } = prehraj(k, 71);
+    expect(zisky[0].some((z) => z.id === "nova")).toBe(true);
+    expect([...zisky[0], ...zisky[1]].some((z) => z.id === "stara")).toBe(false);
+    expect(hodnotaVPartii(stav, 0, k.achievementy[0] as Achievement)).toBe(0);
+    expect(chybaloMalo(k, new Map([["stara", 1]]), new Map())).toEqual([]);
+
+    const krcma = nacitajAchievementy({ achievementy: [ach({ id: "krcma", metrika: "porazenePovahy", rozsah: "kariera", prahy: [1] })] }).achievementy[0] as Achievement;
+    expect(platneStitky(krcma, ["stamgast", "igor", "rapavy_fero", "darina", "teta_gizka"])).toEqual(["igor", "darina"]);
+    const superi = nacitajAchievementy({ achievementy: [ach({ id: "superi", metrika: "rozniSuperi", rozsah: "kariera", prahy: [1] })] }).achievementy[0] as Achievement;
+    expect(platneStitky(superi, ["12", "stamgast"])).toEqual(["12", "stamgast"]);
   });
 
   it("kariéra: súčet, rekord a séria výhier (vlastné vzdanie ju preruší)", () => {

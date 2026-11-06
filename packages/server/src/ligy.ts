@@ -12,7 +12,7 @@
 // Ligu môže odomknúť aj achievement (Michal 2026-10-28) — ktorákoľvek splnená
 // cesta stačí: výhry, achievement alebo rank.
 
-import { ALL_DLZKY, NAZOV_DLZKY, NAZOV_DLZKY_GENITIV, type DlzkaHry, type KatalogAchievementov } from "@naex/core";
+import { ALL_DLZKY, NAZOV_DLZKY, NAZOV_DLZKY_GENITIV, ziskatelne, type DlzkaHry, type KatalogAchievementov } from "@naex/core";
 import type { Pouzivatel } from "./auth.ts";
 import { ChybaVstupu, jeSpravca } from "./auth.ts";
 import type { Db } from "./db.ts";
@@ -105,6 +105,14 @@ export function textPodmienky(p: PodmienkaLigy): string {
   return `Vyhraj ${p.vyhier} ${partii(p.vyhier)} ${NAZOV_DLZKY_GENITIV[p.liga]} proti človeku.`;
 }
 
+/**
+ * Podmienka achievementom, ktorá sa dá ešte splniť. Legacy už nikto nezíska, preto ho od nikoho
+ * nepýtame; držiteľovi ligu odomkne ďalej (stav v Ligy).
+ */
+function ziskatelnaPodmienka(a: AchievementLigy | null, katalog: KatalogAchievementov | null): AchievementLigy | null {
+  return a !== null && katalog?.achievementy.find((x) => x.id === a.id)?.legacy === true ? null : a;
+}
+
 /** „získaj achievement „Maratón“ ★2“ — hviezda len pri achievemente s viac rankami. */
 export function textAchievementu(a: AchievementLigy, katalog: KatalogAchievementov | null): string {
   const def = katalog?.achievementy.find((x) => x.id === a.id);
@@ -120,7 +128,8 @@ export function textPravidla(pravidlo: PravidloLigy, vyhier: number, katalog: Ka
   const casti: string[] = [];
   const p = pravidlo.podmienka;
   if (p !== null) casti.push(`${textPodmienky(p).slice(0, -1)} (máš ${Math.min(vyhier, p.vyhier)}/${p.vyhier})`);
-  if (pravidlo.achievement !== null) casti.push(textAchievementu(pravidlo.achievement, katalog));
+  const achievement = ziskatelnaPodmienka(pravidlo.achievement, katalog);
+  if (achievement !== null) casti.push(textAchievementu(achievement, katalog));
   if (casti.length === 0) return null;
   const veta = casti.join(" alebo ");
   return `${veta.charAt(0).toUpperCase()}${veta.slice(1)}.`;
@@ -153,6 +162,7 @@ function overPravidlo(liga: DlzkaHry, v: unknown, katalog: KatalogAchievementov 
     if (def === undefined) {
       if (prisne) throw new ChybaVstupu(katalog === null ? "Achievementy sú vypnuté — ligu achievementom odomknúť nemožno." : `${NAZOV_DLZKY[liga]}: neznámy achievement.`);
     } else {
+      if (prisne && def.legacy) throw new ChybaVstupu(`${NAZOV_DLZKY[liga]}: achievement „${def.nazov}“ sa už nedá získať — vyber iný.`);
       if (typeof a.rank !== "number" || !Number.isInteger(a.rank) || a.rank < 1 || a.rank > def.prahy.length) {
         throw new ChybaVstupu(`${NAZOV_DLZKY[liga]}: rank achievementu „${def.nazov}“ je 1 až ${def.prahy.length}.`);
       }
@@ -178,7 +188,8 @@ export class Ligy {
 
   /** Achievementy na výber v správe Lig; null = vypnuté. */
   ponukaAchievementov(): { readonly id: string; readonly nazov: string; readonly rankov: number }[] | null {
-    return this.achievementy?.katalog.achievementy.map((a) => ({ id: a.id, nazov: a.nazov, rankov: a.prahy.length })) ?? null;
+    const zdroj = this.achievementy;
+    return zdroj === null ? null : ziskatelne(zdroj.katalog).map((a) => ({ id: a.id, nazov: a.nazov, rankov: a.prahy.length }));
   }
 
   /** Uložené nastavenie doplnené o predvolené; pokazený záznam ligy = predvolené pravidlo. */
@@ -264,7 +275,7 @@ export class Ligy {
       const a = pravidlo.achievement;
       const ma = p === null ? 0 : (vyhryVLige.get(p.liga) ?? 0);
       // Bez výhier aj achievementu je liga otvorená každému — ranky samé ju nezamknú (tak platilo od začiatku).
-      const otvorena = p === null && a === null;
+      const otvorena = p === null && ziskatelnaPodmienka(a, katalog) === null;
       const zVyhier = p !== null && ma >= p.vyhier;
       const zRanku = jeRankHraca(ja.rola) && pravidlo.ranky.includes(ja.rola);
       const zAchievementu = a !== null && (drzane?.get(a.id) ?? 0) >= a.rank;

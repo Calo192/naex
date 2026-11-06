@@ -1146,6 +1146,7 @@
     },
     {
       "id": "stamgast-pod-stolom",
+      "legacy": true,
       "nazov": "Štamgast pod stolom",
       "kategoria": "bot",
       "popis": "Vyhraj nad Štamgastom spolu {prah}×.",
@@ -1169,6 +1170,7 @@
     },
     {
       "id": "fero-umlcany",
+      "legacy": true,
       "nazov": "Rapavý Fero umlčaný",
       "kategoria": "bot",
       "popis": "Vyhraj nad Rapavým Ferom spolu {prah}×.",
@@ -1192,6 +1194,7 @@
     },
     {
       "id": "gizka-bez-reci",
+      "legacy": true,
       "nazov": "Teta Gizka bez reči",
       "kategoria": "bot",
       "popis": "Vyhraj nad Tetou Gizkou spolu {prah}×.",
@@ -1214,16 +1217,108 @@
       "zdroj": "partie.bot_povaha + koniec.vitaz"
     },
     {
+      "id": "igor-v-jarku",
+      "nazov": "Igor v jarku",
+      "kategoria": "bot",
+      "popis": "Vyhraj nad Igorom spolu {prah}×.",
+      "metrika": "vyhraNad.igor",
+      "rozsah": "kariera",
+      "prahy": [
+        1,
+        5,
+        20
+      ],
+      "proti": "bot",
+      "tajny": false,
+      "tajnyText": null,
+      "piktogram": "akcia:Pecka",
+      "zriedkavost": [
+        "bezne",
+        "nezvycajne",
+        "vzacne"
+      ],
+      "zdroj": "partie.bot_povaha + koniec.vitaz"
+    },
+    {
+      "id": "rudo-obraty",
+      "nazov": "Rudo obratý do nitky",
+      "kategoria": "bot",
+      "popis": "Vyhraj nad Rudom spolu {prah}×.",
+      "metrika": "vyhraNad.rudo",
+      "rozsah": "kariera",
+      "prahy": [
+        1,
+        5,
+        20
+      ],
+      "proti": "bot",
+      "tajny": false,
+      "tajnyText": null,
+      "piktogram": "akcia:Cigareta",
+      "zriedkavost": [
+        "bezne",
+        "nezvycajne",
+        "vzacne"
+      ],
+      "zdroj": "partie.bot_povaha + koniec.vitaz"
+    },
+    {
+      "id": "bozena-sa-prezehnala",
+      "nazov": "Božena sa prežehnala",
+      "kategoria": "bot",
+      "popis": "Vyhraj nad Boženou spolu {prah}×.",
+      "metrika": "vyhraNad.bozena",
+      "rozsah": "kariera",
+      "prahy": [
+        1,
+        5,
+        20
+      ],
+      "proti": "bot",
+      "tajny": false,
+      "tajnyText": null,
+      "piktogram": "akcia:Viera",
+      "zriedkavost": [
+        "bezne",
+        "nezvycajne",
+        "vzacne"
+      ],
+      "zdroj": "partie.bot_povaha + koniec.vitaz"
+    },
+    {
+      "id": "darina-si-to-vypila",
+      "nazov": "Darina si to vypila",
+      "kategoria": "bot",
+      "popis": "Vyhraj nad Darinou spolu {prah}×.",
+      "metrika": "vyhraNad.darina",
+      "rozsah": "kariera",
+      "prahy": [
+        1,
+        5,
+        20
+      ],
+      "proti": "bot",
+      "tajny": false,
+      "tajnyText": null,
+      "piktogram": "akcia:Dlh",
+      "zriedkavost": [
+        "bezne",
+        "nezvycajne",
+        "vzacne"
+      ],
+      "zdroj": "partie.bot_povaha + koniec.vitaz"
+    },
+    {
       "id": "cela-krcma",
       "nazov": "Celá krčma porazená",
       "kategoria": "bot",
-      "popis": "Porazené povahy bota: {prah} z 3.",
+      "popis": "Porazené povahy bota: {prah} zo 4.",
       "metrika": "porazenePovahy",
       "rozsah": "kariera",
       "prahy": [
         1,
         2,
-        3
+        4
       ],
       "proti": "bot",
       "tajny": false,
@@ -1529,7 +1624,7 @@
     {
       "id": "porazenePovahy",
       "typ": "rekord",
-      "popis": "počet rôznych povah bota, nad ktorými hráč vyhral (kariéra)"
+      "popis": "počet rôznych povah bota v hre, nad ktorými hráč vyhral (kariéra; vyradené sa nerátajú)"
     },
     {
       "id": "rozniSuperi",

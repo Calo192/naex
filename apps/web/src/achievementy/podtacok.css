@@ -164,6 +164,22 @@
   color: var(--tlmeny);
 }
 
+/* Legacy: kovový okraj karty a značka — trofej, ktorú už nikto nový nezíska. */
+.vitrina-mriezka li.legacy {
+  border-color: var(--akcent);
+}
+
+.znacka-legacy {
+  padding: 2px 6px;
+  border: 1px solid var(--akcent);
+  border-radius: 4px;
+  color: var(--akcent-svetly);
+  font-size: 0.62rem;
+  font-weight: 700;
+  line-height: 1.25;
+  letter-spacing: 0.05em;
+}
+
 /* Päta karty (rank, dátum, postup) dole — popis má 1 až 3 riadky, päty v rade sa zrovnajú. */
 .vitrina-mriezka li > .vitrina-meta:first-of-type {
   margin-top: auto;
@@ -226,6 +242,13 @@
 
 .podtacky-rad li > small {
   font-size: 0.72rem;
+}
+
+.podtacky-rad li > .znacka-legacy {
+  margin-top: 2px;
+  font-size: 0.56rem;
+  font-weight: 700;
+  font-family: inherit;
 }
 
 /* ---- súhrn achievementov v okne konca partie ---- */

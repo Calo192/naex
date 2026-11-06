@@ -18,10 +18,12 @@ import {
   krokAchievementov,
   nacitajAchievementy,
   noveAchievementy,
+  platneStitky,
   popisRanku,
   pripocitajKarieru,
   rankZaHodnotu,
   stitkyPartie,
+  ziskatelne,
   type Achievement,
   type Command,
   type Event,
@@ -45,7 +47,8 @@ export function nacitajKatalog(): KatalogAchievementov {
 
 export type TypPartie = "ludia" | "bot";
 
-const ratSa = (a: Achievement, typ: TypPartie): boolean => a.proti === "vsetky" || a.proti === typ;
+/** Či sa achievement v partii tohto typu ráta — legacy už nikde, nezíska ho nikto nový. */
+const ratSa = (a: Achievement, typ: TypPartie): boolean => !a.legacy && (a.proti === "vsetky" || a.proti === typ);
 
 /** Achievement tak, ako ho vidí klient — oznam, súhrn, vitrína. */
 export interface AchievementPreKlienta {
@@ -59,6 +62,8 @@ export interface AchievementPreKlienta {
   readonly rankov: number;
   /** Vzácnosť každého ranku (bezne, nezvycajne, vzacne, legendarne) — farba podtácku. */
   readonly zriedkavost: readonly string[];
+  /** Už sa nedá získať; držiteľ ho má navždy so značkou LEGACY ACHIEVEMENT. */
+  readonly legacy: boolean;
 }
 
 /** Oznam v partii: hráč práve získal rank. */
@@ -90,6 +95,7 @@ const preKlienta = (a: Achievement, rank: number): AchievementPreKlienta => ({
   tajny: a.tajny,
   rankov: a.prahy.length,
   zriedkavost: a.zriedkavost,
+  legacy: a.legacy,
 });
 
 const ziskPreKlienta = (a: Achievement, rank: number, hodnota: number): ZiskAchievementu => ({
@@ -201,9 +207,7 @@ export class Achievementy {
   private hodnotaKariery(h: HracAchievementov, a: Achievement, stav: StavAchievementov, miesto: PlayerId): number {
     const k = klucVedra(a.proti, a);
     if (a.agregacia === "rozne") {
-      const spolu = new Set(h.rozne.get(k) ?? []);
-      for (const s of stitkyPartie(stav, miesto, a)) spolu.add(s);
-      return spolu.size;
+      return new Set([...platneStitky(a, h.rozne.get(k) ?? []), ...stitkyPartie(stav, miesto, a)]).size;
     }
     const stara = h.kariera.get(k) ?? ZIADNA_KARIERA;
     return pripocitajKarieru(a, stara, agregatPartie(stav, miesto, a)).hodnota;
@@ -287,7 +291,7 @@ export class Achievementy {
   private zapisKarieru(h: HracAchievementov, am: AchievementyMiestnosti, miesto: PlayerId): void {
     const hotove = new Set<string>();
     transakcia(this.db, () => {
-      for (const a of this.katalog.achievementy) {
+      for (const a of ziskatelne(this.katalog)) {
         if (a.rozsah !== "kariera") continue;
         for (const proti of [am.typ, "vsetky"] as const) {
           const k = klucVedra(proti, a);
@@ -324,19 +328,29 @@ export class Achievementy {
     return { ziskane: [...h.ziskane], chybaloMalo: blizko };
   }
 
-  /** Koľko hviezd (★) je v katalógu spolu — z neho sa rátajú prahy rankov Deci a Sedmička. */
+  /**
+   * Koľko hviezd (★) sa dá v katalógu získať — z toho sa rátajú prahy rankov Deci a Sedmička.
+   * Legacy nie: prahy musia byť pre všetkých rovnaké a nikto nový tie hviezdy nezíska.
+   */
   spoluHviezd(): number {
-    return this.katalog.achievementy.reduce((n, a) => n + a.prahy.length, 0);
+    return ziskatelne(this.katalog).reduce((n, a) => n + a.prahy.length, 0);
   }
 
   /**
    * Hviezdy hráča: súčet rankov achievementov z katalógu. Všetky hviezdy platia rovnako
-   * (aj tajné a „záporné“ ako Vlastný gól); achievement vyradený z katalógu sa neráta.
+   * (aj tajné a „záporné“ ako Vlastný gól, aj legacy — hráčovi sa nikdy nič neodoberá);
+   * achievement vyradený z katalógu sa neráta.
    */
   hviezdy(pouzivatel: number): HviezdyHraca {
     const drzane = this.drzane(pouzivatel);
     const hviezdy = this.katalog.achievementy.reduce((n, a) => n + Math.min(drzane.get(a.id) ?? 0, a.prahy.length), 0);
     return { hviezdy, spolu: this.spoluHviezd() };
+  }
+
+  /** Hviezdy hráča v legacy achievementoch — pri „X z N hviezd“ sa pripočítajú k N len jemu. */
+  legacyHviezdy(pouzivatel: number): number {
+    const drzane = this.drzane(pouzivatel);
+    return this.katalog.achievementy.reduce((n, a) => n + (a.legacy ? Math.min(drzane.get(a.id) ?? 0, a.prahy.length) : 0), 0);
   }
 
   /**
@@ -347,7 +361,7 @@ export class Achievementy {
   udelZaVyucbu(pouzivatel: number, cas: number, cast: number): ZiskAchievementu[] {
     const drzane = this.drzane(pouzivatel);
     const out: ZiskAchievementu[] = [];
-    for (const a of this.katalog.achievementy) {
+    for (const a of ziskatelne(this.katalog)) {
       const mal = drzane.get(a.id) ?? 0;
       const rank = Math.min(cast, a.prahy.length);
       if (a.metrika !== "vyucba" || mal >= rank) continue;
@@ -386,7 +400,8 @@ export class Achievementy {
 
   /**
    * Vitrína hráča: každý achievement s rankom, ktorý má, a dátumami. Tajný,
-   * ktorý hráč nemá, má názov a popis „???“ (alebo tajnyText).
+   * ktorý hráč nemá, má názov a popis „???“ (alebo tajnyText). Legacy dostane len
+   * držiteľ — kto ho nemá, ten sa o ňom z vitríny ani z počtu „z N“ nedozvie.
    */
   vitrina(pouzivatel: number): VitrinaAchievementov {
     const zisky = this.zisky(pouzivatel);
@@ -396,15 +411,16 @@ export class Achievementy {
     const postup = (a: Achievement): PostupKariery | null => {
       if (a.rozsah !== "kariera") return null;
       const k = klucVedra(a.proti, a);
-      if (a.agregacia === "rozne") return { hodnota: rozne.get(k)?.size ?? 0, aktualna: null };
+      if (a.agregacia === "rozne") return { hodnota: platneStitky(a, rozne.get(k) ?? []).length, aktualna: null };
       const v = kariera.get(k) ?? ZIADNA_KARIERA;
       return { hodnota: v.hodnota, aktualna: a.agregacia === "seria" ? v.aktualna : null };
     };
-    const polozky = this.katalog.achievementy.map((a): PolozkaVitriny => {
+    const polozky = this.katalog.achievementy.flatMap((a): PolozkaVitriny[] => {
       const moje = zisky.filter((z) => z.achievement === a.id);
       const rank = moje.reduce((m, z) => Math.max(m, z.rank), 0);
+      if (a.legacy && rank === 0) return [];
       const skryty = a.tajny && rank === 0;
-      return {
+      const polozka: PolozkaVitriny = {
         id: a.id,
         nazov: skryty ? "???" : a.nazov,
         popis: skryty ? (a.tajnyText ?? "???") : popisRanku(a, Math.max(1, rank)),
@@ -414,10 +430,13 @@ export class Achievementy {
         rankov: a.prahy.length,
         rank,
         zriedkavost: skryty ? [] : a.zriedkavost,
+        legacy: a.legacy,
         prahy: skryty ? [] : a.prahy,
-        postup: skryty ? null : postup(a),
+        // Legacy sa ďalej nedá získať, postup k vyššiemu ranku by klamal.
+        postup: skryty || a.legacy ? null : postup(a),
         ziskane: moje.map((z) => ({ rank: z.rank, ziskane: z.ziskane, partia: z.partia })),
       };
+      return [polozka];
     });
     return { kategorie: this.katalog.kategorie, achievementy: polozky };
   }

@@ -147,7 +147,7 @@ describe("achievementy na serveri", () => {
     // Hviezdy a cesta k ďalšiemu ranku (Michal 2026-10-25): len vo vlastnom profile, cudziemu nič.
     type PostupRanku = { hviezdy: number; spolu: number; dalsi: { rank: string; prah: number } | null } | null;
     const hviezdyA = (vlastna?.achievementy ?? []).reduce((n, x) => n + x.rank, 0);
-    const spolu = katalog.achievementy.reduce((n, x) => n + x.prahy.length, 0);
+    const spolu = katalog.achievementy.reduce((n, x) => n + (x.legacy ? 0 : x.prahy.length), 0);
     expect(hviezdyA).toBeLessThan(Math.ceil(spolu * 0.35));
     expect((await api<{ postupRanku: PostupRanku }>(a, `/hraci/${idA}`)).postupRanku).toEqual({ hviezdy: hviezdyA, spolu, dalsi: { rank: "deci", prah: Math.ceil(spolu * 0.35) } });
     expect((await api<{ postupRanku: PostupRanku }>(b, `/hraci/${idA}`)).postupRanku).toBeNull();

@@ -6,7 +6,7 @@ import { useMemo } from "react";
 import { useSada } from "../lib/sada.tsx";
 import { polozkaVitriny, type VitrinaApi } from "./data.ts";
 import { NAZOV_RANKU, Podtacok } from "./Podtacok.tsx";
-import { Vitrina, type PolozkaVitriny } from "./Vitrina.tsx";
+import { Vitrina, ZnackaLegacy, type PolozkaVitriny } from "./Vitrina.tsx";
 import "./podtacok.css";
 
 /** Koľko posledných podtáckov ukáže karta v Prehľade. */
@@ -44,6 +44,7 @@ export function PoslednePodtacky({ vitrina, vlastna, vsetky }: { readonly vitrin
               <Podtacok rank={p.rank ?? "bronz"} ikona={p.ikona} obrazok={p.obrazok} nazov={p.nazov} ziskany tajny={p.tajny} velkost={88} />
               <span>{p.nazov}</span>
               <small className="tlmene">{p.rank === null ? "" : NAZOV_RANKU[p.rank]}</small>
+              {p.legacy === true && <ZnackaLegacy />}
             </li>
           ))}
         </ul>
