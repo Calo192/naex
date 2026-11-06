@@ -54,6 +54,13 @@ stav tvorcu sa stane zverejnenou sadou. Over, že zverejnená sada zodpovedá
 ohlás a nevypaľuj, kým ho nevysvetlíš (sada v repe sa mení len postupom
 z CLAUDE.md, pravidlo 5).
 
+**Pozor na poradie (2026-11-06):** zverejnenie overuje nasadený kód Vypálenej,
+nie lokálny (`$A overit --zivy` ráta kódom z master, takže môže klamať). Keď
+sada obsahuje niečo, čo starý kód nepozná (napr. priazeň „Ohováračka“ z v11.10:
+`zverejnenie.ts` vráti 422 „názov nie je žiadna priazeň“), urob najprv krok 4
+a až potom zverejni. Do tej doby sa nedá ani núdzovo zverejniť; dočasne pomôže
+vrátiť názov „Alkoholik“, ktorý berie starý aj nový kód.
+
 ## 4. Posun vetvy a nasadenie Vypálenej
 
 1. `git push origin origin/master:vypalena` (len fast-forward; ak nejde,
