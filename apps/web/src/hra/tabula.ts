@@ -128,6 +128,19 @@ export function cislaHraca(
   };
 }
 
+/**
+ * Zadĺženie je samostatné číslo len pri prahu nad 1 (Výherný automat); pri prahu 1 je každý
+ * Hazard hneď Dlh a „0/1“ by bol falošný počet (v11.8). Zvyšok z rozohranej partie sa ukáže.
+ */
+export function ukazZadlzenie(zadlzenie: number, prah: number): boolean {
+  return prah > 1 || zadlzenie > 0;
+}
+
+/** Ďalší Hazard dá Dlh a zadĺženie k nemu už rastie — pri prahu 1 nie je k čomu rásť. */
+export function zadlzenieHrozi(zadlzenie: number, prah: number): boolean {
+  return prah > 1 && zadlzenie >= prah - 1;
+}
+
 /** Riadok tabule: popis a hodnoty oboch; `zle` = hodnota, ktorá hráčovi škodí. */
 export interface RiadokTabule {
   readonly kluc: string;
@@ -161,7 +174,9 @@ export function riadkyTabule(ja: CislaHraca, su: CislaHraca): RiadokTabule[] {
   riadky.push(
     r("abstaky", "Absťáky v balíčku", (c) => String(c.abstaky), (c) => c.abstaky > 0),
     r("dlhy", "Dlhy", (c) => (c.exekucia > 0 ? `${c.dlhy} (−${c.exekucia} š.)` : String(c.dlhy)), (c) => c.exekucia > 0),
-    r("zadlzenie", "Zadĺženie", (c) => `${c.zadlzenie}/${c.prahDlhu}`, (c) => c.zadlzenie >= c.prahDlhu - 1),
+    ...(ukazZadlzenie(ja.zadlzenie, ja.prahDlhu) || ukazZadlzenie(su.zadlzenie, su.prahDlhu)
+      ? [r("zadlzenie", "Zadĺženie", (c) => (ukazZadlzenie(c.zadlzenie, c.prahDlhu) ? `${c.zadlzenie}/${c.prahDlhu}` : "–"), (c) => zadlzenieHrozi(c.zadlzenie, c.prahDlhu))]
+      : []),
     r("pecen", "Pečeň", (c) => `${c.pecen}/${c.prahPecene}`, (c) => c.pecen >= c.prahPecene - 1),
     r("cirhozy", "Nepriznaná Cirhóza", (c) => String(c.cirhozyNepriznane), (c) => c.cirhozyNepriznane > 0),
     r("balicek", "Balíček · odhodené", (c) => `${c.balicek} · ${c.odhodene}`),
@@ -234,10 +249,10 @@ export function detailZdroja(zdroj: ZdrojStlpca, c: CislaHraca, ja: boolean): De
     case "dlhy":
       return {
         nadpis: "Dlhy",
-        text: `Každé ${c.prahDlhu} zadĺženia v Pitke = Dlh, hneď priznaný; zvyšok zadĺženia ostáva na ďalší. Za priznané Dlhy príde v každej bitke Exekútor: zhorí polovica Dlhov (nahor) a toľko špakov.`,
+        text: `${c.prahDlhu > 1 ? `Každé ${c.prahDlhu} zadĺženia v Pitke = Dlh, hneď priznaný; zvyšok zadĺženia ostáva na ďalší.` : "Každá akcia Hazard v Pitke = Dlh, hneď priznaný."} Za priznané Dlhy príde v každej bitke Exekútor: zhorí polovica Dlhov (nahor) a toľko špakov.`,
         riadky: [
           ["priznané Dlhy", String(c.dlhy)],
-          ["zadĺženie", `${c.zadlzenie} z ${c.prahDlhu}`],
+          ...(ukazZadlzenie(c.zadlzenie, c.prahDlhu) ? [["zadĺženie", `${c.zadlzenie} z ${c.prahDlhu}`] as const] : []),
           ["exekúcia v bitke", c.exekucia > 0 ? `−${spakov(c.exekucia)}` : "nie"],
         ],
       };

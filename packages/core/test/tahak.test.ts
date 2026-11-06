@@ -32,6 +32,8 @@ describe("ťahák AI hráčov sedí s constants.ts", () => {
     ["výhra strachom (v11)", `**červený strach aspoň u ${KONSTANTY.CERVENYCH_NA_VYHRU} starších**`],
     ["väzni podľa ligy (v11)", `Tretia liga ${vazniNaVyhru(DLZKY_HRY.kratka)}, Druhá ${vazniNaVyhru(DLZKY_HRY.stredna)}, Prvá ${vazniNaVyhru(DLZKY_HRY.dlha)}`],
     ["cigareta porazenému (v11)", `**porazený ${pocet(KONSTANTY.CIGARETY_PORAZENEMU, "cigareta", "cigarety", "cigariet")}**`],
+    ["prah Dlhu (v11.8)", `Prah Dlhu ${KONSTANTY.PRAH_DLHU_ZAKLAD} (v11.8: Hazard aj „1 zadĺženie“ z efektu karty sú rovno Dlh)`],
+    ["Výherný automat (v11.8)", `tvoj prah Dlhu ${KONSTANTY.PRAH_DLHU_ZAKLAD + 1} (Dlh za každé ${KONSTANTY.PRAH_DLHU_ZAKLAD + 1} zadĺženia, zvyšok ostáva na účte do ďalšej Pitky aj kola)`],
     ["Chuť a neresti (v9.1)", `**Vypiť 1, NA EX ${KONSTANTY.NEREST_NAEX}, vyfajčená cigareta 1**`],
     ["Chuť na konci kola (v9.1)", `**Chuť = väčšie z (Chuť, neresti kola) − ${KONSTANTY.CHUT_UBYTOK}**`],
     ["Kostol (v11.7)", "**v11.7: NA EX len na poslednú kartu línie, najďalej od Kostola, na výber oba konce**"],

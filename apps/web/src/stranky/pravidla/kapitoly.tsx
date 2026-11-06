@@ -62,7 +62,7 @@ export const KAPITOLY: readonly Kapitola[] = [
         </p>
         <p>
           Karty kladiete do spoločnej <P k="linia">línie</P>, pijete <P k="poldeci">poldeci</P>, fajčíte{" "}
-          <P k="cigareta">cigarety</P> a robíte dlhy. Všetko má svoju cenu — pečeň, zadĺženie a abstinenčné príznaky ťa dobehnú.
+          <P k="cigareta">cigarety</P> a robíte dlhy. Všetko má svoju cenu — pečeň, Dlhy a abstinenčné príznaky ťa dobehnú.
         </p>
         <p className="tlmene upozornenie">
           Hra je fikcia a zámerne zveličená karikatúra. Alkohol, fajčenie, hazard ani dlhy v skutočnom živote nikomu
@@ -117,7 +117,7 @@ export const KAPITOLY: readonly Kapitola[] = [
     obrazok: "03-co-mas-pred-sebou",
     vSkratke: [
       "Ruka, doberací a odhadzovací balíček.",
-      "Bar: poldeci, cigarety, pečeň, zadĺženie, neresti kola, Chuť a špaky.",
+      "Bar: poldeci, cigarety, pečeň, Dlhy, neresti kola, Chuť a špaky.",
       "Karta má akcie po hranách, tagy a efekt.",
     ],
     obsah: (s) => (
@@ -126,7 +126,7 @@ export const KAPITOLY: readonly Kapitola[] = [
         <p>
           Máš <strong>ruku</strong> (bez limitu), <strong>doberací balíček</strong> a <strong>odhadzovací balíček</strong>. Keď sa
           doberací balíček minie, odhadzovací sa zamieša a stane sa z neho nový doberací balíček. Na bare vidíš svoje <P k="poldeci">poldeci</P> (plné a vypité),{" "}
-          <P k="cigareta">cigarety</P>, <P k="pecen">pečeň</P>, zadĺženie, <P k="nerest">neresti</P> kola, <P k="chut">Chuť</P> a svoje{" "}
+          <P k="cigareta">cigarety</P>, <P k="pecen">pečeň</P>, <P k="dlh">Dlhy</P>, <P k="nerest">neresti</P> kola, <P k="chut">Chuť</P> a svoje{" "}
           <P k="spak">špaky</P>.
         </p>
         <H3 id="co-mas-pred-sebou-karta">Karta</H3>
@@ -367,7 +367,7 @@ export const KAPITOLY: readonly Kapitola[] = [
         </p>
         <ol>
           <li>NA EX — odkrytie a odpovede.</li>
-          <li>Dlh — za každý celý prah zadĺženia jeden Dlh (počítadlo, hneď priznaný).</li>
+          <li>Hazard — za každú akciu jeden Dlh (počítadlo, hneď priznaný).</li>
           <li>Poškodenie pečene — za každý celý prah Cirhóza.</li>
           <li>Obmedzenie.</li>
           <li>Cigarety — za akcie Cigareta (mínus súperove Obmedzenia).</li>
@@ -471,8 +471,8 @@ export const KAPITOLY: readonly Kapitola[] = [
     nazov: "Cena pitia",
     obrazok: "08-cena-pitia",
     vSkratke: [
-      "Pečeň sa počíta len v Pitke a potom sa vynuluje; zvyšok zadĺženia ostáva na účte.",
-      "Za každý celý prah pečene Cirhóza, za každý celý prah zadĺženia (z akcie Hazard) Dlh.",
+      "Pečeň sa počíta len v Pitke a potom sa vynuluje.",
+      "Za každý celý prah pečene Cirhóza, za každú akciu Hazard Dlh.",
       "Menej nerestí v kole, než je tvoja Chuť = karta Absťák do balíčka.",
     ],
     obsah: () => (
@@ -485,13 +485,17 @@ export const KAPITOLY: readonly Kapitola[] = [
           sa neprenáša. Poldeci vypitý v Zhromaždení (ďalšia karta v ťahu) pripíše +1 pečene do najbližšej Pitky. Milujúca
           manželka v línii ti zníži pečeň v Pitke o 1.
         </p>
-        <H3 id="cena-dlh">Zadĺženie a Dlh</H3>
+        <H3 id="cena-dlh">Hazard a Dlh</H3>
         <p>
-          Každá akcia <strong>Hazard</strong> v Pitke zvýši zadĺženie o 1. Každé 2 zadĺženia ti dajú jeden{" "}
-          <P k="dlh">Dlh</P> — nie je to karta, ale počítadlo: je hneď priznaný, neťaháš ho a kartu zaň nedoberáš. Zvyšok zadĺženia sa po Pitke nemaže — krčmár píše čiarky
-          a ostávajú ti na účte do ďalšej Pitky aj kola. Dlhy, ktoré dáva
+          Každá akcia <strong>Hazard</strong> ti v Pitke dá jeden{" "}
+          <P k="dlh">Dlh</P> — nie je to karta, ale počítadlo: je hneď priznaný, neťaháš ho a kartu zaň nedoberáš. Rovnako
+          je Dlh aj 1 <P k="zadlzenie">zadĺženie</P> z efektu karty. Dlhy, ktoré dáva
           priamo karta (napríklad Dievčina na vydaj), idú rovno. Viac Pitiek v bitke teda znamená viac pečene aj Dlhov. Doska ti vopred
           ukazuje, čo karty na stole pripíšu a koľko kliatob z toho bude.
+        </p>
+        <p>
+          Len s <strong>Výherným automatom</strong> v Dedičstve dostaneš Dlh až za každé 2 zadĺženia. Zvyšok sa po Pitke nemaže — krčmár
+          píše čiarky a ostávajú ti na účte do ďalšej Pitky aj kola.
         </p>
         <H3 id="cena-abstak">Neresti, Chuť a Absťák</H3>
         <p>
@@ -776,7 +780,7 @@ export const KAPITOLY: readonly Kapitola[] = [
         </p>
         <ul>
           <li>
-            <strong>Dlh</strong> — nie je karta, ale počítadlo priznaných Dlhov: nový Dlh (prah zadĺženia, efekt karty) je hneď
+            <strong>Dlh</strong> — nie je karta, ale počítadlo priznaných Dlhov: nový Dlh (akcia Hazard, efekt karty) je hneď
             priznaný a kartu zaň <strong>nedobereš</strong>; neťahá sa a nedá sa s ním inak manipulovať. Za priznané Dlhy
             príde v každej bitke Exekútor a pri remíze v bitke prehrá, kto ich má viac.
           </li>

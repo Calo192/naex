@@ -146,7 +146,8 @@ describe("Pečeň a zadĺženie len počas Pitky (Michal 2026-10-16)", () => {
 
   it("po Pitke sa zvyšok pečene pod prahom vynuluje, zadĺženie ostáva na účte (D6, v7)", () => {
     let s = vPitke([[], []]);
-    s = { ...s, hraci: [{ ...s.hraci[0], pecen: 2, zadlzenie: 1 }, { ...s.hraci[1], pecen: 1 }] } as GameState;
+    // Zvyšok pod prahom má od v11.8 len majiteľ Výherného automatu (prah 2).
+    s = { ...s, hraci: [{ ...s.hraci[0], pecen: 2, zadlzenie: 1, dedicstvo: [inst("vyherny_automat")] }, { ...s.hraci[1], pecen: 1 }] } as GameState;
     const pred = [cirhozy(s, 0), cirhozy(s, 1)];
     s = dohrajPitku(s);
     expect(s.faza).not.toBe("pitka");

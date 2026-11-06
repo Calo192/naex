@@ -118,9 +118,11 @@ describe("scorecardy v5 na serveri", () => {
 });
 
 describe("popis akcie Dlh v tvorcovi (v5)", () => {
-  it("čísla sú z jadra: prah Dlhu; Exekútor bez prahu (2026-10-28) páli Dlhy aj špaky", () => {
+  it("Hazard dá v Pitke Dlh (v11.8); Exekútor bez prahu (2026-10-28) páli Dlhy aj špaky", () => {
     const dlh = AKCIE_20261019.find((a) => a.kluc === "Dlh")?.popis ?? "";
-    expect(dlh).toContain(`za každé ${KONSTANTY.PRAH_DLHU_ZAKLAD} zadĺženia`);
+    expect(KONSTANTY.PRAH_DLHU_ZAKLAD).toBe(1);
+    expect(dlh).toContain("V Pitke získaš 1 Dlh");
+    expect(dlh).not.toContain("zadĺženi");
     expect(dlh).toContain("príde v každej bitke Exekútor");
     expect(dlh).toContain("rovnako veľa špakov");
     expect(dlh).not.toMatch(/Úžerník|uberá bod|súboj o podmienku/);

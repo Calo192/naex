@@ -1,4 +1,4 @@
-# Ťahák — platné pravidlá NA EX! (v11.7 Strach a reči, zajatie a presvedčenie, identita kariet, Kostol na konci línie, 2026-11-06, Zrejúca; sada = cards.json v master)
+# Ťahák — platné pravidlá NA EX! (v11.8 Strach a reči, zajatie a presvedčenie, identita kariet, Kostol na konci línie, každý Hazard je Dlh, 2026-11-06, Zrejúca; sada = cards.json v master)
 
 Spoločný ťahák AI hráčov — playtester (Zrejúca) ho číta z master, protihráč na
 Vypálenej z vetvy `vypalena` (tam platí jej verzia pravidiel). Podrobne v `docs/PRAVIDLA.md` (zmeny v jeho úvode). Pri
@@ -55,7 +55,7 @@ rozpore s `docs/PRAVIDLA.md` platí `docs/PRAVIDLA.md` a rozpor zapíš do
   rukou nič.
 - **Názvoslovie:** línia = celý rad; lokalita ju delí na dve **strany** (tvoja,
   súperova). **Tvoja partia** = všetky tvoje karty, na ktorejkoľvek strane.
-  Akcie: Hazard (v8.2, kľúč v príkazoch a súčtoch ostáva `Dlh`; zvyšuje zadĺženie, z neho sú Dlhy),
+  Akcie: Hazard (v8.2, kľúč v príkazoch a súčtoch ostáva `Dlh`; každá akcia = 1 Dlh),
   Poškodenie pečene, Poldeci, Cigareta (nie Pečeň, Poldecko, Cigaretka).
 - **Viac kariet v jednom ťahu Zhromaždenia:** prvá je zadarmo, **každá ďalšia
   stojí plný poldeci** (Vypiť: limit −1, pečeň +1, nerest) — dve karty za sebou
@@ -126,7 +126,7 @@ rozpore s `docs/PRAVIDLA.md` platí `docs/PRAVIDLA.md` a rozpor zapíš do
   cigaretu** (`uids`); potom s braním končíš a pokračuje súper. **Hrobár:** 1 karta zo súperovho
   odhadzovacieho balíčka do ruky (`uid`).
 - **Identita kariet (v11.5):** **Sypač** (Podpora): keď sa priložením stretne s tvojím Chlapom, ten má do konca
-  kola **Rany ako Pecky**. **Podvodník** (Konflikt): súper ti dá **1 cigaretu**, ak žiadnu nemá, získa **1 zadĺženie**.
+  kola **Rany ako Pecky**. **Podvodník** (Konflikt): súper ti dá **1 cigaretu**, ak žiadnu nemá, získa **1 zadĺženie** (rovno Dlh, pozri Prah Dlhu).
   **Opatrovateľka** (Furt): tvoji Pamätníci v jej okolí majú aktívne akcie **posilnené** (×2). **Anonymný alkoholik**
   (Furt): Poškodenie pečene tvojich kariet v jeho okolí sa ráta ako **Viera**. **Kôň** (Furt): Nástroj vedľa neho
   s ním tvorí spoj; **Roboty Koňa pália o 1 Dlh viac**. **Noviny** (Dedičstvo: Hádka): keď vyhráš hádku, súper
@@ -252,9 +252,8 @@ rozpore s `docs/PRAVIDLA.md` platí `docs/PRAVIDLA.md` a rozpor zapíš do
 - **Doliatie** v Pitke: 2 cigarety → vypitý poldeci späť na plný (nie s Vínkom
   v Dedičstve). **Barter:** 5 cigariet → nový plný poldeci. Na začiatku kola sa
   jeden vypitý poldeci doleje sám.
-- **Pečeň žije len v Pitke** — vyhodnotí sa v nej a potom sa vynuluje. **Zadĺženie neprepadá (v7, D6):**
-  zvyšok pod prahom ostáva na účte do ďalšej Pitky aj kola. Za **každý celý prah** jedna kliatba
-  (zadĺženie 8 pri prahu 2 = 4 Dlhy). Milujúca manželka (v7) v línii: tvoja pečeň v Pitke −1.
+- **Pečeň žije len v Pitke** — vyhodnotí sa v nej a potom sa vynuluje; za **každý celý prah** Cirhóza.
+  **Každá aktívna akcia Hazard v Pitke = 1 Dlh (v11.8)**, 8 Hazardov = 8 Dlhov. Milujúca manželka (v7) v línii: tvoja pečeň v Pitke −1.
   Riadok „VÝHĽAD PITKY“ v stave ukazuje, čo pripíšu karty na stole a koľko kliatob z toho bude.
 - **Chuť a Absťák (v9.1, 2026-10-30):** **Chuť** je tvoja verejná latka nerestí, na začiatku **0**. Nerest je
   len konzumácia: **Vypiť 1, NA EX 2, vyfajčená cigareta 1** — doliatie,
@@ -279,8 +278,8 @@ rozpore s `docs/PRAVIDLA.md` platí `docs/PRAVIDLA.md` a rozpor zapíš do
   Robota navyše (pália Dlhy, za Dlh, ktorý nemá čo spáliť, 1 špak); Fajčiar +1 / +2 / +3 cigarety
   **po bitke** (Obmedzenie ich neuberá); **Kmotor: po bitke presunie 2 / 3 / 4 tvoje priznané Dlhy medzi súperove** (koľko máš);
   Alkoholik (Na zdravie „do dna“): 1 / 2 / 3 poldeci z tvojho NA EX za kolo sa vráti plných.
-  Prah Dlhu 2 (každé 2 zadĺženia = 1 Dlh), prah Cirhózy 3.
-  Výherný automat (Dedičstvo, v7): tvoj prah Dlhu +1, ale v poslednej Pitke kola získaš 1 Dlh.
+  Prah Dlhu 1 (v11.8: Hazard aj „1 zadĺženie“ z efektu karty sú rovno Dlh), prah Cirhózy 3.
+  Výherný automat (Dedičstvo, v7): tvoj prah Dlhu 2 (Dlh za každé 2 zadĺženia, zvyšok ostáva na účte do ďalšej Pitky aj kola), ale v poslednej Pitke kola získaš 1 Dlh.
 - **Exekútor bez prahu (2026-10-28):** Exekútor príde v každej bitke ku každému s priznaným Dlhom: zhorí polovica priznaných Dlhov zaokrúhlene nahor
   (aj jediný Dlh) a rovnako veľa špakov (Advokát ich uberie) — **až po
   poškodení a špakoch za bitku** (2026-10-28; Robota tesne pred ním), takže remíza a Herňa

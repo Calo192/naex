@@ -60,7 +60,7 @@ describe("M3 — limit vykladania", () => {
 describe("M3 — odvodené hodnoty", () => {
   it("v5: prahy priazeň nezdvíha, súperov Exekútor prah Exekúcie zníži; hodnota Viery je 1", () => {
     expect(prahCirhozy()).toBe(3);
-    expect(prahDlhu()).toBe(2);
+    expect(prahDlhu()).toBe(1);
     expect(hodnotaViery()).toBe(1);
   });
 });

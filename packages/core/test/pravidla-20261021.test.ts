@@ -64,7 +64,8 @@ describe("remíza a sekera v6 (Michal 2026-10-26; sekera od 2026-10-21)", () => 
     let sekier = 0;
     let zoSekery = 0;
     let rozhodliRemizu = 0;
-    for (const seed of SEEDY) {
+    // Pri prahu Dlhu 1 (v11.8) Dlhy rozhodnú väčšinu remíz, na sekeru treba aj partie, kde k nej naozaj dôjde.
+    for (const seed of [...SEEDY, 9, 10, 19]) {
       partia(seed, ({ pred, po, events }) => {
         const vysledok = events.find((e) => e.type === "bitkaVysledok");
         // Lokality nemiznú: v hre + na nástenke (+ cieľ) = všetky.
@@ -177,10 +178,8 @@ describe("náhľad Pitky = vyhodnotenie (Michal 2026-10-21)", () => {
         const nahlad = nahladPitky(data, pred);
         for (const p of [0, 1] as const) {
           const cirhozy = events.filter((e) => e.type === "log" && rozlozRod(e.text, ["muz", "muz"]) === `Hráč ${p + 1} dosiahol prah pečene (${nahlad[p].prahPecene}) — Cirhóza.`).length;
-          const dlhy = events.filter((e) => e.type === "log" && rozlozRod(e.text, ["muz", "muz"]) === `Hráč ${p + 1} dosiahol prah dlhu (${nahlad[p].prahDlhu}) — Dlh.`).length;
           expect(cirhozy).toBe(nahlad[p].cirhozy);
-          expect(dlhy).toBe(nahlad[p].dlhy);
-          // Účet Pitky pre klienta hovorí to isté.
+          // Účet Pitky pre klienta hovorí to isté (Dlhy pri prahu 1 log „prah“ nemajú, v11.8).
           const ucet = events.find((e) => e.type === "pitkaVysledok");
           expect(ucet?.type === "pitkaVysledok" ? [ucet.cirhozy[p], ucet.dlhy[p]] : null).toEqual([nahlad[p].cirhozy, nahlad[p].dlhy]);
         }

@@ -12,7 +12,7 @@ import { IkonaPriazne } from "./IkonaPriazne.tsx";
 import { IkonaMrezi } from "./ikonyZdrojov.tsx";
 import { IkonaSpaku } from "./IkonaSpaku.tsx";
 import type { HracInfo } from "./useHra.ts";
-import { detailZdroja, riadkyTabule, type CislaHraca, type ZdrojStlpca } from "./tabula.ts";
+import { detailZdroja, riadkyTabule, ukazZadlzenie, type CislaHraca, type ZdrojStlpca } from "./tabula.ts";
 import { Medziobrazovka } from "./Medziobrazovka.tsx";
 
 /** Piktogram akcie z karty (IKONY) v štvorci 0..100. */
@@ -80,7 +80,7 @@ export function StlpecHraca({ view, p, info, meno, cisla, naTahu, karty, detail,
       {cip("poldeci", <IkonaPoldeci />, cisla.poldeci, `Poldeci plné ${cisla.poldeci}, vypité ${cisla.vypite + cisla.naStole}${cisla.naStole > 0 ? ` (${cisla.naStole} na stole)` : ""}, limit kariet ${cisla.limit}`)}
       {cisla.chut !== null && cip("chut", <IkonaAbstak />, cisla.chut, `Chuť ${cisla.chut}, neresti dnes ${cisla.nerestiDnes}`, cisla.chutHrozi)}
       {cip("pecen", <Pikto kluc="PoškodeniePečene" />, cisla.pecen, `Pečeň ${cisla.pecen} z ${cisla.prahPecene}`, cisla.pecen >= cisla.prahPecene - 1)}
-      {cip("dlhy", <Pikto kluc="Dlh" />, cisla.dlhy, `Dlhy ${cisla.dlhy}, zadĺženie ${cisla.zadlzenie} z ${cisla.prahDlhu}`, cisla.exekucia > 0)}
+      {cip("dlhy", <Pikto kluc="Dlh" />, cisla.dlhy, `Dlhy ${cisla.dlhy}${ukazZadlzenie(cisla.zadlzenie, cisla.prahDlhu) ? `, zadĺženie ${cisla.zadlzenie} z ${cisla.prahDlhu}` : ""}`, cisla.exekucia > 0)}
       {cip("cigarety", <IkonaCigareta />, cisla.cigarety, `Cigarety ${cisla.cigarety}`)}
       {cip("spaky", <IkonaSpaku />, cisla.spaky, `Špaky ${cisla.spaky}`)}
       <button type="button" className={`stlpec-cip stlpec-starsi${starsi.stlacene ? " stlacene" : ""}`} aria-pressed={starsi.stlacene} aria-label={`Starší: priazeň ${cisla.priazen} — ťuk ukáže líniu starších`} title="Starší — línia starších" onClick={starsi.prepni}>

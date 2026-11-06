@@ -86,4 +86,12 @@ describe("textový režim Pitky", () => {
     expect(riadky[4]?.casti).toContainEqual({ t: "b", s: "5" });
     expect(riadky[4]?.casti).toContainEqual({ t: "text", s: "· 1 ostáva na účte" });
   });
+
+  it("pri prahu 1 riadok Dlhu nehovorí o zadĺžení ani o zvyšku (v11.8)", () => {
+    const riadok = riadkyTextuPitky({ ...r, zadlzenie: { pred: [0, 0], zoStola: [3, 0], prah: [1, 1], dlhy: [3, 0] } }, [], 0).find((x) => x.druh === "dlh");
+    expect(riadok?.casti).toEqual([
+      { t: "b", s: "+3" },
+      { t: "kliatba", akcia: "Dlh" },
+    ]);
+  });
 });

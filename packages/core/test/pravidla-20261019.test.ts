@@ -168,14 +168,14 @@ describe("ruka: +2 karty po bitke, žiadny limit ruky (Michal 2026-10-19)", () =
   });
 });
 
-describe("Úžerník (Michal 2026-10-20): prah Dlhu 2 + sila, Zberateľ zanikol", () => {
-  it("v5: priazeň Úžerníka (Kmotra) prah Dlhu nemení — obaja majú prah 2", () => {
+describe("Úžerník (Michal 2026-10-20): prah Dlhu bez sily, Zberateľ zanikol", () => {
+  it("v5: priazeň Úžerníka (Kmotra) prah Dlhu nemení — obaja majú základný prah", () => {
     const s0 = setupSBalickom(data, 42);
     const uzernik = s0.starsi.find((e) => favourStarsieho(data, e) === "UZERNIK")!;
     // Marker na 1 = priazeň hráča 0, sila 2.
     const s: GameState = { ...s0, starsi: s0.starsi.map((e) => (e === uzernik ? { ...e, ...zPolohy(1) } : e)) };
-    expect(prahyHraca(data, s, 0).dlh).toBe(2);
-    expect(prahyHraca(data, s, 1).dlh).toBe(2);
+    expect(prahyHraca(data, s, 0).dlh).toBe(1);
+    expect(prahyHraca(data, s, 1).dlh).toBe(1);
   });
 
   it("po bitke sa už nič neprezerá — po Cintoríne ide hra rovno do ďalšieho kola", () => {

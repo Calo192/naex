@@ -85,13 +85,13 @@ describe("nevyhnutné ťahy", () => {
 });
 
 describe("prah Dlhu a Cirhózy", () => {
-  // Michal 2026-10-20: prah Dlhu 2 (+ sila Úžerníka).
-  it("prahy sú 3 (Cirhóza) a 2 (Dlh)", () => {
+  // Michal 2026-11-06: prah Dlhu 1 (v11.8).
+  it("prahy sú 3 (Cirhóza) a 1 (Dlh)", () => {
     expect(KONSTANTY.PRAH_CIRHOZY_ZAKLAD).toBe(3);
-    expect(KONSTANTY.PRAH_DLHU_ZAKLAD).toBe(2);
+    expect(KONSTANTY.PRAH_DLHU_ZAKLAD).toBe(1);
   });
 
-  it("dve akcie Dlh dajú jednu kartu Dlh a zadĺženie klesne na 0", () => {
+  it("dve akcie Dlh dajú dva Dlhy a zadĺženie ostane 0", () => {
     const karta = instanceFor(data, "dlznik", [null, "Dlh", "Dlh", null], EMPTY);
     const lezi: PlacedCard = { card: karta, playedBy: 0 as PlayerId };
     const pri: PlacedCard = { card: instanceFor(data, "sused", EMPTY, [null, "Viera", null, null]), playedBy: 0 as PlayerId };
@@ -104,9 +104,10 @@ describe("prah Dlhu a Cirhózy", () => {
     // Verejný dlh (2026-10-21): nový Dlh ide rovno medzi priznané (bitka po Pitke
     // hneď jeden priznaný spáli, preto z logu).
     const dlhy = events.filter((e) => e.type === "log" && e.text.startsWith("Hráč 1 získava Dlh — hneď sa priznáva")).length;
-    expect(dlhy).toBe(1);
+    expect(dlhy).toBe(2);
     expect(state.hraci[0].zadlzenie).toBe(0);
+    // Pri prahu 1 nie je čo „dosiahnuť“ — log hovorí len o Dlhu.
     const texty = events.flatMap((e) => (e.type === "log" ? [rozlozRod(e.text, ["zena", null])] : []));
-    expect(texty).toContain("Hráč 1 dosiahla prah dlhu (2) — Dlh.");
+    expect(texty.some((t) => t.includes("prah dlhu"))).toBe(false);
   });
 });

@@ -285,7 +285,7 @@ describe("§7 NA EX na kartu pri lokalite a §16 NA EX na Veterána", () => {
 // --- §7 Pitka — vyhodnotenie --------------------------------------------------------
 
 describe("§7 Pitka — poradie vyhodnotenia", () => {
-  it("§8: za každý celý prah zadĺženia jeden Dlh — 5 pri prahu 2 = 2 Dlhy, zvyšok ostáva na účte (D6, v7)", () => {
+  it("§8: každá aktívna akcia Hazard = 1 Dlh, na účte nič neostáva (v11.8)", () => {
     const vonk: Layout4 = ["Dlh", "Dlh", "Dlh", null];
     const vnut: Layout4 = ["Dlh", "Dlh", "Rana", null];
     const o = makeDef("r_dlh_o", EMPTY, vonk);
@@ -295,10 +295,10 @@ describe("§7 Pitka — poradie vyhodnotenia", () => {
     const s = vPitke(sada, 12, strany);
     expect(evaluateLine(sada, { lokalita: null, lokalitaOtocena: false, strany }).sums[0].Dlh).toBe(5);
     const { state, events } = dopiPitku(sada, s);
-    expect(vysledokPitky(events).dlhy).toEqual([2, 0]);
+    expect(vysledokPitky(events).dlhy).toEqual([5, 0]);
     // Jediná Pitka — hneď príde bitka a Exekútor (bez prahu, 2026-10-28) zhorí polovicu nahor.
-    expect(state.hraci[0].dlhy).toBe(2 - (state.nastenka.at(-1)?.exekutor[0] ?? 0));
-    expect(state.hraci[0].zadlzenie).toBe(1);
+    expect(state.hraci[0].dlhy).toBe(5 - (state.nastenka.at(-1)?.exekutor[0] ?? 0));
+    expect(state.hraci[0].zadlzenie).toBe(0);
   });
 
   it("§10 Fajčiar (v5): v Pitke cigarety navyše nedáva — dáva ich po šenku", () => {
@@ -440,8 +440,8 @@ describe("§2, §6 a §7 — doplnky prvého prechodu", () => {
   it("§7: NA EX leží na karte až do bitky — jej akcie sa vyhodnotia aj v ďalšej Pitke kola", () => {
     const D: Layout4 = ["Dlh", null, null, null];
     const sada = sadaS(makeDef("r_dlh_naex", EMPTY, D));
-    // Druhá Pitka kola: Dlh karty bez spoja je neaktívny, NA EX ho zdvojí → zadĺženie 2 = 1 Dlh.
+    // Druhá Pitka kola: Dlh karty bez spoja je neaktívny, NA EX ho zdvojí → 2 Dlhy.
     const s = vPitke(sada, 19, [[lezi(instanceFor(sada, "r_dlh_naex", EMPTY, D), 0, 0)], []], { pitkyCelkom: 2, pitkaCislo: 2 });
-    expect(vysledokPitky(dopiPitku(sada, s).events).dlhy).toEqual([1, 0]);
+    expect(vysledokPitky(dopiPitku(sada, s).events).dlhy).toEqual([2, 0]);
   });
 });

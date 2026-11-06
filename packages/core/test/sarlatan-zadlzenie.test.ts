@@ -77,8 +77,8 @@ function dohrajPitku(s: GameState, vyber: (cmds: readonly Command[], q: PlayerId
   return t;
 }
 
-/** Zadĺženie hráča 1 z Pitky (prah 2 → Dlh, zvyšok na účte). */
-const zadlzenieHraca1 = (t: GameState): number => dlhyZPitky1 * 2 + t.hraci[1].zadlzenie;
+/** Zadĺženie hráča 1 z Pitky (prah 1: každé je Dlh). */
+const zadlzenieHraca1 = (t: GameState): number => dlhyZPitky1 + t.hraci[1].zadlzenie;
 
 describe("§16 Šarlatán: Hazard premenený Konfliktom nedáva zadĺženie", () => {
   it("odpoveď na NA EX vyvolá Konflikt pred vyhodnotením Pitky — Hazard ×2 je Viera, zadĺženie 0", () => {
@@ -96,6 +96,7 @@ describe("§16 Šarlatán: Hazard premenený Konfliktom nedáva zadĺženie", ()
     const t = dohrajPitku(poNaex, (cmds, q) => (q === 0 ? cmds.find((c) => c.type === "place" && c.target === "vlastna") : undefined));
     expect(t.strany[1].find((pl) => pl.card.uid === sar.uid)?.premena).toBeUndefined();
     expect(zadlzenieHraca1(t)).toBe(2);
+    expect(t.hraci[1].zadlzenie).toBe(0);
   });
 
   it("Záverečná vyvolá Konflikt až po vyhodnotení Pitky — v nej sa Hazard ešte ráta, v bitke už Viera", () => {
@@ -118,7 +119,7 @@ describe("§16 Šarlatán: Hazard premenený Konfliktom nedáva zadĺženie", ()
       for (const e of r.events) if (e.type === "pitkaVysledok") dlhyZPitky.push(e.dlhy[1]);
       t = r.state;
     }
-    expect(dlhyZPitky.reduce((a, b) => a + b, 0)).toBe(1);
+    expect(dlhyZPitky.reduce((a, b) => a + b, 0)).toBe(2);
     // Po otočení Záverečnej platí premena do konca kola — bitka ráta Hazard ako Vieru.
     expect(t.strany[1].find((pl) => pl.card.uid === sar.uid)?.premena).toBe("sarlatan");
     const zdroje = evaluateLine(data, lineState(t)).zdroje[1];

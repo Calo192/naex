@@ -204,7 +204,8 @@ describe("Nástup (v7)", () => {
 
 describe("D6: zadĺženie neprepadá", () => {
   it("zvyšok zadĺženia ostane na účte a s ďalšou Pitkou dá Dlh", () => {
-    const s = sHracom(vPitke("zastavka", [[], []]), 0, { zadlzenie: 1 });
+    // Zvyšok pod prahom má od v11.8 len majiteľ Výherného automatu (prah 2).
+    const s = sHracom(vPitke("zastavka", [[], []]), 0, { zadlzenie: 1, dedicstvo: [inst("vyherny_automat")] });
     let st = s;
     for (let i = 0; i < 2 && st.faza === "pitka"; i++) st = apply(data, st, { type: "skipNaex" }, st.pitkaStav!.naTahu).state;
     expect(st.hraci[0].zadlzenie).toBe(1);

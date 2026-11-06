@@ -50,12 +50,14 @@ export const KONSTANTY = {
    */
   PRAH_CIRHOZY_ZAKLAD: 3,
   /**
-   * Prah Dlhu (+ sila Úžerníka): akcie Hazard (kľúč Dlh, v8.2) plnia zadĺženie
-   * a Dlh (od v8.2 počítadlo) hráč dostane pri tomto prahu. Michal 2026-10-18 znížil z 2 na 1 (Dlh v playteste
-   * nevznikol), 2026-10-20 vrátil na 2 s priazňou Úžerníka. Úžerník pridáva
-   * silu, nie 2 × silu — zadĺženie sa po Pitke nuluje a vyšší prah by Dlh vypol.
+   * Prah Dlhu: akcie Hazard (kľúč Dlh, v8.2) plnia zadĺženie a Dlh (od v8.2
+   * počítadlo) hráč dostane pri tomto prahu. Michal 2026-10-18 znížil z 2 na 1
+   * (Dlh v playteste nevznikol), 2026-10-20 vrátil na 2 s priazňou Úžerníka (v5
+   * priazeň prah nemení), 2026-11-06 (v11.8) znova 1: „hráči majú strašne málo
+   * Dlhov“ — každý Hazard je hneď Dlh. Prah nad 1 má len Výherný automat
+   * (prahDlhuBonus); len vtedy má hráč zvyšok zadĺženia na účte.
    */
-  PRAH_DLHU_ZAKLAD: 2,
+  PRAH_DLHU_ZAKLAD: 1,
   /**
    * Pas (Michal 2026-10-20): kto v Zhromaždení pasuje, dostane toľko cigariet,
    * koľko kariet ešte smel vyložiť (zostávajúci limit), najviac toľko, koľko má
@@ -265,7 +267,7 @@ export const VERZIA_PRAVIDIEL = "v11";
  * vždy odzrkadľovať správanie nasadenej hry (Michal 2026-10-31). Značka partií
  * (VERZIA_PRAVIDIEL) sa pri dávke nemení, táto áno.
  */
-export const VERZIA_PRAVIDIEL_PRESNA = "v11.7";
+export const VERZIA_PRAVIDIEL_PRESNA = "v11.8";
 /** Odkedy platí VERZIA_PRAVIDIEL_PRESNA — hráč ho vidí na stránke Pravidlá. */
 export const PRAVIDLA_PLATNE_OD = "2026-11-06";
 export type DlzkaHry = keyof typeof DLZKY_HRY;

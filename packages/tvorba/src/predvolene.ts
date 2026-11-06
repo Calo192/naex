@@ -21,7 +21,7 @@ export const AKCIE_20261019: readonly { readonly kluc: string; readonly nazov: s
     kluc: "Dlh",
     nazov: "Hazard",
     popis:
-      `Zvýši zadĺženie o 1. V Pitke za každé ${KONSTANTY.PRAH_DLHU_ZAKLAD} zadĺženia získaš Dlh — je hneď priznaný (počítadlo, nie karta), zvyšok zadĺženia ostáva na ďalšiu Pitku. ` +
+      "V Pitke získaš 1 Dlh — je hneď priznaný (počítadlo, nie karta). " +
       "Za priznané Dlhy príde v každej bitke Exekútor: spáli ti polovicu priznaných Dlhov (zaokrúhlene nahor) a rovnako veľa špakov " +
       "(tvoja priazeň Advokáta špaky uberie). Pri remíze v tuhom aj v Absťákoch prehráva, kto má viac priznaných Dlhov.",
   },

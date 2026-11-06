@@ -19,7 +19,7 @@ import {
 } from "../src/hra/zariadenie.ts";
 import { CHYBA_NA_TELEFONE, UpozornenieTelefonu, upozornenieSkryte } from "../src/hra/UpozornenieTelefonu.tsx";
 import type { Rola } from "../src/lib/ucet.tsx";
-import { detailZdroja, riadkyTabule, type CislaHraca, type ZdrojStlpca } from "../src/hra/tabula.ts";
+import { detailZdroja, riadkyTabule, ukazZadlzenie, zadlzenieHrozi, type CislaHraca, type ZdrojStlpca } from "../src/hra/tabula.ts";
 import { preDotyk, preDotykUzol } from "../src/hra/dotyk.ts";
 
 /** Zariadenie podľa rozmeru a vstupu — vyhodnotí dotazy z zariadenie.ts ako prehliadač. */
@@ -190,6 +190,26 @@ describe("tabuľa ty | súper", () => {
     expect(podla.get("dlhy")).toMatchObject({ ja: "4 (−2 š.)", zleJa: true, zleSu: false });
     expect(podla.get("chut")?.zleJa).toBe(true);
     expect(podla.get("pecen")).toMatchObject({ zleJa: false, zleSu: true });
+  });
+
+  it("pri prahu Dlhu 1 riadok Zadĺženie nie je a nič nesvieti ako varovanie (v11.8)", () => {
+    const bez = riadkyTabule(cisla({ prahDlhu: 1, zadlzenie: 0 }), cisla({ prahDlhu: 1, zadlzenie: 0 }));
+    expect(bez.some((x) => x.kluc === "zadlzenie")).toBe(false);
+    expect(zadlzenieHrozi(0, 1)).toBe(false);
+    expect(ukazZadlzenie(0, 1)).toBe(false);
+    // Detail zdroja: ani „0 z 1“, ani „každé 1 zadĺženia“.
+    const d = detailZdroja("dlhy", cisla({ prahDlhu: 1, zadlzenie: 0 }), true);
+    expect(new Map(d.riadky).has("zadĺženie")).toBe(false);
+    expect(d.text).toContain("Každá akcia Hazard");
+  });
+
+  it("Výherný automat: riadok Zadĺženie ukáže prah 2 a pri 1 z 2 varuje; súper s prahom 1 má pomlčku", () => {
+    const riadok = riadkyTabule(cisla({ prahDlhu: 2, zadlzenie: 1 }), cisla({ prahDlhu: 1, zadlzenie: 0 })).find((x) => x.kluc === "zadlzenie");
+    expect(riadok).toMatchObject({ ja: "1/2", su: "–", zleJa: true, zleSu: false });
+    expect(zadlzenieHrozi(0, 2)).toBe(false);
+    const d = detailZdroja("dlhy", cisla({ prahDlhu: 2, zadlzenie: 1 }), true);
+    expect(new Map(d.riadky).get("zadĺženie")).toBe("1 z 2");
+    expect(d.text).toContain("Každé 2 zadĺženia");
   });
 
   it("bez Chuti v partii riadok Chuť vynechá", () => {

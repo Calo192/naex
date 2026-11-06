@@ -992,16 +992,19 @@ function skontrolujPrahPecene(s: MutState, data: GameData, p: PlayerId, events: 
   }
 }
 
-/** Zadĺženie z akcií Hazard (kľúč Dlh) + Dlh pri prahu (rovnako ako pečeň a Cirhóza). */
+/**
+ * Zadĺženie z akcií Hazard (kľúč Dlh) + Dlh pri prahu. Aj bez prírastku: partia rozohraná
+ * pri starom prahu má na účte zvyšok, ktorý už je celý prah, a výhľad Pitky s ním ráta.
+ */
 function pridajZadlzenie(s: MutState, p: PlayerId, mnozstvo: number, events: Event[]): void {
-  if (mnozstvo <= 0) return;
   const player = hrac(s, p);
-  player.zadlzenie += mnozstvo;
+  player.zadlzenie += Math.max(0, mnozstvo);
   const prah = prahDlhu() + prahDlhuBonus(s as GameState, p);
   while (player.zadlzenie >= prah) {
     player.zadlzenie -= prah;
     pridajDlh(s, p, events);
-    events.push({ type: "log", text: `Hráč ${p + 1} ${rodovo(p, "dosiahol", "dosiahla", "dosahuje")} prah dlhu (${prah}) — Dlh.` });
+    // Pri prahu 1 je Dlh priamo z akcie, „prah“ by hráča v logu len mýlil (v11.8).
+    if (prah > 1) events.push({ type: "log", text: `Hráč ${p + 1} ${rodovo(p, "dosiahol", "dosiahla", "dosahuje")} prah dlhu (${prah}) — Dlh.` });
   }
 }
 
@@ -2606,7 +2609,7 @@ function konflikt(s: MutState, data: GameData, nositel: DeepMutable<PlacedCard>,
       }
       break;
     case "podvodnik":
-      // v11.5: súper dá 1 cigaretu; kto žiadnu nemá, získa zadĺženie (každé 2 = Dlh, §8).
+      // v11.5: súper dá 1 cigaretu; kto žiadnu nemá, získa zadĺženie (pri prahu 1 rovno Dlh, §8).
       if (s.hraci[opp].cigarety > 0) {
         hrac(s, opp).cigarety -= 1;
         hrac(s, p).cigarety += 1;

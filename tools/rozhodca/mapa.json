@@ -907,15 +907,15 @@
     },
     {
       "id": "8.dlh.prah",
-      "paragraf": "8. Pečeň, zadĺženie, nerest, Chuť a Absťák › Zadĺženie a Dlh",
-      "pravidlo": "Za každý celý prah zadĺženia (2) hráč získa Dlh.",
+      "paragraf": "8. Pečeň, Dlh, nerest, Chuť a Absťák › Hazard a Dlh",
+      "pravidlo": "Každá aktívna akcia Hazard dá v Pitke 1 Dlh; s Výherným automatom Dlh za každé 2 zadĺženia, zvyšok na účte.",
       "stav": "na-overenie",
       "testy": [],
       "poznamka": "v5 (2026-10-25): pravidlo sa zmenilo — rozhodca ho prejde znova a doplní testy (jadro v5: packages/core/test/pravidla-v5.test.ts). Testy v4: packages/core/test/pravidla-kolo.test.ts › §8: za každý celý prah zadĺženia jeden Dlh — 5 pri prahu 2 = 2 Dlhy, zvyšok sa po Pitke vynuluje; packages/core/test/tempo.test.ts › dve akcie Dlh dajú jednu kartu Dlh a zadĺženie klesne na 0."
     },
     {
       "id": "8.pecen.prah",
-      "paragraf": "8. Pečeň, zadĺženie, nerest, Chuť a Absťák › Pečeň a Cirhóza",
+      "paragraf": "8. Pečeň, Dlh, nerest, Chuť a Absťák › Pečeň a Cirhóza",
       "pravidlo": "Pečeň z Poškodenia pečene, Poldeci, NA EX (pri odkrytí) a predošlého Vypiť; za každý celý prah (3, +2 Nealko, +2 Krčma) Cirhóza.",
       "stav": "na-overenie",
       "testy": [],
@@ -1347,7 +1347,7 @@
     },
     {
       "id": "8.abstak.vznik",
-      "paragraf": "8. Pečeň, zadĺženie, nerest, Chuť a Absťák › Nerest, Chuť a Absťák (v9.1)",
+      "paragraf": "8. Pečeň, Dlh, nerest, Chuť a Absťák › Nerest, Chuť a Absťák (v9.1)",
       "pravidlo": "Na konci kola menej nerestí než Chuť → karta Absťák do odhadzovacieho balíčka a +1 k Absťákom získaným za hru; potom Chuť = väčšie z (Chuť, neresti) − 1, nie pod 0 (v9.1).",
       "stav": "pokryte",
       "testy": [
@@ -1360,7 +1360,7 @@
     },
     {
       "id": "8.abstak.zbavenie",
-      "paragraf": "8. Pečeň, zadĺženie, nerest, Chuť a Absťák › Nerest, Chuť a Absťák (v9.1)",
+      "paragraf": "8. Pečeň, Dlh, nerest, Chuť a Absťák › Nerest, Chuť a Absťák (v9.1)",
       "pravidlo": "Absťák sa (v9.1) nezbavuje nerestami — karta ostáva v balíčku; zahodí ju Vízia (v starej sade aj Kar). Hasič ju vytiahne ako každú kartu.",
       "stav": "pokryte",
       "testy": [
@@ -1371,7 +1371,7 @@
     },
     {
       "id": "8.abstak.manzelka",
-      "paragraf": "8. Pečeň, zadĺženie, nerest, Chuť a Absťák › Nerest, Chuť a Absťák (v9.1)",
+      "paragraf": "8. Pečeň, Dlh, nerest, Chuť a Absťák › Nerest, Chuť a Absťák (v9.1)",
       "pravidlo": "Milujúca manželka (v7) latku Absťáku (Chuť) neposúva — pri nerestiach rovných Chuti Absťák nevznikne ani s ňou.",
       "stav": "pokryte",
       "testy": [
@@ -1382,7 +1382,7 @@
     },
     {
       "id": "8.abstak.tuhe",
-      "paragraf": "8. Pečeň, zadĺženie, nerest, Chuť a Absťák › Nerest, Chuť a Absťák (v9.1)",
+      "paragraf": "8. Pečeň, Dlh, nerest, Chuť a Absťák › Nerest, Chuť a Absťák (v9.1)",
       "pravidlo": "Každá karta Absťák kdekoľvek v balíčku (ruka, doberací, odhadzovací) znižuje vlastné tuhé o 1 (v9.1).",
       "stav": "pokryte",
       "testy": [
@@ -1392,7 +1392,7 @@
     },
     {
       "id": "8.abstak.autobusar",
-      "paragraf": "8. Pečeň, zadĺženie, nerest, Chuť a Absťák › Nerest, Chuť a Absťák (v9.1)",
+      "paragraf": "8. Pečeň, Dlh, nerest, Chuť a Absťák › Nerest, Chuť a Absťák (v9.1)",
       "pravidlo": "Autobusár jeden Absťák majiteľa ignoruje všade, kde sa v bitke rátajú: v tuhom poškodení, pri remíze v tuhom aj v špakoch víťaza (min 0).",
       "stav": "netestovatelne",
       "testy": [],
@@ -1400,7 +1400,7 @@
     },
     {
       "id": "8.nerest",
-      "paragraf": "8. Pečeň, zadĺženie, nerest, Chuť a Absťák › Nerest, Chuť a Absťák (v9.1)",
+      "paragraf": "8. Pečeň, Dlh, nerest, Chuť a Absťák › Nerest, Chuť a Absťák (v9.1)",
       "pravidlo": "Nerest je len konzumácia (v9.1): Vypiť 1, NA EX 2, vyfajčená cigareta 1 (za každú zaplatenú); doliatie, barter, šenok, Dedičstvo, Starosta a Kšefty lokalít nie.",
       "stav": "pokryte",
       "testy": [
@@ -1412,7 +1412,7 @@
     },
     {
       "id": "8.chut.vyucba",
-      "paragraf": "8. Pečeň, zadĺženie, nerest, Chuť a Absťák › Nerest, Chuť a Absťák (v9.1)",
+      "paragraf": "8. Pečeň, Dlh, nerest, Chuť a Absťák › Nerest, Chuť a Absťák (v9.1)",
       "pravidlo": "Výučba Prvá hra je bez Chuti a Absťáku (prepínač partie bezChuti); viewFor ho posiela.",
       "stav": "pokryte",
       "testy": [
@@ -2037,7 +2037,7 @@
     },
     {
       "id": "8.pecen.poldeci-akcia",
-      "paragraf": "8. Pečeň, zadĺženie, nerest, Chuť a Absťák › Pečeň a Cirhóza",
+      "paragraf": "8. Pečeň, Dlh, nerest, Chuť a Absťák › Pečeň a Cirhóza",
       "pravidlo": "Každá aktívna akcia Poldeci pridá v Pitke majiteľovi karty pečeň +1 (popri otočení poldeci v bitke); za každý celý prah 3 Cirhóza.",
       "stav": "pokryte",
       "testy": [

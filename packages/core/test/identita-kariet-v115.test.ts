@@ -185,11 +185,12 @@ describe("Podvodník (Konflikt, v11.5)", () => {
     expect(po.hraci[0].cigarety).toBe(s.hraci[0].cigarety + 1);
   });
 
-  it("súper priloží kartu k nemu a nemá cigaretu — získa 1 zadĺženie", () => {
+  it("súper priloží kartu k nemu a nemá cigaretu — získa 1 zadĺženie, pri prahu 1 rovno Dlh", () => {
     const cudzia = karta("i_prazdna");
     const s = sHracom(zhromazdenie([[lezi(karta("podvodnik"), 0)], []], [cudzia], 1), 1, { cigarety: 0, zadlzenie: 0 });
     const po = priloz(s, cudzia.uid, 1, "superova");
-    expect(po.hraci[1].zadlzenie).toBe(1);
+    expect(po.hraci[1].zadlzenie).toBe(0);
+    expect(po.hraci[1].dlhy).toBe(s.hraci[1].dlhy + 1);
     expect(po.hraci[0].cigarety).toBe(s.hraci[0].cigarety);
   });
 

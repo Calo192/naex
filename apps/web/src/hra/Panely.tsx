@@ -23,7 +23,7 @@ import type { HracInfo } from "./useHra.ts";
 import { PocetSpakov } from "./Spaky.tsx";
 import { IkonaSpaku } from "./IkonaSpaku.tsx";
 import { CENA_POLA } from "./textyStarsich.ts";
-import { NA_STOLE_VYSVETLENIE, poldeciNaStole } from "./tabula.ts";
+import { NA_STOLE_VYSVETLENIE, poldeciNaStole, ukazZadlzenie, zadlzenieHrozi } from "./tabula.ts";
 import type { SpakyTeraz } from "@naex/core";
 
 // Ikony zdrojov a výmena „cena → zisk“ sú v ikonyZdrojov.tsx — bez ťažkých závislostí Panelov,
@@ -709,12 +709,12 @@ export function HracDoska({
             ),
           }}
         />
-        {/* Dlhy a Zadĺženie v jednej dlaždici (Michal 2026-10-27): číslo = priznané Dlhy k Exekútorovi,
-            pod ním zadĺženie k ďalšiemu Dlhu (v7 po Pitke neprepadá). Vyučba zvýrazňuje obe časti zvlášť (bar:dlhy, bar:zadlzenie). */}
+        {/* Dlhy a Zadĺženie v jednej dlaždici (Michal 2026-10-27): číslo = priznané Dlhy k Exekútorovi, pod ním
+            koľko Dlhov prinesie stôl; riadok zadĺženia len s Výherným automatom (prah 2, v11.8). Vyučba zvýrazňuje časti zvlášť (bar:dlhy, bar:zadlzenie). */}
         <Zdroj
           nazov="Dlhy"
           trieda={`zdroj-dlhy ${
-            (v?.dlhy ?? 0) > 0 || prahy.exekucia > 0 ? "hrozi" : zadlzeniePo >= prahy.dlh - 1 ? "varovanie" : ""
+            (v?.dlhy ?? 0) > 0 || prahy.exekucia > 0 ? "hrozi" : zadlzenieHrozi(zadlzeniePo, prahy.dlh) ? "varovanie" : ""
           }`}
           hodnota={
             <span className="velke-cislo">
@@ -724,10 +724,12 @@ export function HracDoska({
           }
           pod={
             <>
-              <span className={`dlhy-zadlzenie ${zadlzeniePo >= prahy.dlh - 1 ? "zly" : ""}`} data-vyucba-prvok="zadlzenie">
-                zadĺženie {hrac.zadlzenie}
-                {v !== null && v.zadlzenieZoStola > 0 && <span className="projekcia"> ▸ {zadlzeniePo}</span>}/{prahy.dlh}
-              </span>
+              {ukazZadlzenie(hrac.zadlzenie, prahy.dlh) && (
+                <span className={`dlhy-zadlzenie ${zadlzenieHrozi(zadlzeniePo, prahy.dlh) ? "zly" : ""}`} data-vyucba-prvok="zadlzenie">
+                  zadĺženie {hrac.zadlzenie}
+                  {v !== null && v.zadlzenieZoStola > 0 && <span className="projekcia"> ▸ {zadlzeniePo}</span>}/{prahy.dlh}
+                </span>
+              )}
               {vyhladZadlzenia !== null ? (
                 <TextVyhladu x={vyhladZadlzenia} />
               ) : prahy.exekucia > 0 ? (
@@ -745,11 +747,11 @@ export function HracDoska({
               <>
                 <span className="tip-stav">
                   {prahy.priznaneDlhy} {prahy.priznaneDlhy === 1 ? "priznaný Dlh" : "priznané Dlhy"}
-                  {prahy.exekucia > 0 ? ` · exekúcia v tejto bitke: −${spakov(prahy.exekucia)}` : prahy.priznaneDlhy > 0 ? " · Záhradkár: exekúcia ťa obíde" : ""} · zadĺženie {hrac.zadlzenie}
-                  {v !== null && v.zadlzenieZoStola > 0 && ` ▸ ${zadlzeniePo}`} z {prahy.dlh}
+                  {prahy.exekucia > 0 ? ` · exekúcia v tejto bitke: −${spakov(prahy.exekucia)}` : prahy.priznaneDlhy > 0 ? " · Záhradkár: exekúcia ťa obíde" : ""}
+                  {ukazZadlzenie(hrac.zadlzenie, prahy.dlh) && ` · zadĺženie ${hrac.zadlzenie}${v !== null && v.zadlzenieZoStola > 0 ? ` ▸ ${zadlzeniePo}` : ""} z ${prahy.dlh}`}
                   {vyhladZadlzenia !== null && ` · ${vyhladPitky(vyhladZadlzenia).cele.join(" · ")}`}
                 </span>
-                Každé {prahy.dlh} zadĺženia v Pitke = Dlh, hneď priznaný; zvyšok zadĺženia po Pitke ostáva a čaká na ďalší Dlh (v7). Za priznané Dlhy príde v každej bitke
+                {prahy.dlh > 1 ? `Každé ${prahy.dlh} zadĺženia v Pitke = Dlh, hneď priznaný; zvyšok zadĺženia po Pitke ostáva a čaká na ďalší Dlh.` : "Každá akcia Hazard v Pitke = Dlh, hneď priznaný."} Za priznané Dlhy príde v každej bitke
                 Exekútor: zhorí polovica Dlhov (zaokrúhlene nahor) a toľko špakov, tvoja priazeň Advokáta z nich uberie 1 / 2 / 3. Záhradkár v tvojej partii ho v tom kole obíde.
               </>
             ),
@@ -1579,8 +1581,8 @@ export function PriebehKola({
               Občana či Starešinu v línii: zruší jeho aktívne akcie a zdvojí neaktívne (násobky sa násobia: NA EX × Silná žena = ×4); súper
               smie po odkrytí odpovedať jednou kartou lícom dole (najprv útočník, potom obranca na druhý kraj; otočia sa naraz). Fajčiť (karta za 1, 2, 3… cig. v každej Pitke), doliať poldeci ({KONSTANTY.REFILL_CENA} cig.), nový poldeci (barter).
               <span className="tip-riadok">
-                Potom sa pripíšu akcie: Dlh (zadĺženie — za každý celý prah Dlh, hneď priznaný), Poškodenie pečene a Poldeci (za každý celý
-                prah Cirhóza do odhadzovacieho balíčka), Obmedzenie, Cigarety a Vízia. Pečeň aj zadĺženie sa po Pitke vynulujú.
+                Potom sa pripíšu akcie: Hazard (každá akcia Dlh, hneď priznaný), Poškodenie pečene a Poldeci (za každý celý
+                prah Cirhóza do odhadzovacieho balíčka), Obmedzenie, Cigarety a Vízia. Pečeň sa po Pitke vynuluje.
               </span>
               {viac && <span className="tip-stav">{pocetPozn}</span>}
             </>

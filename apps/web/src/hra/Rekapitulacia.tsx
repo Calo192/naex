@@ -339,7 +339,8 @@ export function riadkyTextuPitky(r: RekapitulaciaPitky, odpovede: readonly Odpov
     out.push({
       druh: "dlh",
       kto: p,
-      casti: [text("zadĺženie"), tucne(n), text(`/ ${prah} →`), tucne(`+${dlhy}`), { t: "kliatba", akcia: "Dlh" }, ...(zvysok > 0 ? [text(`· ${zvysok} ostáva na účte`)] : [])],
+      // Pri prahu 1 je to rovno počet Dlhov — „3 / 1 →“ by len mýlilo (v11.8).
+      casti: [...(prah > 1 ? [text("zadĺženie"), tucne(n), text(`/ ${prah} →`)] : []), tucne(`+${dlhy}`), { t: "kliatba", akcia: "Dlh" }, ...(zvysok > 0 ? [text(`· ${zvysok} ostáva na účte`)] : [])],
       krok: 1,
     });
   }
@@ -735,7 +736,7 @@ export function RekapBitky({ r, ja, menoSupera, menoKarty, piktogramy, vlna, hot
             </div>
             {(
               [
-                ["dlh", "Dlh", nazov("Dlh"), "zadĺženie", pitky.zadlzenie, pitky.dlhy, "Dlhov"],
+                ["dlh", "Dlh", nazov("Dlh"), "akcie → Dlhy", pitky.zadlzenie, pitky.dlhy, "Dlhov"],
                 ["pecen", "PoškodeniePečene", "pečeň", "poškodenie", pitky.pecen, pitky.cirhozy, "Cirhóz"],
               ] as const
             ).map(([kluc, akcia, meno, pod, hodnoty, karty, coKarty]) => {
@@ -1106,7 +1107,7 @@ function Meter({ bunky, prah, zvysok }: { readonly bunky: readonly string[]; rea
         <span
           key={i}
           className={`rk-prah ${g.length === prah ? "plny" : zvysok}`}
-          title={g.length === prah ? "plný prah = karta" : `${g.length} z ${prah} — ${zvysok === "prepadne" ? "zvyšok po Pitke prepadne" : "zvyšok ostáva na účte do ďalšej Pitky"}`}
+          title={g.length === prah ? (prah === 1 ? "1 Dlh" : "plný prah = karta") : `${g.length} z ${prah} — ${zvysok === "prepadne" ? "zvyšok po Pitke prepadne" : "zvyšok ostáva na účte do ďalšej Pitky"}`}
         >
           {g.map((c, j) => (
             <span key={j} className={`rk-bk${c === "" ? "" : ` ${c}`}`} />
@@ -1213,7 +1214,7 @@ export function RekapitulaciaPitkyVrstva({ r, ja, mena, nadpis, menoKarty, pikto
         </>
       ),
       n > 0 && (
-        <Cip trieda={karty > 0 ? "zisk" : "nic"} title={`${karty} kariet Dlh, hneď priznané`}>
+        <Cip trieda={karty > 0 ? "zisk" : "nic"} title={`Dlhy: +${karty}, hneď priznané`}>
           +{karty} <KartaKliatby ikona={ikona("Dlh")} />
         </Cip>
       ),
@@ -1307,7 +1308,7 @@ export function RekapitulaciaPitkyVrstva({ r, ja, mena, nadpis, menoKarty, pikto
           {tabulka && vid(1) && (
             <div className={`rk-riadok${naex ? " nova-skupina" : ""}`} role="row">
               {dlh("l", ja)}
-              <StredPitky ikona={ikona("Dlh")} title={`${nazov("Dlh")}: zadĺženie, za každé ${prah(prahDlhu)} karta Dlh; zvyšok ostáva na účte`} />
+              <StredPitky ikona={ikona("Dlh")} title={prahDlhu[0] > 1 || prahDlhu[1] > 1 ? `${nazov("Dlh")}: zadĺženie, za každé ${prah(prahDlhu)} Dlh; zvyšok ostáva na účte` : `${nazov("Dlh")}: každá akcia Dlh, hneď priznaný`} />
               {dlh("r", su)}
             </div>
           )}
@@ -1353,12 +1354,14 @@ export function RekapitulaciaPitkyVrstva({ r, ja, mena, nadpis, menoKarty, pikto
             </span>{" "}
             plný prah → karta
           </span>
-          <span>
-            <span className="rk-prah ostava">
-              <span className="rk-bk" />
-            </span>{" "}
-            zadĺženie: zvyšok ostáva na účte
-          </span>
+          {(prahDlhu[0] > 1 || prahDlhu[1] > 1) && (
+            <span>
+              <span className="rk-prah ostava">
+                <span className="rk-bk" />
+              </span>{" "}
+              zadĺženie: zvyšok ostáva na účte
+            </span>
+          )}
           <span>
             <span className="rk-prah prepadne">
               <span className="rk-bk" />

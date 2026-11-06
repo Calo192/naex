@@ -3090,3 +3090,57 @@ na výber oba konce; oltár a otočenie Kostola pre NA EX zanikli. K Výtržník
 §15 Lokality, Kostol:
 
 > | Kostol | Zhromaždenie, Pitka | Nikto nesmie vypiť (v ťahu teda len jedna karta). NA EX sa smie dať len na kartu v kraji **pri oltári** (pri vytlačenej ľavej hrane; s otočeným Kostolom pri strane hráča 1). |
+
+## v11.8 — Každý Hazard je Dlh (Michal 2026-11-06, Zrejúca)
+
+Michal 2026-11-06: „Defaultne nebude mať dlh prah, čiže každá akcia Dlh automaticky dá hráčovi Dlh. Mám pocit,
+že hráči majú strašne málo Dlhov a nepáči sa mi to.“ `PRAH_DLHU_ZAKLAD` 2 → 1; Výherný automat ostáva (prah 2,
+zvyšok na účte), mechanizmus zadĺženia v jadre tiež. Staré znenia (v11.7):
+
+§2 tabuľka akcií:
+
+> | Hazard | `Dlh` | zvýši **zadĺženie** o 1; každé 2 zadĺženia = 1 Dlh, hneď priznaný (počítadlo, §8; v7 zvyšok neprepadá); za priznané Dlhy príde v každej bitke Exekútor (§11) |
+
+> **Hazard** (Michal 2026-10-30) — Hazard kumuluje zadĺženie a zadĺženie Dlhy.
+
+§7 Vyhodnotenie Pitky:
+
+> 2. **Dlh** — za **každý celý prah** zadĺženia hráč získa Dlh (počítadlo, §8).
+
+> Po vyhodnotení Pitky sa **pečeň oboch hráčov vynuluje** — zvyšok pod prahom
+> sa do ďalšej Pitky neprenáša. **Zadĺženie sa nenuluje (v7, D6, Michal
+> 2026-10-27):** zvyšok pod prahom ostáva na účte do ďalšej Pitky aj kola.
+
+§8 (nadpis „Pečeň, zadĺženie, nerest, Chuť a Absťák“):
+
+> Pečeň **žije len v Pitke**: ráta sa počas Pitky, vyhodnotí sa v jej krokoch
+> 2–3 (§7) a po Pitke sa vynuluje. **Zadĺženie (v7, D6)** sa po Pitke nevynuluje:
+> za každé 2 zadĺženia dostaneš Dlh ako doteraz, zvyšok ostáva na účte do ďalšej
+> Pitky aj kola.
+
+> ### Zadĺženie a Dlh
+>
+> Akcia **Hazard** (kľúč `Dlh`) zvýši zadĺženie o 1. Za **každý celý prah**
+> zadĺženia hráč získa Dlh:
+>
+> ```
+> prah Dlhu = 2        (každé 2 zadĺženia = 1 Dlh; zadĺženie 8 = 4 Dlhy)
+> ```
+
+§11 Kliatby:
+
+> | **Dlh** | za každý celý prah zadĺženia (§8) a priamo z efektov kariet — …
+
+§16 Karty:
+
+> Policajtka: … Zadĺženie ide do súčtu Pitky ako Hazard (každé 2 = Dlh, §8).
+
+> Šarlatán: … (Hazard ×2 = Viera ×2, bez zadĺženia).
+
+> Podvodník: … získa **1 zadĺženie** (každé 2 = Dlh, §8 — Dlh hneď pri prahu).
+
+§17 Slovník:
+
+> | Dlh | počítadlo priznaných Dlhov (v8.2, nie karta) — každé 2 zadĺženia z Hazardu = 1 Dlh; páli ho Exekútor, rozhoduje remízu v tuhom (§8, §11) |
+> | Hazard | akcia (kľúč `Dlh`, v8.2 premenovaná): zvýši zadĺženie o 1 (§2, §8) |
+> | Čiarky na účte | zadĺženie pod prahom Dlhu; od v7 neprepadá ani po Pitke, ani po kole (D6, §8) |
