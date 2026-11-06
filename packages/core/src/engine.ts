@@ -5342,6 +5342,10 @@ function koniecBitky(s: MutState, data: GameData, events: Event[]): void {
     events.push({ type: "log", text: `Priazeň Fajčiara: hráč ${p + 1} dostáva po bitke ${cigariet(sila)}.` });
   }
 
+  // 6c. Výpalné až po cigaretách porazenému a Fajčiarovi: platí sa z toho, čo hráč po bitke má.
+  // Po finále nie — už sa neberie zo šenku, len by to prehadzovalo výkupné.
+  if (!jeFinale(s)) vyplatVypalne(s, events);
+
   // Efekty Výhra/Prehra — ešte kým karty ležia v partiách. Zvieratá vedľa Mäsiara
   // (Recidivista, Krokodíl) sa nespustia — rozhoduje okolie v tejto chvíli.
   const umlcane = zvieratAUmlcane(data, lineState(s as GameState));
@@ -5491,6 +5495,25 @@ export function utocnikFinale(spaky: readonly [number, number], vitazPoslednej: 
   return vitazPoslednej !== null ? opponentOf(vitazPoslednej) : utocnik;
 }
 
+/**
+ * Výpalné (v11.9, §10): obaja platia naraz zo stavu pred výplatou, takže poradie hráčov
+ * nerozhoduje a čerstvo prijaté výpalné sa nedá v tom istom kroku odovzdať ďalej.
+ */
+function vyplatVypalne(s: MutState, events: Event[]): void {
+  const platba = ([0, 1] as const).map((p) => {
+    const su = opponentOf(p);
+    return Math.min(cervenychHraca(s as GameState, su) * KONSTANTY.VYPALNE_ZA_CERVENU, s.hraci[p].cigarety);
+  }) as [number, number];
+  for (const p of [0, 1] as const) {
+    const zaplati = platba[p];
+    if (zaplati <= 0) continue;
+    const su = opponentOf(p);
+    hrac(s, p).cigarety -= zaplati;
+    hrac(s, su).cigarety += zaplati;
+    events.push({ type: "log", text: `Výpalné: hráč ${p + 1} platí hráčovi ${su + 1} ${cigariet(zaplati)}.` });
+  }
+}
+
 /** Začiatok kola: vypité poldeci sa čiastočne otočia na plné (PRAVIDLA §6). */
 function dolejNaZaciatkuKola(s: MutState, events: Event[]): void {
   for (const p of [0, 1] as const) {
@@ -5503,12 +5526,12 @@ function dolejNaZaciatkuKola(s: MutState, events: Event[]): void {
 }
 
 /**
- * Po každej bitke si každý hráč dobere KARTY_PO_BITKE kariet (Michal
- * 2026-10-19 — namiesto doplnenia ruky na 5). Limit ruky nie je.
+ * Na začiatku ďalšieho kola sa dobere do DOBRATIE_DO_RUKY kariet v ruke (v11.9). Kto ich má
+ * viac, nedoberá a nič neodhadzuje — limit ruky nie je. Kliatby v ruke sa rátajú: zanášajú ju.
  */
 function doberPoBitke(s: MutState, events: Event[]): void {
   for (const p of [0, 1] as const) {
-    const tahane = tahaj(s, p, KONSTANTY.KARTY_PO_BITKE, events);
+    const tahane = tahaj(s, p, Math.max(0, KONSTANTY.DOBRATIE_DO_RUKY - s.hraci[p].ruka.length), events);
     if (tahane.length > 0) {
       events.push({ type: "log", text: `Hráč ${p + 1} si po bitke doberá ${kariet(tahane.length)}.` });
     }

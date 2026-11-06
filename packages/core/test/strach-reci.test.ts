@@ -256,14 +256,15 @@ describe("§9 príklad Ana a Boris (Druhá liga, 4. kolo)", () => {
 });
 
 describe("§9 bodovanie, sekera, finále a cigareta (v11)", () => {
-  it("sekera: obaja bodujú len reči, cigaretu nedostane nikto", () => {
+  it("sekera: obaja bodujú len reči, cigaretu porazenému nedostane nikto, výpalné sa platí (v11.9)", () => {
     const s = pred({ markery: { 0: [[3, 0], [0, 2]], 3: [[1, 3], [2, 0]] }, sums: [{ Rana: 1 }, { Rana: 1 }] });
     const t = dohraj(spustBitku(data, s).state);
     const z = t.nastenka.at(-1)!;
     expect(z.vitaz).toBeNull();
     expect(z.zaStarsich).toEqual([spakyOdStarsieho({ strach: [1, 2], reci: [3, 0] }, 0, false), 3]);
     expect(z.zaStarsich).toEqual([5, 3]);
-    expect([t.hraci[0].cigarety, t.hraci[1].cigarety]).toEqual([s.hraci[0].cigarety, s.hraci[1].cigarety]);
+    // Hráč 0 má jednu červenú (starší 0), preto mu hráč 1 platí 1 cigaretu výpalného.
+    expect([t.hraci[0].cigarety, t.hraci[1].cigarety]).toEqual([s.hraci[0].cigarety + 1, s.hraci[1].cigarety - 1]);
   });
 
   it("víťaz hádky rozdelí hádku na svoje reči až po bodovaní; strach dvíha víťaz bitky", () => {

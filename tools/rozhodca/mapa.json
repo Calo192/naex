@@ -702,7 +702,7 @@
         "packages/core/test/pravidla-20261025.test.ts › fajčenie",
         "packages/core/test/pravidla-20261025.test.ts › fajčenie uprostred: najprv zvyšok doberacieho, potom zamiešaný odhadzovací",
         "packages/core/test/pravidla-20261025.test.ts › priznanie kliatby",
-        "packages/core/test/pravidla-20261025.test.ts › dobratie po bitke (KARTY_PO_BITKE = 1 karta na ďalšie kolo, od 2026-10-27)",
+        "packages/core/test/pravidla-20261025.test.ts › dobratie po bitke (DOBRATIE_DO_RUKY = do 3 kariet v ruke na ďalšie kolo, v11.9)",
         "packages/core/test/pravidla-20261025.test.ts › pri prázdnom doberacom sa odhadzovací zamieša a nová Cirhóza príde do ruky (Vízia: vziať)",
         "packages/core/test/michal-20261018.test.ts › aj keď je doberací prázdny — zamieša sa odhadzovací"
       ]

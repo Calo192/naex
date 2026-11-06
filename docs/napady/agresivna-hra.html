@@ -1,0 +1,264 @@
+<!doctype html>
+<html lang="sk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Agresívna hra — NA EX!</title>
+<style>
+:root { --pozadie:#14110e; --plocha:#1e1914; --plocha-2:#28211a; --okraj:#3d3229; --text:#f1e8d8; --tlmeny:#b6a790; --slaby:#8b7d6a;
+  --akcent:#e9ad45; --zelena:#7cbf74; --cervena:#d0563f; --modra:#5cc0cf; color-scheme: dark; }
+@media (prefers-color-scheme: light) { :root { --pozadie:#f6f1e7; --plocha:#fffaf1; --plocha-2:#f0e7d6; --okraj:#dccdb3; --text:#2a2016;
+  --tlmeny:#6b5b45; --slaby:#7a6a52; --akcent:#a8680f; --zelena:#3f7f38; --cervena:#b0402c; --modra:#2a7f8c; color-scheme: light; } }
+* { box-sizing: border-box; }
+body { margin:0; background:var(--pozadie); color:var(--text); font:16px/1.55 system-ui, "Segoe UI", Roboto, sans-serif; }
+main { max-width: 900px; margin: 0 auto; padding: 20px 16px 110px; }
+h1, h2, h3 { font-family: Georgia, serif; line-height: 1.2; }
+h1 { font-size: clamp(1.6rem, 6vw, 2.3rem); margin: 0 0 6px; }
+h2 { font-size: 1.3rem; margin: 38px 0 12px; padding-bottom: 5px; border-bottom: 1px solid var(--okraj); }
+h3 { font-size: 1.08rem; margin: 0; }
+p { margin: 0 0 10px; }
+ul { margin: 0 0 10px; padding-left: 20px; }
+li { margin-bottom: 6px; }
+.tlmene { color: var(--tlmeny); }
+.vyrok { background: var(--plocha); border: 1px solid var(--akcent); border-radius: 10px; padding: 14px 16px; margin: 16px 0; }
+.vyrok strong { color: var(--akcent); }
+.navrh { background: var(--plocha); border: 1px solid var(--okraj); border-radius: 10px; padding: 14px 16px; margin: 12px 0; }
+.navrh.odporucany { border-left: 4px solid var(--zelena); }
+.hlava { display: flex; gap: 8px; align-items: baseline; flex-wrap: wrap; margin-bottom: 8px; }
+.znacka { font-size: .74rem; padding: 1px 8px; border-radius: 999px; border: 1px solid var(--okraj); color: var(--tlmeny); white-space: nowrap; }
+.znacka.ok { color: var(--zelena); border-color: var(--zelena); }
+.znacka.vrat { color: var(--cervena); border-color: var(--cervena); }
+.znenie { background: var(--plocha-2); border-radius: 8px; padding: 9px 12px; margin: 8px 0 10px; }
+dl { margin: 0; display: grid; grid-template-columns: 76px 1fr; gap: 4px 10px; }
+dt { color: var(--slaby); font-size: .88rem; padding-top: 1px; }
+dd { margin: 0; }
+.tabulka { overflow-x: auto; margin: 10px 0 14px; }
+table { border-collapse: collapse; width: 100%; font-size: .93rem; }
+th, td { text-align: left; padding: 6px 9px; border-bottom: 1px solid var(--okraj); vertical-align: top; }
+th { color: var(--tlmeny); font-weight: 600; }
+td.cislo, th.cislo { text-align: right; font-variant-numeric: tabular-nums; }
+.volba { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 12px; }
+.volba label { cursor: pointer; }
+.volba input { position: absolute; opacity: 0; }
+.volba span { display: inline-block; padding: 4px 12px; min-height: 32px; border: 1px solid var(--okraj); border-radius: 7px; font-size: .9rem; }
+.volba input:checked + span { background: var(--akcent); border-color: var(--akcent); color: var(--pozadie); font-weight: 600; }
+.volba input:focus-visible + span { outline: 2px solid var(--modra); outline-offset: 2px; }
+.lista { position: fixed; left: 0; right: 0; bottom: 0; background: var(--plocha-2); border-top: 1px solid var(--okraj); padding: 9px 16px; display: flex; gap: 12px; align-items: center; justify-content: center; flex-wrap: wrap; }
+button { font: inherit; padding: 6px 14px; min-height: 36px; border-radius: 7px; border: 1px solid var(--akcent); background: var(--akcent); color: var(--pozadie); font-weight: 600; cursor: pointer; }
+</style>
+</head>
+<body>
+<main>
+<h1>Ako odmeniť agresívnu hru</h1>
+<p class="tlmene">Návrhy pre Michala, 2026-11-06. Vychádza z pravidiel v11.7 a sady v <code>master</code> a zo 6 partií playtestu štýlov 20261106. Na stránke si vieš pri každom návrhu vybrať a dole rozhodnutia skopírovať.</p>
+
+<div class="vyrok">
+  <p><strong>Rozhodnuté 2026-11-06:</strong> Michal schválil A, E a I pre Zrejúcu (v11.9). Výpalné sa platí hneď po bitke, aby cigarety boli pripravené na šenok. O ostatných návrhoch nerozhodol.</p>
+</div>
+
+<div class="vyrok">
+  <p><strong>Odporúčam začať dvoma zmenami:</strong> <b>A. Dobratie do troch</b> rieši, že agresorovi dôjdu karty. <b>B. Vybrať vrecká</b> rieši, že šetriť je bez rizika, lebo víťaz bitky si z Nakladačky vezme súperove cigarety a karty.</p>
+  <p style="margin:0">Pridal by som 2–3 nové karty a na Zrejúcej to skúsil spolu. Vrátenú výhru strachom (C) by som nechal na druhý krok, lebo spolu s A a B by mohla agresora urobiť neporaziteľným. <b>Nič z toho nie je zmerané</b>, sú to výpočty z pravidiel a z týchto 6 partií.</p>
+</div>
+
+<h2>Prečo agresor dnes dochádza</h2>
+<ul>
+  <li><b>Karty stoja cigarety a cigarety dostáva ten, kto nevykladá.</b> Zadarmo je 1 karta za kolo (§4). Pas platí 1 cigaretu za každú nevyloženú kartu (§6), porazený dostane 1 cigaretu (§9) a víťaz nedostane nič.</li>
+  <li><b>Útočné karty nedávajú palivo.</b> Z 11 kariet do šenku, ktoré majú na hranách tuhé aspoň 4, nemá Cigaretu ani jedna. Z 17 kariet s tuhým aspoň 3 tiež žiadna. Dvadsať kariet s Cigaretou má v priemere 0,15 tuhého.</li>
+  <li><b>Zásoba nič neriskuje.</b> Súperovu ruku a cigarety zasiahne len pár kariet (Noviny, Podvodník). Nakladačka pritom často nemá kam ísť: Agresor pri 7–11 bodoch hlásil, že červená je drahá a dáva súperovi priazeň.</li>
+  <li><b>Finále premení zásobu na body.</b> Platí 1 špak za kartu v línii a 1 za bod Nakladačky (§14b) a môže mať až 5 Pitiek, kým prvá bitka najviac 2.</li>
+  <li><b>Tvoj prvý dojem sedí aj v číslach.</b> Každá karta navyše pridá tuhé aj špak za bitku, teda platí dvakrát. Tomu sa priamo venuje návrh G.</li>
+</ul>
+
+<h3 style="margin-top:18px">Čo to robí s rukou: agresor, ktorý vyhráva a nemá Cigarety</h3>
+<p class="tlmene">Môj výpočet z pravidiel, nie záznam partie. V 1. kole minie 3 cigarety v šenku a vyloží 6 kariet v dvoch Zhromaždeniach.</p>
+<div class="tabulka"><table>
+  <tr><th>Kariet k dispozícii</th><th class="cislo">K1</th><th class="cislo">K2</th><th class="cislo">K3</th><th class="cislo">K4</th><th class="cislo">K5</th><th class="cislo">Finále</th><th class="cislo">Vyložené spolu</th></tr>
+  <tr><td>Dnes (+1 za kolo)</td><td class="cislo">7</td><td class="cislo">2</td><td class="cislo">1</td><td class="cislo">1</td><td class="cislo">1</td><td class="cislo">1</td><td class="cislo">12</td></tr>
+  <tr><td>S návrhom A</td><td class="cislo">7</td><td class="cislo">3</td><td class="cislo">3</td><td class="cislo">3</td><td class="cislo">3</td><td class="cislo">3</td><td class="cislo">21</td></tr>
+</table></div>
+
+<h3>Čo ukázal playtest štýlov (partie Agresora)</h3>
+<div class="tabulka"><table>
+  <tr><th>Partia</th><th class="cislo">Špaky pred finále</th><th class="cislo">Cigarety pred finále</th><th class="cislo">Karty v ruke</th><th class="cislo">Špaky z finále</th><th class="cislo">Výsledok</th></tr>
+  <tr><td>proti Ekonómovi</td><td class="cislo">63 : 19</td><td class="cislo">0 : 7</td><td class="cislo">1 : 0</td><td class="cislo">−1 : 22</td><td class="cislo">59 : 38</td></tr>
+  <tr><td>proti Sabotérovi</td><td class="cislo">64 : 11</td><td class="cislo">2 : 4</td><td class="cislo">2 : 2</td><td class="cislo">26 : −1</td><td class="cislo">69 : 4</td></tr>
+  <tr><td>proti Klebetníkovi</td><td class="cislo">40 : 28</td><td class="cislo">0 : 8</td><td class="cislo">1 : 9</td><td class="cislo">−2 : 31</td><td class="cislo">23 : 50</td></tr>
+</table></div>
+<p>Prvé číslo je vždy Agresor. S nula cigaretami dal vo finále −1 a −2 špaky, s vyrovnanou zásobou 26.</p>
+<p class="tlmene"><b>Čo proti tomu hovorí:</b> Agresor (Sonnet) vyhral 2 z 3, keď si nabral náskok väčší než výkyv finále. Takže agresia dnes nie je beznádejná, chýba jej dych. Je to 6 partií AI hráčov, teda signál, nie štatistika. Tvoj plán „všetko na finále“ v nich nikto nehral, preto tieto čísla tvoju skúsenosť ani nepotvrdzujú, ani nevyvracajú.</p>
+
+<h2>Návrhy pravidiel</h2>
+
+<section class="navrh odporucany" data-id="A" data-nazov="Dobratie do troch">
+  <div class="hlava"><h3>A. Dobratie do troch</h3><span class="znacka ok">odporúčam</span><span class="znacka">príbuzné so zamietnutou N9</span></div>
+  <div class="znenie">Od druhého kola si hráč na začiatku kola doberá, kým nemá v ruke 3 karty. Kto ich má 3 a viac, nedoberá nič. Limit ruky ostáva zrušený. Číslo 3 je môj návrh, treba ho overiť.</div>
+  <dl>
+    <dt>Prečo</dt><dd>Kto vykladal, má plný balíček a dostane karty. Kto šetril, ich má plnú ruku a nedostane nič, ani dnešnú 1 kartu. Kto v K1 skoro nič nevyložil, nemá čo ťahať, takže sa to vyvažuje samo.</dd>
+    <dt>Riziko</dt><dd>Vracia časť toho, čo si 2026-10-27 znížil z 2 kariet na 1, a oslabí to šenok a fajčenie u chudobného hráča. Dobre vykladajúci hráč potiahne aj vlastné Cirhózy, čo je však protihra pre Sabotéra. N9 (prvá karta zadarmo bez cigarety) si zamietol, toto je iná mechanika s podobným účelom.</dd>
+    <dt>Práca</dt><dd>Malá: jadro, bot, texty, výučba pri vypálení.</dd>
+  </dl>
+</section>
+
+<section class="navrh odporucany" data-id="B" data-nazov="Vybrať vrecká">
+  <div class="hlava"><h3>B. Vybrať vrecká (nová mechanika)</h3><span class="znacka ok">odporúčam</span></div>
+  <div class="znenie">Pri rozdelení Nakladačky smie víťaz namiesto strachu: za <b>2 body</b> vziať súperovi <b>1 cigaretu</b>, za <b>3 body</b> vziať <b>1 náhodnú kartu z jeho ruky</b> do svojej. Je to dobrovoľné ako zajatie, vo finále nie. Ceny sú môj návrh.</div>
+  <dl>
+    <dt>Prečo</dt><dd>Zásahy sa konečne dotknú zásoby a agresor z nich získa palivo. Prehrať tri bitky naschvál začne stáť veľa, hoci finále ostáva rovnako bohaté. Súpera bez zásoby to neokradne o nič, takže to neroztáča snehovú guľu proti tomu, kto už prehráva bez rezerv.</dd>
+    <dt>Príklad</dt><dd>Nakladačky 9, 6 a 7 z partie proti Ekonómovi sú spolu 22 bodov. Dnes idú všetky na strach. S týmto môžu byť 2 červené (12), 2 karty (6) a 2 cigarety (4). Pribudne ťažké rozhodnutie, či desiť, alebo olúpiť.</dd>
+    <dt>Riziko</dt><dd>Súper, ktorý zásobu nemá, proti agresorovi nič nezíska a agresor v prvej výhre môže vziať veľa. Ceny môžu byť príliš nízke. Oslabí Ekonóma, ktorý má už teraz len 1 výhru z 3.</dd>
+    <dt>Práca</dt><dd>Stredná: rozdelenie Nakladačky v jadre aj na stole, bot, skrytá náhoda karty cez seed.</dd>
+  </dl>
+</section>
+
+<section class="navrh" data-id="C" data-nazov="Výhra strachom hneď po Nakladačke">
+  <div class="hlava"><h3>C. Výhra strachom hneď po Nakladačke</h3><span class="znacka vrat">vraciam N5, zamietnutú dnes</span><span class="znacka">druhý krok</span></div>
+  <div class="znenie">Výhra strachom sa overí aj po rozdelení Nakladačky, tak ako výhra väzňami.</div>
+  <dl>
+    <dt>Prečo vraciam</dt><dd>Je to jediný skutočný rýchly koniec. Agresor mal dvakrát pred finále 4 červené (raz 3 a väzňa), no štvrtá platí až pri ďalšej výhre. Partia 23 : 50 by skončila v K5 jeho výhrou. Zberač by navyše nemohol pokojne čakať, kým sa partia dostane do finále.</dd>
+    <dt>Riziko</dt><dd>Veľké. Report ho neodporučil, lebo berie ostatným štýlom finále, teda jedinú brzdu snehovej gule, a Agresor už teraz vyhráva 2 : 1. Preto ho nechcem nasadiť naraz s A a B.</dd>
+    <dt>Práca</dt><dd>Malá.</dd>
+  </dl>
+</section>
+
+<section class="navrh" data-id="D" data-nazov="Priazeň Fajčiara len víťazovi">
+  <div class="hlava"><h3>D. Priazeň Fajčiara len víťazovi bitky</h3><span class="znacka">zmena priazne</span></div>
+  <div class="znenie">Priazeň Fajčiara dá cigarety navyše len hráčovi, ktorý bitku vyhral.</div>
+  <dl>
+    <dt>Prečo</dt><dd>Dnes môže agresor vlastným strachom platiť súperovi až +3 cigarety za bitku, hoci súper bitku prehral. Bojové priazne (Bitkár, Veriaci) ostávajú ako brzda pre toho, kto sa naozaj bije.</dd>
+    <dt>Riziko</dt><dd>Mierne ubudne dobiehania a nemám číslo, koľko cigariet to dnes dáva. Robotu nemením: report varuje, že N7 by Ekonómovi vzala jediný fungujúci motor (18 a 33 špakov).</dd>
+    <dt>Práca</dt><dd>Malá.</dd>
+  </dl>
+</section>
+
+<section class="navrh" data-id="E" data-nazov="Výpalné od vydesených starších">
+  <div class="hlava"><h3>E. Výpalné od vydesených starších</h3><span class="znacka">zmena starších, náhrada za B</span></div>
+  <div class="znenie">Hneď po bitke ti súper dá 1 cigaretu za každého staršieho, pri ktorom máš červený strach (väzeň sa ráta), koľko má. Po finále nie.</div>
+  <dl>
+    <dt>Prečo</dt><dd>Strach sa stane palivom počas celej partie, aj keď bitku práve prehráš. Súper bez cigariet neplatí nič. Bez nového rozhodovania na stole je to oveľa jednoduchšie ako B.</dd>
+    <dt>Riziko</dt><dd>Beží to samo, takže to odmeňuje skorý náskok, nie práve odohraný útok. Tento vzťah môže byť silný: 3 červené znamenajú 3 cigarety za kolo. S B naraz by to bolo priveľa.</dd>
+    <dt>Práca</dt><dd>Malá.</dd>
+  </dl>
+</section>
+
+<section class="navrh" data-id="F" data-nazov="Cigarety za pas až po bitke">
+  <div class="hlava"><h3>F. Cigarety za pas až po bitke</h3><span class="znacka">jednoduchšia náhrada za B</span></div>
+  <div class="znenie">Cigarety za pas ležia na stole do konca bitky. Kto bitku vyhrá, vezme si svoje. Kto prehrá, jeho cigarety dostane víťaz.</div>
+  <dl>
+    <dt>Prečo</dt><dd>Pas je dnes istý plat za nevyloženú kartu. Takto je z neho stávka, ktorá sa pri výhre stále oplatí.</dd>
+    <dt>Riziko</dt><dd>Zasiahne aj chudobného hráča, ktorý pasuje z núdze a prehrá. To môže byť špirála. Ostatné návrhy to nerobia, preto je F až posledná možnosť.</dd>
+    <dt>Práca</dt><dd>Malá až stredná, pribudne stav „cigarety na stole“.</dd>
+  </dl>
+</section>
+
+<section class="navrh" data-id="G" data-nazov="Rovnaké špaky za každú bitku">
+  <div class="hlava"><h3>G. Rovnaké špaky za každú bitku</h3><span class="znacka">veľká páka, samostatný pokus</span></div>
+  <div class="znenie">Víťaz bitky dostane pevne 7 špakov namiesto 1 za každú kartu v línii. Finále ostáva s Nakladačkou 1 : 1. Číslo 7 je z toho, že Agresor bral 7–10 špakov za výhru.</div>
+  <dl>
+    <dt>Prečo</dt><dd>Toto priamo rieši pocit „kto vyloží viac“. Prvá bitka má rovnakú cenu ako posledná, takže skorá výhra má skutočnú hodnotu, a karta navyše slúži už len na výhru.</dd>
+    <dt>Riziko</dt><dd>Mení rozhodnutie z v8 (2026-10-28) a jednu z najjasnejších vecí v hre. Po rozhodnutej bitke by nebol dôvod ešte vykladať. Agresor stratí časť bodov za svoje plné línie, takže sám osebe mu to nepomôže.</dd>
+    <dt>Práca</dt><dd>Malá v kóde, veľká v texte pravidiel, výučbe a súhrnoch na stole.</dd>
+  </dl>
+</section>
+
+<h2>Karty</h2>
+<p>Nové karty sa dajú skúšať bez zásahu do pravidiel. Texty sú návrh na tón a účinok, akcie a varianty dorobí Admin. Do tvorcu pôjdu až po tvojom schválení, ako rozpracovaný stav pre Zrejúcu.</p>
+<div class="tabulka"><table>
+  <tr><th>Karta</th><th>Tagy</th><th>Efekt</th><th>Čo robí</th></tr>
+  <tr><td><b>Vreckár</b></td><td>Občan, Kriminál, Chlap</td><td>Výhra: Vezmi si 1 náhodnú kartu z ruky súpera.</td><td>palivo za útok</td></tr>
+  <tr><td><b>Výberčia</b></td><td>Občan, Kriminál, Žena</td><td>Výhra: Súper ti dá 2 cigarety.</td><td>palivo za útok</td></tr>
+  <tr><td><b>Závistlivá suseda</b></td><td>Občan, Pamätník, Žena</td><td>Bitka: Za každé 2 karty v ruke súpera udelíš súperovi 1 Ranu navyše.</td><td>trest za plnú ruku (počet kariet je verejný)</td></tr>
+  <tr><td><b>Rabiát</b></td><td>Občan, Závislý, Chlap</td><td>Bitka: Ak nemáš v ruke žiadnu kartu, udelíš súperovi 1 Petelicu navyše.</td><td>odmena za all-in</td></tr>
+  <tr><td><b>Zúfalec</b></td><td>Občan, Závislý, Chlap</td><td>Nástup: Ak máš prázdnu ruku, dober si 2 karty.</td><td>nový dych</td></tr>
+  <tr><td><b>Ožran od rána</b></td><td>Občan, Závislý, Žena</td><td>Bitka: Ak leží od prvého Zhromaždenia kola, udelíš súperovi 1 Pecku navyše.</td><td>odmena za rýchlosť (jadro si to musí pamätať)</td></tr>
+</table></div>
+<section class="navrh" data-id="H" data-nazov="Nové karty pre agresora">
+  <div class="hlava"><h3>H. Nové karty pre agresora</h3></div>
+  <p style="margin:0">Na začiatok by som vzal Vreckára, Závistlivú susedu a Rabiáta, po jednej na každý účel.</p>
+</section>
+<section class="navrh" data-id="I" data-nazov="Cigareta na útočných kartách">
+  <div class="hlava"><h3>I. Cigareta na 3–4 útočných kartách</h3><span class="znacka">bez programovania</span></div>
+  <p style="margin:0">Pár kariet s tuhým aspoň 4 (kandidáti Traktorista, Vymáhač, Vandal) dostane na druhú hranu Cigaretu namiesto slabšej akcie. Najlacnejší pokus, ktorý rieši druhý bod z diagnózy. Admin to musí zladiť s Identitou kariet (v11.5).</p>
+</section>
+
+<h2>Čo som vedome nevrátil</h2>
+<ul>
+  <li><b>N8, Nakladačka vo finále 1 špak za 2 body.</b> Partiu 50 : 23 by neotočila (41 : 23) a vzala by šetrným štýlom ich cestu.</li>
+  <li><b>N14, výkupné 3 cigarety za špak.</b> Hromadenie by sa vyplácalo ešte viac.</li>
+  <li><b>N4, šenok bez posledného ťahu.</b> Pomáha zberačovi a Agresora oslabuje.</li>
+  <li><b>Bonus za sériu výhier.</b> Je to čistá snehová guľa, proti tvojej zásade o odmene za väčšiu výzvu.</li>
+</ul>
+
+<h2>Ako by som to overil</h2>
+<ul>
+  <li>A, B a 3 karty na Zrejúcu v jednej dávke. Botovi treba doplniť rozhodovanie o vreckách, inak bude výsledok skreslený.</li>
+  <li>Tvoja vlastná partia s plánom „všetko na finále“ proti človeku alebo agentovi. To je test, ktorý čísla botov nezachytia.</li>
+  <li>Playtest štýlov s Agresorom proti Klebetníkovi a Ekonómovi, ak ho schváliš.</li>
+</ul>
+<p><b>Znaky, že to funguje:</b> Agresor príde do finále s aspoň 3 kartami a nedá v ňom záporné špaky. Hráč, ktorý prehrá K1–K3 naschvál, príde o viditeľnú časť zásoby. Ekonóm a Klebetník ostanú schopní vyhrať.</p>
+</main>
+
+<div class="lista">
+  <span id="pocet" class="tlmene">Rozhodnuté: 0 z 9</span>
+  <button id="kopiruj" type="button">Skopírovať rozhodnutia</button>
+</div>
+
+<script>
+(function () {
+  var KLUC = "naex-agresia-volby";
+  var volby = {};
+  try { volby = JSON.parse(localStorage.getItem(KLUC)) || {}; } catch (e) { volby = {}; }
+  var navrhy = Array.prototype.slice.call(document.querySelectorAll("[data-id]"));
+  var moznosti = ["Áno", "Skúsiť neskôr", "Nie"];
+  var pocet = document.getElementById("pocet");
+
+  function obnovPocet() {
+    var hotovo = navrhy.filter(function (n) { return volby[n.dataset.id]; }).length;
+    pocet.textContent = "Rozhodnuté: " + hotovo + " z " + navrhy.length;
+  }
+
+  navrhy.forEach(function (navrh) {
+    var id = navrh.dataset.id;
+    var riadok = document.createElement("div");
+    riadok.className = "volba";
+    moznosti.forEach(function (text) {
+      var label = document.createElement("label");
+      var input = document.createElement("input");
+      input.type = "radio";
+      input.name = "volba-" + id;
+      input.value = text;
+      input.checked = volby[id] === text;
+      input.addEventListener("change", function () {
+        volby[id] = text;
+        try { localStorage.setItem(KLUC, JSON.stringify(volby)); } catch (e) {}
+        obnovPocet();
+      });
+      var span = document.createElement("span");
+      span.textContent = text;
+      label.appendChild(input);
+      label.appendChild(span);
+      riadok.appendChild(label);
+    });
+    navrh.appendChild(riadok);
+  });
+  obnovPocet();
+
+  document.getElementById("kopiruj").addEventListener("click", function () {
+    var tlacidlo = this;
+    var text = navrhy.map(function (n) {
+      return n.dataset.id + ". " + n.dataset.nazov + ": " + (volby[n.dataset.id] || "bez rozhodnutia");
+    }).join("\n");
+    function hotovo(sprava) {
+      tlacidlo.textContent = sprava;
+      setTimeout(function () { tlacidlo.textContent = "Skopírovať rozhodnutia"; }, 1800);
+    }
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(function () { hotovo("Skopírované"); }, function () { window.prompt("Skopíruj:", text); });
+    } else {
+      window.prompt("Skopíruj:", text);
+    }
+  });
+})();
+</script>
+</body>
+</html>

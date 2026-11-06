@@ -5552,7 +5552,7 @@ export function HernaPlocha({
       if (draft.krok === "beranie" && draft.hotovo[p]) pozn("stav", `✓ ${tvar(rodHracaP(p), "skončil", "skončila", "koniec")}`);
     } else if (view.faza === "bitka") {
       casti.push(rukaPocet(p));
-      pozn("dobere", `po bitke dobere ${KONSTANTY.KARTY_PO_BITKE}`);
+      pozn("dobere", `po bitke dobere ${Math.max(0, KONSTANTY.DOBRATIE_DO_RUKY - view.hraci[p].rukaPocet)}`);
     } else {
       casti.push(rukaPocet(p));
     }

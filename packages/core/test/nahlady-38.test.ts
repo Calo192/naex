@@ -21,6 +21,7 @@ import {
   setupGame,
   textHrozbyKliatob,
   viewFor,
+  zablokovaneStrany,
   pohladPoRozdeleni,
   stavVyhier,
 } from "../src/index.ts";
@@ -57,7 +58,8 @@ describe("hrozba kliatob na stole (#38 B)", () => {
         // Obeť vidí to isté — skrytá Záverečná je jediné, čo pohľady líšia (každý vidí len svoju).
         if (!s.strany.flat().some((pl) => pl.zaverecna === true)) expect(hrozbaKliatob(data, viewFor(data, s, obet), hrac, true)).toEqual(k);
         // Každé NA EX hráča z verejnej línie: kliatby obete z náhľadu, ktorý by videl on.
-        const vsetky = naexCieleVLinii(data, lineState(vHraca), hrac).flatMap((uid) => {
+        // Strana so Záverečnou NA EX neberie, rovnako ako v samotnej hrozbe.
+        const vsetky = naexCieleVLinii(data, lineState(vHraca), hrac, false, zablokovaneStrany(vHraca)).flatMap((uid) => {
           const n = nahladNaexNaKartu(data, vHraca, uid, ceny());
           if (n === null) return [];
           const x = n.kliatby[obet];

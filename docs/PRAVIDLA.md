@@ -1,6 +1,6 @@
 # NA EX! — pravidlá (špecifikácia)
 
-**Pravidlá v11.8 (platné od 2026-11-06)** — Každý Hazard je Dlh (v11.8), Kostol a koniec línie (v11.7), Zajatie od minulého kola (v11.6), Identita kariet (v11.5), Zajatie Nakladačkou a presvedčenie (v11.4), Konflikt oboma smermi a Podpora (v11.3), Schopnosť väzňa (v11.2), Vzbura obráti kartu (v11.1) a Strach a reči (Michal 2026-11-02, docs/napady/strach-reci.html,
+**Pravidlá v11.9 (platné od 2026-11-06)** — Dobratie do troch a výpalné (v11.9), Každý Hazard je Dlh (v11.8), Kostol a koniec línie (v11.7), Zajatie od minulého kola (v11.6), Identita kariet (v11.5), Zajatie Nakladačkou a presvedčenie (v11.4), Konflikt oboma smermi a Podpora (v11.3), Schopnosť väzňa (v11.2), Vzbura obráti kartu (v11.1) a Strach a reči (Michal 2026-11-02, docs/napady/strach-reci.html,
 verzia 2) na v10.4
 (Hádka v10 — Michal 2026-11-01, docs/napady/hadka.html, verzia 4; v9 zmrazené 2026-10-30, krok 2
 revízie starších, docs/napady/starsi-krok2-zadanie.html; dávky v9.1 Chuť, v9.2 šenok a NA EX naraz,
@@ -8,6 +8,13 @@ v9.3 Výtržník prebíja Úplatok; v10.1 zajatie pred šenkom; v10.2 Nástroj n
 Forsáž, Úplatok zrušený; v10.4 pojem Spáliť, Autority). Sada kariet v55 (`cards.json`). Pravidlá sa
 menia len v dávkach; celá dávka dostane ďalšiu verziu (značka partií `v11`; presnú verziu ukazuje
 stránka Pravidlá — `VERZIA_PRAVIDIEL_PRESNA`).
+
+**Zmeny v11.9** (Michal 2026-11-06, Zrejúca, docs/napady/agresivna-hra.html; staré znenia v `docs/pravidla-historia.md`, sekcia v11.9):
+
+- **Dobratie do troch** (§4): od druhého kola si hráč na začiatku kola doberá, kým nemá v ruke 3 karty. Kto ich má
+  3 a viac, nedoberá nič a nič neodhadzuje. Do v11.8 1 karta za kolo.
+- **Výpalné** (§9 krok 6c, §10): súper ti hneď po bitke dá 1 cigaretu za každého staršieho s tvojím červeným strachom
+  (väzeň sa ráta), koľko má. Cigarety sú tak pripravené na šenok. Po finále sa neplatí.
 
 **Zmeny v11.8 oproti v11.7** (Michal 2026-11-06, Zrejúca; staré znenia v `docs/pravidla-historia.md`, sekcia v11.8):
 
@@ -503,9 +510,10 @@ druhý kraj línie. Pitku hrajú obaja naraz (§7).
 **Začiatok kola:**
 
 - Každému hráčovi sa otočí **jeden vypitý poldeci na plný** (§6, limit).
-- Od druhého kola si každý hráč dobere zo svojho doberacieho balíčka
-  **1 kartu** (dobratie po bitke; do 2026-10-27 dve — ďalšie karty sa
-  kupujú cigaretami v šenku a fajčením). **Keď sa doberací balíček minie,
+- Od druhého kola si každý hráč dobere zo svojho doberacieho balíčka **do 3 kariet
+  v ruke** (dobratie po bitke, v11.9, `KONSTANTY.DOBRATIE_DO_RUKY`); kto ich má 3 a viac,
+  nedoberá. Kliatby v ruke sa rátajú. Ďalšie karty sa kupujú cigaretami v šenku a
+  fajčením. **Keď sa doberací balíček minie,
   odhadzovací sa zamieša a stane sa z neho nový doberací balíček** — pri
   každom ťahaní, aj uprostred neho. Na začiatku hry je doberací balíček
   prázdny (§3): kým hráč nemá ani odhadzovací, ťahanie nedá nič, fajčiť sa
@@ -1086,7 +1094,7 @@ Bitka sa vyhodnotí po poslednej Pitke kola, v tomto poradí (v11 Strach a reči
 | 5 | Poldeci (aj Na zdravie „do dna“) | §9.5 |
 | 5b | Veštica | §9.5b |
 | 6 | Cintorín (Nástroj do Dedičstva porazenému) | §15 |
-| 6c | **Porazený dostane 1 cigaretu** (pri sekere a po finále nikto), priazne Kmotra (Dlhy súperovi) a Fajčiara (cigarety, v9), efekty Výhra a Prehra (Recidivista, Dievčina), Krokodíl | §9.4, §10, §16 |
+| 6c | **Porazený dostane 1 cigaretu** (pri sekere a po finále nikto), priazne Kmotra (Dlhy súperovi) a Fajčiara (cigarety, v9), **výpalné** (v11.9, §10; po finále nie), efekty Výhra a Prehra (Recidivista, Dievčina), Krokodíl | §9.4, §10, §16 |
 
 | 7 | Návrat kariet; nepriznaná Cirhóza a Absťák z ruky do odhadzovacieho balíčka | §9.7 |
 | 8 | Koniec kola: Chuť a Absťák (v9.1) | §4, §8 |
@@ -1318,6 +1326,14 @@ Očumovateľ), Abstinent `LAKOMEC`.
 
 Efekty kariet uvádzajú pevné čísla — číslo nezávisí od iného staršieho. Čísla sú
 v kóde v `KONSTANTY` (`KONSTANTY.EFEKT`).
+
+### Výpalné (v11.9, krok 6c)
+
+Michal 2026-11-06: **hneď po vyhodnotení bitky** ti súper dá **1 cigaretu** (`KONSTANTY.VYPALNE_ZA_CERVENU`) za každého
+staršieho, pri ktorom máš **červený strach**. Väzeň sa ráta ako červená držiteľa, reči nie. Platí sa po každej bitke
+okrem finále, aj keď si ju prehral a aj pri sekere, a počíta sa so strachom po Nakladačke tejto bitky. Súper dá, koľko
+má; čo nemá, nedlhuje. Platia obaja naraz zo stavu po cigarete porazenému a Fajčiarovi, takže prijaté výpalné sa v tom
+istom kroku neodovzdá ďalej (výklad, Michal to neurčil). Obmedzenie výpalné neuberá a nie je to nerest.
 
 ### Bodovanie po bitke (krok 4b)
 
@@ -1933,7 +1949,8 @@ bitky, Noviny hneď po rozhodnutí hádky, Kôň v kroku Exekútora. Michal ich 
 | Zadĺženie | čo dáva Hazard a efekty kariet: 1 zadĺženie = 1 Dlh; len s Výherným automatom je Dlh za každé 2 a zvyšok ostáva na účte (§8) |
 | Finále | posledná bitka o pinnacle lokalitu, hrá sa ako o každú inú; útočí zaostávajúci (menej špakov) (§14b) |
 | Dedičstvo | Nástroj vyložený mimo línie za rastúcu cenu v cigaretách; platí jeho efekt Dedičstvo (§12) |
-| Dobratie po bitke | 1 karta na začiatku každého ďalšieho kola; limit ruky nie je (§4) |
+| Dobratie po bitke | na začiatku každého ďalšieho kola do 3 kariet v ruke; kto ich má viac, nedoberá; limit ruky nie je (§4) |
+| Výpalné | hneď po bitke 1 cigareta od súpera za každého staršieho s tvojím červeným strachom, koľko má (v11.9, §10) |
 | Konflikt | spúšťač (v11.3): efekt karty, keď sa priložením ocitne vedľa súperovej karty — prikladáš ty alebo súper; Nástroj, NA EX, zrážka ani presun ho nespúšťajú (§6, §16) |
 | Podpora | spúšťač (v11.3): zrkadlo Konfliktu — efekt karty, keď sa priložením stretne s inou kartou toho istého hráča (§6, §16) |
 | Vyvolať Konflikt | priložiť kartu k súperovej ležiacej karte so spúšťačom Konflikt (§16) |

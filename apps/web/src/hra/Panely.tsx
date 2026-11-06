@@ -1604,7 +1604,7 @@ export function PriebehKola({
           Rozdiel tuhého je Nakladačka: drží ju víťaz, starších vyberá porazený (vo finále sa nerozdeľuje, víťaz za ňu dostane špaky 1 : 1). Strach starších platí na
           konci kola za stupne udržané od minulého kola — každému, koho sa boja.
           <span className="tip-riadok">
-            Najprv hádka (mäkké), potom poškodenie, Exekútor, Nakladačka… a každý si dobere {pocet(KONSTANTY.KARTY_PO_BITKE, "kartu", "karty", "kariet")}. Porazený je v ďalšom kole
+            Najprv hádka (mäkké), potom poškodenie, Exekútor, Nakladačka… a súper ti zaplatí výpalné. Na začiatku kola si každý dobere do {KONSTANTY.DOBRATIE_DO_RUKY} kariet v ruke. Porazený je v ďalšom kole
             útočník.
           </span>
         </>

@@ -124,7 +124,7 @@ describe("nová Cirhóza ide do odhadzovacieho balíčka (Michal 2026-10-25)", (
 describe("keď sa doberací balíček minie, odhadzovací sa zamieša a stane sa z neho nový doberací", () => {
   it("fajčenie", () => {
     const odhodene = [inst("cirhoza"), inst("ministrant")];
-    const s = sHracom(vPitke(73), 0, { cigarety: 3, doberaci: [], odhadzovaci: odhodene });
+    const s = sHracom(vPitke(73), 0, { cigarety: 10, doberaci: [], odhadzovaci: odhodene });
     const po = apply(data, s, { type: "smoke", pocet: 2 }, 0).state;
     expect(uids(po.hraci[0].ruka)).toEqual(expect.arrayContaining(uids(odhodene)));
     expect(po.hraci[0].odhadzovaci).toEqual([]);
@@ -137,7 +137,7 @@ describe("keď sa doberací balíček minie, odhadzovací sa zamieša a stane sa
   it("fajčenie uprostred: najprv zvyšok doberacieho, potom zamiešaný odhadzovací", () => {
     const posledna = inst("pijan");
     const odhodena = inst("cirhoza");
-    const s = sHracom(vPitke(74), 0, { cigarety: 3, doberaci: [posledna], odhadzovaci: [odhodena] });
+    const s = sHracom(vPitke(74), 0, { cigarety: 10, doberaci: [posledna], odhadzovaci: [odhodena] });
     const po = apply(data, s, { type: "smoke", pocet: 2 }, 0).state;
     expect(uids(po.hraci[0].ruka)).toEqual(expect.arrayContaining([posledna.uid, odhodena.uid]));
     expect(po.hraci[0].odhadzovaci).toEqual([]);
@@ -161,7 +161,7 @@ describe("keď sa doberací balíček minie, odhadzovací sa zamieša a stane sa
     expect(po.hraci[0].odhadzovaci).toEqual([]);
   });
 
-  it("dobratie po bitke (KARTY_PO_BITKE = 1 karta na ďalšie kolo, od 2026-10-27)", () => {
+  it("dobratie po bitke (DOBRATIE_DO_RUKY = do 3 kariet v ruke na ďalšie kolo, v11.9)", () => {
     const s0 = setupGame(data, 77);
     const odhodene = kusy(3, "ministrant");
     const s = sHracom(
@@ -193,9 +193,9 @@ describe("keď sa doberací balíček minie, odhadzovací sa zamieša a stane sa
     );
     const po = apply(data, s, { type: "cintorin", uid: null }, 0).state;
     expect(po.koniec).toBeNull();
-    expect(KONSTANTY.KARTY_PO_BITKE).toBe(1);
-    expect(po.hraci[0].ruka.filter((k) => odhodene.some((o) => o.uid === k.uid))).toHaveLength(1);
-    expect(po.hraci[0].doberaci).toHaveLength(2);
+    expect(KONSTANTY.DOBRATIE_DO_RUKY).toBe(3);
+    expect(po.hraci[0].ruka.filter((k) => odhodene.some((o) => o.uid === k.uid))).toHaveLength(3);
+    expect(po.hraci[0].doberaci).toHaveLength(0);
     expect(po.hraci[0].odhadzovaci).toEqual([]);
   });
 

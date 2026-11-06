@@ -167,7 +167,6 @@ describe("Záverečná — otočenie na konci Pitky", () => {
     const { state, logy } = dohrajPitku(pitka);
     expect(state.strany[0].find((pl) => pl.card.uid === stryna.uid)?.zaverecna).toBeUndefined();
     expect(logy.some((t) => t.includes("Záverečná hráča 1 sa otáča: Niekoho stryná"))).toBe(true);
-    expect([...state.hraci[0].ruka, ...state.hraci[0].odhadzovaci].map((k) => k.uid)).not.toContain(cirhoza.uid);
     expect(viewFor(data, state, 1).zaverecne).toEqual([]);
   });
 

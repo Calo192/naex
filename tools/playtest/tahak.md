@@ -1,4 +1,4 @@
-# Ťahák — platné pravidlá NA EX! (v11.8 Strach a reči, zajatie a presvedčenie, identita kariet, Kostol na konci línie, každý Hazard je Dlh, 2026-11-06, Zrejúca; sada = cards.json v master)
+# Ťahák — platné pravidlá NA EX! (v11.9 Strach a reči, zajatie a presvedčenie, identita kariet, Kostol na konci línie, každý Hazard je Dlh, 2026-11-06, Zrejúca; sada = cards.json v master)
 
 Spoločný ťahák AI hráčov — playtester (Zrejúca) ho číta z master, protihráč na
 Vypálenej z vetvy `vypalena` (tam platí jej verzia pravidiel). Podrobne v `docs/PRAVIDLA.md` (zmeny v jeho úvode). Pri
@@ -165,7 +165,8 @@ rozpore s `docs/PRAVIDLA.md` platí `docs/PRAVIDLA.md` a rozpor zapíš do
   na 8: najprv z Náradia, kým v ňom nie sú 2 Nástroje, zvyšok z Občanov. Branie striedavo, **začína obranca (v9.2)**: **1 karta za 1 cigaretu,
   2 karty za 3 cigarety** (`{"type":"draftBer","uids":[…]}`); **kto berie prvý, na svojom prvom ťahu vezme len 1 kartu**; poldeci sa
   v šenku neplatí; `draftStop` ukončí branie.
-- **Ruka bez limitu:** po každej bitke si dobereš **1 kartu** (2026-10-27, predtým 2); nič neodhadzuješ.
+- **Ruka bez limitu:** na začiatku každého ďalšieho kola dobereš do **3 kariet v ruke** (v11.9); kto ich má viac, nedoberá a nič neodhadzuje.
+- **Výpalné (v11.9):** súper ti hneď po bitke dá **1 cigaretu za každého staršieho** s tvojím červeným strachom (väzeň sa ráta), koľko má; po finále nie. Máš ho teda na šenok.
   Karty navyše: šenok, fajčenie (`smoke`: karta hneď, **len v Pitke** (v5), v Zhromaždení
   nie; **prvé fajčenie v Pitke 1 cigareta, druhé 2, tretie 3…**, každá Pitka znova od 1
   (2026-10-27), každá vyfajčená cigareta je nerest (v9.1: druhé fajčenie za 2 = 2 neresti); s prázdnym doberacím aj odhadzovacím balíčkom sa fajčiť

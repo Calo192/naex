@@ -11,8 +11,10 @@ export const KONSTANTY = {
    * Po každej bitke si hráč dobere toľkoto kariet (Michal 2026-10-19) —
    * namiesto doplnenia ruky na 5. Limit ruky nie je. Od 2026-10-27 len 1
    * (predtým 2): ďalšie karty sa majú kupovať cigaretami (šenok, fajčenie).
+   * Od v11.9 (Michal 2026-11-06, docs/napady/agresivna-hra.html, návrh A) sa doberá do tohto
+   * počtu kariet v ruke: kto vykladal, dostane karty; kto šetrí, nedostane nič.
    */
-  KARTY_PO_BITKE: 1,
+  DOBRATIE_DO_RUKY: 3,
   START_CIGARETY: 3,
 
   /**
@@ -168,6 +170,11 @@ export const KONSTANTY = {
   CERVENYCH_NA_VYHRU: 4,
   /** Porazený bitky dostane toľkoto cigariet (v11 — do v10 cigaretu za každého posunutého staršieho). */
   CIGARETY_PORAZENEMU: 1,
+  /**
+   * Výpalné (v11.9, Michal 2026-11-06, návrh E): súper po bitke dá toľkoto cigariet za každého
+   * staršieho na tvojom červenom strachu (väzeň sa ráta), koľko má — aby strach financoval šenok.
+   */
+  VYPALNE_ZA_CERVENU: 1,
   /** Schopnosť väzňa Poštárky (v11.2, Michal 2026-11-02): toľko cigariet držiteľovi. */
   POSTARKA_CIGARETY: 4,
   /** Schopnosť väzňa Autobusára (v11.2): každá karta zo šenku za toľko cigariet. */
@@ -261,13 +268,14 @@ export function vazniNaVyhru(lokalitCelkom: number): number {
 // červenej už pred touto Nakladačkou (od minulého kola) — dotiahnuť a zajať naraz nejde.
 // v11.7 (Michal 2026-11-06) bez novej značky: Kostol — NA EX len na poslednú kartu línie (oba konce),
 // oltár a otočenie Kostola pre NA EX zanikli.
+// v11.9 (Michal 2026-11-06) bez novej značky: dobratie do 3 kariet v ruke, výpalné po bitke.
 export const VERZIA_PRAVIDIEL = "v11";
 /**
  * Presná verzia pravidiel vrátane dávky — hráč ju vidí na stránke Pravidlá, ktorá má
  * vždy odzrkadľovať správanie nasadenej hry (Michal 2026-10-31). Značka partií
  * (VERZIA_PRAVIDIEL) sa pri dávke nemení, táto áno.
  */
-export const VERZIA_PRAVIDIEL_PRESNA = "v11.8";
+export const VERZIA_PRAVIDIEL_PRESNA = "v11.9";
 /** Odkedy platí VERZIA_PRAVIDIEL_PRESNA — hráč ho vidí na stránke Pravidlá. */
 export const PRAVIDLA_PLATNE_OD = "2026-11-06";
 export type DlzkaHry = keyof typeof DLZKY_HRY;

@@ -3144,3 +3144,15 @@ zvyšok na účte), mechanizmus zadĺženia v jadre tiež. Staré znenia (v11.7)
 > | Dlh | počítadlo priznaných Dlhov (v8.2, nie karta) — každé 2 zadĺženia z Hazardu = 1 Dlh; páli ho Exekútor, rozhoduje remízu v tuhom (§8, §11) |
 > | Hazard | akcia (kľúč `Dlh`, v8.2 premenovaná): zvýši zadĺženie o 1 (§2, §8) |
 > | Čiarky na účte | zadĺženie pod prahom Dlhu; od v7 neprepadá ani po Pitke, ani po kole (D6, §8) |
+
+## v11.9 — dobratie do troch a výpalné (Michal 2026-11-06, Zrejúca)
+
+Návrh: `docs/napady/agresivna-hra.html`, návrhy A a E. Dôvod: agresívnemu hráčovi došli karty a šetrenie bolo bez rizika.
+
+Staré znenie §4:
+
+> Od druhého kola si každý hráč dobere zo svojho doberacieho balíčka
+> **1 kartu** (dobratie po bitke; do 2026-10-27 dve — ďalšie karty sa
+> kupujú cigaretami v šenku a fajčením).
+
+Výpalné je nové; bez starého znenia. Priazeň Výpalník (do v9) je iná vec: platila za súperovo NA EX.

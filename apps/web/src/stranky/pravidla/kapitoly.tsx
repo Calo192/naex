@@ -199,7 +199,7 @@ export const KAPITOLY: readonly Kapitola[] = [
             starších — ktorých, vyberá porazený. Na konci kola starší zaplatia za udržaný strach tomu, koho sa boja.
           </li>
           <li>
-            <strong>Po bitke.</strong> Karty z línie idú do odhadzovacích balíčkov, každý si dobere 1 kartu a doleje sa mu jeden
+            <strong>Po bitke.</strong> Súper ti dá 1 cigaretu za každého staršieho, ktorý sa ťa bojí na červenej (výpalné). Karty z línie idú do odhadzovacích balíčkov, každý si dobere do 3 kariet v ruke a doleje sa mu jeden
             vypitý poldeci.
           </li>
         </ol>
@@ -639,7 +639,7 @@ export const KAPITOLY: readonly Kapitola[] = [
             minulého kola a ešte ich nezaplatil — nech bitku vyhral ktokoľvek.
           </li>
           <li>
-            <strong>Nové kolo</strong> — každému sa doleje jeden vypitý poldeci a každý si dobere 1 kartu.
+            <strong>Nové kolo</strong> — každému sa doleje jeden vypitý poldeci a každý si dobere do 3 kariet v ruke. Kto ich má viac, nedoberá nič.
           </li>
         </ol>
       </>

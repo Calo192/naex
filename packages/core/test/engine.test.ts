@@ -154,8 +154,8 @@ describe("M6 — smoke test", () => {
         for (const p of [0, 1] as const) {
           const h = state.hraci[p];
           const dostupne = h.doberaci.length + h.odhadzovaci.length;
-          // Po bitke +2 karty, ak bolo z čoho ťahať (Michal 2026-10-19); limit ruky nie je.
-          expect(h.ruka.length).toBeGreaterThanOrEqual(Math.min(KONSTANTY.KARTY_PO_BITKE, dostupne));
+          // Po bitke sa dorovná do 3 kariet, ak bolo z čoho ťahať (v11.9); limit ruky nie je.
+          if (dostupne > 0) expect(h.ruka.length).toBeGreaterThanOrEqual(KONSTANTY.DOBRATIE_DO_RUKY);
         }
         expect(events.some((e) => e.type === "kartyTahane" || e.type === "log")).toBe(true);
         overenych++;
