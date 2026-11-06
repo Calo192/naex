@@ -54,15 +54,17 @@ describe("offline protihráč na serveri", () => {
       // Bitka ešte nestačí — hráčom je až po dohratej partii (Michal 2026-10-21).
       if (a.view?.kolo === 2 && tahov % 10 === 0) expect(await rola()).toBe("navstevnik");
       const pred = a.pocetStavov;
+      const fazaPred = a.view?.faza;
       a.posli({ type: "cmd", cmd: a.vyberTah() });
-      await cakaj(() => a.pocetStavov > pred || a.chyby.length > 0, "odpoveď servera");
-      // Bot s nulovou pauzou ťahá hneď — klient občas pošle ťah podľa stavu,
-      // ktorý medzitým zastaral. Server ho odmietne; klient počká na nový stav.
+      await a.vybavene();
+      // V Pitke hrajú obaja naraz, bot s nulovou pauzou ťahá hneď — môj ťah sa s jeho ťahom
+      // minie a server ho podľa nového stavu odmietne. Inde alebo bez nového stavu je to chyba.
       if (a.chyby.length > 0) {
+        const dovod = a.chyby.join(" | ");
+        expect(fazaPred, dovod).toBe("pitka");
+        expect(a.pocetStavov, dovod).toBeGreaterThan(pred);
         odmietnute.push(...a.chyby.splice(0));
-        await cakaj(() => a.pocetStavov > pred, "nový stav po odmietnutí");
       }
-      expect(odmietnute.length, odmietnute.join(" | ")).toBeLessThanOrEqual(2);
       tahov++;
       expect(tahov).toBeLessThan(3000);
     }
@@ -104,7 +106,7 @@ describe("offline protihráč na serveri", () => {
     const fazy = Object.values(p.fazy);
     expect(fazy.reduce((s, f) => s + f.prikazy[0]! + f.prikazy[1]!, 0)).toBe(p.prikazy);
     // Odmietnuté ťahy (zastaraný stav) server nevykonal, do tempa nepatria.
-    expect(fazy.reduce((s, f) => s + f.prikazy[0]!, 0)).toBeGreaterThanOrEqual(tahov - odmietnute.length);
+    expect(fazy.reduce((s, f) => s + f.prikazy[0]!, 0)).toBe(tahov - odmietnute.length);
     expect(Object.keys(p.fazy)).toEqual(expect.arrayContaining(["zhromazdenie", "pitka"]));
 
     // Partia s botom je v archíve (Michal 2026-10-22): bilancia s botmi, Frajerina bez zmeny,
