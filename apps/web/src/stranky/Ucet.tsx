@@ -21,6 +21,10 @@ import {
 import { Avatar, Hlaska, Pole } from "../komponenty.tsx";
 import { HlavaStranky } from "../HlavaStranky.tsx";
 import type { Pohlavie } from "@naex/core";
+import { hlasitostZvuku, nacitajSkladby, urlSkladby } from "../hra/Hudba.tsx";
+import { nacitajHlasky, urlHlasky } from "../hra/Melichar.tsx";
+import { SCHEMY, aktualnaSchema, pouziSchemu } from "../lib/schemy.ts";
+import { VyberParu } from "./VyberParu.tsx";
 
 /** Pohlavie v profile (Michal 2026-10-22) — súper ho vidí len v tvare hlášok. */
 const VOLBY_POHLAVIA: readonly { readonly id: Pohlavie | null; readonly nazov: string; readonly popis: string }[] = [
@@ -28,10 +32,6 @@ const VOLBY_POHLAVIA: readonly { readonly id: Pohlavie | null; readonly nazov: s
   { id: "zena", nazov: "Žena", popis: "„{meno} skončila bez NA EX.“" },
   { id: null, nazov: "Neuvádzať", popis: "„{meno}: koniec bez NA EX.“" },
 ];
-import { hlasitostZvuku, nacitajSkladby, urlSkladby } from "../hra/Hudba.tsx";
-import { nacitajHlasky, urlHlasky } from "../hra/Melichar.tsx";
-import { SCHEMY, aktualnaSchema, pouziSchemu } from "../lib/schemy.ts";
-import { VyberParu } from "./VyberParu.tsx";
 
 /**
  * Prihlásenie. Zrejúca ho ukáže namiesto každej stránky, kým v nej nie je nikto s oprávnením
