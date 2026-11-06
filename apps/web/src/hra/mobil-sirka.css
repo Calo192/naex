@@ -572,7 +572,7 @@ body:not(.tahanie-aktivne) .hra.mobil-sirka:not(.stol-scroll) .ruka-rad > .tahat
 }
 
 /* Odznaky „dobraná“, „zo šenku“, spoj: malé v hornom rohu, nikdy cez meno. */
-.hra.mobil-sirka:not(.stol-scroll) .ruka-rad :is(.nova-stitok, .spoj-stitok) {
+.hra.mobil-sirka:not(.stol-scroll) .ruka-rad :is(.nova-stitok, .spoj-stitok, .pecen-stitok) {
   top: 2px;
   left: 2px;
   right: auto;
@@ -587,6 +587,10 @@ body:not(.tahanie-aktivne) .hra.mobil-sirka:not(.stol-scroll) .ruka-rad > .tahat
 
 .hra.mobil-sirka:not(.stol-scroll) .ruka-rad .spoj-stitok {
   top: 18px;
+}
+
+.hra.mobil-sirka:not(.stol-scroll) .ruka-rad .pecen-stitok {
+  top: 34px;
 }
 
 /* Vybraná karta v línii či v šenku: obrys ako výber, nie polopriesvitný duch z ťahania. */
@@ -1632,7 +1636,7 @@ html.stol-na-sirku .lokalita-supera :is(.tlacidlo-hlavne, .medziobrazovka-caka) 
   overflow: hidden;
 }
 
-.hra.mobil-sirka:not(.stol-scroll) .ciel-miesto .nahlad-miesto > span:not(.nm-spoj) {
+.hra.mobil-sirka:not(.stol-scroll) .ciel-miesto .nahlad-miesto > span:not(.nm-spoj, .nm-pecen) {
   display: none;
 }
 
@@ -2143,6 +2147,19 @@ html.stol-na-sirku .rk-tel-akcia:disabled {
 }
 
 .hra.mobil-sirka .pruh-text :is(.zetony, .pil-sep) {
+  display: none;
+}
+
+/* Súperovo NA EX cez Bzdochu zaberie celý pruh, inak by text za ním ostal úzky na jedno písmeno; zvyšok po ťuku. */
+.hra.mobil-sirka .pruh-text > .pilulka-nadpis:has(.nadpis-bzdocha) {
+  flex: 1 1 auto;
+  min-width: 0;
+  white-space: normal;
+  letter-spacing: 0.04em;
+  line-height: 1.2;
+}
+
+.hra.mobil-sirka .pruh-text:has(.nadpis-bzdocha) > .pilulka-text {
   display: none;
 }
 

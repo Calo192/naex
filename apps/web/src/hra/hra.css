@@ -2847,6 +2847,51 @@ button.dlzka-volba.aktivna {
   color: var(--tlmeny);
 }
 
+/* Výstraha pečene pred vyložením (Michal 2026-11-06): miesto na stole, štítok v ruke, pokyn. */
+.nahlad-miesto .nm-pecen {
+  padding: 1px 4px;
+  border-radius: 4px;
+  background: color-mix(in srgb, var(--cervena) 55%, var(--pozadie));
+  color: var(--text);
+  font-weight: 800;
+}
+
+.pilulka-text .pecen-varovanie {
+  color: var(--cervena-svetla);
+  font-weight: 800;
+}
+
+/* Nízke okno: s výstrahou by sa riadok súpera nezmestil do miesta; celé znenie je v pokyne. */
+@media (max-height: 719px) {
+  .nahlad-miesto:has(.nm-pecen) .nm-super {
+    display: none;
+  }
+}
+
+/* Na šírku karty a nad ikonami akcií: susedná karta v ruke by dlhší štítok prekryla. */
+.pecen-stitok {
+  position: absolute;
+  z-index: 3;
+  left: 50%;
+  top: 14px;
+  transform: translateX(-50%);
+  width: max-content;
+  max-width: calc(100% - 6px);
+  padding: 1px 6px;
+  border-radius: 8px;
+  background: color-mix(in srgb, var(--cervena) 70%, var(--pozadie));
+  border: 1px solid var(--cervena-svetla);
+  color: var(--text);
+  font: 700 0.68rem/1.25 var(--pismo);
+  text-align: center;
+  pointer-events: none;
+}
+
+/* Súperovo NA EX videné cez Bzdochu: rovnaká červená ako jeho štítok „skryto“ na karte. */
+.nadpis-bzdocha {
+  color: var(--cervena-svetla);
+}
+
 .strany-stredu-ikony {
   white-space: nowrap;
 }

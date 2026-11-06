@@ -6,6 +6,7 @@
 
 import type { CardInstance, PlayerId } from "./types.ts";
 import type { GameData } from "./data.ts";
+import { printedSides } from "./data.ts";
 import {
   cielLokalitaId,
   cieleVykladania,
@@ -30,6 +31,7 @@ import { zahradkarChrani } from "./engine.ts";
 import type { ClientState } from "./view.ts";
 import { cenaKliatby } from "./view.ts";
 import { pocet } from "./jazyk.ts";
+import { mozeEsteNaex } from "./hrozba.ts";
 
 /** Stôl pre náhľad — línia a pečeň po zamýšľanom ťahu (ako pre nahladPitky). */
 export type StolNahladu = Parameters<typeof nahladPitky>[1];
@@ -532,6 +534,44 @@ export function hrozbaKliatob(data: GameData, view: ClientState, hrac: PlayerId,
     if (najhorsia === null || cirhozy + dlhy > najhorsia.cirhozy + najhorsia.dlhy || (cirhozy + dlhy === najhorsia.cirhozy + najhorsia.dlhy && spaky < najhorsia.spaky)) najhorsia = h;
   }
   return najhorsia;
+}
+
+/** Karta s akciou Poškodenie pečene alebo Poldeci na niektorej hrane, aktívnou či nie. */
+export function maAkciuPecene(data: GameData, karta: CardInstance): boolean {
+  const { left, right } = printedSides(data, karta);
+  return [...left, ...right].some((a) => a === "PoškodeniePečene" || a === "Poldeci");
+}
+
+export interface VystrahaPecene {
+  /** Cirhózy navyše do konca kola z tohto vyloženia, [hráč 0, hráč 1]. */
+  readonly cirhozy: readonly [number, number];
+  /** Špaky za ne na konci hry (záporné). */
+  readonly spaky: readonly [number, number];
+  /**
+   * Súperovo NA EX z verejnej línie: Cirhózy, ktoré by hráčovi pridalo ešte navyše. Len keď
+   * ho vyloženie zhorší — hrozbu, ktorá platí aj bez karty, by si hráč pripísal na jej vrub.
+   */
+  readonly naex: HrozbaKliatob | null;
+}
+
+/**
+ * Výstraha pečene pred vyložením (Michal 2026-11-06; playtest 20261106: chodila až po vyložení).
+ * `pred` je pohľad hráča bez karty, `po` s ňou. Počíta to isté čo náhľad ťahu (cenaTahu)
+ * a HROZBA KLIATOB, len z pohľadu, takže súperovu ruku ani jeho skryté NA EX nepozná.
+ * Null, keď karta žiadnu Cirhózu nehrozí.
+ */
+export function vystrahaPecene(data: GameData, pred: ClientState, po: ClientState): VystrahaPecene | null {
+  const su = opponentOf(pred.ja);
+  const cena = cenaKliatby("cirhoza");
+  const k = cenaTahu(data, pred, po, [{ cirhoza: cena, dlh: 0 }, { cirhoza: cena, dlh: 0 }]).kliatby;
+  const navyse = (p: PlayerId): number => Math.max(0, k[p].cirhozy + k[p].dalejCirhozy);
+  const cirhozy = [navyse(0), navyse(1)] as const;
+  const hrozba = (v: ClientState): HrozbaKliatob | null =>
+    hrozbaKliatob(data, v, su, mozeEsteNaex(v, { faza: v.faza, pitkaStav: v.pitkaStav, pitkaCislo: v.pitkaCislo, pitkyCelkom: v.pitkyCelkom, poldeciPlne: [v.hraci[0].poldeciPlne, v.hraci[1].poldeciPlne] }, su));
+  const hrozbaPo = hrozba(po);
+  const naex = hrozbaPo !== null && hrozbaPo.cirhozy > (hrozba(pred)?.cirhozy ?? 0) ? hrozbaPo : null;
+  if (cirhozy[0] === 0 && cirhozy[1] === 0 && naex === null) return null;
+  return { cirhozy, spaky: [cirhozy[0] * cena, cirhozy[1] * cena], naex };
 }
 
 /** „Cirhóza +1, Dlh +2, −3 špaky“ — ten istý text hrozby kliatob pre web aj klienta AI hráčov. */
