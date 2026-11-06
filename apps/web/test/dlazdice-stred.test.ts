@@ -20,13 +20,11 @@ describe("dlaždice dosky", () => {
   });
 
   it("Karty (Michal 2026-11-06): veľké číslo a ruka s priznanými v strede dlaždice", () => {
-    expect(hra).toMatch(/
-.karty-prehlad {[^}]*align-items: center;s*justify-content: center;/);
-    expect(hra).toMatch(/
-.karty-rad {[^}]*text-align: left;/);
+    expect(hra).toMatch(/\n\.karty-prehlad \{[^}]*align-items: center;\s*justify-content: center;/);
+    expect(hra).toMatch(/\n\.karty-rad \{[^}]*text-align: left;/);
   });
 
   it("Karty: súperova dlaždica nie je zrkadlená, veľké číslo je vľavo na oboch stranách", () => {
-    expect(hra).not.toMatch(/.superova[^{]*.karty-(prehlad|vylozi|rad)/);
+    expect(hra).not.toMatch(/\.superova[^{]*\.karty-(prehlad|vylozi|rad)/);
   });
 });
