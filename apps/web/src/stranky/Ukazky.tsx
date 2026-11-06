@@ -3,13 +3,11 @@
 
 import { useLayoutEffect, useMemo, useRef, useState } from "react";
 import type { CardInstance, GameData, LineEval } from "@naex/core";
-import { battleOutcome, computeDamage, evaluateLine, loadGameData } from "@naex/core";
+import { KONSTANTY, battleOutcome, computeDamage, evaluateLine, loadGameData, spakov } from "@naex/core";
 import eldersJson from "@naex/core/data/elders.json";
 import scorecardsJson from "@naex/core/data/scorecards.json";
 import type { KartaNavrh, RozlozenieStrany, Sada, Vzhlad } from "@naex/tvorba";
 import { variant, variantyKarty } from "@naex/tvorba";
-import { ZnackaStrachu } from "../hra/IkonaStrachu.tsx";
-import { IkonaPriazne } from "../hra/IkonaPriazne.tsx";
 import { KartaLico, type SlotStav } from "../karta/KartaLico.tsx";
 import { vzhladSady } from "../lib/sada.tsx";
 
@@ -205,7 +203,7 @@ export function UkazkaBitky() {
       </div>
       <div className="ukazka-bitka-vysledok">
         <div>
-          <span className="tlmene">Zvyšná Viera / Povera po vyrušení (Povery posúvajú priazne)</span>
+          <span className="tlmene">Zvyšná Viera / Povera po vyrušení (Povery idú do hádky)</span>
           <strong>
             {d.zvysnaViera[0]}/{d.zvysnaPovera[0]} : {d.zvysnaViera[1]}/{d.zvysnaPovera[1]}
           </strong>
@@ -231,57 +229,46 @@ export function UkazkaBitky() {
         )}{" "}
         {o.prebytokDrzi === null
           ? "Tuhé poškodenie je vyrovnané — Nakladačku nezíska nikto."
-          : `${MENA[o.prebytokDrzi]} drží Nakladačku ${o.prebytok} — medzi starších ju rozdelí ${o.prebytokDrzi === 0 ? "súper" : "ty"}.`}
+          : `${MENA[o.prebytokDrzi]} drží Nakladačku ${o.prebytok} a po bitke ju rozdelí na svoj strach.`}
       </div>
     </div>
   );
 }
 
-// v6: 7 polí, jediné sivé v strede (index 3); pojmy v8.3: farba a stav staršieho. Stôl má od v11 Strach
-// a reči teplomery (LiniaStarsich.tsx) — táto ukážka pravidiel ostáva, kým sa kapitola neprepíše.
-const STUPNICA_ZONY = [3, 2, 1, 0, 1, 2, 3] as const;
-const STUPNICA_HODNOTY = STUPNICA_ZONY;
-const ZONY = ["červená", "oranžová", "žltá", "stred", "žltá", "oranžová", "červená"];
+const ZONA_TRIEDA = ["siva", "zlta", "oranzova", "cervena"];
 const STAV = ["pokojný", "znepokojený", "vystrašený", "vydesený"];
-const ZONA_TRIEDA = ["cervena", "oranzova", "zlta", "siva", "zlta", "oranzova", "cervena"];
 
-/** Stupnica strachu: kto má priazeň a koho sa starší bojí. */
-export function UkazkaStupnice() {
-  const [m, setM] = useState(3);
-  const hodnota = STUPNICA_HODNOTY[m] ?? 0;
-  const uroven = STUPNICA_ZONY[m] ?? 0;
-  const strana = m < 3 ? "tvojej" : m > 3 ? "súperovej" : null;
+function RiadokStrachu({ nazov, hodnota, nastav }: { readonly nazov: string; readonly hodnota: number; readonly nastav: (n: number) => void }) {
   return (
-    <div className="ukazka">
-      <div className="ukazka-hlava">Posúvaj marker po stupnici staršieho.</div>
-      <div className="stupnica-velka" role="group" aria-label="Stupnica strachu">
-        {ZONY.map((z, i) => (
-          <button key={i} className={`stupnica-bod ${ZONA_TRIEDA[i]} ${m === i ? "marker" : ""}`} onClick={() => setM(i)} aria-label={`Pozícia ${i}: stupeň ${STUPNICA_ZONY[i]}, ${z}`}>
-            <span>{STUPNICA_ZONY[i]}</span>
+    <div className="stupnica-riadok" role="group" aria-label={nazov}>
+      <span>{nazov}</span>
+      <div className="stupnica-velka">
+        {ZONA_TRIEDA.map((z, i) => (
+          <button key={z} className={`stupnica-bod ${z} ${hodnota === i ? "marker" : ""}`} onClick={() => nastav(i)} aria-label={`${nazov}: stupeň ${i}, ${STAV[i]}`}>
+            <span>{i}</span>
           </button>
         ))}
       </div>
-      {/* Ako v hre: na konci zvýhodneného krígeľ, na konci obávaného výkričníky v jeho farbe. */}
-      <div className="stupnica-popis">
-        <span>
-          ← {strana === "tvojej" ? <b className="stupnica-priazen moje"><IkonaPriazne /></b> : strana === "súperovej" && <ZnackaStrachu uroven={uroven} trieda="moje" />} tvoja polovica
-        </span>
-        <span>
-          súperova polovica {strana === "súperovej" ? <b className="stupnica-priazen superove"><IkonaPriazne /></b> : strana === "tvojej" && <ZnackaStrachu uroven={uroven} trieda="superove" />} →
-        </span>
-      </div>
+    </div>
+  );
+}
+
+/** Teplomery staršieho (v11): čo znamená tvoj a súperov strach — priazeň, špaky po bitke, výpalné, zajatie. */
+export function UkazkaStupnice() {
+  const [ja, setJa] = useState(0);
+  const [su, setSu] = useState(0);
+  const sila = Math.abs(su - ja);
+  const spaky = KONSTANTY.SPAKY_ZA_STUPEN[ja] ?? 0;
+  return (
+    <div className="ukazka">
+      <div className="ukazka-hlava">Nastav strach pri jednom staršom.</div>
+      <RiadokStrachu nazov="tvoj strach" hodnota={ja} nastav={setJa} />
+      <RiadokStrachu nazov="súperov strach" hodnota={su} nastav={setSu} />
       <div className="ukazka-vysledok" aria-live="polite">
-        {strana === null ? (
-          <>Marker je v sivom strede (stupeň 0, starší je <strong>pokojný</strong>) — nikomu nedáva priazeň a nikoho sa nebojí.</>
-        ) : (
-          <>
-            Marker leží na {strana} polovici na stupni <strong>{uroven}</strong> ({ZONY[m]}, starší je <strong>{STAV[uroven]}</strong>): priazeň sily <strong>{hodnota}</strong>{" "}
-            má {strana === "tvojej" ? "ty" : "súper"}. Starší sa bojí {strana === "tvojej" ? "súpera" : "teba"} na stupni{" "}
-            <strong>{uroven}</strong> <ZnackaStrachu uroven={uroven} trieda={strana === "tvojej" ? "superove" : "moje"} /> — keď sa tu marker udrží do konca nasledujúceho kola, {strana === "tvojej" ? "súperovi" : "tebe"} zaplatí stupne, ktoré ešte nezaplatil (tento{" "}
-            {uroven === 1 ? "1 špak" : `${uroven} špaky`}, spolu so stupňami pod ním {(uroven * (uroven + 1)) / 2}), nech bitku vyhrá ktokoľvek; zaparkovaný marker druhýkrát nič nedá.
-            {(m === 0 || m === 6) && ` Na krajnej pozícii je starší vydesený — ${strana === "tvojej" ? "súper" : "ty"} ho smie po vyhratej bitke Nakladačkou zajať.`}
-          </>
-        )}
+        {sila === 0 ? "Priazeň nemá nikto." : <>Priazeň sily <strong>{sila}</strong> má {su > ja ? "ty" : "súper"}.</>} Pre teba je starší <strong>{STAV[ja]}</strong>
+        {spaky > 0 ? <>: po vyhratej bitke ti dá <strong>{spakov(spaky)}</strong>.</> : "."}
+        {ja === 3 && " Súper ti po každej bitke okrem finále dá cigaretu (výpalné) a po vyhratej bitke ho smieš za 5 bodov Nakladačky zajať."}
+        {su === 3 && " Ty platíš súperovi cigaretu po každej bitke okrem finále."}
       </div>
     </div>
   );
