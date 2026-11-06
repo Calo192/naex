@@ -1,20 +1,7 @@
-// Jednotný bar nad stolom (Michal 2026-10-25, mock V2): jediná stavová správa s prednosťou chyby
-// (na počítači od 2026-11-06 ostala len chyba, JednotnyBar.tsx) a Melichar v bare.
+// Jednotný bar nad stolom (Michal 2026-10-25, mock V2): Melichar v bare.
 
 import { describe, expect, it } from "vitest";
-import { castiVety, moznostiKvizu, rezimMelichara, rozdelNaStrany, vetyTextu, vyberSpravu } from "../src/hra/bar.ts";
-
-describe("stavová správa baru", () => {
-  it("naraz len jedna: chyba má prednosť pred účtom Pitky a ten pred súperovým ťahom", () => {
-    expect(vyberSpravu("Limit je vyčerpaný.", "Pitka 1 vyhodnotená", "Bot vykladá Pijan.")).toEqual({ druh: "chyba", text: "Limit je vyčerpaný." });
-    expect(vyberSpravu(null, "Pitka 1 vyhodnotená", "Bot vykladá Pijan.")).toEqual({ druh: "ucet", text: "Pitka 1 vyhodnotená" });
-    expect(vyberSpravu(null, null, "Bot vykladá Pijan.")).toEqual({ druh: "super", text: "Bot vykladá Pijan." });
-  });
-
-  it("bez udalosti nič", () => {
-    expect(vyberSpravu(null, null, null)).toBeNull();
-  });
-});
+import { castiVety, moznostiKvizu, rezimMelichara, rozdelNaStrany, vetyTextu } from "../src/hra/bar.ts";
 
 describe("Melichar v bare", () => {
   it("piktogram akcie v texte: [Rana] sa nahradí ikonou, slovo za ním ostane", () => {

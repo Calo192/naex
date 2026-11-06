@@ -15,9 +15,9 @@ describe("pečiatka potvrdenia vo výučbe", () => {
 });
 
 describe("hrana stola bez stavovej správy", () => {
-  it("udalosti a chyby ťahu už na hrane nie sú — patria do baru", () => {
+  it("udalosti už na hrane nie sú a chyba ťahu patrí do baru", () => {
     const zdroj = readFileSync(new URL("../src/hra/HernaPlocha.tsx", import.meta.url), "utf8");
     expect(zdroj).not.toContain("pokyn-udalosti");
-    expect(zdroj).toContain("sprava={spravaBaru}");
+    expect(zdroj).toContain("chyba={chyba}");
   });
 });

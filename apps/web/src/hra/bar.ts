@@ -5,24 +5,6 @@
 
 export type RezimStran = "akcie" | "karty";
 
-export type DruhSpravy = "chyba" | "ucet" | "super";
-
-export interface SpravaBaru {
-  readonly druh: DruhSpravy;
-  readonly text: string;
-}
-
-/**
- * Stavová správa má v bare jedno miesto, takže naraz len jedna: chyba ťahu má prednosť
- * (hráč musí vedieť, prečo ťah neprešiel), potom účet Pitky, potom čo urobil súper.
- */
-export function vyberSpravu(chyba: string | null, ucetPitky: string | null, superov: string | null): SpravaBaru | null {
-  if (chyba !== null) return { druh: "chyba", text: chyba };
-  if (ucetPitky !== null) return { druh: "ucet", text: ucetPitky };
-  if (superov !== null) return { druh: "super", text: superov };
-  return null;
-}
-
 // ---- Majster Melichar v bare (Michal 2026-10-25, mock „Melichar v bare“) ----------------
 
 /**

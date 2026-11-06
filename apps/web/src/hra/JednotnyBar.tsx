@@ -1,6 +1,6 @@
 // Jednotný bar nad stolom (Michal 2026-10-25, mock V2 „Os dole, správa pod verdiktom“).
 // Hore: tvoja strana | odhad kola | súperova strana (Michal 2026-11-06: strany vždy akcie, bez správy súpera;
-// chyba ťahu na chvíľu preberie stred). Telefón si nechal svoj odznak a správy.
+// chyba ťahu na chvíľu preberie stred). Telefón si nechal svoj odznak.
 // Dole: os kola ako pravítko nad stolom, vydesení a Log · ? — len na mobile a v prehrávači;
 // pri stole je os v strede hlavičky webu (Michal 2026-10-27, dizajn timeline-lista A) a bar má jeden riadok.
 // Výška je vo všetkých fázach aj režimoch rovnaká (hra.css, .jbar) — stôl pod ním neskáče.
@@ -8,7 +8,7 @@
 import { useEffect, useLayoutEffect, useRef, useState, type ReactNode } from "react";
 import { createPortal } from "react-dom";
 import { useTip, type TipObsah } from "../karta/Tip.tsx";
-import type { RezimMelichara, RezimStran, SpravaBaru } from "./bar.ts";
+import type { RezimMelichara, RezimStran } from "./bar.ts";
 import { ID_MIESTA_MELICHARA } from "./MelicharBar.tsx";
 import { rozmiestniAkcie } from "./ustupkyBaru.ts";
 
@@ -34,7 +34,8 @@ export interface JednotnyBarProps {
   readonly tip: TipObsah | null;
   readonly ja: StranaBaru;
   readonly su: StranaBaru;
-  readonly sprava: SpravaBaru | null;
+  /** Prečo ťah neprešiel: jediné hlásenie, ktoré v bare ostalo. */
+  readonly chyba: string | null;
   readonly zrusChybu?: (() => void) | undefined;
   /** Telefón: strany ukazujú len karty a správy ostávajú; akcie sú v celom paneli bitky pod barom. */
   readonly mobil?: boolean;
@@ -42,12 +43,6 @@ export interface JednotnyBarProps {
   readonly onOdhad?: (() => void) | undefined;
   /** Plávajúce pod barom (zoznam skratiek). */
   readonly children?: ReactNode;
-}
-
-interface ZobrazenaSprava {
-  readonly sprava: SpravaBaru;
-  readonly id: number;
-  readonly stara: boolean;
 }
 
 function Strana({ s, kto, rezim }: { readonly s: StranaBaru; readonly kto: "ja" | "su"; readonly rezim: RezimStran }) {
@@ -69,22 +64,9 @@ function Strana({ s, kto, rezim }: { readonly s: StranaBaru; readonly kto: "ja" 
   );
 }
 
-export function JednotnyBar({ os, desi, nastroje, rezim, stred, tip, ja, su, sprava, zrusChybu, mobil = false, onOdhad, children }: JednotnyBarProps) {
+export function JednotnyBar({ os, desi, nastroje, rezim, stred, tip, ja, su, chyba, zrusChybu, mobil = false, onOdhad, children }: JednotnyBarProps) {
   const { tip: okno, ukaz, skry } = useTip();
-  // Kým nepríde nová správa, stará ostane stlmená (mock V2) — miesto nikdy neskáče prázdne
-  // a hráč si ju ešte dočíta. Chyba po potvrdení zmizne celá.
-  const [zobrazena, setZobrazena] = useState<ZobrazenaSprava | null>(null);
-  // Na počítači ostala v bare len chyba ťahu (Michal 2026-11-06: správy súpera nikto nečíta).
-  const spravaBaru = mobil || sprava?.druh === "chyba" ? sprava : null;
-  useEffect(() => {
-    setZobrazena((z) => {
-      if (spravaBaru === null) return z === null || z.sprava.druh === "chyba" ? null : z.stara ? z : { ...z, stara: true };
-      if (z !== null && !z.stara && z.sprava.druh === spravaBaru.druh && z.sprava.text === spravaBaru.text) return z;
-      return { sprava: spravaBaru, id: (z?.id ?? 0) + 1, stara: false };
-    });
-  }, [spravaBaru?.druh, spravaBaru?.text]);
-  const z = zobrazena;
-  const chybaVStrede = !mobil && z?.sprava.druh === "chyba";
+  const chybaVStrede = !mobil && chyba !== null;
   // Klik pripne nápovedu odhadu, aby sa dala čítať bez držania myši (mock: „mouseover alebo klik“).
   const [pripnuty, setPripnuty] = useState(false);
   // Strany sa rozsúvajú podľa skutočnej šírky pri každom vykreslení aj pri zmene okna.
@@ -168,19 +150,11 @@ export function JednotnyBar({ os, desi, nastroje, rezim, stred, tip, ja, su, spr
             </button>
           )}
           {okno}
-          <div className={`jbar-sprava-miesto${!mobil && z === null ? " prazdne" : ""}`} role="status" aria-live="polite">
-            {z !== null && (
-              <span
-                key={z.id}
-                className={`jbar-sprava ${z.sprava.druh}${z.stara ? " stara" : " nova"}`}
-                title={z.sprava.text}
-                {...(z.sprava.druh === "chyba" ? { role: "alert" } : {})}
-              >
-                <span className="jbar-sprava-text">
-                  {z.sprava.druh === "chyba" ? "⚠ Ťah neprešiel: " : z.sprava.druh === "super" ? "↺ " : ""}
-                  {z.sprava.text}
-                </span>
-                {z.sprava.druh === "chyba" && zrusChybu !== undefined && (
+          <div className={`jbar-sprava-miesto${chyba === null ? " prazdne" : ""}`} role="status" aria-live="polite">
+            {chyba !== null && (
+              <span className="jbar-sprava chyba" title={chyba} role="alert">
+                <span className="jbar-sprava-text">⚠ Ťah neprešiel: {chyba}</span>
+                {zrusChybu !== undefined && (
                   <button type="button" className="tlacidlo-male" onClick={zrusChybu}>
                     OK
                   </button>

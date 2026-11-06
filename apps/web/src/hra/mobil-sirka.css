@@ -123,10 +123,6 @@ html.stol-na-sirku .obsah:has(> .hra) {
   pointer-events: auto;
 }
 
-.hra.mobil-sirka:not(.stol-scroll) .jbar-sprava.stara {
-  display: none;
-}
-
 .hra.mobil-sirka:not(.stol-scroll) .jbar-sprava {
   max-width: 100%;
   padding: 3px 8px;
@@ -1675,18 +1671,6 @@ body:not(.tahanie-aktivne) .hra.mobil-sirka:not(.stol-scroll) .poradie-koniec {
   font-size: 12px;
 }
 
-/* Správa o súperovom ťahu leží cez líniu — na telefóne po chvíli zmizne (celá ostáva v Logu). */
-.hra.mobil-sirka:not(.stol-scroll) .jbar-sprava:not(.chyba) {
-  animation: sprava-zmizne 0.4s ease-in 4s forwards;
-}
-
-@keyframes sprava-zmizne {
-  to {
-    opacity: 0;
-    visibility: hidden;
-  }
-}
-
 /* ==== oprava 4 (Michal 2026-10-31: „súhrny bitky a Pitky sú chaos“) ==== */
 
 /* ---- súhrn bitky a Pitky na telefóne: pruh s výsledkom a Ďalej hore, kto čo dostal, jeden zoznam ---- */
@@ -1953,11 +1937,6 @@ html.stol-na-sirku .rk-tel-zoznam .rk-legenda {
 }
 
 .hra.mobil-sirka .pruh-sprava {
-  color: var(--text);
-  background: color-mix(in srgb, var(--akcent) 14%, transparent);
-}
-
-.hra.mobil-sirka .pruh-sprava.chyba {
   color: var(--cervena-svetla);
   background: color-mix(in srgb, var(--cervena) 18%, transparent);
 }

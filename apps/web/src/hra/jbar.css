@@ -522,20 +522,12 @@ button.jbar-odhad::before {
   text-overflow: ellipsis;
 }
 
-.jbar-sprava.ucet {
-  color: var(--text);
-}
-
 .jbar-sprava.chyba {
   color: var(--cervena-text);
   font-weight: 700;
 }
 
-.jbar-sprava.stara {
-  opacity: 0.55;
-}
-
-.jbar-sprava.nova {
+.jbar-sprava {
   animation: jbar-sprava 0.22s ease-out;
 }
 
@@ -547,7 +539,7 @@ button.jbar-odhad::before {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .jbar-sprava.nova {
+  .jbar-sprava {
     animation: none;
   }
 }

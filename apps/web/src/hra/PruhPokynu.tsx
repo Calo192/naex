@@ -28,15 +28,14 @@ export interface PruhPokynuProps {
   readonly druha?: ReactNode | undefined;
   /** Odhad bitky ako malý segment vľavo (tlačidlo, ťuk = okno odhadu). */
   readonly odhad?: ReactNode;
-  /** Hlásenie (súperov ťah, účet Pitky, chyba) — na chvíľu nahradí text pokynu. */
-  readonly sprava?: { readonly text: string; readonly chyba: boolean } | null;
-  readonly onZrusSpravu?: (() => void) | undefined;
+  /** Prečo ťah neprešiel — na chvíľu nahradí text pokynu. */
+  readonly chyba?: string | null;
+  readonly onZrusChybu?: (() => void) | undefined;
   /** Potvrdenie či varovanie: celé znenie sa ukáže pod pruhom samo (oprava 5 — „Skončiť bez NA EX?“ bolo orezané). */
   readonly naliehavy?: boolean;
 }
 
 /** Ako dlho ostane hlásenie v pruhu (chyba o niečo dlhšie). */
-const SPRAVA_MS = 4500;
 const CHYBA_MS = 7000;
 
 /** Má prvok viditeľné tlačidlo? (skryté kópie majú display: none — žiadny obdĺžnik) */
@@ -44,14 +43,14 @@ function maTlacidlo(el: HTMLElement | null): boolean {
   return el !== null && [...el.querySelectorAll<HTMLElement>("button, select")].some((b) => b.getClientRects().length > 0);
 }
 
-export function PruhPokynu({ nadpis, text, hlavna, vedlajsie, kluc, jednotny = false, odkaz, druha, odhad, sprava = null, onZrusSpravu, naliehavy = false }: PruhPokynuProps) {
-  const [ukazanaSprava, setUkazanaSprava] = useState<{ readonly text: string; readonly chyba: boolean } | null>(null);
+export function PruhPokynu({ nadpis, text, hlavna, vedlajsie, kluc, jednotny = false, odkaz, druha, odhad, chyba = null, onZrusChybu, naliehavy = false }: PruhPokynuProps) {
+  const [ukazanaChyba, setUkazanaChyba] = useState<string | null>(null);
   useEffect(() => {
-    if (sprava === null) return;
-    setUkazanaSprava(sprava);
-    const t = setTimeout(() => setUkazanaSprava(null), sprava.chyba ? CHYBA_MS : SPRAVA_MS);
+    if (chyba === null) return;
+    setUkazanaChyba(chyba);
+    const t = setTimeout(() => setUkazanaChyba(null), CHYBA_MS);
     return () => clearTimeout(t);
-  }, [sprava?.text, sprava?.chyba]);
+  }, [chyba]);
   const [otvorene, setOtvorene] = useState(false);
   const [rozbaleny, setRozbaleny] = useState(false);
   const [maMenu, setMaMenu] = useState(false);
@@ -106,20 +105,17 @@ export function PruhPokynu({ nadpis, text, hlavna, vedlajsie, kluc, jednotny = f
     >
       <div ref={odkaz} className="linia-stav pruh-pokynu-riadok" role="status" aria-live="polite">
         {odhad !== undefined && odhad !== null && <span className="pruh-odhad">{odhad}</span>}
-        {ukazanaSprava !== null ? (
+        {ukazanaChyba !== null ? (
           <button
             type="button"
-            className={`pruh-text pruh-sprava${ukazanaSprava.chyba ? " chyba" : ""}`}
+            className="pruh-text pruh-sprava chyba"
             title="Ťuk hlásenie zavrie — celé je v Logu"
             onClick={() => {
-              setUkazanaSprava(null);
-              if (ukazanaSprava.chyba) onZrusSpravu?.();
+              setUkazanaChyba(null);
+              onZrusChybu?.();
             }}
           >
-            <span className="pilulka-text">
-              {ukazanaSprava.chyba ? "⚠ Ťah neprešiel: " : "↺ "}
-              {ukazanaSprava.text}
-            </span>
+            <span className="pilulka-text">⚠ Ťah neprešiel: {ukazanaChyba}</span>
           </button>
         ) : (
           <button

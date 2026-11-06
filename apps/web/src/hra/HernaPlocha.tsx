@@ -68,7 +68,7 @@ import { useStolVHlavicke, useStrazOdchodu } from "../lib/odchod.ts";
 import { HlavickaPartie } from "./HlavickaPartie.tsx";
 import { skupinyBalicka } from "./doberaciBalicek.ts";
 import { SkratkyNapoveda, escVratiNavrh, tlacidloNavratu, useSkratky, type VrstvyPreEsc } from "./skratky.tsx";
-import { vyberSpravu, type RezimStran } from "./bar.ts";
+import type { RezimStran } from "./bar.ts";
 import { KARTA_MIN as NASTENKA_KARTA_MIN, rozmerNastenky, type ListokNaVyber } from "./rozlozenieNastenky.ts";
 import { prepniVyber, rozdelenieStavby } from "./stavbaSenku.ts";
 import { JednotnyBar, type StranaBaru } from "./JednotnyBar.tsx";
@@ -1640,11 +1640,9 @@ export function HernaPlocha({
   // súperove karty, ktoré medzitým pribudli, nesú štítok „nová“ a pás ukáže,
   // čo súper urobil — bez otvárania logu.
   const liniaPoMojomTahu = useRef<ReadonlySet<number> | null>(null);
-  const logPoMojomTahu = useRef(log.length);
   useEffect(() => {
     if (somNaTahu) return;
     liniaPoMojomTahu.current = new Set([...view.strany[0], ...view.strany[1]].map((pl) => pl.card.uid));
-    logPoMojomTahu.current = log.length;
     // Snímka len pri konci môjho ťahu — nie pri každom súperovom vyložení.
   }, [somNaTahu]);
   // Záverečné odhalené na konci poslednej Pitky (Michal 2026-10-27): karta sa na stole otočí
@@ -1663,12 +1661,6 @@ export function HernaPlocha({
           .map((pl) => pl.card.uid)
       : [];
   const menoSupera = menoHraca(super_);
-  const poslednySuperov: readonly string[] = somNaTahu
-    ? log
-        .slice(Math.min(logPoMojomTahu.current, log.length))
-        .filter((r) => r.includes(menoSupera) && !r.startsWith("⚠"))
-        .slice(-2)
-    : [];
 
   // Účet Pitky a bitky (UX N2/N3, UI N5 „bloček“ v striedmej podobe): čo
   // vyhodnotenie komu pripísalo — inak to bolo len v logu a skóre skočilo bez súhrnu.
@@ -5639,9 +5631,6 @@ export function HernaPlocha({
     };
     return `Pitka ${ucetPitky.pitka} vyhodnotená · ty: ${za(ja)} · ${menoHraca(super_)}: ${za(super_)}`;
   })();
-  // Stavová správa má od jednotného baru pevné miesto pod odhadom (Michal 2026-10-25) — z hrany stola zmizla.
-  // Vo výučbe hovorí len Melichar — správa o súperovom ťahu sa v bare neukáže (Michal 2026-10-25).
-  const spravaBaru = vyberSpravu(chyba, textUctuPitky, poslednySuperov.length > 0 && vyucba !== true ? poslednySuperov.join(" · ") : null);
 
   // Spodná hrana stola (Michal 2026-10-21): vľavo nákupy za cigarety, v strede
   // NA EX! či potvrdenie návrhu, vpravo koniec ťahu.
@@ -5741,8 +5730,8 @@ export function HernaPlocha({
       hlavna={hranaStred ?? hranaVpravo}
       druha={stolTlacidla?.druha ?? pokyn?.druha}
       odhad={odhadVPruhu}
-      sprava={spravaBaru === null ? null : { text: spravaBaru.text, chyba: spravaBaru.druh === "chyba" }}
-      onZrusSpravu={zrusChybu}
+      chyba={chyba}
+      onZrusChybu={zrusChybu}
       vedlajsie={
         <>
           {hranaVlavo}
@@ -5927,7 +5916,7 @@ export function HernaPlocha({
           zavrietMimo
           trieda="okno-odhadu"
         >
-          <div className="okno-odhadu-telo">{tipOdhadu(bitkaProps, stavka, "").text}</div>
+          <div className="okno-odhadu-telo">{tipOdhadu(bitkaProps, stavka, textUctuPitky).text}</div>
         </Medziobrazovka>
       )}
       {/* V prehrávači výsledok ukáže detail partie — okno konca s hodnotením a lobby tam nepatrí. */}
@@ -5961,7 +5950,7 @@ export function HernaPlocha({
         tip={bitkaProps !== null ? tipOdhadu(bitkaProps, stavka, textUctuPitky) : null}
         ja={stranaBaru(ja)}
         su={stranaBaru(super_)}
-        sprava={spravaBaru}
+        chyba={chyba}
         zrusChybu={zrusChybu}
         mobil={mobil || naSirku}
         onOdhad={naSirku && bitkaProps !== null ? () => setDetailOdhadu(true) : undefined}
