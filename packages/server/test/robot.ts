@@ -84,6 +84,20 @@ export class Robot {
     });
   }
 
+  /**
+   * Počká, kým server vybaví všetko, čo mu tento klient doteraz poslal. Správy jedného
+   * spojenia vybavuje po poradí a odpovede posiela hneď, takže pong príde až po nich.
+   * Samotný nový stav odpoveď nedokazuje — môže byť zo súperovho ťahu, ktorý sa minul s mojím.
+   */
+  async vybavene(): Promise<void> {
+    await new Promise<void>((rieš, zamietni) => {
+      this.ws.once("pong", () => rieš());
+      this.ws.ping(undefined, undefined, (chyba) => {
+        if (chyba != null) zamietni(chyba);
+      });
+    });
+  }
+
   zavri(): void {
     this.ws.close();
   }

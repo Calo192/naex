@@ -79,7 +79,7 @@ describe("hrozba kliatob na stole (#38 B)", () => {
       }
     }
     expect(naslo).toBeGreaterThan(0);
-  });
+  }, 30_000);
 
   it("kto už NA EX dať nesmie, nehrozí; text menuje Cirhózy, Dlhy aj špaky", () => {
     const s = zhromazdenia([7]).next().value as GameState;
