@@ -312,9 +312,9 @@ export function rekapitulaciaBitky(data: GameData, v: VstupRekapitulacieBitky): 
   const { linia, rozpis, damage } = v;
   const tuhe = {} as Record<AkciaTuha, PolozkaRekapitulacie[]>;
   for (const a of AKCIE_TUHE) tuhe[a] = ([0, 1] as const).flatMap((p) => naSucet(poKartach(linia.zdroje[p][a], p), p, nula(v.sums[p][a])));
-  // Do rušenia ide Viera s Veriacim pred hádkou (v10) a všetky Povery.
+  // Do rušenia ide Viera s Veriacim pred hádkou (v10) a všetky Povery aj s Ohováračkou (v11.10).
   const vieraSpolu = dvojica((p) => nula(v.sums[p].Viera) + rozpis[p].veriaciPred);
-  const poveraSpolu = dvojica((p) => nula(v.sums[p].Povera));
+  const poveraSpolu = dvojica((p) => nula(v.sums[p].Povera) + rozpis[p].poveryOhovaracky);
   const viera = ([0, 1] as const).flatMap((p) => naSucet(poKartach(linia.zdroje[p].Viera, p), p, vieraSpolu[p]));
   const povera = ([0, 1] as const).flatMap((p) => naSucet(poKartach(linia.zdroje[p].Povera, p), p, poveraSpolu[p]));
   const pohorsenie = ([0, 1] as const).flatMap((p) => naSucet(poKartach(linia.zdroje[p].Pohoršenie, p), p, v.pohorsenia[p]));

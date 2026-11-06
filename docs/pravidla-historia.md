@@ -3156,3 +3156,22 @@ Staré znenie §4:
 > kupujú cigaretami v šenku a fajčením).
 
 Výpalné je nové; bez starého znenia. Priazeň Výpalník (do v9) je iná vec: platila za súperovo NA EX.
+
+## v11.10 — Ohováračka namiesto Alkoholika (Michal 2026-11-06, Zrejúca)
+
+Návrh: `docs/napady/priazne-nove.html`, návrh 1. Dôvod: Alkoholik bol podľa váh bota najslabšia priazeň a útok v hádke nemala žiadna.
+Michal: „viera a povery sa navzájom rušia, ako by boli normálne na akcii karty.“
+
+Staré znenie §9.5:
+
+> **Na zdravie „do dna“** (priazeň Alkoholika, §10): z poldeci, ktoré hráč
+> v kole položil cez NA EX, sa mu toľko, aká je sila priazne, vráti **plných**
+> namiesto vypitých. Nerest sa ráta ako vždy.
+
+Staré znenie §9.1, krok 2:
+
+> Viera proti Pohoršeniu nepomáha; žiadna priazeň mäkké nepridáva
+
+Staré znenie §10, riadok tabuľky priazní:
+
+> | Alkoholik — Na zdravie „do dna“ | Poldeci v bitke (§9.5) | poldeci z tvojho NA EX sa vráti plný | 1 / 2 / 3 za kolo | `ALKOHOLIK` |

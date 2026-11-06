@@ -11,7 +11,6 @@ import type { GameData } from "./data.ts";
 import { defOf, printedSides } from "./data.ts";
 import type { GameState, KseftyKola } from "./engine.ts";
 import type { ElderState } from "./elders.ts";
-import { favourStarsieho, priazenHraca, priazenSila } from "./elders.ts";
 import type { CardInstance } from "./types.ts";
 import type { LineEval, PlacedCard } from "./partia.ts";
 import { evaluateLine, prevahaStran, silaVKraji, zvieratAUmlcane } from "./partia.ts";
@@ -418,12 +417,9 @@ export function limitBuduceKolo(state: StavPoldeci & { readonly lokalitaOtocena?
   const h = state.hraci[p];
   // Zrážka NA EX (v5, Výtržník): druhý poldeci na karte je toho druhého hráča.
   const naStole = state.strany.flat().filter((pl) => pl.naexBy === p || pl.naexBy2 === p).length + (naex ? 1 : 0);
-  // Na zdravie „do dna“ (Alkoholik v5): poldeci z toľkých NA EX, aká je sila priazne, sa po bitke
-  // vráti plný (vypiPoldeci) — bez dát sady sa priazeň nepozná, náhľad ju neráta.
-  const vratia = data === undefined ? 0 : Math.min(naStole, silaDoDna(data, state, p));
-  const vypite = h.poldeciVypite + naStole - vratia;
+  const vypite = h.poldeciVypite + naStole;
   const otocia = data === undefined || state.lokalitaOtocena === undefined ? 0 : Math.min(vypite, akciePoldeci(data, state, state.lokalitaOtocena)[p]);
-  const plne = h.poldeciPlne - (naex ? 1 : 0) + vratia + otocia;
+  const plne = h.poldeciPlne - (naex ? 1 : 0) + otocia;
   const dolieva = Math.min(KONSTANTY.POLDECI_NA_ZACIATKU_KOLA, vypite - otocia);
   return plne + dolieva + 1 + limitBonus(state, p);
 }
@@ -432,12 +428,6 @@ export function limitBuduceKolo(state: StavPoldeci & { readonly lokalitaOtocena?
 function akciePoldeci(data: GameData, state: VerejnyStav, lokalitaOtocena: boolean): readonly [number, number] {
   const sums = evaluateLine(data, { lokalita: state.ciel?.lokalita ?? null, lokalitaOtocena, strany: state.strany }).sums;
   return [sums[0].Poldeci ?? 0, sums[1].Poldeci ?? 0];
-}
-
-/** Sila priazne Alkoholika („do dna“) hráča p — koľko poldeci z jeho NA EX sa za kolo vráti plných. */
-export function silaDoDna(data: GameData, state: Pick<VerejnyStav, "starsi">, p: PlayerId): number {
-  const e = state.starsi.find((x) => favourStarsieho(data, x) === "ALKOHOLIK" && priazenHraca(x) === p);
-  return e === undefined ? 0 : priazenSila(e);
 }
 
 /**

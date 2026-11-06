@@ -17,7 +17,6 @@ import {
   limitZhromazdenia,
   loadGameData,
   naTahu,
-  odkrytieNaex,
   parseScorecards,
   sMojimiSkrytymiNaex,
   setupGame,
@@ -104,15 +103,11 @@ describe("náhľad NA EX v5 = zúčtovanie motora", () => {
     expect(sMojimiSkrytymiNaex(sada, suPohlad)).toEqual(suPohlad);
   });
 
-  it("Na zdravie „do dna“: limit ďalšieho kola v náhľade = limit, s ktorým hráč naozaj vojde do Zhromaždenia", () => {
-    for (const sila of [0, 1] as const) {
-      const { s, ciel } = pitka(203, 5, false);
-      const sA = sila === 0 ? s : sPriaznou(s, "ALKOHOLIK", 1, sila);
-      expect(odkrytieNaex(sada, viewFor(sada, sA, 1), 1).doDna).toBe(sila > 0);
-      const nahlad = limitBuduceKolo(viewFor(sada, sA, 1), 1, true, sada);
-      const po = dohraj(apply(sada, sA, { type: "naex", uid: ciel }, 1).state);
-      expect(po.kolo).toBe(3);
-      expect(limitZhromazdenia(viewFor(sada, po, 1), 1)).toBe(nahlad);
-    }
+  it("limit ďalšieho kola v náhľade = limit, s ktorým hráč naozaj vojde do Zhromaždenia", () => {
+    const { s, ciel } = pitka(203, 5, false);
+    const nahlad = limitBuduceKolo(viewFor(sada, s, 1), 1, true, sada);
+    const po = dohraj(apply(sada, s, { type: "naex", uid: ciel }, 1).state);
+    expect(po.kolo).toBe(3);
+    expect(limitZhromazdenia(viewFor(sada, po, 1), 1)).toBe(nahlad);
   });
 });

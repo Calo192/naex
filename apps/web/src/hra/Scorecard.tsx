@@ -22,7 +22,8 @@ export const UCINOK_PRIAZNE: Readonly<Record<Favour, (sila: number) => string>> 
   VERIACI: (s) => `+${s} ${s === 1 ? "Viera" : "Viery"} v každej bitke (ruší súperove Povery a uberá jeho tuhé poškodenie).`,
   // Michal 2026-10-19: cigarety platia šenok aj Dedičstvo — Fajčiar dáva silu, bez dvojnásobku.
   FAJCIAR: (s) => `+${s} ${s === 1 ? "cigareta" : "cigarety"} po bitke (Obmedzenie ich neuberá).`,
-  ALKOHOLIK: (s) => `Na zdravie: poldeci z ${s === 1 ? "jedného tvojho NA EX" : `${s} tvojich NA EX`} v kole sa ti po bitke vráti plný.`,
+  // Michal 2026-11-06: Viera a Povery sa rušia, ako keby boli na akcii karty.
+  OHOVARACKA: (s) => `+${s} ${s === 1 ? "Povera" : "Povery"} v každej bitke (mäkké do hádky, súperova Viera ich ruší).`,
   ADVOKAT: (s) => `Advokát: exekúcia ti vezme o ${s} ${s === 1 ? "špak" : "špaky"} menej (Dlhy zhoria ako vždy).`,
 };
 
@@ -37,7 +38,7 @@ export const UCINOK_KRATKO: Readonly<Record<Favour, (sila: number) => string>> =
   BITKAR: (s) => `+${s} tuhé v bitke`,
   VERIACI: (s) => `+${s} ${s === 1 ? "Viera" : "Viery"} v bitke`,
   FAJCIAR: (s) => `+${s} cig. po bitke`,
-  ALKOHOLIK: (s) => `${s} NA EX do dna`,
+  OHOVARACKA: (s) => `+${s} ${s === 1 ? "Povera" : "Povery"} v bitke`,
   ADVOKAT: (s) => `exekúcia −${s} špak`,
 };
 

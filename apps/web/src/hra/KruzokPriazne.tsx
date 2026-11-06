@@ -22,7 +22,7 @@ export const IKONA_PRIAZNE: Readonly<Record<Favour, Action>> = {
   ADVOKAT: "Dlh",
   ROBOTA: "Robota",
   FAJCIAR: "Cigareta",
-  ALKOHOLIK: "Poldeci",
+  OHOVARACKA: "Povera",
   // Abstinent (v10) Pohoršenie nedáva — krúžok kreslí prázdny pohárik Absťáku (IkonaPriazneKruzku).
   LAKOMEC: "Poldeci",
 };

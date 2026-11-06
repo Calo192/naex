@@ -1,0 +1,294 @@
+<!doctype html>
+<html lang="sk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Nové priazne — NA EX!</title>
+<style>
+:root { --pozadie:#14110e; --plocha:#1e1914; --plocha-2:#28211a; --okraj:#3d3229; --text:#f1e8d8; --tlmeny:#b6a790;
+  --akcent:#e9ad45; --zelena:#7cbf74; --cervena:#e0735c; --modra:#7fc6d4; color-scheme:dark; }
+@media (prefers-color-scheme: light) { :root { --pozadie:#f6f1e7; --plocha:#fffaf1; --plocha-2:#f0e7d6; --okraj:#dccdb3; --text:#2a2016;
+  --tlmeny:#5e4f3b; --akcent:#8f5606; --zelena:#2f6a29; --cervena:#a83a26; --modra:#1f6f7c; color-scheme:light; } }
+* { box-sizing:border-box; }
+body { margin:0; background:var(--pozadie); color:var(--text); font:16px/1.55 system-ui,"Segoe UI",Roboto,sans-serif; }
+main { max-width:900px; margin:0 auto; padding:24px 16px 72px; }
+h1,h2,h3 { font-family:Georgia,"Times New Roman",serif; line-height:1.2; }
+h1 { font-size:clamp(1.7rem,5vw,2.3rem); margin:0 0 6px; }
+h2 { font-size:1.35rem; margin:38px 0 12px; padding-bottom:5px; border-bottom:1px solid var(--okraj); }
+h3 { font-size:1.2rem; margin:0; }
+p { margin:0 0 10px; }
+ul { margin:0 0 10px; padding-left:20px; } li { margin-bottom:5px; }
+a { color:var(--akcent); }
+:focus-visible { outline:2px solid var(--akcent); outline-offset:2px; }
+.tlmene { color:var(--tlmeny); font-size:.93rem; }
+.box { background:var(--plocha); border:1px solid var(--okraj); border-radius:12px; padding:13px 16px; margin:0 0 12px; }
+.box.hlavny { border-color:var(--akcent); }
+.box > :last-child { margin-bottom:0; }
+.tab { overflow-x:auto; }
+table { width:100%; border-collapse:collapse; font-size:.9rem; }
+th,td { text-align:left; vertical-align:top; padding:7px 8px; border-bottom:1px solid var(--okraj); }
+thead th { color:var(--tlmeny); font-size:.82rem; font-weight:600; }
+td a { font-weight:600; text-decoration:none; }
+.navrh { background:var(--plocha); border:1px solid var(--okraj); border-radius:12px; padding:14px 16px; margin:0 0 14px; scroll-margin-top:10px; }
+.navrh.odp { border-left:4px solid var(--akcent); }
+.hlavicka { display:flex; flex-wrap:wrap; justify-content:space-between; gap:4px 12px; align-items:baseline; }
+.cislo { color:var(--akcent); margin-right:6px; }
+.chip { display:inline-block; font-size:.74rem; padding:0 8px; border:1px solid currentColor; border-radius:999px; white-space:nowrap; margin-right:3px; }
+.chip.odp { color:var(--akcent); font-weight:600; }
+.chip.vrat { color:var(--modra); }
+.satira { font-style:italic; color:var(--tlmeny); margin:6px 0 10px; }
+.znenie { background:var(--plocha-2); border-radius:8px; padding:9px 12px; margin:0 0 10px; }
+.sily { display:grid; grid-template-columns:repeat(3,1fr); gap:6px; margin:0 0 10px; }
+.sily div { background:var(--plocha-2); border-radius:8px; padding:5px 9px; font-size:.88rem; }
+.sily b { display:block; font-size:.72rem; color:var(--tlmeny); font-weight:600; }
+dl { display:grid; grid-template-columns:7.5em 1fr; gap:5px 12px; margin:0 0 10px; }
+dt { color:var(--tlmeny); font-size:.86rem; padding-top:2px; }
+dd { margin:0; font-size:.95rem; }
+fieldset.volba { border:0; border-top:1px solid var(--okraj); margin:0; padding:10px 0 0; display:flex; flex-wrap:wrap; gap:6px 14px; align-items:center; }
+fieldset.volba legend { position:absolute; width:1px; height:1px; overflow:hidden; clip-path:inset(50%); }
+fieldset.volba label { cursor:pointer; min-height:28px; display:inline-flex; gap:5px; align-items:center; }
+fieldset.volba input[type=radio] { accent-color:var(--akcent); }
+fieldset.volba input[type=text] { flex:1 1 200px; min-width:0; font:inherit; font-size:.9rem; color:var(--text); background:var(--pozadie); border:1px solid var(--okraj); border-radius:8px; padding:5px 8px; }
+#vystup { width:100%; min-height:130px; font:.85rem ui-monospace,Consolas,monospace; color:var(--text); background:var(--plocha); border:1px solid var(--okraj); border-radius:8px; padding:8px; }
+button { font:inherit; font-size:.9rem; color:var(--text); background:var(--plocha-2); border:1px solid var(--okraj); border-radius:8px; padding:6px 12px; cursor:pointer; margin-top:6px; }
+@media (max-width:560px) { dl { grid-template-columns:1fr; gap:1px; } dd { margin-bottom:6px; } }
+</style>
+</head>
+<body>
+<main>
+<h1>Nové priazne</h1>
+<p class="tlmene">10 návrhov na pravidlá v11.7 · 2026-11-06 · pravidlá ani kód sa nemenia · sily sú môj odhad, nič z toho sa ešte nehralo ani nemeralo</p>
+
+<div class="box hlavny">
+  <p><b>Odporúčam najprv tieto tri:</b> <a href="#n3">Našepkávač</a> prináša najviac nového rozhodovania a stavia na v11. <a href="#n5">Kartárka</a> uberá náhodu. <a href="#n10">Notár</a> má malý kód a dáva zaostávajúcemu trvalý pokrok.</p>
+  <p><b>Ak chceš vymeniť len jednu priazeň,</b> daj Notára namiesto Alkoholika, ktorý je dnes podľa váh bota najslabší.</p>
+</div>
+
+<h2>Z čoho návrhy vychádzajú</h2>
+<ul>
+  <li><b>Dnešná osmička sa drží úzkeho okruhu:</b> tri priazne sú o Dlhoch a tri priamo o bitke (tuhé, Viera, Absťáky). Reči, Nakladačku, pečeň, balíček, šenok, prevahu ani Dedičstvo priamo nerieši žiadna a v hádke je len obrana Veriaceho. Každý návrh preto berie inú z týchto oblastí.</li>
+  <li><b>Priazeň je dar súperovi:</b> keď zdvihneš svoj strach pri staršom, jeho priazeň dostane súper. Pri každom návrhu preto uvádzam, čo by darcu bolelo. Tak má vzniknúť tvoje ťažké rozhodnutie pri prideľovaní.</li>
+  <li><b>Odmena pre zaostávajúceho:</b> priazeň má častejšie ten, kto prehráva bitky, lebo víťaz dvíha strach. Návrhy brzdia snehovú guľu.</li>
+  <li><b>Bez stropov a bez mŕtvych priazní:</b> sila 1 musí sama niečo robiť. Kde to neplatí vždy, je to napísané pri riziku.</li>
+</ul>
+
+<h2>Prehľad</h2>
+<div class="tab"><table>
+<thead><tr><th>Priazeň</th><th>Čo mení</th><th>Sila 1 / 2 / 3</th><th>Odhad sily</th><th>Kód</th></tr></thead>
+<tbody>
+<tr><td><a href="#n1">1 Ohováračka</a></td><td>hádka</td><td>+1 / +2 / +3 Povery</td><td>stredná až silná</td><td>malý</td></tr>
+<tr><td><a href="#n2">2 Hlásnik</a></td><td>reči</td><td>1 / 2 / 3 reči neklesnú</td><td>silná</td><td>malý</td></tr>
+<tr><td><a href="#n3">3 Našepkávač</a></td><td>Nakladačka</td><td>rozdelíš 1 / 2 / 3 body</td><td>stredná</td><td>stredný</td></tr>
+<tr><td><a href="#n4">4 Felčiar</a></td><td>pečeň</td><td>prah Cirhózy +1 / +2 / +3</td><td>slabá až stredná</td><td>malý</td></tr>
+<tr><td><a href="#n5">5 Kartárka</a></td><td>balíček</td><td>vidíš 1 / 2 / 3 karty</td><td>stredná</td><td>stredný</td></tr>
+<tr><td><a href="#n6">6 Starinár</a></td><td>šenok</td><td>vymeníš 1 / 2 / 3 karty</td><td>stredná</td><td>stredný</td></tr>
+<tr><td><a href="#n7">7 Zvedavá suseda</a></td><td>skrytá informácia</td><td>vidíš 1 / 2 / 3 karty súpera</td><td>slabá až stredná</td><td>stredný</td></tr>
+<tr><td><a href="#n8">8 Priekupník</a></td><td>cigarety na špaky</td><td>4 / 3 / 2 cigarety = 1 špak</td><td>podľa partie, môže byť silná</td><td>malý</td></tr>
+<tr><td><a href="#n9">9 Švagor</a></td><td>prevaha</td><td>+1 / +2 / +3 v každom kraji</td><td>stredná, vo finále silná</td><td>malý</td></tr>
+<tr><td><a href="#n10">10 Notár</a></td><td>Dedičstvo</td><td>−1 / −2 / −3 cigarety</td><td>stredná</td><td>malý</td></tr>
+</tbody></table></div>
+
+<h2>Návrhy</h2>
+
+<article class="navrh" id="n1" data-meno="Ohováračka">
+  <div class="hlavicka"><h3><span class="cislo">1</span>Ohováračka</h3><span class="tlmene">hádka, krok 1</span></div>
+  <p class="satira">Nič nepovie. Len sa spýta, či si už počul, a potom ti to povie.</p>
+  <p class="znenie">V hádke máš Povery navyše. Súperova Viera ich ruší ako každú Poveru.</p>
+  <div class="sily"><div><b>Sila 1</b>+1 Povera</div><div><b>Sila 2</b>+2 Povery</div><div><b>Sila 3</b>+3 Povery</div></div>
+  <dl>
+    <dt>Prečo</dt><dd>Je to zrkadlo Veriaceho. V hádke dnes pomáha len Veriaci, a to obranou proti Poverám. Útok nemá žiadna priazeň, a pritom reči bodujú aj porazenému.</dd>
+    <dt>Čo bolí darcu</dt><dd>Súper vyhrá hádku a jeho reči ti budú brať bodovanie, hoci vyhrávaš bitky. Pomáha ti len vlastná Viera.</dd>
+    <dt>Riziko</dt><dd>Mäkké 3 a 2 si 2026-11-05 vrátil ako extrémne silné. Toto platí len pre držiteľa, ale sila 3 môže hádku rozhodnúť sama.</dd>
+    <dt>Zmerať</dt><dd>Koľko hádok držiteľ vyhrá a koľko špakov mu dajú reči po prehratej bitke.</dd>
+  </dl>
+  <fieldset class="volba"><legend>Voľba pre Ohováračku</legend><label><input type="radio" name="v1" value="beriem">Beriem</label><label><input type="radio" name="v1" value="možno">Možno</label><label><input type="radio" name="v1" value="nie">Nie</label><input type="text" name="p1" placeholder="Poznámka" aria-label="Poznámka k Ohováračke"></fieldset>
+</article>
+
+<article class="navrh" id="n2" data-meno="Hlásnik">
+  <div class="hlavicka"><h3><span class="cislo">2</span>Hlásnik</h3><span class="tlmene">reči, krok 4b</span></div>
+  <p class="satira">Obecný rozhlas sa pokazil v roku 1987. Hlásnik nie.</p>
+  <p class="znenie">Po bodovaní tvoje najvyššie reči neklesnú.</p>
+  <div class="sily"><div><b>Sila 1</b>pri 1 staršom</div><div><b>Sila 2</b>pri 2 starších</div><div><b>Sila 3</b>pri 3 starších</div></div>
+  <dl>
+    <dt>Prečo</dt><dd>Porazený boduje len za reči, takže toto najviac pomáha tomu, kto prehráva bitky. Výber robí hra sama, netreba novú voľbu.</dd>
+    <dt>Čo bolí darcu</dt><dd>Súperove reči pri staršom prestanú slabnúť a dávajú špaky každé kolo.</dd>
+    <dt>Riziko</dt><dd>Červené reči by mohli dávať 5 špakov v každej bitke, čo ide proti tvojmu cieľu výsledkov okolo 15 : 13. Bez rečí je priazeň mŕtva. Ak bude silná, platila by len pre žlté a oranžové reči.</dd>
+    <dt>Zmerať</dt><dd>Podiel špakov z rečí na výsledku a rozdiel skóre v partiách s touto priazňou.</dd>
+  </dl>
+  <fieldset class="volba"><legend>Voľba pre Hlásnika</legend><label><input type="radio" name="v2" value="beriem">Beriem</label><label><input type="radio" name="v2" value="možno">Možno</label><label><input type="radio" name="v2" value="nie">Nie</label><input type="text" name="p2" placeholder="Poznámka" aria-label="Poznámka k Hlásnikovi"></fieldset>
+</article>
+
+<article class="navrh odp" id="n3" data-meno="Našepkávač">
+  <div class="hlavicka"><h3><span class="cislo">3</span>Našepkávač</h3><span><span class="chip odp">odporúčam</span><span class="chip vrat">čiastočný návrat</span></span></div>
+  <p class="satira">Víťazovi pošepká, koho má ísť strašiť. Víťaz si potom myslí, že to bol jeho nápad.</p>
+  <p class="znenie">Keď prehráš bitku, časť víťazovej Nakladačky rozdelíš ty na jeho strach. Zvyšok rozdelí on, aj so zajatím. Vo finále neplatí.</p>
+  <div class="sily"><div><b>Sila 1</b>1 bod</div><div><b>Sila 2</b>2 body</div><div><b>Sila 3</b>3 body</div></div>
+  <dl>
+    <dt>Prečo</dt><dd>Keď zdvihneš víťazov strach, pri tom staršom dostaneš priazeň, ktorú si sám vyberieš. Odoberieš mu aj body: Nakladačka 5 mu po sile 1 na zajatie nestačí.</dd>
+    <dt>Čo bolí darcu</dt><dd>Veľká výhra prestane byť úplne tvoja a súper si z nej skladá priazne podľa seba.</dd>
+    <dt>Riziko</dt><dd>Každým bodom tlačíš víťaza k výhre strachom. To je zámer, je to cena za voľbu. Ťah navyše spomalí koniec bitky a treba ho doplniť do rozhrania aj bota. Keď už nie je kam dať lacný stupeň, body prepadnú.</dd>
+    <dt>História</dt><dd>Do v10 rozdeľoval celú Nakladačku porazený. Tu je to len malá časť a len s priazňou.</dd>
+    <dt>Zmerať</dt><dd>Ktoré priazne si porazený vyberá, koľko zajatí to zastaví a ako sa zmení dĺžka partie.</dd>
+  </dl>
+  <fieldset class="volba"><legend>Voľba pre Našepkávača</legend><label><input type="radio" name="v3" value="beriem">Beriem</label><label><input type="radio" name="v3" value="možno">Možno</label><label><input type="radio" name="v3" value="nie">Nie</label><input type="text" name="p3" placeholder="Poznámka" aria-label="Poznámka k Našepkávačovi"></fieldset>
+</article>
+
+<article class="navrh" id="n4" data-meno="Felčiar">
+  <div class="hlavicka"><h3><span class="cislo">4</span>Felčiar</h3><span class="chip vrat">návrat starého účinku</span></div>
+  <p class="satira">Prezrie ti pečeň cez oblečenie a povie, že sa ešte dá.</p>
+  <p class="znenie">Tvoj prah Cirhózy je vyšší.</p>
+  <div class="sily"><div><b>Sila 1</b>prah 4</div><div><b>Sila 2</b>prah 5</div><div><b>Sila 3</b>prah 6</div></div>
+  <dl>
+    <dt>Prečo</dt><dd>Pečeň dnes nerieši žiadna priazeň. Nepriznaná Cirhóza stojí 3 špaky a priznaná dáva súperovi +1 tuhé. Ekonóm v jednej partii na v11.6 nazbieral 14 Cirhóz, teda −42 špakov.</dd>
+    <dt>Čo bolí darcu</dt><dd>Málo: súper si môže dovoliť viac piť a viac NA EX, ale v bitke mu to priamo nepomôže. Je to skôr priazeň, ktorú dáš rád.</dd>
+    <dt>História</dt><dd>Alkoholik v5 mal prah 5 / 7 / 9 a Navrhár ho 2026-10-25 hodnotil ako slabý, lebo Cirhóz bolo 1–2 na hráča za partiu. Znova ho navrhujem, lebo Cirhóza dnes stojí viac. Jedna partia AI to ešte nedokazuje.</dd>
+    <dt>Zmerať</dt><dd>Koľko Cirhóz padá dnes na partiu, ideálne aj u ľudí, a koľko ich priazeň ušetrí.</dd>
+  </dl>
+  <fieldset class="volba"><legend>Voľba pre Felčiara</legend><label><input type="radio" name="v4" value="beriem">Beriem</label><label><input type="radio" name="v4" value="možno">Možno</label><label><input type="radio" name="v4" value="nie">Nie</label><input type="text" name="p4" placeholder="Poznámka" aria-label="Poznámka k Felčiarovi"></fieldset>
+</article>
+
+<article class="navrh odp" id="n5" data-meno="Kartárka">
+  <div class="hlavicka"><h3><span class="cislo">5</span>Kartárka</h3><span class="chip odp">odporúčam</span></div>
+  <p class="satira">Vyloží karty a povie, že ťa čaká cesta. Väčšinou do krčmy, takže sa nemýli.</p>
+  <p class="znenie">Po bitke, pred dobraním, sa pozri na vrchné karty doberacieho balíčka. Každú nechaj navrchu v poradí, aké chceš, alebo ju daj naspodok.</p>
+  <div class="sily"><div><b>Sila 1</b>1 karta</div><div><b>Sila 2</b>2 karty</div><div><b>Sila 3</b>3 karty</div></div>
+  <dl>
+    <dt>Prečo</dt><dd>Uberá náhodu z ťahania a dáva plánovanie o kolo dopredu. Je to mierna verzia Vízie, ktorá kartu berie alebo páli. Tu sa nič nespáli.</dd>
+    <dt>Čo bolí darcu</dt><dd>Súperov balíček prestane podávať slabé karty a kliatby v zlej chvíli. Čím silnejšie karty si kúpil, tým viac ti to uškodí.</dd>
+    <dt>Riziko</dt><dd>Prázdny balíček treba najprv doplniť zamiešaním odhadzovacieho. Súper karty nesmie vidieť, takže to treba otestovať vo <code>viewFor()</code>. Odložená Cirhóza môže ostať dlho mimo ruky, čo je blízke parkovaniu, ktoré si nechal ako zámer.</dd>
+    <dt>Zmerať</dt><dd>Výhry bitiek s priazňou a bez nej na rovnakých semienkach a prínos pre zručnosť v <code>strategickost.ts</code>.</dd>
+  </dl>
+  <fieldset class="volba"><legend>Voľba pre Kartárku</legend><label><input type="radio" name="v5" value="beriem">Beriem</label><label><input type="radio" name="v5" value="možno">Možno</label><label><input type="radio" name="v5" value="nie">Nie</label><input type="text" name="p5" placeholder="Poznámka" aria-label="Poznámka ku Kartárke"></fieldset>
+</article>
+
+<article class="navrh" id="n6" data-meno="Starinár">
+  <div class="hlavicka"><h3><span class="cislo">6</span>Starinár</h3><span class="tlmene">šenok</span></div>
+  <p class="satira">Všetko, čo ti ponúkne, patrilo niekomu, kto o tom ešte nevie.</p>
+  <p class="znenie">Pred prvým braním v kole smieš karty zo šenku dať naspodok ich balíčkov. Šenok sa hneď doplní.</p>
+  <div class="sily"><div><b>Sila 1</b>1 karta</div><div><b>Sila 2</b>2 karty</div><div><b>Sila 3</b>3 karty</div></div>
+  <dl>
+    <dt>Prečo</dt><dd>Keď je ponuka slabá, nie si odkázaný na šťastie. Zároveň vieš súperovi vziať kartu, na ktorú čaká. Nie je to zľava, tú si v šenku pri v5 nechcel.</dd>
+    <dt>Čo bolí darcu</dt><dd>Šenok, ktorý si staval, ti súper premieša a karta, na ktorú si si šetril, zmizne.</dd>
+    <dt>Riziko</dt><dd>Nová karta môže pomôcť práve súperovi, ktorý berie ďalší. Stavba šenku stratí časť zmyslu, ak ju držiteľ vie prerobiť.</dd>
+    <dt>Zmerať</dt><dd>Koľko kariet sa vymení za partiu a či držiteľ kupuje lepšie karty podľa <code>hodnotaKarty</code>.</dd>
+  </dl>
+  <fieldset class="volba"><legend>Voľba pre Starinára</legend><label><input type="radio" name="v6" value="beriem">Beriem</label><label><input type="radio" name="v6" value="možno">Možno</label><label><input type="radio" name="v6" value="nie">Nie</label><input type="text" name="p6" placeholder="Poznámka" aria-label="Poznámka k Starinárovi"></fieldset>
+</article>
+
+<article class="navrh" id="n7" data-meno="Zvedavá suseda">
+  <div class="hlavicka"><h3><span class="cislo">7</span>Zvedavá suseda</h3><span class="tlmene">skrytá informácia</span></div>
+  <p class="satira">Záclony má vyprané len z jednej strany, aby cez ne lepšie videla.</p>
+  <p class="znenie">Po šenku uvidíš náhodné karty zo súperovej ruky. Súper vie, ktoré to sú.</p>
+  <div class="sily"><div><b>Sila 1</b>1 karta</div><div><b>Sila 2</b>2 karty</div><div><b>Sila 3</b>3 karty</div></div>
+  <dl>
+    <dt>Prečo</dt><dd>Odmeňuje čítanie súpera, nie šťastie. Súper vie, čo si videl, takže môže blafovať a meniť plán. Vzniká hra o tom, kto koho prekabáti.</dd>
+    <dt>Čo bolí darcu</dt><dd>Prídeš o prekvapenie a súper môže vopred obsadiť miesto, kam chceš kartu priložiť.</dd>
+    <dt>Riziko</dt><dd>Začiatočníkovi to dá málo. Bot skrytú informáciu pred výpočtom mieša, preto treba doplniť, aby videné karty poznal, inak hodnotu nezmeriame. Musí to mať test vo <code>viewFor()</code>, aby server neposlal viac.</dd>
+    <dt>Zmerať</dt><dd>Až po úprave bota: výhry na rovnakých semienkach. Inak len hra ľudí.</dd>
+  </dl>
+  <fieldset class="volba"><legend>Voľba pre Zvedavú susedu</legend><label><input type="radio" name="v7" value="beriem">Beriem</label><label><input type="radio" name="v7" value="možno">Možno</label><label><input type="radio" name="v7" value="nie">Nie</label><input type="text" name="p7" placeholder="Poznámka" aria-label="Poznámka k Zvedavej susede"></fieldset>
+</article>
+
+<article class="navrh" id="n8" data-meno="Priekupník">
+  <div class="hlavicka"><h3><span class="cislo">8</span>Priekupník</h3><span class="chip vrat">blízke zamietnutému N14</span></div>
+  <p class="satira">Cigarety ti vyfajčí sám a špak ti vráti. Volá sa to investičné poradenstvo.</p>
+  <p class="znenie">V Pitke smieš na svojom ťahu meniť cigarety za špaky, koľkokrát chceš. Nie je to fajčenie.</p>
+  <div class="sily"><div><b>Sila 1</b>4 cigarety = 1 špak</div><div><b>Sila 2</b>3 cigarety = 1 špak</div><div><b>Sila 3</b>2 cigarety = 1 špak</div></div>
+  <dl>
+    <dt>Prečo</dt><dd>Prebytok cigariet dostane využitie bez stropu, tak ako si to chcel. Výkupné 5 : 1 platí len po finále, toto je rozhodnutie počas partie: minúť na karty, alebo na body.</dd>
+    <dt>Čo bolí darcu</dt><dd>Súperove nahromadené cigarety sa zmenia na body. Darovať ju súperovi s motorom cigariet je drahé, súperovi bez cigariet je to skoro zadarmo.</dd>
+    <dt>Riziko</dt><dd>Cigareta ×7 pri sile 3 dá 3 špaky za Pitku. Výkupné 3 : 1 si dnes zamietol (N14), hoci to bolo pre všetkých a len na konci. Boti a AI s cigaretami narábajú inak ako ľudia, takže ich čísla budú zavádzať.</dd>
+    <dt>Zmerať</dt><dd>Špaky zo zmeny za partiu a či držiteľ prestane kupovať karty.</dd>
+  </dl>
+  <fieldset class="volba"><legend>Voľba pre Priekupníka</legend><label><input type="radio" name="v8" value="beriem">Beriem</label><label><input type="radio" name="v8" value="možno">Možno</label><label><input type="radio" name="v8" value="nie">Nie</label><input type="text" name="p8" placeholder="Poznámka" aria-label="Poznámka k Priekupníkovi"></fieldset>
+</article>
+
+<article class="navrh" id="n9" data-meno="Švagor">
+  <div class="hlavicka"><h3><span class="cislo">9</span>Švagor</h3><span class="tlmene">prevaha</span></div>
+  <p class="satira">Do krčmy prišiel sám. Odišlo ich šesť a všetci mu vykajú.</p>
+  <p class="znenie">Do prevahy sa ti v každom kraji ráta navyše. Na Ihrisko to neplatí.</p>
+  <div class="sily"><div><b>Sila 1</b>+1 v kraji</div><div><b>Sila 2</b>+2 v kraji</div><div><b>Sila 3</b>+3 v kraji</div></div>
+  <dl>
+    <dt>Prečo</dt><dd>Prevahu dnes nič z priazní nemení, hoci rozhoduje o akciách hrany lokality. Nedáva tuhé priamo, takže to nie je zamietnuté „+1 tuhé za prevahu“.</dd>
+    <dt>Čo bolí darcu</dt><dd>Obranca natočí lokalitu pre seba a súper mu jej hranu vezme s menej kartami. Stavanie kraja prestane stačiť.</dd>
+    <dt>Riziko</dt><dd>Hodnota rastie s lokalitou: pinnacle má 4 akcie na hrane a Poľovnícka chata tuhé z hrán zdvojnásobí. Rozhranie musí ukazovať, prečo prevahu máš, keď máš menej kariet.</dd>
+    <dt>Zmerať</dt><dd>Ako často priazeň zmení držiteľa prevahy a výhry vo finále.</dd>
+  </dl>
+  <fieldset class="volba"><legend>Voľba pre Švagra</legend><label><input type="radio" name="v9" value="beriem">Beriem</label><label><input type="radio" name="v9" value="možno">Možno</label><label><input type="radio" name="v9" value="nie">Nie</label><input type="text" name="p9" placeholder="Poznámka" aria-label="Poznámka k Švagrovi"></fieldset>
+</article>
+
+<article class="navrh odp" id="n10" data-meno="Notár">
+  <div class="hlavicka"><h3><span class="cislo">10</span>Notár</h3><span class="chip odp">odporúčam, náhrada za Alkoholika</span></div>
+  <p class="satira">Dedičstvo ti prepíše ešte predtým, ako nebohý dopije.</p>
+  <p class="znenie">Tvoj Nástroj do Dedičstva je lacnejší, najmenej 0 cigariet. Spoločná cena po ňom stúpne ako vždy.</p>
+  <div class="sily"><div><b>Sila 1</b>−1 cigareta</div><div><b>Sila 2</b>−2 cigarety</div><div><b>Sila 3</b>−3 cigarety</div></div>
+  <dl>
+    <dt>Prečo</dt><dd>Zaostávajúci si odnesie trvalý pokrok, ktorý mu ostane, aj keď priazeň stratí. Takmer nikdy nie je mŕtva, lebo šenok sa dopĺňa na 2 Nástroje. Cena rastie pre oboch, takže je to aj preteky.</dd>
+    <dt>Čo bolí darcu</dt><dd>Súper lacno vyberie najlepšie Nástroje a tebe medzitým Dedičstvo zdražie.</dd>
+    <dt>Riziko</dt><dd>Niekoľko Nástrojov skoro zadarmo môže trvalo pridať veľa sily, čiže zo zaostávajúceho by mohol byť bežec. Zľavu si odmietol pri šenku; Dedičstvo je iná vec, ale radšej to spomínam.</dd>
+    <dt>Zmerať</dt><dd>Nástroje v Dedičstve za partiu a ako sa mení tesnosť partií.</dd>
+  </dl>
+  <fieldset class="volba"><legend>Voľba pre Notára</legend><label><input type="radio" name="v10" value="beriem">Beriem</label><label><input type="radio" name="v10" value="možno">Možno</label><label><input type="radio" name="v10" value="nie">Nie</label><input type="text" name="p10" placeholder="Poznámka" aria-label="Poznámka k Notárovi"></fieldset>
+</article>
+
+<h2>Na rozhodnutie: výmena alebo väčšia zásoba</h2>
+<div class="box">
+  <p>V partii leží 8 scorecardov na 8 starších. Nové priazne sa dajú pridať dvoma spôsobmi:</p>
+  <ul>
+    <li><b>Výmena (odporúčam najprv):</b> 1–3 nové nahradia najslabšie zo súčasných. Sada ostane rovnako veľká a meranie jednoznačné.</li>
+    <li><b>Väčšia zásoba:</b> do každej partie sa vylosuje 8 z väčšieho balíka. Každá partia je iná, ale hráč sa musí naučiť viac priazní a bot aj vyrovnávanie sú náročnejšie.</li>
+  </ul>
+  <p class="tlmene">Každá priazeň, ktorú vyberieš, by najprv išla do Zrejúcej. Treba k nej §10 v pravidlách, jadro hry, ocenenie v <code>bot.ts</code> a bodovaciu kartu v tvorcovi. Výučba sa upraví až pri vypálení. <code>bot.ts</code> teraz mení bot-tréner, takže implementácia by mala počkať na jeho vetvu.</p>
+</div>
+
+<h2>Moje voľby</h2>
+<p class="tlmene">Označ návrhy vyššie, tento text sa doplní sám. Skopíruj ho a pošli mi ho do chatu.</p>
+<textarea id="vystup" readonly aria-label="Súhrn volieb"></textarea>
+<button type="button" id="kopiruj">Skopírovať</button>
+</main>
+<script>
+(function () {
+  var KLUC = "naex-priazne-nove";
+  var vystup = document.getElementById("vystup");
+  var clanky = Array.prototype.slice.call(document.querySelectorAll("article.navrh"));
+  function nacitaj() { try { return JSON.parse(localStorage.getItem(KLUC) || "{}"); } catch (e) { return {}; } }
+  function uloz(stav) { try { localStorage.setItem(KLUC, JSON.stringify(stav)); } catch (e) { /* súkromné okno: voľby platia len do zavretia */ } }
+  function prepocitaj() {
+    var stav = {};
+    var riadky = [];
+    clanky.forEach(function (clanok, i) {
+      var c = i + 1;
+      var volba = clanok.querySelector('input[name="v' + c + '"]:checked');
+      var poznamka = clanok.querySelector('input[name="p' + c + '"]').value.trim();
+      stav["v" + c] = volba ? volba.value : "";
+      stav["p" + c] = poznamka;
+      if (volba || poznamka) {
+        riadky.push(c + " " + clanok.dataset.meno + ": " + (volba ? volba.value : "bez voľby") + (poznamka ? " — " + poznamka : ""));
+      }
+    });
+    vystup.value = riadky.length ? "Nové priazne, moje voľby:\n" + riadky.join("\n") : "Zatiaľ nič nie je označené.";
+    uloz(stav);
+  }
+  var ulozene = nacitaj();
+  clanky.forEach(function (clanok, i) {
+    var c = i + 1;
+    if (ulozene["v" + c]) {
+      var radio = clanok.querySelector('input[name="v' + c + '"][value="' + ulozene["v" + c] + '"]');
+      if (radio) { radio.checked = true; }
+    }
+    clanok.querySelector('input[name="p' + c + '"]').value = ulozene["p" + c] || "";
+  });
+  document.addEventListener("input", prepocitaj);
+  document.addEventListener("change", prepocitaj);
+  document.getElementById("kopiruj").addEventListener("click", function () {
+    var tlacidlo = this;
+    function hotovo() { tlacidlo.textContent = "Skopírované"; setTimeout(function () { tlacidlo.textContent = "Skopírovať"; }, 1500); }
+    if (navigator.clipboard) {
+      navigator.clipboard.writeText(vystup.value).then(hotovo, function () { vystup.select(); });
+    } else { vystup.select(); }
+  });
+  prepocitaj();
+})();
+</script>
+</body>
+</html>

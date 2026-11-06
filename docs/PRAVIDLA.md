@@ -1,6 +1,6 @@
 # NA EX! — pravidlá (špecifikácia)
 
-**Pravidlá v11.9 (platné od 2026-11-06)** — Dobratie do troch a výpalné (v11.9), Každý Hazard je Dlh (v11.8), Kostol a koniec línie (v11.7), Zajatie od minulého kola (v11.6), Identita kariet (v11.5), Zajatie Nakladačkou a presvedčenie (v11.4), Konflikt oboma smermi a Podpora (v11.3), Schopnosť väzňa (v11.2), Vzbura obráti kartu (v11.1) a Strach a reči (Michal 2026-11-02, docs/napady/strach-reci.html,
+**Pravidlá v11.10 (platné od 2026-11-06)** — Ohováračka namiesto Alkoholika (v11.10), Dobratie do troch a výpalné (v11.9), Každý Hazard je Dlh (v11.8), Kostol a koniec línie (v11.7), Zajatie od minulého kola (v11.6), Identita kariet (v11.5), Zajatie Nakladačkou a presvedčenie (v11.4), Konflikt oboma smermi a Podpora (v11.3), Schopnosť väzňa (v11.2), Vzbura obráti kartu (v11.1) a Strach a reči (Michal 2026-11-02, docs/napady/strach-reci.html,
 verzia 2) na v10.4
 (Hádka v10 — Michal 2026-11-01, docs/napady/hadka.html, verzia 4; v9 zmrazené 2026-10-30, krok 2
 revízie starších, docs/napady/starsi-krok2-zadanie.html; dávky v9.1 Chuť, v9.2 šenok a NA EX naraz,
@@ -8,6 +8,13 @@ v9.3 Výtržník prebíja Úplatok; v10.1 zajatie pred šenkom; v10.2 Nástroj n
 Forsáž, Úplatok zrušený; v10.4 pojem Spáliť, Autority). Sada kariet v55 (`cards.json`). Pravidlá sa
 menia len v dávkach; celá dávka dostane ďalšiu verziu (značka partií `v11`; presnú verziu ukazuje
 stránka Pravidlá — `VERZIA_PRAVIDIEL_PRESNA`).
+
+**Zmeny v11.10 oproti v11.9** (Michal 2026-11-06, Zrejúca, docs/napady/priazne-nove.html, návrh 1; staré znenia v `docs/pravidla-historia.md`, sekcia v11.10):
+
+- **Ohováračka namiesto Alkoholika** (§9.1, §10): priazeň dáva Povery navyše **+1 / +2 / +3** do hádky.
+  Michal: „viera a povery sa navzájom rušia, ako by boli normálne na akcii karty.“ Ruší ich teda súperova Viera
+  z kariet aj z Veriaceho, jedna za jednu. Rovnako ako na Povery z kariet na ne platí Horoskop (po 2 mäkké)
+  a Čierna mačka (Vierou sa nerušia). Na zdravie „do dna“ zaniká: poldeci z NA EX sa vždy vráti vypitý.
 
 **Zmeny v11.9** (Michal 2026-11-06, Zrejúca, docs/napady/agresivna-hra.html; staré znenia v `docs/pravidla-historia.md`, sekcia v11.9):
 
@@ -740,7 +747,7 @@ limit vykladania = plné poldeci + 1
   nemíňa (ani odpoveď naň, §7). Plný poldeci však z NA EX odíde zo zásoby na
   kartu a do limitu sa už **neráta** — ďalšie Zhromaždenie toho istého kola má
   limit o 1 nižší (súperov sa nemení). Pri bitke sa poldeci vypije (§9.5) a ďalej
-  je vypitý, kým sa neotočí na plný (začiatok kola, doliatie, Na zdravie).
+  je vypitý, kým sa neotočí na plný (začiatok kola, doliatie).
 - Samotná akcia Poldeci sa do limitu nezapočítava — otáča poldeci až pri
   bitke, takže sa prejaví o kolo neskôr.
 - Priznanie (§11) ani Nástroj (do línie aj do Dedičstva, §12) limit nemíňajú.
@@ -1091,7 +1098,7 @@ Bitka sa vyhodnotí po poslednej Pitke kola, v tomto poradí (v11 Strach a reči
 | 4c | **Výhra strachom:** víťaz s červeným strachom u aspoň 4 starších (väzni sa rátajú) vyhráva — hra končí | §1, §10 |
 | 4d | Exekúcia (Michal 2026-10-28): Robota (aj z priazne Robota, v9), potom Exekútor každému s priznaným Dlhom — Dlhy a špaky (Advokát ich uberie); Záhradkár ju obíde | §11 |
 | 4e | **Nakladačka** — víťaz bitky ju rozdelí na svoj strach a smie **zajímať** (5 bodov za staršieho na červenom strachu už pred touto Nakladačkou, v11.6; väzeň, krádež, výhra väzňami hneď); potom **hádka** — víťaz hádky ju rozdelí na svoje reči a smie **presviedčať** (5 bodov, v11.4) — voľne medzi starších, 1 / 2 / 3 za stupeň, zvyšok prepadne; vo finále sa nerozdeľujú — špaky 1 : 1 dostali v kroku 4a | §9.1, §9.4, §10 |
-| 5 | Poldeci (aj Na zdravie „do dna“) | §9.5 |
+| 5 | Poldeci | §9.5 |
 | 5b | Veštica | §9.5b |
 | 6 | Cintorín (Nástroj do Dedičstva porazenému) | §15 |
 | 6c | **Porazený dostane 1 cigaretu** (pri sekere a po finále nikto), priazne Kmotra (Dlhy súperovi) a Fajčiara (cigarety, v9), **výpalné** (v11.9, §10; po finále nie), efekty Výhra a Prehra (Recidivista, Dievčina), Krokodíl | §9.4, §10, §16 |
@@ -1116,6 +1123,7 @@ víťaz hádky ju po výsledku bitky rozdelí na **svoje reči** (§10).
 1. Viera a Povery sa vyrušia 1 : 1 na kusy
      zrušené_Povery[súper] = min(Povery[súper], Viera[ja])
        Viera[ja] = moje aktívne Viery + Viera navyše z Veriaceho
+       Povery[ja] = moje aktívne Povery + Povery navyše z Ohováračky
        jedna akcia Viera zruší jednu akciu Povera — aj vylepšenú Horoskopom (sila 2);
        Svätý text rušenie nemení, hodnota Viery platí len v tlmení tuhého (Michal 2026-11-01)
      Viera, ktorá rušila Povery, sa na tuhé nepoužije
@@ -1123,7 +1131,7 @@ víťaz hádky ju po výsledku bitky rozdelí na **svoje reči** (§10).
 
 2. mäkké[ja] = Pohoršenie × 2 + zvyšné_Povery × sila_Povery
      sila_Povery = 1, s Horoskopom v Dedičstve 2
-     Viera proti Pohoršeniu nepomáha; žiadna priazeň mäkké nepridáva
+     Viera proti Pohoršeniu nepomáha; mäkké pridáva z priazní len Ohováračka (cez Povery)
 
 3. víťaz hádky = vyššie mäkké; rovnosť = nikto (remíza, reči nikto nedvíha)
    hádka = |rozdiel mäkkého|          „Ana vyhrala hádku o 3.“
@@ -1151,6 +1159,11 @@ víťaz hádky dostane za každý jej bod **1 špak** (krok 4a). Rozdelenie je v
 
 **Veriaci:** Viera navyše z jeho priazne ruší Povery aj tlmí tuhé — tou istou silou (do v10
 sa delila na silu pred hádkou a po nej).
+
+**Ohováračka** (v11.10): Michal 2026-11-06: „viera a povery sa navzájom rušia, ako by boli normálne
+na akcii karty.“ Povery navyše z jej priazne sa správajú ako Povery z akcií kariet: ruší ich súperova
+Viera (z kariet aj z Veriaceho) 1 : 1, Horoskop im dá silu 2 a s Čiernou mačkou sa Vierou nerušia.
+Neležia však na karte, preto ich nemení Posilnenie, Odpor, NA EX ani efekty, ktoré menia akcie na kartách.
 
 **Príklad (Ana a Boris):** Ana aktivovala 2 Pohoršenia a 2 Povery, Boris 1 Pohoršenie, 1 Poveru
 a 1 Vieru. Borisova Viera zruší jednu Aninu Poveru. Ana: 2 × 2 + 1 = **5 mäkké**, Boris
@@ -1247,10 +1260,6 @@ jeden vypitý poldeci otočí späť na plný. Ak hráč nemá žiadny vypitý p
 akcia vyjde naprázdno. Týka sa **majiteľa karty**, nech leží na ktorejkoľvek
 strane.
 
-**Na zdravie „do dna“** (priazeň Alkoholika, §10): z poldeci, ktoré hráč
-v kole položil cez NA EX, sa mu toľko, aká je sila priazne, vráti **plných**
-namiesto vypitých. Nerest sa ráta ako vždy.
-
 ### 9.5b Veštica
 
 Porazený s Vešticou vo svojej partii si prezrie oba doberacie balíčky,
@@ -1317,11 +1326,11 @@ Väzeň priazeň nedáva — jeho scorecard je otočený.
 | Robota (v9) | Exekúcia, pred Exekútorom (§11) | akcie Robota navyše: každá spáli 1 tvoj priznaný Dlh; za Dlh, ktorý nemá čo spáliť, 1 špak (O5) | 1 / 2 / 3 Roboty | `ROBOTA` |
 | Fajčiar (v9) | Po bitke (§9, krok 6c) | cigarety navyše; Obmedzenie ich neuberá | +1 / +2 / +3 | `FAJCIAR` |
 | Kmotor (v9) | Po bitke (§9, krok 6c) | tvoje priznané Dlhy prejdú medzi súperove; ak ich máš menej, presunie, koľko máš; bez Dlhu nič | 2 / 3 / 4 Dlhy | `UZERNIK` |
-| Alkoholik — Na zdravie „do dna“ | Poldeci v bitke (§9.5) | poldeci z tvojho NA EX sa vráti plný | 1 / 2 / 3 za kolo | `ALKOHOLIK` |
+| Ohováračka (v11.10) | Povery v hádke (§9.1) | Povery navyše; súperova Viera ich ruší ako Povery z kariet | +1 / +2 / +3 | `OHOVARACKA` |
 
 Exekútor a Výpalník ako priazne zanikli (v9; akcia exekúcie v §11 ostáva). Staré
 sady a databázy ich ešte nesú — pri načítaní je Exekútor (`EXEKUTOR`) Advokát
-a Výpalník (`VYPALNIK`, `NEPRAJNIK`) Robota; Kmotor je `UZERNIK` (aj Zberateľ,
+a Výpalník (`VYPALNIK`, `NEPRAJNIK`) Robota, Alkoholik (`ALKOHOLIK`, v11.10) Ohováračka; Kmotor je `UZERNIK` (aj Zberateľ,
 Očumovateľ), Abstinent `LAKOMEC`.
 
 Efekty kariet uvádzajú pevné čísla — číslo nezávisí od iného staršieho. Čísla sú
@@ -1897,7 +1906,7 @@ bitky, Noviny hneď po rozhodnutí hádky, Kôň v kroku Exekútora. Michal ich 
 | Bzdocha | Pitka: Súper hrá Pitku pred tebou; vidíš jeho NA EX. Majiteľ čaká, kým súper skončí svoju časť Pitky, potom hrá a vidí súperove skryté NA EX; majú ju obaja → nečaká nikto (§7, Michal 2026-10-27). |
 | Záhradkár | Exekúcia (Michal 2026-10-28): „Exekúcia v tomto kole pre teba neplatí.“ Keď leží odkrytý v línii v partii majiteľa (jeho karta, aj na súperovej strane), Exekútor ho v kroku exekúcie (§9, 4c) obíde — nezhorí mu žiadny Dlh ani špak. Nespáli sa; v ruke či v balíčkoch nerobí nič. Súperov Záhradkár ťa nechráni. |
 | Anonymný alkoholik | Furt (v11.5, Michal 2026-11-03): aktívne akcie **Poškodenie pečene tvojich kariet** (natočených k tebe) v jeho okolí sa rátajú ako **Viera** — v Pitke nedajú pečeň, v bitke ako každá Viera rušia Povery a tlmia tuhé; s násobkami (×2 = 2 Viery). Súperove karty a hrana lokality nie (hrana nie je karta); jeho vlastné akcie tiež nie. Lícom dole ako ostatné Furt efekty akcií. Do v11.4 Nástup: priznal nepriznané Cirhózy z odhadzovacieho balíčka. |
-| Poľovník | Nástup (v10.4, Michal 2026-11-02): na **druhej strane lokality** (oproti strane, kde Poľovník leží — platí aj podstrčený) sa **spáli súperovo Zviera, ktoré je od lokality najďalej**. Súperovo = karta s tagom Zviera natočená k súperovi toho, kto Poľovníka zahral (aj Recidivista — Zviera aj Občan); vlastné Zvieratá nestrieľa. Povinné, bez voľby, hneď pri Nástupe (ako Dohadzovačka). Spálená karta ide navždy z hry, medzera sa uzavrie a spoje aj prevaha sa prepočítajú; na špaky sa už neráta (§14). Spálenie **nie je priloženie** — Konflikt ani Pasca sa nespustia. **Skrytú Záverečnú** nestrieľa (vyberie najvzdialenejšie z odkrytých); ako Záverečná či odpoveď na NA EX sa Poľovník vyhodnotí pri otočení a karty, ktoré sa otáčajú v tej istej chvíli, nestrieľa (keď prišiel, ležali lícom dole). Poldeci z NA EX na spálenej karte sa hneď vypije tomu, kto NA EX dal (ako v bitke, §9.5, s nerestou; Na zdravie nie). Dvojčatá nie sú Zviera; Kôň po spálení s Nástrojom spoj netvorí (Nástroj ostáva ležať, §12). Vo finále rovnako. Ak na druhej strane súperovo Zviera nie je, nič sa nestane. |
+| Poľovník | Nástup (v10.4, Michal 2026-11-02): na **druhej strane lokality** (oproti strane, kde Poľovník leží — platí aj podstrčený) sa **spáli súperovo Zviera, ktoré je od lokality najďalej**. Súperovo = karta s tagom Zviera natočená k súperovi toho, kto Poľovníka zahral (aj Recidivista — Zviera aj Občan); vlastné Zvieratá nestrieľa. Povinné, bez voľby, hneď pri Nástupe (ako Dohadzovačka). Spálená karta ide navždy z hry, medzera sa uzavrie a spoje aj prevaha sa prepočítajú; na špaky sa už neráta (§14). Spálenie **nie je priloženie** — Konflikt ani Pasca sa nespustia. **Skrytú Záverečnú** nestrieľa (vyberie najvzdialenejšie z odkrytých); ako Záverečná či odpoveď na NA EX sa Poľovník vyhodnotí pri otočení a karty, ktoré sa otáčajú v tej istej chvíli, nestrieľa (keď prišiel, ležali lícom dole). Poldeci z NA EX na spálenej karte sa hneď vypije tomu, kto NA EX dal (ako v bitke, §9.5, s nerestou). Dvojčatá nie sú Zviera; Kôň po spálení s Nástrojom spoj netvorí (Nástroj ostáva ležať, §12). Vo finále rovnako. Ak na druhej strane súperovo Zviera nie je, nič sa nestane. |
 | Predavačka | Kšeft (v10.4, Michal 2026-11-02): za **1 cigaretu** si dober 1 kartu z doberacieho balíčka (keď je prázdny, zamieša sa odhadzovací; bez kariet v oboch sa Kšeft neponúka). Raz za Pitku ako každý Kšeft (§7); platba nie je fajčenie — nerest ani Krabička cigariet sa neráta, Jednota ju nezakazuje. |
 | Vedúcko | Furt (v10.4, Michal 2026-11-02): **aktívne Roboty kariet, ktoré s ním susedia** (obe strany oboch susedov, aj súperových), sa rátajú ako **Pecky** majiteľa tej akcie (komu by patrila Robota) — Dlh nepália, dávajú 2 tuhé. Robota ostáva spárovaná a aktívna, len sa ráta ako Pecka: Posilnenie aj Forsáž ju zdvoja ako Pecku, Fúrik ani špak za Robotu bez Dlhu sa na ňu neuplatnia. **Hrana lokality nie je karta** — Robota lokality ostáva Robotou (ako pri Silnej nezávislej žene). Zrušená Robota ostáva zrušená. Robota premenená Profesionálnym tipérom je jeho premena, nie Robota karty. Lícom dole (Záverečná) sa ráta ako ostatné Furt efekty akcií (Silná nezávislá žena). |
 | Dohadzovačka | Nástup (Michal 2026-10-28): keď ju hráč priloží k Občanovi alebo Starešinovi O2 (jej vnútorný sused, karta ktoréhokoľvek hráča), z **druhej strany lokality** sa **najvzdialenejší** (od lokality) Občan alebo Starešina opačného pohlavia ako O2 (Žena ↔ Chlap; karta ktoréhokoľvek hráča) presunie za Dohadzovačku — na vonkajší koniec jej strany. Príklad: „O1 … … O2“, Dohadzovačka za O2 → „… … O2 · Dohadzovačka · O1“. Presun je **povinný**, bez voľby. Karta ostáva svojho majiteľa a natočená k nemu, medzera na druhej strane sa uzavrie a spoje sa prepočítajú. Karta s oboma tagmi (Liberál) sa ráta ako oboje — ako O2 hľadá Ženu aj Chlapa, ako O1 sa hodí k obom. Presun **nie je priloženie**: Konflikt presunutej ani susednej karty sa nespustí a Pasca ho neráta. Skrytá Záverečná sa nepresúva (a ako O2 nerozhoduje); ako Záverečná sa Dohadzovačka vyhodnotí pri otočení. Ak O2 nemá Ženu ani Chlapa, nie je Občan ani Starešina, alebo na druhej strane nie je vhodný O1, nič sa nestane. Do 2026-10-28 Bitka: karta zo šenku za zmiešané spoje. |

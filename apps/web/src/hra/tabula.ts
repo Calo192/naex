@@ -75,8 +75,8 @@ export function poldeciNaStole(view: PohladNaPoldeci, p: PlayerId): { readonly n
   return { naStole: vLinii + naRube + skryte, skryte };
 }
 
-/** Do vysvetlenia poldeci, keď hráč má NA EX na stole (§9.5, Alkoholik §10). */
-export const NA_STOLE_VYSVETLENIE = "Poldeci z NA EX leží na stole a ráta sa k vypitým: v bitke sa vypije a vráti sa vypitý (Alkoholik „do dna“: plný).";
+/** Do vysvetlenia poldeci, keď hráč má NA EX na stole (§9.5). */
+export const NA_STOLE_VYSVETLENIE = "Poldeci z NA EX leží na stole a ráta sa k vypitým: v bitke sa vypije a vráti sa vypitý.";
 
 /**
  * Čísla hráča z pohľadu: plné poldeci bez skrytých NA EX (tie už ležia na stole,

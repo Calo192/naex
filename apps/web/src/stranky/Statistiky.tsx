@@ -436,7 +436,7 @@ export function Statistiky({ profil, vlastny }: { readonly profil: ProfilHraca; 
 
         <Sekcia nazov="Povery a viera" ikona={<Akcia kluc="Povera" />}>
           <Udaj nazov="aktívnych Povier" hodnota={cislo(s.akcie.Povera ?? 0)} vyrazny />
-          <Udaj nazov="Povier účinných" hodnota={percento(s.poveryUcinne, s.akcie.Povera ?? 0)} pomoc="Povery, ktoré nevyrušila súperova Viera." />
+          <Udaj nazov="Povier účinných" hodnota={percento(Math.min(s.poveryUcinne, s.akcie.Povera ?? 0), s.akcie.Povera ?? 0)} pomoc="Povery, ktoré nevyrušila súperova Viera." />
           <Udaj nazov="aktívnej Viery" hodnota={cislo(s.akcie.Viera ?? 0)} />
           <Udaj nazov="aktívnych Pohoršení" hodnota={cislo(s.akcie.Pohoršenie ?? 0)} />
           <Udaj nazov="posunov Pohoršením (do v9)" hodnota={cislo(s.posunyPohorsenim)} pomoc="Markery starších posunuté Pohoršením — len partie do pravidiel v9." />

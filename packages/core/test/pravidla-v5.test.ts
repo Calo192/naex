@@ -224,9 +224,9 @@ describe("v5 bod 6: priazne v5 (sila 1 / 2 / 3)", () => {
     expect(prahyHraca(data, s, 0).exekucia).toBe(3);
   });
 
-  it("Alkoholik a Kmotor prahy Cirhózy a Dlhu nemenia, Robota Povery nemení", () => {
+  it("Kmotor prahy Cirhózy a Dlhu nemení, Robota Povery nemení", () => {
     let s = setupSBalickom(data, 94);
-    s = sPriaznou(sPriaznou(sPriaznou(s, "ALKOHOLIK", 0, 3), "UZERNIK", 0, 3), "ROBOTA", 0, 3);
+    s = sPriaznou(sPriaznou(s, "UZERNIK", 0, 3), "ROBOTA", 0, 3);
     expect(prahyHraca(data, s, 0).cirhoza).toBe(KONSTANTY.PRAH_CIRHOZY_ZAKLAD);
     expect(prahyHraca(data, s, 0).dlh).toBe(KONSTANTY.PRAH_DLHU_ZAKLAD);
     expect(rozpisPoskodenia(data, s, [{}, {}])[0].zvysnaPovera).toBe(0);
@@ -264,13 +264,11 @@ describe("v5 bod 6: priazne v5 (sila 1 / 2 / 3)", () => {
     expect(paleneDlhyVBitke(data, s)).toEqual([2, 0]);
   });
 
-  it("Na zdravie „do dna“ (Alkoholik): poldeci z tvojho NA EX sa po bitke vráti plný", () => {
+  it("Ohováračka (v11.10): poldeci z NA EX sa vráti vypitý ako bez nej — do dna zaniklo", () => {
     const { s, ciel } = pitkaSNaex(98);
-    const s1 = dohraj(apply(sada, sPriaznou(s, "ALKOHOLIK", 1, 1), { type: "naex", uid: ciel }, 1).state);
-    // Poldeci z NA EX späť plný + začiatok kola otočí jeden vypitý (ten, čo mal pred Pitkou).
-    expect([s1.hraci[1].poldeciPlne, s1.hraci[1].poldeciVypite]).toEqual([2, 0]);
+    const s1 = dohraj(apply(sada, sPriaznou(s, "OHOVARACKA", 1, 1), { type: "naex", uid: ciel }, 1).state);
     const bez = dohraj(apply(sada, s, { type: "naex", uid: ciel }, 1).state);
-    expect([bez.hraci[1].poldeciPlne, bez.hraci[1].poldeciVypite]).toEqual([1, 1]);
+    expect([s1.hraci[1].poldeciPlne, s1.hraci[1].poldeciVypite]).toEqual([bez.hraci[1].poldeciPlne, bez.hraci[1].poldeciVypite]);
   });
 });
 

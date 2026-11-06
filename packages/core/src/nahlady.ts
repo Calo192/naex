@@ -20,7 +20,7 @@ import {
   sPrilozenou,
   zablokovaneStrany,
 } from "./engine.ts";
-import { efektPotlaceny, naexPecenSuperovi, partiaHraca, silaDoDna, soferiBezNaex, svokraRany, traktoristkyBezPrevahy } from "./effects.ts";
+import { efektPotlaceny, naexPecenSuperovi, partiaHraca, soferiBezNaex, svokraRany, traktoristkyBezPrevahy } from "./effects.ts";
 import { opponentOf } from "./types.ts";
 import type { LineEval } from "./partia.ts";
 import { evaluateLine } from "./partia.ts";
@@ -268,24 +268,6 @@ export function cenaTahu(data: GameData, pred: ClientState, po: ClientState, cen
 }
 
 /**
- * Čo jedno ďalšie NA EX hráča p zúčtuje pri odkrytí (v5, NA EX naraz) — tým istým
- * poradím ako odhalNaex v motore. `doDna`: poldeci z neho
- * sa po bitke vráti plný (Na zdravie, Alkoholik). Súperove skryté NA EX náhľad
- * pozná len s Bzdochou — vtedy zrážku (Výtržník) zloží poOdkrytiNaex.
- */
-export interface OdkrytieNaex {
-  readonly doDna: boolean;
-}
-
-export function odkrytieNaex(data: GameData, view: ClientState, p: PlayerId): OdkrytieNaex {
-  const linia = view.strany.flat();
-  const naStole =
-    linia.filter((pl) => pl.naexBy === p || pl.naexBy2 === p).length +
-    view.zaverecne.filter((z) => z.naexBy === p && !linia.some((pl) => pl.card.uid === z.uid)).length;
-  return { doDna: naStole < silaDoDna(data, view, p) };
-}
-
-/**
  * Pohľad hráča `view.ja` s jeho skrytými NA EX (v5) tak, ako ich motor zúčtuje
  * pri odkrytí: poldeci na karte, pečeň +1 — základ náhľadu
  * ďalšieho NA EX a výhľadov Pitky. Súperove skryté NA EX klient nevidí.
@@ -298,7 +280,7 @@ export function sMojimiSkrytymiNaex(data: GameData, view: ClientState): ClientSt
 }
 
 /** Pohľad po odkrytí jedného NA EX hráča `view.ja` a čo pri ňom motor zúčtoval. */
-export interface PoOdkrytiNaex extends OdkrytieNaex {
+export interface PoOdkrytiNaex {
   readonly view: ClientState;
   /**
    * Svokra súpera (Michal 2026-10-26): Rany, ktoré ti v bitke udelí za toto NA EX
@@ -321,7 +303,6 @@ export function poOdkrytiNaex(data: GameData, view: ClientState, uid: number): P
   // Súperova skrytá Záverečná nie je v strany — NA EX na ňu nesie jej náhradné uid.
   const naRub = kde === -1 && view.zaverecne.some((z) => z.uid === uid && z.naexBy === null);
   if (kde === -1 && !naRub) return null;
-  const doDna = odkrytieNaex(data, view, ja).doDna;
   // Bzdocha: súperovo skryté NA EX na tú istú kartu hráč vidí — pri odkrytí bude zrážka
   // a z karty Výtržník (playtest 20261030-184957, Šimon: náhľad sľuboval bežné NA EX).
   // Poradie ako odhalNaex: naexBy obranca, naexBy2 útočník.
@@ -345,7 +326,7 @@ export function poOdkrytiNaex(data: GameData, view: ClientState, uid: number): P
   const naexPocet: [number, number] = [pitka?.naexPocet?.[0] ?? 0, pitka?.naexPocet?.[1] ?? 0];
   naexPocet[ja] += 1;
   const pitkaStav = pitka === null ? null : { ...pitka, naexPocet };
-  return { view: { ...sKartou, hraci, pitkaStav }, svokra, doDna, kar };
+  return { view: { ...sKartou, hraci, pitkaStav }, svokra, kar };
 }
 
 /** Náhľad NA EX na jednu kartu: celá cena a čo sa zúčtuje pri odkrytí. */

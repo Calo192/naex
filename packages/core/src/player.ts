@@ -87,8 +87,8 @@ export function limitVykladania(player: Pick<PlayerState, "poldeciPlne">): numbe
   return player.poldeciPlne + 1;
 }
 
-// Priazne v5 (Michal 2026-10-24/25): Alkoholik, Kmotor (Úžerník), Abstinent
-// (Lakomec) a Neprajník už prahy, barter ani mäkké poškodenie nemenia.
+// Priazne v5 (Michal 2026-10-24/25): Kmotor (Úžerník) a Abstinent (Lakomec)
+// už prahy ani barter nemenia.
 
 export function prahCirhozy(): number {
   return KONSTANTY.PRAH_CIRHOZY_ZAKLAD;

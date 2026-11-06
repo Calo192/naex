@@ -35,6 +35,8 @@ export interface BattleSide {
   readonly vieraVeriacehoPred?: number;
   /** Viera navyše z priazne Veriaceho so silou PO hádke — rozdiel oproti „pred“ tlmí tuhé (v10). Chýba = vieraVeriacehoPred. */
   readonly vieraVeriaceho?: number;
+  /** Povery navyše z priazne Ohováračky — rátajú sa ako Povery z akcií kariet (v11.10). Chýba = 0. */
+  readonly poveryOhovaracky?: number;
   /** Koľko mäkkého dá jedna moja zvyšná Povera: 1, s Horoskopom 2 (v10). Chýba = 1. */
   readonly silaPovery?: number;
   /** Sila priazne Abstinenta po hádke — v bitke sa mi toľko Absťákov neráta (v10). Chýba = 0. */
@@ -84,7 +86,7 @@ export function computeDamage(sides: readonly [BattleSide, BattleSide]): DamageR
   //    akcia Viera zruší jednu akciu Povera, aj vylepšenú Horoskopom; Svätý text rušenie
   //    nemení (Michal 2026-11-01). Čierna mačka: jej Povery sa nerušia.
   const viera = ([0, 1] as const).map((p) => n(sides[p].sums.Viera) + n(sides[p].vieraVeriacehoPred)) as [number, number];
-  const povera = [n(sides[0].sums.Povera), n(sides[1].sums.Povera)] as const;
+  const povera = [n(sides[0].sums.Povera) + n(sides[0].poveryOhovaracky), n(sides[1].sums.Povera) + n(sides[1].poveryOhovaracky)] as const;
   const zrusene = ([0, 1] as const).map((p) => (sides[p].poveryBezViery === true ? 0 : Math.min(povera[p], viera[opponentOf(p)]))) as [number, number];
   // Viera, ktorá rušila Povery, sa na tuhé nepoužije.
   const vieraNaPovery = [zrusene[1], zrusene[0]] as [number, number];

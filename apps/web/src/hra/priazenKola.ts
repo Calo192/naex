@@ -138,7 +138,7 @@ export const NAZOV_PRIAZNE: Readonly<Record<Favour, string>> = {
   BITKAR: "Bitkár",
   VERIACI: "Veriaci",
   FAJCIAR: "Fajčiar",
-  ALKOHOLIK: "Alkoholik",
+  OHOVARACKA: "Ohováračka",
   ADVOKAT: "Advokát",
 };
 
@@ -150,13 +150,13 @@ export const KEDY_PRIAZNE: Readonly<Record<Favour, string>> = {
   BITKAR: "v bitke",
   VERIACI: "v bitke",
   FAJCIAR: "po bitke",
-  ALKOHOLIK: "po bitke",
+  OHOVARACKA: "v bitke",
   ADVOKAT: "pri exekúcii",
 };
 
 /** Účinok priazne celou vetou bez názvu na začiatku („Kmotor: …“ je už v nadpise). */
 export function silaPriazne(fav: Favour, sila: number): string {
-  const t = UCINOK_PRIAZNE[fav](sila).replace(/^(Kmotor|Abstinent|Robota|Na zdravie|Advokát): /, "");
+  const t = UCINOK_PRIAZNE[fav](sila).replace(/^(Kmotor|Abstinent|Robota|Advokát): /, "");
   return t.charAt(0).toUpperCase() + t.slice(1);
 }
 

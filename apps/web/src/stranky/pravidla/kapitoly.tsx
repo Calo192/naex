@@ -547,7 +547,7 @@ export const KAPITOLY: readonly Kapitola[] = [
         <ol>
           <li>
             <P k="viera">Viera</P> a Povery sa vyrušia 1 : 1 na kusy — jedna tvoja Viera zruší jednu súperovu Poveru, aj vylepšenú
-            Horoskopom, a naopak. Proti Pohoršeniu Viera nepomáha.
+            Horoskopom, a naopak. Rovnako to platí aj pre Vieru z Veriaceho a Povery z Ohováračky. Proti Pohoršeniu Viera nepomáha.
           </li>
           <li>
             <strong>Mäkké</strong> = Pohoršenie × 2 + zvyšné Povery × 1 (s Horoskopom × 2). Kto ho má viac, <strong>vyhral hádku</strong> o
@@ -609,7 +609,7 @@ export const KAPITOLY: readonly Kapitola[] = [
             vyberá ten súper (spravidla porazený si vyberie priazne). Prejaví sa až v ďalšej bitke. Vo finále sa Nakladačka nerozdeľuje — víťaz za ňu dostane 1 špak za každý bod.
           </li>
           <li>
-            <strong>Poldeci</strong> — poldeci z NA EX sa vypijú (s priazňou Alkoholika sa niektoré vrátia plné); aktívna akcia
+            <strong>Poldeci</strong> — poldeci z NA EX sa vypijú; aktívna akcia
             Poldeci otočí vypitý späť na plný.
           </li>
           <li>
@@ -730,7 +730,7 @@ export const KAPITOLY: readonly Kapitola[] = [
             <tr><td>Robota</td><td>Akcie Robota navyše — spália priznaný Dlh, inak dajú špak</td><td>1 / 2 / 3</td></tr>
             <tr><td>Fajčiar</td><td>Cigarety po bitke (Obmedzenie ich neuberá)</td><td>+1 / +2 / +3</td></tr>
             <tr><td>Kmotor</td><td>Po bitke prejdú tvoje priznané Dlhy medzi súperove (bez Dlhu nič)</td><td>2 / 3 / 4</td></tr>
-            <tr><td>Alkoholik — Na zdravie „do dna“</td><td>Poldeci z tvojho NA EX sa po bitke vráti plný (za kolo)</td><td>1 / 2 / 3</td></tr>
+            <tr><td>Ohováračka</td><td>Povery navyše v hádke; ruší ich súperova Viera ako Povery z kariet</td><td>+1 / +2 / +3</td></tr>
           </tbody>
         </table>
         <H3 id="starsi-vydesenie">Krajná pozícia a zajatie</H3>
