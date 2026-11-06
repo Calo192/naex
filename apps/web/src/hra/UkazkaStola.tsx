@@ -55,6 +55,8 @@
 //                  &kto=super: pasuje súper — hráč ?ja vidí pečiatku „nemá čo vyložiť“
 //   &stop=nastroj  Zhromaždenie od 2. kola, hráč ?ja na ťahu — do ruky dostane Vidly
 //                  a cigarety na Dedičstvo (tlačidlo „odkazujem“)
+//   &stop=pecen    ako nastroj, ale do ruky dostane dvoch Pijanov a pečeň 2 — výstraha pečene
+//                  pri vykladaní (štítok v ruke po kliku na +, miesto na stole pri ťahaní)
 //   &avatar=a,b    fotky hráča a súpera (id médií) namiesto iniciálok
 //   &bot=0         súper po načítaní netiahne (snímka Pitky, v ktorej hrajú obaja naraz)
 //   &zerava=1      žeravé ikony (Michal 2026-10-30): hráč ?ja má v Dedičstve Pušku a Vidly, súper
@@ -186,6 +188,14 @@ function sNastrojom(s: GameState, p: PlayerId): GameState {
   const vidly: CardInstance = { uid: s.nextUid, defId: "vidly", leftLayout: 0, rightLayout: 0 };
   const novy = { ...h, ruka: [...h.ruka, vidly], cigarety: Math.max(h.cigarety, s.dedicstvaVylozene + 3) };
   return { ...s, nextUid: s.nextUid + 1, hraci: p === 0 ? [novy, s.hraci[1]] : [s.hraci[0], novy] };
+}
+
+/** Výstraha pečene: hráčovi p dá do ruky dvoch Pijanov a pečeň tesne pod prahom Cirhózy. */
+function sPecenou(s: GameState, p: PlayerId): GameState {
+  const h = s.hraci[p];
+  const pijani: CardInstance[] = [0, 1].map((i) => ({ uid: s.nextUid + i, defId: "pijan", leftLayout: 0, rightLayout: 0 }));
+  const novy = { ...h, ruka: [...h.ruka, ...pijani], pecen: 2 };
+  return { ...s, nextUid: s.nextUid + 2, hraci: p === 0 ? [novy, s.hraci[1]] : [s.hraci[0], novy] };
 }
 
 /**
@@ -326,6 +336,8 @@ function odohrajSeed(data: GameData, seed: number): { readonly odohrane: Odohran
       return najdene({ zaciatok: s, dohraj: [] });
     if (stop === "nastroj" && s.kolo >= 2 && s.faza === "zhromazdenie" && naTahu(s) === ja && s.zhromazdenieStav?.pasoval[ja] === false)
       return najdene({ zaciatok: sNastrojom(s, ja), dohraj: [] });
+    if (stop === "pecen" && s.kolo >= 2 && s.faza === "zhromazdenie" && naTahu(s) === ja && s.zhromazdenieStav?.pasoval[ja] === false)
+      return najdene({ zaciatok: sPecenou(s, ja), dohraj: [] });
     if (stop === "kolo" && s.kolo === i && s.faza === "volbaCiela") return najdene({ zaciatok: s, dohraj: [] });
     if (stop === "draft" && s.kolo >= (p.get("i") === null ? 2 : i) && s.faza === "draft" && s.draftStav?.krok === "stavba" && s.draftStav.vyber[ja] === null)
       return najdene({ zaciatok: s, dohraj: [] });

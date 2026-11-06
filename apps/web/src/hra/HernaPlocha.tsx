@@ -49,8 +49,8 @@ import type {
   ZobrataVerejne,
   Zdvih,
 } from "@naex/core";
-import { KONSTANTY, jeCoTahat, jeFinaleNaNastenke, cigaretyZaPas, spakov, efektyPrehry, hrozbaKliatob, mozeEsteNaex, textHrozbyKliatob, textyEfektovPrehry, cenaKliatby, battleOutcome, prebytokNaRozdelenie, nahladPitky, pocet, tvar, vyhladDlhov, evaluateLine, pocitadloBitky, pitkaPredBitkou, hrozbaNaex, krokStavby, planVykladania, barterCena, limitBuduceKolo, limitZhromazdenia, lineState, nahladZajatia, prevahaStran, krajeStran, dovodZakazuFajcit, defOf, jednotaZakazuje, cenaFajceniaHraca, naexLimitMinuty as naexLimitMinutyHraca, sMojimiSkrytymiNaex, sPrilozenou, nahladNaexNaKartu, najhorsiaOdpovedNaNaex, cenaTahu, nahladVylozenia, moznostiNaexVPohlade, zablokovaneStrany, NASTROJ_PRI_LOKALITE, favourStarsieho, krokRozdelenia, cieleOdpovede, maxZoSenku, bodyRozdelenia, printedSides, poskodenieBitky, rozpisPoskodenia, prahyHraca, scorecardStarsieho, stavKraja, stavkaBitky, stavZavislosti, stranyLokality, vidiVolbuSupera, hraVPitke, cakaSBzdochou, opponentOf, majitelPresvedcenej, moznostiAkcie, cenaAkcieUplna, zdvihyPreAkcie, navrhRozdelenia, pohladPoRozdeleni, priazenHraca, priazenSila, pultStarsich, spakyTeraz, NAZVY_ZON, reciNizsie, vazniNaVyhru } from "@naex/core";
-import type { Moment, ActionSums, DopadyNahladu, KliatbyNahladu, NahladNaexNaKartu, PrebytokNahladu, NahladVylozenia, PolozkaVykladania, Rod, Slot, StranaLinie } from "@naex/core";
+import { KONSTANTY, jeCoTahat, jeFinaleNaNastenke, cigaretyZaPas, spakov, efektyPrehry, hrozbaKliatob, mozeEsteNaex, textHrozbyKliatob, textyEfektovPrehry, cenaKliatby, battleOutcome, prebytokNaRozdelenie, nahladPitky, pocet, tvar, vyhladDlhov, evaluateLine, pocitadloBitky, pitkaPredBitkou, hrozbaNaex, krokStavby, planVykladania, barterCena, limitBuduceKolo, limitZhromazdenia, lineState, nahladZajatia, prevahaStran, krajeStran, dovodZakazuFajcit, defOf, jednotaZakazuje, cenaFajceniaHraca, naexLimitMinuty as naexLimitMinutyHraca, sMojimiSkrytymiNaex, sPrilozenou, maAkciuPecene, vystrahaPecene, nahladNaexNaKartu, najhorsiaOdpovedNaNaex, cenaTahu, nahladVylozenia, moznostiNaexVPohlade, zablokovaneStrany, NASTROJ_PRI_LOKALITE, favourStarsieho, krokRozdelenia, cieleOdpovede, maxZoSenku, bodyRozdelenia, printedSides, poskodenieBitky, rozpisPoskodenia, prahyHraca, scorecardStarsieho, stavKraja, stavkaBitky, stavZavislosti, stranyLokality, vidiVolbuSupera, hraVPitke, cakaSBzdochou, opponentOf, majitelPresvedcenej, moznostiAkcie, cenaAkcieUplna, zdvihyPreAkcie, navrhRozdelenia, pohladPoRozdeleni, priazenHraca, priazenSila, pultStarsich, spakyTeraz, NAZVY_ZON, reciNizsie, vazniNaVyhru } from "@naex/core";
+import type { Moment, ActionSums, DopadyNahladu, KliatbyNahladu, NahladNaexNaKartu, PrebytokNahladu, NahladVylozenia, PolozkaVykladania, Rod, Slot, StranaLinie, VystrahaPecene } from "@naex/core";
 import { IkonaAkcie } from "../karta/IkonaAkcie.tsx";
 import { KoniecHry } from "./KoniecHry.tsx";
 import { IkonaPriazne, riadokPriazneLogu } from "./IkonaPriazne.tsx";
@@ -109,6 +109,7 @@ import {
 import { KseftPodKartou } from "./KseftPodKartou.tsx";
 import { IkonaMrezi } from "./ikonyZdrojov.tsx";
 import { kseftyNaStole } from "./kseftyNaStole.ts";
+import { cieleSuperovhoNaex, vystrahaCela, vystrahaKratko } from "./vystrahyStola.ts";
 import { StavkaBitky } from "./StavkaBitky.tsx";
 import { UCINOK_KRATKO, UCINOK_PRIAZNE } from "./Scorecard.tsx";
 import type { HracInfo, SuhrnAchievementov, ZmenyFrajeriny } from "./useHra.ts";
@@ -1368,6 +1369,39 @@ export function HernaPlocha({
   // sa spáruje, hráči zisťovali skúškou) — počas ťahania aj v návrhu.
   const nahladVylozeniaNa = (k: CardInstance, kam: "vlastna" | "superova"): NahladVylozenia =>
     nahladVylozenia(data, { ...lineState(view), strany: stol.strany }, ja, k, kam, view.naexVKole);
+  // Výstraha pečene pred vyložením (Michal 2026-11-06): Cirhózy karty ešte skôr, než ide na stôl.
+  // Na požiadanie a s pamäťou do zmeny stola — hrozba NA EX skúša celú líniu a ťahanie prekresľuje často.
+  const { vystrahaVylozenia, vystrahaNavrhu } = useMemo(() => {
+    const hraciSPecenou = (h: ClientState["hraci"], pecen: number): ClientState["hraci"] =>
+      ja === 0 ? [{ ...h[0], pecen: h[0].pecen + pecen }, h[1]] : [h[0], { ...h[1], pecen: h[1].pecen + pecen }];
+    const poNavrhu: ClientState = {
+      ...zaklad,
+      strany: stol.strany,
+      hraci: hraciSPecenou(zaklad.hraci, plan?.poldeci ?? 0),
+      ...(stol.prilozeniaKu === undefined ? {} : { prilozeniaKu: stol.prilozeniaKu }),
+    };
+    // Odpoveď na NA EX je jediná karta: nová nahradí navrhnutú, ráta sa teda bez nej.
+    const pred = reagujem ? zaklad : poNavrhu;
+    const pamat = new Map<string, VystrahaPecene | null>();
+    const vystrahaVylozenia = (k: CardInstance, kam: StranaLinie): VystrahaPecene | null => {
+      if (zaklad.ciel === null || !maAkciuPecene(data, k)) return null;
+      const kluc = `${k.uid}:${kam}`;
+      const znama = pamat.get(kluc);
+      if (znama !== undefined) return znama;
+      // Ďalšia karta v tom istom ťahu sa platí plným poldeci — aj to je pečeň.
+      const vypije = plan === null || reagujem ? 0 : planTahu([...vylozenia, { karta: k, ciel: kam }]).poldeci - plan.poldeci;
+      const po = sPrilozenou(data, pred, kam === "vlastna" ? ja : super_, k, ja);
+      const v = vystrahaPecene(data, pred, { ...po, hraci: hraciSPecenou(po.hraci, vypije) });
+      pamat.set(kluc, v);
+      return v;
+    };
+    const vystrahaNavrhu =
+      plan === null || !vylozenia.some((x) => (x.ciel === "vlastna" || x.ciel === "superova") && maAkciuPecene(data, x.karta)) ? null : vystrahaPecene(data, zaklad, poNavrhu);
+    return { vystrahaVylozenia, vystrahaNavrhu };
+    // vylozenia, plan a planTahu sú odvodené z navrh a view.
+  }, [data, view, navrh, zaklad, stol, reagujem, ja, super_]);
+  const textVystrahy = (v: VystrahaPecene, karta: CardInstance): string =>
+    vystrahaCela(v, ja, menoHraca(super_), menoKarty(stol.strany.flat().find((pl) => pl.card.uid === v.naex?.uid)?.card.defId ?? karta.defId));
   const nazovAkcie = (k: string): string => sada.akcie.find((a) => a.kluc === k)?.nazov ?? k;
   const piktogramyRekapitulacie: PiktogramyRekapitulacie = {
     ikona: (k) => <IkonaAkcie kluc={k} akcia={sada.akcie.find((a) => a.kluc === k)} />,
@@ -2665,9 +2699,11 @@ export function HernaPlocha({
     (cielTahania === "vlastna" || cielTahania === "superova") && jeCiel(cielTahania) ? cielTahania : null;
   const nahladTahania =
     tahanie !== null && kamTahania !== null ? { ciel: kamTahania, n: nahladVylozeniaNa(tahanie.zdroj.karta, kamTahania) } : null;
+  const vystrahaTahania = tahanie !== null && kamTahania !== null && !tahanie.zdroj.navrh ? vystrahaVylozenia(tahanie.zdroj.karta, kamTahania) : null;
   const textNahladuTahania =
     nahladTahania === null ? null : (
       <span className="nahlad-spojov">
+        {tahanie !== null && vystrahaTahania !== null && <strong className="pecen-varovanie">{textVystrahy(vystrahaTahania, tahanie.zdroj.karta)} · </strong>}
         <strong>{menoKarty(tahanie?.zdroj.karta.defId ?? "")}</strong> → {POPIS_CIELA[nahladTahania.ciel]} · {textSpoja(nahladTahania.n)} · ty:{" "}
         {textZmienVylozenia(nahladTahania.n, ja)} · {menoHraca(super_)}: {textZmienVylozenia(nahladTahania.n, super_)}
       </span>
@@ -2884,6 +2920,7 @@ export function HernaPlocha({
     // Počas ťahania z ruky ukáže miesto ešte pred pustením, s čím sa karta spojí.
     const nazovMiesta = p === ja ? "na tvoju stranu" : "na súperovu stranu";
     const n = tahanie !== null && tahanie.zdroj.odkial === "ruka" && jeCiel(ciel) ? nahladVylozeniaNa(tahanie.zdroj.karta, ciel) : null;
+    const vystraha = n !== null && tahanie !== null && !tahanie.zdroj.navrh ? vystrahaVylozenia(tahanie.zdroj.karta, ciel) : null;
     const popis =
       n === null ? (
         <>
@@ -2893,10 +2930,11 @@ export function HernaPlocha({
       ) : (
         <span className="nahlad-miesto">
           <strong>{nazovMiesta}</strong>
+          {vystraha !== null && <span className="nm-pecen">{vystrahaKratko(vystraha, ja)}</span>}
           <span>k lokalite ide tvoja {n.vnutornaVytlacena === "left" ? "ľavá" : "pravá"} hrana</span>
           <span className={n.pary.length > 0 ? "nm-spoj" : "nm-bez"}>{textSpoja(n)}</span>
           <span>ty: {textZmienVylozenia(n, ja)}</span>
-          <span>
+          <span className="nm-super">
             {menoHraca(super_)}: {textZmienVylozenia(n, super_)}
           </span>
           {varovaniePoldeci}
@@ -3884,10 +3922,14 @@ export function HernaPlocha({
           };
         }
         const mojVyhlad = nahladyPitky?.[ja] ?? null;
+        const poslednaSPecenou = [...vylozenia].reverse().find((x) => maAkciuPecene(data, x.karta));
         return {
           nadpis,
           text: (
             <>
+              {vystrahaNavrhu !== null && poslednaSPecenou !== undefined && (
+                <strong className="pecen-varovanie">{textVystrahy(vystrahaNavrhu, poslednaSPecenou.karta)} · </strong>
+              )}
               {vylozenia.map((x, i) => (
                 <span key={x.karta.uid} className="tah-polozka">
                   {i > 0 && " · "}
@@ -3899,7 +3941,7 @@ export function HernaPlocha({
                 <strong className="poldeci-varovanie">
                   {" "}
                   Ťah ťa stojí {plan.poldeci} {plan.poldeci === 1 ? "plný poldeci" : "plné poldeci"} — limit {zostava} → {plan.zostava}, pečeň +{plan.poldeci}
-                  {mojVyhlad !== null && mojVyhlad.cirhozy > 0
+                  {mojVyhlad !== null && mojVyhlad.cirhozy > 0 && (vystrahaNavrhu?.cirhozy[ja] ?? 0) === 0
                     ? ` → v Pitke Cirhóza ×${mojVyhlad.cirhozy} (${mojVyhlad.cirhozy * cenyKliatob[ja].cirhoza} š)`
                     : ""}
                   .
@@ -3970,7 +4012,14 @@ export function HernaPlocha({
         const pitkaSt = view.pitkaStav;
         const obranca = opponentOf(view.utocnik);
         const naexBol = naexLimitMinuty;
-        const nadpis = null;
+        // Štítok pri karte Agresor prehliadol (playtest 20261106) — súperovo NA EX z Bzdochy patrí aj do hlavičky.
+        const cezBzdochu = cieleSuperovhoNaex(view, menoKarty);
+        const nadpis =
+          cezBzdochu.length === 0 ? null : (
+            <span className="nadpis-bzdocha" title="Vidíš to vďaka Bzdoche, lebo vyberáš po ňom. Odkryje sa, keď skončíš Pitku.">
+              {menoHraca(super_)} {tvar(rodHracaP(super_), "dal", "dala", "dáva")} NA EX na {cezBzdochu.join(" a ")}
+            </span>
+          );
         if (reagujem) {
           // Odpoveď na súperovo NA EX (v9.2, Michal 2026-10-30): jedna karta lícom dole, zadarmo,
           // mimo limitu — najprv útočník, potom obranca na druhý kraj; otočia sa naraz.
@@ -4090,7 +4139,7 @@ export function HernaPlocha({
             </strong>{" "}
             {vidimVolbuSupera
               ? superoveSkryteNaex.size > 0
-                ? "— vďaka Bzdoche vidíš, kam dal NA EX (štítok „skryto“ na karte)."
+                ? "— jeho NA EX vidíš vďaka Bzdoche."
                 : "— vďaka Bzdoche vieš, že NA EX nedal."
               : "— či a kam dal NA EX, uvidíš pri odkrytí, keď skončíš aj ty."}{" "}
             {obranca === ja ? "Na NA EX odpovedá prvý on, ty potom na druhý kraj — lícom dole, otočia sa naraz." : "Na NA EX odpovedáš prvý ty, on potom na druhý kraj — lícom dole, otočia sa naraz."}{" "}
@@ -6422,6 +6471,7 @@ export function HernaPlocha({
               const dobrata = !nova && dobrate.includes(k.uid);
               const pary = naMiesto?.pary ?? [];
               const strana = naMiesto?.vnutornaVytlacena;
+              const vystraha = naMiesto !== undefined && miestoVolby !== null ? vystrahaVylozenia(k, miestoVolby) : null;
               const spoj =
                 strana === undefined || pary.length === 0
                   ? undefined
@@ -6437,6 +6487,7 @@ export function HernaPlocha({
                   {dobrata && <span className="nova-stitok">dobraná</span>}
                   {majitelPresvedcenej(view, k.uid) !== null && <span className="nova-stitok">presvedčený starší</span>}
                   {pary.length > 0 && <span className="spoj-stitok">{pary.length === 1 ? "1 spoj" : `${pary.length} spoje`}</span>}
+                  {vystraha !== null && <span className="pecen-stitok">{vystrahaKratko(vystraha, ja)}</span>}
                 </>
               );
               const triedy = [nova || dobrata ? "nova-zo-senku" : ""];
