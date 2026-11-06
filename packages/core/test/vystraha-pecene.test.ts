@@ -6,7 +6,7 @@ import cardsJson from "../data/cards.json";
 import eldersJson from "../data/elders.json";
 import scorecardsJson from "../data/scorecards.json";
 import type { CardInstance, ClientState, GameState, PlacedCard, PlayerId } from "../src/index.ts";
-import { apply, cenaKliatby, hrozbaKliatob, lineState, loadGameData, maAkciuPecene, naexCieleVLinii, nahladPitky, sPrilozenou, setupGame, viewFor, vystrahaPecene } from "../src/index.ts";
+import { apply, cenaKliatby, hrozbaKliatob, lineState, loadGameData, naexCieleVLinii, nahladPitky, sPrilozenou, setupGame, viewFor, vystrahaPecene } from "../src/index.ts";
 
 const data = loadGameData(cardsJson, eldersJson, scorecardsJson);
 
@@ -46,11 +46,24 @@ function* rozlozenia(defId: string): Generator<CardInstance> {
 const susedia = (): readonly CardInstance[] => [...rozlozenia("pijan")].slice(0, 2);
 
 describe("výstraha pečene pred vyložením", () => {
-  it("maAkciuPecene: Pijan a karty s Poldeci áno, karta bez nich nie", () => {
-    expect(maAkciuPecene(data, inst("pijan"))).toBe(true);
-    const bez = [...data.cards.values()].find((d) => !("PoškodeniePečene" in d.left.actions) && !("Poldeci" in d.left.actions) && !("PoškodeniePečene" in d.right.actions) && !("Poldeci" in d.right.actions));
-    expect(bez).toBeDefined();
-    expect(maAkciuPecene(data, inst(bez!.id))).toBe(false);
+  it("Silná žena bez vlastnej Pečene: vedľa Pijana výstrahu dá, presne podľa VÝHĽADU PITKY; na prázdnej línii nie", () => {
+    const def = data.cards.get("silna_nezavisla_zena");
+    expect(def).toBeDefined();
+    expect([...Object.keys(def!.left.actions), ...Object.keys(def!.right.actions)].filter((a) => a === "PoškodeniePečene" || a === "Poldeci")).toEqual([]);
+    let naslo = 0;
+    for (const zena of rozlozenia("silna_nezavisla_zena")) {
+      const prazdna = viewFor(data, zhromazdenie([[], []]), 0);
+      expect(vystrahaPecene(data, prazdna, poVylozeni(prazdna, zena, 0))).toBeNull();
+      for (const sused of rozlozenia("pijan")) {
+        const v = viewFor(data, zhromazdenie([[lezi(sused, 0)], []], 1), 0);
+        const po = poVylozeni(v, zena, 0);
+        const rozdiel = nahladPitky(data, po)[0].cirhozy - nahladPitky(data, v)[0].cirhozy;
+        const x = vystrahaPecene(data, v, po);
+        expect(x?.cirhozy[0] ?? 0).toBe(Math.max(0, rozdiel));
+        if (rozdiel > 0) naslo++;
+      }
+    }
+    expect(naslo).toBeGreaterThan(0);
   });
 
   it("sedí s VÝHĽADOM PITKY: toľko Cirhóz, o koľko ich pribudne v nahladPitky po vyložení, a ich cena v špakoch", () => {
@@ -105,15 +118,17 @@ describe("výstraha pečene pred vyložením", () => {
       let s: GameState = apply(data, { ...z, hraci }, { type: "pass" }, 0).state;
       if (s.faza !== "pitka") s = apply(data, s, { type: "pass" }, 1).state;
       if (s.faza !== "pitka" || s.pitkaStav?.hotovy[1] !== false) continue;
-      const karta = inst("pijan");
-      const vyp = (t: GameState) => {
-        const v = viewFor(data, t, 0);
-        return vystrahaPecene(data, v, poVylozeni(v, karta, 0));
-      };
       const sNaex = apply(data, s, { type: "naex", uid: ciel }, 1).state;
       expect(sNaex.pitkaStav?.skryteNaex).toEqual([{ hrac: 1, uid: ciel }]);
       expect(viewFor(data, sNaex, 0).pitkaStav?.skryteNaex).toEqual([]);
-      expect(vyp(sNaex)).toEqual(vyp(s));
+      // Aj karta bez vlastnej Pečene: výstraha stojí na susedoch, ktorých NA EX by menilo.
+      for (const karta of [inst("pijan"), inst("silna_nezavisla_zena")]) {
+        const vyp = (t: GameState) => {
+          const v = viewFor(data, t, 0);
+          return vystrahaPecene(data, v, poVylozeni(v, karta, 0));
+        };
+        expect(vyp(sNaex)).toEqual(vyp(s));
+      }
       naslo++;
     }
     expect(naslo).toBeGreaterThan(0);
@@ -123,7 +138,10 @@ describe("výstraha pečene pred vyložením", () => {
     const hrozba = (v: ClientState) => hrozbaKliatob(data, v, 1, true);
     let naslo = 0;
     let bez = 0;
-    const bezPecene = [...data.cards.values()].map((d) => inst(d.id)).filter((k) => !maAkciuPecene(data, k)).slice(0, 5);
+    const bezPecene = [...data.cards.values()]
+      .filter((d) => ![...Object.keys(d.left.actions), ...Object.keys(d.right.actions)].some((a) => a === "PoškodeniePečene" || a === "Poldeci"))
+      .map((d) => inst(d.id))
+      .slice(0, 5);
     for (const karta of [...rozlozenia("pijan"), ...bezPecene]) {
       for (const sused of susedia()) {
         const v = viewFor(data, zhromazdenie([[lezi(sused, 0)], []]), 0);

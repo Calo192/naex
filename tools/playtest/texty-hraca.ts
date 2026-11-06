@@ -7,7 +7,6 @@ import type { CardInstance, ClientState, ElderState, GameData, PlayerId } from "
 import {
   dalsiePitkyKola,
   efektyPrehry,
-  maAkciuPecene,
   opponentOf,
   poOdkrytiNaex,
   cenaDalsiehoStupna,
@@ -77,7 +76,7 @@ function kartaPodNaex(data: GameData, v: ClientState, uid: number): string {
  * hráča — súperovu ruku ani jeho skryté NA EX nepozná. Null, keď karta žiadnu Cirhózu nehrozí.
  */
 export function vystrahaPeceneText(data: GameData, v: ClientState, k: CardInstance, kam: "vlastna" | "superova"): string | null {
-  if (v.ciel === null || !maAkciuPecene(data, k)) return null;
+  if (v.ciel === null) return null;
   const su = opponentOf(v.ja);
   const pred = sMojimiSkrytymiNaex(data, v);
   const po = sPrilozenou(data, pred, kam === "vlastna" ? v.ja : su, k, v.ja);

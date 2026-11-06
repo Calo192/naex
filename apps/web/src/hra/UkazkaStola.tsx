@@ -57,6 +57,8 @@
 //                  a cigarety na Dedičstvo (tlačidlo „odkazujem“)
 //   &stop=pecen    ako nastroj, ale do ruky dostane dvoch Pijanov a pečeň 2 — výstraha pečene
 //                  pri vykladaní (štítok v ruke po kliku na +, miesto na stole pri ťahaní)
+//   &stop=pecen-sused  ako pecen, ale do ruky dostane Silnú ženu a na koniec jeho strany príde Pijan
+//                  v rozložení, v ktorom ona pridá Cirhózu — výstraha pri karte bez vlastnej Pečene
 //   &avatar=a,b    fotky hráča a súpera (id médií) namiesto iniciálok
 //   &bot=0         súper po načítaní netiahne (snímka Pitky, v ktorej hrajú obaja naraz)
 //   &zerava=1      žeravé ikony (Michal 2026-10-30): hráč ?ja má v Dedičstve Pušku a Vidly, súper
@@ -70,8 +72,8 @@
 //   &vazen=i:p,…   i-teho staršieho (od 0) zajme hráč p (0 / 1) — snímka väzňa s pečiatkou (R3)
 
 import { useEffect, useMemo, useRef, useState } from "react";
-import type { CardInstance, Command, Event, GameData, GameState, HistoriaLokalit, LokalitaVHistorii, PlayerId, StavMomentov, Stupen, TypMomentu, Vazen } from "@naex/core";
-import { MOMENTY, NOVE_MOMENTY, apply, eventsFor, lokalityPreKlienta, novaHistoriaLokalit, zapisDoHistorie, momenty, moznostiNaex, mozeHrat, naTahu, obmedzMomenty, rngInt, rngSeed, setupGame, tahBota, viewFor, opponentOf } from "@naex/core";
+import type { CardInstance, Command, Event, GameData, GameState, HistoriaLokalit, LokalitaVHistorii, PlacedCard, PlayerId, StavMomentov, Stupen, TypMomentu, Vazen } from "@naex/core";
+import { MOMENTY, NOVE_MOMENTY, apply, eventsFor, lokalityPreKlienta, novaHistoriaLokalit, zapisDoHistorie, momenty, moznostiNaex, mozeHrat, naTahu, obmedzMomenty, rngInt, rngSeed, sPrilozenou, setupGame, tahBota, viewFor, vystrahaPecene, opponentOf } from "@naex/core";
 import { useSada } from "../lib/sada.tsx";
 import { useHerneData } from "../stranky/Ukazky.tsx";
 import { HernaPlocha } from "./HernaPlocha.tsx";
@@ -196,6 +198,28 @@ function sPecenou(s: GameState, p: PlayerId): GameState {
   const pijani: CardInstance[] = [0, 1].map((i) => ({ uid: s.nextUid + i, defId: "pijan", leftLayout: 0, rightLayout: 0 }));
   const novy = { ...h, ruka: [...h.ruka, ...pijani], pecen: 2 };
   return { ...s, nextUid: s.nextUid + 2, hraci: p === 0 ? [novy, s.hraci[1]] : [s.hraci[0], novy] };
+}
+
+/** Výstraha pri karte bez vlastnej Pečene: prvé rozloženia Pijana a Silnej ženy, pri ktorých ona pridá hráčovi p Cirhózu. */
+function sPecenouSuseda(data: GameData, s: GameState, p: PlayerId): GameState {
+  const varianty = (defId: string): readonly [number, number][] => {
+    const v = data.variants.get(defId);
+    return (v?.left ?? []).flatMap((_, l) => (v?.right ?? []).map((_, r) => [l, r] as [number, number]));
+  };
+  const h = s.hraci[p];
+  for (const [al, ar] of varianty("pijan")) {
+    const pijan: PlacedCard = { card: { uid: s.nextUid, defId: "pijan", leftLayout: al, rightLayout: ar }, playedBy: p };
+    const strana = [...s.strany[p], pijan];
+    const strany: GameState["strany"] = p === 0 ? [strana, s.strany[1]] : [s.strany[0], strana];
+    for (const [bl, br] of varianty("silna_nezavisla_zena")) {
+      const zena: CardInstance = { uid: s.nextUid + 1, defId: "silna_nezavisla_zena", leftLayout: bl, rightLayout: br };
+      const novy = { ...h, ruka: [...h.ruka, zena], pecen: 1 };
+      const t: GameState = { ...s, nextUid: s.nextUid + 2, strany, hraci: p === 0 ? [novy, s.hraci[1]] : [s.hraci[0], novy] };
+      const v = viewFor(data, t, p);
+      if ((vystrahaPecene(data, v, sPrilozenou(data, v, p, zena, p))?.cirhozy[p] ?? 0) > 0) return t;
+    }
+  }
+  return s;
 }
 
 /**
@@ -338,6 +362,8 @@ function odohrajSeed(data: GameData, seed: number): { readonly odohrane: Odohran
       return najdene({ zaciatok: sNastrojom(s, ja), dohraj: [] });
     if (stop === "pecen" && s.kolo >= 2 && s.faza === "zhromazdenie" && naTahu(s) === ja && s.zhromazdenieStav?.pasoval[ja] === false)
       return najdene({ zaciatok: sPecenou(s, ja), dohraj: [] });
+    if (stop === "pecen-sused" && s.kolo >= 2 && s.faza === "zhromazdenie" && naTahu(s) === ja && s.zhromazdenieStav?.pasoval[ja] === false)
+      return najdene({ zaciatok: sPecenouSuseda(data, s, ja), dohraj: [] });
     if (stop === "kolo" && s.kolo === i && s.faza === "volbaCiela") return najdene({ zaciatok: s, dohraj: [] });
     if (stop === "draft" && s.kolo >= (p.get("i") === null ? 2 : i) && s.faza === "draft" && s.draftStav?.krok === "stavba" && s.draftStav.vyber[ja] === null)
       return najdene({ zaciatok: s, dohraj: [] });
