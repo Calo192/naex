@@ -206,8 +206,9 @@ describe("offline protihráč — pravidlá v5 a v6", () => {
 
   it("v11.4: zajme staršieho na svojom červenom strachu, keď Nakladačka stačí (väzeň a krádež); opatrná povaha smie odmietnuť", () => {
     const s = rozdelenie("prebytok", 5, { strach: [3, 1], reci: [0, 3] });
-    // Teta Gizka (prahStarsi 1,5) chce za zajatie viac — smie ostať pri strachu.
-    for (const povaha of POVAHY.filter((x) => x.prahStarsi <= 0.5)) {
+    // Teta Gizka a Rudo chcú za zajatie viac (prahStarsi), Božena radšej boduje u staršieho
+    // (body 1,5) — tie smú ostať pri strachu.
+    for (const povaha of POVAHY.filter((x) => x.prahStarsi <= 0.5 && x.body <= 1)) {
       const cmd = tahBota(data, s, 0, 7, { povaha: povaha.id });
       expect(cmd.type === "prebytok" ? cmd.zajatia : null, povaha.id).toEqual([s.starsi[0]!.elderId]);
     }
@@ -374,6 +375,18 @@ describe("offline protihráč — celá partia vrátane finále (Michal 2026-11-
       expect(legalCommands(data, tenka, 0).some((c) => c.type === "smoke")).toBe(true);
       expect(tahBota(data, tenka, 0, 5, { povaha: povaha.id }).type, povaha.id).not.toBe("smoke");
       expect(tahBota(data, v(14, 3), 0, 5, { povaha: povaha.id }).type, povaha.id).toBe("smoke");
+    }
+  });
+});
+
+describe("povahy na výber (Michal 2026-11-06)", () => {
+  it("každá má jedinečné id a jednovetný opis; meno je bez „Bot“, ktoré pridáva stôl", () => {
+    expect(new Set(POVAHY.map((p) => p.id)).size).toBe(POVAHY.length);
+    expect(POVAHY.map((p) => p.id)).toEqual(expect.arrayContaining(["igor", "rudo", "bozena", "darina"]));
+    for (const p of POVAHY) {
+      expect(p.meno).not.toMatch(/^Bot\b/);
+      expect(p.popis.trim().endsWith(".")).toBe(true);
+      expect(p.popis.split(". ").length).toBe(1);
     }
   });
 });

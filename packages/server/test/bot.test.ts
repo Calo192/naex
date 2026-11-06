@@ -35,7 +35,8 @@ describe("offline protihráč na serveri", () => {
     expect(await rola()).toBe("navstevnik");
     const a = new Robot(server.port, cookie);
     await a.otvorene();
-    a.posli({ type: "create", bot: true });
+    // Štamgast má podobizeň v seede; nové povahy sú zatiaľ s iniciálami (vyber-bota.test.ts).
+    a.posli({ type: "create", bot: true, povaha: "stamgast" });
     await cakaj(() => a.view !== null, "začiatok partie");
 
     // Bot sedí hneď, bez účtu a Frajeriny.

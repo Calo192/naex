@@ -3,7 +3,7 @@
 //   node --experimental-strip-types --no-warnings tools/bot/turnaj.ts [partii] [super] [dlzka] [povaha]
 //
 // super: nahodny (predvolený) | chamtivy | hromadic | ekonom | bot | bot:<povaha> | stary:<priečinok>. Bot (povaha,
-// predvolene stamgast) hrá striedavo za hráča 1 a 2. Povahy: stamgast, rapavy_fero, teta_gizka.
+// predvolene stamgast) hrá striedavo za hráča 1 a 2. Povahy: POVAHY v bot.ts.
 // Chamtivý vykladá kartu s najväčším okamžitým rozdielom tuhého poškodenia,
 // NA EX nedáva, zvyšok hrá náhodne — latka „hráč, ktorý vie vykladať“.
 // stary:<priečinok> = tá istá povaha, ale bot.ts z inej kópie repozitára (worktree
