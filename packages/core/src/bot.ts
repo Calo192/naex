@@ -121,7 +121,7 @@ export const POVAHY: readonly Povaha[] = [
     popis: "Šetrná a vypočítavá — hrá na body, šetrí cigarety a poldeci, vyhýba sa kliatbám.",
     bitka: 0.85,
     body: 1.3,
-    zdroje: 1.3,
+    zdroje: 1.1,
     kliatby: 1.4,
     prahRiziko: 0.6,
     prahStarsi: 1.5,
@@ -493,8 +493,13 @@ function cenaCigariet(k: Kontext, s: GameState, p: PlayerId, n: number): number 
 
 /** Čo prinesie karta navyše zahraná vo finále: jej tuhé a špak za kartu v línii. */
 const KARTA_VO_FINALE = 4;
+/** Cena karty pod hranicou dobratia oproti rezerve: kým sa v kole ešte vykladá a po poslednom vykladaní. */
+const KARTA_POD_DOBRATIM = 0.75;
+const KARTA_POD_DOBRATIM_NA_KONCI = 0.25;
 /** Koľko kariet si hráč za kolo najviac dotiahne z balíčka (dobratie a fajčenie), hrubý odhad. */
 const KARIET_ZA_KOLO = 3;
+/** Plný poldeci navyše, keď ruka presahuje limit vykladania: karta by inak ostala ležať. */
+const ZA_LIMIT_NAVYSE = 1;
 /** Koľko kariet z ruky a možností ťahu výpočet dopredu skúša — s plnou rukou by bot ťahal priveľmi dlho. */
 const KARIET_VO_VYPOCTE = 6;
 const MOZNOSTI_VO_VYPOCTE = 6;
@@ -520,7 +525,8 @@ function vykladaniPotom(s: GameState): number {
 
 /**
  * Úžitok ruky v špakoch. Kariet, ktoré sa dajú vyložiť, je vo finále (vykladania × limit), nad to
- * karta veľa nepridá — ale nie je to strop, len klesajúci úžitok.
+ * karta veľa nepridá — ale nie je to strop, len klesajúci úžitok. Pred finále sa ruka na začiatku kola
+ * sama doberie (DOBRATIE_DO_RUKY), takže karta pod touto hranicou má menšiu cenu než rezerva nad ňou.
  */
 function uzitokRuky(s: GameState, p: PlayerId, karty: number): number {
   const finale = kolPoTomto(s) === 0;
@@ -529,7 +535,11 @@ function uzitokRuky(s: GameState, p: PlayerId, karty: number): number {
   const kapacita = Math.max(2, vykladani * (s.hraci[p].poldeciPlne + 1));
   const plna = Math.min(karty, kapacita);
   const navyse = Math.max(0, karty - kapacita);
-  return (finale ? 1 : vahaRezervy(s)) * KARTA_VO_FINALE * (plna + 0.25 * navyse);
+  const rezerva = plna + 0.25 * navyse;
+  if (finale) return KARTA_VO_FINALE * rezerva;
+  const zadarmo = Math.min(plna, KONSTANTY.DOBRATIE_DO_RUKY);
+  const pod = vykladaniPotom(s) > 0 ? KARTA_POD_DOBRATIM : KARTA_POD_DOBRATIM_NA_KONCI;
+  return vahaRezervy(s) * KARTA_VO_FINALE * (rezerva - zadarmo + zadarmo * pod);
 }
 
 /**
@@ -538,7 +548,7 @@ function uzitokRuky(s: GameState, p: PlayerId, karty: number): number {
  */
 function uzitokCigariet(s: GameState, cigarety: number): number {
   const c = Math.max(0, cigarety);
-  const krivka = Math.min(c, 2) + 0.7 * Math.max(0, Math.min(c, 6) - 2) + 0.3 * Math.max(0, Math.min(c, 10) - 6) + 0.1 * Math.max(0, c - 10);
+  const krivka = Math.min(c, 2) + 0.7 * Math.max(0, Math.min(c, 6) - 2) + 0.2 * Math.max(0, Math.min(c, 10) - 6) + 0.05 * Math.max(0, c - 10);
   if (kolPoTomto(s) > 0) return vahaRezervy(s) * KARTA_VO_FINALE * 0.6 * krivka;
   // Finále: cigareta je už len fajčenie pred ďalším vykladaním. V každej Pitke prvá karta za 1,
   // druhá za 2, tretia za 3 — preto cigaretu navyše ceníme čoraz menej a nič z nej nešetríme.
@@ -777,10 +787,16 @@ function hodnotaVydesenia(s: GameState, p: PlayerId): number {
     else if (cervene === KONSTANTY.CERVENYCH_NA_VYHRU - 1) v += CERVENE_PRED_VYHROU;
     v += 1.5 * ciele + 0.4 * s.starsi.filter((e) => strachZ(e, p) === 2).length;
   }
+  // Výpalné (v11.9): súper platí za každú červenú (aj väzňa) v každej bitke pred finále, koľko má.
+  const bitkyVypalneho = kolPoTomto(s);
+  v += CENA_VYPALNEHO * Math.min(cervene * KONSTANTY.VYPALNE_ZA_CERVENU * bitkyVypalneho, s.hraci[opponentOf(p)].cigarety + bitkyVypalneho);
   // Presvedčený starší (v11.4): jeho karta je natrvalo v mojom balíčku a súper ho už nepresvedčí.
   v += s.starsi.filter((e) => e.presvedcil === p).length * (PRESVEDCENY + PRESVEDCENY_ZA_BITKU * Math.min(zostava, 3));
   return v;
 }
+
+/** Cigareta z výpalného v špakoch; turnaj: 0,5 pomáha, celá cena ani odpočet pri platiacom nie. */
+const CENA_VYPALNEHO = 0.5;
 
 /** Nepoužitá schopnosť väzňa (v11.2) pri voľbe zajatia (v11.4) — v hodnote stavu nie je. */
 const SCHOPNOST_VAZNA = 4;
@@ -1402,7 +1418,7 @@ function pitka(v: Volba): Command | null {
   }
   // Doliatie a barter: plný poldeci je limit vykladania a na konci výkupné; oproti cigaretám, ktoré stojí.
   const zdroje = k.povaha.zdroje;
-  const ziskPoldeci = zdroje * (uzitokPoldeci(state, h.poldeciPlne + 1) - uzitokPoldeci(state, h.poldeciPlne)) + k.povaha.body * vahaVykupneho(state) * KONSTANTY.SPAKY_ZA_POLDECI;
+  const ziskPoldeci = zdroje * (uzitokPoldeci(state, h.poldeciPlne + 1) - uzitokPoldeci(state, h.poldeciPlne)) + k.povaha.body * vahaVykupneho(state) * KONSTANTY.SPAKY_ZA_POLDECI + (h.ruka.length > h.poldeciPlne + 1 ? ZA_LIMIT_NAVYSE : 0);
   if (!finale && refill !== undefined && ziskPoldeci > cenaCigariet(k, state, ja, KONSTANTY.REFILL_CENA)) return refill;
   if (barter !== undefined && (finale ? vykladaniPotom(state) > 0 : true) && ziskPoldeci > cenaCigariet(k, state, ja, KONSTANTY.BARTER_CENA)) return barter;
   // Fajčenie: karta v ruke proti cigaretám (cena v jednej Pitke rastie 1, 2, 3…). Vo finále po

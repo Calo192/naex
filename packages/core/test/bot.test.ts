@@ -364,4 +364,16 @@ describe("offline protihráč — celá partia vrátane finále (Michal 2026-11-
       expect(tahBota(data, s, 0, 5, { povaha: povaha.id }).type, povaha.id).toBe("smoke");
     }
   });
+  it("v11.9: po poslednom vykladaní kola nefajčí kartu, ktorú mu dá dobratie; rezervu nad hranicou si z prebytku dokúpi", () => {
+    for (const povaha of POVAHY) {
+      const v = (cigarety: number, ruka: number): GameState => {
+        const s0 = vPitkeFinale({ cigarety, poldeciPlne: 2, poldeciVypite: 0, nerestiTotoKolo: 5, ruka: Array.from({ length: ruka }, (_, i) => karta(990400 + i, "pijan")) });
+        return { ...s0, kolo: 3, ciel: { typ: "lokalita", lokalita: s0.lokalityVHre[0] as CardInstance }, pitkyCelkom: 2, pitkaCislo: 2 };
+      };
+      const tenka = v(2, 1);
+      expect(legalCommands(data, tenka, 0).some((c) => c.type === "smoke")).toBe(true);
+      expect(tahBota(data, tenka, 0, 5, { povaha: povaha.id }).type, povaha.id).not.toBe("smoke");
+      expect(tahBota(data, v(14, 3), 0, 5, { povaha: povaha.id }).type, povaha.id).toBe("smoke");
+    }
+  });
 });
