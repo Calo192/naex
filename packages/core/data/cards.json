@@ -1,5 +1,5 @@
 {
- "source": "tvorca kariet 2026-11-06T09:14:04.526Z — rozpracovaný stav (Zrejúca) nad zverejnenou sadou v45 živého webu, bez karty Dlh; mäkké akcie 9 kariet a Kostol v11.7 (Michal 2026-11-06)",
+ "source": "tvorca kariet 2026-11-06T11:24:28.348Z — rozpracovaný stav (Zrejúca) nad zverejnenou sadou v45 živého webu, bez karty Dlh; mäkké akcie 9 kariet, Kostol v11.7, Cigareta na útočných kartách a Liberál (Michal 2026-11-06)",
  "actions": [
   "Cigareta",
   "Dlh",
@@ -1106,7 +1106,7 @@
      3
     ],
     "actions": {
-     "Poldeci": 1,
+     "Cigareta": 1,
      "PoškodeniePečene": 1
     }
    },
@@ -1495,7 +1495,7 @@
      3
     ],
     "actions": {
-     "Dlh": 1,
+     "Cigareta": 1,
      "Povera": 1
     }
    },
@@ -3272,16 +3272,18 @@
    },
    "right": {
     "blocked": [
+     0,
      2
     ],
     "actions": {
-     "Rana": 2
+     "Cigareta": 1,
+     "Rana": 1
     }
    },
    "permutations": {
-    "total": 6,
+    "total": 4,
     "left": 2,
-    "right": 3
+    "right": 2
    }
   },
   {
@@ -3312,7 +3314,7 @@
      3
     ],
     "actions": {
-     "Dlh": 1,
+     "Cigareta": 1,
      "Pecka": 1
     }
    },
