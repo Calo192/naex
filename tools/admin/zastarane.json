@@ -242,7 +242,7 @@
         "kostol\\w*[^.!?]{0,80}na ex (?:\\w+ ){0,2}(?:neda|nesmie|nemoz)",
         "kostol\\w*[^.!?]{0,30}zakaz\\w*[^.!?]{0,20}na ex"
       ],
-      "pozn": "v11.7: na Kostole nikto nevypije a NA EX ide len na poslednú kartu línie na oboch stranách; oltár a otočenie Kostola zanikli. Vypálená ešte hrá v11.6, kým sa nevypáli"
+      "pozn": "v11.7: na Kostole nikto nevypije a NA EX ide len na poslednú kartu línie na oboch stranách; oltár a otočenie Kostola zanikli (vo Vypálenej od vypálenia 2026-11-07)"
     },
     {
       "pojem": "prah Dlhu 2 (každé 2 zadĺženia)",
@@ -279,7 +279,7 @@
         "rec\\w* (?:\\w+ ){0,3}nad (?:\\w+ ){0,1}strach",
         "nad (?:svoj|vlastn|tvoj)\\w* strach"
       ],
-      "pozn": "v11.12: reči obsadzujú súperov teplomer ako súvislý blok, od vrchu jeho strachu nadol, potom nad neho. Vypálená ešte hrá v11.6, kým sa nevypáli"
+      "pozn": "v11.12: reči obsadzujú súperov teplomer ako súvislý blok, od vrchu jeho strachu nadol, potom nad neho (vo Vypálenej od vypálenia 2026-11-07)"
     },
     {
       "pojem": "reči bodujú 1 / 3 / 5, krátenie rečami",
@@ -289,7 +289,7 @@
         "uberaj\\w* zo strach",
         "kraten\\w* (?:\\w+ ){0,2}(?:strach|rec)"
       ],
-      "pozn": "v11.12: stupne 1 / 2 / 2 boduje ten, kto ich drží, pri každej bitke; krátenie z v11.11 zaniklo. Vypálená ešte hrá v11.6, kým sa nevypáli"
+      "pozn": "v11.12: stupne 1 / 2 / 2 boduje ten, kto ich drží, pri každej bitke; krátenie z v11.11 zaniklo (vo Vypálenej od vypálenia 2026-11-07)"
     },
     {
       "pojem": "reči klesajú po každom bodovaní",
@@ -297,7 +297,7 @@
         "rec\\w* (?:\\w+ ){0,3}bodoval\\w* (?:\\w+ ){0,3}klesn",
         "po bodovani (?:\\w+ ){0,2}klesn\\w* o stup"
       ],
-      "pozn": "v11.12: reči klesajú zospodu len tomu, kto prehral hádku; pri remíze nikomu. Vypálená ešte hrá v11.6, kým sa nevypáli"
+      "pozn": "v11.12: reči klesajú zospodu len tomu, kto prehral hádku; pri remíze nikomu (vo Vypálenej od vypálenia 2026-11-07)"
     },
     {
       "pojem": "presvedčenie za 5 bodov, vyšší súperov strach",
@@ -307,7 +307,7 @@
         "presvedc\\w*[^.!?]{0,80}vyssi\\w* strach",
         "rec\\w* (?:\\w+ ){0,3}po presvedc\\w* zanik"
       ],
-      "pozn": "v11.12: plný teplomer + 3 body pri ktoromkoľvek staršom, reči po presvedčení ostávajú. Vypálená ešte hrá v11.6, kým sa nevypáli"
+      "pozn": "v11.12: plný teplomer + 3 body pri ktoromkoľvek staršom, reči po presvedčení ostávajú (vo Vypálenej od vypálenia 2026-11-07)"
     },
     {
       "pojem": "krádež za najvyšší marker",
@@ -315,7 +315,7 @@
         "kradez\\w*[^.!?]{0,80}(?:najvyss|marker)",
         "(?:najvyss|marker)\\w*[^.!?]{0,80}kradez"
       ],
-      "pozn": "v11.12: zlodej dostane toľko špakov, koľko bodov hádky má okradnutý v rečiach pri staršom. Vypálená ešte hrá v11.6, kým sa nevypáli"
+      "pozn": "v11.12: zlodej dostane toľko špakov, koľko bodov hádky má okradnutý v rečiach pri staršom (vo Vypálenej od vypálenia 2026-11-07)"
     },
     {
       "pojem": "lokalitu natáča obranca",
@@ -323,15 +323,16 @@
         "obranc\\w*[^.!?]{0,40}natoc",
         "natoc\\w*[^.!?]{0,40}obranc"
       ],
-      "pozn": "v11.11: obranca vyberá, natočí víťaz hádky z minulého kola; v prvom kole a po remíze ten, kto vyberá. Vypálená ešte hrá v11.6, kým sa nevypáli"
+      "pozn": "v11.11: obranca vyberá, natočí víťaz hádky z minulého kola; v prvom kole a po remíze ten, kto vyberá (vo Vypálenej od vypálenia 2026-11-07)"
     },
     {
       "pojem": "Kšeft Obecného úradu",
       "vzory": [
         "obecn\\w* urad\\w*[^.!?]{0,80}(?:presun|kseft)",
-        "(?:presun|kseft)\\w*[^.!?]{0,80}obecn\\w* urad"
+        "(?:presun|kseft)\\w*[^.!?]{0,80}obecn\\w* urad",
+        "kseft\\w* uradu"
       ],
-      "pozn": "v11.13: Obecný úrad je Pitka, cigarety a Dlhy získané v Pitke sa rátajú dvakrát. Vypálená ešte hrá v11.6, kým sa nevypáli"
+      "pozn": "v11.13: Obecný úrad je Pitka, cigarety a Dlhy získané v Pitke sa rátajú dvakrát (vo Vypálenej od vypálenia 2026-11-07)"
     },
     {
       "pojem": "starý Kšeft Skladu",
@@ -339,7 +340,7 @@
         "sklad\\w*[^.!?]{0,80}(?:vrchn|superov\\w* odhadzovac)",
         "(?:vrchn|superov\\w* odhadzovac)\\w*[^.!?]{0,80}sklad"
       ],
-      "pozn": "v11.13: Sklad = za 2 cigarety Nástroj zo šenku do Dedičstva. Vypálená ešte hrá v11.6, kým sa nevypáli"
+      "pozn": "v11.13: Sklad = za 2 cigarety Nástroj zo šenku do Dedičstva (vo Vypálenej od vypálenia 2026-11-07)"
     },
     {
       "pojem": "Benzínka najďalej",
@@ -347,7 +348,7 @@
         "benzink\\w*[^.!?]{0,80}(?:najdalej|nefajci|nesmie fajcit|fajcit smie)",
         "(?:najdalej|nefajci|nesmie fajcit|fajcit smie)\\w*[^.!?]{0,80}benzink"
       ],
-      "pozn": "v11.13: na Benzínke je prvé fajčenie v každej Pitke zadarmo. Vypálená ešte hrá v11.6, kým sa nevypáli"
+      "pozn": "v11.13: na Benzínke je prvé fajčenie v každej Pitke zadarmo (vo Vypálenej od vypálenia 2026-11-07)"
     },
     {
       "pojem": "Cintorín Nástroj",
@@ -355,7 +356,31 @@
         "cintorin\\w*[^.!?]{0,80}(?:nastroj|dedicstv)",
         "(?:nastroj|dedicstv)\\w*[^.!?]{0,80}cintorin"
       ],
-      "pozn": "v11.13: na Cintoríne si porazený vezme do ruky kartu zo svojho odhadzovacieho balíčka. Vypálená ešte hrá v11.6, kým sa nevypáli"
+      "pozn": "v11.13: na Cintoríne si porazený vezme do ruky kartu zo svojho odhadzovacieho balíčka (vo Vypálenej od vypálenia 2026-11-07)"
+    },
+    {
+      "pojem": "Družstvo šetrí limit Pracujúcim",
+      "vzory": [
+        "druzstv\\w*[^.!?]{0,80}pracujuc",
+        "pracujuc\\w*[^.!?]{0,80}druzstv"
+      ],
+      "pozn": "v11.13: na Družstve limit vykladania nemíňajú karty s akciou Robota, nie tag Pracujúci (vo Vypálenej od vypálenia 2026-11-07)"
+    },
+    {
+      "pojem": "Lesná cesta v súperovom kraji",
+      "vzory": [
+        "lesn\\w* cest\\w*[^.!?]{0,80}superov\\w* kraj",
+        "superov\\w* kraj\\w*[^.!?]{0,80}lesn\\w* cest"
+      ],
+      "pozn": "v11.13: za každé svoje Zviera v línii 2 tuhé navyše (vo Vypálenej od vypálenia 2026-11-07)"
+    },
+    {
+      "pojem": "Kultúrny dom: aj porazený",
+      "vzory": [
+        "kulturn\\w* dom\\w*[^.!?]{0,80}aj porazen",
+        "aj porazen\\w*[^.!?]{0,80}kulturn\\w* dom"
+      ],
+      "pozn": "v11.13: na Kultúrnom dome dostane každý hráč špaky len za svoje karty v línii, aj víťaz (vo Vypálenej od vypálenia 2026-11-07)"
     }
   ],
   "karty": [
