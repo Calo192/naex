@@ -590,7 +590,9 @@ describe("Cintorín — Pozostalosť (Michal 2026-10-27, Pohreb zrušený)", () 
   });
 
   it("s prázdnym odhadzovacím balíčkom, na inej lokalite a pri sekere sa Cintorín preskočí", () => {
-    const bez = poCintorin(sHracom(vPitke("cintorin", [[lezi(inst("zamocnik"), 0)], silna(3)]), 0, { ruka: [inst("pijan")], odhadzovaci: [] }));
+    // Bez vlastnej karty v línii — tá by sa pred Cintorínom vrátila do balíčka (v11.13).
+    const bez = poCintorin(sHracom(vPitke("cintorin", [[], silna(3)]), 0, { ruka: [inst("pijan")], odhadzovaci: [] }));
+    expect(bez.nastenka.at(-1)?.vitaz).toBe(1);
     expect(bez.bitkaStav?.krok === "cintorin" && bez.bitkaStav.caka !== null).toBe(false);
     const inde = poCintorin(sHracom(vPitke("zastavka", [[lezi(inst("zamocnik"), 0)], silna(3)]), 0, { odhadzovaci: [inst("pijan")] }));
     expect(inde.bitkaStav?.krok === "cintorin" && inde.bitkaStav.caka !== null).toBe(false);
@@ -599,5 +601,32 @@ describe("Cintorín — Pozostalosť (Michal 2026-10-27, Pohreb zrušený)", () 
     const sekera = poCintorin(s);
     expect(sekera.nastenka.at(-1)?.vitaz).toBeNull();
     expect(sekera.bitkaStav?.krok === "cintorin" && sekera.bitkaStav.caka !== null).toBe(false);
+  });
+
+  it("v11.13 (Michal 2026-11-07): Cintorín čaká až po návrate kariet — porazený si smie vziať aj kartu z práve odohranej línie", () => {
+    const zamocnik = inst("zamocnik");
+    const sily = silna(3);
+    const s = poCintorin(sHracom(vPitke("cintorin", [[lezi(zamocnik, 0)], sily]), 0, { odhadzovaci: [] }));
+    expect(s.bitkaStav?.caka).toBe(0);
+    expect(s.strany).toEqual([[], []]);
+    const legal = legalCommands(data, s, 0);
+    expect(legal).toContainEqual({ type: "cintorin", uid: zamocnik.uid });
+    // Víťazove karty idú do jeho balíčka, porazenému sa neponúkajú.
+    for (const pl of sily) expect(legal).not.toContainEqual({ type: "cintorin", uid: pl.card.uid });
+    const po = apply(data, s, { type: "cintorin", uid: zamocnik.uid }, 0).state;
+    expect(po.hraci[0].ruka.map((k) => k.uid)).toContain(zamocnik.uid);
+    expect(po.hraci[0].odhadzovaci.map((k) => k.uid)).not.toContain(zamocnik.uid);
+    expect(po.faza).not.toBe("bitka");
+  });
+
+  it("Cirhóza vzatá Cintorínom sa ako každá nepriznaná vráti do balíčka; porazený dostane cigaretu raz", () => {
+    const cirhoza = inst("cirhoza");
+    const s = poCintorin(sHracom(vPitke("cintorin", [[lezi(inst("zamocnik"), 0)], silna(3)]), 0, { odhadzovaci: [cirhoza] }));
+    expect(s.bitkaStav?.caka).toBe(0);
+    const cigarety = s.hraci[0].cigarety;
+    const po = apply(data, s, { type: "cintorin", uid: cirhoza.uid }, 0).state;
+    expect(po.hraci[0].ruka.map((k) => k.uid)).not.toContain(cirhoza.uid);
+    expect(po.hraci[0].odhadzovaci.map((k) => k.uid)).toContain(cirhoza.uid);
+    expect(po.hraci[0].cigarety).toBe(cigarety);
   });
 });

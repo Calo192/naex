@@ -1292,7 +1292,8 @@ function hodnotaEfektuLokality(v: Volba, lok: CardInstance): number {
     case "sklad":
       return h.cigarety >= KONSTANTY.EFEKT.SKLAD_CENA ? 1.5 : 0;
     case "cintorin":
-      return h.odhadzovaci.some((x) => !defOf(v.data, x).tags.includes("Kliatba")) ? 1.5 : 0;
+      // Po prehre sa berie aj z práve odohranej línie (v11.13) — stačí, že bude čo vyložiť.
+      return [...h.odhadzovaci, ...h.ruka].some((x) => !defOf(v.data, x).tags.includes("Kliatba")) ? 1.5 : 0;
     case "kulturny_dom":
       // Špaky bez ohľadu na výsledok: kto má plnú ruku, narobí si ich viac.
       return h.ruka.length >= 3 ? 1.5 : 0;

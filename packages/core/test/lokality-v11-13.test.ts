@@ -21,6 +21,7 @@ import {
   loadGameData,
   nahladPitky,
   odhadSpakovKola,
+  pokutaPolicajtky,
   prisunZUdalosti,
   riadkyCakajuceho,
   setupGame,
@@ -30,6 +31,7 @@ import {
   tahBota,
   viewFor,
   vyhladDlhov,
+  zadlzeniePitkyZLinie,
   dopadyNahladu,
 } from "../src/index.ts";
 import { spustBitku } from "./helpers.ts";
@@ -435,5 +437,95 @@ describe("Cintorín (v11.13) pre bota", () => {
       );
     expect(tahBota(data, bitka([inst("cirhoza"), dobra]), 0, 1, { povaha: "igor" })).toEqual({ type: "cintorin", uid: dobra.uid });
     expect(tahBota(data, bitka([inst("cirhoza")]), 0, 1, { povaha: "igor" })).toEqual({ type: "cintorin", uid: null });
+  });
+});
+
+describe("Obecný úrad (v11.13): Konflikt a Pitka kariet", () => {
+  /**
+   * Hráč 0 dá NA EX na svojho Pijana, hráč 1 odpovie Pijanom priloženým k Podvodníkovi hráča 0 (koniec strany) —
+   * Konflikt sa vyhodnotí pri otočení odpovedí, teda vo fáze Pitka (výklad (4) v Zmenách v11.13).
+   */
+  function konfliktVOdpovedi(lok: string, superovi: Partial<GameState["hraci"][number]>): { pred: GameState; po: GameState; events: Event[] } {
+    const naex = inst("pijan");
+    const odpoved = inst("pijan");
+    const s0 = vPitke(lok, [[lezi(naex, 0), lezi(inst("podvodnik"), 0)], []]);
+    const s1 = sHracom(s0, 1, { ruka: [odpoved], ...superovi });
+    const pred = sHracom(s1, 0, { ruka: [] });
+    const { state: poNaex } = naexOdkryteBezHelpera(pred, naex.uid);
+    expect(poNaex.pitkaStav?.reakcia).toBe(1);
+    const prilozenie = legalCommands(data, poNaex, 1).find((c) => c.type === "place" && c.uid === odpoved.uid && c.target === "superova");
+    if (prilozenie === undefined) throw new Error("Odpoveď k Podvodníkovi sa nedá priložiť.");
+    const { state: po, events } = applySPrisunom(data, poNaex, prilozenie, 1);
+    expect(events.some((e) => e.type === "log" && /Konflikt — Podvodník/.test(e.text))).toBe(true);
+    return { pred, po, events };
+  }
+
+  /** Súper (hráč 1) už svoju časť Pitky skončil, hráč 0 dá NA EX a skončí — ako naexOdkryte v helpers.ts. */
+  function naexOdkryteBezHelpera(s: GameState, uid: number): { state: GameState } {
+    const pitka = s.pitkaStav;
+    if (pitka === null) throw new Error("nie je Pitka");
+    const t = apply(data, { ...s, pitkaStav: { ...pitka, hotovy: [false, true], naTahu: 0 } }, { type: "naex", uid }, 0).state;
+    const caka = t.faza === "pitka" && t.pitkaStav?.hotovy[0] === false && t.pitkaStav.naTahu === 0;
+    return { state: caka ? apply(data, t, { type: "skipNaex" }, 0).state : t };
+  }
+
+  const zdroj = (events: readonly Event[], p: PlayerId, z: string): number[] =>
+    events.flatMap((e) => (e.type === "zmenaCigariet" && e.hrac === p && e.zdroj === z ? [e.suma] : []));
+
+  it("Podvodník v odpovedi na NA EX: súper dá 1 cigaretu, majiteľ Podvodníka získa 2", () => {
+    const { events } = konfliktVOdpovedi("obecny_urad", { cigarety: 5 });
+    expect(zdroj(events, 1, "podvodnik")).toEqual([-1]);
+    expect(zdroj(events, 0, "podvodnik")).toEqual([1]);
+    // Druhá polovica ide v knihe hneď za Podvodníkom; súper platí len 1 (platby sa nezdvojujú).
+    const i = events.findIndex((e) => e.type === "zmenaCigariet" && e.hrac === 0 && e.zdroj === "podvodnik");
+    expect(events.slice(i + 1).find((e) => e.type === "zmenaCigariet")).toMatchObject({ hrac: 0, zdroj: "obecnyUrad", suma: 1 });
+    expect(zdroj(events, 1, "obecnyUrad").filter((x) => x < 0)).toEqual([]);
+    // Inde len 1 (Lesná cesta je Bitka, na Pitku nesiaha; na Moste sa súperovi nepriloží).
+    const inde = konfliktVOdpovedi("lesna_cesta", { cigarety: 5 }).events;
+    expect(zdroj(inde, 0, "podvodnik")).toEqual([1]);
+    const j = inde.findIndex((e) => e.type === "zmenaCigariet" && e.hrac === 0 && e.zdroj === "podvodnik");
+    expect(inde.slice(j + 1).find((e) => e.type === "zmenaCigariet" && e.hrac === 0 && e.zdroj === "obecnyUrad")).toBeUndefined();
+  });
+
+  it("Podvodník proti súperovi bez cigariet: 2 zadĺženia, pri prahu 1 dva Dlhy; s Výherným automatom 1 Dlh", () => {
+    const dlhy = (lok: string, h: Partial<GameState["hraci"][number]>): number => {
+      const { events } = konfliktVOdpovedi(lok, { cigarety: 0, ...h });
+      const zKonfliktu = events.findIndex((e) => e.type === "log" && /Konflikt — Podvodník/.test(e.text));
+      // Dlhy získané od Konfliktu po vyhodnotenie Pitky (vyhodnotenie pridá vlastné zo stola).
+      const koniec = events.findIndex((e) => e.type === "pitkaVysledok");
+      return events.slice(zKonfliktu, koniec < 0 ? undefined : koniec).filter((e) => e.type === "log" && e.text.startsWith("Hráč 2 získava Dlh")).length;
+    };
+    expect(dlhy("obecny_urad", {})).toBe(2);
+    expect(dlhy("lesna_cesta", {})).toBe(1);
+    expect(dlhy("obecny_urad", { dedicstvo: [inst("vyherny_automat")] })).toBe(1);
+  });
+
+  it("Policajtka: pokutový blok za zrušené akcie sa ráta dvakrát", () => {
+    const pol = data.variants.get("policajtka");
+    if (pol === undefined) throw new Error("Policajtka v sade nie je.");
+    let najdene = 0;
+    for (const def of data.cards.values()) {
+      if (def.tags.includes("Lokalita") || def.id === "financna_poradkyna" || def.id === "policajtka") continue;
+      for (let l = 0; l < pol.left.length && najdene < 3; l++) {
+        for (let r = 0; r < pol.right.length && najdene < 3; r++) {
+          const policajtka: CardInstance = { ...inst("policajtka"), leftLayout: l, rightLayout: r };
+          for (const strana of [[lezi(inst(def.id), 1), lezi(policajtka, 0)], [lezi(policajtka, 0), lezi(inst(def.id), 1)]]) {
+          const s = vPitke("obecny_urad", [strana, []]);
+          const ev = evaluateLine(data, lineState(s));
+          const pokuta = pokutaPolicajtky(data, s, ev);
+          if (pokuta[1] === 0) continue;
+          const zoStola = zadlzeniePitkyZLinie(data, s, ev)[1];
+          expect(nahladPitky(data, s)[1].zadlzenieZoStola).toBe(zoStola * 2);
+          const pred = s.hraci[1].dlhyZiskane ?? 0;
+          const { state: po, events } = applySPrisunom(data, apply(data, s, { type: "skipNaex" }, 0).state, { type: "skipNaex" }, 1);
+          expect((po.hraci[1].dlhyZiskane ?? 0) - pred).toBe(zoStola * 2);
+          expect(events.some((e) => e.type === "log" && e.text.includes(`získava ${pokuta[1] * 2} zadĺžen`))).toBe(true);
+          najdene++;
+          }
+        }
+      }
+      if (najdene >= 3) break;
+    }
+    expect(najdene).toBeGreaterThan(0);
   });
 });

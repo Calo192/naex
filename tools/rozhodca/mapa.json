@@ -1178,12 +1178,14 @@
     {
       "id": "15.lokalita.cintorin",
       "paragraf": "15. Lokality",
-      "pravidlo": "Cintorín (Prehra, Michal 2026-10-27): porazený smie dať jeden Nástroj z ruky alebo zo šenku do Dedičstva zadarmo; cena Dedičstva sa zvýši; pri sekere nikto.",
+      "pravidlo": "Cintorín (Prehra, v11.13, Michal 2026-11-07): porazený si smie vziať do ruky 1 kartu zo svojho odhadzovacieho balíčka, až po návrate kariet — aj z práve odohranej línie; pri sekere nikto.",
       "stav": "pokryte",
       "testy": [
         "packages/core/test/v7-efekty.test.ts › porazený si vezme kartu zo svojho odhadzovacieho balíčka do ruky; cena Dedičstva sa nemení",
         "packages/core/test/v7-efekty.test.ts › voľba nič: karta ostáva v balíčku; cudziu kartu server odmietne",
-        "packages/core/test/v7-efekty.test.ts › s prázdnym odhadzovacím balíčkom, na inej lokalite a pri sekere sa Cintorín preskočí"
+        "packages/core/test/v7-efekty.test.ts › s prázdnym odhadzovacím balíčkom, na inej lokalite a pri sekere sa Cintorín preskočí",
+        "packages/core/test/v7-efekty.test.ts › v11.13 (Michal 2026-11-07): Cintorín čaká až po návrate kariet — porazený si smie vziať aj kartu z práve odohranej línie",
+        "packages/core/test/v7-efekty.test.ts › Cirhóza vzatá Cintorínom sa ako každá nepriznaná vráti do balíčka; porazený dostane cigaretu raz"
       ]
     },
     {

@@ -4536,17 +4536,19 @@ export function HernaPlocha({
           };
         }
         if (b.krok === "cintorin") {
-          // Cintorín (v11.13): porazený si smie vziať do ruky 1 kartu zo svojho odhadzovacieho balíčka.
+          // Cintorín (v11.13): porazený si smie vziať do ruky 1 kartu zo svojho odhadzovacieho balíčka —
+          // čaká sa po návrate kariet, takže sú v ňom aj karty z práve odohranej línie (Michal 2026-11-07).
           return {
             nadpis: "Cintorín",
             text: (
               <span className="zberatel-text">
                 <span>
-                  {tvar(rodHracaP(ja), "Prehral si na Cintoríne", "Prehrala si na Cintoríne", "Prehra na Cintoríne")}: jednu kartu zo svojho odhadzovacieho balíčka si smieš vziať <strong>do ruky</strong>. Klikni na ňu, alebo nič.
+                  {tvar(rodHracaP(ja), "Prehral si na Cintoríne", "Prehrala si na Cintoríne", "Prehra na Cintoríne")}: jednu kartu zo svojho odhadzovacieho balíčka (už aj s kartami z tejto línie) si smieš vziať <strong>do ruky</strong>. Klikni na ňu, alebo nič.
                 </span>
                 <span className="zberatel-ponuka">
-                  {view.hraci[ja].odhadzovaci.map((k) => (
-                    <span key={k.uid}>{karta({ karta: k, sirka: 84, onClick: () => posli({ type: "cintorin", uid: k.uid }) })}</span>
+                  {view.hraci[ja].odhadzovaci.map((k, _, vsetky) => (
+                    // S kartami z línie býva balíček dlhší — menšie karty, nech panel na notebooku nezakryje spodok stola.
+                    <span key={k.uid}>{karta({ karta: k, sirka: vsetky.length > 12 ? 64 : 84, onClick: () => posli({ type: "cintorin", uid: k.uid }) })}</span>
                   ))}
                 </span>
               </span>

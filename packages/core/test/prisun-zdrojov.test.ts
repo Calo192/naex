@@ -371,8 +371,9 @@ describe("skryté NA EX dlaždica Poldeci neprezradí", () => {
     for (const { po } of skryte) {
       const pitka = po.pitkaStav;
       if (pitka === null) continue;
-      const bez: GameState = { ...po, pitkaStav: { ...pitka, skryteNaex: [] } };
       for (const x of pitka.skryteNaex ?? []) {
+        // Odoberá sa len NA EX hráča x — pozorovateľovo vlastné skryté NA EX (aj na tej istej karte) ostáva.
+        const bez: GameState = { ...po, pitkaStav: { ...pitka, skryteNaex: (pitka.skryteNaex ?? []).filter((y) => y.hrac !== x.hrac) } };
         const pozorovatel = (x.hrac === 0 ? 1 : 0) as PlayerId;
         // Bzdocha ukazuje súperovu voľbu zámerne.
         const v = viewFor(data, po, pozorovatel);
