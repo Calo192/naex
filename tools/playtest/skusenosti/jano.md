@@ -15,7 +15,6 @@ vo feedback.md.
 - partie: 20261027-131033-1, 20261027-161907-1, 20261028-090549-2
 - prečo: PRAVIDLA §6 (Pas a koniec Zhromaždenia). 131033-1 K3 Jano: Fero spasoval s 2 kartami v ruke, Jano položil Veterána a vyhral 9 : 5; K4 po Ferovom pase Dievčina + Veterán (+3, +3), 11 : 13 → 13 : 13 (denník Jana K3/K4). 161907 K4: po Evinom pase (Zh 2/3) Jano položil Praudovravca (Mäsiar +4 tuhé) a Policajtku, 2 : 3 → 8 : 1 (Eva potvrdila, 1 : 8). 090549: P2 K3 Eva spasovala s 2 kartami hneď po Janovej prvej karte, Jano doložil Kulturistu, Dvojčatá a Hasiča a vyhral 6 : 0.
 
-
 ### jano-2 · Keď je bitka tesne prehraná v tuhom a mám Pohoršenia a Bitkára na dosah, dám Pohoršenia k sebe na Bitkára a počítam remízu: rozhodnú Absťáky (menej vyhráva), potom Dlhy, preto si pred bitkou skontrolujem Absťáky oboch.
 - stav: neoverená
 - pravidlá: v7
@@ -24,7 +23,6 @@ vo feedback.md.
 - dátum: 2026-10-27
 - partie: 20261027-161907-1
 - prečo: PRAVIDLA §9.2 (priazeň platí hneď), §9.4 (remíza: Absťáky, potom Dlhy). 161907 K5: 3 : 5 → 5 : 5 po 2 Pohoršeniach na Autobusára; Eva mala Absťák 1, Jano 0, remízu vyhral Jano (Eva: „prehrala som na Absťák“).
-
 
 ### jano-3 · Keď sa blíži finále, nechávam si aspoň 3 cigarety a 3 karty v ruke (neminiem všetko na pokus o zajatie či Záverečnú v predposlednom kole), lebo vo finále víťaz dostane 1 špak za každý bod Nakladačky (§9.4, §14b) a hráč bez cigariet a kariet nemá čím položiť prvé karty ani zamknúť kraj.
 - stav: neoverená
@@ -53,3 +51,12 @@ vo feedback.md.
 - dátum: 2026-10-31
 - partie: 20261031-004030-3
 - prečo: PRAVIDLA §13 Záverečná (míňa limit, končí vykladanie, za ňu sa nedá priložiť). K3 Jano [vypiť, Šofér, Záverečná] pri Helinom kraji: bitka 7 : 1 (+9 špakov); K5 Záverečná (Recidivista, junk) v Helinom kraji pri 3 : 3 s kartou pri lokalite → 7 : 4 a väzeň Krčmárka (+8). Hela: „Jano trikrát hrozil Záverečnou na koniec kraja a ja som nemala protiťah“ (K3 1 : 7, K5 4 : 7). Cena: 1 cigareta, ktorú treba mať aj na finále (jano-3).
+
+### jano-6 · Keď môže súper položiť Dvojčatá alebo kartu s Odporom na koniec mojej strany, nekladiem tam kartu s Odporom na vonkajšej hrane, lebo Odpor proti Odporu je Vzbura mojej karty (nespojené akcie ožijú, spojené zhasnú).
+- stav: overená
+- pravidlá: v11
+- potvrdenia: 1
+- vyvrátenia: 0
+- dátum: 2026-11-07
+- partie: 20261107-005858-3
+- prečo: PRAVIDLA §6 Vzbura (v11.1). 005858-3 K1, K2 a K4: Šimonove Dvojčatá s Odporom oproti Odporu na Janovej Recidiviste → Vzbura, Petelica −3 (Jano aj Šimon).

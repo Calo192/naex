@@ -71,3 +71,21 @@ vo feedback.md.
 - dátum: 2026-10-30
 - partie: 20261030-115654-1, 20261030-115654-2
 - prečo: PRAVIDLA §10 (patronát červená 1 / oranžová 2 / žltá 3 cig., marker do stredu maže zaplatené aj držané stupne; strach až po udržaní), §12 Telefón. P1: K2 Fero mal 0 cig → Vilov Farár na červenej vydržal (+6 z +8); K3 Vilo patronát Vychovávateľky za 1 cig zmazal Ferovi +6, K4 Fero patronát Starostu za 1 cig zmazal Vilovi +5; Vilo s Telefónom odtlačil Ferovi 16 čakajúcich špakov za 9 Pohoršení (Fero udržal 12). P2: Šimon so 6–9 cig a Telefónom odtlačil Hele Farára (K3, −2) a vo finále patronátom Poštárky za 1 cig −5, Kšeftom Vily −2, Pohoršeniami −2 → jej bank +9 → 0; Hela s 0–2 cig udržala za partiu 3 špaky, Šimon 18. Navrhnutá ako spoločná (Vilo, potvrdili Hela a Šimon) — spoločný zošit je plný, preto u navrhovateľa.
+
+### vilo-9 · Keď viem, že prehrám bitku v tuhom, skúsim vyhrať hádku, lebo víťaz hádky pri prehratej bitke dostane 1 špak za každú svoju kartu v línii a súperove reči mu zospodu klesnú.
+- stav: overená
+- pravidlá: v11
+- potvrdenia: 2
+- vyvrátenia: 0
+- dátum: 2026-11-07
+- partie: 20261107-005858-2, 20261107-005858-3
+- prečo: PRAVIDLA §9.4 (v11.11), §10 klesanie (v11.12). 005858-2 K1 Fero vyhral hádku 0 : 2 a prehral bitku 4 : 9 → +5 špakov, K3 Vilo hádka 3 : 0 s Manželkou na Ferovu stranu → +4 a pád Ferových rečí; 005858-3 Šimon vyhral hádku K2–K4 pri prehratých bitkách, +4 za kolo.
+
+### vilo-10 · Keď súper hrá odpoveď lícom dole na môj prázdny kraj, počítam s tým, že odpoveď aktivuje hranu lokality a zvýši počet Pitiek (1 → 2 alebo 3), a preto kraj, ktorý chcem uchrániť, neponechávam celkom prázdny.
+- stav: overená
+- pravidlá: v11
+- potvrdenia: 1
+- vyvrátenia: 0
+- dátum: 2026-11-07
+- partie: 20261107-005858-2
+- prečo: PRAVIDLA §7 („odpoveď je bežné vyloženie: smie zmeniť prevahu v kraji aj počet Pitiek“). 005858-2 K2 Fero odpovedal Miňištrantom a Pijanom na Vilov prázdny kraj (Pitka 1/1 → 1/2, Viera 2 a ďalšie NA EX), K4 Pitiek 1 → 3 (Vilo: nezrovnalosť 7, Fero: K4 mal 3 Pitky).
