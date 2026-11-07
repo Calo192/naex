@@ -11,8 +11,6 @@ export const NAZOV_ZDROJA: Readonly<Record<ZmenaMarkera["zdroj"], string>> = {
   nakladacka: "Nakladačka",
   hadka: "Hádka",
   bodovanie: "Bodovanie",
-  zanik: "Reči zanikli",
-  presvedcenie: "Presvedčenie",
   kseft: "Predsedova vila",
   nastup: "Kapybara",
   posun: "Reči sa posunuli",
@@ -49,12 +47,14 @@ export function riadokDlazdice(smer: "hore" | "dole" | "nic", ja: boolean): stri
   return "neutrálny";
 }
 
-/** Ako sa čítajú teplomery (v11) — titulok v hlavičke línie a v ukážkach. */
+/** Ako sa čítajú teplomery (v11.12) — titulok v hlavičke línie a v ukážkach. */
 export const PRAVIDLO_STRACHU =
-  `Každý hráč má pri staršom svoj teplomer: plná časť je strach, šrafovaná nad ním reči — jedna stupnica, stupeň ` +
-  `staršieho pre hráča je jej vrchol (znepokojený, vystrašený, vydesený). Strach dvíha víťaz bitky Nakladačkou a neklesá; ` +
-  `reči dvíha víťaz hádky. Priazeň dáva starší tomu, koho sa bojí menej — sila je rozdiel strachov, reči sa nerátajú. ` +
-  `Po bitke dá starší víťazovi špaky za vrch teplomera, porazenému len za reči: znepokojený ${KONSTANTY.SPAKY_ZA_STUPEN[1]}, vystrašený ${KONSTANTY.SPAKY_ZA_STUPEN[2]}, vydesený ${KONSTANTY.SPAKY_ZA_STUPEN[3]}.`;
+  `Každý hráč má pri staršom svoj teplomer: plná časť je jeho strach, šrafa sú súperove reči. Stupeň staršieho pre hráča ` +
+  `je jeho strach (znepokojený, vystrašený, vydesený). Strach dvíha víťaz bitky Nakladačkou a neklesá; reči dvíha víťaz hádky ` +
+  `na teplomere súpera, od vrchu jeho strachu nadol. Stupeň stojí ${KONSTANTY.CENA_STUPNA[1]} / ${KONSTANTY.CENA_STUPNA[2]} / ${KONSTANTY.CENA_STUPNA[3]}. ` +
+  `Priazeň dáva starší tomu, koho sa bojí menej — sila je rozdiel strachov, reči sa nerátajú. ` +
+  `Po bitke má stupeň hodnotu ${KONSTANTY.HODNOTA_STUPNA[1]} / ${KONSTANTY.HODNOTA_STUPNA[2]} / ${KONSTANTY.HODNOTA_STUPNA[3]} a dostane ju, kto ho drží: reči obaja, strach len víťaz. ` +
+  `Kto prehral hádku, tomu reči klesnú zospodu.`;
 
 /** Rod staršieho pre slová stupňov („vydesený“ / „vydesená“). */
 export type Rod = "m" | "z";

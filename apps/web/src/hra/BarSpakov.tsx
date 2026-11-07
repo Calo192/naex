@@ -43,7 +43,7 @@ export function BarSpakov({ view, p, body, menoKarty }: BarSpakovProps) {
       hodnota: zn(rozpis.zaStarsich),
       trieda: rozpis.zaStarsich > 0 ? "plus" : "",
       pod: `po bitke +${body.zaStarsichVyhra[p]} · prehra +${body.zaStarsichPrehra[p]}`,
-      popis: `Doteraz od starších ${zn(rozpis.zaStarsich)}. Po najbližšej bitke ${ja ? "ti" : "mu"} dajú ${body.zaStarsichVyhra[p]}, keď ju ${ja ? "vyhráš" : "vyhrá"} (najvyšší marker — reči, inak strach), a ${body.zaStarsichPrehra[p]}, keď ju ${ja ? "prehráš" : "prehrá"} (len reči): žltá 1, oranžová 3, červená 5.`,
+      popis: `Doteraz od starších ${zn(rozpis.zaStarsich)}. Po najbližšej bitke ${ja ? "ti" : "mu"} dajú ${body.zaStarsichVyhra[p]}, keď ju ${ja ? "vyhráš" : "vyhrá"} (strach a reči), a ${body.zaStarsichPrehra[p]}, keď ju ${ja ? "prehráš" : "prehrá"} (len reči). Stupeň dá 1 / 2 / 2 tomu, kto ho drží.`,
     },
     {
       kluc: "finale",

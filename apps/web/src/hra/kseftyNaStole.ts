@@ -6,7 +6,6 @@
 
 import {
   KONSTANTY,
-  NAZVY_ZON,
   VILA_CENA,
   jeCoTahat,
   opponentOf,
@@ -170,8 +169,8 @@ function kseftyPitky(data: GameData, view: ClientState): KseftNaStole[] {
           riadky: moznosti.map((m) => ({
             kluc: m.elderId,
             meno: meno(m.defId),
-            // Jedno tlačidlo na staršieho (v11): reči o stupeň — zo stupňa na stupeň, nech je vidno, čo kúpi.
-            vpravo: { text: `reči ${m.z === 0 ? "nič" : NAZVY_ZON[m.z]} → ${NAZVY_ZON[m.na]}`, prikaz: { type: "kseft", uid, elderId: m.elderId }, vyucba: klucVily(m.elderId) },
+            // Jedno tlačidlo na staršieho (v11): reči o stupeň — pred a po, nech je vidno, čo kúpi.
+            vpravo: { text: `reči ${m.pred} → ${m.po}`, prikaz: { type: "kseft", uid, elderId: m.elderId }, vyucba: klucVily(m.elderId) },
           })),
         }),
       );

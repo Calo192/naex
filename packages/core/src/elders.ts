@@ -76,11 +76,10 @@ export interface ZmenaMarkera {
   readonly na: Stupen;
   /**
    * nakladacka = víťaz bitky dvíha strach, hadka = víťaz hádky dvíha reči, bodovanie = reči
-   * po bodovaní klesli, zanik = reči zanikli pod dorastajúcim strachom, presvedcenie = reči
-   * presvedčovateľa zanikli presvedčením (v11.4), kseft = Predsedova vila, nastup = Kapybara,
-   * posun = súperov strach prekonal reči a blok sa posunul (v11.12).
+   * po bodovaní klesli, kseft = Predsedova vila, nastup = Kapybara, posun = súperov strach
+   * prekonal reči a blok sa posunul (v11.12).
    */
-  readonly zdroj: "nakladacka" | "hadka" | "bodovanie" | "zanik" | "presvedcenie" | "kseft" | "nastup" | "posun";
+  readonly zdroj: "nakladacka" | "hadka" | "bodovanie" | "kseft" | "nastup" | "posun";
   /** Spodok bloku rečí pred a po zmene (v11.12); vrch je v z a na, môže ostať rovnaký. */
   readonly odZ?: Stupen;
   readonly odNa?: Stupen;

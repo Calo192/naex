@@ -165,14 +165,13 @@ export function ObsahNapovedyStarsieho({ o, obrazok = null }: { readonly o: Obsa
           <thead>
             <tr>
               <th />
-              <th>stupeň</th>
               <th>
                 <Stvorcek druh="strach" n={2} />
                 strach
               </th>
               <th>
                 <Stvorcek druh="reci" n={2} />
-                reči
+                reči u súpera
               </th>
             </tr>
           </thead>
@@ -180,9 +179,8 @@ export function ObsahNapovedyStarsieho({ o, obrazok = null }: { readonly o: Obsa
             {o.hraci.map((h) => (
               <tr key={h.komu} className={h.komu}>
                 <th>{h.kto}</th>
-                <td>{h.vrchol === 0 ? <span className="np-st s0">{slovoStupna(0, o.rod)}</span> : <SlovoStupna n={h.vrchol} rod={o.rod} />}</td>
-                <td>{h.strach === 0 ? <span className="np-st s0">—</span> : `po ${slovoStupna(h.strach, o.rod)}`}</td>
-                <td>{h.reci === 0 ? <span className="np-st s0">—</span> : `po ${slovoStupna(h.reci, o.rod)}`}</td>
+                <td>{h.strach === 0 ? <span className="np-st s0">{slovoStupna(0, o.rod)}</span> : <SlovoStupna n={h.strach} rod={o.rod} />}</td>
+                <td>{h.reci === 0 ? <span className="np-st s0">—</span> : h.reciOd === h.reci ? slovoStupna(h.reci, o.rod) : `${slovoStupna(h.reciOd, o.rod)} až ${slovoStupna(h.reci, o.rod)}`}</td>
               </tr>
             ))}
           </tbody>
@@ -196,7 +194,7 @@ export function ObsahNapovedyStarsieho({ o, obrazok = null }: { readonly o: Obsa
             </li>
           ))}
         </ul>
-        <span className="np-pozn">Víťaz bitky dostane za vrch teplomera, porazený len za reči. Pri sekere obaja len za reči.</span>
+        <span className="np-pozn">Stupeň dá 1 / 2 / 2 tomu, kto ho drží: reči obom pri každej bitke, strach len víťazovi. Pri sekere obaja len za reči.</span>
       </div>
       <div className="np-b">
         <span className="np-h4">
@@ -248,7 +246,7 @@ function ObsahNapovedyVaznaEl({ o, obrazok }: { readonly o: ObsahNapovedyVazna; 
         </span>
         {o.kradez !== null && (
           <span className="np-vazen">
-            Krádež pri zajatí (bitka {o.kradez.kolo}): {o.kradez.obet} → {o.kto} {pocet(o.kradez.spaky, "špak", "špaky", "špakov")} za vrch teplomera.
+            Krádež pri zajatí (bitka {o.kradez.kolo}): {o.kradez.obet} → {o.kto} {pocet(o.kradez.spaky, "špak", "špaky", "špakov")} za reči pri ňom.
           </span>
         )}
       </div>

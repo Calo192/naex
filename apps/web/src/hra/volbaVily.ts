@@ -1,23 +1,24 @@
 // Kšeft Predsedovej vily — čo ponúknuť a kľúč tlačidla pre výučbu. Bez Reactu a routera:
 // číta ho aj Vyucba.tsx, ktorá sa testuje bez prehliadača.
 
-import { dalsiStupenReci, najvyssiMarker, vilaNaStarsieho, type ClientState, type Stupen } from "@naex/core";
+import { dalsiStupenReci, opisReci, sMarkerom, vilaNaStarsieho, type ClientState } from "@naex/core";
 
 export interface MoznostVily {
   readonly elderId: string;
   readonly defId: string;
-  /** Reči pôjdu zo stupňa `z` (najvyšší marker — reči, inak strach) na `na` (v11). */
-  readonly z: Stupen;
-  readonly na: Stupen;
+  /** Moje reči na teplomere súpera pred Kšeftom a po ňom slovom („nič“, „žltá až oranžová“, v11.12). */
+  readonly pred: string;
+  readonly po: string;
 }
 
-/** Starší, pri ktorých smie Kšeft vily (v11) zdvihnúť moje reči — nie na červenej. */
+/** Starší, pri ktorých smie Kšeft vily zdvihnúť moje reči — nie pri plnom teplomere súpera (v11.12). */
 export function moznostiVily(view: Pick<ClientState, "starsi" | "ja">): readonly MoznostVily[] {
   return view.starsi
     .filter((e) => vilaNaStarsieho(e, view.ja))
     .map((e) => {
-      const z = najvyssiMarker(e, view.ja);
-      return { elderId: e.elderId, defId: e.karta.defId, z, na: dalsiStupenReci(e, view.ja) ?? z };
+      const na = dalsiStupenReci(e, view.ja);
+      const po = na === null ? e : sMarkerom(e, view.ja, "reci", na);
+      return { elderId: e.elderId, defId: e.karta.defId, pred: opisReci(e, view.ja), po: opisReci(po, view.ja) };
     });
 }
 

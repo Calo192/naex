@@ -58,8 +58,8 @@ export interface StarsiVSuhrne {
   readonly elderId: string;
   readonly defId: string;
   readonly scorecard: string;
-  /** Teplomery po fázach: 0 pred bitkou, 1 po poklese rečí, 2 po Nakladačke, 3 po hádke, 4 po presvedčení (v11.4). */
-  readonly fazy: readonly [Markery, Markery, Markery, Markery, Markery];
+  /** Teplomery po fázach: 0 pred bitkou, 1 po poklese rečí, 2 po Nakladačke, 3 po hádke. */
+  readonly fazy: readonly [Markery, Markery, Markery, Markery];
   /** Zajatý v tejto bitke — kto ho má v pivnici. */
   readonly vazen: PlayerId | null;
   /** Bodovanie (krok 4b): špaky a za aký stupeň (reči = len reči). */
@@ -67,10 +67,8 @@ export interface StarsiVSuhrne {
   readonly bodStupen: readonly [Stupen, Stupen];
   readonly bodZaReci: readonly [boolean, boolean];
   readonly pokles: readonly { readonly hrac: PlayerId; readonly z: Stupen; readonly na: Stupen }[];
-  readonly nakladacka: { readonly hrac: PlayerId; readonly z: Stupen; readonly na: Stupen; readonly cena: number; readonly zanikli: boolean } | null;
+  readonly nakladacka: { readonly hrac: PlayerId; readonly z: Stupen; readonly na: Stupen; readonly cena: number } | null;
   readonly hadka: { readonly hrac: PlayerId; readonly z: Stupen; readonly na: Stupen; readonly cena: number } | null;
-  /** Presvedčený v tejto bitke (v11.4): kto ho presvedčil — jeho reči pri ňom zanikli. */
-  readonly presvedcil: PlayerId | null;
   readonly priazen: { readonly od: PriazenSuhrnu; readonly na: PriazenSuhrnu; readonly zmena: boolean };
   /** Kto ho v ďalšej vyhratej bitke smie Nakladačkou zajať (strach 3) a koľko by mu súper odovzdal. */
   readonly ohrozenie: readonly { readonly hrac: PlayerId; readonly kradez: number }[];
@@ -89,7 +87,7 @@ export interface SuhrnBitky {
   readonly hadka: { readonly hrac: PlayerId; readonly cena: number } | null;
 }
 
-const ZDROJE_BITKY: ReadonlySet<ZmenaMarkera["zdroj"]> = new Set(["bodovanie", "zanik", "nakladacka", "hadka", "presvedcenie", "posun"]);
+const ZDROJE_BITKY: ReadonlySet<ZmenaMarkera["zdroj"]> = new Set(["bodovanie", "nakladacka", "hadka", "posun"]);
 
 type Mut = { strach: [Stupen, Stupen]; reci: [Stupen, Stupen]; reciOd: [Stupen, Stupen] };
 const kopia = (m: Markery): Mut => ({
@@ -139,9 +137,8 @@ export function suhrnBitky(zaciatok: ZaciatokKola, view: Pick<ClientState, "star
       return m;
     };
     const f1 = dalej(f0, ["bodovanie"]);
-    const f2 = dalej(f1, ["nakladacka", "zanik", "posun"]);
+    const f2 = dalej(f1, ["nakladacka", "posun"]);
     const f3 = dalej(f2, ["hadka"]);
-    const f4 = dalej(f3, ["presvedcenie"]);
 
     const zaznam = bitka.bodovanie?.find((x) => x.elderId === a.elderId);
     const bodStupen: [Stupen, Stupen] = zaznam !== undefined ? [zaznam.stupen[0], zaznam.stupen[1]] : [0, 1].map((p) => stupenNaBodovanie(f0, p as PlayerId, bitka.vitaz === p)) as [Stupen, Stupen];
@@ -150,24 +147,22 @@ export function suhrnBitky(zaciatok: ZaciatokKola, view: Pick<ClientState, "star
 
     const nakl = jeho.find((z) => z.zdroj === "nakladacka" && z.marker === "strach");
     const hadka = jeho.find((z) => z.zdroj === "hadka" && z.marker === "reci");
-    const presvedcenie = jeho.find((z) => z.zdroj === "presvedcenie");
     const od = priazenZ(f0);
-    const na: PriazenSuhrnu = vazen !== undefined ? { hrac: null, sila: 0 } : priazenZ(f4);
+    const na: PriazenSuhrnu = vazen !== undefined ? { hrac: null, sila: 0 } : priazenZ(f3);
     starsi.push({
       elderId: a.elderId,
       defId: (teraz ?? vazen)?.karta.defId ?? a.karta.defId,
       scorecard: (teraz ?? vazen)?.scorecard ?? a.scorecard,
-      fazy: [f0, f1, f2, f3, f4],
+      fazy: [f0, f1, f2, f3],
       vazen: vazen?.hrac ?? null,
       bod,
       bodStupen,
       bodZaReci,
       pokles: jeho.filter((z) => z.zdroj === "bodovanie").map((z) => ({ hrac: z.hrac, z: z.z, na: z.na })),
-      nakladacka: nakl === undefined ? null : { hrac: nakl.hrac, z: nakl.z, na: nakl.na, cena: cenaZdvihu(f1, nakl.hrac, "strach", nakl.na) ?? 0, zanikli: jeho.some((z) => z.zdroj === "zanik" && z.hrac === nakl.hrac) },
+      nakladacka: nakl === undefined ? null : { hrac: nakl.hrac, z: nakl.z, na: nakl.na, cena: cenaZdvihu(f1, nakl.hrac, "strach", nakl.na) ?? 0 },
       hadka: hadka === undefined ? null : { hrac: hadka.hrac, z: najvyssiMarker(f2, hadka.hrac), na: hadka.na, cena: investovaneReci(f3, hadka.hrac) - investovaneReci(f2, hadka.hrac) },
-      presvedcil: presvedcenie === undefined ? null : presvedcenie.hrac,
       priazen: { od, na, zmena: !rovnakaPriazen(od, na) },
-      ohrozenie: vazen !== undefined ? [] : ([0, 1] as const).filter((p) => f4.strach[p] === 3).map((p) => ({ hrac: p, kradez: kradezZaZajatie(f4, p) })),
+      ohrozenie: vazen !== undefined ? [] : ([0, 1] as const).filter((p) => f3.strach[p] === 3).map((p) => ({ hrac: p, kradez: kradezZaZajatie(f3, p) })),
     });
   }
   const kroky = PORADIE.filter((k) => starsi.some((e) => dotknuty(e, k)));
@@ -220,7 +215,7 @@ export function dotknuty(e: StarsiVSuhrne, k: KrokSuhrnu): boolean {
   if (k === "reci") return e.pokles.length > 0;
   if (k === "nakladacka") return e.nakladacka !== null;
   if (k === "hadka") return e.hadka !== null;
-  return e.priazen.zmena || e.ohrozenie.length > 0 || e.vazen !== null || e.presvedcil !== null;
+  return e.priazen.zmena || e.ohrozenie.length > 0 || e.vazen !== null;
 }
 
 /**
@@ -232,7 +227,7 @@ export function fazaKroku(k: KrokSuhrnu): { readonly stav: number; readonly od: 
   if (k === "reci") return { stav: 1, od: 0, duch: false };
   if (k === "nakladacka") return { stav: 2, od: 1, duch: false };
   if (k === "hadka") return { stav: 3, od: 2, duch: false };
-  return { stav: 4, od: 0, duch: true };
+  return { stav: 3, od: 0, duch: true };
 }
 
 /** Mená a slová, z ktorých sa skladajú vety súhrnu. */
@@ -268,7 +263,6 @@ export function stitkyKroku(e: StarsiVSuhrne, k: KrokSuhrnu, ja: PlayerId, c: Ko
     const komu = na.hrac === null ? "nikto" : `${c.mena[na.hrac]} +${na.sila}`;
     out.push({ text: `${c.nazovPriazne(e.scorecard)} → ${komu}`, kratko: `${c.nazovPriazne(e.scorecard)} → ${na.hrac === null ? "nikto" : `+${na.sila}`}`, trieda: na.hrac === null ? "ne" : t(na.hrac) });
   }
-  if (e.presvedcil !== null) out.push({ text: `✦ presvedčený · ${c.mena[e.presvedcil]}`, kratko: "✦", trieda: t(e.presvedcil) });
   for (const z of e.ohrozenie) out.push({ text: `⛓ ${c.mena[z.hrac]} môže zajať`, kratko: "⛓", trieda: "ne" });
   return out;
 }
@@ -282,7 +276,7 @@ export function riadkyKroku(e: StarsiVSuhrne, k: KrokSuhrnu, c: KontextSuhrnu): 
   const pokles = (): string[] => e.pokles.map((x) => `▼ ${m[x.hrac]} reči ${x.na === 0 ? "zanikli" : `→ ${slovoStupna(x.na, rod)}`}`);
   if (k === "bodovanie") return ([0, 1] as const).filter((p) => e.bod[p] > 0).map((p) => `${m[p]} +${e.bod[p]} (${e.bodZaReci[p] ? `${slovoStupna(e.bodStupen[p], rod)} — reči` : slovoStupna(e.bodStupen[p], rod)})`);
   if (k === "reci") return pokles();
-  if (k === "nakladacka") return [...nakl(), ...(e.nakladacka?.zanikli === true ? [`${m[e.nakladacka.hrac]}: reči zanikli pod strachom`] : [])];
+  if (k === "nakladacka") return nakl();
   if (k === "hadka") return hadka();
   if (e.vazen !== null) return [`⛓ v pivnici u ${m[e.vazen]}`];
   const pr = (p: PriazenSuhrnu): string => (p.hrac === null ? "nikto" : `${m[p.hrac]} +${p.sila}`);
@@ -291,7 +285,6 @@ export function riadkyKroku(e: StarsiVSuhrne, k: KrokSuhrnu, c: KontextSuhrnu): 
     ...hadka(),
     ...(e.priazen.zmena ? [`priazeň: ${pr(e.priazen.od)} → ${pr(e.priazen.na)}`] : []),
     ...pokles(),
-    ...(e.presvedcil !== null ? [`✦ ${m[e.presvedcil]} ho presvedčil — karta staršieho je jeho, jeho reči zanikli`] : []),
     ...e.ohrozenie.map((z) => `⛓ ${m[z.hrac]} môže zajať`),
   ];
 }
@@ -314,7 +307,7 @@ export function opisKroku(s: SuhrnBitky, k: KrokSuhrnu, c: KontextSuhrnu): strin
   if (k === "reci") return "Kto prehral hádku, tomu reči klesnú zospodu: spodný stupeň zanikne.";
   if (k === "nakladacka" && s.nakladacka !== null)
     return `${m[s.nakladacka.hrac]} dvíha Nakladačkou (${s.nakladacka.cena}) svoj strach: ${zoznam((e) => e.nakladacka?.cena ?? null)}. Plná časť rastie a hladina ide hore.`;
-  if (k === "hadka" && s.hadka !== null) return `${m[s.hadka.hrac]} dvíha hádkou (${s.hadka.cena}) svoje reči: ${zoznam((e) => e.hadka?.cena ?? null)}. Šrafy rastú nad strachom.`;
+  if (k === "hadka" && s.hadka !== null) return `${m[s.hadka.hrac]} dvíha hádkou (${s.hadka.cena}) svoje reči: ${zoznam((e) => e.hadka?.cena ?? null)}. Šrafa rastie na teplomere súpera.`;
   const vety = ["Zátvorka medzi hladinami je priazeň, prerušovaná čiara je hladina pred bitkou."];
   for (const e of s.starsi) if (e.vazen !== null) vety.push(`${c.menoStarsieho(e.defId)} je v pivnici u ${m[e.vazen]}.`);
   const ohr = [0, 1].flatMap((p) => {

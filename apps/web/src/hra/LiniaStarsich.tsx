@@ -5,7 +5,7 @@
 // Dve rozloženia s prepínačom v hlavičke:
 //  - Teplomery R3 „Okraje s hladinami“ (Michal 2026-11-02, docs/napady/starsi-ram-mocky.html):
 //    pri okrajoch portrétu pás každého hráča v jeho farbe — ty vľavo, súper vpravo. Strach je plná
-//    výplň, reči šrafovaná nad ním. Od vrchu strachu ide do stredu čiara hladiny s menom hráča,
+//    výplň, súperove reči šrafa na ňom (v11.12). Od vrchu strachu ide do stredu čiara hladiny s menom hráča,
 //    medzi hladinami zátvorka priazne so silou; dole krúžok priazne. Slová stupňov pri teplomeroch
 //    nie sú — sú pod menom staršieho a v nápovede.
 //  - Pult (mock 5): tabuľka — riadok na staršieho, strach a reči oboch, priazeň od stredu
@@ -573,12 +573,12 @@ function RiadokStupna({ kto, komu, strach, reci, rod }: { readonly kto: string; 
   );
 }
 
-/** Výplň stupňa z pre hráča: plná (strach), šrafovaná (reči nad strachom), alebo prázdny. */
+/** Výplň stupňa z pre hráča: plná (strach), alebo prázdny; šrafu súperových rečí kreslí blok. */
 const vyplnStupna = (z: number, strach: number): "plna" | null => (z <= strach ? "plna" : null);
 
 /**
  * Teplomery R3 „Okraje s hladinami“ (docs/napady/starsi-ram-mocky.html): pás hráča pri okraji
- * portrétu vo farbe hráča (ty vľavo, súper vpravo), strach plný, reči šrafované nad ním. Od vrchu
+ * portrétu vo farbe hráča (ty vľavo, súper vpravo), strach plný, súperove reči šrafa na ňom. Od vrchu
  * strachu ide do stredu čiara hladiny s menom hráča, medzi hladinami zátvorka priazne so silou —
  * priazeň meria len plnú časť. `pred` = stav pred krokom (súhrn po bitke, nepotvrdený zdvih):
  * nové diely narastú, zmiznuté ostanú prerušované a hladina sa posunie.

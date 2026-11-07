@@ -7,7 +7,7 @@
 // Bez Reactu, aby sa dalo otestovať.
 
 import type { BitkaNaNastenke, ElderState, Favour, GameData, PlayerId, StavVyhier, Stupen, Vazen, ZmenaMarkera } from "@naex/core";
-import { KONSTANTY, NAZVY_ZON, favourStarsieho, kradezZaZajatie, najvyssiMarker, opponentOf, pocet, priazenHraca, priazenSila, spakyOdStarsieho as spakyOdStarsiehoJadra, spakyZaStupen, vydesil } from "@naex/core";
+import { KONSTANTY, NAZVY_ZON, favourStarsieho, blokReci, kradezZaZajatie, opponentOf, pocet, priazenHraca, priazenSila, spakyOdStarsieho as spakyOdStarsiehoJadra, spakyZaStupen, vydesil } from "@naex/core";
 import { UCINOK_KRATKO, UCINOK_PRIAZNE } from "./Scorecard.tsx";
 import { rodStarsieho, slovoStupna, type Rod } from "./textyStarsich.ts";
 
@@ -54,8 +54,8 @@ export interface RiadokHraca {
   readonly kto: string;
   readonly strach: Stupen;
   readonly reci: Stupen;
-  /** Vrchol teplomera (strach + reči) — stupeň staršieho pre tohto hráča. */
-  readonly vrchol: Stupen;
+  /** Spodok bloku rečí na teplomere súpera (v11.12); pri jednom stupni = reci. */
+  readonly reciOd: Stupen;
   readonly vyhra: number;
   readonly prehra: number;
 }
@@ -172,7 +172,7 @@ export function obsahNapovedy(v: VstupNapovedy): ObsahNapovedy {
       kto: kto(h),
       strach,
       reci,
-      vrchol: najvyssiMarker(v.elder, h),
+      reciOd: blokReci(v.elder, h)?.od ?? 0,
       vyhra: spakyOdStarsiehoJadra(v.elder, h, true),
       prehra: spakyOdStarsiehoJadra(v.elder, h, false),
     };
@@ -218,7 +218,7 @@ export function vetaPriazne(o: Pick<ObsahNapovedy, "priazen" | "hraci" | "rod">)
 
 /** Riziko zajatia s krádežou celou vetou. */
 export function vetaZajatia(z: ZajatieVNapovede, rod: Rod): string {
-  return `${z.kto} ho môže po vyhratej bitke zajať za ${KONSTANTY.CENA_ZAJATIA} z Nakladačky (strach ${slovoStupna(3, rod)}). ${z.obet} mu vtedy odovzdá ${pocet(z.kradez, "špak", "špaky", "špakov")} za vrch svojho teplomera (dnes).`;
+  return `${z.kto} ho môže po vyhratej bitke zajať za ${KONSTANTY.CENA_ZAJATIA} z Nakladačky (strach ${slovoStupna(3, rod)}). ${z.obet} mu vtedy odovzdá ${pocet(z.kradez, "špak", "špaky", "špakov")} za svoje reči pri ňom (dnes).`;
 }
 
 export interface VstupNapovedyVazna {
@@ -257,7 +257,7 @@ export function obsahNapovedyVazna(v: VstupNapovedyVazna): ObsahNapovedyVazna {
 
 /** Nápoveda nad teplomermi (krátka, 1–2 riadky). */
 export function riadkyKruzkov(): readonly string[] {
-  return ["Stĺpec: strach (plní sa zdola, neklesá) · bublina: reči nad strachom, číslo = špaky.", "Tvoj vľavo, súperov vpravo."];
+  return ["Stĺpec: strach (plní sa zdola, neklesá) · šrafa: súperove reči na ňom.", "Tvoj vľavo, súperov vpravo."];
 }
 
 /** Koľko starších dáva hráčovi `p` priazeň (dlaždica Starší, stĺpec na telefóne). */

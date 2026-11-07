@@ -65,7 +65,6 @@ describe("súhrn po bitke: fázy teplomerov", () => {
       [[0, 0], [1, 0]],
       [[0, 2], [1, 0]],
       [[0, 2], [3, 0]],
-      [[0, 2], [3, 0]],
     ]);
     // Kšeft vily je pred bitkou — reči 1 sú už v stave „pred“.
     expect(eb!.fazy[0].reci).toEqual([1, 0]);
@@ -78,7 +77,7 @@ describe("súhrn po bitke: fázy teplomerov", () => {
 
   it("Nakladačka a hádka s cenou; priazeň po bitke z rozdielu strachov", () => {
     // Žltú drží Jano rečami — strach na ňu stojí o 1 viac (v11.12): 2 + 2.
-    expect(ea!.nakladacka).toEqual({ hrac: 1, z: 0, na: 2, cena: 4, zanikli: false });
+    expect(ea!.nakladacka).toEqual({ hrac: 1, z: 0, na: 2, cena: 4 });
     expect(ea!.hadka).toEqual({ hrac: 0, z: 1, na: 3, cena: 5 });
     expect(ea!.priazen).toEqual({ od: { hrac: null, sila: 0 }, na: { hrac: 0, sila: 2 }, zmena: true });
     expect(x.nakladacka).toEqual({ hrac: 1, cena: 4 });
@@ -90,7 +89,7 @@ describe("súhrn po bitke: fázy teplomerov", () => {
     expect(x.kroky).toEqual(["bodovanie", "reci", "nakladacka", "hadka", "koniec"]);
     expect(fazaKroku("bodovanie")).toEqual({ stav: 0, od: null, duch: false });
     expect(fazaKroku("nakladacka")).toEqual({ stav: 2, od: 1, duch: false });
-    expect(fazaKroku("koniec")).toEqual({ stav: 4, od: 0, duch: true });
+    expect(fazaKroku("koniec")).toEqual({ stav: 3, od: 0, duch: true });
   });
 
   it("štítky, riadky a vety menom hráča, stupne slovami", () => {
@@ -143,7 +142,7 @@ describe("súhrn po bitke v partii botov", () => {
               const pred = predBitkou?.starsi.find((y) => y.elderId === e.elderId);
               if (pred !== undefined) expect(kluc(e.fazy[0])).toBe(kluc(pred));
               const teraz = v.starsi.find((y) => y.elderId === e.elderId);
-              if (teraz !== undefined) expect(kluc(e.fazy[4])).toBe(kluc(teraz));
+              if (teraz !== undefined) expect(kluc(e.fazy[3])).toBe(kluc(teraz));
             }
             if (x !== null) bitiek++;
             zac = zaciatokKola(v);

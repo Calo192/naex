@@ -35,13 +35,13 @@ describe("riadky pri staršom", () => {
     expect(riadokDlazdice("nic", true)).toBe("neutrálny");
   });
 
-  it("stupne a ceny v11: žltá 1, oranžová 2, červená 3; špaky 1 / 3 / 5", () => {
+  it("stupne a ceny v11: žltá 1, oranžová 2, červená 3; hodnota stupňa 1 / 2 / 2 (v11.12)", () => {
     expect(nazovStupna(0)).toBe("nič");
     expect(nazovStupna(3)).toBe("červená");
     expect(CENA_POLA).toBe("stupeň stojí 1 / 2 / 3 (žltá / oranžová / červená)");
-    expect(PRAVIDLO_STRACHU).toMatch(/znepokojený 1, vystrašený 3, vydesený 5/);
-    expect(PRAVIDLO_STRACHU).toMatch(/stupeň staršieho pre hráča je jej vrchol/);
-    expect(PRAVIDLO_STRACHU).toMatch(/porazenému len za reči/);
+    expect(PRAVIDLO_STRACHU).toContain("hodnotu 1 / 2 / 2 a dostane ju, kto ho drží");
+    expect(PRAVIDLO_STRACHU).toMatch(/Stupeň staršieho pre hráča je jeho strach/);
+    expect(PRAVIDLO_STRACHU).toMatch(/reči obaja, strach len víťaz/);
   });
 });
 

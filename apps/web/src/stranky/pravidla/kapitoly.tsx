@@ -85,8 +85,8 @@ export const KAPITOLY: readonly Kapitola[] = [
           <div className="karticka">
             <strong>Špaky.</strong> Hrá sa 3, 5 alebo 7 bitiek o lokality podľa <P k="dlzka-hry">ligy</P> a potom{" "}
             <P k="finale">finále</P> — posledná bitka o pinnacle lokalitu, ktorú vyberie hráč s viac špakmi — útočí zaostávajúci. Víťaz bitky (aj finále) dostane 1 <P k="spak">špak</P> za každú
-            kartu, ktorá pri bitke leží v línii (tvoje aj súperove). Po každej bitke dajú špaky aj <P k="starsi">starší</P>: víťazovi za
-            strach a obom za <P k="reci">reči</P> — znepokojený 1, vystrašený 3, vydesený 5.
+            kartu, ktorá pri bitke leží v línii (tvoje aj súperove). Po každej bitke dajú špaky aj <P k="starsi">starší</P>: stupeň 1 / 2 / 2 tomu, kto ho
+            drží — víťazovi za strach a obom za <P k="reci">reči</P>.
             Po finále sa ešte <P k="vykupne">vykúpi</P>, čo ti ostalo: každý plný poldeci 1 špak, každých 5 cigariet 1 špak. Potom vyhrá, kto má
             viac špakov.
           </div>
@@ -267,7 +267,7 @@ export const KAPITOLY: readonly Kapitola[] = [
             <strong>strach na červenej už pred touto Nakladačkou</strong> — teda od minulého kola; strach dotiahnutý na červenú v tom
             istom rozdelení nestačí. Na stole sa pri takom staršom ukáže pečiatka <strong>ZAJAŤ</strong>. Smie aj viac naraz
             a nemusí. Starší je jeho <P k="vazen">väzeň</P>: leží medzi jeho priznanými kartami, zo stupnice zmizne a súper mu odovzdá
-            špaky za svoj najvyšší marker pri ňom (žltá 1, oranžová 3, červená 5), najviac koľko má. Väzeň sa ráta ako červená
+            toľko špakov, koľko bodov hádky má pri ňom v rečiach, najviac koľko má. Väzeň sa ráta ako červená
             a má <a href="#schopnost-vazna">schopnosť</a>. Väzni na výhru podľa ligy — Tretia 2, Druhá 3, Prvá 4 — končia hru hneď.
           </li>
           <li>
@@ -1005,7 +1005,7 @@ export const KAPITOLY: readonly Kapitola[] = [
             <tr><td>Vyhraná hádka pri prehratej bitke alebo sekere</td><td>1 za každú svoju kartu v línii; na Kultúrnom dome nie druhýkrát</td></tr>
             <tr><td>Starší po bitke</td><td>stupne žltá 1, oranžová 2, červená 2 dostane, kto ich drží: víťaz za svoj strach bez stupňov, ktoré obsadil súper, obaja pri každej bitke za svoje reči; kto prehral hádku, tomu reči klesnú zospodu o stupeň</td></tr>
             <tr><td>Finále: Nakladačka a hádka</td><td>víťaz bitky 1 za bod Nakladačky, víťaz hádky 1 za bod hádky</td></tr>
-            <tr><td>Krádež pri zajatí</td><td>zlodej dostane a okradnutý stratí špaky za okradnutého najvyšší marker pri zajatom staršom (1 / 3 / 5), najviac koľko má</td></tr>
+            <tr><td>Krádež pri zajatí</td><td>zlodej dostane a okradnutý stratí toľko špakov, koľko bodov hádky má okradnutý v rečiach pri zajatom staršom, najviac koľko má</td></tr>
             <tr><td>Exekútor</td><td>v každej bitke mínus polovica priznaných Dlhov nahor (s priazňou Advokáta o 1 / 2 / 3 menej)</td></tr>
             <tr><td><P k="vykupne">Výkupné</P> na konci hry</td><td>každý plný poldeci 1, každých celých 5 cigariet 1 (zvyšok prepadne); bez stropu — vypitý poldeci ani poldeci pod NA EX sa nerátajú</td></tr>
             <tr><td>Nepriznaná Cirhóza</td><td>mínus 3 za kus na konci hry (ruka aj oba balíčky)</td></tr>
