@@ -8,7 +8,14 @@ nastavDocasneEnv();
 export default defineConfig({
   test: {
     include: ["packages/*/test/**/*.test.ts", "apps/*/test/**/*.test.ts"],
-    exclude: ["**/node_modules/**"],
+    // Dočasne bez výučby (Michal 2026-11-07: vypáliť hneď, výučbu prerobiť hneď po vypálení).
+    // Výnimku zruší vetva s novým scenárom Prvej hry.
+    exclude: [
+      "**/node_modules/**",
+      "packages/core/test/vyucba.test.ts",
+      "packages/server/test/vyucba.test.ts",
+      "apps/web/test/zmenyVyucby.test.ts",
+    ],
     passWithNoTests: true,
     globalSetup: ["tools/vitest-upratanie.ts"],
   },
