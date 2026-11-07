@@ -62,7 +62,6 @@ import {
   dalsiStupenReci,
   freshElder,
   kradezZaZajatie,
-  noveReci,
   opisReci,
   priazenHraca,
   priazenPre,
@@ -541,11 +540,6 @@ export interface GameState {
   readonly lokalitaOtocena: boolean;
   /** v11.11: víťaz hádky minulého kola; natáča ďalšiu lokalitu. Pri remíze null, v K1 chýba. */
   readonly vitazPoslednejHadky?: PlayerId | null;
-  /**
-   * Výučba Prvá hra je scenár s číslami v hláškach a prerobí sa až pri vypálení (CLAUDE.md):
-   * dovtedy hrá bez zmien v11.11: hádka nedáva špaky za karty, lokalitu natáča obranca a reči nekrátia strach.
-   */
-  readonly vyucbaPredV1111?: true;
   readonly strany: readonly [readonly PlacedCard[], readonly PlacedCard[]];
   /**
    * Pitiek v bitke (Michal 2026-10-19): 1 + menší z počtov aktivovaných
@@ -2561,26 +2555,17 @@ function zajmi(s: MutState, data: GameData, p: PlayerId, elderId: string, events
 /**
  * Presvedčenie (v11.4, Michal 2026-11-03, §10) pri rozdelení hádky: strach oboch ostáva, starší
  * ostáva na stupnici (priazeň, bodovanie) a jeho karta ide p do ruky — odteraz patrí do jeho
- * balíčka. Reči ostávajú (v11.12, Michal 2026-11-06); vo výučbe zanikajú ako do v11.11.
+ * balíčka. Reči ostávajú (v11.12, Michal 2026-11-06).
  */
 function presvedc(s: MutState, data: GameData, p: PlayerId, elderId: string, events: Event[]): void {
   const elder = s.starsi.find((e) => e.elderId === elderId);
   if (elder === undefined) return;
-  const z = elder.reci[p];
-  if (z > 0 && !noveReci(elder as ElderState)) {
-    const reci: [Stupen, Stupen] = [elder.reci[0], elder.reci[1]];
-    reci[p] = 0;
-    elder.reci = reci;
-    const x: ZmenaMarkera = { elderId: elder.elderId, hrac: p, marker: "reci", z, na: 0, zdroj: "presvedcenie", kto: p };
-    s.zmenyMarkerov.push(x);
-    events.push({ type: "zmenaMarkera", ...x });
-  }
   elder.presvedcil = p;
   doRuky(s, kapitan(s, p), { ...elder.karta });
   events.push({ type: "kartyTahane", hrac: p, karty: [elder.karta as CardInstance], pre: p });
   events.push({
     type: "log",
-    text: `Presvedčenie: hráč ${p + 1} ${rodovo(p, "presvedčil", "presvedčila", "presviedča")} za ${KONSTANTY.CENA_PRESVEDCENIA} z hádky staršieho ${defOf(data, elder.karta as CardInstance).name} — karta mu ide do ruky a odteraz patrí do jeho balíčka. ${noveReci(elder as ElderState) ? "Reči, strach aj priazeň ostávajú." : "Jeho reči pri ňom zanikajú, strach a priazeň ostávajú."}`,
+    text: `Presvedčenie: hráč ${p + 1} ${rodovo(p, "presvedčil", "presvedčila", "presviedča")} za ${KONSTANTY.CENA_PRESVEDCENIA} z hádky staršieho ${defOf(data, elder.karta as CardInstance).name} — karta mu ide do ruky a odteraz patrí do jeho balíčka. Reči, strach aj priazeň ostávajú.`,
   });
 }
 
@@ -4311,7 +4296,7 @@ export function moznostiKseftu(data: GameData, state: GameState, p: PlayerId): C
 
 /**
  * Smie Kšeft Predsedovej vily (v11) pridať reči hráča p pri tomto staršom o stupeň? Nie, keď už
- * nie je kam (v11.12: celý teplomer; výučba: červený strach či červené reči).
+ * nie je kam (v11.12: celý teplomer).
  */
 export function vilaNaStarsieho(elder: Pick<ElderState, "strach" | "reci" | "reciOd">, p: PlayerId): boolean {
   return dalsiStupenReci(elder, p) !== null;
@@ -5403,9 +5388,8 @@ function zmenMarker(
   kto: PlayerId,
 ): void {
   const z = marker === "strach" ? elder.strach[p] : elder.reci[p];
-  const reciPred = elder.reci[p];
   // Elder sa mení na mieste — pôvodný stav si treba odložiť skôr.
-  const pred: ElderState = { ...(elder as ElderState), reci: [elder.reci[0], elder.reci[1]], ...(elder.reciOd !== undefined ? { reciOd: [elder.reciOd[0], elder.reciOd[1]] as const } : {}) };
+  const pred: ElderState = { ...(elder as ElderState), reci: [elder.reci[0], elder.reci[1]], reciOd: [elder.reciOd[0], elder.reciOd[1]] };
   const po = sMarkerom(pred, p, marker, na);
   elder.strach = [po.strach[0], po.strach[1]];
   elder.reci = [po.reci[0], po.reci[1]];
@@ -5413,44 +5397,36 @@ function zmenMarker(
     s.zmenyMarkerov.push(x);
     events.push({ type: "zmenaMarkera", ...x });
   };
-  if (noveReci(pred)) {
-    // v11.12: reči sú blok a menia sa aj zospodu; súperove reči sa môžu posunúť so strachom.
-    const q = marker === "strach" ? opponentOf(p) : p;
-    const odZ = pred.reciOd?.[q] ?? 0;
-    const odNa = po.reciOd?.[q] ?? 0;
-    const vrchZ = pred.reci[q];
-    const vrchNa = po.reci[q];
-    elder.reciOd = [po.reciOd?.[0] ?? 0, po.reciOd?.[1] ?? 0];
-    if (marker === "strach") {
-      if (z !== na) zapis({ elderId: elder.elderId, hrac: p, marker, z, na, zdroj, kto });
-      if (vrchZ !== vrchNa || odZ !== odNa) zapis({ elderId: elder.elderId, hrac: q, marker: "reci", z: vrchZ, na: vrchNa, odZ, odNa, zdroj: "posun", kto });
-    } else {
-      zapis({ elderId: elder.elderId, hrac: p, marker, z: vrchZ, na: vrchNa, odZ, odNa, zdroj, kto });
-    }
-    return;
+  // v11.12: reči sú blok a menia sa aj zospodu; súperove reči sa môžu posunúť so strachom.
+  const q = marker === "strach" ? opponentOf(p) : p;
+  const odZ = pred.reciOd[q];
+  const odNa = po.reciOd[q];
+  const vrchZ = pred.reci[q];
+  const vrchNa = po.reci[q];
+  elder.reciOd = [po.reciOd[0], po.reciOd[1]];
+  if (marker === "strach") {
+    if (z !== na) zapis({ elderId: elder.elderId, hrac: p, marker, z, na, zdroj, kto });
+    if (vrchZ !== vrchNa || odZ !== odNa) zapis({ elderId: elder.elderId, hrac: q, marker: "reci", z: vrchZ, na: vrchNa, odZ, odNa, zdroj: "posun", kto });
+  } else {
+    zapis({ elderId: elder.elderId, hrac: p, marker, z: vrchZ, na: vrchNa, odZ, odNa, zdroj, kto });
   }
-  if (z !== na) zapis({ elderId: elder.elderId, hrac: p, marker, z, na, zdroj, kto });
-  if (marker === "strach" && reciPred > 0 && po.reci[p] === 0) zapis({ elderId: elder.elderId, hrac: p, marker: "reci", z: reciPred, na: 0, zdroj: "zanik", kto });
 }
 
 /** Reči hráča p pri staršom o stupeň nižšie (bodovanie, Kapybara) — v11.12 zospodu, posledný stupeň zanikne. */
 function znizReci(s: MutState, events: Event[], elder: DeepMutable<ElderState>, p: PlayerId, zdroj: ZmenaMarkera["zdroj"], kto: PlayerId): void {
   const z = elder.reci[p];
   const pred = elder as ElderState;
-  const nove = noveReci(pred);
   const na = reciNizsie(pred, p);
-  const odZ = pred.reciOd?.[p] ?? 0;
-  const odNa = nove ? reciOdNizsie(pred, p) : 0;
-  if (z === 0 || (z === na && !nove)) return;
+  const odZ = pred.reciOd[p];
+  const odNa = reciOdNizsie(pred, p);
+  if (z === 0) return;
   const reci: [Stupen, Stupen] = [elder.reci[0], elder.reci[1]];
   reci[p] = na;
   elder.reci = reci;
-  if (nove) {
-    const od: [Stupen, Stupen] = [pred.reciOd?.[0] ?? 0, pred.reciOd?.[1] ?? 0];
-    od[p] = odNa;
-    elder.reciOd = od;
-  }
-  const x: ZmenaMarkera = { elderId: elder.elderId, hrac: p, marker: "reci", z, na, ...(nove ? { odZ, odNa } : {}), zdroj, kto };
+  const od: [Stupen, Stupen] = [pred.reciOd[0], pred.reciOd[1]];
+  od[p] = odNa;
+  elder.reciOd = od;
+  const x: ZmenaMarkera = { elderId: elder.elderId, hrac: p, marker: "reci", z, na, odZ, odNa, zdroj, kto };
   s.zmenyMarkerov.push(x);
   events.push({ type: "zmenaMarkera", ...x });
 }
@@ -5498,7 +5474,7 @@ function cmdRozdelenie(
     if (elder === undefined) continue;
     const predReci = marker === "reci" ? opisReci(elder as ElderState, p) : "";
     zmenMarker(s, events, elder, p, marker, zd.na, krok === "prebytok" ? "nakladacka" : "hadka", p);
-    casti.push(marker === "reci" && noveReci(elder as ElderState) ? `${meno(zd.elderId)} ${predReci} → ${opisReci(elder as ElderState, p)} (${zd.cena})` : `${meno(zd.elderId)} ${NAZVY_ZON[zd.z]} → ${NAZVY_ZON[zd.na]} (${zd.cena})`);
+    casti.push(marker === "reci" ? `${meno(zd.elderId)} ${predReci} → ${opisReci(elder as ElderState, p)} (${zd.cena})` : `${meno(zd.elderId)} ${NAZVY_ZON[zd.z]} → ${NAZVY_ZON[zd.na]} (${zd.cena})`);
   }
   for (const id of plan.akcie) casti.push(`${meno(id)} ${krok === "prebytok" ? "zajatie" : "presvedčenie"} (${krok === "prebytok" ? KONSTANTY.CENA_ZAJATIA : KONSTANTY.CENA_PRESVEDCENIA})`);
   const co = marker === "strach" ? "strach" : "reči";
@@ -5545,7 +5521,6 @@ export function prebytokNaRozdelenie(s: VerejnyStav, outcome: BattleOutcome): nu
  * Bodovanie starších po bitke (v11, krok 4b, stav pred zdvihnutím; v11.12): obaja dostanú špaky
  * za stupne, ktoré držia rečami (1 / 2 / 2), víťaz navyše za svoj strach bez stupňov, ktoré drží
  * súper. Reči potom klesnú zospodu tomu, kto prehral hádku; pri remíze nikomu.
- * Výučba (bez reciOd): najvyšší marker víťazovi, porazenému a pri sekere reči, a všetky reči klesnú.
  */
 function bodujStarsich(s: MutState, data: GameData, vitaz: PlayerId | null, events: Event[]): void {
   const b = s.bitkaStav;
@@ -5579,12 +5554,12 @@ function bodujStarsich(s: MutState, data: GameData, vitaz: PlayerId | null, even
     const ako = vitaz === p ? "víťaz" : vitaz === null ? "sekera, len reči" : "porazený, len reči";
     events.push({ type: "log", text: `Starší po bitke: hráč ${p + 1} (${ako}) dostáva ${spakov(zaStarsich[p])} — ${kto}.` });
   }
-  // v11.12: klesajú len tomu, kto prehral hádku. Výučba: reči, ktoré bodovali, teda všetky.
+  // v11.12: klesajú len tomu, kto prehral hádku.
   const vitazHadky = b.hadka?.vitaz ?? null;
   for (const e of s.starsi) {
     for (const p of [0, 1] as const) {
       if (e.reci[p] === 0) continue;
-      if (!noveReci(e as ElderState) || (vitazHadky !== null && vitazHadky !== p)) znizReci(s, events, e, p, "bodovanie", p);
+      if (vitazHadky !== null && vitazHadky !== p) znizReci(s, events, e, p, "bodovanie", p);
     }
   }
 }
@@ -5603,7 +5578,7 @@ function vyhodnotPoskodenie(s: MutState, data: GameData, events: Event[]): void 
   b.prebytokDrzi = outcome.prebytokDrzi;
   b.prebytokZostava = prebytokNaRozdelenie(s, outcome);
   b.krok = "prebytok";
-  if (s.vyucbaPredV1111 !== true) s.vitazPoslednejHadky = b.hadka?.vitaz ?? null;
+  s.vitazPoslednejHadky = b.hadka?.vitaz ?? null;
   const sums = b.sums as readonly [ActionSums, ActionSums];
   const line = lineState(s as GameState);
   const linia = evaluateLine(data, line);
@@ -5771,7 +5746,7 @@ function vyplatSpaky(s: MutState, outcome: BattleOutcome, events: Event[]): void
   const vitaz = outcome.vitaz;
   if (vitaz !== null) {
     const porazeny = opponentOf(vitaz);
-    const v = spakyZaVyhru(s as GameState, vitaz, karty, s.vyucbaPredV1111 === true ? null : (b.hadka?.vitaz ?? null));
+    const v = spakyZaVyhru(s as GameState, vitaz, karty, b.hadka?.vitaz ?? null);
     const { zisk, herna, spolu, porazenemu, zaHadku } = v;
     zoSekery = s.spakyNaSekere;
     zaBitku[vitaz] += spolu;
@@ -5810,7 +5785,7 @@ function vyplatSpaky(s: MutState, outcome: BattleOutcome, events: Event[]): void
     events.push({ type: "log", text: `Hádka ${hd.velkost} vo finále: hráč ${hd.vitaz + 1} dostáva ${spakov(hadkaSpaky[hd.vitaz])} — 1 za každý bod.` });
   }
   // Sekera (v11.11): víťaz hádky dostane za svoje karty hneď; všetky karty línie ďalej idú na sekeru.
-  if (vitaz === null && hd?.vitaz != null && s.vyucbaPredV1111 !== true) {
+  if (vitaz === null && hd?.vitaz != null) {
     const zaHadku = karty.vlastne[hd.vitaz];
     zaBitku[hd.vitaz] += zaHadku;
     s.spaky[hd.vitaz] += zaHadku;

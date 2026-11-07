@@ -4,11 +4,8 @@
 // každom staršom vlastné dva markery:
 //  - strach 0–3: neklesá; dvíha ho víťaz
 //    bitky Nakladačkou. Priazeň pre mňa = max(0, strach súpera − môj strach).
-//  - reči: nič (0), alebo stupeň NAD vlastným strachom; dvíha ich víťaz hádky. Priazeň
-//    nedávajú, bodujú aj porazenému a po bodovaní klesnú o stupeň; keď by klesli na
-//    stupeň strachu (alebo strach dorastie na ich stupeň), zaniknú.
-// Po bitke dá starší víťazovi špaky za najvyšší marker (reči, inak strach), porazenému
-// a pri sekere obom len za reči — žltá 1, oranžová 3, červená 5 (KONSTANTY.SPAKY_ZA_STUPEN).
+//  - reči: blok stupňov na teplomere súpera (v11.12, nižšie); dvíha ich víťaz hádky. Priazeň
+//    nedávajú, bodujú aj porazenému.
 // Väzeň (v9; v11.4 za 5 bodov Nakladačky): starší, ktorý sa hráča bojí na stupni 3, sa dá zajať;
 // zajatý odchádza zo stupnice (GameState.vazni) a ráta sa ako červená svojho držiteľa (výhra strachom).
 // Presvedčený (v11.4): ostáva na stupnici, jeho karta patrí presvedčovateľovi.
@@ -18,7 +15,6 @@
 // majú prednosť pred strachom. Obsadzuje sa od vrchu súperovho strachu nadol, potom nad ním; súper
 // za obsadený stupeň platí o 1 viac a keď reči prekoná, blok sa posunie s jeho strachom. Klesajú
 // zospodu a len tomu, kto prehral hádku.
-// Starší bez reciOd sa riadi rečami do v11.11: hrá s nimi výučba, kým sa pri vypálení neprerobí.
 
 import type { CardInstance, Favour, PlayerId } from "./types.ts";
 import { opponentOf } from "./types.ts";
@@ -51,12 +47,11 @@ export interface ElderState {
   /** Strach [hráč 0, hráč 1] — ako veľmi sa starší bojí ktorého hráča. Verejné. */
   readonly strach: readonly [Stupen, Stupen];
   /**
-   * Reči [hráč 0, hráč 1] — 0 = žiadne. v11.12: vrchný stupeň bloku hráča na teplomere súpera.
-   * Bez reciOd (výučba): stupeň nad vlastným strachom toho hráča. Verejné.
+   * Reči [hráč 0, hráč 1] — 0 = žiadne. v11.12: vrchný stupeň bloku hráča na teplomere súpera. Verejné.
    */
   readonly reci: readonly [Stupen, Stupen];
-  /** Spodný stupeň bloku rečí [hráč 0, hráč 1], 0 = žiadne (v11.12). Chýba = reči do v11.11. Verejné. */
-  readonly reciOd?: readonly [Stupen, Stupen];
+  /** Spodný stupeň bloku rečí [hráč 0, hráč 1], 0 = žiadne (v11.12). Verejné. */
+  readonly reciOd: readonly [Stupen, Stupen];
   /**
    * Kto staršieho presvedčil (v11.4, §10): jeho karta natrvalo patrí tomuto hráčovi (hrá ju
    * ako ktorúkoľvek, bez efektu), starší ostáva na stupnici. Verejné; kde karta práve je, nie.
@@ -115,20 +110,16 @@ export interface Vazen {
 type Strach = Pick<ElderState, "strach">;
 type Markery = Pick<ElderState, "strach" | "reci" | "reciOd">;
 
-/** Riadi sa starší rečami na súperovom teplomere (v11.12)? Bez reciOd platia reči do v11.11. */
-export const noveReci = (e: Pick<ElderState, "reciOd">): boolean => e.reciOd !== undefined;
-
 /** Blok rečí hráča p na teplomere súpera (v11.12): stupne od..vrch, null = žiadne. */
 export function blokReci(e: Pick<ElderState, "reci" | "reciOd">, p: PlayerId): { readonly od: Stupen; readonly vrch: Stupen } | null {
   const vrch = e.reci[p];
   if (vrch === 0) return null;
-  const od = e.reciOd?.[p] ?? 0;
+  const od = e.reciOd[p];
   return { od: od === 0 ? vrch : od, vrch };
 }
 
 /** Leží na stupni st teplomera hráča p blok súperových rečí (v11.12)? */
 export function obsadenyStupen(e: Pick<ElderState, "reci" | "reciOd">, p: PlayerId, st: number): boolean {
-  if (!noveReci(e)) return false;
   const b = blokReci(e, opponentOf(p));
   return b !== null && st >= b.od && st <= b.vrch;
 }
@@ -192,7 +183,7 @@ export function investovaneReci(e: Pick<ElderState, "reci" | "reciOd">, p: Playe
 /** Špaky, ktoré odovzdá súper tomu, kto staršieho zajme (najviac koľko má, stráži volajúci). */
 export function kradezZaZajatie(e: Markery, zlodej: PlayerId): number {
   const su = opponentOf(zlodej);
-  return noveReci(e) ? investovaneReci(e, su) : spakyZaStupen(najvyssiMarker(e, su));
+  return investovaneReci(e, su);
 }
 
 /** Ako veľmi sa starší bojí hráča p (strach hráča p). */
@@ -237,12 +228,11 @@ export function najvyssiMarker(elder: Markery, p: PlayerId): Stupen {
 }
 
 /**
- * Stupeň, za ktorý starší po bitke boduje hráčovi p: víťaz najvyšší marker, inak len reči.
- * v11.12: vrch rečí, ak ich má, inak víťazov strach (popis v súhrne, špaky ráta spakyOdStarsieho).
+ * Stupeň, za ktorý starší po bitke boduje hráčovi p (v11.12): vrch rečí, ak ich má, inak víťazov
+ * strach (popis v súhrne, špaky ráta spakyOdStarsieho).
  */
 export function stupenNaBodovanie(elder: Markery, p: PlayerId, vyhral: boolean): Stupen {
-  if (noveReci(elder)) return elder.reci[p] > 0 ? elder.reci[p] : vyhral ? elder.strach[p] : 0;
-  return vyhral ? najvyssiMarker(elder, p) : elder.reci[p];
+  return elder.reci[p] > 0 ? elder.reci[p] : vyhral ? elder.strach[p] : 0;
 }
 
 /** Špaky za marker na stupni (žltá 1, oranžová 3, červená 5). */
@@ -253,11 +243,10 @@ export function spakyZaStupen(stupen: number): number {
 /**
  * Špaky, ktoré starší dá hráčovi p po bitke, ktorú p vyhral (vyhral = true), alebo nie.
  * v11.12: reči bodujú vždy, strach len víťazovi a bez stupňov, ktoré drží súper rečami.
- * Nahrádza krátenie z v11.11. Výučba (bez reciOd): najvyšší marker víťazovi, inak reči.
+ * Nahrádza krátenie z v11.11.
  */
 export function spakyOdStarsieho(elder: Markery, p: PlayerId, vyhral: boolean): number {
-  if (noveReci(elder)) return spakyZaReci(elder, p) + (vyhral ? spakyZaStrach(elder, p) : 0);
-  return spakyZaStupen(stupenNaBodovanie(elder, p, vyhral));
+  return spakyZaReci(elder, p) + (vyhral ? spakyZaStrach(elder, p) : 0);
 }
 
 /** Cena dvihnutia markera zo stupňa `z` na `na` — súčet cien stupňov, do ktorých vstupuje (1 / 2 / 3). */
@@ -287,7 +276,7 @@ export function krokyZdvihu(e: Markery, p: PlayerId, marker: DruhMarkera): reado
   const out: KrokZdvihu[] = [];
   let cena = 0;
   const stupne: readonly number[] =
-    marker === "reci" && noveReci(e)
+    marker === "reci"
       ? postupReci(e, p)
       : [1, 2, 3].filter((st) => st > stupenOdkial(e, p, marker));
   for (const st of stupne) {
@@ -306,13 +295,7 @@ export function cenaZdvihu(e: Markery, p: PlayerId, marker: DruhMarkera, na: num
 export function sMarkerom<E extends Markery>(elder: E, p: PlayerId, marker: DruhMarkera, na: Stupen): E {
   const strach: [Stupen, Stupen] = [elder.strach[0], elder.strach[1]];
   const reci: [Stupen, Stupen] = [elder.reci[0], elder.reci[1]];
-  if (!noveReci(elder)) {
-    if (marker === "strach") strach[p] = na;
-    else reci[p] = na;
-    if (reci[p] <= strach[p]) reci[p] = 0;
-    return { ...elder, strach, reci };
-  }
-  const reciOd: [Stupen, Stupen] = [elder.reciOd?.[0] ?? 0, elder.reciOd?.[1] ?? 0];
+  const reciOd: [Stupen, Stupen] = [elder.reciOd[0], elder.reciOd[1]];
   if (marker === "strach") {
     strach[p] = na;
     const su = opponentOf(p);
@@ -339,14 +322,8 @@ export function sMarkerom<E extends Markery>(elder: E, p: PlayerId, marker: Druh
 
 /** Reči hráča p o stupeň nižšie (Kapybara, bodovanie): vrch po poklese. v11.12 zospodu, vrch ostáva. */
 export function reciNizsie(elder: Markery, p: PlayerId): Stupen {
-  const r = elder.reci[p];
-  if (r === 0) return 0;
-  if (noveReci(elder)) {
-    const b = blokReci(elder, p);
-    return b !== null && b.od < b.vrch ? b.vrch : 0;
-  }
-  const na = r - 1;
-  return (na <= elder.strach[p] ? 0 : na) as Stupen;
+  const b = blokReci(elder, p);
+  return b !== null && b.od < b.vrch ? b.vrch : 0;
 }
 
 /** Spodok bloku po poklese rečí (v11.12); 0 = reči zanikli. */
@@ -359,8 +336,7 @@ export function reciOdNizsie(elder: Pick<ElderState, "reci" | "reciOd">, p: Play
 export function sReciNizsie<E extends Markery>(elder: E, p: PlayerId): E {
   const reci: [Stupen, Stupen] = [elder.reci[0], elder.reci[1]];
   reci[p] = reciNizsie(elder, p);
-  if (!noveReci(elder)) return { ...elder, reci };
-  const reciOd: [Stupen, Stupen] = [elder.reciOd?.[0] ?? 0, elder.reciOd?.[1] ?? 0];
+  const reciOd: [Stupen, Stupen] = [elder.reciOd[0], elder.reciOd[1]];
   reciOd[p] = reciOdNizsie(elder, p);
   return { ...elder, reci, reciOd };
 }

@@ -15,10 +15,9 @@
 
 import type { BitkaKrok, Command } from "./engine.ts";
 import type { DruhMarkera, ElderState, Stupen, Zdvih } from "./elders.ts";
-import { CERVENA, cenaZdvihu, krokyZdvihu, noveReci, plnyTeplomer, sMarkerom, stupenOdkial } from "./elders.ts";
+import { CERVENA, cenaZdvihu, krokyZdvihu, plnyTeplomer, sMarkerom, stupenOdkial } from "./elders.ts";
 import { KONSTANTY } from "./constants.ts";
 import type { PlayerId } from "./types.ts";
-import { opponentOf } from "./types.ts";
 
 type StarsiRozdelenia = Pick<ElderState, "elderId" | "strach" | "reci" | "reciOd" | "presvedcil">;
 
@@ -79,18 +78,17 @@ export const CHYBA_ZAJATIA_BEZ_CERVENEJ =
  * staršieho na stupnici (aj presvedčeného, aj vlastného presvedčeného), ktorý sa hráča bojí na
  * červenej už pred rozdelením (v11.6, Michal 2026-11-03: dotiahnuť a hneď zajať v tom istom
  * kole sa nedá). Presvedčiť ktoréhokoľvek nepresvedčeného (v11.12) — reči sa smú dotiahnuť
- * v tom istom rozdelení. Výučba (reči do v11.11): len keď má súper vyšší strach.
+ * v tom istom rozdelení.
  */
 export function dovodBezAkcie(elder: StarsiRozdelenia, p: PlayerId, marker: DruhMarkera): string | null {
   if (marker === "strach") return elder.strach[p] === CERVENA ? null : CHYBA_ZAJATIA_BEZ_CERVENEJ;
   if (elder.presvedcil !== undefined) return "Tohto staršieho už niekto presvedčil.";
-  if (!noveReci(elder) && elder.strach[opponentOf(p)] <= elder.strach[p]) return "Presvedčiť sa dá len staršieho, ktorý sa súpera bojí viac než teba.";
   return null;
 }
 
 /** Je marker po zdvihoch tam, kde akcia chce: strach na červenej, reči na celom teplomere (v11.12). */
 const markerNaAkciu = (elder: StarsiRozdelenia, p: PlayerId, marker: DruhMarkera): boolean =>
-  marker === "reci" && noveReci(elder) ? plnyTeplomer(elder, p) : stupenOdkial(elder, p, marker) === CERVENA;
+  marker === "reci" ? plnyTeplomer(elder, p) : stupenOdkial(elder, p, marker) === CERVENA;
 
 /**
  * Celá cena akcie pri staršom: dotiahnutie markera tam, kde akcia chce, za bežnú cenu + cena akcie

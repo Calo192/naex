@@ -24,8 +24,7 @@ const starsiLayoutRight = [null, "Pecka", null, null] as const;
 const data = syntheticData([makeDef("starsi", starsiLayoutLeft, starsiLayoutRight, { tags: ["Starešina", "Chlap"] })]);
 
 function elder(strach: readonly [Stupen, Stupen], reci: readonly [Stupen, Stupen] = [0, 0]): ElderState {
-  // Reči do v11.11 (výučba): starší bez reciOd. v11.12 overuje reci-teplomer.test.ts.
-  const { reciOd: _reciOd, ...e } = freshElder("starsi", instanceFor(data, "starsi", starsiLayoutLeft, starsiLayoutRight), "sc");
+  const e = freshElder("starsi", instanceFor(data, "starsi", starsiLayoutLeft, starsiLayoutRight), "sc");
   return { ...e, strach, reci };
 }
 
@@ -38,17 +37,6 @@ describe("v11 — stupnica 0–3 a markery hráčov", () => {
     ]);
     expect(stupenStavu(elder([1, 3]))).toBe(3);
     expect(strachZ(elder([1, 3]), 0)).toBe(1);
-  });
-
-  it("špaky po bitke: víťaz najvyšší marker (reči, inak strach), porazený len reči — žltá 1, oranžová 3, červená 5", () => {
-    const e = elder([2, 0], [3, 2]);
-    expect(najvyssiMarker(e, 0)).toBe(3);
-    expect(spakyOdStarsieho(e, 0, true)).toBe(5);
-    expect(spakyOdStarsieho(e, 0, false)).toBe(5);
-    expect(spakyOdStarsieho(elder([2, 0]), 0, true)).toBe(3);
-    expect(spakyOdStarsieho(elder([2, 0]), 0, false)).toBe(0);
-    expect(spakyOdStarsieho(e, 1, true)).toBe(3);
-    expect(spakyOdStarsieho(elder([0, 1]), 1, true)).toBe(1);
   });
 });
 

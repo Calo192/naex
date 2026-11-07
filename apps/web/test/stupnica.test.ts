@@ -4,7 +4,7 @@
 import { describe, expect, it } from "vitest";
 import type { ZmenaMarkera } from "@naex/core";
 import { stitokZmien } from "../src/hra/LiniaStarsich.tsx";
-import { CENA_POLA, PRAVIDLO_STRACHU, nazovStupna, riadokDlazdice, riadokPriazne, rodStarsieho, slovoStupna, textZmeny, vrcholTeplomera } from "../src/hra/textyStarsich.ts";
+import { CENA_POLA, PRAVIDLO_STRACHU, nazovStupna, riadokDlazdice, riadokPriazne, rodStarsieho, slovoStupna, textZmeny } from "../src/hra/textyStarsich.ts";
 
 const MENA = ["Jano", "Fero"] as const;
 
@@ -53,10 +53,5 @@ describe("stupne slovami (R3)", () => {
     expect(rodStarsieho("krcmarka", "Krčmárka")).toBe("z");
     expect(rodStarsieho("starosta", "Starosta")).toBe("m");
     expect(rodStarsieho("nahrada", "Upratovačka")).toBe("z");
-  });
-
-  it("stupeň staršieho pre hráča je vrchol teplomera (strach + reči)", () => {
-    expect(vrcholTeplomera(1, 3)).toBe(3);
-    expect(vrcholTeplomera(2, 0)).toBe(2);
   });
 });

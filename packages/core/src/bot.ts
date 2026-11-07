@@ -35,7 +35,7 @@ import { evaluateLine } from "./partia.ts";
 import { KONSTANTY, vazniNaVyhru } from "./constants.ts";
 import { abstakyVBitke, spakyPriExekucii, zhoriPriExekucii } from "./battle.ts";
 import type { ElderState } from "./elders.ts";
-import { kradezZaZajatie, noveReci, priazenPre, spakyOdStarsieho, spakyZaReci, spakyZaStrach, spakyZaStupen, strachZ, vydesil } from "./elders.ts";
+import { kradezZaZajatie, priazenPre, spakyOdStarsieho, spakyZaReci, spakyZaStrach, spakyZaStupen, strachZ, vydesil } from "./elders.ts";
 import { jeCielLokalita, nasobokPitky, partiaHraca } from "./effects.ts";
 import { stranyLokality } from "./hrany.ts";
 import { stavZavislosti } from "./zavislost.ts";
@@ -519,25 +519,15 @@ function bitiekNaBodovanie(s: GameState): number {
 
 /**
  * Bodovanie starších v odhade (v11, Michal 2026-11-02): v každej bitke, ktorá ešte príde,
- * dá starší víťazovi špaky za najvyšší marker, porazenému za reči. Reči bodujú hneď (aj pri
- * prehre) a po každej bitke klesnú o stupeň; strach je trvalý, ale boduje len víťazovi —
- * bot ráta polovičnú šancu na výhru (výsledok prebiehajúcej bitky ráta hodnotaBitky).
+ * dá starší obom špaky za reči a víťazovi za strach (v11.12, spakyOdStarsieho). Strach boduje len
+ * víťazovi — bot ráta polovičnú šancu na výhru (výsledok prebiehajúcej bitky ráta hodnotaBitky).
  */
 function bodyStarsichVOdhade(s: GameState, p: PlayerId, starsi: readonly ElderState[] = s.starsi): number {
   const n = bitiekNaBodovanie(s);
   let spolu = 0;
   for (const e of starsi) {
     // v11.12: reči bodujú vždy a klesnú len po prehratej hádke, strach len víťazovi.
-    if (noveReci(e)) {
-      spolu += n * (spakyZaReci(e, p) + 0.5 * spakyZaStrach(e, p));
-      continue;
-    }
-    const strach = e.strach[p];
-    let reci: number = e.reci[p];
-    for (let i = 0; i < n; i++) {
-      spolu += reci > strach ? spakyZaStupen(reci) : 0.5 * spakyZaStupen(strach);
-      reci = reci - 1 > strach ? reci - 1 : 0;
-    }
+    spolu += n * (spakyZaReci(e, p) + 0.5 * spakyZaStrach(e, p));
   }
   return spolu;
 }

@@ -313,10 +313,7 @@ export function zhodnyPrikaz(a: Command, b: Command): boolean {
 
 /** Začiatok výučby: pevné rozdanie scenára. */
 export function zacniVyucbu(data: GameData, scenar: ScenarVyucby): GameState {
-  // Výučba hrá pravidlá do v11.11, prerobí sa pri vypálení. Starší bez reciOd sa riadi starými rečami.
-  const s = setupZRozdania(data, scenar.rozdanie);
-  const starsi = s.starsi.map(({ reciOd: _reciOd, ...e }) => e);
-  return { ...s, starsi, vyucbaPredV1111: true };
+  return setupZRozdania(data, scenar.rozdanie);
 }
 
 /**

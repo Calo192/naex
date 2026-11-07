@@ -21,7 +21,7 @@ Sedem lokalít má nový efekt a sada v55 aj nové hrany (§15). Režimy 2 na 2 
 - **Družstvo** (Zhromaždenie): limit vykladania nemíňa **karta s akciou Robota** na ktorejkoľvek strane, nie tag Pracujúci.
 - **Benzínka** (Pitka): **prvé fajčenie každého hráča v každej Pitke je zadarmo**, ďalšie stojí 2, potom 3. Zákaz fajčenia podľa najvzdialenejšej karty zanikol.
 - **Výklad programátora, na potvrdenie Michalom:** (1) Kultúrny dom pri sekere: špaky kola čakajú ako inde a víťaz hádky dostane za svoje karty hneď, raz. (2) Víťaz na Kultúrnom dome dostane aspoň 1 špak (§9.4), aj bez vlastnej karty v línii. (3) Fajčenie zadarmo nie je nerest a do Krabičky cigariet sa neráta: žiadna cigareta sa neminula. (4) Obecný úrad: Dlh Výherného automatu v poslednej Pitke sa ráta dvakrát (je to Dlh z Pitky), rovnako schopnosť Poštárky použitá v Pitke (8 cigariet) a Konflikt v Pitke (odpoveď na NA EX). (5) Sklad: spoločná cena Dedičstva stúpne ako pri bežnom vložení. (6) Cintorín: berie sa z balíčka v kroku 6 bitky, karty práve ležiace v línii v ňom ešte nie sú.
-- **Výučba Prvá hra** hrá do v11.12; prerobí sa pri vypálení.
+- **Výučba Prvá hra** hrá rovnaké pravidlá ako bežná partia; jej scenár sa prerába pri vypálení.
 
 **Zmeny v11.12 oproti v11.11** (Michal 2026-11-06, Zrejúca, po playteste Klebetníka; staré znenia v `docs/pravidla-historia.md`, sekcia v11.12):
 
@@ -34,14 +34,14 @@ Sedem lokalít má nový efekt a sada v55 aj nové hrany (§15). Režimy 2 na 2 
 - **Čo sa nemení:** obsadená červená sa ráta do výhry strachom, zajatia aj výpalného a priazeň sa ráta z celého strachu. Špaky za karty víťaza hádky a natáčanie lokality z v11.11 ostávajú.
 - **Kapybara a Predsedova vila** (výklad, Michal zatiaľ nepotvrdil): Kapybara zhodí súperovým rečiam spodný stupeň, vila pridá ďalší stupeň v bežnom poradí.
 - **Reči po klesnutí** (rozhodnutie session Ideas, Michal ho nechal na nej): každý obsadený stupeň má vždy hodnotu 1 / 2 / 2, takže aj reči nad súperovým strachom po klesnutí bodujú menej (plné 5, oranžová a červená 4, samotná červená 2).
-- **Výučba Prvá hra** hrá reči do v11.11; prerobí sa pri vypálení.
+- **Výučba Prvá hra** hrá tieto zmeny ako bežná partia (od vypálenia; dovtedy hrala reči do v11.11).
 
 **Zmeny v11.11 oproti v11.10** (Michal 2026-11-06, Zrejúca, po playteste štýlov docs/playtesty/styly-20261106-123023.html, kde Klebetník vyhral 13 zo 17 hádok a ani jednu bitku; staré znenia v `docs/pravidla-historia.md`, sekcia v11.11):
 
 - **Víťaz hádky dostane špaky za svoje karty** (§9.4, §14): kto vyhrá hádku a prehrá bitku, dostane **1 špak za každú svoju kartu v línii**. Víťaz bitky dostane za všetky karty ako doteraz, aj keď hádku tiež vyhral — navyše nič. Pri **sekere** dostane víťaz hádky za svoje karty hneď a všetky karty línie ďalej čakajú na sekere. Na Kultúrnom dome sa to s jeho efektom **sčíta** (porazený, ktorý vyhral hádku, má svoje karty 2×). Platí aj vo finále, navyše k 1 špaku za bod hádky.
 - **Lokalitu natáča víťaz minulej hádky** (§4, §5, §14b): obranca lokalitu naďalej vyberá, natočí ju víťaz hádky z minulého kola. V prvom kole a po remíze v hádke natáča ten, kto vyberá. Platí aj pre pinnacle vo finále.
 - **Reči uberajú zo strachu** (§10, krok 4b): špaky, ktoré dostane porazený za reči pri staršom, sa odpočítajú zo špakov víťaza za strach pri tom istom staršom, **najviac na 0**. Príklad: víťaz má červený strach (5), porazený oranžové reči (3) — víťaz dostane 2, porazený 3. Víťazove reči sa nekrátia. Výhra strachom, zajatie a krádež sa nemenia.
-- **Výučba Prvá hra** zatiaľ hrá bez týchto zmien; prerobí sa pri vypálení.
+- **Výučba Prvá hra** hrá tieto zmeny ako bežná partia (od vypálenia; dovtedy hrala bez nich).
 
 **Zmeny v11.10 oproti v11.9** (Michal 2026-11-06, Zrejúca, docs/napady/priazne-nove.html, návrh 1; staré znenia v `docs/pravidla-historia.md`, sekcia v11.10):
 

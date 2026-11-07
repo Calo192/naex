@@ -15,13 +15,13 @@ const karta = (uid: number, defId: string): CardInstance => ({ uid, defId }) as 
 describe("Kšeft vily", () => {
   const view = {
     starsi: [
-      { elderId: "starosta", karta: karta(90, "starosta"), strach: [0, 0], reci: [0, 0] },
-      { elderId: "farar", karta: karta(91, "farar"), strach: [0, 0], reci: [3, 0] },
+      { elderId: "starosta", karta: karta(90, "starosta"), strach: [0, 0], reci: [0, 0], reciOd: [0, 0] },
+      { elderId: "farar", karta: karta(91, "farar"), strach: [0, 0], reci: [3, 0], reciOd: [1, 0] },
     ],
     ja: 0,
   } as unknown as Parameters<typeof moznostiVily>[0];
 
-  it("ponúkne starších, pri ktorých moje reči ešte nie sú na červenej", () => {
+  it("ponúkne starších, pri ktorých moje reči ešte nie sú na celom súperovom teplomere", () => {
     expect(moznostiVily(view).map((m) => m.elderId)).toEqual(["starosta"]);
   });
 

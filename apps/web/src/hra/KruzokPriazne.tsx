@@ -192,7 +192,7 @@ export function ObsahNapovedyStarsieho({ o, obrazok = null }: { readonly o: Obsa
           {o.hraci.map((h) => (
             <li key={h.komu} className={h.komu}>
               <b>{h.kto}</b>
-              <span>{vetaSpakov(h, o.rod)}</span>
+              <span>{vetaSpakov(h)}</span>
             </li>
           ))}
         </ul>

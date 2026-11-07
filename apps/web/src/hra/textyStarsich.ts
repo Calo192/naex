@@ -78,9 +78,6 @@ const SLOVA_STUPNOV: Readonly<Record<Rod, readonly [string, string, string, stri
 /** Stupeň slovom v rode staršieho — nikdy farbou (Michal 2026-11-02). */
 export const slovoStupna = (s: number, rod: Rod): string => SLOVA_STUPNOV[rod][s] ?? SLOVA_STUPNOV[rod][0];
 
-/** Vrchol teplomera hráča: reči, ak sú (vždy nad strachom), inak strach — stupeň staršieho pre hráča (§10). */
-export const vrcholTeplomera = (strach: number, reci: number): number => Math.max(strach, reci);
-
 /**
  * Názov kroku rozdeľovania na stole (bublina, línia starších) — na jednom mieste. Prebytok
  * poškodenia sa hráčovi volá Nakladačka (Michal 2026-10-30); v kóde ostáva „prebytok“.

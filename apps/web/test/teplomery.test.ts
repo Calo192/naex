@@ -83,12 +83,9 @@ describe("rozdeľovanie klikom na stupeň", () => {
 describe("línia starších", () => {
   const s0 = setupGame(data, 5);
   const v0 = viewFor(data, s0, 0);
-  // Reči do v11.11 (výučba): starší bez reciOd. Šrafu v11.12 overuje test nižšie.
-  const st = (i: number, strach: readonly [Stupen, Stupen], reci: readonly [Stupen, Stupen]): StarsiVerejne => {
-    const { reciOd: _reciOd, ...bez } = v0.starsi[i]!;
-    return { ...bez, strach, reci };
-  };
-  const starsi = [st(0, [1, 3], [2, 0]), st(1, [0, 0], [0, 0])];
+  // Reči na jedinom stupni (spodok bloku = vrch, v11.12); šrafu bloku overuje test nižšie.
+  const st = (i: number, strach: readonly [Stupen, Stupen], reci: readonly [Stupen, Stupen]): StarsiVerejne => ({ ...v0.starsi[i]!, strach, reci });
+  const starsi = [st(0, [1, 3], [3, 0]), st(1, [0, 0], [0, 0])];
   const vazen: Vazen = { elderId: "vaz", hrac: 1, poradie: 1, karta: v0.starsi[2]!.karta, scorecard: v0.starsi[2]!.scorecard, miesto: 2 };
   const view = { ...v0, starsi, vazni: [vazen] } as ClientState;
   const rad: MiestoVLinii[] = [
@@ -113,14 +110,15 @@ describe("línia starších", () => {
       }),
     );
 
-  it("Teplomery R3: tvoj pás vľavo, súperov vpravo; strach plný, reči šrafované nad ním; hladiny s menom; zátvorka priazne", () => {
+  it("Teplomery R3: tvoj pás vľavo, súperov vpravo; strach plný, reči šrafované na súperovom teplomere; hladiny s menom; zátvorka priazne", () => {
     const html = linia("teplomery");
     expect(html).toContain('data-vyucba="starsi-stupnica"');
     expect(html).toContain(`data-vyucba="strach:${starsi[0]!.elderId}"`);
-    // Môj strach 1 (plný), moje reči 2 (šrafovaný diel nad ním), súperov strach 3 (tri plné).
+    // Môj strach 1 (plný), súperov strach 3 (tri plné) a na jeho červenej moje reči (šrafa).
     const moj = /r3-pas ja"[^>]*>(.*?)<\/span><span class="r3-pas su/.exec(html)?.[1] ?? "";
     expect(moj.match(/r3-vypln plna/g)).toHaveLength(1);
-    expect(moj.match(/r3-vypln reci/g)).toHaveLength(1);
+    expect(moj).not.toContain("srafa");
+    expect(html.match(/r3-vypln srafa/g)).toHaveLength(1);
     expect(html.match(/r3-vypln plna/g)).toHaveLength(4);
     // Hladiny s menom hráča (nie „ty“), zátvorka priazne +2 pre mňa (Fero sa bojí viac).
     expect(html).toMatch(/r3-hladina ja" style="--h:1[^"]*"><b class="r3-meno">Jano</);
@@ -128,7 +126,7 @@ describe("línia starších", () => {
     expect(html).toMatch(/r3-zatvorka ja" style="--a:1;--b:3"><b>\+2</);
     // Pri teplomeroch slová stupňov nie sú — sú pod menom staršieho, menom hráča.
     for (const cast of html.split('class="ls-stav').slice(0, -1)) expect(cast.slice(cast.lastIndexOf('class="r3"'))).not.toMatch(/znepokojen|vystrašen|vydesen/);
-    expect(html).toMatch(/r3-riadok ja"><b class="kto">Jano<\/b>.*?vystrašen.*? — reči/);
+    expect(html).toMatch(/r3-riadok ja"><b class="kto">Jano<\/b>.*?znepokojen.*? — reči/);
     expect(html).not.toMatch(/class="(kto|r3-meno)">ty</);
     expect(html).toContain("✦ presvedčil Fero");
     expect(html).toContain("2/4");
@@ -191,9 +189,9 @@ describe("línia starších", () => {
     const html = linia("pult");
     expect(html).toContain('class="tp-pult"');
     expect(html).toContain("ty výhra · prehra");
-    // Výučba: ja reči oranžová → výhra 3, prehra 3; súper strach červená → výhra 5, prehra 0.
-    expect(html).toMatch(/tp-bd ja"><b>3<\/b> · 3/);
-    expect(html).toMatch(/tp-bd su"><b>5<\/b> · 0/);
+    // Moje reči na jeho červenej: výhra 2 + 1 za môj strach, prehra 2; jeho strach 5 bez červenej, ktorú držím rečami: 3.
+    expect(html).toMatch(/tp-bd ja"><b>3<\/b> · 2/);
+    expect(html).toMatch(/tp-bd su"><b>3<\/b> · 0/);
     expect(html).toContain("⛓ v pivnici u Fero");
     expect(html).toContain("červené 2/4");
   });

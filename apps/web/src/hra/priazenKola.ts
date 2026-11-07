@@ -7,7 +7,7 @@
 // Bez Reactu, aby sa dalo otestovať.
 
 import type { BitkaNaNastenke, ElderState, Favour, GameData, PlayerId, StavVyhier, Stupen, Vazen, ZmenaMarkera } from "@naex/core";
-import { KONSTANTY, NAZVY_ZON, favourStarsieho, kradezZaZajatie, najvyssiMarker, noveReci, opponentOf, pocet, priazenHraca, priazenSila, reciNizsie, spakyOdStarsieho as spakyOdStarsiehoJadra, spakyZaStupen, vydesil } from "@naex/core";
+import { KONSTANTY, NAZVY_ZON, favourStarsieho, kradezZaZajatie, najvyssiMarker, opponentOf, pocet, priazenHraca, priazenSila, spakyOdStarsieho as spakyOdStarsiehoJadra, spakyZaStupen, vydesil } from "@naex/core";
 import { UCINOK_KRATKO, UCINOK_PRIAZNE } from "./Scorecard.tsx";
 import { rodStarsieho, slovoStupna, type Rod } from "./textyStarsich.ts";
 
@@ -54,14 +54,10 @@ export interface RiadokHraca {
   readonly kto: string;
   readonly strach: Stupen;
   readonly reci: Stupen;
-  /** Reči na súperovom teplomere (v11.12). */
-  readonly noveReci?: boolean;
   /** Vrchol teplomera (strach + reči) — stupeň staršieho pre tohto hráča. */
   readonly vrchol: Stupen;
   readonly vyhra: number;
   readonly prehra: number;
-  /** Na aký stupeň reči po bodovaní klesnú (0 = zaniknú); null = rečí niet. */
-  readonly reciPotom: Stupen | null;
 }
 
 /** Zajatie, ktoré by hráč smel pri vyhratej bitke Nakladačkou urobiť (jeho strach je 3, v11.4): koľko by mu súper odovzdal. */
@@ -179,8 +175,6 @@ export function obsahNapovedy(v: VstupNapovedy): ObsahNapovedy {
       vrchol: najvyssiMarker(v.elder, h),
       vyhra: spakyOdStarsiehoJadra(v.elder, h, true),
       prehra: spakyOdStarsiehoJadra(v.elder, h, false),
-      reciPotom: reci === 0 ? null : reciNizsie(v.elder, h),
-      noveReci: noveReci(v.elder),
     };
   };
   const zajatie = ([v.ja, su] as const).flatMap((h): ZajatieVNapovede[] =>
@@ -203,16 +197,12 @@ export function obsahNapovedy(v: VstupNapovedy): ObsahNapovedy {
 }
 
 /**
- * Špaky hráča po bitke celou vetou (Michal 2026-11-02): „pri výhre +5 (vydesený — reči), pri
- * prehre +5 (reči), potom reči klesnú na vystrašený“; bez rečí „pri prehre 0“.
+ * Špaky hráča po bitke celou vetou (v11.12): „pri výhre +5, pri prehre +2 (reči; keď prehráš hádku,
+ * klesnú zospodu)“; bez rečí „pri prehre 0“.
  */
-export function vetaSpakov(r: Pick<RiadokHraca, "strach" | "reci" | "vrchol" | "vyhra" | "prehra" | "reciPotom" | "noveReci">, rod: Rod): string {
+export function vetaSpakov(r: Pick<RiadokHraca, "reci" | "vyhra" | "prehra">): string {
   const plus = (n: number): string => (n > 0 ? `+${n}` : "0");
-  if (r.noveReci === true) return `pri výhre ${plus(r.vyhra)}, pri prehre ${plus(r.prehra)}${r.reci > 0 ? " (reči; keď prehráš hádku, klesnú zospodu)" : ""}`;
-  const za = r.vrchol === 0 ? "teplomer je prázdny" : r.reci > 0 ? `${slovoStupna(r.reci, rod)} — reči` : slovoStupna(r.strach, rod);
-  const prehra = r.reci > 0 ? `pri prehre ${plus(r.prehra)} (reči)` : `pri prehre ${plus(r.prehra)}`;
-  const potom = r.reciPotom === null ? "" : r.reciPotom === 0 ? ", potom reči zaniknú" : `, potom reči klesnú na ${slovoStupna(r.reciPotom, rod)}`;
-  return `pri výhre ${plus(r.vyhra)} (${za}), ${prehra}${potom}`;
+  return `pri výhre ${plus(r.vyhra)}, pri prehre ${plus(r.prehra)}${r.reci > 0 ? " (reči; keď prehráš hádku, klesnú zospodu)" : ""}`;
 }
 
 /** Komu priazeň patrí a prečo — celou vetou, menami hráčov. */

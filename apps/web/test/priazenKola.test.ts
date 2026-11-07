@@ -17,9 +17,8 @@ const data = loadGameData(cardsJson, eldersJson, scorecardsJson);
 const s0 = setupGame(data, 5);
 const e0 = s0.starsi[0] as ElderState;
 const id = e0.elderId;
-// Reči do v11.11 (výučba): starší bez reciOd.
-const { reciOd: _reciOd, ...e0Bez } = e0;
-const s = (strach: readonly [Stupen, Stupen], reci: readonly [Stupen, Stupen] = [0, 0]): ElderState => ({ ...e0Bez, strach, reci });
+// Reči na jedinom stupni (spodok bloku = vrch, v11.12).
+const s = (strach: readonly [Stupen, Stupen], reci: readonly [Stupen, Stupen] = [0, 0]): ElderState => ({ ...e0, strach, reci });
 const FERO = "Bot Rapavý Fero";
 
 describe("priazeň z rozdielu strachov", () => {
@@ -39,16 +38,16 @@ describe("nápoveda nad staršom", () => {
   const text = (html: string): string => html.replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim();
 
   it("R3: strach a reči oboch menom hráča, špaky vetou s dôvodom, stupne slovami (vrchol), nikdy farbou", () => {
-    const o = obsahNapovedy({ data, elder: { ...s([1, 0], [3, 2]), karta: { ...e0.karta, defId: "farar" } }, meno: "Farár", ja: 0, mena: ["Jano", FERO] });
+    // Janove reči na Ferovom teplomere žltá až oranžová (1 + 2), Ferove na Janovej žltej (1), ktorú Jano drží strachom.
+    const o = obsahNapovedy({ data, elder: { ...s([1, 0], [2, 1]), reciOd: [1, 1], karta: { ...e0.karta, defId: "farar" } }, meno: "Farár", ja: 0, mena: ["Jano", FERO] });
     expect(o.priazen).toEqual({ komu: "su", hrac: 1, sila: 1 });
-    expect(o.hraci[0]).toMatchObject({ komu: "ja", kto: "Jano", strach: 1, reci: 3, vrchol: 3, vyhra: 5, prehra: 5, reciPotom: 2 });
-    expect(o.hraci[1]).toMatchObject({ komu: "su", kto: "Fero", strach: 0, reci: 2, vrchol: 2, vyhra: 3, prehra: 3, reciPotom: 1 });
-    expect(vetaSpakov(o.hraci[0], "m")).toBe("pri výhre +5 (vydesený — reči), pri prehre +5 (reči), potom reči klesnú na vystrašený");
-    expect(vetaSpakov({ strach: 2, reci: 0, vrchol: 2, vyhra: 3, prehra: 0, reciPotom: null }, "z")).toBe("pri výhre +3 (vystrašená), pri prehre 0");
-    expect(vetaSpakov({ strach: 1, reci: 2, vrchol: 2, vyhra: 3, prehra: 3, reciPotom: 0 }, "m")).toMatch(/potom reči zaniknú$/);
+    expect(o.hraci[0]).toMatchObject({ komu: "ja", kto: "Jano", strach: 1, reci: 2, vrchol: 2, vyhra: 3, prehra: 3 });
+    expect(o.hraci[1]).toMatchObject({ komu: "su", kto: "Fero", strach: 0, reci: 1, vrchol: 1, vyhra: 1, prehra: 1 });
+    expect(vetaSpakov(o.hraci[0])).toBe("pri výhre +3, pri prehre +3 (reči; keď prehráš hádku, klesnú zospodu)");
+    expect(vetaSpakov({ reci: 0, vyhra: 3, prehra: 0 })).toBe("pri výhre +3, pri prehre 0");
     const t = text(renderToStaticMarkup(createElement(ObsahNapovedyStarsieho, { o })));
-    expect(t).toContain("Jano vydesený po znepokojený po vydesený");
-    expect(t).toContain("Fero vystrašený — po vystrašený");
+    expect(t).toContain("Jano vystrašený po znepokojený po vystrašený");
+    expect(t).toContain("Fero znepokojený — po znepokojený");
     expect(t).not.toMatch(/\bty\b|žltá|oranžová|červená/);
   });
 
@@ -64,8 +63,9 @@ describe("nápoveda nad staršom", () => {
 
   it("riziko zajatia s krádežou: vrch súperovho teplomera", () => {
     const o = obsahNapovedy({ data, elder: s([3, 1], [0, 3]), meno: "Farár", ja: 1, mena: ["Jano", FERO] });
-    expect(o.zajatie).toEqual([{ hrac: 0, komu: "su", kto: "Jano", obet: "Fero", kradez: 5 }]);
-    expect(vetaZajatia(o.zajatie[0]!, "m")).toBe("Jano ho môže po vyhratej bitke zajať za 5 z Nakladačky (strach vydesený). Fero mu vtedy odovzdá 5 špakov za vrch svojho teplomera (dnes).");
+    // Ferove reči na Janovej červenej: investované 3.
+    expect(o.zajatie).toEqual([{ hrac: 0, komu: "su", kto: "Jano", obet: "Fero", kradez: 3 }]);
+    expect(vetaZajatia(o.zajatie[0]!, "m")).toBe("Jano ho môže po vyhratej bitke zajať za 5 z Nakladačky (strach vydesený). Fero mu vtedy odovzdá 3 špaky za vrch svojho teplomera (dnes).");
   });
 
   it("väzeň: v pivnici u koho, krádež z nástenky a schopnosť väzňa doslova (v11.2)", () => {
