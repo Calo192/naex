@@ -35,6 +35,9 @@
 //                  &gula=1 mu dá do Dedičstva Krištáľovú guľu — okno ukáže dve karty
 //   &stop=vestica  Veštica po prehratej bitke: hráč ?ja vyberá karty z oboch doberacích balíčkov; keď ju
 //                  partia nemá, prvá prehratá bitka od 2. kola sa na ukážku prepne na krok Veštica (&vynut=0 nie)
+//   &stop=cintorin Cintorín po prehratej bitke: hráč ?ja si berie kartu z odhadzovacieho balíčka (v11.13, už aj
+//                  s kartami z línie); keď partia Cintorín nemá, prvá prehratá bitka od 2. kola sa na ukážku
+//                  odohrá na Cintoríne (&vynut=0 nie)
 //   &stop=pitka    Pitka od 2. kola, hrajú obaja naraz (cena fajčenia, nákupy na hrane stola)
 //   &stop=bzdocha  ako pitka, hráč ?ja má v línii Bzdochu a súper už skončil so skrytým NA EX —
 //                  stôl ukáže súperovu voľbu (Bzdocha, v7)
@@ -159,6 +162,25 @@ function sVesticou(s: GameState, p: PlayerId): GameState {
   const balicek = (h: GameState["hraci"][number]) => ({ ...h, doberaci: [...h.doberaci, ...h.odhadzovaci], odhadzovaci: [] });
   const hraci = [balicek(s.hraci[0]), balicek(s.hraci[1])] as unknown as GameState["hraci"];
   return { ...s, hraci, bitkaStav: { ...b, krok: "vestica", caka: p, vitaz: opponentOf(p), prebytokZostava: 0, vesticaHotova: false } };
+}
+
+/**
+ * Cintorín na ukážku: bitku, ktorú hráč p prehral, hrá na Cintoríne (lokalita sa vymení) a boti ju dohrajú,
+ * kým nečaká na jeho voľbu — Cintorín v partii býva zriedka.
+ */
+function naCintorine(data: GameData, s0: GameState, p: PlayerId, rng: ReturnType<typeof rngSeed>, n: number): GameState | null {
+  if (s0.ciel?.typ !== "lokalita") return null;
+  const lokalita: CardInstance = { uid: s0.nextUid, defId: "cintorin", leftLayout: 0, rightLayout: 0 };
+  let s: GameState = { ...s0, nextUid: s0.nextUid + 1, ciel: { typ: "lokalita", lokalita } };
+  let r = rng;
+  for (let k = 0; k < 60 && s.faza === "bitka"; k++) {
+    if (s.bitkaStav?.krok === "cintorin" && s.bitkaStav.caka === p) return s;
+    const u = tahy(data, s, r, n + 1 + k);
+    if (u === null) return null;
+    r = u.rng;
+    s = apply(data, s, u.cmd, u.kto).state;
+  }
+  return null;
 }
 
 /** Hráč p dostane do ruky Hasiča a pár kariet do odhadzovacieho balíčka (alebo ho má prázdny); `tah` Hasiča vyloží. */
@@ -326,7 +348,7 @@ function sPresvedcenim(s: GameState, ja: PlayerId, druhyPresvedceny: boolean): G
 
 function odohraj(data: GameData): Odohrane {
   const seed = Number(q().get("seed") ?? "8");
-  const hlada = ["zaverecna", "reci", "reci-super", "hadka", "hadka-super", "pohorsenie", "vizia", "vestica", "cigarety-pride", "cigarety-dopad", "poldeci-pride", "poldeci-dopad"].includes(q().get("stop") ?? "") || (q().get("stop") === "suhrn" && q().get("rucne") !== null);
+  const hlada = ["zaverecna", "reci", "reci-super", "hadka", "hadka-super", "pohorsenie", "vizia", "vestica", "cintorin", "cigarety-pride", "cigarety-dopad", "poldeci-pride", "poldeci-dopad"].includes(q().get("stop") ?? "") || (q().get("stop") === "suhrn" && q().get("rucne") !== null);
   if (!hlada) return odohrajSeed(data, seed).odohrane;
   // Súperova Záverečná, hádka určitého víťaza, Vízia ani Veštica nepadnú v každej partii — skúša sa od zadaného seedu ďalej.
   for (let pokus = 0; pokus < 40; pokus++) {
@@ -426,6 +448,11 @@ function odohrajSeed(data: GameData, seed: number): { readonly odohrane: Odohran
     // Bez Veštice v partii: prvá prehratá bitka od 2. kola (balíčky už nie sú prázdne) sa na ukážku prepne na ňu.
     if (stop === "vestica" && p.get("vynut") !== "0" && s.kolo >= 2 && s.faza === "bitka" && s.bitkaStav?.krok === "prebytok" && s.bitkaStav.caka === opponentOf(ja))
       return najdene({ zaciatok: sVesticou(s, ja), dohraj: [] });
+    if (stop === "cintorin" && s.faza === "bitka" && s.bitkaStav?.krok === "cintorin" && s.bitkaStav.caka === ja) return najdene({ zaciatok: s, dohraj: [] });
+    if (stop === "cintorin" && p.get("vynut") !== "0" && s.kolo >= 2 && s.faza === "bitka" && s.bitkaStav?.krok === "prebytok" && s.bitkaStav.caka === opponentOf(ja)) {
+      const x = naCintorine(data, s, ja, rng, n);
+      if (x !== null) return najdene({ zaciatok: x, dohraj: [] });
+    }
     if (stop === "poldeci-pride" && s.faza === "pitka" && mozeHrat(s, ja) && s.pitkaStav?.reakcia === null && s.vizia === null && nahladPitky(data, s).some((n) => n.poldeci.zisk > 0))
       return najdene({ zaciatok: s, dohraj: [] });
     if (stop === "cigarety-pride" && s.faza === "pitka" && mozeHrat(s, ja) && s.pitkaStav?.reakcia === null && s.vizia === null && nahladPitky(data, s).every((n) => n.cigarety.zisk > 0))
@@ -542,7 +569,7 @@ function odohrajSeed(data: GameData, seed: number): { readonly odohrane: Odohran
     historia = zapisDoHistorie(historia, s, t.cmd, t.kto, po, events);
     s = po;
   }
-  return { odohrane: { zaciatok: s, dohraj: [], historia }, najdene: !["zaverecna", "vizia", "vestica", "cigarety-pride", "cigarety-dopad", "poldeci-pride", "poldeci-dopad"].includes(stop) && !(stop === "suhrn" && p.get("rucne") !== null) };
+  return { odohrane: { zaciatok: s, dohraj: [], historia }, najdene: !["zaverecna", "vizia", "vestica", "cintorin", "cigarety-pride", "cigarety-dopad", "poldeci-pride", "poldeci-dopad"].includes(stop) && !(stop === "suhrn" && p.get("rucne") !== null) };
 }
 
 export function UkazkaStola() {

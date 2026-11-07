@@ -1,7 +1,8 @@
 // Ukážka rekapitulácie bitky a Pitky na snímky a UI inšpekciu (/hra/ukazka-rekapitulacie,
 // len správca): dva boti odohrajú partiu v prehliadači (to isté jadro ako server) a vrstva
 // ukáže ich skutočnú bitku či Pitku — bez živej partie. Parametre: ?druh=bitka|pitka,
-// &seed=N (partia), &i=k (k-ta bitka či Pitka; inak tá s najviac riadkami), &ja=0|1.
+// &seed=N (partia), &i=k (k-ta bitka či Pitka; inak tá s najviac riadkami), &ja=0|1,
+// &lok=defId len bitky a Pitky na tejto lokalite (napr. kulturny_dom; hľadá sa aj v ďalších semienkach).
 
 import { useMemo, useState } from "react";
 import type { Command, Event, GameState, PlayerId, RekapitulaciaBitky, RekapitulaciaPitky } from "@naex/core";
@@ -19,7 +20,7 @@ interface Najdene {
   readonly pitky: { readonly stol: GameState; readonly rekap: RekapitulaciaPitky }[];
 }
 
-function odohraj(data: GameData, seed: number): Najdene {
+function odohraj(data: GameData, seed: number, lok: string | null): Najdene {
   let s = setupGame(data, seed, { lokalit: 4 });
   let rng = rngSeed(seed ^ 0x5a);
   const bitky: Najdene["bitky"][number][] = [];
@@ -32,6 +33,7 @@ function odohraj(data: GameData, seed: number): Najdene {
     const cmd: Command = tahBota(data, s, p, j, { povaha: i % 2 === 0 ? "igor" : "chamtivy" });
     const { state: po, events } = apply(data, s, cmd, p);
     for (const e of events as readonly Event[]) {
+      if (lok !== null && s.ciel?.lokalita?.defId !== lok) continue;
       const stol = po.ciel !== null && po.strany.some((x) => x.length > 0) ? po : s;
       if (e.type === "pitkaRekap") pitky.push({ stol, rekap: e.rekap });
       if (e.type === "bitkaVysledok" && e.rekap !== undefined) bitky.push({ stol, rekap: e.rekap, tuhe: e.damage.tuhe });
@@ -54,7 +56,15 @@ function Ukazka({ sada }: { readonly sada: NonNullable<ReturnType<typeof useSada
   const seed = Number(q.get("seed") ?? "8");
   const ja: PlayerId = q.get("ja") === "1" ? 1 : 0;
   const [kolo, setKolo] = useState(0);
-  const najdene = useMemo(() => odohraj(data, seed), [data, seed]);
+  const lok = q.get("lok");
+  const najdene = useMemo(() => {
+    // Lokalita kola padne len v niektorých partiách — skúša sa od zadaného semienka ďalej.
+    for (let k = 0; k < (lok === null ? 1 : 30); k++) {
+      const x = odohraj(data, seed + k, lok);
+      if (x.bitky.length > 0 || k === 29 || lok === null) return x;
+    }
+    return odohraj(data, seed, lok);
+  }, [data, seed, lok]);
   const piktogramy: PiktogramyRekapitulacie = {
     ikona: (k) => <IkonaAkcie kluc={k} akcia={sada.akcie.find((a) => a.kluc === k)} />,
     nazov: (k) => sada.akcie.find((a) => a.kluc === k)?.nazov ?? k,

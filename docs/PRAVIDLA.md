@@ -14,13 +14,13 @@ stránka Pravidlá — `VERZIA_PRAVIDIEL_PRESNA`).
 Sedem lokalít má nový efekt a sada v55 aj nové hrany (§15). Režimy 2 na 2 (§18) a Päta, Lakeť, Otočka (§19) sú **len v Zrejúcej**; hráči Vypálenej dostanú len Kalamitu 1 na 1.
 
 - **Lesná cesta** (Bitka): za každé svoje Zviera v línii, na ktorejkoľvek strane, **2 tuhé** navyše.
-- **Cintorín** (Prehra): porazený si smie vziať do ruky **1 kartu zo svojho odhadzovacieho balíčka**. Nástroj do Dedičstva zanikol.
+- **Cintorín** (Prehra): porazený si smie vziať do ruky **1 kartu zo svojho odhadzovacieho balíčka**, a to až po návrate kariet (§9 krok 7a), takže **aj kartu z práve odohranej línie** (Michal 2026-11-07). Nástroj do Dedičstva zanikol.
 - **Obecný úrad** (Pitka): platí pre oboch — **všetky cigarety a Dlhy získané počas fázy Pitka**, z akcií aj z efektov kariet, **sa rátajú dvakrát**. Obmedzenie sa odráta pred zdvojnásobením: (akcie − Obmedzenie) × 2. Platby, cigarety za pas a Dlhy mimo Pitky sa nezdvojujú. S Výherným automatom sa zdvojnásobí zadĺženie a prah ostáva. Kšeft (presun Dlhu) zanikol.
 - **Sklad** (Kšeft): za **2 cigarety** Nástroj zo šenku do Dedičstva (pravidlá ako pri bežnom vložení, §12, len namiesto ceny tieto 2 cigarety). Z vrchu Náradia príde do šenku nový Nástroj, verejne; z prázdneho nič. Bez Nástroja v šenku sa Kšeft neponúka. Starý Kšeft (vrchná karta súperovho odhadzovacieho balíčka) zanikol.
 - **Kultúrny dom** (Bitka): **každý hráč dostane špaky len za svoje karty v línii, aj víťaz**. Špaky za výhru hádky (v11.11) sa tu nepripočítavajú druhýkrát. Pri sekere sa nemení nič (§9.4).
 - **Družstvo** (Zhromaždenie): limit vykladania nemíňa **karta s akciou Robota** na ktorejkoľvek strane, nie tag Pracujúci.
 - **Benzínka** (Pitka): **prvé fajčenie každého hráča v každej Pitke je zadarmo**, ďalšie stojí 2, potom 3. Zákaz fajčenia podľa najvzdialenejšej karty zanikol.
-- **Výklad programátora, na potvrdenie Michalom:** (1) Kultúrny dom pri sekere: špaky kola čakajú ako inde a víťaz hádky dostane za svoje karty hneď, raz. (2) Víťaz na Kultúrnom dome dostane aspoň 1 špak (§9.4), aj bez vlastnej karty v línii. (3) Fajčenie zadarmo nie je nerest a do Krabičky cigariet sa neráta: žiadna cigareta sa neminula. (4) Obecný úrad: Dlh Výherného automatu v poslednej Pitke sa ráta dvakrát (je to Dlh z Pitky), rovnako schopnosť Poštárky použitá v Pitke (8 cigariet) a Konflikt v Pitke (odpoveď na NA EX). (5) Sklad: spoločná cena Dedičstva stúpne ako pri bežnom vložení. (6) Cintorín: berie sa z balíčka v kroku 6 bitky, karty práve ležiace v línii v ňom ešte nie sú.
+- **Výklad programátora, na potvrdenie Michalom:** (1) Kultúrny dom pri sekere: špaky kola čakajú ako inde a víťaz hádky dostane za svoje karty hneď, raz. (2) Víťaz na Kultúrnom dome dostane aspoň 1 špak (§9.4), aj bez vlastnej karty v línii. (3) Fajčenie zadarmo nie je nerest a do Krabičky cigariet sa neráta: žiadna cigareta sa neminula. (4) Obecný úrad: Dlh Výherného automatu v poslednej Pitke sa ráta dvakrát (je to Dlh z Pitky), rovnako schopnosť Poštárky použitá v Pitke (8 cigariet) a Konflikt v Pitke (odpoveď na NA EX). (5) Sklad: spoločná cena Dedičstva stúpne ako pri bežnom vložení.
 - **Výučba Prvá hra** hrá do v11.12; prerobí sa pri vypálení.
 
 **Zmeny v11.12 oproti v11.11** (Michal 2026-11-06, Zrejúca, po playteste Klebetníka; staré znenia v `docs/pravidla-historia.md`, sekcia v11.12):
@@ -1136,10 +1136,10 @@ Bitka sa vyhodnotí po poslednej Pitke kola, v tomto poradí (v11 Strach a reči
 | 4e | **Nakladačka** — víťaz bitky ju rozdelí na svoj strach a smie **zajímať** (5 bodov za staršieho na červenom strachu už pred touto Nakladačkou, v11.6; väzeň, krádež, výhra väzňami hneď); potom **hádka** — víťaz hádky ju rozdelí na svoje reči na teplomeroch súpera a smie **presviedčať** (3 body pri rečiach na celom teplomere, v11.12) — voľne medzi starších, 1 / 2 / 3 za stupeň, zvyšok prepadne; vo finále sa nerozdeľujú — špaky 1 : 1 dostali v kroku 4a | §9.1, §9.4, §10 |
 | 5 | Poldeci | §9.5 |
 | 5b | Veštica | §9.5b |
-| 6 | Cintorín (porazený si smie vziať do ruky 1 kartu zo svojho odhadzovacieho balíčka) | §15 |
 | 6c | **Porazený dostane 1 cigaretu** (pri sekere a po finále nikto), priazne Kmotra (Dlhy súperovi) a Fajčiara (cigarety, v9), **výpalné** (v11.9, §10; po finále nie), efekty Výhra a Prehra (Recidivista, Dievčina), Krokodíl | §9.4, §10, §16 |
-
-| 7 | Návrat kariet; nepriznaná Cirhóza a Absťák z ruky do odhadzovacieho balíčka | §9.7 |
+| 7 | Návrat kariet | §9.7 |
+| 7a | Cintorín (porazený si smie vziať do ruky 1 kartu zo svojho odhadzovacieho balíčka, už aj s kartami z tejto línie; v11.13) | §15 |
+| 7b | Nepriznaná Cirhóza a Absťák z ruky do odhadzovacieho balíčka | §9.7 |
 | 8 | Koniec kola: Chuť a Absťák (v9.1) | §4, §8 |
 
 ### 9.0 Efekty na začiatku bitky
@@ -1843,7 +1843,7 @@ finále): Poľovnícka chata, Predsedova vila, Herňa. Hrany sú v `cards.json`
 | Lokalita | Kedy | Efekt v7 a v8 |
 |---|---|---|
 | Lesná cesta | Bitka | Za každé **svoje Zviera v línii** (natočené k tebe, na ktorejkoľvek strane) **2 tuhé** navyše (v11.13), bez stropu; skrytá Záverečná sa neráta. |
-| Cintorín | Prehra | Porazený si smie vziať do ruky **1 kartu zo svojho odhadzovacieho balíčka** (v11.13); smie aj nič. Pri prázdnom balíčku a pri sekere sa nič nedeje. |
+| Cintorín | Prehra | Porazený si smie vziať do ruky **1 kartu zo svojho odhadzovacieho balíčka** (v11.13); smie aj nič. Berie sa až po návrate kariet (§9 krok 7a), takže v balíčku sú už aj jeho karty z práve odohranej línie (Michal 2026-11-07); spálené karty nie. Cirhóza vzatá do ruky sa hneď vráti do balíčka ako každá nepriznaná (krok 7b). Pri prázdnom balíčku a pri sekere sa nič nedeje. |
 | Jednota | Pitka | Kto má viac priznaných Dlhov, nesmie v tejto Pitke fajčiť ani dolievať (doliatie = 2 cigarety za vypitý poldeci; barter smie). Pri rovnosti smú obaja. |
 | Benzínka | Pitka | **Prvé fajčenie každého hráča v každej Pitke je zadarmo** (v11.13), ďalšie stojí 2, potom 3 (poradie cien ako inde, len prvá platba odpadá). Fajčenie zadarmo nie je nerest a do Krabičky cigariet sa neráta. |
 | Kar | Pitka | Poškodenie pečene za NA EX dostane **súper** hráča, ktorý ho dal (poldeci a nerest ostávajú dávajúcemu). |

@@ -157,6 +157,8 @@ describe("náhľad NA EX == zúčtovanie motora (seedy)", () => {
         const b0 = bez.bitkaStav;
         // v11 bitka nečaká pred poškodením — porovná sa aj stav, kde čaká na rozdelenie (NA EX ešte na kartách).
         if (s1.faza !== "bitka" || bez.faza !== "bitka" || b1 === null || b0 === null) continue;
+        // Bitka čakajúca na Cintorín (v11.13) už vyplatila krok 6c (cigareta porazenému, Fajčiar, výpalné) — to náhľad Pitky nesľubuje.
+        if (b1.kartyVratene === true || b0.kartyVratene === true) continue;
         const kde = `seed ${seed} kolo ${s.kolo}, hráč ${p}, NA EX na ${uid}`;
         expect(n.liniaPo.sums, `${kde}: súčty akcií v bitke`).toEqual(b1.sums);
         for (const q of [0, 1] as const) {

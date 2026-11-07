@@ -398,8 +398,10 @@ export interface BitkaStav {
   /** Karty z línie, ktoré sa po bitke spália namiesto návratu (Dievčina na vydaj). */
   readonly spalit: readonly number[];
   readonly vesticaHotova: boolean;
-  /** Cintorín: porazený už rozhodol o Nástroji z ruky či zo šenku do Dedičstva. */
+  /** Cintorín: porazený už rozhodol o karte z odhadzovacieho balíčka (v11.13). */
   readonly cintorinHotovy?: boolean;
+  /** Karty z línie sú už v balíčkoch (krok 7) — Cintorín čaká až po návrate. */
+  readonly kartyVratene?: boolean;
 }
 
 /**
@@ -3075,9 +3077,9 @@ function konflikt(s: MutState, data: GameData, nositel: DeepMutable<PlacedCard>,
     case "podvodnik":
       // v11.5: súper dá 1 cigaretu; kto žiadnu nemá, získa zadĺženie (pri prahu 1 rovno Dlh, §8).
       if (s.hraci[opp].cigarety > 0) {
+        events.push({ type: "log", text: `Konflikt — Podvodník: hráč ${opp + 1} dáva hráčovi ${p + 1} 1 cigaretu.` });
         zmenCigarety(s, opp, "podvodnik", -1, events);
         ziskajCigarety(s, p, "podvodnik", 1, events);
-        events.push({ type: "log", text: `Konflikt — Podvodník: hráč ${opp + 1} dáva hráčovi ${p + 1} 1 cigaretu.` });
       } else {
         events.push({ type: "log", text: `Konflikt — Podvodník: hráč ${opp + 1} nemá cigaretu — získava 1 zadĺženie.` });
         pridajZadlzenie(s, opp, nasobokTeraz(s), events);
@@ -5030,9 +5032,11 @@ function pokracujBitku(s: MutState, data: GameData, events: Event[]): void {
     b.krok = "cintorin";
   }
 
-  // 6. Cintorín (Prehra, v11.13): porazený si smie vziať do ruky 1 kartu zo svojho odhadzovacieho
-  // balíčka; pri sekere nikto (porazený nie je).
+  // 7a. Cintorín (Prehra, v11.13): porazený si smie vziať do ruky 1 kartu zo svojho odhadzovacieho
+  // balíčka; pri sekere nikto (porazený nie je). Až po návrate kariet (Michal 2026-11-07) — smie si
+  // vziať aj kartu z práve odohranej línie.
   if (b.krok === "cintorin") {
+    if (b.kartyVratene !== true) vratKartyPoBitke(s, data, events);
     const porazeny = b.vitaz === null ? null : opponentOf(b.vitaz);
     if (
       b.cintorinHotovy !== true &&
@@ -5879,11 +5883,22 @@ function vypiPoldeci(s: MutState, data: GameData, events: Event[]): void {
   events.push({ type: "log", text: "Poldeci z NA EX sa vypili; aktívne akcie Poldeci otočili vypité." });
 }
 
-/** Návrat kariet, kliatby kola, kontrola konca, ďalšie kolo. */
+/** Kliatby kola, kontrola konca, ďalšie kolo — po návrate kariet (vratKartyPoBitke) a Cintoríne. */
 function koniecBitky(s: MutState, data: GameData, events: Event[]): void {
   const b = s.bitkaStav;
   if (b === null) return;
+  // Režim Päta a rozohrané partie, ktoré čakali na starý Cintorín, sem prídu s kartami ešte v línii.
+  if (b.kartyVratene !== true) vratKartyPoBitke(s, data, events);
   // null = sekera: nikto nevyhral ani neprehral, špaky kola čakajú na sekere.
+  const vitaz = b.vitaz as PlayerId | null;
+  koniecBitkyPoNavrate(s, data, events, vitaz);
+}
+
+/** Krok 6c a 7 (§9): cigareta porazenému, priazne a výpalné, Výhra/Prehra, Krokodíl, návrat kariet do balíčkov. */
+function vratKartyPoBitke(s: MutState, data: GameData, events: Event[]): void {
+  const b = s.bitkaStav;
+  if (b === null) return;
+  b.kartyVratene = true;
   const vitaz = b.vitaz as PlayerId | null;
   const porazeny = vitaz === null ? null : opponentOf(vitaz);
 
@@ -5982,6 +5997,9 @@ function koniecBitky(s: MutState, data: GameData, events: Event[]): void {
     }
   }
   s.strany = [[], []];
+}
+
+function koniecBitkyPoNavrate(s: MutState, data: GameData, events: Event[], vitaz: PlayerId | null): void {
 
   // Nepriznaná Cirhóza v ruke ide po bitke do odhadzovacieho balíčka (v5 bod 8,
   // Michal 2026-10-25): kto ju neprizná hneď, riskuje, že sa mu do konca hry
