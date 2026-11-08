@@ -40,51 +40,6 @@ describe("štartovacie karty", () => {
   });
 });
 
-describe("Nástroj funguje len pri Občanovi alebo Starešinovi", () => {
-  const lokalita = inst(data.lokality[0]!.id);
-  const line = (strana: LineState["strany"][0]): LineState => ({ lokalita, lokalitaOtocena: false, strany: [strana, []] });
-  const aktivne = (l: LineState, uid: number): number => {
-    const e = evaluateLine(data, l).cards.get(uid)!;
-    return [...e.left, ...e.right].filter((x) => x !== null && x.stav !== "neaktivna").length;
-  };
-
-  it("pri lokalite spoj nevznikne — ani na Nástroji, ani na lokalite", () => {
-    const puska = inst("puska");
-    const l = line([{ card: puska, playedBy: 0 }]);
-    expect(aktivne(l, puska.uid)).toBe(0);
-    expect(aktivne(l, lokalita.uid)).toBe(0);
-  });
-
-  it("vedľa Občana (Pijan) sa Nástroj páruje ako bežná karta", () => {
-    // Hľadá Občana, s ktorým má Puška aspoň jeden pár, aby test niečo overoval.
-    const puska = inst("puska");
-    const obcania = [...data.cards.values()].filter((c) => c.tags.includes("Občan") && !c.tags.includes("Nástroj"));
-    let overene = 0;
-    for (const o of obcania) {
-      const obcan = inst(o.id);
-      // partia[0] je pri lokalite: Občan pri lokalite, Puška na konci za ním.
-      const s = line([{ card: obcan, playedBy: 0 }, { card: puska, playedBy: 0 }]);
-      const bezObcana = line([{ card: puska, playedBy: 0 }]);
-      if (aktivne(s, puska.uid) > 0) overene++;
-      expect(aktivne(bezObcana, puska.uid)).toBe(0);
-    }
-    expect(overene).toBeGreaterThan(0);
-  });
-
-  it("vedľa karty bez tagu Občan či Starešina (napr. iný Nástroj či Zviera) spoj nevznikne", () => {
-    const puska = inst("puska");
-    const bezObcana = [...data.cards.values()].find(
-      (c) => !c.tags.includes("Občan") && !c.tags.includes("Starešina") && !c.tags.includes("Lokalita") && !c.tags.includes("Kliatba") && c.id !== "puska",
-    );
-    if (bezObcana === undefined) return;
-    const sused = inst(bezObcana.id);
-    const l = line([{ card: sused, playedBy: 0 }, { card: puska, playedBy: 0 }]);
-    const e = evaluateLine(data, l).cards.get(puska.uid)!;
-    // Puška má jediného suseda (kartu bez tagu Občan) — nič na nej nesmie byť aktívne.
-    expect([...e.left, ...e.right].filter((x) => x !== null && x.stav === "aktivna")).toEqual([]);
-  });
-});
-
 describe("priznanie kliatby dá kartu (okrem Cirhózy; Dlh a Absťák sú od v8.2 počítadlá)", () => {
   // Sada v8.2 kliatbu s kartou za priznanie nemá — pravidlo jadra stráži testovacia kliatba.
   const sKliatbou = buildGameData(new Map([...data.cards, ["kliatba_test", makeDef("kliatba_test", EMPTY, EMPTY, { tags: ["Kliatba"] })]]), data.elders, parseScorecards(scorecardsJson));
@@ -149,14 +104,14 @@ describe("automatický pas", () => {
     expect(pre(1)).toEqual([{ type: "autoPas", hrac: 0, dovody: [], pre: 1 }]);
   });
 
-  it("dôvody: prázdna ruka, Nástroj bez podpory, limit", () => {
+  it("dôvody: prázdna ruka, Nástroj bez cigariet (Náradie 2026-11-08), limit", () => {
     const s0 = zhromazdenie([], 0, 0);
     expect(dovodyAutoPasu(data, s0, 0)).toEqual(["Nemáš v ruke žiadnu kartu."]);
     const [a, n] = [inst("pijan"), inst("noviny")];
     const s = zhromazdenie([a, n], 0, 0);
     const d = dovodyAutoPasu(data, s, 0);
     expect(d[0]).toMatch(/^Pijan — limit vykladania/);
-    expect(d[1]).toBe("Noviny do línie nemá kam (oba konce: prázdne kraje, Nástroj sa vedľa lokality nevykladá) a Dedičstvo stojí 1 cigaretu, máš 0.");
+    expect(d[1]).toBe("Noviny — podloženie stojí 1 cigaretu a Dedičstvo stojí 1 cigaretu, máš 0.");
   });
 
   it("kliatba v ruke auto-pas zastaví — priznanie je stále možnosť", () => {

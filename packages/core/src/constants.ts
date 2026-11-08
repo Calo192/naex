@@ -76,6 +76,8 @@ export const KONSTANTY = {
    * kariet v ruke (v6.1), a hrá až v Pitke.
    */
   CIGARETY_ZA_PAS_NA_KARTU: 1,
+  /** Podloženie Nástroja pod kartu v línii (Náradie, Michal 2026-11-08, P4). */
+  CENA_PODLOZENIA: 1,
   /** Záverečná (roadmapa #83, Michal 2026-10-23): karta lícom dole za cigaretu. */
   CENA_ZAVERECNEJ: 1,
   /**

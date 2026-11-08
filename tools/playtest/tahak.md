@@ -52,8 +52,8 @@ rozpore s `docs/PRAVIDLA.md` platí `docs/PRAVIDLA.md` a rozpor zapíš do
   dobehne ho vysokou výhrou vo finále.
 - **Každú kartu** môžeš vyložiť na **ktorýkoľvek z dvoch koncov línie**
   (`target` `vlastna` = koniec vľavo od lokality, `superova` = vpravo; názvy sú len technické). Karta **patrí tomu, kto ju zahral** — akcie
-  aj efekty sa rátajú majiteľovi, nech leží kdekoľvek (výnimka: Nástroj — nižšie). Tvoja karta priložená k súperovej
-  („podstrčená“, sabotér) s Odporom zruší súperovi akciu na spoji. Každá karta okrem Nástroja míňa limit
+  aj efekty sa rátajú majiteľovi, nech leží kdekoľvek. Nástroj sa do línie nevykladá — podkladá sa (nižšie). Tvoja karta priložená k súperovej
+  („podstrčená“, sabotér) s Odporom zruší súperovi akciu na spoji. Každá vyložená karta míňa limit
   vykladania. **Limit = plné poldeci + 1** — NA EX limit nemíňa, ale
   jeho poldeci na karte sa neráta (v4), takže v ďalšom Zhromaždení kola máš limit o 1 nižší.
 - **Pas** (`pass`): do Pitky už nevykladáš; dostaneš 1 cigaretu za každú kartu, ktorú
@@ -137,12 +137,12 @@ rozpore s `docs/PRAVIDLA.md` platí `docs/PRAVIDLA.md` a rozpor zapíš do
   odhadzovacieho balíčka do ruky (`uid`).
 - **Identita kariet (v11.5):** **Sypač** (Podpora): keď sa priložením stretne s tvojím Chlapom, ten má do konca
   kola **Rany ako Pecky** (aj Rany navyše). **Silná nezávislá žena** (Furt, 2026-11-08): zdvojí aktívne akcie len tvojich susedných **Občanov a Starešinov**, nie Zviera ani Nástroj (ani Recidivistu). **Anonymný alkoholik**
-  (Furt): Poškodenie pečene tvojich kariet v jeho okolí sa ráta ako **Viera**. **Kôň** (Furt): Nástroj vedľa neho
-  s ním tvorí spoj; **Roboty Koňa pália o 1 Dlh viac**. **Noviny** (Dedičstvo: Hádka): keď vyhráš hádku, súper
+  (Furt): Poškodenie pečene tvojich kariet v jeho okolí sa ráta ako **Viera**. **Kôň** (Furt): kým leží v línii,
+  Nástroj smieš podložiť aj pod Zviera; **Roboty Koňa pália o 1 Dlh viac**. **Noviny** (Dedičstvo: Hádka): keď vyhráš hádku, súper
   odhodí **1 náhodnú kartu z ruky**. Výtržník má vždy Rany (aj Sypač).
 - **Konflikt (v11.3):** efekt karty, keď sa **priložením** ocitne vedľa **súperovej** karty — či ju prikladáš
-  ty k súperovej, alebo súper k nej (aj odpoveďou na NA EX; Záverečná až pri otočení). Priložený či ležiaci
-  Nástroj nič; NA EX, zrážka ani presun (Dohadzovačka, Poľovník) nič. Najprv Nástup priloženej karty, potom
+  ty k súperovej, alebo súper k nej (aj odpoveďou na NA EX; Záverečná až pri otočení). Podloženie
+  Nástroja nič; NA EX, zrážka ani presun (Dohadzovačka, Poľovník) nič. Najprv Nástup priloženej karty, potom
   Konflikt a Podpora priloženej, potom ležiacej. **Podpora (v11.3)** je zrkadlo: spustí sa, keď sa priložením
   stretnú **dve tvoje** karty. **Veľmi smútiaca vdova (Konflikt: Chlap, frakcie):** súper odhodí **1 náhodnú
   kartu z ruky** (vyberie ju hra, nikto nevolí). **Predavačka (Podpora, frakcie):** dober si
@@ -151,10 +151,9 @@ rozpore s `docs/PRAVIDLA.md` platí `docs/PRAVIDLA.md` a rozpor zapíš do
   Pakt s Paktom nerobí nič, s Posilnením sa stane Posilnením (= Forsáž), Odpor ho zruší; neaktívny Pakt NA EX nezdvojí.
 - **Forsáž (v10.3):** Posilnenie + Posilnenie na spoji = **Forsáž** — obe karty spoja majú **všetky
   aktívne akcie posilnené ×2** (aj Hazard a Pečeň); akcia posilnená ešte Posilnením suseda **×4**.
-  Lokalita len hranu pri tom kraji, **Nástroj Forsáž nedostane** (len Občan/Starešina pri ňom). NA EX
+  Lokalita len hranu pri tom kraji. NA EX
   na jednu z kariet spoja jej Posilnenie
-  zruší, a tým aj Forsáž (Energeťák a Veterán to zastavia). **Vzbura s Nástrojom (v10.3):** Odpor
-  Nástroja proti Odporu Občana — Vzburu dostane len Občan/Starešina.
+  zruší, a tým aj Forsáž (Energeťák v Dedičstve a Veterán to zastavia).
 - **Vzbura (v11.1):** Odpor + Odpor na spoji **obráti** obe karty — aktívne sú ich **nespojené** akcie
   (aj celá vonkajšia hrana), **spojené sú neaktívne** (aj posilnené susedom); zrušené Odporom ostávajú.
   **Odpor proti Posilneniu** = Vzbura len karty s Odporom a jej aktívne (nespojené) akcie sú **×2**
@@ -223,11 +222,21 @@ rozpore s `docs/PRAVIDLA.md` platí `docs/PRAVIDLA.md` a rozpor zapíš do
   karty: o jednej rozhodneš — `{"type":"vizia","vziat":true,"druha":true}` je o druhej —, druhá ostane navrchu).
   **Profesionálny tipér** (Furt): posilnené akcie na jeho spojoch (Posilnením aj Forsážou, v10.4) — súperove ako
   posilnený Hazard, tvoje ako posilnená Robota.
-- **Nástroj v línii** tvorí spoj len s Občanom/Starešinom a jeho akcie dostane
-  **majiteľ karty, s ktorou tvorí spoj** (podstrčený Nástroj pracuje pre
-  súpera). **Vedľa lokality sa Nástroj nevykladá (v10.2):** do prázdneho kraja (na žiadny
-  koniec línie, ani vo finále) ho nevyložíš — ani ako Záverečnú či odpoveď na NA EX; v ťahu po Vypiť
-  smie za kartu, ktorú si práve vyložil. Do Dedičstva áno. Ostáva ležať, keď sa k lokalite dostane neskôr.
+- **Podloženie Nástroja (Náradie, Michal 2026-11-08):** Nástroj sa **do línie nevykladá**. Z ruky ho
+  **podložíš pod Občana alebo Starešinu v línii — svojho aj súperovho** — za **1 cigaretu**:
+  `{"type":"podloz","nastrojId":<uid z ruky>,"hostitelId":<uid karty v línii>,"hrana":"horna"|"dolna"}`.
+  Je to **ťah** (v ťahu po Vypiť aj ďalší krok), **limit nemíňa**. Nástroj má **hornú a dolnú hranu**,
+  platí len tá, ktorú zvolíš (pretŕča spod karty); natočenie sa nemení. Pod kartou leží **najviac jeden**
+  Nástroj (pod **Zámočníka** ľubovoľne veľa), pod **Zviera** len kým v línii leží **Kôň**; pod kartu lícom
+  dole nie. **Akciová hrana X → Y** zmení **všetky** X na oboch hranách karty na Y ešte **pred spojmi**
+  (susedia sa párujú už s Y); bez X nerobí nič. **Kartová hrana** dá karte stav ako inou cestou:
+  **Energeťák — Forsáž** (aktívne ×2; NA EX ju nezruší), **Vínko — NA EX** (aktívne zrušené, neaktívne ×2;
+  bez poldeca, nie je to nerest, nepije sa; skutočné NA EX na ňu už nejde; nie pod kartu s poldecom či so Vzburou),
+  **Injekcia — Výtržník** (všetky akcie aktívne Rany pre majiteľa karty), **Vidly — Vzbura** (nespojené
+  aktívne, spojené neaktívne). Podložený Nástroj **leží do bitky**, vyhodiť sa nedá; po bitke, alebo keď
+  karta odíde z línie skôr (Poľovník), ide do **odhadzovacieho balíčka toho, kto ho podložil**. Podloženie nie
+  je priloženie — Konflikt, Podporu ani Pascu nespustí. **Živnostník** (keď má Nástup): hneď pod neho smieš
+  podložiť Nástroj z ruky za cigaretu, mimo ťahu (`{"type":"nastroj","uid":<uid>,"hrana":"horna"}`).
 - **NA EX na Občana alebo Starešinu v línii — svojho aj súperovho**, len na kartu
   s aspoň 1 aktívnou a aspoň 1 neaktívnou akciou (2026-10-23; súperova Záverečná vždy). Zruší
   karte aktívne akcie a zdvojí neaktívne; akcie sa rátajú majiteľovi karty.

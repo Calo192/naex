@@ -16,7 +16,9 @@ import { opponentOf } from "./types.ts";
 import type { GameData } from "./data.ts";
 import { defOf, printedSides } from "./data.ts";
 import type { ActionSums, LineEval, LineState, PlacedCard } from "./partia.ts";
-import { evaluateLine, spojVznikne, zvieratAUmlcane } from "./partia.ts";
+import { evaluateLine } from "./partia.ts";
+import type { KartaSNastrojmi } from "./naradie.ts";
+import { preskolenaStrana, preskoleniaHostitela } from "./naradie.ts";
 import { bitkaMody, zadlzeniePitkyZLinie } from "./effects.ts";
 import type { VerejnyStav } from "./effects.ts";
 
@@ -25,9 +27,14 @@ export interface HranyZPohladu {
   readonly prava: readonly Slot[];
 }
 
-/** Hrany karty tak, ako ich vidí divák (zhora nadol); `otocena` = karta je voči nemu nohami hore. */
-export function hranyZPohladu(data: GameData, karta: CardInstance, otocena: boolean): HranyZPohladu {
-  const p = printedSides(data, karta);
+/**
+ * Hrany karty tak, ako ich vidí divák (zhora nadol); `otocena` = karta je voči nemu nohami hore.
+ * Karta v línii (`vLinii`) má akcie už premenené podloženým Nástrojom — s nimi sa páruje.
+ */
+export function hranyZPohladu(data: GameData, karta: CardInstance, otocena: boolean, vLinii?: KartaSNastrojmi): HranyZPohladu {
+  const tlac = printedSides(data, karta);
+  const premeny = vLinii === undefined ? new Map() : preskoleniaHostitela(data, vLinii);
+  const p = { left: preskolenaStrana(premeny, tlac.left), right: preskolenaStrana(premeny, tlac.right) };
   return otocena
     ? { lava: [...p.right].reverse(), prava: [...p.left].reverse() }
     : { lava: [...p.left], prava: [...p.right] };
@@ -128,7 +135,7 @@ export function nahladVylozenia(
   const krajna = strana[strana.length - 1];
   let sused: SusedNaSpoji | null = null;
   if (krajna !== undefined) {
-    const h = hranyZPohladu(data, krajna.card, krajna.playedBy !== ja);
+    const h = hranyZPohladu(data, krajna.card, krajna.playedBy !== ja, krajna);
     sused = { karta: krajna.card, stred: false, majitel: krajna.playedBy, hrana: naMojej ? h.lava : h.prava };
   } else if (line.lokalita !== null) {
     const s = stranyLokality(data, line.lokalita, line.lokalitaOtocena, ja);
@@ -136,13 +143,7 @@ export function nahladVylozenia(
   }
 
   const pary: { index: number; moja: NonNullable<Slot>; susedova: NonNullable<Slot> }[] = [];
-  const spoj =
-    sused !== null &&
-    spojVznikne(
-      { tags: defOf(data, karta).tags, stred: false, defId: karta.defId },
-      { tags: defOf(data, sused.karta).tags, stred: sused.stred, defId: sused.karta.defId, umlcany: zvieratAUmlcane(data, line).has(sused.karta.uid) },
-    );
-  if (sused !== null && spoj) {
+  if (sused !== null) {
     for (let k = 0; k < 4; k++) {
       const a = vnutorna[k] ?? null;
       const b = sused.hrana[k] ?? null;

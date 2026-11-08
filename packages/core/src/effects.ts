@@ -126,8 +126,8 @@ export const REGISTER: Readonly<Record<string, EfektStatus>> = {
   // Frakcie (Michal 2026-11-08, docs/napady/frakcie-final.json): Kšeft zanikol. Efekty „Spúšťač: Tag
   // {Akcia}“ vyhodnocuje jadro z textu (navyse.ts); staré efekty 14 kariet platia len pre staré sady.
   zberny_dvor: "impl", // Pitka (frakcie): na konci Pitky smie každý spáliť 1 kartu z ruky, nie kliatbu (zbernyDvor)
-  zamocnik: "impl", // Furt: akcie nástrojov v okolí posilnené
-  zivnostnik: "impl", // Spoločník: Autorita {Robota} (navyse.ts); starý Nástup — Nástroj z ruky za neho (voľba nastroj) — len stará sada
+  zamocnik: "impl", // Furt (Náradie 2026-11-08): pod neho smie ľubovoľne veľa Nástrojov (podlozenie.ts)
+  zivnostnik: "impl", // Spoločník: Autorita {Robota} (navyse.ts); Nástup (Náradie 2026-11-08) — Nástroj z ruky pod neho za cigaretu (voľba nastroj), keď ho karta má
   pes: "impl", // Furt (v7): aktívne akcie na spoji so súperovou kartou ×2 (partia.ts)
   kostol: "impl", // Zhromaždenie: nikto nevypije; Pitka (v11.7): NA EX len na kartu na konci línie
   zahradkar: "impl", // Exekúcia (Michal 2026-10-28): v línii v tvojej partii ťa exekúcia v tomto kole obíde (zahradkarChrani)
@@ -153,7 +153,7 @@ export const REGISTER: Readonly<Record<string, EfektStatus>> = {
   lievik: "impl", // Dedičstvo: NA EX aj na Zviera (naexCieleVLinii)
   krokodil: "impl", // Bitka (v7): na konci bitky spáli Občanov a Zvieratá v jeho okolí (koniecBitky)
   kapybara: "impl", // Nástup (v7): marker staršieho o 1 k stredu (voľba kapybara)
-  kon: "impl", // Furt: Nástroj s ním tvorí spoj (partia.ts spojVznikne); v11.5 jeho Roboty pália o 1 Dlh viac (engine robotyKona)
+  kon: "impl", // Furt (Náradie 2026-11-08): kým leží, Nástroj smie aj pod Zviera (podlozenie.ts); v11.5 jeho Roboty pália o 1 Dlh viac (engine robotyKona)
   kohut: "impl", // Pitka (v7): posledné slovo pri odpovediach na NA EX má majiteľ (odhalNaex)
   degustatorka: "impl", // Nástup: súperovi s viac plnými poldeci otočí jeden na vypitý
   klebetnica: "impl", // Pitka (Bzdocha, Michal 2026-10-27): majiteľ hrá Pitku po súperovi a vidí jeho NA EX (zacniPitku, viewFor)
@@ -570,27 +570,6 @@ export interface VplyvNaAkciu {
   readonly uid?: number;
 }
 
-/**
- * Zámočník (Furt): aktívne akcie Nástrojov v jeho okolí (sused vľavo a vpravo v línii)
- * sa rátajú dvakrát (partia.ts kartoveEfekty) — žeravá ikona na tých Nástrojoch, aj na
- * súperových (Náradie 2026-10-30). Vplyv patrí majiteľovi Nástroja, len na jeho karte.
- */
-function vplyvyZamocnika(data: GameData, state: Pick<VerejnyStav, "strany">, p: PlayerId): VplyvNaAkciu[] {
-  const out: VplyvNaAkciu[] = [];
-  for (const strana of state.strany) {
-    strana.forEach((pl, i) => {
-      if (pl.card.defId !== "zamocnik") return;
-      for (const sused of [strana[i - 1], strana[i + 1]]) {
-        if (sused === undefined || sused.playedBy !== p || !defOf(data, sused.card).tags.includes("Nástroj")) continue;
-        const strany = printedSides(data, sused.card);
-        const akcie = new Set([...strany.left, ...strany.right].filter((a): a is Action => a !== null));
-        for (const akcia of akcie) out.push({ akcia, zdroj: "zamocnik", o: 0, popis: "Zámočník vedľa: aktívna akcia Nástroja sa ráta dvakrát", uid: sused.card.uid });
-      }
-    });
-  }
-  return out;
-}
-
 /** Nástroje, ktoré akciu menia inak než číslom (Náradie 2026-10-30) — žeravá ikona s vetou. */
 const VPLYVY_BEZ_CISLA: readonly { readonly zdroj: string; readonly akcia: Action; readonly popis: string }[] = [
   { zdroj: "puska", akcia: "Petelica", popis: "prepojenú Petelicu namiesto zrušenia (Odpor, NA EX) udelí o 1 poškodenie menej" },
@@ -619,7 +598,6 @@ export function vplyvyNaAkcie(state: Pick<VerejnyStav, "hraci"> & Partial<Pick<V
   if (kusov("vidly") > 0) out.push({ akcia: "Rana", zdroj: "vidly", o: kusov("vidly") });
   if (kusov("furik") > 0) out.push({ akcia: "Robota", zdroj: "furik", o: kusov("furik"), popis: `Robota spáli o ${kusov("furik")} Dlh viac (bez Dlhu špak)` });
   for (const v of VPLYVY_BEZ_CISLA) if (kusov(v.zdroj) > 0) out.push({ akcia: v.akcia, zdroj: v.zdroj, o: 0, popis: v.popis });
-  if (data !== undefined && state.strany !== undefined) out.push(...vplyvyZamocnika(data, { strany: state.strany }, p));
   // Rovnako ako hodnotaViery v bitke (engine): druhý Svätý text Vieru nezvýši.
   if (kusov("svaty_text") > 0) out.push({ akcia: "Viera", zdroj: "svaty_text", o: KONSTANTY.EFEKT.SVATY_TEXT_VIERA });
   return out;

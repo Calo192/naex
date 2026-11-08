@@ -276,10 +276,6 @@ describe("efekty v línii", () => {
     expect(evaluateLine(sd, cudzi).sums[1].Rana).toBeUndefined();
   });
 
-  it("Zámočník: akcie Nástroja v jeho okolí sú posilnené", () => {
-    expect(evaluateLine(sd, linia("zamocnik", "nastroj")).sums[0].Rana).toBe(1 + 2);
-  });
-
   it("Šarlatán (v7): Viera v jeho okolí už nie je Vízia (efekt je pečeň ako Viera, test v7-pakt)", () => {
     const sums = evaluateLine(sd, linia("sarlatan", "veriaca")).sums[0];
     expect(sums.Viera).toBe(2);

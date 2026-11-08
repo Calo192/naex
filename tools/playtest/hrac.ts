@@ -67,6 +67,9 @@ import {
   krokStavby,
   cieleOdpovede,
   cieleVykladania,
+  ponukaPodlozenia,
+  skoncilVykladanie,
+  popisPodlozenych,
   cielLokalitaId,
   evaluateLine,
   hrozbaNaex,
@@ -501,13 +504,15 @@ function vykresli(v: ClientState, mena: readonly string[]): string {
     pl.naexBy === undefined
       ? ""
       : `, NA EX: ${kto(pl.naexBy)}${pl.naexBy2 !== undefined ? ` aj ${kto(pl.naexBy2)} — zrážka${pl.vytrznik === true ? ", z karty je Výtržník" : ""}` : ""}${skryteText(pl.card.uid)}`;
+  const podlozeneText = (pl: PlacedCard): string =>
+    (pl.podlozene ?? []).length === 0 ? "" : `, pod ňou: ${popisPodlozenych(DATA, pl).map((t, i) => `${t} — ${kto(pl.podlozene?.[i]?.majitel ?? ja)}`).join("; ")}`;
   const zaverecnaText = (pl: PlacedCard): string =>
     pl.zaverecna !== true ? "" : pl.odpoved === true ? ", TVOJA ODPOVEĎ NA NA EX lícom dole — súper ju nevidí, otočí sa s jeho odpoveďou" : ", TVOJA ZÁVEREČNÁ lícom dole — súper ju nevidí";
 
   const moja = [...vs.strany[ja]].reverse();
   for (const pl of moja)
     out.push(
-      kartaVLinii(pl.card, pl.playedBy !== ja, lineEval, ` [${majitel(pl.playedBy)} vľavo${zaverecnaText(pl)}${naexText(pl)}]`, [
+      kartaVLinii(pl.card, pl.playedBy !== ja, lineEval, ` [${majitel(pl.playedBy)} vľavo${zaverecnaText(pl)}${naexText(pl)}${podlozeneText(pl)}]`, [
         "vonkajšia hrana",
         "vnútorná hrana (k lokalite)",
       ]),
@@ -518,7 +523,7 @@ function vykresli(v: ClientState, mena: readonly string[]): string {
   } else out.push("  (stred línie — ešte nič)");
   for (const pl of vs.strany[su])
     out.push(
-      kartaVLinii(pl.card, pl.playedBy !== ja, lineEval, ` [${majitel(pl.playedBy)} vpravo${zaverecnaText(pl)}${naexText(pl)}]`, [
+      kartaVLinii(pl.card, pl.playedBy !== ja, lineEval, ` [${majitel(pl.playedBy)} vpravo${zaverecnaText(pl)}${naexText(pl)}${podlozeneText(pl)}]`, [
         "vnútorná hrana (k lokalite)",
         "vonkajšia hrana",
       ]),
@@ -804,8 +809,14 @@ function moznosti(v: ClientState): string[] {
       return out;
     }
     if (nv.typ === "nastroj") {
-      c({ type: "nastroj", uid: null }, "ŽIVNOSTNÍK: Nástroj za neho neprikladať");
-      for (const k of v.ruka) if ((DATA.cards.get(k.defId)?.tags ?? []).includes("Nástroj")) c({ type: "nastroj", uid: k.uid }, `ŽIVNOSTNÍK: prilož za neho ${popisKarty(k)} (limit nemíňa)`);
+      c({ type: "nastroj", uid: null }, "ŽIVNOSTNÍK: Nástroj pod neho nepodkladať");
+      const line = lineState(v);
+      const zivnostnici = new Set([...v.strany[0], ...v.strany[1]].filter((pl) => pl.card.defId === "zivnostnik" && pl.playedBy === ja).map((pl) => pl.card.uid));
+      for (const k of v.ruka) {
+        for (const m of ponukaPodlozenia(DATA, line, k)) {
+          if (zivnostnici.has(m.hostitel) && m.maCoRobit) c({ type: "nastroj", uid: k.uid, hrana: m.hrana }, `ŽIVNOSTNÍK: podlož pod neho ${popisKarty(k)}, ${m.hrana === "horna" ? "horná" : "dolná"} hrana: ${m.popis} (za ${cigariet(KONSTANTY.CENA_PODLOZENIA)}, mimo ťahu)`);
+        }
+      }
       return out;
     }
     // Kapybara (v11): súperove reči pri jednom staršom o stupeň nižšie — povinne, ponúka sa len tam, kde nejaké má.
@@ -899,6 +910,21 @@ function moznosti(v: ClientState): string[] {
             c({ type: "place", uid: k.uid, target: t }, `vylož ${meno(k.defId)} → ${POPIS_CIELA[t]}${t === "vlastna" || t === "superova" ? popisVylozenia(v, k, t) : ""}`);
             if (v.zaverecnaMozna && (t === "vlastna" || t === "superova"))
               c({ type: "zaverecna", uid: k.uid, target: t }, `ZÁVEREČNÁ: ${meno(k.defId)} lícom dole → ${POPIS_CIELA[t]} za ${KONSTANTY.CENA_ZAVERECNEJ} cig.; súper ju nevidí do konca Pitky a za ňu nepriloží (ani odpoveď na NA EX), ty už v tomto Zhromaždení nevykladáš (bez cigariet za pas); Nástup až pri otočení`);
+          }
+        }
+        // Podloženie (Náradie 2026-11-08): Nástroj pod kartu v línii za cigaretu — ponúkajú sa len hrany, ktoré niečo urobia.
+        if (v.hraci[ja].cigarety >= KONSTANTY.CENA_PODLOZENIA && !skoncilVykladanie(z, ja)) {
+          const line = lineState(v);
+          const vsetky = [...v.strany[0], ...v.strany[1]];
+          for (const k of v.ruka) {
+            for (const m of ponukaPodlozenia(DATA, line, k)) {
+              const host = vsetky.find((pl) => pl.card.uid === m.hostitel);
+              if (!m.maCoRobit || host === undefined) continue;
+              c(
+                { type: "podloz", nastrojId: k.uid, hostitelId: m.hostitel, hrana: m.hrana },
+                `PODLOŽ ${meno(k.defId)} pod ${meno(host.card.defId)} (${host.playedBy === ja ? "tvoja" : "súperova"} karta), ${m.hrana === "horna" ? "horná" : "dolná"} hrana: ${m.popis}; za ${cigariet(KONSTANTY.CENA_PODLOZENIA)}, je to ťah, limit nemíňa; leží do bitky, potom ide do tvojho odhadzovacieho balíčka`,
+              );
+            }
           }
         }
       }

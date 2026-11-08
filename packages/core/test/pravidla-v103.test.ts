@@ -69,15 +69,6 @@ describe("Forsáž (v10.3)", () => {
     expect(ev.sums[0]).toMatchObject({ Rana: 4, Cigareta: 2, Robota: 2 });
   });
 
-  it("Nástroj Forsáž nedostane — pri spoji Nástroj–Občan ju má len Občan", () => {
-    const { data, a, b, c } = zostav(C_R, ["Nástroj"]);
-    const ev = evaluateLine(data, lineP0(own(a), own(b), own(c)));
-    expect(ev.cards.get(b.uid)?.forsaz).toBe(false);
-    expect(ev.cards.get(a.uid)?.forsaz).toBe(true);
-    // Rana a Cigareta sú Nástroja ×1, Viera a Hazard Občana ×2.
-    expect(ev.sums[0]).toMatchObject({ Rana: 1, Cigareta: 1, Robota: 1, Viera: 2, Dlh: 2 });
-  });
-
   it("Odpor Praudovravca sa ráta ako Posilnenie — s Posilnením aj s Odporom vytvorí Forsáž", () => {
     const P_L: Layout4 = ["Odpor", "Rana", null, null];
     for (const druhy of ["Posilnenie", "Odpor"] as const) {
@@ -135,24 +126,6 @@ describe("Forsáž (v10.3)", () => {
     const m = { typ: "forsaz" as const, ...MOMENTY.forsaz, hrac: null, popis: "" };
     expect(naladaMomentu(m, 0)).toBe("udiv");
     expect(naladaMomentu(m, 1)).toBe("udiv");
-  });
-});
-
-describe("Vzbura s Nástrojom (v10.3)", () => {
-  it("Odpor Nástroja proti Odporu Občana: Vzburu dostane len Občan", () => {
-    // B (Nástroj) · A (Občan) — B.pravá Odpor ↔ A.ľavá Odpor. C podporuje Nástroj zľava.
-    const aL: Layout4 = ["Odpor", null, null, null];
-    const aR: Layout4 = [null, null, null, "Pecka"];
-    const bL: Layout4 = [null, null, null, "Rana"];
-    const bR: Layout4 = ["Odpor", null, null, null];
-    const cR: Layout4 = ["Viera", null, null, null];
-    const data = syntheticData([makeDef("a", aL, aR), makeDef("b", bL, bR, { tags: ["Nástroj"] }), makeDef("c", EMPTY, cR)]);
-    const a = instanceFor(data, "a", aL, aR);
-    const b = instanceFor(data, "b", bL, bR);
-    const ev = evaluateLine(data, lineP0(own(a), own(b), own(instanceFor(data, "c", EMPTY, cR))));
-    expect(ev.cards.get(a.uid)?.vzbura).toBe(true);
-    expect(ev.cards.get(b.uid)?.vzbura).toBe(false);
-    expect(ev.sums[0]).toEqual({ Pecka: 1 });
   });
 });
 

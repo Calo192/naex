@@ -116,9 +116,9 @@
     "naradie": [
       "nealko/0/0",
       "vinko/0/0",
-      "vyherny_automat/0/1",
+      "vyherny_automat/0/0",
       "lievik/0/0",
-      "puska/0/1",
+      "puska/0/0",
       "nealko/0/0",
       "zapalovac/0/0",
       "vyherne_zreby/0/0",
@@ -130,11 +130,11 @@
       "jogurt/0/0",
       "vidly/0/0",
       "puska/0/0",
-      "energetak/0/1",
+      "energetak/0/0",
       "noviny/0/0",
       "horoskop/0/0",
-      "pasca/1/1",
-      "cigorky/1/0",
+      "pasca/0/0",
+      "cigorky/0/0",
       "furik/0/0",
       "kristalova_gula/0/0",
       "boxer/0/0",
@@ -179,7 +179,7 @@
       "praudovravec/0/0",
       "degustatorka/0/0",
       "vandal/1/0",
-      "podvodnik/0/1",
+      "recidivista/0/3",
       "kulturista/0/0",
       "masiar/0/0",
       "liberal/0/0",
@@ -1922,7 +1922,7 @@
         "type": "stavbaSenku",
         "doSenku": [
           "stavba:vidly",
-          "stavba:puska",
+          "stavba:recidivista",
           "stavba:pes",
           "stavba:masiar"
         ],
@@ -1930,7 +1930,7 @@
           "stavba:praudovravec",
           "stavba:degustatorka",
           "stavba:vandal",
-          "stavba:podvodnik"
+          "stavba:puska"
         ]
       },
       "melichar": ""
@@ -1944,7 +1944,7 @@
           "senok:vidly"
         ]
       },
-      "melichar": "Kupuješ prvý, prvý raz jednu kartu: Vidly za [Cigareta] cigaretu. Vidly aj Puška sú Nástroje: v línii sa spoja len s Občanom alebo Starešinom a ich akcie dostane majiteľ tej karty. Svoj efekt majú len v Dedičstve – o chvíľu.",
+      "melichar": "Kupuješ prvý, prvý raz jednu kartu: Vidly za [Cigareta] cigaretu. Vidly sú Nástroj: do línie sa nevykladá. Svoj efekt má v Dedičstve – o chvíľu.",
       "hlaskaChyby": "nervy/19_ach_boha",
       "zvyraznit": [
         "senok:vidly"
@@ -1967,10 +1967,10 @@
       "prikaz": {
         "type": "draftBer",
         "uids": [
-          "senok:puska"
+          "senok:recidivista"
         ]
       },
-      "melichar": "Vezmi aj Pušku, tiež za jednu. Dve naraz by stáli tri, po jednej dve. Cigareta je cigareta.",
+      "melichar": "Vezmi aj Recidivistu, tiež za jednu. Dve naraz by stáli tri, po jednej dve. Cigareta je cigareta.",
       "hlaskaChyby": "urazky/ty_debil",
       "zvyraznit": [
         "senok:puska"
@@ -2154,33 +2154,15 @@
         "kroky": [
           {
             "type": "place",
-            "uid": "ruka:puska",
+            "uid": "ruka:recidivista",
             "target": "vlastna"
           }
         ]
       },
-      "melichar": "Teraz Pušku za Miňištranta; Nástroj limit nemíňa. Jej [Petelica] Petelica sa spojí s Miňištrantovou [Viera] Vierou a [Rana] Rana s jeho pečeňou. Obe sú tvoje, lebo Miňištrant je tvoj, a Rana s Vidlami udrie za dve. 5 : 1.",
+      "melichar": "Teraz Recidivistu za Miňištranta. Jeho [Petelica] Petelica a [Rana] Rana sa spoja s Miňištrantom a sú tvoje, lebo Recidivista je tvoj; Rana s Vidlami udrie za dve. 5 : 0.",
       "hlaskaChyby": "urazky/ty_marha",
       "zvyraznit": [
-        "ruka:puska"
-      ]
-    },
-    {
-      "id": "q-nastroj",
-      "kto": "otazka",
-      "melichar": "Komu by dala Puška Petelicu, keby ležala vedľa Štamgastovho Občana?",
-      "moznosti": [
-        {
-          "text": "Mne, je to moja Puška.",
-          "spravna": false,
-          "vysvetlenie": "Puška je tvoja, ale akcie dostane majiteľ karty, s ktorou sa spojí. Ako moje kladivo u suseda.",
-          "hlaska": "udiv/pozri_co_ta_robi"
-        },
-        {
-          "text": "Štamgastovi.",
-          "spravna": true,
-          "vysvetlenie": "Áno. Náradie je spoločné. Robí pre toho, s kým sa spojí."
-        }
+        "ruka:recidivista"
       ]
     },
     {
@@ -2196,7 +2178,7 @@
           }
         ]
       },
-      "melichar": "Teraz Pijana za Pušku. Puškina [Rana] Rana sa spojí s jeho [Rana] Ranou a dostaneš ju ty, lebo Pijan je tvoj. S Vidlami po dve: odhad 9 : 1. Ruku máš prázdnu, ďalej za teba pasuje hra – a cigaretu za pas nedostaneš, pas sa platí len kartami v ruke.",
+      "melichar": "Teraz Pijana za Recidivistu. Jeho [Rana] Rana sa spojí s Recidivistom a dostaneš ju ty, lebo Pijan je tvoj. S Vidlami za dve: odhad 7 : 0. Ruku máš prázdnu, ďalej za teba pasuje hra – a cigaretu za pas nedostaneš, pas sa platí len kartami v ruke.",
       "hlaskaChyby": "nervy/16_to_zas_bude_vyzerat",
       "zvyraznit": [
         "ruka:pijan"
@@ -2273,7 +2255,7 @@
     {
       "id": "i-vyhra3",
       "kto": "info",
-      "melichar": "Bitka je tvoja, 9 : 1. Na Kultúrnom dome máš špaky len za svoje karty, tri, a Štamgast za svojho Mäsiara jeden. Farár ti za červený strach dal len 3: červenú drží Štamgast rečami a za ňu zaplatil jemu, 2. Krčmárka tiež platila jemu, 1, Autobusár a Vychovávateľka tebe po 1. Exekútor ti spálil jeden z Dlhov od Kmotra aj so špakom. 27 : 9.",
+      "melichar": "Bitka je tvoja, 7 : 0. Na Kultúrnom dome máš špaky len za svoje karty, tri, a Štamgast za svojho Mäsiara jeden. Farár ti za červený strach dal len 3: červenú drží Štamgast rečami a za ňu zaplatil jemu, 2. Krčmárka tiež platila jemu, 1, Autobusár a Vychovávateľka tebe po 1. Exekútor ti spálil dva Dlhy aj s dvoma špakmi. 26 : 9.",
       "zvyraznit": [
         "bar:body",
         "bar-supera:body",
@@ -2307,20 +2289,15 @@
           {
             "elderId": "krcmarka",
             "na": 2
-          },
-          {
-            "elderId": "starosta",
-            "na": 1
           }
         ],
         "zajatia": [
           "farar"
         ]
       },
-      "melichar": "Nakladačku 8 som ti rozdelil ja, nech tu nesedíme do rána. Farár sa ťa bojí na červenej od minulého kola, tak som ho za 5 zajal – je tvoj väzeň a sedí v pivnici. Štamgastove reči pri ňom aj pri Krčmárke po prehratej hádke klesli zospodu a zanikli, tak ti za ne nemal čo dať. Farárovu schopnosť – zhodiť jedno súperovo NA EX z karty – smieš raz za hru použiť, kedy chceš. Zvyšné 3: Krčmárka zo žltej na oranžovú za 2 a Starosta na žltú za 1.",
+      "melichar": "Nakladačku 7 som ti rozdelil ja, nech tu nesedíme do rána. Farár sa ťa bojí na červenej od minulého kola, tak som ho za 5 zajal – je tvoj väzeň a sedí v pivnici. Štamgastove reči pri ňom aj pri Krčmárke po prehratej hádke klesli zospodu a zanikli, tak ti za ne nemal čo dať. Farárovu schopnosť – zhodiť jedno súperovo NA EX z karty – smieš raz za hru použiť, kedy chceš. Zvyšné 2: Krčmárka zo žltej na oranžovú.",
       "zvyraznit": [
         "starsi:krcmarka",
-        "starsi:starosta",
         "linia-starsich"
       ]
     },
@@ -2366,7 +2343,7 @@
     {
       "id": "i-po-bitke3",
       "kto": "info",
-      "melichar": "Za prehru dostal Štamgast cigaretu, od Autobusára ďalšiu, a tebe dal výpalné: väzeň sa ráta ako červený strach. Priazeň mu teraz dáva Krčmárka v sile 2, Starosta, Autobusár a Vychovávateľka v sile 1 – to je cena tvojho strachu. A z prázdnej ruky si si dobral tri karty: dvoch Pijanov a Čiernu mačku.",
+      "melichar": "Za prehru dostal Štamgast cigaretu, od Autobusára ďalšiu, a tebe dal výpalné: väzeň sa ráta ako červený strach. Priazeň mu teraz dáva Krčmárka v sile 2, Autobusár a Vychovávateľka v sile 1 – to je cena tvojho strachu. A z prázdnej ruky si si dobral tri karty: dvoch Pijanov a Čiernu mačku.",
       "zvyraznit": [
         "linia-starsich",
         "bar-supera:cigarety"
@@ -2557,7 +2534,7 @@
           }
         ]
       },
-      "melichar": "Polož Pijana k vile. Spojí tri jej akcie: [Posilnenie] Posilnenie, ktoré mu zdvojí Ranu, [Rana] Ranu a [Dlh] Hazard. Pitky budú tri. 8 : 6, zatiaľ.",
+      "melichar": "Polož Pijana k vile. Spojí tri jej akcie: [Posilnenie] Posilnenie, ktoré mu zdvojí Ranu, [Rana] Ranu a [Dlh] Hazard. Pitky budú tri. 8 : 5, zatiaľ.",
       "hlaskaChyby": "urazky/ty_debil",
       "zvyraznit": [
         "ruka:pijan"
@@ -2642,7 +2619,7 @@
           }
         ]
       },
-      "melichar": "Vypi a polož Policajtku za Pijana a druhého Pijana za ňu, v jednom ťahu. Policajtka má Nepriateľa: kým leží v línii Štamgastov Kriminál – Recidivista –, má navyše [Petelica] Petelicu. 19 : 6, zatiaľ. Štamgast ešte nevie, čo ho čaká.",
+      "melichar": "Vypi a polož Policajtku za Pijana a druhého Pijana za ňu, v jednom ťahu. Policajtka má Nepriateľa: kým leží v línii Štamgastov Kriminál – Recidivista –, má navyše [Petelica] Petelicu. 19 : 5, zatiaľ. Štamgast ešte nevie, čo ho čaká.",
       "hlaskaChyby": "urazky/takuto_marhu_vyjebanu_skurvenu_spinavu",
       "volba": {
         "kandidati": [
@@ -2764,7 +2741,7 @@
       "prikaz": {
         "type": "skipNaex"
       },
-      "melichar": "Odkryté: Štamgast dal NA EX na tvojho Pijana, chcel ti zrušiť spojené akcie. Lenže tam bolo aj tvoje – zrážka, z Pijana je Výtržník a všetky jeho akcie sú tvoje Rany: 27 : 6. Hovoril som, že ho poznám.",
+      "melichar": "Odkryté: Štamgast dal NA EX na tvojho Pijana, chcel ti zrušiť spojené akcie. Lenže tam bolo aj tvoje – zrážka, z Pijana je Výtržník a všetky jeho akcie sú tvoje Rany: 27 : 5. Hovoril som, že ho poznám.",
       "zvyraznit": [
         "linia:pijan",
         "bitka-ucet"
@@ -2789,7 +2766,7 @@
     {
       "id": "i-bitka-finale",
       "kto": "info",
-      "melichar": "Finále je tvoje, 27 : 6. Špaky: šesť za karty v línii a Nakladačka 21 sa vo finále mení na špaky jedna ku jednej. Starší: Veterinár 3 za reči po oranžovú, Krčmárka 3 za oranžový strach, Starosta, Autobusár a Vychovávateľka po 1 za žltý; exekútor ti zobral dva, Štamgastovi jeden. Vo finále sa nezajíma ani nepresviedča.",
+      "melichar": "Finále je tvoje, 27 : 5. Špaky: šesť za karty v línii a Nakladačka 22 sa vo finále mení na špaky jedna ku jednej. Starší: Veterinár 3 za reči po oranžovú, Krčmárka 3 za oranžový strach, Autobusár a Vychovávateľka po 1 za žltý; exekútor ti zobral tri, Štamgastovi jeden. Vo finále sa nezajíma ani nepresviedča.",
       "zvyraznit": [
         "bitka-ucet",
         "bar:body",
@@ -2799,7 +2776,7 @@
     {
       "id": "i-koniec",
       "kto": "info",
-      "melichar": "Koniec hry. Zvyšné plné poldeci a cigarety sa vykúpia: plný poldeci 1 špak, päť cigariet 1 špak; tebe to dalo 2, Štamgastovi 5 – nahrabal si dvadsaťjeden cigariet. A dve Cirhózy – z druhého kola a z finále – ti ležia v balíčku nepriznané a stoja ťa 6 špakov; Štamgasta jeho jedna 3. 57 : 15.",
+      "melichar": "Koniec hry. Zvyšné plné poldeci a cigarety sa vykúpia: plný poldeci 1 špak, päť cigariet 1 špak; tebe to dalo 2, Štamgastovi 5 – nahrabal si dvadsaťjeden cigariet. A dve Cirhózy – z druhého kola a z finále – ti ležia v balíčku nepriznané a stoja ťa 6 špakov; Štamgasta jeho jedna 3. 55 : 15.",
       "zvyraznit": [
         "bar:body",
         "nastenka"

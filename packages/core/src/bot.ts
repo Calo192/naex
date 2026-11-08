@@ -33,6 +33,7 @@ import type { RngState } from "./rng.ts";
 import { rngInt, rngNext, rngSeed, rngShuffle } from "./rng.ts";
 import { evaluateLine } from "./partia.ts";
 import { efektyNavyse, jeSlovami } from "./navyse.ts";
+import { hranyNastroja } from "./naradie.ts";
 import { KONSTANTY, vazniNaVyhru } from "./constants.ts";
 import { abstakyVBitke, spakyPriExekucii, zhoriPriExekucii } from "./battle.ts";
 import type { ElderState } from "./elders.ts";
@@ -1458,6 +1459,8 @@ function zhromazdenie(v: Volba): Command | null {
   };
   if (vylozenia.length <= MOZNOSTI_VO_VYPOCTE) moznosti.push(...vylozenia);
   else moznosti.push(...vylozenia.map((cmd) => ({ cmd, h: odhad(cmd) })).sort((a, b) => b.h - a.h).slice(0, MOZNOSTI_VO_VYPOCTE).map((x) => x.cmd));
+  // Podloženie (Náradie 2026-11-08): z každého Nástroja najsľubnejšia posila a sabotáž — rozhodne výpočet ako pri vykladaní.
+  moznosti.push(...kandidatiPodlozenia(v));
   // Záverečná: blok súperovej odpovede na tej strane už dohrá dohrajZhromazdenie
   // (súper za ňu nepriloží); utajenie karty do konca Pitky má malú cenu navyše.
   const sZaverecnou = (po: GameState): number =>
@@ -1471,6 +1474,39 @@ function zhromazdenie(v: Volba): Command | null {
     return zmizli.reduce((a, pl) => a + Math.max(0, hodnotaKarty(data, pl.card)), 0) * SPALENIE_ZA_KARTU * k.buducnost;
   };
   return najlepsi(v, moznosti, (po) => hodnotaStavu(k, dohrajZhromazdenie(k, po), 0.9) + sZaverecnou(po) + spalene(po));
+}
+
+/**
+ * Kandidáti podloženia (Náradie 2026-11-08): pre každý Nástroj v ruke posila pod vlastnú kartu
+ * s najviac zdrojovými slotmi a sabotáž pod súperovu s najcennejšou akciou, ktorú hrana zmení.
+ * Kartový účinok ide pod kartu s najviac akciami — či pomôže, či uškodí, ukáže až výpočet.
+ */
+function kandidatiPodlozenia(v: Volba): Command[] {
+  const { data, state, ja } = v;
+  const najlepsie = new Map<string, { cmd: Command; h: number }>();
+  for (const cmd of v.legal) {
+    if (cmd.type !== "podloz") continue;
+    const karta = state.hraci[ja].ruka.find((k) => k.uid === cmd.nastrojId);
+    const hostitel = [...state.strany[0], ...state.strany[1]].find((pl) => pl.card.uid === cmd.hostitelId);
+    const hrany = karta === undefined ? null : hranyNastroja(defOf(data, karta));
+    if (karta === undefined || hostitel === undefined || hrany === null) continue;
+    const strany = printedSides(data, hostitel.card);
+    const akcie = [...strany.left, ...strany.right].filter((a): a is Action => a !== null);
+    const hrana = hrany[cmd.hrana];
+    const moja = hostitel.playedBy === ja;
+    let h: number;
+    if (hrana.druh === "karta") h = akcie.length;
+    else {
+      const zdroj = akcie.filter((a) => a === hrana.z).length;
+      const zisk = VAHA_AKCIE[hrana.na] - VAHA_AKCIE[hrana.z];
+      h = zdroj * (moja ? zisk : -zisk);
+    }
+    if (hrana.druh === "akcia" && h <= 0) continue;
+    const kluc = `${karta.defId}/${moja ? "posila" : "sabotaz"}`;
+    const doteraz = najlepsie.get(kluc);
+    if (doteraz === undefined || h > doteraz.h) najlepsie.set(kluc, { cmd, h });
+  }
+  return [...najlepsie.values()].map((x) => x.cmd);
 }
 
 /** O koľko musí byť NA EX lepšie, keď ho súper s Bzdochou uvidí skôr, než dohrá Pitku — hrubý odhad. */

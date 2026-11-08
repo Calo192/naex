@@ -264,26 +264,6 @@ describe("Dedičstvo: cena rastie spoločne pre oboch (1, 2, 3 … cigariet)", (
 
 // --- Nástroj v línii -------------------------------------------------------------
 
-describe("Nástroj v línii: akcie dostane majiteľ karty, s ktorou tvorí spoj", () => {
-  it("Nástroj podstrčený súperovi pracuje pre súpera", () => {
-    const obcan = makeDef("obcan_n", [null, null, null, "Rana"], EMPTY, { tags: ["Občan"] });
-    const nastroj = makeDef("nastroj_n", ["Cigareta", null, null, null], EMPTY, { tags: ["Nástroj"] });
-    const sd = syntheticData([obcan, nastroj]);
-    const strany: GameState["strany"] = [
-      [],
-      [
-        { card: instanceFor(sd, "obcan_n", [null, null, null, "Rana"], EMPTY), playedBy: 1 },
-        { card: instanceFor(sd, "nastroj_n", ["Cigareta", null, null, null], EMPTY), playedBy: 0 },
-      ],
-    ];
-    const ev = evaluateLine(sd, { lokalita: null, lokalitaOtocena: false, strany });
-    expect(ev.sums[1]).toEqual({ Rana: 1, Cigareta: 1 });
-    expect(ev.sums[0]).toEqual({});
-  });
-});
-
-// --- Celý ťah naraz ----------------------------------------------------------------
-
 describe("ťah v Zhromaždení naraz: ďalšia karta stojí poldeci (Michal 2026-10-19)", () => {
   it("dve karty = Vypiť pred prvou; server ich vykoná atomicky a ťah prejde na súpera", () => {
     const [a, b, d] = [inst("pijan"), inst("ministrant"), inst("cirhoza")];

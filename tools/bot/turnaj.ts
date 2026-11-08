@@ -39,7 +39,9 @@ import {
 import { ekonom, hromadic } from "./hromadic.ts";
 
 const citaj = (s: string): unknown => JSON.parse(readFileSync(new URL(`../../packages/core/data/${s}`, import.meta.url), "utf8"));
-const data = loadGameData(citaj("cards.json"), citaj("elders.json"), citaj("scorecards.json"));
+// NAEX_SADA=<cesta k cards.json>: turnaj na inej sade (napr. s hranami Nástrojov, tools/admin/naradie-hrany.ts --sada).
+const sada = process.env.NAEX_SADA === undefined ? citaj("cards.json") : JSON.parse(readFileSync(process.env.NAEX_SADA, "utf8"));
+const data = loadGameData(sada, citaj("elders.json"), citaj("scorecards.json"));
 
 const partii = Number(process.argv[2] ?? 10);
 const superTyp = process.argv[3] ?? "nahodny";

@@ -57,7 +57,7 @@ describe("zmeny na stole po ťahu bota či hry vo výučbe", () => {
 
   it("strach zdvihnutý Nakladačkou rozsvieti staršieho — hráčovou aj tou, ktorú rozdelila hra (v11)", () => {
     expect(tah("k-nakladacka1").kluce).toContain("starsi:farar");
-    expect(tah("k-nakladacka3").kluce).toEqual(expect.arrayContaining(["starsi:krcmarka", "starsi:starosta"]));
+    expect(tah("k-nakladacka3").kluce).toContain("starsi:krcmarka");
   });
 
   it("karta, ktorú hráč priložil, svieti na stole", () => {

@@ -20,6 +20,7 @@ import { ALL_ACTIONS, ALL_PODMIENKY, priazenZKluca } from "./types.ts";
 import type { CardVariants } from "./variants.ts";
 import { cardVariants } from "./variants.ts";
 import { rozborNavyse } from "./navyse.ts";
+import { chybyZapisuHran } from "./naradie.ts";
 
 export interface GameData {
   readonly cards: ReadonlyMap<string, CardDef>;
@@ -131,6 +132,8 @@ export function parseCards(json: unknown): ReadonlyMap<string, CardDef> {
     // Akcie navyše (frakcie): preklep v piktograme či tagu by efekt potichu vypol.
     const chybyNavyse = rozborNavyse(def.effectText).chyby;
     if (chybyNavyse.length > 0) fail(`${path}.effect_text`, chybyNavyse.join(" "));
+    const chybyHranKarty = chybyZapisuHran(def);
+    if (chybyHranKarty.length > 0) fail(`${path}.effect_text`, chybyHranKarty.join(" "));
     if (cards.has(id)) fail(path, "duplicitné id");
     cards.set(id, def);
   }

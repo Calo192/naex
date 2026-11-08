@@ -1,0 +1,159 @@
+{
+  "poznamka": "Hrany 22 Nástrojov podľa docs/napady/naradie-hrany-zoznam.html v5 (Michal 2026-11-08). Admin prepíše text efektu každého Nástroja v tvorcovi Vypálenej na effect_text (rozpracovaný stav, nezverejniť) a vymaže mu sloty; Dedičstvo ostáva. Hore = horná hrana, Dole = dolná. Kontrola: node --experimental-strip-types --no-warnings tools/admin/naradie-hrany.ts",
+  "nastroje": [
+    {
+      "id": "energetak",
+      "nazov": "Energeťák",
+      "hore": "Forsáž",
+      "dole": "{Posilnenie}→{Pečeň}",
+      "effect_text": "Dedičstvo: Tvoje Posilnenie nemožno zrušiť NA EX. Hore: Forsáž. Dole: {Posilnenie}→{Pečeň}."
+    },
+    {
+      "id": "furik",
+      "nazov": "Fúrik",
+      "hore": "{Hazard}→{Robota}",
+      "dole": "{Robota}→{Hazard}",
+      "effect_text": "Dedičstvo: Tvoje Roboty pália o 1 Dlh viac. Hore: {Hazard}→{Robota}. Dole: {Robota}→{Hazard}."
+    },
+    {
+      "id": "horoskop",
+      "nazov": "Horoskop",
+      "hore": "{Hazard}→{Povera}",
+      "dole": "{Povera}→{Hazard}",
+      "effect_text": "Dedičstvo: Tvoje Povery majú silu 2. Hore: {Hazard}→{Povera}. Dole: {Povera}→{Hazard}."
+    },
+    {
+      "id": "hrable",
+      "nazov": "Hrable",
+      "hore": "{Odpor}→{Posilnenie}",
+      "dole": "{Posilnenie}→{Odpor}",
+      "effect_text": "Dedičstvo: Akcia zrušená tvojím Odporom sa ráta ako tvoja a je posilnená. Hore: {Odpor}→{Posilnenie}. Dole: {Posilnenie}→{Odpor}."
+    },
+    {
+      "id": "lievik",
+      "nazov": "Injekcia",
+      "hore": "Výtržník",
+      "dole": "{Poldeci}→{Pečeň}",
+      "effect_text": "Dedičstvo: NA EX smieš dať aj na Zviera. Hore: Výtržník. Dole: {Poldeci}→{Pečeň}."
+    },
+    {
+      "id": "pistalka",
+      "nazov": "Izolačka",
+      "hore": "{Pečeň}→{Obmedzenie}",
+      "dole": "{Pecka}→{Obmedzenie}",
+      "effect_text": "Dedičstvo: Tvoje Obmedzenia uberajú aj cigarety, ktoré súper dostane za pas. Hore: {Pečeň}→{Obmedzenie}. Dole: {Pecka}→{Obmedzenie}."
+    },
+    {
+      "id": "jogurt",
+      "nazov": "Jogurt",
+      "hore": "{Pečeň}→{Posilnenie}",
+      "dole": "{Pečeň}→{Hazard}",
+      "effect_text": "Dedičstvo: Tvoje Poldeci otáčajú vypitý poldeci hneď v Pitke, nie až v bitke. Hore: {Pečeň}→{Posilnenie}. Dole: {Pečeň}→{Hazard}."
+    },
+    {
+      "id": "cigorky",
+      "nazov": "Krabička cigariet",
+      "hore": "{Pečeň}→{Cigareta}",
+      "dole": "{Hazard}→{Cigareta}",
+      "effect_text": "Dedičstvo: Pitka: Za každé 2 cigarety, ktoré súper vyfajčí, si dober 1 kartu. Nie je to nerest. Hore: {Pečeň}→{Cigareta}. Dole: {Hazard}→{Cigareta}."
+    },
+    {
+      "id": "kristalova_gula",
+      "nazov": "Krištáľová guľa",
+      "hore": "{Povera}→{Vízia}",
+      "dole": "{Vízia}→{Povera}",
+      "effect_text": "Dedičstvo: Tvoje Vízie ukážu 2 vrchné karty — jednu si vezmi alebo spáľ, druhú vráť navrch. Hore: {Povera}→{Vízia}. Dole: {Vízia}→{Povera}."
+    },
+    {
+      "id": "nealko",
+      "nazov": "Nealko",
+      "hore": "{Pečeň}→{Viera}",
+      "dole": "{Poldeci}→{Viera}",
+      "effect_text": "Dedičstvo: Tvoj prah Cirhózy je o 2 vyšší. Hore: {Pečeň}→{Viera}. Dole: {Poldeci}→{Viera}."
+    },
+    {
+      "id": "noviny",
+      "nazov": "Noviny",
+      "hore": "{Viera}→{Pohoršenie}",
+      "dole": "{Pohoršenie}→{Povera}",
+      "effect_text": "Dedičstvo: Hádka: Ak vyhráš hádku, súper odhodí 1 náhodnú kartu z ruky. Hore: {Viera}→{Pohoršenie}. Dole: {Pohoršenie}→{Povera}."
+    },
+    {
+      "id": "pasca",
+      "nazov": "Pasca",
+      "hore": "{Pečeň}→{Rana}",
+      "dole": "{Pecka}→{Rana}",
+      "effect_text": "Dedičstvo: Bitka: Ak súper v tomto kole priložil kartu k tvojej {Rana}. Hore: {Pečeň}→{Rana}. Dole: {Pecka}→{Rana}."
+    },
+    {
+      "id": "puska",
+      "nazov": "Puška",
+      "hore": "{Rana}→{Petelica}",
+      "dole": "{Petelica}→{Rana}",
+      "effect_text": "Dedičstvo: Keď by tvoju prepojenú Petelicu zrušil iný efekt (Odpor, NA EX…), namiesto zrušenia udeľuje o 1 poškodenie menej. Hore: {Rana}→{Petelica}. Dole: {Petelica}→{Rana}."
+    },
+    {
+      "id": "svaty_text",
+      "nazov": "Svätý text",
+      "hore": "{Povera}→{Viera}",
+      "dole": "{Viera}→{Povera}",
+      "effect_text": "Dedičstvo: Hodnota tvojej Viery je o 1 vyššia. Hore: {Povera}→{Viera}. Dole: {Viera}→{Povera}."
+    },
+    {
+      "id": "telefon",
+      "nazov": "Telefón",
+      "hore": "{Povera}→{Pohoršenie}",
+      "dole": "{Odpor}→{Povera}",
+      "effect_text": "Dedičstvo: Tvoje Pohoršenia nemožno zrušiť Odporom a NA EX. Hore: {Povera}→{Pohoršenie}. Dole: {Odpor}→{Povera}."
+    },
+    {
+      "id": "boxer",
+      "nazov": "Valaška",
+      "hore": "{Pecka}→{Petelica}",
+      "dole": "{Petelica}→{Pecka}",
+      "effect_text": "Dedičstvo: Tvoje Pecky udeľujú o 1 poškodenie viac. Hore: {Pecka}→{Petelica}. Dole: {Petelica}→{Pecka}."
+    },
+    {
+      "id": "vidly",
+      "nazov": "Vidly",
+      "hore": "Vzbura",
+      "dole": "{Rana}→{Pecka}",
+      "effect_text": "Dedičstvo: Tvoje Rany udeľujú o 1 poškodenie viac. Hore: Vzbura. Dole: {Rana}→{Pecka}."
+    },
+    {
+      "id": "vinko",
+      "nazov": "Vínko",
+      "hore": "NA EX",
+      "dole": "{Pečeň}→{Poldeci}",
+      "effect_text": "Dedičstvo: Počíta sa, akoby si mal plný poldeci navyše. Nemôžeš dolievať poldeci za cigarety. Hore: NA EX. Dole: {Pečeň}→{Poldeci}."
+    },
+    {
+      "id": "vyherne_zreby",
+      "nazov": "Výherné žreby",
+      "hore": "{Hazard}→{Vízia}",
+      "dole": "{Vízia}→{Hazard}",
+      "effect_text": "Dedičstvo: Tvoje Hazardy sú aktívne, keď nie sú spojené, a neaktívne, keď sú spojené. Hore: {Hazard}→{Vízia}. Dole: {Vízia}→{Hazard}."
+    },
+    {
+      "id": "vyherny_automat",
+      "nazov": "Výherný automat",
+      "hore": "{Hazard}→{Poldeci}",
+      "dole": "{Cigareta}→{Hazard}",
+      "effect_text": "Dedičstvo: Tvoj prah Dlhu je o 1 vyšší. Posledná Pitka kola: {Hazard}. Hore: {Hazard}→{Poldeci}. Dole: {Cigareta}→{Hazard}."
+    },
+    {
+      "id": "zapalovac",
+      "nazov": "Zapaľovač",
+      "hore": "{Cigareta}→{Rana}",
+      "dole": "{Cigareta}→{Pečeň}",
+      "effect_text": "Dedičstvo: Tvoje aktívne Cigarety nemožno zrušiť NA EX. Hore: {Cigareta}→{Rana}. Dole: {Cigareta}→{Pečeň}."
+    },
+    {
+      "id": "zrkadlo",
+      "nazov": "Zrkadlo",
+      "hore": "{Odpor}→{Pakt}",
+      "dole": "{Pakt}→{Odpor}",
+      "effect_text": "Dedičstvo: Tvoj Pakt kopíruje prepojenú akciu dvakrát. Hore: {Odpor}→{Pakt}. Dole: {Pakt}→{Odpor}."
+    }
+  ]
+}

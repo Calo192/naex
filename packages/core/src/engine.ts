@@ -42,6 +42,9 @@ import { rngInt, rngSeed, rngShuffle } from "./rng.ts";
 import type { ActionSums, KartaVBitke, LineEval, LineState, PlacedCard } from "./partia.ts";
 import { evaluateLine, okolieVLinii, prevahaStran, prispevkyKariet, zvieratAUmlcane } from "./partia.ts";
 import { efektyNavyse, podmienkySpoja, splnaTag } from "./navyse.ts";
+import type { KtoraHrana } from "./naradie.ts";
+import { KTORE_HRANY, hranyNastroja, ucinkyNastrojov } from "./naradie.ts";
+import { dovodNepodlozenia, hranaMaCoRobit, popisPodlozenych, ponukaPodlozenia } from "./podlozenie.ts";
 import { krajeStran } from "./hrany.ts";
 import type { PlayerState } from "./player.ts";
 import {
@@ -656,8 +659,11 @@ export type Command =
   | { readonly type: "hasic"; readonly nechat: boolean }
   // Karta zo šenku zadarmo (Zastávka).
   | { readonly type: "senok"; readonly uid: number }
-  // Živnostník (Nástup, v7): Nástroj z ruky, ktorý sa priloží za neho, alebo nič (uid null).
-  | { readonly type: "nastroj"; readonly uid: number | null }
+  // Živnostník (Nástup, Náradie 2026-11-08): Nástroj z ruky, ktorý podloží pod neho hranou `hrana`
+  // (chýba = prvá, ktorá má čo robiť), alebo nič (uid null).
+  | { readonly type: "nastroj"; readonly uid: number | null; readonly hrana?: KtoraHrana }
+  // Podloženie (Náradie, Michal 2026-11-08): Nástroj z ruky pod kartu v línii, zvolená hrana pretŕča.
+  | { readonly type: "podloz"; readonly nastrojId: number; readonly hostitelId: number; readonly hrana: KtoraHrana }
   // Kapybara (Nástup, v11): starší, pri ktorom súperove reči klesnú o stupeň.
   | { readonly type: "kapybara"; readonly elderId: string }
   // Zberný dvor (Pitka, frakcie): na konci Pitky spáliť 1 kartu z ruky (nie kliatbu), alebo nič (uid null).
@@ -1919,7 +1925,7 @@ function applyPrikaz(
     let st = state;
     const vsetky: Event[] = [];
     for (const k of cmd.kroky) {
-      need(k.type === "place" || k.type === "vypit" || k.type === "zaverecna", "V ťahu smú byť len vyloženia, Vypiť a Záverečná.");
+      need(k.type === "place" || k.type === "vypit" || k.type === "zaverecna" || k.type === "podloz", "V ťahu smú byť len vyloženia, podloženia, Vypiť a Záverečná.");
       // O vytiahnutej karte Hasiča hráč rozhodne po zvyšku ťahu (ten poslal skôr, než ju videl);
       // ťah sa preto posudzuje bez čakania na Hasiča.
       need(st.faza === "zhromazdenie" && naTahuVoFaze(st) === kto, "Ťah sa skončil skôr, než si vyložil všetky karty.");
@@ -1969,6 +1975,9 @@ function applyPrikaz(
       break;
     case "zaverecna":
       cmdZaverecna(s, data, cmd, kto, events);
+      break;
+    case "podloz":
+      cmdPodloz(s, data, cmd, kto, events);
       break;
     case "bezReakcie":
       cmdBezReakcie(s, data, hracId, events);
@@ -2721,10 +2730,10 @@ function cmdPlace(
     });
     manualEfekty(s, data, "Dedičstvo", events);
   } else {
-    // Nástroj sa do limitu vykladania nezapočítava (PRAVIDLA §6, §12); ostatné
-    // karty limit míňajú (Kočovník od 2026-10-19 tiež).
-    // Družstvo: karty s akciou Robota limit nemíňajú.
-    if (!jeNastroj && !bezLimituDruzstva(cielLokalita(s as GameState)?.defId ?? null, def)) {
+    // Nástroj sa do línie nevykladá (Náradie 2026-11-08) — podkladá sa (cmdPodloz).
+    need(!jeNastroj, NASTROJ_DO_LINIE);
+    // Karty limit míňajú (Kočovník od 2026-10-19 tiež); Družstvo: karty s akciou Robota nie.
+    if (!bezLimituDruzstva(cielLokalita(s as GameState)?.defId ?? null, def)) {
       need(z.zostavaLimit[p] > 0, "Limit vykladania je vyčerpaný.");
       uberLimit(z, p, 1);
     }
@@ -2785,7 +2794,8 @@ function cmdZaverecna(
   const kartaVRuke = rukaMiestaMut(s, kto).find((k) => k.uid === cmd.uid);
   need(kartaVRuke !== undefined, "Karta nie je v ruke.");
   const def = defOf(data, kartaVRuke as CardInstance);
-  if (!def.tags.includes("Nástroj") && !bezLimituDruzstva(cielLokalita(s as GameState)?.defId ?? null, def)) {
+  need(!def.tags.includes("Nástroj"), NASTROJ_DO_LINIE);
+  if (!bezLimituDruzstva(cielLokalita(s as GameState)?.defId ?? null, def)) {
     need(z.zostavaLimit[p] > 0, "Limit vykladania je vyčerpaný.");
     uberLimit(z, p, 1);
   }
@@ -2903,19 +2913,12 @@ function vylozDoLinie(
   need(!(def.tags.includes("Kliatba") && !def.tags.includes("Občan")), "Kliatbu možno len priznať — do línie nepatrí.");
   // Karta smie na ktorýkoľvek koniec línie; patrí tomu, kto ju zahral (pravidlá v3).
   const cielPartia: PlayerId = target === "vlastna" ? p : opponentOf(p);
-  // Nástroj nesmie susediť s Nástrojom (PRAVIDLA §12).
+  // Nástroj sa do línie nevykladá ani odpoveďou na NA EX (Náradie 2026-11-08) — len podkladá.
+  need(!def.tags.includes("Nástroj"), NASTROJ_DO_LINIE);
   const partia = s.strany[cielPartia];
   const sused = susedNaKonci(s.strany, cielPartia);
   need(sused?.zaverecna !== true, "Za Záverečnú sa nedá priložiť, kým sa na konci Pitky neotočí.");
   need(sused?.posledna !== true, "Za túto kartu sa už nepriloží — Hrobár ju urobil poslednou na tom konci línie.");
-  // Vedľa lokality sa Nástroj nevykladá (v10.2, Michal 2026-11-01) — na žiadnom konci línie.
-  need(!(def.tags.includes("Nástroj") && sused == null), NASTROJ_PRI_LOKALITE);
-  if (def.tags.includes("Nástroj") && sused != null) {
-    need(
-      !defOf(data, sused.card as CardInstance).tags.includes("Nástroj"),
-      "Nástroj nesmie susediť s Nástrojom.",
-    );
-  }
   const karta = vezmiZRuky(s, kto, uid);
   // Pasca (v7): súper priložil kartu k tvojej — ráta sa každé priloženie, aj lícom dole.
   if (sused != null && sused.playedBy !== p) {
@@ -2946,8 +2949,56 @@ function vylozDoLinie(
   if (sused != null) poPrilozeni(s, data, sused as DeepMutable<PlacedCard>, nova, events);
 }
 
-/** Dôvod pre server aj klienta, keď sa Nástroj vykladá do prázdneho kraja. */
-export const NASTROJ_PRI_LOKALITE = "Vedľa lokality sa Nástroj vyložiť nedá — najprv tam musí ležať iná karta.";
+/** Dôvod pre server aj klienta, keď sa Nástroj vykladá do línie (Náradie 2026-11-08). */
+export const NASTROJ_DO_LINIE = "Nástroj sa do línie nevykladá — podlož ho pod Občana či Starešinu alebo ho vylož do Dedičstva.";
+
+/**
+ * Podloženie (Náradie, Michal 2026-11-08, PRAVIDLA §12): Nástroj z ruky pod kartu v línii
+ * (svoju aj súperovu) za cigaretu, zvolená hrana pretŕča. Je to ťah v striedaní, limit
+ * vykladania nemíňa; Konflikt, Podporu ani Pascu nespúšťa (nie je to priloženie).
+ */
+function cmdPodloz(
+  s: MutState,
+  data: GameData,
+  cmd: { nastrojId: number; hostitelId: number; hrana: KtoraHrana },
+  kto: Miesto,
+  events: Event[],
+): void {
+  const p = timMiesta(kto);
+  const z = s.zhromazdenieStav;
+  need(s.faza === "zhromazdenie" && z !== null, "Podkladá sa len v Zhromaždení.");
+  need(!skoncilVykladanie(z, kto), "Už si pasoval.");
+  podlozNastroj(s, data, cmd, kto, events);
+  ukonciVykladanie(s, data, p, events);
+}
+
+/** Podloží Nástroj z ruky miesta `kto` za cigaretu — ťah v Zhromaždení aj Živnostník (cmdNastroj). */
+function podlozNastroj(s: MutState, data: GameData, cmd: { nastrojId: number; hostitelId: number; hrana: KtoraHrana }, kto: Miesto, events: Event[]): void {
+  const p = timMiesta(kto);
+  need(KTORE_HRANY.includes(cmd.hrana), "Hrana je horná alebo dolná.");
+  const karta = rukaMiestaMut(s, kto).find((k) => k.uid === cmd.nastrojId);
+  need(karta !== undefined, "Nástroj nie je v ruke.");
+  const dovod = dovodNepodlozenia(data, lineState(s as GameState), karta as CardInstance, cmd.hostitelId, cmd.hrana);
+  need(dovod === null, dovod ?? "");
+  need(s.hraci[p].cigarety >= KONSTANTY.CENA_PODLOZENIA, `Podloženie stojí ${cigariet(KONSTANTY.CENA_PODLOZENIA)}.`);
+  zmenCigarety(s, p, "platba", -KONSTANTY.CENA_PODLOZENIA, events);
+  const nastroj = vezmiZRuky(s, kto, cmd.nastrojId);
+  const kde = najdiVLinii(s, cmd.hostitelId);
+  const hostitel = kde === null ? undefined : s.strany[kde.strana][kde.index];
+  need(hostitel !== undefined, "Karta nie je v línii.");
+  const podlozeny = { card: nastroj, majitel: p, hrana: cmd.hrana, ...kymVylozena(s, kto) };
+  hostitel.podlozene = [...(hostitel.podlozene ?? []), podlozeny as DeepMutable<typeof podlozeny>];
+  const popis = popisPodlozenych(data, hostitel as PlacedCard).at(-1) ?? defOf(data, nastroj).name;
+  events.push({ type: "log", text: `Hráč ${p + 1} podkladá ${popis} pod kartu ${defOf(data, hostitel.card as CardInstance).name} hráča ${hostitel.playedBy + 1} za ${cigariet(KONSTANTY.CENA_PODLOZENIA)}.` });
+}
+
+/** Podložené Nástroje karty, ktorá odchádza z línie, idú hneď do odhadzovacieho balíčka ich majiteľov. */
+function vratPodlozene(s: MutState, data: GameData, pl: PlacedCard, events: Event[]): void {
+  for (const n of pl.podlozene ?? []) {
+    hrac(s, n.majitel).odhadzovaci.push(n.card as DeepMutable<CardInstance>);
+    events.push({ type: "log", text: `${defOf(data, n.card).name} spod karty ${defOf(data, pl.card).name} ide do odhadzovacieho balíčka hráča ${n.majitel + 1}.` });
+  }
+}
 
 /** Karta, ku ktorej sa priložila posledná karta kraja `strana`. */
 function susedPrilozenej(s: MutState, strana: PlayerId): DeepMutable<PlacedCard> | null {
@@ -3357,13 +3408,18 @@ function nastupEfekt(
       s.strany = strany as MutState["strany"];
       events.push({ type: "log", text: `Poľovník hráča ${p + 1} strieľa: ${defOf(data, spalena.card).name} hráča ${opp + 1} sa spáli — navždy z hry.` });
       vypiPoldeciSpalenej(s, spalena, events);
+      vratPodlozene(s, data, spalena, events);
       break;
     }
     case "zivnostnik": {
-      // v7: v tom istom ťahu smie za neho priložiť Nástroj z ruky — mimo limitu.
-      if (!rukaMiesta(s as GameState, spustil ?? kapitan(s, p)).some((k) => defOf(data, k).tags.includes("Nástroj"))) break;
-      s.hasicVolby = [...(s.hasicVolby ?? []), { hrac: p, typ: "nastroj", uid: 0, potom: null, strana, ...zaSpustil }];
-      events.push({ type: "log", text: `Živnostník: hráč ${p + 1} smie za neho priložiť Nástroj z ruky.` });
+      // Náradie (2026-11-08): hneď pod neho smie podložiť Nástroj z ruky — mimo ťahu, za cigaretu ako každé podloženie.
+      const ziv = s.strany[strana].at(-1);
+      if (ziv === undefined || ziv.card.defId !== "zivnostnik" || s.hraci[p].cigarety < KONSTANTY.CENA_PODLOZENIA) break;
+      const line = lineState(s as GameState);
+      const moze = rukaMiesta(s as GameState, spustil ?? kapitan(s, p)).some((k) => ponukaPodlozenia(data, line, k).some((m) => m.hostitel === ziv.card.uid));
+      if (!moze) break;
+      s.hasicVolby = [...(s.hasicVolby ?? []), { hrac: p, typ: "nastroj", uid: ziv.card.uid, potom: null, strana, ...zaSpustil }];
+      events.push({ type: "log", text: `Živnostník: hráč ${p + 1} smie pod neho podložiť Nástroj z ruky.` });
       break;
     }
     case "kapybara": {
@@ -3868,6 +3924,9 @@ export function naexCieleVLinii(data: GameData, line: LineState, p: PlayerId, na
         continue;
       }
       if (placed.naexBy !== undefined) continue;
+      // Vínko a Injekcia pod kartou (Náradie 2026-11-08): NA EX z Vínka skutočné NA EX blokuje, Výtržník ho nedostane.
+      const ucinky = ucinkyNastrojov(data, placed);
+      if (ucinky.has("NA EX") || ucinky.has("Výtržník")) continue;
       const tags = defOf(data, placed.card).tags;
       // Injekcia (lievik) (Dedičstvo, v7): aj na Zviera.
       if ((tags.includes("Občan") || tags.includes("Starešina") || (naZviera && tags.includes("Zviera"))) && zmysel.has(placed.card.uid)) out.push(placed.card.uid);
@@ -4386,11 +4445,14 @@ function volbyNastupu(data: GameData, state: GameState): Command[] {
   if (volba.typ === "dvor") return [{ type: "spal", uid: null }, ...ruka().filter((k) => !jeKliatba(data, k)).map((k) => ({ type: "spal", uid: k.uid }) as Command)];
   if (volba.typ === "vila") return state.starsi.filter((e) => dalsiStupenReci(e, volba.hrac) !== null).map((e) => ({ type: "vila", elderId: e.elderId }) as Command);
   if (volba.typ === "nastroj") {
-    const strana = state.strany[volba.strana ?? volba.hrac];
-    const posledna = strana[strana.length - 1];
-    const smie = posledna?.card.defId === "zivnostnik" && posledna.playedBy === volba.hrac;
-    const nastroje = smie ? rukaMiesta(state, volba.miesto ?? kapitan(state, volba.hrac)).filter((k) => defOf(data, k).tags.includes("Nástroj")) : [];
-    return [{ type: "nastroj", uid: null }, ...nastroje.map((k) => ({ type: "nastroj", uid: k.uid }) as Command)];
+    const line = lineState(state);
+    const ziv = zivnostnikVolby(state, volba);
+    const out: Command[] = [{ type: "nastroj", uid: null }];
+    if (ziv === null || state.hraci[volba.hrac].cigarety < KONSTANTY.CENA_PODLOZENIA) return out;
+    for (const k of rukaMiesta(state, volba.miesto ?? kapitan(state, volba.hrac))) {
+      for (const m of ponukaPodlozenia(data, line, k)) if (m.hostitel === ziv.card.uid && m.maCoRobit) out.push({ type: "nastroj", uid: k.uid, hrana: m.hrana });
+    }
+    return out;
   }
   return [{ type: "hasic", nechat: true }, { type: "hasic", nechat: false }];
 }
@@ -4641,20 +4703,31 @@ function cmdSenok(s: MutState, data: GameData, cmd: { uid: number }, kto: Miesto
   dokonciPoVolbe(s, data, volba, events);
 }
 
-/** Živnostník (Nástup, v7): Nástroj z ruky za neho na tú istú stranu, mimo limitu; null = nič. */
-function cmdNastroj(s: MutState, data: GameData, cmd: { uid: number | null }, kto: Miesto, events: Event[]): void {
+/** Živnostník, pod ktorého voľba podkladá — podľa uid, staré uloženia (uid 0) podľa konca línie. */
+function zivnostnikVolby(state: Pick<GameState, "strany">, volba: HasicVolba): PlacedCard | null {
+  const vsetky = [...state.strany[0], ...state.strany[1]];
+  const ziv = volba.uid !== 0 ? vsetky.find((pl) => pl.card.uid === volba.uid) : state.strany[volba.strana ?? volba.hrac].at(-1);
+  return ziv !== undefined && ziv.card.defId === "zivnostnik" ? ziv : null;
+}
+
+/** Živnostník (Nástup, Náradie 2026-11-08): Nástroj z ruky pod neho za cigaretu, mimo ťahu; null = nič. */
+function cmdNastroj(s: MutState, data: GameData, cmd: { uid: number | null; hrana?: KtoraHrana }, kto: Miesto, events: Event[]): void {
   const p = timMiesta(kto);
   const [volba, ...dalsie] = s.hasicVolby ?? [];
-  need(volba !== undefined && volba.hrac === p && volba.typ === "nastroj", "Teraz neprikladáš Nástroj za Živnostníka.");
-  s.hasicVolby = dalsie;
+  need(volba !== undefined && volba.hrac === p && volba.typ === "nastroj", "Teraz nepodkladáš Nástroj pod Živnostníka.");
   if (cmd.uid !== null) {
+    const ziv = zivnostnikVolby(s as GameState, volba as HasicVolba);
+    need(ziv !== null, "Živnostník už v línii nie je — Nástroj sa pod neho nepodloží.");
     const karta = rukaMiestaMut(s, kto).find((k) => k.uid === cmd.uid);
-    need(karta !== undefined && defOf(data, karta as CardInstance).tags.includes("Nástroj"), "Za Živnostníka smieš priložiť len Nástroj z ruky.");
-    const strana = volba.strana ?? p;
-    const posledna = s.strany[strana][s.strany[strana].length - 1];
-    need(posledna?.card.defId === "zivnostnik" && posledna.playedBy === p, "Živnostník už nie je na konci línie — Nástroj sa za neho nepriloží.");
-    vylozDoLinie(s, data, kto, cmd.uid, strana === p ? "vlastna" : "superova", events);
-  } else events.push({ type: "log", text: `Živnostník: hráč ${p + 1} za neho Nástroj neprikladá.` });
+    need(karta !== undefined, "Pod Živnostníka smieš podložiť len Nástroj z ruky.");
+    const hrany = hranyNastroja(defOf(data, karta as CardInstance));
+    const hrana = cmd.hrana ?? KTORE_HRANY.find((h) => hrany !== null && hranaMaCoRobit(data, ziv, hrany[h])) ?? "horna";
+    s.hasicVolby = dalsie;
+    podlozNastroj(s, data, { nastrojId: cmd.uid, hostitelId: ziv.card.uid, hrana }, kto, events);
+  } else {
+    s.hasicVolby = dalsie;
+    events.push({ type: "log", text: `Živnostník: hráč ${p + 1} pod neho Nástroj nepodkladá.` });
+  }
   dokonciPoVolbe(s, data, volba, events);
 }
 
@@ -5277,8 +5350,8 @@ export function planVykladania(
       return chyba(
         x.ciel === "dedicstvo"
           ? `Do Dedičstva treba ${cena} cig.`
-          : defOf(data, x.karta).tags.includes("Nástroj") && strany[x.ciel === "vlastna" ? p : opponentOf(p)].length === 0
-            ? NASTROJ_PRI_LOKALITE
+          : defOf(data, x.karta).tags.includes("Nástroj")
+            ? NASTROJ_DO_LINIE
             : zostava <= 0
               ? "Limit vykladania je vyčerpaný."
               : `${defOf(data, x.karta).name} sem vyložiť nemôžeš.`,
@@ -5304,7 +5377,7 @@ export function planVykladania(
       const nova = [...strany[kam], { card: x.karta, playedBy: p }];
       strany = kam === 0 ? [nova, strany[1]] : [strany[0], nova];
       const def = defOf(data, x.karta);
-      if (!def.tags.includes("Nástroj") && !bezLimituDruzstva(lokalita, def)) zostava -= 1;
+      if (!bezLimituDruzstva(lokalita, def)) zostava -= 1;
     }
   }
   return { kroky, poldeci, chyba: null, zostava };
@@ -5336,26 +5409,21 @@ export function cieleVykladania(
   // ktorá je zároveň Občan s akciami (Milujúca manželka). Absťák (v9.1) ani to.
   if (def.id === "abstak") return [];
   if (def.tags.includes("Kliatba") && !def.tags.includes("Občan")) return ["priznanie"];
-  const jeNastroj = def.tags.includes("Nástroj");
-  const doDedicstva = jeNastroj && naDedicstvo;
-  // Nástroj limit nemíňa, nesmie však susediť s Nástrojom na konci partie.
+  // Nástroj sa do línie nevykladá (Náradie 2026-11-08): podkladá sa (ponukaPodlozenia) alebo ide do Dedičstva.
+  if (def.tags.includes("Nástroj")) return naDedicstvo ? ["dedicstvo"] : [];
   const smie = (strana: PlayerId, ciel: "vlastna" | "superova"): boolean => {
-    if (!jeNastroj && zostavaLimit <= 0 && !bezLimituDruzstva(lokalita, def)) return false;
+    if (zostavaLimit <= 0 && !bezLimituDruzstva(lokalita, def)) return false;
     if (ciel === "superova" && lenVlastnaStrana(lokalita)) return false;
     const koniec = susedNaKonci(strany, strana);
     // Za skrytú Záverečnú sa nedá priložiť (ani odpoveď na NA EX), kým sa neotočí.
     if (koniec?.zaverecna === true || zablokovane[ciel === "vlastna" ? p : opponentOf(p)]) return false;
     // Za kartu, ktorú Hrobár urobil poslednou, sa už nepriloží (Konflikt v7).
-    if (koniec?.posledna === true) return false;
-    // Vedľa lokality sa Nástroj nevykladá (v10.2) — prázdna strana ho neprijme.
-    if (jeNastroj && koniec == null) return false;
-    return !(jeNastroj && koniec != null && defOf(data, koniec.card).tags.includes("Nástroj"));
+    return koniec?.posledna !== true;
   };
   const out: CielVykladania[] = [];
   if (smie(p, "vlastna")) out.push("vlastna");
   if (smie(opponentOf(p), "superova")) out.push("superova");
   if (def.tags.includes("Kliatba")) out.push("priznanie");
-  if (doDedicstva) out.push("dedicstvo");
   return out;
 }
 
@@ -5371,17 +5439,15 @@ export function dovodyAutoPasu(data: GameData, state: GameState, p: PlayerId, kt
   if (ruka.length === 0) return ["Nemáš v ruke žiadnu kartu."];
   const lokalita = cielLokalitaId(state);
   /** Prečo koniec línie kartu neprijme (limit zvlášť); null = prijme. */
-  const prekazka = (strana: PlayerId, jeNastroj: boolean): string | null => {
+  const prekazka = (strana: PlayerId): string | null => {
     if (strana !== p && lenVlastnaStrana(lokalita)) return "na Moste sa vykladá len po svojej ľavici";
     const koniec = susedNaKonci(state.strany, strana);
     if (koniec?.zaverecna === true) return "na konci leží skrytá Záverečná";
     if (koniec?.posledna === true) return "za poslednú kartu sa už nepriloží";
-    if (jeNastroj && koniec === null) return "prázdny kraj, Nástroj sa vedľa lokality nevykladá";
-    if (jeNastroj && koniec !== null && defOf(data, koniec.card).tags.includes("Nástroj")) return "na konci je Nástroj";
     return null;
   };
-  const strany = (jeNastroj: boolean): string => {
-    const [moja, superova] = [prekazka(p, jeNastroj), prekazka(opponentOf(p), jeNastroj)];
+  const strany = (): string => {
+    const [moja, superova] = [prekazka(p), prekazka(opponentOf(p))];
     // Text ide len hráčovi p — jeho strany[p] leží vľavo od lokality.
     if (moja !== null && moja === superova) return `oba konce: ${moja.replace(/^prázdny kraj/, "prázdne kraje")}`;
     return [moja === null ? null : `vľavo: ${moja}`, superova === null ? null : `vpravo: ${superova}`].filter((x) => x !== null).join("; ");
@@ -5396,9 +5462,15 @@ export function dovodyAutoPasu(data: GameData, state: GameState, p: PlayerId, kt
     if (def.id === "abstak") pridaj("sa nevykladá.", def.name);
     else if (def.tags.includes("Nástroj")) {
       const cena = cenaDedicstva(state);
-      pridaj(`do línie nemá kam (${strany(true)}) a Dedičstvo stojí ${cigariet(cena)}, máš ${state.hraci[p].cigarety}.`, def.name);
+      const podlozit =
+        state.hraci[p].cigarety < KONSTANTY.CENA_PODLOZENIA
+          ? `podloženie stojí ${cigariet(KONSTANTY.CENA_PODLOZENIA)}`
+          : hranyNastroja(def) === null
+            ? "nemá v sade hrany na podloženie"
+            : "pod kartami v línii by nemal čo robiť";
+      pridaj(`— ${podlozit} a Dedičstvo stojí ${cigariet(cena)}, máš ${state.hraci[p].cigarety}.`, def.name);
     } else if (z.zostavaLimit[p] <= 0 && !bezLimituDruzstva(lokalita, def)) pridaj("— limit vykladania máš v tomto Zhromaždení vyčerpaný.", def.name);
-    else pridaj(`nemá kam (${strany(false)}).`, def.name);
+    else pridaj(`nemá kam (${strany()}).`, def.name);
   }
   return [...skupiny].map(([dovod, mena]) => `${mena.join(", ")} ${dovod}`);
 }
@@ -6071,6 +6143,8 @@ function vratKartyPoBitke(s: MutState, data: GameData, events: Event[]): void {
         events.push({ type: "log", text: `Výtržník ${defOf(data, placed.card as CardInstance).name} vytriezvel — karta má znova svoje akcie.` });
         delete (placed as { vytrznik?: true }).vytrznik;
       }
+      // Podložené Nástroje (Náradie 2026-11-08) idú majiteľom Nástrojov, nech je hostiteľ kohokoľvek a nech ide kamkoľvek.
+      for (const n of placed.podlozene ?? []) hrac(s, n.majitel).odhadzovaci.push(n.card as DeepMutable<CardInstance>);
       // Presvedčený starší (v11.4) je nezničiteľný a majiteľa nemení — ide vždy svojmu majiteľovi;
       // zajatý presvedčený už medzi staršími nie je, ten sa spáli (je v pivnici).
       const majitel = majitelPresvedcenej(s as GameState, placed.card.uid);
@@ -6359,6 +6433,17 @@ export function legalCommands(data: GameData, state: GameState, kto: Miesto): Co
           // Záverečná: tá istá karta lícom dole za cigaretu.
           if ((target === "vlastna" || target === "superova") && state.hraci[p].cigarety >= KONSTANTY.CENA_ZAVERECNEJ) {
             vylozenia.push({ type: "zaverecna", uid: karta.uid, target });
+          }
+        }
+      }
+      // Podloženie (Náradie 2026-11-08): len hrany, ktoré pod kartou niečo urobia — prázdne podloženie
+      // pravidlá dovolia (cmdPodloz), ponúkať ho nemá zmysel.
+      if (state.hraci[p].cigarety >= KONSTANTY.CENA_PODLOZENIA && !skoncilVykladanie(z, kto)) {
+        const line = lineState(state);
+        for (const karta of ruka) {
+          if (!defOf(data, karta).tags.includes("Nástroj")) continue;
+          for (const m of ponukaPodlozenia(data, line, karta)) {
+            if (m.maCoRobit) vylozenia.push({ type: "podloz", nastrojId: karta.uid, hostitelId: m.hostitel, hrana: m.hrana });
           }
         }
       }

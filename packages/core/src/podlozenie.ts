@@ -1,0 +1,141 @@
+// Podloženie Nástroja (rework Náradia, Michal 2026-11-08, PRAVIDLA §12): kam a ktorou hranou
+// smie hráč Nástroj z ruky podložiť. Spoločné pre server (cmdPodloz), legalCommands, bota
+// aj klienta — pravidlá podloženia sú tak len raz.
+
+import type { CardInstance } from "./types.ts";
+import type { GameData } from "./data.ts";
+import { defOf, printedSides } from "./data.ts";
+import type { LineState, PlacedCard } from "./partia.ts";
+import { evaluateLine, zvieratAUmlcane } from "./partia.ts";
+import type { HranaNastroja, KtoraHrana } from "./naradie.ts";
+import { KTORE_HRANY, aktivnaHrana, hranyNastroja, preskoleniaHostitela, ucinkyNastrojov } from "./naradie.ts";
+import { preskolenieSlovami, menoAkcie } from "./preskolenie.ts";
+
+
+/** Pod Zámočníka smie ľubovoľne veľa Nástrojov, pod ostatné karty jeden. */
+export const BEZ_LIMITU_NASTROJOV = "zamocnik";
+
+/** Hostiteľ v línii a jeho kraj. */
+function najdi(line: Pick<LineState, "strany">, uid: number): PlacedCard | null {
+  for (const strana of line.strany) for (const pl of strana) if (pl.card.uid === uid) return pl;
+  return null;
+}
+
+/** Čo sa z línie ráta raz pre celú ponuku (legalCommands ju volá pri každom ťahu). */
+const pamat = new WeakMap<LineState, { kon?: boolean; vzbury?: ReadonlySet<number> }>();
+
+function pamatLinie(line: LineState): { kon?: boolean; vzbury?: ReadonlySet<number> } {
+  let p = pamat.get(line);
+  if (p === undefined) {
+    p = {};
+    pamat.set(line, p);
+  }
+  return p;
+}
+
+/** Leží v línii odkrytý Kôň, ktorého neumlčal Mäsiar? Potom smie Nástroj aj pod Zviera. */
+function konPusta(data: GameData, line: LineState): boolean {
+  const p = pamatLinie(line);
+  if (p.kon === undefined) {
+    const umlcane = zvieratAUmlcane(data, line);
+    p.kon = [...line.strany[0], ...line.strany[1]].some((pl) => pl.card.defId === "kon" && pl.zaverecna !== true && !umlcane.has(pl.card.uid));
+  }
+  return p.kon;
+}
+
+/** Má karta na tejto hrane čo robiť pod hostiteľom (preškolenie nájde svoju akciu, účinok ešte nemá)? */
+export function hranaMaCoRobit(data: GameData, hostitel: PlacedCard, hrana: HranaNastroja): boolean {
+  if (hrana.druh === "karta") return !ucinkyNastrojov(data, hostitel).has(hrana.ucinok);
+  if (preskoleniaHostitela(data, hostitel).has(hrana.z)) return false;
+  return pocetAkcie(data, hostitel, hrana.z) > 0;
+}
+
+/** Koľko vytlačených akcií `a` má karta na oboch hranách. */
+function pocetAkcie(data: GameData, pl: PlacedCard, a: string): number {
+  const p = printedSides(data, pl.card);
+  return [...p.left, ...p.right].filter((x) => x === a).length;
+}
+
+/**
+ * Prečo sa Nástroj nedá podložiť pod kartu `hostitelUid` hranou `hrana`; null = smie.
+ * Cigaretu a ťah stráži volajúci. Hrana, ktorá pod kartou nemá čo robiť, je dovolená
+ * (pravidlá v5: „podložiť ho smieš, je to tvoj ťah“) — ponuka ju len označí.
+ */
+export function dovodNepodlozenia(data: GameData, line: LineState, nastroj: CardInstance, hostitelUid: number, hrana: KtoraHrana): string | null {
+  const def = defOf(data, nastroj);
+  if (!def.tags.includes("Nástroj")) return "Podložiť možno len Nástroj.";
+  const hrany = hranyNastroja(def);
+  if (hrany === null) return `${def.name} nemá v sade hrany — smie len do Dedičstva.`;
+  const hostitel = najdi(line, hostitelUid);
+  if (hostitel === null) return "Karta nie je v línii.";
+  // Karta lícom dole: súper nevie, čo to je — odmietnutie by prezradilo jej tagy.
+  if (hostitel.zaverecna === true) return "Pod kartu lícom dole sa nepodkladá.";
+  const tags = defOf(data, hostitel.card).tags;
+  const clovek = tags.includes("Občan") || tags.includes("Starešina");
+  if (!clovek && !(tags.includes("Zviera") && konPusta(data, line))) {
+    return tags.includes("Zviera") ? "Pod Zviera smie Nástroj len, kým v línii leží Kôň." : "Nástroj sa podkladá len pod Občana alebo Starešinu.";
+  }
+  if ((hostitel.podlozene?.length ?? 0) > 0 && hostitel.card.defId !== BEZ_LIMITU_NASTROJOV) return "Pod kartou už leží Nástroj — viac ich smie len pod Zámočníka.";
+  const h = hrany[hrana];
+  if (h.druh === "karta" && h.ucinok === "NA EX") {
+    // Vínko (Michal 2026-11-08, P3): ako NA EX — nie na kartu s poldecom, so Vzburou ani na Výtržníka.
+    if (hostitel.naexBy !== undefined || hostitel.naexBy2 !== undefined) return "Na karte leží poldeci — NA EX z Vínka pod ňu nejde.";
+    const ucinky = ucinkyNastrojov(data, hostitel);
+    if (hostitel.vytrznik === true || ucinky.has("Výtržník")) return "Výtržník NA EX nedostane.";
+    if (vzburaVidno(data, line, hostitel)) return "Karta má Vzburu — NA EX z Vínka pod ňu nejde.";
+  }
+  return null;
+}
+
+/** Vzbura karty z toho, čo vidia obaja — skryté Záverečné sa nerátajú (naexMaZmysel). */
+function vzburaVidno(data: GameData, line: LineState, pl: PlacedCard): boolean {
+  const p = pamatLinie(line);
+  if (p.vzbury === undefined) {
+    const verejne = line.strany.map((strana) => strana.filter((x) => x.zaverecna !== true)) as unknown as LineState["strany"];
+    p.vzbury = new Set([...evaluateLine(data, { ...line, strany: verejne }).cards.values()].filter((k) => k.vzbura).map((k) => k.uid));
+  }
+  return p.vzbury.has(pl.card.uid);
+}
+
+export interface MoznostPodlozenia {
+  readonly hostitel: number;
+  readonly hrana: KtoraHrana;
+  /** Hrana pod touto kartou niečo urobí; inak je podloženie len stratený ťah. */
+  readonly maCoRobit: boolean;
+  /** Čo hrana spraví na tejto karte: „Rana ×2 → Pecka ×2“, „Vzbura“, „nemá Ranu“. */
+  readonly popis: string;
+}
+
+/** Všetky dovolené podloženia Nástroja `nastroj` (karta v línii × hrana) v poradí línie. */
+export function ponukaPodlozenia(data: GameData, line: LineState, nastroj: CardInstance): MoznostPodlozenia[] {
+  const hrany = hranyNastroja(defOf(data, nastroj));
+  if (hrany === null) return [];
+  const out: MoznostPodlozenia[] = [];
+  for (const strana of line.strany) {
+    for (const pl of strana) {
+      for (const hrana of KTORE_HRANY) {
+        if (dovodNepodlozenia(data, line, nastroj, pl.card.uid, hrana) !== null) continue;
+        out.push({ hostitel: pl.card.uid, hrana, maCoRobit: hranaMaCoRobit(data, pl, hrany[hrana]), popis: popisHrany(data, pl, hrany[hrana]) });
+      }
+    }
+  }
+  return out;
+}
+
+/** Čo hrana spraví na karte — text pre ponuku hrany a log. */
+export function popisHrany(data: GameData, hostitel: PlacedCard, hrana: HranaNastroja): string {
+  if (hrana.druh === "karta") return hrana.ucinok;
+  const n = pocetAkcie(data, hostitel, hrana.z);
+  if (n === 0) return `nemá ${menoAkcie(hrana.z)}`;
+  const krat = n > 1 ? ` ×${n}` : "";
+  return `${menoAkcie(hrana.z)}${krat} → ${menoAkcie(hrana.na)}${krat}`;
+}
+
+/** Pretŕčajúce hrany Nástrojov pod kartou, ako ich ukazuje log a klient: „Vidly (Rana → Pecka)“. */
+export function popisPodlozenych(data: GameData, pl: PlacedCard): string[] {
+  return (pl.podlozene ?? []).map((n) => {
+    const h = aktivnaHrana(data, n);
+    const meno = defOf(data, n.card).name;
+    return h === null ? meno : `${meno} (${h.druh === "akcia" ? preskolenieSlovami(h) : h.ucinok})`;
+  });
+}

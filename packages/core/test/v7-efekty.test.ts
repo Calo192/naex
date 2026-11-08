@@ -32,8 +32,10 @@ import {
   viewFor,
 } from "../src/index.ts";
 import { zPolohy } from "./helpers.ts";
+import { sHranami } from "./naradieData.ts";
 
 const data = loadGameData(cardsJson, eldersJson, scorecardsJson);
+const dataH = loadGameData(sHranami(cardsJson), eldersJson, scorecardsJson);
 
 let uidSeq = 980000;
 const inst = (defId: string): CardInstance => ({ uid: ++uidSeq, defId, leftLayout: 0, rightLayout: 0 });
@@ -132,7 +134,7 @@ describe("Konflikt (v7, plan.md 13.1)", () => {
   // (konflikt-podpora-v113.test.ts).
   const premena = (st: GameState, uid: number): string | undefined => [...st.strany[0], ...st.strany[1]].find((pl) => pl.card.uid === uid)?.premena;
 
-  it("vlastné priloženie a priložený Nástroj Konflikt nevyvolajú", () => {
+  it("vlastné priloženie a podložený Nástroj Konflikt nevyvolajú", () => {
     const sar = inst("sarlatan");
     const vlastna = vZhromazdeni("zastavka", [[lezi(sar, 0)], []], [inst("masiar")]);
     const masiar = vlastna.hraci[0].ruka[0]!;
@@ -144,7 +146,10 @@ describe("Konflikt (v7, plan.md 13.1)", () => {
     const sar3 = inst("sarlatan");
     const pasca = inst("pasca");
     const nastroj = vZhromazdeni("zastavka", [[lezi(sar3, 1)], []], [pasca]);
-    expect(premena(apply(data, nastroj, { type: "place", uid: pasca.uid, target: "vlastna" }, 0).state, sar3.uid)).toBeUndefined();
+    // Náradie (2026-11-08): podloženie nie je priloženie.
+    const podlozeny = apply(dataH, nastroj, { type: "podloz", nastrojId: pasca.uid, hostitelId: sar3.uid, hrana: "horna" }, 0).state;
+    expect(podlozeny.strany[0][0]?.podlozene?.map((n) => n.card.uid)).toEqual([pasca.uid]);
+    expect(premena(podlozeny, sar3.uid)).toBeUndefined();
   });
 
   it("Konflikt oboma smermi (v11.3): Šarlatána priložený k súperovej karte sa premení tiež", () => {
@@ -394,20 +399,24 @@ describe("Zhromaždenie a Nástup (v7)", () => {
     expect(po.hraci[0].cigarety).toBe(s.hraci[0].cigarety + 2);
   });
 
-  it("Starosta v línii od v9 Nástup nemá; Živnostník (Nástroj za neho); Anonymný alkoholik od v11.5 Nástup nemá", () => {
+  it("Starosta v línii od v9 Nástup nemá; Živnostník (Nástroj pod neho, Náradie 2026-11-08); Anonymný alkoholik od v11.5 Nástup nemá", () => {
     const starosta = inst("starosta");
     const s = vZhromazdeni("zastavka", [[], []], [starosta]);
     const po = apply(data, s, { type: "place", uid: starosta.uid, target: "vlastna" }, 0).state;
     expect(legalCommands(data, po, 0).some((c) => c.type === "senok")).toBe(false);
 
     const ziv = inst("zivnostnik");
-    const pasca = inst("pasca");
-    const sz = vZhromazdeni("zastavka", [[], []], [ziv, pasca]);
-    const pz = apply(data, sz, { type: "place", uid: ziv.uid, target: "vlastna" }, 0).state;
-    expect(legalCommands(data, pz, 0)).toContainEqual({ type: "nastroj", uid: pasca.uid });
-    const pn = apply(data, pz, { type: "nastroj", uid: pasca.uid }, 0).state;
-    expect(pn.strany[0].map((pl) => pl.card.uid)).toEqual([ziv.uid, pasca.uid]);
+    const vidly = inst("vidly");
+    const sz = vZhromazdeni("zastavka", [[], []], [ziv, vidly]);
+    const pz = apply(dataH, sz, { type: "place", uid: ziv.uid, target: "vlastna" }, 0).state;
+    expect(legalCommands(dataH, pz, 0)).toContainEqual({ type: "nastroj", uid: vidly.uid, hrana: "horna" });
+    const pn = apply(dataH, pz, { type: "nastroj", uid: vidly.uid, hrana: "horna" }, 0).state;
+    expect(pn.strany[0].map((pl) => pl.card.uid)).toEqual([ziv.uid]);
+    expect(pn.strany[0][0]?.podlozene).toEqual([{ card: vidly, majitel: 0, hrana: "horna" }]);
+    expect(pn.hraci[0].cigarety).toBe(pz.hraci[0].cigarety - 1);
     expect(pn.zhromazdenieStav?.zostavaLimit[0]).toBe(2);
+    // Bez hrán v sade (stará sada) Živnostník nič neponúkne.
+    expect(apply(data, sz, { type: "place", uid: ziv.uid, target: "vlastna" }, 0).state.hasicVolby ?? []).toEqual([]);
 
     const aa = inst("anonymny_alkoholik");
     const sa = sHracom(vZhromazdeni("zastavka", [[], []], [aa]), 0, { odhadzovaci: [inst("cirhoza"), inst("cirhoza"), inst("masiar")] });

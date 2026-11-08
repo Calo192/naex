@@ -1,0 +1,345 @@
+// Rework Náradia (Michal 2026-11-08, docs/napady/naradie-hrany-zoznam.html v5, PRAVIDLA §12):
+// Nástroj sa do línie nevykladá — podkladá sa pod Občana či Starešinu za cigaretu, pretŕča jedna
+// z dvoch hrán. Akciová hrana preškolí akcie hostiteľa pred spojmi, kartová mu dá Vzburu, Forsáž,
+// NA EX či Výtržníka tou istou cestou ako inak. Po bitke ide Nástroj majiteľovi Nástroja.
+
+import { describe, expect, it } from "vitest";
+import cardsJson from "../data/cards.json";
+import eldersJson from "../data/elders.json";
+import scorecardsJson from "../data/scorecards.json";
+import scenarJson from "../data/vyucba/prva-hra.json";
+import zoznam from "./data/naradie-hrany.json";
+import type { CardDef, CardInstance, Command, GameData, GameState, LineState, PlacedCard, PlayerId, PodlozenyNastroj, ScenarVyucby } from "../src/index.ts";
+import {
+  NASTROJ_DO_LINIE,
+  apply,
+  chybyHran,
+  evaluateLine,
+  hranySlovami,
+  hranyNastroja,
+  legalCommands,
+  loadGameData,
+  naexCieleVLinii,
+  ponukaPodlozenia,
+  prehrajVyucbu,
+  rozborHran,
+  rozborNavyse,
+  rozborPreskolenia,
+  setupGame,
+  tahBota,
+  textBezHran,
+  viewFor,
+} from "../src/index.ts";
+import { EMPTY, instanceFor, makeDef, syntheticData } from "./helpers.ts";
+import type { Layout4 } from "./helpers.ts";
+import { dataSHranami } from "./naradieData.ts";
+
+const dataH = dataSHranami();
+
+describe("zápis hrán v texte efektu", () => {
+  it("Hore a Dole: preškolenie {X}→{Y} alebo účinok; Dedičstvo a akcie navyše ostávajú", () => {
+    const r = rozborHran("Dedičstvo: Tvoje Rany udeľujú o 1 poškodenie viac. Hore: Vzbura. Dole: {Rana}→{Pecka}.");
+    expect(r).toEqual({ horna: { druh: "karta", ucinok: "Vzbura" }, dolna: { druh: "akcia", z: "Rana", na: "Pecka" }, chyby: [] });
+    // Hazard je Dlh, Pečeň Poškodenie pečene; šípka aj „->“; NA EX bez ohľadu na veľkosť písmen.
+    expect(rozborHran("Hore: {Hazard} -> {Pečeň}. Dole: na ex.")).toMatchObject({ horna: { z: "Dlh", na: "PoškodeniePečene" }, dolna: { ucinok: "NA EX" } });
+    // Pasca: efekt Dedičstva s piktogramom navyše a hrany s piktogramami sa nepomýlia.
+    const pasca = "Dedičstvo: Bitka: Ak súper v tomto kole priložil kartu k tvojej {Rana}. Hore: {Pečeň}→{Rana}. Dole: {Pecka}→{Rana}.";
+    expect(rozborNavyse(pasca)).toEqual({ efekty: [{ spustac: "Bitka", tag: null, akcie: ["Rana"], podmienka: "Ak súper v tomto kole priložil kartu k tvojej", dedicstvo: true }], chyby: [] });
+    expect(textBezHran(pasca)).toBe("Dedičstvo: Bitka: Ak súper v tomto kole priložil kartu k tvojej {Rana}.");
+    expect(hranySlovami("Hore: {Hazard}→{Robota}. Dole: Forsáž.")).toBe("Hore: Hazard → Robota. Dole: Forsáž.");
+  });
+
+  it("preškolenie {X}→{Y} je spoločná funkcia — nie len pre Nástroj", () => {
+    expect(rozborPreskolenia("{Robota}→{Pecka}")).toEqual({ preskolenie: { z: "Robota", na: "Pecka" }, chyby: [] });
+    expect(rozborPreskolenia("{Rana}→{Rana}")?.preskolenie).toBeNull();
+    expect(rozborPreskolenia("Vzbura")).toBeNull();
+  });
+
+  it("chyby zápisu: neznáma akcia či účinok, hrana dvakrát, hrany mimo Nástroja, chýbajúca hrana", () => {
+    const nastroj = (effectText: string): Pick<CardDef, "effectText" | "tags"> => ({ effectText, tags: ["Nástroj"] });
+    expect(chybyHran(nastroj("Hore: {Ranka}→{Pecka}. Dole: Vzbura."))[0]).toMatch(/Ranka/);
+    expect(chybyHran(nastroj("Hore: Vzburka. Dole: Vzbura."))[0]).toMatch(/Forsáž, NA EX, Výtržník, Vzbura/);
+    expect(chybyHran(nastroj("Hore: Vzbura. Hore: Forsáž. Dole: Vzbura."))[0]).toMatch(/dvakrát/);
+    expect(chybyHran(nastroj("Hore: Vzbura."))).toEqual([expect.stringMatching(/chýba dolná hrana/)]);
+    expect(chybyHran(nastroj("Dedičstvo: Tvoj prah Cirhózy je o 2 vyšší."))).toHaveLength(2);
+    expect(chybyHran({ effectText: "Furt: Nič. Hore: Vzbura. Dole: Forsáž.", tags: ["Občan"] })).toEqual(["Hrany „Hore:“ a „Dole:“ má len Nástroj."]);
+    // Preklep padne pri načítaní sady; Nástroj bez hrán načítanie prejde (cards.json ich ešte nemá).
+    const zle = { ...cardsJson, cards: cardsJson.cards.map((c) => (c.id === "vidly" ? { ...c, effect_text: `${c.effect_text} Hore: Vzbura. Dole: {Rana}→{Pecky}.` } : c)) };
+    expect(() => loadGameData(zle, eldersJson, scorecardsJson)).toThrow(/Pecky/);
+    expect(() => loadGameData(cardsJson, eldersJson, scorecardsJson)).not.toThrow();
+  });
+});
+
+describe("zoznam hrán pre admina (packages/core/test/data/naradie-hrany.json)", () => {
+  const nastroje = cardsJson.cards.filter((c) => c.tags.includes("Nástroj"));
+
+  it("22 Nástrojov zo sady, každý s oboma hranami bez chyby a s Dedičstvom zo sady", () => {
+    expect(zoznam.nastroje.map((n) => n.id).sort()).toEqual(nastroje.map((c) => c.id).sort());
+    for (const n of zoznam.nastroje) {
+      expect(chybyHran({ effectText: n.effect_text, tags: ["Nástroj"] }), n.id).toEqual([]);
+      expect(rozborHran(n.effect_text), n.id).toMatchObject({ horna: expect.anything(), dolna: expect.anything() });
+      expect(textBezHran(n.effect_text), n.id).toBe(nastroje.find((c) => c.id === n.id)?.effect_text);
+    }
+  });
+
+  it("štyri kartové účinky (P1) a každé preškolenie X → Y v sade raz", () => {
+    const ucinky = zoznam.nastroje.flatMap((n) => {
+      const h = hranyNastroja({ effectText: n.effect_text, tags: ["Nástroj"] });
+      return [h?.horna, h?.dolna].flatMap((x) => (x?.druh === "karta" ? [`${n.id}:${x.ucinok}`] : []));
+    });
+    expect(ucinky.sort()).toEqual(["energetak:Forsáž", "lievik:Výtržník", "vidly:Vzbura", "vinko:NA EX"]);
+    const dvojice = zoznam.nastroje.flatMap((n) => {
+      const h = hranyNastroja({ effectText: n.effect_text, tags: ["Nástroj"] });
+      return [h?.horna, h?.dolna].flatMap((x) => (x?.druh === "akcia" ? [`${x.z}>${x.na}`] : []));
+    });
+    expect(dvojice).toHaveLength(40);
+    expect(new Set(dvojice).size).toBe(40);
+  });
+
+  it("keď cards.json hrany už má, sedia so zoznamom (pravidlo 5: prepisuje ich admin v tvorcovi)", () => {
+    for (const c of nastroje) {
+      const h = hranyNastroja({ effectText: c.effect_text, tags: ["Nástroj"] });
+      if (h === null) continue;
+      const n = zoznam.nastroje.find((x) => x.id === c.id);
+      expect(h, c.id).toEqual(hranyNastroja({ effectText: n?.effect_text ?? "", tags: ["Nástroj"] }));
+    }
+  });
+});
+
+// --- Vyhodnotenie línie: syntetické karty --------------------------------------
+
+const H_L: Layout4 = ["Odpor", "Rana", null, "Rana"];
+const H_R: Layout4 = ["Viera", null, "Posilnenie", null];
+const nastrojDef = (id: string, hore: string, dole: string): CardDef => makeDef(id, EMPTY, EMPTY, { tags: ["Nástroj"], effectText: `Hore: ${hore}. Dole: ${dole}.` });
+const sd: GameData = syntheticData([
+  makeDef("host", H_L, H_R),
+  makeDef("sused_odpor", EMPTY, ["Odpor", "Pecka", null, "Viera"]),
+  makeDef("sused_rana", EMPTY, ["Rana", "Pecka", null, "Viera"]),
+  makeDef("sused_posil", EMPTY, ["Rana", "Pecka", "Posilnenie", null]),
+  makeDef("lavy_posil", [null, null, "Posilnenie", null], EMPTY),
+  nastrojDef("puska", "{Rana}→{Petelica}", "{Petelica}→{Rana}"),
+  nastrojDef("hrable", "{Odpor}→{Posilnenie}", "{Posilnenie}→{Odpor}"),
+  nastrojDef("vidly", "Vzbura", "{Rana}→{Pecka}"),
+  nastrojDef("energetak", "Forsáž", "{Posilnenie}→{Pečeň}"),
+  nastrojDef("vinko", "NA EX", "{Pečeň}→{Poldeci}"),
+  nastrojDef("lievik", "Výtržník", "{Poldeci}→{Pečeň}"),
+  makeDef("zamocnik", H_L, H_R),
+]);
+const host = instanceFor(sd, "host", H_L, H_R);
+const kartaS = (id: string, right: Layout4): CardInstance => instanceFor(sd, id, EMPTY, right);
+const nastroj = (id: string): CardInstance => instanceFor(sd, id, EMPTY, EMPTY);
+/** Hráč 0: hostiteľ pri lokalite (null), sused za ním — ľavá hrana hostiteľa proti pravej susedovej. */
+const linia = (hostitel: PlacedCard, sused: CardInstance): LineState => ({ lokalita: null, lokalitaOtocena: false, strany: [[hostitel, { card: sused, playedBy: 0 }], []] });
+const pod = (id: string, hrana: "horna" | "dolna" = "horna", majitel: PlayerId = 1): readonly PodlozenyNastroj[] => [{ card: nastroj(id), majitel, hrana }];
+
+describe("preškolenie akciovou hranou", () => {
+  it("mení všetky výskyty na oboch hranách hostiteľa ešte pred spojmi; slot nesie vytlačenú akciu", () => {
+    const sused = kartaS("sused_rana", ["Rana", "Pecka", null, "Viera"]);
+    const bez = evaluateLine(sd, linia({ card: host, playedBy: 0 }, sused));
+    const s = evaluateLine(sd, linia({ card: host, playedBy: 0, podlozene: pod("puska") }, sused));
+    // Rany na indexe 1 (proti Pecke) aj 3 (proti Viere) sú Petelice; Ranu suseda ruší Odpor hostiteľa.
+    expect(bez.sums[0]).toEqual({ Rana: 2, Pecka: 1, Viera: 1 });
+    expect(s.sums[0]).toEqual({ Petelica: 2, Pecka: 1, Viera: 1 });
+    const left = s.cards.get(host.uid)?.left;
+    expect(left?.[1]).toMatchObject({ action: "Petelica", povodna: "Rana", stav: "aktivna" });
+    expect(left?.[3]).toMatchObject({ action: "Petelica", povodna: "Rana" });
+    expect(left?.[0]).not.toHaveProperty("povodna");
+  });
+
+  it("preškolený Odpor na Posilnenie súsedovu akciu zdvojí namiesto zrušenia (Hrable)", () => {
+    const sused = kartaS("sused_rana", ["Rana", "Pecka", null, "Viera"]);
+    expect(evaluateLine(sd, linia({ card: host, playedBy: 0 }, sused)).sums[0].Rana).toBe(2);
+    // Odpor hostiteľa proti Rane suseda: zrušená; z Posilnenia je Rana ×2 (+ Rana hostiteľa na indexe 3).
+    expect(evaluateLine(sd, linia({ card: host, playedBy: 0, podlozene: pod("hrable") }, sused)).sums[0].Rana).toBe(4);
+  });
+
+  it("pod Zámočníkom sa uplatní prvý Nástroj s tou akciou — preškolenia sa nereťazia", () => {
+    const zam = instanceFor(sd, "zamocnik", H_L, H_R);
+    const sused = kartaS("sused_rana", ["Rana", "Pecka", null, "Viera"]);
+    const dva: PlacedCard = { card: zam, playedBy: 0, podlozene: [...pod("puska"), ...pod("vidly", "dolna")] };
+    expect(evaluateLine(sd, linia(dva, sused)).cards.get(zam.uid)?.left[1]).toMatchObject({ action: "Petelica", povodna: "Rana" });
+  });
+});
+
+describe("kartové účinky — presne ako dnešnou cestou", () => {
+  it("Vzbura z Vidiel = Vzbura zo spoja (Odpor proti Odporu); so spojovou sa karta obráti raz", () => {
+    const zoSpoja = evaluateLine(sd, linia({ card: host, playedBy: 0 }, kartaS("sused_odpor", ["Odpor", "Pecka", null, "Viera"])));
+    const zVidiel = evaluateLine(sd, linia({ card: host, playedBy: 0, podlozene: pod("vidly") }, kartaS("sused_rana", ["Rana", "Pecka", null, "Viera"])));
+    expect(zoSpoja.cards.get(host.uid)?.vzbura).toBe(true);
+    expect(zVidiel.cards.get(host.uid)).toEqual({ ...zoSpoja.cards.get(host.uid), uid: host.uid });
+    const oboje = evaluateLine(sd, linia({ card: host, playedBy: 0, podlozene: pod("vidly") }, kartaS("sused_odpor", ["Odpor", "Pecka", null, "Viera"])));
+    expect(oboje.cards.get(host.uid)).toEqual(zoSpoja.cards.get(host.uid));
+  });
+
+  it("Forsáž z Energeťáka: aktívne ×2, so spojovou Forsážou ×4; NA EX ju nezruší, zdvojí len neaktívne", () => {
+    const sused = kartaS("sused_rana", ["Rana", "Pecka", null, "Viera"]);
+    // Obe aktívne Rany hostiteľa ×2; akcie suseda nie.
+    expect(evaluateLine(sd, linia({ card: host, playedBy: 0, podlozene: pod("energetak") }, sused)).sums[0]).toEqual({ Rana: 4, Pecka: 1, Viera: 1 });
+    // Pri lokalite (bližšie) karta s Posilnením proti Posilneniu na pravej hrane hostiteľa: spojová Forsáž; s Energeťákom ×4.
+    const lavy = instanceFor(sd, "lavy_posil", [null, null, "Posilnenie", null], EMPTY);
+    const sForsazou = (podlozene: readonly PodlozenyNastroj[]): LineState => ({ lokalita: null, lokalitaOtocena: false, strany: [[{ card: lavy, playedBy: 0 }, { card: host, playedBy: 0, podlozene }, { card: sused, playedBy: 0 }], []] });
+    expect(evaluateLine(sd, sForsazou([])).cards.get(host.uid)?.left[1]?.nasobok).toBe(2);
+    expect(evaluateLine(sd, sForsazou(pod("energetak"))).cards.get(host.uid)?.left[1]?.nasobok).toBe(4);
+    const sNaex = evaluateLine(sd, linia({ card: host, playedBy: 0, naexBy: 1, podlozene: pod("energetak") }, sused));
+    expect(sNaex.cards.get(host.uid)?.left[1]).toMatchObject({ stav: "zrusena" });
+    expect(sNaex.cards.get(host.uid)?.right[0]).toMatchObject({ action: "Viera", stav: "aktivna", nasobok: 2 });
+    expect(sNaex.cards.get(host.uid)?.forsaz).toBe(true);
+  });
+
+  it("NA EX z Vínka = NA EX s poldecom; skutočné NA EX ani na kartu so Vzburou či Výtržníkom nejde", () => {
+    const sused = kartaS("sused_rana", ["Rana", "Pecka", null, "Viera"]);
+    const sPoldecom = evaluateLine(sd, linia({ card: host, playedBy: 0, naexBy: 1 }, sused));
+    const zVinka = evaluateLine(sd, linia({ card: host, playedBy: 0, podlozene: pod("vinko") }, sused));
+    expect(zVinka.cards.get(host.uid)).toEqual(sPoldecom.cards.get(host.uid));
+    expect(zVinka.sums).toEqual(sPoldecom.sums);
+    const lok = makeDef("lok", ["Viera", "Viera", "Viera", "Viera"], ["Viera", "Viera", "Viera", "Viera"], { tags: ["Lokalita"] });
+    const sl = syntheticData([...sd.cards.values(), lok]);
+    const lokalita = instanceFor(sl, "lok", ["Viera", "Viera", "Viera", "Viera"], ["Viera", "Viera", "Viera", "Viera"]);
+    const ciele = (pl: PlacedCard): number[] => naexCieleVLinii(sl, { lokalita, lokalitaOtocena: false, strany: [[pl], []] }, 1);
+    expect(ciele({ card: host, playedBy: 0 })).toEqual([host.uid]);
+    expect(ciele({ card: host, playedBy: 0, podlozene: pod("vinko") })).toEqual([]);
+    expect(ciele({ card: host, playedBy: 0, podlozene: pod("lievik") })).toEqual([]);
+    expect(ciele({ card: host, playedBy: 0, podlozene: pod("vidly") })).toEqual([]);
+  });
+
+  it("Výtržník z Injekcie = Výtržník zo zrážky NA EX", () => {
+    const sused = kartaS("sused_posil", ["Rana", "Pecka", "Posilnenie", null]);
+    const zoZrazky = evaluateLine(sd, linia({ card: host, playedBy: 0, naexBy: 0, naexBy2: 1, vytrznik: true }, sused));
+    const zInjekcie = evaluateLine(sd, linia({ card: host, playedBy: 0, podlozene: pod("lievik") }, sused));
+    expect(zInjekcie.cards.get(host.uid)).toEqual(zoZrazky.cards.get(host.uid));
+    expect(zInjekcie.sums).toEqual(zoZrazky.sums);
+  });
+});
+
+// --- Podloženie v hre (sada s hranami) ----------------------------------------
+
+let uidSeq = 880000;
+const inst = (defId: string): CardInstance => ({ uid: ++uidSeq, defId, leftLayout: 0, rightLayout: 0 });
+
+/** Zhromaždenie na Zastávke, hráč 0 na ťahu s rukou `ruka`. */
+function vZhromazdeni(strany: GameState["strany"], ruka: CardInstance[], cigarety = 5): GameState {
+  const s0 = setupGame(dataH, 7);
+  const lokalita = s0.lokalityVHre.find((k) => k.defId === "zastavka")!;
+  const hraci = s0.hraci.map((h, i) => ({ ...h, cigarety, poldeciPlne: 2, doberaci: [inst("masiar"), inst("pijan")], ...(i === 0 ? { ruka } : {}) })) as unknown as GameState["hraci"];
+  return {
+    ...s0,
+    hraci,
+    faza: "zhromazdenie",
+    utocnik: 0,
+    ciel: { typ: "lokalita", lokalita },
+    lokalityVHre: s0.lokalityVHre.filter((k) => k !== lokalita),
+    strany,
+    pitkaStav: null,
+    pitkaCislo: 0,
+    zhromazdenieStav: { naTahu: 0, zostavaLimit: [3, 3], pasoval: [false, false], navyse: [0, 0] },
+  };
+}
+const lezi = (card: CardInstance, playedBy: PlayerId, ine: Partial<PlacedCard> = {}): PlacedCard => ({ card, playedBy, ...ine });
+
+describe("ťah podloženia (§12)", () => {
+  it("pod súperovu kartu za 1 cigaretu: ťah v striedaní, limit nemíňa, Nástroj je verejný", () => {
+    const vidly = inst("vidly");
+    const jeho = inst("pijan");
+    const s = vZhromazdeni([[], [lezi(jeho, 1)]], [vidly, inst("masiar")]);
+    const cmd: Command = { type: "podloz", nastrojId: vidly.uid, hostitelId: jeho.uid, hrana: "horna" };
+    expect(legalCommands(dataH, s, 0)).toContainEqual(cmd);
+    const po = apply(dataH, s, cmd, 0).state;
+    expect(po.strany[1][0]?.podlozene).toEqual([{ card: vidly, majitel: 0, hrana: "horna" }]);
+    expect(po.hraci[0].cigarety).toBe(4);
+    expect(po.hraci[0].ruka.map((k) => k.uid)).not.toContain(vidly.uid);
+    expect(po.zhromazdenieStav?.zostavaLimit[0]).toBe(3);
+    expect(po.zhromazdenieStav?.naTahu).toBe(1);
+    // viewFor: obaja vidia Nástroj aj hranu; v súperovej ruke pritom nič nepribudlo.
+    for (const p of [0, 1] as const) expect(viewFor(dataH, po, p).strany[1][0]?.podlozene).toEqual([{ card: vidly, majitel: 0, hrana: "horna" }]);
+    expect(JSON.stringify(viewFor(dataH, s, 1))).not.toContain(`"uid":${vidly.uid}`);
+  });
+
+  it("do línie ani do odpovede Nástroj nejde; bez cigarety ani bez hrán sa nepodkladá", () => {
+    const vidly = inst("vidly");
+    const moj = inst("pijan");
+    const s = vZhromazdeni([[lezi(moj, 0)], []], [vidly]);
+    expect(() => apply(dataH, s, { type: "place", uid: vidly.uid, target: "vlastna" }, 0)).toThrow(NASTROJ_DO_LINIE);
+    expect(() => apply(dataH, vZhromazdeni([[lezi(moj, 0)], []], [vidly], 0), { type: "podloz", nastrojId: vidly.uid, hostitelId: moj.uid, hrana: "horna" }, 0)).toThrow(/cigaret/);
+    const stara = loadGameData(cardsJson, eldersJson, scorecardsJson);
+    expect(() => apply(stara, s, { type: "podloz", nastrojId: vidly.uid, hostitelId: moj.uid, hrana: "horna" }, 0)).toThrow(/nemá v sade hrany/);
+  });
+
+  it("len pod Občana a Starešinu, pod Zviera len s Kôňom; jeden Nástroj na kartu, pod Zámočníka viac", () => {
+    const vidly = inst("vidly");
+    const pes = inst("pes");
+    const line = (strany: LineState["strany"]): LineState => ({ lokalita: null, lokalitaOtocena: false, strany });
+    expect(ponukaPodlozenia(dataH, line([[lezi(pes, 0)], []]), vidly)).toEqual([]);
+    expect(ponukaPodlozenia(dataH, line([[lezi(pes, 0), lezi(inst("kon"), 1)], []]), vidly).map((m) => m.hostitel)).toContain(pes.uid);
+    const pijan = inst("pijan");
+    const obsadeny = lezi(pijan, 1, { podlozene: [{ card: inst("puska"), majitel: 1, hrana: "horna" }] });
+    expect(ponukaPodlozenia(dataH, line([[obsadeny], []]), vidly)).toEqual([]);
+    const zam = inst("zamocnik");
+    const zamObsadeny = lezi(zam, 1, { podlozene: [{ card: inst("puska"), majitel: 1, hrana: "horna" }] });
+    expect(ponukaPodlozenia(dataH, line([[zamObsadeny], []]), vidly).map((m) => m.hostitel)).toEqual([zam.uid, zam.uid]);
+    // Karta lícom dole: tagy nevidno, nepodkladá sa.
+    expect(ponukaPodlozenia(dataH, line([[lezi(inst("pijan"), 1, { zaverecna: true })], []]), vidly)).toEqual([]);
+  });
+
+  it("Vínko nie pod kartu s poldecom; hrana bez zdrojovej akcie je dovolená, ale ponuka ju označí", () => {
+    const vinko = inst("vinko");
+    const pijan = inst("pijan");
+    const line = (pl: PlacedCard): LineState => ({ lokalita: null, lokalitaOtocena: false, strany: [[pl], []] });
+    expect(ponukaPodlozenia(dataH, line(lezi(pijan, 0, { naexBy: 1 })), vinko).map((m) => m.hrana)).not.toContain("horna");
+    const puska = inst("puska");
+    const masiar = inst("masiar");
+    const ponuka = ponukaPodlozenia(dataH, line(lezi(masiar, 0)), puska);
+    expect(ponuka).toHaveLength(2);
+    for (const m of ponuka) expect(m.maCoRobit).toBe(/→/.test(m.popis));
+  });
+});
+
+describe("návrat Nástroja a hra s podkladaním", () => {
+  it("Poľovník spáli Zviera s Nástrojom — Nástroj ide hneď majiteľovi Nástroja", () => {
+    const pes = inst("pes");
+    const puska = inst("puska");
+    const polovnik = inst("polovnik");
+    const s = vZhromazdeni([[], [lezi(pes, 1, { podlozene: [{ card: puska, majitel: 0, hrana: "horna" }] })]], [polovnik]);
+    const po = apply(dataH, s, { type: "place", uid: polovnik.uid, target: "vlastna" }, 0).state;
+    expect(po.strany[1]).toEqual([]);
+    expect(po.hraci[0].odhadzovaci.map((k) => k.uid)).toContain(puska.uid);
+    expect(po.hraci[1].odhadzovaci.map((k) => k.uid)).not.toContain(puska.uid);
+  });
+
+  it("boti podkladajú a po každej bitke je každý Nástroj u svojho majiteľa — aj spod súperovej karty", () => {
+    let podlozeni = 0;
+    let podSuperovu = 0;
+    for (const seed of [3, 4]) {
+      let s = setupGame(dataH, seed);
+      for (let krok = 0; s.koniec === null && krok < 3000; krok++) {
+        const p = ([0, 1] as const).find((q) => legalCommands(dataH, s, q).length > 0);
+        if (p === undefined) break;
+        const cmd = tahBota(dataH, s, p, seed * 1000 + krok, { vzorky: 1 });
+        const po = apply(dataH, s, cmd, p).state;
+        if (cmd.type === "podloz") {
+          podlozeni++;
+          const hostitel = [...po.strany[0], ...po.strany[1]].find((pl) => pl.card.uid === cmd.hostitelId);
+          if (hostitel?.playedBy !== p) podSuperovu++;
+        }
+        const pred = [...s.strany[0], ...s.strany[1]];
+        const ostali = new Set([...po.strany[0], ...po.strany[1]].flatMap((pl) => (pl.podlozene ?? []).map((n) => n.card.uid)));
+        for (const pl of pred) {
+          for (const n of pl.podlozene ?? []) {
+            if (ostali.has(n.card.uid)) continue;
+            const kde = (q: PlayerId): number[] => [...po.hraci[q].odhadzovaci, ...po.hraci[q].doberaci, ...po.hraci[q].ruka].map((k) => k.uid);
+            expect(kde(n.majitel)).toContain(n.card.uid);
+            expect(kde((1 - n.majitel) as PlayerId)).not.toContain(n.card.uid);
+          }
+        }
+        s = po;
+      }
+      expect(s.koniec).not.toBeNull();
+    }
+    expect(podlozeni).toBeGreaterThan(0);
+    expect(podSuperovu).toBeGreaterThan(0);
+  }, 240000);
+
+  it("výučba prejde aj so sadou s hranami (Nástroje bez slotov, varianty 0/0)", () => {
+    const scenar = scenarJson as unknown as ScenarVyucby;
+    expect(prehrajVyucbu(dataH, scenar, scenar.kroky.length).koniec?.vitaz).toBe(0);
+  });
+});

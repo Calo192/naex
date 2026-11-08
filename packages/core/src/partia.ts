@@ -19,9 +19,13 @@
 //
 // Rozhodnutia pri nejasných pravidlách (viď README):
 //  - Posilnenie + Posilnenie = Forsáž (v10.3, Michal 2026-11-02): obe karty spoja majú
-//    všetky aktívne akcie posilnené; lokalita len hranu pri tom kraji, Nástroj nič.
+//    všetky aktívne akcie posilnené; lokalita len hranu pri tom kraji.
 //  - Vzbura obráti aktivitu karty (v11.1, Michal 2026-11-02): nespojené akcie sú aktívne,
-//    spojené neaktívne; na lokalite len strana patriaca danej partii; Nástroj Vzburu nedostane (v10.3).
+//    spojené neaktívne; na lokalite len strana patriaca danej partii.
+//  - Podložený Nástroj (Náradie, Michal 2026-11-08, naradie.ts): akciová hrana premení akcie
+//    hostiteľa ešte pred spojmi, kartová mu dá Vzburu, Forsáž, NA EX či Výtržníka tou istou
+//    cestou, akou ich karta dostane inak — v poradí spoje → Vzbura → Výherné žreby → Forsáž →
+//    NA EX → Výtržník.
 //    Odpor proti Posilneniu je Vzbura len karty s Odporom a jej aktívne akcie sú posilnené.
 //  - Vzbura ani NA EX neoživujú akcie zrušené Odporom.
 //  - NA EX mení len akcie cieľovej karty; zrušenie Odporom na susedovi
@@ -39,6 +43,8 @@ import type { GameData } from "./data.ts";
 import { defOf, printedSides } from "./data.ts";
 import type { EfektNavyse, NavyseStav } from "./navyse.ts";
 import { efektyNavyse, jeSlovami, popisPodmienky, stavNavyse } from "./navyse.ts";
+import type { PodlozenyNastroj } from "./naradie.ts";
+import { preskolStranu, preskoleniaHostitela, ucinkyNastrojov } from "./naradie.ts";
 
 /** Karta ležiaca v partii. */
 export interface PlacedCard {
@@ -94,6 +100,11 @@ export interface PlacedCard {
   readonly poBitkeK?: PlayerId;
   /** 2 na 2: člen tímu, ktorý kartu vyložil — karta „do ruky“ ide jemu (Michal 2026-11-02, Q4). */
   readonly miesto?: Miesto;
+  /**
+   * Nástroje podložené pod kartu (Náradie, Michal 2026-11-08) v poradí podloženia — verejné;
+   * viac ako jeden len pod Zámočníkom. Po bitke a keď karta odíde z línie idú majiteľom Nástrojov.
+   */
+  readonly podlozene?: readonly PodlozenyNastroj[];
 }
 
 export interface LineState {
@@ -147,13 +158,15 @@ export interface SlotEval {
   readonly ako?: Action;
   /** Karta kreslí na slote `ako` namiesto vytlačenej akcie (Tipér, Vedúcko, Sypač, Anonymný alkoholik). */
   readonly naKarte?: true;
+  /** Vytlačená akcia, ktorú podložený Nástroj premenil na `action` (klient ju kreslí prečiarknutú v rožku). */
+  readonly povodna?: Action;
 }
 
 /** Vyhodnotenie jednej karty — sloty vo VYTLAČENOM ráme karty. */
 export interface CardLineEval {
   readonly uid: number;
   readonly vzbura: boolean;
-  /** Forsáž (v10.3): Posilnenie proti Posilneniu na niektorom spoji karty, NA EX ju nezrušil. */
+  /** Forsáž (v10.3): Posilnenie proti Posilneniu na niektorom spoji karty, NA EX ju nezrušil; aj z Energeťáka pod kartou. */
   readonly forsaz: boolean;
   readonly left: readonly (SlotEval | null)[];
   readonly right: readonly (SlotEval | null)[];
@@ -246,7 +259,16 @@ interface Elem {
   readonly vzburaPosilnena: [boolean, boolean];
   /** forsaz[side] pre lokalitu (len hrana pri tom kraji); karta ju má za obe strany naraz. */
   readonly forsaz: [boolean, boolean];
+  /**
+   * Forsáž z podloženého Energeťáka — neviaže sa na Posilnenie, NA EX ju nezruší; so spojovou
+   * Forsážou či Vzburou z Odporu proti Posilneniu sa násobí (naradie-hrany-zoznam.html v5).
+   */
+  forsazNastroj: boolean;
   readonly naexBy: PlayerId | undefined;
+  /** NA EX z podloženého Vínka — ako NA EX, len bez poldeca (nie je nerest, nepije sa). */
+  readonly naexNastroj: boolean;
+  /** povodne[side][k]: vytlačená akcia, ktorú podložený Nástroj premenil (efektívny rám). */
+  readonly povodne: (Action | null)[][];
   /** Šarlatán v okolí: Viera tejto karty sa ráta ako Vízia (do v6; v7 nepoužíva). */
   vieraAkoVizia: boolean;
   /** Premena akcií do konca kola (PlacedCard.premena). */
@@ -411,6 +433,13 @@ function makeElem(
   pl?: PlacedCard,
 ): Elem {
   const printed = printedSides(data, card);
+  // Podložený Nástroj preškolí akcie hostiteľa ešte pred spojmi — susedia sa párujú už s preškolenými.
+  const sNastrojom = pl?.podlozene !== undefined && pl.podlozene.length > 0;
+  const premeny = sNastrojom ? preskoleniaHostitela(data, pl) : null;
+  const strany = premeny === null ? null : { left: preskolStranu(premeny, printed.left), right: preskolStranu(premeny, printed.right) };
+  const akcie = (s: NonNullable<typeof strany>["left"]): Slot[] => s.map((x) => x?.akcia ?? null);
+  const povodne = (s: NonNullable<typeof strany>["left"]): (Action | null)[] => s.map((x) => x?.povodna ?? null);
+  const ucinky: ReadonlySet<string> = sNastrojom ? ucinkyNastrojov(data, pl) : new Set();
   return {
     uid: card.uid,
     defId: card.defId,
@@ -421,14 +450,22 @@ function makeElem(
     strana,
     rotated,
     printed,
-    effLeft: rotated ? reversed(printed.right) : [...printed.left],
-    effRight: rotated ? reversed(printed.left) : [...printed.right],
+    effLeft: strany === null ? (rotated ? reversed(printed.right) : [...printed.left]) : rotated ? akcie(strany.right).reverse() : akcie(strany.left),
+    effRight: strany === null ? (rotated ? reversed(printed.left) : [...printed.right]) : rotated ? akcie(strany.left).reverse() : akcie(strany.right),
+    povodne:
+      strany === null
+        ? [[null, null, null, null], [null, null, null, null]]
+        : rotated
+          ? [povodne(strany.right).reverse(), povodne(strany.left).reverse()]
+          : [povodne(strany.left), povodne(strany.right)],
     stav: [freshStav(), freshStav()],
     nasobok: [freshNasobok(), freshNasobok()],
     vzbura: [false, false],
     vzburaPosilnena: [false, false],
     forsaz: [false, false],
+    forsazNastroj: ucinky.has("Forsáž"),
     naexBy,
+    naexNastroj: naexBy === undefined && ucinky.has("NA EX") && !ucinky.has("Výtržník") && pl?.vytrznik !== true,
     vieraAkoVizia: false,
     premena: pl?.premena,
     dovody: [0, 1].map(() => [[], [], [], []]),
@@ -468,37 +505,13 @@ function puskaChrani(elem: Elem, line: Pick<LineState, "nastroje">): void {
   }
 }
 
-/** Nástroj v línii (nie karta v strede) — Vzburu ani Forsáž nedostane (v10.3). */
-function jeNastroj(elem: Elem): boolean {
-  return !elem.isLokalita && elem.tags.includes("Nástroj");
-}
-
 function markVzbura(elem: Elem, side: 0 | 1): void {
-  // Odpor Nástroja proti Odporu Občana: Vzburu dostane len Občan (v10.3); ani proti Posilneniu (v11.1).
-  if (jeNastroj(elem)) return;
   if (elem.isLokalita) {
     elem.vzbura[side] = true;
   } else {
     elem.vzbura[0] = true;
     elem.vzbura[1] = true;
   }
-}
-
-/**
- * Nástroj funguje len na strane, kde ho podporuje Občan alebo Starešina
- * (Michal 2026-10-18). Pri lokalite, karte staršieho v strede či karte bez
- * týchto tagov spoj nevznikne — neaktivuje sa nič ani na susedovi.
- */
-export function spojVznikne(
-  a: { readonly tags: readonly Tag[]; readonly stred: boolean; readonly defId?: string; readonly umlcany?: boolean },
-  b: { readonly tags: readonly Tag[]; readonly stred: boolean; readonly defId?: string; readonly umlcany?: boolean },
-): boolean {
-  // Kôň (Furt, v7): Nástroj vedľa neho s ním tvorí spoj ako s Občanom — nie vedľa Mäsiara (umlcany).
-  const podporuje = (x: typeof a): boolean =>
-    !x.stred && (x.tags.includes("Občan") || x.tags.includes("Starešina") || (x.defId === "kon" && x.umlcany !== true));
-  if (a.tags.includes("Nástroj") && !a.stred && !podporuje(b)) return false;
-  if (b.tags.includes("Nástroj") && !b.stred && !podporuje(a)) return false;
-  return true;
 }
 
 /** Spoj, na ktorom sa stretli dve Posilnenia — Forsáž, ak ani jedno nezruší NA EX. */
@@ -522,13 +535,10 @@ interface VzburaSPosilnenim {
 function resolveJunction(
   a: Elem,
   b: Elem,
-  umlcane: ReadonlySet<number>,
   line: Pick<LineState, "nastroje">,
   forsaze: SpojForsaze[],
   vzburyPosilnene: VzburaSPosilnenim[],
 ): void {
-  const x = { tags: a.tags, stred: a.isLokalita, defId: a.defId, umlcany: umlcane.has(a.uid) };
-  if (!spojVznikne(x, { tags: b.tags, stred: b.isLokalita, defId: b.defId, umlcany: umlcane.has(b.uid) })) return;
   // Praudovravec (Dezinformátor, v7): Odpor na jeho spojoch neruší, ale posilní.
   const dezinformator = (!a.isLokalita && a.defId === "praudovravec" && a.staryEfekt) || (!b.isLokalita && b.defId === "praudovravec" && b.staryEfekt);
   for (let k = 0; k < 4; k++) {
@@ -688,7 +698,7 @@ function profesionalnyTiper(segments: readonly (readonly Elem[])[]): void {
  * (Dedičstvo, Náradie 2026-10-30). Lokalita NA EX nedostáva.
  */
 function naexRusiPosilnenie(elem: Elem, line: Pick<LineState, "nastroje">): boolean {
-  if (elem.naexBy === undefined || elem.defId === "veteran") return false;
+  if ((elem.naexBy === undefined && !elem.naexNastroj) || elem.defId === "veteran") return false;
   return elem.isLokalita || !maNastroj(line, elem.owner, "energetak");
 }
 
@@ -712,13 +722,12 @@ function applyForsaz(
   for (const { a, b } of forsaze) {
     if (naexRusiPosilnenie(a, line) || naexRusiPosilnenie(b, line)) continue;
     for (const [elem, side] of [[a, 1], [b, 0]] as const) {
-      if (jeNastroj(elem)) continue;
       if (elem.isLokalita) elem.forsaz[side] = true;
       else elem.forsaz.fill(true);
     }
   }
   for (const { odpor, side, posil } of vzburyPosilnene) {
-    if (naexRusiPosilnenie(posil, line) || jeNastroj(odpor)) continue;
+    if (naexRusiPosilnenie(posil, line)) continue;
     if (odpor.isLokalita) odpor.vzburaPosilnena[side] = true;
     else odpor.vzburaPosilnena.fill(true);
   }
@@ -727,6 +736,7 @@ function applyForsaz(
       for (const [zapnute, dovod] of [
         [elem.forsaz[side], "Forsáž"],
         [elem.vzburaPosilnena[side], "Posilnenie"],
+        [elem.forsazNastroj && !elem.isLokalita, "Forsáž"],
       ] as const) {
         if (!zapnute) continue;
         for (let k = 0; k < 4; k++) {
@@ -793,7 +803,7 @@ function zrusPosilnenie(elem: Elem, line: Pick<LineState, "nastroje">): void {
 }
 
 function applyNaex(elem: Elem, line: Pick<LineState, "nastroje">): void {
-  if (elem.naexBy === undefined) return;
+  if (elem.naexBy === undefined && !elem.naexNastroj) return;
   // Zapaľovač, Energeťák a Telefón (Dedičstvo, Náradie 2026-10-30, v10): tvoje aktívne Cigarety,
   // Posilnenie, resp. Pohoršenia NA EX nezruší (a nezdvojí — ostávajú, ako sú).
   const imunne: Action[] = [];
@@ -848,9 +858,7 @@ function kartoveEfekty(segments: readonly (readonly Elem[])[], umlcane: Readonly
   const karty = [...susedia.keys()].filter((e) => !e.isLokalita);
   const okolie = (e: Elem): Elem[] => (susedia.get(e) ?? [null, null]).filter((x): x is Elem => x !== null);
   for (const e of karty) {
-    if (e.defId === "zamocnik") {
-      for (const s of okolie(e)) if (s.tags.includes("Nástroj")) zdvojAktivne(s, e.defId);
-    } else if (e.defId === "silna_nezavisla_zena") {
+    if (e.defId === "silna_nezavisla_zena") {
       // Michal 2026-10-18: podporuje okolie — aktívne akcie susedných kariet
       // toho istého majiteľa sa rátajú dvakrát (lokalitu a cudzie karty nie).
       // Michal 2026-11-08: len ľudí — Občanov a Starešinov; Zviera ani Nástroj nie,
@@ -945,8 +953,10 @@ function elemEval(elem: Elem): CardLineEval {
             : action === "PoškodeniePečene" && elem.pecenAkoViera
               ? "Viera"
               : null;
+    const povodna = elem.povodne[side]![idx] ?? null;
     return {
       action,
+      ...(povodna !== null ? { povodna } : {}),
       stav: elem.stav[side]![idx] as SlotStav,
       nasobok: elem.nasobok[side]![idx] as number,
       ...(zmena !== null && zmena !== action ? { ako: zmena, naKarte: true as const } : elem.vieraAkoVizia && action === "Viera" ? { ako: "Vízia" as const } : {}),
@@ -955,7 +965,7 @@ function elemEval(elem: Elem): CardLineEval {
   return {
     uid: elem.uid,
     vzbura: elem.vzbura[0] || elem.vzbura[1],
-    forsaz: elem.forsaz[0] || elem.forsaz[1],
+    forsaz: elem.forsaz[0] || elem.forsaz[1] || elem.forsazNastroj,
     left: [0, 1, 2, 3].map((k) => printedSlot(0, k)),
     right: [0, 1, 2, 3].map((k) => printedSlot(1, k)),
   };
@@ -984,12 +994,13 @@ export function evaluateLine(data: GameData, line: LineState): LineEval {
 
   // Výtržník NA EX nezdvojuje — jeho akcie sa prepíšu na Rany nižšie.
   const vytrznici = new Set<number>();
-  for (const strana of line.strany) for (const p of strana) if (p.vytrznik === true) vytrznici.add(p.card.uid);
+  // Injekcia pod kartou (Náradie) z nej robí Výtržníka tou istou cestou ako zrážka NA EX.
+  for (const strana of line.strany) for (const p of strana) if (p.vytrznik === true || ucinkyNastrojov(data, p).has("Výtržník")) vytrznici.add(p.card.uid);
   const partia0 = line.strany[0].map((p) =>
-    makeElem(data, p.card, p.playedBy, p.playedBy === 1, false, p.vytrznik === true ? undefined : p.naexBy, 0, p),
+    makeElem(data, p.card, p.playedBy, p.playedBy === 1, false, vytrznici.has(p.card.uid) ? undefined : p.naexBy, 0, p),
   );
   const partia1 = line.strany[1].map((p) =>
-    makeElem(data, p.card, p.playedBy, p.playedBy === 1, false, p.vytrznik === true ? undefined : p.naexBy, 1, p),
+    makeElem(data, p.card, p.playedBy, p.playedBy === 1, false, vytrznici.has(p.card.uid) ? undefined : p.naexBy, 1, p),
   );
   // Posilnenie a Odpor Výtržníka sú už len Rany (v6.1, Michal 2026-10-27): suseda
   // nezdvojujú ani nerušia, spoj s nimi je obyčajný pár. Ostatné akcie sa spárujú
@@ -1024,7 +1035,15 @@ export function evaluateLine(data: GameData, line: LineState): LineEval {
   const vzburyPosilnene: VzburaSPosilnenim[] = [];
   for (const segment of segments) {
     for (let i = 0; i + 1 < segment.length; i++) {
-      resolveJunction(segment[i] as Elem, segment[i + 1] as Elem, umlcane, line, forsaze, vzburyPosilnene);
+      resolveJunction(segment[i] as Elem, segment[i + 1] as Elem, line, forsaze, vzburyPosilnene);
+    }
+  }
+  // Vidly pod kartou (Náradie): Vzbura ako zo spoja — so Vzburou zo spoja sa karta obráti raz.
+  for (const strana of line.strany) {
+    for (const p of strana) {
+      if (!ucinkyNastrojov(data, p).has("Vzbura")) continue;
+      const elem = elems.find((e) => e.uid === p.card.uid);
+      if (elem !== undefined) markVzbura(elem, 0);
     }
   }
   for (const elem of elems) applyVzbura(elem);
@@ -1057,16 +1076,6 @@ export function evaluateLine(data: GameData, line: LineState): LineEval {
     }
   }
 
-  // Nástroj v línii (Michal 2026-10-19): akcie na spoji dostane majiteľ karty,
-  // s ktorou Nástroj spoj vytvoril — nie majiteľ Nástroja. Efekt Nástroja platí
-  // len v Dedičstve. Ľavá efektívna strana spája s ľavým susedom v úseku.
-  const susedNastroja = new Map<Elem, [PlayerId | null, PlayerId | null]>();
-  for (const seg of segments) {
-    seg.forEach((e, i) => {
-      if (!e.isLokalita && e.tags.includes("Nástroj")) susedNastroja.set(e, [seg[i - 1]?.owner ?? null, seg[i + 1]?.owner ?? null]);
-    });
-  }
-
   const sums: [Partial<Record<Action, number>>, Partial<Record<Action, number>>] = [{}, {}];
   const zdroje: [Partial<Record<Action, ZdrojAkcie[]>>, Partial<Record<Action, ZdrojAkcie[]>>] = [{}, {}];
   const zrusene: [Partial<Record<Action, ZdrojAkcie[]>>, Partial<Record<Action, ZdrojAkcie[]>>] = [{}, {}];
@@ -1090,8 +1099,7 @@ export function evaluateLine(data: GameData, line: LineState): LineEval {
         // s prevahou v jeho kraji — súper, ktorý tam prevládne, berie aj škodlivé.
         // Zrušená akcia sa zapíše tomu, komu by inak patrila.
         const kocovnik = elem.defId === "kocovnik" && elem.staryEfekt && elem.strana !== null ? (susedLokality[elem.strana] ?? elem.owner) : null;
-        const nastroj = susedNastroja.get(elem)?.[side] ?? null;
-        const target: PlayerId = elem.isLokalita ? (susedLokality[side] ?? side) : (kocovnik ?? nastroj ?? elem.owner);
+        const target: PlayerId = elem.isLokalita ? (susedLokality[side] ?? side) : (kocovnik ?? elem.owner);
         const tiper = elem.tiper[side]![k] ?? null;
         // Puška: zachránená Petelica udeľuje 2 — v súčtoch sa ráta ako Pecka (2 tuhé).
         const vedRobota = tiper === null && action === "Robota" && elem.robotaAkoPecka;

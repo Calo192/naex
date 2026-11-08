@@ -8,7 +8,9 @@ import cardsJson from "../data/cards.json";
 import eldersJson from "../data/elders.json";
 import scorecardsJson from "../data/scorecards.json";
 import type { CardInstance, GameState, PlacedCard, PlayerId } from "../src/index.ts";
-import { apply, evaluateLine, lineState, loadGameData, poskodenieBitky, setupGame, spojVznikne, zvieraPlati, zvieratAUmlcane } from "../src/index.ts";
+import type { LineState } from "../src/index.ts";
+import { apply, dovodNepodlozenia, evaluateLine, lineState, loadGameData, poskodenieBitky, setupGame, zvieraPlati, zvieratAUmlcane } from "../src/index.ts";
+import { dataSHranami } from "./naradieData.ts";
 import { zPolohy } from "./helpers.ts";
 
 const data = loadGameData(cardsJson, eldersJson, scorecardsJson);
@@ -42,11 +44,14 @@ describe("Mäsiar (Furt, Michal 2026-10-28): efekty Zvierat v jeho okolí neplat
     expect(sloty.every((x) => x.stav !== "aktivna" || x.nasobok === 1)).toBe(true);
   });
 
-  it("Kôň vedľa Mäsiara netvorí spoj s Nástrojom", () => {
-    const kon = { tags: data.cards.get("kon")!.tags, stred: false, defId: "kon" };
-    const nastroj = { tags: data.cards.get("puska")!.tags, stred: false, defId: "puska" };
-    expect(spojVznikne(nastroj, kon)).toBe(true);
-    expect(spojVznikne(nastroj, { ...kon, umlcany: true })).toBe(false);
+  it("Kôň vedľa Mäsiara nedovolí podložiť Nástroj pod Zviera (Náradie 2026-11-08)", () => {
+    const dataH = dataSHranami();
+    const vidly = inst("vidly");
+    const pes = inst("pes");
+    const sKonom: LineState = { lokalita: null, lokalitaOtocena: false, strany: [[lezi(pes, 0), lezi(inst("kon"), 0)], []] };
+    expect(dovodNepodlozenia(dataH, sKonom, vidly, pes.uid, "horna")).toBeNull();
+    const priMasiarovi: LineState = { ...sKonom, strany: [[...sKonom.strany[0], lezi(inst("masiar"), 1)], []] };
+    expect(dovodNepodlozenia(dataH, priMasiarovi, vidly, pes.uid, "horna")).toMatch(/Kôň/);
   });
 
   it("Čierna mačka vedľa Mäsiara neplatí — Viera jej Povery ruší (v8.3); Čierna mačka a Krokodíl neplatia (Kohút je zo sady v51 vyradený)", () => {

@@ -27,7 +27,9 @@
 // menia všetky akcie hráča (rátajú zo súčtov), a premena Vedúcka a Sypača (Michal 2026-11-08).
 
 import type { Action, CardDef, PlayerId, Tag } from "./types.ts";
-import { ALL_ACTIONS, ALL_TAGS } from "./types.ts";
+import { ALL_TAGS } from "./types.ts";
+import { hranySlovami, textBezHran } from "./naradie.ts";
+import { akciaZTokenu } from "./preskolenie.ts";
 
 export type SpustacTagom = "Spoločník" | "Nepriateľ" | "Podpora" | "Konflikt";
 /** Spúšťače s podmienkou slovami (skryté akcie, Michal 2026-11-08). */
@@ -61,18 +63,6 @@ export function popisPodmienky(e: Pick<EfektNavyse, "spustac" | "tag" | "podmien
 /** Modifikátory spoja bez spoja nič nerobia — akciou navyše byť nemôžu. */
 const BEZ_SPOJA_NIC: readonly Action[] = ["Posilnenie", "Odpor", "Pakt"];
 
-/** Názvy akcií z tvorcu, ktoré sa líšia od kľúča (Hazard je akcia Dlh). */
-const ALIAS_AKCIE: Readonly<Record<string, Action>> = { Hazard: "Dlh", Cigaretka: "Cigareta" };
-
-const bezMedzier = (s: string): string => s.replace(/\s+/g, "").toLocaleLowerCase("sk");
-
-function akciaZTokenu(token: string): Action | null {
-  const t = bezMedzier(token);
-  for (const a of ALL_ACTIONS) if (bezMedzier(a) === t) return a;
-  for (const [alias, a] of Object.entries(ALIAS_AKCIE)) if (bezMedzier(alias) === t) return a;
-  return null;
-}
-
 const TOKEN = /\{([^{}]+)\}/gu;
 // Skupiny: 1 spúšťač s tagom, 2 tag, 3 spúšťač slovami, 4 podmienka slovami, 5 piktogramy.
 const EFEKT = new RegExp(
@@ -87,7 +77,9 @@ export interface RozborNavyse {
 }
 
 /** Prečíta efekty s akciami navyše z textu efektu karty. */
-export function rozborNavyse(text: string): RozborNavyse {
+export function rozborNavyse(celyText: string): RozborNavyse {
+  // Hrany Nástroja („Dole: {Rana}→{Pecka}.“) číta naradie.ts — akcie navyše to nie sú.
+  const text = textBezHran(celyText);
   const efekty: EfektNavyse[] = [];
   const chyby: string[] = [];
   let tokenovVEfektoch = 0;
@@ -131,7 +123,7 @@ export function efektyNavyse(def: Pick<CardDef, "effectText" | "tags">): readonl
 
 /** Text efektu bez piktogramov {Akcia} — tie kreslí karta zvlášť (pečať v ilustrácii). */
 export function textBezAkcii(text: string): string {
-  return text
+  return hranySlovami(text)
     .replace(TOKEN, "")
     .replace(/[ \t]+([.,!?])/gu, "$1")
     // „Posledná Pitka kola: {Hazard}.“ či „Podpora: {Robota}.“ — bez piktogramu ostala dvojbodka pred bodkou.

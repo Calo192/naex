@@ -188,46 +188,49 @@
     },
     {
       "id": "12.nastroj.spoj",
-      "paragraf": "12. Nástroje a Dedičstvo › Nástroj v línii",
-      "pravidlo": "Nástroj tvorí spoj len s Občanom alebo Starešinom (nie s lokalitou ani Zvieraťom bez tagu Občan).",
-      "stav": "pokryte",
+      "paragraf": "12. Nástroje a Dedičstvo › Podloženie",
+      "pravidlo": "Podloženie: ťah v Zhromaždení za 1 cigaretu, limit nemíňa; pod Občana či Starešinu (svojho aj súperovho), pod Zviera len s Kôňom, najviac jeden Nástroj (Zámočník viac), nie pod kartu lícom dole; Nástroj do línie nejde.",
+      "stav": "na-overenie",
       "testy": [
-        "packages/core/test/michal-20261018.test.ts › pri lokalite spoj nevznikne — ani na Nástroji, ani na lokalite",
-        "packages/core/test/michal-20261018.test.ts › vedľa Občana (Pijan) sa Nástroj páruje ako bežná karta",
-        "packages/core/test/michal-20261018.test.ts › vedľa karty bez tagu Občan či Starešina (napr. iný Nástroj či Zviera) spoj nevznikne"
-      ]
+        "packages/core/test/naradie-podlozenie.test.ts › pod súperovu kartu za 1 cigaretu: ťah v striedaní, limit nemíňa, Nástroj je verejný",
+        "packages/core/test/naradie-podlozenie.test.ts › do línie ani do odpovede Nástroj nejde; bez cigarety ani bez hrán sa nepodkladá",
+        "packages/core/test/naradie-podlozenie.test.ts › len pod Občana a Starešinu, pod Zviera len s Kôňom; jeden Nástroj na kartu, pod Zámočníka viac"
+      ],
+      "poznamka": "Náradie — podloženie (Michal 2026-11-08): nové znenie §12; rozhodca prejde znova."
     },
     {
       "id": "12.nastroj.lokalita",
-      "paragraf": "12. Nástroje a Dedičstvo › Nástroj v línii",
-      "pravidlo": "Vedľa lokality sa Nástroj nevykladá (v10.2): na prázdnu stranu ani svoju, ani súperovu; za Živnostníka a do Dedičstva áno; neskôr pri lokalite ostáva ležať.",
+      "paragraf": "12. Nástroje a Dedičstvo › Podloženie",
+      "pravidlo": "Akciová hrana preškolí všetky výskyty X na Y pred spojmi; kartová hrana (Forsáž, NA EX, Výtržník, Vzbura) dáva stav ako dnešná cesta; Vínko nie pod kartu s poldecom ani so Vzburou.",
       "stav": "na-overenie",
       "testy": [
-        "packages/core/test/naradie-pri-lokalite.test.ts › na prázdnu stranu sa nevyloží — ani na svoju, ani na súperovu; Dedičstvo áno",
-        "packages/core/test/naradie-pri-lokalite.test.ts › za Občanom na ktorejkoľvek strane áno",
-        "packages/core/test/naradie-pri-lokalite.test.ts › ťah s viacerými kartami: Nástroj smie až za kartu vyloženú v tom istom ťahu",
-        "packages/core/test/naradie-pri-lokalite.test.ts › Živnostník pri lokalite: Nástroj za neho áno (neleží už pri lokalite)",
-        "packages/core/test/naradie-pri-lokalite.test.ts › odpoveď na NA EX: Nástroj nie na prázdnu stranu",
-        "packages/core/test/naradie-pri-lokalite.test.ts › Nástroj, ku ktorému sa lokalita dostane neskôr, ostáva ležať"
+        "packages/core/test/naradie-podlozenie.test.ts › mení všetky výskyty na oboch hranách hostiteľa ešte pred spojmi; slot nesie vytlačenú akciu",
+        "packages/core/test/naradie-podlozenie.test.ts › Vzbura z Vidiel = Vzbura zo spoja (Odpor proti Odporu); so spojovou sa karta obráti raz",
+        "packages/core/test/naradie-podlozenie.test.ts › Forsáž z Energeťáka: aktívne ×2, so spojovou Forsážou ×4; NA EX ju nezruší, zdvojí len neaktívne",
+        "packages/core/test/naradie-podlozenie.test.ts › NA EX z Vínka = NA EX s poldecom; skutočné NA EX ani na kartu so Vzburou či Výtržníkom nejde",
+        "packages/core/test/naradie-podlozenie.test.ts › Výtržník z Injekcie = Výtržník zo zrážky NA EX",
+        "packages/core/test/naradie-podlozenie.test.ts › Vínko nie pod kartu s poldecom; hrana bez zdrojovej akcie je dovolená, ale ponuka ju označí"
       ],
-      "poznamka": "Frakcie (Michal 2026-11-08): Kšeft zanikol, 17 kariet a 3 lokality majú nové efekty — testy v packages/core/test/frakcie.test.ts; rozhodca prejde znova."
+      "poznamka": "Náradie — podloženie (Michal 2026-11-08): nové znenie §12; rozhodca prejde znova."
     },
     {
       "id": "12.nastroj.akcie",
-      "paragraf": "12. Nástroje a Dedičstvo › Nástroj v línii",
-      "pravidlo": "Akcie Nástroja na spoji dostane majiteľ karty, s ktorou Nástroj tvorí spoj.",
-      "stav": "pokryte",
+      "paragraf": "12. Nástroje a Dedičstvo › Podloženie",
+      "pravidlo": "Podložený Nástroj leží do bitky; po bitke a pri odchode hostiteľa z línie ide do odhadzovacieho balíčka toho, kto ho podložil.",
+      "stav": "na-overenie",
       "testy": [
-        "packages/core/test/pravidla-20261019.test.ts › Nástroj podstrčený súperovi pracuje pre súpera"
-      ]
+        "packages/core/test/naradie-podlozenie.test.ts › Poľovník spáli Zviera s Nástrojom — Nástroj ide hneď majiteľovi Nástroja",
+        "packages/core/test/naradie-podlozenie.test.ts › boti podkladajú a po každej bitke je každý Nástroj u svojho majiteľa — aj spod súperovej karty"
+      ],
+      "poznamka": "Náradie — podloženie (Michal 2026-11-08): nové znenie §12; rozhodca prejde znova."
     },
     {
       "id": "6.linia.susedstvo",
       "paragraf": "6. Zhromaždenie › Línia, strany a kraje",
-      "pravidlo": "Nástroj nesmie susediť s Nástrojom na konci strany; Pes sa nestretne s iným Zvieraťom vo svojej partii.",
-      "stav": "pokryte",
+      "pravidlo": "Pes sa nestretne s iným Zvieraťom vo svojej partii; Nástroj sa do línie nevykladá (Náradie 2026-11-08).",
+      "stav": "na-overenie",
       "testy": [
-        "packages/core/test/vykladanie.test.ts › Nástroj limit nemíňa, ale nesusedí s Nástrojom na konci partie ani s lokalitou (v10.2)"
+        "packages/core/test/vykladanie.test.ts › Nástroj sa do línie nevykladá — len do Dedičstva (podloženie ponúka ponukaPodlozenia, Náradie 2026-11-08)"
       ]
     },
     {
@@ -253,12 +256,12 @@
       "id": "6.modifikatory.vzbura",
       "paragraf": "6. Zhromaždenie › Modifikátory na spoji",
       "pravidlo": "Odpor + Odpor = Vzbura: obe karty aktivujú neaktívne akcie; lokalita len hranu pri tom kraji; Nástroj Vzburu nedostane (v10.3).",
-      "stav": "pokryte",
+      "stav": "na-overenie",
       "testy": [
         "packages/core/test/partia.test.ts › Odpor + Odpor → Vzbura: obe karty aktivujú neprepojené akcie",
-        "packages/core/test/partia.test.ts › vzbura na spoji s lokalitou aktivuje len stranu patriacu partii (rozhodnutie č. 4)",
-        "packages/core/test/pravidla-v103.test.ts › Odpor Nástroja proti Odporu Občana: Vzburu dostane len Občan"
-      ]
+        "packages/core/test/partia.test.ts › vzbura na spoji s lokalitou aktivuje len stranu patriacu partii (rozhodnutie č. 4)"
+      ],
+      "poznamka": "Náradie — podloženie (Michal 2026-11-08): Nástroj sa do línie nevykladá, testy Nástroja v línii zanikli; rozhodca prejde znova."
     },
     {
       "id": "6.modifikatory.posilnenie-odpor",
@@ -273,21 +276,20 @@
       "id": "6.modifikatory.posilnenie-posilnenie",
       "paragraf": "6. Zhromaždenie › Modifikátory na spoji",
       "pravidlo": "Posilnenie + Posilnenie = Forsáž (v10.3): obe karty majú všetky aktívne akcie posilnené (×2, s Posilnením suseda ×4), aj Hazard; lokalita len hranu, Nástroj nie; Odpor Praudovravca ju vytvára; NA EX na jedno z Posilnení ju zruší (Energeťák nie); zdvojí aj akcie zo Vzbury.",
-      "stav": "pokryte",
+      "stav": "na-overenie",
       "testy": [
         "packages/core/test/partia.test.ts › Posilnenie + Posilnenie → Forsáž (v10.3); neaktívne akcie ostávajú neaktívne",
         "packages/core/test/pravidla-v103.test.ts › obe karty spoja majú všetky aktívne akcie ×2 — aj Hazard; tretia karta nie",
         "packages/core/test/pravidla-v103.test.ts › akcia posilnená ešte Posilnením suseda má ×4",
         "packages/core/test/pravidla-v103.test.ts › NA EX na kartu Forsáže zruší jej Posilnenie, a tým Forsáž; NA EX na suseda zruší len jeho ×2",
         "packages/core/test/pravidla-v103.test.ts › Energeťák: NA EX tvoje Posilnenie nezruší, Forsáž ostáva",
-        "packages/core/test/pravidla-v103.test.ts › Nástroj Forsáž nedostane — pri spoji Nástroj–Občan ju má len Občan",
         "packages/core/test/pravidla-v103.test.ts › Odpor Praudovravca sa ráta ako Posilnenie — s Posilnením aj s Odporom vytvorí Forsáž",
         "packages/core/test/pravidla-v103.test.ts › Pakt proti Posilneniu sa stane Posilnením — Forsáž",
         "packages/core/test/pravidla-v103.test.ts › akcie aktivované Vzburou Forsáž tiež zdvojí",
         "packages/core/test/pravidla-v103.test.ts › lokalita má Forsáž len na hrane pri tom kraji",
         "packages/core/test/pravidla-v103.test.ts › nový spoj Posilnenie + Posilnenie hlási moment FORSÁŽ!"
       ],
-      "poznamka": "v10.3 (Michal 2026-11-02) — Developer, na prejdenie rozhodcom."
+      "poznamka": "Náradie — podloženie (Michal 2026-11-08): Nástroj sa do línie nevykladá, testy Nástroja v línii zanikli; rozhodca prejde znova."
     },
     {
       "id": "16.karta.veteran",
@@ -324,11 +326,12 @@
       "id": "6.limit.nastroj",
       "paragraf": "6. Zhromaždenie › Limit vykladania",
       "pravidlo": "Nástroj sa do limitu vykladania nezapočítava.",
-      "stav": "pokryte",
+      "stav": "na-overenie",
       "testy": [
-        "packages/core/test/vykladanie.test.ts › Nástroj limit nemíňa, ale nesusedí s Nástrojom na konci partie ani s lokalitou (v10.2)",
-        "packages/core/test/pravidla-kolo.test.ts › §6/§11: priznanie neodovzdá ťah, vyloženie Nástroja do Dedičstva áno — a limit vykladania nemíňa"
-      ]
+        "packages/core/test/pravidla-kolo.test.ts › §6/§11: priznanie neodovzdá ťah, vyloženie Nástroja do Dedičstva áno — a limit vykladania nemíňa",
+        "packages/core/test/naradie-podlozenie.test.ts › pod súperovu kartu za 1 cigaretu: ťah v striedaní, limit nemíňa, Nástroj je verejný"
+      ],
+      "poznamka": "Náradie — podloženie (Michal 2026-11-08): Nástroj sa do línie nevykladá, testy Nástroja v línii zanikli; rozhodca prejde znova."
     },
     {
       "id": "6.limit.nanovo",
@@ -1709,11 +1712,12 @@
       "id": "16.karta.silna-zena-zamocnik",
       "paragraf": "16. Výklad kariet",
       "pravidlo": "Silná nezávislá žena zdvojí aktívne akcie susedných kariet majiteľa (nie lokalitu ani súperove); Zámočník zdvojí Nástroje v okolí.",
-      "stav": "pokryte",
+      "stav": "na-overenie",
       "testy": [
         "packages/core/test/playtest-055944.test.ts › Silná nezávislá žena: zdvojí aktívne akcie tvojich susedov",
-        "packages/core/test/playtest-055944.test.ts › Zámočník: akcie Nástroja v jeho okolí sú posilnené"
-      ]
+        "packages/core/test/naradie-podlozenie.test.ts › len pod Občana a Starešinu, pod Zviera len s Kôňom; jeden Nástroj na kartu, pod Zámočníka viac"
+      ],
+      "poznamka": "Náradie — podloženie (Michal 2026-11-08): Nástroj sa do línie nevykladá, testy Nástroja v línii zanikli; rozhodca prejde znova."
     },
     {
       "id": "16.karta.starosta",
@@ -2134,7 +2138,7 @@
       "pravidlo": "Konflikt (v7): efekt ležiacej karty, keď k nej súper priloží svoju — po Nástupe priloženej karty; vlastné priloženie, Nástroj, NA EX ani zrážka ho nespúšťajú; Záverečná až pri otočení.",
       "stav": "pokryte",
       "testy": [
-        "packages/core/test/v7-efekty.test.ts › vlastné priloženie a priložený Nástroj Konflikt nevyvolajú",
+        "packages/core/test/v7-efekty.test.ts › vlastné priloženie a podložený Nástroj Konflikt nevyvolajú",
         "packages/core/test/v7-efekty.test.ts › NA EX na kartu vedľa Konfliktu ho nespustí",
         "packages/core/test/v7-efekty.test.ts › Záverečná vyvolá Konflikt až pri otočení na konci Pitky"
       ]
@@ -2163,7 +2167,7 @@
         "packages/core/test/v7-efekty.test.ts › Krokodíl: na konci bitky idú z hry Občania a Zvieratá v jeho okolí (oboch hráčov)",
         "packages/core/test/masiar.test.ts › umlčané sú Zvieratá oboch hráčov, ktoré susedia s odkrytým Mäsiarom",
         "packages/core/test/masiar.test.ts › akcie Zvierat sa rátajú normálne (Mäsiar ich už neruší); Pes vedľa Mäsiara nezdvojuje",
-        "packages/core/test/masiar.test.ts › Kôň vedľa Mäsiara netvorí spoj s Nástrojom",
+        "packages/core/test/masiar.test.ts › Kôň vedľa Mäsiara nedovolí podložiť Nástroj pod Zviera (Náradie 2026-11-08)",
         "packages/core/test/masiar.test.ts › Čierna mačka vedľa Mäsiara nezruší strop mäkkého; Kohút a Krokodíl neplatia",
         "packages/core/test/masiar.test.ts › Kapybara priložená k Mäsiarovi sa nespustí"
       ]
