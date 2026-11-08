@@ -53,6 +53,7 @@ import { prveFajcenieZadarmo, opisReci, sReciNizsie, sRadom, ktoNatacaLokalitu, 
 import type { Moment, ActionSums, DopadyNahladu, KliatbyNahladu, NahladNaexNaKartu, PrebytokNahladu, NahladVylozenia, PolozkaVykladania, Rod, Slot, StranaLinie, VystrahaPecene } from "@naex/core";
 import { IkonaAkcie } from "../karta/IkonaAkcie.tsx";
 import { KoniecHry } from "./KoniecHry.tsx";
+import { JAMKY_RUKY, jamkyLinie, type KartaNaKraji } from "./jamkyLinie.ts";
 import { IkonaPriazne, riadokPriazneLogu } from "./IkonaPriazne.tsx";
 import { CENA_POLA, NAZOV_DELENIA, rodStarsieho } from "./textyStarsich.ts";
 import { IkonaDelenia, LiniaStarsich, type AkciaStarsieho, type MiestoVLinii, type RezimLinie, type RozdelenieStarsieho, type StarsiVLinii, type SuhrnNaLinii } from "./LiniaStarsich.tsx";
@@ -2892,6 +2893,7 @@ export function HernaPlocha({
           onClick: klikLinia(placed.playedBy, uid),
           vybrana: mode.typ === "naexCiel" && mode.uid === uid,
           spoj: spojPre(uid),
+          jamky: jamkyStola.get(uid),
           vytrznik,
         },
         {
@@ -2943,6 +2945,7 @@ export function HernaPlocha({
         eval: lineEval.cards.get(x.karta.uid) ?? null,
         hranaVnutorna: nahladSpojov?.uid === x.karta.uid ? nahladSpojov.n.vnutornaVytlacena : undefined,
         spoj: spojPre(x.karta.uid),
+        jamky: jamkyStola.get(x.karta.uid),
       };
       const vrat = (): void => vratDoRuky(x.karta.uid);
       const obsah = tahatelna(
@@ -3118,6 +3121,24 @@ export function HernaPlocha({
   const lokalita = view.ciel?.lokalita ?? null;
   // Natočenie lokality je v ráme hráča 1 opačné.
   const lokalitaNavrhOtocena = lokalitaNavrh !== null && lokalitaNavrh.otocena !== (ja === 1);
+  // Jamky na prázdnych indexoch len na otvorenej hrane línie (Michal 2026-11-08, jamkyLinie.ts).
+  // Za Záverečnou lícom dole (vlastnou aj súperovou) sa nepriloží — taký kraj je zavretý.
+  const kartyKraja = (p: PlayerId): KartaNaKraji[] => view.strany[p].map((pl) => ({ uid: pl.card.uid, otocena: pl.playedBy !== ja }));
+  const navrhKraja = (p: PlayerId): KartaNaKraji[] =>
+    naStoleNavrh.filter((x) => x.ciel === (p === ja ? "vlastna" : "superova")).map((x) => ({ uid: x.karta.uid, otocena: false }));
+  const zavreteKraje = zablokovaneStrany(view);
+  const jamkyStola = jamkyLinie({
+    ja,
+    strany: [kartyKraja(0), kartyKraja(1)],
+    navrh: [navrhKraja(0), navrhKraja(1)],
+    zavreta: zavreteKraje,
+    stred:
+      lokalita !== null
+        ? { uid: lokalita.uid, otocena: view.lokalitaOtocena !== (ja === 1) }
+        : lokalitaNavrh !== null
+          ? { uid: lokalitaNavrh.karta.uid, otocena: lokalitaNavrhOtocena }
+          : null,
+  });
   // Ktorá hrana stredu je obrátená ku ktorej strane (playtest 20261017-164450:
   // Eva kvôli otočeniu lokality dala súperovi Petelicu). Natočenie je v ráme hráča 0.
   const stredKarta = lokalitaNavrh?.karta ?? lokalita;
@@ -3195,6 +3216,7 @@ export function HernaPlocha({
           otocena: view.lokalitaOtocena !== (ja === 1),
           eval: lineEval.cards.get(lokalita.uid) ?? null,
           spoj: spojPre(lokalita.uid),
+          jamky: jamkyStola.get(lokalita.uid),
         }),
       );
     }
@@ -3208,6 +3230,7 @@ export function HernaPlocha({
             sirka: sirkaVLinii,
             otocena: lokalitaNavrhOtocena,
             eval: lineEval.cards.get(lokalitaNavrh.karta.uid) ?? null,
+            jamky: jamkyStola.get(lokalitaNavrh.karta.uid),
             ...(natociSuper ? {} : { onClick: () => setNavrh({ typ: "lokalita", uid: lokalitaNavrh.karta.uid, otocena: !lokalitaNavrh.otocena }) }),
           }),
           undefined,
@@ -6633,7 +6656,7 @@ export function HernaPlocha({
                   : { left: strana === "left" ? pary.map((x) => x.index) : [], right: strana === "right" ? pary.map((x) => x.index) : [] };
               const obsah = (
                 <>
-                  {karta({ karta: k, sirka: sirkaVRuke, vybrana: vybranaDoOblasti === k.uid, onClick, hranaVnutorna: strana, spoj })}
+                  {karta({ karta: k, sirka: sirkaVRuke, vybrana: vybranaDoOblasti === k.uid, onClick, hranaVnutorna: strana, spoj, jamky: JAMKY_RUKY })}
                   {/* Nízke okno: pás s názvom je pod okrajom okna — meno ukáže štítok nad ním (hra.css). */}
                   <span className="ruka-meno" aria-hidden="true">
                     {menoKarty(k.defId)}
@@ -6650,7 +6673,7 @@ export function HernaPlocha({
               // Bez myši: Enter / ťuknutie urobí to isté čo klik, inak kartu zväčší (lupa) — na dotyku sa ruka inak prečítať nedá.
               const klucLupy = `r${k.uid}`;
               const zdrojRuky: Zdroj = { karta: k, odkial: "ruka", navrh: false };
-              lupaKarty.set(klucLupy, { render: (s) => karta({ karta: k, sirka: s }), zdroj: zdrojRuky });
+              lupaKarty.set(klucLupy, { render: (s) => karta({ karta: k, sirka: s, jamky: JAMKY_RUKY }), zdroj: zdrojRuky });
               const lupaRuky = (el: HTMLElement): void => otvorLupu(klucLupy, el.querySelector(".kl"));
               const aktivuj = (el: HTMLElement): void => {
                 if (onClick !== undefined) onClick();
@@ -6686,13 +6709,13 @@ export function HernaPlocha({
               { karta: k, odkial: "senok", navrh: true },
               naSirku ? (
                 <>
-                  {karta({ karta: k, sirka: sirkaVRuke })}
+                  {karta({ karta: k, sirka: sirkaVRuke, jamky: JAMKY_RUKY })}
                   <span className="ruka-meno" aria-hidden="true">
                     {menoKarty(k.defId)}
                   </span>
                 </>
               ) : (
-                karta({ karta: k, sirka: sirkaVRuke })
+                karta({ karta: k, sirka: sirkaVRuke, jamky: JAMKY_RUKY })
               ),
               k.uid,
               NAHRADIT + k.uid,

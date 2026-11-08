@@ -56,6 +56,11 @@ export interface KartaLicoProps {
   readonly hranaVnutorna?: "lava" | "prava" | undefined;
   /** Sloty (vytlačené strany, indexy zhora), ktoré by pri vybranom vyložení vytvorili spoj. */
   readonly spoj?: { readonly lava: readonly number[]; readonly prava: readonly number[] } | undefined;
+  /**
+   * Vytlačené strany, na ktorých sa prázdne indexy kreslia ako jamky (Michal 2026-11-08):
+   * hráč inak nevidí, kde spoj nevznikne. Len tam, kde ešte môže vzniknúť — ruka a otvorená hrana línie.
+   */
+  readonly jamky?: { readonly lava: boolean; readonly prava: boolean } | undefined;
   /** Bez tooltipov a efektu — malá karta v zozname. */
   readonly bezPopisov?: boolean;
   /**
@@ -94,9 +99,19 @@ export function KartaLico(props: KartaLicoProps) {
         };
 
   const slot = (strana: "lava" | "prava", i: number, kluc: string | null) => {
-    if (kluc === null) return null;
     const r = (strana === "lava" ? g.slotyLave : g.slotyPrave)[i];
     if (r === undefined) return null;
+    if (kluc === null) {
+      if (tlac || props.jamky?.[strana] !== true) return null;
+      return (
+        <span
+          key={`${strana}${i}`}
+          className="kl-jamka"
+          style={{ "--x": r.x, "--y": r.y, "--s": r.w, "--r": g.polomerSlotu } as CSSProperties}
+          aria-hidden="true"
+        />
+      );
+    }
     const akcia = vzhlad.akcie.find((a) => a.kluc === kluc);
     const st = sloty?.[strana][i] ?? null;
     const zar = props.zar?.[strana][i] ?? null;
