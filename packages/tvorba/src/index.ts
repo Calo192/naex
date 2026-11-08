@@ -12,3 +12,4 @@ export * from "./predvolene.ts";
 export * from "./texty.ts";
 export * from "./pribeh.ts";
 export * from "./heatmapa.ts";
+export * from "./powerLevel.ts";

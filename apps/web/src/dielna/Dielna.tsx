@@ -21,11 +21,12 @@ import type { DetailNavrhu, NavrhDielne, ObsahNavrhu, Pozicie, StavZobrazeny, Zo
 import { STAVY, kartaZNavrhu, kedy, poziciZoStrany, stranaZPozicii } from "./typy.ts";
 import "./dielna.css";
 
-/** Záložky stránky Karty: glosár, Dielňa (Michal 2026-10-22: nie nová položka navigácie) a heatmapa akcií (2026-11-02). */
+/** Záložky stránky Karty: glosár, Dielňa (Michal 2026-10-22: nie nová položka navigácie), heatmapa akcií (2026-11-02) a power level (2026-11-08). */
 const ZALOZKY_KARIET = [
   { id: "karty", href: "/karty", nazov: "Karty v hre" },
   { id: "dielna", href: "/karty/dielna", nazov: "Dielňa" },
   { id: "heatmapa", href: "/karty/heatmapa", nazov: "Heatmapa" },
+  { id: "power-level", href: "/karty/power-level", nazov: "Power level" },
 ] as const;
 
 export function KartyZalozky({ aktivna }: { readonly aktivna: (typeof ZALOZKY_KARIET)[number]["id"] }) {
