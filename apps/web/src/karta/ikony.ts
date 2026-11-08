@@ -12,7 +12,7 @@ export interface IkonaCesta {
 /**
  * Piktogramy rozhrania, nie akcie karty (Michal 2026-11-08, docs/napady/ikony-final.html):
  * Dobratie = D-E (karta s „+1“), Odhodenie = O1 (karta s „−1“), Návrat = N1 (karta so šípkami
- * v kruhu), Spálenie = S-B (plameň v karte). Majú štýl akcií, aby sa dali kresliť všade, kde hra
+ * v kruhu), Spálenie = S-B′ (plameň v karte D-E). Majú štýl akcií, aby sa dali kresliť všade, kde hra
  * kreslí piktogramy (IkonaAkcie, značky v texte).
  */
 export type PiktogramRozhrania = "Dobratie" | "Odhodenie" | "Návrat" | "Spálenie";
@@ -92,8 +92,8 @@ export const IKONY: Readonly<Record<Action | PiktogramRozhrania, readonly IkonaC
   "Návrat": [
     { d: "M74 6L76.59 6.34L79 7.34L81.07 8.93L82.66 11L83.66 13.41L84 16L84 84L83.66 86.59L82.66 89L81.07 91.07L79 92.66L76.59 93.66L74 94L26 94L23.41 93.66L21 92.66L18.93 91.07L17.34 89L16.34 86.59L16 84L16 16L16.34 13.41L17.34 11L18.93 8.93L21 7.34L23.41 6.34L26 6ZM28.39 42.13A23 23 0 0 1 68.12 35.84L74.15 31.13L68.32 47.43L55 46.09L61.03 41.38A14 14 0 0 0 36.84 45.21ZM71.61 57.87A23 23 0 0 1 31.88 64.16L25.85 68.87L31.68 52.57L45 53.91L38.97 58.62A14 14 0 0 0 63.16 54.79Z", evenOdd: true },
   ],
-  // S-B má užšiu kartu (20..80) — Michal ho vybral tak, ako je.
+  // S-B′ — plameň v karte D-E (Michal 2026-11-08: „nech karty vyzerajú rovnako“).
   "Spálenie": [
-    { d: "M71 6L73.33 6.31L75.5 7.21L77.36 8.64L78.79 10.5L79.69 12.67L80 15L80 85L79.69 87.33L78.79 89.5L77.36 91.36L75.5 92.79L73.33 93.69L71 94L29 94L26.67 93.69L24.5 92.79L22.64 91.36L21.21 89.5L20.31 87.33L20 85L20 15L20.31 12.67L21.21 10.5L22.64 8.64L24.5 7.21L26.67 6.31L29 6ZM50.8 20C58.8 34.08 70 44.32 70 63.52C70 77.6 60.4 84 50 84C39.6 84 30 77.6 30 62.24C30 52 36.4 45.6 39.6 39.2C42 48.16 46.8 52 47.6 52C47.6 39.2 45.2 28.96 50.8 20Z", evenOdd: true },
+    { d: "M74 6L76.59 6.34L79 7.34L81.07 8.93L82.66 11L83.66 13.41L84 16L84 84L83.66 86.59L82.66 89L81.07 91.07L79 92.66L76.59 93.66L74 94L26 94L23.41 93.66L21 92.66L18.93 91.07L17.34 89L16.34 86.59L16 84L16 16L16.34 13.41L17.34 11L18.93 8.93L21 7.34L23.41 6.34L26 6ZM50.8 20C58.8 34.08 70 44.32 70 63.52C70 77.6 60.4 84 50 84C39.6 84 30 77.6 30 62.24C30 52 36.4 45.6 39.6 39.2C42 48.16 46.8 52 47.6 52C47.6 39.2 45.2 28.96 50.8 20Z", evenOdd: true },
   ],
 };

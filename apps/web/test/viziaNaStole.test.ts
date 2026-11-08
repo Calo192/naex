@@ -13,10 +13,11 @@ const MOCKUP = new URL("../../../docs/napady/ikony-final.html", import.meta.url)
 
 describe("piktogramy rozhrania", () => {
   // Finál je návrh v docs/napady — keď ho niekto upratal, porovnanie sa preskočí.
-  it.skipIf(!existsSync(MOCKUP))("Dobratie (D-E), Odhodenie (O1), Návrat (N1) a Spálenie (S-B) sú v IKONY presne ako vo finále, ktoré Michal vybral", () => {
+  it.skipIf(!existsSync(MOCKUP))("Dobratie (D-E), Odhodenie (O1), Návrat (N1) a Spálenie (S-B′) sú v IKONY presne ako vo finále, ktoré Michal vybral", () => {
     const html = readFileSync(MOCKUP, "utf8");
     const riadok = html.split(/\r?\n/).find((r) => r.startsWith("const DATA = ")) ?? "const DATA = {};";
-    const fin = (JSON.parse(riadok.slice("const DATA = ".length).replace(/;\s*$/, "")) as { FINAL?: Record<string, { d: string; evenOdd: boolean }[]> }).FINAL ?? {};
+    const data = (JSON.parse(riadok.slice("const DATA = ".length).replace(/;\s*$/, "")) as { FINAL?: Record<string, { d: string; evenOdd: boolean }[]>; SB_ZJEDNOTENA?: { d: string; evenOdd: boolean }[] });
+    const fin = { ...(data.FINAL ?? {}), Spálenie: data.SB_ZJEDNOTENA };
     expect(IKONY.Dobratie).toEqual(fin.Dobratie);
     expect(IKONY.Odhodenie).toEqual(fin.Odhodenie);
     expect(IKONY.Návrat).toEqual(fin.Navrat);
