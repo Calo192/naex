@@ -1,0 +1,184 @@
+<!doctype html>
+<html lang="sk"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Vízia v2 — NA EX!</title>
+<style>
+:root{--bg:#14110e;--pl:#1e1914;--pl2:#28211a;--ok:#3d3229;--tx:#f1e8d8;--tl:#b6a790;--sl:#8b7d6a;--ak:#e9ad45;--zel:#7cbf74;--cer:#d0563f;
+--dob:#5ea6e0;--zla:#e0614a;--mod:#e6b04a;--mak:#b48ae6;--viz:#4cc2ad;color-scheme:dark}
+@media (prefers-color-scheme:light){:root{--bg:#f6f1e7;--pl:#fffaf1;--pl2:#f0e7d6;--ok:#dccdb3;--tx:#2a2016;--tl:#6b5b45;--sl:#7a6a52;--ak:#a8680f;--zel:#3f7f38;--cer:#b0402c;
+--dob:#2f6fae;--zla:#b53b26;--mod:#9a6a10;--mak:#7a4fb5;--viz:#1f8070;color-scheme:light}}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--tx);font:15px/1.5 system-ui,"Segoe UI",Roboto,sans-serif}
+main{max-width:1100px;margin:0 auto;padding:14px 14px 90px}h1,h2,h3{font-family:Georgia,serif;line-height:1.2}h1{font-size:clamp(1.4rem,5vw,2rem);margin:0 0 4px}
+h2{font-size:1.25rem;margin:28px 0 10px;padding-bottom:4px;border-bottom:1px solid var(--ok)}h3{font-size:1.02rem;margin:0 0 6px}
+p{margin:0 0 9px}.mini{color:var(--sl);font-size:.84rem}.box{background:var(--pl);border:1px solid var(--ok);border-radius:12px;padding:11px 13px;margin:0 0 12px}
+.box>:last-child{margin-bottom:0}.ok{color:var(--zel);font-weight:600}.zle{color:var(--cer);font-weight:600}
+.a{display:inline-block;font-size:.8rem;font-weight:600;padding:0 6px;border-radius:6px;border:1px solid currentColor;margin:1px 1px;white-space:nowrap}
+.a.dob{color:var(--dob)}.a.zla{color:var(--zla)}.a.mod{color:var(--mod)}.a.mak{color:var(--mak)}.a.viz{color:var(--viz);background:color-mix(in srgb,var(--viz) 16%,transparent)}
+.a.blk{color:var(--sl);border-style:dashed}.a.nic{color:var(--sl)}.a.nova{box-shadow:0 0 0 2px var(--ak)}.slt{display:inline-flex;gap:2px}
+.mriezka{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(340px,100%),1fr));gap:12px}
+.karta{background:var(--pl);border:1px solid var(--ok);border-radius:12px;padding:11px 12px;min-width:0}.karta.ponecha{border-color:var(--viz)}
+.typ{font:600 .72rem system-ui;color:var(--tl);border:1px solid var(--ok);border-radius:999px;padding:1px 7px;vertical-align:middle}
+table{border-collapse:collapse;width:100%}td,th{padding:4px 6px;border-bottom:1px solid var(--ok);text-align:left;vertical-align:top}th{font-size:.8rem;color:var(--tl);font-weight:600}
+table.str td:first-child{color:var(--tl);font-size:.8rem;white-space:nowrap}.num{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+.tab{overflow-x:auto}tr.odp td{background:color-mix(in srgb,var(--ak) 12%,transparent)}code{background:var(--pl2);padding:0 4px;border-radius:4px;font-size:.86em}
+.ot li{margin:5px 0}
+</style></head><body><main>
+<h1>Vízia v2 — štyri karty, indexy pre Posilnenie a Pakt</h1>
+<p class="mini">Vymyselník · 2026-11-08 · podľa tvojho rozhodnutia k <a href="vizia-a-kseft.html">vizia-a-kseft.html</a> · nad <code>cards.json</code> v master. Kšeft sa nemení.</p>
+
+<div class="box">
+<p><b>Odporúčanie:</b> Veštica, Bzdocha a Guľa majú <b>jednu Víziu, pevne na pravej strane, index 2</b>. Tam ju najčastejšie stretne tvoje Posilnenie: B+ dáva Posilnenia Občanov na ľavú stranu, index 2, a tá sa s tvojou pravou 2 stretne priamo. Vlastný sused má na tom mieste Posilnenie alebo Pakt v <b>8,1 %</b> kariet tlače. Je to najviac zo všetkých 8 pozícií. Dnes majú tieto 4 karty Víziu na miestach s 2,8–6,4 %. Poštárka si nechá Víziu na Ľ1, kde ju má dnes: je to tretie najlepšie miesto a P2 drží jej Posilnenie. Zvyšok akcií som oslabil. Veštici a Bzdoche sa jedna Povera zmení na Hazard, Guľa príde o dve Vízie z troch a Poštárka o jednu (→ Pečeň).</p>
+<p class="mini">Fixácia cez <code>allowed</code> zrazila Veštičke a Bzdoche varianty na 2 a 3. Riešenie: na voľnej ľavej strane sú tri rôzne akcie, takže tá dá 6 rozložení. Všetky 4 karty sú v rozsahu (Občan 6, Nástroj 2, Starší 1).</p>
+</div>
+
+<h2>1 · Kde v sade ležia Posilnenia a Pakty</h2>
+<p class="mini">Podiel tlačených kariet (permutácie × kópie z tvorcu, 592 kariet okrem lokalít a kliatob), ktoré majú na danej strane a indexe Posilnenie či Pakt. Už so zmenami nižšie (Bzdocha má Pakt pevne na P1). Mena kariet ukáže myš.</p>
+<div class="tab"><table><tr><th>strana · index</th><th class="num">0</th><th class="num">1</th><th class="num">2</th><th class="num">3</th></tr>
+<tr><td><span class="a mod">Posilnenie</span> ľavá</td><td class="num" title="Praudovravec, Starosta">0,5 %</td><td class="num" title="Hasič, Anonymný alkoholik, Snúbenica, Profesionálny tipér">4,7 %</td><td class="num" title="Hasič, Praudovravec, Zámočník, Starosta, Anonymný alkoholik, Snúbenica, Kôň, Sypač, Energeťák, Profesionálny tipér">7,9 %</td><td class="num" title="Zámočník, Anonymný alkoholik, Sypač, Energeťák">3,7 %</td></tr><tr><td><span class="a mod">Posilnenie</span> pravá</td><td class="num" title="">·</td><td class="num" title="Dohadzovačka">1,4 %</td><td class="num" title="Vínko, Poštárka, Injekcia, Dohadzovačka, Zapaľovač">2,2 %</td><td class="num" title="Vínko, Injekcia, Zapaľovač">0,7 %</td></tr><tr><td><span class="a mod">Pakt</span> ľavá</td><td class="num" title="Silná, nezávislá žena, Dohadzovačka">3,4 %</td><td class="num" title="">·</td><td class="num" title="Zrkadlo">0,2 %</td><td class="num" title="Silná, nezávislá žena, Dohadzovačka, Zrkadlo">3,5 %</td></tr><tr><td><span class="a mod">Pakt</span> pravá</td><td class="num" title="Profesionálny tipér">0,7 %</td><td class="num" title="Dievčina na vydaj, Bzdocha">5,4 %</td><td class="num" title="Starosta, Dievčina na vydaj, Zrkadlo">1,9 %</td><td class="num" title="Profesionálny tipér">0,7 %</td></tr></table></div>
+<p class="mini">Posilnenia: Ľ2 Hasič, Praudovravec, Zámočník, Starosta, Anonymný alkoholik, Snúbenica, Kôň, Sypač, Energeťák, Profesionálny tipér. Ľ1 Hasič, Anonymný alkoholik, Snúbenica, Profesionálny tipér. Ľ3 Zámočník, Anonymný alkoholik, Sypač, Energeťák. Pakty: Ľ0/Ľ3 Silná, nezávislá žena, Dohadzovačka, Zrkadlo; P1/P2 Dievčina na vydaj, Bzdocha, Starosta, Zrkadlo.</p>
+
+<h2>2 · Ktorý index pre Víziu</h2>
+<div class="box">
+<p><b>Spoj (§6):</b> pravá strana karty a ľavá strana suseda sa stretnú na rovnakom indexe. Súperova karta je voči tvojej otočená, takže jej strany sa vymenia a indexy obrátia (0↔3, 1↔2). Vízia na tvojej <b>P2</b> preto stretne <b>Ľ2</b> tvojej karty vpravo, alebo <b>P1</b> súperovej karty. Vízia na <b>Ľ2</b> stretne P2 tvojej karty, alebo Ľ1 súperovej.</p>
+</div>
+<div class="tab"><table><tr><th>Vízia na</th><th>vlastný sused · Posilnenie/Pakt</th><th>súperov sused (otočený)</th></tr><tr class=""><td>Vízia Ľ0</td><td>P0 · <b>0,7 %</b></td><td>Ľ3 · 7,3 %</td></tr><tr class="odp"><td>Vízia Ľ1</td><td>P1 · <b>6,8 %</b></td><td>Ľ2 · 8,1 %</td></tr><tr class=""><td>Vízia Ľ2</td><td>P2 · <b>4,1 %</b></td><td>Ľ1 · 4,7 %</td></tr><tr class=""><td>Vízia Ľ3</td><td>P3 · <b>1,4 %</b></td><td>Ľ0 · 3,9 %</td></tr><tr class=""><td>Vízia P0</td><td>Ľ0 · <b>3,9 %</b></td><td>P3 · 1,4 %</td></tr><tr class=""><td>Vízia P1</td><td>Ľ1 · <b>4,7 %</b></td><td>P2 · 4,1 %</td></tr><tr class="odp"><td>Vízia P2</td><td>Ľ2 · <b>8,1 %</b></td><td>P1 · 6,8 %</td></tr><tr class=""><td>Vízia P3</td><td>Ľ3 · <b>7,3 %</b></td><td>P0 · 0,7 %</td></tr></table></div>
+<p class="mini">Súperovo Posilnenie zdvojí tvoju Víziu tebe. Jeho Pakt ju skopíruje jemu. Vlastný Pakt ju skopíruje tebe, takže máš dve. Rozhoduje preto stĺpec „vlastný sused“. <b>P2</b> vedie (B+: Posilnenie Občana na Ľ2). <b>P3</b> je druhá (Pakty na Ľ3 a Posilnenia Zámočníka, Sypača, Anonymného alkoholika, Energeťáka). <b>Ľ1</b> je tretia (Pakty Bzdochy a Dievčiny na P1, k tomu súperovo Posilnenie na Ľ2). Ľ0, Ľ3 a P0 skoro nikdy. Pri Nástroji (Guľa) sa ráta len sused Občan, Starší alebo Kôň (§6). Vzorka je iná, poradie rovnaké: P2 8,6 %.</p>
+
+<h2>3 · Karty, ktoré Víziu nechajú</h2>
+<div class="mriezka">
+<div class="karta ponecha">
+<h3>Veštica <span class="typ">Občan</span></h3>
+<table class="str"><tr><th></th><th>dnes</th><th>návrh</th></tr>
+<tr><td>ľavá</td><td><span class="slt"><span class="a blk">×</span><span class="a nic">·</span><span class="a nic">·</span><span class="a nic">·</span></span> <span class="a zla">Pečeň</span> <span class="a mak">Povera</span> <span class="a viz">Vízia</span></td><td><span class="slt"><span class="a blk">×</span><span class="a nic">·</span><span class="a nic">·</span><span class="a nic">·</span></span> <span class="a zla">Pečeň</span> <span class="a zla nova">Hazard</span> <span class="a mak">Povera</span></td></tr>
+<tr><td>pravá</td><td><span class="slt"><span class="a blk">×</span><span class="a nic">·</span><span class="a nic">·</span><span class="a blk">×</span></span> <span class="a mak">Povera</span> <span class="a mak">Povera</span></td><td><span class="slt"><span class="a blk">×</span><span class="a mak nova">Povera</span><span class="a viz nova">Vízia</span><span class="a blk">×</span></span></td></tr>
+<tr><td>varianty</td><td>6 × 1 = <b>6</b></td><td>6 × 1 = <b>6</b> <span class="ok">(4–8)</span></td></tr>
+<tr><td>Vízia</td><td>Ľ3, Ľ2, Ľ1 · vlastný sused <b>4,1 %</b>, súperov 5,6 %</td><td>P2 · vlastný sused <b>8,1 %</b>, súperov 6,8 %</td></tr>
+<tr><td>tlač</td><td>6</td><td>6</td></tr>
+</table>
+<p class="mini"><b>Alternatíva:</b> Vízia na Ľ2 (Pečeň a Hazard okolo nej, pravá Povera ×2 s odblokovaným P1–P2 = 3 rozloženia → 2 × 3 = 6). Vlastný sused tam má Posilnenie/Pakt menej často (4,1 %).</p>
+<p>Vízia pevne na P2, vedľa nej Povera na P1. Ľavá strana: Vízia z nej odíde, Povera → Hazard, takže tam ostanú Pečeň, Hazard a Povera vo voľnom poradí (6). Oslabenie: z troch Povier ostanú dve, pribudne Hazard.</p></div>
+<div class="karta ponecha">
+<h3>Bzdocha <span class="typ">Občan</span></h3>
+<table class="str"><tr><th></th><th>dnes</th><th>návrh</th></tr>
+<tr><td>ľavá</td><td><span class="slt"><span class="a blk">×</span><span class="a nic">·</span><span class="a nic">·</span><span class="a nic">·</span></span> <span class="a zla">Pečeň</span> <span class="a mak">Povera</span> <span class="a mak">Povera</span></td><td><span class="slt"><span class="a blk">×</span><span class="a nic">·</span><span class="a nic">·</span><span class="a nic">·</span></span> <span class="a zla">Pečeň</span> <span class="a mak">Povera</span> <span class="a zla nova">Hazard</span></td></tr>
+<tr><td>pravá</td><td><span class="slt"><span class="a blk">×</span><span class="a nic">·</span><span class="a nic">·</span><span class="a blk">×</span></span> <span class="a mod">Pakt</span> <span class="a viz">Vízia</span></td><td><span class="slt"><span class="a blk">×</span><span class="a mod nova">Pakt</span><span class="a viz nova">Vízia</span><span class="a blk">×</span></span></td></tr>
+<tr><td>varianty</td><td>3 × 2 = <b>6</b></td><td>6 × 1 = <b>6</b> <span class="ok">(4–8)</span></td></tr>
+<tr><td>Vízia</td><td>P2, P1 · vlastný sused <b>6,4 %</b>, súperov 5,4 %</td><td>P2 · vlastný sused <b>8,1 %</b>, súperov 6,8 %</td></tr>
+<tr><td>tlač</td><td>24</td><td>24</td></tr>
+</table>
+<p class="mini"><b>Alternatíva:</b> Pakt → Pečeň (P1). Bzdocha prestane kopírovať a je ešte slabšia, no Pakty v sade ubudnú (P1 má Pakt len ona a Dievčina).</p>
+<p>Pakt pevne na P1, Vízia na P2. Ľavá strana: jedna Povera → Hazard, aby boli 3 rôzne akcie a 6 rozložení. <b>Spoj s vlastným Paktom:</b> akcie na tej istej strane sa nikdy nepárujú, Pakt a Vízia Bzdochy sa teda nestretnú. Stretnú sa len pri dvoch Bzdochách rôznych hráčov: súperova je otočená, jej P1 Pakt leží proti tvojej P2 Vízii a naopak. Obaja potom majú po 2 Víziách. Tvoje dve Bzdochy vedľa seba sa nestretnú, ich ľavé strany Pakt nemajú.</p></div>
+<div class="karta ponecha">
+<h3>Krištáľová guľa <span class="typ">Nástroj</span></h3>
+<table class="str"><tr><th></th><th>dnes</th><th>návrh</th></tr>
+<tr><td>ľavá</td><td><span class="slt"><span class="a nic">·</span><span class="a blk">×</span><span class="a blk">×</span><span class="a nic">·</span></span> <span class="a viz">Vízia</span> <span class="a viz">Vízia</span></td><td><span class="slt"><span class="a nic">·</span><span class="a blk">×</span><span class="a blk">×</span><span class="a nic">·</span></span> <span class="a mak nova">Povera</span> <span class="a zla nova">Pečeň</span></td></tr>
+<tr><td>pravá</td><td><span class="slt"><span class="a blk">×</span><span class="a nic">·</span><span class="a nic">·</span><span class="a blk">×</span></span> <span class="a mak">Povera</span> <span class="a viz">Vízia</span></td><td><span class="slt"><span class="a blk">×</span><span class="a zla nova">Hazard</span><span class="a viz nova">Vízia</span><span class="a blk">×</span></span></td></tr>
+<tr><td>varianty</td><td>1 × 2 = <b>2</b></td><td>2 × 1 = <b>2</b> <span class="ok">(2–4)</span></td></tr>
+<tr><td>Vízia</td><td>Ľ0, Ľ3, P2, P1 · vlastný sused <b>2,8 %</b>, súperov 5,9 %</td><td>P2 · vlastný sused <b>8,6 %</b>, súperov 7,7 %</td></tr>
+<tr><td>tlač</td><td>2</td><td>2</td></tr>
+</table>
+<p class="mini"><b>Alternatíva:</b> Víziu na oboch stranách: Ľ2 Vízia s Pečeňou na Ľ0 alebo Ľ3 (2), P1 Hazard a P2 Vízia (1). Spolu 2 Vízie namiesto 3 a 2 varianty. Na Ľ2 ju vlastný sused (Občan) posilní v 3,4 % kariet.</p>
+<p>Odporúčam <b>jednu Víziu</b> na P2 a vedľa nej Hazard na P1. Na ľavej strane Povera a Pečeň na krajoch (2). Spolu 4 akcie a 2 varianty. <b>Dedičstvo ostáva:</b> so 4 kartami Vízie má Guľa čo zosilňovať (Veštica, Bzdocha, Poštárka a druhá Guľa v línii). Dve Gule vedľa seba neležia, Nástroj nesusedí s Nástrojom.</p></div>
+<div class="karta ponecha">
+<h3>Poštárka <span class="typ">Starší</span></h3>
+<table class="str"><tr><th></th><th>dnes</th><th>návrh</th></tr>
+<tr><td>ľavá</td><td><span class="slt"><span class="a blk">×</span><span class="a viz">Vízia</span><span class="a mak">Pohoršenie</span><span class="a mak">Povera</span></span></td><td><span class="mini">bez zmeny</span></td></tr>
+<tr><td>pravá</td><td><span class="slt"><span class="a viz">Vízia</span><span class="a zla">Hazard</span><span class="a mod">Posilnenie</span><span class="a blk">×</span></span></td><td><span class="slt"><span class="a zla nova">Pečeň</span><span class="a zla">Hazard</span><span class="a mod">Posilnenie</span><span class="a blk">×</span></span></td></tr>
+<tr><td>varianty</td><td>1 × 1 = <b>1</b></td><td>1 × 1 = <b>1</b> <span class="ok">(1)</span></td></tr>
+<tr><td>Vízia</td><td>Ľ1, P0 · vlastný sused <b>5,3 %</b>, súperov 4,7 %</td><td>Ľ1 · vlastný sused <b>6,8 %</b>, súperov 8,1 %</td></tr>
+
+</table>
+<p class="mini"><b>Alternatíva:</b> Vízia z P0 na P3 (vlastný sused 7,3 %), P0 sa zablokuje. Poštárka si nechá dve Vízie, obe na dobrých miestach. Silnejšia, preto ju neodporúčam.</p>
+<p>Starší má pevné rozloženie, 1 variant. Vízia na Ľ1 ostáva, je to tretie najlepšie miesto (vlastný sused 6,8 %, súperovo Posilnenie na Ľ2 8,1 %). P2 drží jej Posilnenie, ktoré tam patrí podľa B+. Druhá Vízia na P0 je na zlom mieste (3,9 %) → Pečeň. To je zároveň oslabenie. Poštárka je starší, do línie príde len presvedčením.</p></div>
+</div>
+
+<h2>4 · Karty, ktoré Víziu stratia</h2>
+<p class="mini">Náhrady z <a href="vizia-a-kseft.html">vizia-a-kseft.html</a>. Strýko nemení Cigaretu, lebo Kšeft ostáva. Kostol má náhradu z variantu V1.</p>
+<div class="mriezka">
+<div class="karta">
+<h3>Finančná poradkyňa <span class="typ">Občan</span></h3>
+<table class="str"><tr><th></th><th>dnes</th><th>návrh</th></tr>
+<tr><td>ľavá</td><td><span class="slt"><span class="a blk">×</span><span class="a nic">·</span><span class="a nic">·</span><span class="a nic">·</span></span> <span class="a zla">Hazard</span> <span class="a zla">Hazard</span> <span class="a viz">Vízia</span></td><td><span class="slt"><span class="a blk">×</span><span class="a nic">·</span><span class="a nic">·</span><span class="a nic">·</span></span> <span class="a zla">Hazard</span> <span class="a zla">Hazard</span> <span class="a dob nova">Obmedzenie</span></td></tr>
+<tr><td>pravá</td><td><span class="slt"><span class="a blk">×</span><span class="a nic">·</span><span class="a nic">·</span><span class="a blk">×</span></span> <span class="a zla">Hazard</span> <span class="a viz">Vízia</span></td><td><span class="slt"><span class="a blk">×</span><span class="a nic">·</span><span class="a nic">·</span><span class="a blk">×</span></span> <span class="a mak nova">Povera</span> <span class="a zla">Hazard</span></td></tr>
+<tr><td>varianty</td><td>3 × 2 = <b>6</b></td><td>3 × 2 = <b>6</b> <span class="ok">(4–8)</span></td></tr>
+
+<tr><td>tlač</td><td>24</td><td>24</td></tr>
+</table>
+
+<p>Vízia → Obmedzenie a Povera. Hazardy dostáva súper (efekt).</p></div>
+<div class="karta">
+<h3>Dievčina na vydaj <span class="typ">Občan · štart</span></h3>
+<table class="str"><tr><th></th><th>dnes</th><th>návrh</th></tr>
+<tr><td>ľavá</td><td><span class="slt"><span class="a blk">×</span><span class="a nic">·</span><span class="a nic">·</span><span class="a blk">×</span></span> <span class="a dob">Cigareta</span> <span class="a zla">Hazard</span></td><td><span class="mini">bez zmeny</span></td></tr>
+<tr><td>pravá</td><td><span class="slt"><span class="a blk">×</span><span class="a nic">·</span><span class="a nic">·</span><span class="a blk">×</span></span> <span class="a mod">Pakt</span> <span class="a viz">Vízia</span></td><td><span class="slt"><span class="a blk">×</span><span class="a nic">·</span><span class="a nic">·</span><span class="a blk">×</span></span> <span class="a mod">Pakt</span> <span class="a dob nova">Poldeci</span></td></tr>
+<tr><td>varianty</td><td>2 × 2 = <b>4</b></td><td>2 × 2 = <b>4</b> <span class="ok">(4–8)</span></td></tr>
+
+<tr><td>tlač</td><td>16</td><td>16</td></tr>
+</table>
+
+<p>Štartovacia karta. Vízia → Poldeci. Alternatíva: Povera. Výučba používa variant <code>dievcina_na_vydaj/1/0</code>.</p></div>
+<div class="karta">
+<h3>Strýko z Ameriky <span class="typ">Občan</span></h3>
+<table class="str"><tr><th></th><th>dnes</th><th>návrh</th></tr>
+<tr><td>ľavá</td><td><span class="slt"><span class="a blk">×</span><span class="a blk">×</span><span class="a nic">·</span><span class="a nic">·</span></span> <span class="a dob">Cigareta</span> <span class="a dob">Cigareta</span></td><td><span class="mini">bez zmeny</span></td></tr>
+<tr><td>pravá</td><td><span class="slt"><span class="a nic">·</span><span class="a blk">×</span><span class="a nic">·</span><span class="a nic">·</span></span> <span class="a dob">Cigareta</span> <span class="a viz">Vízia</span></td><td><span class="slt"><span class="a nic">·</span><span class="a blk">×</span><span class="a nic">·</span><span class="a nic">·</span></span> <span class="a dob">Cigareta</span> <span class="a dob nova">Poldeci</span></td></tr>
+<tr><td>varianty</td><td>1 × 6 = <b>6</b></td><td>1 × 6 = <b>6</b> <span class="ok">(4–8)</span></td></tr>
+
+<tr><td>tlač</td><td>6</td><td>6</td></tr>
+</table>
+
+<p>Vízia → Poldeci (platí rundu). Cigarety a Kšeft ostávajú.</p></div>
+<div class="karta">
+<h3>Horoskop <span class="typ">Nástroj</span></h3>
+<table class="str"><tr><th></th><th>dnes</th><th>návrh</th></tr>
+<tr><td>ľavá</td><td><span class="slt"><span class="a nic">·</span><span class="a nic">·</span><span class="a blk">×</span><span class="a blk">×</span></span> <span class="a mak">Povera</span> <span class="a mak">Povera</span></td><td><span class="mini">bez zmeny</span></td></tr>
+<tr><td>pravá</td><td><span class="slt"><span class="a blk">×</span><span class="a blk">×</span><span class="a nic">·</span><span class="a nic">·</span></span> <span class="a mak">Povera</span> <span class="a viz">Vízia</span></td><td><span class="slt"><span class="a blk">×</span><span class="a blk">×</span><span class="a nic">·</span><span class="a nic">·</span></span> <span class="a mak">Povera</span> <span class="a zla nova">Hazard</span></td></tr>
+<tr><td>varianty</td><td>1 × 2 = <b>2</b></td><td>1 × 2 = <b>2</b> <span class="ok">(2–4)</span></td></tr>
+
+<tr><td>tlač</td><td>2</td><td>2</td></tr>
+</table>
+
+<p>Vízia → Hazard (šťastné čísla na tiket).</p></div>
+<div class="karta">
+<h3>Starosta <span class="typ">Starší</span></h3>
+<table class="str"><tr><th></th><th>dnes</th><th>návrh</th></tr>
+<tr><td>ľavá</td><td><span class="slt"><span class="a mod">Posilnenie</span><span class="a dob">Cigareta</span><span class="a mod">Posilnenie</span><span class="a blk">×</span></span></td><td><span class="mini">bez zmeny</span></td></tr>
+<tr><td>pravá</td><td><span class="slt"><span class="a blk">×</span><span class="a zla">Hazard</span><span class="a mod">Pakt</span><span class="a viz">Vízia</span></span></td><td><span class="slt"><span class="a blk">×</span><span class="a zla">Hazard</span><span class="a mod">Pakt</span><span class="a dob nova">Robota</span></span></td></tr>
+<tr><td>varianty</td><td>1 × 1 = <b>1</b></td><td>1 × 1 = <b>1</b> <span class="ok">(1)</span></td></tr>
+
+
+</table>
+
+<p>Vízia → Robota. Alternatíva: Obmedzenie.</p></div>
+<div class="karta">
+<h3>Kostol <span class="typ">Lokalita</span></h3>
+<table class="str"><tr><th></th><th>dnes</th><th>návrh</th></tr>
+<tr><td>ľavá</td><td><span class="slt"><span class="a dob">Viera</span><span class="a dob">Viera</span><span class="a viz">Vízia</span><span class="a blk">×</span></span></td><td><span class="slt"><span class="a dob">Viera</span><span class="a dob">Viera</span><span class="a zla nova">Pečeň</span><span class="a blk">×</span></span></td></tr>
+<tr><td>pravá</td><td><span class="slt"><span class="a blk">×</span><span class="a mod">Pakt</span><span class="a mak">Povera</span><span class="a mak">Pohoršenie</span></span></td><td><span class="mini">bez zmeny</span></td></tr>
+<tr><td>varianty</td><td>1 × 1 = <b>1</b></td><td>1 × 1 = <b>1</b> <span class="ok">(nerátajú sa)</span></td></tr>
+
+
+</table>
+
+<p>Vízia → Pečeň (omšové víno). Počet Pitiek sa nemení.</p></div>
+<div class="karta">
+<h3>Sklad <span class="typ">Lokalita</span></h3>
+<table class="str"><tr><th></th><th>dnes</th><th>návrh</th></tr>
+<tr><td>ľavá</td><td><span class="slt"><span class="a viz">Vízia</span><span class="a blk">×</span><span class="a viz">Vízia</span><span class="a blk">×</span></span></td><td><span class="slt"><span class="a dob nova">Robota</span><span class="a blk">×</span><span class="a dob nova">Obmedzenie</span><span class="a blk">×</span></span></td></tr>
+<tr><td>pravá</td><td><span class="slt"><span class="a dob">Pecka</span><span class="a blk">×</span><span class="a mod">Posilnenie</span><span class="a blk">×</span></span></td><td><span class="mini">bez zmeny</span></td></tr>
+<tr><td>varianty</td><td>1 × 1 = <b>1</b></td><td>1 × 1 = <b>1</b> <span class="ok">(nerátajú sa)</span></td></tr>
+
+
+</table>
+
+<p>Vízia ×2 → Robota a Obmedzenie. Kšeft Skladu ostáva.</p></div>
+</div>
+
+<h2>Otázky</h2>
+<ol class="ot">
+<li>Má byť Vízia na P2 pri Veštici, Bzdoche a Guli (odporúčam)? Alebo pri Veštici na Ľ2?</li>
+<li>Bzdocha si nechá Pakt (odporúčam), alebo dostane Pečeň?</li>
+<li>Guľa: jedna Vízia (odporúčam) alebo dve? Poštárka: jedna na Ľ1 (odporúčam), alebo dve (Ľ1 a P3)?</li>
+<li>Oslabenie Povera → Hazard (Veštica, Bzdocha) a druhá Vízia → Pečeň (Poštárka): súhlasíš?</li>
+</ol>
+<p class="mini">Pre programátora: len dáta v tvorcovi (rozpracovaný stav), pozície Vízie cez <code>allowed</code> („obmedzené pozície“). Kód sa nemení. Overiť výučbu (prva-hra.json, varianty podľa indexu) a <code>npx vitest run</code>.</p>
+</main></body></html>
