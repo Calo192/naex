@@ -115,8 +115,9 @@ rozpore s `docs/PRAVIDLA.md` platí `docs/PRAVIDLA.md` a rozpor zapíš do
   nemíňajú limit).
 - **Kšeft zanikol (frakcie, 2026-11-08).** **Akcie navyše:** karta s efektom „**Spoločník: Tag**“ má akcie
   z pečate (piktogramy dole v obrázku) navyše, kým máš v partii **inú** odkrytú kartu s tým tagom; „**Nepriateľ: Tag**“,
-  kým ju má v partii súper — raz, aj pri viacerých takých kartách. „**Podpora: Tag**“ / „**Konflikt: Tag**“ ich pridá pri
-  každom stretnutí priložením s tvojou / súperovou kartou s tým tagom, do konca kola (×2 pri dvoch susedoch).
+  kým ju má v partii súper — raz, aj pri viacerých takých kartách. „**Podpora**“ / „**Konflikt**“ ich pridá pri
+  každom stretnutí priložením s tvojou / súperovou kartou (s tagom, ak ho efekt uvádza, napr. „Podpora: Zahraničný“), do konca
+  kola (×2 pri dvoch susedoch). Konflikt na kartách tag nemá (2026-11-08): platí pri ktorejkoľvek súperovej karte.
   Akcia navyše je tvoja aktívna akcia mimo hrán: ráta sa ako tá istá akcia v jej kroku (Obmedzenie a Cigareta v každej
   Pitke, Rany v bitke, Robota pri exekúcii); **Posilnenie, Odpor, Forsáž, NA EX ani Silná žena ju nemenia**; Náradie
   v Dedičstve (Vidly, Valaška, Svätý text), Vedúcko (Robota ako Pecka), Sypač (Rana ako Pecka) a Anonymný alkoholik
@@ -144,8 +145,8 @@ rozpore s `docs/PRAVIDLA.md` platí `docs/PRAVIDLA.md` a rozpor zapíš do
   ty k súperovej, alebo súper k nej (aj odpoveďou na NA EX; Záverečná až pri otočení). Priložený či ležiaci
   Nástroj nič; NA EX, zrážka ani presun (Dohadzovačka, Poľovník) nič. Najprv Nástup priloženej karty, potom
   Konflikt a Podpora priloženej, potom ležiacej. **Podpora (v11.3)** je zrkadlo: spustí sa, keď sa priložením
-  stretnú **dve tvoje** karty. **Veľmi smútiaca vdova (Konflikt: Chlap, frakcie):** súper odhodí **1 náhodnú
-  kartu z ruky** (vyberie ju hra, nikto nevolí). **Predavačka (Podpora, frakcie):** dober si
+  stretnú **dve tvoje** karty. **Veľmi smútiaca vdova (Konflikt, frakcie):** pri ktorejkoľvek súperovej karte
+  súper odhodí **1 náhodnú kartu z ruky** (vyberie ju hra, nikto nevolí). **Predavačka (Podpora, frakcie):** dober si
   1 kartu. **Hasič (Podpora, frakcie):** voľba ako predtým, len spúšťač je Podpora namiesto Nástupu.
 - **Pakt (v7, akcia):** na spoji sa správa ako akcia, s ktorou je v páre (aj zlá: Hazard, Pečeň).
   Pakt s Paktom nerobí nič, s Posilnením sa stane Posilnením (= Forsáž), Odpor ho zruší; neaktívny Pakt NA EX nezdvojí.
@@ -241,7 +242,7 @@ rozpore s `docs/PRAVIDLA.md` platí `docs/PRAVIDLA.md` a rozpor zapíš do
   Súperova **Svokra** mu v bitke dá Ranu navyše
   (akcia navyše; Vidly jej majiteľa ju zosilnia) za každú jeho kartu, na ktorej leží tvoj poldeci z NA EX — NA EX na svoje karty ju nespustí.
   Šofér (v11.5): ak si v kole nedal NA EX, v bitke Pecka navyše (Valaška +1) a na začiatku bitky 1 cigareta. **Pijan** (v7): za každé tvoje NA EX v kole
-  Rana navyše (Vidly +1). Injekcia v Dedičstve: NA EX aj na Zviera. **Stryná** (frakcie: Konflikt: Závislý → Pohoršenie navyše). **Bzdocha** (Pitka): súper hrá Pitku pred tebou — čakáš, kým skončí, a vidíš jeho NA EX. Veterán (v4): NA EX mu
+  Rana navyše (Vidly +1). Injekcia v Dedičstve: NA EX aj na Zviera. **Stryná** (frakcie: Konflikt → Pohoršenie navyše pri ktorejkoľvek súperovej karte). **Bzdocha** (Pitka): súper hrá Pitku pred tebou — čakáš, kým skončí, a vidíš jeho NA EX. Veterán (v4): NA EX mu
   aktívne akcie zdvojí (nezruší), neaktívne nechá.
   **Skryto (v5):** `naex` súper nevidí do odkrytia; odpovedáš po odkrytí za každé súperovo NA EX —
   najprv útočník lícom dole, potom obranca na druhý kraj; viac NA EX = viac kôl (v každom po jednej odpovedi, potom otočenie). **Zrážka** (obaja na tú istú kartu) = **Výtržník**: karta sa

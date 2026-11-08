@@ -1,7 +1,9 @@
 // Frakcie (Michal 2026-11-08, docs/napady/frakcie-final.json): akcie navyše podmienené tagom
 // (Spoločník, Nepriateľ, Podpora a Konflikt s tagom), nové efekty Vdovy, Predavačky, Hasiča
 // a lokalít bez Kšeftu (Zberný dvor, Sklad, Predsedova vila). Kšeft zanikol úplne.
-// Očakávané hodnoty sú z pravidla (špecifikácia), nie z kódu.
+// Očakávané hodnoty sú z pravidla (špecifikácia), nie z kódu. Väčšina testov hrá zápis zo
+// špecifikácie (frakcie-karty.json, Konflikt s tagom); v sade má od 2026-11-08 Konflikt tag
+// žiadna karta — to strážia testy „Konflikt bez tagu“ na konci so skutočným cards.json.
 
 import { describe, expect, it } from "vitest";
 import cardsJson from "../data/cards.json";
@@ -65,8 +67,8 @@ function sHracom(s: GameState, p: PlayerId, h: Partial<GameState["hraci"][number
 }
 
 /** Zhromaždenie na lokalite `lok`, hráč 0 na ťahu s `ruka`. */
-function zhromazdenie(lok: string, strany: GameState["strany"], ruka: CardInstance[]): GameState {
-  const s0 = setupGame(data, 7);
+function zhromazdenie(lok: string, strany: GameState["strany"], ruka: CardInstance[], d: GameData = data): GameState {
+  const s0 = setupGame(d, 7);
   const lokalita = s0.lokalityVHre.find((k) => k.defId === lok) ?? inst(lok);
   return {
     ...sHracom(s0, 0, { ruka, cigarety: 6 }),
@@ -184,7 +186,7 @@ describe("Spoločník a Nepriateľ — raz, kým platí podmienka", () => {
   });
 });
 
-describe("Podpora a Konflikt s tagom — pri každom stretnutí, do konca kola", () => {
+describe("Podpora a Konflikt s tagom (zápis zo špecifikácie frakcií) — pri každom stretnutí, do konca kola", () => {
   it("Podpora: Pamätník — priloženie k vlastnému Pamätníkovi pridá Robotu; k inej karte nie", () => {
     const op = inst("opatrovatelka");
     const man = lezi(inst("milujuca_manzelka"), 0);
@@ -260,7 +262,7 @@ describe("Podpora a Konflikt s tagom — pri každom stretnutí, do konca kola",
     expect(po.state.hraci[1].ruka.map((k) => k.uid)).toContain(vandal.uid);
   });
 
-  it("Vdova (Konflikt: Chlap): súper odhodí 1 náhodnú kartu z ruky — vyberie ju generátor partie (Michal 2026-11-08); pri Žene nič", () => {
+  it("Vdova so zápisom zo špecifikácie (Konflikt: Chlap): súper odhodí 1 náhodnú kartu z ruky — vyberie ju generátor partie (Michal 2026-11-08); pri Žene nič", () => {
     const vd = inst("velmi_smutiaca_vdova");
     const jehoRuka = [inst("vandal"), inst("masiar"), inst("hasic")];
     const s = sHracom(zhromazdenie("zastavka", [[lezi(inst("pijan"), 1)], []], [vd]), 1, { ruka: jehoRuka });
@@ -389,4 +391,56 @@ describe("partia botov so sadou frakcií", () => {
       expect(s.koniec, `seed ${seed}`).not.toBeNull();
     }
   }, 120_000);
+});
+
+describe("Konflikt bez tagu (Michal 2026-11-08) — karty zo skutočného cards.json", () => {
+  const sada = loadGameData(cardsJson, eldersJson, scorecardsJson);
+  const pohorsenie = (strany: GameState["strany"], p: PlayerId, uid: number) =>
+    (evaluateLine(sada, { lokalita: null, lokalitaOtocena: false, strany }).zdroje[p].Pohoršenie ?? []).filter((z) => z.uid === uid && z.dovody.some((x) => x.startsWith("akcia navyše")));
+  /** Súperove karty rôznych tagov: Závislý Chlap, Žena Influencer, Zviera, Starešina. */
+  const susedia = ["pijan", "snubenica", "cierna_macka", "farar"];
+
+  it("Praudovravec, Stryná a Podvodník majú Konflikt bez tagu, Vdova efekt slovami bez tagu", () => {
+    for (const id of ["praudovravec", "niekoho_stryna", "podvodnik"]) {
+      expect(efektyNavyse(sada.cards.get(id)!).map((e) => [e.spustac, e.tag]), id).toEqual([["Konflikt", null]]);
+    }
+    expect(sada.cards.get("velmi_smutiaca_vdova")!.effectText).toBe("Konflikt: Súper odhodí 1 náhodnú kartu z ruky.");
+  });
+
+  it("Praudovravec a Stryná: Pohoršenie navyše pri súperovej karte akéhokoľvek tagu; pri vlastnej nič", () => {
+    for (const id of ["praudovravec", "niekoho_stryna"]) {
+      for (const sused of susedia) {
+        const k = inst(id);
+        const po = apply(sada, zhromazdenie("zastavka", [[lezi(inst(sused), 1)], []], [k], sada), { type: "place", uid: k.uid, target: "vlastna" }, 0).state;
+        expect(po.strany[0].find((pl) => pl.card.uid === k.uid)?.navyse, `${id} pri ${sused}`).toEqual([1]);
+        expect(pohorsenie(po.strany, 0, k.uid), `${id} pri ${sused}`).toEqual([expect.objectContaining({ hodnota: 1 })]);
+      }
+      const k = inst(id);
+      const vlastna = apply(sada, zhromazdenie("zastavka", [[lezi(inst("snubenica"), 0)], []], [k], sada), { type: "place", uid: k.uid, target: "vlastna" }, 0).state;
+      expect(vlastna.strany[0].find((pl) => pl.card.uid === k.uid)?.navyse, id).toBeUndefined();
+    }
+  });
+
+  it("oboma smermi: súper priloží ktorúkoľvek kartu k ležiacemu Praudovravcovi — Pohoršenie navyše má Praudovravec", () => {
+    const pr = lezi(inst("praudovravec"), 1);
+    const k = inst("cierna_macka");
+    const po = apply(sada, zhromazdenie("zastavka", [[pr], []], [k], sada), { type: "place", uid: k.uid, target: "vlastna" }, 0).state;
+    expect(po.strany[0].find((pl) => pl.card.uid === pr.card.uid)?.navyse).toEqual([1]);
+    expect(pohorsenie(po.strany, 1, pr.card.uid)).toEqual([expect.objectContaining({ hodnota: 1 })]);
+  });
+
+  it("Vdova: súper odhodí 1 náhodnú kartu z ruky pri jeho karte akéhokoľvek tagu (aj Žena, Zviera); pri vlastnej nič", () => {
+    for (const sused of susedia) {
+      const vd = inst("velmi_smutiaca_vdova");
+      const jehoRuka = [inst("vandal"), inst("masiar"), inst("hasic")];
+      const s = sHracom(zhromazdenie("zastavka", [[lezi(inst(sused), 1)], []], [vd], sada), 1, { ruka: jehoRuka });
+      const po = apply(sada, s, { type: "place", uid: vd.uid, target: "vlastna" }, 0).state;
+      expect(po.hraci[1].ruka, sused).toHaveLength(2);
+      expect(po.hraci[1].odhadzovaci.filter((k) => jehoRuka.some((x) => x.uid === k.uid)), sused).toHaveLength(1);
+    }
+    const vd = inst("velmi_smutiaca_vdova");
+    const jehoRuka = [inst("vandal"), inst("masiar"), inst("hasic")];
+    const vlastna = sHracom(zhromazdenie("zastavka", [[lezi(inst("pijan"), 0)], []], [vd], sada), 1, { ruka: jehoRuka });
+    expect(apply(sada, vlastna, { type: "place", uid: vd.uid, target: "vlastna" }, 0).state.hraci[1].ruka).toHaveLength(3);
+  });
 });
