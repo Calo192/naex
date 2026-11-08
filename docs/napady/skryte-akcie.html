@@ -1,0 +1,271 @@
+<!doctype html>
+<html lang="sk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Skryté akcie v efektoch — NA EX!</title>
+<style>
+:root{--bg:#15120f;--pl:#1f1a15;--pl2:#2a231c;--ok:#43372c;--tx:#f1e8d8;--tl:#b8a993;--ak:#e9ad45;--zel:#7fbf7a;--cer:#d8705f;--dob:#5ea6e0;--mak:#b48ae6;color-scheme:dark}
+@media (prefers-color-scheme:light){:root{--bg:#f6f1e7;--pl:#fffaf1;--pl2:#f0e7d6;--ok:#d8c8ad;--tx:#2a2016;--tl:#5e4f3b;--ak:#95590a;--zel:#2f7a2b;--cer:#a8402f;--dob:#2f6fae;--mak:#7a4fb5;color-scheme:light}}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--tx);font:15px/1.5 system-ui,"Segoe UI",Roboto,sans-serif}
+main{max-width:1060px;margin:0 auto;padding:14px max(14px,env(safe-area-inset-right,0px)) 80px max(14px,env(safe-area-inset-left,0px))}
+h1,h2,h3{font-family:Georgia,serif;line-height:1.2;text-wrap:balance}h1{font-size:clamp(1.4rem,5vw,2rem);margin:0 0 4px}
+h2{font-size:1.25rem;margin:32px 0 10px;padding-bottom:4px;border-bottom:1px solid var(--ok)}h3{font-size:1.02rem;margin:0 0 6px}
+p,ul,ol{max-width:78ch}p{margin:0 0 9px}li{margin-bottom:4px}.tl{color:var(--tl)}.mal{font-size:.86rem}
+nav{display:flex;gap:6px;overflow-x:auto;padding:6px 0 10px;position:sticky;top:0;background:var(--bg);z-index:2}
+nav a{flex:none;color:var(--tl);text-decoration:none;border:1px solid var(--ok);background:var(--pl);padding:4px 11px;border-radius:999px;font-size:.86rem}
+.box{background:var(--pl);border:1px solid var(--ak);border-radius:12px;padding:12px 15px;margin:12px 0}.box>:last-child{margin-bottom:0}
+.tab{overflow-x:auto}table{border-collapse:collapse;width:100%;font-size:.9rem}
+th,td{padding:6px;text-align:left;vertical-align:top;border-bottom:1px solid var(--ok)}thead th{font-size:.82rem;color:var(--tl);border-bottom:2px solid var(--ok)}
+td.n{text-align:right;font-variant-numeric:tabular-nums}td.sk{font-weight:700;text-align:center}
+tr.sA td.sk{color:var(--cer)}tr.sB td.sk{color:var(--dob)}tr.sZ td.sk{color:var(--zel)}tr.sC td.sk{color:var(--tl)}
+.karta{background:var(--pl);border:1px solid var(--ok);border-radius:12px;padding:11px 13px;margin:10px 0}
+.karta.a{border-left:4px solid var(--cer)}.karta.b{border-left:4px solid var(--dob)}
+.st{color:var(--tl);text-decoration:line-through;text-decoration-color:var(--cer)}.nv{color:var(--zel);font-weight:600}
+code{background:var(--pl2);padding:0 4px;border-radius:4px;font-size:.84em;overflow-wrap:anywhere}
+.ot li{margin:7px 0}footer{margin-top:36px;padding-top:10px;border-top:1px solid var(--ok);color:var(--tl);font-size:.85rem}
+</style>
+</head>
+<body>
+<main>
+<h1>Skryté akcie v efektoch kariet</h1>
+<p class="tl">Audit sady v master (Zrejúca) · 2026-11-08 · vymyselník · podklad pre Michala</p>
+<nav><a href="#suhrn">Súhrn</a><a href="#otazky">Otázky</a><a href="#A">A · skryté akcie</a><a href="#B">B · menia akciu</a><a href="#rozpory">Rozpory</a><a href="#vsetky">Všetky karty</a></nav>
+
+<h2 id="suhrn">Súhrn</h2>
+<div class="box">
+<p><b>Prezreté:</b> 96 kariet v <code>packages/core/data/cards.json</code> (index 57 chýba: karta Dlh a Presbiter v kópii sady nie sú, pravidlo 5) a 8 schopností starších v <code>packages/core/data/elders.json</code>. Schopnosti majú rovnaké znenie ako karty starších v cards.json, preto sú v tabuľke raz. Porovnané s kódom v <code>effects.ts</code>, <code>partia.ts</code>, <code>engine.ts</code>, <code>battle.ts</code> a <code>navyse.ts</code>.</p>
+<ul>
+<li><b>14 kariet už má zápis</b> <code>Spúšťač: Tag {Akcia}</code> a pečať (Z).</li>
+<li><b>A · 10 skrytých akcií navyše.</b> Efekt dáva Ranu, Pecku alebo Hazard inými slovami. <b>Ani jedna sa nedá prepísať dnešným zápisom.</b> Všetky majú spúšťač Bitka alebo Dedičstvo a navyse.ts pozná len Spoločník, Nepriateľ, Podpora a Konflikt (<code>navyse.ts:21</code>, <code>navyse.ts:47</code>).</li>
+<li><b>B · 31 efektov akciu mení</b>, zdvojuje alebo prerába. Z toho je 15 Náradia, ktoré už v kóde k akcii patrí (žeravá ikona, <code>effects.ts:582</code>).</li>
+<li><b>C · 41 efektov</b> s akciami nesúvisí. 10 z nich sa akcii podobá, a preto sú v tabuľke s poznámkou.</li>
+</ul>
+<p><b>Pozor na zápis:</b> <code>{Akcia}</code> v texte vždy znamená akciu navyše. Mimo štyroch spúšťačov ho načítanie sady odmietne (<code>navyse.ts:79</code>, <code>data.ts:132–133</code>). Rovnako odmietne <code>{Posilnenie}</code>, <code>{Odpor}</code> a <code>{Pakt}</code> (<code>navyse.ts:32</code>). Pečať skupiny B preto potrebuje <b>iný tvar zápisu</b>, inak by hra pridala akciu.</p>
+</div>
+
+<h2 id="otazky">Otázky pre Michala</h2>
+<ol class="ot">
+<li><b>Skupina A (Pasca, Pijan, Svokra, Vymáhač, Šofér, Traktorista, Výherný automat):</b> majú dostať pečať a rátať sa ako akcia navyše? <b>V hre sa zmení:</b> Vidly zosilnia Rany a Valaška Pecky, čo si dnes výslovne nechcel (Michal 2026-10-27, <code>PRAVIDLA.md:1997</code>). Rozpis bitky ich ukáže ako akcie, nie ako bonus. <b>V kóde:</b> navyse.ts potrebuje spúšťače Bitka a Dedičstvo, podmienku slovami a násobok „za každé“. Dnes ich ráta <code>bitkaMody</code> mimo súčtov akcií (<code>effects.ts:512–531</code>).</li>
+<li><b>Cirhóza, Lesná cesta, Ihrisko</b> (+1 alebo 2 tuhé): odporúčam ich nechať slovami. Kliatba dáva tuhé súperovi a lokalita nemá majiteľa, pečať „akcie majiteľa karty“ by klamala. Súhlasíš?</li>
+<li><b>Skupina B:</b> chceš na kartách, ktoré akciu menia, pečať ovplyvnenej akcie (napr. Vedúcko: Robota → Pecka)? Musí mať iný tvar než <code>{Akcia}</code>, napr. <code>[Robota→Pecka]</code>, a navyse.ts ju nesmie čítať ako akciu navyše.</li>
+<li><b>Sypač a Vedúcko pri akciách navyše:</b> keď sa Sypač stretne so Strýkom z Ameriky (Chlap, <code>{Rana} {Rana}</code>), sú jeho Rany navyše Pecky? A keď vedľa Vedúcka leží Živnostník alebo Opatrovateľka, ráta sa jeho Robota navyše ako Pecka? <b>Kód hovorí nie:</b> premena platí len pre sloty (<code>partia.ts:872</code>, <code>partia.ts:1055</code>) a akcie navyše sa pripočítajú potom bez premeny (<code>partia.ts:1095–1113</code>). Text hovorí „každá jeho aktívna Rana“ (<code>PRAVIDLA.md:1969</code>) a „Roboty kariet, ktoré s ním susedia“ (<code>PRAVIDLA.md:1967</code>). §6 ich medzi výnimky nemenuje (<code>PRAVIDLA.md:682–688</code>).</li>
+</ol>
+
+<h2 id="A">A · Efekt dáva akciu navyše</h2>
+<p class="mal tl">Na každej karte je dnešný text, návrh zápisu a zmena v hre. Návrh predpokladá rozšírenie navyse.ts: spúšťače Bitka a Dedičstvo, podmienka slovami pred piktogramom a násobok „za každé“. <b>Dnešný navyse.ts ho odmietne a sada by sa nenačítala.</b> Nepísať do tvorcu, kým nepribudne kód.</p>
+
+<div class="karta a" id="pasca"><h3>Pasca (Nástroj) · Rana</h3>
+<p class="st">Dedičstvo: Bitka: Ak súper v tomto kole priložil kartu k tvojej, udelíš mu 1 Ranu navyše.</p>
+<p class="nv">Dedičstvo: Bitka: Ak súper v tomto kole priložil kartu k tvojej {Rana}.</p>
+<p class="mal"><b>Dôvod:</b> 1 Rana = 1 tuhé. Kód ju ráta ako bonus 1 tuhé (<code>effects.ts:531</code>), nie ako akciu, a <code>PRAVIDLA.md:1993</code> ju volá Ranou. <b>Zmena:</b> zosilnia ju Vidly (+1).</p></div>
+
+<div class="karta a" id="pijan"><h3>Pijan · Rana × NA EX</h3>
+<p class="st">Bitka: Za každé NA EX, ktoré si v tomto kole dal, udelíš súperovi 1 Ranu navyše.</p>
+<p class="nv">Bitka: Za každé NA EX, ktoré si v tomto kole dal {Rana}.</p>
+<p class="mal"><b>Dôvod:</b> <code>effects.ts:524</code> pripočíta Pijanov × NA EX ako tuhé. <b>Zmena:</b> Vidly +1 za každú Ranu, čo ruší výnimku na <code>PRAVIDLA.md:1997</code>. Zápis potrebuje násobok „za každé“, pečať ×N.</p></div>
+
+<div class="karta a" id="svokra"><h3>Svokra · Rana × karta so súperovým NA EX</h3>
+<p class="st">Bitka: Za každú tvoju kartu so súperovým NA EX udelíš súperovi Ranu.</p>
+<p class="nv">Bitka: Za každú tvoju kartu so súperovým NA EX {Rana}.</p>
+<p class="mal"><b>Dôvod:</b> <code>effects.ts:462–469</code> (svokraRany), bonus na <code>effects.ts:512</code>. <b>Zmena:</b> Vidly +1 za každú Ranu. Pozor, <code>svokraRany</code> ráta najmenej 1 Svokru (<code>Math.max(1, …)</code>, <code>effects.ts:466</code>).</p></div>
+
+<div class="karta a" id="vymahac"><h3>Vymáhač · Rana × 2 Dlhy</h3>
+<p class="st">Bitka: Za každé 2 tvoje priznané Dlhy udelíš súperovi 1 Ranu navyše.</p>
+<p class="nv">Bitka: Za každé 2 tvoje priznané Dlhy {Rana}.</p>
+<p class="mal"><b>Dôvod:</b> <code>effects.ts:528</code>. <b>Zmena:</b> Vidly +1 za každú Ranu.</p></div>
+
+<div class="karta a" id="sofer"><h3>Šofér · Pecka</h3>
+<p class="st">Bitka: Ak si v tomto kole nedal NA EX, udelíš súperovi 1 Pecku navyše a dostaneš 1 cigaretu.</p>
+<p class="nv">Bitka: Ak si v tomto kole nedal NA EX {Pecka} a dostaneš 1 cigaretu.</p>
+<p class="mal"><b>Dôvod:</b> <code>effects.ts:520</code> pridá 2 tuhé mimo súčtov, preto Valaška (<code>effects.ts:621–631</code> ráta len súčty) Pecku Šoféra dnes nezosilní. <b>Zmena:</b> Valaška +1. Cigareta na začiatku bitky (<code>engine.ts:4882–4889</code>) nie je akcia Cigareta: tá pôsobí v Pitke a uberá ju Obmedzenie. Ostáva slovami.</p></div>
+
+<div class="karta a" id="traktoristka"><h3>Traktorista · Pecka (s prevahou)</h3>
+<p class="st">Bitka: Ak máš v jeho kraji prevahu, udelíš súperovi 1 Pecku navyše. Inak získaš 1 Dlh.</p>
+<p class="nv">Bitka: Ak máš v jeho kraji prevahu {Pecka}. Inak získaš 1 Dlh.</p>
+<p class="mal"><b>Dôvod:</b> <code>effects.ts:526</code> a <code>effects.ts:475–483</code>. <b>Zmena:</b> Valaška +1. Dlh bez prevahy (<code>engine.ts:4874–4879</code>) prichádza na začiatku bitky, Obecný úrad ho nezdvojí a nie je to Hazard. Ostáva slovami.</p></div>
+
+<div class="karta a" id="vyherny_automat"><h3>Výherný automat (Nástroj) · Hazard</h3>
+<p class="st">Dedičstvo: Tvoj prah Dlhu je o 1 vyšší. V poslednej Pitke kola získaš 1 Dlh.</p>
+<p class="nv">Dedičstvo: Tvoj prah Dlhu je o 1 vyšší. Posledná Pitka kola: {Hazard}.</p>
+<p class="mal"><b>Dôvod:</b> Dlh z Pitky, ktorý Obecný úrad zdvojí ako Dlh z akcie (<code>engine.ts:4789–4795</code>, <code>PRAVIDLA.md:1855</code>), je presne účinok akcie Hazard (<code>PRAVIDLA.md:493</code>). <b>Zmena:</b> v hre žiadna. Finančná poradkyňa ráta len vlastné akcie, Výherné žreby len spoj. Zmení sa len to, že Dlh je v rozpise Pitky pri akciách. Navyse.ts pozná alias <code>Hazard</code> → <code>Dlh</code> (<code>navyse.ts:35</code>).</p></div>
+
+<div class="karta a" id="cirhoza"><h3>Cirhóza (Kliatba) · Rana súpera</h3>
+<p class="st">Bitka: Ak je priznaná, súper má +1 tuhé poškodenie. …</p>
+<p class="nv">Odporúčanie: nechať slovami.</p>
+<p class="mal"><b>Dôvod:</b> +1 tuhé = 1 Rana, ale <b>súpera</b> (<code>engine.ts:1388</code>, <code>battle.ts:112</code>). Akcia navyše patrí majiteľovi karty (<code>PRAVIDLA.md:682</code>), tu by pečať klamala. Pri prepise by ju Vidly súpera zosilnili.</p></div>
+
+<div class="karta a" id="lesna_cesta"><h3>Lesná cesta (Lokalita) · Pecka × Zviera</h3>
+<p class="st">Bitka: Za každé svoje Zviera v línii máš 2 tuhé poškodenia navyše.</p>
+<p class="nv">Odporúčanie: nechať slovami. Keby áno: „Bitka: Za každé svoje Zviera v línii {Pecka}.“</p>
+<p class="mal"><b>Dôvod:</b> 2 tuhé = Pecka (<code>effects.ts:514–517</code>). Lokalita nemá majiteľa a akciu by dostal každý hráč. Pri prepise by Valaška pridala +1 za Zviera. Znenie v tuhých je z v11.13 (<code>PRAVIDLA.md:1847</code>).</p></div>
+
+<div class="karta a" id="ihrisko"><h3>Ihrisko (Lokalita) · Pecka za kraj</h3>
+<p class="st">Bitka: V každom kraji, kde máš viac svojich Občanov, Zvierat a Starešinov než súper, máš 2 tuhé poškodenia navyše.</p>
+<p class="nv">Odporúčanie: nechať slovami. Keby áno: „Bitka: V každom kraji, kde máš viac svojich Občanov, Zvierat a Starešinov než súper {Pecka}.“</p>
+<p class="mal"><b>Dôvod:</b> <code>effects.ts:532–538</code>, <code>PRAVIDLA.md:1860</code>. Dôvody sú ako pri Lesnej ceste.</p></div>
+
+<h2 id="B">B · Efekt akciu mení, zdvojuje alebo prerába</h2>
+<p class="mal tl">Text karty sa nemení. Stĺpec „pečať“ hovorí, ktorú akciu by pečať ukázala, keby si ju chcel (otázka 3). <code>{…}</code> sa na to použiť nedá, pretože by pridal akciu navyše.</p>
+<div class="tab"><table>
+<thead><tr><th>Karta</th><th>Pečať</th><th>Čo efekt robí s akciou · kód</th></tr></thead>
+<tbody>
+<tr id="silna_nezavisla_zena"><td>Silná, nezávislá žena</td><td>všetky ×2</td><td class="mal">Aktívne akcie susedných vlastných Občanov a Starešinov ×2 · <code>partia.ts:824–829</code>. Akcie navyše nemení (<code>PRAVIDLA.md:687</code>).</td></tr>
+<tr id="zamocnik"><td>Zámočník</td><td>akcie Nástroja ×2</td><td class="mal">Akcie Nástrojov v okolí ×2 · <code>partia.ts:822–823</code></td></tr>
+<tr id="veteran"><td>Veterán</td><td>NA EX ×2</td><td class="mal">NA EX jeho aktívne akcie zdvojí, nezruší · <code>partia.ts:775</code></td></tr>
+<tr id="liberal"><td>Liberál</td><td>všetky ×2</td><td class="mal">Pri rovnováhe žien a chlapov jeho aktívne akcie ×2 · <code>partia.ts:846–848</code></td></tr>
+<tr id="pes"><td>Pes</td><td>spoj ×2</td><td class="mal">Akcie na spoji so súperovou kartou ×2 · <code>partia.ts:830–835</code></td></tr>
+<tr id="anonymny_alkoholik"><td>Anonymný alkoholik</td><td>Poškodenie pečene → Viera</td><td class="mal">Premena v slotoch susedov · <code>partia.ts:843–845</code>, <code>partia.ts:1056</code></td></tr>
+<tr id="veducko"><td>Vedúcko</td><td>Robota → Pecka</td><td class="mal">Roboty susedov ako Pecky · <code>partia.ts:836–839</code>, <code>partia.ts:1055</code>. Robota navyše zostáva Robotou (otázka 4).</td></tr>
+<tr id="kulturista"><td>Sypač</td><td>Rana → Pecka</td><td class="mal">Tvoj Chlap má Rany ako Pecky · <code>engine.ts:3206–3209</code>, <code>partia.ts:872</code>. Rana navyše zostáva Ranou (otázka 4).</td></tr>
+<tr id="profesionalny_tiper"><td>Profesionálny tipér</td><td>posilnené → Hazard / Robota</td><td class="mal">Posilnené akcie na jeho spojoch · <code>partia.ts:637</code></td></tr>
+<tr id="cierna_macka"><td>Čierna mačka</td><td>Povera</td><td class="mal">Tvoje Povery Viera neruší, aj Povery navyše (súčty) · <code>engine.ts:1390</code>, <code>battle.ts:90</code></td></tr>
+<tr id="kon"><td>Kôň</td><td>Robota</td><td class="mal">Jeho Roboty pália o 1 Dlh viac · <code>engine.ts:4824–4828</code></td></tr>
+<tr id="financna_poradkyna"><td>Finančná poradkyňa</td><td>Hazard</td><td class="mal">Dlhy z jej akcií dostane súper · <code>effects.ts:254</code></td></tr>
+<tr id="milujuca_manzelka"><td>Milujúca manželka</td><td>Poškodenie pečene</td><td class="mal">Pečeň v Pitke −1 (najprv z akcií Poškodenie pečene) · <code>engine.ts:1241</code></td></tr>
+<tr id="obecny_urad"><td>Obecný úrad (L)</td><td>Cigareta, Hazard ×2</td><td class="mal">Cigarety a Dlhy z Pitky ×2, aj z akcií navyše · <code>effects.ts:358–360</code></td></tr>
+<tr id="polovnicka_chata"><td>Poľovnícka chata (L)</td><td>Rana, Pecka, Petelica ×2</td><td class="mal">Len hrany lokality · <code>partia.ts:1070</code></td></tr>
+<tr id="starosta"><td>Starosta (väzeň)</td><td>hrany posilnené</td><td class="mal">Všetky akcie hrán do konca kola ×2 · <code>engine.ts:4530</code>, <code>partia.ts:1073</code></td></tr>
+<tr id="puska"><td>Puška</td><td>Petelica</td><td class="mal" rowspan="15">Náradie v Dedičstve. Každý Nástroj už v kóde patrí k jednej akcii a stôl ju podsvieti (<code>effects.ts:582–616</code>, <code>PRAVIDLA.md:1675–1693</code>). Pečať by bola len kresba. Vidly, Valaška, Fúrik, Horoskop a Svätý text menia aj akcie navyše (<code>PRAVIDLA.md:686</code>). Energeťák, Hrable a Zrkadlo patria k modifikátorom spoja a akcia navyše z nich nikdy nebude (<code>navyse.ts:32</code>).</td></tr>
+<tr id="svaty_text"><td>Svätý text</td><td>Viera</td></tr>
+<tr id="vidly"><td>Vidly</td><td>Rana</td></tr>
+<tr id="boxer"><td>Valaška</td><td>Pecka</td></tr>
+<tr id="energetak"><td>Energeťák</td><td>Posilnenie</td></tr>
+<tr id="furik"><td>Fúrik</td><td>Robota</td></tr>
+<tr id="horoskop"><td>Horoskop</td><td>Povera</td></tr>
+<tr id="hrable"><td>Hrable</td><td>Odpor</td></tr>
+<tr id="jogurt"><td>Jogurt</td><td>Poldeci</td></tr>
+<tr id="kristalova_gula"><td>Krištáľová guľa</td><td>Vízia</td></tr>
+<tr id="pistalka"><td>Izolačka</td><td>Obmedzenie</td></tr>
+<tr id="telefon"><td>Telefón</td><td>Pohoršenie</td></tr>
+<tr id="vyherne_zreby"><td>Výherné žreby</td><td>Hazard</td></tr>
+<tr id="zapalovac"><td>Zapaľovač</td><td>Cigareta</td></tr>
+<tr id="zrkadlo"><td>Zrkadlo</td><td>Pakt</td></tr>
+</tbody></table></div>
+<p class="mal"><b>Šarlatán</b> (príklad z úlohy) je v master už v zápise <code>Spoločník: Autorita {Povera} {Povera}</code>, teda Z. Jeho stará premena (Hazard → Viera, Povera → Rana) platí len pre staré sady (<code>engine.ts:3037</code>, <code>engine.ts:3168</code>).</p>
+
+<h2 id="rozpory">Rozpory, ktoré audit našiel mimo úlohy</h2>
+<ul class="mal">
+<li><code>PRAVIDLA.md:1983</code> Veštica: „Prehra: porazený vymení…“. Karta v master má <code>Spoločník: Pamätník {Povera} {Povera}</code> (<code>cards.json:807</code>) a kód starý efekt vypne (<code>engine.ts:5085</code>). Riadok v §16 je zastaraný.</li>
+<li><code>PRAVIDLA.md:1141</code> v tabuľke krokov bitky: riadok 5b popisuje Vešticu ako „2 Povery navyše“, hoci ide o krok výmeny kariet zo starej sady. Povery navyše patria do hádky (krok 1).</li>
+<li><code>PRAVIDLA.md:755</code> a <code>PRAVIDLA.md:770</code>: „Odpor Praudovravca sa ráta ako Posilnenie“. V master platí len pre starú sadu (<code>partia.ts:504</code>, <code>staryEfekt</code>). Praudovravec má dnes <code>Konflikt: Autorita {Pohoršenie}</code>.</li>
+<li>Komentáre v REGISTER v <code>effects.ts</code> opisujú staré efekty 14 kariet so zápisom: <code>:74</code>, <code>:77</code>, <code>:78</code>, <code>:89</code>, <code>:91</code>, <code>:95</code>, <code>:97</code>, <code>:100</code>, <code>:107</code>, <code>:130</code>, <code>:135</code>, <code>:136</code>, <code>:141</code>. Hasič (<code>:81</code>) je dnes Podpora, nie Nástup. Toto sa týka kódu, nie hry (pre upratovača).</li>
+</ul>
+
+<h2 id="vsetky">Všetky karty</h2>
+<p class="mal tl"><b>Z</b> už v zápise · <b>A</b> skrytá akcia navyše · <b>B</b> mení akciu · <b>C</b> s akciami nesúvisí (poznámka = podobá sa akcii, ale nie je ňou). Odkaz ↓ vedie na detail.</p>
+<div class="tab"><table>
+<thead><tr><th>#</th><th>Karta</th><th>Efekt (master)</th><th>Sk.</th><th>Poznámka</th></tr></thead>
+<tbody>
+<tr class="sC"><td class="n">1</td><td><b>Veterinár</b><br><span class="mal tl">Starešina, Chlap</span></td><td class="mal">Väzeň — raz za hru: Odhoď všetky priznané Cirhózy a Cirhózy na ruke.<br><span class="tl">cards.json:47</span></td><td class="sk">C</td><td class="mal"></td></tr>
+<tr class="sC"><td class="n">2</td><td><b>Autobusár</b><br><span class="mal tl">Starešina, Chlap</span></td><td class="mal">Väzeň — raz za hru: Zo šenku berieš kariet, koľko chceš, každú za jednu cigaretu; keď skončíš, môže pokračovať súper.<br><span class="tl">cards.json:106</span></td><td class="sk">C</td><td class="mal"></td></tr>
+<tr class="sC"><td class="n">3</td><td><b>Noviny</b><br><span class="mal tl">Nástroj</span></td><td class="mal">Dedičstvo: Hádka: Ak vyhráš hádku, súper odhodí 1 náhodnú kartu z ruky.<br><span class="tl">cards.json:165</span></td><td class="sk">C</td><td class="mal"></td></tr>
+<tr class="sC"><td class="n">4</td><td><b>Krabička cigariet</b><br><span class="mal tl">Nástroj</span></td><td class="mal">Dedičstvo: Pitka: Za každé 2 cigarety, ktoré súper vyfajčí, si dober 1 kartu. Nie je to nerest.<br><span class="tl">cards.json:203</span></td><td class="sk">C</td><td class="mal"></td></tr>
+<tr class="sC"><td class="n">5</td><td><b>Vínko</b><br><span class="mal tl">Nástroj</span></td><td class="mal">Dedičstvo: Počíta sa, akoby si mal plný poldeci navyše. Nemôžeš dolievať poldeci za cigarety.<br><span class="tl">cards.json:240</span></td><td class="sk">C</td><td class="mal">zásoba poldeci, nie akcia Poldeci</td></tr>
+<tr class="sA"><td class="n">6</td><td><b>Pasca</b><br><span class="mal tl">Nástroj</span></td><td class="mal">Dedičstvo: Bitka: Ak súper v tomto kole priložil kartu k tvojej, udelíš mu 1 Ranu navyše.<br><span class="tl">cards.json:276</span></td><td class="sk">A</td><td class="mal">Rana navyše <a href="#pasca">↓</a></td></tr>
+<tr class="sB"><td class="n">7</td><td><b>Puška</b><br><span class="mal tl">Nástroj</span></td><td class="mal">Dedičstvo: Keď by tvoju prepojenú Petelicu zrušil iný efekt (Odpor, NA EX…), namiesto zrušenia udeľuje o 1 poškodenie menej.<br><span class="tl">cards.json:314</span></td><td class="sk">B</td><td class="mal">Petelica <a href="#puska">↓</a></td></tr>
+<tr class="sB"><td class="n">8</td><td><b>Svätý text</b><br><span class="mal tl">Nástroj</span></td><td class="mal">Dedičstvo: Hodnota tvojej Viery je o 1 vyššia.<br><span class="tl">cards.json:351</span></td><td class="sk">B</td><td class="mal">Viera <a href="#svaty_text">↓</a></td></tr>
+<tr class="sC"><td class="n">9</td><td><b>Nealko</b><br><span class="mal tl">Nástroj</span></td><td class="mal">Dedičstvo: Tvoj prah Cirhózy je o 2 vyšší.<br><span class="tl">cards.json:387</span></td><td class="sk">C</td><td class="mal">prah, nie akcia</td></tr>
+<tr class="sA"><td class="n">10</td><td><b>Výherný automat</b><br><span class="mal tl">Nástroj</span></td><td class="mal">Dedičstvo: Tvoj prah Dlhu je o 1 vyšší. V poslednej Pitke kola získaš 1 Dlh.<br><span class="tl">cards.json:424</span></td><td class="sk">A</td><td class="mal">Hazard v poslednej Pitke <a href="#vyherny_automat">↓</a></td></tr>
+<tr class="sA"><td class="n">11</td><td><b>Cirhóza</b><br><span class="mal tl">Kliatba</span></td><td class="mal">Bitka: Ak je priznaná, súper má +1 tuhé poškodenie. Nepriznaná ide po bitke do tvojho odhadzovacieho balíčka; na konci hry ti zoberie 3 špaky.<br><span class="tl">cards.json:460</span></td><td class="sk">A</td><td class="mal">+1 tuhé = Rana súpera <a href="#cirhoza">↓</a></td></tr>
+<tr class="sA"><td class="n">12</td><td><b>Lesná cesta</b><br><span class="mal tl">Lokalita</span></td><td class="mal">Bitka: Za každé svoje Zviera v línii máš 2 tuhé poškodenia navyše.<br><span class="tl">cards.json:495</span></td><td class="sk">A</td><td class="mal">2 tuhé = Pecka × Zviera <a href="#lesna_cesta">↓</a></td></tr>
+<tr class="sA"><td class="n">13</td><td><b>Ihrisko</b><br><span class="mal tl">Lokalita</span></td><td class="mal">Bitka: V každom kraji, kde máš viac svojich Občanov, Zvierat a Starešinov než súper, máš 2 tuhé poškodenia navyše.<br><span class="tl">cards.json:544</span></td><td class="sk">A</td><td class="mal">2 tuhé = Pecka za kraj <a href="#ihrisko">↓</a></td></tr>
+<tr class="sA"><td class="n">14</td><td><b>Pijan</b><br><span class="mal tl">Občan, Závislý, Chlap</span></td><td class="mal">Bitka: Za každé NA EX, ktoré si v tomto kole dal, udelíš súperovi 1 Ranu navyše.<br><span class="tl">cards.json:601</span></td><td class="sk">A</td><td class="mal">Rana navyše × NA EX <a href="#pijan">↓</a></td></tr>
+<tr class="sB"><td class="n">15</td><td><b>Milujúca manželka</b><br><span class="mal tl">Občan, Pamätník, Žena</span></td><td class="mal">Pitka: Tvoje poškodenie pečene v tejto Pitke je o 1 menšie.<br><span class="tl">cards.json:639</span></td><td class="sk">B</td><td class="mal">Poškodenie pečene −1 <a href="#milujuca_manzelka">↓</a></td></tr>
+<tr class="sZ"><td class="n">16</td><td><b>Miňištrant</b><br><span class="mal tl">Občan, Závislý, Chlap</span></td><td class="mal">Spoločník: Zahraničný {Pecka}.<br><span class="tl">cards.json:687</span></td><td class="sk">Z</td><td class="mal">už v zápise</td></tr>
+<tr class="sB"><td class="n">17</td><td><b>Finančná poradkyňa</b><br><span class="mal tl">Občan, Pracujúci, Žena</span></td><td class="mal">Pitka: Dlhy, ktoré vygeneruje táto karta, dostáva súper.<br><span class="tl">cards.json:725</span></td><td class="sk">B</td><td class="mal">Hazard → súperovi <a href="#financna_poradkyna">↓</a></td></tr>
+<tr class="sC"><td class="n">18</td><td><b>Veľmi smútiaca vdova</b><br><span class="mal tl">Občan, Kriminál, Žena</span></td><td class="mal">Konflikt: Chlap — Súper odhodí 1 kartu z ruky.<br><span class="tl">cards.json:763</span></td><td class="sk">C</td><td class="mal"></td></tr>
+<tr class="sZ"><td class="n">19</td><td><b>Veštica</b><br><span class="mal tl">Občan, Zahraničný, Žena</span></td><td class="mal">Spoločník: Pamätník {Povera} {Povera}.<br><span class="tl">cards.json:807</span></td><td class="sk">Z</td><td class="mal">už v zápise</td></tr>
+<tr class="sB"><td class="n">20</td><td><b>Silná, nezávislá žena</b><br><span class="mal tl">Občan, Influencer, Žena</span></td><td class="mal">Furt: Aktívne akcie tvojich Občanov a Starešinov, ktorí s ňou susedia, sa rátajú dvakrát.<br><span class="tl">cards.json:854</span></td><td class="sk">B</td><td class="mal">všetky akcie ×2 <a href="#silna_nezavisla_zena">↓</a></td></tr>
+<tr class="sZ"><td class="n">21</td><td><b>Policajtka</b><br><span class="mal tl">Občan, Autorita, Žena</span></td><td class="mal">Nepriateľ: Kriminál {Petelica}.<br><span class="tl">cards.json:891</span></td><td class="sk">Z</td><td class="mal">už v zápise</td></tr>
+<tr class="sC"><td class="n">22</td><td><b>Hasič</b><br><span class="mal tl">Občan, Autorita, Chlap</span></td><td class="mal">Podpora: Vytiahni náhodnú kartu zo svojho odhadzovacieho balíčka (aj kliatbu) a rozhodni sa, či si ju necháš, alebo ju odhodíš.<br><span class="tl">cards.json:933</span></td><td class="sk">C</td><td class="mal"></td></tr>
+<tr class="sZ"><td class="n">23</td><td><b>Praudovravec</b><br><span class="mal tl">Občan, Influencer, Chlap</span></td><td class="mal">Konflikt: Autorita {Pohoršenie}.<br><span class="tl">cards.json:972</span></td><td class="sk">Z</td><td class="mal">už v zápise</td></tr>
+<tr class="sB"><td class="n">24</td><td><b>Zámočník</b><br><span class="mal tl">Občan, Pracujúci, Chlap</span></td><td class="mal">Furt: Akcie nástrojov v jeho okolí sú posilnené.<br><span class="tl">cards.json:1031</span></td><td class="sk">B</td><td class="mal">akcie Nástrojov ×2 <a href="#zamocnik">↓</a></td></tr>
+<tr class="sZ"><td class="n">25</td><td><b>Stryná</b><br><span class="mal tl">Občan, Pamätník, Žena</span></td><td class="mal">Konflikt: Závislý {Pohoršenie}.<br><span class="tl">cards.json:1069</span></td><td class="sk">Z</td><td class="mal">už v zápise</td></tr>
+<tr class="sB"><td class="n">26</td><td><b>Veterán</b><br><span class="mal tl">Občan, Pamätník, Chlap</span></td><td class="mal">Furt: NA EX na neho jeho aktívne akcie nezruší, ale zdvojí. Neaktívne nezdvojí.<br><span class="tl">cards.json:1108</span></td><td class="sk">B</td><td class="mal">NA EX zdvojí namiesto zrušenia <a href="#veteran">↓</a></td></tr>
+<tr class="sZ"><td class="n">27</td><td><b>Recidivista</b><br><span class="mal tl">Občan, Kriminál, Chlap, Zviera</span></td><td class="mal">Nepriateľ: Zahraničný {Pecka}.<br><span class="tl">cards.json:1147</span></td><td class="sk">Z</td><td class="mal">už v zápise</td></tr>
+<tr class="sB"><td class="n">28</td><td><b>Starosta</b><br><span class="mal tl">Starešina, Chlap</span></td><td class="mal">Väzeň — raz za hru: Do konca kola sú všetky aktívne akcie lokality posilnené.<br><span class="tl">cards.json:1188</span></td><td class="sk">B</td><td class="mal">akcie hrán posilnené <a href="#starosta">↓</a></td></tr>
+<tr class="sC"><td class="n">29</td><td><b>Farár</b><br><span class="mal tl">Starešina, Chlap</span></td><td class="mal">Väzeň — raz za hru: Odstráň jedno súperovo NA EX z karty. Jeho poldeci ostáva vypitý.<br><span class="tl">cards.json:1247</span></td><td class="sk">C</td><td class="mal"></td></tr>
+<tr class="sC"><td class="n">30</td><td><b>Poštárka</b><br><span class="mal tl">Starešina, Žena</span></td><td class="mal">Väzeň — raz za hru: Dostaneš 4 cigarety.<br><span class="tl">cards.json:1306</span></td><td class="sk">C</td><td class="mal">4 cigarety ≈ 4 Cigarety, ale mimo Pitky</td></tr>
+<tr class="sC"><td class="n">31</td><td><b>Hrobár</b><br><span class="mal tl">Starešina, Chlap</span></td><td class="mal">Väzeň — raz za hru: Vezmi si do ruky 1 kartu zo súperovho odhadzovacieho balíčka.<br><span class="tl">cards.json:1366</span></td><td class="sk">C</td><td class="mal"></td></tr>
+<tr class="sC"><td class="n">32</td><td><b>Vychovávateľka</b><br><span class="mal tl">Starešina, Žena</span></td><td class="mal">Väzeň — raz za hru: Súper v tomto Zhromaždení hneď pasuje a za pas nedostane cigarety.<br><span class="tl">cards.json:1426</span></td><td class="sk">C</td><td class="mal"></td></tr>
+<tr class="sB"><td class="n">33</td><td><b>Liberál</b><br><span class="mal tl">Občan, Zahraničný, Žena, Chlap</span></td><td class="mal">Furt: Ak máš v partii rovnako žien a chlapov, všetky jeho aktívne akcie sú posilnené.<br><span class="tl">cards.json:1487</span></td><td class="sk">B</td><td class="mal">jeho akcie ×2 <a href="#liberal">↓</a></td></tr>
+<tr class="sZ"><td class="n">34</td><td><b>Dievčina na vydaj</b><br><span class="mal tl">Občan, Závislý, Žena</span></td><td class="mal">Podpora: Zahraničný {Pohoršenie}.<br><span class="tl">cards.json:1526</span></td><td class="sk">Z</td><td class="mal">už v zápise</td></tr>
+<tr class="sZ"><td class="n">35</td><td><b>Živnostník</b><br><span class="mal tl">Občan, Pracujúci, Chlap</span></td><td class="mal">Spoločník: Autorita {Robota}.<br><span class="tl">cards.json:1565</span></td><td class="sk">Z</td><td class="mal">už v zápise</td></tr>
+<tr class="sC"><td class="n">36</td><td><b>Krčmárka</b><br><span class="mal tl">Starešina, Žena</span></td><td class="mal">Väzeň — raz za hru: Nový plný poldeci.<br><span class="tl">cards.json:1607</span></td><td class="sk">C</td><td class="mal">zásoba poldeci, nie akcia Poldeci</td></tr>
+<tr class="sC"><td class="n">37</td><td><b>Zberný dvor</b><br><span class="mal tl">Lokalita</span></td><td class="mal">Pitka: Na konci Pitky smieš spáliť 1 kartu z ruky, nie kliatbu.<br><span class="tl">cards.json:1665</span></td><td class="sk">C</td><td class="mal"></td></tr>
+<tr class="sC"><td class="n">38</td><td><b>Benzínka</b><br><span class="mal tl">Lokalita</span></td><td class="mal">Pitka: Prvé fajčenie každého hráča v tejto Pitke je zadarmo.<br><span class="tl">cards.json:1719</span></td><td class="sk">C</td><td class="mal"></td></tr>
+<tr class="sC"><td class="n">39</td><td><b>Zastávka</b><br><span class="mal tl">Lokalita</span></td><td class="mal">Pitka: Po prvej Pitke kola si každý hráč vezme zadarmo 1 kartu zo šenku — najprv útočník, potom obranca. Z prázdneho šenku sa neberie nič.<br><span class="tl">cards.json:1772</span></td><td class="sk">C</td><td class="mal"></td></tr>
+<tr class="sC"><td class="n">40</td><td><b>Krčma</b><br><span class="mal tl">Lokalita</span></td><td class="mal">Pitka: Ak máš plný poldeci a máš ho kam dať, musíš dať NA EX. Prah Cirhózy je tu o 2 vyšší.<br><span class="tl">cards.json:1821</span></td><td class="sk">C</td><td class="mal"></td></tr>
+<tr class="sB"><td class="n">41</td><td><b>Čierna mačka</b><br><span class="mal tl">Zviera</span></td><td class="mal">Furt: Tvoje Povery sa Vierou nerušia.<br><span class="tl">cards.json:1875</span></td><td class="sk">B</td><td class="mal">Povera (Viera ju neruší) <a href="#cierna_macka">↓</a></td></tr>
+<tr class="sZ"><td class="n">42</td><td><b>Kočovník</b><br><span class="mal tl">Občan, Zahraničný, Chlap</span></td><td class="mal">Spoločník: Pamätník {Pecka}.<br><span class="tl">cards.json:1913</span></td><td class="sk">Z</td><td class="mal">už v zápise</td></tr>
+<tr class="sB"><td class="n">43</td><td><b>Pes</b><br><span class="mal tl">Zviera</span></td><td class="mal">Furt: Jeho aktívne akcie na spoji so súperovou kartou sa rátajú dvakrát.<br><span class="tl">cards.json:1954</span></td><td class="sk">B</td><td class="mal">akcie na spoji ×2 <a href="#pes">↓</a></td></tr>
+<tr class="sC"><td class="n">44</td><td><b>Kostol</b><br><span class="mal tl">Lokalita</span></td><td class="mal">Zhromaždenie: Nikto nesmie vypiť. Pitka: NA EX sa smie dať len na poslednú kartu línie na jednej alebo druhej strane.<br><span class="tl">cards.json:1989</span></td><td class="sk">C</td><td class="mal"></td></tr>
+<tr class="sA"><td class="n">45</td><td><b>Svokra</b><br><span class="mal tl">Občan, Autorita, Žena</span></td><td class="mal">Bitka: Za každú tvoju kartu so súperovým NA EX udelíš súperovi Ranu.<br><span class="tl">cards.json:2052</span></td><td class="sk">A</td><td class="mal">Rana × karta so súperovým NA EX <a href="#svokra">↓</a></td></tr>
+<tr class="sZ"><td class="n">46</td><td><b>Šarlatán</b><br><span class="mal tl">Občan, Influencer, Chlap</span></td><td class="mal">Spoločník: Autorita {Povera} {Povera}.<br><span class="tl">cards.json:2091</span></td><td class="sk">Z</td><td class="mal">už v zápise</td></tr>
+<tr class="sZ"><td class="n">47</td><td><b>Podvodník</b><br><span class="mal tl">Občan, Kriminál, Chlap</span></td><td class="mal">Konflikt: Influencer {Obmedzenie}.<br><span class="tl">cards.json:2129</span></td><td class="sk">Z</td><td class="mal">už v zápise</td></tr>
+<tr class="sC"><td class="n">48</td><td><b>Záhradkár</b><br><span class="mal tl">Občan, Pracujúci, Chlap</span></td><td class="mal">Exekúcia: Exekúcia v tomto kole pre teba neplatí.<br><span class="tl">cards.json:2167</span></td><td class="sk">C</td><td class="mal"></td></tr>
+<tr class="sB"><td class="n">49</td><td><b>Anonymný alkoholik</b><br><span class="mal tl">Občan, Závislý, Chlap</span></td><td class="mal">Furt: Akcie Poškodenie pečene tvojich kariet v jeho okolí sa rátajú ako Viera.<br><span class="tl">cards.json:2205</span></td><td class="sk">B</td><td class="mal">Poškodenie pečene → Viera <a href="#anonymny_alkoholik">↓</a></td></tr>
+<tr class="sC"><td class="n">50</td><td><b>Most</b><br><span class="mal tl">Lokalita</span></td><td class="mal">Zhromaždenie: Karty sa smú vykladať len na vlastnú stranu (aj odpoveď na NA EX).<br><span class="tl">cards.json:2241</span></td><td class="sk">C</td><td class="mal"></td></tr>
+<tr class="sB"><td class="n">51</td><td><b>Obecný úrad</b><br><span class="mal tl">Lokalita</span></td><td class="mal">Pitka: Cigarety a Dlhy získané v Pitke sa rátajú dvakrát.<br><span class="tl">cards.json:2290</span></td><td class="sk">B</td><td class="mal">Cigareta, Hazard ×2 <a href="#obecny_urad">↓</a></td></tr>
+<tr class="sC"><td class="n">52</td><td><b>Jednota</b><br><span class="mal tl">Lokalita</span></td><td class="mal">Pitka: Kto má viac priznaných Dlhov, nesmie v tejto Pitke fajčiť ani dolievať.<br><span class="tl">cards.json:2350</span></td><td class="sk">C</td><td class="mal"></td></tr>
+<tr class="sC"><td class="n">53</td><td><b>Kultúrny dom</b><br><span class="mal tl">Lokalita</span></td><td class="mal">Bitka: Každý hráč dostane špaky len za svoje karty v línii, aj víťaz.<br><span class="tl">cards.json:2399</span></td><td class="sk">C</td><td class="mal"></td></tr>
+<tr class="sC"><td class="n">54</td><td><b>Vínna pivnica</b><br><span class="mal tl">Lokalita</span></td><td class="mal">Pitka: Každý hráč smie dať NA EX až dvakrát.<br><span class="tl">cards.json:2459</span></td><td class="sk">C</td><td class="mal"></td></tr>
+<tr class="sC"><td class="n">55</td><td><b>Družstvo</b><br><span class="mal tl">Lokalita</span></td><td class="mal">Zhromaždenie: Karty s akciou Robota nemíňajú limit vykladania.<br><span class="tl">cards.json:2519</span></td><td class="sk">C</td><td class="mal">Robota len ako podmienka</td></tr>
+<tr class="sC"><td class="n">56</td><td><b>Cintorín</b><br><span class="mal tl">Lokalita</span></td><td class="mal">Prehra: Vezmi si do ruky 1 kartu zo svojho odhadzovacieho balíčka.<br><span class="tl">cards.json:2579</span></td><td class="sk">C</td><td class="mal"></td></tr>
+<tr class="sC"><td class="n">58</td><td><b>Dvojčatá</b><br><span class="mal tl">Občan, Chlap, Závislý</span></td><td class="mal">Furt: Do prevahy sa rátajú za dvoch.<br><span class="tl">cards.json:2630</span></td><td class="sk">C</td><td class="mal"></td></tr>
+<tr class="sA"><td class="n">59</td><td><b>Šofér</b><br><span class="mal tl">Občan, Chlap, Pracujúci</span></td><td class="mal">Bitka: Ak si v tomto kole nedal NA EX, udelíš súperovi 1 Pecku navyše a dostaneš 1 cigaretu.<br><span class="tl">cards.json:2672</span></td><td class="sk">A</td><td class="mal">Pecka navyše <a href="#sofer">↓</a></td></tr>
+<tr class="sC"><td class="n">60</td><td><b>Kar</b><br><span class="mal tl">Lokalita</span></td><td class="mal">Pitka: Poškodenie pečene za NA EX dostane súper hráča, ktorý ho dal.<br><span class="tl">cards.json:2709</span></td><td class="sk">C</td><td class="mal">pečeň z NA EX, nie z akcie</td></tr>
+<tr class="sZ"><td class="n">61</td><td><b>Snúbenica</b><br><span class="mal tl">Občan, Žena, Influencer</span></td><td class="mal">Nepriateľ: Autorita {Pohoršenie}.<br><span class="tl">cards.json:2765</span></td><td class="sk">Z</td><td class="mal">už v zápise</td></tr>
+<tr class="sB"><td class="n">62</td><td><b>Vidly</b><br><span class="mal tl">Nástroj</span></td><td class="mal">Dedičstvo: Tvoje Rany udeľujú o 1 poškodenie viac.<br><span class="tl">cards.json:2801</span></td><td class="sk">B</td><td class="mal">Rana <a href="#vidly">↓</a></td></tr>
+<tr class="sC"><td class="n">63</td><td><b>Injekcia</b><br><span class="mal tl">Nástroj</span></td><td class="mal">Dedičstvo: NA EX smieš dať aj na Zviera.<br><span class="tl">cards.json:2837</span></td><td class="sk">C</td><td class="mal"></td></tr>
+<tr class="sC"><td class="n">64</td><td><b>Krokodíl</b><br><span class="mal tl">Zviera</span></td><td class="mal">Bitka: Na konci bitky sa spália všetci Občania a Zvieratá v jeho okolí.<br><span class="tl">cards.json:2873</span></td><td class="sk">C</td><td class="mal"></td></tr>
+<tr class="sC"><td class="n">65</td><td><b>Kapybara</b><br><span class="mal tl">Zviera</span></td><td class="mal">Nástup: Súperove reči pri jednom staršom klesnú o stupeň.<br><span class="tl">cards.json:2909</span></td><td class="sk">C</td><td class="mal"></td></tr>
+<tr class="sB"><td class="n">66</td><td><b>Kôň</b><br><span class="mal tl">Zviera</span></td><td class="mal">Furt: Nástroj vedľa Koňa s ním tvorí spoj. Roboty Koňa pália o 1 Dlh viac.<br><span class="tl">cards.json:2944</span></td><td class="sk">B</td><td class="mal">Robota páli +1 Dlh <a href="#kon">↓</a></td></tr>
+<tr class="sC"><td class="n">67</td><td><b>Degustátorka</b><br><span class="mal tl">Občan, Závislý, Kriminál, Žena</span></td><td class="mal">Nástup: Ak má súper viac plných poldeci ako ty, jeden mu vyžerie — otoč ho na vypitý.<br><span class="tl">cards.json:2983</span></td><td class="sk">C</td><td class="mal">poldeci, nie akcia</td></tr>
+<tr class="sC"><td class="n">68</td><td><b>Bzdocha</b><br><span class="mal tl">Občan, Influencer, Žena</span></td><td class="mal">Pitka: Súper hrá Pitku pred tebou; vidíš jeho NA EX.<br><span class="tl">cards.json:3022</span></td><td class="sk">C</td><td class="mal"></td></tr>
+<tr class="sC"><td class="n">69</td><td><b>Dohadzovačka</b><br><span class="mal tl">Občan, Pamätník, Žena</span></td><td class="mal">Nástup: Ak susedíš s Občanom alebo Starešinom, za teba sa presunie najvzdialenejší Občan alebo Starešina opačného pohlavia ako tvoj sused z druhej strany lokality.<br><span class="tl">cards.json:3069</span></td><td class="sk">C</td><td class="mal"></td></tr>
+<tr class="sC"><td class="n">70</td><td><b>Vandal</b><br><span class="mal tl">Občan, Kriminál, Chlap</span></td><td class="mal">Nástup: Otoč lokalitu o 180° — jej hrany si vymenia strany.<br><span class="tl">cards.json:3108</span></td><td class="sk">C</td><td class="mal"></td></tr>
+<tr class="sZ"><td class="n">71</td><td><b>Strýko z Ameriky</b><br><span class="mal tl">Občan, Influencer, Zahraničný, Chlap</span></td><td class="mal">Nepriateľ: Autorita {Rana} {Rana}.<br><span class="tl">cards.json:3158</span></td><td class="sk">Z</td><td class="mal">už v zápise</td></tr>
+<tr class="sC"><td class="n">72</td><td><b>Mäsiar</b><br><span class="mal tl">Občan, Pracujúci, Chlap</span></td><td class="mal">Furt: Efekty Zvierat v jeho okolí neplatia.<br><span class="tl">cards.json:3195</span></td><td class="sk">C</td><td class="mal">umlčí aj akcie navyše Recidivistu (§16)</td></tr>
+<tr class="sB"><td class="n">73</td><td><b>Sypač</b><br><span class="mal tl">Občan, Influencer, Chlap</span></td><td class="mal">Podpora: Keď sa stretne s tvojím Chlapom, ten má do konca kola Rany ako Pecky.<br><span class="tl">cards.json:3234</span></td><td class="sk">B</td><td class="mal">Rana → Pecka <a href="#kulturista">↓</a></td></tr>
+<tr class="sA"><td class="n">74</td><td><b>Traktorista</b><br><span class="mal tl">Občan, Autorita, Chlap</span></td><td class="mal">Bitka: Ak máš v jeho kraji prevahu, udelíš súperovi 1 Pecku navyše. Inak získaš 1 Dlh.<br><span class="tl">cards.json:3272</span></td><td class="sk">A</td><td class="mal">Pecka navyše (s prevahou) <a href="#traktoristka">↓</a></td></tr>
+<tr class="sA"><td class="n">75</td><td><b>Vymáhač</b><br><span class="mal tl">Občan, Kriminál, Chlap</span></td><td class="mal">Bitka: Za každé 2 tvoje priznané Dlhy udelíš súperovi 1 Ranu navyše.<br><span class="tl">cards.json:3311</span></td><td class="sk">A</td><td class="mal">Rana × 2 Dlhy <a href="#vymahac">↓</a></td></tr>
+<tr class="sC"><td class="n">76</td><td><b>Sklad</b><br><span class="mal tl">Lokalita</span></td><td class="mal">Zhromaždenie: Nástroj zo šenku smieš vyložiť rovno do Dedičstva za cenu Dedičstva. Do šenku sa dotiahne nový Nástroj.<br><span class="tl">cards.json:3347</span></td><td class="sk">C</td><td class="mal"></td></tr>
+<tr class="sB"><td class="n">77</td><td><b>Poľovnícka chata</b><br><span class="mal tl">Lokalita</span></td><td class="mal">Furt: Aktívne Rany, Pecky a Petelice z hrán lokality sa rátajú dvakrát.<br><span class="tl">cards.json:3402</span></td><td class="sk">B</td><td class="mal">Rana, Pecka, Petelica hrán ×2 <a href="#polovnicka_chata">↓</a></td></tr>
+<tr class="sC"><td class="n">78</td><td><b>Predsedova vila</b><br><span class="mal tl">Lokalita</span></td><td class="mal">Pitka: Za každé 2 cigarety, ktoré v tejto Pitke vyfajčíš, zdvihni svoje reči pri jednom staršom o stupeň.<br><span class="tl">cards.json:3466</span></td><td class="sk">C</td><td class="mal"></td></tr>
+<tr class="sC"><td class="n">79</td><td><b>Herňa</b><br><span class="mal tl">Lokalita</span></td><td class="mal">Bitka: Víťaz dostane navyše toľko špakov, koľko má porazený priznaných Dlhov.<br><span class="tl">cards.json:3531</span></td><td class="sk">C</td><td class="mal"></td></tr>
+<tr class="sB"><td class="n">80</td><td><b>Valaška</b><br><span class="mal tl">Nástroj</span></td><td class="mal">Dedičstvo: Tvoje Pecky udeľujú o 1 poškodenie viac.<br><span class="tl">cards.json:3595</span></td><td class="sk">B</td><td class="mal">Pecka <a href="#boxer">↓</a></td></tr>
+<tr class="sB"><td class="n">81</td><td><b>Energeťák</b><br><span class="mal tl">Nástroj</span></td><td class="mal">Dedičstvo: Tvoje Posilnenie nemožno zrušiť NA EX.<br><span class="tl">cards.json:3632</span></td><td class="sk">B</td><td class="mal">Posilnenie <a href="#energetak">↓</a></td></tr>
+<tr class="sB"><td class="n">82</td><td><b>Fúrik</b><br><span class="mal tl">Nástroj</span></td><td class="mal">Dedičstvo: Tvoje Roboty pália o 1 Dlh viac.<br><span class="tl">cards.json:3667</span></td><td class="sk">B</td><td class="mal">Robota <a href="#furik">↓</a></td></tr>
+<tr class="sB"><td class="n">83</td><td><b>Horoskop</b><br><span class="mal tl">Nástroj</span></td><td class="mal">Dedičstvo: Tvoje Povery majú silu 2.<br><span class="tl">cards.json:3703</span></td><td class="sk">B</td><td class="mal">Povera <a href="#horoskop">↓</a></td></tr>
+<tr class="sB"><td class="n">84</td><td><b>Hrable</b><br><span class="mal tl">Nástroj</span></td><td class="mal">Dedičstvo: Akcia zrušená tvojím Odporom sa ráta ako tvoja a je posilnená.<br><span class="tl">cards.json:3739</span></td><td class="sk">B</td><td class="mal">Odpor <a href="#hrable">↓</a></td></tr>
+<tr class="sB"><td class="n">85</td><td><b>Jogurt</b><br><span class="mal tl">Nástroj</span></td><td class="mal">Dedičstvo: Tvoje Poldeci otáčajú vypitý poldeci hneď v Pitke, nie až v bitke.<br><span class="tl">cards.json:3775</span></td><td class="sk">B</td><td class="mal">Poldeci <a href="#jogurt">↓</a></td></tr>
+<tr class="sB"><td class="n">86</td><td><b>Krištáľová guľa</b><br><span class="mal tl">Nástroj</span></td><td class="mal">Dedičstvo: Tvoje Vízie ukážu 2 vrchné karty — jednu si vezmi alebo spáľ, druhú vráť navrch.<br><span class="tl">cards.json:3812</span></td><td class="sk">B</td><td class="mal">Vízia <a href="#kristalova_gula">↓</a></td></tr>
+<tr class="sB"><td class="n">87</td><td><b>Izolačka</b><br><span class="mal tl">Nástroj</span></td><td class="mal">Dedičstvo: Tvoje Obmedzenia uberajú aj cigarety, ktoré súper dostane za pas.<br><span class="tl">cards.json:3848</span></td><td class="sk">B</td><td class="mal">Obmedzenie <a href="#pistalka">↓</a></td></tr>
+<tr class="sB"><td class="n">88</td><td><b>Profesionálny tipér</b><br><span class="mal tl">Občan, Závislý, Chlap</span></td><td class="mal">Furt: Posilnené akcie na jeho spojoch sa rátajú inak — súperove ako posilnený Hazard, tvoje ako posilnená Robota.<br><span class="tl">cards.json:3886</span></td><td class="sk">B</td><td class="mal">posilnené → Hazard / Robota <a href="#profesionalny_tiper">↓</a></td></tr>
+<tr class="sB"><td class="n">89</td><td><b>Telefón</b><br><span class="mal tl">Nástroj</span></td><td class="mal">Dedičstvo: Tvoje Pohoršenia nemožno zrušiť Odporom a NA EX.<br><span class="tl">cards.json:3923</span></td><td class="sk">B</td><td class="mal">Pohoršenie <a href="#telefon">↓</a></td></tr>
+<tr class="sB"><td class="n">90</td><td><b>Výherné žreby</b><br><span class="mal tl">Nástroj</span></td><td class="mal">Dedičstvo: Tvoje Hazardy sú aktívne, keď nie sú spojené, a neaktívne, keď sú spojené.<br><span class="tl">cards.json:3960</span></td><td class="sk">B</td><td class="mal">Hazard <a href="#vyherne_zreby">↓</a></td></tr>
+<tr class="sB"><td class="n">91</td><td><b>Zapaľovač</b><br><span class="mal tl">Nástroj</span></td><td class="mal">Dedičstvo: Tvoje aktívne Cigarety nemožno zrušiť NA EX.<br><span class="tl">cards.json:3996</span></td><td class="sk">B</td><td class="mal">Cigareta <a href="#zapalovac">↓</a></td></tr>
+<tr class="sB"><td class="n">92</td><td><b>Zrkadlo</b><br><span class="mal tl">Nástroj</span></td><td class="mal">Dedičstvo: Tvoj Pakt kopíruje prepojenú akciu dvakrát.<br><span class="tl">cards.json:4032</span></td><td class="sk">B</td><td class="mal">Pakt <a href="#zrkadlo">↓</a></td></tr>
+<tr class="sC"><td class="n">93</td><td><b>Absťák</b><br><span class="mal tl">Kliatba</span></td><td class="mal">Bitka: Každý Absťák v tvojom balíčku (ruka, doberací aj odhadzovací) ti uberie 1 tuhé; pri remíze v tuhom prehráva, kto ich má viac. Nedá sa priznať; po bitke ide z ruky do odhadzovacieho balíčka. Spáliť ju smie len Vízia alebo efekt, ktorý to výslovne povie.<br><span class="tl">cards.json:4068</span></td><td class="sk">C</td><td class="mal">−1 tuhé, nie Viera</td></tr>
+<tr class="sZ"><td class="n">94</td><td><b>Opatrovateľka</b><br><span class="mal tl">Občan, Zahraničný, Pracujúci, Žena</span></td><td class="mal">Podpora: Pamätník {Robota}.<br><span class="tl">cards.json:4106</span></td><td class="sk">Z</td><td class="mal">už v zápise</td></tr>
+<tr class="sC"><td class="n">95</td><td><b>Poľovník</b><br><span class="mal tl">Občan, Autorita, Chlap, Pamätník</span></td><td class="mal">Nástup: Spáľ súperovo Zviera na druhej strane lokality, ktoré je od nej najďalej.<br><span class="tl">cards.json:4145</span></td><td class="sk">C</td><td class="mal"></td></tr>
+<tr class="sC"><td class="n">96</td><td><b>Predavačka</b><br><span class="mal tl">Občan, Autorita, Žena, Pracujúci</span></td><td class="mal">Podpora: Dober si 1 kartu.<br><span class="tl">cards.json:4195</span></td><td class="sk">C</td><td class="mal">≈ Vízia bez spálenia</td></tr>
+<tr class="sB"><td class="n">97</td><td><b>Vedúcko</b><br><span class="mal tl">Občan, Autorita, Chlap</span></td><td class="mal">Furt: Roboty kariet, ktoré s ním susedia, sa rátajú ako Pecky.<br><span class="tl">cards.json:4233</span></td><td class="sk">B</td><td class="mal">Robota → Pecka <a href="#veducko">↓</a></td></tr>
+</tbody></table></div>
+
+<h3 style="margin-top:22px">Poznámky k hraničným C</h3>
+<ul class="mal">
+<li><b>Poštárka</b> (4 cigarety): akcia Cigareta pôsobí v Pitke, kde ju uberá Obmedzenie a zdvojí Obecný úrad. Schopnosť väzňa sa použije kedykoľvek a nič z toho na ňu neplatí (<code>engine.ts:4513–4514</code>).</li>
+<li><b>Krčmárka, Vínko, Degustátorka:</b> menia zásobu plných poldeci. Akcia Poldeci otáča vypitý na plný až v bitke (<code>PRAVIDLA.md:498</code>) a do Pitky pridá pečeň, takže to nie je to isté.</li>
+<li><b>Predavačka</b> (dober 1 kartu): Vízia dá na výber vziať alebo spáliť a pôsobí na konci Pitky. Prepis na <code>Podpora: {Vízia}</code> by zápis prijal, ale karta by zosilnela: Vízia v každej ďalšej Pitke kola, za každé stretnutie, s Krištáľovou guľou. Je to nový návrh, nie oprava.</li>
+<li><b>Absťák</b> (−1 tuhé): pôsobí ako súperova Viera, ale Povery neruší a nedá sa priznať.</li>
+<li><b>Družstvo:</b> Robota je len podmienka limitu, akciu nemení. <b>Kar:</b> pečeň z NA EX, nie z akcie. <b>Mäsiar:</b> umlčí aj akcie navyše Recidivistu (Zviera), čo zodpovedá §16.</li>
+<li><b>Mimo kariet:</b> priazne Ohováračka, Veriaci a Robota dávajú Povery, Vieru a Roboty navyše zo scorecardu (<code>PRAVIDLA.md:1366–1372</code>). Nie sú to karty, preto sú mimo auditu.</li>
+</ul>
+
+<footer>Vetva napady/skryte-akcie · kód ani tvorca sa nemenili · zápis akcií navyše: docs/napady/frakcie-final.html, packages/core/src/navyse.ts</footer>
+</main>
+</body>
+</html>
