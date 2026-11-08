@@ -72,7 +72,7 @@ button.akcia.sek { background: var(--plocha-2); color: var(--text); border: 1px 
 <body>
 <main>
 <h1>Náradie: hrany všetkých 22 Nástrojov</h1>
-<p class="mini">Návrh v5, 2026-11-08 · nadväzuje na <a href="naradie-dve-hrany.html">v4 (dve hrany)</a> a Michalove voľby O1–O8 · Michal 2026-11-08: štyri Nástroje majú jednu premenu a jeden kartový efekt (Forsáž, NA EX, Výtržník, Vzbura), ostatné dve premeny; hrany sú voľné (posila aj sabotáž v ľubovoľnej kombinácii) · pravidlá ani kód sa nemenia, kým Michal nerozhodne</p>
+<p class="mini">Návrh v5, 2026-11-08 · nadväzuje na <a href="naradie-dve-hrany.html">v4 (dve hrany)</a> a Michalove voľby O1–O8 · Michal 2026-11-08: štyri Nástroje majú jednu premenu a jeden kartový efekt (Forsáž, NA EX, Výtržník, Vzbura), ostatné dve premeny; hrany sú voľné (posila aj sabotáž v ľubovoľnej kombinácii) · pravidlá ani kód sa nemenia · <b>Michal 2026-11-08 rozhodol P1–P6</b>: Vínko NA EX a Injekcia Výtržník (vymenené), premena mení všetky výskyty, NA EX z Vínka je stav (nie nerest), <b>Vyhodiť zaniká a podloženie stojí 1 cigaretu</b>, sabotáže → Povera ostávajú, tabuľka platí → ďalší krok <a href="naradie-mock-stol.html">UI mock</a></p>
 
 <nav class="skupiny">
   <a href="#rozhodnute">Rozhodnuté</a><a href="#pravidla">Pravidlá</a><a href="#efekty">4 kartové efekty</a><a href="#zoznam">Zoznam 22</a><a href="#cisla">Čísla</a><a href="#otazky">Otázky</a>
@@ -96,11 +96,11 @@ button.akcia.sek { background: var(--plocha-2); color: var(--text); border: 1px 
 <section id="pravidla">
 <h2>Pravidlá v skratke (návrh znenia §12)</h2>
 <ol class="kroky">
-  <li><b>Podloženie je ťah v Zhromaždení.</b> Nástroj z ruky zasunieš pod kartu s tagom Občan alebo Starešina v línii, svoju alebo súperovu, natočený tak, aby zvolená hrana pretŕčala. Nástroj sa do limitu vykladania neráta, ťah v striedaní áno (ako dnes). Pod jednou kartou leží najviac jeden Nástroj (Zámočník výnimka).</li>
+  <li><b>Podloženie je ťah v Zhromaždení a stojí 1 cigaretu</b> (Michal 2026-11-08, P4). Nástroj z ruky zasunieš pod kartu s tagom Občan alebo Starešina v línii, svoju alebo súperovu, natočený tak, aby zvolená hrana pretŕčala. Nástroj sa do limitu vykladania neráta, ťah v striedaní áno (ako dnes). Pod jednou kartou leží najviac jeden Nástroj (Zámočník výnimka).</li>
   <li><b>Platí len pretŕčajúca hrana.</b> Druhá je skrytá a nerobí nič. Natočenie sa po podložení nemení.</li>
   <li><b>Akciová hrana X → Y</b> premení <b>všetky</b> výskyty akcie X na oboch hranách hostiteľa na Y (Rana×2 → Pecka×2). Premena prebehne ešte pred spojmi: susedia sa párujú už s premenenou akciou. Ak hostiteľ X nemá, Nástroj pod ním nerobí nič (podložiť ho smieš, je to tvoj ťah).</li>
   <li><b>Kartová hrana</b> dá hostiteľovi účinok z §6 alebo §7 (nižšie) a uplatní sa v poradí, kde ten účinok stojí dnes: spoje → Vzbura → Výherné žreby → Forsáž → NA EX → zrážka (Výtržník) → efekty kariet.</li>
-  <li><b>Vyhodiť:</b> súperov Nástroj spod svojej karty vyhodíš za 2 cigarety ako ťah v Zhromaždení. Ide do odhadzovacieho balíčka jeho majiteľa. Spod súperovej karty sa Nástroj vyhodiť nedá.</li>
+  <li><b>Podložený Nástroj leží do bitky</b> (P4): nedá sa vyhodiť. Zbaviť sa ho dá len s hostiteľom (spálenie, zajatie, Konflikt).</li>
   <li><b>Po bitke</b> sa každý podložený Nástroj vráti do odhadzovacieho balíčka svojho majiteľa. Keď hostiteľ odíde z línie skôr (spálenie, zajatie, Konflikt), Nástroj ide tam hneď.</li>
   <li><b>Dedičstvo</b> ostáva ako dnes: Nástroj mimo línie za rastúcu cenu, platí text v strede karty. Nástroj do línie ako samostatná karta so spojmi sa <b>už nevykladá</b>. Priznané Náradie posilňuje akcie v efektoch ako dnes.</li>
 </ol>
@@ -123,25 +123,26 @@ button.akcia.sek { background: var(--plocha-2); color: var(--text); border: 1px 
 </ul>
 </div>
 <div class="box">
-<h3>Injekcia · NA EX</h3>
-<p><span class="pr ka h">NA EX</span> <span class="pr dn l">Poldeci → Pečeň</span></p>
+<h3>Vínko · NA EX</h3>
+<p><span class="pr ka h">NA EX</span> <span class="pr up l">Pečeň → Poldeci</span></p>
 <p><b>Text hrany:</b> „Hostiteľ je ako s NA EX: aktívne akcie zrušené, neaktívne ×2.“</p>
 <ul>
   <li>Bez poldeca: nie je nerest, nepridá pečeň, nikto nič nepije. Podloženie je viditeľné v Zhromaždení, nie skryté.</li>
-  <li>Na hostiteľa sa už skutočné NA EX dať nedá (ako na kartu s poldecom). Injekciu nemožno podložiť pod kartu, na ktorej leží poldeci, ani pod kartu so Vzburou (§7 to zakazuje NA EX).</li>
-  <li>Podmienka „aspoň jedna aktívna a jedna neaktívna“ sa neposudzuje: čo nie je, to sa nezruší ani nezdvojí. Farár a Snúbenica ho nezložia (nie je to NA EX, cestou je Vyhodiť). Svokra ho neráta.</li>
+  <li>Na hostiteľa sa už skutočné NA EX dať nedá (ako na kartu s poldecom). Vínko nemožno podložiť pod kartu, na ktorej leží poldeci, ani pod kartu so Vzburou (§7 to zakazuje NA EX).</li>
+  <li>Podmienka „aspoň jedna aktívna a jedna neaktívna“ sa neposudzuje: čo nie je, to sa nezruší ani nezdvojí. Farár a Snúbenica ho nezložia (nie je to NA EX) a keďže Vyhodiť niet, leží do bitky. Svokra ho neráta.</li>
   <li>Pod súperovu kartu: zruší mu aktívne dobré akcie. Pod svoju: zdvojí nespojené akcie karty na konci línie, dnešný trik NA EX bez poldeca a bez nerestí.</li>
+  <li>Dolná hrana: vínko lieči, pečeň sa mení na Poldeci.</li>
 </ul>
 </div>
 <div class="box">
-<h3>Vínko · Výtržník</h3>
-<p><span class="pr ka h">VÝTRŽNÍK</span> <span class="pr up l">Pečeň → Poldeci</span></p>
+<h3>Injekcia · Výtržník</h3>
+<p><span class="pr ka h">VÝTRŽNÍK</span> <span class="pr dn l">Poldeci → Pečeň</span></p>
 <p><b>Text hrany:</b> „Hostiteľ je Výtržník: všetky akcie na jeho hranách sú aktívne Rany pre jeho majiteľa.“</p>
 <ul>
   <li>Presne §7: hostiteľ sa najprv spáruje so susedmi s pôvodnými akciami, potom sú všetky jeho akcie aktívne Rany, aj bez partnera. Jeho Posilnenie a Odpor nezdvojujú ani nerušia, sused má spárovanú akciu ×1, Vzbura nevzniká. Sypač má Pecky.</li>
-  <li>NA EX sa naň nedá (nemalo by čo robiť). Po bitke vytriezvie tým, že sa Vínko vráti majiteľovi.</li>
+  <li>NA EX sa naň nedá (nemalo by čo robiť). Po bitke vytriezvie tým, že sa Injekcia vráti majiteľovi.</li>
   <li>Pod svoju kartu plnú Dlhu a Pečene: zlé akcie sa zmenia na Rany. Pod súperovu kartu plnú Viery, Odporu a Vízie: príde o obranu a doberanie, dostane za to slabé Rany.</li>
-  <li>Dolná hrana: vínko lieči, pečeň sa mení na Poldeci.</li>
+  <li>Dolná hrana: namiesto nalievania pichne, Poldeci sa mení na pečeň.</li>
 </ul>
 </div>
 <div class="box">
@@ -173,8 +174,8 @@ button.akcia.sek { background: var(--plocha-2); color: var(--text); border: 1px 
 <tbody>
 <tr><th colspan="5" style="color:var(--modra);padding-top:14px">S kartovým efektom (1 premena + 1 účinok)</th></tr>
 <tr><th>Energeťák</th><td><span class="pr ka">FORSÁŽ</span><span class="pod">aktívne akcie hostiteľa ×2</span></td><td><span class="pr dn">Posilnenie → Pečeň</span><span class="pod">predávkovanie</span></td><td class="c">48 / 10 / 48</td><td class="d">Tvoje Posilnenie nemožno zrušiť NA EX.</td></tr>
-<tr><th>Injekcia</th><td><span class="pr ka">NA EX</span><span class="pod">aktívne zrušené, neaktívne ×2, bez poldeca</span></td><td><span class="pr dn">Poldeci → Pečeň</span><span class="pod">namiesto nalievania pichne</span></td><td class="c">48 / 11 / 48</td><td class="d">NA EX smieš dať aj na Zviera.</td></tr>
-<tr><th>Vínko</th><td><span class="pr ka">VÝTRŽNÍK</span><span class="pod">všetky akcie hostiteľa = aktívne Rany</span></td><td><span class="pr up">Pečeň → Poldeci</span><span class="pod">vínko lieči</span></td><td class="c">48 / 21 / 48</td><td class="d">Počíta sa ako plný poldeci navyše. Nedolievaš za cigarety.</td></tr>
+<tr><th>Vínko</th><td><span class="pr ka">NA EX</span><span class="pod">aktívne zrušené, neaktívne ×2, bez poldeca</span></td><td><span class="pr up">Pečeň → Poldeci</span><span class="pod">vínko lieči</span></td><td class="c">48 / 21 / 48</td><td class="d">Počíta sa ako plný poldeci navyše. Nedolievaš za cigarety.</td></tr>
+<tr><th>Injekcia</th><td><span class="pr ka">VÝTRŽNÍK</span><span class="pod">všetky akcie hostiteľa = aktívne Rany</span></td><td><span class="pr dn">Poldeci → Pečeň</span><span class="pod">namiesto nalievania pichne</span></td><td class="c">48 / 11 / 48</td><td class="d">NA EX smieš dať aj na Zviera.</td></tr>
 <tr><th>Vidly</th><td><span class="pr ka">VZBURA</span><span class="pod">nespojené aktívne, spojené neaktívne</span></td><td><span class="pr up">Rana → Pecka</span><span class="pod">vidly bodnú hlbšie</span></td><td class="c">48 / 16 / 48</td><td class="d">Tvoje Rany udeľujú o 1 viac.</td></tr>
 
 <tr><th colspan="5" style="color:var(--akcent);padding-top:14px">Dve premeny: tuhé poškodenie</th></tr>
@@ -232,8 +233,8 @@ button.akcia.sek { background: var(--plocha-2); color: var(--text); border: 1px 
 <div class="box riz">
 <h3>Sporné miesta, ktoré treba vedieť</h3>
 <ul>
-  <li><b>Injekcia je NA EX zadarmo.</b> Bez nerestí a pečene, zato verejne, za kartu a ťah, a súper ju môže Vyhodiť za 2 cigarety. Ak to vyjde silné, prvá brzda je „Injekciu nemožno podložiť pod kartu, ktorá už má spoj“, nie strop.</li>
-  <li><b>Výtržník z Vínka</b> pod súperovu kartu mu dá za každú akciu Ranu na teba. Pri Snúbenici so 6 akciami je to 6 poškodení. Hráč to vie spočítať, karta to robí viditeľne. Nechať.</li>
+  <li><b>Vínko je NA EX za cigaretu.</b> Bez nerestí a pečene, zato verejne, za kartu, ťah a 1 cigaretu; po rozhodnutí P4 sa nedá vyhodiť a leží do bitky. Ak to vyjde silné, prvá brzda je „Vínko nemožno podložiť pod kartu, ktorá už má spoj“, nie strop.</li>
+  <li><b>Výtržník z Injekcie</b> pod súperovu kartu mu dá za každú akciu Ranu na teba. Pri Snúbenici so 6 akciami je to 6 poškodení. Hráč to vie spočítať, karta to robí viditeľne. Nechať.</li>
   <li><b>Sabotáže, ktoré súperovi niečo dajú</b> (Viera → Povera, Vízia → Povera, Odpor → Povera): berú mu obranu či doberanie a dajú mu 1 mäkké poškodenie na teba, ktoré tvoja Viera zruší. Sú slabšie ako čisté sabotáže. Ak to Michal nechce, náhrada je → Dlh.</li>
   <li><b>Premena mení všetky výskyty.</b> Pri Rana×2 → Petelica×2 je Puška pod Hasičom +4 poškodenia. Alternatíva „len jeden výskyt“ je slabšia a horšie sa kreslí (ktorý slot?).</li>
 </ul>
@@ -241,8 +242,9 @@ button.akcia.sek { background: var(--plocha-2); color: var(--text); border: 1px 
 </section>
 
 <section id="otazky">
-<h2>Otázky pre Michala</h2>
-<p class="mini">Voľby sa ukladajú v prehliadači a vypíšu dole. Odporúčaná je prvá.</p>
+<h2>Otázky pre Michala — rozhodnuté 2026-11-08</h2>
+<div class="box rec"><p><b>P1</b> Vínko NA EX, Injekcia Výtržník · <b>P2</b> všetky výskyty · <b>P3</b> stav, nie NA EX · <b>P4</b> nemožno vyhodiť, podloženie stojí 1 cigaretu · <b>P5</b> nechať → Povera · <b>P6</b> tabuľka platí, ísť na UI mock.</p></div>
+<p class="mini">Pôvodné otázky ostávajú pre históriu.</p>
 
 <details class="q" open><summary><span class="qid">P1</span> <span class="qt">Priradenie štyroch kartových efektov</span></summary>
 <ol class="moznosti">
