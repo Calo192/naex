@@ -63,6 +63,7 @@ describe("pečiatky krokov", () => {
 
   it("Hasič s prázdnym odhadzovacím balíčkom dá pečiatku tomu, kto ho vyložil; s kartami nie (Michal 2026-11-03)", () => {
     // Prvé Zhromaždenie partie botov, hráč na ťahu dostane do ruky Hasiča — znenie logu je z motora.
+    // Hasič má Podporu (frakcie 2026-11-08): priloží sa k vlastnému Pijanovi.
     let s = setupGame(data, 5, { lokalit: 3 });
     let rng = rngSeed(7);
     for (let i = 0; i < 500 && s.faza !== "zhromazdenie"; i++) {
@@ -77,7 +78,9 @@ describe("pečiatky krokov", () => {
     const hasic = { uid: s.nextUid, defId: "hasic", leftLayout: 0, rightLayout: 0 };
     const vyloz = (odhadzovaci: GameState["hraci"][number]["odhadzovaci"]) => {
       const h = { ...s.hraci[p], ruka: [...s.hraci[p].ruka, hasic], odhadzovaci };
-      const pred: GameState = { ...s, nextUid: s.nextUid + 1, hraci: p === 0 ? [h, s.hraci[1]] : [s.hraci[0], h] };
+      const pijan = { card: { uid: s.nextUid + 2, defId: "pijan", leftLayout: 0, rightLayout: 0 }, playedBy: p };
+      const strany = s.strany.map((st, q) => (q === p ? [...st, pijan] : st)) as unknown as GameState["strany"];
+      const pred: GameState = { ...s, nextUid: s.nextUid + 3, strany, hraci: p === 0 ? [h, s.hraci[1]] : [s.hraci[0], h] };
       return peciatkyKrokov(apply(data, pred, { type: "place", uid: hasic.uid, target: "vlastna" }, p).events).filter((x) => x.druh === "hasic");
     };
     expect(vyloz([])).toEqual([{ hrac: p, druh: "hasic" }]);

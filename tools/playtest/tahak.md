@@ -149,8 +149,8 @@ rozpore s `docs/PRAVIDLA.md` platí `docs/PRAVIDLA.md` a rozpor zapíš do
   Pakt s Paktom nerobí nič, s Posilnením sa stane Posilnením (= Forsáž), Odpor ho zruší; neaktívny Pakt NA EX nezdvojí.
 - **Forsáž (v10.3):** Posilnenie + Posilnenie na spoji = **Forsáž** — obe karty spoja majú **všetky
   aktívne akcie posilnené ×2** (aj Hazard a Pečeň); akcia posilnená ešte Posilnením suseda **×4**.
-  Lokalita len hranu pri tom kraji, **Nástroj Forsáž nedostane** (len Občan/Starešina pri ňom). Odpor
-  Praudovravca (ráta sa ako Posilnenie) Forsáž vytvára. NA EX na jednu z kariet spoja jej Posilnenie
+  Lokalita len hranu pri tom kraji, **Nástroj Forsáž nedostane** (len Občan/Starešina pri ňom). NA EX
+  na jednu z kariet spoja jej Posilnenie
   zruší, a tým aj Forsáž (Energeťák a Veterán to zastavia). **Vzbura s Nástrojom (v10.3):** Odpor
   Nástroja proti Odporu Občana — Vzburu dostane len Občan/Starešina.
 - **Vzbura (v11.1):** Odpor + Odpor na spoji **obráti** obe karty — aktívne sú ich **nespojené** akcie
@@ -309,13 +309,13 @@ rozpore s `docs/PRAVIDLA.md` platí `docs/PRAVIDLA.md` a rozpor zapíš do
   Napr. hádka 10 na prázdnom staršom: reči 1 + 2 + 3, presvedčenie 3, 1 bod inam. **Reči, strach oboch aj priazeň ostávajú**,
   starší ostáva na stupnici (priazeň aj bodovanie ďalej). **Jeho karta ide tebe do ruky a natrvalo patrí do tvojho
   balíčka**: hráš ju ako Starešinu (len akcie, ráta sa do prevahy, dá sa naň NA EX), po bitke do tvojho
-  odhadzovacieho balíčka; nespáli sa (ide do odhadzovacieho) a Hrobár ani Veštica ju nevezmú. Schopnosť
+  odhadzovacieho balíčka; nespáli sa (ide do odhadzovacieho) a Hrobár ju nevezme. Schopnosť
   väzňa pri presvedčenom neplatí. **Kto prvý presvedčí, toho je** — presvedčeného už nikto nepresvedčí, zajať ho
   smú obaja. Vo finále nie. Kto koho presvedčil, je verejné; kde karta práve je, nie.
 - **Poradie bitky (v11):** **hádka** (kto ju vyhral a o koľko) → poškodenie → výsledok → **4a** špaky za karty
   v línii → **4b starší bodujú** (reči obom, víťaz navyše strach bez obsadených stupňov; reči porazeného v hádke potom −1 zospodu) → **4c výhra strachom**
   (víťaz so 4 červenými končí hru) → **4d** exekúcia (Robota, Exekútor) → **4e Nakladačka a reči** → poldeci,
-  Veštica, Cintorín, **porazený 1 cigareta** (po finále nie), Kmotor, Fajčiar → návrat
+  Cintorín, **porazený 1 cigareta** (po finále nie), Kmotor, Fajčiar → návrat
   kariet, Chuť a Absťák. Zajatie (krádež, výhra väzňami) je súčasť rozdelenia Nakladačky, presvedčenie rozdelenia hádky (4e).
 - **Nakladačka a hádka (v11, 2026-11-02):** Nakladačku (rozdiel tuhého) **rozdelí víťaz bitky na svoj strach**,
   hádku (rozdiel mäkkého) **víťaz hádky na svoje reči na súperovom teplomere** — **ľubovoľne medzi starších**, stupeň stojí **do žltej 1,

@@ -5,6 +5,7 @@ import { describe, expect, it } from "vitest";
 import cardsJson from "../data/cards.json";
 import eldersJson from "../data/elders.json";
 import scorecardsJson from "../data/scorecards.json";
+import predFrakciamiJson from "./data/cards-pred-frakciami.json";
 import type { CardInstance, Command, Event, GameState, PlacedCard, PlayerId } from "../src/index.ts";
 import {
   KONSTANTY,
@@ -37,6 +38,7 @@ import {
 import { spustBitku } from "./helpers.ts";
 
 const data = loadGameData(cardsJson, eldersJson, scorecardsJson);
+const stara = loadGameData(predFrakciamiJson, eldersJson, scorecardsJson);
 
 let uidSeq = 880000;
 const inst = (defId: string): CardInstance => ({ uid: ++uidSeq, defId, leftLayout: 0, rightLayout: 0 });
@@ -379,6 +381,9 @@ describe("Cintorín (v11.13) pre bota", () => {
 });
 
 describe("Obecný úrad (v11.13): Konflikt a Pitka kariet", () => {
+  // Podvodník a Policajtka so starými efektmi (sada pred frakciami 2026-11-08) — zdvojenie efektov
+  // kariet v Pitke platí ďalej; akcie navyše zo sady frakcií zdvojí Úrad ako každú akciu.
+  const data = stara;
   /**
    * Hráč 0 dá NA EX na svojho Pijana, hráč 1 odpovie Pijanom priloženým k Podvodníkovi hráča 0 (koniec strany) —
    * Konflikt sa vyhodnotí pri otočení odpovedí, teda vo fáze Pitka (výklad (4) v Zmenách v11.13).

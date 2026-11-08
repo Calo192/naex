@@ -8,6 +8,8 @@ import cardsJson from "../data/cards.json";
 import eldersJson from "../data/elders.json";
 import scorecardsJson from "../data/scorecards.json";
 import frakcieJson from "./data/frakcie-karty.json";
+import predFrakciamiJson from "./data/cards-pred-frakciami.json";
+import { naexOdkryte } from "./helpers.ts";
 import type { CardInstance, Command, GameData, GameState, PlacedCard, PlayerId } from "../src/index.ts";
 import {
   apply,
@@ -47,7 +49,8 @@ function frakcieData(): GameData {
 }
 
 const data = frakcieData();
-const stara = loadGameData(cardsJson, eldersJson, scorecardsJson);
+// Sada pred frakciami (cards.json pred 2026-11-08) — staré efekty pre staré sady.
+const stara = loadGameData(predFrakciamiJson, eldersJson, scorecardsJson);
 
 let uidSeq = 970000;
 const inst = (defId: string): CardInstance => ({ uid: ++uidSeq, defId, leftLayout: 0, rightLayout: 0 });
@@ -227,6 +230,34 @@ describe("Podpora a Konflikt s tagom — pri každom stretnutí, do konca kola",
     expect(apply(data, s, { type: "place", uid: h.uid, target: "vlastna" }, 0).state.hasicVolby ?? []).toEqual([]);
     const v = sHracom(zhromazdenie("zastavka", [[lezi(inst("pijan"), 0)], []], [h]), 0, { odhadzovaci: [inst("vandal")] });
     expect(apply(data, v, { type: "place", uid: h.uid, target: "vlastna" }, 0).state.hasicVolby).toHaveLength(1);
+  });
+
+  it("Hasič ako odpoveď na NA EX v Pitke: voľbu vidí stôl, ponúka legal, vyrieši ju bot a Pitka sa potom vyhodnotí", () => {
+    // NA EX hráča 1 na Pijana hráča 2; hráč 2 odpovedá Hasičom vedľa neho (Podpora).
+    const pijan = lezi(inst("pijan"), 1);
+    const h = inst("hasic");
+    const vandal = inst("vandal");
+    let s = vPitke("jednota", [[], [pijan]]);
+    s = sHracom(s, 1, { ruka: [h], odhadzovaci: [vandal], poldeciPlne: 1 });
+    s = sHracom(s, 0, { poldeciPlne: 1 });
+    const naex = naexOdkryte(data, s, pijan.card.uid, 0).state;
+    expect(naex.pitkaStav?.reakcia).toBe(1);
+    const odpoved = apply(data, naex, { type: "place", uid: h.uid, target: "vlastna" }, 1);
+    expect(odpoved.state.hasicVolby?.[0]).toMatchObject({ hrac: 1, uid: vandal.uid, potom: "odpovede" });
+    expect(odpoved.events.some((e) => e.type === "pitkaVysledok")).toBe(false);
+    // Stôl: voľbu a vytiahnutú kartu vidia obaja (odhadzovací balíček je verejný), rozhoduje hráč 2.
+    expect(viewFor(data, odpoved.state, 1).hasicVolba).toEqual({ hrac: 1, karta: vandal });
+    expect(viewFor(data, odpoved.state, 0).hasicVolba).toEqual({ hrac: 1, karta: vandal });
+    expect(legalCommands(data, odpoved.state, 1)).toEqual([
+      { type: "hasic", nechat: true },
+      { type: "hasic", nechat: false },
+    ]);
+    expect(() => apply(data, odpoved.state, { type: "skipNaex" }, 1)).toThrow("Hasič");
+    const bot = tahBota(data, odpoved.state, 1, 3);
+    expect(bot).toEqual({ type: "hasic", nechat: true });
+    const po = apply(data, odpoved.state, bot, 1);
+    expect(po.events.some((e) => e.type === "pitkaVysledok")).toBe(true);
+    expect(po.state.hraci[1].ruka.map((k) => k.uid)).toContain(vandal.uid);
   });
 
   it("Vdova (Konflikt: Chlap): súper vyberie kartu z ruky a odhodí ju; pri Žene nič", () => {

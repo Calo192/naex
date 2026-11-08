@@ -6,12 +6,14 @@ import { describe, expect, it } from "vitest";
 import cardsJson from "../data/cards.json";
 import eldersJson from "../data/elders.json";
 import scorecardsJson from "../data/scorecards.json";
+import predFrakciamiJson from "./data/cards-pred-frakciami.json";
 import type { CardDef, CardInstance, GameData, GameState, PlayerId, PlayerState } from "../src/index.ts";
 import { KONSTANTY, apply, buildGameData, legalCommands, loadGameData, nahladPitky, naTahu, parseScorecards, setupGame, viewFor } from "../src/index.ts";
 import type { Layout4 } from "./helpers.ts";
 import { instanceFor, makeDef } from "./helpers.ts";
 
 const data = loadGameData(cardsJson, eldersJson, scorecardsJson);
+const stara = loadGameData(predFrakciamiJson, eldersJson, scorecardsJson);
 
 let uidSeq = 250000;
 const inst = (defId: string): CardInstance => ({ uid: ++uidSeq, defId, leftLayout: 0, rightLayout: 0 });
@@ -202,6 +204,8 @@ describe("keď sa doberací balíček minie, odhadzovací sa zamieša a stane sa
 });
 
 describe("Veštica pri prázdnom doberacom balíčku zamieša odhadzovací (Michal 2026-10-25)", () => {
+  // Veštica s Prehrou je zo sady pred frakciami (2026-11-08); jadro ju drží pre staré sady.
+  const data = stara;
   /**
    * Hráč 0 vyhral, drží prebytok 1; porazený hráč 1 má v línii Vešticu.
    * Rozdelením prebytku bitka dôjde ku kroku Veštice.

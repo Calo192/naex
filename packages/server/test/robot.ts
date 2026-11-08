@@ -4,7 +4,7 @@
 import { expect } from "vitest";
 import { WebSocket } from "ws";
 import type { ClientState, Command } from "@naex/core";
-import { cieleVykladania, cielLokalitaId, krokStavby, moznostiNaexVPohlade, navrhRozdelenia, zablokovaneStrany } from "@naex/core";
+import { cieleVykladania, cielLokalitaId, dalsiStupenReci, krokStavby, moznostiNaexVPohlade, navrhRozdelenia, zablokovaneStrany } from "@naex/core";
 import { loadDataFromDisk } from "../src/server.ts";
 
 /** Dáta sady pre pravidlá vykladania — robot ich pozná ako hráč (verejné karty). */
@@ -117,6 +117,12 @@ export class Robot {
       if (nv.typ === "nastroj") return { type: "nastroj", uid: null };
       const kapybara = view.starsi.find((e) => e.reci[ja === 0 ? 1 : 0] > 0);
       if (nv.typ === "kapybara" && kapybara !== undefined) return { type: "kapybara", elderId: kapybara.elderId };
+      // Frakcie (2026-11-08): Vdova — odhodí prvú kartu z ruky; Zberný dvor — nič nepáli; vila — prvý starší s voľným stupňom.
+      const prvaVRuke = view.ruka[0];
+      if (nv.typ === "vdova" && prvaVRuke !== undefined) return { type: "odhod", uid: prvaVRuke.uid };
+      if (nv.typ === "dvor") return { type: "spal", uid: null };
+      const vila = view.starsi.find((e) => dalsiStupenReci(e, ja) !== null);
+      if (nv.typ === "vila" && vila !== undefined) return { type: "vila", elderId: vila.elderId };
     }
 
     switch (view.faza) {

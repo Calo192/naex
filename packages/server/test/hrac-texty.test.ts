@@ -16,6 +16,7 @@ import {
 import cardsJson from "../../core/data/cards.json";
 import eldersJson from "../../core/data/elders.json";
 import scorecardsJson from "../../core/data/scorecards.json";
+import predFrakciamiJson from "../../core/test/data/cards-pred-frakciami.json";
 import type { BitkaStav, CardInstance, Command, GameState, PlacedCard, PlayerId } from "../../core/src/index.ts";
 import {
   apply,
@@ -40,6 +41,7 @@ import type { Layout4 } from "../../core/test/helpers.ts";
 import { EMPTY, instanceFor, makeDef, setupSBalickom } from "../../core/test/helpers.ts";
 
 const data = loadGameData(cardsJson, eldersJson, scorecardsJson);
+const stara = loadGameData(predFrakciamiJson, eldersJson, scorecardsJson);
 const R2: Layout4 = ["Rana", "Rana", null, null];
 const R1: Layout4 = ["Rana", null, null, null];
 const D1: Layout4 = [null, "Rana", null, null];
@@ -204,6 +206,8 @@ describe("klient AI hráčov: stávka bitky z jadra (nezrovnalosť 3; Noviny od 
 
 describe("klient AI hráčov: efekty Prehra (nezrovnalosť 3, Dievčina na vydaj)", () => {
   it("Dlhy z Dievčiny na vydaj predpovedá klient rovnako, ako ich motor rozdá", () => {
+    // Dievčina s Prehrou je zo sady pred frakciami (2026-11-08); jadro aj klient ju držia pre staré sady.
+    const data = stara;
     let porovnane = 0;
     for (const seed of [11, 12, 13, 14, 15, 16]) {
       let state = setupGame(data, seed, { lokalit: 3 });

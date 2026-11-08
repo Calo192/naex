@@ -6,10 +6,12 @@ import { describe, expect, it } from "vitest";
 import cardsJson from "../data/cards.json";
 import eldersJson from "../data/elders.json";
 import scorecardsJson from "../data/scorecards.json";
+import predFrakciamiJson from "./data/cards-pred-frakciami.json";
 import type { CardInstance, GameState, PlacedCard, PlayerId } from "../src/index.ts";
 import { NASTROJ_PRI_LOKALITE, apply, cieleOdpovede, legalCommands, loadGameData, planVykladania, setupGame } from "../src/index.ts";
 
 const data = loadGameData(cardsJson, eldersJson, scorecardsJson);
+const stara = loadGameData(predFrakciamiJson, eldersJson, scorecardsJson);
 
 let uidSeq = 990000;
 const inst = (defId: string): CardInstance => ({ uid: ++uidSeq, defId, leftLayout: 0, rightLayout: 0 });
@@ -84,6 +86,8 @@ describe("Nástroj vedľa lokality (v10.2)", () => {
   });
 
   it("Živnostník pri lokalite: Nástroj za neho áno (neleží už pri lokalite)", () => {
+    // Živnostník s Nástupom je zo sady pred frakciami (2026-11-08); jadro ho drží pre staré sady.
+    const data = stara;
     const ziv = inst("zivnostnik");
     const pasca = inst("pasca");
     const s = vZhromazdeni([[], []], [ziv, pasca]);
