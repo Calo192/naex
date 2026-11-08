@@ -1,6 +1,6 @@
-// Kšeft pod kartou, ktorá ho ponúka (Michal 2026-11-02): tlačidlo nie je na hrane stola medzi
-// Fajčiť a Doliať, ale celé pod Strýkom v línii a pod lokalitou; väzni majú v okne Pivnica
-// schopnosť (v11.2, raz za hru — predtým Kšeft väzňa).
+// Efekt pod kartou, ktorá ho ponúka (Michal 2026-11-02): väzni majú v okne Pivnica schopnosť
+// (v11.2, raz za hru), Sklad pod lokalitou Nástroj zo šenku do Dedičstva (frakcie 2026-11-08).
+// Kšeft zanikol (frakcie 2026-11-08) — Strýko ani lokality ho nemajú.
 // Ponuka musí sedieť s jadrom (legalCommands) a čo sa nedá, povie prečo.
 
 import { createElement } from "react";
@@ -13,7 +13,6 @@ import type { CardInstance, Command, GameState, PlayerId } from "@naex/core";
 import { apply, legalCommands, loadGameData, mozeHrat, naTahu, opponentOf, setupGame, tahBota, viewFor } from "@naex/core";
 import { kseftyNaStole, type KseftNaStole } from "../src/hra/kseftyNaStole.ts";
 import { KseftPodKartou, klucVyucbyKseftu } from "../src/hra/KseftPodKartou.tsx";
-import { klucVily } from "../src/hra/volbaVily.ts";
 
 const data = loadGameData(cardsJson, eldersJson, scorecardsJson);
 const ja: PlayerId = 0;
@@ -60,18 +59,11 @@ const prikazy = (k: KseftNaStole): Command[] =>
 const zaklad = pitka();
 
 describe("Kšefty pod kartou", () => {
-  it("každý Kšeft má tlačidlo pod svojou kartou: Strýko, lokalita a každý väzeň (schopnosť)", () => {
-    const { s, stryko } = sKseftami(zaklad, { lok: "predsedova_vila", vazni: ["postarka", "krcmarka"] });
+  it("Kšeft zanikol: pod Strýkom ani pod lokalitou nič, väzni majú schopnosť", () => {
+    const { s } = sKseftami(zaklad, { lok: "predsedova_vila", vazni: ["postarka", "krcmarka"] });
     const ksefty = kseftyNaStole(data, viewFor(data, s, ja));
-    const lok = s.ciel?.lokalita?.uid;
-    expect(ksefty.map((k) => [k.druh, k.uid])).toEqual([
-      ["karta", stryko],
-      ["lokalita", lok],
-      ...s.vazni.map((v) => ["vazen", v.karta.uid]),
-    ]);
-    expect(ksefty.every((k) => k.dovod === null)).toBe(true);
-    expect(ksefty.find((k) => k.druh === "karta")).toMatchObject({ cena: { cigarety: 2 }, zisk: "+1 Rana" });
-    expect(ksefty.filter((k) => k.druh === "vazen").every((k) => "raz" in k.cena)).toBe(true);
+    expect(ksefty.map((k) => [k.druh, k.uid])).toEqual(s.vazni.map((v) => ["vazen", v.karta.uid]));
+    expect(ksefty.every((k) => k.dovod === null && "raz" in k.cena)).toBe(true);
   });
 
   it("ponúka presne príkazy, ktoré jadro dovolí (legalCommands)", () => {
@@ -83,40 +75,10 @@ describe("Kšefty pod kartou", () => {
     }
   });
 
-  it("Kšeft vily otvorí voľbu staršieho s kľúčom výučby kseft:<elderId>:0 (v11: jedno tlačidlo)", () => {
-    const { s } = sKseftami(zaklad, { lok: "predsedova_vila", vazni: [] });
-    const vila = kseftyNaStole(data, viewFor(data, s, ja)).find((k) => k.druh === "lokalita");
-    expect(vila?.akcia.typ).toBe("volba");
-    if (vila?.akcia.typ !== "volba") return;
-    const e = s.starsi[0]?.elderId ?? "";
-    const riadok = vila.akcia.riadky.find((r) => r.kluc === e);
-    expect(riadok?.vlavo).toBeUndefined();
-    expect(riadok?.vpravo.vyucba).toBe(`kseft:${e}:0`);
-    expect(riadok?.vpravo.text).toMatch(/^reči (nič|žltá|oranžová) → (žltá|oranžová|červená)$/);
-    expect(klucVyucbyKseftu(vila)).toBe("tlacidlo:kseft");
-  });
-
-  it("málo cigariet: tlačidlo ostane, povie prečo; schopnosť väzňa nič nestojí", () => {
+  it("schopnosť väzňa nič nestojí ani bez cigariet", () => {
     const { s } = sKseftami(zaklad, { lok: "sklad", vazni: ["postarka"], cigarety: 1, poldeci: 0 });
     const ksefty = kseftyNaStole(data, viewFor(data, s, ja));
-    expect(ksefty.find((k) => k.druh === "karta")?.dovod).toMatch(/2 cigarety, máš 1/);
-    expect(ksefty.find((k) => k.druh === "lokalita")?.dovod).toMatch(/2 cigarety, máš 1/);
     expect(ksefty.find((k) => k.druh === "vazen")?.dovod).toBeNull();
-  });
-
-  it("použitý Kšeft ostane pod kartou ako použitý", () => {
-    const { s, stryko } = sKseftami(zaklad, { lok: "sklad", vazni: ["hrobar"] });
-    const po = apply(data, s, { type: "kseft", uid: stryko }, ja).state;
-    const k = kseftyNaStole(data, viewFor(data, po, ja)).find((x) => x.uid === stryko);
-    expect(k?.pouzity).toBe(true);
-    expect(k?.dovod).toMatch(/už použil/);
-  });
-
-  it("Strýko podstrčený k súperovi je hráčov; súperov Strýko nie", () => {
-    const podstrceny = sKseftami(zaklad, { lok: "sklad", vazni: [], strykoNa: su });
-    expect(kseftyNaStole(data, viewFor(data, podstrceny.s, ja)).some((k) => k.uid === podstrceny.stryko)).toBe(true);
-    const superov = sKseftami(zaklad, { lok: "sklad", vazni: [], strykoOd: su, strykoNa: su });
-    expect(kseftyNaStole(data, viewFor(data, superov.s, ja)).some((k) => k.uid === superov.stryko)).toBe(false);
   });
 
   it("po „Skončiť Pitku“ Kšefty nie sú a schopnosť väzňa čaká na môj ťah (ikona nesvieti)", () => {
@@ -168,53 +130,44 @@ describe("Kšefty pod kartou", () => {
   });
 });
 
-describe("tlačidlo Kšeftu", () => {
-  const { s } = sKseftami(zaklad, { lok: "predsedova_vila", vazni: ["hrobar"], cigarety: 1 });
-  const ksefty = kseftyNaStole(data, viewFor(data, s, ja));
-  const vila = sKseftami(zaklad, { lok: "predsedova_vila", vazni: [] });
-  const vilaK = kseftyNaStole(data, viewFor(data, vila.s, ja)).find((k) => k.druh === "lokalita") as KseftNaStole;
-
-  it("nedostupné je obrys; zisk a dôvod nesie aj popis pre čítačku", () => {
-    const stryko = ksefty.find((k) => k.druh === "karta") as KseftNaStole;
-    const html = renderToStaticMarkup(createElement(KseftPodKartou, { kseft: stryko, cmd: () => {} }));
-    expect(html).toContain("+1 Rana");
-    expect(html).toContain('aria-disabled="true"');
-    expect(html).toContain("máš 1");
-  });
-
-  it("na tlačidle len „Kšeft“ a cena — zisk a celé znenie sú v nápovede (Michal 2026-11-02)", () => {
-    const stryko = ksefty.find((k) => k.druh === "karta") as KseftNaStole;
-    const html = renderToStaticMarkup(createElement(KseftPodKartou, { kseft: { ...stryko, dovod: null }, cmd: () => {} }));
-    const text = html.replace(/<[^>]*>/g, "");
-    expect(text).toBe("Kšeft−2");
-    expect(html).not.toContain("title=");
-    expect(stryko.nazov).toBe("Strýko z Ameriky");
-  });
-
-  it("na telefóne ťuk na nedostupný Kšeft ukáže detail s dôvodom, bez tlačidla Kšeftu", () => {
-    const stryko = ksefty.find((k) => k.druh === "karta") as KseftNaStole;
-    const html = renderToStaticMarkup(createElement(KseftPodKartou, { kseft: stryko, cmd: () => {}, naDotyk: true, otvorena: true }));
-    expect(html).toContain("máš 1");
-    expect(html).toContain("1 Ranu navyše");
-    expect(html).not.toContain("kseft-ponuka-hlavne");
-  });
-
-  it("Kšeft vily je tlačidlo s ponukou starších (v11: reči o stupeň), nie rozbaľovač", () => {
-    const zavreta = renderToStaticMarkup(createElement(KseftPodKartou, { kseft: vilaK, cmd: () => {} }));
-    expect(zavreta).not.toContain("<select");
-    expect(zavreta).toContain('data-vyucba="tlacidlo:kseft"');
-    const otvorena = renderToStaticMarkup(createElement(KseftPodKartou, { kseft: vilaK, cmd: () => {}, otvorena: true }));
-    const e = vila.s.starsi[0]?.elderId ?? "";
-    expect(otvorena).toContain(`data-vyucba="${klucVily(e)}"`);
-    expect(otvorena).not.toContain(`data-vyucba="${klucVily(e, true)}"`);
-    expect(otvorena).toContain("reči ");
-  });
-
+describe("tlačidlo pod kartou", () => {
   it("na telefóne ťuk otvorí ponuku s celým znením a veľkým tlačidlom", () => {
     const postarka = kseftyNaStole(data, viewFor(data, sKseftami(zaklad, { lok: "sklad", vazni: ["postarka"] }).s, ja)).find((k) => k.druh === "vazen") as KseftNaStole;
     const html = renderToStaticMarkup(createElement(KseftPodKartou, { kseft: postarka, cmd: () => {}, naDotyk: true, otvorena: true }));
     expect(html).toContain("kseft-ponuka-hlavne");
     expect(html).toContain("Dostaneš 4 cigarety.");
     expect(html).toContain("Schopnosť · Poštárka");
+  });
+});
+
+describe("Sklad (Zhromaždenie, frakcie 2026-11-08)", () => {
+  // Sada so Skladom zo špecifikácie frakcií — strany ostávajú, mení sa len efekt.
+  const surove = (cardsJson as { cards: { id: string }[] }).cards.map((c) =>
+    c.id === "sklad" ? { ...c, effect_text: "Zhromaždenie: Nástroj zo šenku smieš vyložiť rovno do Dedičstva za cenu Dedičstva. Do šenku sa dotiahne nový Nástroj.", triggers: ["Zhromaždenie"] } : c,
+  );
+  const sData = loadGameData({ ...cardsJson, cards: surove }, eldersJson, scorecardsJson);
+  const vidly: CardInstance = { uid: 99600, defId: "vidly", leftLayout: 0, rightLayout: 0 };
+  const { s: sp } = sKseftami(zaklad, { lok: "sklad", vazni: [], cigarety: 9 });
+  const s: GameState = {
+    ...sp,
+    faza: "zhromazdenie",
+    pitkaStav: null,
+    vizia: null,
+    senok: [vidly],
+    zhromazdenieStav: { naTahu: ja, zostavaLimit: [2, 2], pasoval: [false, false], navyse: [0, 0] },
+  };
+
+  it("pod lokalitou ponuka Nástroja zo šenku do Dedičstva — príkaz, ktorý jadro dovolí", () => {
+    const k = kseftyNaStole(sData, viewFor(sData, s, ja)).find((x) => x.druh === "lokalita") as KseftNaStole;
+    expect(k.dovod).toBeNull();
+    expect(prikazy(k)).toEqual([{ type: "place", uid: vidly.uid, target: "dedicstvo" }]);
+    expect(legalCommands(sData, s, ja)).toContainEqual({ type: "place", uid: vidly.uid, target: "dedicstvo" });
+    const html = renderToStaticMarkup(createElement(KseftPodKartou, { kseft: k, cmd: () => {} }));
+    expect(html.replace(/<[^>]*>/g, "")).toContain("Sklad");
+  });
+
+  it("stará sada (Kšeft Skladu) ani Pitka ponuku nemá", () => {
+    expect(kseftyNaStole(data, viewFor(data, s, ja)).some((x) => x.druh === "lokalita")).toBe(false);
+    expect(kseftyNaStole(sData, viewFor(sData, sp, ja)).some((x) => x.druh === "lokalita")).toBe(false);
   });
 });

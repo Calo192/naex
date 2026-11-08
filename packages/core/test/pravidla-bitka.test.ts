@@ -52,7 +52,7 @@ function pitkaStav(naTahuHrac: PlayerId): PitkaStav {
     postarka: [false, false],
     starosta: [false, false],
     naexPocet: [0, 0],
-    vykup: [false, false],
+    
   };
 }
 

@@ -9,7 +9,7 @@
 // Bez --login si založí nový účet návštevníka (časti s textami na schválenie neuvidí).
 // Info kroky a kvízy kliká v bubline (kvíz skúša možnosti po poradí — aj zlá odpoveď
 // a jej hláška), ťah hráča pošle cez WebSocket stránky príkaz, ktorý krok čaká (myšou
-// ho hrá playtest výučby, tools/playtest/vyucba.ts) — Kšeft vily a NA EX klikne cez tlačidlá
+// ho hrá playtest výučby, tools/playtest/vyucba.ts) — NA EX klikne cez tlačidlá
 // stola. Enter skúša na konci časti (listuje a spustí ďalšiu) aj v kvíze (nesmie odpovedať).
 // Pri každom kroku zapíše, či je stránka vyššia než okno. Na začiatku každej časti raz
 // pošle zlý ťah — overí radu a hlášku pri chybe. Snímky: koniec každej časti,
@@ -286,20 +286,11 @@ try {
         zaznam.zlyTah = nove;
         await foto(`zly-tah-cast-${krok.cast.cast}`);
       }
-      // Kšeft vily a NA EX hrá myšou cez tlačidlá stola — tie sa v playteste 20261030 zasekli; ostatné
-      // ťahy idú cez WebSocket. Keď klik krok neposunie, pošle ťah cez WebSocket a zapíše to.
-      // Kšeft vily (v11) je { type: "kseft", uid, elderId } — zdvihne moje reči, smer (kSebe) zanikol.
-      const c = krok.ocakava as { type?: string; uid?: number; elderId?: string } | null;
+      // NA EX hrá myšou cez tlačidlá stola — v playteste 20261030 sa zasekli; ostatné ťahy idú cez
+      // WebSocket. Keď klik krok neposunie, pošle ťah cez WebSocket a zapíše to.
+      const c = krok.ocakava as { type?: string; uid?: number } | null;
       let klikom = false;
-      if (c?.type === "kseft" && c.elderId !== undefined) {
-        await klik('[data-vyucba="tlacidlo:kseft"] > button');
-        await pockaj(400);
-        if (fotoKrokov.has(krok.id)) await foto(`krok-${krok.id}-ponuka`);
-        // Tlačidlo, ktoré rozsvieti Vyucba.tsx (klucVily(elderId, false)); inak ktorékoľvek tlačidlo vily pri tomto staršom.
-        klikom =
-          (await klik(`[data-vyucba="kseft:${c.elderId}:0"]`)) ||
-          (await klik(`[data-vyucba="kseft:${c.elderId}"], [data-vyucba^="kseft:${c.elderId}:"]`));
-      } else if (c?.type === "naex" && c.uid !== undefined) {
+      if (c?.type === "naex" && c.uid !== undefined) {
         await klik(`.linia [data-vyucba-uid="${c.uid}"]`);
         await pockaj(500);
         if (fotoKrokov.has(krok.id)) await foto(`krok-${krok.id}-vybrana`);
@@ -312,7 +303,7 @@ try {
           await posliWs({ type: "cmd", cmd: krok.ocakava });
         } else zaznam.klikom = true;
       } else {
-        if (c?.type === "kseft" || c?.type === "naex") zaznam.klikNezabral = true;
+        if (c?.type === "naex") zaznam.klikNezabral = true;
         await posliWs({ type: "cmd", cmd: krok.ocakava });
       }
     } else if (krok.kto === "otazka") {
@@ -364,7 +355,7 @@ try {
   for (const p of zaseknute) console.log(`  ZASEKNUTÉ ${String(p.id)}`);
   const klikom = priebeh.filter((p) => p.klikom === true).map((p) => String(p.id));
   const nezabral = priebeh.filter((p) => p.klikNezabral === true).map((p) => String(p.id));
-  console.log(`Myšou (Kšeft vily, NA EX): ${klikom.length} ${JSON.stringify(klikom)}${nezabral.length > 0 ? `, KLIK NEZABRAL ${JSON.stringify(nezabral)}` : ""}.`);
+  console.log(`Myšou (NA EX): ${klikom.length} ${JSON.stringify(klikom)}${nezabral.length > 0 ? `, KLIK NEZABRAL ${JSON.stringify(nezabral)}` : ""}.`);
   const kvizy = priebeh.filter((p) => p.kto === "otazka");
   const zleKvizy = kvizy.filter((p) => p.enterOdpovedal === true || p.enterBezNapovedy === true).map((p) => String(p.id));
   console.log(`Enter v kvíze: ${kvizy.length} otázok${zleKvizy.length > 0 ? `, ZLE ${JSON.stringify(zleKvizy)}` : " bez odpovede, s nápovedou"}.`);

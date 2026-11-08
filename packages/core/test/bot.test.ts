@@ -270,7 +270,7 @@ describe("offline protihráč — výkupné zdrojov (2026-10-27)", () => {
         postarka: [false, false],
         starosta: [false, false],
         naexPocet: [0, 0],
-        vykup: [false, false],
+        
       },
     };
   }
@@ -329,7 +329,7 @@ describe("offline protihráč — celá partia vrátane finále (Michal 2026-11-
       pitkyCelkom: 4,
       pitkaCislo: 1,
       hraci: [hrac, s0.hraci[1]],
-      pitkaStav: { naTahu: 0, hotovy: [false, false], naexPouzity: [false, false], fajcenie: [0, 0], reakcia: null, postarka: [false, false], starosta: [false, false], naexPocet: [0, 0], vykup: [false, false] },
+      pitkaStav: { naTahu: 0, hotovy: [false, false], naexPouzity: [false, false], fajcenie: [0, 0], reakcia: null, postarka: [false, false], starosta: [false, false], naexPocet: [0, 0] },
     };
   }
 

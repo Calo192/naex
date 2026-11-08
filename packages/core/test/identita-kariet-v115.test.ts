@@ -99,7 +99,7 @@ const priloz = (s: GameState, uid: number, p: PlayerId = 0, target: "vlastna" | 
 const naKarte = (s: Pick<GameState, "strany">, uid: number): PlacedCard => s.strany.flat().find((pl) => pl.card.uid === uid)!;
 
 function pitkaStav(naTahu: PlayerId): PitkaStav {
-  return { naTahu, hotovy: [false, false], naexPouzity: [false, false], fajcenie: [0, 0], reakcia: null, postarka: [false, false], starosta: [false, false], naexPocet: [0, 0], vykup: [false, false] };
+  return { naTahu, hotovy: [false, false], naexPouzity: [false, false], fajcenie: [0, 0], reakcia: null, postarka: [false, false], starosta: [false, false], naexPocet: [0, 0] };
 }
 
 /** Posledná Pitka kola na Moste (bez efektu po Pitke) s danou líniou. */

@@ -72,8 +72,9 @@ describe("Schopnosť väzňa (v11.2): „Väzeň — raz za hru:“ je spúšťa
     expect(spustaceVTexte(text, ALL_TRIGGERS)).toEqual(["Väzeň"]);
     expect(spustaceVTexte("Väzeň – raz za hru: Dostaneš 4 cigarety.", ALL_TRIGGERS)).toEqual(["Väzeň"]);
     expect(spustaceVTexte("Väzeň - raz za hru: Dostaneš 4 cigarety.", ALL_TRIGGERS)).toEqual(["Väzeň"]);
-    // Kšeft karty v línii ostáva Kšeftom.
-    expect(spustaceVTexte("Kšeft: Za 2 cigarety udelíš v bitke Ranu navyše.", ALL_TRIGGERS)).toEqual(["Kšeft"]);
+    // Kšeft zanikol (frakcie 2026-11-08); Spoločník s piktogramom je spúšťač.
+    expect(spustaceVTexte("Kšeft: Za 2 cigarety udelíš v bitke Ranu navyše.", ALL_TRIGGERS)).toEqual([]);
+    expect(spustaceVTexte("Spoločník: Pamätník {Povera} {Povera}.", ALL_TRIGGERS)).toEqual(["Spoločník"]);
   });
 
   it("karty starších v cards.json majú spúšťač Väzeň", () => {

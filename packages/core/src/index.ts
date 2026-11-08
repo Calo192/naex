@@ -9,6 +9,7 @@ export * from "./variants.ts";
 export * from "./data.ts";
 export * from "./rng.ts";
 export * from "./partia.ts";
+export * from "./navyse.ts";
 export * from "./hrany.ts";
 export * from "./constants.ts";
 export * from "./jazyk.ts";

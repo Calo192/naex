@@ -34,7 +34,7 @@ function vStave(faza: "zhromazdenie" | "pitka", doberaci: boolean): GameState {
   return {
     ...zaklad,
     faza,
-    pitkaStav: { naTahu: p, hotovy: [false, false], naexPouzity: [false, false], fajcenie: [0, 0], reakcia: null, postarka: [false, false], starosta: [false, false], naexPocet: [0, 0], vykup: [false, false] },
+    pitkaStav: { naTahu: p, hotovy: [false, false], naexPouzity: [false, false], fajcenie: [0, 0], reakcia: null, postarka: [false, false], starosta: [false, false], naexPocet: [0, 0] },
   };
 }
 

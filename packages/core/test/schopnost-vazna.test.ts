@@ -32,7 +32,7 @@ import { EMPTY, instanceFor, makeDef, setupSBalickom, syntheticData } from "./he
 
 const data = loadGameData(cardsJson, eldersJson, scorecardsJson);
 
-const PITKA = { naTahu: 1 as PlayerId, hotovy: [false, false] as const, naexPouzity: [false, false] as const, fajcenie: [0, 0] as const, reakcia: null, postarka: [false, false] as const, starosta: [false, false] as const, naexPocet: [0, 0] as const, vykup: [false, false] as const };
+const PITKA = { naTahu: 1 as PlayerId, hotovy: [false, false] as const, naexPouzity: [false, false] as const, fajcenie: [0, 0] as const, reakcia: null, postarka: [false, false] as const, starosta: [false, false] as const, naexPocet: [0, 0] as const };
 
 /** Hráč `p` drží väzňa `elderId`; stav v Pitke (predvolene), Zhromaždení alebo pri braní zo šenku. */
 function sVaznom(elderId: string, faza: "pitka" | "zhromazdenie" | "draft" = "pitka", p: PlayerId = 0, upravy: (s: GameState) => GameState = (s) => s): GameState {

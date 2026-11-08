@@ -381,6 +381,43 @@
         "aj porazen\\w*[^.!?]{0,80}kulturn\\w* dom"
       ],
       "pozn": "v11.13: na Kultúrnom dome dostane každý hráč špaky len za svoje karty v línii, aj víťaz (vo Vypálenej od vypálenia 2026-11-07)"
+    },
+    {
+      "pojem": "Kšeft",
+      "vzory": [
+        "kseft"
+      ],
+      "pozn": "frakcie (Michal 2026-11-08): Kšeft zanikol úplne — Strýko a Predavačka majú nové efekty, lokality Zberný dvor (Pitka), Sklad (Zhromaždenie) a Predsedova vila (Pitka) tiež"
+    },
+    {
+      "pojem": "Zberný dvor výkup",
+      "vzory": [
+        "zbernw* dvorw*[^.!?]{0,80}(?:cigaret|odhadzovac)",
+        "vykupw* zo srot"
+      ],
+      "pozn": "frakcie: na Zbernom dvore sa na konci Pitky smie spáliť 1 karta z ruky"
+    },
+    {
+      "pojem": "Kočovník a prevaha",
+      "vzory": [
+        "kocovnikw*[^.!?]{0,80}prevah"
+      ],
+      "pozn": "frakcie: Kočovník má Spoločník: Pamätník, jeho akcie patria majiteľovi"
+    },
+    {
+      "pojem": "Veštica výmena kariet",
+      "vzory": [
+        "vesticw*[^.!?]{0,80}vymen"
+      ],
+      "pozn": "frakcie: Veštica má Spoločník: Pamätník (2 Povery navyše), krok bitky 5b zanikol"
+    },
+    {
+      "pojem": "Pokutový blok Policajtky",
+      "vzory": [
+        "pokutovw* blok",
+        "policajtkw*[^.!?]{0,80}zadlzen"
+      ],
+      "pozn": "frakcie: Policajtka má Nepriateľ: Kriminál (Petelica navyše)"
     }
   ],
   "karty": [

@@ -29,7 +29,7 @@ const inst = (defId: string): CardInstance => ({ uid: ++uidSeq, defId, leftLayou
 const lezi = (card: CardInstance, playedBy: PlayerId, x: Partial<PlacedCard> = {}): PlacedCard => ({ card, playedBy, ...x });
 
 function pitkaStav(naTahu: PlayerId): PitkaStav {
-  return { naTahu, hotovy: [false, false], naexPouzity: [false, false], fajcenie: [0, 0], reakcia: null, postarka: [false, false], starosta: [false, false], naexPocet: [0, 0], vykup: [false, false] };
+  return { naTahu, hotovy: [false, false], naexPouzity: [false, false], fajcenie: [0, 0], reakcia: null, postarka: [false, false], starosta: [false, false], naexPocet: [0, 0] };
 }
 
 /** Pitka finále na pinnacle `lok` (obranca = hráč 0 na ťahu), alebo to isté ako bežné kolo. */

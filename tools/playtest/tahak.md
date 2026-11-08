@@ -52,9 +52,9 @@ rozpore s `docs/PRAVIDLA.md` platí `docs/PRAVIDLA.md` a rozpor zapíš do
   dobehne ho vysokou výhrou vo finále.
 - **Každú kartu** môžeš vyložiť na koniec **svojej aj súperovej strany**
   (`target` `vlastna` / `superova`). Karta **patrí tomu, kto ju zahral** — akcie
-  aj efekty sa rátajú majiteľovi, nech leží kdekoľvek (výnimky: Nástroj, Kočovník — nižšie). Podstrčený „sabotér"
+  aj efekty sa rátajú majiteľovi, nech leží kdekoľvek (výnimka: Nástroj — nižšie). Podstrčený „sabotér"
   s Odporom zruší súperovi akciu na spoji. Každá karta okrem Nástroja míňa limit
-  vykladania (aj Kočovník). **Limit = plné poldeci + 1** — NA EX limit nemíňa, ale
+  vykladania. **Limit = plné poldeci + 1** — NA EX limit nemíňa, ale
   jeho poldeci na karte sa neráta (v4), takže v ďalšom Zhromaždení kola máš limit o 1 nižší.
 - **Pas** (`pass`): do Pitky už nevykladáš; dostaneš 1 cigaretu za každú kartu, ktorú
   si ešte smel vyložiť, **najviac toľko, koľko máš kariet v ruke** (v6.1) — s prázdnou
@@ -82,13 +82,13 @@ rozpore s `docs/PRAVIDLA.md` platí `docs/PRAVIDLA.md` a rozpor zapíš do
   s nimi spoj: ako prvá karta pri lokalite určuje, ktoré akcie hrany sa
   aktivujú (dostane ich hráč s prevahou). Kraje
   majú mená podľa lokality (Krčma: pri výčape / pri dverách).
-  **Dvojčatá** — do prevahy sa rátajú za dvoch; **Kočovník** — Furt: jeho akcie
+  **Dvojčatá** — do prevahy sa rátajú za dvoch; **Kočovník** (len stará sada; frakcie: Spoločník) — Furt: jeho akcie
   (aj Rana, Hazard, Poškodenie pečene) sa počítajú hráčovi, ktorý má v jeho kraji
   prevahu; do prevahy sa ráta majiteľovi, pri rovnosti rozhoduje karta pri lokalite.
 - **Poradie (2026-10-20, v11.11):** cieľ kola vyberá **obranca** a natáča ho víťaz minulej hádky (obranca = víťaz
   poslednej bitky) a **berie zo šenku prvý (v9.2)**; **útočník** (porazený) berie zo šenku druhý a **vykladá
   prvý**. **Pitka naraz (2026-10-27):** v Pitke hráte **obaja súčasne** —
-  fajčíte, dolievate, barterujete, Kšefty a skryto NA EX; každý skončí
+  fajčíte, dolievate, barterujete a skryto NA EX; každý skončí
   sám („hotovo“, nevratné, zapíše sa do logu). NA EX vyberáte skryto — súper
   nevidí, či a kam ste ho dali; odkryjú sa **naraz**, keď ste hotoví obaja (v9.2). Jediná výnimka je **Bzdocha**: jej majiteľ čaká, kým súper
   skončí, a potom hrá a vidí jeho NA EX (majú ju obaja → nečaká nikto). Potom odpovede **lícom dole (v9.2)**: najprv **útočník**, potom **obranca na druhý kraj línie** (ak útočník
@@ -99,24 +99,27 @@ rozpore s `docs/PRAVIDLA.md` platí `docs/PRAVIDLA.md` a rozpor zapíš do
   vezme **zadarmo 1 kartu zo šenku**, najprv útočník, potom obranca — `{"type":"senok","uid":…}`;
   z prázdneho šenku nič), Lesná cesta (v11.13: 2 tuhé za každé svoje Zviera v línii, na ktorejkoľvek strane, bez stropu),
   Ihrisko (+2 tuhé za každý kraj, kde máš viac svojich Občanov, Zvierat a Starešinov — Dvojčatá za dve, v8), Zberný
-  dvor (Kšeft: cigareta → ľubovoľná karta z tvojho odhadzovacieho do ruky, `kseft` s `kartaUid`),
+  dvor (frakcie, Pitka: na konci Pitky smie každý spáliť 1 kartu z ruky, nie kliatbu — najprv obranca, potom útočník;
+  `{"type":"spal","uid":…}`, nič = `"uid":null`),
   Most (len na vlastnú stranu), Kar (v7: pečeň za NA EX dostane **súper** toho, kto ho dal), Cintorín (v11.13 Prehra:
   porazený si smie vziať do ruky **1 kartu zo svojho odhadzovacieho balíčka**, `{"type":"cintorin","uid":…}`, alebo `uid: null` nič;
   pri sekere nikto), Obecný úrad (v11.13 Pitka, obom: **cigarety a Dlhy získané v Pitke sa rátajú dvakrát**, z akcií aj z efektov kariet;
   (akcie − Obmedzenie) × 2; platby, cigarety za pas a Dlhy mimo Pitky nie; Výherný automat: zadĺženie × 2, prah ostáva), Jednota (v7: kto má viac priznaných Dlhov, nesmie fajčiť ani dolievať),
-  Sklad (v11.13 Kšeft: 2 cigarety → Nástroj zo šenku do Dedičstva, `kseft` s `kartaUid`; do šenku príde z vrchu Náradia nový Nástroj;
-  bez Nástroja v šenku sa neponúka), Poľovnícka chata (tuhé z hrán ×2), Predsedova vila
-  (v11 Kšeft: 2 cigarety → **tvoje reči pri jednom staršom o ďalší stupeň** v bežnom poradí,
-  `{"type":"kseft","uid":…,"elderId":…}`),
+  Sklad (frakcie, Zhromaždenie: Nástroj zo šenku rovno do Dedičstva **za cenu Dedičstva** —
+  `{"type":"place","uid":<uid zo šenku>,"target":"dedicstvo"}`; je to ťah, do šenku príde z vrchu Náradia nový Nástroj),
+  Poľovnícka chata (tuhé z hrán ×2), Predsedova vila (frakcie, Pitka: **za každé 2 cigarety, ktoré v Pitke
+  vyfajčíš, tvoje reči pri jednom staršom o ďalší stupeň** — vyberieš `{"type":"vila","elderId":…}`),
   Herňa (víťaz + toľko špakov, koľko má porazený priznaných Dlhov), Kultúrny dom (v11.13: **každý hráč dostane
   špaky len za svoje karty v línii, aj víťaz**;
   Nakladačka sa rozdeľuje ako inde), Vínna pivnica (NA EX 2× za Pitku), Družstvo (v11.13: karty s akciou Robota
   nemíňajú limit).
-- **Kšeft (v7):** aktívny efekt za cenu `{"type":"kseft","uid":…}` (uid karty v línii alebo
-  lokality; Zberný dvor a Sklad s `kartaUid`, Vila s `elderId`) — v Pitke na svojom ťahu, nie pri
-  odpovedi na NA EX; každá karta raz za Pitku, Kšeft lokality smie každý hráč. Strýko z Ameriky
-  (2 cigarety → v bitke kola +1 Rana), **Predavačka (v10.4): 1 cigareta → 1 karta z tvojho doberacieho balíčka**
-  (nie je to fajčenie — nerest ani Krabička nie), Zberný dvor, Sklad, Predsedova vila.
+- **Kšeft zanikol (frakcie, 2026-11-08).** **Akcie navyše:** karta s efektom „**Spoločník: Tag**“ má akcie
+  z pečate (piktogramy dole v obrázku) navyše, kým máš v partii **inú** odkrytú kartu s tým tagom; „**Nepriateľ: Tag**“,
+  kým ju má v partii súper — raz, aj pri viacerých takých kartách. „**Podpora: Tag**“ / „**Konflikt: Tag**“ ich pridá pri
+  každom stretnutí priložením s tvojou / súperovou kartou s tým tagom, do konca kola (×2 pri dvoch susedoch).
+  Akcia navyše je tvoja aktívna akcia mimo hrán: ráta sa ako tá istá akcia v jej kroku (Obmedzenie a Cigareta v každej
+  Pitke, Rany v bitke, Robota pri exekúcii); **Posilnenie, Odpor, Forsáž, NA EX ani Silná žena ju nemenia**, Náradie
+  v Dedičstve, Vidly a Svätý text áno. Skrytá Záverečná podmienku nesplní ani nedostane. V texte efektu sú akcie navyše zapísané ako {Povera}.
 - **Schopnosť väzňa (v11.2, 2026-11-02; Kšeft väzňa zanikol):** každý tvoj väzeň má schopnosť, ktorú
   použiješ **raz za hru, kedy chceš** — vo **svojom ťahu** pri braní zo šenku, v Zhromaždení alebo v Pitke
   (kým ju neskončíš, nie pri odpovedi na NA EX), aj vo finále; nie je to ťah a nič nestojí. Potom je
@@ -131,8 +134,7 @@ rozpore s `docs/PRAVIDLA.md` platí `docs/PRAVIDLA.md` a rozpor zapíš do
   cigaretu** (`uids`); potom s braním končíš a pokračuje súper. **Hrobár:** 1 karta zo súperovho
   odhadzovacieho balíčka do ruky (`uid`).
 - **Identita kariet (v11.5):** **Sypač** (Podpora): keď sa priložením stretne s tvojím Chlapom, ten má do konca
-  kola **Rany ako Pecky**. **Podvodník** (Konflikt): súper ti dá **1 cigaretu**, ak žiadnu nemá, získa **1 zadĺženie** (rovno Dlh, pozri Prah Dlhu).
-  **Opatrovateľka** (Furt): tvoji Pamätníci v jej okolí majú aktívne akcie **posilnené** (×2). **Silná nezávislá žena** (Furt, 2026-11-08): zdvojí aktívne akcie len tvojich susedných **Občanov a Starešinov**, nie Zviera ani Nástroj (ani Recidivistu). **Anonymný alkoholik**
+  kola **Rany ako Pecky**. **Silná nezávislá žena** (Furt, 2026-11-08): zdvojí aktívne akcie len tvojich susedných **Občanov a Starešinov**, nie Zviera ani Nástroj (ani Recidivistu). **Anonymný alkoholik**
   (Furt): Poškodenie pečene tvojich kariet v jeho okolí sa ráta ako **Viera**. **Kôň** (Furt): Nástroj vedľa neho
   s ním tvorí spoj; **Roboty Koňa pália o 1 Dlh viac**. **Noviny** (Dedičstvo: Hádka): keď vyhráš hádku, súper
   odhodí **1 náhodnú kartu z ruky**. Výtržník má vždy Rany (aj Sypač).
@@ -140,15 +142,9 @@ rozpore s `docs/PRAVIDLA.md` platí `docs/PRAVIDLA.md` a rozpor zapíš do
   ty k súperovej, alebo súper k nej (aj odpoveďou na NA EX; Záverečná až pri otočení). Priložený či ležiaci
   Nástroj nič; NA EX, zrážka ani presun (Dohadzovačka, Poľovník) nič. Najprv Nástup priloženej karty, potom
   Konflikt a Podpora priloženej, potom ležiacej. **Podpora (v11.3)** je zrkadlo: spustí sa, keď sa priložením
-  stretnú **dve tvoje** karty. **Policajtka (Pitka, v10.4):** za každú súperovu akciu, ktorú
-  v tejto Pitke zruší tvoj Odpor (aj Nástroja), získa súper **1 zadĺženie** (každá tvoja Policajtka zvlášť; Odpor
-  hrany lokality nie). **Veľmi smútiaca vdova (v11.3):** súper odhodí **1 kartu
-  z doberacieho balíčka za každého svojho Chlapa, ktorý s ňou susedí** (najviac 2 Chlapi = 2 karty; keď
-  balíček nestačí, zamieša odhadzovací, potom zvyšok z ruky — náhodne),
-  Šarlatán (do konca kola jeho Hazardy = Viera,
-  Povery = Rana), **Snúbenica (Podpora):** keď sa stretne s tvojím Chlapom, na ktorom leží súperovo NA EX,
-  NA EX z neho zíde a súperov poldeci sa mu vráti vypitý (nerest ostáva).
-  Miňištrant (Nástup): ak vyvolá Konflikt (priloží sa k súperovej karte s Konfliktom), jeho Viera sa ráta ako Pecka.
+  stretnú **dve tvoje** karty. **Veľmi smútiaca vdova (Konflikt: Chlap, frakcie):** súper **vyberie a odhodí
+  1 kartu z ruky** (`{"type":"odhod","uid":…}` posiela ten, kto odhadzuje). **Predavačka (Podpora, frakcie):** dober si
+  1 kartu. **Hasič (Podpora, frakcie):** voľba ako predtým, len spúšťač je Podpora namiesto Nástupu.
 - **Pakt (v7, akcia):** na spoji sa správa ako akcia, s ktorou je v páre (aj zlá: Hazard, Pečeň).
   Pakt s Paktom nerobí nič, s Posilnením sa stane Posilnením (= Forsáž), Odpor ho zruší; neaktívny Pakt NA EX nezdvojí.
 - **Forsáž (v10.3):** Posilnenie + Posilnenie na spoji = **Forsáž** — obe karty spoja majú **všetky
@@ -175,7 +171,7 @@ rozpore s `docs/PRAVIDLA.md` platí `docs/PRAVIDLA.md` a rozpor zapíš do
   Karty navyše: šenok, fajčenie (`smoke`: karta hneď, **len v Pitke** (v5), v Zhromaždení
   nie; **prvé fajčenie v Pitke 1 cigareta, druhé 2, tretie 3…**, každá Pitka znova od 1
   (2026-10-27; na Benzínke prvé zadarmo), každá vyfajčená cigareta je nerest (v9.1: druhé fajčenie za 2 = 2 neresti); s prázdnym doberacím aj odhadzovacím balíčkom sa fajčiť
-  nedá), Vízia, efekty (Kšefty, Zastávka). Priznanie Cirhózy kartu nedá. Malý balíček prehru nespôsobí (v5).
+  nedá), Vízia, efekty (Zastávka, Predavačka). Priznanie Cirhózy kartu nedá. Malý balíček prehru nespôsobí (v5).
   Keď sa doberací balíček minie, odhadzovací sa zamieša a stane sa z neho nový
   doberací balíček (pri každom ťahaní).
 - **Kliatby (v8.2, 2026-10-30):** **Dlh je počítadlo, nie karta** — vzniká rovno priznaný,
@@ -194,8 +190,7 @@ rozpore s `docs/PRAVIDLA.md` platí `docs/PRAVIDLA.md` a rozpor zapíš do
   karta lícom dole, míňa limit, potom už v Zhromaždení nevykladáš (bez cigariet za pas). Súper ju
   nevidí, za ňu nepriloží (ani odpoveď na NA EX), NA EX na ňu smie len on (prejde vždy); akciu jeho
   karty, ktorú spáruje, mu výpis ani odhad bitky neukáže. Otočí sa na konci Pitky — až vtedy Nástup a Konflikt, ktorý priložením vyvolala.
-- **Nástup s voľbou (v7):** Živnostník — za neho hneď smieš priložiť Nástroj z ruky mimo limitu
-  (`{"type":"nastroj","uid":…}`, nič = `"uid":null`; aj pri otočení Záverečnej); Kapybara (v11) — **súperove reči pri jednom staršom klesnú zospodu o stupeň** (povinne; bez súperových rečí nič)
+- **Nástup s voľbou (v7):** Kapybara (v11) — **súperove reči pri jednom staršom klesnú zospodu o stupeň** (povinne; bez súperových rečí nič)
   (`{"type":"kapybara","elderId":…}`). Dohadzovačka (Nástup, 2026-10-28): keď ju priložíš k Občanovi či Starešinovi, z druhej strany
   lokality sa najvzdialenejší Občan alebo Starešina opačného pohlavia ako jej sused presunie za ňu
   (na koniec jej strany; povinné, karta ostáva majiteľovi, Konflikt sa nespustí). **Poľovník (Nástup, v10.4):**
@@ -204,9 +199,9 @@ rozpore s `docs/PRAVIDLA.md` platí `docs/PRAVIDLA.md` a rozpor zapíš do
 - **Vízia:** na konci Pitky za každú aktívnu Víziu uvidíš vrchnú kartu svojho
   balíčka — `{"type":"vizia","vziat":true}` do ruky, alebo `false` = spáliť
   (navždy z hry).
-- **Spáliť vs. odhodiť (v10.4):** **spáliť** = karta ide navždy z hry (Vízia, Poľovník, Krokodíl, Dievčina;
+- **Spáliť vs. odhodiť (v10.4):** **spáliť** = karta ide navždy z hry (Vízia, Poľovník, Krokodíl, Zberný dvor;
   Robota a Exekútor pália Dlhy); **odhodiť** = do odhadzovacieho balíčka (vráti sa).
-- **Hasič (Nástup, 2026-10-26):** vytiahne náhodnú kartu z tvojho odhadzovacieho
+- **Hasič (Podpora od frakcií, 2026-10-26):** vytiahne náhodnú kartu z tvojho odhadzovacieho
   balíčka (aj kliatbu; súper ju vidí, odhadzovací je verejný) —
   `{"type":"hasic","nechat":true}` do ruky,
   alebo `false` = vráti sa do odhadzovacieho. Kým nerozhodneš, hra čaká; v ťahu
@@ -244,8 +239,7 @@ rozpore s `docs/PRAVIDLA.md` platí `docs/PRAVIDLA.md` a rozpor zapíš do
   Súperova **Svokra** mu v bitke dá +1 tuhé
   (Ranu) za každú jeho kartu, na ktorej leží tvoj poldeci z NA EX — NA EX na svoje karty ju nespustí.
   Šofér (v11.5): ak si v kole nedal NA EX, v bitke Pecka navyše a na začiatku bitky 1 cigareta. **Pijan** (v7): za každé tvoje NA EX v kole
-  Rana navyše. Injekcia v Dedičstve: NA EX aj na Zviera. **Stryná** (Pitka): kto v Pitke nedal NA EX,
-  +1 pečeň. **Bzdocha** (Pitka): súper hrá Pitku pred tebou — čakáš, kým skončí, a vidíš jeho NA EX. Veterán (v4): NA EX mu
+  Rana navyše. Injekcia v Dedičstve: NA EX aj na Zviera. **Stryná** (frakcie: Konflikt: Závislý → Pohoršenie navyše). **Bzdocha** (Pitka): súper hrá Pitku pred tebou — čakáš, kým skončí, a vidíš jeho NA EX. Veterán (v4): NA EX mu
   aktívne akcie zdvojí (nezruší), neaktívne nechá.
   **Skryto (v5):** `naex` súper nevidí do odkrytia; odpovedáš po odkrytí za každé súperovo NA EX —
   najprv útočník lícom dole, potom obranca na druhý kraj; viac NA EX = viac kôl (v každom po jednej odpovedi, potom otočenie). **Zrážka** (obaja na tú istú kartu) = **Výtržník**: karta sa
@@ -263,7 +257,7 @@ rozpore s `docs/PRAVIDLA.md` platí `docs/PRAVIDLA.md` a rozpor zapíš do
   Riadok „VÝHĽAD PITKY“ v stave ukazuje, čo pripíšu karty na stole a koľko kliatob z toho bude.
 - **Chuť a Absťák (v9.1, 2026-10-30):** **Chuť** je tvoja verejná latka nerestí, na začiatku **0**. Nerest je
   len konzumácia: **Vypiť 1, NA EX 2, vyfajčená cigareta 1** — doliatie,
-  barter, šenok, Dedičstvo ani cigarety za Kšefty lokalít nie. **Na konci kola:** keď si v kole mal
+  barter, šenok ani Dedičstvo nie. **Na konci kola:** keď si v kole mal
   **menej nerestí, než je tvoja Chuť**, dostaneš **kartu Absťák do odhadzovacieho balíčka**; potom
   **Chuť = väčšie z (Chuť, neresti kola) − 1** (nie pod 0). Súper latku neurčuje. Po finále nič.
   **Karta Absťák:** nedá sa priznať ani vyložiť,
@@ -301,8 +295,7 @@ rozpore s `docs/PRAVIDLA.md` platí `docs/PRAVIDLA.md` a rozpor zapíš do
   v jeho okolí; Vidly (Dedičstvo) — tvoje Rany z vyložených akcií o 1 poškodenie viac (Rany navyše z efektov nie); Puška (Dedičstvo, 2026-10-30) — tvoju prepojenú Petelicu, ktorú by zrušil Odpor či NA EX, ráta namiesto zrušenia za 2; Pasca
   (Dedičstvo) — keď súper v kole priložil kartu k tvojej, Rana navyše (v9.1); Krabička (Dedičstvo) — za každé
   2 cigarety, ktoré súper vyfajčí, karta; **Liberál (Furt, v10.3)** — keď máš v partii rovnako žien
-  a chlapov (on sa ráta za oboch, skrytá Záverečná nie), všetky jeho aktívne akcie sú posilnené ×2; Recidivista (Prehra) — po bitke späť do ruky; Dievčina na vydaj (Prehra) — spáli sa,
-  víťaz získa Dlhy podľa jej aktívnych akcií. **Vedúcko (Furt, v10.4)** — Roboty kariet, ktoré s ním susedia (aj
+  a chlapov (on sa ráta za oboch, skrytá Záverečná nie), všetky jeho aktívne akcie sú posilnené ×2. **Vedúcko (Furt, v10.4)** — Roboty kariet, ktoré s ním susedia (aj
   súperových; hrana lokality nie), sa rátajú ako **Pecky** ich majiteľa: Dlh nepália, dávajú 2 tuhé (posilnená ×2).
 - **Zajatie (v11.4, 2026-11-03):** pokus o zajatie v drafte a jeho cigareta **zanikli**. Kto **rozdeľuje
   Nakladačku**, smie pri staršom, pri ktorom je **tvoj strach 3** (červená) **už pred touto Nakladačkou** (od minulého kola, v11.6 — dotiahnutý v tom istom

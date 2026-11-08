@@ -63,7 +63,7 @@ function pitka(seed: number, cigarety: number, odpoved: boolean): { s: GameState
       { ...s0.hraci[0], ruka: ruka0, cigarety: 5 },
       { ...s0.hraci[1], ruka: [], cigarety, poldeciPlne: 1, poldeciVypite: 1 },
     ],
-    pitkaStav: { naTahu: 1, hotovy: [false, false], naexPouzity: [false, false], fajcenie: [0, 0], reakcia: null, postarka: [false, false], starosta: [false, false], naexPocet: [0, 0], vykup: [false, false] },
+    pitkaStav: { naTahu: 1, hotovy: [false, false], naexPouzity: [false, false], fajcenie: [0, 0], reakcia: null, postarka: [false, false], starosta: [false, false], naexPocet: [0, 0] },
   };
   return { s, ciel: lavy.uid };
 }

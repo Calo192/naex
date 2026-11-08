@@ -32,6 +32,7 @@ import { defOf, printedSides } from "./data.ts";
 import type { RngState } from "./rng.ts";
 import { rngInt, rngNext, rngSeed, rngShuffle } from "./rng.ts";
 import { evaluateLine } from "./partia.ts";
+import { efektyNavyse } from "./navyse.ts";
 import { KONSTANTY, vazniNaVyhru } from "./constants.ts";
 import { abstakyVBitke, spakyPriExekucii, zhoriPriExekucii } from "./battle.ts";
 import type { ElderState } from "./elders.ts";
@@ -297,7 +298,6 @@ const BONUS_EFEKTU: Readonly<Record<string, number>> = {
   niekoho_stryna: 0.3,
   kapybara: 0.4,
   stryko_z_ameriky: 0.5,
-  // Kšeft: karta za cigaretu (Michal 2026-11-02) — ako Strýko, odbytisko cigariet.
   predavacka: 0.5,
   // Nástup spáli súperovo Zviera — bitku ráta simulácia vyloženia, zvyšok hry SPALENIE_ZA_KARTU.
   polovnik: 0.4,
@@ -403,6 +403,12 @@ export function hodnotaKarty(data: GameData, karta: CardInstance, kolPoTejto?: n
   // hodnotu akcie, ktorú dostane do páru — v priemere asi ako Robota.
   for (const slot of [...strany.left, ...strany.right]) if (slot === "Pakt") akcie += 0.3;
   let v = akcie * 0.5 + (BONUS_EFEKTU[def.id] ?? 0);
+  // Akcie navyše (frakcie): odhad, ako často sa podmienka splní — Spoločník a Nepriateľ platia
+  // raz, Podpora a Konflikt pri každom stretnutí; v bitke ich presne vidí evaluateLine.
+  for (const e of efektyNavyse(def)) {
+    const casto = e.spustac === "Spoločník" || e.spustac === "Nepriateľ" ? 0.4 : 0.5;
+    for (const a of e.akcie) v += casto * VAHA_AKCIE[a] * (HOSPODARSKE.has(a) ? hospodarstvo : 1);
+  }
   if (def.tags.includes("Nástroj")) v += (DEDICSTVO[def.id] ?? 0) * 0.5;
   return v;
 }
@@ -1168,7 +1174,7 @@ export function tahBota(data: GameData, stav: GameState, ja: PlayerId, seed: num
 
   // Voľby, ktoré menia stôl (Kapybara, Nástroj za Živnostníka), si zahrá nanečisto.
   const typ = state.hasicVolby?.[0]?.typ;
-  if (typ === "kapybara" || typ === "nastroj") return najlepsi(volba, legal, (po) => hodnotaStavu(k, po, 1.5)) ?? prvy;
+  if (typ === "kapybara" || typ === "nastroj" || typ === "vila") return najlepsi(volba, legal, (po) => hodnotaStavu(k, po, 1.5)) ?? prvy;
   const cmd = rozhodni(volba);
   return cmd ?? prvy;
 }
@@ -1236,7 +1242,15 @@ function schopnostBota(data: GameData, state: GameState, ja: PlayerId, legal: re
 function volbaHasica(data: GameData, state: GameState): Command | null {
   const volba = state.hasicVolby?.[0];
   if (volba === undefined) return null;
-  if (volba.typ === "kapybara" || volba.typ === "nastroj") return null;
+  if (volba.typ === "kapybara" || volba.typ === "nastroj" || volba.typ === "vila") return null;
+  const ruka = [...state.hraci[volba.hrac].ruka].sort((a, b) => hodnotaKarty(data, a) - hodnotaKarty(data, b));
+  // Vdova: súperovi odhodí z ruky najslabšiu kartu.
+  if (volba.typ === "vdova") return ruka[0] === undefined ? null : { type: "odhod", uid: ruka[0].uid };
+  if (volba.typ === "dvor") {
+    // Zberný dvor: spáli najslabšiu kartu, ktorá nie je kliatba, len keď za veľa nestojí — tenší balíček.
+    const slaba = ruka.find((x) => !defOf(data, x).tags.includes("Kliatba"));
+    return { type: "spal", uid: slaba !== undefined && hodnotaKarty(data, slaba) < 1 ? slaba.uid : null };
+  }
   if (volba.typ === "senok") {
     // Zastávka: zo šenku najlepšiu kartu.
     const best = [...state.senok].sort((a, b) => hodnotaKarty(data, b) - hodnotaKarty(data, a))[0];
@@ -1289,8 +1303,6 @@ function hodnotaEfektuLokality(v: Volba, lok: CardInstance): number {
       return vRuke((d) => d.tags.includes("Zviera"));
     case "druzstvo":
       return 0.7 * vRuke((d) => (d.left.actions.Robota ?? 0) + (d.right.actions.Robota ?? 0) > 0);
-    case "sklad":
-      return h.cigarety >= KONSTANTY.EFEKT.SKLAD_CENA ? 1.5 : 0;
     case "cintorin":
       // Po prehre sa berie aj z práve odohranej línie (v11.13) — stačí, že bude čo vyložiť.
       return [...h.odhadzovaci, ...h.ruka].some((x) => !defOf(v.data, x).tags.includes("Kliatba")) ? 1.5 : 0;
@@ -1555,15 +1567,6 @@ function pitka(v: Volba): Command | null {
   // Benzínka (v11.13): prvé fajčenie je zadarmo — karta nič nestojí, kým sa dá ešte vyložiť.
   if (smoke !== undefined && cenaFajc === 0 && maCoTahat && !(finale && vykladaniPotom(state) === 0)) return smoke;
   if (smoke !== undefined && !fajcenieStoji && maCoTahat && ziskKarty > cenaCigariet(k, state, ja, cenaFajc)) return smoke;
-
-  // Kšeft (v7): zahrá si ho nanečisto; berie, keď stav zlepší viac než o povahový prah.
-  const ksefty = v.legal.filter((c) => c.type === "kseft");
-  if (ksefty.length > 0) {
-    const ohodnot = (po: GameState): number => hodnotaStavu(k, po, 1.5);
-    const best = najlepsi(v, ksefty, ohodnot);
-    const teraz = v.vzorky.reduce((a, s) => a + ohodnot(s), 0) / Math.max(1, v.vzorky.length);
-    if (best !== null && priemer(v, best, ohodnot) > teraz + 0.25 + k.povaha.prahRiziko) return best;
-  }
 
   // NA EX: zahrá si ho nanečisto aj so súperovou odpoveďou.
   const naex = v.legal.filter((c) => c.type === "naex");

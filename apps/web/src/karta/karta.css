@@ -655,3 +655,14 @@ body:not(.tahanie-aktivne) .ruka-rad > .tahatelna:is(:hover, :focus-visible) .kl
     display: none;
   }
 }
+
+/* Pečať akcií navyše (frakcie M3, Michal 2026-11-08): slot v dolnom strede ilustrácie.
+   Nesplnená podmienka „spí“ — sivá a priehľadná; splnená žiari ako aktívna akcia (kl-aktivna). */
+.kl-slot.kl-navyse {
+  z-index: 1;
+}
+
+.kl-slot.kl-navyse-spi {
+  opacity: 0.5;
+  filter: grayscale(1);
+}

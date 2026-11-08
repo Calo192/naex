@@ -111,6 +111,7 @@ import {
 import { KseftPodKartou } from "./KseftPodKartou.tsx";
 import { IkonaMrezi } from "./ikonyZdrojov.tsx";
 import { kseftyNaStole } from "./kseftyNaStole.ts";
+import { moznostiVily } from "./volbaVily.ts";
 import { cieleSuperovhoNaex, vystrahaCela, vystrahaKratko } from "./vystrahyStola.ts";
 import { StavkaBitky } from "./StavkaBitky.tsx";
 import { UCINOK_KRATKO, UCINOK_PRIAZNE } from "./Scorecard.tsx";
@@ -354,8 +355,7 @@ type Mode =
   | { typ: "naexCiel"; uid: number | null }
 
   // Veštica: po jednej karte z oboch doberacích balíčkov.
-  | { typ: "vestica"; moja: number | null; jeho: number | null }
-  | { typ: "vykup" };
+  | { typ: "vestica"; moja: number | null; jeho: number | null };
 
 // Hra beží na sade svojej miestnosti; pomocné funkcie nižšie ju čítajú odtiaľto.
 let DATA: GameData;
@@ -1130,7 +1130,7 @@ export function HernaPlocha({
       }
     }
     const ciel = lokalitaNavrh !== null && view.ciel === null ? { typ: "lokalita" as const, lokalita: lokalitaNavrh.karta } : view.ciel;
-    // Šofér, Strýko, Vychovávateľka, Pasca a Vidly čítajú aj NA EX v kole, Kšefty a špaky (playtest v7 131033).
+    // Šofér, Vychovávateľka, Pasca a Vidly čítajú aj NA EX v kole, schopnosti väzňov a špaky (playtest v7 131033).
     const stol: VerejnyStav = {
       ciel,
       strany,
@@ -1138,7 +1138,6 @@ export function HernaPlocha({
       hraci,
       spaky: view.spaky,
       naexVKole: zaklad.naexVKole,
-      ...(view.kseftRany === undefined ? {} : { kseftRany: view.kseftRany }),
       ...(view.kseftyKola === undefined ? {} : { kseftyKola: view.kseftyKola }),
       ...(prilozeniaKu === undefined ? {} : { prilozeniaKu }),
     };
@@ -2797,7 +2796,6 @@ export function HernaPlocha({
       kseft={k}
       cmd={cmd}
       naDotyk={naSirku}
-      onVykup={() => setMode({ typ: "vykup" })}
       onNedostupny={(text, x, y) => setChybaTahania({ text, x, y })}
     />
   );
@@ -3775,6 +3773,41 @@ export function HernaPlocha({
     if (view.volbaNastupu !== null && view.volbaNastupu.hrac === ja) {
       // Voľby v7 čakajú ako Hasič: karta zo šenku (Zastávka), Nástroj za Živnostníka, Kapybara.
       const nv = view.volbaNastupu;
+      if (nv.typ === "vdova" || nv.typ === "dvor") {
+        // Frakcie (2026-11-08): Vdova — súper vyberie kartu z ruky na odhodenie; Zberný dvor — spáliť 1 kartu z ruky, nie kliatbu.
+        const vdova = nv.typ === "vdova";
+        const ponuka = vdova ? view.ruka : view.ruka.filter((k) => !defOf(data, k).tags.includes("Kliatba"));
+        const nic = <button onClick={() => posli({ type: "spal", uid: null })}>nič nepáliť</button>;
+        return {
+          nadpis: vdova ? "Veľmi smútiaca vdova" : "Zberný dvor",
+          text: (
+            <span className="vizia-text">
+              <span>{vdova ? "Vyber kartu z ruky, ktorú odhodíš do odhadzovacieho balíčka." : "Smieš spáliť 1 kartu z ruky (nie kliatbu) — navždy z hry."}</span>{" "}
+              {ponuka.map((k) => (
+                <span key={k.uid} className="vizia-karta">
+                  {karta({ karta: k, sirka: 72, onClick: () => posli(vdova ? { type: "odhod", uid: k.uid } : { type: "spal", uid: k.uid }) })}
+                </span>
+              ))}
+            </span>
+          ),
+          ...(vdova ? {} : naSirku ? { druha: nic } : { vpravo: <span className="pecat pecat-tichy">{nic}</span> }),
+        };
+      }
+      if (nv.typ === "vila") {
+        return {
+          nadpis: "Predsedova vila",
+          text: (
+            <span>
+              Za 2 vyfajčené cigarety zdvihni svoje reči pri jednom staršom o stupeň:{" "}
+              {moznostiVily(view).map((m) => (
+                <button key={m.elderId} type="button" className="pecat pecat-nakup" onClick={() => posli({ type: "vila", elderId: m.elderId })}>
+                  {menoKarty(m.defId)}: {m.pred} → {m.po}
+                </button>
+              ))}
+            </span>
+          ),
+        };
+      }
       if (nv.typ === "senok" || nv.typ === "nastroj") {
         const zoSenku = nv.typ === "senok";
         const ponuka = zoSenku ? view.senok : view.ruka.filter((k) => defOf(data, k).tags.includes("Nástroj"));
@@ -4178,35 +4211,6 @@ export function HernaPlocha({
                   </>
                 ),
               };
-        }
-        if (mode.typ === "vykup") {
-          // Zberný dvor (Michal 2026-10-20): raz za Pitku za cigaretu karta z vlastného odhadzovacieho balíčka.
-          const srot = hracJa.odhadzovaci;
-          return {
-            nadpis: "Zberný dvor — výkup",
-            text: (
-              <span className="zberatel-text">
-                <span>
-                  Za {KONSTANTY.EFEKT.ZBERNY_DVOR_CENA} cigaretu si vezmi do ruky jednu kartu zo svojho odhadzovacieho balíčka — klikni na ňu.
-                </span>
-                <span className="zberatel-ponuka">
-                  {srot.map((k) => (
-                    <span key={k.uid}>
-                      {karta({
-                        karta: k,
-                        sirka: 72,
-                        onClick: () => {
-                          setMode({ typ: "ziadny" });
-                          if (view.ciel?.lokalita != null) cmd({ type: "kseft", uid: view.ciel.lokalita.uid, kartaUid: k.uid });
-                        },
-                      })}
-                    </span>
-                  ))}
-                </span>
-              </span>
-            ),
-            tlacidla: <button onClick={() => setMode({ typ: "ziadny" })}>zrušiť</button>,
-          };
         }
         // Prečo NA EX nejde — hráč to vidí hneď, nielen v tooltipe.
         const dovodBezNaex = naexCiele.size > 0

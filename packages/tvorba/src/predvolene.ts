@@ -35,7 +35,7 @@ export const AKCIE_20261019: readonly { readonly kluc: string; readonly nazov: s
     kluc: "Cigareta",
     nazov: "Cigareta",
     popis:
-      "V Pitke dostaneš 1 cigaretu (mínus súperove Obmedzenia). Cigarety sa prenášajú — platíš nimi šenok, Dedičstvo, doliatie poldeci, Kšefty aj fajčenie: " +
+      "V Pitke dostaneš 1 cigaretu (mínus súperove Obmedzenia). Cigarety sa prenášajú — platíš nimi šenok, Dedičstvo, doliatie poldeci aj fajčenie: " +
       `v Pitke dobereš kartu, prvé fajčenie v Pitke stojí ${KONSTANTY.CENA_FAJCENIA_ZAKLAD} cigaretu, druhé ${KONSTANTY.CENA_FAJCENIA_ZAKLAD + KONSTANTY.CENA_FAJCENIA_PRIRASTOK}, ` +
       `tretie ${KONSTANTY.CENA_FAJCENIA_ZAKLAD + 2 * KONSTANTY.CENA_FAJCENIA_PRIRASTOK}…`,
   },
@@ -99,13 +99,15 @@ export const PREDVOLENE_KLUCOVE_SLOVA: readonly KlucoveSlovo[] = [
   // Remízu v tuhom rozhodujú Absťáky, potom priznané Dlhy (battleOutcome, §9.4); sekera až keď nerozhodne nič.
   S("Výhra", "Uplatní sa, keď vyhráš bitku o lokalitu: máš vyššie tuhé poškodenie, pri rovnakom tuhom menej Absťákov a pri ich rovnosti menej priznaných Dlhov. Keď nerozhodne ani to, nevyhrá nikto — špaky kola idú na sekeru."),
   S("Prehra", "Uplatní sa, keď prehráš bitku o lokalitu: máš nižšie tuhé poškodenie, pri rovnakom tuhom viac Absťákov a pri ich rovnosti viac priznaných Dlhov. Keď nerozhodne ani to, neprehrá nikto — špaky kola idú na sekeru."),
-  // Kšeft (v7, Michal 2026-10-27): aktívny efekt za cenu; Prestávka a Exekúcia zanikli (nemali kartu).
-  // Kšeft väzňa (v9) nahradila v11.2 schopnosť väzňa raz za hru (PRAVIDLA §10).
-  S("Kšeft", "Aktívny efekt: za cenu (cigarety, poldeci, Dlh, karta) ho spustíš sám v Pitke, kým ju neskončíš — každú kartu raz za Pitku; Kšeft nie je ťah. Kšeft lokality smie použiť každý hráč. Väzeň Kšeft nemá — jeho schopnosť (Väzeň — raz za hru) použije hráč, ktorý ho má v pivnici, raz za hru."),
+  // Kšeft zanikol (frakcie, Michal 2026-11-08); Kšeft väzňa nahradila v11.2 schopnosť väzňa (PRAVIDLA §10).
+  // Spoločník a Nepriateľ (frakcie): akcie navyše, kým je v partii karta s tagom; zápis v texte
+  // efektu „Spoločník: Tag {Akcia}.“ — piktogram v zložených zátvorkách (@naex/core navyse.ts).
+  S("Spoločník", "Kým máš v partii (karty natočené k tebe, na ktorejkoľvek strane) inú odkrytú kartu s tagom za dvojbodkou, máš akcie navyše z pečate v obrázku — raz, aj pri viacerých takých kartách. Rátajú sa ako tvoje akcie toho druhu v ich kroku; Posilnenie, Odpor, NA EX ani Forsáž ich nemenia."),
+  S("Nepriateľ", "Kým má súper v partii odkrytú kartu s tagom za dvojbodkou, máš akcie navyše z pečate v obrázku — raz, aj pri viacerých takých kartách. Rátajú sa ako tvoje akcie toho druhu v ich kroku; Posilnenie, Odpor, NA EX ani Forsáž ich nemenia."),
   // Konflikt a Exekúcia (v7, Michal 2026-10-27, plan.md 13 a 14); Úplatok zanikol vo v10.3.
   // Konflikt oboma smermi a Podpora (v11.3, Michal 2026-11-03).
-  S("Konflikt", "Spustí sa, keď sa táto karta priložením ocitne vedľa súperovej karty — či ju prikladáš ty k súperovej, alebo súper svoju k nej. Nástroj, NA EX, zrážka ani presun karty ho nespúšťajú."),
-  S("Podpora", "Spustí sa, keď sa táto karta priložením stretne s inou tvojou kartou — či prikladáš ju, alebo inú svoju k nej. Nástroj, NA EX, zrážka ani presun karty ju nespúšťajú."),
+  S("Konflikt", "Spustí sa, keď sa táto karta priložením ocitne vedľa súperovej karty — či ju prikladáš ty k súperovej, alebo súper svoju k nej; s tagom za dvojbodkou len pri karte s tým tagom. Pri každom stretnutí, do konca kola. Nástroj, NA EX, zrážka ani presun karty ho nespúšťajú."),
+  S("Podpora", "Spustí sa, keď sa táto karta priložením stretne s inou tvojou kartou — či prikladáš ju, alebo inú svoju k nej; s tagom za dvojbodkou len pri karte s tým tagom. Pri každom stretnutí, do konca kola. Nástroj, NA EX, zrážka ani presun karty ju nespúšťajú."),
   // Hádka (v11.5, Noviny, Michal 2026-11-03).
   S("Hádka", "Uplatní sa v bitke, keď sa rozhodne hádka — kto má viac mäkkého poškodenia (Pohoršenie, Povera), hádku vyhral."),
   S("Exekúcia", "Uplatní sa v bitke v kroku exekúcie (po poškodení a špakoch za bitku), keď Exekútor prichádza ku každému hráčovi s priznaným Dlhom."),

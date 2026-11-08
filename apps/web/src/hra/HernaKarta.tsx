@@ -8,10 +8,10 @@
 
 import { createContext, useContext } from "react";
 import type { CardInstance, CardLineEval, ClientState, GameData, PlayerId } from "@naex/core";
-import { akciaVytrznika, printedSides } from "@naex/core";
+import { akciaVytrznika, defOf, efektyNavyse, printedSides, stavNavyseVRuke } from "@naex/core";
 import type { KartaNavrh, RozlozenieStrany, Sada } from "@naex/tvorba";
 import { PREDVOLENE_NASTAVENIA } from "@naex/tvorba";
-import { KartaLico, type SlotStav, type ZarNaKarte } from "../karta/KartaLico.tsx";
+import { KartaLico, type NavyseNaKarte, type SlotStav, type ZarNaKarte } from "../karta/KartaLico.tsx";
 import { zarSlotu } from "../karta/zar.ts";
 import { vzhladSady } from "../lib/sada.tsx";
 
@@ -117,6 +117,24 @@ export function HernaKarta({ karta, sada, data, sirka, otocena = false, eval: ev
     });
   const zarL = zar("left", l.roz);
   const zarP = zar("right", p.roz);
+  // Akcie navyše (frakcie): v línii stav z vyhodnotenia, v ruke či by Spoločník a Nepriateľ platili teraz.
+  const efekty = efektyNavyse(defOf(data, karta));
+  const stavy =
+    efekty.length === 0
+      ? undefined
+      : ev?.navyse ?? (stol !== null && kde?.miesto === "ruka" ? stavNavyseVRuke((id) => data.cards.get(id)?.tags ?? [], efekty, stol.view.strany, karta.uid, kde.majitel) : undefined);
+  const navyse: NavyseNaKarte[] | undefined = stavy?.map((e, ei) => ({
+    krat: e.krat,
+    zar: e.akcie.map((a, ai) => {
+      if (stol === null || kde === null) return null;
+      const z = zarSlotu(a, stol.view.vplyvyAkcii?.[kde.majitel] ?? [], (id) => data.cards.get(id)?.name ?? id, karta.uid);
+      if (z === null) return null;
+      const kluc = `${karta.uid}:${kde.miesto}:navyse${ei}-${ai}:${z.pricina}`;
+      const prvy = stol.videne.get(kluc) ?? teraz;
+      if (!stol.videne.has(kluc)) stol.videne.set(kluc, prvy);
+      return { ...z, nova: teraz - prvy < TRVANIE_ISKRY_MS };
+    }),
+  }));
   // NA EX na karte ukazuje štítok nad kartou v línii (HernaPlocha), nie odznak v nej.
   const odznaky = vytrznik ? (
     <span className="odznak-vytrznik">Výtržník!</span>
@@ -134,6 +152,7 @@ export function HernaKarta({ karta, sada, data, sirka, otocena = false, eval: ev
       sloty={l.sloty !== null && p.sloty !== null ? { lava: l.sloty, prava: p.sloty } : null}
       zar={zarL.some((z) => z !== null) || zarP.some((z) => z !== null) ? { lava: zarL, prava: zarP } : undefined}
       odznaky={odznaky}
+      navyse={navyse}
       onClick={onClick}
       vybrana={vybrana ?? false}
       stlacena={stlacena}

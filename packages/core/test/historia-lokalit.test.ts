@@ -71,6 +71,8 @@ function partia(seed: number, lokalit = 5): Partia {
       if (e.type === "odpovedNaNaex") odpovede++;
       // Odpoveď sa otočí pred bitkou v tom istom ťahu — lícom hore ju obaja videli, hoci v línii po ťahu už neleží.
       if (e.type === "odpovedNaNaex" && !("pre" in e) && e.uid !== null) verejne.add(e.uid);
+      // Záverečná otočená na konci poslednej Pitky — bitka príde v tom istom ťahu, po ňom už v línii neleží.
+      if (e.type === "pitkaRekap" && !("pre" in e)) for (const z of e.rekap.zaverecne ?? []) verejne.add(z.uid);
       if (e.type === "zmenaMarkera") posuny++;
     }
     s = po;

@@ -1,5 +1,5 @@
 // Pravidlá v10.4 (Michal 2026-11-02, docs/napady/autority.html kolo 2 a odpor-vzbura-poc.html):
-// Poľovník (Nástup: spáli súperovo Zviera), Predavačka (Kšeft: karta za cigaretu), Vedúcko
+// Poľovník (Nástup: spáli súperovo Zviera), Vedúcko
 // (Furt: Roboty susedov ako Pecky), Policajtka (Pitka: pokutový blok za zrušené akcie),
 // Profesionálny tipér ráta aj Forsáž. Karty v sade pridá či zmení admin — testy majú vlastné.
 
@@ -25,17 +25,6 @@ const NOVE = [
     right: { blocked: [1], actions: { Odpor: 1, Obmedzenie: 1 }, allowed: { "0": ["Odpor"], "2": ["Obmedzenie"], "3": ["Obmedzenie"] } },
     permutations: { total: 4, left: 2, right: 2 },
   },
-  {
-    id: "predavacka",
-    index: 902,
-    name: "Predavačka",
-    tags: ["Občan", "Autorita", "Žena", "Pracujúci"],
-    effect_text: "Kšeft: Za 1 cigaretu si dober 1 kartu.",
-    triggers: ["Kšeft"],
-    left: { blocked: [3], actions: { Dlh: 1, Robota: 1 }, allowed: { "0": ["Dlh"], "1": ["Dlh"], "2": ["Robota"] } },
-    right: { blocked: [0, 1], actions: { Obmedzenie: 2 } },
-    permutations: { total: 2, left: 2, right: 1 },
-  },
 ];
 const sada = cardsJson as { cards: { id: string }[] };
 const data = loadGameData({ ...sada, cards: [...sada.cards.filter((c) => !NOVE.some((n) => n.id === c.id)), ...NOVE] }, eldersJson, scorecardsJson);
@@ -54,7 +43,7 @@ function sHracom(s: GameState, p: PlayerId, h: Partial<PlayerState>): GameState 
 }
 
 function pitkaStav(naTahu: PlayerId): PitkaStav {
-  return { naTahu, hotovy: [false, false], naexPouzity: [false, false], fajcenie: [0, 0], reakcia: null, postarka: [false, false], starosta: [false, false], naexPocet: [0, 0], vykup: [false, false] };
+  return { naTahu, hotovy: [false, false], naexPouzity: [false, false], fajcenie: [0, 0], reakcia: null, postarka: [false, false], starosta: [false, false], naexPocet: [0, 0] };
 }
 
 /** Pitka na Zastávke, hráč 0 (obranca) na ťahu, obaja s balíčkom a cigaretami. */
@@ -161,30 +150,6 @@ describe("Poľovník (Nástup, v10.4)", () => {
     const p = inst("polovnik");
     const s = vZhromazdeni([[lezi(inst("pijan"), 0)], [lezi(inst("pes"), 1), lezi(inst("krokodil"), 1)]], [p]);
     expect(ids(sPrilozenou(data, s, 0, p, 0))).toEqual(ids(apply(data, s, { type: "place", uid: p.uid, target: "vlastna" }, 0).state));
-  });
-});
-
-describe("Predavačka (Kšeft, v10.4)", () => {
-  it("za 1 cigaretu si hráč doberie 1 kartu, raz za Pitku; platba nie je nerest", () => {
-    const pr = inst("predavacka");
-    const s = sHracom(vPitke([[lezi(pr, 0)], []]), 0, { cigarety: 2 });
-    expect(legalCommands(data, s, 0)).toContainEqual({ type: "kseft", uid: pr.uid });
-    const po = apply(data, s, { type: "kseft", uid: pr.uid }, 0).state;
-    expect(po.hraci[0].cigarety).toBe(1);
-    expect(po.hraci[0].ruka).toHaveLength(s.hraci[0].ruka.length + 1);
-    expect(po.hraci[0].doberaci).toHaveLength(s.hraci[0].doberaci.length - 1);
-    expect(po.hraci[0].nerestiTotoKolo).toBe(s.hraci[0].nerestiTotoKolo);
-    expect(legalCommands(data, po, 0).some((c) => c.type === "kseft" && c.uid === pr.uid)).toBe(false);
-  });
-
-  it("bez cigarety alebo bez kariet v balíčkoch sa neponúka; súperova Predavačka nie", () => {
-    const pr = inst("predavacka");
-    const bezCig = sHracom(vPitke([[lezi(pr, 0)], []]), 0, { cigarety: 0 });
-    expect(legalCommands(data, bezCig, 0).some((c) => c.type === "kseft")).toBe(false);
-    const bezKariet = sHracom(vPitke([[lezi(pr, 0)], []]), 0, { doberaci: [], odhadzovaci: [] });
-    expect(legalCommands(data, bezKariet, 0).some((c) => c.type === "kseft")).toBe(false);
-    const superova = vPitke([[lezi(pr, 1)], []]);
-    expect(legalCommands(data, superova, 0).some((c) => c.type === "kseft")).toBe(false);
   });
 });
 

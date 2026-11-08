@@ -201,7 +201,7 @@
       "id": "12.nastroj.lokalita",
       "paragraf": "12. Nástroje a Dedičstvo › Nástroj v línii",
       "pravidlo": "Vedľa lokality sa Nástroj nevykladá (v10.2): na prázdnu stranu ani svoju, ani súperovu; za Živnostníka a do Dedičstva áno; neskôr pri lokalite ostáva ležať.",
-      "stav": "pokryte",
+      "stav": "na-overenie",
       "testy": [
         "packages/core/test/naradie-pri-lokalite.test.ts › na prázdnu stranu sa nevyloží — ani na svoju, ani na súperovu; Dedičstvo áno",
         "packages/core/test/naradie-pri-lokalite.test.ts › za Občanom na ktorejkoľvek strane áno",
@@ -209,7 +209,8 @@
         "packages/core/test/naradie-pri-lokalite.test.ts › Živnostník pri lokalite: Nástroj za neho áno (neleží už pri lokalite)",
         "packages/core/test/naradie-pri-lokalite.test.ts › odpoveď na NA EX: Nástroj nie na prázdnu stranu",
         "packages/core/test/naradie-pri-lokalite.test.ts › Nástroj, ku ktorému sa lokalita dostane neskôr, ostáva ležať"
-      ]
+      ],
+      "poznamka": "Frakcie (Michal 2026-11-08): Kšeft zanikol, 17 kariet a 3 lokality majú nové efekty — testy v packages/core/test/frakcie.test.ts; rozhodca prejde znova."
     },
     {
       "id": "12.nastroj.akcie",
@@ -489,11 +490,12 @@
       "id": "7.naex.efekty-okolo",
       "paragraf": "7. Pitka › NA EX",
       "pravidlo": "Pri odkrytí platia Výpalné, Vychovávateľka a nakoniec Policajtka (Dlh tomu, kto dal v Pitke viac NA EX); Svokra (Rana za majiteľovu kartu so súperovým NA EX) až v bitke a cigarety už neberie. Odpoveď na NA EX počet pre Policajtku nezmení.",
-      "stav": "pokryte",
+      "stav": "na-overenie",
       "testy": [
         "packages/core/test/naex-ochrana.test.ts › pri odkrytí NA EX už súperovi cigarety neberie",
         "packages/core/test/naex-ochrana.test.ts › v bitke je Rana navyše v tuhom: to isté NA EX od súpera dá o 1 tuhé viac ako vlastné"
-      ]
+      ],
+      "poznamka": "Frakcie (Michal 2026-11-08): Kšeft zanikol, 17 kariet a 3 lokality majú nové efekty — testy v packages/core/test/frakcie.test.ts; rozhodca prejde znova."
     },
     {
       "id": "7.naex.pecen-a-poldeci",
@@ -881,21 +883,23 @@
       "id": "13.zaverecna.otocenie",
       "paragraf": "13. Pokročilé ťahy › Záverečná",
       "pravidlo": "Záverečná sa otočí na konci Pitky; Nástup a efekty, ktoré by ju prezradili (Policajtka), sa vyhodnotia až vtedy.",
-      "stav": "pokryte",
+      "stav": "na-overenie",
       "testy": [
         "packages/core/test/zaverecna.test.ts › otočí sa a Nástup sa vyhodnotí až vtedy"
-      ]
+      ],
+      "poznamka": "Frakcie (Michal 2026-11-08): Kšeft zanikol, 17 kariet a 3 lokality majú nové efekty — testy v packages/core/test/frakcie.test.ts; rozhodca prejde znova."
     },
     {
       "id": "13.podstrcenie",
       "paragraf": "13. Pokročilé ťahy › Podstrčenie (sabotér)",
       "pravidlo": "Kartu možno podstrčiť na súperovu stranu: jej Odpor mu zruší akciu na spoji, jej akcie bodujú pre toho, kto ju zahral (okrem Kočovníka); akcie hrany lokality jedna podstrčená karta neukradne, ale tvorí s nimi spoj.",
-      "stav": "pokryte",
+      "stav": "na-overenie",
       "testy": [
         "packages/core/test/partia.test.ts › Odpor podstrčenej karty ruší súperovu akciu a vlastné akcie boduje majiteľovi",
         "packages/core/test/lokality-20261020.test.ts › podstrčená karta pri lokalite hranu nevezme, keď má domáci na strane viac kariet",
         "packages/core/test/lokality-20261020.test.ts › podstrčená karta pri lokalite akcie hrany neukradne, ale určuje, ktoré sa spoja (O2, zámer Michala 2026-10-24)"
-      ]
+      ],
+      "poznamka": "Frakcie (Michal 2026-11-08): Kšeft zanikol, 17 kariet a 3 lokality majú nové efekty — testy v packages/core/test/frakcie.test.ts; rozhodca prejde znova."
     },
     {
       "id": "7.poradie",
@@ -978,10 +982,11 @@
       "id": "9.zaciatok.krcmarka-dievcina",
       "paragraf": "9. Bitka › 9.0 Efekty na začiatku bitky",
       "pravidlo": "Na začiatku bitky Krčmárka otočí vypitý poldeci (bez Absťáku a NA EX) a Dievčina spáli priznané Dlhy a seba.",
-      "stav": "pokryte",
+      "stav": "na-overenie",
       "testy": [
         "packages/core/test/playtest-055944.test.ts › Benzínka: fajčiť sa smie, prvé je zadarmo (v11.13); Krčmárka po bitke otočí vypitý poldeci (Michal 2026-10-20)"
-      ]
+      ],
+      "poznamka": "Frakcie (Michal 2026-11-08): Kšeft zanikol, 17 kariet a 3 lokality majú nové efekty — testy v packages/core/test/frakcie.test.ts; rozhodca prejde znova."
     },
     {
       "id": "11.exekutor.prah",
@@ -1143,7 +1148,7 @@
       "pravidlo": "Miňištrant vo víťazovej partii zdraží každý posun o 1; posun drahší než zvyšok Nakladačky prepadne.",
       "stav": "na-overenie",
       "testy": [],
-      "poznamka": "Efekty v7 (2026-10-27, plan.md 14) zmenili kartu alebo pravidlo — testy starého znenia odpojené; nové v packages/core/test/v7-efekty.test.ts."
+      "poznamka": "Efekty v7 (2026-10-27, plan.md 14) zmenili kartu alebo pravidlo — testy starého znenia odpojené; nové v packages/core/test/v7-efekty.test.ts. Frakcie (Michal 2026-11-08): Kšeft zanikol, 17 kariet a 3 lokality majú nové efekty — testy v packages/core/test/frakcie.test.ts; rozhodca prejde znova."
     },
     {
       "id": "9.vysledok.cigarety",
@@ -1166,14 +1171,15 @@
       "id": "9.vestica",
       "paragraf": "9. Bitka › 9.5b Veštica",
       "pravidlo": "Porazený s Vešticou si prezrie oba doberacie balíčky, vymení jednu kartu a balíčky sa zamiešajú. Prázdny doberací sa najprv doplní zamiešaním odhadzovacieho; bez doberacieho aj odhadzovacieho sa Veštica nespustí.",
-      "stav": "pokryte",
+      "stav": "na-overenie",
       "testy": [
         "packages/core/test/playtest-055944.test.ts › Veštica: oba balíčky vidí len porazený počas výberu",
         "packages/core/test/pravidla-20261025.test.ts › prázdny doberací porazeného: odhadzovací sa zamieša, Veštica čaká na výber a vymení kartu",
         "packages/core/test/pravidla-20261025.test.ts › prázdne doberacie oboch: zamiešajú sa oba odhadzovacie",
         "packages/core/test/pravidla-20261025.test.ts › súper nemá ani doberací, ani odhadzovací: Veštica sa nespustí a nič sa nemieša",
         "packages/core/test/pravidla-20261025.test.ts › porazený nemá ani doberací, ani odhadzovací: Veštica sa nespustí"
-      ]
+      ],
+      "poznamka": "Frakcie (Michal 2026-11-08): Kšeft zanikol, 17 kariet a 3 lokality majú nové efekty — testy v packages/core/test/frakcie.test.ts; rozhodca prejde znova."
     },
     {
       "id": "15.lokalita.cintorin",
@@ -1200,10 +1206,11 @@
       "id": "9.navrat",
       "paragraf": "9. Bitka › 9.7 Návrat kariet",
       "pravidlo": "Karty z línie sa vrátia do odhadzovacieho balíčka hráča, ktorý ich zahral; zahodené (Dievčina) nie; lokalita ide na nástenku (v6).",
-      "stav": "pokryte",
+      "stav": "na-overenie",
       "testy": [
         "packages/core/test/pravidla-bitka.test.ts › §9.7: karty z línie sa vrátia do odhadzovacieho balíčka hráča, ktorý ich zahral — aj zo súperovej strany"
-      ]
+      ],
+      "poznamka": "Frakcie (Michal 2026-11-08): Kšeft zanikol, 17 kariet a 3 lokality majú nové efekty — testy v packages/core/test/frakcie.test.ts; rozhodca prejde znova."
     },
     {
       "id": "10.stupnica.sila",
@@ -1278,12 +1285,13 @@
       "id": "3.start.karty",
       "paragraf": "3. Príprava hry",
       "pravidlo": "Každý má na začiatku v ruke 4 karty — Miňištrant, Milujúca manželka, Pijan, Dievčina na vydaj; doberací balíček je prázdny; tieto druhy nie sú v Náradí ani v Občanoch (v6, v8.5).",
-      "stav": "pokryte",
+      "stav": "na-overenie",
       "testy": [
         "packages/core/test/michal-20261018.test.ts › v6: obaja začínajú so 4 kartami v ruke — Miňištrant, Milujúca manželka, Pijan a Dievčina na vydaj (Michal 2026-10-26)",
         "packages/core/test/engine.test.ts › hra sa rozdá (v6): 4 štartovky v ruke, prázdny doberací balíček, šenok prázdny, poldeci 2, cigarety 3",
         "packages/core/test/michal-20261018.test.ts › v Náradí a Občanoch (a teda v šenku) štartovky nie sú"
-      ]
+      ],
+      "poznamka": "Frakcie (Michal 2026-11-08): Kšeft zanikol, 17 kariet a 3 lokality majú nové efekty — testy v packages/core/test/frakcie.test.ts; rozhodca prejde znova."
     },
     {
       "id": "3.start.zdroje",
@@ -1364,12 +1372,12 @@
       "id": "8.abstak.zbavenie",
       "paragraf": "8. Pečeň, Dlh, nerest, Chuť a Absťák › Nerest, Chuť a Absťák (v9.1)",
       "pravidlo": "Absťák sa (v9.1) nezbavuje nerestami — karta ostáva v balíčku; zahodí ju Vízia (v starej sade aj Kar). Hasič ju vytiahne ako každú kartu.",
-      "stav": "pokryte",
+      "stav": "na-overenie",
       "testy": [
         "packages/core/test/abstak-chut.test.ts › §11: Vízia ho smie zahodiť z hry",
         "packages/core/test/abstak-chut.test.ts › §9.7: Absťák z ruky ide po bitke do odhadzovacieho balíčka"
       ],
-      "poznamka": "v8.1 Nervák (Michal 2026-10-28, roadmapa #113). v8.2 (Michal 2026-10-30): znenie a testy podľa novej ceny posunu / počítadiel Dlhu a Absťáku."
+      "poznamka": "v8.1 Nervák (Michal 2026-10-28, roadmapa #113). v8.2 (Michal 2026-10-30): znenie a testy podľa novej ceny posunu / počítadiel Dlhu a Absťáku. Frakcie (Michal 2026-11-08): Kšeft zanikol, 17 kariet a 3 lokality majú nové efekty — testy v packages/core/test/frakcie.test.ts; rozhodca prejde znova."
     },
     {
       "id": "8.abstak.manzelka",
@@ -1404,13 +1412,14 @@
       "id": "8.nerest",
       "paragraf": "8. Pečeň, Dlh, nerest, Chuť a Absťák › Nerest, Chuť a Absťák (v9.1)",
       "pravidlo": "Nerest je len konzumácia (v9.1): Vypiť 1, NA EX 2, vyfajčená cigareta 1 (za každú zaplatenú); doliatie, barter, šenok, Dedičstvo, Starosta a Kšefty lokalít nie.",
-      "stav": "pokryte",
+      "stav": "na-overenie",
       "testy": [
         "packages/core/test/abstak-chut.test.ts › fajčenie 1 za každú cigaretu; doliatie, barter, Dedičstvo ani šenok nie",
         "packages/core/test/abstak-chut.test.ts › Vypiť v Zhromaždení 1, NA EX 2 (vypije sa v bitke) — výhľad v bare ráta NA EX na stole za 2",
         "packages/core/test/pravidla-bitka.test.ts › §9.5: NA EX poldeci sa najprv vypijú, potom akcia Poldeci otočí vypitý na plný; bez vypitého vyjde naprázdno; platí pre majiteľa karty aj na súperovej strane",
         "packages/core/test/pravidla-v3.test.ts › limit klesne o 1, ďalšou kartou ťah nekončí, pečeň +1 a nerest"
-      ]
+      ],
+      "poznamka": "Frakcie (Michal 2026-11-08): Kšeft zanikol, 17 kariet a 3 lokality majú nové efekty — testy v packages/core/test/frakcie.test.ts; rozhodca prejde znova."
     },
     {
       "id": "8.chut.vyucba",
@@ -1425,10 +1434,11 @@
       "id": "8.chut.opatrovatelka",
       "paragraf": "16. Výklad kariet",
       "pravidlo": "Opatrovateľka (Furt, v9.1): v línii porovná Chuť majiteľa na konci kola o 2 nižšiu; Chuť ubúda normálne; súperova nepomáha.",
-      "stav": "pokryte",
+      "stav": "na-overenie",
       "testy": [
         "packages/core/test/abstak-chut.test.ts › Opatrovateľka v línii (Furt): Chuť sa porovnáva o 2 nižšia — ubúda normálne"
-      ]
+      ],
+      "poznamka": "Frakcie (Michal 2026-11-08): Kšeft zanikol, 17 kariet a 3 lokality majú nové efekty — testy v packages/core/test/frakcie.test.ts; rozhodca prejde znova."
     },
     {
       "id": "11.abstak.verejny-pocet",
@@ -1496,7 +1506,7 @@
       "pravidlo": "Zberný dvor: raz za Pitku za 1 cigaretu karta z vlastného odhadzovacieho balíčka do ruky.",
       "stav": "na-overenie",
       "testy": [],
-      "poznamka": "Efekty v7 (2026-10-27, plan.md 14) zmenili kartu alebo pravidlo — testy starého znenia odpojené; nové v packages/core/test/v7-efekty.test.ts."
+      "poznamka": "Efekty v7 (2026-10-27, plan.md 14) zmenili kartu alebo pravidlo — testy starého znenia odpojené; nové v packages/core/test/v7-efekty.test.ts. Frakcie (Michal 2026-11-08): Kšeft zanikol, 17 kariet a 3 lokality majú nové efekty — testy v packages/core/test/frakcie.test.ts; rozhodca prejde znova."
     },
     {
       "id": "15.lokalita.most",
@@ -1540,7 +1550,7 @@
       "pravidlo": "Dievčina na vydaj sa pri bitke zahodí a spáli toľko priznaných Dlhov, koľko mala aktívnych akcií; jej akcie v tej bitke platia.",
       "stav": "na-overenie",
       "testy": [],
-      "poznamka": "Efekty v7 (2026-10-27, plan.md 14) zmenili kartu alebo pravidlo — testy starého znenia odpojené; nové v packages/core/test/v7-efekty.test.ts."
+      "poznamka": "Efekty v7 (2026-10-27, plan.md 14) zmenili kartu alebo pravidlo — testy starého znenia odpojené; nové v packages/core/test/v7-efekty.test.ts. Frakcie (Michal 2026-11-08): Kšeft zanikol, 17 kariet a 3 lokality majú nové efekty — testy v packages/core/test/frakcie.test.ts; rozhodca prejde znova."
     },
     {
       "id": "16.karta.hrobar",
@@ -1557,7 +1567,7 @@
       "pravidlo": "Anonymný alkoholik (2026-10-26): NA EX majiteľa naňho (placatka) sa nepočíta do limitu NA EX za Pitku, aj podstrčený; súper naňho NA EX smie a jemu sa ráta. Kostol zakazuje aj placatku, na Krčme ju splní, na Anonymného alkoholika s poldeci ďalšie NA EX nie; do počtu NA EX Pitky (Policajtka) sa ráta.",
       "stav": "na-overenie",
       "testy": [],
-      "poznamka": "Efekty v7 (2026-10-27, plan.md 14) zmenili kartu alebo pravidlo — testy starého znenia odpojené; nové v packages/core/test/v7-efekty.test.ts."
+      "poznamka": "Efekty v7 (2026-10-27, plan.md 14) zmenili kartu alebo pravidlo — testy starého znenia odpojené; nové v packages/core/test/v7-efekty.test.ts. Frakcie (Michal 2026-11-08): Kšeft zanikol, 17 kariet a 3 lokality majú nové efekty — testy v packages/core/test/frakcie.test.ts; rozhodca prejde znova."
     },
     {
       "id": "16.karta.sofer",
@@ -1574,7 +1584,7 @@
       "pravidlo": "Snúbenica: vyložená vedľa karty s NA EX ju vráti jej majiteľovi do ruky a zaujme jej miesto; poldeci sa vypije tomu, kto NA EX dal.",
       "stav": "na-overenie",
       "testy": [],
-      "poznamka": "Efekty v7 (2026-10-27, plan.md 14) zmenili kartu alebo pravidlo — testy starého znenia odpojené; nové v packages/core/test/v7-efekty.test.ts."
+      "poznamka": "Efekty v7 (2026-10-27, plan.md 14) zmenili kartu alebo pravidlo — testy starého znenia odpojené; nové v packages/core/test/v7-efekty.test.ts. Frakcie (Michal 2026-11-08): Kšeft zanikol, 17 kariet a 3 lokality majú nové efekty — testy v packages/core/test/frakcie.test.ts; rozhodca prejde znova."
     },
     {
       "id": "16.karta.krcmarka",
@@ -1601,14 +1611,15 @@
       "id": "16.karta.kocovnik",
       "paragraf": "16. Výklad kariet",
       "pravidlo": "Kočovník: všetky jeho akcie dostane hráč s prevahou v jeho kraji; do prevahy sa ráta majiteľovi, pri rovnosti karta pri lokalite; limit míňa.",
-      "stav": "pokryte",
+      "stav": "na-overenie",
       "testy": [
         "packages/core/test/revizia-kariet.test.ts › prevahu má majiteľ (Kočovník sám v kraji) → Dlh dostane majiteľ, hoci leží na súperovej strane",
         "packages/core/test/revizia-kariet.test.ts › súper v kraji prevládne (rovnosť, jeho karta pri lokalite) → Kočovníkov Dlh dostane súper",
         "packages/core/test/revizia-kariet.test.ts › platí pre všetky jeho akcie — aj Ranu dostane hráč s prevahou",
         "packages/core/test/revizia-kariet.test.ts › do prevahy sa Kočovník ráta majiteľovi — s ďalšou svojou kartou majiteľ v kraji prevládne a akcie má on",
         "packages/core/test/vykladanie.test.ts › Kočovník míňa limit ako každá karta (Michal 2026-10-19)"
-      ]
+      ],
+      "poznamka": "Frakcie (Michal 2026-11-08): Kšeft zanikol, 17 kariet a 3 lokality majú nové efekty — testy v packages/core/test/frakcie.test.ts; rozhodca prejde znova."
     },
     {
       "id": "16.karta.pasca",
@@ -1666,13 +1677,14 @@
       "id": "16.karta.policajtka-praudovravec",
       "paragraf": "16. Výklad kariet",
       "pravidlo": "Policajtka (2026-10-26): kto dal v Pitke viac NA EX ako jej majiteľ (rátajú sa všetky, aj placatka), dostane pri odkrytí jeden Dlh, hneď priznaný; pri rovnosti a na Kostole nič; vyložená až ako odpoveď sa v tej Pitke neráta, skrytá Záverečná sa vyhodnotí pri otočení; Pohoršenia neruší. Praudovravec umlčí Autority v súperovej partii. Praudovravec: Odpor na jeho spojoch neruší, ale ráta sa ako Posilnenie — zdvojí aj súperovu akciu na spoji.",
-      "stav": "pokryte",
+      "stav": "na-overenie",
       "testy": [
         "packages/core/test/naex-ochrana.test.ts › Praudovravec súpera ju umlčí (Autorita)",
         "packages/core/test/revizia-kariet.test.ts › Praudovravec: Autority v SÚPEROVEJ partii neuplatňujú efekt",
         "packages/core/test/v7-pakt.test.ts › Praudovravec: Odpor na jeho spoji neruší, ale posilní",
         "packages/core/test/v7-pakt.test.ts › Praudovravec: posilní aj súperovu akciu na spoji (§16, návrh #41 A)"
-      ]
+      ],
+      "poznamka": "Frakcie (Michal 2026-11-08): Kšeft zanikol, 17 kariet a 3 lokality majú nové efekty — testy v packages/core/test/frakcie.test.ts; rozhodca prejde znova."
     },
     {
       "id": "16.karta.postarka",
@@ -1734,7 +1746,7 @@
       "id": "16.karta.svokra",
       "paragraf": "16. Výklad kariet",
       "pravidlo": "Svokra (2026-10-26): v bitke za každú majiteľovu kartu (na ktorejkoľvek strane, aj podstrčenú a samu seba) so súperovým poldeci z NA EX udelí súperovi Ranu (+1 tuhé), aj pri zrážke; vlastné NA EX majiteľa nie; každá Svokra zvlášť; cigarety už neberie; Praudovravec ju umlčí.",
-      "stav": "pokryte",
+      "stav": "na-overenie",
       "testy": [
         "packages/core/test/naex-ochrana.test.ts › ráta majiteľove karty so súperovým NA EX na oboch stranách, aj podstrčené aj Svokru samu; vlastné NA EX nie",
         "packages/core/test/naex-ochrana.test.ts › zrážka (Výtržník) sa ráta — na karte leží aj súperov poldeci",
@@ -1742,27 +1754,29 @@
         "packages/core/test/naex-ochrana.test.ts › Praudovravec súpera ju umlčí (Autorita); dve Svokry — Rana od každej",
         "packages/core/test/naex-ochrana.test.ts › pri odkrytí NA EX už súperovi cigarety neberie",
         "packages/core/test/nahlady.test.ts › Svokra (Michal 2026-10-26): náhľad NA EX na jej majiteľovu kartu ukáže Ranu, cigarety nekradne"
-      ]
+      ],
+      "poznamka": "Frakcie (Michal 2026-11-08): Kšeft zanikol, 17 kariet a 3 lokality majú nové efekty — testy v packages/core/test/frakcie.test.ts; rozhodca prejde znova."
     },
     {
       "id": "16.karta.sarlatan",
       "paragraf": "16. Výklad kariet",
       "pravidlo": "Šarlatán (Konflikt): do konca kola jeho Hazard = Viera a Povera = Rana, aj akcie zdvojené NA EX; akcie, ktoré karta odpovede na NA EX aktivuje spojom, NA EX zruší (aj premenené).",
-      "stav": "pokryte",
+      "stav": "na-overenie",
       "testy": [
         "packages/core/test/sarlatan-naex.test.ts › bez odpovede: NA EX zdvojí neaktívne — Hazard ×2 je Viera, Povera ×2 je Rana; žiadny Dlh",
         "packages/core/test/sarlatan-naex.test.ts › s kartou odpovede: Povery na spoji sú aktívne, NA EX ich zruší (zrušené ako Rany); Hazard ďalej Viera bez zadĺženia"
       ],
-      "poznamka": "ULTRA 20261030-115654 (Fero N10, Vilo N14): prehratie partie ukázalo, že jadro Konflikt uplatňuje celý; Dlh 1 vo výpise bol z Anonymného alkoholika."
+      "poznamka": "ULTRA 20261030-115654 (Fero N10, Vilo N14): prehratie partie ukázalo, že jadro Konflikt uplatňuje celý; Dlh 1 vo výpise bol z Anonymného alkoholika. Frakcie (Michal 2026-11-08): Kšeft zanikol, 17 kariet a 3 lokality majú nové efekty — testy v packages/core/test/frakcie.test.ts; rozhodca prejde znova."
     },
     {
       "id": "16.karta.vestica",
       "paragraf": "16. Výklad kariet",
       "pravidlo": "Veštica: porazený vymení kartu medzi doberacími balíčkami, ktoré vidí len on.",
-      "stav": "pokryte",
+      "stav": "na-overenie",
       "testy": [
         "packages/core/test/playtest-055944.test.ts › Veštica: oba balíčky vidí len porazený počas výberu"
-      ]
+      ],
+      "poznamka": "Frakcie (Michal 2026-11-08): Kšeft zanikol, 17 kariet a 3 lokality majú nové efekty — testy v packages/core/test/frakcie.test.ts; rozhodca prejde znova."
     },
     {
       "id": "16.karta.vychovavatelka",
@@ -1800,7 +1814,7 @@
       "pravidlo": "Živnostník (Výhra): keď jeho majiteľ vyhrá bitku a Živnostník leží v jeho partii, majiteľ vyberie jedno súperovo Dedičstvo, ktoré sa zahodí; každý Živnostník jedno; na začiatku kroku 6c; bez Dedičstva, pri prehre či remíze nič; Nástup nerobí nič.",
       "stav": "na-overenie",
       "testy": [],
-      "poznamka": "Efekty v7 (2026-10-27, plan.md 14) zmenili kartu alebo pravidlo — testy starého znenia odpojené; nové v packages/core/test/v7-efekty.test.ts."
+      "poznamka": "Efekty v7 (2026-10-27, plan.md 14) zmenili kartu alebo pravidlo — testy starého znenia odpojené; nové v packages/core/test/v7-efekty.test.ts. Frakcie (Michal 2026-11-08): Kšeft zanikol, 17 kariet a 3 lokality majú nové efekty — testy v packages/core/test/frakcie.test.ts; rozhodca prejde znova."
     },
     {
       "id": "16.karta.niekoho-stryna",
@@ -1814,7 +1828,7 @@
       "id": "16.karta.hasic",
       "paragraf": "16. Výklad kariet",
       "pravidlo": "Hasič (Nástup): náhodná karta z majiteľovho odhadzovacieho balíčka, aj kliatba; majiteľ ju nechá v ruke, alebo vráti. Kým nerozhodne, hra čaká (ťah naraz dobehne, odpoveď na NA EX a otočená Záverečná čakajú); prázdny odhadzovací = nič; karta je verejná.",
-      "stav": "pokryte",
+      "stav": "na-overenie",
       "testy": [
         "packages/core/test/autobusar-hasic.test.ts › §16 Hasič: vytiahne kartu z VLASTNÉHO odhadzovacieho balíčka deterministicky zo semienka hry; aj kliatbu",
         "packages/core/test/autobusar-hasic.test.ts › §16 Hasič: kým hráč nerozhodne, hrá len on a len túto voľbu; karta zatiaľ leží v odhadzovacom",
@@ -1826,7 +1840,7 @@
         "packages/core/test/autobusar-hasic.test.ts › §16 Hasič ako odpoveď na NA EX: Pitka sa vyhodnotí až po voľbe",
         "packages/core/test/autobusar-hasic.test.ts › §16 Hasič ako Záverečná: otočí sa na konci Pitky a Pitka sa dokončí až po voľbe"
       ],
-      "poznamka": "Michal 2026-10-26: predtým bez voľby prvý Pracujúci z odhadzovacieho balíčka. v8.2 (Michal 2026-10-30): znenie a testy podľa novej ceny posunu / počítadiel Dlhu a Absťáku."
+      "poznamka": "Michal 2026-10-26: predtým bez voľby prvý Pracujúci z odhadzovacieho balíčka. v8.2 (Michal 2026-10-30): znenie a testy podľa novej ceny posunu / počítadiel Dlhu a Absťáku. Frakcie (Michal 2026-11-08): Kšeft zanikol, 17 kariet a 3 lokality majú nové efekty — testy v packages/core/test/frakcie.test.ts; rozhodca prejde znova."
     },
     {
       "id": "16.karta.manzelka",
@@ -1869,7 +1883,7 @@
       "pravidlo": "Pri zrážke platí každý za svoje NA EX: pečeň +1, poldeci (v bitke sa vypijú oba), Výpalné za každé z oboch NA EX; Policajtka ráta 1 : 1 a Svokra majiteľa karty ju ráta ako kartu so súperovým NA EX.",
       "stav": "na-overenie",
       "testy": [],
-      "poznamka": "v5 (2026-10-25): nové pravidlo — rozhodca ho prejde a priradí test."
+      "poznamka": "v5 (2026-10-25): nové pravidlo — rozhodca ho prejde a priradí test. Frakcie (Michal 2026-11-08): Kšeft zanikol, 17 kariet a 3 lokality majú nové efekty — testy v packages/core/test/frakcie.test.ts; rozhodca prejde znova."
     },
     {
       "id": "7.naex.vytrznik-vytriezvie",
@@ -2061,9 +2075,9 @@
       "id": "16.karta.snubenica.koniec-linie",
       "paragraf": "16. Výklad kariet",
       "pravidlo": "Snúbenica sa vykladá len na vonkajší koniec strany, takže zaberie, len keď je karta s NA EX doteraz poslednou kartou tej strany (vo finále na prázdnej strane karta v strede).",
-      "stav": "netestovatelne",
+      "stav": "na-overenie",
       "testy": [],
-      "poznamka": "Snúbenica v7 má iný efekt (Konflikt: priložený Chlap po bitke k majiteľovi Snúbenice), veta „vedľa karty s NA EX“ už v §16 nie je — bod 2 návrhu #25 nemá čo spresniť (Developer 2026-10-28)."
+      "poznamka": "Snúbenica v7 má iný efekt (Konflikt: priložený Chlap po bitke k majiteľovi Snúbenice), veta „vedľa karty s NA EX“ už v §16 nie je — bod 2 návrhu #25 nemá čo spresniť (Developer 2026-10-28). Frakcie (Michal 2026-11-08): Kšeft zanikol, 17 kariet a 3 lokality majú nové efekty — testy v packages/core/test/frakcie.test.ts; rozhodca prejde znova."
     },
     {
       "id": "16.karta.vinko.uprostred",
@@ -2129,14 +2143,15 @@
       "id": "16.karta.v7.konflikt-karty",
       "paragraf": "16. Výklad kariet",
       "pravidlo": "Konflikt kariet v7: Policajtka (Dlh / 2 cigarety za Kriminála), Vdova (od v10.3 odhodenie kariet, 16.karta.vdova), Snúbenica (Chlap k nej), Šarlatán (Dlh = Viera, Povera = Rana), Miňištrant (Nástup, Viera = Pecka); Hrobár v línii od v9 Konflikt nemá.",
-      "stav": "pokryte",
+      "stav": "na-overenie",
       "testy": [
         "packages/core/test/v7-efekty.test.ts › Policajtka: súper, ktorý k nej priloží kartu, získa Dlh; za Kriminála jej majiteľ dostane 2 cigarety",
         "packages/core/test/v7-efekty.test.ts › Snúbenica: priložený Chlap ide po bitke do odhadzovacieho balíčka jej majiteľa",
         "packages/core/test/v7-efekty.test.ts › Šarlatán: po Konflikte sa do konca kola jeho Dlhy rátajú ako Viera a Povery ako Rana",
         "packages/core/test/v7-efekty.test.ts › Miňištrant: Nástup — vyvolal Konflikt, jeho Viera sa ráta ako Pecka",
         "packages/core/test/v7-efekty.test.ts › Hrobár v línii od v9 Konflikt nemá (len akcie); Vdovu od v10.3 skúša pravidla-v103.test.ts"
-      ]
+      ],
+      "poznamka": "Frakcie (Michal 2026-11-08): Kšeft zanikol, 17 kariet a 3 lokality majú nové efekty — testy v packages/core/test/frakcie.test.ts; rozhodca prejde znova."
     },
     {
       "id": "16.karta.v7.linia",
@@ -2157,7 +2172,7 @@
       "id": "16.karta.v7.pitka",
       "paragraf": "16. Výklad kariet",
       "pravidlo": "Pitka v7: Stryná, Veterinár, Kar, Krčmárka, Kohút, Cintorín, Jednota, Benzínka, Bzdocha, Krabička cigariet.",
-      "stav": "pokryte",
+      "stav": "na-overenie",
       "testy": [
         "packages/core/test/v7-efekty.test.ts › Stryná: hráč bez NA EX v Pitke +1 pečeň (Liberál od v10.3 zadĺženie nedáva)",
         "packages/core/test/v7-efekty.test.ts › Veterinár v línii od v9 pečeň okolia nemaže — jeho efekt je len Kšeft väzňa",
@@ -2167,25 +2182,25 @@
         "packages/core/test/v7-efekty.test.ts › Bzdocha: kto vyberá NA EX po súperovi, vidí jeho skryté NA EX — inak nie",
         "packages/core/test/v7-efekty.test.ts › Krabička cigariet: za každé 2 cigarety, ktoré súper vyfajčí, karta navyše",
         "packages/core/test/v7-efekty.test.ts › Krčmárka v línii od v9 odpoveď na NA EX nezakazuje (jej efekt je Kšeft väzňa)"
-      ]
+      ],
+      "poznamka": "Frakcie (Michal 2026-11-08): Kšeft zanikol, 17 kariet a 3 lokality majú nové efekty — testy v packages/core/test/frakcie.test.ts; rozhodca prejde znova."
     },
     {
       "id": "16.karta.v7.nastup-kseft",
       "paragraf": "16. Výklad kariet",
       "pravidlo": "Nástup s voľbou (Starosta, Kapybara, Živnostník, Anonymný alkoholik), Autobusár, Kšefty Poštárky, Vychovávateľky a Zberného dvora, prebudený starší s Kšeftom.",
-      "stav": "pokryte",
+      "stav": "na-overenie",
       "testy": [
         "packages/core/test/v7-efekty.test.ts › Autobusár v línii od v9 cigarety za pas neberie (jeho efekt je Kšeft väzňa)",
-        "packages/core/test/v7-efekty.test.ts › Starosta v línii od v9 Nástup nemá; Kapybara (marker k stredu), Živnostník (Nástroj za neho), Anonymný alkoholik (Cirhózy)",
-        "packages/core/test/v7-efekty.test.ts › Poštárka a Vychovávateľka v línii od v9 Kšeft nemajú (len väzeň); Obecný úrad Kšeft nemá (v11.13), Zberný dvor áno",
-        "packages/core/test/v7-efekty.test.ts › v9: prebudenie zaniklo — Poštárka na kraji stupnice Kšeft nedáva"
-      ]
+        "packages/core/test/v7-efekty.test.ts › Starosta v línii od v9 Nástup nemá; Kapybara (marker k stredu), Živnostník (Nástroj za neho), Anonymný alkoholik (Cirhózy)"
+      ],
+      "poznamka": "Frakcie (Michal 2026-11-08): Kšeft zanikol, 17 kariet a 3 lokality majú nové efekty — testy v packages/core/test/frakcie.test.ts; rozhodca prejde znova."
     },
     {
       "id": "16.karta.v7.bitka",
       "paragraf": "16. Výklad kariet",
       "pravidlo": "Bitka a po nej v7: Puška, Vidly, Pasca, Pijan, Recidivista, Dievčina, Farár, Noviny, Výherný automat, Záhradkár (Exekúcia).",
-      "stav": "pokryte",
+      "stav": "na-overenie",
       "testy": [
         "packages/core/test/v7-efekty.test.ts › Puška a Vidly: Petelice a Rany o 1 poškodenie viac — aj Rany navyše z efektov",
         "packages/core/test/v7-efekty.test.ts › Pasca: súper v kole priložil kartu k tvojej → Rana navyše (v9.1, predtým Pecka); Pijan: Rana za každé svoje NA EX",
@@ -2193,7 +2208,7 @@
         "packages/core/test/v7-efekty.test.ts › Noviny — Titulka (návrh #40): porazený majiteľ dostane 1 špak za každý Dlh víťaza navyše, víťaz špaky za bitku celé",
         "packages/core/test/v7-efekty.test.ts › Výherný automat: prah Dlhu +1 a v poslednej Pitke kola Dlh"
       ],
-      "poznamka": "Noviny — Titulka (návrh #40, Michal 2026-10-28): porazený +1 špak za každý Dlh víťaza navyše."
+      "poznamka": "Noviny — Titulka (návrh #40, Michal 2026-10-28): porazený +1 špak za každý Dlh víťaza navyše. Frakcie (Michal 2026-11-08): Kšeft zanikol, 17 kariet a 3 lokality majú nové efekty — testy v packages/core/test/frakcie.test.ts; rozhodca prejde znova."
     },
     {
       "id": "14b.finale.utocnik.v7",
@@ -2258,11 +2273,9 @@
       "id": "16.karta.predavacka",
       "paragraf": "16. Výklad kariet",
       "pravidlo": "Predavačka (Kšeft, v10.4): za 1 cigaretu 1 karta z doberacieho balíčka, raz za Pitku, nie nerest; bez kariet sa neponúka.",
-      "stav": "pokryte",
-      "testy": [
-        "packages/core/test/autority-v104.test.ts › Predavačka (Kšeft, v10.4) › za 1 cigaretu si hráč doberie 1 kartu, raz za Pitku; platba nie je nerest",
-        "packages/core/test/autority-v104.test.ts › Predavačka (Kšeft, v10.4) › bez cigarety alebo bez kariet v balíčkoch sa neponúka; súperova Predavačka nie"
-      ]
+      "stav": "na-overenie",
+      "testy": [],
+      "poznamka": "Frakcie (Michal 2026-11-08): Kšeft zanikol, 17 kariet a 3 lokality majú nové efekty — testy v packages/core/test/frakcie.test.ts; rozhodca prejde znova."
     },
     {
       "id": "16.karta.veducko",
@@ -2277,11 +2290,12 @@
       "id": "16.karta.policajtka",
       "paragraf": "16. Výklad kariet",
       "pravidlo": "Policajtka (Pitka, v10.4): súper získa 1 zadĺženie za každú svoju akciu, ktorú v tejto Pitke zruší tvoj Odpor; každá Policajtka zvlášť, Odpor lokality nie.",
-      "stav": "pokryte",
+      "stav": "na-overenie",
       "testy": [
         "packages/core/test/autority-v104.test.ts › Policajtka — pokutový blok (Pitka, v10.4) › za každú súperovu akciu zrušenú tvojím Odporom získa súper 1 zadĺženie",
         "packages/core/test/autority-v104.test.ts › Policajtka — pokutový blok (Pitka, v10.4) › Policajtka so starým Konfliktom (sada do v10.3) pokutu nedáva"
-      ]
+      ],
+      "poznamka": "Frakcie (Michal 2026-11-08): Kšeft zanikol, 17 kariet a 3 lokality majú nové efekty — testy v packages/core/test/frakcie.test.ts; rozhodca prejde znova."
     },
     {
       "id": "16.karta.zahradkar",
@@ -2320,14 +2334,13 @@
       "id": "10.zajatie.v-ohrozeni",
       "paragraf": "10. Starší › Zajatie a väzeň",
       "pravidlo": "Starší v ohrození sa v kole pokusu nehýbe — Nakladačka (O8), Kšeft Predsedovej vily a Kapybara naňho nesmú; hádka smie meniť silu jeho priazne (v10, H4).",
-      "stav": "pokryte",
+      "stav": "na-overenie",
       "testy": [
         "packages/core/test/vazen.test.ts › O8: starší v ohrození sa v kole pokusu nehýbe — Nakladačka naňho nesmie; hádka smie meniť silu priazne (v10, H4)",
         "packages/core/test/rozdelenie.test.ts › starší v ohrození (pokus o zajatie) sa pri hádke posúva (v10 H4), pri Nakladačke nie (O8)",
-        "packages/core/test/v7-karty.test.ts › Predsedova vila: za 2 cigarety posun markera, nie staršieho v ohrození (pokus o zajatie, v9)",
         "packages/server/test/hrac-texty.test.ts › staršieho v ohrození výpis neponúkne — rovnako ako server"
       ],
-      "poznamka": "v10 (Michal 2026-11-01, docs/napady/hadka.html): Developer, na prejdenie rozhodcom."
+      "poznamka": "v10 (Michal 2026-11-01, docs/napady/hadka.html): Developer, na prejdenie rozhodcom. Frakcie (Michal 2026-11-08): Kšeft zanikol, 17 kariet a 3 lokality majú nové efekty — testy v packages/core/test/frakcie.test.ts; rozhodca prejde znova."
     },
     {
       "id": "10.zajatie.vysledok",
@@ -2390,14 +2403,13 @@
       "id": "16.starsi.len-akcie",
       "paragraf": "16. Výklad kariet › Starší",
       "pravidlo": "Karta staršieho v línii má len akcie — žiadny Konflikt, Nástup, Pitka, Kšeft ani prebudenie.",
-      "stav": "pokryte",
+      "stav": "na-overenie",
       "testy": [
         "packages/core/test/v7-efekty.test.ts › Hrobár v línii od v9 Konflikt nemá (len akcie); Vdovu od v10.3 skúša pravidla-v103.test.ts",
         "packages/core/test/v7-efekty.test.ts › Krčmárka v línii od v9 odpoveď na NA EX nezakazuje (jej efekt je Kšeft väzňa)",
-        "packages/core/test/v7-efekty.test.ts › Autobusár v línii od v9 cigarety za pas neberie (jeho efekt je Kšeft väzňa)",
-        "packages/core/test/v7-efekty.test.ts › v9: prebudenie zaniklo — Poštárka na kraji stupnice Kšeft nedáva"
+        "packages/core/test/v7-efekty.test.ts › Autobusár v línii od v9 cigarety za pas neberie (jeho efekt je Kšeft väzňa)"
       ],
-      "poznamka": "v9 (krok 2 revízie starších, Michal 2026-10-30) — Developer, na prejdenie rozhodcom."
+      "poznamka": "v9 (krok 2 revízie starších, Michal 2026-10-30) — Developer, na prejdenie rozhodcom. Frakcie (Michal 2026-11-08): Kšeft zanikol, 17 kariet a 3 lokality majú nové efekty — testy v packages/core/test/frakcie.test.ts; rozhodca prejde znova."
     },
     {
       "id": "10.priazne.v9",
@@ -2419,12 +2431,22 @@
       "id": "viewfor.vazen",
       "paragraf": "Nemenné pravidlo 2 (viewFor) › pokus a väzni",
       "pravidlo": "Pokusy, väzni a Kšefty kola sú verejné; boss v súperovej ruke je verejný, zvyšok ruky nie.",
-      "stav": "pokryte",
+      "stav": "na-overenie",
       "testy": [
         "packages/core/test/vazen.test.ts › pokus, väzni a Kšefty kola sú verejné; zvyšok súperovej ruky nie",
         "packages/core/test/engine.test.ts › filtrovanie platí počas celej náhodnej hry"
       ],
-      "poznamka": "v9 (krok 2 revízie starších, Michal 2026-10-30) — Developer, na prejdenie rozhodcom."
+      "poznamka": "v9 (krok 2 revízie starších, Michal 2026-10-30) — Developer, na prejdenie rozhodcom. Frakcie (Michal 2026-11-08): Kšeft zanikol, 17 kariet a 3 lokality majú nové efekty — testy v packages/core/test/frakcie.test.ts; rozhodca prejde znova."
+    },
+    {
+      "id": "6.frakcie.akcie-navyse",
+      "paragraf": "6. Partia › Spoločník, Nepriateľ, akcia navyše",
+      "pravidlo": "Spoločník: tag / Nepriateľ: tag platí raz, kým je v tvojej / súperovej partii iná odkrytá karta s tagom; Podpora a Konflikt s tagom pri každom stretnutí do konca kola. Akcia navyše ide do súčtov ako tá istá akcia; Posilnenie, Odpor, Forsáž, NA EX ani Silná žena ju nemenia; skrytá Záverečná nič nesplní ani nedostane.",
+      "stav": "na-overenie",
+      "testy": [
+        "packages/core/test/frakcie.test.ts"
+      ],
+      "poznamka": "Frakcie (Michal 2026-11-08), programátor — na prejdenie rozhodcom."
     }
   ]
 }

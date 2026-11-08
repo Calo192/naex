@@ -96,6 +96,25 @@ export type Tag =
   | "Závislý"
   | "Žena";
 
+/** Tagy, ktoré pozná motor — podmienka spúšťača („Podpora: Kriminál“) smie byť len jeden z nich. */
+export const ALL_TAGS: readonly Tag[] = [
+  "Autorita",
+  "Chlap",
+  "Influencer",
+  "Kliatba",
+  "Kriminál",
+  "Lokalita",
+  "Nástroj",
+  "Občan",
+  "Pamätník",
+  "Pracujúci",
+  "Starešina",
+  "Zahraničný",
+  "Zviera",
+  "Závislý",
+  "Žena",
+];
+
 /** Spúšťače efektov (union hodnôt z cards.json a pojmov z pravidiel). */
 export type Trigger =
   | "Nástup"
@@ -106,18 +125,20 @@ export type Trigger =
   | "Dedičstvo"
   | "Výhra"
   | "Prehra"
-  // Kšeft (v7): aktívny efekt — majiteľ ho spustí sám v Pitke na svojom ťahu, raz za Pitku.
-  | "Kšeft"
   // Konflikt (v11.3): karta a súperova karta sa stretnú priložením — jedna k druhej.
   | "Konflikt"
   // Podpora (v11.3): zrkadlo Konfliktu — priložením sa stretnú dve karty toho istého hráča.
   | "Podpora"
+  // Spoločník a Nepriateľ (frakcie, Michal 2026-11-08): akcie navyše, kým je v tvojej, resp.
+  // súperovej partii karta s tagom z podmienky (navyse.ts).
+  | "Spoločník"
+  | "Nepriateľ"
   // Hádka (v11.5, Noviny): efekt sa uplatní, keď sa v bitke rozhodne hádka (§9.1).
   | "Hádka"
 
   // Exekúcia (Záhradkár, Michal 2026-10-28): exekúcia v tomto kole pre majiteľa neplatí.
   | "Exekúcia"
-  // Väzeň (krok 2 revízie starších, Michal 2026-10-30): Kšeft karty staršieho platí len držiteľovi väzňa.
+  // Väzeň (v11.2): schopnosť väzňa raz za hru — použije ju hráč, ktorý staršieho drží v pivnici.
   | "Väzeň";
 
 export const ALL_TRIGGERS: readonly Trigger[] = [
@@ -129,9 +150,10 @@ export const ALL_TRIGGERS: readonly Trigger[] = [
   "Dedičstvo",
   "Výhra",
   "Prehra",
-  "Kšeft",
   "Konflikt",
   "Podpora",
+  "Spoločník",
+  "Nepriateľ",
   "Hádka",
   "Exekúcia",
   "Väzeň",

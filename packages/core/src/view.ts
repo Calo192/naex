@@ -238,8 +238,6 @@ export interface ClientState {
   readonly lokalitCelkom: number;
   /** Rozpis úrovní lokalít po kolách s finále na konci (v7); chýba = žreb ako do v6. */
   readonly rozpis?: readonly number[];
-  /** Rany navyše z Kšeftu Strýka z Ameriky v tomto kole (v7) — verejné. */
-  readonly kseftRany?: readonly [number, number];
   /** Účinky schopností väzňov do konca kola (v11.2: Starosta); verejné. */
   readonly kseftyKola?: KseftyKola;
   /** Priloženia súpera ku kartám hráča v tomto kole (Pasca v7); verejné. */
@@ -416,7 +414,6 @@ export function viewFor(data: GameData, state: GameState, miesto: Miesto): Clien
     lokalityVHre: lokalityNaVyber(data, state),
     lokalitCelkom: state.lokalitCelkom,
     ...(state.rozpis !== undefined ? { rozpis: state.rozpis } : {}),
-    ...(state.kseftRany !== undefined ? { kseftRany: state.kseftRany } : {}),
     ...(state.kseftyKola !== undefined ? { kseftyKola: state.kseftyKola } : {}),
     ...(state.prilozeniaKu !== undefined ? { prilozeniaKu: state.prilozeniaKu } : {}),
     spaky: state.spaky,

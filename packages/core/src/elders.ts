@@ -76,10 +76,10 @@ export interface ZmenaMarkera {
   readonly na: Stupen;
   /**
    * nakladacka = víťaz bitky dvíha strach, hadka = víťaz hádky dvíha reči, bodovanie = reči
-   * po bodovaní klesli, kseft = Predsedova vila, nastup = Kapybara, posun = súperov strach
+   * po bodovaní klesli, vila = Predsedova vila (fajčenie v Pitke), nastup = Kapybara, posun = súperov strach
    * prekonal reči a blok sa posunul (v11.12).
    */
-  readonly zdroj: "nakladacka" | "hadka" | "bodovanie" | "kseft" | "nastup" | "posun";
+  readonly zdroj: "nakladacka" | "hadka" | "bodovanie" | "vila" | "nastup" | "posun";
   /** Spodok bloku rečí pred a po zmene (v11.12); vrch je v z a na, môže ostať rovnaký. */
   readonly odZ?: Stupen;
   readonly odNa?: Stupen;
@@ -340,7 +340,7 @@ export function sReciNizsie<E extends Markery>(elder: E, p: PlayerId): E {
   return { ...elder, reci, reciOd };
 }
 
-/** Ďalší stupeň rečí pri Kšefte Predsedovej vily, alebo null, keď už nie je kam. */
+/** Ďalší stupeň rečí pri Predsedovej vile, alebo null, keď už nie je kam (v11.12: celý teplomer). */
 export function dalsiStupenReci(elder: Markery, p: PlayerId): Stupen | null {
   return krokyZdvihu(elder, p, "reci")[0]?.na ?? null;
 }

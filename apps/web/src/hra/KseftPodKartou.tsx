@@ -19,17 +19,15 @@ export interface KseftPodKartouProps {
   readonly cmd: (c: Command) => void;
   /** Telefón: ťuk najprv otvorí ponuku s veľkým tlačidlom. */
   readonly naDotyk?: boolean;
-  /** Zberný dvor: výber karty zo šrotu v pilulke. */
-  readonly onVykup?: () => void;
   /** Nedostupný Kšeft povie prečo aj na ťuk (nápoveda pod myšou na dotyku nie je). */
   readonly onNedostupny?: (text: string, x: number, y: number) => void;
   /** Len pre test — na stole sa ponuka otvorí klikom. */
   readonly otvorena?: boolean;
 }
 
-/** Kľúč výučby: Kšeft vily ostáva „tlacidlo:kseft“ (krok k-kseft vo výučbe Prvá hra). */
+/** Kľúč výučby tlačidla pod kartou. */
 export function klucVyucbyKseftu(k: Pick<KseftNaStole, "defId">): string {
-  return k.defId === "predsedova_vila" ? "tlacidlo:kseft" : `tlacidlo:kseft-${k.defId}`;
+  return `tlacidlo:efekt-${k.defId}`;
 }
 
 /** Detail Kšeftu — nápoveda pod myšou aj ponuka po ťuknutí: čo dáš, čo dostaneš, celé znenie, prečo nie. */
@@ -45,9 +43,9 @@ function Detail({ k }: { readonly k: KseftNaStole }) {
   );
 }
 
-/** „Kšeft“, pri väzňovi „Schopnosť“ (v11.2). */
-function druhNazov(k: Pick<KseftNaStole, "druh">): string {
-  return k.druh === "vazen" ? "Schopnosť" : "Kšeft";
+/** Pri väzňovi „Schopnosť“ (v11.2), pod lokalitou jej meno (Sklad). */
+function druhNazov(k: Pick<KseftNaStole, "druh" | "nazov">): string {
+  return k.druh === "vazen" ? "Schopnosť" : k.nazov;
 }
 
 export function obsahNapovedy(k: KseftNaStole): TipObsah {
@@ -64,7 +62,7 @@ function Cena({ k }: { readonly k: KseftNaStole }) {
   );
 }
 
-export function KseftPodKartou({ kseft: k, cmd, naDotyk = false, onVykup, onNedostupny, otvorena: otvorenaNaZaciatku = false }: KseftPodKartouProps) {
+export function KseftPodKartou({ kseft: k, cmd, naDotyk = false, onNedostupny, otvorena: otvorenaNaZaciatku = false }: KseftPodKartouProps) {
   const [otvorena, setOtvorena] = useState(otvorenaNaZaciatku);
   const obal = useRef<HTMLSpanElement>(null);
   const ponuka = useRef<HTMLDivElement>(null);
@@ -121,10 +119,6 @@ export function KseftPodKartou({ kseft: k, cmd, naDotyk = false, onVykup, onNedo
   };
   const vykonaj = (): void => {
     if (k.akcia.typ === "prikaz") posli(k.akcia.prikaz);
-    else if (k.akcia.typ === "vykup") {
-      setOtvorena(false);
-      onVykup?.();
-    }
   };
 
   const tlacidloVolby = (t: TlacidloVolby): ReactNode => (

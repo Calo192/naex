@@ -1,0 +1,391 @@
+{
+  "zdroj": "docs/napady/frakcie-final.json (Michal 2026-11-08) — texty efektov v zápise tvorcu: „Spúšťač: Tag {Akcia}.“",
+  "karty": [
+    {
+      "id": "ministrant",
+      "effect_text": "Spoločník: Zahraničný {Pecka}.",
+      "triggers": [
+        "Spoločník"
+      ]
+    },
+    {
+      "id": "velmi_smutiaca_vdova",
+      "effect_text": "Konflikt: Chlap — Súper odhodí 1 kartu z ruky.",
+      "triggers": [
+        "Konflikt"
+      ]
+    },
+    {
+      "id": "vestica",
+      "effect_text": "Spoločník: Pamätník {Povera} {Povera}.",
+      "triggers": [
+        "Spoločník"
+      ],
+      "left": {
+        "blocked": [
+          0
+        ],
+        "actions": {
+          "PoškodeniePečene": 1,
+          "Dlh": 1,
+          "Povera": 1
+        }
+      },
+      "right": {
+        "blocked": [
+          0,
+          3
+        ],
+        "actions": {
+          "Povera": 1,
+          "Vízia": 1
+        },
+        "allowed": {
+          "1": [
+            "Povera"
+          ],
+          "2": [
+            "Vízia"
+          ]
+        }
+      }
+    },
+    {
+      "id": "policajtka",
+      "effect_text": "Nepriateľ: Kriminál {Petelica}.",
+      "triggers": [
+        "Nepriateľ"
+      ]
+    },
+    {
+      "id": "praudovravec",
+      "effect_text": "Konflikt: Autorita {Pohoršenie}.",
+      "triggers": [
+        "Konflikt"
+      ],
+      "right": {
+        "blocked": [
+          0
+        ],
+        "actions": {
+          "Dlh": 1,
+          "Povera": 1
+        },
+        "allowed": {
+          "1": [
+            "Povera"
+          ],
+          "2": [
+            "Dlh"
+          ],
+          "3": [
+            "Dlh"
+          ]
+        }
+      }
+    },
+    {
+      "id": "niekoho_stryna",
+      "effect_text": "Konflikt: Závislý {Pohoršenie}.",
+      "triggers": [
+        "Konflikt"
+      ]
+    },
+    {
+      "id": "recidivista",
+      "effect_text": "Nepriateľ: Zahraničný {Pecka}.",
+      "triggers": [
+        "Nepriateľ"
+      ]
+    },
+    {
+      "id": "dievcina_na_vydaj",
+      "effect_text": "Podpora: Zahraničný {Pohoršenie}.",
+      "triggers": [
+        "Podpora"
+      ],
+      "right": {
+        "blocked": [
+          0,
+          3
+        ],
+        "actions": {
+          "Pakt": 1,
+          "Poldeci": 1
+        }
+      }
+    },
+    {
+      "id": "zivnostnik",
+      "effect_text": "Spoločník: Autorita {Robota}.",
+      "triggers": [
+        "Spoločník"
+      ]
+    },
+    {
+      "id": "kocovnik",
+      "effect_text": "Spoločník: Pamätník {Pecka}.",
+      "triggers": [
+        "Spoločník"
+      ]
+    },
+    {
+      "id": "sarlatan",
+      "effect_text": "Spoločník: Autorita {Povera} {Povera}.",
+      "triggers": [
+        "Spoločník"
+      ]
+    },
+    {
+      "id": "podvodnik",
+      "effect_text": "Konflikt: Influencer {Obmedzenie}.",
+      "triggers": [
+        "Konflikt"
+      ]
+    },
+    {
+      "id": "snubenica",
+      "effect_text": "Nepriateľ: Autorita {Pohoršenie}.",
+      "triggers": [
+        "Nepriateľ"
+      ]
+    },
+    {
+      "id": "predavacka",
+      "effect_text": "Podpora: Dober si 1 kartu.",
+      "triggers": [
+        "Podpora"
+      ]
+    },
+    {
+      "id": "opatrovatelka",
+      "effect_text": "Podpora: Pamätník {Robota}.",
+      "triggers": [
+        "Podpora"
+      ]
+    },
+    {
+      "id": "hasic",
+      "effect_text": "Podpora: Vytiahni náhodnú kartu zo svojho odhadzovacieho balíčka (aj kliatbu) a rozhodni sa, či si ju necháš, alebo ju odhodíš.",
+      "triggers": [
+        "Podpora"
+      ]
+    },
+    {
+      "id": "stryko_z_ameriky",
+      "effect_text": "Nepriateľ: Autorita {Rana} {Rana}.",
+      "triggers": [
+        "Nepriateľ"
+      ],
+      "right": {
+        "blocked": [
+          1
+        ],
+        "actions": {
+          "Cigareta": 1,
+          "Poldeci": 1
+        }
+      }
+    },
+    {
+      "id": "zberny_dvor",
+      "effect_text": "Pitka: Na konci Pitky smieš spáliť 1 kartu z ruky, nie kliatbu.",
+      "triggers": [
+        "Pitka"
+      ]
+    },
+    {
+      "id": "sklad",
+      "effect_text": "Zhromaždenie: Nástroj zo šenku smieš vyložiť rovno do Dedičstva za cenu Dedičstva. Do šenku sa dotiahne nový Nástroj.",
+      "triggers": [
+        "Zhromaždenie"
+      ],
+      "left": {
+        "blocked": [
+          1,
+          3
+        ],
+        "actions": {
+          "Robota": 1,
+          "Obmedzenie": 1
+        },
+        "allowed": {
+          "0": [
+            "Robota"
+          ],
+          "2": [
+            "Obmedzenie"
+          ]
+        },
+        "name": "pri vreciach"
+      }
+    },
+    {
+      "id": "predsedova_vila",
+      "effect_text": "Pitka: Za každé 2 cigarety, ktoré v tejto Pitke vyfajčíš, zdvihni svoje reči pri jednom staršom o stupeň.",
+      "triggers": [
+        "Pitka"
+      ]
+    },
+    {
+      "id": "klebetnica",
+      "left": {
+        "blocked": [
+          0
+        ],
+        "actions": {
+          "PoškodeniePečene": 1,
+          "Povera": 1,
+          "Dlh": 1
+        }
+      },
+      "right": {
+        "blocked": [
+          0,
+          3
+        ],
+        "actions": {
+          "Pakt": 1,
+          "Vízia": 1
+        },
+        "allowed": {
+          "1": [
+            "Pakt"
+          ],
+          "2": [
+            "Vízia"
+          ]
+        }
+      }
+    },
+    {
+      "id": "kristalova_gula",
+      "left": {
+        "blocked": [
+          1,
+          2
+        ],
+        "actions": {
+          "Povera": 1,
+          "PoškodeniePečene": 1
+        }
+      },
+      "right": {
+        "blocked": [
+          0,
+          1
+        ],
+        "actions": {
+          "Vízia": 2
+        }
+      }
+    },
+    {
+      "id": "postarka",
+      "right": {
+        "blocked": [
+          0
+        ],
+        "actions": {
+          "Dlh": 1,
+          "Posilnenie": 1,
+          "Vízia": 1
+        },
+        "allowed": {
+          "1": [
+            "Dlh"
+          ],
+          "2": [
+            "Posilnenie"
+          ],
+          "3": [
+            "Vízia"
+          ]
+        }
+      }
+    },
+    {
+      "id": "financna_poradkyna",
+      "left": {
+        "blocked": [
+          0
+        ],
+        "actions": {
+          "Dlh": 2,
+          "Obmedzenie": 1
+        }
+      },
+      "right": {
+        "blocked": [
+          0,
+          3
+        ],
+        "actions": {
+          "Povera": 1,
+          "Dlh": 1
+        }
+      }
+    },
+    {
+      "id": "horoskop",
+      "right": {
+        "blocked": [
+          0,
+          1
+        ],
+        "actions": {
+          "Povera": 1,
+          "Dlh": 1
+        }
+      }
+    },
+    {
+      "id": "starosta",
+      "right": {
+        "blocked": [
+          0
+        ],
+        "actions": {
+          "Dlh": 1,
+          "Pakt": 1,
+          "Robota": 1
+        },
+        "allowed": {
+          "1": [
+            "Dlh"
+          ],
+          "2": [
+            "Pakt"
+          ],
+          "3": [
+            "Robota"
+          ]
+        }
+      }
+    },
+    {
+      "id": "kostol",
+      "left": {
+        "blocked": [
+          3
+        ],
+        "actions": {
+          "Viera": 2,
+          "PoškodeniePečene": 1
+        },
+        "allowed": {
+          "0": [
+            "Viera"
+          ],
+          "1": [
+            "Viera"
+          ],
+          "2": [
+            "PoškodeniePečene"
+          ]
+        },
+        "name": "pri oltári"
+      }
+    }
+  ]
+}
