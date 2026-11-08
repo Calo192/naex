@@ -115,7 +115,7 @@ describe("zápis efektu v tvorcovi: „Spúšťač: Tag {Akcia}.“", () => {
     expect(rozborNavyse("Spoločník: Pamatnik {Povera}.").chyby).toHaveLength(1);
     expect(rozborNavyse("Spoločník: Pamätník {Pověra}.").chyby).toHaveLength(1);
     expect(rozborNavyse("Spoločník: Pamätník {Posilnenie}.").chyby).toHaveLength(1);
-    expect(rozborNavyse("Bitka: Dostaneš {Rana}.").chyby).toHaveLength(1);
+    expect(rozborNavyse("Nástup: Dostaneš {Rana}.").chyby).toHaveLength(1);
     const zla = { ...(cardsJson as { cards: Surova[] }).cards[0], effect_text: "Spoločník: Autorta {Rana}." };
     expect(() => parseCards({ cards: [zla] })).toThrow(/Autorta/);
   });
@@ -260,19 +260,34 @@ describe("Podpora a Konflikt s tagom — pri každom stretnutí, do konca kola",
     expect(po.state.hraci[1].ruka.map((k) => k.uid)).toContain(vandal.uid);
   });
 
-  it("Vdova (Konflikt: Chlap): súper vyberie kartu z ruky a odhodí ju; pri Žene nič", () => {
+  it("Vdova (Konflikt: Chlap): súper odhodí 1 náhodnú kartu z ruky — vyberie ju generátor partie (Michal 2026-11-08); pri Žene nič", () => {
     const vd = inst("velmi_smutiaca_vdova");
-    const jehoRuka = [inst("pijan"), inst("vandal")];
+    const jehoRuka = [inst("vandal"), inst("masiar"), inst("hasic")];
     const s = sHracom(zhromazdenie("zastavka", [[lezi(inst("pijan"), 1)], []], [vd]), 1, { ruka: jehoRuka });
-    const po = apply(data, s, { type: "place", uid: vd.uid, target: "vlastna" }, 0).state;
-    expect(po.hasicVolby?.[0]).toMatchObject({ hrac: 1, typ: "vdova" });
-    expect(legalCommands(data, po, 1)).toEqual(jehoRuka.map((k) => ({ type: "odhod", uid: k.uid })));
-    expect(() => apply(data, po, { type: "pass" }, 0)).toThrow();
-    const odh = apply(data, po, { type: "odhod", uid: jehoRuka[1]!.uid }, 1).state;
-    expect(odh.hraci[1].ruka.map((k) => k.uid)).toEqual([jehoRuka[0]!.uid]);
-    expect(odh.hraci[1].odhadzovaci.map((k) => k.uid)).toContain(jehoRuka[1]!.uid);
+    const r = apply(data, s, { type: "place", uid: vd.uid, target: "vlastna" }, 0);
+    const po = r.state;
+    // Nikto nevyberá: hra nečaká na voľbu a hráč 0 hrá ďalej.
+    expect(po.hasicVolby ?? []).toEqual([]);
+    expect(legalCommands(data, po, 1).some((c) => (c.type as string) === "odhod")).toBe(false);
+    expect(po.hraci[1].ruka).toHaveLength(2);
+    const odhodena = po.hraci[1].odhadzovaci.find((k) => jehoRuka.some((x) => x.uid === k.uid));
+    expect(odhodena).toBeDefined();
+    // Deterministická náhoda: rovnaký stav a semienko = rovnaká karta.
+    const znova = apply(data, s, { type: "place", uid: vd.uid, target: "vlastna" }, 0).state;
+    expect(znova.hraci[1].odhadzovaci.map((k) => k.uid)).toEqual(po.hraci[1].odhadzovaci.map((k) => k.uid));
+    // Iné semienko vyberie inú kartu aspoň niekedy — volí náhoda, nie poradie v ruke.
+    const vybrane = new Set<number>();
+    for (let seed = 1; seed <= 12; seed++) {
+      const sx = { ...s, rng: setupGame(data, seed).rng };
+      const px = apply(data, sx, { type: "place", uid: vd.uid, target: "vlastna" }, 0).state;
+      for (const k of px.hraci[1].odhadzovaci) if (jehoRuka.some((x) => x.uid === k.uid)) vybrane.add(k.uid);
+    }
+    expect(vybrane.size).toBeGreaterThan(1);
+    // Ktorú kartu stratil, vie len on: súper vidí v logu len počet.
+    const pre0 = r.events.filter((e) => e.type === "log" && (e as { pre?: number }).pre !== 1).map((e) => (e as { text: string }).text).join(" ");
+    expect(pre0).not.toContain(data.cards.get(odhodena!.defId)!.name);
     const zena = sHracom(zhromazdenie("zastavka", [[lezi(inst("snubenica"), 1)], []], [vd]), 1, { ruka: jehoRuka });
-    expect(apply(data, zena, { type: "place", uid: vd.uid, target: "vlastna" }, 0).state.hasicVolby ?? []).toEqual([]);
+    expect(apply(data, zena, { type: "place", uid: vd.uid, target: "vlastna" }, 0).state.hraci[1].ruka).toHaveLength(3);
   });
 
   it("staré efekty platia len pre staré sady: Kočovník bez Furtu, Vdova so starým znením", () => {

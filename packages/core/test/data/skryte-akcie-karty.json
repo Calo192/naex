@@ -1,0 +1,45 @@
+{
+  "zdroj": "docs/napady/skryte-akcie.html, skupina A (Michal 2026-11-08) — nové texty efektov pre admina v zápise akcie navyše: „Bitka: podmienka {Akcia}.“; Cirhóza, Lesná cesta a Ihrisko ostávajú slovami. Vdova: kartu vyberie náhoda (Michal 2026-11-08).",
+  "karty": [
+    {
+      "id": "pasca",
+      "effect_text": "Dedičstvo: Bitka: Ak súper v tomto kole priložil kartu k tvojej {Rana}.",
+      "triggers": ["Dedičstvo", "Bitka"]
+    },
+    {
+      "id": "pijan",
+      "effect_text": "Bitka: Za každé NA EX, ktoré si v tomto kole dal {Rana}.",
+      "triggers": ["Bitka"]
+    },
+    {
+      "id": "svokra",
+      "effect_text": "Bitka: Za každú tvoju kartu so súperovým NA EX {Rana}.",
+      "triggers": ["Bitka"]
+    },
+    {
+      "id": "vymahac",
+      "effect_text": "Bitka: Za každé 2 tvoje priznané Dlhy {Rana}.",
+      "triggers": ["Bitka"]
+    },
+    {
+      "id": "sofer",
+      "effect_text": "Bitka: Ak si v tomto kole nedal NA EX {Pecka} a dostaneš 1 cigaretu.",
+      "triggers": ["Bitka"]
+    },
+    {
+      "id": "traktoristka",
+      "effect_text": "Bitka: Ak máš v jeho kraji prevahu {Pecka}. Inak získaš 1 Dlh.",
+      "triggers": ["Bitka"]
+    },
+    {
+      "id": "vyherny_automat",
+      "effect_text": "Dedičstvo: Tvoj prah Dlhu je o 1 vyšší. Posledná Pitka kola: {Hazard}.",
+      "triggers": ["Dedičstvo"]
+    },
+    {
+      "id": "velmi_smutiaca_vdova",
+      "effect_text": "Konflikt: Chlap — Súper odhodí 1 náhodnú kartu z ruky.",
+      "triggers": ["Konflikt"]
+    }
+  ]
+}

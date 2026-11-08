@@ -117,9 +117,7 @@ export class Robot {
       if (nv.typ === "nastroj") return { type: "nastroj", uid: null };
       const kapybara = view.starsi.find((e) => e.reci[ja === 0 ? 1 : 0] > 0);
       if (nv.typ === "kapybara" && kapybara !== undefined) return { type: "kapybara", elderId: kapybara.elderId };
-      // Frakcie (2026-11-08): Vdova — odhodí prvú kartu z ruky; Zberný dvor — nič nepáli; vila — prvý starší s voľným stupňom.
-      const prvaVRuke = view.ruka[0];
-      if (nv.typ === "vdova" && prvaVRuke !== undefined) return { type: "odhod", uid: prvaVRuke.uid };
+      // Frakcie (2026-11-08): Zberný dvor — nič nepáli; vila — prvý starší s voľným stupňom.
       if (nv.typ === "dvor") return { type: "spal", uid: null };
       const vila = view.starsi.find((e) => dalsiStupenReci(e, ja) !== null);
       if (nv.typ === "vila" && vila !== undefined) return { type: "vila", elderId: vila.elderId };

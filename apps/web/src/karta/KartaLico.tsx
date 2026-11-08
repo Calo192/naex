@@ -7,7 +7,7 @@
 import { useLayoutEffect, useMemo, useRef, useState, type CSSProperties, type ReactNode } from "react";
 import type { KartaNavrh, RozlozenieStrany, Vzhlad } from "@naex/tvorba";
 import { farbaKarty, formatujEfekt, geometriaKarty } from "@naex/tvorba";
-import { rozborNavyse, textBezAkcii } from "@naex/core";
+import { popisPodmienky, rozborNavyse, textBezAkcii } from "@naex/core";
 import { mediaUrl } from "../lib/api.ts";
 import { IkonaAkcie } from "./IkonaAkcie.tsx";
 import { useTip, type TipObsah } from "./Tip.tsx";
@@ -32,6 +32,10 @@ export interface ZarNaKarte extends ZarSlotu {
 export interface NavyseNaKarte {
   readonly krat: number;
   readonly zar?: readonly (ZarNaKarte | null)[];
+  /** Akcia, ktorou sa akcia [j] ráta (Vedúcko, Sypač) — pečať ju kreslí namiesto vytlačenej. */
+  readonly ako?: readonly string[];
+  /** Podpora a Konflikt: ktorá vytlačená strana susedí s kartou, s ktorou sa efekt spustil (šípka svieti). */
+  readonly sipky?: { readonly lava: boolean; readonly prava: boolean };
 }
 
 export type VzhladKarty = Pick<
@@ -184,17 +188,39 @@ export function KartaLico(props: KartaLicoProps) {
     const w = vzor.w;
     const medzera = w * 0.3;
     // Rovnaké akcie jedného efektu sú jedna ikona s odznakom ×N (Veštica: 2 Povery = Povera ×2).
-    const skupiny = efektyNavyse.map((e) => [...new Set(e.akcie)].map((a) => ({ a, kusov: e.akcie.filter((x) => x === a).length, prva: e.akcie.indexOf(a) })));
+    // Vedúcko a Sypač (Michal 2026-11-08): pečať ukáže akciu, ktorou sa akcia ráta (Robota → Pecka).
+    const skupiny = efektyNavyse.map((e, ei) => {
+      const ako = e.akcie.map((a, j) => props.navyse?.[ei]?.ako?.[j] ?? a);
+      return [...new Set(ako)].map((a) => ({ a, kusov: ako.filter((x) => x === a).length, prva: ako.indexOf(a) }));
+    });
+    // Podpora a Konflikt majú po bokoch šípky k susedom (mock M3) — miesto pre ne v rade.
+    const sipkaW = w * 0.32;
+    const sipkovych = efektyNavyse.filter((e) => e.spustac === "Podpora" || e.spustac === "Konflikt").length;
     const ikon = skupiny.reduce((n, g2) => n + g2.length, 0);
-    const x0 = (g.sirka - ikon * w - (ikon - 1) * medzera) / 2;
+    const sirkaRadu = ikon * w + (ikon - 1) * medzera + sipkovych * 2 * (sipkaW + medzera * 0.5);
+    let x = (g.sirka - sirkaRadu) / 2;
     const y = g.pas.y - w - 5;
-    let n = 0;
     return efektyNavyse.flatMap((e, ei) => {
       const stav = props.navyse?.[ei];
-      const podmienka = `${e.spustac}${e.tag === null ? "" : `: ${e.tag}`}`;
-      return (skupiny[ei] ?? []).map(({ a, kusov, prva }) => {
-        const r = { x: x0 + n * (w + medzera), y, w };
-        n++;
+      const podmienka = popisPodmienky(e);
+      const sSipkami = e.spustac === "Podpora" || e.spustac === "Konflikt";
+      const sipka = (strana: "lava" | "prava") => {
+        const sviti = stav?.sipky?.[strana] === true;
+        const el = (
+          <span
+            key={`navyse${ei}-sipka-${strana}`}
+            className={`kl-navyse-sipka kl-navyse-sipka-${strana}${sviti ? " kl-navyse-sipka-sviti" : ""}`}
+            style={{ "--x": x, "--y": y + w / 2, "--s": sipkaW } as CSSProperties}
+            aria-hidden="true"
+          />
+        );
+        x += sipkaW + medzera * 0.5;
+        return el;
+      };
+      const lava = sSipkami ? [sipka("lava")] : [];
+      const ikony = (skupiny[ei] ?? []).map(({ a, kusov, prva }, gi, vsetky) => {
+        const r = { x, y, w };
+        x += w + (gi < vsetky.length - 1 || !sSipkami ? medzera : medzera * 0.5);
         // Stavy ako na hrane: splnená = aktívna (žiar), nesplnená = neaktívna a sivá; mimo hry ako vytlačená.
         const st: SlotStav | null = stav === undefined ? null : { stav: stav.krat === 0 ? "neaktivna" : "aktivna", nasobok: 1 };
         const text =
@@ -206,6 +232,7 @@ export function KartaLico(props: KartaLicoProps) {
         const zar = stav?.zar?.[prva] ?? null;
         return ikona(`navyse${ei}-${a}`, r, a, st, zar, ` kl-navyse${stav !== undefined && stav.krat === 0 ? " kl-navyse-spi" : ""}${zar !== null ? " kl-zar-prava" : ""}`, text, kusov * Math.max(1, stav?.krat ?? 1));
       });
+      return [...lava, ...ikony, ...(sSipkami ? [sipka("prava")] : [])];
     });
   };
 

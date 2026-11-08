@@ -10,22 +10,52 @@
 //   Podpora: T    — pri každom stretnutí priložením s vlastnou kartou s tagom T, do konca kola
 //   Konflikt: T   — pri každom stretnutí priložením so súperovou kartou s tagom T, do konca kola
 //
+// Skryté akcie (Michal 2026-11-08): efekty, ktoré akciu dávali slovami, majú podmienku
+// slovami pred piktogramom. Podmienku a násobok „za každé“ vyhodnotí jadro podľa karty
+// (partia.ts kratSlovami), text ju len opisuje:
+//
+//   Bitka: podmienka            — Pijan, Svokra, Vymáhač, Šofér, Traktorista, Pasca
+//   Posledná Pitka kola:        — Výherný automat; Dlh dáva motor na konci poslednej Pitky,
+//                                 do súčtov akcia nejde, pečať len ukazuje, kedy platí
+//
+// Efekt v texte, ktorý začína „Dedičstvo:“ (Pasca, Výherný automat), platí, len keď karta
+// leží v Dedičstve.
+//
 // Akcia navyše je aktívna akcia majiteľa karty mimo jej hrán: do súčtov ide ako tá
 // istá akcia a vyhodnotí sa v jej kroku. Nie je na spoji, preto ju nemení Posilnenie,
-// Odpor, Forsáž, NA EX ani Silná žena; mení ju Náradie v Dedičstve a efekty, ktoré
-// menia všetky akcie hráča (rátajú zo súčtov).
+// Odpor, Forsáž, NA EX ani Silná žena; mení ju Náradie v Dedičstve, efekty, ktoré
+// menia všetky akcie hráča (rátajú zo súčtov), a premena Vedúcka a Sypača (Michal 2026-11-08).
 
 import type { Action, CardDef, PlayerId, Tag } from "./types.ts";
 import { ALL_ACTIONS, ALL_TAGS } from "./types.ts";
 
-export type SpustacNavyse = "Spoločník" | "Nepriateľ" | "Podpora" | "Konflikt";
-export const SPUSTACE_NAVYSE: readonly SpustacNavyse[] = ["Spoločník", "Nepriateľ", "Podpora", "Konflikt"];
+export type SpustacTagom = "Spoločník" | "Nepriateľ" | "Podpora" | "Konflikt";
+/** Spúšťače s podmienkou slovami (skryté akcie, Michal 2026-11-08). */
+export type SpustacSlovami = "Bitka" | "Posledná Pitka kola";
+export type SpustacNavyse = SpustacTagom | SpustacSlovami;
+export const SPUSTACE_NAVYSE: readonly SpustacTagom[] = ["Spoločník", "Nepriateľ", "Podpora", "Konflikt"];
+export const SPUSTACE_SLOVAMI: readonly SpustacSlovami[] = ["Bitka", "Posledná Pitka kola"];
 
 export interface EfektNavyse {
   readonly spustac: SpustacNavyse;
-  /** Tag z podmienky; null = ktorákoľvek karta (Podpora a Konflikt bez tagu). */
+  /** Tag z podmienky; null = ktorákoľvek karta (Podpora a Konflikt bez tagu) či podmienka slovami. */
   readonly tag: Tag | null;
   readonly akcie: readonly Action[];
+  /** Podmienka slovami pred piktogramom (Bitka); chýba = bez podmienky. */
+  readonly podmienka?: string;
+  /** Efekt Nástroja v Dedičstve (text začína „Dedičstvo:“) — v línii neplatí. */
+  readonly dedicstvo?: true;
+}
+
+/** Efekt s podmienkou slovami (Bitka, Posledná Pitka kola) — tú vyhodnocuje jadro podľa karty. */
+export function jeSlovami(e: Pick<EfektNavyse, "spustac">): boolean {
+  return (SPUSTACE_SLOVAMI as readonly string[]).includes(e.spustac);
+}
+
+/** Text podmienky efektu pre popis pečate: „Spoločník: Pamätník“, „Bitka: Ak si v tomto kole nedal NA EX“. */
+export function popisPodmienky(e: Pick<EfektNavyse, "spustac" | "tag" | "podmienka">): string {
+  const za = e.tag ?? e.podmienka ?? null;
+  return za === null ? e.spustac : `${e.spustac}: ${za}`;
 }
 
 /** Modifikátory spoja bez spoja nič nerobia — akciou navyše byť nemôžu. */
@@ -44,7 +74,11 @@ function akciaZTokenu(token: string): Action | null {
 }
 
 const TOKEN = /\{([^{}]+)\}/gu;
-const EFEKT = new RegExp(`(?:^|[\\s.!?])(${SPUSTACE_NAVYSE.join("|")}):\\s*(?:([\\p{L}]+)\\s*)?((?:\\{[^{}]+\\}\\s*)+)`, "gu");
+// Skupiny: 1 spúšťač s tagom, 2 tag, 3 spúšťač slovami, 4 podmienka slovami, 5 piktogramy.
+const EFEKT = new RegExp(
+  `(?:^|[\\s.!?])(?:(${SPUSTACE_NAVYSE.join("|")}):\\s*(?:([\\p{L}]+)\\s*)?|(${SPUSTACE_SLOVAMI.join("|")}):\\s*([^{}:.!?]*?)\\s*)((?:\\{[^{}]+\\}\\s*)+)`,
+  "gu",
+);
 
 export interface RozborNavyse {
   readonly efekty: readonly EfektNavyse[];
@@ -57,26 +91,28 @@ export function rozborNavyse(text: string): RozborNavyse {
   const efekty: EfektNavyse[] = [];
   const chyby: string[] = [];
   let tokenovVEfektoch = 0;
+  const dedicstvo = /^\s*Dedičstvo:/u.test(text);
   for (const m of text.matchAll(EFEKT)) {
-    const spustac = m[1] as SpustacNavyse;
+    const spustac = (m[1] ?? m[3]) as SpustacNavyse;
     const slovo = m[2] ?? null;
+    const podmienka = (m[4] ?? "").trim();
     let tag: Tag | null = null;
     if (slovo !== null) {
       if (!(ALL_TAGS as readonly string[]).includes(slovo)) chyby.push(`„${spustac}: ${slovo}“ — ${slovo} nie je tag, ktorý hra pozná (${ALL_TAGS.join(", ")}).`);
       else tag = slovo as Tag;
     }
     const akcie: Action[] = [];
-    for (const t of (m[3] ?? "").matchAll(TOKEN)) {
+    for (const t of (m[5] ?? "").matchAll(TOKEN)) {
       tokenovVEfektoch++;
       const a = akciaZTokenu(t[1] ?? "");
       if (a === null) chyby.push(`{${t[1] ?? ""}} nie je akcia, ktorú hra pozná.`);
       else if (BEZ_SPOJA_NIC.includes(a)) chyby.push(`{${t[1] ?? ""}} nemôže byť akcia navyše — bez spoja nič nerobí.`);
       else akcie.push(a);
     }
-    if (akcie.length > 0) efekty.push({ spustac, tag, akcie });
+    if (akcie.length > 0) efekty.push({ spustac, tag, akcie, ...(podmienka === "" ? {} : { podmienka }), ...(dedicstvo ? { dedicstvo: true as const } : {}) });
   }
   const vsetkych = [...text.matchAll(TOKEN)].length;
-  if (vsetkych > tokenovVEfektoch) chyby.push("Piktogram akcie {…} je mimo efektu „Spúšťač: Tag {Akcia}“ — hra ho nevyhodnotí.");
+  if (vsetkych > tokenovVEfektoch) chyby.push("Piktogram akcie {…} je mimo efektu „Spúšťač: Tag {Akcia}“ alebo „Bitka: podmienka {Akcia}“ — hra ho nevyhodnotí.");
   return { efekty, chyby };
 }
 
@@ -98,6 +134,8 @@ export function textBezAkcii(text: string): string {
   return text
     .replace(TOKEN, "")
     .replace(/[ \t]+([.,!?])/gu, "$1")
+    // „Posledná Pitka kola: {Hazard}.“ či „Podpora: {Robota}.“ — bez piktogramu ostala dvojbodka pred bodkou.
+    .replace(/:([.,!?])/gu, "$1")
     .replace(/[ \t]{2,}/gu, " ")
     .trim();
 }
@@ -131,17 +169,25 @@ export interface KartaPodmienky {
   readonly zaverecna?: true;
   /** Koľkokrát sa spustil efekt navyše [i] (Podpora, Konflikt) v tomto kole. */
   readonly navyse?: readonly number[];
+  /** Uid kariet, s ktorými sa efekt navyše [i] spustil — šípky pečate k susedom. */
+  readonly navyseOd?: readonly (readonly number[])[];
 }
 
 /** Stav jedného efektu s akciami navyše — pre súčty aj pre kreslenie karty. */
 export interface NavyseStav extends EfektNavyse {
   /** Koľkokrát platí: 0 = nesplnené, Spoločník a Nepriateľ najviac 1, Podpora a Konflikt za každé stretnutie. */
   readonly krat: number;
+  /** Akcia, ktorou sa akcia [j] ráta (Vedúcko: Robota ako Pecka, Sypač: Rana ako Pecka); chýba = bez zmeny. */
+  readonly ako?: readonly Action[];
+  /** Podpora a Konflikt: uid kariet, s ktorými sa efekt spustil. */
+  readonly od?: readonly number[];
 }
 
 /**
  * Stav efektov navyše karty `pl` v línii `strany`. Skrytá Záverečná nič nesplní ani
  * nedostane, kým sa neotočí (inak by ju súper vyčítal); umlčané Zviera (Mäsiar) tiež nie.
+ * `kratSlovami[i]` — koľkokrát platí efekt [i] s podmienkou slovami (jadro, partia.ts);
+ * chýba = nesplnený.
  */
 export function stavNavyse(
   tagyKarty: (defId: string) => readonly Tag[],
@@ -149,6 +195,7 @@ export function stavNavyse(
   strany: readonly (readonly KartaPodmienky[])[],
   pl: KartaPodmienky,
   umlcane: ReadonlySet<number> = new Set(),
+  kratSlovami: readonly number[] = [],
 ): NavyseStav[] {
   const odkryte = strany.flat().filter((x) => x.zaverecna !== true && x.card.uid !== pl.card.uid);
   return efekty.map((e, i): NavyseStav => {
@@ -158,8 +205,13 @@ export function stavNavyse(
         return { ...e, krat: odkryte.some((x) => x.playedBy === pl.playedBy && splnaTag(e.tag, tagyKarty(x.card.defId))) ? 1 : 0 };
       case "Nepriateľ":
         return { ...e, krat: odkryte.some((x) => x.playedBy !== pl.playedBy && splnaTag(e.tag, tagyKarty(x.card.defId))) ? 1 : 0 };
+      case "Podpora":
+      case "Konflikt": {
+        const od = pl.navyseOd?.[i];
+        return { ...e, krat: pl.navyse?.[i] ?? 0, ...(od !== undefined && od.length > 0 ? { od } : {}) };
+      }
       default:
-        return { ...e, krat: pl.navyse?.[i] ?? 0 };
+        return { ...e, krat: kratSlovami[i] ?? 0 };
     }
   });
 }

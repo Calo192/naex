@@ -2,7 +2,7 @@
 // diakritika v herných pojmoch a zmenený text efektu, ktorý hra vyhodnocuje
 // kódom (zmena textu nezmení správanie — treba upraviť aj jadro).
 
-import { ALL_TRIGGERS, REGISTER, rozborNavyse } from "@naex/core";
+import { ALL_TRIGGERS, PODMIENKY_SLOVAMI, REGISTER, rozborNavyse } from "@naex/core";
 import type { AkciaDef, KartaNavrh, KlucoveSlovo } from "./typy.ts";
 import { sPredponouVazna } from "./text.ts";
 
@@ -88,6 +88,10 @@ export function kontrolaTextov(karty: readonly KartaNavrh[], podklady: PodkladyT
 
     // Efekt „Spúšťač: Tag {Akcia}.“ vyhodnocuje jadro zo samotného textu — zmena textu je zmena správania.
     const navyse = rozborNavyse(t).efekty.length > 0;
+    // Skryté akcie (2026-11-08): podmienku slovami („Bitka: Ak … {Pecka}“) vyhodnocuje jadro podľa karty.
+    if (rozborNavyse(t).efekty.some((e) => e.podmienka !== undefined) && !PODMIENKY_SLOVAMI.includes(k.id)) {
+      problem("chyba", "Podmienku slovami pred piktogramom akcie hra pri tejto karte nepozná — akcia navyše by nikdy neplatila, kým ju nenaprogramuje vývoj.");
+    }
     const stav = REGISTER[k.id];
     const zverejneny = podklady.zverejnene?.find((z) => z.id === k.id);
     // Schopnosť väzňa (v11.2) hra berie z elders.json, nie z textu karty: zmena oproti

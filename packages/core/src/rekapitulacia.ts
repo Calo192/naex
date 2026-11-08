@@ -265,11 +265,13 @@ export function ucinokNaex(data: GameData, line: LineState, ev: LineEval = evalu
 }
 
 /** Zdroje akcie po kartách (jedna položka za kartu, jednotky = hodnota). */
-function poKartach(zdroje: readonly ZdrojAkcie[] | undefined, kto: PlayerId): PolozkaRekapitulacie[] {
+function poKartach(zdroje: readonly ZdrojAkcie[] | undefined, kto: PlayerId, vLinii?: ReadonlySet<number>): PolozkaRekapitulacie[] {
   const out: PolozkaRekapitulacie[] = [];
   for (const z of zdroje ?? []) {
-    const x = out.find((o) => o.uid === z.uid);
-    if (x === undefined) out.push({ kto, uid: z.uid, n: z.hodnota });
+    // Akcia navyše Nástroja v Dedičstve (Pasca, skryté akcie 2026-11-08) nie je karta línie.
+    const uid = vLinii === undefined || vLinii.has(z.uid) ? z.uid : null;
+    const x = out.find((o) => o.uid === uid);
+    if (x === undefined) out.push({ kto, uid, n: z.hodnota });
     else out[out.indexOf(x)] = { ...x, n: x.n + z.hodnota };
   }
   return out;
@@ -312,8 +314,10 @@ export interface VstupRekapitulacieBitky {
 
 export function rekapitulaciaBitky(data: GameData, v: VstupRekapitulacieBitky): RekapitulaciaBitky {
   const { linia, rozpis, damage } = v;
+  const vLinii = new Set([...v.line.strany[0], ...v.line.strany[1]].map((pl) => pl.card.uid));
+  if (v.line.lokalita !== null) vLinii.add(v.line.lokalita.uid);
   const tuhe = {} as Record<AkciaTuha, PolozkaRekapitulacie[]>;
-  for (const a of AKCIE_TUHE) tuhe[a] = ([0, 1] as const).flatMap((p) => naSucet(poKartach(linia.zdroje[p][a], p), p, nula(v.sums[p][a])));
+  for (const a of AKCIE_TUHE) tuhe[a] = ([0, 1] as const).flatMap((p) => naSucet(poKartach(linia.zdroje[p][a], p, vLinii), p, nula(v.sums[p][a])));
   // Do rušenia ide Viera s Veriacim pred hádkou (v10) a všetky Povery aj s Ohováračkou (v11.10).
   const vieraSpolu = dvojica((p) => nula(v.sums[p].Viera) + rozpis[p].veriaciPred);
   const poveraSpolu = dvojica((p) => nula(v.sums[p].Povera) + rozpis[p].poveryOhovaracky);

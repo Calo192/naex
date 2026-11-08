@@ -44,6 +44,10 @@
 //   &stop=bzdocha-caka  ako pitka, hráč ?ja má Bzdochu a čaká, kým súper skončí Pitku
 //   &stop=frakcie  Zhromaždenie od 2. kola, hráč ?ja na ťahu: pečať akcií navyše (M3) platí, sivá, ×2,
 //                  posilnená Vidlami; v ruke Spoločník, ktorý by platil, a sivý Konflikt (sada so špecifikáciou frakcií)
+//   &stop=skryte  ako frakcie, ale skryté akcie (Michal 2026-11-08): sada dostane na ukážku nové texty
+//                  Pascy, Pijana, Svokry, Vymáhača, Šoféra, Traktoristu a Automatu; v línii pečať sivá
+//                  (Pijan bez NA EX), výrazná (Šofér), posilnená Vidlami (Vymáhač, 4 Dlhy), Konflikt so
+//                  šípkou k súperovej Svokre, súperovo Vedúcko mení Robotu Živnostníka na Pecku (hrana aj pečať)
 //   &stop=kseft    prvá Pitka, v ktorej hráč ?ja hrá: v línii Strýko z Ameriky, lokalita &lok=defId
 //                  (predvolene predsedova_vila), väzni &vazni=defId,… (predvolene hrobar,veterinar) —
 //                  schopnosti väzňov (v11.2; Kšeft zanikol, frakcie 2026-11-08);
@@ -86,6 +90,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import type { CardInstance, Command, Event, GameData, GameState, HistoriaLokalit, LokalitaVHistorii, PlacedCard, PlayerId, StavMomentov, Stupen, TypMomentu, Vazen } from "@naex/core";
 import { MOMENTY, NOVE_MOMENTY, apply, applySPrisunom, nahladPitky, prisunZUdalosti, eventsFor, lokalityPreKlienta, novaHistoriaLokalit, zapisDoHistorie, momenty, moznostiNaex, mozeHrat, naTahu, obmedzMomenty, rngInt, rngSeed, sPrilozenou, setupGame, tahBota, viewFor, vystrahaPecene, opponentOf } from "@naex/core";
+import type { Sada } from "@naex/tvorba";
 import { useSada } from "../lib/sada.tsx";
 import { useHerneData } from "../stranky/Ukazky.tsx";
 import { HernaPlocha } from "./HernaPlocha.tsx";
@@ -313,6 +318,52 @@ function sFrakciami(s: GameState, p: PlayerId): GameState {
   return { ...s, nextUid: uid, strany, hraci: p === 0 ? [h, s.hraci[su]] : [s.hraci[su], h] };
 }
 
+/**
+ * Nové texty skrytých akcií (packages/core/test/data/skryte-akcie-karty.json) — kým ich admin
+ * nezapíše do tvorcu, ukážka ich dá sade len v prehliadači.
+ */
+const TEXTY_SKRYTYCH_AKCII: Readonly<Record<string, string>> = {
+  pasca: "Dedičstvo: Bitka: Ak súper v tomto kole priložil kartu k tvojej {Rana}.",
+  pijan: "Bitka: Za každé NA EX, ktoré si v tomto kole dal {Rana}.",
+  svokra: "Bitka: Za každú tvoju kartu so súperovým NA EX {Rana}.",
+  vymahac: "Bitka: Za každé 2 tvoje priznané Dlhy {Rana}.",
+  sofer: "Bitka: Ak si v tomto kole nedal NA EX {Pecka} a dostaneš 1 cigaretu.",
+  traktoristka: "Bitka: Ak máš v jeho kraji prevahu {Pecka}. Inak získaš 1 Dlh.",
+  vyherny_automat: "Dedičstvo: Tvoj prah Dlhu je o 1 vyšší. Posledná Pitka kola: {Hazard}.",
+};
+
+function sadaSoSkrytymiAkciami(sada: Sada): Sada {
+  const cards = (sada.cardsJson as { cards: { id: string; effect_text: string }[] }).cards.map((c) =>
+    TEXTY_SKRYTYCH_AKCII[c.id] === undefined ? c : { ...c, effect_text: TEXTY_SKRYTYCH_AKCII[c.id] },
+  );
+  return {
+    ...sada,
+    karty: sada.karty.map((k) => (TEXTY_SKRYTYCH_AKCII[k.id] === undefined ? k : { ...k, efekt: TEXTY_SKRYTYCH_AKCII[k.id]! })),
+    cardsJson: { ...(sada.cardsJson as object), cards },
+  };
+}
+
+/** Skryté akcie v línii: pečať sivá, výrazná, posilnená Vidlami, šípka Konfliktu, premena Vedúcka. */
+function sSkrytymiAkciami(s: GameState, p: PlayerId): GameState {
+  let uid = s.nextUid;
+  const su = opponentOf(p);
+  const k = (defId: string): CardInstance => ({ uid: uid++, defId, leftLayout: 0, rightLayout: 0 });
+  const svokra = k("svokra");
+  const strany: [GameState["strany"][0], GameState["strany"][1]] = [[], []];
+  strany[p] = [
+    { card: k("vymahac"), playedBy: p },
+    { card: k("sofer"), playedBy: p },
+    { card: k("pijan"), playedBy: p },
+    { card: k("praudovravec"), playedBy: p, navyse: [1], navyseOd: [[svokra.uid]] },
+    { card: svokra, playedBy: su },
+  ];
+  strany[su] = [{ card: k("veducko"), playedBy: su }, { card: k("zivnostnik"), playedBy: su }];
+  const h = { ...s.hraci[p], dlhy: 4, dedicstvo: [...s.hraci[p].dedicstvo, k("vidly"), k("pasca")] };
+  const prilozeniaKu: [number, number] = [0, 0];
+  prilozeniaKu[p] = 1;
+  return { ...s, nextUid: uid, strany, naexVKole: [false, false], prilozeniaKu, hraci: p === 0 ? [h, s.hraci[su]] : [s.hraci[su], h] };
+}
+
 /** Hráčovi p pridá priznané Dlhy — exekúcia v najbližšej bitke. */
 function sExekuciou(s: GameState, p: PlayerId): GameState {
   const h = s.hraci[p];
@@ -418,6 +469,8 @@ function odohrajSeed(data: GameData, seed: number): { readonly odohrane: Odohran
       return najdene({ zaciatok: sNastrojom(s, ja), dohraj: [] });
     if (stop === "frakcie" && s.kolo >= 2 && s.faza === "zhromazdenie" && naTahu(s) === ja && s.zhromazdenieStav?.pasoval[ja] === false)
       return najdene({ zaciatok: sFrakciami(s, ja), dohraj: [] });
+    if (stop === "skryte" && s.kolo >= 2 && s.faza === "zhromazdenie" && naTahu(s) === ja && s.zhromazdenieStav?.pasoval[ja] === false)
+      return najdene({ zaciatok: sSkrytymiAkciami(s, ja), dohraj: [] });
     if (stop === "pecen" && s.kolo >= 2 && s.faza === "zhromazdenie" && naTahu(s) === ja && s.zhromazdenieStav?.pasoval[ja] === false)
       return najdene({ zaciatok: sPecenou(s, ja), dohraj: [] });
     if (stop === "pecen-sused" && s.kolo >= 2 && s.faza === "zhromazdenie" && naTahu(s) === ja && s.zhromazdenieStav?.pasoval[ja] === false)
@@ -601,8 +654,9 @@ function odohrajSeed(data: GameData, seed: number): { readonly odohrane: Odohran
 
 export function UkazkaStola() {
   const { sada } = useSada();
-  if (sada === null) return <p className="tlmene">Načítavam sadu…</p>;
-  return <Ukazka sada={sada} />;
+  const sadaUkazky = useMemo(() => (sada === null || q().get("stop") !== "skryte" ? sada : sadaSoSkrytymiAkciami(sada)), [sada]);
+  if (sadaUkazky === null) return <p className="tlmene">Načítavam sadu…</p>;
+  return <Ukazka sada={sadaUkazky} />;
 }
 
 function Ukazka({ sada }: { readonly sada: NonNullable<ReturnType<typeof useSada>["sada"]> }) {

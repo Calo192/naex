@@ -74,7 +74,12 @@ export function pocitadloBitky(data: GameData, stol: StolBitky, linia: LineEval,
       }
     }
     for (const [uid, x] of zKariet) {
-      if (x.zmena !== 0) kroky.push({ vlna: vlnaKarty.get(uid) ?? 0, kto, druh: "karta", uid, zdroj: null, zmena: x.zmena, nasobok: x.nasobok });
+      if (x.zmena === 0) continue;
+      const vlna = vlnaKarty.get(uid);
+      // Akcia navyše Nástroja v Dedičstve (Pasca, skryté akcie 2026-11-08): karta nie je v línii — ide medzi bonusy.
+      const defId = vlna === undefined ? (Object.values(linia.zdroje[kto]).flat().find((z) => z?.uid === uid)?.defId ?? null) : null;
+      if (vlna === undefined && defId !== null) kroky.push({ vlna: kartyVln + 1, kto, druh: "bonus", uid: null, zdroj: defId, zmena: x.zmena, nasobok: 1 });
+      else kroky.push({ vlna: vlna ?? 0, kto, druh: "karta", uid, zdroj: null, zmena: x.zmena, nasobok: x.nasobok });
     }
   }
   const rozpis = rozpisPoskodenia(data, stol, linia.sums);

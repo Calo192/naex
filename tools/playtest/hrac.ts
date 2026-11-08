@@ -782,11 +782,7 @@ function moznosti(v: ClientState): string[] {
   const su = (ja === 0 ? 1 : 0) as PlayerId;
   const nv = v.volbaNastupu;
   if (nv !== null && nv.hrac === ja) {
-    // Voľby v7: karta zo šenku (Zastávka), Nástroj za Živnostníka, Kapybara; frakcie (2026-11-08): Vdova, Zberný dvor, vila.
-    if (nv.typ === "vdova") {
-      for (const k of v.ruka) c({ type: "odhod", uid: k.uid }, `VDOVA: odhoď z ruky ${popisKarty(k)} do odhadzovacieho balíčka (povinne jednu)`);
-      return out;
-    }
+    // Voľby v7: karta zo šenku (Zastávka), Nástroj za Živnostníka, Kapybara; frakcie (2026-11-08): Zberný dvor, vila.
     if (nv.typ === "dvor") {
       c({ type: "spal", uid: null }, "ZBERNÝ DVOR: nič nepáliť");
       for (const k of v.ruka) if (!(DATA.cards.get(k.defId)?.tags ?? []).includes("Kliatba")) c({ type: "spal", uid: k.uid }, `ZBERNÝ DVOR: spáľ z ruky ${popisKarty(k)} — navždy z hry, tenší balíček`);

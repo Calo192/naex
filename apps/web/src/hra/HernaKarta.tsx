@@ -7,7 +7,7 @@
 // poradím slotov. Na čítanie ju narovná lupa (Lupa.tsx).
 
 import { createContext, useContext } from "react";
-import type { CardInstance, CardLineEval, ClientState, GameData, PlayerId } from "@naex/core";
+import type { CardInstance, CardLineEval, ClientState, GameData, NavyseStav, PlayerId } from "@naex/core";
 import { akciaVytrznika, defOf, efektyNavyse, printedSides, stavNavyseVRuke } from "@naex/core";
 import type { KartaNavrh, RozlozenieStrany, Sada } from "@naex/tvorba";
 import { PREDVOLENE_NASTAVENIA } from "@naex/tvorba";
@@ -20,9 +20,11 @@ import { vzhladSady } from "../lib/sada.tsx";
  * Dedičstvo. Mimo stola (náhľady, šenok, tvorca) karta nežhne.
  */
 export interface ZarStola {
-  readonly view: Pick<ClientState, "ja" | "ruka" | "strany" | "vplyvyAkcii">;
+  readonly view: Pick<ClientState, "ja" | "ruka" | "strany" | "vplyvyAkcii" | "hraci">;
   /** Kedy sa ktorá zmena ikony ukázala prvý raz — iskra odletí len pri prvom zobrazení. */
   readonly videne: Map<string, number>;
+  /** Pečate Nástrojov v Dedičstve (LineEval.navyseDedicstva) podľa uid karty. */
+  readonly navyseDedicstva?: ReadonlyMap<number, readonly NavyseStav[]>;
 }
 
 export const ZarStolaKontext = createContext<ZarStola | null>(null);
@@ -30,13 +32,41 @@ export const ZarStolaKontext = createContext<ZarStola | null>(null);
 /** Ako dlho po prvom zobrazení beží iskra (karta.css kl-iskra-let) — prekreslenie ju nepreruší. */
 const TRVANIE_ISKRY_MS = 1200;
 
-/** Kde karta leží a komu patrí — len ruka hráča a línia. */
-function miestoKarty(view: ZarStola["view"], uid: number): { readonly majitel: PlayerId; readonly miesto: "ruka" | "linia" } | null {
+/** Kde karta leží a komu patrí — ruka hráča, línia a Dedičstvo. */
+function miestoKarty(view: ZarStola["view"], uid: number): { readonly majitel: PlayerId; readonly miesto: "ruka" | "linia" | "dedicstvo" } | null {
   for (const strana of view.strany) {
     const pl = strana.find((x) => x.card.uid === uid);
     if (pl !== undefined) return { majitel: pl.playedBy, miesto: "linia" };
   }
-  return view.ruka.some((k) => k.uid === uid) ? { majitel: view.ja, miesto: "ruka" } : null;
+  if (view.ruka.some((k) => k.uid === uid)) return { majitel: view.ja, miesto: "ruka" };
+  for (const p of [0, 1] as const) if (view.hraci[p].dedicstvo.some((k) => k.uid === uid)) return { majitel: p, miesto: "dedicstvo" };
+  return null;
+}
+
+/**
+ * Šípky pečate pri Podpore a Konflikte (Michal 2026-11-08): ktorá vytlačená strana karty
+ * susedí s kartou, s ktorou sa efekt spustil. V globálnom ráme leží hráč 0 vľavo od lokality
+ * (vnútorný sused vpravo), hráč 1 vpravo; karta hráča 1 je otočená, jej vytlačená ľavá je vpravo.
+ */
+function sipkyKSusedom(view: ZarStola["view"], uid: number, od: readonly number[]): { readonly lava: boolean; readonly prava: boolean } {
+  const out = { lava: false, prava: false };
+  for (const s of [0, 1] as const) {
+    const strana = view.strany[s];
+    const i = strana.findIndex((x) => x.card.uid === uid);
+    const pl = strana[i];
+    if (pl === undefined) continue;
+    const vnutorny = strana[i - 1]?.card.uid;
+    const vonkajsi = strana[i + 1]?.card.uid;
+    const otocena = pl.playedBy === 1;
+    for (const u of od) {
+      // Globálne vľavo: pri hráčovi 0 vonkajší sused, pri hráčovi 1 vnútorný.
+      const vlavo = u === (s === 0 ? vonkajsi : vnutorny);
+      const vpravo = u === (s === 0 ? vnutorny : vonkajsi);
+      if (vlavo) out[otocena ? "prava" : "lava"] = true;
+      if (vpravo) out[otocena ? "lava" : "prava"] = true;
+    }
+  }
+  return out;
 }
 
 export function vzhladKarty(sada: Sada, data: GameData, defId: string): KartaNavrh {
@@ -87,10 +117,12 @@ export function HernaKarta({ karta, sada, data, sirka, otocena = false, eval: ev
   // Lupa a karta na stole majú rovnaký kľúč — lupa otvorená po iskre ju už nezopakuje.
   const teraz = Date.now();
   const strana = (ps: "left" | "right"): { roz: RozlozenieStrany; sloty: (SlotStav | null)[] | null } => {
-    // Výtržník kreslí Rany na miestach vytlačených akcií — hráč má vidieť, čo karta naozaj robí.
+    // Výtržník kreslí Rany na miestach vytlačených akcií, Vedúcko a Sypač Pecky (Michal 2026-11-08)
+    // — hráč má vidieť, čo karta naozaj robí.
     const roz = [0, 1, 2, 3].map((k) => {
       const a = vytlacene[ps][k] ?? null;
-      return vytrznik && a !== null ? akciaVytrznika() : a;
+      const ako = ev?.[ps][k]?.ako;
+      return a === null ? null : ako === "Pecka" ? ako : vytrznik ? akciaVytrznika() : a;
     }) as unknown as RozlozenieStrany;
     const sloty =
       ev === undefined || ev === null
@@ -117,16 +149,22 @@ export function HernaKarta({ karta, sada, data, sirka, otocena = false, eval: ev
     });
   const zarL = zar("left", l.roz);
   const zarP = zar("right", p.roz);
-  // Akcie navyše (frakcie): v línii stav z vyhodnotenia, v ruke či by Spoločník a Nepriateľ platili teraz.
+  // Akcie navyše (frakcie): v línii stav z vyhodnotenia, v Dedičstve z línie stola, v ruke či by
+  // Spoločník a Nepriateľ platili teraz.
   const efekty = efektyNavyse(defOf(data, karta));
   const stavy =
     efekty.length === 0
       ? undefined
-      : ev?.navyse ?? (stol !== null && kde?.miesto === "ruka" ? stavNavyseVRuke((id) => data.cards.get(id)?.tags ?? [], efekty, stol.view.strany, karta.uid, kde.majitel) : undefined);
+      : ev?.navyse ??
+        (kde?.miesto === "dedicstvo" ? stol?.navyseDedicstva?.get(karta.uid) : undefined) ??
+        (stol !== null && kde?.miesto === "ruka" ? stavNavyseVRuke((id) => data.cards.get(id)?.tags ?? [], efekty, stol.view.strany, karta.uid, kde.majitel) : undefined);
   const navyse: NavyseNaKarte[] | undefined = stavy?.map((e, ei) => ({
     krat: e.krat,
-    zar: e.akcie.map((a, ai) => {
+    ...(e.ako === undefined ? {} : { ako: e.ako }),
+    ...(e.od !== undefined && stol !== null && kde?.miesto === "linia" ? { sipky: sipkyKSusedom(stol.view, karta.uid, e.od) } : {}),
+    zar: e.akcie.map((a0, ai) => {
       if (stol === null || kde === null) return null;
+      const a = e.ako?.[ai] ?? a0;
       const z = zarSlotu(a, stol.view.vplyvyAkcii?.[kde.majitel] ?? [], (id) => data.cards.get(id)?.name ?? id, karta.uid);
       if (z === null) return null;
       const kluc = `${karta.uid}:${kde.miesto}:navyse${ei}-${ai}:${z.pricina}`;

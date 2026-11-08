@@ -90,8 +90,8 @@ export const REGISTER: Readonly<Record<string, EfektStatus>> = {
   nealko: "impl", // Dedičstvo: tvoj prah Cirhózy je o 2 vyšší (prahCirhozyBonus)
   niekoho_stryna: "impl", // Pitka (v7, Stryná): kto v Pitke nedal NA EX, +1 pečeň (prirastkyPitky)
   noviny: "impl", // Dedičstvo: Hádka (v11.5): víťaz hádky — súper odhodí 1 náhodnú kartu z ruky (engine novinyPoHadke)
-  pasca: "impl", // Dedičstvo: Bitka (v7): súper v kole priložil kartu k tvojej → Rana navyše (bitkaMody)
-  pijan: "impl", // Bitka (v7): Rana navyše za každé vlastné NA EX v kole (bitkaMody)
+  pasca: "impl", // Dedičstvo: Bitka (v7): súper v kole priložil kartu k tvojej → Rana navyše (bitkaMody; v zápise {Rana} evaluateLine)
+  pijan: "impl", // Bitka (v7): Rana navyše za každé vlastné NA EX v kole (bitkaMody; v zápise {Rana} evaluateLine)
   policajtka: "impl", // Pitka (Michal 2026-11-02): súperovi zadĺženie za každú jeho akciu zrušenú tvojím Odporom (pokutaPolicajtky); sada so starým Konfliktom: Dlh, za Kriminála 2 cigarety (konflikt)
   postarka: "impl", // Schopnosť väzňa: 4 cigarety
   praudovravec: "impl", // Furt (v7, Dezinformátor): Odpor na jeho spojoch posilní (partia.ts)
@@ -103,7 +103,7 @@ export const REGISTER: Readonly<Record<string, EfektStatus>> = {
   svaty_text: "impl", // Dedičstvo: hodnota tvojej Viery o 1 vyššia v tlmení tuhého; Povery ruší 1 : 1 (computeDamage)
   veterinar: "impl", // Schopnosť väzňa: odhodí priznané Cirhózy a Cirhózy na ruke
   veteran: "impl", // Furt: NA EX naňho aktívne akcie zdvojí (nezruší), neaktívne nezdvojí (partia.ts, Michal 2026-10-23)
-  velmi_smutiaca_vdova: "impl", // Konflikt (v11.3): súper odhodí 1 kartu z balíčka za každého svojho Chlapa pri nej (konflikt)
+  velmi_smutiaca_vdova: "impl", // Konflikt: Chlap — súper odhodí 1 náhodnú kartu z ruky (2026-11-08); staré znenie z balíčka za Chlapov (konflikt)
   vestica: "impl", // Prehra: výmena kariet v balíčkoch
   vychovavatelka: "impl", // Schopnosť väzňa: súper v tomto Zhromaždení hneď pasuje bez cigariet
   vinko: "impl", // Dedičstvo: poldeci navyše; nedolieva poldeci za cigarety (Michal 2026-10-19)
@@ -502,11 +502,21 @@ export function soferiBezNaex(state: Pick<VerejnyStav, "strany" | "naexVKole">, 
   return partiaHraca(state, p).filter((pl) => pl.card.defId === "sofer" && pl.zaverecna !== true).length;
 }
 
+/**
+ * Karta má efekt Bitka v zápise akcie navyše (skryté akcie, Michal 2026-11-08) — Rany a Pecky
+ * ráta evaluateLine v súčtoch (zosilní ich Vidly a Valaška), nie bitkaMody. Starý text
+ * karty platí ako tuhé navyše, kým admin nezapíše nový.
+ */
+export function bitkaVZapise(data: GameData, defId: string): boolean {
+  const def = data.cards.get(defId);
+  return def !== undefined && efektyNavyse(def).some((e) => e.spustac === "Bitka");
+}
+
 export function bitkaMody(data: GameData, state: VerejnyStav, p: PlayerId): BitkaMody {
   const opp = opponentOf(p);
   const tuheZdroje: { zdroj: string; tuhe: number }[] = [];
   const pridaj = (zdroj: string, tuhe: number): void => {
-    if (tuhe > 0) tuheZdroje.push({ zdroj, tuhe });
+    if (tuhe > 0 && !bitkaVZapise(data, zdroj)) tuheZdroje.push({ zdroj, tuhe });
   };
 
   pridaj("svokra", svokraRany(data, state, p));
@@ -613,9 +623,10 @@ export function vplyvyNaAkcie(state: Pick<VerejnyStav, "hraci"> & Partial<Pick<V
 }
 
 /**
- * Puška a Vidly (Dedičstvo, v7): každá aktívna Petelica, resp. Rana hráča p
- * z vyložených akcií udelí o 1 poškodenie viac; Rany navyše z efektov kariet
- * (Svokra, Pijan, Vymáhač) nie (Michal 2026-10-27). Jeden výpočet pre
+ * Vidly a Valaška (Dedičstvo, v7, Náradie): každá aktívna Rana, resp. Pecka hráča p udelí
+ * o 1 poškodenie viac — zo súčtov, teda aj akcie navyše (frakcie a skryté akcie Pijana,
+ * Svokry, Vymáhača, Šoféra, Traktoristu a Pascy, Michal 2026-11-08). Tie isté karty so
+ * starým textom dávajú tuhé navyše (bitkaMody) a Náradie ich nezosilní. Jeden výpočet pre
  * bitku aj rozpis poškodenia.
  */
 export function nastrojeTuhe(state: VerejnyStav, p: PlayerId, sums: { readonly Rana?: number; readonly Pecka?: number; readonly Petelica?: number }): readonly { readonly zdroj: string; readonly tuhe: number }[] {
