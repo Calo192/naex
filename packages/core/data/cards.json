@@ -1,5 +1,5 @@
 {
- "source": "tvorca kariet 2026-11-06T20:55:19.205Z — rozpracovaný stav (Zrejúca) nad zverejnenou sadou v45 živého webu, bez karty Dlh; mäkké akcie 9 kariet, Kostol v11.7, Cigareta na útočných kartách, Liberál a lokality v11.13 (Michal 2026-11-06)",
+ "source": "tvorca kariet 2026-11-08T07:51:31.461Z — rozpracovaný stav (Zrejúca) nad zverejnenou sadou v47 živého webu, bez karty Dlh; mäkké akcie 9 kariet, Kostol v11.7, Cigareta na útočných kartách, Liberál a lokality v11.13 (Michal 2026-11-06); Silná, nezávislá žena len Občania a Starešinovia (Michal 2026-11-08)",
  "actions": [
   "Cigareta",
   "Dlh",
@@ -842,7 +842,7 @@
     "Influencer",
     "Žena"
    ],
-   "effect_text": "Furt: Aktívne akcie tvojich kariet, ktoré s ňou susedia, sa rátajú dvakrát.",
+   "effect_text": "Furt: Aktívne akcie tvojich Občanov a Starešinov, ktorí s ňou susedia, sa rátajú dvakrát.",
    "triggers": [
     "Furt"
    ],
