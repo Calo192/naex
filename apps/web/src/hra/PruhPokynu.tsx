@@ -9,7 +9,8 @@
 //
 // Oprava 4 (Michal 2026-10-31): nič nepláva cez líniu — hlásenie o súperovom ťahu sa ukáže
 // na chvíľu v pruhu namiesto textu pokynu a odhad bitky je malý segment vľavo (ťuk = okno).
-// Pri binárnej voľbe (Vízia „spáliť“, Hasič „vrátiť“) je druhá voľba tmavý segment vedľa hlavnej.
+// Pri binárnej voľbe (Hasič „vrátiť“) je druhá voľba tmavý segment vedľa hlavnej; Vízia má obe voľby
+// ako segmenty s piktogramom v hlavnej akcii (mobil-sirka.css).
 
 import { useEffect, useLayoutEffect, useRef, useState, type ReactNode, type Ref } from "react";
 
