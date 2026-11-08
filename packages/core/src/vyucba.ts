@@ -537,13 +537,13 @@ function klucKroku(state: GameState, c: Command): string {
 }
 
 const KAM: Readonly<Record<string, string>> = {
-  vlastna: "na svoju stranu línie",
-  superova: "na súperovu stranu línie",
+  vlastna: "na koniec línie vľavo",
+  superova: "na koniec línie vpravo",
   priznanie: "medzi priznané",
   dedicstvo: "do Dedičstva",
 };
 
-/** Krok slovami pre hráča — „polož kartu „Hasič“ na svoju stranu línie“, „vypi poldeci“. */
+/** Krok slovami pre hráča — „polož kartu „Hasič“ na koniec línie vľavo“, „vypi poldeci“. */
 export function popisKroku(data: GameData, state: GameState, c: Command): PopisKroku {
   const uid = "uid" in c && typeof c.uid === "number" ? c.uid : null;
   const karta = uid === null ? null : kartaPodlaUid(state, uid);

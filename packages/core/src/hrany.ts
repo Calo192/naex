@@ -34,9 +34,9 @@ export function hranyZPohladu(data: GameData, karta: CardInstance, otocena: bool
 }
 
 export interface StranyLokality {
-  /** Hrana lokality obrátená k tvojej strane línie. */
+  /** Hrana lokality obrátená ku kraju vľavo (z pohľadu hráča). */
   readonly kTebe: readonly Slot[];
-  /** Hrana lokality obrátená k súperovej strane. */
+  /** Hrana lokality obrátená ku kraju vpravo (z pohľadu hráča). */
   readonly kSuperovi: readonly Slot[];
 }
 
@@ -105,7 +105,7 @@ function rozdiel(pred: ActionSums, po: ActionSums): ActionSums {
 }
 
 /**
- * Čo spraví karta hráča `ja` vyložená na koniec strany `kam` — pred potvrdením.
+ * Čo spraví karta hráča `ja` vyložená na koniec línie `kam` — pred potvrdením.
  * `naexVKole` zo stavu (view.naexVKole); bez neho náhľad ráta, že v kole ešte nikto NA EX nedal.
  */
 export function nahladVylozenia(

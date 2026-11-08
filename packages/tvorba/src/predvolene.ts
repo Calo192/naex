@@ -102,7 +102,7 @@ export const PREDVOLENE_KLUCOVE_SLOVA: readonly KlucoveSlovo[] = [
   // Kšeft zanikol (frakcie, Michal 2026-11-08); Kšeft väzňa nahradila v11.2 schopnosť väzňa (PRAVIDLA §10).
   // Spoločník a Nepriateľ (frakcie): akcie navyše, kým je v partii karta s tagom; zápis v texte
   // efektu „Spoločník: Tag {Akcia}.“ — piktogram v zložených zátvorkách (@naex/core navyse.ts).
-  S("Spoločník", "Kým máš v partii (karty natočené k tebe, na ktorejkoľvek strane) inú odkrytú kartu s tagom za dvojbodkou, máš akcie navyše z pečate v obrázku — raz, aj pri viacerých takých kartách. Rátajú sa ako tvoje akcie toho druhu v ich kroku; Posilnenie, Odpor, NA EX ani Forsáž ich nemenia."),
+  S("Spoločník", "Kým máš v partii (karty natočené k tebe, kdekoľvek v línii) inú odkrytú kartu s tagom za dvojbodkou, máš akcie navyše z pečate v obrázku — raz, aj pri viacerých takých kartách. Rátajú sa ako tvoje akcie toho druhu v ich kroku; Posilnenie, Odpor, NA EX ani Forsáž ich nemenia."),
   S("Nepriateľ", "Kým má súper v partii odkrytú kartu s tagom za dvojbodkou, máš akcie navyše z pečate v obrázku — raz, aj pri viacerých takých kartách. Rátajú sa ako tvoje akcie toho druhu v ich kroku; Posilnenie, Odpor, NA EX ani Forsáž ich nemenia."),
   // Konflikt a Exekúcia (v7, Michal 2026-10-27, plan.md 13 a 14); Úplatok zanikol vo v10.3.
   // Konflikt oboma smermi a Podpora (v11.3, Michal 2026-11-03).

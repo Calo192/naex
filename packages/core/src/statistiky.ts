@@ -62,7 +62,10 @@ export interface StatistikyHraca {
   readonly naex: number;
   readonly naexNaSuperove: number;
   readonly kartyVylozene: number;
+  /** Vyložené na koniec línie vpravo (target superova) — do 2026-11-08 sa tomu hovorilo podstrčenie. */
   readonly kartyDoSuperovej: number;
+  /** Podstrčené (Michal 2026-11-08): karty priložené k súperovej karte, aj lícom dole; ráta sa od 2026-11-08. */
+  readonly kartyPodstrcene: number;
   readonly dedicstvo: number;
 
   /** Markery posunuté Pohoršením — len partie do v9 (v10 markerom hýbe len Nakladačka). */
@@ -141,6 +144,7 @@ export function prazdneStatistiky(): StatistikyHraca {
     naexNaSuperove: 0,
     kartyVylozene: 0,
     kartyDoSuperovej: 0,
+    kartyPodstrcene: 0,
     dedicstvo: 0,
     posunyPohorsenim: 0,
     hadkyVyhrane: 0,
@@ -248,6 +252,25 @@ function noveKliatby(pred: GameState, po: GameState, p: PlayerId, defId: string)
   return vlastnene(po, p, defId).filter((k) => k.uid >= pred.nextUid).length;
 }
 
+/**
+ * Koľko kariet hráč p príkazom podstrčil — priložil k súperovej karte (Michal 2026-11-08).
+ * Jadro také priloženia ráta pre Pascu (prilozeniaKu, aj lícom dole); koniec kola počítadlo
+ * zmaže, vtedy sa odvodia z kariet na koncoch línie pred príkazom.
+ */
+function podstrcene(pred: GameState, cmd: Command, po: GameState, p: PlayerId): number {
+  const opp = opponentOf(p);
+  if (po.prilozeniaKu !== undefined) return Math.max(0, po.prilozeniaKu[opp] - (pred.prilozeniaKu?.[opp] ?? 0));
+  const naKonci: (PlayerId | undefined)[] = [pred.strany[0].at(-1)?.playedBy, pred.strany[1].at(-1)?.playedBy];
+  let n = 0;
+  for (const c of cmd.type === "tah" ? cmd.kroky : [cmd]) {
+    if ((c.type !== "place" && c.type !== "zaverecna") || (c.target !== "vlastna" && c.target !== "superova")) continue;
+    const k = c.target === "vlastna" ? p : opp;
+    if (naKonci[k] !== undefined && naKonci[k] !== p) n += 1;
+    naKonci[k] = p;
+  }
+  return n;
+}
+
 function kartaVRuke(state: GameState, p: PlayerId, uid: number): CardInstance | undefined {
   return state.hraci[p].ruka.find((k) => k.uid === uid);
 }
@@ -272,6 +295,7 @@ function zapisJedneho(
   // ---- príkazy tohto hráča
   if (autor === p) {
     s.tahy += 1;
+    s.kartyPodstrcene += podstrcene(pred, cmd, po, p);
     // Celý ťah Zhromaždenia (príkaz „tah“) sa ráta ako jeden ťah, kroky po jednom.
     for (const c of cmd.type === "tah" ? cmd.kroky : [cmd]) {
       switch (c.type) {

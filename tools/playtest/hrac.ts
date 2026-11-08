@@ -477,15 +477,15 @@ function vykresli(v: ClientState, mena: readonly string[]): string {
   out.push(
     v.ciel === null ? "CIEĽ KOLA: ešte nevybraný." : `CIEĽ KOLA: bitka o lokalitu ${meno(v.ciel.lokalita?.defId ?? "")}.`,
   );
-  out.push("LÍNIA zľava doprava (tvoja strana vľavo, lokalita v strede, súperova strana vpravo), hrany zhora nadol tak, ako ich vidíš.");
+  out.push("LÍNIA zľava doprava (kraj vľavo, lokalita v strede, kraj vpravo; konce línie nepatria nikomu, vykladáš na ktorýkoľvek), hrany zhora nadol tak, ako ich vidíš.");
   out.push(
     "Každá karta sa páruje VNÚTORNOU hranou (obrátenou k lokalite) so susedom bližšie k stredu; VONKAJŠIA hrana ostáva voľná pre ďalšiu kartu. Na spoji sa stretnú akcie na rovnakej pozícii zhora. ✓ aktívna, ✗ zrušená Odporom, · neaktívna (bez páru).",
   );
-  out.push("Karta PATRÍ tomu, kto ju zahral (je natočená k nemu) — jej akcie a efekty sa rátajú jemu, nech leží na ktorejkoľvek strane. Tvoja PARTIA = tvoje karty.");
+  out.push("Karta PATRÍ tomu, kto ju zahral (je natočená k nemu) — jej akcie a efekty sa rátajú jemu, nech leží kdekoľvek v línii. Tvoja PARTIA = tvoje karty.");
   // Prevaha (Michal 2026-10-20): akcie hrany lokality dostane, kto má v kraji viac svojich Občanov, Zvierat a Starešinov.
   const kraje = krajeStran(DATA, v.ciel?.lokalita ?? null, v.lokalitaOtocena);
   const prevaha = prevahaStran(DATA, v.strany);
-  const nazovKraja = (p: PlayerId): string => (kraje[p] === null ? (p === ja ? "tvoja strana" : "súperova strana") : `kraj „${kraje[p]}“ (${p === ja ? "tvoja strana" : "súperova strana"})`);
+  const nazovKraja = (p: PlayerId): string => (kraje[p] === null ? (p === ja ? "kraj vľavo" : "kraj vpravo") : `kraj „${kraje[p]}“ (${p === ja ? "vľavo" : "vpravo"})`);
   out.push(
     `PREVAHA: akcie hrany lokality dostane, kto má v tom kraji viac svojich Občanov, Zvierat a Starešinov (Nástroje a Cirhóza nie; pri rovnosti ten, koho karta v kraji leží hneď pri lokalite — vyložená ako prvá). ${nazovKraja(ja)}: ${prevaha[ja] === null ? "prázdna" : kto(prevaha[ja])}; ${nazovKraja(su)}: ${prevaha[su] === null ? "prázdna" : kto(prevaha[su])}.`,
   );
@@ -507,18 +507,18 @@ function vykresli(v: ClientState, mena: readonly string[]): string {
   const moja = [...vs.strany[ja]].reverse();
   for (const pl of moja)
     out.push(
-      kartaVLinii(pl.card, pl.playedBy !== ja, lineEval, ` [${majitel(pl.playedBy)} na tvojej strane${zaverecnaText(pl)}${naexText(pl)}]`, [
+      kartaVLinii(pl.card, pl.playedBy !== ja, lineEval, ` [${majitel(pl.playedBy)} vľavo${zaverecnaText(pl)}${naexText(pl)}]`, [
         "vonkajšia hrana",
         "vnútorná hrana (k lokalite)",
       ]),
     );
   if (v.ciel !== null && v.ciel.lokalita !== null) {
     const popis = " [LOKALITA]";
-    out.push(kartaVLinii(v.ciel.lokalita, v.lokalitaOtocena !== (ja === 1), lineEval, popis, [`hrana k TEBE — ${nazovKraja(ja)}`, `hrana k SÚPEROVI — ${nazovKraja(su)}`]));
+    out.push(kartaVLinii(v.ciel.lokalita, v.lokalitaOtocena !== (ja === 1), lineEval, popis, [`hrana VĽAVO — ${nazovKraja(ja)}`, `hrana VPRAVO — ${nazovKraja(su)}`]));
   } else out.push("  (stred línie — ešte nič)");
   for (const pl of vs.strany[su])
     out.push(
-      kartaVLinii(pl.card, pl.playedBy !== ja, lineEval, ` [${majitel(pl.playedBy)} na súperovej strane${zaverecnaText(pl)}${naexText(pl)}]`, [
+      kartaVLinii(pl.card, pl.playedBy !== ja, lineEval, ` [${majitel(pl.playedBy)} vpravo${zaverecnaText(pl)}${naexText(pl)}]`, [
         "vnútorná hrana (k lokalite)",
         "vonkajšia hrana",
       ]),
@@ -664,7 +664,7 @@ function vykresli(v: ClientState, mena: readonly string[]): string {
 
   out.push("");
   out.push(
-    `TVOJA RUKA (${v.ruka.length}) — vytlačené strany; na TVOJU stranu sa k lokalite obráti PRAVÁ, na SÚPEROVU ĽAVÁ (karta ostáva natočená k tebe). Presný spoj ukazuje každá možnosť „vylož“:`,
+    `TVOJA RUKA (${v.ruka.length}) — vytlačené strany; vľavo od lokality sa k nej obráti PRAVÁ, vpravo ĽAVÁ (karta ostáva natočená k tebe na oboch koncoch). Presný spoj ukazuje každá možnosť „vylož“:`,
   );
   for (const k of v.ruka) out.push(`  ${popisKarty(k)}`);
   // Balíčky, ktoré hráčovi podľa karty odhalil server (Veštica).
@@ -740,14 +740,14 @@ const zmenyText = (z: ActionSums): string =>
     .map(([a, n]) => `${a} ${n > 0 ? "+" : "−"}${Math.abs(n)}`)
     .join(", ") || "bez zmeny";
 
-/** Strany lokality pri voľbe cieľa — ktorá hrana bude obrátená k tebe. */
+/** Hrany lokality pri voľbe cieľa — ktorá bude vľavo a ktorá vpravo. */
 function popisStranLokality(v: ClientState, k: CardInstance, otocena: boolean): string {
   const s = stranyLokality(DATA, k, otocena, v.ja);
-  return `k TEBE: ${hranaText(s.kTebe)} | k SÚPEROVI: ${hranaText(s.kSuperovi)}`;
+  return `VĽAVO: ${hranaText(s.kTebe)} | VPRAVO: ${hranaText(s.kSuperovi)}`;
 }
 
 /**
- * Náhľad vyloženia na koniec strany (playtest 20261017-164450: hrany sa
+ * Náhľad vyloženia na koniec línie (playtest 20261017-164450: hrany sa
  * dali zistiť len skúšaním) — vnútorná hrana, s čím sa stretne a čo to zmení.
  */
 function popisVylozenia(v: ClientState, k: CardInstance, kam: "vlastna" | "superova"): string {
@@ -768,8 +768,8 @@ function popisVylozenia(v: ClientState, k: CardInstance, kam: "vlastna" | "super
 }
 
 const POPIS_CIELA: Record<string, string> = {
-  vlastna: "na koniec tvojej strany",
-  superova: "na koniec súperovej strany (karta ostane tvoja, natočená k tebe)",
+  vlastna: "na koniec línie vľavo",
+  superova: "na koniec línie vpravo (karta je tvoja na oboch koncoch, natočená k tebe)",
   priznanie: "priznať — kliatba je NAVŽDY mimo balíčka (čistí ho) a hneď si dobereš kartu (za Cirhózu nie; Dlh sa prizná sám, keď si ho dobereš); nemíňa limit a neodovzdá ťah (môžeš priznať viac kliatob za sebou a potom ešte vyložiť); priznaný Dlh sa ráta k Exekútorovi a súperovým Poverám",
   dedicstvo: "do Dedičstva — pasívny efekt Nástroja platí, kým tam leží (cena vyššie, rastie pre oboch)",
 };
@@ -949,7 +949,7 @@ function moznosti(v: ClientState): string[] {
         break;
       }
       let naexMoznosti = 0;
-      if (v.ciel?.lokalita?.defId === "kostol") out.push("(Kostol: NA EX len na poslednú kartu línie, najďalej od Kostola — na jednom alebo druhom konci)");
+      if (v.ciel?.lokalita?.defId === "kostol") out.push("(Kostol: NA EX len na kartu na konci línie — na ktoromkoľvek z dvoch koncov, najďalej od Kostola)");
       // NA EX naraz (v5): moje skryté NA EX sa rátajú do limitu Pitky aj poldeci.
       // S Bzdochou prídu aj súperove — do môjho limitu a poldeci sa nerátajú.
       const mojeSkryte = (pk?.skryteNaex ?? []).filter((x) => x.hrac === ja);
@@ -965,7 +965,7 @@ function moznosti(v: ClientState): string[] {
             const moja = pl.playedBy === ja;
             c(
               { type: "naex", uid: pl.card.uid },
-              `NA EX na ${moja ? "svoju" : "SÚPEROVU"} kartu ${meno(pl.card.defId)} (na ${p === ja ? "tvojej" : "súperovej"} strane) — ${pl.card.defId === "veteran" ? "Veterán: zdvojí jeho aktívne akcie a nezruší ich, neaktívne nechá" : "zruší jej aktívne akcie, zdvojí neaktívne"} (rátajú sa ${moja ? "tebe" : "súperovi"}; násobky sa násobia, NA EX × Silná žena = ×4); pečeň +1 tebe, poldeci sa pri bitke vypije; skryto — súper ho uvidí až po tom, čo obaja skončíte Pitku (ak naň dá NA EX aj on, je z karty Výtržník: všetky akcie Rany pre majiteľa), potom smie odpovedať jednou kartou${cenaNaexText(v, pl.card.uid)}`,
+              `NA EX na ${moja ? "svoju" : "SÚPEROVU"} kartu ${meno(pl.card.defId)} (${p === ja ? "vľavo" : "vpravo"}) — ${pl.card.defId === "veteran" ? "Veterán: zdvojí jeho aktívne akcie a nezruší ich, neaktívne nechá" : "zruší jej aktívne akcie, zdvojí neaktívne"} (rátajú sa ${moja ? "tebe" : "súperovi"}; násobky sa násobia, NA EX × Silná žena = ×4); pečeň +1 tebe, poldeci sa pri bitke vypije; skryto — súper ho uvidí až po tom, čo obaja skončíte Pitku (ak naň dá NA EX aj on, je z karty Výtržník: všetky akcie Rany pre majiteľa), potom smie odpovedať jednou kartou${cenaNaexText(v, pl.card.uid)}`,
             );
           }
         }
@@ -973,7 +973,7 @@ function moznosti(v: ClientState): string[] {
       if (naexEste) {
         for (const z of v.zaverecne.filter((x) => ciele.has(x.uid))) {
           naexMoznosti++;
-          c({ type: "naex", uid: z.uid }, `NA EX na SÚPEROVU ZÁVEREČNÚ lícom dole (${z.strana === ja ? "na tvojej" : "na súperovej"} strane) — nevieš, čo to je; prejde vždy, aktívne akcie zruší a neaktívne zdvojí ako pri každej karte; pečeň +1 tebe`);
+          c({ type: "naex", uid: z.uid }, `NA EX na SÚPEROVU ZÁVEREČNÚ lícom dole (${z.strana === ja ? "vľavo" : "vpravo"}) — nevieš, čo to je; prejde vždy, aktívne akcie zruší a neaktívne zdvojí ako pri každej karte; pečeň +1 tebe`);
         }
       }
       if (naexLimitMinuty(v, ja) && (pk?.naexPouzity[ja] === true || mojeSkryte.length > 0)) {

@@ -146,7 +146,7 @@ export function Heatmapa() {
         <p>
           Karta má 4 pozície vľavo a 4 vpravo, 0 je hore. Každá karta má váhu 1: ak má viac variantov (akcie na rôznych pozíciách), počíta sa priemer
           cez všetky jej varianty. Číslo v bunke je, koľko kariet v priemere pozíciu obsadzuje, a percento z vybraných kariet; ⊘ je počet kariet, ktoré
-          ju majú blokovanú. Sýtosť farby je voči najobsadenejšej pozícii. Prepínač <em>ako na súperovej strane</em> ukáže kartu otočenú o 180° —
+          ju majú blokovanú. Sýtosť farby je voči najobsadenejšej pozícii. Prepínač <em>ako súperova karta</em> ukáže kartu otočenú o 180°, ako vidíš každú súperovu kartu —
           strany sa vymenia a pozícia 0 je dole.
         </p>
       }
@@ -195,7 +195,7 @@ export function Heatmapa() {
           </div>
           <label className="hm-otocene">
             <input type="checkbox" checked={otocene} onChange={(e) => setOtocene(e.target.checked)} />
-            ako na súperovej strane (otočené o 180°)
+            ako súperova karta (otočená o 180°)
           </label>
         </div>
 

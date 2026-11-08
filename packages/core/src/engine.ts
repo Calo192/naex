@@ -635,7 +635,7 @@ export type Command =
   | { readonly type: "draftBer"; readonly uids: readonly number[] }
   | { readonly type: "draftStop" }
   | { readonly type: "place"; readonly uid: number; readonly target: CielVykladania }
-  // Záverečná (roadmapa #83): za cigaretu karta lícom dole na koniec strany;
+  // Záverečná (roadmapa #83): za cigaretu karta lícom dole na koniec línie;
   // hráč tým v tomto Zhromaždení končí s vykladaním (cigarety za pas nedostane).
   | { readonly type: "zaverecna"; readonly uid: number; readonly target: "vlastna" | "superova" }
   | { readonly type: "pass" }
@@ -933,6 +933,14 @@ function presunDlhy(s: MutState, od: PlayerId, k: PlayerId, najviac: number): nu
 
 function cielLokalita(s: GameState): CardInstance | null {
   return s.ciel?.lokalita ?? null;
+}
+
+/**
+ * Kraj do logu, ktorý čítajú obaja (Michal 2026-11-08: línia nemá „tvoju a súperovu stranu“).
+ * Bez mena hrany poloha z pohľadu hráča 1 — strany[0] leží uňho vľavo od lokality.
+ */
+function menoKraja(data: GameData, s: Pick<GameState, "ciel" | "lokalitaOtocena">, strana: PlayerId): string {
+  return krajeStran(data, s.ciel?.lokalita ?? null, s.lokalitaOtocena)[strana] ?? (strana === 0 ? "vľavo od lokality (pohľad hráča 1)" : "vpravo od lokality (pohľad hráča 1)");
 }
 
 /** defId lokality, o ktorú sa hrá (aj pinnacle vo finále) — null pred voľbou cieľa (aj pre klienta). */
@@ -2752,7 +2760,7 @@ function zoSkladu(s: MutState, data: GameData, p: PlayerId, uid: number, events:
 
 /**
  * Záverečná (roadmapa #83, Michal 2026-10-23): za cigaretu karta z ruky lícom
- * dole na koniec strany. Míňa limit ako bežné vyloženie (aj po Vypiť) a hráč
+ * dole na koniec línie. Míňa limit ako bežné vyloženie (aj po Vypiť) a hráč
  * tým v tomto Zhromaždení končí — bez cigariet za pas.
  */
 function cmdZaverecna(
@@ -2859,7 +2867,7 @@ export function cenaDedicstva(state: { readonly dedicstvaVylozene: number }): nu
 }
 
 /**
- * Vyloženie karty z ruky na koniec tvojej alebo súperovej strany — v
+ * Vyloženie karty z ruky na jeden z dvoch koncov línie — v
  * Zhromaždení aj ako reakcia na NA EX. Limit vykladania rieši volajúci.
  */
 /** V 1 na 1 je hráč jediný člen, pole sa do stavu nepridáva. */
@@ -2880,20 +2888,20 @@ function vylozDoLinie(
   odpoved = false,
 ): void {
   const p = timMiesta(kto);
-  need(target === "vlastna" || target === "superova", "Kartu možno vyložiť len na tvoju alebo súperovu stranu.");
-  need(!(target === "superova" && lenVlastnaStrana(cielLokalita(s as GameState)?.defId ?? null)), "Most: karty sa smú vykladať len na vlastnú stranu.");
+  need(target === "vlastna" || target === "superova", "Kartu možno vyložiť len na koniec línie.");
+  need(!(target === "superova" && lenVlastnaStrana(cielLokalita(s as GameState)?.defId ?? null)), "Most: každý vykladá len na koniec línie po svojej ľavici.");
   const kartaVRuke = rukaMiestaMut(s, kto).find((k) => k.uid === uid);
   need(kartaVRuke !== undefined, "Karta nie je v ruke.");
   const def = defOf(data, kartaVRuke as CardInstance);
   need(!(def.tags.includes("Kliatba") && !def.tags.includes("Občan")), "Kliatbu možno len priznať — do línie nepatrí.");
-  // Karta smie na ktorúkoľvek stranu; patrí tomu, kto ju zahral (pravidlá v3).
+  // Karta smie na ktorýkoľvek koniec línie; patrí tomu, kto ju zahral (pravidlá v3).
   const cielPartia: PlayerId = target === "vlastna" ? p : opponentOf(p);
   // Nástroj nesmie susediť s Nástrojom (PRAVIDLA §12).
   const partia = s.strany[cielPartia];
   const sused = susedNaKonci(s.strany, cielPartia);
   need(sused?.zaverecna !== true, "Za Záverečnú sa nedá priložiť, kým sa na konci Pitky neotočí.");
-  need(sused?.posledna !== true, "Za túto kartu sa už nepriloží — Hrobár ju urobil poslednou na strane.");
-  // Vedľa lokality sa Nástroj nevykladá (v10.2, Michal 2026-11-01) — ani na súperovu stranu.
+  need(sused?.posledna !== true, "Za túto kartu sa už nepriloží — Hrobár ju urobil poslednou na tom konci línie.");
+  // Vedľa lokality sa Nástroj nevykladá (v10.2, Michal 2026-11-01) — na žiadnom konci línie.
   need(!(def.tags.includes("Nástroj") && sused == null), NASTROJ_PRI_LOKALITE);
   if (def.tags.includes("Nástroj") && sused != null) {
     need(
@@ -2910,20 +2918,20 @@ function vylozDoLinie(
   }
   if (odpoved) {
     partia.push({ card: karta, playedBy: p, zaverecna: true, odpoved: true, ...kymVylozena(s, kto) } as DeepMutable<PlacedCard>);
-    events.push({ type: "log", text: `Hráč ${p + 1} odpovedá na NA EX lícom dole na koniec ${target === "vlastna" ? "svojej" : "súperovej"} strany.` });
+    events.push({ type: "log", text: `Hráč ${p + 1} odpovedá na NA EX lícom dole na koniec línie ${menoKraja(data, s, cielPartia)}.` });
     return;
   }
   if (zaverecna) {
     partia.push({ card: karta, playedBy: p, zaverecna: true, ...kymVylozena(s, kto) } as DeepMutable<PlacedCard>);
     // Meno karty sa v logu objaví až pri otočení.
-    events.push({ type: "log", text: `Hráč ${p + 1} hrá Záverečnú lícom dole do ${target === "vlastna" ? "svojej" : "súperovej"} partie.` });
+    events.push({ type: "log", text: `Hráč ${p + 1} hrá Záverečnú lícom dole na koniec línie ${menoKraja(data, s, cielPartia)}.` });
     return;
   }
   const nova = { card: karta, playedBy: p, ...kymVylozena(s, kto) } as DeepMutable<PlacedCard>;
   partia.push(nova);
   events.push({
     type: "log",
-    text: `Hráč ${p + 1} vykladá ${def.name} do ${target === "vlastna" ? "svojej" : "súperovej"} partie.`,
+    text: `Hráč ${p + 1} vykladá ${def.name} na koniec línie ${menoKraja(data, s, cielPartia)}.`,
   });
   if (def.triggers.includes("Nástup")) {
     nastupEfekt(s, data, def.id, p, cielPartia, events);
@@ -2931,10 +2939,10 @@ function vylozDoLinie(
   if (sused != null) poPrilozeni(s, data, sused as DeepMutable<PlacedCard>, nova, events);
 }
 
-/** Dôvod pre server aj klienta, keď sa Nástroj vykladá na prázdnu stranu. */
+/** Dôvod pre server aj klienta, keď sa Nástroj vykladá do prázdneho kraja. */
 export const NASTROJ_PRI_LOKALITE = "Vedľa lokality sa Nástroj vyložiť nedá — najprv tam musí ležať iná karta.";
 
-/** Karta, ku ktorej sa priložila posledná karta strany `strana`. */
+/** Karta, ku ktorej sa priložila posledná karta kraja `strana`. */
 function susedPrilozenej(s: MutState, strana: PlayerId): DeepMutable<PlacedCard> | null {
   const partia = s.strany[strana];
   return partia.length >= 2 ? (partia[partia.length - 2] ?? null) : null;
@@ -3012,7 +3020,7 @@ function zlozNaex(s: MutState, placed: DeepMutable<PlacedCard>, q: PlayerId): vo
 }
 
 /**
- * Stôl po priložení karty `karta` hráča `kto` na koniec strany `strana` — pre
+ * Stôl po priložení karty `karta` hráča `kto` na koniec línie v kraji `strana` — pre
  * náhľady a bota (v7): to, čo z Konfliktu, Podpory a Nástupu Miňištranta mení bitku,
  * ako vylozDoLinie. Policajtkin Dlh ide medzi priznané s náhradným uid,
  * cigarety (Kriminál, Podvodník), odhodené karty ani Nástupy s voľbou náhľad nepredvída.
@@ -3063,13 +3071,13 @@ export function sPrilozenou<T extends VerejnyStav & { readonly lokalitaOtocena: 
   if (karta.defId === "dohadzovacka" && defOf(data, karta).triggers.includes("Nástup") && !efektPotlaceny(data, s, kto, "dohadzovacka")) {
     strany = presunDohadzovackou(data, strany, strana, karta.uid).strany;
   }
-  // Poľovník (Nástup): spáli súperovo Zviera na druhej strane, najďalej od lokality.
+  // Poľovník (Nástup): spáli súperovo Zviera v druhom kraji, najďalej od lokality.
   if (karta.defId === "polovnik" && defOf(data, karta).triggers.includes("Nástup") && !efektPotlaceny(data, s, kto, "polovnik")) {
     strany = spalPolovnikom(data, strany, strana, kto).strany;
   }
   const prilozeniaKu: [number, number] = [s.prilozeniaKu?.[0] ?? 0, s.prilozeniaKu?.[1] ?? 0];
   if (sused !== null && sused.playedBy !== kto) prilozeniaKu[sused.playedBy] += 1;
-  // Vandal (Nástup): lokalita sa otočí o 180° — hrany si vymenia strany (nastupEfekt).
+  // Vandal (Nástup): lokalita sa otočí o 180° — hrany si vymenia kraje (nastupEfekt).
   const vandal = karta.defId === "vandal" && s.ciel?.lokalita != null && defOf(data, karta).triggers.includes("Nástup") && !efektPotlaceny(data, s, kto, "vandal");
   return { ...s, strany, hraci, prilozeniaKu, ...(vandal ? { lokalitaOtocena: !s.lokalitaOtocena } : {}) };
 }
@@ -3250,8 +3258,8 @@ function odhodZBalicka(s: MutState, p: PlayerId, n: number): CardInstance[] {
 }
 
 /**
- * Karta, ku ktorej sa priloží ďalšia karta na koniec strany `strana`; pri
- * prázdnej strane null (prikladá sa k lokalite).
+ * Karta, ku ktorej sa priloží ďalšia karta na koniec línie v kraji `strana`; pri
+ * prázdnom kraji null (prikladá sa k lokalite).
  */
 export function susedNaKonci(strany: readonly [readonly PlacedCard[], readonly PlacedCard[]], strana: PlayerId): PlacedCard | null {
   return strany[strana].at(-1) ?? null;
@@ -3312,7 +3320,7 @@ function nastupEfekt(
       s.strany = strany as MutState["strany"];
       events.push({
         type: "log",
-        text: `Dohadzovačka: ${defOf(data, presunuta.card).name} (${presunuta.playedBy === p ? `hráča ${p + 1}` : `hráča ${opp + 1}`}) sa presúva z druhej strany lokality za Dohadzovačku.`,
+        text: `Dohadzovačka: ${defOf(data, presunuta.card).name} (${presunuta.playedBy === p ? `hráča ${p + 1}` : `hráča ${opp + 1}`}) sa presúva z druhého kraja za Dohadzovačku.`,
       });
       break;
     }
@@ -3389,7 +3397,7 @@ function nastupEfekt(
     case "vandal": {
       if (s.ciel?.lokalita != null) {
         s.lokalitaOtocena = !s.lokalitaOtocena;
-        events.push({ type: "log", text: `Vandal: hráč ${p + 1} otáča lokalitu o 180° — jej hrany si vymenili strany.` });
+        events.push({ type: "log", text: `Vandal: hráč ${p + 1} otáča lokalitu o 180° — jej hrany si vymenili kraje.` });
       }
       break;
     }
@@ -3554,7 +3562,7 @@ function cmdNaex(
   need(s.hraci[p].poldeciPlne - moje.length > 0, "Nemáš plný poldeci.");
   const kde = najdiVLinii(s, uidCiela);
   need(kde !== null, "Karta neleží v žiadnej partii.");
-  need(!naexLenNaKonci(lineState(s as GameState)) || kde.index === s.strany[kde.strana].length - 1, "Kostol: NA EX smie len na poslednú kartu línie.");
+  need(!naexLenNaKonci(lineState(s as GameState)) || kde.index === s.strany[kde.strana].length - 1, "Kostol: NA EX smie len na kartu na konci línie.");
   const placed = s.strany[kde.strana][kde.index] as DeepMutable<PlacedCard>;
   need(placed.naexBy === undefined && !moje.some((x) => x.uid === placed.card.uid), "Na karte už poldeci leží.");
   // NA EX na vlastnú aj súperovu kartu (Michal 2026-10-18 vrátil obmedzenie
@@ -3678,7 +3686,7 @@ function dalsiaReakcia(s: MutState, data: GameData, events: Event[]): boolean {
     const kraj = pitka.krajOdpovede ?? null;
     events.push({
       type: "log",
-      text: `Hráč ${q + 1} smie na NA EX odpovedať jednou kartou lícom dole${kraj === null ? "" : ` — len na koniec strany hráča ${opponentOf(kraj) + 1} (druhý kraj línie)`}.`,
+      text: `Hráč ${q + 1} smie na NA EX odpovedať jednou kartou lícom dole${kraj === null ? "" : ` — len na druhý koniec línie (${menoKraja(data, s, opponentOf(kraj))})`}.`,
     });
     return true;
   }
@@ -3712,7 +3720,7 @@ function otocOdpovede(s: MutState, data: GameData, events: Event[]): boolean {
   const prevahaPred = prevahaStran(data, bezSkrytych);
   events.push({
     type: "log",
-    text: `Odpovede sa otáčajú naraz: ${skryte.map(({ strana, placed }) => `hráč ${placed.playedBy + 1} ${defOf(data, placed.card as CardInstance).name} (koniec strany hráča ${strana + 1})`).join("; ")}.`,
+    text: `Odpovede sa otáčajú naraz: ${skryte.map(({ strana, placed }) => `hráč ${placed.playedBy + 1} ${defOf(data, placed.card as CardInstance).name} (${menoKraja(data, s, strana)})`).join("; ")}.`,
   });
   let cakaNaHasica = false;
   for (const { strana, placed } of skryte) {
@@ -3731,11 +3739,10 @@ function otocOdpovede(s: MutState, data: GameData, events: Event[]): boolean {
   }
   // Odpoveď smie zmeniť prevahu v kraji aj počet Pitiek (b22d4d6) — hráč to musí vidieť (názor #27).
   const prevahaPo = prevahaStran(data, s.strany);
-  const kraje = krajeStran(data, s.ciel?.lokalita ?? null, s.lokalitaOtocena);
   for (const strana of [0, 1] as const) {
     const kto = prevahaPo[strana];
     if (kto === prevahaPred[strana]) continue;
-    const kraj = kraje[strana] === null ? `pri strane hráča ${strana + 1}` : `v kraji ${kraje[strana]}`;
+    const kraj = `v kraji ${menoKraja(data, s, strana)}`;
     events.push({ type: "log", text: `Odpoveď na NA EX: prevahu ${kraj} má teraz ${kto === null ? "nikto" : `hráč ${kto + 1}`}.` });
   }
   const pitkyPred = s.pitkyCelkom;
@@ -4619,7 +4626,7 @@ function cmdNastroj(s: MutState, data: GameData, cmd: { uid: number | null }, kt
     need(karta !== undefined && defOf(data, karta as CardInstance).tags.includes("Nástroj"), "Za Živnostníka smieš priložiť len Nástroj z ruky.");
     const strana = volba.strana ?? p;
     const posledna = s.strany[strana][s.strany[strana].length - 1];
-    need(posledna?.card.defId === "zivnostnik" && posledna.playedBy === p, "Živnostník už nie je na konci strany — Nástroj sa za neho nepriloží.");
+    need(posledna?.card.defId === "zivnostnik" && posledna.playedBy === p, "Živnostník už nie je na konci línie — Nástroj sa za neho nepriloží.");
     vylozDoLinie(s, data, kto, cmd.uid, strana === p ? "vlastna" : "superova", events);
   } else events.push({ type: "log", text: `Živnostník: hráč ${p + 1} za neho Nástroj neprikladá.` });
   dokonciPoVolbe(s, data, volba, events);
@@ -4895,10 +4902,10 @@ function zacniBitku(s: MutState, data: GameData, events: Event[]): void {
 }
 
 /**
- * Dohadzovačka (Nástup, Michal 2026-10-28): leží na konci strany `strana` (uid). Ak jej
+ * Dohadzovačka (Nástup, Michal 2026-10-28): leží na konci línie v kraji `strana` (uid). Ak jej
  * vnútorný sused O2 je Občan alebo Starešina s tagom Žena či Chlap (karta ktoréhokoľvek
- * hráča), z druhej strany lokality sa najvzdialenejší Občan alebo Starešina opačného
- * pohlavia presunie za ňu — na vonkajší koniec jej strany; medzera sa uzavrie. Presun je
+ * hráča), z druhého kraja sa najvzdialenejší Občan alebo Starešina opačného
+ * pohlavia presunie za ňu — na koniec línie; medzera sa uzavrie. Presun je
  * povinný, karta ostáva majiteľovi a natočená k nemu. Karta s oboma tagmi sa ráta ako
  * oboje. Presun nie je priloženie (Konflikt ani Pascu nespustí); skrytá Záverečná sa
  * nepresúva. Vráti nové strany a presunutú kartu (null = nič sa nestalo).
@@ -4933,8 +4940,8 @@ export function presunDohadzovackou<S extends readonly [readonly PlacedCard[], r
 }
 
 /**
- * Poľovník (Nástup, Michal 2026-11-02): leží na strane `strana`, zahral ho hráč `kto`. Na druhej
- * strane lokality sa spáli súperovo Zviera (karta s tagom Zviera natočená k súperovi hráča
+ * Poľovník (Nástup, Michal 2026-11-02): leží v kraji `strana`, zahral ho hráč `kto`. V druhom
+ * kraji sa spáli súperovo Zviera (karta s tagom Zviera natočená k súperovi hráča
  * `kto`, aj Recidivista), ktoré je od lokality najďalej — povinne, bez voľby. Spálená karta ide
  * navždy z hry, medzera sa uzavrie a spoje sa prepočítajú (ako presun Dohadzovačky). Spálenie nie
  * je priloženie (Konflikt ani Pascu nespustí). Skrytá Záverečná sa nestrieľa, ani karta, ktorá
@@ -5299,7 +5306,7 @@ export function cieleVykladania(
   lokalita: string | null = null,
   /**
    * Strany so skrytou Záverečnou (zablokovaneStrany) — klient súpera ju v strany
-   * nemá; na serveri ju prezradí príznak karty na konci strany.
+   * nemá; na serveri ju prezradí príznak karty na konci línie.
    */
   zablokovane: readonly [boolean, boolean] = [false, false],
 ): CielVykladania[] {
@@ -5342,20 +5349,21 @@ export function dovodyAutoPasu(data: GameData, state: GameState, p: PlayerId, kt
   if (z === null) return [];
   if (ruka.length === 0) return ["Nemáš v ruke žiadnu kartu."];
   const lokalita = cielLokalitaId(state);
-  /** Prečo strana kartu neprijme (limit zvlášť); null = prijme. */
+  /** Prečo koniec línie kartu neprijme (limit zvlášť); null = prijme. */
   const prekazka = (strana: PlayerId, jeNastroj: boolean): string | null => {
-    if (strana !== p && lenVlastnaStrana(lokalita)) return "na tejto lokalite sa vykladá len na vlastnú";
+    if (strana !== p && lenVlastnaStrana(lokalita)) return "na Moste sa vykladá len po svojej ľavici";
     const koniec = susedNaKonci(state.strany, strana);
     if (koniec?.zaverecna === true) return "na konci leží skrytá Záverečná";
     if (koniec?.posledna === true) return "za poslednú kartu sa už nepriloží";
-    if (jeNastroj && koniec === null) return "prázdna, Nástroj sa vedľa lokality nevykladá";
+    if (jeNastroj && koniec === null) return "prázdny kraj, Nástroj sa vedľa lokality nevykladá";
     if (jeNastroj && koniec !== null && defOf(data, koniec.card).tags.includes("Nástroj")) return "na konci je Nástroj";
     return null;
   };
   const strany = (jeNastroj: boolean): string => {
     const [moja, superova] = [prekazka(p, jeNastroj), prekazka(opponentOf(p), jeNastroj)];
-    if (moja !== null && moja === superova) return `obe strany: ${moja.replace(/^prázdna/, "prázdne")}`;
-    return [moja === null ? null : `tvoja strana: ${moja}`, superova === null ? null : `súperova strana: ${superova}`].filter((x) => x !== null).join("; ");
+    // Text ide len hráčovi p — jeho strany[p] leží vľavo od lokality.
+    if (moja !== null && moja === superova) return `oba konce: ${moja.replace(/^prázdny kraj/, "prázdne kraje")}`;
+    return [moja === null ? null : `vľavo: ${moja}`, superova === null ? null : `vpravo: ${superova}`].filter((x) => x !== null).join("; ");
   };
   const skupiny = new Map<string, string[]>();
   const pridaj = (dovod: string, meno: string): void => {
