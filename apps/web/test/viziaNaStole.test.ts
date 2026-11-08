@@ -9,20 +9,22 @@ import { IKONY } from "../src/karta/ikony.ts";
 import { rozmerVizie, VolbyVizie, zamerVizie } from "../src/hra/ViziaNaStole.tsx";
 
 const POMER = 80 / 54;
-const MOCKUP = new URL("../../../docs/napady/frakcie-mockupy.html", import.meta.url);
+const MOCKUP = new URL("../../../docs/napady/ikony-final.html", import.meta.url);
 
 describe("piktogramy rozhrania", () => {
-  // Mockup je návrh v docs/napady — keď ho niekto upratal, porovnanie sa preskočí.
-  it.skipIf(!existsSync(MOCKUP))("Dobratie (D3) a Spálenie (S3) sú v IKONY presne ako v mockupe, ktorý Michal vybral", () => {
+  // Finál je návrh v docs/napady — keď ho niekto upratal, porovnanie sa preskočí.
+  it.skipIf(!existsSync(MOCKUP))("Dobratie (D-E), Odhodenie (O1), Návrat (N1) a Spálenie (S-B) sú v IKONY presne ako vo finále, ktoré Michal vybral", () => {
     const html = readFileSync(MOCKUP, "utf8");
-    const pk = JSON.parse(/const PK = (\{.*\});/.exec(html)?.[1] ?? "{}") as Record<string, { d: string; evenOdd: boolean }[]>;
-    expect(IKONY.Dobratie).toEqual(pk.D3);
-    expect(IKONY.Spálenie).toEqual(pk.S3);
+    const riadok = html.split(/\r?\n/).find((r) => r.startsWith("const DATA = ")) ?? "const DATA = {};";
+    const fin = (JSON.parse(riadok.slice("const DATA = ".length).replace(/;\s*$/, "")) as { FINAL?: Record<string, { d: string; evenOdd: boolean }[]> }).FINAL ?? {};
+    expect(IKONY.Dobratie).toEqual(fin.Dobratie);
+    expect(IKONY.Odhodenie).toEqual(fin.Odhodenie);
+    expect(IKONY.Návrat).toEqual(fin.Navrat);
+    expect(IKONY.Spálenie).toEqual(fin.Spálenie);
   });
 
-  it("karta s okienkom ilustrácie je vyrezaná (evenodd), plus a zápalka sú plné tvary", () => {
-    expect(IKONY.Dobratie.map((c) => c.evenOdd)).toEqual([true, false]);
-    expect(IKONY.Spálenie.map((c) => c.evenOdd)).toEqual([true, false, false, false]);
+  it("každý piktogram je jedna karta so znakom vyrezaným (evenodd)", () => {
+    for (const k of ["Dobratie", "Odhodenie", "Návrat", "Spálenie"] as const) expect(IKONY[k].map((c) => c.evenOdd)).toEqual([true]);
   });
 });
 
@@ -83,7 +85,7 @@ describe("tlačidlá Vízie na hrane", () => {
     const h = html(1);
     expect(h.match(/<button/g)).toHaveLength(2);
     expect(h).toContain(IKONY.Dobratie[0]!.d);
-    expect(h).toContain(IKONY.Spálenie[1]!.d);
+    expect(h).toContain(IKONY.Spálenie[0]!.d);
     expect(h).toContain('aria-label="Do ruky: Nealko"');
     expect(h).toContain('aria-label="Spáliť navždy z hry: Nealko"');
     // Bez textu na tlačidle — medzi značkami nie je žiadne slovo.
