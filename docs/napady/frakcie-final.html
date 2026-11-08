@@ -1,0 +1,385 @@
+<!doctype html>
+<html lang="sk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Frakcie — záväzná špecifikácia — NA EX!</title>
+<style>
+:root{--bg:#15120f;--pl:#1f1a15;--pl2:#2a231c;--ok:#43372c;--tx:#f1e8d8;--tl:#b8a993;--ak:#e9ad45;--zel:#7fbf7a;--cer:#d8705f;
+--dob:#5ea6e0;--zla:#e0614a;--mak:#b48ae6;color-scheme:dark}
+@media (prefers-color-scheme:light){:root{--bg:#f6f1e7;--pl:#fffaf1;--pl2:#f0e7d6;--ok:#d8c8ad;--tx:#2a2016;--tl:#5e4f3b;--ak:#95590a;--zel:#2f7a2b;--cer:#a8402f;
+--dob:#2f6fae;--zla:#b53b26;--mak:#7a4fb5;color-scheme:light}}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--tx);font:15px/1.5 system-ui,"Segoe UI",Roboto,sans-serif}
+main{max-width:1060px;margin:0 auto;padding:14px max(14px,env(safe-area-inset-right,0px)) 80px max(14px,env(safe-area-inset-left,0px))}
+h1,h2,h3{font-family:Georgia,serif;line-height:1.2;text-wrap:balance}h1{font-size:clamp(1.4rem,5vw,2rem);margin:0 0 4px}
+h2{font-size:1.25rem;margin:32px 0 10px;padding-bottom:4px;border-bottom:1px solid var(--ok)}h3{font-size:1.02rem;margin:0 0 6px}
+p,ul,ol{max-width:78ch}p{margin:0 0 9px}li{margin-bottom:4px}.tl{color:var(--tl)}.mal{font-size:.88rem}
+nav{display:flex;gap:6px;overflow-x:auto;padding:6px 0 10px;position:sticky;top:0;background:var(--bg);z-index:2}
+nav a{flex:none;color:var(--tl);text-decoration:none;border:1px solid var(--ok);background:var(--pl);padding:4px 11px;border-radius:999px;font-size:.86rem}
+.box{background:var(--pl);border:1px solid var(--ak);border-radius:12px;padding:12px 15px;margin:12px 0}.box>:last-child{margin-bottom:0}
+.tab{overflow-x:auto}table{border-collapse:collapse;width:100%;font-size:.9rem}
+th,td{padding:6px 6px;text-align:left;vertical-align:top;border-bottom:1px solid var(--ok)}thead th{font-size:.82rem;color:var(--tl);border-bottom:2px solid var(--ok)}
+td.n,th.n{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+tr.odp td{background:color-mix(in srgb,var(--ak) 12%,transparent)}
+.a{display:inline-block;font-size:.8rem;font-weight:600;padding:0 7px;border-radius:6px;border:1px solid currentColor;margin:1px 1px;white-space:nowrap}
+.a.t{color:var(--zla)}.a.m{color:var(--mak)}.a.d{color:var(--dob)}.a.c{color:var(--zel)}
+.mriezka{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(330px,100%),1fr));gap:12px}
+.karta{background:var(--pl);border:1px solid var(--ok);border-radius:12px;padding:11px 13px}
+.karta .tagy{color:var(--tl);font-size:.82rem;margin-bottom:6px}
+.dnes{color:var(--tl);font-size:.88rem;margin:4px 0 8px}
+.alt{border-left:3px solid var(--ok);padding:3px 0 3px 9px;margin:6px 0}.alt.odp{border-left-color:var(--ak)}
+.alt b.k{font-family:Georgia,serif}.znak{font-size:.75rem;color:var(--ak);font-weight:700;margin-left:4px}
+.efekt{display:inline-block;background:var(--pl2);border:1px solid var(--ok);border-radius:8px;padding:5px 10px;margin:3px 0;text-align:center;min-width:150px}
+.efekt .sp{font-weight:700}.efekt .ik{margin-top:3px}
+.pozn{font-size:.85rem;color:var(--tl);margin:4px 0 0}.zmena{color:var(--cer);font-weight:600}
+svg{max-width:100%;height:auto;display:block;margin:6px auto}
+svg .uzol{fill:var(--pl2);stroke:var(--ak);stroke-width:1.5}svg .uzol2{fill:var(--pl2);stroke:var(--tl);stroke-width:1.2;stroke-dasharray:4 3}
+svg text{fill:var(--tx);font:600 14px system-ui,sans-serif}svg .men{fill:var(--tl);font:italic 13px Georgia,serif}
+svg .hr{stroke:var(--ak);stroke-width:2}svg .hr2{stroke:var(--tl);stroke-width:1.6;stroke-dasharray:5 4}
+svg .c{fill:var(--ak)}svg .ct{fill:var(--bg);font:700 12px system-ui,sans-serif}
+code{background:var(--pl2);padding:0 4px;border-radius:4px;font-size:.84em;overflow-wrap:anywhere}
+.ot li{margin:6px 0}footer{margin-top:36px;padding-top:10px;border-top:1px solid var(--ok);color:var(--tl);font-size:.85rem}
+.a.z{color:var(--cer)}.a.v{color:var(--ak)}.a.o{color:var(--tl)}
+table.st{width:auto;border-collapse:separate;border-spacing:2px;display:inline-table;vertical-align:middle;margin-right:6px}
+table.st td{border:1px solid var(--ok);border-radius:5px;min-width:26px;text-align:center;padding:1px 2px}table.st td.x{color:var(--tl);background:var(--pl2)}table.st td.vo{color:var(--tl)}
+table.sr th{white-space:nowrap}.caka{border-color:var(--cer)}
+</style>
+</head>
+<body>
+<main>
+<h1>Frakcie, Vízia a koniec Kšeftu — záväzná špecifikácia</h1>
+<p class="tl mal">Vymyselník · 2026-11-08 · <b>rozhodol Michal 2026-11-08</b> · podklad pre naex-admin (tvorca, rozpracovaný stav Zrejúcej) a pre programátora · nad cards.json v master ec550d5e · strojovo: <code>docs/napady/frakcie-final.json</code></p>
+<nav><a href="#suhrn">Súhrn</a><a href="#pojmy">Pravidlá</a><a href="#navyse">Akcia navyše</a><a href="#graf">Graf</a><a href="#karty">17 kariet</a><a href="#vizia">Vízia</a><a href="#kseft">Kšeft a lokality</a><a href="#pravidla">Znenia</a><a href="#postup">Postup</a><a href="#vyklady">Výklady</a></nav>
+
+<h2 id="suhrn">Súhrn</h2>
+<div class="box">
+<ul>
+<li><b>Štyri spúšťače s tagom:</b> <b>Spoločník: T</b> (tag v tvojej partii), <b>Nepriateľ: T</b> (tag v súperovej partii), <b>Podpora: T</b> a <b>Konflikt: T</b> (sused pri priložení). Pod spúšťačom sú piktogramy <b>akcií navyše</b> alebo text efektu.</li>
+<li><b>17 kariet</b> dostane nový efekt: 5 Spoločník, 4 Nepriateľ, 2 Podpora s tagom, 2 Podpora bez tagu (Hasič, Predavačka), 4 Konflikt s tagom. Akcie sa menia Praudovravcovi (Odpor → Povera) a kartám z Vízie.</li>
+<li><b>Graf tagov:</b> odporúčaný G1 (dva trojuholníky a Pracujúci → Autorita) a <b>nová šípka 8 Kriminál → Zahraničný</b> kvôli Recidivistovi. Michalove voľby ostali bez zmeny.</li>
+<li><b>Vízia</b> ostáva na 4 kartách (Veštica, Bzdocha, Krištáľová guľa, Poštárka), 6 ikon namiesto 16. V tlači 33 kariet s Víziou namiesto 84. 7 kariet ju stratí. Všetky varianty sú v rozsahu.</li>
+<li><b>Kšeft zaniká.</b> Strýko a Predavačka majú frakčný efekt. Zberný dvor, Sklad a Predsedova vila majú nový efekt (ide do implementácie) a zálohu.</li>
+<li>Veľmi smútiaca vdova: <b>z ruky</b> (Michal potvrdil). Otvorené ostávajú len výklady v poslednej časti, každý s mojím predvoleným riešením.</li>
+</ul></div>
+
+<h2 id="pojmy">1 · Spúšťače s tagom</h2>
+<div class="tab"><table>
+<thead><tr><th>Na karte</th><th>Kedy platí</th><th>Koľkokrát</th><th>Ako dlho</th></tr></thead>
+<tr><td><b>Spoločník: T</b></td><td>Máš v partii (karty natočené k tebe, v ktoromkoľvek kraji) odkrytú kartu s tagom T.</td><td>Raz, aj keď máš takých kariet viac. Dve karty so Spoločníkom platia každá zvlášť.</td><td>Ako akcia na hrane: <b>v každej Pitke</b>, v ktorej podmienka platí (pitkové akcie), v bitke (bitkové), pri exekúcii (Robota). Nie raz za kolo.</td></tr>
+<tr><td><b>Nepriateľ: T</b></td><td>Súper má v partii odkrytú kartu s tagom T.</td><td>Raz, ako Spoločník.</td><td>Ako Spoločník.</td></tr>
+<tr><td><b>Podpora: T</b></td><td>Karta sa priložením stretne s tvojou kartou s tagom T (oboma smermi, §16).</td><td><b>Pri každom spustení</b>, bez stropu (aj tretí sused po Poľovníkovi či Dohadzovačke).</td><td>Od spustenia do konca kola; pitkové akcie v každej Pitke od spustenia.</td></tr>
+<tr><td><b>Konflikt: T</b></td><td>Karta sa priložením stretne so súperovou kartou s tagom T.</td><td>Pri každom spustení, bez stropu.</td><td>Ako Podpora.</td></tr>
+<tr><td>Podpora / Konflikt bez tagu</td><td>Ako dnes (§16).</td><td>Pri každom spustení.</td><td>Podľa textu efektu.</td></tr>
+</table></div>
+<ul class="mal">
+<li>Pre Podporu a Konflikt s tagom platí všetko z §16: Nástroj, NA EX, zrážka ani presun karty ich nespúšťajú. Pribúda len podmienka, že stretnutá karta nesie tag T.</li>
+<li><b>Skrytá Záverečná</b> nič nesplní ani nedostane, kým sa neotočí: nesplní podmienku inej karte a sama akcie navyše nemá. Podporu a Konflikt vyvolá pri otočení (krok 8 Pitky), takže ich pitkové akcie platia od ďalšej Pitky. Súper z náhľadu nevyčíta, čo leží lícom dole (pravidlo 2, viewFor).</li>
+<li><b>Zobrazenie:</b> 1× bez odznaku, odznak ×N až od 2. Líce karty podľa frakcie-mockupy.html (M1).</li>
+<li><b>„Necieli vlastný tag“</b> platí pre nové efekty, aj pre pohlavie a Zviera. Sypač ostáva, ako je, aj so znením.</li>
+<li><b>2 na 2:</b> Spoločník = karta tvojho tímu, Nepriateľ = karta druhého tímu (súper = druhý tím ako celok).</li>
+</ul>
+
+<h2 id="navyse">2 · Akcia navyše</h2>
+<div class="box"><p><b>Pravidlo:</b> akcia navyše je aktívna akcia majiteľa karty <b>mimo jej hrán</b>. Do súčtov ide ako tá istá akcia a vyhodnotí sa v jej kroku. Po bitke zaniká, karta ide do balíčka bez nej.</p>
+<p><b>Mení ju</b> to, čo platí na všetky tvoje akcie toho druhu. <b>Nemení ju</b> nič, čo pôsobí na spoj alebo na akcie jednej karty.</p></div>
+<div class="tab"><table>
+<thead><tr><th>Čo</th><th>Mení?</th><th>Týka sa (ikony v tejto sade)</th></tr></thead>
+<tr class="odp"><td>Dedičstvo Náradia: Valaška (Pecka +1), Horoskop (Povera sila 2), Fúrik (Robota +1 Dlh), Píšťalka (Obmedzenie aj pri pase), Telefón (Pohoršenie)</td><td><b>áno</b></td><td>Miňištrant, Recidivista, Kočovník · Veštica, Šarlatán · Živnostník, Opatrovateľka · Podvodník · Praudovravec, Stryná, Dievčina, Snúbenica</td></tr>
+<tr class="odp"><td>Ostatné efekty na všetky tvoje akcie druhu: Vidly, Svätý text, Čierna mačka, súperova Viera proti Povere, Milujúca manželka, Obecný úrad, priazeň starších</td><td><b>áno</b></td><td>Vidly: Rany Strýka sú akcie, preto ich zosilnia (Rany navyše z Kšeftu nie sú akcie a Vidly ich nezosilnili).</td></tr>
+<tr><td>Posilnenie, Odpor, Pakt, Forsáž, Vzbura suseda</td><td>nie</td><td>Pôsobia len na spoji.</td></tr>
+<tr><td>NA EX na túto kartu aj na suseda, Veterán</td><td>nie</td><td>Nezruší ani nezdvojí. Do podmienky NA EX „aspoň 1 aktívna a 1 neaktívna akcia“ (§7) sa nepočíta.</td></tr>
+<tr><td>Silná nezávislá žena, Liberál, Pes, Zámočník, Sypač, Vedúcko, Profesionálny tipér, zrážka (Výtržník)</td><td>nie</td><td>Násobia alebo menia akcie konkrétnej karty, nie hráča.</td></tr>
+<tr><td>Starosta (schopnosť), Poľovnícka chata</td><td>nie</td><td>Týkajú sa len hrán lokality.</td></tr>
+<tr><td>Puška</td><td>—</td><td>Petelicu navyše (Policajtka) nemá čo zrušiť, Puška sa neuplatní.</td></tr>
+<tr><td>Mäsiar</td><td>áno, celý efekt</td><td>Efekty Zvierat pri ňom neplatia, teda ani Nepriateľ Recidivistu.</td></tr>
+</table></div>
+
+<h2 id="graf">3 · Graf tagov (záväzný)</h2>
+<p>Vybral som G1 z frakcie-efekty.html. Michalova voľba Recidivistu (Kriminál, Nepriateľ: Zahraničný) v ňom nemala šípku, preto pribudla <b>šípka 8 Kriminál → Zahraničný</b>. Kriminál má teraz dve šípky von (na Influencera a na Zahraničného), ostatné tagy jednu. Influencera cieli už len Podvodník, lebo Vdova (Chlap) a Recidivista (Zahraničný) od neho odišli podľa Michala. Ostatné Michalove voľby (Policajtka 1, Miňištrant 6) graf G1 už spĺňal.</p>
+<svg viewBox="-20 30 760 290" role="img" aria-label="Graf tagov: Ulica Autorita, Kriminál, Influencer; Dedina Zahraničný, Pamätník, Závislý; Pracujúci na Autoritu; Kriminál na Zahraničného">
+<defs>
+<marker id="sip" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="c"/></marker>
+<marker id="sip2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" style="fill:var(--tl)"/></marker>
+</defs>
+<text x="180" y="225" text-anchor="middle" class="men">Ulica</text>
+<text x="540" y="225" text-anchor="middle" class="men">Dedina</text>
+<line class="hr" x1="195" y1="87" x2="300" y2="265" marker-end="url(#sip)"/>
+<line class="hr" x1="251" y1="290" x2="109" y2="290" marker-end="url(#sip)"/>
+<line class="hr" x1="60" y1="265" x2="165" y2="87" marker-end="url(#sip)"/>
+<line class="hr" x1="555" y1="87" x2="660" y2="265" marker-end="url(#sip)"/>
+<line class="hr" x1="611" y1="290" x2="469" y2="290" marker-end="url(#sip)"/>
+<line class="hr" x1="420" y1="265" x2="525" y2="87" marker-end="url(#sip)"/>
+<line class="hr2" x1="300" y1="148" x2="218" y2="85" marker-end="url(#sip2)"/>
+<line class="hr" x1="352" y1="268" x2="500" y2="86" marker-end="url(#sip)" style="stroke-dasharray:8 4"/>
+<rect class="uzol" x="122" y="42" width="116" height="40" rx="10"/><text x="180" y="67" text-anchor="middle">Autorita</text>
+<rect class="uzol" x="257" y="270" width="116" height="40" rx="10"/><text x="315" y="295" text-anchor="middle">Kriminál</text>
+<rect class="uzol" x="-13" y="270" width="116" height="40" rx="10"/><text x="45" y="295" text-anchor="middle">Influencer</text>
+<rect class="uzol" x="482" y="42" width="116" height="40" rx="10"/><text x="540" y="67" text-anchor="middle">Zahraničný</text>
+<rect class="uzol" x="617" y="270" width="116" height="40" rx="10"/><text x="675" y="295" text-anchor="middle">Pamätník</text>
+<rect class="uzol" x="347" y="270" width="116" height="40" rx="10"/><text x="405" y="295" text-anchor="middle">Závislý</text>
+<rect class="uzol2" x="262" y="150" width="116" height="40" rx="10"/><text x="320" y="175" text-anchor="middle">Pracujúci</text>
+<circle class="c" cx="248" cy="176" r="11"/><text class="ct" x="248" y="180" text-anchor="middle">1</text>
+<circle class="c" cx="180" cy="290" r="11"/><text class="ct" x="180" y="294" text-anchor="middle">2</text>
+<circle class="c" cx="113" cy="176" r="11"/><text class="ct" x="113" y="180" text-anchor="middle">3</text>
+<circle class="c" cx="608" cy="176" r="11"/><text class="ct" x="608" y="180" text-anchor="middle">4</text>
+<circle class="c" cx="540" cy="290" r="11"/><text class="ct" x="540" y="294" text-anchor="middle">5</text>
+<circle class="c" cx="473" cy="176" r="11"/><text class="ct" x="473" y="180" text-anchor="middle">6</text>
+<circle class="c" cx="270" cy="116" r="11"/><text class="ct" x="270" y="120" text-anchor="middle">7</text>
+<circle class="c" cx="395" cy="215" r="11"/><text class="ct" x="395" y="219" text-anchor="middle">8</text>
+</svg>
+<p class="mal tl">Šípka X → Y: karta s tagom X má v efekte tag Y. Chlap, Žena a Zviera sú mimo grafu (Vdova → Chlap). Hasič a Predavačka majú Podporu bez tagu.</p>
+<div class="tab"><table><thead><tr><th class="n">#</th><th>Šípka</th><th>Karty</th></tr></thead>
+<tr><td class="n">1</td><td>Autorita → Kriminál</td><td>Policajtka (Nepriateľ)</td></tr>
+<tr><td class="n">2</td><td>Kriminál → Influencer</td><td>Podvodník (Konflikt)</td></tr>
+<tr><td class="n">3</td><td>Influencer → Autorita</td><td>Praudovravec (Konflikt), Šarlatán (Spoločník), Snúbenica (Nepriateľ), Strýko z Ameriky (Nepriateľ)</td></tr>
+<tr><td class="n">4</td><td>Zahraničný → Pamätník</td><td>Veštica (Spoločník), Kočovník (Spoločník), Opatrovateľka (Podpora)</td></tr>
+<tr><td class="n">5</td><td>Pamätník → Závislý</td><td>Stryná (Konflikt)</td></tr>
+<tr><td class="n">6</td><td>Závislý → Zahraničný</td><td>Miňištrant (Spoločník), Dievčina na vydaj (Podpora)</td></tr>
+<tr><td class="n">7</td><td>Pracujúci → Autorita</td><td>Živnostník (Spoločník)</td></tr>
+<tr class="odp"><td class="n">8</td><td>Kriminál → Zahraničný <span class="znak">NOVÁ</span></td><td>Recidivista (Nepriateľ)</td></tr>
+</table></div>
+<h3 style="margin-top:14px">Overenie: žiadna karta necieli svoj tag</h3>
+<p class="mal">Skript overil 17 kariet a celú sadu. Oba konce jednej šípky nesie len Predavačka (šípka 7). Predavačka má Podporu bez tagu, takže nič nekoliduje. Karta s dvoma frakčnými tagmi smie použiť šípku ktoréhokoľvek z nich, len nie tú, ktorá vedie na jej druhý tag. Kriminála so Zahraničným (šípka 8) nemá nikto.</p>
+<div class="tab"><table><thead><tr><th>Karta</th><th>Tagy (frakcia, pohlavie, Zviera)</th><th>Cieľ</th><th>Nesie cieľ?</th></tr></thead>
+<tr><td>Miňištrant</td><td>Závislý, Chlap</td><td>Zahraničný</td><td>nie</td></tr>
+<tr><td>Veľmi smútiaca vdova</td><td>Kriminál, Žena</td><td>Chlap</td><td>nie</td></tr>
+<tr><td>Veštica</td><td>Zahraničný, Žena</td><td>Pamätník</td><td>nie</td></tr>
+<tr><td>Policajtka</td><td>Autorita, Žena</td><td>Kriminál</td><td>nie</td></tr>
+<tr><td>Praudovravec</td><td>Influencer, Chlap</td><td>Autorita</td><td>nie</td></tr>
+<tr><td>Stryná</td><td>Pamätník, Žena</td><td>Závislý</td><td>nie</td></tr>
+<tr><td>Recidivista</td><td>Kriminál, Chlap, Zviera</td><td>Zahraničný</td><td>nie</td></tr>
+<tr><td>Dievčina na vydaj</td><td>Závislý, Žena</td><td>Zahraničný</td><td>nie</td></tr>
+<tr><td>Živnostník</td><td>Pracujúci, Chlap</td><td>Autorita</td><td>nie</td></tr>
+<tr><td>Kočovník</td><td>Zahraničný, Chlap</td><td>Pamätník</td><td>nie</td></tr>
+<tr><td>Šarlatán</td><td>Influencer, Chlap</td><td>Autorita</td><td>nie</td></tr>
+<tr><td>Podvodník</td><td>Kriminál, Chlap</td><td>Influencer</td><td>nie</td></tr>
+<tr><td>Snúbenica</td><td>Žena, Influencer</td><td>Autorita</td><td>nie</td></tr>
+<tr><td>Predavačka</td><td>Autorita, Žena, Pracujúci</td><td>—</td><td>bez tagu</td></tr>
+<tr><td>Opatrovateľka</td><td>Zahraničný, Pracujúci, Žena</td><td>Pamätník</td><td>nie</td></tr>
+<tr><td>Hasič</td><td>Autorita, Chlap</td><td>—</td><td>bez tagu</td></tr>
+<tr><td>Strýko z Ameriky</td><td>Influencer, Zahraničný, Chlap</td><td>Autorita</td><td>nie</td></tr>
+</table></div>
+
+<h2 id="karty">4 · Karty</h2>
+<p class="mal tl">Text efektu je to, čo ide do tvorcu (<code>effect_text</code>). Piktogramy pod ním sú <code>akcie_navyse</code> v JSON. Percentá sú odhad z tlače (frakcie-efekty.html časť 5): pri Spoločníkovi a Nepriateľovi raná · stredná · neskorá hra, pri Podpore a Konflikte rozsah v strednej hre. „Hazard?“ v políčku = index, kde smie byť len táto akcia, alebo nič. Príbeh je návrh pre pole <code>pribeh</code>, admin ho smie pritvrdiť. Akcie na hranách sa nemenia, ak nie je uvedené inak.</p>
+<div class="mriezka">
+<div class="karta" id="k-ministrant"><h3>Miňištrant</h3><div class="tagy">Občan · Závislý · Chlap · šípka 6</div>
+<div class="dnes">Dnes: Nástup: Ak vyvoláš Konflikt, do konca kola sa jeho Viera ráta ako Pecka.</div>
+<div class="efekt"><span class="sp">Spoločník: Zahraničný</span><div class="ik"><span class="a t">Pecka</span></div></div>
+<p class="pozn"><b>Spoločník 9 · 18 · 20 %</b> · Michal (spúšťač a tag), ikona podľa odporúčania A. Príbeh: <i>Cudzí farár ho vezme pod krídla, pri omši rozdáva facky.</i></p>
+<p class="pozn">Štartovka, slabá, kým si hráč nekúpi Zahraničného. Je vo výučbe (prva-hra.json) — výučba až pri prechode do Vypálenej.</p>
+</div>
+<div class="karta" id="k-velmi_smutiaca_vdova"><h3>Veľmi smútiaca vdova</h3><div class="tagy">Občan · Kriminál · Žena · mimo grafu</div>
+<div class="dnes">Dnes: Konflikt: Súper odhodí 1 kartu z doberacieho balíčka za každého svojho Chlapa, ktorý s ňou susedí.</div>
+<div class="efekt"><span class="sp">Konflikt: Chlap</span><div>Súper odhodí 1 kartu z ruky.</div></div>
+<p class="pozn"><b>Konflikt 32–95 %</b> · Michal doslova („Muž“ = tag Chlap), z ruky potvrdil Michal.</p>
+<p class="pozn">Pohlavie je mimo grafu; Vdova je Žena, vlastný tag necieli. Výklad: kartu vyberá súper (text nehovorí „náhodnú“ ako Noviny), hra počká ako pri Hasičovi; odhodená ide do jeho odhadzovacieho balíčka (verejný). Prázdna ruka = nič.</p>
+</div>
+<div class="karta" id="k-vestica"><h3>Veštica</h3><div class="tagy">Občan · Zahraničný · Žena · šípka 4</div>
+<div class="dnes">Dnes: Prehra: Preskúmaj súperov a svoj doberací balík. Vymeň jednu jeho kartu za tvoju a karty vráť.</div>
+<div class="efekt"><span class="sp">Spoločník: Pamätník</span><div class="ik"><span class="a m">Povera</span><span class="a m">Povera</span></div></div>
+<p class="pozn"><b>Spoločník 43 · 41 · 36 %</b> · Michal: A. Príbeh: <i>Babky jej nosia na kávu.</i></p>
+<p class="pozn">Zaniká krok bitky 5b (výmena kariet balíčkov) a príkaz vestica. Akcie mení Vízia (časť 5).</p>
+</div>
+<div class="karta" id="k-policajtka"><h3>Policajtka</h3><div class="tagy">Občan · Autorita · Žena · šípka 1</div>
+<div class="dnes">Dnes: Pitka: Za každú súperovu akciu, ktorú v tejto Pitke zruší tvoj Odpor, získa súper 1 zadĺženie.</div>
+<div class="efekt"><span class="sp">Nepriateľ: Kriminál</span><div class="ik"><span class="a t">Petelica</span></div></div>
+<p class="pozn"><b>Nepriateľ 17 · 33 · 37 %</b> · Michal doslova (Petelica namiesto Obmedzenia). Príbeh: <i>Hliadka pred krčmou, obušok vytiahne skôr ako blok.</i></p>
+<p class="pozn">Zaniká Pokutový blok (Pitka). Petelica navyše sa nedá zrušiť (nie je na spoji); Puška ju preto nemení.</p>
+</div>
+<div class="karta" id="k-praudovravec"><h3>Praudovravec</h3><div class="tagy">Občan · Influencer · Chlap · šípka 3</div>
+<div class="dnes">Dnes: Furt: Odpor na jeho spojoch nič neruší, ale ráta sa ako Posilnenie — zdvojí akciu, s ktorou je v páre, aj keď je súperova.</div>
+<div class="efekt"><span class="sp">Konflikt: Autorita</span><div class="ik"><span class="a m">Pohoršenie</span></div></div>
+<p class="pozn"><b>Konflikt 8–42 %</b> · Michal: A. Príbeh: <i>Povie úradu do očí, čo si myslí.</i></p>
+<p class="pozn">Zaniká Furt (Odpor ako Posilnenie).</p>
+<p class="pozn zmena">Akcie: Pravý Odpor → Povera na tom istom indexe 1. Bez Furtu by mal 2 Odpory (zásada najviac 1 Odpor).</p><div class="tab"><table class="sr"><thead><tr><th></th><th>dnes</th><th>po</th></tr></thead>
+<tr><th>ľavá</th><td><table class="st"><tr><td class="vo" title="len Posilnenie alebo prázdno">Posilnenie?</td><td><span class="a o">Odpor</span></td><td class="vo" title="len Posilnenie alebo prázdno">Posilnenie?</td><td class="x">×</td></tr></table><span class="mal tl">voľne: </span><span class="a o">Posilnenie</span></td><td><span class="tl">bez zmeny</span></td></tr><tr><th>pravá</th><td><table class="st"><tr><td class="x">×</td><td><span class="a o">Odpor</span></td><td class="vo" title="len Hazard alebo prázdno">Hazard?</td><td class="vo" title="len Hazard alebo prázdno">Hazard?</td></tr></table><span class="mal tl">voľne: </span><span class="a z">Hazard</span></td><td><table class="st"><tr><td class="x">×</td><td><span class="a m">Povera</span></td><td class="vo" title="len Hazard alebo prázdno">Hazard?</td><td class="vo" title="len Hazard alebo prázdno">Hazard?</td></tr></table><span class="mal tl">voľne: </span><span class="a z">Hazard</span></td></tr>
+<tr><th>varianty</th><td class="n">2 × 2 = 4</td><td class="n"><b>2 × 2 = 4</b> <span class="tl">(4–8)</span> · tlač 4</td></tr></table></div></div>
+<div class="karta" id="k-niekoho_stryna"><h3>Stryná</h3><div class="tagy">Občan · Pamätník · Žena · šípka 5</div>
+<div class="dnes">Dnes: Pitka: Každý hráč, ktorý v tejto Pitke nedal NA EX, dostane 1 poškodenie pečene.</div>
+<div class="efekt"><span class="sp">Konflikt: Závislý</span><div class="ik"><span class="a m">Pohoršenie</span></div></div>
+<p class="pozn"><b>Konflikt 20–79 %</b> · Michal: A. Príbeh: <i>Vynadá opilcovi pred celou dedinou.</i></p>
+<p class="pozn">Zaniká pečeň pre hráča bez NA EX (Pitka).</p>
+</div>
+<div class="karta" id="k-recidivista"><h3>Recidivista</h3><div class="tagy">Občan · Kriminál · Chlap · Zviera · šípka 8</div>
+<div class="dnes">Dnes: Prehra: Po bitke sa vráti do tvojej ruky.</div>
+<div class="efekt"><span class="sp">Nepriateľ: Zahraničný</span><div class="ik"><span class="a t">Pecka</span></div></div>
+<p class="pozn"><b>Nepriateľ 9 · 18 · 20 %</b> · Michal doslova. Príbeh: <i>Kto príde s cudzou menou, ten ju aj nechá.</i></p>
+<p class="pozn">Šípka 8 je nová (graf upravený kvôli tejto voľbe). Recidivista je aj Zviera: vedľa Mäsiara jeho Nepriateľ neplatí. Zaniká Prehra (návrat do ruky).</p>
+</div>
+<div class="karta" id="k-dievcina_na_vydaj"><h3>Dievčina na vydaj</h3><div class="tagy">Občan · Závislý · Žena · šípka 6</div>
+<div class="dnes">Dnes: Prehra: Spáľ túto kartu. Súper získa toľko Dlhov, koľko mala aktívnych akcií.</div>
+<div class="efekt"><span class="sp">Podpora: Zahraničný</span><div class="ik"><span class="a m">Pohoršenie</span></div></div>
+<p class="pozn"><b>Podpora 4–18 %</b> · odporúčanie A. Príbeh: <i>Bozkáva sa s cudzincom pred kostolom.</i></p>
+<p class="pozn">Štartovka. Zaniká Prehra (spálenie, Dlhy víťazovi). Je vo výučbe — až pri prechode.</p>
+<p class="pozn zmena">Akcie: Vízia → Poldeci (Vízia v2).</p><div class="tab"><table class="sr"><thead><tr><th></th><th>dnes</th><th>po</th></tr></thead>
+<tr><th>ľavá</th><td><table class="st"><tr><td class="x">×</td><td class="vo">·</td><td class="vo">·</td><td class="x">×</td></tr></table><span class="mal tl">voľne: </span><span class="a c">Cigareta</span><span class="a z">Hazard</span></td><td><span class="tl">bez zmeny</span></td></tr><tr><th>pravá</th><td><table class="st"><tr><td class="x">×</td><td class="vo">·</td><td class="vo">·</td><td class="x">×</td></tr></table><span class="mal tl">voľne: </span><span class="a o">Pakt</span><span class="a v">Vízia</span></td><td><table class="st"><tr><td class="x">×</td><td class="vo">·</td><td class="vo">·</td><td class="x">×</td></tr></table><span class="mal tl">voľne: </span><span class="a o">Pakt</span><span class="a o">Poldeci</span></td></tr>
+<tr><th>varianty</th><td class="n">2 × 2 = 4</td><td class="n"><b>2 × 2 = 4</b> <span class="tl">(4–8)</span> · tlač 16</td></tr></table></div></div>
+<div class="karta" id="k-zivnostnik"><h3>Živnostník</h3><div class="tagy">Občan · Pracujúci · Chlap · šípka 7</div>
+<div class="dnes">Dnes: Nástup: V tom istom ťahu smieš za neho priložiť 1 Nástroj z ruky.</div>
+<div class="efekt"><span class="sp">Spoločník: Autorita</span><div class="ik"><span class="a d">Robota</span></div></div>
+<p class="pozn"><b>Spoločník 23 · 42 · 48 %</b> · odporúčanie A. Príbeh: <i>Obecná zákazka cez švagra.</i></p>
+<p class="pozn">Zaniká Nástup (Nástroj za neho mimo limitu).</p>
+</div>
+<div class="karta" id="k-kocovnik"><h3>Kočovník</h3><div class="tagy">Občan · Zahraničný · Chlap · šípka 4</div>
+<div class="dnes">Dnes: Furt: Jeho akcie sa počítajú hráčovi, ktorý má v jeho kraji prevahu.</div>
+<div class="efekt"><span class="sp">Spoločník: Pamätník</span><div class="ik"><span class="a t">Pecka</span></div></div>
+<p class="pozn"><b>Spoločník 43 · 41 · 36 %</b> · odporúčanie A. Príbeh: <i>Starí ho poznajú z jarmoku, kde dvom rozbil hubu.</i></p>
+<p class="pozn">Zaniká Furt (akcie hráčovi s prevahou) aj výnimka „akcie Kočovníka“ v §6.</p>
+</div>
+<div class="karta" id="k-sarlatan"><h3>Šarlatán</h3><div class="tagy">Občan · Influencer · Chlap · šípka 3</div>
+<div class="dnes">Dnes: Konflikt: Do konca kola sa jeho akcie Hazard rátajú ako Viera a Povery ako Rana.</div>
+<div class="efekt"><span class="sp">Spoločník: Autorita</span><div class="ik"><span class="a m">Povera</span><span class="a m">Povera</span></div></div>
+<p class="pozn"><b>Spoločník 23 · 42 · 48 %</b> · odporúčanie A. Príbeh: <i>Zázračný liečiteľ s pečiatkou z úradu.</i></p>
+<p class="pozn">Zaniká Konflikt (Hazard ako Viera, Povera ako Rana).</p>
+</div>
+<div class="karta" id="k-podvodnik"><h3>Podvodník</h3><div class="tagy">Občan · Kriminál · Chlap · šípka 2</div>
+<div class="dnes">Dnes: Konflikt: Súper ti dá 1 cigaretu. Ak žiadnu nemá, získa 1 zadĺženie.</div>
+<div class="efekt"><span class="sp">Konflikt: Influencer</span><div class="ik"><span class="a c">Obmedzenie</span></div></div>
+<p class="pozn"><b>Konflikt 10–51 %</b> · odporúčanie A. Príbeh: <i>Investičná príležitosť pre frajera s mobilom.</i></p>
+<p class="pozn">Obmedzenie platí v každej Pitke od spustenia do konca kola. Zaniká cigareta / zadĺženie.</p>
+</div>
+<div class="karta" id="k-snubenica"><h3>Snúbenica</h3><div class="tagy">Občan · Žena · Influencer · šípka 3</div>
+<div class="dnes">Dnes: Podpora: Ak na tvojom Chlapovi pri nej leží súperovo NA EX, vráti sa súperovi ako vypitý poldeci.</div>
+<div class="efekt"><span class="sp">Nepriateľ: Autorita</span><div class="ik"><span class="a m">Pohoršenie</span></div></div>
+<p class="pozn"><b>Nepriateľ 23 · 42 · 48 %</b> · odporúčanie A. Príbeh: <i>Gopnička ukáže hliadke prostredník.</i></p>
+<p class="pozn">Zaniká Podpora (súperovo NA EX z Chlapa).</p>
+</div>
+<div class="karta" id="k-predavacka"><h3>Predavačka</h3><div class="tagy">Občan · Autorita · Žena · Pracujúci · mimo grafu</div>
+<div class="dnes">Dnes: Kšeft: Za 1 cigaretu si dober 1 kartu.</div>
+<div class="efekt"><span class="sp">Podpora:</span> Dober si 1 kartu.</div>
+<p class="pozn"><b>Podpora bez tagu, asi 2 z 3 kôl, často 2×</b> · Michal doslova (bez tagu, 2 Cigarety ostávajú). Príbeh: <i>Tovar spod pultu pre známych.</i></p>
+<p class="pozn">Akcie bez zmeny (Cigareta ×2 ostáva). Zaniká Kšeft.</p>
+</div>
+<div class="karta" id="k-opatrovatelka"><h3>Opatrovateľka</h3><div class="tagy">Občan · Zahraničný · Pracujúci · Žena · šípka 4</div>
+<div class="dnes">Dnes: Furt: Tvoji Pamätníci v jej okolí majú aktívne akcie posilnené.</div>
+<div class="efekt"><span class="sp">Podpora: Pamätník</span><div class="ik"><span class="a d">Robota</span></div></div>
+<p class="pozn"><b>Podpora 9–41 %</b> · odporúčanie A. Príbeh: <i>Opatrovať dedka je robota, dôchodok ide na splátky.</i></p>
+<p class="pozn">Zaniká Furt (posilnení Pamätníci).</p>
+</div>
+<div class="karta" id="k-hasic"><h3>Hasič</h3><div class="tagy">Občan · Autorita · Chlap · mimo grafu</div>
+<div class="dnes">Dnes: Nástup: Vytiahni náhodnú kartu zo svojho odhadzovacieho balíčka (aj kliatbu) a rozhodni sa, či si ju necháš, alebo ju odhodíš.</div>
+<div class="efekt"><span class="sp">Podpora:</span> Vytiahni náhodnú kartu zo svojho odhadzovacieho balíčka (aj kliatbu) a rozhodni sa, či si ju necháš, alebo ju odhodíš.</div>
+<p class="pozn"><b>Podpora bez tagu, asi 2 z 3 kôl, často 2×</b> · Michal doslova (B: Podpora bez tagu).</p>
+<p class="pozn">Len spúšťač Nástup → Podpora; účinok a príkaz hasic ostávajú.</p>
+</div>
+<div class="karta" id="k-stryko_z_ameriky"><h3>Strýko z Ameriky</h3><div class="tagy">Občan · Influencer · Zahraničný · Chlap · šípka 3</div>
+<div class="dnes">Dnes: Kšeft: Za 2 cigarety udelíš v tejto bitke súperovi 1 Ranu navyše.</div>
+<div class="efekt"><span class="sp">Nepriateľ: Autorita</span><div class="ik"><span class="a t">Rana</span><span class="a t">Rana</span></div></div>
+<p class="pozn"><b>Nepriateľ 23 · 42 · 48 %</b> · odporúčanie A. Príbeh: <i>Američan sa nenechá legitimovať.</i></p>
+<p class="pozn">Rany navyše sú akcie, Vidly ich zosilnia (na rozdiel od Rán z Kšeftu).</p>
+<p class="pozn zmena">Akcie: Vízia → Poldeci (Vízia v2). Cigarety ×3 ostávajú, Kšeft zaniká.</p><div class="tab"><table class="sr"><thead><tr><th></th><th>dnes</th><th>po</th></tr></thead>
+<tr><th>ľavá</th><td><table class="st"><tr><td class="x">×</td><td class="x">×</td><td class="vo">·</td><td class="vo">·</td></tr></table><span class="mal tl">voľne: </span><span class="a c">Cigareta</span><span class="a c">Cigareta</span></td><td><span class="tl">bez zmeny</span></td></tr><tr><th>pravá</th><td><table class="st"><tr><td class="vo">·</td><td class="x">×</td><td class="vo">·</td><td class="vo">·</td></tr></table><span class="mal tl">voľne: </span><span class="a c">Cigareta</span><span class="a v">Vízia</span></td><td><table class="st"><tr><td class="vo">·</td><td class="x">×</td><td class="vo">·</td><td class="vo">·</td></tr></table><span class="mal tl">voľne: </span><span class="a c">Cigareta</span><span class="a o">Poldeci</span></td></tr>
+<tr><th>varianty</th><td class="n">1 × 6 = 6</td><td class="n"><b>1 × 6 = 6</b> <span class="tl">(4–8)</span> · tlač 6</td></tr></table></div></div>
+</div>
+
+<h2 id="vizia">5 · Vízia</h2>
+<p>Ostáva na 4 kartách: <b>Veštica, Bzdocha a Krištáľová guľa majú Víziu na pravej strane, index 2</b>, kde ju vlastný sused posilní alebo skopíruje najčastejšie (8,1 % kariet tlače). <b>Guľa a Poštárka majú dve Vízie</b>, druhú na P3, druhom najlepšom mieste podľa tabuľky vo vizia-v2.html (vlastný sused 7,3 %, pri Nástroji 7,7 %). Poštárka má prvú Víziu na Ľ1 ako dnes, P2 drží jej Posilnenie. Pozície sú pevné cez <code>allowed</code>. Pri Guli to nie je treba, pravá strana má len indexy 2 a 3.</p>
+<p class="mal tl">Prečo nie Ľ1 pre Guľu: Nástroj má na strane 2 voľné indexy a s Víziou pevne na Ľ1 aj P2 by mal 1 variant (pod rozsahom 2–4). P3 dá 2 varianty. Riziko: obe Vízie Gule sú na pravej strane, takže ich dá len pravý sused. Ak to playtest ukáže ako slabé, Vízia z P3 pôjde na Ľ1 a Pečeň na Ľ0, voľne s Poverou.</p>
+<h3>Víziu nechajú</h3>
+<div class="mriezka"><div class="karta"><h3>Veštica</h3><div class="tagy">Občan · Zahraničný · Žena</div><p class="pozn">Vízia pevne P2, Povera P1. Ľavá: Vízia odíde, Povera → Hazard, 3 rôzne akcie voľne (6).</p><div class="tab"><table class="sr"><thead><tr><th></th><th>dnes</th><th>po</th></tr></thead>
+<tr><th>ľavá</th><td><table class="st"><tr><td class="x">×</td><td class="vo">·</td><td class="vo">·</td><td class="vo">·</td></tr></table><span class="mal tl">voľne: </span><span class="a z">Pečeň</span><span class="a m">Povera</span><span class="a v">Vízia</span></td><td><table class="st"><tr><td class="x">×</td><td class="vo">·</td><td class="vo">·</td><td class="vo">·</td></tr></table><span class="mal tl">voľne: </span><span class="a z">Pečeň</span><span class="a z">Hazard</span><span class="a m">Povera</span></td></tr><tr><th>pravá</th><td><table class="st"><tr><td class="x">×</td><td class="vo">·</td><td class="vo">·</td><td class="x">×</td></tr></table><span class="mal tl">voľne: </span><span class="a m">Povera</span><span class="a m">Povera</span></td><td><table class="st"><tr><td class="x">×</td><td><span class="a m">Povera</span></td><td><span class="a v">Vízia</span></td><td class="x">×</td></tr></table></td></tr>
+<tr><th>varianty</th><td class="n">6 × 1 = 6</td><td class="n"><b>6 × 1 = 6</b> <span class="tl">(4–8)</span> · tlač 6</td></tr></table></div></div>
+<div class="karta"><h3>Bzdocha</h3><div class="tagy">Občan · Influencer · Žena</div><p class="pozn">Pakt ostáva (P1), Vízia P2. Ľavá: jedna Povera → Hazard (6 rozložení).</p><div class="tab"><table class="sr"><thead><tr><th></th><th>dnes</th><th>po</th></tr></thead>
+<tr><th>ľavá</th><td><table class="st"><tr><td class="x">×</td><td class="vo">·</td><td class="vo">·</td><td class="vo">·</td></tr></table><span class="mal tl">voľne: </span><span class="a z">Pečeň</span><span class="a m">Povera</span><span class="a m">Povera</span></td><td><table class="st"><tr><td class="x">×</td><td class="vo">·</td><td class="vo">·</td><td class="vo">·</td></tr></table><span class="mal tl">voľne: </span><span class="a z">Pečeň</span><span class="a m">Povera</span><span class="a z">Hazard</span></td></tr><tr><th>pravá</th><td><table class="st"><tr><td class="x">×</td><td class="vo">·</td><td class="vo">·</td><td class="x">×</td></tr></table><span class="mal tl">voľne: </span><span class="a o">Pakt</span><span class="a v">Vízia</span></td><td><table class="st"><tr><td class="x">×</td><td><span class="a o">Pakt</span></td><td><span class="a v">Vízia</span></td><td class="x">×</td></tr></table></td></tr>
+<tr><th>varianty</th><td class="n">3 × 2 = 6</td><td class="n"><b>6 × 1 = 6</b> <span class="tl">(4–8)</span> · tlač 24</td></tr></table></div></div>
+<div class="karta"><h3>Krištáľová guľa</h3><div class="tagy">Nástroj</div><p class="pozn">2 Vízie: P2 a P3 (P3 = druhé najlepšie miesto, vlastný sused 7,3 %, pri Nástroji 7,7 %). Ľavá Vízia ×2 → Povera a Pečeň na krajoch (2). Spolu 4 akcie.</p><div class="tab"><table class="sr"><thead><tr><th></th><th>dnes</th><th>po</th></tr></thead>
+<tr><th>ľavá</th><td><table class="st"><tr><td class="vo">·</td><td class="x">×</td><td class="x">×</td><td class="vo">·</td></tr></table><span class="mal tl">voľne: </span><span class="a v">Vízia</span><span class="a v">Vízia</span></td><td><table class="st"><tr><td class="vo">·</td><td class="x">×</td><td class="x">×</td><td class="vo">·</td></tr></table><span class="mal tl">voľne: </span><span class="a m">Povera</span><span class="a z">Pečeň</span></td></tr><tr><th>pravá</th><td><table class="st"><tr><td class="x">×</td><td class="vo">·</td><td class="vo">·</td><td class="x">×</td></tr></table><span class="mal tl">voľne: </span><span class="a m">Povera</span><span class="a v">Vízia</span></td><td><table class="st"><tr><td class="x">×</td><td class="x">×</td><td class="vo">·</td><td class="vo">·</td></tr></table><span class="mal tl">voľne: </span><span class="a v">Vízia</span><span class="a v">Vízia</span></td></tr>
+<tr><th>varianty</th><td class="n">1 × 2 = 2</td><td class="n"><b>2 × 1 = 2</b> <span class="tl">(2–4)</span> · tlač 2</td></tr></table></div></div>
+<div class="karta"><h3>Poštárka</h3><div class="tagy">Starešina · Žena</div><p class="pozn">2 Vízie: Ľ1 ostáva, druhá z P0 na P3 (7,3 %), P0 sa zablokuje. P2 drží Posilnenie.</p><div class="tab"><table class="sr"><thead><tr><th></th><th>dnes</th><th>po</th></tr></thead>
+<tr><th>ľavá</th><td><table class="st"><tr><td class="x">×</td><td><span class="a v">Vízia</span></td><td><span class="a m">Pohoršenie</span></td><td><span class="a m">Povera</span></td></tr></table></td><td><span class="tl">bez zmeny</span></td></tr><tr><th>pravá</th><td><table class="st"><tr><td><span class="a v">Vízia</span></td><td><span class="a z">Hazard</span></td><td><span class="a o">Posilnenie</span></td><td class="x">×</td></tr></table></td><td><table class="st"><tr><td class="x">×</td><td><span class="a z">Hazard</span></td><td><span class="a o">Posilnenie</span></td><td><span class="a v">Vízia</span></td></tr></table></td></tr>
+<tr><th>varianty</th><td class="n">1 × 1 = 1</td><td class="n"><b>1 × 1 = 1</b> <span class="tl">(1)</span> · tlač 1</td></tr></table></div></div></div>
+<h3 style="margin-top:16px">Víziu stratia (náhrady z vizia-v2.html)</h3>
+<div class="mriezka"><div class="karta"><h3>Finančná poradkyňa</h3><div class="tagy">Občan · Pracujúci · Žena</div><p class="pozn">Vízia → Obmedzenie (ľavá) a Povera (pravá).</p><div class="tab"><table class="sr"><thead><tr><th></th><th>dnes</th><th>po</th></tr></thead>
+<tr><th>ľavá</th><td><table class="st"><tr><td class="x">×</td><td class="vo">·</td><td class="vo">·</td><td class="vo">·</td></tr></table><span class="mal tl">voľne: </span><span class="a z">Hazard</span><span class="a z">Hazard</span><span class="a v">Vízia</span></td><td><table class="st"><tr><td class="x">×</td><td class="vo">·</td><td class="vo">·</td><td class="vo">·</td></tr></table><span class="mal tl">voľne: </span><span class="a z">Hazard</span><span class="a z">Hazard</span><span class="a c">Obmedzenie</span></td></tr><tr><th>pravá</th><td><table class="st"><tr><td class="x">×</td><td class="vo">·</td><td class="vo">·</td><td class="x">×</td></tr></table><span class="mal tl">voľne: </span><span class="a z">Hazard</span><span class="a v">Vízia</span></td><td><table class="st"><tr><td class="x">×</td><td class="vo">·</td><td class="vo">·</td><td class="x">×</td></tr></table><span class="mal tl">voľne: </span><span class="a m">Povera</span><span class="a z">Hazard</span></td></tr>
+<tr><th>varianty</th><td class="n">3 × 2 = 6</td><td class="n"><b>3 × 2 = 6</b> <span class="tl">(4–8)</span> · tlač 24</td></tr></table></div></div>
+<div class="karta"><h3>Dievčina na vydaj</h3><div class="tagy">Občan · Závislý · Žena</div><p class="pozn">Vízia → Poldeci.</p><div class="tab"><table class="sr"><thead><tr><th></th><th>dnes</th><th>po</th></tr></thead>
+<tr><th>ľavá</th><td><table class="st"><tr><td class="x">×</td><td class="vo">·</td><td class="vo">·</td><td class="x">×</td></tr></table><span class="mal tl">voľne: </span><span class="a c">Cigareta</span><span class="a z">Hazard</span></td><td><span class="tl">bez zmeny</span></td></tr><tr><th>pravá</th><td><table class="st"><tr><td class="x">×</td><td class="vo">·</td><td class="vo">·</td><td class="x">×</td></tr></table><span class="mal tl">voľne: </span><span class="a o">Pakt</span><span class="a v">Vízia</span></td><td><table class="st"><tr><td class="x">×</td><td class="vo">·</td><td class="vo">·</td><td class="x">×</td></tr></table><span class="mal tl">voľne: </span><span class="a o">Pakt</span><span class="a o">Poldeci</span></td></tr>
+<tr><th>varianty</th><td class="n">2 × 2 = 4</td><td class="n"><b>2 × 2 = 4</b> <span class="tl">(4–8)</span> · tlač 16</td></tr></table></div></div>
+<div class="karta"><h3>Strýko z Ameriky</h3><div class="tagy">Občan · Influencer · Zahraničný · Chlap</div><p class="pozn">Vízia → Poldeci.</p><div class="tab"><table class="sr"><thead><tr><th></th><th>dnes</th><th>po</th></tr></thead>
+<tr><th>ľavá</th><td><table class="st"><tr><td class="x">×</td><td class="x">×</td><td class="vo">·</td><td class="vo">·</td></tr></table><span class="mal tl">voľne: </span><span class="a c">Cigareta</span><span class="a c">Cigareta</span></td><td><span class="tl">bez zmeny</span></td></tr><tr><th>pravá</th><td><table class="st"><tr><td class="vo">·</td><td class="x">×</td><td class="vo">·</td><td class="vo">·</td></tr></table><span class="mal tl">voľne: </span><span class="a c">Cigareta</span><span class="a v">Vízia</span></td><td><table class="st"><tr><td class="vo">·</td><td class="x">×</td><td class="vo">·</td><td class="vo">·</td></tr></table><span class="mal tl">voľne: </span><span class="a c">Cigareta</span><span class="a o">Poldeci</span></td></tr>
+<tr><th>varianty</th><td class="n">1 × 6 = 6</td><td class="n"><b>1 × 6 = 6</b> <span class="tl">(4–8)</span> · tlač 6</td></tr></table></div></div>
+<div class="karta"><h3>Horoskop</h3><div class="tagy">Nástroj</div><p class="pozn">Vízia → Hazard.</p><div class="tab"><table class="sr"><thead><tr><th></th><th>dnes</th><th>po</th></tr></thead>
+<tr><th>ľavá</th><td><table class="st"><tr><td class="vo">·</td><td class="vo">·</td><td class="x">×</td><td class="x">×</td></tr></table><span class="mal tl">voľne: </span><span class="a m">Povera</span><span class="a m">Povera</span></td><td><span class="tl">bez zmeny</span></td></tr><tr><th>pravá</th><td><table class="st"><tr><td class="x">×</td><td class="x">×</td><td class="vo">·</td><td class="vo">·</td></tr></table><span class="mal tl">voľne: </span><span class="a m">Povera</span><span class="a v">Vízia</span></td><td><table class="st"><tr><td class="x">×</td><td class="x">×</td><td class="vo">·</td><td class="vo">·</td></tr></table><span class="mal tl">voľne: </span><span class="a m">Povera</span><span class="a z">Hazard</span></td></tr>
+<tr><th>varianty</th><td class="n">1 × 2 = 2</td><td class="n"><b>1 × 2 = 2</b> <span class="tl">(2–4)</span> · tlač 2</td></tr></table></div></div>
+<div class="karta"><h3>Starosta</h3><div class="tagy">Starešina · Chlap</div><p class="pozn">Vízia → Robota.</p><div class="tab"><table class="sr"><thead><tr><th></th><th>dnes</th><th>po</th></tr></thead>
+<tr><th>ľavá</th><td><table class="st"><tr><td><span class="a o">Posilnenie</span></td><td><span class="a c">Cigareta</span></td><td><span class="a o">Posilnenie</span></td><td class="x">×</td></tr></table></td><td><span class="tl">bez zmeny</span></td></tr><tr><th>pravá</th><td><table class="st"><tr><td class="x">×</td><td><span class="a z">Hazard</span></td><td><span class="a o">Pakt</span></td><td><span class="a v">Vízia</span></td></tr></table></td><td><table class="st"><tr><td class="x">×</td><td><span class="a z">Hazard</span></td><td><span class="a o">Pakt</span></td><td><span class="a d">Robota</span></td></tr></table></td></tr>
+<tr><th>varianty</th><td class="n">1 × 1 = 1</td><td class="n"><b>1 × 1 = 1</b> <span class="tl">(1)</span> · tlač 1</td></tr></table></div></div>
+<div class="karta"><h3>Kostol</h3><div class="tagy">Lokalita</div><p class="pozn">Vízia → Pečeň (omšové víno). Počet Pitiek sa nemení.</p><div class="tab"><table class="sr"><thead><tr><th></th><th>dnes</th><th>po</th></tr></thead>
+<tr><th>ľavá</th><td><table class="st"><tr><td><span class="a d">Viera</span></td><td><span class="a d">Viera</span></td><td><span class="a v">Vízia</span></td><td class="x">×</td></tr></table></td><td><table class="st"><tr><td><span class="a d">Viera</span></td><td><span class="a d">Viera</span></td><td><span class="a z">Pečeň</span></td><td class="x">×</td></tr></table></td></tr><tr><th>pravá</th><td><table class="st"><tr><td class="x">×</td><td><span class="a o">Pakt</span></td><td><span class="a m">Povera</span></td><td><span class="a m">Pohoršenie</span></td></tr></table></td><td><span class="tl">bez zmeny</span></td></tr>
+<tr><th>varianty</th><td class="n">1 × 1 = 1</td><td class="n"><b>1 × 1 = 1</b> · tlač 1</td></tr></table></div></div>
+<div class="karta"><h3>Sklad</h3><div class="tagy">Lokalita</div><p class="pozn">Vízia ×2 → Robota a Obmedzenie.</p><div class="tab"><table class="sr"><thead><tr><th></th><th>dnes</th><th>po</th></tr></thead>
+<tr><th>ľavá</th><td><table class="st"><tr><td><span class="a v">Vízia</span></td><td class="x">×</td><td><span class="a v">Vízia</span></td><td class="x">×</td></tr></table></td><td><table class="st"><tr><td><span class="a d">Robota</span></td><td class="x">×</td><td><span class="a c">Obmedzenie</span></td><td class="x">×</td></tr></table></td></tr><tr><th>pravá</th><td><table class="st"><tr><td><span class="a t">Pecka</span></td><td class="x">×</td><td><span class="a o">Posilnenie</span></td><td class="x">×</td></tr></table></td><td><span class="tl">bez zmeny</span></td></tr>
+<tr><th>varianty</th><td class="n">1 × 1 = 1</td><td class="n"><b>1 × 1 = 1</b> · tlač 1</td></tr></table></div></div></div>
+<p class="mal">Varianty prepočítal algoritmus tvorcu (<code>tvorba/src/varianty.ts</code>): Občan 4–8, Nástroj 2–4, starší 1, lokality sa nerátajú. Všetky sú v rozsahu. Tlač = varianty × kópie z <code>seed/navrhy.json</code>.</p>
+
+<h2 id="kseft">6 · Kšeft zaniká, nové lokality</h2>
+<p>Spúšťač Kšeft zmizne z hry. Strýko z Ameriky a Predavačka majú frakčný efekt (časť 4). Každá z troch lokalít má <b>efekt, ktorý ide rovno do implementácie</b>, a zálohu. Hrany lokalít sa nemenia, okrem Skladu (Vízia). Kraje ostávajú.</p>
+<div class="mriezka"><div class="karta"><h3>Zberný dvor</h3><div class="tagy">Lokalita · pri váhe / za plotom</div>
+<div class="dnes">Dnes: Kšeft: Za 1 cigaretu si vezmi do ruky ľubovoľnú kartu zo svojho odhadzovacieho balíčka.</div>
+<div class="alt odp"><b class="k">Efekt · Kontajner</b><span class="znak">IDE DO IMPLEMENTÁCIE</span><div class="efekt">Pitka: Na konci Pitky smieš spáliť 1 kartu z ruky, nie kliatbu.</div>
+<p class="pozn">Preriedenie balíčka (roadmapa #53). Po Vízii v2 ubudne skoro celé spaľovanie z Vízie; lokalita ho vráti na jedno kolo, bez cigariet. Voľba karty z ruky na konci Pitky, ako rozhodnutie pri Vízii. Kliatby nie: parkovanie Cirhózy je zámer (zamietnutá Spoveď).</p><p class="pozn">Nový krok 7b vyhodnotenia Pitky, po Vízii a pred otočením Záverečných: každý hráč smie spáliť 1 kartu z ruky (nie Cirhózu ani Absťák). Rozhoduje obranca, potom útočník. Súper vidí len to, že hráč kartu spálil (ruka je skrytá, viewFor). Na Zbernom dvore sú 2 + 2 akcie na hranách, teda najviac 3 Pitky.</p></div>
+<div class="alt"><b class="k">Záloha · Výkup</b><div class="efekt">Pitka: Na konci Pitky smieš vymeniť 1 kartu z ruky za kartu zo svojho odhadzovacieho balíčka.</div><p class="pozn">Dnešná identita (karta z odhadzovacieho) zadarmo, ale výmenou, takže ruka nerastie.</p></div>
+</div>
+<div class="karta"><h3>Sklad</h3><div class="tagy">Lokalita · pri vreciach / pri strážnici</div>
+<div class="dnes">Dnes: Kšeft: Za 2 cigarety si zober do Dedičstva kartu Nástroja zo šenku. Do šenku sa dotiahne nová karta Nástroja.</div>
+<div class="alt odp"><b class="k">Efekt · Zo skladu rovno domov</b><span class="znak">IDE DO IMPLEMENTÁCIE</span><div class="efekt">Zhromaždenie: Nástroj zo šenku smieš vyložiť rovno do Dedičstva za cenu Dedičstva. Do šenku sa dotiahne nový Nástroj.</div>
+<p class="pozn">Zachová tvoj zámer z v11.13 (Nástroj zo šenku do Dedičstva). Míňa cigarety bez stropu, lebo cena Dedičstva rastie. Jadro má presun zo šenku do Dedičstva hotový (Kšeft Skladu), mení sa len kedy a za koľko.</p><p class="pozn">Ťah v Zhromaždení ako vyloženie Nástroja do Dedičstva (§12): platí sa len spoločná rastúca cena Dedičstva, nie cena šenku, a cena potom stúpne. Z vrchu Náradia príde do šenku nový Nástroj, verejne; z prázdneho nič. Bez Nástroja v šenku a bez cigariet na cenu Dedičstva sa ťah neponúka. Smie každý hráč, koľkokrát chce (každý raz je ťah a cena rastie).</p></div>
+<div class="alt"><b class="k">Záloha · Pri strážnici</b><div class="efekt">Bitka: Za každý svoj Nástroj v línii máš 1 tuhé poškodenie navyše.</div><p class="pozn">Vzor Lesnej cesty, bez platby. Nástroj v línii dá akcie tomu, s kým tvorí spoj, ale tuhé navyše majiteľovi Nástroja.</p></div>
+<p class="pozn zmena">Hrana pri vreciach: Vízia ×2 → Robota, Obmedzenie (časť 5).</p></div>
+<div class="karta"><h3>Predsedova vila</h3><div class="tagy">Lokalita · pri bazéne / v pracovni</div>
+<div class="dnes">Dnes: Kšeft: Za 2 cigarety zdvihni svoje reči pri jednom staršom o stupeň. Staršieho v ohrození nie.</div>
+<div class="alt odp"><b class="k">Efekt · Recepcia u predsedu</b><span class="znak">IDE DO IMPLEMENTÁCIE</span><div class="efekt">Pitka: Za každé 2 cigarety, ktoré v tejto Pitke vyfajčíš, zdvihni svoje reči pri jednom staršom o stupeň.</div>
+<p class="pozn">Vila je pinnacle, hrá sa len vo finále, kde sa cigarety inak menia len na výkupné 5 : 1. Kurz 2 : 1 ostáva, platí sa fajčením (rastúca cena, nerest, karta navyše). Odbytisko cigariet bez stropu tam, kde ho hráči najviac potrebujú.</p><p class="pozn">Rátajú sa zaplatené cigarety za fajčenie v tejto Pitke, ako pri Krabičke cigariet; stupeň hneď, keď súčet dosiahne ďalšie 2 (fajčenie 1 + 2 = 3 cigarety = 1 stupeň, + 3 = 6 = 3 stupne). Stupeň pridáva ako dnes (ďalší v bežnom poradí, kým je kam, v11.12); staršieho vyberá hráč (dnešná voľba Vily). Text „Staršieho v ohrození nie“ zaniká, ohrozenie už neexistuje.</p></div>
+<div class="alt"><b class="k">Záloha · Predsedova pečiatka</b><div class="efekt">Spoločník: Autorita — Na konci Pitky zdvihni svoje reči pri jednom staršom o stupeň.</div><p class="pozn">Bez cigariet, cez nový spúšťač: na lokalite platí Spoločník pre každého hráča zvlášť (kto má v partii Autoritu). Hodí sa, ak nechceš platiť za efekt ani fajčením.</p></div>
+</div></div>
+<p class="mal tl">Odbytisko cigariet: Kšefty boti míňali 0,6 cigarety na hráča a partiu (vizia-a-kseft.html). Sklad a Vila ho nahradia cenou Dedičstva a fajčením, oboje bez stropu. Zálohy Skladu a Vily sú bez cigariet. Ak by šli obe, ostane z lokalít bez Kšeftu len fajčenie a šenok.</p>
+
+<h2 id="pravidla">7 · Znenia pre PRAVIDLA.md</h2>
+<p class="mal tl">Návrh textu. Zapisuje ho Developer pri implementácii, verzia podľa poradia (v11.14 alebo vyššia). Bez výpočtu interakcií s konkrétnymi kartami, tie patria do §16 ku karte.</p>
+<div class="box">
+<p><b>§6 (za Podporou a Konfliktom):</b> „<b>Spúšťač s tagom.</b> Podpora: T a Konflikt: T sa spustia len pri stretnutí s kartou s tagom T, pri každom spustení zvlášť. <b>Spoločník: T</b> platí, kým máš v partii odkrytú kartu s tagom T. <b>Nepriateľ: T</b> platí, kým ju má súper. Spoločník a Nepriateľ platia raz, aj pri viacerých takých kartách, a overujú sa ako akcia na hrane: v každej Pitke a v bitke zvlášť. Skrytá Záverečná podmienku nesplní, kým sa neotočí.“</p>
+<p><b>§6 (za Modifikátormi na spoji):</b> „<b>Akcia navyše</b> (piktogram pod spúšťačom) je aktívna akcia majiteľa karty mimo jej hrán. Do súčtov ide ako tá istá akcia a vyhodnotí sa v jej kroku. Podporou a Konfliktom platí do konca kola, Spoločníkom a Nepriateľom, kým platí podmienka. Mení ju to, čo platí na všetky tvoje akcie toho druhu (Dedičstvo, priazeň, lokalita). Nemení ju nič, čo pôsobí na spoj alebo na akcie jednej karty: Posilnenie, Odpor, Pakt, Forsáž, Vzbura, NA EX ani efekty susedov. Karta ju na hrane nemá, takže sa nepočíta ani do podmienok NA EX.“</p>
+<p><b>§6:</b> výnimka „a Kočovníka“ pri akciách karty zaniká.</p>
+<p><b>§2 Tagy:</b> „Tagy Kriminál, Influencer, Autorita, Pracujúci, Zahraničný, Pamätník a Závislý číta Spoločník, Nepriateľ, Podpora a Konflikt s tagom (§6). Karta nikdy necieli tag, ktorý sama nesie.“ Graf patrí do docs (tento súbor), nie do pravidiel.</p>
+<p><b>§7:</b> odsek Kšeft (v7) zaniká. Do Vyhodnotenia Pitky pribudne krok 7b Zberný dvor, krok 6 bez „Kšeftmi“.</p>
+<p><b>§9:</b> krok 5b (Veštica) zaniká.</p>
+<p><b>§15:</b> riadky Zberný dvor, Sklad a Predsedova vila podľa časti 6.</p>
+<p><b>§16:</b> 17 riadkov kariet podľa časti 4 s výkladom. Vidly: „Rany navyše z efektov kariet“ ostáva, akcie navyše nimi nie sú.</p>
+<p><b>§17 Slovník:</b> Spoločník, Nepriateľ, akcia navyše. Kšeft vyradiť.</p>
+</div>
+
+<h2 id="postup">8 · Postup</h2>
+<h3>naex-admin (tvorca, rozpracovaný stav Zrejúcej, nezverejniť)</h3>
+<ol class="mal">
+<li>Kľúčové slová Spoločník a Nepriateľ s popisom z časti 1. Popisy Podpory a Konfliktu doplniť o „: tag“. Kšeft z kľúčových slov vyradiť.</li>
+<li>17 kariet: <code>triggers</code> a <code>effect_text</code> podľa JSON (<code>karty[].spustac</code>, <code>text</code>). Polia tag a akcie navyše zapíše, keď ich tvorca dostane (programátor). Dovtedy ostane v texte len „Spúšťač: Tag“.</li>
+<li>Akcie: Praudovravec, 11 kariet Vízie (<code>vizia[]</code>), strany presne podľa <code>left</code> / <code>right</code> vrátane <code>allowed</code>. Skontrolovať varianty v tvorcovi proti JSON.</li>
+<li>Lokality: <code>lokality[].efekt</code>. Potom <code>sada-do-repa</code> → cards.json v master (pravidlo 5 CLAUDE.md).</li>
+</ol>
+<h3>Programátor (naex-developer)</h3>
+<ul class="mal">
+<li><b>Dáta:</b> <code>types.ts</code> Trigger + ALL_TRIGGERS (Spoločník, Nepriateľ; Kšeft preč), CardDef <code>cielTag?: Tag</code>, <code>akcieNavyse?: Record&lt;Action, number&gt;</code>. <code>data.ts</code> načíta <code>ciel_tag</code> a <code>akcie_navyse</code> a zamietne cieľ, ktorý karta sama nesie. Tvorca: polia návrhu, <code>text.ts</code> „Spúšťač: Tag“, export a hash v <code>server/src/obsah.ts</code>.</li>
+<li><b>Jadro:</b> <code>spustiSpoj</code> / <code>podpora</code> / <code>konflikt</code> v engine.ts: podmienka tagu a zápis akcií navyše do PlacedCard (kópia pri každom spustení), log. <code>partia.ts</code> koniec <code>evaluateLine</code>: pripočítať akcie navyše z Podpory a Konfliktu a zo Spoločníka a Nepriateľa podľa partie (bez skrytej Záverečnej, Mäsiar) do súm a zdrojov s dôvodom <code>karta:&lt;id&gt;</code>. Dedičstvo Náradia, Vidly a Píšťalka musia akcie navyše vidieť, modifikátory spoja nie.</li>
+<li><b>Staré efekty</b> 17 kariet a Kšeft podmieniť sadou (staré partie v archíve), zoznam riadkov je vo frakcie-efekty.html časť 8 a vizia-a-kseft.html (Pre programátora). Zberný dvor krok 7b (voľba z ruky, viewFor súperovi len počet), Sklad ťah v Zhromaždení (presun zo šenku do Dedičstva už existuje v cmdKseft), Vila počítadlo zaplateného fajčenia (vzor Krabička) a dnešná voľba staršieho (<code>volbaVily</code>, <code>vilaNaStarsieho</code>). Vdova: čakanie na voľbu karty z ruky (vzor Hasič).</li>
+<li><b>Klient:</b> piktogramy pod efektom (KartaLico), žiar akcie navyše a podsvietený zdrojový tag (frakcie-mockupy M1), 1× bez odznaku. Tlačidlá Kšeftu preč (KseftPodKartou, kseftyNaStole).</li>
+<li><b>Bot:</b> hodnota karty podľa tagov vo vlastnom a súperovom balíčku, kam priložiť kvôli Podpore a Konfliktu (cez sPrilozenou). Turnajom overiť percentá z časti 4.</li>
+<li><b>Testy a texty:</b> fázy akcií navyše, NA EX, Forsáž, Záverečná, Mäsiar, Valaška, Vidly, viewFor. Ťahák (<code>tools/playtest/tahak.md</code>), mapa rozhodcu, slovník pravidiel. Odtlačok sa zmení, je to zmena hry. Výučba (Miňištrant, Dievčina, finále s Kšeftom Vily) až pri prechode do Vypálenej.</li>
+</ul>
+
+<h2 id="vyklady">9 · Výklady, ktoré som rozhodol</h2>
+<p class="mal tl">Nie sú to nové otázky. Ak Michal nepovie inak, platí predvolené.</p>
+<ol class="ot mal">
+<li><b>Vdova, kto vyberá kartu z ruky:</b> súper (text nehovorí „náhodnú“ ako Noviny), hra počká ako pri Hasičovi. Ak Michal chce náhodnú, do textu pribudne „náhodnú“.</li>
+<li><b>Vidly a akcia navyše Rana:</b> zosilnia ju, lebo je to akcia (Michal: efekty na všetky akcie hráča áno). Výnimka z 2026-10-27 sa týka Rán navyše z efektov, nie akcií.</li>
+<li><b>Sypač, Vedúcko, Liberál</b> akciu navyše nemenia. Pôsobia na akcie jednej karty, rovnako ako Silná žena, ktorú Michal vylúčil.</li>
+<li><b>Graf:</b> šípka 8 Kriminál → Zahraničný pre Recidivistu. Kriminál má dve šípky von.</li>
+<li><b>Guľa:</b> druhá Vízia na P3, nie na Ľ1 (rozsah variantov Nástroja).</li>
+<li><b>Predavačka:</b> Podpora bez tagu → „Dober si 1 kartu“ (jej identita z návrhu A, bez tagu).</li>
+<li><b>Zberný dvor</b> páli kartu z ruky (nová identita), dnešná identita je v zálohe.</li>
+</ol>
+
+<footer>NA EX! · Vymyselník · vetva napady/frakcie-final · docs/napady/frakcie-final.html + .json (generované z overeného skriptu: varianty algoritmom tvorcu, graf proti celej sade) · podklady: frakcie-efekty.html, vizia-v2.html, vizia-a-kseft.html, frakcie-mockupy.html, PRAVIDLA.md (v11.13). Kód hry ani tvorca sa nemenili.</footer>
+</main>
+</body>
+</html>
