@@ -265,7 +265,12 @@ const spakovStarsieho = (e: Pick<StarsiVerejne, "strach" | "reci" | "reciOd">, p
 const DO_STUPNA = ["sivej", "žltej", "oranžovej", "červenej"] as const;
 const NA_STUPEN = ["sivú", "žltú", "oranžovú", "červenú"] as const;
 const CENY_STUPNOV = [1, 2, 3].map((st) => `do ${DO_STUPNA[st]} ${KONSTANTY.CENA_STUPNA[st]}`).join(", ");
-const SPAKY_STUPNOV = [1, 2, 3].map((st) => `${NAZVY_ZON[st]} ${KONSTANTY.SPAKY_ZA_STUPEN[st]}`).join(", ");
+const HODNOTY_STUPNOV = [1, 2, 3].map((st) => `${NAZVY_ZON[st]} ${KONSTANTY.HODNOTA_STUPNA[st]}`).join(", ");
+/** Čo páli Dlhy pred bitkou — karty z dát, ktoré Robotám pridávajú (Fúrik, Kôň…), aby text nezastaral so sadou. */
+function paliDlh(): string {
+  const karty = [...DATA.cards.values()].filter((d) => /pál\S* .*Dlh/.test(d.effectText)).map((d) => d.name);
+  return `pália ich Roboty v línii${karty.length > 0 ? ` (viac s: ${karty.join(", ")})` : ""}, zvyšok exekúcia`;
+}
 
 /** Karta v línii z pohľadu hráča: efektívne strany (otočená = vymenené a obrátené). */
 function kartaVLinii(
@@ -341,15 +346,19 @@ function cenaNaexText(v: ClientState, uid: number): string {
     const c = k.cirhozy + k.dalejCirhozy;
     const d = k.dlhy + k.dalejDlhy;
     if (c === 0 && d === 0) return "nič";
-    const poBitke = d !== k.dlhyPoBitke ? ` → po bitke ${k.dlhyPoBitke} (Robota či Dievčina na vydaj spáli)` : "";
+    const poBitke = d !== k.dlhyPoBitke ? ` → po bitke ${k.dlhyPoBitke} (${paliDlh()})` : "";
     return `${c !== 0 ? `Cirhóza ${c > 0 ? "+" : "−"}${Math.abs(c)} (nepriznaná na konci −${spakov(KONSTANTY.SPAKY_ZA_CIRHOZU)}; priznaná nič, ale súper za ňu +1 tuhé v každej bitke) ` : ""}${d !== 0 ? `Dlh ${d > 0 ? "+" : "−"}${Math.abs(d)}${poBitke} ` : ""}(${k.body < 0 ? "−" : "+"}${Math.abs(k.body)} špakov)`;
   };
   const dopady = dopadyText(n.dopady, ja);
   const o = n.odkrytie;
+  // Vo finále sa Nakladačka nerozdeľuje (prebytokNaRozdelenie vráti 0) — Puška by bola falošná.
+  const finale = v.ciel?.typ === "finale";
   const prebytok = (x: typeof n.prebytokPo): string =>
     x.drzi === null || x.prebytok === 0
       ? "žiadny"
-      : `${x.prebytok} na ${x.drzi === ja ? "tvoj" : "súperov"} strach${x.naRozdelenie !== x.prebytok ? ` (Puška −${x.prebytok - x.naRozdelenie})` : ""}`;
+      : finale
+        ? `${x.prebytok} ${x.drzi === ja ? "tebe" : "súperovi"} na špaky (finále 1 : 1)`
+        : `${x.prebytok} na ${x.drzi === ja ? "tvoj" : "súperov"} strach${x.naRozdelenie !== x.prebytok ? ` (Puška −${x.prebytok - x.naRozdelenie})` : ""}`;
   const navyse = [
     o.svokra > 0 ? `Svokra súpera: za toto NA EX na jeho kartu ti v bitke udelí ${o.svokra === 1 ? "Ranu" : `${o.svokra} Rany`} (v tuhom už je)` : "",
     o.kar ? "Kar: pečeň za toto NA EX dostane súper, nie ty" : "",
@@ -553,10 +562,10 @@ function vykresli(v: ClientState, mena: readonly string[]): string {
     out.push(
       `  → ${o.vitaz === null ? "REMÍZA V TUHOM — rozhodnú Absťáky (menej vyhrá), potom priznané Dlhy (menej vyhrá), inak sekera" : o.vitaz === ja ? "vyhrávaš" : "prehrávaš"}. ${stavka === null ? "" : `${stavka} `}Špaky za bitku (v8): 1 za každú kartu v línii na oboch stranách (Absťáky ich od v8.1 neuberajú), aspoň ${KONSTANTY.SPAKY_ZA_BITKU_MIN} — každá ďalšia karta v línii pridá víťazovi špak; lokalitu si nikto neberie. Sekera: špaky kola vezme víťaz ďalšej bitky${finale ? " — vo finále prepadnú" : ""}; útočník ostáva, cigaretu nedostane nikto. Nakladačka (rozdiel tuhého) ${finale ? "vo finále ide víťazovi 1 : 1 na špaky" : "patrí víťazovi bitky — po bitke ju rozdelí na svoj strach"}. Porazený dostane ${cigariet(KONSTANTY.CIGARETY_PORAZENEMU)}.`,
     );
-    // Starší po bitke (v11, krok 4b): víťaz za najvyšší marker, porazený a sekera len za reči.
+    // Starší po bitke (v11.12, krok 4b): obaja za stupne, ktoré držia rečami, víťaz navyše za strach bez nich.
     const sp = spakyTeraz(v);
     out.push(
-      `  STARŠÍ PO BITKE (bodujú podľa markerov pred Nakladačkou a hádkou): keď vyhráš ty — ty +${sp.zaStarsichVyhra[ja]}, súper +${sp.zaStarsichPrehra[su]} (len reči); keď vyhrá súper — súper +${sp.zaStarsichVyhra[su]}, ty +${sp.zaStarsichPrehra[ja]} (len reči); pri sekere obaja len reči. Reči, ktoré bodovali, potom klesnú o stupeň.`,
+      `  STARŠÍ PO BITKE (bodujú podľa markerov pred Nakladačkou a hádkou): keď vyhráš ty — ty +${sp.zaStarsichVyhra[ja]}, súper +${sp.zaStarsichPrehra[su]} (len reči); keď vyhrá súper — súper +${sp.zaStarsichVyhra[su]}, ty +${sp.zaStarsichPrehra[ja]} (len reči); pri sekere obaja len reči. Potom klesnú reči zospodu o stupeň tomu, kto prehral hádku (pri remíze v hádke nikomu).`,
     );
     const vy = v.vyhry;
     out.push(
@@ -619,13 +628,13 @@ function vykresli(v: ClientState, mena: readonly string[]): string {
   out.push("");
   const body = spakyTeraz(v);
   const pult = pultStarsich(v);
-  out.push("STARŠÍ — STRACH A REČI (v11): pri každom staršom má každý hráč dva vlastné markery na stupnici 0–3:");
+  out.push("STARŠÍ — STRACH A REČI (v11.12): pri každom staršom má každý hráč svoj teplomer 0–3 so strachom; reči kladie na teplomer SÚPERA:");
   out.push(
-    `  STRACH (0 sivá, 1 žltá, 2 oranžová, 3 červená) — ako veľmi sa starší bojí hráča; neklesá. REČI — žiadne, alebo stupeň NAD vlastným strachom; keď strach dorastie na stupeň rečí, reči zaniknú; pri červenom strachu reči nie sú. ` +
+    `  STRACH (0 sivá, 1 žltá, 2 oranžová, 3 červená) — ako veľmi sa starší bojí hráča; neklesá. REČI — súvislý blok stupňov na SÚPEROVOM teplomere: obsadzujú sa od vrchu jeho strachu nadol, potom nad neho (zo sivej zdola nahor); keď jeho strach reči prekoná, blok sa posunie nahor a počet stupňov ostáva (spodný zanikne). Reči priazeň, strach, výhru strachom ani zajatie nemenia. ` +
       `PRIAZEŇ pre teba = súperov strach − tvoj strach (najmenej 0; reči sa nerátajú) — vyšší strach ti teda dáva body, ale súperovi priazeň. Stav staršieho podľa vyššieho strachu: ${STAV_STARSIEHO.map((x, i) => `${i} ${x}`).join(", ")}. ` +
-      `PO KAŽDEJ BITKE starší bodujú: víťaz dostane špaky za svoj NAJVYŠŠÍ marker (reči, ak ich má, inak strach), porazený a pri sekere obaja LEN ZA REČI (${SPAKY_STUPNOV}); reči, ktoré bodovali, potom klesnú o stupeň. ` +
+      `PO KAŽDEJ BITKE starší bodujú (stav pred zdvihnutím): stupne majú hodnotu ${HODNOTY_STUPNOV} (spolu ${[1, 2, 3].map((st) => KONSTANTY.SPAKY_ZA_STUPEN[st]).join(" / ")}) a dostane ich ten, kto stupeň drží, reči majú prednosť — víťaz bitky za svoj strach bez stupňov, ktoré obsadil súper rečami, KAŽDÝ hráč (vyhral, prehral aj pri sekere) za stupne, ktoré obsadil rečami. Potom klesnú reči zospodu o stupeň tomu, kto prehral hádku (pri remíze v hádke nikomu). ` +
       `DVÍHANIE: víťaz bitky rozdelí Nakladačku na svoj strach, víťaz hádky hádku na svoje reči na SÚPEROVOM teplomere, Predsedova vila za každé 2 cigarety vyfajčené v Pitke pridá tvoje reči o stupeň, Kapybara zhodí súperovým rečiam spodný stupeň. Stupeň stojí ${CENY_STUPNOV} (napr. strach zo sivej na červenú ${cenaDvihnutia(0, CERVENA)}), strach na stupeň so súperovými rečami o ${KONSTANTY.REC_PRIRAZKA} viac. ` +
-      `ZAJATIE (v11.4): pri rozdelení Nakladačky zajmeš za ${KONSTANTY.CENA_ZAJATIA} staršieho s tvojím červeným strachom (väzeň, súper ti odovzdá špaky za svoj najvyšší marker pri ňom). PRESVEDČENIE (v11.4): pri rozdelení hádky za ${KONSTANTY.CENA_PRESVEDCENIA} staršieho, ktorý sa súpera bojí viac než teba, keď sú tvoje reči pri ňom na červenej — reči zaniknú, priazeň ostane, jeho karta ide tebe do ruky a natrvalo do tvojho balíčka. Vo finále ani jedno.`,
+      `ZAJATIE (v11.4, v11.6): pri rozdelení Nakladačky zajmeš za ${KONSTANTY.CENA_ZAJATIA} staršieho, pri ktorom je tvoj strach na červenej UŽ PRED touto Nakladačkou (väzeň; súper ti odovzdá toľko špakov, koľko bodov hádky má v rečiach pri ňom, najviac koľko má). PRESVEDČENIE (v11.12): pri rozdelení hádky za ${KONSTANTY.CENA_PRESVEDCENIA} ktoréhokoľvek staršieho, pri ktorom máš reči na celom súperovom teplomere (smieš ich dotiahnuť v tom istom rozdelení) — reči, strach oboch aj priazeň ostanú, jeho karta ide tebe do ruky a natrvalo do tvojho balíčka. Vo finále ani jedno.`,
   );
   out.push(
     `  ŠPAKY: ty ${body.spaky[ja]}, súper ${body.spaky[su]}; od starších po najbližšej bitke: keď ju vyhráš ty — ty +${body.zaStarsichVyhra[ja]}, súper +${body.zaStarsichPrehra[su]}; keď ju vyhrá súper — súper +${body.zaStarsichVyhra[su]}, ty +${body.zaStarsichPrehra[ja]}; nepriznaná Cirhóza na konci −${KONSTANTY.SPAKY_ZA_CIRHOZU} za kus (ty ${body.cirhozy[ja]}, súper ${body.cirhozy[su]}); výkupné na konci (plný poldeci ${KONSTANTY.SPAKY_ZA_POLDECI}, každých ${KONSTANTY.CIGARIET_ZA_SPAK} cigariet 1): ty +${body.vykupne[ja].spaky}, súper +${body.vykupne[su].spaky}; keby skončila teraz ty ${body.spolu[ja]}, súper ${body.spolu[su]}.`,
@@ -1046,7 +1055,7 @@ function moznosti(v: ClientState): string[] {
             : "Strach neklesá. Vyšší strach ti po bitkách dáva špaky a červený strach vedie k výhre strachom a k zajatiu, ale súperovi dáva priazeň (súperov strach − tvoj).";
         const akciaText =
           krok === "prebytok"
-            ? `ZAJATIE (v11.4): staršieho, pri ktorom máš (aj po zdvihu v tomto rozdelení) strach na červenej, zajmeš za ${KONSTANTY.CENA_ZAJATIA} — pridaj "zajatia":["<id>",…]. Je tvoj väzeň, súper ti odovzdá toľko špakov, koľko bodov hádky má v rečiach pri ňom; väzni na výhru podľa ligy vyhrávajú hneď. Dobrovoľné, aj viac naraz; do „rozdeľ, čo sa dá“ sa nerátajú. `
+            ? `ZAJATIE (v11.4, v11.6): staršieho, pri ktorom máš strach na červenej UŽ PRED touto Nakladačkou (dotiahnutý v tomto rozdelení nestačí), zajmeš za ${KONSTANTY.CENA_ZAJATIA} — pridaj "zajatia":["<id>",…]. Je tvoj väzeň, súper ti odovzdá toľko špakov, koľko bodov hádky má v rečiach pri ňom; väzni na výhru podľa ligy vyhrávajú hneď. Dobrovoľné, aj viac naraz; do „rozdeľ, čo sa dá“ sa nerátajú. `
             : `PRESVEDČENIE (v11.12): ktoréhokoľvek staršieho presvedčíš za ${KONSTANTY.CENA_PRESVEDCENIA}, keď máš (aj po zdvihu v tomto rozdelení) reči na celom teplomere — pridaj "presvedcenia":["<id>",…]. Reči, strach aj priazeň ostanú, jeho karta ide tebe do ruky a natrvalo patrí do tvojho balíčka (hráš ju ako Starešinu, len akcie). Kto prvý presvedčí, toho je; zajať ho smú obaja. Dobrovoľné, aj viac naraz. `;
         out.push(
           `(ROZDEĽUJEŠ ${body} ${body === 1 ? "bod" : body <= 4 ? "body" : "bodov"} ${krok === "prebytok" ? `NAKLADAČKY (vyhral si bitku ${b?.damage?.tuhe[ja] ?? "?"} : ${b?.damage?.tuhe[su] ?? "?"} v tuhom)` : `HÁDKY (vyhral si hádku ${b?.hadka?.makke[ja] ?? "?"} : ${b?.hadka?.makke[su] ?? "?"} v mäkkom)`} na SVOJ ${coje} — ľubovoľne medzi starších. ` +
@@ -1218,7 +1227,9 @@ async function main(): Promise<void> {
       const start = KONSTANTY.START_RUKA[c.id];
       if (start !== undefined) return `štartovacia: ${start}× v ruke každého hráča, v Náradí, Občanoch ani v šenku nie je`;
       if (c.tags.includes("Lokalita")) return "lokalita: 1 kus (do hry ide len časť lokalít)";
-      if (c.tags.includes("Starešina")) return "starší: 1 kus na ukazovateli (do ruky len ako boss pri súperovom pokuse o zajatie)";
+      if (c.tags.includes("Starešina")) return "starší: 1 kus na ukazovateli (do ruky a balíčka len presvedčením)";
+      // Dlh je od v8.2 počítadlo — sada v tvorcovi ho môže ešte niesť ako kartu.
+      if (c.id === "dlh") return "kliatba: nie je karta ani v balíčku — počítadlo priznaných Dlhov (vzniká z Hazardu a efektov)";
       if (c.id === "cirhoza") return "kliatba: v balíčku nie je, vzniká počas hry (bez limitu)";
       // Absťák (v9.1) vzniká z Chuti na konci kola — do Občanov ani do šenku nepatrí (playtest 20261030-184957, Eva N2).
       if (c.id === "abstak") return "kliatba: v balíčku nie je, vzniká počas hry (z Chuti na konci kola, do odhadzovacieho balíčka)";

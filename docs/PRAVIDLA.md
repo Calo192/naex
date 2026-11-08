@@ -41,7 +41,7 @@ Sedem lokalít má nový efekt a sada v55 aj nové hrany (§15). Režimy 2 na 2 
 - **Lesná cesta** (Bitka): za každé svoje Zviera v línii, na ktorejkoľvek strane, **2 tuhé** navyše.
 - **Cintorín** (Prehra): porazený si smie vziať do ruky **1 kartu zo svojho odhadzovacieho balíčka**, a to až po návrate kariet (§9 krok 7a), takže **aj kartu z práve odohranej línie** (Michal 2026-11-07). Nástroj do Dedičstva zanikol.
 - **Obecný úrad** (Pitka): platí pre oboch — **všetky cigarety a Dlhy získané počas fázy Pitka**, z akcií aj z efektov kariet, **sa rátajú dvakrát**. Obmedzenie sa odráta pred zdvojnásobením: (akcie − Obmedzenie) × 2. Platby, cigarety za pas a Dlhy mimo Pitky sa nezdvojujú. S Výherným automatom sa zdvojnásobí zadĺženie a prah ostáva. Kšeft (presun Dlhu) zanikol.
-- **Sklad** (Kšeft): za **2 cigarety** Nástroj zo šenku do Dedičstva (pravidlá ako pri bežnom vložení, §12, len namiesto ceny tieto 2 cigarety). Z vrchu Náradia príde do šenku nový Nástroj, verejne; z prázdneho nič. Bez Nástroja v šenku sa Kšeft neponúka. Starý Kšeft (vrchná karta súperovho odhadzovacieho balíčka) zanikol.
+- **Sklad** (Zhromaždenie; od frakcií bez Kšeftu): Nástroj zo šenku smieš vyložiť rovno do Dedičstva **za cenu Dedičstva** (§12, §15), nie za cenu šenku; je to ťah a spoločná cena potom stúpne. Z vrchu Náradia príde do šenku nový Nástroj, verejne; z prázdneho nič. Starý Kšeft (vrchná karta súperovho odhadzovacieho balíčka) zanikol.
 - **Kultúrny dom** (Bitka): **každý hráč dostane špaky len za svoje karty v línii, aj víťaz**. Špaky za výhru hádky (v11.11) sa tu nepripočítavajú druhýkrát. Pri sekere sa nemení nič (§9.4).
 - **Družstvo** (Zhromaždenie): limit vykladania nemíňa **karta s akciou Robota** na ktorejkoľvek strane, nie tag Pracujúci.
 - **Benzínka** (Pitka): **prvé fajčenie každého hráča v každej Pitke je zadarmo**, ďalšie stojí 2, potom 3. Zákaz fajčenia podľa najvzdialenejšej karty zanikol.
@@ -398,7 +398,7 @@ Rozhodnuté; značka `VERZIA_PRAVIDIEL` ostáva „v8“):
 
 - **Robota** (§2, §11): spáli 1 priznaný Dlh; **za každý Dlh, ktorý nemá čo spáliť,
   dá 1 špak** (s Fúrikom 2 Dlhy, bez Dlhov 2 špaky).
-- **12 nových Nástrojov do Dedičstva** (§12, §16): Zapaľovač, Výherné žreby, Píšťalka,
+- **12 nových Nástrojov do Dedičstva** (§12, §16): Zapaľovač, Výherné žreby, Izolačka,
   Hrable, Zrkadlo, Valaška, Telefón, Jogurt, Energeťák, Horoskop, Fúrik, Krištáľová guľa.
 - **Puška** (§16): už nepridáva +1 k Petelici — prepojenú Petelicu, ktorú by zrušil
   Odpor či NA EX, namiesto zrušenia ráta o 1 poškodenie menej (3 → 2).
@@ -1759,7 +1759,7 @@ majiteľa; menia sa len **tvoje** akcie (karty, ktoré si zahral):
 |---|---|---|
 | Zapaľovač | Tvoje aktívne Cigarety nemožno zrušiť NA EX. | NA EX na kartu zruší ostatné aktívne akcie; aktívne Cigarety ostanú ×1 (nezdvoja sa). |
 | Výherné žreby | Tvoje Hazardy sú aktívne, keď nie sú spojené, a neaktívne, keď sú spojené. | Rozhoduje, či slot má na spoji partnera; zrušené Odporom ostávajú zrušené. NA EX potom ako vždy: spojené (neaktívne) zdvojí, nespojené (aktívne) zruší (O1). |
-| Píšťalka | Tvoje Obmedzenia uberajú aj cigarety, ktoré súper dostane za pas. | Pri súperovom pase sa mu cigarety za pas znížia o tvoje aktívne Obmedzenia v línii v tej chvíli (najmenej 0); v Pitke uberajú ako vždy. |
+| Izolačka | Tvoje Obmedzenia uberajú aj cigarety, ktoré súper dostane za pas. | Pri súperovom pase sa mu cigarety za pas znížia o tvoje aktívne Obmedzenia v línii v tej chvíli (najmenej 0); v Pitke uberajú ako vždy. |
 | Hrable | Akcia zrušená tvojím Odporom sa ráta ako tvoja a je posilnená. | Zrušená akcia (nie Posilnenie, Odpor, Pakt) sa pripíše majiteľovi Odporu ×2. |
 | Zrkadlo | Tvoj Pakt kopíruje prepojenú akciu dvakrát. | Pakt sa premení na akciu partnera ×2; proti Posilneniu ostáva nič. |
 | Valaška | Tvoje Pecky udeľujú o 1 poškodenie viac. | Každá tvoja aktívna Pecka +1 tuhé — z vyložených akcií aj akcia navyše (Šofér, Traktorista, frakcie), aj preškolená (Vedúcko, Sypač). |
@@ -2078,7 +2078,7 @@ Kôň v kroku Exekútora. Michal ich potvrdí.
 | Krabička cigariet | Dedičstvo: Pitka: za každé 2 cigarety, ktoré súper v Pitke vyfajčí (rátajú sa zaplatené cigarety), si hneď doberieš 1 kartu. Nie je to nerest. |
 | Pasca | Dedičstvo: Bitka: ak súper v tomto kole priložil kartu (akúkoľvek, aj lícom dole) k tvojej, máš **1 Ranu navyše** (akcia navyše, §6; Vidly ju zosilnia; za každú Pascu v Dedičstve) (v9.1 podľa textu karty od sady v36; predtým Pecku). |
 | Puška | Dedičstvo (Michal 2026-10-30, mení v7 „+1 k Petelici“): keď by tvoju **prepojenú** Petelicu zrušil iný efekt (Odpor, NA EX…), namiesto zrušenia udeľuje o 1 poškodenie menej (3 → 2; v súčtoch sa ráta ako Pecka). Prepojená = má na spoji partnera (aktívna len zo Vzbury nie); na karte so Vzburou (v11.1) sa Puška neuplatní — prepojená Petelica je tam neaktívna. súperove Hrable nemajú čo ukradnúť (zrušenie nenastalo); Výtržník akcie nezrušuje (mení na Rany) — Puška sa neuplatní; NA EX ďalej zdvojí neaktívne akcie karty, prepojená Petelica ostane na 2. Text karty v sade v53 už znie podľa tohto pravidla. |
-| Náradie (v8.4) | Zapaľovač, Výherné žreby, Píšťalka, Hrable, Zrkadlo, Valaška, Telefón, Jogurt, Energeťák, Horoskop, Fúrik, Krištáľová guľa — §12, tabuľka Náradie. |
+| Náradie (v8.4) | Zapaľovač, Výherné žreby, Izolačka, Hrable, Zrkadlo, Valaška, Telefón, Jogurt, Energeťák, Horoskop, Fúrik, Krištáľová guľa — §12, tabuľka Náradie. |
 | Profesionálny tipér | Školiteľ — Konflikt: Preškolenie {Cigareta}→{Hazard} (Michal 2026-11-08, T1, §6): súperova karta, s ktorou sa priložením stretne (oboma smermi), má do konca kola **Cigarety ako Hazard** — namiesto cigarety Dlh súperovi, aj Cigarety navyše. Do 2026-11-08 Furt (v8.4): posilnené akcie na jeho spojoch — súperove ako posilnený Hazard, tvoje ako posilnená Robota. |
 | Vidly | Dedičstvo: každá tvoja aktívna Rana — z vyložených kariet (aj hrany lokality) aj akcia navyše (§6: frakcie, Pijan, Svokra, Vymáhač, Pasca) — udelí o 1 poškodenie viac (Michal 2026-11-08; výnimka z 2026-10-27 zrušená). |
 | Výherný automat | Dedičstvo: tvoj prah Dlhu je o 1 vyšší (§8); posledná Pitka kola: **Hazard** v pečati — po poslednej Pitke kola (pred bitkou) získaš 1 Dlh, Obecný úrad ho zdvojí. |

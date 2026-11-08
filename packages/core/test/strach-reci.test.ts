@@ -140,6 +140,15 @@ describe("§9 bodovanie, sekera, finále a cigareta (v11)", () => {
     expect([t.hraci[0].cigarety, t.hraci[1].cigarety]).toEqual([s.hraci[0].cigarety + 1, s.hraci[1].cigarety - 1]);
   });
 
+  it("log bodovania rozpíše špaky víťaza za strach a za reči, nulové časti vynechá (playtest 20261108-165501)", () => {
+    // Ana vyhrá: pri staršom 0 má červený strach (5), pri staršom 3 žltý strach (1) a reči na Borisovej oranžovej (2).
+    const s = pred({ markery: { 0: [[3, 0], [0, 0]], 3: [[1, 2], [2, 0]] }, sums: [{ Rana: 2 }, {}] });
+    const { events } = spustBitku(data, s);
+    const log = events.flatMap((e) => (e.type === "log" && e.text.startsWith("Starší po bitke") ? [e.text] : []));
+    const meno = (i: number): string => data.cards.get(s.starsi[i]!.karta.defId)!.name;
+    expect(log).toEqual([`Starší po bitke: hráč 1 (víťaz) dostáva 8 špakov — ${meno(0)} 5 za strach; ${meno(3)} 1 za strach, 2 za reči.`]);
+  });
+
   it("víťaz hádky rozdelí hádku na svoje reči až po bodovaní; strach dvíha víťaz bitky", () => {
     const s = pred({ sums: [{ Rana: 1 }, {}], hadka: { vitaz: 1, velkost: 3 } });
     let t = spustBitku(data, s).state;

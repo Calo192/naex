@@ -144,15 +144,15 @@ describe("Náradie mimo línie (§11, §12)", () => {
     expect(vplyvyNaAkcie(s, 0)).toContainEqual({ akcia: "Pecka", zdroj: "boxer", o: 1 });
   });
 
-  it("Píšťalka: súperove Obmedzenia v línii uberajú aj cigarety za pas", () => {
+  it("Izolačka (pistalka): súperove Obmedzenia v línii uberajú aj cigarety za pas", () => {
     const s0 = setupGame(data, 4);
     const zh = { naTahu: 0, pasoval: [false, false], zostavaLimit: [3, 3], navyse: [0, 0] };
     const s = { ...s0, zhromazdenieStav: zh as unknown as GameState["zhromazdenieStav"], lokalitaOtocena: false };
     const bez = cigaretyZaPas(data, s as GameState, 0, 3);
     expect(bez).toBe(3);
-    // Bez Obmedzení v línii Píšťalka nič neuberie.
+    // Bez Obmedzení v línii Izolačka nič neuberie.
     expect(cigaretyZaPas(data, sDedicstvom(s as GameState, 1, ["pistalka"]), 0, 3)).toBe(3);
-    // Súper (hráč 1) má v línii spoj Obmedzenie–Obmedzenie = 2 aktívne: s Píšťalkou za pas 3 − 2.
+    // Súper (hráč 1) má v línii spoj Obmedzenie–Obmedzenie = 2 aktívne: s Izolačkou za pas 3 − 2.
     const o = (): CardInstance => instanceFor(data, "obmedzenie_test", ["Obmedzenie", null, null, null], ["Obmedzenie", null, null, null]);
     const sObm = { ...s, strany: [[], [{ card: o(), playedBy: 1 as PlayerId }, { card: o(), playedBy: 1 as PlayerId }]] } as GameState;
     expect(cigaretyZaPas(data, sObm, 0, 3)).toBe(3);

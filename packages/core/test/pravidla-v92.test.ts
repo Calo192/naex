@@ -99,6 +99,27 @@ describe("§7 v9.2: odpovede lícom dole", () => {
     for (const strana of b.state.strany) expect(strana.some((pl) => pl.odpoved === true || pl.zaverecna === true)).toBe(false);
   });
 
+  it("Hasič medzi odpoveďami: po jeho voľbe sa zvyšok dootáča bez druhej hlášky „Odpovede sa otáčajú naraz“ (playtest 20261108-165501)", () => {
+    const { s: s0, odpoved } = poOdkryti(924);
+    // Útočník odpovedá Hasičom vedľa vlastnej karty (Podpora) — otáča sa prvý a čaká na voľbu.
+    const hasic = { uid: 990001, defId: "hasic", leftLayout: 0, rightLayout: 0 };
+    const vOdhadzovacom = { uid: 990002, defId: "pijan", leftLayout: 0, rightLayout: 0 };
+    const s: GameState = {
+      ...s0,
+      hraci: [{ ...s0.hraci[0], ruka: [hasic], odhadzovaci: [vOdhadzovacom] }, s0.hraci[1]],
+    };
+    const a = apply(sada, s, { type: "place", uid: hasic.uid, target: "vlastna" }, 0).state;
+    const b = apply(sada, a, { type: "place", uid: odpoved[1], target: "vlastna" }, 1);
+    expect(b.state.hasicVolby?.[0]).toMatchObject({ hrac: 0, potom: "odpovede" });
+    const c = apply(sada, b.state, { type: "hasic", nechat: false }, 0);
+    const naraz = [...texty(b.events), ...texty(c.events)].filter((x) => x.startsWith("Odpovede sa otáčajú naraz"));
+    expect(naraz).toHaveLength(1);
+    expect(naraz[0]).toContain("Hasič");
+    // Odpoveď obrancu sa po voľbe naozaj otočí a Pitka sa vyhodnotí.
+    expect(c.events.some((e) => e.type === "odpovedNaNaex" && e.uid === odpoved[1])).toBe(true);
+    expect(c.events.some((e) => e.type === "pitkaVysledok")).toBe(true);
+  });
+
   it("útočník neodpovie → obranca smie na ktorýkoľvek kraj (Michal 2026-10-30)", () => {
     const { s } = poOdkryti(923);
     const t = apply(sada, s, { type: "bezReakcie" }, 0).state;

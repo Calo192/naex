@@ -74,6 +74,7 @@ import {
   reciOdNizsie,
   sMarkerom,
   spakyOdStarsieho,
+  spakyZaReci,
   stupenNaBodovanie,
   vydesil,
   favourStarsieho,
@@ -237,7 +238,7 @@ export function kartyZaPas(z: Pick<ZhromazdenieStav, "zostavaLimit">, p: PlayerI
 
 /**
  * Cigarety, ktoré hráč p dostane, keď teraz pasuje — jeden výpočet pre motor aj
- * náhľad pasu: karty za pas (kartyZaPas) a Píšťalka v súperovom
+ * náhľad pasu: karty za pas (kartyZaPas) a Izolačka (id pistalka) v súperovom
  * Dedičstve (Náradie 2026-10-30): súperove aktívne Obmedzenia v línii ich uberajú, najmenej 0.
  * V 2 na 2 pasuje miesto `kto`: kým partner vykladá, pas cigarety nedá (Michal 2026-11-02, Q1);
  * `vRuke` sú karty v oboch rukách tímu.
@@ -1919,7 +1920,7 @@ function applyPrikaz(
     // Atomicky: pri chybe ktoréhokoľvek kroku sa nevykoná nič. Rozdelenie Nakladačky
     // a hádky je od v11 jeden zámer (prebytok / reci so zdvihmi), ťah netreba.
     need(state.faza === "zhromazdenie", "Celý ťah naraz sa hrá len v Zhromaždení.");
-    need(!cakaHasic(state), HASIC_NAJPRV);
+    need(!cakaHasic(state), najprvVolba(state, hracId));
     need(cmd.kroky.length > 0, "Ťah je prázdny.");
     let st = state;
     const vsetky: Event[] = [];
@@ -1947,7 +1948,7 @@ function applyPrikaz(
     need(kto === kapitan(state, hracId), "NA EX a koniec Pitky za tím volí kapitán.");
   }
   need(state.vizia === null || cmd.type === "vizia", "Najprv rozhodni o karte z Vízie.");
-  need(!cakaHasic(state) || ["hasic", "senok", "nastroj", "kapybara", "spal", "vila"].includes(cmd.type) || vTahu, HASIC_NAJPRV);
+  need(!cakaHasic(state) || ["hasic", "senok", "nastroj", "kapybara", "spal", "vila"].includes(cmd.type) || vTahu, najprvVolba(state, hracId));
 
   switch (cmd.type) {
     case "chooseLocation":
@@ -3563,7 +3564,7 @@ function cmdPass(s: MutState, data: GameData, kto: Miesto, events: Event[]): voi
   const karty = kartyZaPas(z, p, vRuke);
   const ziska = cigaretyZaPas(data, s as GameState, kto, vRuke);
   const pistalka = karty * KONSTANTY.CIGARETY_ZA_PAS_NA_KARTU - ziska;
-  if (pistalka > 0) events.push({ type: "log", text: `Píšťalka: súperove Obmedzenia uberajú hráčovi ${p + 1} ${cigariet(pistalka)} za pas.` });
+  if (pistalka > 0) events.push({ type: "log", text: `${data.cards.get("pistalka")?.name ?? "Izolačka"}: súperove Obmedzenia uberajú hráčovi ${p + 1} ${cigariet(pistalka)} za pas.` });
   zmenCigarety(s, p, "pas", ziska, events);
   events.push({
     type: "log",
@@ -3819,10 +3820,11 @@ function dalsiaReakcia(s: MutState, data: GameData, events: Event[]): boolean {
 
 /**
  * Po kole odpovedí (v9.2): odpovede lícom dole sa otočia naraz, potom ďalšie kolo,
- * alebo sa Pitka vyhodnotí. Otočený Hasič (Nástup) počká na voľbu.
+ * alebo sa Pitka vyhodnotí. Otočený Hasič (Nástup) počká na voľbu; `poVolbe` = dootáčajú sa
+ * zvyšné odpovede toho istého kola po nej.
  */
-function poKoleOdpovedi(s: MutState, data: GameData, events: Event[]): void {
-  if (otocOdpovede(s, data, events)) return;
+function poKoleOdpovedi(s: MutState, data: GameData, events: Event[], poVolbe = false): void {
+  if (otocOdpovede(s, data, events, poVolbe)) return;
   const zostava = s.pitkaStav?.odpovedeZostava ?? [0, 0];
   if ((zostava[0] > 0 || zostava[1] > 0) && zacniKoloOdpovedi(s, data, events)) return;
   vyhodnotPitku(s, data, events);
@@ -3833,13 +3835,14 @@ function poKoleOdpovedi(s: MutState, data: GameData, events: Event[]): void {
  * Konflikt, ktorý odpoveď vyvolala priložením, prevaha v kraji a počet Pitiek.
  * Vráti true, keď otočený Hasič čaká na voľbu (zvyšok dobehne dokonciPoVolbe).
  */
-function otocOdpovede(s: MutState, data: GameData, events: Event[]): boolean {
+function otocOdpovede(s: MutState, data: GameData, events: Event[], poVolbe: boolean): boolean {
   const skryte = ([0, 1] as const).flatMap((strana) => s.strany[strana].filter((pl) => pl.odpoved === true).map((placed) => ({ strana, placed })));
   if (skryte.length === 0) return false;
   const naraz = new Set(skryte.map((x) => x.placed.card.uid as number));
   const bezSkrytych = s.strany.map((strana) => strana.filter((pl) => pl.odpoved !== true)) as unknown as GameState["strany"];
   const prevahaPred = prevahaStran(data, bezSkrytych);
-  events.push({
+  // Po voľbe Hasiča sa dootáčajú odpovede, ktoré log pred ňou už ohlásil (playtest 20261108-165501).
+  if (!poVolbe) events.push({
     type: "log",
     text: `Odpovede sa otáčajú naraz: ${skryte.map(({ strana, placed }) => `hráč ${placed.playedBy + 1} ${defOf(data, placed.card as CardInstance).name} (${menoKraja(data, s, strana)})`).join("; ")}.`,
   });
@@ -4422,7 +4425,22 @@ function cmdVizia(s: MutState, data: GameData, cmd: { vziat: boolean; druha?: tr
   dokonciPitku(s, data, events);
 }
 
-const HASIC_NAJPRV = "Najprv rozhodni o karte, ktorú vytiahol Hasič.";
+/**
+ * Odmietnutie ťahu, kým čaká voľba z fronty hasicVolby — tá nesie aj šenok, Živnostníka,
+ * Kapybaru, Zberný dvor a Predsedovu vilu, hláška preto pomenuje voľbu, ktorá je na rade.
+ */
+function najprvVolba(state: Pick<GameState, "hasicVolby">, p: PlayerId): string {
+  const volba = state.hasicVolby?.[0];
+  if (volba === undefined) return "";
+  const co =
+    volba.typ === "senok" ? "o karte zo šenku (Zastávka)"
+    : volba.typ === "nastroj" ? "o Nástroji pod Živnostníka"
+    : volba.typ === "kapybara" ? "o staršom pre Kapybaru"
+    : volba.typ === "dvor" ? "o karte na spálenie (Zberný dvor)"
+    : volba.typ === "vila" ? "o staršom, pri ktorom Predsedova vila zdvihne reči"
+    : "o karte, ktorú vytiahol Hasič";
+  return volba.hrac === p ? `Najprv rozhodni ${co}.` : `Najprv musí súper rozhodnúť ${co}.`;
+}
 
 /** Čaká sa, kým hráč rozhodne o karte z Hasiča? */
 export function cakaHasic(state: Pick<GameState, "hasicVolby">): boolean {
@@ -4469,7 +4487,7 @@ function cmdHasic(s: MutState, data: GameData, cmd: { nechat: boolean }, kto: Mi
 /** Po voľbe Hasiča, šenku, Živnostníka či Kapybary dobehne, čo hra kvôli nej odložila. */
 function dokonciPoVolbe(s: MutState, data: GameData, volba: HasicVolba, events: Event[]): void {
   if (volba.potom === "reakcia") ukonciReakciu(s, data, events);
-  else if (volba.potom === "odpovede") poKoleOdpovedi(s, data, events);
+  else if (volba.potom === "odpovede") poKoleOdpovedi(s, data, events, true);
   else if (volba.potom === "koniecPitky") dokonciPitku(s, data, events);
   else if (volba.potom === "bitka") pokracujBitku(s, data, events);
   else if (volba.potom === "zastavka") {
@@ -5748,6 +5766,8 @@ function bodujStarsich(s: MutState, data: GameData, vitaz: PlayerId | null, even
   const zaStarsich: [number, number] = [0, 0];
   const rozpis: [SpakyOdStarsieho[], SpakyOdStarsieho[]] = [[], []];
   const bodovanie: BodovanieStarsieho[] = [];
+  // Log rozpíše strach a reči zvlášť — rozpis na nástenke nesie len súčet.
+  const zLogu: [string[], string[]] = [[], []];
   for (const e of s.starsi) {
     const stupen: [Stupen, Stupen] = [stupenNaBodovanie(e as ElderState, 0, vitaz === 0), stupenNaBodovanie(e as ElderState, 1, vitaz === 1)];
     const reci: [boolean, boolean] = [stupen[0] > 0 && stupen[0] === e.reci[0], stupen[1] > 0 && stupen[1] === e.reci[1]];
@@ -5758,6 +5778,9 @@ function bodujStarsich(s: MutState, data: GameData, vitaz: PlayerId | null, even
       if (spaky[p] === 0) continue;
       zaStarsich[p] += spaky[p];
       rozpis[p].push({ elderId: e.elderId, defId: e.karta.defId, spaky: spaky[p], ...(reci[p] ? { reci: true } : {}) });
+      const zaReci = spakyZaReci(e as ElderState, p);
+      const casti = [...(spaky[p] > zaReci ? [`${spaky[p] - zaReci} za strach`] : []), ...(zaReci > 0 ? [`${zaReci} za reči`] : [])];
+      zLogu[p].push(`${data.cards.get(e.karta.defId)?.name ?? e.karta.defId} ${casti.join(", ")}`);
     }
   }
   for (const p of [0, 1] as const) s.spaky[p] += zaStarsich[p];
@@ -5770,7 +5793,7 @@ function bodujStarsich(s: MutState, data: GameData, vitaz: PlayerId | null, even
   }
   for (const p of [0, 1] as const) {
     if (zaStarsich[p] === 0) continue;
-    const kto = rozpis[p].map((x) => `${data.cards.get(x.defId)?.name ?? x.defId} ${x.spaky}${x.reci === true ? " za reči" : ""}`).join(", ");
+    const kto = zLogu[p].join("; ");
     const ako = vitaz === p ? "víťaz" : vitaz === null ? "sekera, len reči" : "porazený, len reči";
     events.push({ type: "log", text: `Starší po bitke: hráč ${p + 1} (${ako}) dostáva ${spakov(zaStarsich[p])} — ${kto}.` });
   }

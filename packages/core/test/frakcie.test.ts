@@ -340,6 +340,9 @@ describe("lokality bez Kšeftu", () => {
     s = apply(data, s, { type: "smoke" }, 0).state;
     // 1 + 2 = 3 cigarety = 1 stupeň.
     expect(s.hasicVolby?.map((v) => v.typ)).toEqual(["vila"]);
+    // Odmietnutie pomenuje čakajúcu voľbu vily, nie Hasiča (playtest 20261108-165501).
+    expect(() => apply(data, s, { type: "smoke" }, 0)).toThrow("Najprv rozhodni o staršom, pri ktorom Predsedova vila zdvihne reči.");
+    expect(() => apply(data, s, { type: "smoke" }, 0)).not.toThrow(/Hasič/);
     const e = s.starsi[0]!;
     const po = apply(data, s, { type: "vila", elderId: e.elderId }, 0).state;
     expect(po.starsi[0]!.reci[0]).toBeGreaterThan(e.reci[0]);
