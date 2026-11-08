@@ -1,0 +1,376 @@
+<!doctype html>
+<html lang="sk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Náradie: premena akcií — NA EX!</title>
+<style>
+:root { --pozadie:#14110e; --plocha:#1e1914; --plocha-2:#28211a; --okraj:#3d3229; --text:#f1e8d8; --tlmeny:#b6a790; --slaby:#8b7d6a;
+  --akcent:#e9ad45; --zelena:#7cbf74; --cervena:#d0563f; --modra:#5cc0cf; --oranzova:#e08a3a; color-scheme: dark; }
+@media (prefers-color-scheme: light) { :root:not([data-theme="dark"]) { --pozadie:#f6f1e7; --plocha:#fffaf1; --plocha-2:#f0e7d6; --okraj:#dccdb3; --text:#2a2016;
+  --tlmeny:#6b5b45; --slaby:#7a6a52; --akcent:#a8680f; --zelena:#3f7f38; --cervena:#b0402c; --modra:#2a7f8c; --oranzova:#b0601a; color-scheme: light; } }
+:root[data-theme="light"] { --pozadie:#f6f1e7; --plocha:#fffaf1; --plocha-2:#f0e7d6; --okraj:#dccdb3; --text:#2a2016;
+  --tlmeny:#6b5b45; --slaby:#7a6a52; --akcent:#a8680f; --zelena:#3f7f38; --cervena:#b0402c; --modra:#2a7f8c; --oranzova:#b0601a; color-scheme: light; }
+* { box-sizing: border-box; }
+body { margin:0; background:var(--pozadie); color:var(--text); font:16px/1.5 system-ui, "Segoe UI", Roboto, sans-serif; }
+main { max-width: 960px; margin: 0 auto; padding: 16px 16px 120px; }
+h1, h2, h3 { font-family: Georgia, serif; line-height: 1.2; }
+h1 { font-size: clamp(1.5rem, 6vw, 2.2rem); margin: 0 0 6px; }
+h2 { font-size: 1.25rem; margin: 34px 0 10px; padding-bottom: 4px; border-bottom: 1px solid var(--okraj); }
+h3 { font-size: 1.02rem; margin: 18px 0 6px; color: var(--akcent); }
+p { margin: 0 0 10px; }
+code { font: .84em ui-monospace, Consolas, monospace; background: var(--plocha-2); padding: 1px 4px; border-radius: 4px; overflow-wrap: anywhere; }
+a { color: var(--akcent); }
+.box { background: var(--plocha); border: 1px solid var(--okraj); border-radius: 12px; padding: 12px 14px; margin: 0 0 12px; }
+.box.zv { border-color: var(--akcent); } .box.rec { border-color: var(--zelena); } .box.riz { border-color: var(--cervena); } .box.mer { border-color: var(--modra); }
+.box > :last-child { margin-bottom: 0; }
+.mini { color: var(--slaby); font-size: .85rem; }
+ul, ol { padding-left: 20px; } li { margin-bottom: 5px; }
+.chip { display: inline-block; font-size: .72rem; padding: 0 7px; border-radius: 999px; border: 1px solid currentColor; white-space: nowrap; vertical-align: 1px; }
+.chip.ok { color: var(--zelena); } .chip.sab { color: var(--cervena); } .chip.obo { color: var(--modra); } .chip.s { color: var(--slaby); } .chip.n { color: var(--oranzova); } .chip.zle { color: var(--cervena); }
+nav.skupiny { position: sticky; top: 0; z-index: 2; background: var(--pozadie); padding: 8px 0; display: flex; gap: 6px; overflow-x: auto; border-bottom: 1px solid var(--okraj); }
+nav.skupiny a { flex: none; font-size: .85rem; text-decoration: none; color: var(--tlmeny); background: var(--plocha); border: 1px solid var(--okraj); border-radius: 999px; padding: 4px 11px; }
+table { width: 100%; border-collapse: collapse; font-size: .88rem; }
+th, td { text-align: left; vertical-align: top; padding: 6px 8px; border-bottom: 1px solid var(--okraj); }
+thead th { color: var(--slaby); font-weight: 600; font-size: .8rem; }
+tbody th { font-family: Georgia, serif; font-weight: 600; white-space: nowrap; }
+.tab { overflow-x: auto; }
+.pr { display: inline-block; font-family: ui-monospace, Consolas, monospace; font-size: .86em; background: var(--plocha-2); border: 1px solid var(--okraj); border-radius: 6px; padding: 1px 7px; margin: 1px 4px 1px 0; white-space: nowrap; }
+.pr.up { border-color: var(--zelena); } .pr.dn { border-color: var(--cervena); } .pr.sd { border-color: var(--modra); }
+pre { background: var(--plocha-2); border: 1px solid var(--okraj); border-radius: 8px; padding: 8px 10px; font-size: .82rem; overflow-x: auto; white-space: pre-wrap; }
+section, h2 { scroll-margin-top: 52px; }
+.kroky { counter-reset: k; list-style: none; padding: 0; }
+.kroky li { position: relative; padding-left: 30px; margin-bottom: 8px; }
+.kroky li::before { counter-increment: k; content: counter(k); position: absolute; left: 0; top: 1px; width: 22px; height: 22px; border-radius: 50%; background: var(--akcent); color: #1a1410; font-weight: 700; font-size: .8rem; text-align: center; line-height: 22px; }
+.kon { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+@media (max-width: 680px) { .kon { grid-template-columns: 1fr; } }
+.kon .box { margin: 0; }
+details.q { background: var(--plocha); border: 1px solid var(--okraj); border-radius: 12px; margin: 0 0 8px; padding: 0 12px; }
+details.q[open] { padding-bottom: 10px; border-color: var(--akcent); }
+details.q summary { cursor: pointer; padding: 10px 0; list-style: none; }
+details.q summary::-webkit-details-marker { display: none; }
+.qid { font: 700 .95rem Georgia, serif; color: var(--akcent); margin-right: 4px; }
+.qt { font-weight: 600; }
+ol.moznosti { list-style: none; padding: 0; margin: 8px 0; }
+li.moz { border: 1px solid var(--okraj); border-radius: 10px; padding: 8px 10px; margin-bottom: 6px; background: var(--plocha-2); }
+li.moz.rec { border-color: var(--zelena); }
+li.moz label { display: block; cursor: pointer; }
+li.moz span:not(.chip) { display: block; font-size: .9rem; color: var(--tlmeny); margin-top: 2px; }
+li.moz input { accent-color: var(--akcent); }
+.pozn { display: block; font-size: .8rem; color: var(--slaby); margin-top: 6px; }
+.pozn textarea { width: 100%; font: inherit; font-size: .9rem; background: var(--pozadie); color: var(--text); border: 1px solid var(--okraj); border-radius: 8px; padding: 6px; margin-top: 2px; }
+#vystup { width: 100%; min-height: 160px; font: .85rem ui-monospace, Consolas, monospace; background: var(--plocha); color: var(--text); border: 1px solid var(--okraj); border-radius: 8px; padding: 8px; }
+button.akcia { font: inherit; font-size: .9rem; background: var(--akcent); color: #1a1410; border: 0; border-radius: 8px; padding: 6px 14px; cursor: pointer; font-weight: 700; margin-right: 6px; }
+button.akcia.sek { background: var(--plocha-2); color: var(--text); border: 1px solid var(--okraj); }
+.bar { height: 8px; background: var(--plocha-2); border-radius: 4px; overflow: hidden; min-width: 70px; }
+.bar i { display: block; height: 100%; background: var(--akcent); }
+</style>
+</head>
+<body>
+<main>
+<h1>Náradie: premena akcií</h1>
+<p class="mini">návrh na rozhodnutie · verzia 3 · 2026-11-08 · nápad Michala: Nástroj funguje ako dnes v Dedičstve, ALEBO sa podloží pod Občana či Starešinu a <b>premení dve jeho akcie na iné</b> (Rana → Pecka, Pecka → Petelica); pod súperovu kartu ako sabotáž (Cigareta → Hazard) · podklady: PRAVIDLA.md §2, §6, §7, §12; sada master (<code>cards.json</code>, 48 hostiteľov) · predchádzajúce verzie: <a href="naradie-rework.html">v1</a>, <a href="naradie-vytiahnut.html">v2</a> (zamietnuté) · <b>Michal 2026-11-08: „tento nápad sa mi celkom páči, treba ho uchovať“</b> — voľby O1–O9 zatiaľ otvorené · pravidlá ani kód sa nemenia</p>
+
+<div class="box zv">
+  <p><b>Verdikt: áno, je to dobrý nápad — najlepší z troch verzií.</b> Z troch dôvodov: premena nepridáva do hry nový zdroj ani text, len prehadzuje akcie, ktoré už hráč pozná; dá sa nakresliť <b>dvoma piktogramami so šípkou</b> bez jediného slova; a jadro ju spraví jedným krokom pred výpočtom spojov. Hráč pritom rozhoduje o troch veciach naraz: komu Nástroj podloží, či ho radšej zdedí, a či ním súperovi pokazí kartu.</p>
+  <p>Má to tri slabiny, ktoré návrh rieši: <b>(1)</b> Nástroj bez zhodnej akcie na hostiteľovi nerobí nič — preto každý Nástroj páruje jednu častú a jednu vzácnejšiu akciu (v sade trafí priemerne <b>54 %</b> hostiteľov, Jogurt a Fúrik 85 %, Hrable 33 %); <b>(2)</b> premeny Odporu, Posilnenia a Paktu sú pre nováčika ťažko čitateľné — sú len na troch Nástrojoch; <b>(3)</b> sabotáž potrebuje odpoveď — navrhujem <i>Vyhodiť</i> (2 cigarety v Pitke), nie zákaz.</p>
+  <ul>
+    <li><b>Podložiť:</b> Zhromaždenie, ťah mimo limitu, zadarmo, pod Občana alebo Starešinu v línii — svojho aj súperovho. Jeden Nástroj na kartu. Po bitke do odhadzovacieho balíčka toho, kto podložil.</li>
+    <li><b>Premena:</b> každý slot hostiteľa s akciou X sa ráta ako Y (na oboch hranách, raz za slot), ešte pred spojmi — premenená akcia sa páruje, posilňuje, ruší a dostáva NA EX ako Y.</li>
+    <li><b>Dedičstvo</b> ako dnes (texty bez zmeny). Voliteľne zjednotiť: zdedený Nástroj premieňa akcie <i>všetkých tvojich kariet</i>.</li>
+    <li>22 Nástrojov: 10 posíl, 5 sabotáží, 7 obojakých (premena hore aj dole — podloženie má cenu). Nástroj bez hrán, do línie nejde.</li>
+  </ul>
+</div>
+
+<nav class="skupiny" aria-label="Časti">
+  <a href="#verdikt">Verdikt</a><a href="#pravidla">Pravidlá</a><a href="#schemy">Schémy</a><a href="#nastroje">22 Nástrojov</a><a href="#priklad">Príklad</a><a href="#sabotaz">Odpoveď na sabotáž</a><a href="#okolie">Okolité karty</a><a href="#rizika">Riziká</a><a href="#kod">Kód</a><a href="#otazky">Otázky</a>
+</nav>
+
+<!-- ============================================================ -->
+<section id="verdikt">
+<h2>Je to dobrý nápad? Poctivo</h2>
+<div class="kon">
+  <div class="box rec">
+    <h3>Prečo áno</h3>
+    <ul>
+      <li><b>Nič nové sa netreba učiť.</b> Hráč pozná 16 akcií; Nástroj len povie „táto je odteraz tamtá“. Žiadny text, žiadny nový zdroj, žiadna nová fáza. Výučba: jedna lekcia.</li>
+      <li><b>Čitateľné na stole.</b> Premenený slot hostiteľa ukáže novú ikonu s malou značkou Nástroja — presne tak, ako dnes žeravá ikona ukazuje posilnenie. Na karte Nástroja sú dva riadky <span class="pr up">Rana → Pecka</span><span class="pr up">Pecka → Petelica</span>, nič viac.</li>
+      <li><b>Posila aj sabotáž z jedného pravidla.</b> Ten istý mechanizmus pod svojou kartou pomáha, pod súperovou škodí — pravidlo nerozlišuje, rozlišuje smer šípky. Sabotáž premenou je čistejšia než dnešné blokovanie Odpormi: súper vidí, čo presne sa stalo, a karta hrá ďalej.</li>
+      <li><b>Rozhodnutie má tri rozmery:</b> komu (hostiteľ s akciami, ktoré Nástroj trafí), kedy (hostiteľ po bitke odíde aj s Nástrojom — podložiť skoro, aby sa premena stihla prejaviť v Pitkách, či neskoro, aby súper nestihol odpovedať) a či radšej zdediť.</li>
+      <li><b>Dedičstvo dostane zmysel porovnaním:</b> Vidly v Dedičstve = Rany +1 navždy pre všetkých; Vidly pod Pijanom = Rana → Pecka hneď, ale len jemu a len toto kolo. Dve ceny tej istej veci.</li>
+      <li><b>Jadro:</b> premena je mapa akcií hostiteľa pred výpočtom spojov. Varianty, permutácie ani <code>cards.json</code> Občanov sa nemenia. Zjednodušenia z v1 platia (spoj s Nástrojom, Vzbura a Forsáž s Nástrojom, vedľa lokality, krokodílí štít — všetko zaniká).</li>
+    </ul>
+  </div>
+  <div class="box riz">
+    <h3>Kde to škrípe</h3>
+    <ul>
+      <li><b>Podmienka zhody.</b> Nástroj robí niečo len na hostiteľovi s jeho akciou — a tá musí byť ešte aj aktívna na spoji. To je tá istá „dvojitá podmienka“, pre ktorú dnes Dedičstvo nikto nekupuje. Rozdiel: hostiteľa si hráč <i>vyberá v okamihu podloženia z odkrytej línie</i>, takže prvú podmienku splní vždy; druhú (spoj) vie odhadnúť. Preto musí mať každý Nástroj aspoň jednu častú akciu (Hazard 56 % hostiteľov, Cigareta 44 %, Pečeň 44 %, Rana 33 %) — tabuľka nižšie ukazuje pokrytie každého.</li>
+      <li><b>Mäkké akcie sú vzácne</b> (Pohoršenie 13 %, Povera 17 %): Nástroje pre hádku (Svätý text, Horoskop, Telefón) treba párovať s častou akciou, inak budú „odpad“ ako dnes.</li>
+      <li><b>Premeny modifikátorov</b> (Odpor ↔ Posilnenie ↔ Pakt) menia, čo sa stane partnerovi na spoji — mocné, ale ťažko čitateľné. Držím ich na troch Nástrojoch (Energeťák, Hrable, Zrkadlo) a označil by som ich ako pokročilé.</li>
+      <li><b>Sabotáž bez odpovede</b> by bola nové blokovanie: Výherný automat pod súperovou kartou s dvoma Cigaretami = −2 cigarety a +2 zadĺženia každú Pitku, a súper s tým do bitky nič nespraví. Preto <a href="#sabotaz">Vyhodiť</a>.</li>
+      <li><b>Sila nie je rovnaká:</b> Rana → Pecka je +1 za slot, Hazard → Cigareta je obrat o 2 (−1 na +1), Cigareta → Hazard tiež. Obraty „zlé ↔ dobré“ sú najsilnejšie a najčastejšie trafia — ustrážiť ich počet (v návrhu 7 z 44 premien).</li>
+      <li><b>Hostiteľ odíde skôr</b> (Krokodíl, Poľovník, Recidivista do ruky) — Nástroj z ruky je stratený; pri sabotáži je to riziko útočníka, pri posile obrancu. V poriadku, ale UI to musí ukázať.</li>
+    </ul>
+  </div>
+</div>
+</section>
+
+<!-- ============================================================ -->
+<section id="pravidla">
+<h2>Pravidlá (návrh znenia §12)</h2>
+<div class="box">
+  <ol class="kroky">
+    <li><b>Dva spôsoby zahrania.</b> Nástroj z ruky možno <b>zdediť</b> (ako dnes: Zhromaždenie, cigarety 1, 2, 3 … spoločne, ťah mimo limitu, text <i>Dedičstvo</i>) alebo <b>podložiť</b>. Do línie Nástroj nepatrí — nemá hrany, netvorí spoje, nemení susedstvo ani prevahu, nedostane NA EX, nedá sa ním zacloniť Krokodíl.</li>
+    <li><b>Podložiť:</b> v Zhromaždení, keď si na ťahu, zasunieš Nástroj z ruky pod odkrytú kartu v línii s tagom <b>Občan alebo Starešina</b> — svoju aj súperovu (nie skrytá Záverečná, nie lokalita, nie Zviera bez tagu Občan). Je to <b>ťah</b> (striedanie ako dnes), <b>limit nemíňa</b>, <b>nič nestojí</b>; smie ísť za Vypiť ako dnes vyloženie Nástroja. Pod jednou kartou leží <b>najviac jeden</b> Nástroj (štrukturálne ako jeden NA EX na kartu; otázka O5).</li>
+    <li><b>Premena:</b> Nástroj má dve premeny <span class="pr">X → Y</span>. Každý slot hostiteľa s akciou X sa <b>na oboch hranách</b> ráta ako Y. Každý slot sa premení <b>raz</b> (Vidly: Rana sa stane Peckou, nie Petelicou). Premena platí od podloženia, kým hostiteľ leží v línii.</li>
+    <li><b>Poradie výpočtu:</b> premena → spoje → Vzbura → Výherné žreby → Forsáž → NA EX → efekty kariet. Premenená akcia je Y vo všetkom: páruje sa ako Y, Posilnenie ju zdvojí ako Y, Odpor ju zruší, NA EX ju zruší alebo zdvojí, Výtržník, Silná žena, Pes ju vidia ako Y. Premena na Odpor alebo Posilnenie mení aj to, čo sa stane partnerovi na spoji.</li>
+    <li><b>Komu patrí účinok:</b> akcie hostiteľa patria jeho majiteľovi ako vždy — preto premena na zlú akciu (Hazard, Pečeň) pod súperovou kartou škodí súperovi, premena na dobrú pod svojou pomáha tebe. Pravidlo nerozlišuje posilu a sabotáž.</li>
+    <li><b>Po bitke</b> ide Nástroj do odhadzovacieho balíčka hráča, ktorý ho podložil (§9.7). Keď hostiteľ odíde skôr (spálenie, návrat do ruky), Nástroj odíde tou istou cestou hneď.</li>
+    <li><b>Vyhodiť</b> (odpoveď na sabotáž, otázka O3): v Pitke, kým si neskončil, smieš za <b>2 cigarety</b> odstrániť Nástroj spod svojej karty — ide do odhadzovacieho balíčka toho, kto ho podložil. Ako doliatie: cena, nie zákaz.</li>
+  </ol>
+  <pre>podložiť:  Zhromaždenie · ťah mimo limitu · zadarmo · pod Občana / Starešinu, svojho aj súperovho · 1 na kartu
+premena:   každý slot X hostiteľa (obe hrany) → Y, raz · pred spojmi · Y vo všetkom (spoj, ×2, Odpor, NA EX, efekty)
+koniec:    po bitke do odhadzovacieho balíčka podkladajúceho · Vyhodiť za 2 cigarety v Pitke
+Dedičstvo: ako dnes (alebo: premena pre všetky tvoje karty — O6)</pre>
+</div>
+</section>
+
+<!-- ============================================================ -->
+<section id="schemy">
+<h2>Tri schémy, ako môže Nástroj premieňať</h2>
+<div class="kon">
+  <div class="box">
+    <h3>S1 — Čistá <span class="chip s">2 hore alebo 2 dole</span></h3>
+    <p><span class="pr up">Rana → Pecka</span><span class="pr up">Pecka → Petelica</span> alebo <span class="pr dn">Cigareta → Hazard</span><span class="pr dn">Poldeci → Hazard</span>. Nástroj je jasne posila alebo sabotáž; nováčik to pochopí z farby šípok. Nevýhoda: podloženie nemá cenu okrem ťahu a karty.</p>
+  </div>
+  <div class="box">
+    <h3>S2 — Zmiešaná <span class="chip s">1 hore + 1 dole</span></h3>
+    <p><span class="pr up">Rana → Pecka</span><span class="pr dn">Poldeci → Pečeň</span> (Injekcia). Pod svojou kartou vyberáš hostiteľa, ktorý má hornú akciu a nemá dolnú; pod súperovou naopak. Každé podloženie je hádanka. Nevýhoda: viac premýšľania, niektoré kombinácie sú nelogické.</p>
+  </div>
+  <div class="box">
+    <h3>S3 — Rebrík <span class="chip s">celá skupina o stupeň</span></h3>
+    <p>„Tuhé akcie o stupeň vyššie“ (Rana → Pecka → Petelica), „mäkké o stupeň“ (Povera → Pohoršenie), „zlé na dobré“ (Hazard → Cigareta, Pečeň → Poldeci). Menej Nástrojov, širšie pokrytie, ale rebríky sú len tri až štyri — na 22 Nástrojov nestačia.</p>
+  </div>
+</div>
+<p class="mini"><b>Odporúčanie:</b> sada väčšinou S1 (čitateľnosť), 7 Nástrojov S2 ako „obojaké“ (hĺbka pre skúsených). S3 sa v S1 prirodzene objaví (Vidly = tuhý rebrík). Tabuľka nižšie je podľa toho.</p>
+</section>
+
+<!-- ============================================================ -->
+<section id="nastroje">
+<h2>22 Nástrojov — dve premeny</h2>
+<p>Zelená šípka = akcia hore (posila pod svoju kartu), červená = dole (sabotáž pod súperovu), modrá = do strany (iný druh, rovnaká hodnota — presmerovanie). <b>Pokrytie</b> = podiel zo 48 Občanov a Starešinov sady, ktorí majú aspoň jednu z dvoch akcií (priemer 54 %). Dedičstvo ostáva dnešné; v zátvorke, kde by zjednotenie (O6) dalo iný text.</p>
+<div class="tab"><table>
+  <thead><tr><th>Nástroj</th><th>Premeny</th><th>Typ</th><th>Pokrytie</th><th>Dedičstvo dnes</th><th>Poznámka</th></tr></thead>
+  <tbody>
+    <tr><th>Vidly</th><td><span class="pr up">Rana → Pecka</span><span class="pr up">Pecka → Petelica</span></td><td><span class="chip ok">posila</span></td><td>54 %<div class="bar"><i style="width:54%"></i></div></td><td>Rany +1</td><td>Michalov príklad. Pod Pijanom (2 Rany) +2 tuhé.</td></tr>
+    <tr><th>Valaška</th><td><span class="pr up">Pecka → Petelica</span><span class="pr sd">Odpor → Pecka</span></td><td><span class="chip ok">posila</span></td><td>44 %<div class="bar"><i style="width:44%"></i></div></td><td>Pecky +1</td><td>Sekera nerieši spory, rúbe: Odpor prestane rušiť partnera a začne biť.</td></tr>
+    <tr><th>Puška</th><td><span class="pr up">Rana → Petelica</span><span class="pr sd">Viera → Pecka</span></td><td><span class="chip obo">obojaká</span></td><td>56 %<div class="bar"><i style="width:56%"></i></div></td><td>prepojenú Petelicu nemožno zrušiť, len oslabiť</td><td>Poľovník neverí, strieľa. Pod súperovým Veriacim mu vezme Vieru (jeho obrana), ale dá Pecku.</td></tr>
+    <tr><th>Svätý text</th><td><span class="pr up">Povera → Viera</span><span class="pr up">Pečeň → Viera</span></td><td><span class="chip ok">posila</span></td><td>50 %<div class="bar"><i style="width:50%"></i></div></td><td>Viera +1</td><td>Pokánie: povera aj chľast sa obrátia na vieru. Pod súperovou kartou zruší jeho Povery, ale dá mu Vieru — obojaké v praxi.</td></tr>
+    <tr><th>Horoskop</th><td><span class="pr up">Povera → Pohoršenie</span><span class="pr up">Hazard → Povera</span></td><td><span class="chip ok">posila</span></td><td>69 %<div class="bar"><i style="width:69%"></i></div></td><td>Povery sila 2</td><td>Hazardér verí na šťastie: Hazard (zlý) sa stane Poverou (mäkké 1). Najširšie pokrytie medzi mäkkými.</td></tr>
+    <tr><th>Telefón</th><td><span class="pr up">Obmedzenie → Pohoršenie</span><span class="pr sd">Cigareta → Pohoršenie</span></td><td><span class="chip ok">posila</span></td><td>54 %<div class="bar"><i style="width:54%"></i></div></td><td>Pohoršenia nemožno zrušiť</td><td>Klebety namiesto fajčenia — presmeruje ekonomiku do hádky.</td></tr>
+    <tr><th>Zapaľovač</th><td><span class="pr up">Hazard → Cigareta</span><span class="pr up">Obmedzenie → Cigareta</span></td><td><span class="chip ok">posila</span></td><td>63 %<div class="bar"><i style="width:63%"></i></div></td><td>Cigarety nezruší NA EX</td><td>Obrat zlého na dobré (sila 2 za slot) — jeden z najsilnejších, cena Dedičstva by to mala odrážať.</td></tr>
+    <tr><th>Krabička cigariet</th><td><span class="pr sd">Rana → Cigareta</span><span class="pr sd">Povera → Cigareta</span></td><td><span class="chip obo">obojaká</span></td><td>46 %<div class="bar"><i style="width:46%"></i></div></td><td>karta za 2 súperom vyfajčené cigarety</td><td>Radšej fajčiť než biť. Pod súperovým Bitkárom mu vezme tuhé, ale dá cigarety — rozhodni sa, čo bolí viac.</td></tr>
+    <tr><th>Jogurt</th><td><span class="pr up">Pečeň → Poldeci</span><span class="pr up">Hazard → Poldeci</span></td><td><span class="chip ok">posila</span></td><td>85 %<div class="bar"><i style="width:85%"></i></div></td><td>Poldeci otáčajú hneď v Pitke</td><td>Vystlaný žalúdok. Najširšie pokrytie, dva obraty — kandidát na zoslabenie (len Pečeň → Poldeci + Vízia → Poldeci).</td></tr>
+    <tr><th>Nealko</th><td><span class="pr up">Pečeň → Viera</span><span class="pr sd">Poldeci → Viera</span></td><td><span class="chip obo">obojaká</span></td><td>50 %<div class="bar"><i style="width:50%"></i></div></td><td>prah Cirhózy +2</td><td>Triezvy veriaci. Pod súperovým Pijanom: pečeň mu zmizne (zle), poldeci stratí (dobre).</td></tr>
+    <tr><th>Vínko</th><td><span class="pr sd">Cigareta → Poldeci</span><span class="pr sd">Vízia → Poldeci</span></td><td><span class="chip obo">obojaká</span></td><td>52 %<div class="bar"><i style="width:52%"></i></div></td><td>plný poldeci navyše</td><td>Všetko prepiť. Presmerovanie: kto potrebuje poldeci, nie cigarety.</td></tr>
+    <tr><th>Energeťák</th><td><span class="pr up">Odpor → Posilnenie</span><span class="pr up">Pečeň → Posilnenie</span></td><td><span class="chip ok">posila</span> <span class="chip s">pokročilý</span></td><td>56 %<div class="bar"><i style="width:56%"></i></div></td><td>Posilnenie nezruší NA EX</td><td>Pod súperovou kartou: jeho Odpor na spoji s tvojou kartou prestane rušiť a začne zdvojovať <i>tvoju</i> akciu — sabotáž obrany.</td></tr>
+    <tr><th>Hrable</th><td><span class="pr dn">Posilnenie → Odpor</span><span class="pr dn">Pakt → Odpor</span></td><td><span class="chip sab">sabotáž</span> <span class="chip s">pokročilý</span></td><td>33 %<div class="bar"><i style="width:33%"></i></div></td><td>akcia zrušená Odporom je tvoja, posilnená</td><td>Pod súperovou kartou: jeho Posilnenie partnera sa stane Odporom — zruší partnera (jeho vlastná karta) alebo tvoju (pozor, kam). Najnižšie pokrytie — alebo Posilnenie → Odpor + Cigareta → Odpor.</td></tr>
+    <tr><th>Zrkadlo</th><td><span class="pr sd">Odpor → Pakt</span><span class="pr sd">Posilnenie → Pakt</span></td><td><span class="chip obo">obojaká</span> <span class="chip s">pokročilý</span></td><td>46 %<div class="bar"><i style="width:46%"></i></div></td><td>Pakt kopíruje dvakrát</td><td>Modifikátor sa stane kópiou partnera: tvoj Odpor pri súperovej Petelici = aj ty máš Petelicu.</td></tr>
+    <tr><th>Krištáľová guľa</th><td><span class="pr sd">Povera → Vízia</span><span class="pr sd">Cigareta → Vízia</span></td><td><span class="chip obo">obojaká</span></td><td>54 %<div class="bar"><i style="width:54%"></i></div></td><td>Vízie ukážu 2 karty</td><td>Vidieť namiesto veriť a fajčiť. Vízia ostáva na 4 kartách — Guľa ju prinesie kamkoľvek.</td></tr>
+    <tr><th>Fúrik</th><td><span class="pr up">Hazard → Robota</span><span class="pr up">Pečeň → Robota</span></td><td><span class="chip ok">posila</span></td><td>85 %<div class="bar"><i style="width:85%"></i></div></td><td>Roboty pália +1 Dlh</td><td>Odpracovať to. Robota bez Dlhu dá špak (§11) — Fúrik pod hráčom bez Dlhov = špaky za Hazardy. Sledovať.</td></tr>
+    <tr><th>Výherné žreby</th><td><span class="pr dn">Robota → Hazard</span><span class="pr dn">Vízia → Hazard</span></td><td><span class="chip sab">sabotáž</span></td><td>40 %<div class="bar"><i style="width:40%"></i></div></td><td>Hazardy aktívne bez spoja</td><td>Namiesto roboty a rozhľadu žreby. Pod súperovým Záhradkárom či Vešticou.</td></tr>
+    <tr><th>Výherný automat</th><td><span class="pr dn">Cigareta → Hazard</span><span class="pr dn">Poldeci → Hazard</span></td><td><span class="chip sab">sabotáž</span></td><td>56 %<div class="bar"><i style="width:56%"></i></div></td><td>prah Dlhu +1, Dlh v poslednej Pitke</td><td>Michalov príklad. Dva obraty — najsilnejšia sabotáž; Vyhodiť za 2 cigarety je proti nej lacné, to je zámer.</td></tr>
+    <tr><th>Izolačka</th><td><span class="pr dn">Rana → Obmedzenie</span><span class="pr dn">Pohoršenie → Obmedzenie</span></td><td><span class="chip obo">obojaká</span></td><td>42 %<div class="bar"><i style="width:42%"></i></div></td><td>Obmedzenia uberajú aj za pas</td><td>Zalepené ústa a ruky. Pod súperovou kartou mu vezme tuhé aj hádku, ale Obmedzenie škodí <i>tebe</i> (−1 cigareta) — platíš za ticho.</td></tr>
+    <tr><th>Pasca</th><td><span class="pr dn">Poldeci → Pečeň</span><span class="pr dn">Cigareta → Pečeň</span></td><td><span class="chip sab">sabotáž</span></td><td>56 %<div class="bar"><i style="width:56%"></i></div></td><td>Bitka: 1 Rana za priloženie</td><td>Otrávené pitie: súperova Pitka mu ničí pečeň (prah 3 → Cirhóza).</td></tr>
+    <tr><th>Noviny</th><td><span class="pr dn">Petelica → Pecka</span><span class="pr dn">Pecka → Rana</span></td><td><span class="chip sab">sabotáž</span></td><td>40 %<div class="bar"><i style="width:40%"></i></div></td><td>Prehra: špak za Dlh víťaza navyše</td><td>Titulka krotí bitkára — opak Vidiel. Pod súperovým Bitkárom −1 za slot.</td></tr>
+    <tr><th>Injekcia</th><td><span class="pr up">Rana → Pecka</span><span class="pr dn">Poldeci → Pečeň</span></td><td><span class="chip obo">obojaká</span></td><td>46 %<div class="bar"><i style="width:46%"></i></div></td><td>NA EX aj na Zviera</td><td>Doping: silnejší úder, pečeň platí. Vzor schémy S2.</td></tr>
+  </tbody>
+</table></div>
+<p class="mini">Spolu 44 premien: 19 hore, 13 dole, 12 do strany; 7 obratov zlé ↔ dobré (Zapaľovač 2, Jogurt 2, Fúrik 2, Horoskop 1 hore; Automat 2, Pasca 2 dole — Pasca a Automat sú teda zrkadlá Jogurtu a Zapaľovača). Hodnoty akcií, s ktorými som rátal: Petelica 3 · Pecka 2 · Rana 1 · Pohoršenie 2 mäkké · Povera 1 mäkké · Viera, Cigareta, Poldeci, Vízia, Robota, Obmedzenie ≈ 1 · Hazard, Pečeň −1 · Odpor, Posilnenie, Pakt podľa partnera.</p>
+</section>
+
+<!-- ============================================================ -->
+<section id="priklad">
+<h2>Príklad</h2>
+<div class="box mer">
+  <p>Kolo o Krčmu, Zhromaždenie pred prvou Pitkou. Ana vyloží <b>Pijana</b> (vnútorná hrana: Rana, Rana, Pečeň; spoj s lokalitou aktivuje všetky tri) a ďalším ťahom pod neho podloží <b>Vidly</b>: Pijan má teraz Pecka, Pecka, Pečeň — v bitke 4 tuhé namiesto 2. Boris odpovie <b>Svokrou</b> na druhý kraj (Cigareta, Cigareta, Pohoršenie aktívne) a Ana na ďalší ťah podloží pod Svokru <b>Výherný automat</b>: Svokra má Hazard, Hazard, Pohoršenie — Boris v každej Pitke stráca 2 cigarety a získava 2 zadĺženia (1 Dlh za Pitku, Exekútor v bitke).</p>
+  <p>Boris má v prvej Pitke tri možnosti: <b>Vyhodiť</b> Automat za 2 cigarety (lacné, ale cigarety mu chýbajú na šenok), dať na Svokru <b>vlastný NA EX</b> (zruší aktívne Hazardy aj Pohoršenie, zdvojí neaktívne — Automat číta až výsledok), alebo to zniesť a v ďalšom Zhromaždení vyložiť kartu s <b>Robotou</b>, ktorá Dlhy spáli. Ana zatiaľ rieši, či Vidly v ďalšom kole radšej nezdedí (Rany +1 navždy, 1 cigareta), lebo Pijan po bitke odíde aj s Vidlami do balíčka.</p>
+  <p>Dve karty z ruky, žiadny text, štyri rozhodnutia — a všetko vidno na stole ako zmenené ikony.</p>
+</div>
+</section>
+
+<!-- ============================================================ -->
+<section id="sabotaz">
+<h2>Odpoveď na sabotáž</h2>
+<div class="tab"><table>
+  <thead><tr><th>Možnosť</th><th>Ako</th><th>Za</th><th>Proti</th></tr></thead>
+  <tbody>
+    <tr><th>Vyhodiť za 2 cigarety <span class="chip ok">odporúčam</span></th><td>v Pitke, kým si neskončil, odstrániš Nástroj spod svojej karty; ide do odhadzovacieho balíčka podkladajúceho</td><td>cena, nie zákaz (zásada bez stropov); rovnaká logika ako doliatie; sabotér vie, že ho to stojí kartu a ťah, obrancu 2 cigarety — férová výmena</td><td>obranca bez cigariet nemá odpoveď (to je ale stav, v ktorom je zraniteľný všade)</td></tr>
+    <tr><th>Prekryť</th><td>podložiť pod tú istú kartu vlastný Nástroj — nový nahradí starý</td><td>bez novej akcie; Nástroje v ruke dostanú druhý zmysel</td><td>porušuje „1 na kartu“ len formálne; obrana stojí kartu z ruky, čo je drahšie než útok</td></tr>
+    <tr><th>Žiadna</th><td>sabotáž trvá do bitky; odpoveď je NA EX na vlastnú kartu alebo Odpor suseda</td><td>najjednoduchšie</td><td>Výherný automat pod kartou s dvoma Cigaretami je „povinný ťah“ bez protihry — nové blokovanie</td></tr>
+    <tr><th>Len pod svoje karty</th><td>podkladať smieš len pod vlastné Občanov</td><td>žiadna sabotáž, žiadna odpoveď netreba</td><td>stráca sa polovica nápadu (Michal výslovne chce sabotáž) a polovica Nástrojov</td></tr>
+  </tbody>
+</table></div>
+</section>
+
+<!-- ============================================================ -->
+<section id="okolie">
+<h2>Okolité karty a pravidlá</h2>
+<div class="tab"><table>
+  <thead><tr><th>Čo</th><th>Dnes</th><th>Nanovo</th></tr></thead>
+  <tbody>
+    <tr><th>Hrany Nástroja</th><td>4 akcie, 2–4 varianty</td><td><b>Bez hrán</b>: karta Nástroja má ilustráciu, dve premeny ako piktogramy so šípkou a text Dedičstva. Zásada „Nástroj 4 akcie, 2–4 varianty“ (2026-11-03) zaniká; tvorca potrebuje rám Nástroja (O7).</td></tr>
+    <tr><th>Zámočník</th><td>Furt: akcie Nástrojov v okolí posilnené</td><td><b>Furt: pod Zámočníka možno podložiť ľubovoľne veľa Nástrojov.</b> Mechanik s celou dielňou — jediná karta, kde sa premeny reťazia (Vidly + Valaška: Rana → Pecka → Petelica? nie — každý slot raz, Nástroje sa uplatnia v poradí podloženia).</td></tr>
+    <tr><th>Živnostník</th><td>Nástup: hneď za neho prilož Nástroj z ruky</td><td><b>Nástup: hneď pod neho smieš podložiť Nástroj z ruky</b> (mimo ťahu).</td></tr>
+    <tr><th>Kôň</th><td>Furt: Nástroj vedľa neho tvorí spoj</td><td><b>Furt: Nástroj možno podložiť aj pod Zviera</b> (Kôň aj ostatné Zvieratá v línii, kým Kôň leží). Mäsiar ho umlčí ako každé Zviera.</td></tr>
+    <tr><th>Cintorín</th><td>Prehra: Nástroj do Dedičstva zadarmo</td><td>Bez zmeny.</td></tr>
+    <tr><th>Krokodíl, Poľovník</th><td>Nástroje sa nepália; Krokodíl sa dá zacloniť Nástrojom</td><td>Štít zaniká. Spálený hostiteľ: Nástroj do odhadzovacieho balíčka podkladajúceho.</td></tr>
+    <tr><th>Výtržník, Silná žena, Pes, Praudovravec</th><td>čítajú akcie karty</td><td>Čítajú <b>premenené</b> akcie (premena je prvá). Praudovravcov Odpor „ako Posilnenie“: premena Odpor → X má prednosť (je to iná akcia).</td></tr>
+    <tr><th>§6 Vzbura/Forsáž s Nástrojom, §12 Nástroj v línii, v10.2 vedľa lokality</th><td>výnimky</td><td>Zanikajú.</td></tr>
+    <tr><th>Frakčné efekty (2026-11-08)</th><td>„Akcie v efekte posilňuje aj Dedičstvo“</td><td>Platí ďalej. Premena sa akcií v efekte (Spoločník, Nepriateľ…) <b>netýka</b> — premieňa len sloty hrán (jednoduchšie; O8 poznámka, ak Michal chce inak).</td></tr>
+    <tr><th>Šenok 2 + 6, Náradie 2 kópie</th><td>§5</td><td>Bez zmeny.</td></tr>
+    <tr><th>Formát 2 na 2</th><td></td><td>„Svoja karta“ = karta tímu; podložiť smieš aj pod spoluhráčovu.</td></tr>
+  </tbody>
+</table></div>
+</section>
+
+<!-- ============================================================ -->
+<section id="rizika">
+<h2>Riziká a čo merať v playteste</h2>
+<div class="box riz">
+  <ul>
+    <li><b>Podiel „mŕtvych“ podložení</b> (Nástroj pod hostiteľom, ktorého premenené sloty neboli v kole ani raz aktívne): cieľ pod 20 %. Ak vyššie, páry premien posunúť k častejším akciám.</li>
+    <li><b>Pomer posila : sabotáž</b> v skutočných partiách a koľko sabotáží sa vyhodí. Ak sa vyhodí takmer všetko, cena 2 je nízka → 3; ak nič, je vysoká → 1.</li>
+    <li><b>Obraty zlé ↔ dobré</b> (Zapaľovač, Jogurt, Fúrik, Automat, Pasca): priemerný zisk za kolo oproti Vidlám. Ak dvojnásobný, jeden z dvoch obratov nahradiť premenou do strany.</li>
+    <li><b>Dedičstvo vs. podloženie:</b> koľko Nástrojov sa zdedí. Ak nič, buď zjednotiť (O6: zdedený Nástroj premieňa všetky tvoje karty — vtedy je Dedičstvo jasne silnejšie a stojí za cigarety), alebo prvý Nástroj zadarmo.</li>
+    <li><b>Čitateľnosť:</b> nováčik v Prvej hre musí po lekcii vedieť povedať, čo robí Pijan s Vidlami; pokročilé Nástroje (Energeťák, Hrable, Zrkadlo) do výučby nedávať.</li>
+    <li><b>Tempo:</b> podloženie je ťah — Zhromaždenia sa predĺžia o 1–2 ťahy. Sledovať dĺžku kola.</li>
+    <li><b>Bot:</b> musí vedieť oceniť premenu (rozdiel hodnoty hostiteľa pred a po, krát pravdepodobnosť aktívnych slotov) a Vyhodiť; inak bude v playtestoch Nástroje ignorovať ako dnes a dáta nebudú.</li>
+    <li><b>Odtlačok hry</b> sa zmení — nie je to refaktor.</li>
+  </ul>
+</div>
+</section>
+
+<!-- ============================================================ -->
+<section id="kod">
+<h2>Dopad na kód (odhad)</h2>
+<div class="box">
+  <ul>
+    <li><b>core:</b> karta v línii dostane <code>nastroj?: { karta, podlozil }</code>; nový zámer <code>podloz</code> (Nástroj z ruky, cieľ = karta v línii) a <code>vyhod</code> (v Pitke, 2 cigarety); <code>place</code> Nástroja do línie zaniká, <code>dedicstvo</code> ostáva. Premena = jedna funkcia <code>efektivneAkcie(karta)</code> volaná pred výpočtom spojov všade, kde sa dnes čítajú <code>left/right.actions</code> (spoje, NA EX, Výtržník, Silná žena, náhľad). Dáta: Nástroj v <code>cards.json</code> dostane <code>premeny: [[X,Y],[X,Y]]</code>; hrany prázdne.</li>
+    <li><b>viewFor:</b> všetko verejné — nič nové.</li>
+    <li><b>tvorca:</b> pole „premeny“ pri Nástroji (dva výbery akcií), rám karty Nástroja bez slotov s dvoma piktogramami a šípkou, export/import TXT.</li>
+    <li><b>klient:</b> ťah „podložiť“ (výber Nástroja → zvýraznia sa hostitelia, pri každom náhľad premenených slotov), premenený slot s ikonou Y a značkou Nástroja (ako žeravá ikona posilnenia), Nástroj vysunutý spod karty, tlačidlo Vyhodiť v Pitke. Mock najprv.</li>
+    <li><b>bot, ťahák AI hráčov, výučba, PRAVIDLA §6, §12, §16, slovník, mapa rozhodcu, odtlačok.</b></li>
+    <li>Odhad: Developer 2–3 dni (jadro 1, klient 1, tvorca a dáta 0,5, bot 0,5) + UI mock. Najprv Zrejúca.</li>
+  </ul>
+</div>
+</section>
+
+<!-- ============================================================ -->
+<section id="otazky">
+<h2>Otázky na rozhodnutie</h2>
+<p class="mini">Voľby sa ukladajú v prehliadači; dole je výpis na skopírovanie Leaderovi.</p>
+
+<details class="q" open><summary><span class="qid">O1</span> <span class="qt">Ideme do toho?</span></summary>
+<ol class="moznosti">
+  <li class="moz rec"><label><input type="radio" name="o1" value="áno, premena akcií"> <b>Áno, premena akcií</b> <span class="chip ok">odporúčam</span><span>Podloženie s premenou + Dedičstvo; detaily podľa O2–O9.</span></label></li>
+  <li class="moz"><label><input type="radio" name="o1" value="áno, ale najprv variant botov"> <b>Áno, ale najprv zmerať botmi</b><span>Stratég vyskúša vo worktree, či sa Nástroje začnú hrať a čo spravia s náhodou.</span></label></li>
+  <li class="moz"><label><input type="radio" name="o1" value="nie, iný smer (poznámka)"> <b>Nie</b><span>Do poznámky, čo chýba.</span></label></li>
+</ol><label class="pozn">Poznámka<textarea data-p="o1" rows="2"></textarea></label></details>
+
+<details class="q"><summary><span class="qid">O2</span> <span class="qt">Schéma premien</span></summary>
+<ol class="moznosti">
+  <li class="moz rec"><label><input type="radio" name="o2" value="S1 čistá, 7 obojakých podľa tabuľky"> <b>Väčšina čistá (S1), 7 obojakých (S2) podľa tabuľky</b> <span class="chip ok">odporúčam</span></label></li>
+  <li class="moz"><label><input type="radio" name="o2" value="všetky čisté S1"> <b>Všetky čisté</b><span>Každý Nástroj je buď posila, alebo sabotáž. Najčitateľnejšie, menej hĺbky.</span></label></li>
+  <li class="moz"><label><input type="radio" name="o2" value="všetky zmiešané S2"> <b>Všetky zmiešané</b><span>Každé podloženie má cenu. Najviac premýšľania.</span></label></li>
+  <li class="moz"><label><input type="radio" name="o2" value="rebríky S3, menej Nástrojov"> <b>Rebríky (S3), menej Nástrojov</b><span>Napr. 12 Nástrojov so širokými premenami.</span></label></li>
+</ol><label class="pozn">Poznámka<textarea data-p="o2" rows="2"></textarea></label></details>
+
+<details class="q"><summary><span class="qid">O3</span> <span class="qt">Odpoveď na sabotáž</span></summary>
+<ol class="moznosti">
+  <li class="moz rec"><label><input type="radio" name="o3" value="Vyhodiť za 2 cigarety v Pitke"> <b>Vyhodiť za 2 cigarety</b> <span class="chip ok">odporúčam</span></label></li>
+  <li class="moz"><label><input type="radio" name="o3" value="prekryť vlastným Nástrojom"> <b>Prekryť vlastným Nástrojom</b></label></li>
+  <li class="moz"><label><input type="radio" name="o3" value="žiadna"> <b>Žiadna</b><span>Sabotáž trvá do bitky.</span></label></li>
+  <li class="moz"><label><input type="radio" name="o3" value="len pod svoje karty"> <b>Len pod svoje karty</b><span>Bez sabotáže.</span></label></li>
+</ol><label class="pozn">Poznámka (iná cena?)<textarea data-p="o3" rows="2"></textarea></label></details>
+
+<details class="q"><summary><span class="qid">O4</span> <span class="qt">Hostitelia</span></summary>
+<ol class="moznosti">
+  <li class="moz rec"><label><input type="radio" name="o4" value="Občan a Starešina; Zviera len s Koňom"> <b>Občan a Starešina; Zviera len cez Koňa</b> <span class="chip ok">odporúčam</span><span>Podľa zadania; Kôň dostane zmysel.</span></label></li>
+  <li class="moz"><label><input type="radio" name="o4" value="aj Zviera vždy"> <b>Aj Zviera vždy</b><span>Vidly pod Psa; Kôň potrebuje iný efekt.</span></label></li>
+</ol><label class="pozn">Poznámka<textarea data-p="o4" rows="2"></textarea></label></details>
+
+<details class="q"><summary><span class="qid">O5</span> <span class="qt">Počet Nástrojov pod kartou</span></summary>
+<ol class="moznosti">
+  <li class="moz rec"><label><input type="radio" name="o5" value="1 na kartu, Zámočník neobmedzene"> <b>Jeden na kartu, Zámočník neobmedzene</b> <span class="chip ok">odporúčam</span></label></li>
+  <li class="moz"><label><input type="radio" name="o5" value="ľubovoľne veľa, v poradí podloženia"> <b>Ľubovoľne veľa</b><span>Premeny v poradí podloženia, každý slot raz za Nástroj (Vidly + Valaška: Rana → Pecka → Petelica). Kombá, ťažšie UI.</span></label></li>
+</ol><label class="pozn">Poznámka<textarea data-p="o5" rows="2"></textarea></label></details>
+
+<details class="q"><summary><span class="qid">O6</span> <span class="qt">Dedičstvo</span></summary>
+<ol class="moznosti">
+  <li class="moz rec"><label><input type="radio" name="o6" value="ako dnes (texty bez zmeny)"> <b>Ako dnes</b> <span class="chip ok">odporúčam na prvý krok</span><span>Texty Dedičstva ostávajú; dve veci na karte (premeny + text).</span></label></li>
+  <li class="moz"><label><input type="radio" name="o6" value="zjednotiť: zdedený Nástroj premieňa všetky tvoje karty"> <b>Zjednotiť</b><span>Zdedený Nástroj premieňa akcie všetkých tvojich kariet v línii (sabotážne Nástroje v Dedičstve: všetky súperove karty priložené k tvojim). Jedna vec na karte, Dedičstvo zreteľne silnejšie ako podloženie.</span></label></li>
+</ol><label class="pozn">Poznámka<textarea data-p="o6" rows="2"></textarea></label></details>
+
+<details class="q"><summary><span class="qid">O7</span> <span class="qt">Hrany Nástroja</span></summary>
+<ol class="moznosti">
+  <li class="moz rec"><label><input type="radio" name="o7" value="bez hrán, do línie nikdy"> <b>Bez hrán, do línie nikdy</b> <span class="chip ok">odporúčam</span></label></li>
+  <li class="moz"><label><input type="radio" name="o7" value="hrany ostanú, línia ako dnes"> <b>Hrany ostanú, línia ako dnes</b><span>Tri spôsoby zahrania.</span></label></li>
+</ol><label class="pozn">Poznámka<textarea data-p="o7" rows="2"></textarea></label></details>
+
+<details class="q"><summary><span class="qid">O8</span> <span class="qt">Premeny 22 Nástrojov</span></summary>
+<ol class="moznosti">
+  <li class="moz rec"><label><input type="radio" name="o8" value="tabuľka ako je"> <b>Tabuľka ako je</b> <span class="chip ok">odporúčam</span></label></li>
+  <li class="moz"><label><input type="radio" name="o8" value="jednotlivo (poznámka)"> <b>Jednotlivo</b><span>Do poznámky, ktoré páry zmeniť (Jogurt zoslabiť? Hrable iný pár? premeny aj akcií v efekte?).</span></label></li>
+</ol><label class="pozn">Poznámka<textarea data-p="o8" rows="3"></textarea></label></details>
+
+<details class="q"><summary><span class="qid">O9</span> <span class="qt">Ďalší krok</span></summary>
+<ol class="moznosti">
+  <li class="moz rec"><label><input type="radio" name="o9" value="UI mock (karta Nástroja, premenený slot, podloženie), potom Zrejúca"> <b>UI mock, potom Zrejúca</b> <span class="chip ok">odporúčam</span><span>Mock: karta Nástroja s dvoma šípkami, premenený slot na hostiteľovi, ťah podloženia, Vyhodiť.</span></label></li>
+  <li class="moz"><label><input type="radio" name="o9" value="rovno Zrejúca"> <b>Rovno do Zrejúcej</b></label></li>
+</ol><label class="pozn">Poznámka<textarea data-p="o9" rows="2"></textarea></label></details>
+
+<h3>Výpis volieb</h3>
+<p><button class="akcia" id="kopiruj">Kopírovať</button><button class="akcia sek" id="vymaz">Vymazať voľby</button></p>
+<textarea id="vystup" readonly></textarea>
+</section>
+</main>
+<script>
+(function () {
+  var KLUC = "naex-naradie-premena-v3";
+  var OT = ["o1","o2","o3","o4","o5","o6","o7","o8","o9"];
+  var ulozene = {};
+  try { ulozene = JSON.parse(localStorage.getItem(KLUC) || "{}"); } catch (e) {}
+  function uloz() { try { localStorage.setItem(KLUC, JSON.stringify(ulozene)); } catch (e) {} vypis(); }
+  function vypis() {
+    var r = [];
+    OT.forEach(function (o) {
+      var v = ulozene[o], p = ulozene[o + "_p"];
+      var t = document.querySelector("details.q input[name=" + o + "]");
+      var nazov = t ? t.closest("details").querySelector(".qt").textContent : o;
+      if (v || p) r.push(o.toUpperCase() + " " + nazov + ": " + (v || "?") + (p ? " — " + p : ""));
+    });
+    document.getElementById("vystup").value = r.length ? r.join("\n") : "(zatiaľ nič nevybrané)";
+  }
+  document.querySelectorAll("input[type=radio]").forEach(function (i) {
+    if (ulozene[i.name] === i.value) i.checked = true;
+    i.addEventListener("change", function () { ulozene[i.name] = i.value; uloz(); });
+  });
+  document.querySelectorAll("textarea[data-p]").forEach(function (t) {
+    var k = t.getAttribute("data-p") + "_p"; t.value = ulozene[k] || "";
+    t.addEventListener("input", function () { ulozene[k] = t.value.trim(); uloz(); });
+  });
+  document.getElementById("kopiruj").onclick = function () {
+    var t = document.getElementById("vystup"); t.select();
+    if (navigator.clipboard) navigator.clipboard.writeText(t.value); else document.execCommand("copy");
+  };
+  document.getElementById("vymaz").onclick = function () {
+    ulozene = {}; uloz();
+    document.querySelectorAll("input[type=radio]").forEach(function (i) { i.checked = false; });
+    document.querySelectorAll("textarea[data-p]").forEach(function (t) { t.value = ""; });
+  };
+  vypis();
+})();
+</script>
+</body>
+</html>

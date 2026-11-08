@@ -1,0 +1,299 @@
+<!doctype html>
+<html lang="sk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Náradie: Dedičstvo a Vytiahnuť — NA EX!</title>
+<style>
+:root { --pozadie:#14110e; --plocha:#1e1914; --plocha-2:#28211a; --okraj:#3d3229; --text:#f1e8d8; --tlmeny:#b6a790; --slaby:#8b7d6a;
+  --akcent:#e9ad45; --zelena:#7cbf74; --cervena:#d0563f; --modra:#5cc0cf; --oranzova:#e08a3a; color-scheme: dark; }
+@media (prefers-color-scheme: light) { :root:not([data-theme="dark"]) { --pozadie:#f6f1e7; --plocha:#fffaf1; --plocha-2:#f0e7d6; --okraj:#dccdb3; --text:#2a2016;
+  --tlmeny:#6b5b45; --slaby:#7a6a52; --akcent:#a8680f; --zelena:#3f7f38; --cervena:#b0402c; --modra:#2a7f8c; --oranzova:#b0601a; color-scheme: light; } }
+:root[data-theme="light"] { --pozadie:#f6f1e7; --plocha:#fffaf1; --plocha-2:#f0e7d6; --okraj:#dccdb3; --text:#2a2016;
+  --tlmeny:#6b5b45; --slaby:#7a6a52; --akcent:#a8680f; --zelena:#3f7f38; --cervena:#b0402c; --modra:#2a7f8c; --oranzova:#b0601a; color-scheme: light; }
+* { box-sizing: border-box; }
+body { margin:0; background:var(--pozadie); color:var(--text); font:16px/1.5 system-ui, "Segoe UI", Roboto, sans-serif; }
+main { max-width: 960px; margin: 0 auto; padding: 16px 16px 120px; }
+h1, h2, h3 { font-family: Georgia, serif; line-height: 1.2; }
+h1 { font-size: clamp(1.5rem, 6vw, 2.2rem); margin: 0 0 6px; }
+h2 { font-size: 1.25rem; margin: 34px 0 10px; padding-bottom: 4px; border-bottom: 1px solid var(--okraj); }
+h3 { font-size: 1.02rem; margin: 18px 0 6px; color: var(--akcent); }
+p { margin: 0 0 10px; }
+code { font: .84em ui-monospace, Consolas, monospace; background: var(--plocha-2); padding: 1px 4px; border-radius: 4px; overflow-wrap: anywhere; }
+a { color: var(--akcent); }
+.box { background: var(--plocha); border: 1px solid var(--okraj); border-radius: 12px; padding: 12px 14px; margin: 0 0 12px; }
+.box.zv { border-color: var(--akcent); } .box.rec { border-color: var(--zelena); } .box.riz { border-color: var(--cervena); } .box.mer { border-color: var(--modra); }
+.box > :last-child { margin-bottom: 0; }
+.mini { color: var(--slaby); font-size: .85rem; }
+ul, ol { padding-left: 20px; } li { margin-bottom: 5px; }
+.chip { display: inline-block; font-size: .72rem; padding: 0 7px; border-radius: 999px; border: 1px solid currentColor; white-space: nowrap; vertical-align: 1px; }
+.chip.ok { color: var(--zelena); } .chip.p { color: var(--modra); } .chip.b { color: var(--cervena); } .chip.zle { color: var(--cervena); } .chip.s { color: var(--slaby); } .chip.n { color: var(--oranzova); }
+nav.skupiny { position: sticky; top: 0; z-index: 2; background: var(--pozadie); padding: 8px 0; display: flex; gap: 6px; overflow-x: auto; border-bottom: 1px solid var(--okraj); }
+nav.skupiny a { flex: none; font-size: .85rem; text-decoration: none; color: var(--tlmeny); background: var(--plocha); border: 1px solid var(--okraj); border-radius: 999px; padding: 4px 11px; }
+table { width: 100%; border-collapse: collapse; font-size: .88rem; }
+th, td { text-align: left; vertical-align: top; padding: 6px 8px; border-bottom: 1px solid var(--okraj); }
+thead th { color: var(--slaby); font-weight: 600; font-size: .8rem; }
+tbody th { font-family: Georgia, serif; font-weight: 600; white-space: nowrap; }
+.tab { overflow-x: auto; }
+.ef { font-style: italic; border-left: 3px solid var(--akcent); padding-left: 8px; margin: 2px 0; }
+.ef.d { border-left-color: var(--zelena); } .ef.p { border-left-color: var(--modra); } .ef.b { border-left-color: var(--cervena); } .ef.n { border-left-color: var(--oranzova); }
+.ef b { font-style: normal; font-size: .78rem; color: var(--slaby); letter-spacing: .02em; }
+pre { background: var(--plocha-2); border: 1px solid var(--okraj); border-radius: 8px; padding: 8px 10px; font-size: .82rem; overflow-x: auto; white-space: pre-wrap; }
+section, h2 { scroll-margin-top: 52px; }
+.kroky { counter-reset: k; list-style: none; padding: 0; }
+.kroky li { position: relative; padding-left: 30px; margin-bottom: 8px; }
+.kroky li::before { counter-increment: k; content: counter(k); position: absolute; left: 0; top: 1px; width: 22px; height: 22px; border-radius: 50%; background: var(--akcent); color: #1a1410; font-weight: 700; font-size: .8rem; text-align: center; line-height: 22px; }
+details.q { background: var(--plocha); border: 1px solid var(--okraj); border-radius: 12px; margin: 0 0 8px; padding: 0 12px; }
+details.q[open] { padding-bottom: 10px; border-color: var(--akcent); }
+details.q summary { cursor: pointer; padding: 10px 0; list-style: none; }
+details.q summary::-webkit-details-marker { display: none; }
+.qid { font: 700 .95rem Georgia, serif; color: var(--akcent); margin-right: 4px; }
+.qt { font-weight: 600; }
+ol.moznosti { list-style: none; padding: 0; margin: 8px 0; }
+li.moz { border: 1px solid var(--okraj); border-radius: 10px; padding: 8px 10px; margin-bottom: 6px; background: var(--plocha-2); }
+li.moz.rec { border-color: var(--zelena); }
+li.moz label { display: block; cursor: pointer; }
+li.moz span:not(.chip) { display: block; font-size: .9rem; color: var(--tlmeny); margin-top: 2px; }
+li.moz input { accent-color: var(--akcent); }
+.pozn { display: block; font-size: .8rem; color: var(--slaby); margin-top: 6px; }
+.pozn textarea { width: 100%; font: inherit; font-size: .9rem; background: var(--pozadie); color: var(--text); border: 1px solid var(--okraj); border-radius: 8px; padding: 6px; margin-top: 2px; }
+#vystup { width: 100%; min-height: 160px; font: .85rem ui-monospace, Consolas, monospace; background: var(--plocha); color: var(--text); border: 1px solid var(--okraj); border-radius: 8px; padding: 8px; }
+button.akcia { font: inherit; font-size: .9rem; background: var(--akcent); color: #1a1410; border: 0; border-radius: 8px; padding: 6px 14px; cursor: pointer; font-weight: 700; margin-right: 6px; }
+button.akcia.sek { background: var(--plocha-2); color: var(--text); border: 1px solid var(--okraj); }
+.karta { display: inline-block; vertical-align: top; width: 200px; background: var(--plocha-2); border: 1px solid var(--okraj); border-radius: 10px; padding: 8px 10px; margin: 0 8px 8px 0; font-size: .85rem; }
+.karta .n { font-family: Georgia, serif; font-weight: 700; font-size: 1rem; margin-bottom: 4px; }
+</style>
+</head>
+<body>
+<main>
+<h1>Náradie: Dedičstvo a Vytiahnuť</h1>
+<p class="mini">návrh na rozhodnutie · verzia 2 · 2026-11-08 · Michal vybral koncept K5 z <a href="naradie-rework.html">naradie-rework.html</a>: každý Nástroj má fungovať <b>aj ako Dedičstvo, aj ako jednorazový trik v Pitke a bitke</b> · podklady: PRAVIDLA.md §7, §9, §11, §12; 22 Nástrojov sady (master) · pravidlá ani kód sa zatiaľ nemenia</p>
+
+<div class="box zv">
+  <p><b>Skratka.</b> Nástroj má dva texty a dva spôsoby zahrania, oba o tej istej veci:</p>
+  <ul>
+    <li><b>Dedičstvo</b> (Zhromaždenie, cigarety 1, 2, 3 … spoločne, ťah mimo limitu — ako dnes): <b>malá výhoda navždy</b>. Texty ostávajú dnešné, päť slabých je prepísaných.</li>
+    <li><b>Vytiahnuť</b> (v Pitke, kým si neskončil, zadarmo, verejne, ľubovoľne veľa): <b>veľký účinok raz</b>, potom karta do odhadzovacieho balíčka. Účinok „Pitka“ sa stane hneď, účinok „Bitka“ sa pripočíta v bitke tohto kola. Nie je to ťah ani nerest.</li>
+    <li>Trik <b>nikdy nemá podmienku</b> („keď máš aktívnu Ranu…“) — vždy niečo spraví. To je hlavný rozdiel oproti Dedičstvu, kde si kupuješ trvalú podmienenú výhodu. Hráč sa rozhoduje: <i>vytiahnem teraz, alebo zdedím na celú hru?</i></li>
+    <li>Nástroj <b>prestáva byť kartou v línii</b> — bez hrán, bez spojov, bez blokovania a bez krokodílieho štítu (otázka O3 ponúka hrany ponechať).</li>
+    <li>Triky: 15 v Pitke (karty, cigarety, poldeci, informácie, zrušenie a kópia akcie, druhý NA EX, Dlhy, reči), 7 v bitke (tuhé, mäkké, Viera, Robota). Pomer posíl pre seba : zásahov proti súperovi ≈ 15 : 7.</li>
+  </ul>
+</div>
+
+<nav class="skupiny" aria-label="Časti">
+  <a href="#pravidla">Pravidlá</a><a href="#nastroje">22 Nástrojov</a><a href="#priklad">Príklad</a><a href="#okolie">Okolité karty</a><a href="#rizika">Riziká</a><a href="#kod">Kód</a><a href="#otazky">Otázky</a>
+</nav>
+
+<!-- ============================================================ -->
+<section id="pravidla">
+<h2>Pravidlá (návrh znenia §12)</h2>
+<div class="box">
+  <ol class="kroky">
+    <li><b>Dva spôsoby zahrania.</b> Nástroj z ruky možno <b>zdediť</b> (vyložiť do Dedičstva) alebo <b>vytiahnuť</b>. Do línie Nástroj nepatrí — nemá hrany ani spoje (dnešné „Nástroj v línii“, Náradie spoločné, vedľa lokality, Vzbura a Forsáž s Nástrojom zanikajú).</li>
+    <li><b>Dedičstvo</b> ako dnes: v Zhromaždení, keď si na ťahu, za cigarety — prvý Nástroj v hre 1, druhý 2, tretí 3 … (spoločne pre oboch); ťah, ktorý nemíňa limit; z Dedičstva sa Nástroj nevracia; platí text <i>Dedičstvo</i>. Cintorín dá porazenému Nástroj do Dedičstva zadarmo (§15).</li>
+    <li><b>Vytiahnuť:</b> v <b>Pitke</b>, kým si neskončil „hotovo“ (nie počas odpovede na NA EX), zahráš Nástroj z ruky a platí jeho text <i>Vytiahnuť</i>. Je to <b>zadarmo</b>, <b>verejné hneď</b> (ako Kšeft a fajčenie), nie je to ťah ani nerest, počet za Pitku nie je obmedzený. Karta ide hneď do <b>tvojho odhadzovacieho balíčka</b>.</li>
+    <li><b>Dve chvíle účinku.</b> Trik označený <b>Pitka</b> sa vykoná hneď pri zahraní (dobratie, cigarety, poldeci, zrušenie akcie…). Trik označený <b>Bitka</b> sa pripočíta v bitke tohto kola (ako Kšeft „v tejto bitke“) — vytiahnuť ho smieš v ktorejkoľvek Pitke kola. Keď kolo skončí bez bitky (hra skončila), prepadne.</li>
+    <li><b>Výber cieľa</b> (zruš akciu, skopíruj akciu, spáľ Zviera, jeden starší) sa robí pri zahraní z toho, čo je v tej chvíli odkryté; skryté NA EX a Záverečné sa nerátajú. Zrušená akcia ostáva zrušená, aj keď ju neskôr zmení NA EX (ako Odpor).</li>
+    <li><b>Nástroj mimo Pitky:</b> Živnostník dovolí vytiahnuť Nástroj hneď pri Nástupe (v Zhromaždení), Kôň vráti vytiahnutý Nástroj do ruky, Zámočník zdvojí jeho účinok (nižšie). Šenok ostáva 2 Nástroje + 6 Občanov (§5), balíček Náradia 2 kópie od každého.</li>
+  </ol>
+  <pre>Z RUKY:  ZDEDIŤ   Zhromaždenie · cigarety 1, 2, 3 … · ťah mimo limitu · navždy    → text „Dedičstvo“
+         VYTIAHNUŤ  Pitka (pred hotovo) · zadarmo · verejne · raz · do odhadzovacieho  → text „Vytiahnuť“ (Pitka: hneď · Bitka: v bitke kola)</pre>
+</div>
+</section>
+
+<!-- ============================================================ -->
+<section id="nastroje">
+<h2>22 Nástrojov — oba texty</h2>
+<p>Zelený pruh = Dedičstvo (trvalá malá výhoda), modrý = Vytiahnuť s účinkom hneď v Pitke, červený = Vytiahnuť s účinkom v bitke. <span class="chip n">zmena</span> označuje Dedičstvo prepísané oproti dnešku; ostatné texty Dedičstva ostávajú ako v sade. Texty sú stroho, v štýle sady; výklad patrí do §12/§16.</p>
+<div class="tab"><table>
+  <thead><tr><th>Nástroj</th><th>Dedičstvo · Vytiahnuť</th><th>Prečo tak</th></tr></thead>
+  <tbody>
+    <tr><th>Vidly</th><td><div class="ef d"><b>DEDIČSTVO</b> Tvoje Rany udeľujú o 1 poškodenie viac.</div><div class="ef b"><b>VYTIAHNUŤ · BITKA</b> Udelíš 1 tuhé za každú svoju kartu v línii.</div></td><td>Vidly do každého: trik rastie s tvojou partiou, Dedičstvo s Ranami.</td></tr>
+    <tr><th>Valaška</th><td><div class="ef d"><b>DEDIČSTVO</b> Tvoje Pecky udeľujú o 1 poškodenie viac.</div><div class="ef b"><b>VYTIAHNUŤ · BITKA</b> Udelíš 2 tuhé navyše.</div></td><td>Pecka z ruky — najjednoduchší trik v hre, vhodný pre nováčika.</td></tr>
+    <tr><th>Puška</th><td><div class="ef d"><b>DEDIČSTVO</b> Keď by tvoju prepojenú Petelicu zrušil iný efekt, namiesto zrušenia udeľuje o 1 poškodenie menej.</div><div class="ef b"><b>VYTIAHNUŤ · BITKA</b> Udelíš 3 tuhé navyše, ktoré súperova Viera neznižuje.</div></td><td>Výstrel: Petelica, ktorú nič nezastaví. Dedičstvo podľa rozhodnutia 2026-10-30.</td></tr>
+    <tr><th>Svätý text</th><td><div class="ef d"><b>DEDIČSTVO</b> Hodnota tvojej Viery je o 1 vyššia.</div><div class="ef b"><b>VYTIAHNUŤ · BITKA</b> Súperove Povery sa v tejto bitke nerátajú.</div></td><td>Trik proti mäkkému, Dedičstvo proti tuhému — oba Viera.</td></tr>
+    <tr><th>Horoskop</th><td><div class="ef d"><b>DEDIČSTVO</b> Tvoje Povery majú silu 2.</div><div class="ef b"><b>VYTIAHNUŤ · BITKA</b> Máš v hádke 2 mäkké navyše.</div></td><td>Dve Povery z ruky do hádky; Viera ich neruší (nie sú to akcie Povera) — treba to v §9.1 povedať.</td></tr>
+    <tr><th>Telefón</th><td><div class="ef d"><b>DEDIČSTVO</b> Tvoje Pohoršenia nemožno zrušiť Odporom a NA EX.</div><div class="ef p"><b>VYTIAHNUŤ · PITKA</b> Pozri sa na súperovu ruku.</div></td><td>Odpočúvanie: informácia pred vlastným NA EX a odpoveďou. Lacný, vždy použiteľný.</td></tr>
+    <tr><th>Zapaľovač <span class="chip n">zmena</span></th><td><div class="ef d"><b>DEDIČSTVO</b> Prvé fajčenie v každej Pitke ťa stojí o 1 cigaretu menej.</div><div class="ef p"><b>VYTIAHNUŤ · PITKA</b> Každé fajčenie v tejto Pitke ťa stojí 1 cigaretu.</div></td><td>Dnešné „Cigarety nezruší NA EX“ sa takmer neuplatní. Zapaľovač = lacné fajčenie: trvalo prvé, jednorazovo všetky.</td></tr>
+    <tr><th>Krabička cigariet <span class="chip n">zmena</span></th><td><div class="ef d"><b>DEDIČSTVO</b> Tvoje Cigarety dávajú o 1 cigaretu viac.</div><div class="ef p"><b>VYTIAHNUŤ · PITKA</b> Dostaneš 2 cigarety.</div></td><td>Dnešné dobratie za súperovo fajčenie závisí od súpera. Krabička = cigarety, hotovo.</td></tr>
+    <tr><th>Hrable</th><td><div class="ef d"><b>DEDIČSTVO</b> Akcia zrušená tvojím Odporom sa ráta ako tvoja a je posilnená.</div><div class="ef p"><b>VYTIAHNUŤ · PITKA</b> Zruš jednu súperovu aktívnu akciu.</div></td><td>Odpor z ruky — jediný trik, ktorý blokuje; je to vedomé rozhodnutie, nie vedľajší účinok hrán.</td></tr>
+    <tr><th>Zrkadlo</th><td><div class="ef d"><b>DEDIČSTVO</b> Tvoj Pakt kopíruje prepojenú akciu dvakrát.</div><div class="ef p"><b>VYTIAHNUŤ · PITKA</b> Jedna súperova aktívna akcia sa ráta aj tebe.</div></td><td>Pakt z ruky; kópia súperovej Petelice alebo Cigariet. Zlú akciu nikto nekopíruje.</td></tr>
+    <tr><th>Jogurt</th><td><div class="ef d"><b>DEDIČSTVO</b> Tvoje Poldeci otáčajú vypitý poldeci hneď v Pitke, nie až v bitke.</div><div class="ef p"><b>VYTIAHNUŤ · PITKA</b> Otoč jeden vypitý poldeci na plný.</div></td><td>Doliatie zadarmo (inak 2 cigarety).</td></tr>
+    <tr><th>Krištáľová guľa</th><td><div class="ef d"><b>DEDIČSTVO</b> Tvoje Vízie ukážu 2 vrchné karty — jednu si vezmi alebo spáľ, druhú vráť navrch.</div><div class="ef p"><b>VYTIAHNUŤ · PITKA</b> Pozri sa na 3 vrchné karty svojho balíčka; jednu si vezmi, jednu smieš spáliť, ostatné vráť v ľubovoľnom poradí.</div></td><td>Veľká Vízia z ruky; jediný trik, ktorým sa dá spáliť Absťák či Cirhóza bez Vízie.</td></tr>
+    <tr><th>Fúrik</th><td><div class="ef d"><b>DEDIČSTVO</b> Tvoje Roboty pália o 1 Dlh viac.</div><div class="ef b"><b>VYTIAHNUŤ · BITKA</b> Spáliš 1 svoj priznaný Dlh; bez Dlhu dostaneš 1 špak.</div></td><td>Robota z ruky, presne podľa §11 — vždy niečo dá.</td></tr>
+    <tr><th>Energeťák</th><td><div class="ef d"><b>DEDIČSTVO</b> Tvoje Posilnenie nemožno zrušiť NA EX.</div><div class="ef p"><b>VYTIAHNUŤ · PITKA</b> Jedna tvoja aktívna akcia je posilnená.</div></td><td>Posilnenie z ruky (×2 na čokoľvek aktívne — aj na Cigarety či Víziu).</td></tr>
+    <tr><th>Injekcia</th><td><div class="ef d"><b>DEDIČSTVO</b> NA EX smieš dať aj na Zviera.</div><div class="ef p"><b>VYTIAHNUŤ · PITKA</b> V tejto Pitke smieš dať NA EX ešte raz.</div></td><td>Doping: druhý NA EX ako na Vínnej pivnici — stojí plný poldeci, takže nie je zadarmo.</td></tr>
+    <tr><th>Nealko</th><td><div class="ef d"><b>DEDIČSTVO</b> Tvoj prah Cirhózy je o 2 vyšší.</div><div class="ef p"><b>VYTIAHNUŤ · PITKA</b> Tvoje poškodenie pečene v tejto Pitke sa neráta.</div></td><td>Záchrana pred Cirhózou, keď Pitka ide zle (Vypiť, Poldeci, pečeňové akcie).</td></tr>
+    <tr><th>Vínko</th><td><div class="ef d"><b>DEDIČSTVO</b> Počíta sa, akoby si mal plný poldeci navyše. Nemôžeš dolievať poldeci za cigarety.</div><div class="ef p"><b>VYTIAHNUŤ · PITKA</b> Dostaneš nový plný poldeci navyše.</div></td><td>Barter zadarmo (inak 5 cigariet); vo výkupnom je to aj 1 špak.</td></tr>
+    <tr><th>Noviny</th><td><div class="ef d"><b>DEDIČSTVO</b> Prehra: Za každý priznaný Dlh, ktorý má víťaz navyše oproti tebe, dostaneš 1 špak.</div><div class="ef p"><b>VYTIAHNUŤ · PITKA</b> Tvoje reči pri jednom staršom stúpnu o stupeň.</div></td><td>Titulka o tebe: jediný trik na starších. Reči ležia vždy nad strachom; kde stúpnuť nemôžu, vyber iného.</td></tr>
+    <tr><th>Výherné žreby</th><td><div class="ef d"><b>DEDIČSTVO</b> Tvoje Hazardy sú aktívne, keď nie sú spojené, a neaktívne, keď sú spojené.</div><div class="ef p"><b>VYTIAHNUŤ · PITKA</b> Dober si 2 karty a dostaneš 1 Dlh.</div></td><td>Pôžička od lichvára: karty hneď, Dlh na účet (Exekútor v bitke).</td></tr>
+    <tr><th>Výherný automat <span class="chip n">zmena</span></th><td><div class="ef d"><b>DEDIČSTVO</b> Tvoj prah Dlhu je o 1 vyšší.</div><div class="ef p"><b>VYTIAHNUŤ · PITKA</b> Súper dostane 2 zadĺženia.</div></td><td>Dnešné „v poslednej Pitke získaš Dlh“ sa škrtá (trestalo vlastníka). Automat v krčme zadlžuje súpera.</td></tr>
+    <tr><th>Izolačka</th><td><div class="ef d"><b>DEDIČSTVO</b> Tvoje Obmedzenia uberajú aj cigarety, ktoré súper dostane za pas.</div><div class="ef p"><b>VYTIAHNUŤ · PITKA</b> Súper v tejto Pitke nesmie fajčiť.</div></td><td>Zalepené ústa: bez dobratia fajčením. Najsilnejší, keď má súper plné vrecká cigariet.</td></tr>
+    <tr><th>Pasca</th><td><div class="ef d"><b>DEDIČSTVO</b> Bitka: Ak súper v tomto kole priložil kartu k tvojej, udelíš mu 1 Ranu navyše.</div><div class="ef b"><b>VYTIAHNUŤ · BITKA</b> Udelíš 1 tuhé za každú súperovu kartu v línii.</div></td><td>Zrkadlo Vidiel: Vidly rastú s tvojimi kartami, Pasca so súperovými.</td></tr>
+  </tbody>
+</table></div>
+<p class="mini">Triky Bitka: Vidly, Valaška, Puška, Svätý text, Horoskop, Fúrik, Pasca. Triky Pitka: ostatných 15. Rany z trikov sú poškodenie z efektu — Vidly v Dedičstve ich nezosilnia (rozhodnutie 2026-10-27), Viera ich znižuje ako každé tuhé (okrem Pušky).</p>
+</section>
+
+<!-- ============================================================ -->
+<section id="priklad">
+<h2>Príklad: jedna Pitka s trikmi</h2>
+<div class="box mer">
+  <p>Kolo o Krčmu, druhá Pitka. Ana má v ruke Telefón a Vidly, v línii 4 karty; Boris má Izolačku a Fúrik, v línii 3 karty a 1 priznaný Dlh. Pitka beží naraz:</p>
+  <ol>
+    <li>Ana <b>vytiahne Telefón</b>: vidí Borisovu ruku — Izolačku, Fúrik a Hráča. Vie, že Boris nemá odpoveď na NA EX za kartou s Petelicou, a dá NA EX práve tam (skryto).</li>
+    <li>Boris má 6 cigariet a chce dvakrát fajčiť. Ana to vidí prichádzať? Nie — Izolačku má Boris, nie ona. Boris <b>vytiahne Izolačku</b>, aby Ana nefajčila: Ana má 3 cigarety a 2 karty v ruke, dobrať už nemôže.</li>
+    <li>Ana <b>vytiahne Vidly</b> (Bitka): v bitke udelí 4 tuhé navyše za svoje 4 karty. Boris <b>vytiahne Fúrik</b> (Bitka): v bitke spáli svoj Dlh, Exekútor nepríde.</li>
+    <li>Obaja „hotovo“. NA EX sa odkryje, odpovede, vyhodnotenie Pitky. V bitke sa k tuhému pripočítajú Vidly (+4), Boris exekúciu obíde Fúrikom.</li>
+  </ol>
+  <p>Štyri karty z ruky, štyri rozhodnutia, žiadne podmienky — a každý trik sa dal prečítať: Telefón zmenil Anin NA EX, Izolačka Anino dobratie, Vidly a Fúrik bitku. Keby si Ana Vidly radšej zdedila (2 cigarety), mala by +1 za Ranu do konca hry, ale túto bitku by hrala o 4 tuhé slabšie.</p>
+</div>
+</section>
+
+<!-- ============================================================ -->
+<section id="okolie">
+<h2>Okolité karty a pravidlá</h2>
+<div class="tab"><table>
+  <thead><tr><th>Čo</th><th>Dnes</th><th>Nanovo</th></tr></thead>
+  <tbody>
+    <tr><th>Hrany Nástroja</th><td>4 akcie, 2–4 varianty</td><td><b>Bez hrán</b>: karta Nástroja má ilustráciu a dva texty. Zásada „Nástroj 4 akcie, 2–4 varianty“ (2026-11-03) zaniká; tvorca potrebuje rám Nástroja bez slotov. (O3)</td></tr>
+    <tr><th>Zámočník</th><td>Furt: akcie Nástrojov v okolí posilnené</td><td><div class="ef n">Furt: Nástroj, ktorý vytiahneš, pôsobí dvakrát.</div> (Valaška 4 tuhé, Krabička 4 cigarety, Hrable 2 akcie, Telefón — nič navyše)</td></tr>
+    <tr><th>Živnostník</th><td>Nástup: hneď za neho prilož Nástroj z ruky</td><td><div class="ef n">Nástup: hneď smieš vytiahnuť 1 Nástroj z ruky.</div> (aj v Zhromaždení; účinok Bitka sa pripočíta v bitke kola)</td></tr>
+    <tr><th>Kôň</th><td>Furt: Nástroj vedľa neho tvorí spoj</td><td><div class="ef n">Furt: Nástroj, ktorý vytiahneš, sa ti vráti do ruky.</div> (ťažný kôň náradie odvezie domov; Mäsiar ho umlčí ako každé Zviera)</td></tr>
+    <tr><th>Cintorín</th><td>Prehra: Nástroj do Dedičstva zadarmo</td><td>Bez zmeny.</td></tr>
+    <tr><th>Krokodíl, Poľovník, Mäsiar</th><td>Nástroje sa nepália, Krokodíl sa dá zacloniť Nástrojom</td><td>Štít zaniká — Nástroj v línii nie je. Nič ďalšie.</td></tr>
+    <tr><th>§6 Vzbura a Forsáž s Nástrojom, §12 Nástroj v línii, v10.2 vedľa lokality</th><td>výnimky pre Nástroj</td><td>Zanikajú — kód aj pravidlá sa zjednodušia.</td></tr>
+    <tr><th>Frakčné efekty (2026-11-08)</th><td>„Akcie v efekte posilňuje aj priznané Náradie (Dedičstvo)“</td><td>Platí ďalej bez zmeny (Dedičstvo ostáva pasívne na „tvoje akcie“). Energeťák vytiahnutý smie posilniť aj akciu v efekte.</td></tr>
+    <tr><th>Šenok 2 + 6, karta zadarmo, Náradie 2 kópie</th><td>§5</td><td>Bez zmeny. Nástroje v šenku budú žiadané — možno treba sledovať, či 2 na stavbu nie je málo.</td></tr>
+    <tr><th>Kšeft lokality, fajčenie, barter</th><td>Pitka naraz</td><td>Vytiahnuť ide do toho istého radu krokov Pitky (verejné, kým nie je hotovo). Log: „Ana vytiahla Vidly.“</td></tr>
+    <tr><th>Výučba, ťahák, bot</th><td></td><td>Prvá hra: lekcia „vytiahni Valašku“ (najjednoduchší trik); ťahák §12; bot: hodnota triku teraz vs. Dedičstvo (dnešná tabuľka <code>DEDICSTVO</code> v bot.ts + nová pre triky).</td></tr>
+  </tbody>
+</table></div>
+</section>
+
+<!-- ============================================================ -->
+<section id="rizika">
+<h2>Riziká a čo sledovať v playteste</h2>
+<div class="box riz">
+  <ul>
+    <li><b>Dedičstvo prehrá s trikom.</b> Trik je zadarmo a hneď, Dedičstvo stojí cigarety a ťah. Ak po playteste Dedičstvo nikto nekupuje, prvá úprava je cena (prvý Nástroj zadarmo — návrh Jana z playtestu), nie sila trikov.</li>
+    <li><b>Hrable a Izolačka</b> sú jediné triky „proti“ — sledovať, či nevznikne pocit „súper mi všetko zruší“. Brzdou je, že každý trik je karta z ruky a šenok dáva 2 Nástroje na stavbu.</li>
+    <li><b>Vidly a Pasca</b> škálujú s počtom kariet (bežne 3–5 tuhé) — porovnať s tuhým z línie (dnes ≈ 4–8 za bitku). Ak rozhodujú bitky, zmeniť na „za každú kartu okrem prvej“.</li>
+    <li><b>Horoskop</b> dáva mäkké mimo akcií — hádka dostane zdroj, ktorý Viera neruší; sledovať víťazov hádky.</li>
+    <li><b>Telefón</b> je informácia — proti botovi bezcenný, proti človeku silný; ak sa ukáže ako „povinný“, zúžiť na „pozri sa na 2 náhodné karty“ (seedovaný generátor).</li>
+    <li><b>Tempo Pitky:</b> triky pribudnú do simultánnej Pitky, kde dnes hráč fajčí, dolieva, barteruje a dáva NA EX — UI musí triky ukázať ako jasný krok (tlačidlo na karte v ruke), nie ďalšie menu.</li>
+    <li><b>Odtlačok hry a bot</b> sa zmenia — nie refaktor.</li>
+  </ul>
+</div>
+</section>
+
+<!-- ============================================================ -->
+<section id="kod">
+<h2>Dopad na kód (odhad)</h2>
+<div class="box">
+  <ul>
+    <li><b>core:</b> nový zámer <code>vytiahni</code> (karta z ruky, voliteľný cieľ) v Pitke pred „hotovo“; triky Pitka sa vykonajú hneď (zmena stavu + záznam), triky Bitka sa zapíšu do <code>kolo.triky[]</code> a pripočítajú vo výpočte bitky; <code>nahladPitky</code> a náhľad bitky ich ukážu. <code>place</code> Nástroja do línie zaniká, <code>dedicstvo</code> ostáva. Zjednodušenia: spoj s Nástrojom, prevaha, Krokodíl, Vzbura a Forsáž bez výnimiek.</li>
+    <li><b>viewFor:</b> Telefón posiela súperovu ruku len tomu, kto ho vytiahol — jediný nový prípad filtrovania, s testom.</li>
+    <li><b>tvorca / cards.json:</b> Nástroj bez slotov, dva texty (<code>effect_text</code> s dvoma spúšťačmi <code>Dedičstvo</code> a <code>Vytiahnuť</code>, alebo nové pole) — podľa O3 a toho, ako tvorca ukladá efekty; rám karty Nástroja bez hrán.</li>
+    <li><b>klient:</b> tlačidlo „Vytiahnuť“ na Nástroji v ruke počas Pitky, výber cieľa na stole (akcia, Zviera, starší), záznam v logu a v súhrne Pitky; Dedičstvo ako dnes.</li>
+    <li><b>bot, ťahák AI hráčov, výučba, PRAVIDLA §7, §9.1, §11, §12, §16, slovník, mapa rozhodcu.</b></li>
+    <li>Odhad: Developer 2–3 dni (22 trikov je 22 malých efektov, väčšina nad existujúcimi funkciami — doliatie, barter, Robota, Vízia, Odpor, Posilnenie, NA EX) + UI mock tlačidla a výberu cieľa. Najprv Zrejúca.</li>
+  </ul>
+</div>
+</section>
+
+<!-- ============================================================ -->
+<section id="otazky">
+<h2>Otázky na rozhodnutie</h2>
+<p class="mini">Voľby sa ukladajú v prehliadači; dole je výpis na skopírovanie Leaderovi.</p>
+
+<details class="q" open><summary><span class="qid">O1</span> <span class="qt">Kedy sa vyťahuje</span></summary>
+<ol class="moznosti">
+  <li class="moz rec"><label><input type="radio" name="o1" value="len v Pitke, Bitka-triky sa pripočítajú v bitke kola"> <b>Len v Pitke</b> <span class="chip ok">odporúčam</span><span>Triky Bitka sa vytiahnu v ktorejkoľvek Pitke kola a pripočítajú sa v bitke (ako Kšeft). Žiadna nová fáza.</span></label></li>
+  <li class="moz"><label><input type="radio" name="o1" value="aj okno Pred bitkou (skryto, naraz)"> <b>Aj okno „Pred bitkou“</b><span>Po poslednej Pitke krátke okno, kde obaja skryto vytiahnu triky Bitka a odkryjú sa naraz — reakcia na hotovú líniu, viac blafu, nová fáza v kóde a UI.</span></label></li>
+  <li class="moz"><label><input type="radio" name="o1" value="aj v Zhromaždení"> <b>Aj v Zhromaždení</b><span>Triky Pitka len v Pitke, triky Bitka aj v Zhromaždení ako ťah mimo limitu.</span></label></li>
+</ol><label class="pozn">Poznámka<textarea data-p="o1" rows="2"></textarea></label></details>
+
+<details class="q"><summary><span class="qid">O2</span> <span class="qt">Verejne alebo skryto</span></summary>
+<ol class="moznosti">
+  <li class="moz rec"><label><input type="radio" name="o2" value="verejne hneď"> <b>Verejne hneď</b> <span class="chip ok">odporúčam</span><span>Ako Kšeft a fajčenie — súper vidí a v tej istej Pitke môže odpovedať vlastným trikom.</span></label></li>
+  <li class="moz"><label><input type="radio" name="o2" value="skryto, odkryť s NA EX"> <b>Skryto, odkryť spolu s NA EX</b><span>Blaf ako pri NA EX; triky Pitka (dobratie, cigarety) by sa ale museli vykonať až po odkrytí — mení poradie krokov Pitky.</span></label></li>
+</ol><label class="pozn">Poznámka<textarea data-p="o2" rows="2"></textarea></label></details>
+
+<details class="q"><summary><span class="qid">O3</span> <span class="qt">Hrany Nástroja a línia</span></summary>
+<ol class="moznosti">
+  <li class="moz rec"><label><input type="radio" name="o3" value="bez hrán, do línie nikdy"> <b>Bez hrán, do línie nikdy</b> <span class="chip ok">odporúčam</span><span>Nástroj má ilustráciu a dva texty. Končí blokovanie hranami a krokodílí štít; zásada „4 akcie, 2–4 varianty“ zaniká.</span></label></li>
+  <li class="moz"><label><input type="radio" name="o3" value="hrany ostanú, línia ako dnes"> <b>Hrany ostanú, línia ako dnes</b><span>Tri spôsoby zahrania: línia, Dedičstvo, Vytiahnuť. Karta hustá, dnešné problémy línie ostávajú.</span></label></li>
+  <li class="moz"><label><input type="radio" name="o3" value="hrany ostanú, línia len cez Živnostníka a Koňa"> <b>Hrany ostanú, do línie len cez Živnostníka a Koňa</b><span>Vtedy Živnostník a Kôň ostanú ako dnes.</span></label></li>
+</ol><label class="pozn">Poznámka<textarea data-p="o3" rows="2"></textarea></label></details>
+
+<details class="q"><summary><span class="qid">O4</span> <span class="qt">Kam ide vytiahnutý Nástroj</span></summary>
+<ol class="moznosti">
+  <li class="moz rec"><label><input type="radio" name="o4" value="odhadzovací balíček"> <b>Do odhadzovacieho balíčka</b> <span class="chip ok">odporúčam</span><span>Vráti sa do obehu pri zamiešaní; Kôň ho vráti do ruky hneď.</span></label></li>
+  <li class="moz"><label><input type="radio" name="o4" value="spáliť"> <b>Spáliť</b><span>Naozaj raz za hru; Dedičstvo je jediná trvalá cesta. Balíček sa čistí.</span></label></li>
+</ol><label class="pozn">Poznámka<textarea data-p="o4" rows="2"></textarea></label></details>
+
+<details class="q"><summary><span class="qid">O5</span> <span class="qt">Texty 22 Nástrojov</span></summary>
+<ol class="moznosti">
+  <li class="moz rec"><label><input type="radio" name="o5" value="tabuľka ako je"> <b>Tabuľka ako je</b> <span class="chip ok">odporúčam</span><span>Vrátane 3 prepísaných Dedičstiev (Zapaľovač, Krabička, Výherný automat).</span></label></li>
+  <li class="moz"><label><input type="radio" name="o5" value="triky ako sú, Dedičstvá nechať dnešné"> <b>Triky ako sú, Dedičstvá nechať dnešné</b></label></li>
+  <li class="moz"><label><input type="radio" name="o5" value="jednotlivo (poznámka)"> <b>Jednotlivo</b><span>Do poznámky, ktoré texty zmeniť (napr. Telefón iný trik, Vidly „za kartu okrem prvej“, Horoskop…).</span></label></li>
+</ol><label class="pozn">Poznámka<textarea data-p="o5" rows="3"></textarea></label></details>
+
+<details class="q"><summary><span class="qid">O6</span> <span class="qt">Zámočník, Živnostník, Kôň</span></summary>
+<ol class="moznosti">
+  <li class="moz rec"><label><input type="radio" name="o6" value="podľa tabuľky"> <b>Podľa tabuľky</b> <span class="chip ok">odporúčam</span><span>Zámočník: vytiahnutý Nástroj pôsobí dvakrát · Živnostník: Nástup vytiahni Nástroj · Kôň: vytiahnutý Nástroj sa vráti do ruky.</span></label></li>
+  <li class="moz"><label><input type="radio" name="o6" value="inak (poznámka)"> <b>Inak</b><span>Do poznámky.</span></label></li>
+</ol><label class="pozn">Poznámka<textarea data-p="o6" rows="2"></textarea></label></details>
+
+<details class="q"><summary><span class="qid">O7</span> <span class="qt">Ďalší krok</span></summary>
+<ol class="moznosti">
+  <li class="moz rec"><label><input type="radio" name="o7" value="UI mock (ruka v Pitke, výber cieľa, rám Nástroja), potom Zrejúca"> <b>UI mock, potom Zrejúca</b> <span class="chip ok">odporúčam</span><span>Mock: Nástroj v ruke počas Pitky, výber cieľa, rám karty Nástroja bez hrán; potom Developer do Zrejúcej a playtest.</span></label></li>
+  <li class="moz"><label><input type="radio" name="o7" value="rovno Zrejúca"> <b>Rovno do Zrejúcej</b><span>UI podľa Developera, doladiť po playteste.</span></label></li>
+  <li class="moz"><label><input type="radio" name="o7" value="najprv varianty botov (stratég)"> <b>Najprv variant botov</b><span>Stratég zmeria triky vo worktree, až potom UI.</span></label></li>
+</ol><label class="pozn">Poznámka<textarea data-p="o7" rows="2"></textarea></label></details>
+
+<h3>Výpis volieb</h3>
+<p><button class="akcia" id="kopiruj">Kopírovať</button><button class="akcia sek" id="vymaz">Vymazať voľby</button></p>
+<textarea id="vystup" readonly></textarea>
+</section>
+</main>
+<script>
+(function () {
+  var KLUC = "naex-naradie-vytiahnut-v2";
+  var OT = ["o1","o2","o3","o4","o5","o6","o7"];
+  var ulozene = {};
+  try { ulozene = JSON.parse(localStorage.getItem(KLUC) || "{}"); } catch (e) {}
+  function uloz() { try { localStorage.setItem(KLUC, JSON.stringify(ulozene)); } catch (e) {} vypis(); }
+  function vypis() {
+    var r = [];
+    OT.forEach(function (o) {
+      var v = ulozene[o], p = ulozene[o + "_p"];
+      var t = document.querySelector("details.q input[name=" + o + "]");
+      var nazov = t ? t.closest("details").querySelector(".qt").textContent : o;
+      if (v || p) r.push(o.toUpperCase() + " " + nazov + ": " + (v || "?") + (p ? " — " + p : ""));
+    });
+    document.getElementById("vystup").value = r.length ? r.join("\n") : "(zatiaľ nič nevybrané)";
+  }
+  document.querySelectorAll("input[type=radio]").forEach(function (i) {
+    if (ulozene[i.name] === i.value) i.checked = true;
+    i.addEventListener("change", function () { ulozene[i.name] = i.value; uloz(); });
+  });
+  document.querySelectorAll("textarea[data-p]").forEach(function (t) {
+    var k = t.getAttribute("data-p") + "_p"; t.value = ulozene[k] || "";
+    t.addEventListener("input", function () { ulozene[k] = t.value.trim(); uloz(); });
+  });
+  document.getElementById("kopiruj").onclick = function () {
+    var t = document.getElementById("vystup"); t.select();
+    if (navigator.clipboard) navigator.clipboard.writeText(t.value); else document.execCommand("copy");
+  };
+  document.getElementById("vymaz").onclick = function () {
+    ulozene = {}; uloz();
+    document.querySelectorAll("input[type=radio]").forEach(function (i) { i.checked = false; });
+    document.querySelectorAll("textarea[data-p]").forEach(function (t) { t.value = ""; });
+  };
+  vypis();
+})();
+</script>
+</body>
+</html>
