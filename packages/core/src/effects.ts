@@ -99,7 +99,7 @@ export const REGISTER: Readonly<Record<string, EfektStatus>> = {
   dvojcata: "impl", // Furt: do prevahy sa rátajú za dvoch (partia.ts, Michal 2026-10-20)
   puska: "impl", // Dedičstvo (Náradie 2026-10-30): prepojenú Petelicu namiesto zrušenia ráta za 2 (partia.ts puskaChrani)
   recidivista: "impl", // Prehra (v7): po bitke sa vráti do ruky (koniecBitky)
-  silna_nezavisla_zena: "impl", // Furt: akcie len s podporou dvoch chlapov
+  silna_nezavisla_zena: "impl", // Furt: aktívne akcie susedných vlastných Občanov a Starešinov ×2, Zviera ani Nástroj nie (partia.ts, Michal 2026-11-08)
   starosta: "impl", // Schopnosť väzňa: do konca kola všetky akcie hrán lokality posilnené (partia.ts hranyPosilnene)
   svaty_text: "impl", // Dedičstvo: hodnota tvojej Viery o 1 vyššia v tlmení tuhého; Povery ruší 1 : 1 (computeDamage)
   veterinar: "impl", // Schopnosť väzňa: odhodí priznané Cirhózy a Cirhózy na ruke

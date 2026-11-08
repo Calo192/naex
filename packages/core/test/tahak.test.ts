@@ -35,6 +35,7 @@ describe("ťahák AI hráčov sedí s constants.ts", () => {
     ["Chuť na konci kola (v9.1)", `**Chuť = väčšie z (Chuť, neresti kola) − ${KONSTANTY.CHUT_UBYTOK}**`],
     ["Kostol (v11.7)", "**v11.7: NA EX len na poslednú kartu línie, najďalej od Kostola, na výber oba konce**"],
     ["Výtržník a Silná žena (2026-11-06)", "Rany Výtržníka sú vždy ×1, nezdvojí ich ani Silná nezávislá žena"],
+    ["Silná žena len ľudia (2026-11-08)", "zdvojí aktívne akcie len tvojich susedných **Občanov a Starešinov**, nie Zviera ani Nástroj"],
     ["Opatrovateľka (v11.5)", "**Opatrovateľka** (Furt): tvoji Pamätníci v jej okolí majú aktívne akcie **posilnené** (×2)"],
     ["Podvodník (v11.5)", "**Podvodník** (Konflikt): súper ti dá **1 cigaretu**, ak žiadnu nemá, získa **1 zadĺženie**"],
     ["šenok začína obranca (v9.2)", "Branie striedavo, **začína obranca (v9.2)**"],
