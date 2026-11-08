@@ -9,6 +9,7 @@ import { describe, expect, it } from "vitest";
 import cardsJson from "../../../packages/core/data/cards.json";
 import eldersJson from "../../../packages/core/data/elders.json";
 import scorecardsJson from "../../../packages/core/data/scorecards.json";
+import predFrakciamiJson from "../../../packages/core/test/data/cards-pred-frakciami.json";
 import type { CardInstance, Command, GameState, PlayerId } from "@naex/core";
 import { apply, legalCommands, loadGameData, mozeHrat, naTahu, opponentOf, setupGame, tahBota, viewFor } from "@naex/core";
 import { kseftyNaStole, type KseftNaStole } from "../src/hra/kseftyNaStole.ts";
@@ -146,6 +147,8 @@ describe("Sklad (Zhromaždenie, frakcie 2026-11-08)", () => {
     c.id === "sklad" ? { ...c, effect_text: "Zhromaždenie: Nástroj zo šenku smieš vyložiť rovno do Dedičstva za cenu Dedičstva. Do šenku sa dotiahne nový Nástroj.", triggers: ["Zhromaždenie"] } : c,
   );
   const sData = loadGameData({ ...cardsJson, cards: surove }, eldersJson, scorecardsJson);
+  // Sada pred frakciami: Sklad mal Kšeft.
+  const stara = loadGameData(predFrakciamiJson, eldersJson, scorecardsJson);
   const vidly: CardInstance = { uid: 99600, defId: "vidly", leftLayout: 0, rightLayout: 0 };
   const { s: sp } = sKseftami(zaklad, { lok: "sklad", vazni: [], cigarety: 9 });
   const s: GameState = {
@@ -167,7 +170,7 @@ describe("Sklad (Zhromaždenie, frakcie 2026-11-08)", () => {
   });
 
   it("stará sada (Kšeft Skladu) ani Pitka ponuku nemá", () => {
-    expect(kseftyNaStole(data, viewFor(data, s, ja)).some((x) => x.druh === "lokalita")).toBe(false);
+    expect(kseftyNaStole(stara, viewFor(stara, s, ja)).some((x) => x.druh === "lokalita")).toBe(false);
     expect(kseftyNaStole(sData, viewFor(sData, sp, ja)).some((x) => x.druh === "lokalita")).toBe(false);
   });
 });

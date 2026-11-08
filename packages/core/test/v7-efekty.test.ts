@@ -1,9 +1,10 @@
 // Efekty kariet v7, druhá fáza revízie sady (Michal 2026-10-27, plan.md časť 14):
 // Konflikt (jednosmerný spúšťač, časť 13), nové efekty občanov, starších,
-// Nástrojov a lokalít, útočník finále.
+// Nástrojov a lokalít, útočník finále. Beží na sade pred frakciami (2026-11-08): jadro staré
+// efekty drží pre staré sady; nové efekty tých istých kariet stráži frakcie.test.ts.
 
 import { describe, expect, it } from "vitest";
-import cardsJson from "../data/cards.json";
+import cardsJson from "./data/cards-pred-frakciami.json";
 import eldersJson from "../data/elders.json";
 import scorecardsJson from "../data/scorecards.json";
 import type { CardInstance, Command, GameState, PitkaStav, PlacedCard, PlayerId, PlayerState, RekapitulaciaPitky } from "../src/index.ts";

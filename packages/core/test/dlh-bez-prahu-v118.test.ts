@@ -1,8 +1,9 @@
 // Každý Hazard je Dlh (v11.8, Michal 2026-11-06, PRAVIDLA §8): prah Dlhu 1, výnimkou je
-// len Výherný automat (prah 2, zvyšok ostáva na účte).
+// len Výherný automat (prah 2, zvyšok ostáva na účte). Podvodník so zadĺžením je zo sady pred
+// frakciami (2026-11-08) — jadro jeho Konflikt drží pre staré sady, pravidlo prahu platí ďalej.
 
 import { describe, expect, it } from "vitest";
-import cardsJson from "../data/cards.json";
+import cardsJson from "./data/cards-pred-frakciami.json";
 import eldersJson from "../data/elders.json";
 import scorecardsJson from "../data/scorecards.json";
 import type { CardInstance, Event, GameState, PitkaStav, PlacedCard, PlayerId } from "../src/index.ts";

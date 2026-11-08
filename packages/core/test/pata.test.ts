@@ -4,6 +4,7 @@ import { describe, expect, it } from "vitest";
 import cardsJson from "../data/cards.json";
 import eldersJson from "../data/elders.json";
 import scorecardsJson from "../data/scorecards.json";
+import predFrakciamiJson from "./data/cards-pred-frakciami.json";
 import katalogJson from "../data/vyucba/napovedy.json";
 import type { CardInstance, KrokBitkyPata, PataStav, PlayerId, StarsiPata, ZamerLieceniaPata, ZamerUtokuPata } from "../src/index.ts";
 import {
@@ -41,6 +42,7 @@ import {
 } from "../src/index.ts";
 
 const data = loadGameData(cardsJson, eldersJson, scorecardsJson);
+const stara = loadGameData(predFrakciamiJson, eldersJson, scorecardsJson);
 
 let uid = 90000;
 const karta = (defId: string): CardInstance => ({ uid: ++uid, defId, leftLayout: 0, rightLayout: 0 });
@@ -129,6 +131,9 @@ describe("draft a pečeň", () => {
 });
 
 describe("rad", () => {
+  // Rozloženia v komentároch sú zo sady pred frakciami (2026-11-08, Poštárka mala Víziu vľavo) —
+  // testuje sa mechanika radu, nie karta.
+  const data = stara;
   const rad = (ids: readonly string[], podrazeni: readonly string[] = []): StarsiPata[] =>
     ids.map((id) => starsi(id, { podrazeny: podrazeni.includes(id) }));
 

@@ -356,9 +356,10 @@ describe("offline protihráč — celá partia vrátane finále (Michal 2026-11-
 
   it("skoro v hre berie kartu, ktorá sype cigarety, vo finále kartu, ktorá bije (partia 17, #19)", () => {
     for (const povaha of POVAHY) {
-      const senok = ["masiar", "stryko_z_ameriky"];
+      // Záhradkár (2× Cigareta); Strýko má od frakcií (2026-11-08) aj Rany navyše proti Autorite a Rudo ho berie aj vo finále.
+      const senok = ["masiar", "zahradkar"];
       const skoro = vDrafte(2, senok, { cigarety: 1, ruka: [karta(990300, "pijan")] });
-      expect(vzate(skoro, tahBota(data, skoro, 0, 5, { povaha: povaha.id }))[0], povaha.id).toBe("stryko_z_ameriky");
+      expect(vzate(skoro, tahBota(data, skoro, 0, 5, { povaha: povaha.id }))[0], povaha.id).toBe("zahradkar");
       const finale = vDrafte(6, senok, { cigarety: 1, ruka: [karta(990300, "pijan")] });
       expect(vzate(finale, tahBota(data, finale, 0, 5, { povaha: povaha.id }))[0], povaha.id).toBe("masiar");
     }

@@ -6,6 +6,7 @@ import { describe, expect, it } from "vitest";
 import cardsJson from "../data/cards.json";
 import eldersJson from "../data/elders.json";
 import scorecardsJson from "../data/scorecards.json";
+import predFrakciamiJson from "./data/cards-pred-frakciami.json";
 import {
   DLZKY_HRY,
   KONSTANTY,
@@ -35,6 +36,7 @@ import {
 import type { GameState, Miesto } from "../src/index.ts";
 
 const data = loadGameData(cardsJson, eldersJson, scorecardsJson);
+const stara = loadGameData(predFrakciamiJson, eldersJson, scorecardsJson);
 
 describe("miesta pri stole", () => {
   it("miesta 0 a 1 sú prví členovia tímov — v 1 na 1 je miesto hráč", () => {
@@ -399,7 +401,11 @@ describe("karta „do ruky“ ide tomu, kto efekt spustil (Q4)", () => {
   });
 
   it("Hasič: rozhoduje člen, ktorý ho vyložil, nie kapitán, a karta ide do jeho ruky", () => {
-    const { s, partner } = partnerNaTahu("hasic", ["pijan"]);
+    const { s: s0, partner } = partnerNaTahu("hasic", ["pijan"]);
+    // Hasič má Podporu (frakcie 2026-11-08): priloží sa k Pijanovi, ktorého vyložil kapitán tímu.
+    const tim = timMiesta(partner);
+    const pijan = { card: karta("pijan", 90004), playedBy: tim, miesto: kapitan(s0, tim) };
+    const s: GameState = { ...s0, strany: s0.strany.map((st, q) => (q === tim ? [...st, pijan] : st)) as unknown as GameState["strany"] };
     const po = apply(data, s, { type: "place", uid: 90001, target: "vlastna" }, partner).state;
     expect(po.hasicVolby?.[0]?.miesto).toBe(partner);
     expect(miestoNaTahu(po)).toBe(partner);
@@ -413,6 +419,8 @@ describe("karta „do ruky“ ide tomu, kto efekt spustil (Q4)", () => {
   });
 
   it("Živnostník: Nástroj priloží člen, ktorý ho vyložil, a len zo svojej ruky", () => {
+    // Živnostník s Nástupom je zo sady pred frakciami (2026-11-08); jadro ho drží pre staré sady.
+    const data = stara;
     const { s, partner } = partnerNaTahu("zivnostnik");
     const tim = timMiesta(partner);
     const clen = clenMiesta(partner);
