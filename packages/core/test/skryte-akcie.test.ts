@@ -12,6 +12,7 @@ import eldersJson from "../data/elders.json";
 import scorecardsJson from "../data/scorecards.json";
 import frakcieJson from "./data/frakcie-karty.json";
 import skryteJson from "./data/skryte-akcie-karty.json";
+import stareJson from "./data/skryte-akcie-stare.json";
 import type { CardInstance, GameData, GameState, PlacedCard, PlayerId } from "../src/index.ts";
 import type { Layout4 } from "./helpers.ts";
 import { EMPTY, instanceFor, makeDef, syntheticData } from "./helpers.ts";
@@ -54,8 +55,9 @@ function sadaSoZmenami(...zoznamy: { readonly karty: readonly unknown[] }[]): Ga
   return loadGameData({ ...cardsJson, cards }, eldersJson, scorecardsJson);
 }
 
-/** Starý text (slovami) a nový zápis — inak tá istá sada. */
-const stara = sadaSoZmenami(frakcieJson);
+/** Starý text (slovami) a nový zápis — inak tá istá sada. cards.json už hrá nový zápis,
+ *  preto staré texty idú z vlastnej kópie. */
+const stara = sadaSoZmenami(frakcieJson, stareJson);
 const nova = sadaSoZmenami(frakcieJson, skryteJson);
 
 const SEDEM = ["pasca", "pijan", "svokra", "vymahac", "sofer", "traktoristka", "vyherny_automat"] as const;

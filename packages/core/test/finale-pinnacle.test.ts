@@ -92,7 +92,12 @@ describe("finále na pinnacle lokalite sa hrá ako bežné kolo (Michal 2026-10-
     const trakt = inst("traktoristka");
     const finale = nahladVylozenia(data, lineState(s), 0, trakt, "vlastna");
     const bezne = nahladVylozenia(data, lineState({ ...s, ciel: { typ: "lokalita", lokalita: s.ciel!.lokalita! } }), 0, trakt, "vlastna");
-    expect(finale.tuhe[0]).toBe(2);
+    // Skryté akcie (Michal 2026-11-08): Pecka navyše s prevahou je v súčtoch (zmeny), nie v tuhých navyše.
+    const zdrojePecky = evaluateLine(data, { ...lineState(s), strany: [[lezi(trakt, 0)], []] }).zdroje[0].Pecka ?? [];
+    const navyse = zdrojePecky.filter((z) => z.uid === trakt.uid && z.dovody.some((d) => d.startsWith("akcia navyše")));
+    expect(navyse.reduce((n, z) => n + z.hodnota, 0)).toBe(1);
+    expect(finale.zmeny[0].Pecka).toBe(zdrojePecky.reduce((n, z) => n + z.hodnota, 0));
+    expect(finale.tuhe[0]).toBe(0);
     expect(finale).toEqual(bezne);
   });
 

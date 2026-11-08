@@ -1,0 +1,40 @@
+{
+  "zdroj": "Texty siedmich kariet skupiny A pred skrytými akciami (slovami, cards.json pred bd3b2d4a) — „stará“ sada testu skryte-akcie.test.ts, keďže cards.json už hrá nové texty.",
+  "karty": [
+    {
+      "id": "pasca",
+      "effect_text": "Dedičstvo: Bitka: Ak súper v tomto kole priložil kartu k tvojej, udelíš mu 1 Ranu navyše.",
+      "triggers": ["Dedičstvo", "Bitka"]
+    },
+    {
+      "id": "pijan",
+      "effect_text": "Bitka: Za každé NA EX, ktoré si v tomto kole dal, udelíš súperovi 1 Ranu navyše.",
+      "triggers": ["Bitka"]
+    },
+    {
+      "id": "svokra",
+      "effect_text": "Bitka: Za každú tvoju kartu so súperovým NA EX udelíš súperovi Ranu.",
+      "triggers": ["Bitka"]
+    },
+    {
+      "id": "vymahac",
+      "effect_text": "Bitka: Za každé 2 tvoje priznané Dlhy udelíš súperovi 1 Ranu navyše.",
+      "triggers": ["Bitka"]
+    },
+    {
+      "id": "sofer",
+      "effect_text": "Bitka: Ak si v tomto kole nedal NA EX, udelíš súperovi 1 Pecku navyše a dostaneš 1 cigaretu.",
+      "triggers": ["Bitka"]
+    },
+    {
+      "id": "traktoristka",
+      "effect_text": "Bitka: Ak máš v jeho kraji prevahu, udelíš súperovi 1 Pecku navyše. Inak získaš 1 Dlh.",
+      "triggers": ["Bitka"]
+    },
+    {
+      "id": "vyherny_automat",
+      "effect_text": "Dedičstvo: Tvoj prah Dlhu je o 1 vyšší. V poslednej Pitke kola získaš 1 Dlh.",
+      "triggers": ["Dedičstvo"]
+    }
+  ]
+}

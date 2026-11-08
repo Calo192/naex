@@ -44,6 +44,12 @@ function pitkaStav(naTahu: PlayerId): PitkaStav {
   return { naTahu, hotovy: [false, false], naexPouzity: [false, false], fajcenie: [0, 0], reakcia: null, postarka: [false, false], starosta: [false, false], naexPocet: [0, 0] };
 }
 
+/** Koľko akcie dá karta `defId` hráča 0 ako akciu navyše (skryté akcie, §6) — v súčtoch línie. */
+function navyse(s: GameState, defId: string, akcia: "Rana" | "Pecka"): number {
+  const zdroje = evaluateLine(data, lineState(s)).zdroje[0][akcia] ?? [];
+  return zdroje.filter((z) => z.defId === defId && z.dovody.some((d) => d.startsWith("akcia navyše"))).reduce((n, z) => n + z.hodnota, 0);
+}
+
 /** Pitka na lokalite `lok` (hráč 0 na ťahu). */
 function vPitke(lok: string, strany: GameState["strany"], seed = 7): GameState {
   const s0 = setupGame(data, seed);
@@ -139,19 +145,21 @@ describe("efekty v bitke (v7)", () => {
   it("Vymáhač: za každé 2 priznané Dlhy Rana navyše; Šofér bez NA EX Pecku", () => {
     const s0 = vPitke("zastavka", [[lezi(inst("vymahac"), 0), lezi(inst("sofer"), 0)], []]);
     const s = { ...sHracom(s0, 0, { dlhy: 5}), spaky: [1, 4] as [number, number] };
-    const zdroje = bitkaMody(data, s, 0).tuheZdroje;
-    expect(zdroje).toContainEqual({ zdroj: "vymahac", tuhe: 2 });
-    expect(zdroje).toContainEqual({ zdroj: "sofer", tuhe: 2 });
-    expect(bitkaMody(data, { ...s, naexVKole: [true, false] }, 0).tuheZdroje.some((z) => z.zdroj === "sofer")).toBe(false);
+    // Skryté akcie (Michal 2026-11-08): Rana a Pecka navyše idú do súčtov línie, nie medzi bonusy bitky.
+    expect(navyse(s, "vymahac", "Rana")).toBe(2);
+    expect(navyse(s, "sofer", "Pecka")).toBe(1);
+    expect(bitkaMody(data, s, 0).tuheZdroje.some((z) => z.zdroj === "vymahac" || z.zdroj === "sofer")).toBe(false);
+    expect(navyse({ ...s, naexVKole: [true, false] }, "sofer", "Pecka")).toBe(0);
   });
 
   it("Traktoristka: s prevahou v jej kraji Pecka navyše, bez nej Dlh na začiatku bitky", () => {
     const t = inst("traktoristka");
     const s = vPitke("zastavka", [[lezi(t, 0)], []]);
-    expect(bitkaMody(data, s, 0).tuheZdroje).toContainEqual({ zdroj: "traktoristka", tuhe: 2 });
+    expect(navyse(s, "traktoristka", "Pecka")).toBe(1);
+    expect(bitkaMody(data, s, 0).tuheZdroje.some((z) => z.zdroj === "traktoristka")).toBe(false);
     // Súperove dve karty v jej kraji — prevahu má súper.
     const bez = vPitke("zastavka", [[lezi(t, 0), lezi(inst("masiar"), 1), lezi(inst("masiar"), 1)], []]);
-    expect(bitkaMody(data, bez, 0).tuheZdroje.some((z) => z.zdroj === "traktoristka")).toBe(false);
+    expect(navyse(bez, "traktoristka", "Pecka")).toBe(0);
     let st = bez;
     for (let i = 0; i < 2 && st.faza === "pitka"; i++) st = apply(data, st, { type: "skipNaex" }, st.pitkaStav!.naTahu).state;
     // Dlh z Traktoristky príde pred Exekútorom — ten ho hneď zhorí (bez prahu, 2026-10-28).
