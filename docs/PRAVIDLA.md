@@ -12,7 +12,7 @@ stránka Pravidlá — `VERZIA_PRAVIDIEL_PRESNA`).
 **Frakcie — pripravené pre ďalšiu dávku** (Michal 2026-11-08, Zrejúca; špecifikácia `docs/napady/frakcie-final.json`):
 
 - **Kšeft zaniká** — spúšťač, ťah aj Kšefty kariet a lokalít (§7).
-- **Akcie navyše podmienené tagom** (§6, §16): spúšťače **Spoločník: tag** a **Nepriateľ: tag** a **Podpora / Konflikt s tagom**. Na karte je podmienka v poli efektu a akcie navyše v pečati dole v ilustrácii.
+- **Akcie navyše podmienené tagom** (§6, §16): spúšťače **Spoločník: tag** a **Nepriateľ: tag** a **Podpora / Konflikt s tagom**. Na karte je podmienka v poli efektu a akcie navyše v pečati dole v ilustrácii. **Konflikt bez tagu** (Michal 2026-11-08): Praudovravec, Stryná, Podvodník a Vdova majú „Konflikt: …“ bez tagu — platí pri stretnutí s ktoroukoľvek súperovou kartou.
 - **Skryté akcie** (§6, §16, Michal 2026-11-08): Pasca, Pijan, Svokra, Vymáhač, Šofér, Traktorista a Výherný automat majú akciu navyše v pečati s podmienkou slovami („Bitka: … {Rana}“); Vidly a Valaška ich zosilnia. Vedúcko, Sypač a Anonymný alkoholik menia aj akcie navyše. Vdova odhadzuje náhodnú kartu.
 - Nové efekty 17 kariet (§16) a lokalít Zberný dvor, Sklad a Predsedova vila (§15).
 
@@ -679,7 +679,8 @@ Nástroja sa v striedaní počíta ako ťah, priznanie nie.
   karte, alebo súper svoju k nej. **Podpora** je zrkadlo: spustí sa, keď sa
   priložením stretnú **dve tvoje** karty. Oba po Nástupe priloženej karty; Nástroj
   (priložený aj ležiaci), NA EX, zrážka ani presun karty ich nespúšťajú (§16).
-  **S tagom** („Konflikt: Autorita“, frakcie) sa spustia len pri karte s tým tagom.
+  **S tagom** („Podpora: Pamätník“, frakcie) sa spustia len pri karte s tým tagom;
+  bez tagu („Konflikt: {Pohoršenie}“) pri ktorejkoľvek.
 - **Spoločník: tag** platí, kým máš v partii inú odkrytú kartu s tým tagom;
   **Nepriateľ: tag**, kým ju má v partii súper. Raz, aj pri viacerých takých kartách.
 - **Akcia navyše** (piktogram v pečati karty) je aktívna akcia majiteľa karty mimo
@@ -1923,9 +1924,11 @@ nespúšťa — ani priložený, ani ležiaci. Poradie: Nástup priloženej kart
 jej Konflikt a Podpora, potom Konflikt a Podpora ležiacej. Záverečná ich vyvolá
 až pri otočení na konci Pitky (§13). Lokalita ani starší ich neprepožičiavajú.
 **Vyvolať Konflikt** = priložiť kartu k súperovej ležiacej karte s Konfliktom
-(§17). **S tagom** (frakcie, Michal 2026-11-08): „Konflikt: Autorita“ sa spustí len
-pri súperovej karte s tagom Autorita, „Podpora: Pamätník“ len pri vlastnom Pamätníkovi;
-bez tagu pri ktorejkoľvek. Pri každom spustení zvlášť, bez stropu (po Poľovníkovi či
+(§17). **S tagom** (frakcie, Michal 2026-11-08): „Podpora: Pamätník“ sa spustí len
+pri vlastnom Pamätníkovi, „Podpora: Zahraničný“ len pri vlastnom Zahraničnom; Konflikt
+s tagom by sa rovnako spustil len pri súperovej karte s tým tagom. **Bez tagu** pri
+ktorejkoľvek — tak má Konflikt každá karta v sade (Michal 2026-11-08: Praudovravec,
+Stryná, Podvodník, Vdova). Pri každom spustení zvlášť, bez stropu (po Poľovníkovi či
 Dohadzovačke môže prísť tretí sused).
 
 **Spoločník a Nepriateľ (frakcie):** „Spoločník: Pamätník“ platí, kým máš v partii
@@ -1944,9 +1947,9 @@ bitky, Noviny hneď po rozhodnutí hádky, Kôň v kroku Exekútora. Michal ich 
 
 | Karta | Výklad |
 |---|---|
-| Veľmi smútiaca vdova | Konflikt: Chlap (frakcie; Michal 2026-11-08): súper odhodí **1 náhodnú kartu z ruky** do svojho odhadzovacieho balíčka — vyberie ju náhoda, nie súper; ktorú, vie len on. Prázdna ruka = nič |
+| Veľmi smútiaca vdova | Konflikt (frakcie; Michal 2026-11-08, bez tagu — pri ktorejkoľvek súperovej karte, predtým len pri Chlapovi): súper odhodí **1 náhodnú kartu z ruky** do svojho odhadzovacieho balíčka — vyberie ju náhoda, nie súper; ktorú, vie len on. Prázdna ruka = nič |
 | Policajtka | Nepriateľ: Kriminál (frakcie): 1 Petelica navyše |
-| Stryná | Konflikt: Závislý (frakcie): 1 Pohoršenie navyše za každé stretnutie, do konca kola |
+| Stryná | Konflikt (frakcie; bez tagu od 2026-11-08, predtým Závislý): 1 Pohoršenie navyše za každé stretnutie so súperovou kartou, do konca kola |
 | Recidivista | Nepriateľ: Zahraničný (frakcie): 1 Pecka navyše. Je aj Zviera — vedľa Mäsiara neplatí |
 | Liberál | Furt (v10.3, Michal 2026-11-02): ak máš v partii (tvoje karty v línii, v ktoromkoľvek kraji) rovnako žien a chlapov, všetky jeho aktívne akcie sú posilnené (×2; násobí sa s ostatnými násobkami). Rátajú sa karty s tagom Žena / Chlap; Liberál má oba, ráta sa za oboch; skrytá Záverečná sa neráta. Do v10.2: súper bez rovnováhy získal v Pitke 1 zadĺženie. |
 | Živnostník | Spoločník: Autorita (frakcie): 1 Robota navyše |
@@ -1977,8 +1980,8 @@ bitky, Noviny hneď po rozhodnutí hádky, Kôň v kroku Exekútora. Michal ich 
 | Hasič | Podpora (frakcie, bez tagu; do v11.13 Nástup): z majiteľovho odhadzovacieho balíčka sa vytiahne náhodná karta (aj kliatba, aj Absťák); majiteľ si ju nechá v ruke, alebo ju vráti. Kým nerozhodne, hra čaká. Prázdny balíček = nič |
 | Šofér | Bitka (v11.5): ak si v tomto kole nedal NA EX, máš **Pecku navyše** (akcia navyše, §6; Valaška ju zosilní) a **na začiatku bitky dostaneš 1 cigaretu** — za každého Šoféra. Do v11.4 bez cigarety. |
 | Traktorista | Bitka (v sade v53 Traktorista, Chlap; id `traktoristka`, predtým Traktoristka): s prevahou v kraji, kde leží, **Pecka navyše** (akcia navyše, §6); bez nej dostaneš na začiatku bitky Dlh. |
-| Podvodník | Konflikt: Influencer (frakcie): 1 Obmedzenie navyše — v každej Pitke od spustenia do konca kola |
-| Praudovravec | Konflikt: Autorita (frakcie): 1 Pohoršenie navyše za každé stretnutie, do konca kola |
+| Podvodník | Konflikt (frakcie; bez tagu od 2026-11-08, predtým Influencer): 1 Obmedzenie navyše za každé stretnutie so súperovou kartou — v každej Pitke od spustenia do konca kola |
+| Praudovravec | Konflikt (frakcie; bez tagu od 2026-11-08, predtým Autorita): 1 Pohoršenie navyše za každé stretnutie so súperovou kartou, do konca kola |
 | Kočovník | Spoločník: Pamätník (frakcie): 1 Pecka navyše. Jeho akcie patria majiteľovi ako pri každej karte |
 | Dvojčatá | Furt: do prevahy sa rátajú za dvoch — aj pre bonus Ihriska (v8). Lesná cesta ráta len Zvieratá. |
 | Silná nezávislá žena | Furt (Michal 2026-11-08): aktívne akcie tvojich **Občanov a Starešinov**, ktorí s ňou susedia, sa rátajú dvakrát. Zviera ani Nástroj nie, ani keď je zároveň Občan (Recidivista); lokalitu a súperove karty nie. Predtým zdvojovala všetky tvoje susedné karty. |

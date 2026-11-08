@@ -1248,7 +1248,7 @@ export function prirastkyPitky(
   const pecen: [number, number] = [sums[0].PoškodeniePečene ?? 0, sums[1].PoškodeniePečene ?? 0];
   const poldeci: [number, number] = [sums[0].Poldeci ?? 0, sums[1].Poldeci ?? 0];
   // Stryná (Pitka, v7): každá dá hráčovi bez NA EX v tejto Pitke 1 pečeň.
-  // Frakcie (2026-11-08): Stryná má Konflikt: Závislý — pečeň za Pitku bez NA EX len v starých sadách.
+  // Frakcie (2026-11-08): Stryná má Konflikt s Pohoršením navyše — pečeň za Pitku bez NA EX len v starých sadách.
   const stryna = data.cards.get("niekoho_stryna");
   const strynaPitka = stryna !== undefined && efektyNavyse(stryna).length === 0;
   const stryne = [...s.strany[0], ...s.strany[1]].filter((pl) => strynaPitka && pl.card.defId === "niekoho_stryna" && pl.zaverecna !== true && !efektPotlaceny(data, s, pl.playedBy, "niekoho_stryna")).length;
