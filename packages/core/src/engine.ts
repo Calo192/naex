@@ -3273,12 +3273,12 @@ function nastupEfekt(
       break;
     }
     case "degustatorka": {
-      // v7: súper s viac plnými poldeci ako majiteľ — jeden mu ochutná (nie nerest ani pečeň).
+      // v7: súper s viac plnými poldeci ako majiteľ — jeden mu vyžerie (nie nerest ani pečeň).
       if (s.hraci[opp].poldeciPlne > s.hraci[p].poldeciPlne) {
         zmenPoldeci(s, opp, "degustatorka", -1, events);
         hrac(s, opp).poldeciVypite += 1;
-        events.push({ type: "log", text: `Degustátorka: hráčovi ${opp + 1} ochutná plný poldeci — je vypitý.` });
-      } else events.push({ type: "log", text: `Degustátorka: hráč ${opp + 1} nemá viac plných poldeci — nič neochutná.` });
+        events.push({ type: "log", text: `Degustátorka: hráčovi ${opp + 1} vyžerie plný poldeci — je vypitý.` });
+      } else events.push({ type: "log", text: `Degustátorka: hráč ${opp + 1} nemá viac plných poldeci — nič nevyžerie.` });
       break;
     }
     case "vandal": {
@@ -3506,7 +3506,7 @@ function odhalNaex(s: MutState, data: GameData, events: Event[]): boolean {
         placed.naexBy2 = p;
         placed.vytrznik = true;
       } else placed.naexBy = p;
-      // Degustátorka mohla medzitým ochutnať poldeci pod skrytým NA EX — do knihy ide len to, čo naozaj odišlo.
+      // Degustátorka mohla medzitým vyžrať poldeci pod skrytým NA EX — do knihy ide len to, čo naozaj odišlo.
       zmenPoldeci(s, p, "platba", -Math.min(1, s.hraci[p].poldeciPlne), events);
       s.naexVKole[p] = true;
       pocty[p] += 1;
