@@ -31,8 +31,8 @@
 //   &pult=1        línia starších sa otvorí v rozložení Pult (mock 5) namiesto Teplomerov
 //   &stop=posledna-pitka  posledná Pitka kola, hráč ?ja má prázdnu ruku a môže dať NA EX — súper
 //                  odpovie a bitka sa vyhodnotí v jeho ťahu
-//   &stop=vizia    Vízia: hráč ?ja rozhoduje o vrchnej karte balíčka (veľké okno, Michal 2026-11-02);
-//                  &gula=1 mu dá do Dedičstva Krištáľovú guľu — okno ukáže dve karty
+//   &stop=vizia    Vízia: hráč ?ja rozhoduje o vrchnej karte balíčka (karta na stole, voľby na hrane, Michal 2026-11-08);
+//                  &gula=1 mu dá do Dedičstva Krištáľovú guľu — stôl ukáže dve karty
 //   &stop=vestica  Veštica po prehratej bitke: hráč ?ja vyberá karty z oboch doberacích balíčkov; keď ju
 //                  partia nemá, prvá prehratá bitka od 2. kola sa na ukážku prepne na krok Veštica (&vynut=0 nie)
 //   &stop=cintorin Cintorín po prehratej bitke: hráč ?ja si berie kartu z odhadzovacieho balíčka (v11.13, už aj

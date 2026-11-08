@@ -89,7 +89,7 @@ import { LUPA_PREDVOLENA, useUcet } from "../lib/ucet.tsx";
 import { rezimRadov } from "./spakyAStarsi.ts";
 import { Vrstva as VrstvaPanel } from "./Vrstva.tsx";
 import { VesticaVyber } from "./Vestica.tsx";
-import { OknoVizie } from "./OknoVizie.tsx";
+import { rozmerVizie, ViziaNaStole, VolbyVizie, zamerVizie, type KartaVizie } from "./ViziaNaStole.tsx";
 import {
   AkcieStrany,
   BitkaPanel,
@@ -545,8 +545,6 @@ export function HernaPlocha({
   const super_ = opponentOf(ja);
   const [mode, setMode] = useState<Mode>({ typ: "ziadny" });
   const [vrstva, setVrstva] = useState<Vrstva | null>(null);
-  /** Kľúč Vízie, ktorej veľké okno hráč skryl (pozerá stôl) — pri ďalšej Vízii sa otvorí znova. */
-  const [viziaSkrytaPre, setViziaSkrytaPre] = useState<string | null>(null);
   /** Kolo odohranej lokality, ktorej súhrn (Pitky a bitka) je otvorený po kliku na nástenke. */
   const [suhrnLokality, setSuhrnLokality] = useState<number | null>(null);
   // Čí popolník nástenka zvýrazní (Michal 2026-10-27): Špaky súpera otvoria jeho, hlavička tvoju.
@@ -1592,11 +1590,17 @@ export function HernaPlocha({
     if (krokVyberu === "vestica") setMode({ typ: "vestica", moja: null, jeho: null });
   }, [krokVyberu, klucTahu]);
 
-  // Vízia: veľké okno s kartou (Michal 2026-11-02), kým hráč nerozhodne alebo ho neskryje.
+  // Vízia na stole (Michal 2026-11-08, mockup V-B): karty na plsti nad rukou, voľby na spodnej hrane.
   const viziaK = view.vizia !== null && somNaTahu && view.koniec === null ? view.volbaVizia : null;
   const viziaK2 = viziaK === null ? null : (view.volbaViziaDruha ?? null);
+  /** Nová Vízia (aj ďalšia v tej istej Pitke) = nový kľúč — karty znova vyjdú z balíčka. */
   const klucVizie = viziaK === null ? null : `${view.kolo}-${view.pitkaCislo}-${viziaK.uid}-${viziaK2?.uid ?? ""}-${view.vizia?.zostava[ja] ?? 0}`;
-  const oknoVizieOtvorene = klucVizie !== null && viziaSkrytaPre !== klucVizie;
+  const kartyVizie: readonly KartaVizie[] = [viziaK, viziaK2].flatMap((k, i) =>
+    k === null
+      ? []
+      : [{ kluc: k.uid, nazov: menoKarty(k.defId), ...(viziaK2 === null ? {} : { popis: i === 0 ? "vrchná" : "druhá" }), render: (sirka: number) => sLupou({ karta: k, sirka }) }],
+  );
+  const rozmerKarietVizie = rozmerVizie(vnutroPlste, kartyVizie.length, naSirku);
 
   const posli = (c: Command): void => {
     cmd(c);
@@ -4090,50 +4094,18 @@ export function HernaPlocha({
 
       case "pitka": {
         if (view.vizia !== null) {
-          // Vízia (Michal 2026-10-19): vrchná karta balíčka do ruky, alebo navždy preč.
-          const k = view.volbaVizia;
+          // Vízia (Michal 2026-10-19): vrchná karta balíčka do ruky, alebo navždy preč. Karta leží
+          // na stole a voľby sú v strede spodnej hrany (Michal 2026-11-08, mockup V-B).
           const zostava = view.vizia.zostava[ja];
+          const este = zostava > 1 ? ` Ešte ${zostava - 1}× Vízia.` : "";
           // Krištáľová guľa (Náradie 2026-10-30): dve vrchné karty — o jednej rozhodneš, druhá ostane navrchu.
-          const k2 = view.volbaViziaDruha ?? null;
-          if (k2 !== null) {
-            return {
-              nadpis: "Vízia — Krištáľová guľa",
-              text: (
-                <span className="vizia-text">
-                  {k !== null && <span className="vizia-karta">{sLupou({ karta: k, sirka: 72 })}</span>}
-                  <span className="vizia-karta">{sLupou({ karta: k2, sirka: 72 })}</span>
-                  <span>
-                    Dve vrchné karty: <strong>{k === null ? "?" : menoKarty(k.defId)}</strong> a <strong>{menoKarty(k2.defId)}</strong>. Jednu si vezmi
-                    do ruky alebo ju spáľ — navždy z hry; druhá ostane navrchu balíčka.{zostava > 1 ? ` Ešte ${zostava - 1}× Vízia.` : ""}
-                  </span>
-                </span>
-              ),
-              vlavo: <button onClick={() => setViziaSkrytaPre(null)}>karty</button>,
-              stred: pecatTahu({ text: "prvú do ruky", tip: "Vrchnú kartu si vezmeš do ruky, druhá bude navrchu.", akcia: () => posli({ type: "vizia", vziat: true }) }),
-              vpravo: (
-                <>
-                  <button onClick={() => posli({ type: "vizia", vziat: true, druha: true })}>druhú do ruky</button>{" "}
-                  <button onClick={() => posli({ type: "vizia", vziat: false })}>spáliť prvú</button>{" "}
-                  <button onClick={() => posli({ type: "vizia", vziat: false, druha: true })}>spáliť druhú</button>
-                </>
-              ),
-            };
-          }
+          const gula = view.volbaViziaDruha != null;
           return {
-            nadpis: "Vízia",
-            text: (
-              <span className="vizia-text">
-                {k !== null && <span className="vizia-karta">{sLupou({ karta: k, sirka: 72 })}</span>}
-                <span>
-                  Vrchná karta tvojho balíčka: <strong>{k === null ? "?" : menoKarty(k.defId)}</strong>. Vezmi si ju do ruky, alebo ju spáľ
-                  — navždy z hry (kliatba, slabá karta).{zostava > 1 ? ` Ešte ${zostava - 1}× Vízia.` : ""}
-                </span>
-              </span>
-            ),
-            vlavo: <button onClick={() => setViziaSkrytaPre(null)}>karta</button>,
-            // „spáliť“ je druhá voľba, nie zrušenie — preto nie je ✕ na pečiatke.
-            stred: pecatTahu({ text: "do ruky", tip: "Vrchnú kartu balíčka si vezmeš do ruky.", akcia: () => posli({ type: "vizia", vziat: true }) }),
-            ...(naSirku ? { druha: <button onClick={() => posli({ type: "vizia", vziat: false })}>spáliť</button> } : { vpravo: <button onClick={() => posli({ type: "vizia", vziat: false })}>spáliť</button> }),
+            nadpis: gula ? "Vízia — Krištáľová guľa" : "Vízia",
+            text: gula
+              ? `Dve vrchné karty balíčka: jednu si vezmi do ruky, alebo ju spáľ — navždy z hry; druhá ostane navrchu.${este}`
+              : `Vrchná karta tvojho balíčka: vezmi si ju do ruky, alebo ju spáľ — navždy z hry.${este}`,
+            stred: kartyVizie.length === 0 ? undefined : <VolbyVizie karty={kartyVizie} rozmer={rozmerKarietVizie} onVolba={(i, vziat) => posli(zamerVizie(i, vziat))} />,
           };
         }
         const hracJa = view.hraci[ja];
@@ -6210,6 +6182,7 @@ export function HernaPlocha({
             </div>
             {podLiniou}
             {naPlsti}
+            {klucVizie !== null && kartyVizie.length > 0 && <ViziaNaStole key={klucVizie} karty={kartyVizie} rozmer={rozmerKarietVizie} />}
             {vrstvaFazy !== null && !starsiViditelni && !nastenkaNaStole && (
               <div className="vrstva-fazy" ref={setVrstvaFazyEl}>
                 {vrstvaFazy}
@@ -6355,42 +6328,6 @@ export function HernaPlocha({
             }, SIRKA_VO_VRSTVE)}
           </div>
         </VrstvaPanel>
-      )}
-
-      {viziaK !== null && klucVizie !== null && oknoVizieOtvorene && (
-        <OknoVizie
-          nadpis={viziaK2 !== null ? "Vízia — Krištáľová guľa" : "Vízia"}
-          text={
-            viziaK2 !== null
-              ? "Dve vrchné karty tvojho balíčka. O jednej rozhodni — nechaj si ju do ruky, alebo ju spáľ — navždy z hry; druhá ostane navrchu balíčka."
-              : "Vrchná karta tvojho balíčka. Nechaj si ju do ruky, alebo ju spáľ — navždy z hry (kliatba, slabá karta)."
-          }
-          karty={[
-            {
-              kluc: viziaK.uid,
-              nazov: menoKarty(viziaK.defId),
-              ...(viziaK2 !== null ? { popis: "vrchná" } : {}),
-              render: (sirka: number) => karta({ karta: viziaK, sirka }),
-              nechat: () => posli({ type: "vizia", vziat: true }),
-              zahodit: () => posli({ type: "vizia", vziat: false }),
-            },
-            ...(viziaK2 === null
-              ? []
-              : [
-                  {
-                    kluc: viziaK2.uid,
-                    nazov: menoKarty(viziaK2.defId),
-                    popis: "druhá",
-                    render: (sirka: number) => karta({ karta: viziaK2, sirka }),
-                    nechat: () => posli({ type: "vizia", vziat: true, druha: true }),
-                    zahodit: () => posli({ type: "vizia", vziat: false, druha: true }),
-                  },
-                ]),
-          ]}
-          sirkaOkna={sirkaOkna}
-          vyskaOkna={vyskaOkna}
-          onSkry={() => setViziaSkrytaPre(klucVizie)}
-        />
       )}
 
       {vrstva === "vestica" && view.volbaVestica !== null && (
