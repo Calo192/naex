@@ -340,9 +340,15 @@ describe("náhľad vyloženia: Šofér po NA EX (playtest 20261030-184957, Šimo
   it("kto už v kole dal NA EX, tomu Šofér Pecku navyše nedá ani v náhľade", () => {
     const s0 = setupGame(data, 309);
     const sofer: CardInstance = { uid: 891100, defId: "sofer", leftLayout: 0, rightLayout: 0 };
-    const line = lineState({ ...s0, ciel: { typ: "lokalita", lokalita: s0.lokalityVHre[0]! } });
-    expect(nahladVylozenia(data, line, 0, sofer, "superova").tuhe[0]).toBe(2);
-    expect(nahladVylozenia(data, line, 0, sofer, "superova", [false, false]).tuhe[0]).toBe(2);
-    expect(nahladVylozenia(data, line, 0, sofer, "superova", [true, false]).tuhe[0]).toBe(0);
+    // Skryté akcie (Michal 2026-11-08): Pecka navyše je v súčtoch línie (zmeny), nie v tuhých navyše.
+    // Klient berie NA EX v kole zo stavu — lineState(view) aj view.naexVKole.
+    const stol = (naexVKole: [boolean, boolean]) => lineState({ ...s0, naexVKole, ciel: { typ: "lokalita", lokalita: s0.lokalityVHre[0]! } });
+    const bez = nahladVylozenia(data, stol([false, false]), 0, sofer, "superova", [false, false]);
+    const po = nahladVylozenia(data, stol([true, false]), 0, sofer, "superova", [true, false]);
+    expect((bez.zmeny[0].Pecka ?? 0) - (po.zmeny[0].Pecka ?? 0)).toBe(1);
+    expect(bez.tuhe[0]).toBe(0);
+    expect(po.tuhe[0]).toBe(0);
+    // Bez NA EX v stave náhľad ráta, že v kole ešte nikto NA EX nedal.
+    expect(nahladVylozenia(data, lineState({ ...s0, ciel: { typ: "lokalita", lokalita: s0.lokalityVHre[0]! } }), 0, sofer, "superova")).toEqual(bez);
   });
 });

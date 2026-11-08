@@ -2764,7 +2764,7 @@
       "prikaz": {
         "type": "skipNaex"
       },
-      "melichar": "Odkryté: Štamgast dal NA EX na tvojho Pijana, chcel ti zrušiť spojené akcie. Lenže tam bolo aj tvoje – zrážka, z Pijana je Výtržník a všetky jeho akcie sú tvoje Rany: 25 : 6. Hovoril som, že ho poznám.",
+      "melichar": "Odkryté: Štamgast dal NA EX na tvojho Pijana, chcel ti zrušiť spojené akcie. Lenže tam bolo aj tvoje – zrážka, z Pijana je Výtržník a všetky jeho akcie sú tvoje Rany: 27 : 6. Hovoril som, že ho poznám.",
       "zvyraznit": [
         "linia:pijan",
         "bitka-ucet"
@@ -2789,7 +2789,7 @@
     {
       "id": "i-bitka-finale",
       "kto": "info",
-      "melichar": "Finále je tvoje, 25 : 6. Špaky: šesť za karty v línii a Nakladačka 19 sa vo finále mení na špaky jedna ku jednej. Starší: Veterinár 3 za reči po oranžovú, Krčmárka 3 za oranžový strach, Starosta, Autobusár a Vychovávateľka po 1 za žltý; exekútor ti zobral dva, Štamgastovi jeden. Vo finále sa nezajíma ani nepresviedča.",
+      "melichar": "Finále je tvoje, 27 : 6. Špaky: šesť za karty v línii a Nakladačka 21 sa vo finále mení na špaky jedna ku jednej. Starší: Veterinár 3 za reči po oranžovú, Krčmárka 3 za oranžový strach, Starosta, Autobusár a Vychovávateľka po 1 za žltý; exekútor ti zobral dva, Štamgastovi jeden. Vo finále sa nezajíma ani nepresviedča.",
       "zvyraznit": [
         "bitka-ucet",
         "bar:body",
@@ -2799,7 +2799,7 @@
     {
       "id": "i-koniec",
       "kto": "info",
-      "melichar": "Koniec hry. Zvyšné plné poldeci a cigarety sa vykúpia: plný poldeci 1 špak, päť cigariet 1 špak; tebe to dalo 2, Štamgastovi 5 – nahrabal si dvadsaťjeden cigariet. A dve Cirhózy – z druhého kola a z finále – ti ležia v balíčku nepriznané a stoja ťa 6 špakov; Štamgasta jeho jedna 3. 55 : 15.",
+      "melichar": "Koniec hry. Zvyšné plné poldeci a cigarety sa vykúpia: plný poldeci 1 špak, päť cigariet 1 špak; tebe to dalo 2, Štamgastovi 5 – nahrabal si dvadsaťjeden cigariet. A dve Cirhózy – z druhého kola a z finále – ti ležia v balíčku nepriznané a stoja ťa 6 špakov; Štamgasta jeho jedna 3. 57 : 15.",
       "zvyraznit": [
         "bar:body",
         "nastenka"
