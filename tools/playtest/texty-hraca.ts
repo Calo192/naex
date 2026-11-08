@@ -62,11 +62,11 @@ function kartaPodNaex(data: GameData, v: ClientState, uid: number): string {
     const pl = v.strany[p].find((x) => x.card.uid === uid);
     if (pl !== undefined) {
       const meno = data.cards.get(pl.card.defId)?.name ?? pl.card.defId;
-      return `${pl.playedBy === v.ja ? "tvoju" : "svoju"} kartu ${meno} [${uid}] (na ${p === v.ja ? "tvojej" : "jeho"} strane)`;
+      return `${pl.playedBy === v.ja ? "tvoju" : "svoju"} kartu ${meno} [${uid}] (${p === v.ja ? "vľavo" : "vpravo"})`;
     }
   }
   const z = v.zaverecne.find((x) => x.uid === uid);
-  if (z !== undefined) return `${z.majitel === v.ja ? "tvoju" : "svoju"} Záverečnú lícom dole (na ${z.strana === v.ja ? "tvojej" : "jeho"} strane)`;
+  if (z !== undefined) return `${z.majitel === v.ja ? "tvoju" : "svoju"} Záverečnú lícom dole (${z.strana === v.ja ? "vľavo" : "vpravo"})`;
   return `kartu [${uid}]`;
 }
 

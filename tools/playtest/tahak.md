@@ -11,7 +11,7 @@ rozpore s `docs/PRAVIDLA.md` platí `docs/PRAVIDLA.md` a rozpor zapíš do
   (2) **výhra väzňami** — po zajatí (rozdelenie Nakladačky) máš **väzňov aspoň (lokality + finále) / 2: Tretia liga 2, Druhá 3,
   Prvá 4**. Inak vyhrá, kto má po finále viac špakov.
 - **Špaky (v6, 2026-10-26) = víťazné body.** Vyhrá, kto má po finále viac špakov.
-  **Víťaz bitky** dostane **1 špak za každú kartu v línii** na oboch stranách v čase bitky (v8,
+  **Víťaz bitky** dostane **1 špak za každú kartu v línii** (v celej línii) v čase bitky (v8,
   2026-10-28; aj odkrytá Záverečná, nie priznané karty ani Dedičstvo, nie karty, ktoré z línie počas
   kola zmizli), aspoň 1 — Absťáky ich neuberajú; lokalitu si
   **neberie** (ide na nástenku).
@@ -50,17 +50,17 @@ rozpore s `docs/PRAVIDLA.md` platí `docs/PRAVIDLA.md` a rozpor zapíš do
   víťaz bitky dostane za každý bod Nakladačky 1 špak, víťaz hádky za každý bod hádky 1 špak** — zajatie ani
   presvedčenie vo finále nie je. Kto zaostáva,
   dobehne ho vysokou výhrou vo finále.
-- **Každú kartu** môžeš vyložiť na koniec **svojej aj súperovej strany**
-  (`target` `vlastna` / `superova`). Karta **patrí tomu, kto ju zahral** — akcie
-  aj efekty sa rátajú majiteľovi, nech leží kdekoľvek (výnimka: Nástroj — nižšie). Podstrčený „sabotér"
-  s Odporom zruší súperovi akciu na spoji. Každá karta okrem Nástroja míňa limit
+- **Každú kartu** môžeš vyložiť na **ktorýkoľvek z dvoch koncov línie**
+  (`target` `vlastna` = koniec vľavo od lokality, `superova` = vpravo; názvy sú len technické). Karta **patrí tomu, kto ju zahral** — akcie
+  aj efekty sa rátajú majiteľovi, nech leží kdekoľvek (výnimka: Nástroj — nižšie). Tvoja karta priložená k súperovej
+  („podstrčená“, sabotér) s Odporom zruší súperovi akciu na spoji. Každá karta okrem Nástroja míňa limit
   vykladania. **Limit = plné poldeci + 1** — NA EX limit nemíňa, ale
   jeho poldeci na karte sa neráta (v4), takže v ďalšom Zhromaždení kola máš limit o 1 nižší.
 - **Pas** (`pass`): do Pitky už nevykladáš; dostaneš 1 cigaretu za každú kartu, ktorú
   si ešte smel vyložiť, **najviac toľko, koľko máš kariet v ruke** (v6.1) — s prázdnou
   rukou nič.
-- **Názvoslovie:** línia = celý rad; lokalita ju delí na dve **strany** (tvoja,
-  súperova). **Tvoja partia** = všetky tvoje karty, na ktorejkoľvek strane.
+- **Názvoslovie:** línia = celý rad; lokalita ju delí na dva **kraje**; línia má dva
+  **konce**, žiaden nie je tvoj. **Tvoja partia** = všetky tvoje karty, kdekoľvek v línii.
   Akcie: Hazard (v8.2, kľúč v príkazoch a súčtoch ostáva `Dlh`; každá akcia = 1 Dlh),
   Poškodenie pečene, Poldeci, Cigareta (nie Pečeň, Poldecko, Cigaretka).
 - **Viac kariet v jednom ťahu Zhromaždenia:** prvá je zadarmo, **každá ďalšia
@@ -71,14 +71,14 @@ rozpore s `docs/PRAVIDLA.md` platí `docs/PRAVIDLA.md` a rozpor zapíš do
   poslednej `{"type":"vypit"}` — pri dvoch kartách **vypit, karta, karta**; „karta,
   vypit, karta“ server odmietne), alebo jednotlivé `place` / `vypit`.
 - **Pitky:** Pitiek v bitke = **1 + menší počet aktivovaných akcií lokality**
-  z jej dvoch strán (1–4, na pinnacle vo finále 1–5); Odpor na hrane lokality sa ráta, akcia hrany zrušená
-  Odporom karty nie. Ráta sa podľa strán, nie podľa toho, kto kartu zahral (aj
-  podstrčená); akcia hrany ×2 je stále jedna. Pred každou
+  z jej dvoch krajov (1–4, na pinnacle vo finále 1–5); Odpor na hrane lokality sa ráta, akcia hrany zrušená
+  Odporom karty nie. Ráta sa podľa krajov, nie podľa toho, kto kartu zahral (aj
+  súperova karta); akcia hrany ×2 je stále jedna. Pred každou
   Pitkou je Zhromaždenie. Počet sa mení s líniou — výpis ho ukazuje.
 - **Prevaha (2026-10-20):** akcie hrany lokality dostane, kto má v tej
   polovici línie (kraji) **viac svojich Občanov, Zvierat a Starešinov** (Nástroje a Cirhóza nie); pri rovnosti
   hráč, ktorého karta v tom kraji leží hneď pri lokalite (vyložená ako prvá) — nie
-  „majiteľ lokality“. Jedna podstrčená karta neukradne akcie hrany, ale tvorí
+  „majiteľ lokality“. Jedna súperova karta v kraji neukradne akcie hrany, ale tvorí
   s nimi spoj: ako prvá karta pri lokalite určuje, ktoré akcie hrany sa
   aktivujú (dostane ich hráč s prevahou). Kraje
   majú mená podľa lokality (Krčma: pri výčape / pri dverách).
@@ -95,13 +95,13 @@ rozpore s `docs/PRAVIDLA.md` platí `docs/PRAVIDLA.md` a rozpor zapíš do
   neodpovedal, na ktorýkoľvek); obe sa **otočia naraz** a Pitka sa vyhodnotí — posledné slovo nemá nikto.
 - **Lokality** — efekt platí v kole o ňu: Krčma (s plným
   poldeci povinné NA EX; prah Cirhózy obom +2), Kostol (nikto nevypije — v ťahu 1 karta; **v11.7: NA EX len
-  na poslednú kartu línie, najďalej od Kostola, na výber oba konce** — koniec bez podmienok NA EX sa neposúva na kartu pred ním, skrytá Záverečná je posledná, NA EX už dané ostáva), Benzínka (v11.13: prvé fajčenie v každej Pitke zadarmo, ďalšie 2, 3…; zadarmo nie je nerest), Zastávka (v9.1: po **prvej Pitke kola** si každý
+  na kartu na konci línie (na ktoromkoľvek z dvoch koncov), najďalej od Kostola** — koniec bez podmienok NA EX sa neposúva na kartu pred ním, skrytá Záverečná je posledná, NA EX už dané ostáva), Benzínka (v11.13: prvé fajčenie v každej Pitke zadarmo, ďalšie 2, 3…; zadarmo nie je nerest), Zastávka (v9.1: po **prvej Pitke kola** si každý
   vezme **zadarmo 1 kartu zo šenku**, najprv útočník, potom obranca — `{"type":"senok","uid":…}`;
-  z prázdneho šenku nič), Lesná cesta (v11.13: 2 tuhé za každé svoje Zviera v línii, na ktorejkoľvek strane, bez stropu),
+  z prázdneho šenku nič), Lesná cesta (v11.13: 2 tuhé za každé svoje Zviera v línii, v ktoromkoľvek kraji, bez stropu),
   Ihrisko (+2 tuhé za každý kraj, kde máš viac svojich Občanov, Zvierat a Starešinov — Dvojčatá za dve, v8), Zberný
   dvor (frakcie, Pitka: na konci Pitky smie každý spáliť 1 kartu z ruky, nie kliatbu — najprv obranca, potom útočník;
   `{"type":"spal","uid":…}`, nič = `"uid":null`),
-  Most (len na vlastnú stranu), Kar (v7: pečeň za NA EX dostane **súper** toho, kto ho dal), Cintorín (v11.13 Prehra:
+  Most (každý len na koniec línie po svojej ľavici — vľavo od lokality), Kar (v7: pečeň za NA EX dostane **súper** toho, kto ho dal), Cintorín (v11.13 Prehra:
   porazený si smie vziať do ruky **1 kartu zo svojho odhadzovacieho balíčka**, `{"type":"cintorin","uid":…}`, alebo `uid: null` nič;
   pri sekere nikto), Obecný úrad (v11.13 Pitka, obom: **cigarety a Dlhy získané v Pitke sa rátajú dvakrát**, z akcií aj z efektov kariet;
   (akcie − Obmedzenie) × 2; platby, cigarety za pas a Dlhy mimo Pitky nie; Výherný automat: zadĺženie × 2, prah ostáva), Jednota (v7: kto má viac priznaných Dlhov, nesmie fajčiť ani dolievať),
@@ -191,10 +191,10 @@ rozpore s `docs/PRAVIDLA.md` platí `docs/PRAVIDLA.md` a rozpor zapíš do
   nevidí, za ňu nepriloží (ani odpoveď na NA EX), NA EX na ňu smie len on (prejde vždy); akciu jeho
   karty, ktorú spáruje, mu výpis ani odhad bitky neukáže. Otočí sa na konci Pitky — až vtedy Nástup a Konflikt, ktorý priložením vyvolala.
 - **Nástup s voľbou (v7):** Kapybara (v11) — **súperove reči pri jednom staršom klesnú zospodu o stupeň** (povinne; bez súperových rečí nič)
-  (`{"type":"kapybara","elderId":…}`). Dohadzovačka (Nástup, 2026-10-28): keď ju priložíš k Občanovi či Starešinovi, z druhej strany
-  lokality sa najvzdialenejší Občan alebo Starešina opačného pohlavia ako jej sused presunie za ňu
-  (na koniec jej strany; povinné, karta ostáva majiteľovi, Konflikt sa nespustí). **Poľovník (Nástup, v10.4):**
-  na druhej strane lokality sa **spáli súperovo Zviera, ktoré je od lokality najďalej** (povinné, bez voľby;
+  (`{"type":"kapybara","elderId":…}`). Dohadzovačka (Nástup, 2026-10-28): keď ju priložíš k Občanovi či Starešinovi, z druhého
+  kraja sa najvzdialenejší Občan alebo Starešina opačného pohlavia ako jej sused presunie za ňu
+  (na koniec línie za ňou; povinné, karta ostáva majiteľovi, Konflikt sa nespustí). **Poľovník (Nástup, v10.4):**
+  v druhom kraji sa **spáli súperovo Zviera, ktoré je od lokality najďalej** (povinné, bez voľby;
   vlastné Zvieratá nie, skrytá Záverečná nie; medzera sa uzavrie, Konflikt sa nespustí). Ak tam žiadne nie je, nič.
 - **Vízia:** na konci Pitky za každú aktívnu Víziu uvidíš vrchnú kartu svojho
   balíčka — `{"type":"vizia","vziat":true}` do ruky, alebo `false` = spáliť
@@ -223,8 +223,8 @@ rozpore s `docs/PRAVIDLA.md` platí `docs/PRAVIDLA.md` a rozpor zapíš do
   posilnený Hazard, tvoje ako posilnená Robota.
 - **Nástroj v línii** tvorí spoj len s Občanom/Starešinom a jeho akcie dostane
   **majiteľ karty, s ktorou tvorí spoj** (podstrčený Nástroj pracuje pre
-  súpera). **Vedľa lokality sa Nástroj nevykladá (v10.2):** na prázdnu stranu (svoju ani
-  súperovu, ani vo finále) ho nevyložíš — ani ako Záverečnú či odpoveď na NA EX; v ťahu po Vypiť
+  súpera). **Vedľa lokality sa Nástroj nevykladá (v10.2):** do prázdneho kraja (na žiadny
+  koniec línie, ani vo finále) ho nevyložíš — ani ako Záverečnú či odpoveď na NA EX; v ťahu po Vypiť
   smie za kartu, ktorú si práve vyložil. Do Dedičstva áno. Ostáva ležať, keď sa k lokalite dostane neskôr.
 - **NA EX na Občana alebo Starešinu v línii — svojho aj súperovho**, len na kartu
   s aspoň 1 aktívnou a aspoň 1 neaktívnou akciou (2026-10-23; súperova Záverečná vždy). Zruší

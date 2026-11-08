@@ -161,8 +161,8 @@ const CIELE_VYKLADANIA: readonly string[] = ["vlastna", "superova", "priznanie",
 const jeCielVykladania = (c: string): c is CielVykladania => CIELE_VYKLADANIA.includes(c);
 
 const POPIS_CIELA: Record<CielVykladania, string> = {
-  vlastna: "na tvoju stranu",
-  superova: "na súperovu stranu (ostane tvoja)",
+  vlastna: "na koniec línie vľavo",
+  superova: "na koniec línie vpravo (ostane tvoja)",
   priznanie: "priznať",
   dedicstvo: "do Dedičstva (za cigarety)",
 };
@@ -2842,7 +2842,7 @@ export function HernaPlocha({
         nova || otocena || presunieSa || naexBy !== undefined || skryteMoje || skryteSupera || vybranaNaex || placed.zaverecna === true ? (
           <>
             {presunieSa && (
-              <span className="nova-stitok" title="Navrhnutá Dohadzovačka túto kartu po potvrdení presunie z druhej strany lokality za seba (na koniec svojej strany).">
+              <span className="nova-stitok" title="Navrhnutá Dohadzovačka túto kartu po potvrdení presunie z druhého kraja za seba (na koniec línie).">
                 presunie sa za Dohadzovačku
               </span>
             )}
@@ -2990,7 +2990,7 @@ export function HernaPlocha({
   };
   const miestoNaKonci = (p: PlayerId, ciel: "vlastna" | "superova"): ReactNode => {
     // Počas ťahania z ruky ukáže miesto ešte pred pustením, s čím sa karta spojí.
-    const nazovMiesta = p === ja ? "na tvoju stranu" : "na súperovu stranu";
+    const nazovMiesta = p === ja ? "na koniec vľavo" : "na koniec vpravo";
     const n = tahanie !== null && tahanie.zdroj.odkial === "ruka" && jeCiel(ciel) ? nahladVylozeniaNa(tahanie.zdroj.karta, ciel) : null;
     const vystraha = n !== null && tahanie !== null && !tahanie.zdroj.navrh ? vystrahaVylozenia(tahanie.zdroj.karta, ciel) : null;
     const popis =
@@ -3022,7 +3022,7 @@ export function HernaPlocha({
     const vybrane = miestoVolby === ciel;
     const moze = m.dovod === null;
     const sSpojom = [...m.karty.values()].filter((n) => n.pary.length > 0).length;
-    const nazov = p === ja ? "na tvoju stranu" : "na súperovu stranu";
+    const nazov = p === ja ? "na koniec vľavo" : "na koniec vpravo";
     const vyska = (sirkaVLinii * 80) / 54;
     const sirkaMiesta = Math.round(sirkaVLinii * MIESTO_VOLBY);
     return vLinii(
@@ -3182,7 +3182,7 @@ export function HernaPlocha({
     return t === null ? null : <span className="kraj-rovnost">{t}</span>;
   };
   const popisKraja = (p: PlayerId, smer: "vlavo" | "vpravo") => {
-    const nazov = krajStrany(p) ?? (p === ja ? "tvoja strana" : `strana — ${menoHraca(p)}`);
+    const nazov = krajStrany(p) ?? (p === ja ? "vľavo" : "vpravo");
     return (
       <span className="partia-popis" title={[tipKraja(p), textRovnostiKraja(p)].filter((x) => x !== null).join(" ")}>
         {smer === "vlavo" ? "← " : ""}
@@ -3203,14 +3203,14 @@ export function HernaPlocha({
   const popisStranStredu =
     stranyStredu === null ? null : (
       <span className="strany-stredu">
-        <span title={tipKraja(ja)}>◀ {krajStrany(ja) ?? "k tebe"}</span>
-        <span title={tipKraja(super_)}>{krajStrany(super_) ?? "k súperovi"} ▶</span>
+        <span title={tipKraja(ja)}>◀ {krajStrany(ja) ?? "vľavo"}</span>
+        <span title={tipKraja(super_)}>{krajStrany(super_) ?? "vpravo"} ▶</span>
       </span>
     );
   const ikonyStranStredu =
     stranyStredu === null ? null : (
       <span className="strany-stredu-ikony">
-        k tebe {hranaIkony(stranyStredu.kTebe)} · k súperovi {hranaIkony(stranyStredu.kSuperovi)}
+        vľavo {hranaIkony(stranyStredu.kTebe)} · vpravo {hranaIkony(stranyStredu.kSuperovi)}
       </span>
     );
   const stredLinie = ((): ReactNode => {
@@ -3260,7 +3260,7 @@ export function HernaPlocha({
   const textVolbyMiesta: ReactNode =
     miestoVolby === null || vybraneMiesto === undefined ? null : (
       <span className="volba-miesta-text">
-        <strong>{miestoVolby === "vlastna" ? "Na tvoju stranu" : "Na súperovu stranu"}:</strong> klikni na kartu v ruke. Vysunuté sa tu spoja
+        <strong>{miestoVolby === "vlastna" ? "Na koniec vľavo" : "Na koniec vpravo"}:</strong> klikni na kartu v ruke. Vysunuté sa tu spoja
         (svietia akcie spoja), stlmené sa dajú položiť bez spoja.{" "}
         {view.strany[miestoVolby === "vlastna" ? ja : super_].length === 0 &&
           !vylozenia.some((x) => x.ciel === miestoVolby) &&
@@ -3338,7 +3338,7 @@ export function HernaPlocha({
     </span>
   );
   const pravidloBrania =
-    "Beriete striedavo, kým obaja neprestanete; kto nemá cigaretu, prestane sám. Pitiek v bitke bude 1 + menší počet aktivovaných akcií lokality z dvoch strán.";
+    "Beriete striedavo, kým obaja neprestanete; kto nemá cigaretu, prestane sám. Pitiek v bitke bude 1 + menší počet aktivovaných akcií lokality z dvoch krajov.";
   const potvrdBranie = (): void => {
     const uids = zoSenku.map((k) => k.uid);
     setNoveZoSenku((n) => ({ kolo: view.kolo, uids: [...(n.kolo === view.kolo ? n.uids : []), ...uids] }));
@@ -4048,7 +4048,7 @@ export function HernaPlocha({
               </>
             ) : (
               <>
-                Potiahni kartu z ruky na stôl, alebo klikni na <strong>+</strong> na konci strany — vysunú sa karty, ktoré sa tam spoja. Alebo
+                Potiahni kartu z ruky na stôl, alebo klikni na <strong>+</strong> na konci línie — vysunú sa karty, ktoré sa tam spoja. Alebo
                 pasuj do Pitky (cigareta za každú nevyloženú kartu).{" "}
                 <span className="tlmene">
                   Ďalšie karty v tom istom ťahu smieš pridať, každá ťa stojí plný poldeci (limit −1, pečeň +1){plne === 0 ? " — teraz žiadny nemáš" : ""}.
@@ -4182,7 +4182,7 @@ export function HernaPlocha({
                       <strong>{menoHraca(super_)} neodpovedal — smieš na ktorýkoľvek kraj.</strong>
                     ) : null}{" "}
                     Obe odpovede sa otočia naraz a Pitka sa vyhodnotí.{" "}
-                    Potiahni ju na stôl, alebo klikni na <strong>+</strong> na konci strany.
+                    Potiahni ju na stôl, alebo klikni na <strong>+</strong> na konci línie.
                   </>
                 ),
                 stred: pecatTahu({
@@ -4227,7 +4227,7 @@ export function HernaPlocha({
             ? "Nemáš plný poldeci (doliať: 2 cigarety)."
             : naexCiele.size === 0
               ? view.ciel?.lokalita?.defId === "kostol"
-                ? "Kostol: NA EX smie len na poslednú kartu línie — na žiadnom konci nie je karta, na ktorú by malo zmysel."
+                ? "Kostol: NA EX smie len na kartu na konci línie — na žiadnom z dvoch koncov nie je karta, na ktorú by malo zmysel."
                 : "NA EX ide len na Občana či Starešinu v línii s aspoň jednou aktívnou a jednou neaktívnou akciou (nie Nástroj)."
               : null;
         // Krčma chce jedno NA EX; po ňom už končím nič neblokuje.
@@ -4370,7 +4370,7 @@ export function HernaPlocha({
                   ? "▼"
                   : "="}{" "}
               {odpoved !== null && (
-                <span title={`Súperovu ruku nevidíš — takto by dopadla najhoršia karta sady, akou môže odpovedať (napr. ${menoKarty(odpoved.karta.defId)} na koniec ${odpoved.strana === ja ? "tvojej" : "svojej"} strany).`}>
+                <span title={`Súperovu ruku nevidíš — takto by dopadla najhoršia karta sady, akou môže odpovedať (napr. ${menoKarty(odpoved.karta.defId)} na koniec línie ${odpoved.strana === ja ? "vľavo" : "vpravo"}).`}>
                   · po najhoršej odpovedi {menoHraca(super_)} až{" "}
                   <b>
                     {odpoved.damage.tuhe[ja]}:{odpoved.damage.tuhe[super_]}
@@ -5967,7 +5967,7 @@ export function HernaPlocha({
   );
 
   // Lokalita, ktorú vybral súper: karta v čitateľnej veľkosti a pod ňou hrany tak, ako ležia na stole
-  // (k tebe vľavo). Na notebooku stojí vedľa textu, aby sa zmestila na výšku bez posúvania.
+  // (tvoj kraj vľavo, ako na stole). Na notebooku stojí vedľa textu, aby sa zmestila na výšku bez posúvania.
   const pauzaCielaEl = ((): ReactNode => {
     if (!pauzaBezi || lokalita === null) return null;
     const kTebe = krajStrany(ja);
@@ -5990,15 +5990,15 @@ export function HernaPlocha({
       nadpis: menoKarty(lokalita.defId),
       text:
         `${menoHraca(super_)} ${tvar(rodHracaP(super_), "vybral", "vybrala", "vybral(a)")} ${finale ? "vrcholovú lokalitu finále" : "lokalitu, o ktorú sa v tomto kole bije"}. ` +
-        (kTebe !== null && kSuperovi !== null ? `K tebe je hrana „${kTebe}“, k súperovi „${kSuperovi}“.` : "Ľavá hrana karty je k tebe, pravá k súperovi."),
+        (kTebe !== null && kSuperovi !== null ? `Vľavo je hrana „${kTebe}“, vpravo „${kSuperovi}“.` : "Hrany ležia tak, ako ich vidíš: ľavá vľavo, pravá vpravo."),
     };
     return (
       <Medziobrazovka obsah={obsah} onRozumiem={zrusPauzuCiela} tlacidloPoMs={PAUZA_CIELA_MS} vypinac={false} trieda="lokalita-supera">
         <div className="ls-lokalita">
           {karta({ karta: lokalita, sirka: sirkaKarty, otocena: view.lokalitaOtocena !== (ja === 1) })}
           <span className="ls-hrany" style={naSirku ? undefined : { width: sirkaKarty }}>
-            <span>◀ k tebe{kTebe !== null && <b> {kTebe}</b>}</span>
-            <span>{kSuperovi !== null && <b>{kSuperovi} </b>}k súperovi ▶</span>
+            <span>◀ vľavo{kTebe !== null && <b> {kTebe}</b>}</span>
+            <span>{kSuperovi !== null && <b>{kSuperovi} </b>}vpravo ▶</span>
           </span>
           {ikonyStranStredu}
         </div>
@@ -6170,7 +6170,7 @@ export function HernaPlocha({
                   title={
                     stranyStredu === null || krajStrany(ja) === null || krajStrany(super_) === null
                       ? undefined
-                      : `Hrana k tebe: ${krajStrany(ja)} · hrana k súperovi: ${krajStrany(super_)}`
+                      : `Vľavo: ${krajStrany(ja)} · vpravo: ${krajStrany(super_)}`
                   }
                 >
                   {jeFinaleStola && lokalita !== null ? (naSirku ? "finále" : "finále · lokalita") : lokalita !== null || lokalitaNavrh !== null ? "lokalita" : "cieľ kola"}

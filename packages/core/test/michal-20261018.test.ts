@@ -156,7 +156,7 @@ describe("automatický pas", () => {
     const s = zhromazdenie([a, n], 0, 0);
     const d = dovodyAutoPasu(data, s, 0);
     expect(d[0]).toMatch(/^Pijan — limit vykladania/);
-    expect(d[1]).toBe("Noviny do línie nemá kam (obe strany: prázdne, Nástroj sa vedľa lokality nevykladá) a Dedičstvo stojí 1 cigaretu, máš 0.");
+    expect(d[1]).toBe("Noviny do línie nemá kam (oba konce: prázdne kraje, Nástroj sa vedľa lokality nevykladá) a Dedičstvo stojí 1 cigaretu, máš 0.");
   });
 
   it("kliatba v ruke auto-pas zastaví — priznanie je stále možnosť", () => {

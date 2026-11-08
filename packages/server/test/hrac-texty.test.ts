@@ -154,8 +154,8 @@ describe("klient AI hráčov: Bzdocha (playtest 20261028-090549, nezrovnalosť 2
     let t = apply(sada, s, { type: "naex", uid: lavy }, 0).state;
     t = apply(sada, t, { type: "skipNaex" }, 0).state;
     const v = viewFor(sada, t, 1);
-    // ht_lavy patrí majiteľovi Bzdochy (hráč 1) a leží na jeho strane.
-    expect(bzdochaText(sada, v)).toMatch(/^Bzdocha: súper dal skryto NA EX na tvoju kartu ht_lavy \[\d+\] \(na tvojej strane\)/);
+    // ht_lavy patrí majiteľovi Bzdochy (hráč 1) a leží uňho vľavo od lokality.
+    expect(bzdochaText(sada, v)).toMatch(/^Bzdocha: súper dal skryto NA EX na tvoju kartu ht_lavy \[\d+\] \(vľavo\)/);
     // Stôl a odhad rátajú jeho NA EX tak, ako ho motor zúčtuje pri odkrytí.
     const vs = sVidenymiSkrytymiNaex(sada, v);
     expect(vs.strany[1].find((pl) => pl.card.uid === lavy)?.naexBy).toBe(0);

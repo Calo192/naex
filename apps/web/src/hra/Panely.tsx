@@ -1490,7 +1490,7 @@ export function PriebehKola({
   const pitiek = Math.max(1, view.pitkyCelkom);
   const viac = pitiek > 1;
   const pocetPozn =
-    "Pitiek je 1 + menší z počtov aktivovaných akcií karty v strede na jej dvoch stranách — počet sa mení, keď hráči vykladajú karty k lokalite.";
+    "Pitiek je 1 + menší z počtov aktivovaných akcií karty v strede v jej dvoch krajoch — počet sa mení, keď hráči vykladajú karty k lokalite.";
   // Vo finále je „Finále“ hlavou osi (krokPartie) — krok „Finále“ by ho opakoval (dizajn timeline-lista, U2).
   const finale = view.ciel?.typ === "finale";
   const tipFinale: TipObsah = {
@@ -1516,7 +1516,7 @@ export function PriebehKola({
               text: (
                 <>
                   Obranca (víťaz poslednej bitky) vyberie lokalitu, natočí ju víťaz minulej hádky (po remíze obranca).
-                  <span className="tip-riadok">Natočenie určuje, ktoré akcie lokality sú obrátené ku ktorej strane.</span>
+                  <span className="tip-riadok">Natočenie určuje, ktoré akcie lokality sú obrátené ku ktorému kraju.</span>
                 </>
               ),
             },
@@ -1557,7 +1557,7 @@ export function PriebehKola({
           nadpis: `Zhromaždenie${viac ? ` ${i} z ${pitiek}` : ""}`,
           text: (
             <>
-              Striedavo vykladáte karty z ruky na hociktorú stranu línie, začína útočník. Limit vykladania = plné poldeci + poldeci na
+              Striedavo vykladáte karty z ruky na hociktorý koniec línie, začína útočník. Limit vykladania = plné poldeci + poldeci na
               stole + 1; každá ďalšia karta v tom istom ťahu stojí plný poldeci.
               <span className="tip-riadok">
                 Kedykoľvek na ťahu: priznať kliatbu (za Cirhózu sa nedoberá; Dlh sa prizná sám pri dobratí), Nástroj do Dedičstva (za cigarety, cena rastie);

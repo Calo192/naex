@@ -236,7 +236,7 @@
         "uid": "lokality:lesna_cesta",
         "otocena": false
       },
-      "melichar": "Vyber Lesnú cestu tak, aby jej [Pecka] Pecka bola pri tebe: klikni na ňu a potvrď, náhľad ukáže, ktorá hrana bude pri tebe. Hrana pri tebe môže byť tvoja, tú druhú berie súper. Súper je Štamgast, ja radím.",
+      "melichar": "Vyber Lesnú cestu tak, aby jej [Pecka] Pecka bola vľavo: klikni na ňu a potvrď, náhľad ukáže, ktorá hrana bude vľavo. Hrana vľavo môže byť tvoja, tú druhú berie súper. Súper je Štamgast, ja radím.",
       "zvyraznit": [
         "lokality",
         "lokalita-navrh",
@@ -255,7 +255,7 @@
               "uid": "lokality:lesna_cesta",
               "otocena": true
             },
-            "text": "Takto by [Pecka] Pecka hľadela na Štamgasta a pri tebe by nebolo žiadne tuhé. Otoč ju späť, klikni na ňu ešte raz.",
+            "text": "Takto by [Pecka] Pecka hľadela na Štamgasta a vľavo by nebolo žiadne tuhé. Otoč ju späť, klikni na ňu ešte raz.",
             "hlaska": "nervy/16_to_zas_bude_vyzerat"
           },
           {
@@ -275,7 +275,7 @@
             "hlaska": "udiv/03_No_toto_je_marha"
           }
         ],
-        "inak": "Lesná cesta, Peckou k sebe. Viac od teba nechcem."
+        "inak": "Lesná cesta, Peckou doľava. Viac od teba nechcem."
       }
     },
     {
@@ -501,7 +501,7 @@
     {
       "id": "q-spoj",
       "kto": "otazka",
-      "melichar": "Máš 3 : 2 – Rana 1 a Pecka 2 – a hrana pri tebe je tvoja, lebo pri nej leží tvoja karta. Tak schválne: prečo Pijanova [Rana] Rana platí?",
+      "melichar": "Máš 3 : 2 – Rana 1 a Pecka 2 – a hrana vľavo je tvoja, lebo pri nej leží tvoja karta. Tak schválne: prečo Pijanova [Rana] Rana platí?",
       "moznosti": [
         {
           "text": "Na spoji stretla Pecku Lesnej cesty v rovnakej výške.",
@@ -509,9 +509,9 @@
           "vysvetlenie": "Áno, spojená akcia platí, osamotená nie. Na začiatočníka nie zlé."
         },
         {
-          "text": "Leží na mojej strane.",
+          "text": "Leží vľavo od lokality.",
           "spravna": false,
-          "vysvetlenie": "Strana nerozhoduje, rozhoduje partner na spoji.",
+          "vysvetlenie": "Kde leží, nerozhoduje, rozhoduje partner na spoji.",
           "hlaska": "nervy/bud_ticho"
         }
       ]
@@ -809,7 +809,7 @@
     {
       "id": "k-povera-bot",
       "kto": "info",
-      "melichar": "Potom tuhé 9 : 4: bitka o Lesnú cestu je tvoja. Za vyhratú bitku dostaneš špak za každú kartu v línii na oboch stranách – päť. Ohorky, tie ja zbieram celý život.",
+      "melichar": "Potom tuhé 9 : 4: bitka o Lesnú cestu je tvoja. Za vyhratú bitku dostaneš špak za každú kartu v línii – päť. Ohorky, tie ja zbieram celý život.",
       "zvyraznit": [
         "bitka-ucet",
         "bar:body"
@@ -1024,7 +1024,7 @@
         "uid": "lokality:ihrisko",
         "otocena": false
       },
-      "melichar": "Vyber Ihrisko tak, ako leží, [Pecka] Peckou a [Rana] Ranou k sebe, a potvrď. Aj Ihrisko má efekt: kto má pri ňom na svojej polovici viac ľudí ako súper, dostane 2 tuhé navyše.",
+      "melichar": "Vyber Ihrisko tak, ako leží, [Pecka] Peckou a [Rana] Ranou doľava, a potvrď. Aj Ihrisko má efekt: kto má v kraji viac ľudí ako súper, dostane 2 tuhé navyše.",
       "hlaskaChyby": "nervy/19_ach_boha",
       "zvyraznit": [
         "lokality",
@@ -1063,7 +1063,7 @@
             "hlaska": "udiv/03_No_toto_je_marha"
           }
         ],
-        "inak": "Ihrisko, Peckou k sebe. Viac od teba nechcem."
+        "inak": "Ihrisko, Peckou doľava. Viac od teba nechcem."
       }
     },
     {
@@ -1197,7 +1197,7 @@
         {
           "text": "Kto tam má viac svojich Občanov, Zvierat a Starešinov.",
           "spravna": true,
-          "vysvetlenie": "Áno. Ráta sa, koho sú karty, nie na ktorej strane ležia. O chvíľu sa ti to zíde."
+          "vysvetlenie": "Áno. Ráta sa, koho sú karty, nie na ktorom konci ležia. O chvíľu sa ti to zíde."
         },
         {
           "text": "Kto tam má viac tuhého.",
@@ -1289,7 +1289,7 @@
           }
         ]
       },
-      "melichar": "Pozor, podlosť: Štamgast položil Dvojčatá na koniec tvojej strany. Karta je natočená k nemu, ostáva jeho a jej akcie sa rátajú jemu. Do prevahy sa Dvojčatá rátajú za dvoch: na trávniku 2 : 2.",
+      "melichar": "Pozor, podlosť: Štamgast položil Dvojčatá na koniec línie vľavo, k tvojim kartám. Karta je natočená k nemu, ostáva jeho a jej akcie sa rátajú jemu. Do prevahy sa Dvojčatá rátajú za dvoch: na trávniku 2 : 2.",
       "zvyraznit": [
         "linia:dvojcata",
         "prevaha"
@@ -1307,12 +1307,12 @@
     {
       "id": "q-superova",
       "kto": "otazka",
-      "melichar": "Komu sa rátajú akcie Dvojčiat, ktoré ležia na tvojej strane?",
+      "melichar": "Komu sa rátajú akcie Dvojčiat, ktoré ležia medzi tvojimi kartami?",
       "moznosti": [
         {
-          "text": "Mne, ležia u mňa.",
+          "text": "Mne, ležia pri mojich.",
           "spravna": false,
-          "vysvetlenie": "Ležia u teba, ale sú jeho. Ako moja požičaná cigareta u teba.",
+          "vysvetlenie": "Ležia pri tvojich, ale sú jeho. Ako moja požičaná cigareta u teba.",
           "hlaska": "nervy/to_robia_naprotiven"
         },
         {
@@ -1432,7 +1432,7 @@
           }
         ]
       },
-      "melichar": "Vráť si trávnik: polož Praudovravca na koniec svojej strany, za Liberála, a potvrď. Na trávniku bude 3 : 3 a pri rovnosti rozhoduje karta pri lokalite – tvoj Pijan.",
+      "melichar": "Vráť si trávnik: polož Praudovravca na koniec línie, za Liberála, a potvrď. Na trávniku bude 3 : 3 a pri rovnosti rozhoduje karta pri lokalite – tvoj Pijan.",
       "hlaskaChyby": "urazky/ty_marha",
       "zvyraznit": [
         "ruka:praudovravec",
@@ -1520,7 +1520,7 @@
             "hlaska": "urazky/sak_to_len_debil_moze_spravit_toto"
           }
         ],
-        "inak": "NA EX na Anonymného alkoholika. Na koniec tvojej strany."
+        "inak": "NA EX na Anonymného alkoholika. Leží vľavo, na konci línie."
       }
     },
     {

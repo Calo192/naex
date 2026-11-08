@@ -892,7 +892,7 @@
     {
       "id": "13.podstrcenie",
       "paragraf": "13. Pokročilé ťahy › Podstrčenie (sabotér)",
-      "pravidlo": "Kartu možno podstrčiť na súperovu stranu: jej Odpor mu zruší akciu na spoji, jej akcie bodujú pre toho, kto ju zahral (okrem Kočovníka); akcie hrany lokality jedna podstrčená karta neukradne, ale tvorí s nimi spoj.",
+      "pravidlo": "Podstrčiť = priložiť svoju kartu k súperovej (Michal 2026-11-08): jej Odpor mu zruší akciu na spoji, jej akcie bodujú pre toho, kto ju zahral; akcie hrany lokality súperova karta v kraji neukradne, ale tvorí s nimi spoj.",
       "stav": "na-overenie",
       "testy": [
         "packages/core/test/partia.test.ts › Odpor podstrčenej karty ruší súperovu akciu a vlastné akcie boduje majiteľovi",
