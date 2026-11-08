@@ -1,0 +1,1340 @@
+{
+ "nazov": "Frakcie, Vízia a koniec Kšeftu — záväzná špecifikácia",
+ "datum": "2026-11-08",
+ "rozhodol": "Michal Calík 2026-11-08 (cez Leadera); spísal Vymyselník",
+ "zaklad": "packages/core/data/cards.json v master ec550d5e (Zrejúca, v11.13); kópie z packages/server/seed/navrhy.json",
+ "kluce_akcii": "ako v cards.json: Dlh = Hazard, PoškodeniePečene = Pečeň",
+ "pojmy": {
+  "Spoločník": "Spoločník: T — platí, kým máš v partii (karty natočené k tebe, ktorýkoľvek kraj) odkrytú kartu s tagom T. Raz, aj pri viacerých takých kartách. Akcie navyše sa rátajú ako akcie na hrane: pitkové v každej Pitke, v ktorej podmienka platí, bitkové v bitke, Robota pri exekúcii.",
+  "Nepriateľ": "Nepriateľ: T — to isté, keď má súper v partii odkrytú kartu s tagom T.",
+  "Podpora: T": "Podpora (§16) len so stretnutou vlastnou kartou s tagom T. Pri každom spustení zvlášť, bez stropu. Akcie navyše platia od spustenia do konca kola (pitkové v každej Pitke od spustenia).",
+  "Konflikt: T": "Konflikt (§16) len so stretnutou súperovou kartou s tagom T. Pri každom spustení zvlášť, bez stropu, do konca kola.",
+  "Podpora / Konflikt bez tagu": "ako dnes (§16), pri každom spustení.",
+  "akcia navyše": "aktívna akcia majiteľa karty mimo jej hrán; ide do súčtov ako tá istá akcia a vyhodnotí sa v jej kroku; po bitke zaniká.",
+  "mení akciu navyše": "všetko, čo platí na všetky tvoje akcie toho druhu: Dedičstvo Náradia (Valaška, Horoskop, Fúrik, Píšťalka, Telefón…), Svätý text, Vidly, Čierna mačka, súperova Viera proti Povere, Milujúca manželka, Obecný úrad, priazeň starších",
+  "nemení akciu navyše": "nič, čo pôsobí na spoj alebo na akcie jednej karty: Posilnenie, Odpor, Pakt, Forsáž, Vzbura, NA EX (na túto kartu ani na suseda), zrážka (Výtržník), Silná nezávislá žena, Liberál, Pes, Zámočník, Sypač, Vedúcko, Profesionálny tipér, Veterán, Starosta (hrany lokality), Poľovnícka chata",
+  "skrytá Záverečná": "kým leží lícom dole, nesplní podmienku inej karte a sama akcie navyše nedostane; Podporu či Konflikt vyvolá až pri otočení (od ďalšej Pitky).",
+  "Mäsiar": "efekty Zvierat pri ňom neplatia, teda ani Nepriateľ Recidivistu.",
+  "zobrazenie": "1× bez odznaku; ×N až od 2 (Michal 2026-11-08).",
+  "necieli vlastný tag": "platí pre nové efekty vrátane pohlavia a Zvieraťa; Sypač ostáva, ako je, aj so znením.",
+  "2 na 2": "Spoločník = karta tvojho tímu, Nepriateľ = karta druhého tímu (súper = druhý tím ako celok)."
+ },
+ "graf": {
+  "sipky": [
+   {
+    "cislo": 1,
+    "z": "Autorita",
+    "na": "Kriminál",
+    "karty": [
+     "policajtka"
+    ]
+   },
+   {
+    "cislo": 2,
+    "z": "Kriminál",
+    "na": "Influencer",
+    "karty": [
+     "podvodnik"
+    ]
+   },
+   {
+    "cislo": 3,
+    "z": "Influencer",
+    "na": "Autorita",
+    "karty": [
+     "praudovravec",
+     "sarlatan",
+     "snubenica",
+     "stryko_z_ameriky"
+    ]
+   },
+   {
+    "cislo": 4,
+    "z": "Zahraničný",
+    "na": "Pamätník",
+    "karty": [
+     "vestica",
+     "kocovnik",
+     "opatrovatelka"
+    ]
+   },
+   {
+    "cislo": 5,
+    "z": "Pamätník",
+    "na": "Závislý",
+    "karty": [
+     "niekoho_stryna"
+    ]
+   },
+   {
+    "cislo": 6,
+    "z": "Závislý",
+    "na": "Zahraničný",
+    "karty": [
+     "ministrant",
+     "dievcina_na_vydaj"
+    ]
+   },
+   {
+    "cislo": 7,
+    "z": "Pracujúci",
+    "na": "Autorita",
+    "karty": [
+     "zivnostnik"
+    ]
+   },
+   {
+    "cislo": 8,
+    "z": "Kriminál",
+    "na": "Zahraničný",
+    "karty": [
+     "recidivista"
+    ],
+    "nova": "Recidivista (Michal)"
+   }
+  ],
+  "mimo_grafu": {
+   "tagy": [
+    "Chlap",
+    "Žena",
+    "Zviera"
+   ],
+   "karty": [
+    "velmi_smutiaca_vdova",
+    "predavacka",
+    "hasic"
+   ]
+  },
+  "pravidlo": "nový efekt nikdy necieli tag, ktorý karta sama nesie; karta s dvoma frakčnými tagmi smie použiť šípku ktoréhokoľvek z nich, len nie tú, ktorá vedie na jej druhý tag",
+  "oba_konce_jednej_sipky": [
+   "Predavačka (šípka 7)"
+  ]
+ },
+ "karty": [
+  {
+   "id": "ministrant",
+   "nazov": "Miňištrant",
+   "tagy": [
+    "Občan",
+    "Závislý",
+    "Chlap"
+   ],
+   "spustac": "Spoločník",
+   "tag": "Zahraničný",
+   "akcie_navyse": {
+    "Pecka": 1
+   },
+   "text": "Spoločník: Zahraničný",
+   "sipka": 6,
+   "pred": {
+    "triggers": [
+     "Nástup"
+    ],
+    "effect_text": "Nástup: Ak vyvoláš Konflikt, do konca kola sa jeho Viera ráta ako Pecka."
+   },
+   "zdroj": "Michal (spúšťač a tag), ikona podľa odporúčania A",
+   "pocetnost_stredna_hra": "Spoločník 9 · 18 · 20 %",
+   "pribeh_navrh": "Cudzí farár ho vezme pod krídla, pri omši rozdáva facky.",
+   "poznamka": "Štartovka, slabá, kým si hráč nekúpi Zahraničného. Je vo výučbe (prva-hra.json) — výučba až pri prechode do Vypálenej."
+  },
+  {
+   "id": "velmi_smutiaca_vdova",
+   "nazov": "Veľmi smútiaca vdova",
+   "tagy": [
+    "Občan",
+    "Kriminál",
+    "Žena"
+   ],
+   "spustac": "Konflikt",
+   "tag": "Chlap",
+   "akcie_navyse": {},
+   "text": "Konflikt: Chlap — Súper odhodí 1 kartu z ruky.",
+   "sipka": null,
+   "pred": {
+    "triggers": [
+     "Konflikt"
+    ],
+    "effect_text": "Konflikt: Súper odhodí 1 kartu z doberacieho balíčka za každého svojho Chlapa, ktorý s ňou susedí."
+   },
+   "zdroj": "Michal doslova („Muž“ = tag Chlap), z ruky potvrdil Michal",
+   "pocetnost_stredna_hra": "Konflikt 32–95 %",
+   "poznamka": "Pohlavie je mimo grafu; Vdova je Žena, vlastný tag necieli. Výklad: kartu vyberá súper (text nehovorí „náhodnú“ ako Noviny), hra počká ako pri Hasičovi; odhodená ide do jeho odhadzovacieho balíčka (verejný). Prázdna ruka = nič."
+  },
+  {
+   "id": "vestica",
+   "nazov": "Veštica",
+   "tagy": [
+    "Občan",
+    "Zahraničný",
+    "Žena"
+   ],
+   "spustac": "Spoločník",
+   "tag": "Pamätník",
+   "akcie_navyse": {
+    "Povera": 2
+   },
+   "text": "Spoločník: Pamätník",
+   "sipka": 4,
+   "pred": {
+    "triggers": [
+     "Prehra"
+    ],
+    "effect_text": "Prehra: Preskúmaj súperov a svoj doberací balík. Vymeň jednu jeho kartu za tvoju a karty vráť."
+   },
+   "zdroj": "Michal: A",
+   "pocetnost_stredna_hra": "Spoločník 43 · 41 · 36 %",
+   "pribeh_navrh": "Babky jej nosia na kávu.",
+   "poznamka": "Zaniká krok bitky 5b (výmena kariet balíčkov) a príkaz vestica. Akcie mení Vízia (časť 5).",
+   "akcie": {
+    "left": {
+     "blocked": [
+      0
+     ],
+     "actions": {
+      "PoškodeniePečene": 1,
+      "Dlh": 1,
+      "Povera": 1
+     }
+    },
+    "right": {
+     "blocked": [
+      0,
+      3
+     ],
+     "actions": {
+      "Povera": 1,
+      "Vízia": 1
+     },
+     "allowed": {
+      "1": [
+       "Povera"
+      ],
+      "2": [
+       "Vízia"
+      ]
+     }
+    },
+    "pred": {
+     "left": {
+      "blocked": [
+       0
+      ],
+      "actions": {
+       "PoškodeniePečene": 1,
+       "Povera": 1,
+       "Vízia": 1
+      }
+     },
+     "right": {
+      "blocked": [
+       0,
+       3
+      ],
+      "actions": {
+       "Povera": 2
+      }
+     }
+    },
+    "varianty": {
+     "pred": 6,
+     "po": 6
+    },
+    "dovod": "Vízia pevne P2, Povera P1. Ľavá: Vízia odíde, Povera → Hazard, 3 rôzne akcie voľne (6)."
+   }
+  },
+  {
+   "id": "policajtka",
+   "nazov": "Policajtka",
+   "tagy": [
+    "Občan",
+    "Autorita",
+    "Žena"
+   ],
+   "spustac": "Nepriateľ",
+   "tag": "Kriminál",
+   "akcie_navyse": {
+    "Petelica": 1
+   },
+   "text": "Nepriateľ: Kriminál",
+   "sipka": 1,
+   "pred": {
+    "triggers": [
+     "Pitka"
+    ],
+    "effect_text": "Pitka: Za každú súperovu akciu, ktorú v tejto Pitke zruší tvoj Odpor, získa súper 1 zadĺženie."
+   },
+   "zdroj": "Michal doslova (Petelica namiesto Obmedzenia)",
+   "pocetnost_stredna_hra": "Nepriateľ 17 · 33 · 37 %",
+   "pribeh_navrh": "Hliadka pred krčmou, obušok vytiahne skôr ako blok.",
+   "poznamka": "Zaniká Pokutový blok (Pitka). Petelica navyše sa nedá zrušiť (nie je na spoji); Puška ju preto nemení."
+  },
+  {
+   "id": "praudovravec",
+   "nazov": "Praudovravec",
+   "tagy": [
+    "Občan",
+    "Influencer",
+    "Chlap"
+   ],
+   "spustac": "Konflikt",
+   "tag": "Autorita",
+   "akcie_navyse": {
+    "Pohoršenie": 1
+   },
+   "text": "Konflikt: Autorita",
+   "sipka": 3,
+   "pred": {
+    "triggers": [
+     "Furt"
+    ],
+    "effect_text": "Furt: Odpor na jeho spojoch nič neruší, ale ráta sa ako Posilnenie — zdvojí akciu, s ktorou je v páre, aj keď je súperova."
+   },
+   "zdroj": "Michal: A",
+   "pocetnost_stredna_hra": "Konflikt 8–42 %",
+   "pribeh_navrh": "Povie úradu do očí, čo si myslí.",
+   "poznamka": "Zaniká Furt (Odpor ako Posilnenie).",
+   "akcie": {
+    "right": {
+     "blocked": [
+      0
+     ],
+     "actions": {
+      "Dlh": 1,
+      "Povera": 1
+     },
+     "allowed": {
+      "1": [
+       "Povera"
+      ],
+      "2": [
+       "Dlh"
+      ],
+      "3": [
+       "Dlh"
+      ]
+     }
+    },
+    "pred": {
+     "right": {
+      "blocked": [
+       0
+      ],
+      "actions": {
+       "Dlh": 1,
+       "Odpor": 1
+      },
+      "allowed": {
+       "1": [
+        "Odpor"
+       ],
+       "2": [
+        "Dlh"
+       ],
+       "3": [
+        "Dlh"
+       ]
+      }
+     }
+    },
+    "varianty": {
+     "pred": 4,
+     "po": 4
+    },
+    "dovod": "Pravý Odpor → Povera na tom istom indexe 1. Bez Furtu by mal 2 Odpory (zásada najviac 1 Odpor)."
+   }
+  },
+  {
+   "id": "niekoho_stryna",
+   "nazov": "Stryná",
+   "tagy": [
+    "Občan",
+    "Pamätník",
+    "Žena"
+   ],
+   "spustac": "Konflikt",
+   "tag": "Závislý",
+   "akcie_navyse": {
+    "Pohoršenie": 1
+   },
+   "text": "Konflikt: Závislý",
+   "sipka": 5,
+   "pred": {
+    "triggers": [
+     "Pitka"
+    ],
+    "effect_text": "Pitka: Každý hráč, ktorý v tejto Pitke nedal NA EX, dostane 1 poškodenie pečene."
+   },
+   "zdroj": "Michal: A",
+   "pocetnost_stredna_hra": "Konflikt 20–79 %",
+   "pribeh_navrh": "Vynadá opilcovi pred celou dedinou.",
+   "poznamka": "Zaniká pečeň pre hráča bez NA EX (Pitka)."
+  },
+  {
+   "id": "recidivista",
+   "nazov": "Recidivista",
+   "tagy": [
+    "Občan",
+    "Kriminál",
+    "Chlap",
+    "Zviera"
+   ],
+   "spustac": "Nepriateľ",
+   "tag": "Zahraničný",
+   "akcie_navyse": {
+    "Pecka": 1
+   },
+   "text": "Nepriateľ: Zahraničný",
+   "sipka": 8,
+   "pred": {
+    "triggers": [
+     "Prehra"
+    ],
+    "effect_text": "Prehra: Po bitke sa vráti do tvojej ruky."
+   },
+   "zdroj": "Michal doslova",
+   "pocetnost_stredna_hra": "Nepriateľ 9 · 18 · 20 %",
+   "pribeh_navrh": "Kto príde s cudzou menou, ten ju aj nechá.",
+   "poznamka": "Šípka 8 je nová (graf upravený kvôli tejto voľbe). Recidivista je aj Zviera: vedľa Mäsiara jeho Nepriateľ neplatí. Zaniká Prehra (návrat do ruky)."
+  },
+  {
+   "id": "dievcina_na_vydaj",
+   "nazov": "Dievčina na vydaj",
+   "tagy": [
+    "Občan",
+    "Závislý",
+    "Žena"
+   ],
+   "spustac": "Podpora",
+   "tag": "Zahraničný",
+   "akcie_navyse": {
+    "Pohoršenie": 1
+   },
+   "text": "Podpora: Zahraničný",
+   "sipka": 6,
+   "pred": {
+    "triggers": [
+     "Prehra"
+    ],
+    "effect_text": "Prehra: Spáľ túto kartu. Súper získa toľko Dlhov, koľko mala aktívnych akcií."
+   },
+   "zdroj": "odporúčanie A",
+   "pocetnost_stredna_hra": "Podpora 4–18 %",
+   "pribeh_navrh": "Bozkáva sa s cudzincom pred kostolom.",
+   "poznamka": "Štartovka. Zaniká Prehra (spálenie, Dlhy víťazovi). Je vo výučbe — až pri prechode.",
+   "akcie": {
+    "right": {
+     "blocked": [
+      0,
+      3
+     ],
+     "actions": {
+      "Pakt": 1,
+      "Poldeci": 1
+     }
+    },
+    "pred": {
+     "right": {
+      "blocked": [
+       0,
+       3
+      ],
+      "actions": {
+       "Pakt": 1,
+       "Vízia": 1
+      }
+     }
+    },
+    "varianty": {
+     "pred": 4,
+     "po": 4
+    },
+    "dovod": "Vízia → Poldeci (Vízia v2)."
+   }
+  },
+  {
+   "id": "zivnostnik",
+   "nazov": "Živnostník",
+   "tagy": [
+    "Občan",
+    "Pracujúci",
+    "Chlap"
+   ],
+   "spustac": "Spoločník",
+   "tag": "Autorita",
+   "akcie_navyse": {
+    "Robota": 1
+   },
+   "text": "Spoločník: Autorita",
+   "sipka": 7,
+   "pred": {
+    "triggers": [
+     "Nástup"
+    ],
+    "effect_text": "Nástup: V tom istom ťahu smieš za neho priložiť 1 Nástroj z ruky."
+   },
+   "zdroj": "odporúčanie A",
+   "pocetnost_stredna_hra": "Spoločník 23 · 42 · 48 %",
+   "pribeh_navrh": "Obecná zákazka cez švagra.",
+   "poznamka": "Zaniká Nástup (Nástroj za neho mimo limitu)."
+  },
+  {
+   "id": "kocovnik",
+   "nazov": "Kočovník",
+   "tagy": [
+    "Občan",
+    "Zahraničný",
+    "Chlap"
+   ],
+   "spustac": "Spoločník",
+   "tag": "Pamätník",
+   "akcie_navyse": {
+    "Pecka": 1
+   },
+   "text": "Spoločník: Pamätník",
+   "sipka": 4,
+   "pred": {
+    "triggers": [
+     "Furt"
+    ],
+    "effect_text": "Furt: Jeho akcie sa počítajú hráčovi, ktorý má v jeho kraji prevahu."
+   },
+   "zdroj": "odporúčanie A",
+   "pocetnost_stredna_hra": "Spoločník 43 · 41 · 36 %",
+   "pribeh_navrh": "Starí ho poznajú z jarmoku, kde dvom rozbil hubu.",
+   "poznamka": "Zaniká Furt (akcie hráčovi s prevahou) aj výnimka „akcie Kočovníka“ v §6."
+  },
+  {
+   "id": "sarlatan",
+   "nazov": "Šarlatán",
+   "tagy": [
+    "Občan",
+    "Influencer",
+    "Chlap"
+   ],
+   "spustac": "Spoločník",
+   "tag": "Autorita",
+   "akcie_navyse": {
+    "Povera": 2
+   },
+   "text": "Spoločník: Autorita",
+   "sipka": 3,
+   "pred": {
+    "triggers": [
+     "Konflikt"
+    ],
+    "effect_text": "Konflikt: Do konca kola sa jeho akcie Hazard rátajú ako Viera a Povery ako Rana."
+   },
+   "zdroj": "odporúčanie A",
+   "pocetnost_stredna_hra": "Spoločník 23 · 42 · 48 %",
+   "pribeh_navrh": "Zázračný liečiteľ s pečiatkou z úradu.",
+   "poznamka": "Zaniká Konflikt (Hazard ako Viera, Povera ako Rana)."
+  },
+  {
+   "id": "podvodnik",
+   "nazov": "Podvodník",
+   "tagy": [
+    "Občan",
+    "Kriminál",
+    "Chlap"
+   ],
+   "spustac": "Konflikt",
+   "tag": "Influencer",
+   "akcie_navyse": {
+    "Obmedzenie": 1
+   },
+   "text": "Konflikt: Influencer",
+   "sipka": 2,
+   "pred": {
+    "triggers": [
+     "Konflikt"
+    ],
+    "effect_text": "Konflikt: Súper ti dá 1 cigaretu. Ak žiadnu nemá, získa 1 zadĺženie."
+   },
+   "zdroj": "odporúčanie A",
+   "pocetnost_stredna_hra": "Konflikt 10–51 %",
+   "pribeh_navrh": "Investičná príležitosť pre frajera s mobilom.",
+   "poznamka": "Obmedzenie platí v každej Pitke od spustenia do konca kola. Zaniká cigareta / zadĺženie."
+  },
+  {
+   "id": "snubenica",
+   "nazov": "Snúbenica",
+   "tagy": [
+    "Občan",
+    "Žena",
+    "Influencer"
+   ],
+   "spustac": "Nepriateľ",
+   "tag": "Autorita",
+   "akcie_navyse": {
+    "Pohoršenie": 1
+   },
+   "text": "Nepriateľ: Autorita",
+   "sipka": 3,
+   "pred": {
+    "triggers": [
+     "Podpora"
+    ],
+    "effect_text": "Podpora: Ak na tvojom Chlapovi pri nej leží súperovo NA EX, vráti sa súperovi ako vypitý poldeci."
+   },
+   "zdroj": "odporúčanie A",
+   "pocetnost_stredna_hra": "Nepriateľ 23 · 42 · 48 %",
+   "pribeh_navrh": "Gopnička ukáže hliadke prostredník.",
+   "poznamka": "Zaniká Podpora (súperovo NA EX z Chlapa)."
+  },
+  {
+   "id": "predavacka",
+   "nazov": "Predavačka",
+   "tagy": [
+    "Občan",
+    "Autorita",
+    "Žena",
+    "Pracujúci"
+   ],
+   "spustac": "Podpora",
+   "tag": null,
+   "akcie_navyse": {},
+   "text": "Podpora: Dober si 1 kartu.",
+   "sipka": null,
+   "pred": {
+    "triggers": [
+     "Kšeft"
+    ],
+    "effect_text": "Kšeft: Za 1 cigaretu si dober 1 kartu."
+   },
+   "zdroj": "Michal doslova (bez tagu, 2 Cigarety ostávajú)",
+   "pocetnost_stredna_hra": "Podpora bez tagu, asi 2 z 3 kôl, často 2×",
+   "pribeh_navrh": "Tovar spod pultu pre známych.",
+   "poznamka": "Akcie bez zmeny (Cigareta ×2 ostáva). Zaniká Kšeft."
+  },
+  {
+   "id": "opatrovatelka",
+   "nazov": "Opatrovateľka",
+   "tagy": [
+    "Občan",
+    "Zahraničný",
+    "Pracujúci",
+    "Žena"
+   ],
+   "spustac": "Podpora",
+   "tag": "Pamätník",
+   "akcie_navyse": {
+    "Robota": 1
+   },
+   "text": "Podpora: Pamätník",
+   "sipka": 4,
+   "pred": {
+    "triggers": [
+     "Furt"
+    ],
+    "effect_text": "Furt: Tvoji Pamätníci v jej okolí majú aktívne akcie posilnené."
+   },
+   "zdroj": "odporúčanie A",
+   "pocetnost_stredna_hra": "Podpora 9–41 %",
+   "pribeh_navrh": "Opatrovať dedka je robota, dôchodok ide na splátky.",
+   "poznamka": "Zaniká Furt (posilnení Pamätníci)."
+  },
+  {
+   "id": "hasic",
+   "nazov": "Hasič",
+   "tagy": [
+    "Občan",
+    "Autorita",
+    "Chlap"
+   ],
+   "spustac": "Podpora",
+   "tag": null,
+   "akcie_navyse": {},
+   "text": "Podpora: Vytiahni náhodnú kartu zo svojho odhadzovacieho balíčka (aj kliatbu) a rozhodni sa, či si ju necháš, alebo ju odhodíš.",
+   "sipka": null,
+   "pred": {
+    "triggers": [
+     "Nástup"
+    ],
+    "effect_text": "Nástup: Vytiahni náhodnú kartu zo svojho odhadzovacieho balíčka (aj kliatbu) a rozhodni sa, či si ju necháš, alebo ju odhodíš."
+   },
+   "zdroj": "Michal doslova (B: Podpora bez tagu)",
+   "pocetnost_stredna_hra": "Podpora bez tagu, asi 2 z 3 kôl, často 2×",
+   "poznamka": "Len spúšťač Nástup → Podpora; účinok a príkaz hasic ostávajú."
+  },
+  {
+   "id": "stryko_z_ameriky",
+   "nazov": "Strýko z Ameriky",
+   "tagy": [
+    "Občan",
+    "Influencer",
+    "Zahraničný",
+    "Chlap"
+   ],
+   "spustac": "Nepriateľ",
+   "tag": "Autorita",
+   "akcie_navyse": {
+    "Rana": 2
+   },
+   "text": "Nepriateľ: Autorita",
+   "sipka": 3,
+   "pred": {
+    "triggers": [
+     "Kšeft"
+    ],
+    "effect_text": "Kšeft: Za 2 cigarety udelíš v tejto bitke súperovi 1 Ranu navyše."
+   },
+   "zdroj": "odporúčanie A",
+   "pocetnost_stredna_hra": "Nepriateľ 23 · 42 · 48 %",
+   "pribeh_navrh": "Američan sa nenechá legitimovať.",
+   "poznamka": "Rany navyše sú akcie, Vidly ich zosilnia (na rozdiel od Rán z Kšeftu).",
+   "akcie": {
+    "right": {
+     "blocked": [
+      1
+     ],
+     "actions": {
+      "Cigareta": 1,
+      "Poldeci": 1
+     }
+    },
+    "pred": {
+     "right": {
+      "blocked": [
+       1
+      ],
+      "actions": {
+       "Cigareta": 1,
+       "Vízia": 1
+      }
+     }
+    },
+    "varianty": {
+     "pred": 6,
+     "po": 6
+    },
+    "dovod": "Vízia → Poldeci (Vízia v2). Cigarety ×3 ostávajú, Kšeft zaniká."
+   }
+  }
+ ],
+ "vizia": [
+  {
+   "id": "vestica",
+   "nazov": "Veštica",
+   "vizia_ostava": true,
+   "left": {
+    "blocked": [
+     0
+    ],
+    "actions": {
+     "PoškodeniePečene": 1,
+     "Dlh": 1,
+     "Povera": 1
+    }
+   },
+   "right": {
+    "blocked": [
+     0,
+     3
+    ],
+    "actions": {
+     "Povera": 1,
+     "Vízia": 1
+    },
+    "allowed": {
+     "1": [
+      "Povera"
+     ],
+     "2": [
+      "Vízia"
+     ]
+    }
+   },
+   "pred": {
+    "left": {
+     "blocked": [
+      0
+     ],
+     "actions": {
+      "PoškodeniePečene": 1,
+      "Povera": 1,
+      "Vízia": 1
+     }
+    },
+    "right": {
+     "blocked": [
+      0,
+      3
+     ],
+     "actions": {
+      "Povera": 2
+     }
+    }
+   },
+   "varianty": {
+    "pred": "6 × 1 = 6",
+    "po": "6 × 1 = 6"
+   },
+   "tlac_po": 6,
+   "dovod": "Vízia pevne P2, Povera P1. Ľavá: Vízia odíde, Povera → Hazard, 3 rôzne akcie voľne (6)."
+  },
+  {
+   "id": "klebetnica",
+   "nazov": "Bzdocha",
+   "vizia_ostava": true,
+   "left": {
+    "blocked": [
+     0
+    ],
+    "actions": {
+     "PoškodeniePečene": 1,
+     "Povera": 1,
+     "Dlh": 1
+    }
+   },
+   "right": {
+    "blocked": [
+     0,
+     3
+    ],
+    "actions": {
+     "Pakt": 1,
+     "Vízia": 1
+    },
+    "allowed": {
+     "1": [
+      "Pakt"
+     ],
+     "2": [
+      "Vízia"
+     ]
+    }
+   },
+   "pred": {
+    "left": {
+     "blocked": [
+      0
+     ],
+     "actions": {
+      "PoškodeniePečene": 1,
+      "Povera": 2
+     }
+    },
+    "right": {
+     "blocked": [
+      0,
+      3
+     ],
+     "actions": {
+      "Pakt": 1,
+      "Vízia": 1
+     }
+    }
+   },
+   "varianty": {
+    "pred": "3 × 2 = 6",
+    "po": "6 × 1 = 6"
+   },
+   "tlac_po": 24,
+   "dovod": "Pakt ostáva (P1), Vízia P2. Ľavá: jedna Povera → Hazard (6 rozložení)."
+  },
+  {
+   "id": "kristalova_gula",
+   "nazov": "Krištáľová guľa",
+   "vizia_ostava": true,
+   "left": {
+    "blocked": [
+     1,
+     2
+    ],
+    "actions": {
+     "Povera": 1,
+     "PoškodeniePečene": 1
+    }
+   },
+   "right": {
+    "blocked": [
+     0,
+     1
+    ],
+    "actions": {
+     "Vízia": 2
+    }
+   },
+   "pred": {
+    "left": {
+     "blocked": [
+      1,
+      2
+     ],
+     "actions": {
+      "Vízia": 2
+     }
+    },
+    "right": {
+     "blocked": [
+      0,
+      3
+     ],
+     "actions": {
+      "Povera": 1,
+      "Vízia": 1
+     }
+    }
+   },
+   "varianty": {
+    "pred": "1 × 2 = 2",
+    "po": "2 × 1 = 2"
+   },
+   "tlac_po": 2,
+   "dovod": "2 Vízie: P2 a P3 (P3 = druhé najlepšie miesto, vlastný sused 7,3 %, pri Nástroji 7,7 %). Ľavá Vízia ×2 → Povera a Pečeň na krajoch (2). Spolu 4 akcie."
+  },
+  {
+   "id": "postarka",
+   "nazov": "Poštárka",
+   "vizia_ostava": true,
+   "right": {
+    "blocked": [
+     0
+    ],
+    "actions": {
+     "Dlh": 1,
+     "Posilnenie": 1,
+     "Vízia": 1
+    },
+    "allowed": {
+     "1": [
+      "Dlh"
+     ],
+     "2": [
+      "Posilnenie"
+     ],
+     "3": [
+      "Vízia"
+     ]
+    }
+   },
+   "pred": {
+    "right": {
+     "blocked": [
+      3
+     ],
+     "actions": {
+      "Dlh": 1,
+      "Posilnenie": 1,
+      "Vízia": 1
+     },
+     "allowed": {
+      "0": [
+       "Vízia"
+      ],
+      "1": [
+       "Dlh"
+      ],
+      "2": [
+       "Posilnenie"
+      ]
+     }
+    }
+   },
+   "varianty": {
+    "pred": "1 × 1 = 1",
+    "po": "1 × 1 = 1"
+   },
+   "tlac_po": 1,
+   "dovod": "2 Vízie: Ľ1 ostáva, druhá z P0 na P3 (7,3 %), P0 sa zablokuje. P2 drží Posilnenie."
+  },
+  {
+   "id": "financna_poradkyna",
+   "nazov": "Finančná poradkyňa",
+   "vizia_ostava": false,
+   "left": {
+    "blocked": [
+     0
+    ],
+    "actions": {
+     "Dlh": 2,
+     "Obmedzenie": 1
+    }
+   },
+   "right": {
+    "blocked": [
+     0,
+     3
+    ],
+    "actions": {
+     "Povera": 1,
+     "Dlh": 1
+    }
+   },
+   "pred": {
+    "left": {
+     "blocked": [
+      0
+     ],
+     "actions": {
+      "Dlh": 2,
+      "Vízia": 1
+     }
+    },
+    "right": {
+     "blocked": [
+      0,
+      3
+     ],
+     "actions": {
+      "Dlh": 1,
+      "Vízia": 1
+     }
+    }
+   },
+   "varianty": {
+    "pred": "3 × 2 = 6",
+    "po": "3 × 2 = 6"
+   },
+   "tlac_po": 24,
+   "dovod": "Vízia → Obmedzenie (ľavá) a Povera (pravá)."
+  },
+  {
+   "id": "dievcina_na_vydaj",
+   "nazov": "Dievčina na vydaj",
+   "vizia_ostava": false,
+   "right": {
+    "blocked": [
+     0,
+     3
+    ],
+    "actions": {
+     "Pakt": 1,
+     "Poldeci": 1
+    }
+   },
+   "pred": {
+    "right": {
+     "blocked": [
+      0,
+      3
+     ],
+     "actions": {
+      "Pakt": 1,
+      "Vízia": 1
+     }
+    }
+   },
+   "varianty": {
+    "pred": "2 × 2 = 4",
+    "po": "2 × 2 = 4"
+   },
+   "tlac_po": 16,
+   "dovod": "Vízia → Poldeci."
+  },
+  {
+   "id": "stryko_z_ameriky",
+   "nazov": "Strýko z Ameriky",
+   "vizia_ostava": false,
+   "right": {
+    "blocked": [
+     1
+    ],
+    "actions": {
+     "Cigareta": 1,
+     "Poldeci": 1
+    }
+   },
+   "pred": {
+    "right": {
+     "blocked": [
+      1
+     ],
+     "actions": {
+      "Cigareta": 1,
+      "Vízia": 1
+     }
+    }
+   },
+   "varianty": {
+    "pred": "1 × 6 = 6",
+    "po": "1 × 6 = 6"
+   },
+   "tlac_po": 6,
+   "dovod": "Vízia → Poldeci."
+  },
+  {
+   "id": "horoskop",
+   "nazov": "Horoskop",
+   "vizia_ostava": false,
+   "right": {
+    "blocked": [
+     0,
+     1
+    ],
+    "actions": {
+     "Povera": 1,
+     "Dlh": 1
+    }
+   },
+   "pred": {
+    "right": {
+     "blocked": [
+      0,
+      1
+     ],
+     "actions": {
+      "Povera": 1,
+      "Vízia": 1
+     }
+    }
+   },
+   "varianty": {
+    "pred": "1 × 2 = 2",
+    "po": "1 × 2 = 2"
+   },
+   "tlac_po": 2,
+   "dovod": "Vízia → Hazard."
+  },
+  {
+   "id": "starosta",
+   "nazov": "Starosta",
+   "vizia_ostava": false,
+   "right": {
+    "blocked": [
+     0
+    ],
+    "actions": {
+     "Dlh": 1,
+     "Pakt": 1,
+     "Robota": 1
+    },
+    "allowed": {
+     "1": [
+      "Dlh"
+     ],
+     "2": [
+      "Pakt"
+     ],
+     "3": [
+      "Robota"
+     ]
+    }
+   },
+   "pred": {
+    "right": {
+     "blocked": [
+      0
+     ],
+     "actions": {
+      "Dlh": 1,
+      "Pakt": 1,
+      "Vízia": 1
+     },
+     "allowed": {
+      "1": [
+       "Dlh"
+      ],
+      "2": [
+       "Pakt"
+      ],
+      "3": [
+       "Vízia"
+      ]
+     }
+    }
+   },
+   "varianty": {
+    "pred": "1 × 1 = 1",
+    "po": "1 × 1 = 1"
+   },
+   "tlac_po": 1,
+   "dovod": "Vízia → Robota."
+  },
+  {
+   "id": "kostol",
+   "nazov": "Kostol",
+   "vizia_ostava": false,
+   "left": {
+    "blocked": [
+     3
+    ],
+    "actions": {
+     "Viera": 2,
+     "PoškodeniePečene": 1
+    },
+    "allowed": {
+     "0": [
+      "Viera"
+     ],
+     "1": [
+      "Viera"
+     ],
+     "2": [
+      "PoškodeniePečene"
+     ]
+    },
+    "name": "pri oltári"
+   },
+   "pred": {
+    "left": {
+     "blocked": [
+      3
+     ],
+     "actions": {
+      "Viera": 2,
+      "Vízia": 1
+     },
+     "allowed": {
+      "0": [
+       "Viera"
+      ],
+      "1": [
+       "Viera"
+      ],
+      "2": [
+       "Vízia"
+      ]
+     },
+     "name": "pri oltári"
+    }
+   },
+   "varianty": {
+    "pred": "1 × 1 = 1",
+    "po": "1 × 1 = 1"
+   },
+   "tlac_po": 1,
+   "dovod": "Vízia → Pečeň (omšové víno). Počet Pitiek sa nemení."
+  },
+  {
+   "id": "sklad",
+   "nazov": "Sklad",
+   "vizia_ostava": false,
+   "left": {
+    "blocked": [
+     1,
+     3
+    ],
+    "actions": {
+     "Robota": 1,
+     "Obmedzenie": 1
+    },
+    "allowed": {
+     "0": [
+      "Robota"
+     ],
+     "2": [
+      "Obmedzenie"
+     ]
+    },
+    "name": "pri vreciach"
+   },
+   "pred": {
+    "left": {
+     "blocked": [
+      1,
+      3
+     ],
+     "actions": {
+      "Vízia": 2
+     },
+     "allowed": {
+      "0": [
+       "Vízia"
+      ],
+      "2": [
+       "Vízia"
+      ]
+     },
+     "name": "pri vreciach"
+    }
+   },
+   "varianty": {
+    "pred": "1 × 1 = 1",
+    "po": "1 × 1 = 1"
+   },
+   "tlac_po": 1,
+   "dovod": "Vízia ×2 → Robota a Obmedzenie."
+  }
+ ],
+ "vizia_suhrn": {
+  "ikon_pred": 16,
+  "ikon_po": 6,
+  "kariet_po": 4,
+  "tlac_kariet_s_viziou_pred": 84,
+  "tlac_kariet_s_viziou_po": 33
+ },
+ "kseft": {
+  "zanika": true,
+  "karty": [
+   "stryko_z_ameriky",
+   "predavacka",
+   "zberny_dvor",
+   "sklad",
+   "predsedova_vila"
+  ],
+  "spustac": "Kšeft zmizne z Trigger, ALL_TRIGGERS, tvorcu (kľúčové slovo) a PRAVIDLA §7; staré záznamy partií s príkazom kseft musí prehrávač dohrať"
+ },
+ "lokality": [
+  {
+   "id": "zberny_dvor",
+   "nazov": "Zberný dvor",
+   "pred": {
+    "triggers": [
+     "Kšeft"
+    ],
+    "effect_text": "Kšeft: Za 1 cigaretu si vezmi do ruky ľubovoľnú kartu zo svojho odhadzovacieho balíčka."
+   },
+   "efekt": {
+    "triggers": [
+     "Pitka"
+    ],
+    "effect_text": "Pitka: Na konci Pitky smieš spáliť 1 kartu z ruky, nie kliatbu.",
+    "vyklad": "Nový krok 7b vyhodnotenia Pitky, po Vízii a pred otočením Záverečných: každý hráč smie spáliť 1 kartu z ruky (nie Cirhózu ani Absťák). Rozhoduje obranca, potom útočník. Súper vidí len to, že hráč kartu spálil (ruka je skrytá, viewFor). Na Zbernom dvore sú 2 + 2 akcie na hranách, teda najviac 3 Pitky."
+   },
+   "zaloha": {
+    "triggers": [
+     "Pitka"
+    ],
+    "effect_text": "Pitka: Na konci Pitky smieš vymeniť 1 kartu z ruky za kartu zo svojho odhadzovacieho balíčka."
+   }
+  },
+  {
+   "id": "sklad",
+   "nazov": "Sklad",
+   "pred": {
+    "triggers": [
+     "Kšeft"
+    ],
+    "effect_text": "Kšeft: Za 2 cigarety si zober do Dedičstva kartu Nástroja zo šenku. Do šenku sa dotiahne nová karta Nástroja."
+   },
+   "efekt": {
+    "triggers": [
+     "Zhromaždenie"
+    ],
+    "effect_text": "Zhromaždenie: Nástroj zo šenku smieš vyložiť rovno do Dedičstva za cenu Dedičstva. Do šenku sa dotiahne nový Nástroj.",
+    "vyklad": "Ťah v Zhromaždení ako vyloženie Nástroja do Dedičstva (§12): platí sa len spoločná rastúca cena Dedičstva, nie cena šenku, a cena potom stúpne. Z vrchu Náradia príde do šenku nový Nástroj, verejne; z prázdneho nič. Bez Nástroja v šenku a bez cigariet na cenu Dedičstva sa ťah neponúka. Smie každý hráč, koľkokrát chce (každý raz je ťah a cena rastie)."
+   },
+   "zaloha": {
+    "triggers": [
+     "Bitka"
+    ],
+    "effect_text": "Bitka: Za každý svoj Nástroj v línii máš 1 tuhé poškodenie navyše."
+   }
+  },
+  {
+   "id": "predsedova_vila",
+   "nazov": "Predsedova vila",
+   "pred": {
+    "triggers": [
+     "Kšeft"
+    ],
+    "effect_text": "Kšeft: Za 2 cigarety zdvihni svoje reči pri jednom staršom o stupeň. Staršieho v ohrození nie."
+   },
+   "efekt": {
+    "triggers": [
+     "Pitka"
+    ],
+    "effect_text": "Pitka: Za každé 2 cigarety, ktoré v tejto Pitke vyfajčíš, zdvihni svoje reči pri jednom staršom o stupeň.",
+    "vyklad": "Rátajú sa zaplatené cigarety za fajčenie v tejto Pitke, ako pri Krabičke cigariet; stupeň hneď, keď súčet dosiahne ďalšie 2 (fajčenie 1 + 2 = 3 cigarety = 1 stupeň, + 3 = 6 = 3 stupne). Stupeň pridáva ako dnes (ďalší v bežnom poradí, kým je kam, v11.12); staršieho vyberá hráč (dnešná voľba Vily). Text „Staršieho v ohrození nie“ zaniká, ohrozenie už neexistuje."
+   },
+   "zaloha": {
+    "triggers": [
+     "Pitka"
+    ],
+    "effect_text": "Spoločník: Autorita — Na konci Pitky zdvihni svoje reči pri jednom staršom o stupeň."
+   }
+  }
+ ],
+ "caka": []
+}
