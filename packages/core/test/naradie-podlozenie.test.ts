@@ -63,9 +63,10 @@ describe("zápis hrán v texte efektu", () => {
     expect(chybyHran(nastroj("Hore: Vzbura."))).toEqual([expect.stringMatching(/chýba dolná hrana/)]);
     expect(chybyHran(nastroj("Dedičstvo: Tvoj prah Cirhózy je o 2 vyšší."))).toHaveLength(2);
     expect(chybyHran({ effectText: "Furt: Nič. Hore: Vzbura. Dole: Forsáž.", tags: ["Občan"] })).toEqual(["Hrany „Hore:“ a „Dole:“ má len Nástroj."]);
-    // Preklep padne pri načítaní sady; Nástroj bez hrán načítanie prejde (cards.json ich ešte nemá).
-    const zle = { ...cardsJson, cards: cardsJson.cards.map((c) => (c.id === "vidly" ? { ...c, effect_text: `${c.effect_text} Hore: Vzbura. Dole: {Rana}→{Pecky}.` } : c)) };
-    expect(() => loadGameData(zle, eldersJson, scorecardsJson)).toThrow(/Pecky/);
+    // Preklep padne pri načítaní sady; Nástroj bez hrán načítanie prejde (nemožno ho len podložiť).
+    const sTextom = (text: (t: string) => string) => ({ ...cardsJson, cards: cardsJson.cards.map((c) => (c.id === "vidly" ? { ...c, effect_text: text(c.effect_text) } : c)) });
+    expect(() => loadGameData(sTextom((t) => `${textBezHran(t)} Hore: Vzbura. Dole: {Rana}→{Pecky}.`), eldersJson, scorecardsJson)).toThrow(/Pecky/);
+    expect(() => loadGameData(sTextom(textBezHran), eldersJson, scorecardsJson)).not.toThrow();
     expect(() => loadGameData(cardsJson, eldersJson, scorecardsJson)).not.toThrow();
   });
 });
@@ -73,12 +74,12 @@ describe("zápis hrán v texte efektu", () => {
 describe("zoznam hrán pre admina (packages/core/test/data/naradie-hrany.json)", () => {
   const nastroje = cardsJson.cards.filter((c) => c.tags.includes("Nástroj"));
 
-  it("22 Nástrojov zo sady, každý s oboma hranami bez chyby a s Dedičstvom zo sady", () => {
+  it("22 Nástrojov zo sady, každý s oboma hranami bez chyby a s textom zo sady", () => {
     expect(zoznam.nastroje.map((n) => n.id).sort()).toEqual(nastroje.map((c) => c.id).sort());
     for (const n of zoznam.nastroje) {
       expect(chybyHran({ effectText: n.effect_text, tags: ["Nástroj"] }), n.id).toEqual([]);
       expect(rozborHran(n.effect_text), n.id).toMatchObject({ horna: expect.anything(), dolna: expect.anything() });
-      expect(textBezHran(n.effect_text), n.id).toBe(nastroje.find((c) => c.id === n.id)?.effect_text);
+      expect(n.effect_text, n.id).toBe(nastroje.find((c) => c.id === n.id)?.effect_text);
     }
   });
 
@@ -260,8 +261,8 @@ describe("ťah podloženia (§12)", () => {
     const s = vZhromazdeni([[lezi(moj, 0)], []], [vidly]);
     expect(() => apply(dataH, s, { type: "place", uid: vidly.uid, target: "vlastna" }, 0)).toThrow(NASTROJ_DO_LINIE);
     expect(() => apply(dataH, vZhromazdeni([[lezi(moj, 0)], []], [vidly], 0), { type: "podloz", nastrojId: vidly.uid, hostitelId: moj.uid, hrana: "horna" }, 0)).toThrow(/cigaret/);
-    const stara = loadGameData(cardsJson, eldersJson, scorecardsJson);
-    expect(() => apply(stara, s, { type: "podloz", nastrojId: vidly.uid, hostitelId: moj.uid, hrana: "horna" }, 0)).toThrow(/nemá v sade hrany/);
+    const bezHran = { ...cardsJson, cards: cardsJson.cards.map((c) => (c.id === "vidly" ? { ...c, effect_text: textBezHran(c.effect_text) } : c)) };
+    expect(() => apply(loadGameData(bezHran, eldersJson, scorecardsJson), s, { type: "podloz", nastrojId: vidly.uid, hostitelId: moj.uid, hrana: "horna" }, 0)).toThrow(/nemá v sade hrany/);
   });
 
   it("len pod Občana a Starešinu, pod Zviera len s Kôňom; jeden Nástroj na kartu, pod Zámočníka viac", () => {

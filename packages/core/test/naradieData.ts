@@ -1,6 +1,6 @@
-// Sada s hranami Nástrojov (rework Náradia, Michal 2026-11-08) — kým admin hrany nezadá
-// v tvorcovi a cards.json sa neskopíruje (pravidlo 5), testy podloženia stoja na sade,
-// v ktorej Nástroje dostanú text efektu zo zoznamu pre admina a stratia sloty.
+// Sada s hranami Nástrojov (rework Náradia, Michal 2026-11-08). Od sady v70 má cards.json hrany
+// aj bez slotov (test zoznamu stráži zhodu so zoznamom pre admina); testy podloženia stoja na zozname,
+// aby nezáviseli od ďalšieho kopírovania sady.
 
 import cardsJson from "../data/cards.json";
 import eldersJson from "../data/elders.json";

@@ -113,13 +113,16 @@ describe("budúca sada: 8 zmenených Občanov (test/data/obcania-kategorie.json 
     ]);
   });
 
-  it("prechod: dnešná sada v67 sa so starými textmi načíta, Školiteľa v nej niet a staré texty nič nepreškolia", () => {
-    for (const id of ["veducko", "kulturista", "anonymny_alkoholik", "profesionalny_tiper"]) expect(jeSkolitel(defOf(dnesna, { defId: id })), id).toBe(false);
+  it("sada v70 (cards.json) má texty 8 Občanov zo zoznamu a tých istých Školiteľov ako budúca sada", () => {
+    for (const k of zoznam.karty) {
+      expect(defOf(dnesna, { defId: k.id }).effectText, k.id).toBe(k.effect_text);
+      expect(jeSkolitel(defOf(dnesna, { defId: k.id })), k.id).toBe(k.kategoria === "skolitel");
+    }
+    // Vedúcko v sade preškolí Roboty suseda tak ako v budúcej sade.
     const v = { uid: 1, defId: "veducko", leftLayout: 0, rightLayout: 0 };
     const ziv = { uid: 2, defId: "zivnostnik", leftLayout: 0, rightLayout: 0 };
-    const ev = evaluateLine(dnesna, linia([lezi(v, 0), lezi(ziv, 0)]));
-    expect(ev.cards.get(ziv.uid)?.preskolena).toBeUndefined();
-    expect(ev.cards.get(v.uid)?.skolitel).toBeUndefined();
+    const linka = linia([lezi(v, 0), lezi(ziv, 0)]);
+    expect(evaluateLine(dnesna, linka).cards.get(ziv.uid)?.preskolena).toEqual(evaluateLine(buduca, linka).cards.get(ziv.uid)?.preskolena);
   });
 });
 

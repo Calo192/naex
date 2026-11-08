@@ -109,10 +109,17 @@ export function kontrolaTextov(karty: readonly KartaNavrh[], podklady: PodkladyT
       if (schopnost !== starsi.schopnost.trim()) {
         problem("chyba", `Text nesedí so schopnosťou väzňa v elders.json — hra vyhodnotí a ukáže „Väzeň — raz za hru: ${starsi.schopnost}“, kým sa neupraví jadro.`);
       }
-    } else if (schopnost === undefined && zverejneny !== undefined && zverejneny.efekt.trim() !== k.efekt.trim() && !navyse && (stav === "impl" || stav === "native")) {
+    } else if (
+      schopnost === undefined &&
+      zverejneny !== undefined &&
+      // Hrany Nástroja číta jadro z textu — ich zmena kód nepotrebuje; porovnáva sa zvyšok (Dedičstvo).
+      textBezHran(zverejneny.efekt).trim() !== bezHran.trim() &&
+      !navyse &&
+      (stav === "impl" || stav === "native")
+    ) {
       problem("chyba", "Zmenený text efektu, ktorý hra vyhodnocuje kódom — správanie sa nezmení, kým sa neupraví jadro (effects.ts).");
     }
-    if (zverejneny === undefined && stav === undefined && !navyse) {
+    if (zverejneny === undefined && stav === undefined && !navyse && bezHran.trim() !== "") {
       problem("upozornenie", "Nová karta s efektom — hra ho nevyhodnotí (manual), len pripomenie v logu, kým ho vývoj nenaprogramuje.");
     }
   }

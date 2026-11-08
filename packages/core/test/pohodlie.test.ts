@@ -41,6 +41,7 @@ describe("menej klikov (roadmapa #9 B)", () => {
 
   it("automatické „končím“ v Pitke je legálne a mimo zvoleného kola nič nerobí", () => {
     let auto = 0;
+    let volieb = 0;
     for (const seed of [4, 6, 8]) {
       let s: GameState = setupGame(data, seed);
       let rng = rngSeed(seed ^ 0x33);
@@ -55,6 +56,9 @@ describe("menej klikov (roadmapa #9 B)", () => {
           auto++;
           expect(legalCommands(data, s, p)).toContainEqual(c);
         }
+        // Predsedova vila v Pitke: kým hráč nevyberie staršieho, „končím“ sa neposiela.
+        if (v.faza === "pitka" && v.volbaNastupu !== null) volieb++;
+        if (c !== null) expect(autoKoniecPitky({ ...v, volbaNastupu: { typ: "vila", hrac: p } }, s.kolo)).toBeNull();
         const cmds = legalCommands(data, s, p);
         const [j, r] = rngInt(rng, cmds.length);
         rng = r;
@@ -62,5 +66,6 @@ describe("menej klikov (roadmapa #9 B)", () => {
       }
     }
     expect(auto).toBeGreaterThan(10);
+    expect(volieb).toBeGreaterThan(0);
   });
 });

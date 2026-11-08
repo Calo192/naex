@@ -117,12 +117,14 @@ describe("výučba — pevné rozdanie", () => {
     const s = setupZRozdania(data, {
       ...r,
       scorecardy: { farar: sc },
-      naradie: ["puska/0/1"],
+      naradie: ["puska"],
       obcania: ["hasic", "sofer/1/0"],
       hraci: [{ ...r.hraci[0], ruka: ["hasic/0/1"] }, r.hraci[1]],
     });
     expect(s.starsi.find((e) => e.elderId === "farar")?.scorecard).toBe(sc);
-    expect(s.naradie.map((k) => `${k.defId}/${k.leftLayout}/${k.rightLayout}`)).toEqual(["puska/0/1"]);
+    // Nástroj nemá sloty, len jeden variant (rework Náradia, sada v70) — iný ako 0/0 je chyba.
+    expect(s.naradie.map((k) => `${k.defId}/${k.leftLayout}/${k.rightLayout}`)).toEqual(["puska/0/0"]);
+    expect(() => setupZRozdania(data, { ...r, naradie: ["puska/0/1"] })).toThrow(/1×1 variantov/);
     expect(s.obcania.map((k) => `${k.defId}/${k.leftLayout}/${k.rightLayout}`)).toEqual(["hasic/0/0", "sofer/1/0"]);
     // Scenár spred v8.5 s jedným spoločným balíčkom: rozdelí sa podľa druhu, poradie ostáva.
     // Scenár výučby už má naradie/obcania (tie by spoločný balíček prepísali) — starý tvar bez nich.

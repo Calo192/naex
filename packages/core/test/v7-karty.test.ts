@@ -11,6 +11,7 @@ import {
   bitkaMody,
   cardVariants,
   evaluateLine,
+  hranyNastroja,
   legalCommands,
   lineState,
   loadGameData,
@@ -77,10 +78,16 @@ describe("sada v7 — dáta", () => {
     for (const l of data.lokality) expect(cardVariants(l).total, l.id).toBe(1);
   });
 
-  it("počty variantov podľa typu karty (Michal 2026-11-03, identita kariet): Starší 1, Občan 4–8, Nástroj a Zviera 2–4", () => {
+  it("počty variantov podľa typu karty (Michal 2026-11-03, identita kariet): Starší 1, Občan 4–8, Zviera 2–4, Nástroj 1 s dvoma hranami", () => {
     for (const def of data.cards.values()) {
       if (["Lokalita", "Kliatba"].some((t) => def.tags.includes(t as never))) continue;
       const v = cardVariants(def).total;
+      // Nástroj nemá sloty, len hornú a dolnú hranu v texte (rework Náradia, Michal 2026-11-08).
+      if (def.tags.includes("Nástroj")) {
+        expect(v, def.id).toBe(1);
+        expect(hranyNastroja(def), def.id).toMatchObject({ horna: expect.anything(), dolna: expect.anything() });
+        continue;
+      }
       const [od, po] = def.tags.includes("Starešina") ? [1, 1] : def.tags.includes("Občan") ? [4, 8] : [2, 4];
       expect(v, def.id).toBeGreaterThanOrEqual(od);
       expect(v, def.id).toBeLessThanOrEqual(po);

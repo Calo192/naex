@@ -14,7 +14,10 @@ import type { ClientState } from "./view.ts";
  * ostáva na hráčovi a Krčma, ktorá NA EX vynúti, prepínač vypne.
  */
 export function autoKoniecPitky(view: ClientState, kolo: number | null): Command | null {
-  if (kolo === null || kolo !== view.kolo || view.koniec !== null || !view.mozemHrat || view.hasicVolba !== null) return null;
+  if (kolo === null || kolo !== view.kolo || view.koniec !== null || !view.mozemHrat) return null;
+  // Kým čaká voľba (Hasič, Predsedova vila, Zberný dvor…), motor prijme len ju — „končím“
+  // by server odmietol a klient by ho v tejto Pitke už znova neposlal.
+  if (view.hasicVolba !== null || view.volbaNastupu !== null) return null;
   const ps = view.pitkaStav;
   const ja: PlayerId = view.ja;
   if (view.faza !== "pitka" || ps === null || ps.reakcia !== null || ps.naTahu !== ja || ps.hotovy[ja]) return null;

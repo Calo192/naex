@@ -59,6 +59,19 @@ describe("kontrola textov efektov", () => {
     const p = kontrolaTextov([karta("Bitka: Udelí ranu.", "nova_karta")], { ...podklady, zverejnene: [] });
     expect(p.map((x) => x.text).join(" ")).toContain("manual");
   });
+
+  it("hrany Nástroja číta jadro z textu: ich zmena nie je zmena implementovaného efektu, zmena Dedičstva áno", () => {
+    const nastroj = (efekt: string, id = "vidly"): KartaNavrh => ({ ...navrhy.find((k) => k.id === "vidly")!, id, efekt });
+    const dedicstvo = "Dedičstvo: Tvoje Rany udeľujú o 1 poškodenie viac.";
+    const zverejnene = [{ id: "vidly", efekt: dedicstvo }];
+    const jadro = (efekt: string, id?: string) =>
+      kontrolaTextov([nastroj(efekt, id)], { ...podklady, zverejnene }).filter((x) => x.text.includes("jadro") || x.text.includes("manual"));
+    expect(jadro(`${dedicstvo} Hore: Vzbura. Dole: {Rana}→{Pecka}.`)).toEqual([]);
+    expect(jadro(`${dedicstvo} Hore: Forsáž. Dole: {Pecka}→{Rana}.`)).toEqual([]);
+    expect(jadro("Dedičstvo: Tvoje Rany udeľujú o 2 poškodenia viac. Hore: Vzbura. Dole: {Rana}→{Pecka}.")).toHaveLength(1);
+    // Nová kópia Nástroja s hranami a bez Dedičstva nie je „manual“ — nemá čo naprogramovať.
+    expect(jadro("Hore: Vzbura. Dole: {Rana}→{Pecka}.", "vidly_2")).toEqual([]);
+  });
 });
 
 describe("Schopnosť väzňa (v11.2): „Väzeň — raz za hru:“ je spúšťač Väzeň", () => {
