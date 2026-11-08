@@ -162,35 +162,23 @@
    "tags": [
     "Nástroj"
    ],
-   "effect_text": "Dedičstvo: Hádka: Ak vyhráš hádku, súper odhodí 1 náhodnú kartu z ruky.",
+   "effect_text": "Dedičstvo: Hádka: Ak vyhráš hádku, súper odhodí 1 náhodnú kartu z ruky. Hore: {Viera}→{Pohoršenie}. Dole: {Pohoršenie}→{Povera}.",
    "triggers": [
     "Dedičstvo",
     "Hádka"
    ],
    "left": {
-    "blocked": [
-     1,
-     3
-    ],
-    "actions": {
-     "Dlh": 1,
-     "Povera": 1
-    }
+    "blocked": [],
+    "actions": {}
    },
    "right": {
-    "blocked": [
-     0,
-     1
-    ],
-    "actions": {
-     "Pohoršenie": 1,
-     "Povera": 1
-    }
+    "blocked": [],
+    "actions": {}
    },
    "permutations": {
-    "total": 4,
-    "left": 2,
-    "right": 2
+    "total": 1,
+    "left": 1,
+    "right": 1
    }
   },
   {
@@ -200,33 +188,22 @@
    "tags": [
     "Nástroj"
    ],
-   "effect_text": "Dedičstvo: Pitka: Za každé 2 cigarety, ktoré súper vyfajčí, si dober 1 kartu. Nie je to nerest.",
+   "effect_text": "Dedičstvo: Pitka: Za každé 2 cigarety, ktoré súper vyfajčí, si dober 1 kartu. Nie je to nerest. Hore: {Pečeň}→{Cigareta}. Dole: {Hazard}→{Cigareta}.",
    "triggers": [
     "Dedičstvo",
     "Pitka"
    ],
    "left": {
-    "blocked": [
-     0,
-     3
-    ],
-    "actions": {
-     "Cigareta": 1,
-     "PoškodeniePečene": 1
-    }
+    "blocked": [],
+    "actions": {}
    },
    "right": {
-    "blocked": [
-     0,
-     1
-    ],
-    "actions": {
-     "Cigareta": 2
-    }
+    "blocked": [],
+    "actions": {}
    },
    "permutations": {
-    "total": 2,
-    "left": 2,
+    "total": 1,
+    "left": 1,
     "right": 1
    }
   },
@@ -237,33 +214,22 @@
    "tags": [
     "Nástroj"
    ],
-   "effect_text": "Dedičstvo: Počíta sa, akoby si mal plný poldeci navyše. Nemôžeš dolievať poldeci za cigarety.",
+   "effect_text": "Dedičstvo: Počíta sa, akoby si mal plný poldeci navyše. Nemôžeš dolievať poldeci za cigarety. Hore: NA EX. Dole: {Pečeň}→{Poldeci}.",
    "triggers": [
     "Dedičstvo"
    ],
    "left": {
-    "blocked": [
-     0,
-     3
-    ],
-    "actions": {
-     "Poldeci": 2
-    }
+    "blocked": [],
+    "actions": {}
    },
    "right": {
-    "blocked": [
-     0,
-     1
-    ],
-    "actions": {
-     "Posilnenie": 1,
-     "PoškodeniePečene": 1
-    }
+    "blocked": [],
+    "actions": {}
    },
    "permutations": {
-    "total": 2,
+    "total": 1,
     "left": 1,
-    "right": 2
+    "right": 1
    }
   },
   {
@@ -273,35 +239,23 @@
    "tags": [
     "Nástroj"
    ],
-   "effect_text": "Dedičstvo: Bitka: Ak súper v tomto kole priložil kartu k tvojej {Rana}.",
+   "effect_text": "Dedičstvo: Bitka: Ak súper v tomto kole priložil kartu k tvojej {Rana}. Hore: {Pečeň}→{Rana}. Dole: {Pecka}→{Rana}.",
    "triggers": [
     "Dedičstvo",
     "Bitka"
    ],
    "left": {
-    "blocked": [
-     0,
-     3
-    ],
-    "actions": {
-     "Obmedzenie": 1,
-     "Odpor": 1
-    }
+    "blocked": [],
+    "actions": {}
    },
    "right": {
-    "blocked": [
-     0,
-     3
-    ],
-    "actions": {
-     "Obmedzenie": 1,
-     "Odpor": 1
-    }
+    "blocked": [],
+    "actions": {}
    },
    "permutations": {
-    "total": 4,
-    "left": 2,
-    "right": 2
+    "total": 1,
+    "left": 1,
+    "right": 1
    }
   },
   {
@@ -311,34 +265,22 @@
    "tags": [
     "Nástroj"
    ],
-   "effect_text": "Dedičstvo: Keď by tvoju prepojenú Petelicu zrušil iný efekt (Odpor, NA EX…), namiesto zrušenia udeľuje o 1 poškodenie menej.",
+   "effect_text": "Dedičstvo: Keď by tvoju prepojenú Petelicu zrušil iný efekt (Odpor, NA EX…), namiesto zrušenia udeľuje o 1 poškodenie menej. Hore: {Rana}→{Petelica}. Dole: {Petelica}→{Rana}.",
    "triggers": [
     "Dedičstvo"
    ],
    "left": {
-    "blocked": [
-     0,
-     3
-    ],
-    "actions": {
-     "Dlh": 1,
-     "Rana": 1
-    }
+    "blocked": [],
+    "actions": {}
    },
    "right": {
-    "blocked": [
-     0,
-     1
-    ],
-    "actions": {
-     "Petelica": 1,
-     "Rana": 1
-    }
+    "blocked": [],
+    "actions": {}
    },
    "permutations": {
-    "total": 4,
-    "left": 2,
-    "right": 2
+    "total": 1,
+    "left": 1,
+    "right": 1
    }
   },
   {
@@ -348,33 +290,22 @@
    "tags": [
     "Nástroj"
    ],
-   "effect_text": "Dedičstvo: Hodnota tvojej Viery je o 1 vyššia.",
+   "effect_text": "Dedičstvo: Hodnota tvojej Viery je o 1 vyššia. Hore: {Povera}→{Viera}. Dole: {Viera}→{Povera}.",
    "triggers": [
     "Dedičstvo"
    ],
    "left": {
-    "blocked": [
-     1,
-     3
-    ],
-    "actions": {
-     "Viera": 2
-    }
+    "blocked": [],
+    "actions": {}
    },
    "right": {
-    "blocked": [
-     0,
-     1
-    ],
-    "actions": {
-     "Dlh": 1,
-     "Viera": 1
-    }
+    "blocked": [],
+    "actions": {}
    },
    "permutations": {
-    "total": 2,
+    "total": 1,
     "left": 1,
-    "right": 2
+    "right": 1
    }
   },
   {
@@ -384,34 +315,22 @@
    "tags": [
     "Nástroj"
    ],
-   "effect_text": "Dedičstvo: Tvoj prah Cirhózy je o 2 vyšší.",
+   "effect_text": "Dedičstvo: Tvoj prah Cirhózy je o 2 vyšší. Hore: {Pečeň}→{Viera}. Dole: {Poldeci}→{Viera}.",
    "triggers": [
     "Dedičstvo"
    ],
    "left": {
-    "blocked": [
-     0,
-     1
-    ],
-    "actions": {
-     "Pohoršenie": 1,
-     "Povera": 1
-    }
+    "blocked": [],
+    "actions": {}
    },
    "right": {
-    "blocked": [
-     2,
-     3
-    ],
-    "actions": {
-     "Obmedzenie": 1,
-     "Odpor": 1
-    }
+    "blocked": [],
+    "actions": {}
    },
    "permutations": {
-    "total": 4,
-    "left": 2,
-    "right": 2
+    "total": 1,
+    "left": 1,
+    "right": 1
    }
   },
   {
@@ -421,33 +340,22 @@
    "tags": [
     "Nástroj"
    ],
-   "effect_text": "Dedičstvo: Tvoj prah Dlhu je o 1 vyšší. Posledná Pitka kola: {Hazard}.",
+   "effect_text": "Dedičstvo: Tvoj prah Dlhu je o 1 vyšší. Posledná Pitka kola: {Hazard}. Hore: {Hazard}→{Poldeci}. Dole: {Cigareta}→{Hazard}.",
    "triggers": [
     "Dedičstvo"
    ],
    "left": {
-    "blocked": [
-     2,
-     3
-    ],
-    "actions": {
-     "Dlh": 2
-    }
+    "blocked": [],
+    "actions": {}
    },
    "right": {
-    "blocked": [
-     0,
-     3
-    ],
-    "actions": {
-     "Cigareta": 1,
-     "Dlh": 1
-    }
+    "blocked": [],
+    "actions": {}
    },
    "permutations": {
-    "total": 2,
+    "total": 1,
     "left": 1,
-    "right": 2
+    "right": 1
    }
   },
   {
@@ -1523,7 +1431,7 @@
     "Závislý",
     "Žena"
    ],
-   "effect_text": "Podpora: Zahraničný {Pohoršenie}.",
+   "effect_text": "Podpora: {Povera}.",
    "triggers": [
     "Podpora"
    ],
@@ -2202,9 +2110,9 @@
     "Závislý",
     "Chlap"
    ],
-   "effect_text": "Furt: Akcie Poškodenie pečene tvojich kariet v jeho okolí sa rátajú ako Viera.",
+   "effect_text": "Podpora: Preškolenie {PoškodeniePečene}→{Viera}.",
    "triggers": [
-    "Furt"
+    "Podpora"
    ],
    "left": {
     "blocked": [
@@ -2669,7 +2577,7 @@
     "Chlap",
     "Pracujúci"
    ],
-   "effect_text": "Bitka: Ak si v tomto kole nedal NA EX {Pecka} a dostaneš 1 cigaretu.",
+   "effect_text": "Bitka: Ak si v tomto kole nedal NA EX {Pecka} {Rana}.",
    "triggers": [
     "Bitka"
    ],
@@ -2798,33 +2706,22 @@
    "tags": [
     "Nástroj"
    ],
-   "effect_text": "Dedičstvo: Tvoje Rany udeľujú o 1 poškodenie viac.",
+   "effect_text": "Dedičstvo: Tvoje Rany udeľujú o 1 poškodenie viac. Hore: Vzbura. Dole: {Rana}→{Pecka}.",
    "triggers": [
     "Dedičstvo"
    ],
    "left": {
-    "blocked": [
-     0,
-     3
-    ],
-    "actions": {
-     "Rana": 2
-    }
+    "blocked": [],
+    "actions": {}
    },
    "right": {
-    "blocked": [
-     0,
-     3
-    ],
-    "actions": {
-     "Rana": 1,
-     "Robota": 1
-    }
+    "blocked": [],
+    "actions": {}
    },
    "permutations": {
-    "total": 2,
+    "total": 1,
     "left": 1,
-    "right": 2
+    "right": 1
    }
   },
   {
@@ -2834,32 +2731,21 @@
    "tags": [
     "Nástroj"
    ],
-   "effect_text": "Dedičstvo: NA EX smieš dať aj na Zviera.",
+   "effect_text": "Dedičstvo: NA EX smieš dať aj na Zviera. Hore: Výtržník. Dole: {Poldeci}→{Pečeň}.",
    "triggers": [
     "Dedičstvo"
    ],
    "left": {
-    "blocked": [
-     0,
-     1
-    ],
-    "actions": {
-     "Poldeci": 1,
-     "PoškodeniePečene": 1
-    }
+    "blocked": [],
+    "actions": {}
    },
    "right": {
-    "blocked": [
-     0,
-     1
-    ],
-    "actions": {
-     "Posilnenie": 2
-    }
+    "blocked": [],
+    "actions": {}
    },
    "permutations": {
-    "total": 2,
-    "left": 2,
+    "total": 1,
+    "left": 1,
     "right": 1
    }
   },
@@ -3231,7 +3117,7 @@
     "Influencer",
     "Chlap"
    ],
-   "effect_text": "Podpora: Keď sa stretne s tvojím Chlapom, ten má do konca kola Rany ako Pecky.",
+   "effect_text": "Podpora: Preškolenie {Rana}→{Pecka}.",
    "triggers": [
     "Podpora"
    ],
@@ -3269,7 +3155,7 @@
     "Autorita",
     "Chlap"
    ],
-   "effect_text": "Bitka: Ak máš v jeho kraji prevahu {Pecka}. Inak získaš 1 Dlh.",
+   "effect_text": "Bitka: Ak máš v jeho kraji prevahu {Pecka}. Posledná Pitka kola: Bez prevahy v jeho kraji {Dlh}.",
    "triggers": [
     "Bitka"
    ],
@@ -3592,34 +3478,22 @@
    "tags": [
     "Nástroj"
    ],
-   "effect_text": "Dedičstvo: Tvoje Pecky udeľujú o 1 poškodenie viac.",
+   "effect_text": "Dedičstvo: Tvoje Pecky udeľujú o 1 poškodenie viac. Hore: {Pecka}→{Petelica}. Dole: {Petelica}→{Pecka}.",
    "triggers": [
     "Dedičstvo"
    ],
    "left": {
-    "blocked": [
-     2,
-     3
-    ],
-    "actions": {
-     "Pecka": 1,
-     "Rana": 1
-    }
+    "blocked": [],
+    "actions": {}
    },
    "right": {
-    "blocked": [
-     2,
-     3
-    ],
-    "actions": {
-     "Odpor": 1,
-     "Rana": 1
-    }
+    "blocked": [],
+    "actions": {}
    },
    "permutations": {
-    "total": 4,
-    "left": 2,
-    "right": 2
+    "total": 1,
+    "left": 1,
+    "right": 1
    }
   },
   {
@@ -3629,32 +3503,22 @@
    "tags": [
     "Nástroj"
    ],
-   "effect_text": "Dedičstvo: Tvoje Posilnenie nemožno zrušiť NA EX.",
+   "effect_text": "Dedičstvo: Tvoje Posilnenie nemožno zrušiť NA EX. Hore: Forsáž. Dole: {Posilnenie}→{Pečeň}.",
    "triggers": [
     "Dedičstvo"
    ],
    "left": {
-    "blocked": [
-     0,
-     1
-    ],
-    "actions": {
-     "Posilnenie": 2
-    }
+    "blocked": [],
+    "actions": {}
    },
    "right": {
-    "blocked": [
-     0,
-     3
-    ],
-    "actions": {
-     "PoškodeniePečene": 1
-    }
+    "blocked": [],
+    "actions": {}
    },
    "permutations": {
-    "total": 2,
+    "total": 1,
     "left": 1,
-    "right": 2
+    "right": 1
    }
   },
   {
@@ -3664,33 +3528,22 @@
    "tags": [
     "Nástroj"
    ],
-   "effect_text": "Dedičstvo: Tvoje Roboty pália o 1 Dlh viac.",
+   "effect_text": "Dedičstvo: Tvoje Roboty pália o 1 Dlh viac. Hore: {Hazard}→{Robota}. Dole: {Robota}→{Hazard}.",
    "triggers": [
     "Dedičstvo"
    ],
    "left": {
-    "blocked": [
-     0,
-     1
-    ],
-    "actions": {
-     "Robota": 2
-    }
+    "blocked": [],
+    "actions": {}
    },
    "right": {
-    "blocked": [
-     2,
-     3
-    ],
-    "actions": {
-     "Cigareta": 1,
-     "Robota": 1
-    }
+    "blocked": [],
+    "actions": {}
    },
    "permutations": {
-    "total": 2,
+    "total": 1,
     "left": 1,
-    "right": 2
+    "right": 1
    }
   },
   {
@@ -3700,33 +3553,22 @@
    "tags": [
     "Nástroj"
    ],
-   "effect_text": "Dedičstvo: Tvoje Povery majú silu 2.",
+   "effect_text": "Dedičstvo: Tvoje Povery majú silu 2. Hore: {Hazard}→{Povera}. Dole: {Povera}→{Hazard}.",
    "triggers": [
     "Dedičstvo"
    ],
    "left": {
-    "blocked": [
-     2,
-     3
-    ],
-    "actions": {
-     "Povera": 2
-    }
+    "blocked": [],
+    "actions": {}
    },
    "right": {
-    "blocked": [
-     0,
-     1
-    ],
-    "actions": {
-     "Dlh": 1,
-     "Povera": 1
-    }
+    "blocked": [],
+    "actions": {}
    },
    "permutations": {
-    "total": 2,
+    "total": 1,
     "left": 1,
-    "right": 2
+    "right": 1
    }
   },
   {
@@ -3736,33 +3578,22 @@
    "tags": [
     "Nástroj"
    ],
-   "effect_text": "Dedičstvo: Akcia zrušená tvojím Odporom sa ráta ako tvoja a je posilnená.",
+   "effect_text": "Dedičstvo: Akcia zrušená tvojím Odporom sa ráta ako tvoja a je posilnená. Hore: {Odpor}→{Posilnenie}. Dole: {Posilnenie}→{Odpor}.",
    "triggers": [
     "Dedičstvo"
    ],
    "left": {
-    "blocked": [
-     2,
-     3
-    ],
-    "actions": {
-     "Odpor": 2
-    }
+    "blocked": [],
+    "actions": {}
    },
    "right": {
-    "blocked": [
-     0,
-     3
-    ],
-    "actions": {
-     "Odpor": 1,
-     "Robota": 1
-    }
+    "blocked": [],
+    "actions": {}
    },
    "permutations": {
-    "total": 2,
+    "total": 1,
     "left": 1,
-    "right": 2
+    "right": 1
    }
   },
   {
@@ -3772,34 +3603,22 @@
    "tags": [
     "Nástroj"
    ],
-   "effect_text": "Dedičstvo: Tvoje Poldeci otáčajú vypitý poldeci hneď v Pitke, nie až v bitke.",
+   "effect_text": "Dedičstvo: Tvoje Poldeci otáčajú vypitý poldeci hneď v Pitke, nie až v bitke. Hore: {Pečeň}→{Posilnenie}. Dole: {Pečeň}→{Hazard}.",
    "triggers": [
     "Dedičstvo"
    ],
    "left": {
-    "blocked": [
-     2,
-     3
-    ],
-    "actions": {
-     "Poldeci": 1,
-     "PoškodeniePečene": 1
-    }
+    "blocked": [],
+    "actions": {}
    },
    "right": {
-    "blocked": [
-     0,
-     3
-    ],
-    "actions": {
-     "Cigareta": 1,
-     "Poldeci": 1
-    }
+    "blocked": [],
+    "actions": {}
    },
    "permutations": {
-    "total": 4,
-    "left": 2,
-    "right": 2
+    "total": 1,
+    "left": 1,
+    "right": 1
    }
   },
   {
@@ -3809,32 +3628,21 @@
    "tags": [
     "Nástroj"
    ],
-   "effect_text": "Dedičstvo: Tvoje Vízie ukážu 2 vrchné karty — jednu si vezmi alebo spáľ, druhú vráť navrch.",
+   "effect_text": "Dedičstvo: Tvoje Vízie ukážu 2 vrchné karty — jednu si vezmi alebo spáľ, druhú vráť navrch. Hore: {Povera}→{Vízia}. Dole: {Vízia}→{Povera}.",
    "triggers": [
     "Dedičstvo"
    ],
    "left": {
-    "blocked": [
-     1,
-     2
-    ],
-    "actions": {
-     "PoškodeniePečene": 1,
-     "Povera": 1
-    }
+    "blocked": [],
+    "actions": {}
    },
    "right": {
-    "blocked": [
-     0,
-     1
-    ],
-    "actions": {
-     "Vízia": 2
-    }
+    "blocked": [],
+    "actions": {}
    },
    "permutations": {
-    "total": 2,
-    "left": 2,
+    "total": 1,
+    "left": 1,
     "right": 1
    }
   },
@@ -3845,33 +3653,22 @@
    "tags": [
     "Nástroj"
    ],
-   "effect_text": "Dedičstvo: Tvoje Obmedzenia uberajú aj cigarety, ktoré súper dostane za pas.",
+   "effect_text": "Dedičstvo: Tvoje Obmedzenia uberajú aj cigarety, ktoré súper dostane za pas. Hore: {Pečeň}→{Obmedzenie}. Dole: {Pecka}→{Obmedzenie}.",
    "triggers": [
     "Dedičstvo"
    ],
    "left": {
-    "blocked": [
-     1,
-     2
-    ],
-    "actions": {
-     "Obmedzenie": 2
-    }
+    "blocked": [],
+    "actions": {}
    },
    "right": {
-    "blocked": [
-     0,
-     3
-    ],
-    "actions": {
-     "Obmedzenie": 1,
-     "Odpor": 1
-    }
+    "blocked": [],
+    "actions": {}
    },
    "permutations": {
-    "total": 2,
+    "total": 1,
     "left": 1,
-    "right": 2
+    "right": 1
    }
   },
   {
@@ -3883,9 +3680,9 @@
     "Závislý",
     "Chlap"
    ],
-   "effect_text": "Furt: Posilnené akcie na jeho spojoch sa rátajú inak — súperove ako posilnený Hazard, tvoje ako posilnená Robota.",
+   "effect_text": "Konflikt: Preškolenie {Cigareta}→{Dlh}.",
    "triggers": [
-    "Furt"
+    "Konflikt"
    ],
    "left": {
     "blocked": [
@@ -3920,34 +3717,22 @@
    "tags": [
     "Nástroj"
    ],
-   "effect_text": "Dedičstvo: Tvoje Pohoršenia nemožno zrušiť Odporom a NA EX.",
+   "effect_text": "Dedičstvo: Tvoje Pohoršenia nemožno zrušiť Odporom a NA EX. Hore: {Povera}→{Pohoršenie}. Dole: {Odpor}→{Povera}.",
    "triggers": [
     "Dedičstvo"
    ],
    "left": {
-    "blocked": [
-     0,
-     1
-    ],
-    "actions": {
-     "Pohoršenie": 1,
-     "Povera": 1
-    }
+    "blocked": [],
+    "actions": {}
    },
    "right": {
-    "blocked": [
-     2,
-     3
-    ],
-    "actions": {
-     "Dlh": 1,
-     "Povera": 1
-    }
+    "blocked": [],
+    "actions": {}
    },
    "permutations": {
-    "total": 4,
-    "left": 2,
-    "right": 2
+    "total": 1,
+    "left": 1,
+    "right": 1
    }
   },
   {
@@ -3957,33 +3742,22 @@
    "tags": [
     "Nástroj"
    ],
-   "effect_text": "Dedičstvo: Tvoje Hazardy sú aktívne, keď nie sú spojené, a neaktívne, keď sú spojené.",
+   "effect_text": "Dedičstvo: Tvoje Hazardy sú aktívne, keď nie sú spojené, a neaktívne, keď sú spojené. Hore: {Hazard}→{Vízia}. Dole: {Vízia}→{Hazard}.",
    "triggers": [
     "Dedičstvo"
    ],
    "left": {
-    "blocked": [
-     2,
-     3
-    ],
-    "actions": {
-     "Dlh": 2
-    }
+    "blocked": [],
+    "actions": {}
    },
    "right": {
-    "blocked": [
-     0,
-     3
-    ],
-    "actions": {
-     "Dlh": 1,
-     "Robota": 1
-    }
+    "blocked": [],
+    "actions": {}
    },
    "permutations": {
-    "total": 2,
+    "total": 1,
     "left": 1,
-    "right": 2
+    "right": 1
    }
   },
   {
@@ -3993,33 +3767,22 @@
    "tags": [
     "Nástroj"
    ],
-   "effect_text": "Dedičstvo: Tvoje aktívne Cigarety nemožno zrušiť NA EX.",
+   "effect_text": "Dedičstvo: Tvoje aktívne Cigarety nemožno zrušiť NA EX. Hore: {Cigareta}→{Rana}. Dole: {Cigareta}→{Pečeň}.",
    "triggers": [
     "Dedičstvo"
    ],
    "left": {
-    "blocked": [
-     2,
-     3
-    ],
-    "actions": {
-     "Cigareta": 2
-    }
+    "blocked": [],
+    "actions": {}
    },
    "right": {
-    "blocked": [
-     0,
-     1
-    ],
-    "actions": {
-     "Cigareta": 1,
-     "Posilnenie": 1
-    }
+    "blocked": [],
+    "actions": {}
    },
    "permutations": {
-    "total": 2,
+    "total": 1,
     "left": 1,
-    "right": 2
+    "right": 1
    }
   },
   {
@@ -4029,32 +3792,21 @@
    "tags": [
     "Nástroj"
    ],
-   "effect_text": "Dedičstvo: Tvoj Pakt kopíruje prepojenú akciu dvakrát.",
+   "effect_text": "Dedičstvo: Tvoj Pakt kopíruje prepojenú akciu dvakrát. Hore: {Odpor}→{Pakt}. Dole: {Pakt}→{Odpor}.",
    "triggers": [
     "Dedičstvo"
    ],
    "left": {
-    "blocked": [
-     0,
-     1
-    ],
-    "actions": {
-     "Pakt": 1
-    }
+    "blocked": [],
+    "actions": {}
    },
    "right": {
-    "blocked": [
-     0,
-     1,
-     3
-    ],
-    "actions": {
-     "Pakt": 1
-    }
+    "blocked": [],
+    "actions": {}
    },
    "permutations": {
-    "total": 2,
-    "left": 2,
+    "total": 1,
+    "left": 1,
     "right": 1
    }
   },
@@ -4103,9 +3855,9 @@
     "Pracujúci",
     "Žena"
    ],
-   "effect_text": "Podpora: Pamätník {Robota}.",
+   "effect_text": "Spoločník: Pamätník {Robota}.",
    "triggers": [
-    "Podpora"
+    "Spoločník"
    ],
    "left": {
     "blocked": [
@@ -4230,7 +3982,7 @@
     "Autorita",
     "Chlap"
    ],
-   "effect_text": "Furt: Roboty kariet, ktoré s ním susedia, sa rátajú ako Pecky.",
+   "effect_text": "Furt: Preškolenie {Robota}→{Pecka}.",
    "triggers": [
     "Furt"
    ],
