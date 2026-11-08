@@ -346,6 +346,17 @@ CREATE TABLE IF NOT EXISTS achievementy_rozne (
   stitok TEXT NOT NULL,
   PRIMARY KEY (pouzivatel, proti, kluc, stitok)
 );
+
+-- Power level kariet (Michal 2026-11-08): váhy, ktoré nastavil admin. druh 'akcia' = kľúč
+-- akcie (spoločná váha), 'efekt' = id karty. Chýbajúci riadok = predvolená váha z @naex/tvorba.
+CREATE TABLE IF NOT EXISTS power_level (
+  druh TEXT NOT NULL,
+  kluc TEXT NOT NULL,
+  vaha REAL NOT NULL,
+  upravil INTEGER REFERENCES pouzivatelia(id) ON DELETE SET NULL,
+  upravene INTEGER NOT NULL,
+  PRIMARY KEY (druh, kluc)
+);
 `;
 
 export function otvorDb(cesta: string): Db {

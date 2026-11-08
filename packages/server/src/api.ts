@@ -34,6 +34,7 @@ import type { Playtesty } from "./playtesty.ts";
 import type { Navrhy } from "./navrhy.ts";
 import type { Roadmapa } from "./roadmapa.ts";
 import type { Novinky } from "./novinky.ts";
+import type { PowerLevely } from "./powerLevel.ts";
 import type { Dielna } from "./dielna.ts";
 import { KRABICKA, MAX_OTVORENYCH } from "./dielna.ts";
 import type { Hodnotenia } from "./znamky.ts";
@@ -129,6 +130,8 @@ export interface ApiKontext {
   readonly roadmapa: Roadmapa;
   /** Novinky pre hráčov — verejné, píše správca. */
   readonly novinky: Novinky;
+  /** Power level kariet — váhy čítajú všetci, nastavuje len admin. */
+  readonly powerLevely: PowerLevely;
   /** Dielňa — návrhy kariet od hráčov, hlasovanie cigaretami, posudok správcu. */
   readonly dielna: Dielna;
   /** Známky hry podľa 12 kritérií a ich vývoj v čase. */
@@ -707,6 +710,8 @@ export async function spracujApi(ctx: ApiKontext, req: IncomingMessage, res: Ser
 
     // ----- verejné -------------------------------------------------------
     if (r === "GET /sada") return ok(ctx.obsah.aktualnaSada().sada);
+    // Power level kariet (Michal 2026-11-08): vidí každý, aj návštevník; zápis je v /admin/power-level.
+    if (r === "GET /power-level") return ok(ctx.powerLevely.stav());
     if (r === "GET /rebricek-2na2") {
       if (!ctx.rezimyZrejucej) throw new ChybaVstupu(REZIM_LEN_V_ZREJUCEJ, 404);
       return ok(ctx.rebricek2na2());
@@ -997,6 +1002,12 @@ export async function spracujApi(ctx: ApiKontext, req: IncomingMessage, res: Ser
       if (ZAPIS_DO_TVORCU.test(sub)) throw voVypalenej("Tvorca kariet");
       // Rozpracovaná sada sa preberá sama každú minútu; toto hneď (admin.ts sada-zrejuca).
       if (sub === "POST /sada-z-vypalenej") return ok(await ctx.zrejuca.prevezmiSadu());
+    }
+
+    if (sub === "PUT /power-level") {
+      // Slidre power levelu nastavuje len admin, subadmin nie (Michal 2026-11-08).
+      if (ja2.rola !== "admin") throw new ChybaVstupu("Power level nastavuje len admin.", 403);
+      return ok(ctx.powerLevely.uloz(await citajJson(req), ja2.id, teraz));
     }
 
     if (casti[2] === "novinky") {

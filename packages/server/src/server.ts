@@ -97,6 +97,7 @@ import { Playtesty } from "./playtesty.ts";
 import { Navrhy } from "./navrhy.ts";
 import { Roadmapa } from "./roadmapa.ts";
 import { Novinky } from "./novinky.ts";
+import { PowerLevely } from "./powerLevel.ts";
 import { Dielna } from "./dielna.ts";
 import { Hodnotenia } from "./znamky.ts";
 import { ObnovaHesla } from "./obnovaHesla.ts";
@@ -451,6 +452,7 @@ export function createGameServer(opts: ServerOpts): Promise<GameServer> {
   const roadmapa = new Roadmapa(db);
   roadmapa.naplnAkTreba(fileURLToPath(new URL("../seed/roadmapa.json", import.meta.url)), teraz());
   const novinky = new Novinky(db);
+  const powerLevely = new PowerLevely(db);
   const dielna = new Dielna(db, prava, {
     sada: () => obsah.aktualnaSada().sada,
     kartaTvorcu: (id) => obsah.karty.jeden(id),
@@ -632,6 +634,7 @@ export function createGameServer(opts: ServerOpts): Promise<GameServer> {
           navrhy,
           roadmapa,
           novinky,
+          powerLevely,
           dielna,
           hodnotenia,
           teraz,
