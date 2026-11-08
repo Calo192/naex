@@ -13,6 +13,8 @@ import scorecardsJson from "../data/scorecards.json";
 import frakcieJson from "./data/frakcie-karty.json";
 import skryteJson from "./data/skryte-akcie-karty.json";
 import type { CardInstance, GameData, GameState, PlacedCard, PlayerId } from "../src/index.ts";
+import type { Layout4 } from "./helpers.ts";
+import { EMPTY, instanceFor, makeDef, syntheticData } from "./helpers.ts";
 import {
   apply,
   cardVariants,
@@ -277,6 +279,43 @@ describe("Vedúcko a Sypač menia aj akcie navyše (Michal 2026-11-08)", () => {
     const sloty = [...(ev.cards.get(k.uid)?.left ?? []), ...(ev.cards.get(k.uid)?.right ?? [])].filter((x) => x?.action === "Rana");
     expect(sloty.length).toBeGreaterThan(0);
     for (const x of sloty) expect(x?.ako).toBe("Pecka");
+  });
+});
+
+describe("premenu Anonymného alkoholika a Tipéra vidno na karte (Michal 2026-11-08)", () => {
+  it("Anonymný alkoholik: Poškodenie pečene navyše suseda je Viera — v súčtoch aj v pečati; hrana tiež", () => {
+    // Akcia navyše s pečeňou v sade zatiaľ nie je — Miňištrant na skúšku: „Spoločník: Závislý {Poškodenie pečene}.“
+    const d = sadaSoZmenami(frakcieJson, skryteJson, { karty: [{ id: "ministrant", effect_text: "Spoločník: Závislý {Poškodenie pečene}." }] });
+    const min = inst("ministrant");
+    const aa = inst("anonymny_alkoholik");
+    const ev = evaluateLine(d, lineState(stol(d, { strany: [[lezi(aa, 0), lezi(min, 0)], []] })));
+    const stav = ev.cards.get(min.uid)?.navyse?.[0];
+    expect(stav?.krat).toBe(1);
+    expect(stav?.ako).toEqual(["Viera"]);
+    expect(ev.zdroje[0].Viera?.some((z) => z.uid === min.uid && z.dovody.includes("karta:anonymny_alkoholik"))).toBe(true);
+    expect(ev.zdroje[0].PoškodeniePečene?.some((z) => z.uid === min.uid && z.dovody[0]?.startsWith("akcia navyše") === true)).not.toBe(true);
+    for (const x of [...(ev.cards.get(min.uid)?.left ?? []), ...(ev.cards.get(min.uid)?.right ?? [])]) {
+      if (x?.action === "PoškodeniePečene") expect(x).toMatchObject({ ako: "Viera", naKarte: true });
+    }
+  });
+
+  it("Profesionálny tipér: posilnené akcie na jeho spoji karta ukáže ako Robotu (svoje) — na oboch kartách spoja", () => {
+    const T_R: Layout4 = ["Posilnenie", "Pecka", null, null];
+    const A_L: Layout4 = ["Posilnenie", "Rana", null, null];
+    const d = syntheticData([makeDef("profesionalny_tiper", EMPTY, T_R), makeDef("a", A_L, EMPTY)]);
+    const t = instanceFor(d, "profesionalny_tiper", EMPTY, T_R);
+    const a = instanceFor(d, "a", A_L, EMPTY);
+    const ev = evaluateLine(d, { lokalita: null, lokalitaOtocena: false, strany: [[], [lezi(t, 0), lezi(a, 0)]] });
+    expect(ev.sums[0]).toEqual({ Robota: 4 });
+    const sloty = [t, a].flatMap((k) => [...(ev.cards.get(k.uid)?.left ?? []), ...(ev.cards.get(k.uid)?.right ?? [])]).filter((x) => x?.action === "Pecka" || x?.action === "Rana");
+    expect(sloty).toHaveLength(2);
+    for (const x of sloty) expect(x).toMatchObject({ ako: "Robota", naKarte: true });
+  });
+
+  it("Šarlatán ani Výtržník sa na karte zatiaľ nekreslia", () => {
+    const k = inst("pijan");
+    const ev = evaluateLine(nova, lineState(stol(nova, { strany: [[lezi(k, 0, { vytrznik: true, naexBy: 0, naexBy2: 1 })], []] })));
+    for (const x of [...(ev.cards.get(k.uid)?.left ?? []), ...(ev.cards.get(k.uid)?.right ?? [])]) expect(x?.naKarte).toBeUndefined();
   });
 });
 

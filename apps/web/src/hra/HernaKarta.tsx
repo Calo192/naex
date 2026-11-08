@@ -117,12 +117,12 @@ export function HernaKarta({ karta, sada, data, sirka, otocena = false, eval: ev
   // Lupa a karta na stole majú rovnaký kľúč — lupa otvorená po iskre ju už nezopakuje.
   const teraz = Date.now();
   const strana = (ps: "left" | "right"): { roz: RozlozenieStrany; sloty: (SlotStav | null)[] | null } => {
-    // Výtržník kreslí Rany na miestach vytlačených akcií, Vedúcko a Sypač Pecky (Michal 2026-11-08)
-    // — hráč má vidieť, čo karta naozaj robí.
+    // Výtržník kreslí Rany na miestach vytlačených akcií; premenu Tipéra, Vedúcka, Sypača
+    // a Anonymného alkoholika kreslí slot (Michal 2026-11-08) — hráč má vidieť, čo karta naozaj robí.
     const roz = [0, 1, 2, 3].map((k) => {
       const a = vytlacene[ps][k] ?? null;
-      const ako = ev?.[ps][k]?.ako;
-      return a === null ? null : ako === "Pecka" ? ako : vytrznik ? akciaVytrznika() : a;
+      const se = ev?.[ps][k];
+      return a === null ? null : se?.naKarte === true && se.ako !== undefined ? se.ako : vytrznik ? akciaVytrznika() : a;
     }) as unknown as RozlozenieStrany;
     const sloty =
       ev === undefined || ev === null

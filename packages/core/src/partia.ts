@@ -145,6 +145,8 @@ export interface SlotEval {
   readonly nasobok: number;
   /** Akcia sa ráta ako iná (Šarlatán: Viera v jeho okolí platí ako Vízia). */
   readonly ako?: Action;
+  /** Karta kreslí na slote `ako` namiesto vytlačenej akcie (Tipér, Vedúcko, Sypač, Anonymný alkoholik). */
+  readonly naKarte?: true;
 }
 
 /** Vyhodnotenie jednej karty — sloty vo VYTLAČENOM ráme karty. */
@@ -261,6 +263,8 @@ interface Elem {
   readonly zrusilOdporom: (PlayerId | null)[][];
   /** tiper[side][k]: posilnená akcia na spoji Profesionálneho tipéra — jeho majiteľ (premena pri súčte). */
   readonly tiper: (PlayerId | null)[][];
+  /** akoTipera[side][k]: akcia, ktorou sa posilnená akcia na spoji Tipéra ráta (Robota či Dlh) — kreslí ju karta. */
+  readonly akoTipera: (Action | null)[][];
   /** puska[side][k]: Petelica, ktorú Puška zachránila pred zrušením — ráta sa o 1 poškodenie menej. */
   readonly puska: boolean[][];
   /** Vedúcko v okolí: vytlačené Roboty karty sa rátajú ako Pecky. */
@@ -433,6 +437,7 @@ function makeElem(
     spojena: [0, 1].map(() => [false, false, false, false]),
     zrusilOdporom: [0, 1].map(() => [null, null, null, null]),
     tiper: [0, 1].map(() => [null, null, null, null]),
+    akoTipera: [0, 1].map(() => [null, null, null, null]),
     puska: [0, 1].map(() => [false, false, false, false]),
     robotaAkoPecka: false,
     pecenAkoViera: false,
@@ -927,13 +932,24 @@ function elemEval(elem: Elem): CardLineEval {
     const actions = side === 0 ? elem.effLeft : elem.effRight;
     const action = actions[idx];
     if (action == null) return null;
-    // Vedúcko a Sypač (Michal 2026-11-08): zmenená akcia je vidieť na dotknutej karte.
-    const pecka = elem.tiper[side]![idx] == null && ((action === "Robota" && elem.robotaAkoPecka) || (action === "Rana" && elem.ranyAkoPecky));
+    // Michal 2026-11-08: keď efekt mení akciu, zmenená akcia je vidieť na karte, ktorej sa týka —
+    // Profesionálny tipér, Vedúcko, Sypač a Anonymný alkoholik. Šarlatán a Výtržník nie (zatiaľ).
+    const tip = elem.akoTipera[side]![idx] ?? null;
+    const zmena: Action | null =
+      tip !== null
+        ? tip
+        : elem.tiper[side]![idx] != null
+          ? null
+          : (action === "Robota" && elem.robotaAkoPecka) || (action === "Rana" && elem.ranyAkoPecky)
+            ? "Pecka"
+            : action === "PoškodeniePečene" && elem.pecenAkoViera
+              ? "Viera"
+              : null;
     return {
       action,
       stav: elem.stav[side]![idx] as SlotStav,
       nasobok: elem.nasobok[side]![idx] as number,
-      ...(elem.vieraAkoVizia && action === "Viera" ? { ako: "Vízia" as const } : pecka ? { ako: "Pecka" as const } : {}),
+      ...(zmena !== null && zmena !== action ? { ako: zmena, naKarte: true as const } : elem.vieraAkoVizia && action === "Viera" ? { ako: "Vízia" as const } : {}),
     };
   };
   return {
@@ -1081,6 +1097,7 @@ export function evaluateLine(data: GameData, line: LineState): LineEval {
         const vedRobota = tiper === null && action === "Robota" && elem.robotaAkoPecka;
         const aaPecen = tiper === null && action === "PoškodeniePečene" && elem.pecenAkoViera;
         const ako: Action = tiper !== null ? (target === tiper ? "Robota" : "Dlh") : elem.puska[side]![k] || vedRobota ? "Pecka" : aaPecen ? "Viera" : akciaPoPremene(elem, action);
+        if (tiper !== null) elem.akoTipera[side]![k] = ako;
         if (zrusil != null) {
           (zrusene[target][ako] ??= []).push({ defId: elem.defId, uid: elem.uid, hodnota: 0, vStrede: elem.isLokalita, dovody: [zrusil] });
           // Hrable (Dedičstvo, Náradie 2026-10-30): akcia zrušená tvojím Odporom sa ráta ako tvoja a je posilnená.
@@ -1136,7 +1153,8 @@ export function evaluateLine(data: GameData, line: LineState): LineEval {
       });
       for (const { a, ako, n } of pocty.values()) {
         const hodnota = e.krat * n;
-        const dovody = ako === a ? [dovod] : [dovod, `karta:${a === "Robota" ? "veducko" : "kulturista"}`];
+        const pricina = a === "Robota" ? "veducko" : a === "PoškodeniePečene" ? "anonymny_alkoholik" : "kulturista";
+        const dovody = ako === a ? [dovod] : [dovod, `karta:${pricina}`];
         sums[p][ako] = (sums[p][ako] ?? 0) + hodnota;
         pridajZdroj(p, ako, { defId, uid, hodnota, vStrede: false, dovody });
       }
@@ -1174,11 +1192,14 @@ export function evaluateLine(data: GameData, line: LineState): LineEval {
 
 /**
  * Premena akcií navyše karty (Michal 2026-11-08): Vedúcko v okolí z Roboty urobí Pecku,
- * Sypač tvojmu Chlapovi z Rany Pecku — ako na hrane. Iné modifikátory ich nemenia.
+ * Sypač tvojmu Chlapovi z Rany Pecku, Anonymný alkoholik tvojim susedom z Poškodenia pečene
+ * Vieru — ako na hrane. Iné modifikátory ich nemenia; Tipér mení len posilnené akcie na spoji.
  */
 function premenNavyse(e: NavyseStav, elem: Elem | undefined): NavyseStav {
   if (elem === undefined) return e;
-  const ako = e.akcie.map((a): Action => ((a === "Robota" && elem.robotaAkoPecka) || (a === "Rana" && elem.ranyAkoPecky) ? "Pecka" : a));
+  const ako = e.akcie.map((a): Action =>
+    (a === "Robota" && elem.robotaAkoPecka) || (a === "Rana" && elem.ranyAkoPecky) ? "Pecka" : a === "PoškodeniePečene" && elem.pecenAkoViera ? "Viera" : a,
+  );
   return ako.some((a, j) => a !== e.akcie[j]) ? { ...e, ako } : e;
 }
 
