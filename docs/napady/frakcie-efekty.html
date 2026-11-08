@@ -1,0 +1,353 @@
+<!doctype html>
+<html lang="sk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Frakcie a akcie navyše — NA EX!</title>
+<style>
+:root{--bg:#15120f;--pl:#1f1a15;--pl2:#2a231c;--ok:#43372c;--tx:#f1e8d8;--tl:#b8a993;--ak:#e9ad45;--zel:#7fbf7a;--cer:#d8705f;
+--dob:#5ea6e0;--zla:#e0614a;--mak:#b48ae6;color-scheme:dark}
+@media (prefers-color-scheme:light){:root{--bg:#f6f1e7;--pl:#fffaf1;--pl2:#f0e7d6;--ok:#d8c8ad;--tx:#2a2016;--tl:#5e4f3b;--ak:#95590a;--zel:#2f7a2b;--cer:#a8402f;
+--dob:#2f6fae;--zla:#b53b26;--mak:#7a4fb5;color-scheme:light}}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--tx);font:15px/1.5 system-ui,"Segoe UI",Roboto,sans-serif}
+main{max-width:1060px;margin:0 auto;padding:14px max(14px,env(safe-area-inset-right,0px)) 80px max(14px,env(safe-area-inset-left,0px))}
+h1,h2,h3{font-family:Georgia,serif;line-height:1.2;text-wrap:balance}h1{font-size:clamp(1.4rem,5vw,2rem);margin:0 0 4px}
+h2{font-size:1.25rem;margin:32px 0 10px;padding-bottom:4px;border-bottom:1px solid var(--ok)}h3{font-size:1.02rem;margin:0 0 6px}
+p,ul,ol{max-width:78ch}p{margin:0 0 9px}li{margin-bottom:4px}.tl{color:var(--tl)}.mal{font-size:.88rem}
+nav{display:flex;gap:6px;overflow-x:auto;padding:6px 0 10px;position:sticky;top:0;background:var(--bg);z-index:2}
+nav a{flex:none;color:var(--tl);text-decoration:none;border:1px solid var(--ok);background:var(--pl);padding:4px 11px;border-radius:999px;font-size:.86rem}
+.box{background:var(--pl);border:1px solid var(--ak);border-radius:12px;padding:12px 15px;margin:12px 0}.box>:last-child{margin-bottom:0}
+.tab{overflow-x:auto}table{border-collapse:collapse;width:100%;font-size:.9rem}
+th,td{padding:6px 6px;text-align:left;vertical-align:top;border-bottom:1px solid var(--ok)}thead th{font-size:.82rem;color:var(--tl);border-bottom:2px solid var(--ok)}
+td.n,th.n{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+tr.odp td{background:color-mix(in srgb,var(--ak) 12%,transparent)}
+.a{display:inline-block;font-size:.8rem;font-weight:600;padding:0 7px;border-radius:6px;border:1px solid currentColor;margin:1px 1px;white-space:nowrap}
+.a.t{color:var(--zla)}.a.m{color:var(--mak)}.a.d{color:var(--dob)}.a.c{color:var(--zel)}
+.mriezka{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(330px,100%),1fr));gap:12px}
+.karta{background:var(--pl);border:1px solid var(--ok);border-radius:12px;padding:11px 13px}
+.karta .tagy{color:var(--tl);font-size:.82rem;margin-bottom:6px}
+.dnes{color:var(--tl);font-size:.88rem;margin:4px 0 8px}
+.alt{border-left:3px solid var(--ok);padding:3px 0 3px 9px;margin:6px 0}.alt.odp{border-left-color:var(--ak)}
+.alt b.k{font-family:Georgia,serif}.znak{font-size:.75rem;color:var(--ak);font-weight:700;margin-left:4px}
+.efekt{display:inline-block;background:var(--pl2);border:1px solid var(--ok);border-radius:8px;padding:5px 10px;margin:3px 0;text-align:center;min-width:150px}
+.efekt .sp{font-weight:700}.efekt .ik{margin-top:3px}
+.pozn{font-size:.85rem;color:var(--tl);margin:4px 0 0}.zmena{color:var(--cer);font-weight:600}
+svg{max-width:100%;height:auto;display:block;margin:6px auto}
+svg .uzol{fill:var(--pl2);stroke:var(--ak);stroke-width:1.5}svg .uzol2{fill:var(--pl2);stroke:var(--tl);stroke-width:1.2;stroke-dasharray:4 3}
+svg text{fill:var(--tx);font:600 14px system-ui,sans-serif}svg .men{fill:var(--tl);font:italic 13px Georgia,serif}
+svg .hr{stroke:var(--ak);stroke-width:2}svg .hr2{stroke:var(--tl);stroke-width:1.6;stroke-dasharray:5 4}
+svg .c{fill:var(--ak)}svg .ct{fill:var(--bg);font:700 12px system-ui,sans-serif}
+code{background:var(--pl2);padding:0 4px;border-radius:4px;font-size:.84em;overflow-wrap:anywhere}
+.ot li{margin:6px 0}footer{margin-top:36px;padding-top:10px;border-top:1px solid var(--ok);color:var(--tl);font-size:.85rem}
+</style>
+</head>
+<body>
+<main>
+<h1>Frakcie: akcie navyše podľa tagov</h1>
+<p class="tl mal">Vymyselník · 2026-11-08 · na rozhodnutie Michalovi · podľa tvojich rozhodnutí k <code>deckbuilding-mechaniky.html</code> (Študent) · nad <code>cards.json</code> v master (Zrejúca, v11.13). Hra ani tvorca sa nemenia, kým nerozhodneš.</p>
+
+<nav>
+<a href="#skratka">V skratke</a><a href="#nazvy">Názvy</a><a href="#spustace">Spúšťače</a><a href="#akcia">Akcia navyše</a><a href="#graf">Graf tagov</a><a href="#frek">Ako často</a><a href="#karty">17 kariet</a><a href="#otazky">Otázky</a><a href="#prog">Pre programátora</a>
+</nav>
+
+<div class="box" id="skratka">
+<h3>V skratke</h3>
+<ul>
+<li><b>Štyri spúšťače s tagom.</b> Dva sa pozerajú na partiu (Spoločník a Nepriateľ, odporúčam názvy <b>Švagor</b> a <b>Sok</b>). Dva na suseda pri priložení (<b>Podpora: tag</b>, <b>Konflikt: tag</b>). Na karte je riadok „Sok: Kriminál“ a pod ním piktogramy akcií navyše.</li>
+<li><b>Akcia navyše</b> funguje ako Povery navyše z Ohováračky (PRAVIDLA.md:1198). Ide do súčtov ako tá istá akcia a vyhodnotí sa v jej kroku. Neleží na hrane, preto ju nezdvojí ani nezruší nič, čo mení akcie na hranách: Posilnenie, Odpor, Forsáž, NA EX ani Silná žena.</li>
+<li><b>Graf tagov:</b> dva trojuholníky. <b>Ulica</b>: Autorita → Kriminál → Influencer → Autorita. <b>Dedina</b>: Zahraničný → Pamätník → Závislý → Zahraničný. K tomu šípka Pracujúci → Autorita. Každý tag cieli práve jeden iný tag, takže žiadna karta necieli tag, ktorý sama nesie (overené na všetkých 40 kartách s tagom Občan).</li>
+<li><b>Závislý</b> má každý hráč v štartovke trikrát. Švagor alebo Sok so Závislým by platil v 70–90 % kôl. Závislého preto cieli len jedna karta (Stryná), a to Konfliktom, teda len pri susedovi.</li>
+<li><b>17 kariet</b>, každá s dvoma alternatívami. Odporúčané rozdelenie: 4 Švagor, 4 Sok, 4 Podpora, 5 Konflikt. Akcie sa menia len Praudovravcovi (bez Furtu by mal 2 Odpory).</li>
+</ul>
+</div>
+
+<h2 id="nazvy">1 · Názvy</h2>
+<p>Spoločník aj Nepriateľ sú pracovné názvy. Na karte stoja pred dvojbodkou ako spúšťač, preto majú byť krátke a nesmú sa pliesť s Podporou a Konfliktom. Tie dva tiež znamenajú „vlastný“ a „súperov“, len sa pozerajú na suseda, nie na celú partiu.</p>
+<div class="tab"><table>
+<thead><tr><th>Dvojica</th><th>Na karte</th><th>Za</th><th>Proti</th></tr></thead>
+<tbody>
+<tr class="odp"><td><b>Švagor / Sok</b> · odporúčam</td><td>Švagor: Autorita<br>Sok: Kriminál</td><td>Satira dedinských známostí: „mám švagra na úrade“. Obe slová sú krátke a nekolidujú s ničím v hre.</td><td>Švagor je príbuzný, takže pri kartách žien to znie ako „jej švagor“. To je ale vtip, nie chyba.</td></tr>
+<tr><td>Parťák / Sok</td><td>Parťák: Autorita<br>Sok: Kriminál</td><td>Hovorové a hneď zrozumiteľné, hodí sa k Kriminálom.</td><td>Menej satiry. Policajtka s „Parťák: Kriminál“ nevyznie ako korupcia.</td></tr>
+<tr><td>Spoločník / Nepriateľ</td><td>Spoločník: Autorita<br>Nepriateľ: Kriminál</td><td>Tvoje pracovné názvy, presné.</td><td>Najdlhšie (9 a 9 písmen). „Nepriateľ“ zvádza k tomu, že sa s tou kartou bojuje, pritom stačí, že ju súper má v partii.</td></tr>
+<tr><td>Kamoš / Úhlavný</td><td>Kamoš: Autorita<br>Úhlavný: Kriminál</td><td>Hovorové, krčmové.</td><td>Samotné „Úhlavný“ bez podstatného mena znie čudne.</td></tr>
+</tbody></table></div>
+<p class="mal tl">Ďalej v dokumente píšem Švagor a Sok. Ak vyberieš iné, mení sa len slovo.</p>
+
+<h2 id="spustace">2 · Štyri spúšťače s tagom</h2>
+<div class="tab"><table>
+<thead><tr><th>Na karte</th><th>Kedy platí</th><th>Koľkokrát</th><th>Ako dlho</th></tr></thead>
+<tbody>
+<tr><td><b>Švagor: T</b></td><td>Máš v partii (karty natočené k tebe, na ktorejkoľvek strane línie) aspoň jednu odkrytú kartu s tagom T.</td><td><b>Raz.</b> Jedna sada ikon, aj keď máš kariet s tagom T viac. Dve karty so Švagorom platia každá zvlášť.</td><td>Ako Furt: kým podmienka platí. Ráta sa stav v chvíli vyhodnotenia, teda v kroku Pitky alebo bitky, v ktorom sa akcia vyhodnocuje.</td></tr>
+<tr><td><b>Sok: T</b></td><td>Súper má v partii odkrytú kartu s tagom T.</td><td>Raz, ako Švagor.</td><td>Kým platí podmienka.</td></tr>
+<tr><td><b>Podpora: T</b></td><td>Karta sa priložením stretne s <b>tvojou</b> kartou s tagom T. Jedno, či prikladáš túto kartu, alebo tú druhú (§6, PRAVIDLA.md:669).</td><td><b>Pri každom stretnutí.</b> Karta má dvoch susedov, takže zvyčajne najviac 2×.</td><td>Ikony sa pridajú od spustenia do konca kola, aj keď sused neskôr z línie zmizne.</td></tr>
+<tr><td><b>Konflikt: T</b></td><td>Karta sa priložením stretne so <b>súperovou</b> kartou s tagom T.</td><td>Pri každom stretnutí, zvyčajne najviac 2×.</td><td>Do konca kola.</td></tr>
+</tbody></table></div>
+<p>Pre Podporu a Konflikt s tagom platí všetko, čo platí dnes (§16, PRAVIDLA.md:1909): Nástroj, NA EX, zrážka ani presun karty ich nespúšťajú a skrytá Záverečná ich vyvolá až pri otočení. Pribúda len podmienka, že sused nesie tag T.</p>
+<p><b>Viac ako 2×:</b> keď Poľovník spáli suseda alebo ho Dohadzovačka presunie, karta sa znova ocitne na konci strany a ďalšie priloženie ju spustí tretíkrát. Je to zriedkavé. Navrhujem to nechať tak, strop by porušil tvoju zásadu (otázka 4).</p>
+<p><b>Zobrazenie:</b> spúšťač a tag v jednom riadku, pod ním piktogramy. Karty bez ikon (Hasič, Predavačka) majú pod riadkom text.</p>
+<p>
+<span class="efekt"><span class="sp">Sok: Kriminál</span><br><span class="ik"><span class="a c">Obmedzenie</span></span></span>
+<span class="efekt"><span class="sp">Konflikt: Influencer</span><br><span class="ik"><span class="a t">Pecka</span></span></span>
+<span class="efekt"><span class="sp">Švagor: Autorita</span><br><span class="ik"><span class="a m">Povera</span><span class="a m">Povera</span></span></span>
+</p>
+<p class="mal tl">Tvorca dnes hľadá spúšťač podľa „Slovo:“ v texte (<code>packages/tvorba/src/text.ts:92</code>). Tvar „Podpora: Kriminál“ to zachová. Tag a ikony patria do nových polí karty, nie do textu (Dáta, nie kód), pozri časť Pre programátora.</p>
+
+<h2 id="akcia">3 · Akcia navyše: kedy a ako sa ráta</h2>
+<p>Dve možnosti. <b>A</b> berie precedens Ohováračky (PRAVIDLA.md:1198) a Rán navyše z efektov kariet, ktoré Vidly nezosilnia (PRAVIDLA.md:1985). <b>B</b> robí z ikony ďalšiu akciu karty, len bez spoja.</p>
+<div class="tab"><table>
+<thead><tr><th>Otázka</th><th>A · mimo hrán · odporúčam</th><th>B · akcia karty bez spoja</th></tr></thead>
+<tbody>
+<tr><td>Komu sa ráta</td><td colspan="2">Majiteľovi karty. Efekty patria majiteľovi (§6, PRAVIDLA.md:660), aj keď karta leží podstrčená. V 2 na 2 tímu.</td></tr>
+<tr><td>Je aktívna?</td><td>Vždy, ×1. Do súčtu ide ako tá istá akcia z hrany.</td><td>Áno, ako aktívna akcia karty.</td></tr>
+<tr><td>Posilnenie, Odpor, Pakt suseda</td><td>Nie, nie je na spoji.</td><td>Nie, nie je na spoji.</td></tr>
+<tr><td>Forsáž, Vzbura</td><td>Nie.</td><td>Forsáž ju zdvojí (všetky aktívne akcie karty). Pri Vzbure ostane aktívna, lebo je nespojená.</td></tr>
+<tr><td>NA EX na kartu</td><td>Nič. Do podmienky „aspoň 1 aktívna a 1 neaktívna akcia“ (§7) sa nepočíta.</td><td>Zruší ju ako každú aktívnu akciu. Veterán ju zdvojí. Na kartu so Sokom je NA EX protiťah.</td></tr>
+<tr><td>Výtržník (zrážka)</td><td>Ostane, čím je.</td><td>Zmení sa na Ranu.</td></tr>
+<tr><td>Silná žena, Liberál, Pes, Zámočník</td><td>Nie, tie násobia akcie kariet.</td><td>Silná žena a Liberál ju zdvoja, Pes nie (len spoj).</td></tr>
+<tr><td>Vidly, Valaška</td><td>Nie, pôsobia len na akcie z vyložených kariet (PRAVIDLA.md:1682, 1985).</td><td>Áno.</td></tr>
+<tr><td>Horoskop, Svätý text, Čierna mačka, súperova Viera proti Povere, Milujúca manželka, Obecný úrad, prah Dlhu</td><td colspan="2">Áno. Menia hráčov súčet danej akcie, nie kartu.</td></tr>
+<tr><td>Fáza</td><td colspan="2">Krok, v ktorom sa vyhodnocuje ten druh akcie. Hazard, Poškodenie pečene, Obmedzenie a Cigareta pri vyhodnotení Pitky (§7, PRAVIDLA.md:969). Rana, Pecka, Petelica, Povera, Pohoršenie a Viera v bitke, Poldeci v kroku 5, Robota pri exekúcii. Posilnenie, Odpor, Pakt a Víziu ako akciu navyše nenavrhujem: prvé tri bez spoja nič nerobia a Víziu práve uberáš (Vízia v2).</td></tr>
+<tr><td>Pitková akcia (Obmedzenie, Cigareta)</td><td colspan="2">Švagor a Sok: v každej Pitke, pri ktorej vyhodnotení podmienka platí, ako akcia na hrane. Podpora a Konflikt: v každej Pitke od spustenia do konca kola. Spustenie Záverečnou platí až od ďalšej Pitky, lebo Záverečné sa otáčajú v kroku 8 po Cigaretách (otázka 3).</td></tr>
+<tr><td>Skrytá Záverečná</td><td colspan="2">Kým leží lícom dole, nesplní podmienku inej karte a sama ikony nedostane. Inak by súper z náhľadu vyčítal, čo leží pod ňou (pravidlo 2).</td></tr>
+<tr><td>Mäsiar</td><td colspan="2">Efekty Zvierat pri ňom neplatia, teda ani ikony Recidivistu (je aj Zviera).</td></tr>
+<tr><td>Dĺžka</td><td colspan="2">Po bitke ikony zaniknú. Karta ide do balíčka bez nich, ako po Sypačovi.</td></tr>
+</tbody></table></div>
+<p><b>Prečo A:</b> pravidlo sa dá povedať jednou vetou, hra ho už pozná a bot ani rekapitulácia nemusia riešiť nové kombinácie. B dáva viac interakcií (NA EX proti Soku, Forsáž ×2). Hráč by si však pri každej karte musel pamätať, čo ikonu mení a čo nie. Navrhované texty pre PRAVIDLA §6:</p>
+<p class="efekt" style="text-align:left;display:block">„<b>Akcia navyše</b> (piktogram pod spúšťačom) je aktívna akcia majiteľa karty mimo jej hrán. Do súčtov ide ako tá istá akcia a vyhodnotí sa v jej kroku. Nemení ju nič, čo mení akcie na hranách kariet. Pravidlá druhu akcie (Viera proti Povere, Horoskop, Svätý text) platia ako pri Poverách navyše z Ohováračky.“</p>
+
+<h2 id="graf">4 · Graf tagov</h2>
+<p>Šípka X → Y znamená, že karta s tagom X má na svojom efekte tag Y, či už ako Švagor, Sok, Podpora alebo Konflikt. Každý tag má jednu šípku von a cieľ nikdy nie je ten istý tag. Karta s dvoma tagmi smie použiť šípku ktoréhokoľvek z nich, len nie takú, ktorá vedie na jej druhý tag.</p>
+<svg viewBox="0 0 720 340" role="img" aria-label="Graf tagov: Ulica Autorita, Kriminál, Influencer; Dedina Zahraničný, Pamätník, Závislý; Pracujúci smeruje na Autoritu">
+<defs>
+<marker id="sip" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="c"/></marker>
+<marker id="sip2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="currentColor" style="fill:var(--tl)"/></marker>
+</defs>
+<text x="180" y="225" text-anchor="middle" class="men">Ulica</text>
+<text x="540" y="225" text-anchor="middle" class="men">Dedina</text>
+<line class="hr" x1="195" y1="87" x2="300" y2="265" marker-end="url(#sip)"/>
+<line class="hr" x1="251" y1="290" x2="109" y2="290" marker-end="url(#sip)"/>
+<line class="hr" x1="60" y1="265" x2="165" y2="87" marker-end="url(#sip)"/>
+<line class="hr" x1="555" y1="87" x2="660" y2="265" marker-end="url(#sip)"/>
+<line class="hr" x1="611" y1="290" x2="469" y2="290" marker-end="url(#sip)"/>
+<line class="hr" x1="420" y1="265" x2="525" y2="87" marker-end="url(#sip)"/>
+<line class="hr2" x1="322" y1="147" x2="218" y2="85" marker-end="url(#sip2)"/>
+<rect class="uzol" x="122" y="42" width="116" height="40" rx="10"/><text x="180" y="67" text-anchor="middle">Autorita</text>
+<rect class="uzol" x="257" y="270" width="116" height="40" rx="10"/><text x="315" y="295" text-anchor="middle">Kriminál</text>
+<rect class="uzol" x="-13" y="270" width="116" height="40" rx="10"/><text x="45" y="295" text-anchor="middle">Influencer</text>
+<rect class="uzol" x="482" y="42" width="116" height="40" rx="10"/><text x="540" y="67" text-anchor="middle">Zahraničný</text>
+<rect class="uzol" x="617" y="270" width="116" height="40" rx="10"/><text x="675" y="295" text-anchor="middle">Pamätník</text>
+<rect class="uzol" x="347" y="270" width="116" height="40" rx="10"/><text x="405" y="295" text-anchor="middle">Závislý</text>
+<rect class="uzol2" x="302" y="150" width="116" height="40" rx="10"/><text x="360" y="175" text-anchor="middle">Pracujúci</text>
+<circle class="c" cx="248" cy="176" r="11"/><text class="ct" x="248" y="180" text-anchor="middle">1</text>
+<circle class="c" cx="180" cy="290" r="11"/><text class="ct" x="180" y="294" text-anchor="middle">2</text>
+<circle class="c" cx="113" cy="176" r="11"/><text class="ct" x="113" y="180" text-anchor="middle">3</text>
+<circle class="c" cx="608" cy="176" r="11"/><text class="ct" x="608" y="180" text-anchor="middle">4</text>
+<circle class="c" cx="540" cy="290" r="11"/><text class="ct" x="540" y="294" text-anchor="middle">5</text>
+<circle class="c" cx="473" cy="176" r="11"/><text class="ct" x="473" y="180" text-anchor="middle">6</text>
+<circle class="c" cx="270" cy="116" r="11"/><text class="ct" x="270" y="120" text-anchor="middle">7</text>
+</svg>
+<div class="tab"><table>
+<thead><tr><th>#</th><th>Šípka</th><th>Karty (odporúčaná alternatíva)</th><th>Príbeh šípky</th></tr></thead>
+<tbody>
+<tr><td>1</td><td>Autorita → Kriminál</td><td>Policajtka (Sok), Predavačka (Podpora), Hasič (Podpora)</td><td>Zákon a zlodej. Ako Švagor ide o korupciu: hasič, čo hasí, čo podpálil kamoš.</td></tr>
+<tr><td>2</td><td>Kriminál → Influencer</td><td>Vdova (Konflikt), Recidivista (Sok), Podvodník (Konflikt)</td><td>Kto sa chváli, toho okradnú.</td></tr>
+<tr><td>3</td><td>Influencer → Autorita</td><td>Praudovravec (Konflikt), Šarlatán (Švagor), Snúbenica (Sok), Strýko z Ameriky (Sok)</td><td>Rečníci a úrad. Proti úradu alebo s pečiatkou od úradu.</td></tr>
+<tr><td>4</td><td>Zahraničný → Pamätník</td><td>Veštica (Švagor), Kočovník (Švagor), Opatrovateľka (Podpora)</td><td>Kto prišiel zvonka, hľadá starých: opatrovanie, veštenie, staré známosti.</td></tr>
+<tr><td>5</td><td>Pamätník → Závislý</td><td>Stryná (Konflikt)</td><td>Starší vychovávajú opilcov.</td></tr>
+<tr><td>6</td><td>Závislý → Zahraničný</td><td>Miňištrant (Konflikt), Dievčina na vydaj (Podpora)</td><td>Štartovky chcú preč: ženích zo zahraničia, cudzí farár.</td></tr>
+<tr><td>7</td><td>Pracujúci → Autorita</td><td>Živnostník (Švagor)</td><td>Obecná zákazka cez švagra.</td></tr>
+</tbody></table></div>
+
+<h3 style="margin-top:14px">Overenie: žiadna karta necieli svoj tag</h3>
+<div class="tab"><table>
+<thead><tr><th>Karta</th><th>Frakčné tagy</th><th>Použitá šípka</th><th>Cieľ</th><th>Nesie cieľ?</th></tr></thead>
+<tbody>
+<tr><td>Miňištrant, Dievčina na vydaj</td><td>Závislý</td><td>6</td><td>Zahraničný</td><td>nie</td></tr>
+<tr><td>Vdova, Recidivista, Podvodník</td><td>Kriminál</td><td>2</td><td>Influencer</td><td>nie</td></tr>
+<tr><td>Veštica, Kočovník</td><td>Zahraničný</td><td>4</td><td>Pamätník</td><td>nie</td></tr>
+<tr><td>Opatrovateľka</td><td>Zahraničný, Pracujúci</td><td>4 (šípka 7 by viedla na Autoritu, tú nenesie, je to druhá možnosť)</td><td>Pamätník</td><td>nie</td></tr>
+<tr><td>Policajtka, Hasič</td><td>Autorita</td><td>1</td><td>Kriminál</td><td>nie</td></tr>
+<tr><td>Predavačka</td><td>Autorita, Pracujúci</td><td>1 (šípka 7 vedie na jej Autoritu, <b>zakázaná</b>)</td><td>Kriminál</td><td>nie</td></tr>
+<tr><td>Praudovravec, Šarlatán, Snúbenica</td><td>Influencer</td><td>3</td><td>Autorita</td><td>nie</td></tr>
+<tr><td>Strýko z Ameriky</td><td>Influencer, Zahraničný</td><td>3 (alternatíva B: šípka 4 → Pamätník)</td><td>Autorita</td><td>nie</td></tr>
+<tr><td>Stryná</td><td>Pamätník</td><td>5</td><td>Závislý</td><td>nie</td></tr>
+<tr><td>Živnostník</td><td>Pracujúci</td><td>7</td><td>Autorita</td><td>nie</td></tr>
+</tbody></table></div>
+<p class="mal">Overil som všetkých 40 kariet s tagom Občan (36 v balíčku Občanov a 4 štartovky), nielen týchto 17. Šípku na vlastný tag by mala len Predavačka (Pracujúci → Autorita), preto jej ostáva šípka 1. Žiadna iná karta nenesie dvojicu tagov spojenú šípkou. Degustátorka (Závislý, Kriminál) a Poľovník (Autorita, Pamätník) majú obe svoje šípky voľné.</p>
+<p><b>Prečo Pracujúci nikto necieli:</b> je to najčastejší tag (8 druhov, 24 % tlače). Švagor s Pracujúcim by platil v polovici kôl a bol by skoro zadarmo. Siedmy tag sa do dvoch trojuholníkov nezmestí, tak som ho nechal len so šípkou von.</p>
+<p><b>Alternatíva G2:</b> Dedina = Pracujúci → Závislý → Zahraničný → Pracujúci a Pamätník len so šípkou na Závislého. Veštica a Kočovník by potom cielili Pracujúceho (platí v 50 % kôl) a Opatrovateľka by stratila Pamätníka, ktorého dnes posilňuje. Preto odporúčam G1.</p>
+<p><b>Chlap, Žena, Zviera</b> sú mimo grafu. Ostávajú pre Sypača (Podpora s Chlapom), Liberála a Poľovníka. Sypač je Chlap a cieli Chlapa. Ak má zásada „necieliť vlastný tag“ platiť aj pre pohlavie, porušuje ju (otázka 6).</p>
+
+<h2 id="frek">5 · Ako často sa podmienka splní</h2>
+<p class="mal tl">Odhad, nie meranie. Balíček Občanov v tlači má 480 kariet (permutácie × kópie z tvorcu, <code>packages/server/seed/navrhy.json</code>), na webe 82 (2 kópie každého druhu, §3). Hráčov balíček = 4 štartovky + B kúpených kariet (raná hra B = 3, stredná 8, neskorá 14). V partii má okrem karty s efektom ďalšie 3 / 4 / 4 karty. V štartovke sú 3 Závislí a 1 Pamätník (Milujúca manželka). Sok je to isté o súperovom balíčku. Podpora a Konflikt: dolná hranica je bez cielenia (karta má v priemere 1,4 suseda, 55 % vlastných, 45 % súperových). Horná hranica je číslo Švagra, ak hráč priloží presne tam, kam treba.</p>
+<div class="tab"><table>
+<thead><tr><th>Tag</th><th class="n">Druhov</th><th class="n">Tlač</th><th class="n">Web</th><th class="n">Švagor / Sok<br>raná · stredná · neskorá</th><th class="n">Podpora<br>stredná</th><th class="n">Konflikt<br>stredná</th><th>Cielia ho</th></tr></thead>
+<tbody>
+<tr><td>Kriminál</td><td class="n">6</td><td class="n">14 %</td><td class="n">15 %</td><td class="n">17 · 33 · 37 %</td><td class="n">7–33 %</td><td class="n">6–33 %</td><td>Policajtka, Predavačka, Hasič</td></tr>
+<tr><td>Influencer</td><td class="n">7</td><td class="n">25 %</td><td class="n">17 %</td><td class="n">28 · 51 · 57 %</td><td class="n">12–51 %</td><td class="n">10–51 %</td><td>Vdova, Recidivista, Podvodník</td></tr>
+<tr><td>Autorita</td><td class="n">7</td><td class="n">19 %</td><td class="n">17 %</td><td class="n">23 · 42 · 48 %</td><td class="n">10–42 %</td><td class="n">8–42 %</td><td>Praudovravec, Šarlatán, Snúbenica, Strýko, Živnostník</td></tr>
+<tr><td>Pracujúci</td><td class="n">8</td><td class="n">24 %</td><td class="n">20 %</td><td class="n">28 · 50 · 56 %</td><td class="n">12–50 %</td><td class="n">10–50 %</td><td>nikto (G1)</td></tr>
+<tr><td>Zahraničný</td><td class="n">5</td><td class="n">7 %</td><td class="n">12 %</td><td class="n">9 · 18 · 20 %</td><td class="n">4–18 %</td><td class="n">3–18 %</td><td>Miňištrant, Dievčina</td></tr>
+<tr><td>Pamätník</td><td class="n">4 + štart</td><td class="n">6 %</td><td class="n">10 %</td><td class="n">43 · 41 · 36 %</td><td class="n">9–41 %</td><td class="n">8–41 %</td><td>Veštica, Kočovník, Opatrovateľka</td></tr>
+<tr class="odp"><td><b>Závislý</b></td><td class="n">4 + 3 štart</td><td class="n">11 %</td><td class="n">10 %</td><td class="n"><b>86 · 79 · 69 %</b></td><td class="n">24–79 %</td><td class="n">20–79 %</td><td>len Stryná, Konfliktom</td></tr>
+<tr><td class="tl">Chlap</td><td class="n tl">23 + 2</td><td class="n tl">54 %</td><td class="n tl">56 %</td><td class="n tl">89 · 95 · 95 %</td><td class="n tl">38–95 %</td><td class="n tl">32–95 %</td><td class="tl">Sypač (mimo grafu)</td></tr>
+<tr><td class="tl">Žena</td><td class="n tl">14 + 2</td><td class="n tl">44 %</td><td class="n tl">34 %</td><td class="n tl">85 · 91 · 91 %</td><td class="n tl">33–91 %</td><td class="n tl">28–91 %</td><td class="tl">—</td></tr>
+<tr><td class="tl">Zviera</td><td class="n tl">6</td><td class="n tl">5 %</td><td class="n tl">15 %</td><td class="n tl">7 · 14 · 16 %</td><td class="n tl">3–14 %</td><td class="n tl">2–14 %</td><td class="tl">—</td></tr>
+</tbody></table></div>
+<ul class="mal">
+<li><b>Závislý:</b> Švagor ani Sok sa naň nehodí, platil by skoro vždy, najviac v prvých kolách. Podpora a Konflikt so Závislým sú obmedzené susedstvom, preto ho Stryná cieli Konfliktom.</li>
+<li><b>Pamätník</b> má štartovú Manželku, preto je v ranej hre častejší (43 %) ako v neskorej (36 %). Kariet s Pamätníkom v balíčku pribúda pomalšie ako ostatných.</li>
+<li><b>Zahraničný</b> je v tlači zriedkavý (34 z 480), na webe menej (2 kópie druhu). Štartovky, ktoré ho cielia, sa spustia zriedka. Je to zámer: štartovka je slabá, kým si hráč nekúpi Zahraničného.</li>
+<li>Tlač a web sa líšia najviac pri Influencerovi a Zvierati (počet variantov × kópie). Hra na webe sa riadi stĺpcom Web. Čísla treba overiť turnajom botov (zásah pre bota).</li>
+</ul>
+
+<h2 id="karty">6 · Karty: dnes a dve alternatívy</h2>
+<p class="mal tl">Text „Dnes“ je doslova z <code>cards.json</code>. Ikony sú slovom: <span class="a t">tuhé</span> <span class="a m">mäkké</span> <span class="a d">Viera, Robota</span> <span class="a c">Pitka</span>. Percento je stredná hra zo stĺpca Tlač (pri Podpore a Konflikte rozsah). Akcie na hranách sa nemenia, ak nie je uvedené inak. Návrhy Vízia v2 (Veštica, Dievčina, Strýko) sú nezávislé a platia popri týchto.</p>
+<div class="mriezka">
+
+<div class="karta"><h3>Miňištrant</h3><div class="tagy">Občan · Závislý · Chlap · štartovka · šípka 6</div>
+<div class="dnes">Dnes: Nástup: Ak vyvoláš Konflikt, do konca kola sa jeho Viera ráta ako Pecka.</div>
+<div class="alt odp"><b class="k">A</b><span class="znak">odporúčam</span> · <span class="efekt"><span class="sp">Konflikt: Zahraničný</span><br><span class="a t">Pecka</span></span><p class="pozn">Pecka mu ostáva ako identita. 3–18 %, štartovka slabá.</p></div>
+<div class="alt"><b class="k">B</b> · <span class="efekt"><span class="sp">Švagor: Zahraničný</span><br><span class="a d">Viera</span></span><p class="pozn">Cudzí farár ho drží v kostole. 18 %.</p></div>
+<p class="pozn">Je vo výučbe (prva-hra.json). Výučba sa robí až pri prechode do Vypálenej.</p></div>
+
+<div class="karta"><h3>Veľmi smútiaca vdova</h3><div class="tagy">Občan · Kriminál · Žena · šípka 2</div>
+<div class="dnes">Dnes: Konflikt: Súper odhodí 1 kartu z doberacieho balíčka za každého svojho Chlapa, ktorý s ňou susedí.</div>
+<div class="alt odp"><b class="k">A</b><span class="znak">odporúčam</span> · <span class="efekt"><span class="sp">Konflikt: Influencer</span><br><span class="a t">Pecka</span></span><p class="pozn">Čierna vdova si vyhliadne frajera so sledovateľmi. 10–51 %.</p></div>
+<div class="alt"><b class="k">B</b> · <span class="efekt"><span class="sp">Konflikt: Influencer</span><br>Súper odhodí 1 kartu z doberacieho balíčka.</span><p class="pozn">Dnešný účinok, cieľ Influencer namiesto Chlapa, bez počítania susedov.</p></div></div>
+
+<div class="karta"><h3>Veštica</h3><div class="tagy">Občan · Zahraničný · Žena · šípka 4</div>
+<div class="dnes">Dnes: Prehra: Preskúmaj súperov a svoj doberací balík. Vymeň jednu jeho kartu za tvoju a karty vráť.</div>
+<div class="alt odp"><b class="k">A</b><span class="znak">odporúčam</span> · <span class="efekt"><span class="sp">Švagor: Pamätník</span><br><span class="a m">Povera</span><span class="a m">Povera</span></span><p class="pozn">Babky jej nosia na kávu. 41 %. Zaniká krok bitky 5b (§9.5b) a príkaz <code>vestica</code>.</p></div>
+<div class="alt"><b class="k">B</b> · <span class="efekt"><span class="sp">Podpora: Pamätník</span><br>Pozri 2 vrchné karty svojho doberacieho balíčka. Jednu si vezmi do ruky, druhú vráť navrch.</span><p class="pozn">Zvolanie ako obyčajný efekt (tvoj bod 3). 9–41 %, až 2×.</p></div></div>
+
+<div class="karta"><h3>Policajtka</h3><div class="tagy">Občan · Autorita · Žena · šípka 1</div>
+<div class="dnes">Dnes: Pitka: Za každú súperovu akciu, ktorú v tejto Pitke zruší tvoj Odpor, získa súper 1 zadĺženie.</div>
+<div class="alt odp"><b class="k">A</b><span class="znak">odporúčam</span> · <span class="efekt"><span class="sp">Sok: Kriminál</span><br><span class="a c">Obmedzenie</span></span><p class="pozn">Hliadka pred krčmou, v každej Pitke o cigaretu menej. 33 %.</p></div>
+<div class="alt"><b class="k">B</b> · <span class="efekt"><span class="sp">Konflikt: Kriminál</span><br>Súper ti dá 2 cigarety; za každú chýbajúcu získa 1 zadĺženie.</span><p class="pozn">Pokuta na mieste. Do v10.3 mala skoro to isté (PRAVIDLA.md:1932), nebolo to zamietnuté.</p></div></div>
+
+<div class="karta"><h3>Praudovravec</h3><div class="tagy">Občan · Influencer · Chlap · šípka 3</div>
+<div class="dnes">Dnes: Furt: Odpor na jeho spojoch nič neruší, ale ráta sa ako Posilnenie — zdvojí akciu, s ktorou je v páre, aj keď je súperova.</div>
+<div class="alt odp"><b class="k">A</b><span class="znak">odporúčam</span> · <span class="efekt"><span class="sp">Konflikt: Autorita</span><br><span class="a m">Pohoršenie</span></span><p class="pozn">Povie úradu do očí, čo si myslí. 8–42 %. <span class="zmena">Akcie (nutné):</span> pravá Odpor → Povera, teda vľavo Odpor a Posilnenie, vpravo Hazard a Povera. Bez Furtu by mal 2 Odpory, výnimka zo zásady „najviac 1 Odpor“ by stratila dôvod. Varianty overí admin (B+).</p></div>
+<div class="alt"><b class="k">B</b> · <span class="efekt"><span class="sp">Konflikt: Autorita</span><br>Do konca kola sa Odpor na jeho spojoch ráta ako Posilnenie.</span><p class="pozn">Dnešný Furt, len po stretnutí. Akcie bez zmeny, do spustenia sú to 2 obyčajné Odpory (Vzbura).</p></div></div>
+
+<div class="karta"><h3>Stryná</h3><div class="tagy">Občan · Pamätník · Žena · šípka 5</div>
+<div class="dnes">Dnes: Pitka: Každý hráč, ktorý v tejto Pitke nedal NA EX, dostane 1 poškodenie pečene.</div>
+<div class="alt odp"><b class="k">A</b><span class="znak">odporúčam</span> · <span class="efekt"><span class="sp">Konflikt: Závislý</span><br><span class="a m">Pohoršenie</span></span><p class="pozn">Vynadá opilcovi. Súper má 3 Závislých v štartovke, Konflikt to drží na 20–79 %.</p></div>
+<div class="alt"><b class="k">B</b> · <span class="efekt"><span class="sp">Sok: Závislý</span><br><span class="a m">Povera</span></span><p class="pozn">Platí v 70–86 % kôl, takže je to skoro bezpodmienečná Povera. Preto len jedna.</p></div></div>
+
+<div class="karta"><h3>Recidivista</h3><div class="tagy">Občan · Kriminál · Chlap · Zviera · šípka 2</div>
+<div class="dnes">Dnes: Prehra: Po bitke sa vráti do tvojej ruky.</div>
+<div class="alt odp"><b class="k">A</b><span class="znak">odporúčam</span> · <span class="efekt"><span class="sp">Sok: Influencer</span><br><span class="a t">Pecka</span></span><p class="pozn">Ide po tom s drahým mobilom. 51 %. Ako Zviera ho Mäsiar umlčí.</p></div>
+<div class="alt"><b class="k">B</b> · <span class="efekt"><span class="sp">Konflikt: Influencer</span><br><span class="a t">Rana</span><span class="a t">Rana</span></span><p class="pozn">10–51 %, až 2×.</p></div></div>
+
+<div class="karta"><h3>Dievčina na vydaj</h3><div class="tagy">Občan · Závislý · Žena · štartovka · šípka 6</div>
+<div class="dnes">Dnes: Prehra: Spáľ túto kartu. Súper získa toľko Dlhov, koľko mala aktívnych akcií.</div>
+<div class="alt odp"><b class="k">A</b><span class="znak">odporúčam</span> · <span class="efekt"><span class="sp">Podpora: Zahraničný</span><br><span class="a m">Pohoršenie</span></span><p class="pozn">Bozkáva sa s cudzincom pred kostolom. 4–18 %.</p></div>
+<div class="alt"><b class="k">B</b> · <span class="efekt"><span class="sp">Švagor: Zahraničný</span><br><span class="a c">Cigareta</span></span><p class="pozn">Ženích z Anglicka posiela cigarety. 18 %.</p></div>
+<p class="pozn">Zaniká jedno z mála spálení karty z balíčka (preriedenie). Je vo výučbe.</p></div>
+
+<div class="karta"><h3>Živnostník</h3><div class="tagy">Občan · Pracujúci · Chlap · šípka 7</div>
+<div class="dnes">Dnes: Nástup: V tom istom ťahu smieš za neho priložiť 1 Nástroj z ruky.</div>
+<div class="alt odp"><b class="k">A</b><span class="znak">odporúčam</span> · <span class="efekt"><span class="sp">Švagor: Autorita</span><br><span class="a d">Robota</span></span><p class="pozn">Obecná zákazka. 42 %. Robota páli Dlh, bez Dlhu dá špak.</p></div>
+<div class="alt"><b class="k">B</b> · <span class="efekt"><span class="sp">Podpora: Autorita</span><br><span class="a d">Robota</span></span><p class="pozn">10–42 %, až 2×. Dnešný Nástroj za ním som s Podporou nespájal: Podporu môže spustiť aj neskorší sused, keď Živnostník už nie je na konci strany.</p></div></div>
+
+<div class="karta"><h3>Kočovník</h3><div class="tagy">Občan · Zahraničný · Chlap · šípka 4</div>
+<div class="dnes">Dnes: Furt: Jeho akcie sa počítajú hráčovi, ktorý má v jeho kraji prevahu.</div>
+<div class="alt odp"><b class="k">A</b><span class="znak">odporúčam</span> · <span class="efekt"><span class="sp">Švagor: Pamätník</span><br><span class="a t">Pecka</span></span><p class="pozn">Starí ho poznajú z jarmoku. 41 %. Zaniká výnimka „akcie Kočovníka“ v §6 (PRAVIDLA.md:660).</p></div>
+<div class="alt"><b class="k">B</b> · <span class="efekt"><span class="sp">Konflikt: Pamätník</span><br><span class="a t">Rana</span></span><p class="pozn">8–41 %, až 2×. Príbeh karty má byť bez etnických narážok (Michal 2026-10-23).</p></div></div>
+
+<div class="karta"><h3>Šarlatán</h3><div class="tagy">Občan · Influencer · Chlap · šípka 3</div>
+<div class="dnes">Dnes: Konflikt: Do konca kola sa jeho akcie Hazard rátajú ako Viera a Povery ako Rana.</div>
+<div class="alt odp"><b class="k">A</b><span class="znak">odporúčam</span> · <span class="efekt"><span class="sp">Švagor: Autorita</span><br><span class="a m">Povera</span><span class="a m">Povera</span></span><p class="pozn">Zázračný liečiteľ s pečiatkou z úradu. 42 %.</p></div>
+<div class="alt"><b class="k">B</b> · <span class="efekt"><span class="sp">Konflikt: Autorita</span><br>Do konca kola sa jeho akcie Hazard rátajú ako Viera a Povery ako Rana.</span><p class="pozn">Dnešný účinok s tagom.</p></div></div>
+
+<div class="karta"><h3>Podvodník</h3><div class="tagy">Občan · Kriminál · Chlap · šípka 2</div>
+<div class="dnes">Dnes: Konflikt: Súper ti dá 1 cigaretu. Ak žiadnu nemá, získa 1 zadĺženie.</div>
+<div class="alt odp"><b class="k">A</b><span class="znak">odporúčam</span> · <span class="efekt"><span class="sp">Konflikt: Influencer</span><br><span class="a c">Obmedzenie</span></span><p class="pozn">Investičná príležitosť pre frajera. 10–51 %, až 2×, v každej Pitke do konca kola.</p></div>
+<div class="alt"><b class="k">B</b> · <span class="efekt"><span class="sp">Konflikt: Influencer</span><br>Súper ti dá 1 cigaretu. Ak žiadnu nemá, získa 1 zadĺženie.</span><p class="pozn">Dnešný účinok s tagom.</p></div></div>
+
+<div class="karta"><h3>Snúbenica</h3><div class="tagy">Občan · Žena · Influencer · šípka 3</div>
+<div class="dnes">Dnes: Podpora: Ak na tvojom Chlapovi pri nej leží súperovo NA EX, vráti sa súperovi ako vypitý poldeci.</div>
+<div class="alt odp"><b class="k">A</b><span class="znak">odporúčam</span> · <span class="efekt"><span class="sp">Sok: Autorita</span><br><span class="a m">Pohoršenie</span></span><p class="pozn">Gopnička ukáže hliadke prostredník. 42 %.</p></div>
+<div class="alt"><b class="k">B</b> · <span class="efekt"><span class="sp">Konflikt: Autorita</span><br><span class="a t">Rana</span><span class="a t">Rana</span></span><p class="pozn">Facka policajtovi. 8–42 %, až 2×.</p></div></div>
+
+<div class="karta"><h3>Predavačka</h3><div class="tagy">Občan · Autorita · Žena · Pracujúci · šípka 1</div>
+<div class="dnes">Dnes: Kšeft: Za 1 cigaretu si dober 1 kartu.</div>
+<div class="alt odp"><b class="k">A</b><span class="znak">odporúčam</span> · <span class="efekt"><span class="sp">Podpora: Kriminál</span><br>Dober si 1 kartu.</span><p class="pozn">Tovar spod pultu. Ostáva jej identita (karta) bez Kšeftu a ceny. 7–33 %, až 2×.</p></div>
+<div class="alt"><b class="k">B</b> · <span class="efekt"><span class="sp">Podpora: Kriminál</span><br><span class="a c">Obmedzenie</span></span><p class="pozn">Zamkne cigarety za pult.</p></div>
+<p class="pozn">Šípka 7 (Pracujúci → Autorita) by viedla na jej vlastný tag. Cigareta ×2 na hrane ostáva: tvoja zásada z 2026-11-02 sa týkala Kšeftu platenému vlastnou menou a Kšeft zaniká (otázka 9).</p></div>
+
+<div class="karta"><h3>Opatrovateľka</h3><div class="tagy">Občan · Zahraničný · Pracujúci · Žena · šípka 4</div>
+<div class="dnes">Dnes: Furt: Tvoji Pamätníci v jej okolí majú aktívne akcie posilnené.</div>
+<div class="alt odp"><b class="k">A</b><span class="znak">odporúčam</span> · <span class="efekt"><span class="sp">Podpora: Pamätník</span><br><span class="a d">Robota</span></span><p class="pozn">Opatrovať dedka je robota, dôchodok ide na splátky. 9–41 %, až 2×. S Pracujúcim nič nerobí, tak ako si chcel.</p></div>
+<div class="alt"><b class="k">B</b> · <span class="efekt"><span class="sp">Podpora: Pamätník</span><br>Ten Pamätník má do konca kola aktívne akcie posilnené.</span><p class="pozn">Dnešný účinok, len pri stretnutí (vzor Sypača). Nie sú to ikony.</p></div></div>
+
+<div class="karta"><h3>Hasič</h3><div class="tagy">Občan · Autorita · Chlap · šípka 1</div>
+<div class="dnes">Dnes: Nástup: Vytiahni náhodnú kartu zo svojho odhadzovacieho balíčka (aj kliatbu) a rozhodni sa, či si ju necháš, alebo ju odhodíš.</div>
+<div class="alt odp"><b class="k">A</b><span class="znak">odporúčam</span> · <span class="efekt"><span class="sp">Podpora: Kriminál</span><br>Vytiahni náhodnú kartu zo svojho odhadzovacieho balíčka (aj kliatbu) a rozhodni sa, či si ju necháš, alebo ju odhodíš.</span><p class="pozn">Hasí, čo podpálil kamoš, a z požiariska si niečo odnesie. 7–33 %, až 2×.</p></div>
+<div class="alt"><b class="k">B</b> · <span class="efekt"><span class="sp">Podpora</span><br>to isté</span><p class="pozn">Bez tagu, mimo grafu. Spustí sa pri každom stretnutí s vlastnou kartou, asi v 2 z 3 kôl a často 2×. Tvoje „nechal pri Podpore“ som mohol pochopiť aj takto (otázka 8).</p></div></div>
+
+<div class="karta"><h3>Strýko z Ameriky</h3><div class="tagy">Občan · Influencer · Zahraničný · Chlap · šípka 3 (B: 4)</div>
+<div class="dnes">Dnes: Kšeft: Za 2 cigarety udelíš v tejto bitke súperovi 1 Ranu navyše.</div>
+<div class="alt odp"><b class="k">A</b><span class="znak">odporúčam</span> · <span class="efekt"><span class="sp">Sok: Autorita</span><br><span class="a t">Rana</span><span class="a t">Rana</span></span><p class="pozn">Američan sa nenechá legitimovať. 42 %. Poškodenie ostáva ako si chcel, Kšeft a cena zanikajú. Vidly tieto Rany nezosilnia, rovnako ako dnešné z Kšeftu.</p></div>
+<div class="alt"><b class="k">B</b> · <span class="efekt"><span class="sp">Švagor: Pamätník</span><br><span class="a t">Rana</span><span class="a t">Rana</span></span><p class="pozn">Prišiel za babkou a bije sa za rodinu. 41 %. Odľahčí Autoritu, ktorú inak cieli 5 kariet.</p></div></div>
+</div>
+
+<h2 id="otazky">7 · Otázky</h2>
+<ol class="ot">
+<li><b>Názvy:</b> Švagor / Sok (odporúčam), Parťák / Sok, Spoločník / Nepriateľ, alebo Kamoš / Úhlavný?</li>
+<li><b>Akcia navyše:</b> A, mimo hrán, ako Povery z Ohováračky (odporúčam), alebo B, aktívna akcia karty, ktorú NA EX zruší a Forsáž, Silná žena a Vidly zdvoja?</li>
+<li><b>„Švagor sa aktivuje len raz“:</b> rozumiem tomu ako jedna sada ikon, aj keď máš kariet s tagom viac. Pitková ikona (Obmedzenie, Cigareta) potom platí v každej Pitke, v ktorej podmienka platí, ako akcia na hrane (odporúčam). Alebo si myslel raz za kolo?</li>
+<li><b>Podpora a Konflikt viac ako 2×:</b> po Poľovníkovi či Dohadzovačke môže prísť tretí sused. Nechať pri každom priložení (odporúčam, bez stropu), alebo najviac 2× za kolo?</li>
+<li><b>Graf:</b> G1, teda dva trojuholníky a Pracujúci len so šípkou na Autoritu (odporúčam), alebo G2 s Pracujúcim v trojuholníku a Pamätníkom bokom?</li>
+<li><b>Pohlavie a Zviera:</b> platí „necieli vlastný tag“ aj pre Chlap, Žena a Zviera? Ak áno, porušuje to Sypač (Chlap cieli Chlapa).</li>
+<li><b>Skrytá Záverečná</b> nesplní podmienku inej karte a sama ikony nedostane, kým sa neotočí (odporúčam)?</li>
+<li><b>Hasič:</b> Podpora: Kriminál (odporúčam), alebo Podpora bez tagu?</li>
+<li><b>Predavačka:</b> po zániku Kšeftu jej ostanú 2 Cigarety na hrane?</li>
+<li><b>Karty:</b> pri každej zo 17 vyber A alebo B. Ktoré nevyberieš, pripomeniem.</li>
+</ol>
+
+<h2 id="prog">8 · Pre programátora</h2>
+<p class="mal tl">Riadky sú k master 5cee6d04. Karty mení admin v tvorcovi (rozpracovaný stav Zrejúcej), potom cards.json cez sada-do-repa. Staré efekty nechať pre partie zo starých sád, so spúšťačom alebo textom sady ako podmienkou. Vzor je <code>effects.ts:238</code> (Praudovravec) a <code>effects.ts:274</code> (Policajtka).</p>
+<h3>Dáta a tvorca</h3>
+<ul class="mal">
+<li><code>packages/core/src/types.ts:100</code>, <code>:123</code>: spúšťače Švagor a Sok v <code>Trigger</code> a <code>ALL_TRIGGERS</code>. <code>types.ts:170</code> <code>CardDef</code>: <code>cielTag?: Tag</code>, <code>akcieNavyse?: readonly Action[]</code>.</li>
+<li><code>packages/core/src/data.ts:110</code>: načítať <code>ciel_tag</code> a <code>akcie_navyse</code> z cards.json. Zamietnuť cieľ, ktorý karta sama nesie (zásada grafu).</li>
+<li><code>packages/tvorba/src/typy.ts:40</code>: polia návrhu karty. <code>text.ts:92</code> <code>spustaceVTexte</code>: tvar „Švagor: Autorita“ (tag za dvojbodkou nie je účinok). <code>predvolene.ts:104–108</code>: kľúčové slová Švagor a Sok, popisy Podpory a Konfliktu s tagom. Popis Kšeftu podľa rozhodnutia o Kšefte.</li>
+<li><code>packages/server/src/obsah.ts:172</code>, <code>:360</code>, <code>:378</code>: export a hash nových polí. Tvorca v <code>apps/web/src/admin</code>: výber tagu a ikon.</li>
+</ul>
+<h3>Jadro</h3>
+<ul class="mal">
+<li><code>engine.ts:2909</code> <code>spustiSpoj</code>: karta s <code>cielTag</code> sa spustí len pri susedovi s tým tagom.</li>
+<li><code>engine.ts:3016</code> <code>poPrilozeni</code>, <code>:3035</code> <code>konflikt</code>, <code>:3088</code> <code>podpora</code>: generická vetva namiesto dnešného <code>manualEfekt</code>. Pridať ikony do <code>PlacedCard.akcieNavyse</code> (kopia sa pri každom spustení) a zapísať do logu. <code>engine.ts:2958</code> <code>sPrilozenou</code> rovnako pre náhľady a bota.</li>
+<li><code>partia.ts:42</code> <code>PlacedCard.akcieNavyse</code>. <code>partia.ts:1078</code> (koniec <code>evaluateLine</code>, vedľa <code>presbiter</code>): pripočítať ikony z Podpory a Konfliktu a ikony Švagra a Soku podľa partie do <code>sums</code> a <code>zdroje</code> s dôvodom <code>karta:&lt;id&gt;</code>. Skrytú Záverečnú vynechať. Mäsiar cez <code>partia.ts:913</code>. Štatistiky kariet: <code>partia.ts:1102</code>.</li>
+<li>Staré efekty podmieniť sadou: Miňištrant <code>engine.ts:2961</code>, <code>:3246</code>, <code>partia.ts:856</code>. Policajtka <code>engine.ts:2972</code>, <code>:3051</code>, <code>effects.ts:274</code>. Vdova <code>engine.ts:3042</code>, Podvodník <code>:3062</code>, Šarlatán <code>:2970</code>, <code>:3073</code>, Snúbenica <code>:2978</code>, <code>:3077</code>, <code>:3095</code>. Stryná <code>engine.ts:1235</code>. Živnostník <code>:3222</code>, <code>:4248</code>, <code>:4636</code>. Hasič <code>:3255</code> (Nástup → Podpora, príkaz <code>hasic</code> ostáva). Veštica <code>:1960</code>, <code>:4995</code>. Recidivista <code>:5921</code>, Dievčina <code>:5926</code>, <code>nahlady.ts:451</code>. Kšeft Strýka a Predavačky <code>engine.ts:4261–4330</code>, <code>effects.ts:530</code>. Praudovravec <code>partia.ts:277</code>, <code>:489</code>. Opatrovateľka <code>partia.ts:825</code>. Kočovník <code>partia.ts:1035</code>.</li>
+<li><code>effects.ts:85–170</code>: stav <code>EFEKTY</code> pre 17 kariet.</li>
+<li><code>view.ts:380</code>: skrytá Záverečná nesmie prezradiť ikony ani splnenú podmienku. Pridať test <code>viewFor</code>.</li>
+</ul>
+<h3>Bot</h3>
+<ul class="mal">
+<li><code>bot.ts:393</code> <code>hodnotaKarty</code> a <code>:1342</code> draft: hodnota karty podľa tagov vo vlastnom balíčku (Švagor, Podpora) a v súperovom (Sok, Konflikt). Stavba šenku: poslať súperovi cieľový tag naspodok.</li>
+<li><code>bot.ts:1007</code> <code>sKartou</code> a <code>:1390</code> Zhromaždenie: kam priložiť kvôli Podpore a Konfliktu. Ide cez <code>sPrilozenou</code>, stačí zásah v jadre. Heuristiky <code>:274</code>, <code>:315</code>. Hasič <code>:1236</code>, Veštica <code>:1667</code> zaniká.</li>
+<li>Overiť turnajom (<code>tools/bot/turnaj.ts</code>), ako často sa podmienky naozaj splnia, a porovnať s časťou 5.</li>
+</ul>
+<h3>Klient</h3>
+<ul class="mal">
+<li><code>apps/web/src/karta/KartaLico.tsx:220</code>: pod textom efektu rad ikon (<code>IkonaAkcie.tsx:15</code>).</li>
+<li><code>apps/web/src/hra/HernaPlocha.tsx:1118</code> náhľad priloženia: ukázať, že spoj spustí Podporu alebo Konflikt s tagom. Na stole pri karte ikony navyše (svieti, keď platí). Rekapitulácia cez <code>ZdrojAkcie</code>.</li>
+<li><code>apps/web/src/stranky/pravidla/slovnik.ts:31–33</code>: pojmy Švagor, Sok, akcia navyše.</li>
+</ul>
+<h3>Pravidlá, ťahák, výučba, testy</h3>
+<ul class="mal">
+<li>PRAVIDLA §2 Tagy <code>docs/PRAVIDLA.md:474</code> (graf tagov). §6 <code>:660</code> (výnimka Kočovníka), <code>:669</code> (Podpora a Konflikt s tagom) a nový odsek Akcia navyše za Modifikátormi (<code>:697</code>). §7 <code>:969</code> Vyhodnotenie Pitky. §9 tabuľka <code>:1138</code> a <code>:1301</code> (krok 5b Veštica). §16 <code>:1909</code> a riadky kariet <code>:1931–1976</code>, Vidly <code>:1985</code>. §17 <code>:2007–2008</code> a nové pojmy. Kšeft <code>:1003</code> podľa rozhodnutia o Kšefte.</li>
+<li>Ťahák <code>tools/playtest/tahak.md:115–117</code> (Kšeft Strýka a Predavačky), <code>:133–151</code> (Identita kariet, Konflikt, Podpora, Miňištrant).</li>
+<li>Výučba <code>packages/core/data/vyucba/prva-hra.json:91–111</code>, <code>:707</code> (Miňištrant, Dievčina) až pri prechode do Vypálenej (CLAUDE.md).</li>
+<li>Rozhodca <code>tools/rozhodca/mapa.json:1750</code>, <code>:1778</code> (Šarlatán, Vdova).</li>
+<li>Testy: <code>packages/core/test/konflikt-podpora-v113.test.ts</code>, <code>identita-kariet-v115.test.ts</code>, <code>autority-v104.test.ts</code>, <code>sarlatan-*.test.ts</code>. Nové testy: fázy akcií navyše, NA EX, Forsáž, Záverečná, Mäsiar, <code>viewFor</code>. Odtlačok (<code>tools/upratovanie/odtlacok.ts</code>) sa zmení, je to zmena hry, nie refaktor.</li>
+</ul>
+
+<footer>NA EX! · Vymyselník · vetva <code>napady/frakcie-efekty</code> · <code>docs/napady/frakcie-efekty.html</code> · podklad: <code>docs/napady/deckbuilding-mechaniky.html</code>, <code>docs/kniznica/2026-11-08-deckbuilding.html</code> (Študent), PRAVIDLA §6 a §16, <code>packages/core/data/cards.json</code> a kópie z <code>packages/server/seed/navrhy.json</code>. Percentá sú odhad z tlače, nie meranie.</footer>
+</main>
+</body>
+</html>
