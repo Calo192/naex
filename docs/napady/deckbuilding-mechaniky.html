@@ -1,0 +1,312 @@
+<!doctype html>
+<html lang="sk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mechaniky z combat deckbuilderov pre NA EX! — Študent</title>
+<style>
+:root { --pozadie:#15120f; --plocha:#1f1a15; --plocha-2:#2a231c; --okraj:#43372c; --text:#f1e8d8; --tlmeny:#b8a993;
+  --akcent:#e9ad45; --dobre:#7fbf7a; --zle:#d8705f; --stred:#d9c04a;
+  --serif:Georgia,"Times New Roman",serif; --sans:system-ui,"Segoe UI",Roboto,sans-serif; --mono:ui-monospace,Consolas,monospace; color-scheme:dark; }
+@media (prefers-color-scheme: light) { :root:not([data-theme="dark"]) { --pozadie:#f6f1e7; --plocha:#fffaf1; --plocha-2:#f0e7d6; --okraj:#d8c8ad;
+  --text:#2a2016; --tlmeny:#5e4f3b; --akcent:#95590a; --dobre:#2f7a2b; --zle:#a8402f; --stred:#8a7410; color-scheme:light; } }
+* { box-sizing:border-box; }
+body { margin:0; background:var(--pozadie); color:var(--text); font:16px/1.55 var(--sans); }
+main { max-width:1020px; margin:0 auto; padding:28px max(16px, env(safe-area-inset-right,0px)) 56px max(16px, env(safe-area-inset-left,0px)); }
+h1,h2,h3 { font-family:var(--serif); line-height:1.2; text-wrap:balance; }
+h1 { font-size:clamp(1.7rem,4.6vw,2.4rem); margin:0 0 8px; }
+h2 { font-size:1.4rem; margin:40px 0 14px; padding-bottom:6px; border-bottom:1px solid var(--okraj); }
+h3 { font-size:1.05rem; margin:16px 0 6px; }
+p, ul, ol { max-width:76ch; } p { margin:0 0 10px; } li { margin-bottom:5px; }
+a { color:var(--akcent); } :focus-visible { outline:2px solid var(--akcent); outline-offset:2px; }
+.uvod, .pozn { color:var(--tlmeny); } .pozn { font-size:.9rem; }
+.skratka { background:var(--plocha); border:1px solid var(--akcent); border-radius:12px; padding:14px 16px; margin:18px 0; }
+.skratka h2 { margin:0 0 6px; border:0; padding:0; font-size:1.2rem; }
+.tab-obal { overflow-x:auto; }
+table { width:100%; border-collapse:collapse; font-size:.92rem; }
+th, td { padding:7px 6px; text-align:left; vertical-align:top; border-bottom:1px solid var(--okraj); }
+thead th { border-bottom:2px solid var(--okraj); font-size:.85rem; color:var(--tlmeny); font-weight:600; }
+td.num, th.num { text-align:right; font-variant-numeric:tabular-nums; }
+.znamka { display:inline-block; font-size:.78rem; border-radius:999px; padding:0 8px; border:1px solid currentColor; white-space:nowrap; margin:1px 0; }
+.n { color:var(--dobre); } .s { color:var(--stred); } .v { color:var(--zle); }
+.filtre { display:flex; flex-wrap:wrap; gap:6px; margin:0 0 12px; }
+button { appearance:none; font:inherit; font-size:.88rem; padding:6px 11px; border-radius:8px; border:1px solid var(--okraj); background:var(--plocha-2); color:var(--text); cursor:pointer; }
+button[aria-pressed="true"] { border-color:var(--akcent); color:var(--akcent); font-weight:600; }
+[hidden] { display:none !important; }
+article.mech { background:var(--plocha); border:1px solid var(--okraj); border-radius:12px; padding:14px 18px; margin:16px 0; }
+article.mech h2 { margin:0 0 4px; border:0; padding:0; font-size:1.3rem; }
+.poradie { display:inline-block; min-width:1.8em; text-align:center; font-family:var(--serif); color:var(--pozadie); background:var(--akcent); border-radius:6px; margin-right:6px; }
+.zdroj { color:var(--tlmeny); font-size:.88rem; margin-bottom:8px; }
+.karty { display:grid; grid-template-columns:repeat(auto-fit,minmax(300px,1fr)); gap:10px; margin:8px 0; }
+.karta { border:1px solid var(--okraj); border-radius:10px; padding:10px 12px; background:var(--plocha-2); }
+.karta b { font-family:var(--serif); font-size:1.02rem; }
+.karta .tagy { color:var(--tlmeny); font-size:.82rem; }
+.karta .dnes { color:var(--tlmeny); font-size:.9rem; margin:6px 0 4px; }
+.karta .nove { border-left:3px solid var(--akcent); padding-left:8px; margin:4px 0; }
+.karta .preco { font-size:.88rem; color:var(--tlmeny); margin:4px 0 0; }
+.mriezka { display:grid; grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); gap:4px 22px; }
+pre.linia { font-family:var(--mono); font-size:.86rem; background:var(--plocha-2); border-radius:8px; padding:10px 12px; overflow-x:auto; margin:8px 0; }
+code { font-family:var(--mono); font-size:.86em; background:var(--plocha-2); padding:1px 4px; border-radius:4px; overflow-wrap:anywhere; }
+footer { margin-top:40px; padding-top:12px; border-top:1px solid var(--okraj); color:var(--tlmeny); font-size:.88rem; }
+</style>
+</head>
+<body>
+<main>
+<p class="pozn">Študent · 8. 11. 2026 · zadanie Michala · rešerš a zdroje: <a href="../kniznica/2026-11-08-deckbuilding.html">knižnica, téma Combat deckbuilding</a> · podklad pre Vymyselníka a Navrhára, nie návrh do sekcie Playtest</p>
+<h1>Čo si NA EX! môže zobrať z combat deckbuilderov</h1>
+<p class="uvod">Michal: „Nech študent pozrie combat deckbuilding hry ako Witcher, Star Realms a podobné a príde s mechanikami, ktoré budeme môcť uplatniť v tejto hre. Napríklad v Star Realms, keď sa hrajú karty z rovnakej frakcie, aktivujú sa dodatočné efekty daných kariet.“ Nižšie je osem mechaník zoradených podľa toho, ako sľubne by v NA EX! fungovali. Pri každej je ukážka na existujúcej karte zo sady v55 (dnešný text a ako by vyzeral s mechanikou) a odhad zásahu. Čísla na ukážkach sú na ladenie, nie hotové hodnoty.</p>
+
+<section class="skratka">
+<h2>V skratke</h2>
+<ul>
+<li><b>Frakcie už máme, len ich nič nečíta.</b> Tagy Kriminál, Influencer, Autorita, Zahraničný, Pracujúci a Závislý nesie 33 zo 41 druhov kariet balíčka Občanov a žiadne platné pravidlo ani efekt sa na ne neodvoláva (PRAVIDLA §2 Tagy, roadmapa #123).</li>
+<li><b>Najsľubnejšie:</b> (1) <a href="#m1">Kumpán</a>, teda spojenec zo Star Realms, ktorého Michal uviedol ako príklad. (2) <a href="#m2">Podpora a Konflikt s tagom</a>: spúšťače už existujú, stačí meniť karty.</li>
+<li><b>Preriedenie balíčka</b> (roadmapa #53) rieši <a href="#m3">Obeta</a>, ktorá je zo všetkých najväčší zásah (nový ťah v Pitke).</li>
+<li>Všetkých osem mechaník je bez stropov (CLAUDE.md). Žiadna nepotrebuje meniť scorecard ani starších.</li>
+</ul>
+</section>
+
+<h2>Prehľad</h2>
+<p class="pozn"><b>Zásah:</b> <span class="znamka n">len karty</span> = nový efekt karty v engine (effects.ts), pravidlá sa nemenia, prípadne pribudne riadok výkladu v §16; <span class="znamka s">pravidlo</span> = nový spúšťač alebo pojem v PRAVIDLA.md, ťahák AI hráčov a veta vo výučbe; <span class="znamka v">engine</span> = nový ťah, fáza alebo stav v jadre, a s ním klient, bot a <code>viewFor()</code>.</p>
+<div class="filtre" role="group" aria-label="Filtrovať podľa zásahu">
+<button type="button" data-z="vsetko" aria-pressed="true">Všetky</button><button type="button" data-z="karty" aria-pressed="false">Len karty</button><button type="button" data-z="pravidlo" aria-pressed="false">Potrebuje pravidlo</button><button type="button" data-z="engine" aria-pressed="false">Potrebuje engine</button>
+</div>
+<div class="tab-obal"><table id="prehlad">
+<thead><tr><th class="num">#</th><th>Mechanika</th><th>Odkiaľ</th><th>Ukážka</th><th>Rozhodnutie hráča</th><th>Zásah</th></tr></thead>
+<tbody>
+<tr data-z="pravidlo"><td class="num">1</td><td><a href="#m1">Kumpán</a> (spojenec tagu)</td><td>Star Realms, Hero Realms, Dune: Imperium, Legendary</td><td>Podvodník, Predavačka</td><td>kúpiť kartu tagu, ktorý už mám; súperovho kumpána poslať pri stavbe šenku naspodok</td><td><span class="znamka s">pravidlo</span> <span class="znamka n">karty</span></td></tr>
+<tr data-z="karty"><td class="num">2</td><td><a href="#m2">Podpora a Konflikt s tagom</a></td><td>Witcher: Old World, Legendary</td><td>Šarlatán, Policajtka</td><td>ku ktorej karte priložiť; čo nechať na konci strany</td><td><span class="znamka n">len karty</span></td></tr>
+<tr data-z="pravidlo engine"><td class="num">3</td><td><a href="#m3">Obeta</a> (spáľ za účinok)</td><td>Star Realms, Hero Realms, Ascension, Slay the Spire, Dominion</td><td>Strýko z Ameriky, Hasič</td><td>akcie a špak v línii teraz, alebo účinok a štíhlejší balíček</td><td><span class="znamka s">pravidlo</span> <span class="znamka v">engine</span></td></tr>
+<tr data-z="karty"><td class="num">4</td><td><a href="#m4">Partia v balíčku</a> (sila podľa zloženia)</td><td>Slay the Spire (Perfected Strike)</td><td>Vymáhač, Šofér</td><td>koľko kariet jedného tagu nakúpiť, kým riedia ruku</td><td><span class="znamka n">len karty</span></td></tr>
+<tr data-z="pravidlo engine"><td class="num">5</td><td><a href="#m5">Banda</a> (rad rovnakého tagu) a kraj</td><td>Witcher: Old World, Gwent</td><td>Recidivista</td><td>predĺžiť bandu, alebo ju súperovi zablokovať podstrčením</td><td><span class="znamka s">pravidlo</span> <span class="znamka v">engine</span></td></tr>
+<tr data-z="karty"><td class="num">6</td><td><a href="#m6">Zvolanie</a> (privolaj kumpánov z balíčka)</td><td>Gwent (Muster)</td><td>Dvojčatá, Traktorista</td><td>zahrať zvolávača skoro (karty do ruky), alebo neskôr (silnejšia línia)</td><td><span class="znamka n">len karty</span></td></tr>
+<tr data-z="karty"><td class="num">7</td><td><a href="#m7">Udavač</a> (špión na súperovej strane)</td><td>Gwent (Spy)</td><td>Bzdocha</td><td>dať súperovi silu v tejto bitke za 2 karty do ďalších kôl</td><td><span class="znamka n">len karty</span></td></tr>
+<tr data-z="karty pravidlo"><td class="num">8</td><td><a href="#m8">Bratia</a> (dve kópie vedľa seba)</td><td>Gwent (Tight Bond)</td><td>Pes</td><td>kúpiť aj druhú kópiu, keď je v šenku; súperovi ju poslať naspodok</td><td><span class="znamka n">karty</span> <span class="znamka s">alebo pravidlo</span></td></tr>
+</tbody></table></div>
+
+<h2>Frakčná identita tagov</h2>
+<p>V Star Realms má každá frakcia svoju rolu (Trade Federation obchod a životy, Blob poškodenie, Star Empire ťahanie a odhadzovanie súperovi, Machine Cult šrot). Spojenec potom posilňuje to, čo frakcia robí, a hráč vie, čo kupuje. Tagy NA EX! takú rolu zatiaľ nemajú, ale akcie na kartách ju naznačujú. Nasledujúca tabuľka je spočítaná zo sady v55 (všetky akcie oboch strán kariet daného tagu v balíčku Občanov):</p>
+<div class="tab-obal"><table>
+<thead><tr><th>Tag</th><th class="num">Druhov</th><th>Najčastejšie akcie</th><th>Možná rola frakcie (pre efekty Kumpána a Bandy)</th></tr></thead>
+<tbody>
+<tr><td>Kriminál</td><td class="num">6</td><td>Hazard 18 %, Rana 18 %, Cigareta 14 %, Petelica 11 %, Odpor 11 %</td><td>berie súperovi cigarety, dáva mu Dlhy, tuhé navyše</td></tr>
+<tr><td>Influencer</td><td class="num">7</td><td>Cigareta 19 %, Hazard 19 %, Povera 13 %, Posilnenie 9 %</td><td>mäkké a reči: Povery, Pohoršenie, hádka</td></tr>
+<tr><td>Autorita</td><td class="num">7</td><td>Obmedzenie 19 %, Cigareta 16 %, Rana 13 %, Poškodenie pečene 13 %</td><td>Obmedzenie a Odpor, pokuty (Dlh súperovi)</td></tr>
+<tr><td>Pracujúci</td><td class="num">8</td><td>Cigareta 26 %, Robota 15 %, Hazard 13 %</td><td>Robota, cigarety, Nástroje</td></tr>
+<tr><td>Zahraničný</td><td class="num">5</td><td>Cigareta 25 %, Povera 21 %, Poškodenie pečene 13 %, Vízia 8 %</td><td>Vízia a karty</td></tr>
+<tr><td>Závislý</td><td class="num">4 (+3 v štartovke)</td><td>Viera 16 %, Hazard 16 %, Rana 16 %, Poldeci 11 %</td><td>poldeci, NA EX, pečeň; pozor, v štartovke je trikrát</td></tr>
+</tbody></table></div>
+<p class="pozn">Zdroj rolí Star Realms: fanúšikovské prehľady a autor Darwin Kastle (<a href="https://www.starrealms.com/news/a-colony-wars-strategy-primer-from-darwin-kastle">primer</a>). Tagy NA EX! sú tematické (kto ten človek je), nie mechanické, preto rola musí vyplývať z príbehu. Satira tým nič nestráca, naopak: Kriminál pri Kriminálovi je banda, Influencer pri Influencerovi virálna klebeta.</p>
+
+<article class="mech" id="m1" data-z="pravidlo">
+<h2><span class="poradie">1</span>Kumpán: efekt navyše, keď máš v partii ďalšieho z tej istej frakcie</h2>
+<p class="zdroj">Star Realms a Hero Realms (Ally), Dune: Imperium (Fremen Bond), Legendary (Superpower), Clank! Catacombs · <a href="../kniznica/2026-11-08-deckbuilding.html#kumpan-spojenec-frakcie">knižnica</a></p>
+<p><b>Ako:</b> Karta má riadok efektu „Kumpán Kriminál: …“. Platí, kým máš v partii (karty natočené k tebe, na ktorejkoľvek strane línie) ďalšiu odkrytú kartu s tagom Kriminál. Hlavný účinok karty sú jej akcie na hranách a Kumpán je bonus, rovnako ako hlavný účinok a spojenec v Star Realms. Vyhodnocuje sa ako Furt. Skrytá Záverečná sa neráta, karta s dvoma tagmi ráta za oba (Liberál to robí už dnes). Podstrčený Kriminál na súperovej strane sa ráta, lebo je v tvojej partii.</p>
+<div class="karty">
+<div class="karta"><b>Podvodník</b> <span class="tagy">Občan · Kriminál · Chlap</span>
+<p class="dnes">Dnes: Konflikt: Súper ti dá 1 cigaretu. Ak žiadnu nemá, získa 1 zadĺženie.</p>
+<p class="nove">Konflikt: Súper ti dá 1 cigaretu. Ak žiadnu nemá, získa 1 zadĺženie. <b>Kumpán Kriminál:</b> 2 cigarety, za každú chýbajúcu 1 zadĺženie.</p>
+<p class="preco">Podvodník s parťákom ťahá dvakrát viac. Kumpán zdvojí efekt, ktorý karta už má, takže hráč sa nemusí učiť nový účinok.</p></div>
+<div class="karta"><b>Predavačka</b> <span class="tagy">Občan · Autorita · Žena · Pracujúci</span>
+<p class="dnes">Dnes: Kšeft: Za 1 cigaretu si dober 1 kartu.</p>
+<p class="nove">Kšeft: Za 1 cigaretu si dober 1 kartu. <b>Kumpán Pracujúci:</b> Kšeft smieš použiť dvakrát za Pitku.</p>
+<p class="preco">Jedna predáva, druhá kryje. Karta s dvoma tagmi ukáže, že kumpán sa vyberá podľa jedného z nich. Kšeft sa platí cigaretami, ktoré karta nevyrába (zásada „Kšeft negeneruje vlastnú menu“).</p></div>
+</div>
+<div class="mriezka">
+<div><h3>Rozhodnutie hráča</h3><ul>
+<li><b>Šenok:</b> silná karta, alebo slabšia karta tagu, ktorý už mám? Autor Star Realms: „acquiring a good card that you can use now often better than acquiring a great card that you can't use until later“.</li>
+<li><b>Stavba šenku</b> (§5): z 8 kariet dávaš 4 do šenku a 4 tajne naspodok. Súperovho kumpána môžeš poslať naspodok. Z dnešného skrytého draftu sa stane frakčný.</li>
+<li><b>Zhromaždenie:</b> kumpána mať v línii čo najskôr, alebo ho podstrčiť súperovi, kde zaberie koniec strany a ešte ťa zapína.</li>
+</ul></div>
+<div><h3>Zásah</h3><p><span class="znamka s">pravidlo</span> nový spúšťač Kumpán v §16 a v ťaháku, jedna veta vo výučbe. V engine jedna pomocná funkcia „má v partii ďalšiu kartu s tagom X“, ostatné je text a efekt každej karty. Karty: začať 4 až 6 kartami na dva tagy. Scorecard ani starší sa nemenia.</p>
+<h3>Riziká</h3><ul>
+<li>Závislý je v štartovke trikrát (Miňištrant, Pijan, Dievčina na vydaj), Kumpán Závislý by platil skoro vždy. Kumpán písať na tagy s 5 až 8 druhmi.</li>
+<li>Lineárny balíček „všetko Kriminál“ ako jediná správna stratégia, teda stomp. Recenzent Star Realms: kombinácie frakcií sú „overwhelmingly powerful“ a pre súpera skľučujúce.</li>
+<li>Náhoda šenku: frakcia, ktorá nepríde, je mŕtva. Pomáha <a href="#m6">Zvolanie</a>.</li>
+</ul></div>
+</div>
+<p><b>Čo zmerať:</b> ako často sa Kumpán zapne na zahratú kartu, po tagoch; úspešnosť hráča s aspoň 3 kartami jedného tagu v balíčku. Ilustračný výpočet: keď hráč v kole vyloží 5 kariet zo 16-kartového balíčka, aspoň dve karty jedného tagu má v línii s pravdepodobnosťou 37 % pri 4 kartách tagu a 65 % pri 6.</p>
+</article>
+
+<article class="mech" id="m2" data-z="karty">
+<h2><span class="poradie">2</span>Podpora a Konflikt s tagom: nadväznosť ako v kombe</h2>
+<p class="zdroj">The Witcher: Old World (farebná reťaz kombá), Legendary (poradie v ťahu) · <a href="../kniznica/2026-11-08-deckbuilding.html#nadvaznost-a-retaz">knižnica</a></p>
+<p><b>Ako:</b> Spúšťače Podpora (stretnutie s vlastnou kartou) a Konflikt (so súperovou) už existujú (§6, §16). Efekt len pomenuje tag: „Podpora (Influencer): …“ sa spustí, keď sa priložením stretne s tvojím Influencerom, „Konflikt (Kriminál): …“ keď sa stretne so súperovým Kriminálom. Vzor už je v sade: Sypač a Snúbenica čítajú Chlapa, Vdova Chlapov pri sebe. V Witcher: Old World sa ďalšia karta pripojí do kombá, len ak sedí farba. V NA EX! sa „farbou“ stane tag suseda.</p>
+<div class="karty">
+<div class="karta"><b>Šarlatán</b> <span class="tagy">Občan · Influencer · Chlap</span>
+<p class="dnes">Dnes: Konflikt: Do konca kola sa jeho akcie Hazard rátajú ako Viera a Povery ako Rana.</p>
+<p class="nove"><b>Podpora (Influencer):</b> Do konca kola sa jeho Povery rátajú ako Pohoršenia.</p>
+<p class="preco">Dvaja influenceri vedľa seba: klebeta sa šíri virálne. Povera dáva 1 mäkké, Pohoršenie 2 a Viera ho nezruší (§9.1), teda priamy vstup do hádky a rečí.</p></div>
+<div class="karta"><b>Policajtka</b> <span class="tagy">Občan · Autorita · Žena</span>
+<p class="dnes">Dnes: Pitka: Za každú súperovu akciu, ktorú v tejto Pitke zruší tvoj Odpor, získa súper 1 zadĺženie.</p>
+<p class="nove"><b>Konflikt (Kriminál):</b> Súper ti dá 2 cigarety; za každú chýbajúcu získa 1 zadĺženie.</p>
+<p class="preco">Pokuta na mieste, keď stretne súperovho Kriminála. Do v10.3 mala Policajtka takmer to isté (Konflikt, za Kriminála 2 cigarety), nahradil to Pokutový blok, nebolo to zamietnuté. Konflikt s tagom súpera dá dôvod sledovať, čo leží na konci jeho strany.</p></div>
+</div>
+<div class="mriezka">
+<div><h3>Rozhodnutie hráča</h3><p>Ku ktorej karte priložiť a čo nechať na konci strany. Konflikt oboma smermi (v11.3) znamená, že aj súper zvažuje, či svojho Kriminála priloží k tvojej Policajtke. Je to reakcia na súpera, nie len skladanie vlastnej línie.</p></div>
+<div><h3>Zásah</h3><p><span class="znamka n">len karty</span> spúšťače, poradie vyhodnotenia aj výklad (§16) už existujú. Nový je len efekt v engine a text karty.</p>
+<h3>Riziká</h3><p>Ďalší text na karte (efekty stroho). Bez ďalšieho nákupu tagu sa spustí zriedka, takže sila karty závisí od šenku. Podpora s tagom a Kumpán sa môžu prekrývať, preto ich na jednej karte nemiešať.</p></div>
+</div>
+<p><b>Čo zmerať:</b> ako často sa Podpora a Konflikt s tagom spustia za partiu; či boti a ľudia menia, kam prikladajú, keď na konci strany leží karta s Konfliktom s tagom.</p>
+</article>
+
+<article class="mech" id="m3" data-z="pravidlo engine">
+<h2><span class="poradie">3</span>Obeta: spáľ vlastnú kartu z línie za okamžitý účinok</h2>
+<p class="zdroj">Star Realms (Scrap), Hero Realms (Sacrifice), Ascension (Banish), Slay the Spire (Exhaust), Dominion (trashing) · <a href="../kniznica/2026-11-08-deckbuilding.html#obeta-za-ucinok">knižnica</a></p>
+<p><b>Ako:</b> Karta má „Obeta: &lt;účinok&gt;.“ Hráč ju použije v Pitke ako Kšeft (raz, kým Pitku neskončil, nie počas odpovede na NA EX), ale namiesto ceny kartu spáli z línie, navždy z hry. Medzera sa uzavrie a spoje sa prepočítajú ako po Poľovníkovi (§16). Cena je vstavaná: karta prestane dávať akcie, jej sused stratí pár a v línii je o kartu menej, takže víťaz bitky dostane o 1 špak menej (§14). Balíček sa tým preriedi, čo rieši roadmapu #53 (Ruka plná mŕtvych kariet).</p>
+<div class="karty">
+<div class="karta"><b>Strýko z Ameriky</b> <span class="tagy">Občan · Influencer · Zahraničný · Chlap</span>
+<p class="dnes">Dnes: Kšeft: Za 2 cigarety udelíš v tejto bitke súperovi 1 Ranu navyše.</p>
+<p class="nove"><b>Obeta:</b> Dostaneš 5 cigariet.</p>
+<p class="preco">Strýko sa vráti do Ameriky a nechá na stole obálku. Hráč volí medzi jeho akciami (Cigareta ×2 | Cigareta, Vízia) do konca hry a jednorazovou hotovosťou. Obeta sa neplatí cigaretami, takže karta si nevyrába vlastnú menu.</p></div>
+<div class="karta"><b>Hasič</b> <span class="tagy">Občan · Autorita · Chlap</span>
+<p class="dnes">Dnes: Nástup: Vytiahni náhodnú kartu zo svojho odhadzovacieho balíčka (aj kliatbu) a rozhodni sa, či si ju necháš, alebo ju odhodíš.</p>
+<p class="nove"><b>Obeta:</b> Spáľ aj 1 kartu z ruky.</p>
+<p class="preco">Vyhorel, ale niečo zobral so sebou. Nástroj na preriedenie: štartovka alebo slabá karta navždy preč. Otvorená otázka pre Michala: smie takto ísť aj Absťák (Absťák smie spáliť „efekt, ktorý to výslovne povie“, §8)? Cirhózu nie, parkovanie Cirhózy je zámer (zamietnuté N3 a Spoveď).</p></div>
+</div>
+<div class="mriezka">
+<div><h3>Rozhodnutie hráča</h3><p>Kartu nechať v línii (akcie, spoj pre suseda, špak za kartu), alebo ju spáliť za účinok a mať štíhlejší balíček. Autor Star Realms radí šrotovať štartovacie karty skoro a v neskorej hre agresívne. Načasovanie je teda samostatné rozhodnutie.</p></div>
+<div><h3>Zásah</h3><p><span class="znamka s">pravidlo</span> spúšťač Obeta v §7 (kedy) a §16, odchod z línie ako pri Poľovníkovi. <span class="znamka v">engine</span> nový druh ťahu v Pitke, klient (tlačidlo pri karte ako pri Kšefte), bot a log.</p>
+<h3>Riziká</h3><ul>
+<li>Ak je obeta silnejšia ako karta, hráči kupujú karty len na spálenie.</li>
+<li>Menší balíček s dobratím do troch (v11.9) častejšie ťahá najlepšie karty, snowball sa zrýchli.</li>
+<li>Obeta musí mať príbeh (odchod do Ameriky, vyhorenie), nie abstraktné „zošrotuj“.</li>
+</ul></div>
+</div>
+<p><b>Čo zmerať:</b> veľkosť balíčka na konci partie s obetou a bez nej; v ktorom kole sa obeta používa; úspešnosť hráča, ktorý obetoval aspoň 2 karty; koľko štartoviek a Absťákov ostane v balíčku.</p>
+</article>
+
+<article class="mech" id="m4" data-z="karty">
+<h2><span class="poradie">4</span>Partia v balíčku: sila podľa toho, koľko ich máš</h2>
+<p class="zdroj">Slay the Spire (Perfected Strike: +2 poškodenia za každú kartu „Strike“ v balíčku) · <a href="../kniznica/2026-11-08-deckbuilding.html#sila-podla-zlozenia-balicka">knižnica</a></p>
+<p><b>Ako:</b> Efekt ráta kartu s tagom v celom balíčku hráča: ruka, doberací, odhadzovací a línia. Je to rovnaký dosah ako pri Absťáku (§8), ktorý dnes jediný ráta celý balíček, a to len ako trest. Bez stropu; brzdou je riedenie, lebo každá karta navyše zaberá miesto v ruke.</p>
+<div class="karty">
+<div class="karta"><b>Vymáhač</b> <span class="tagy">Občan · Kriminál · Chlap</span>
+<p class="dnes">Dnes: Bitka: Za každé 2 tvoje priznané Dlhy udelíš súperovi 1 Ranu navyše.</p>
+<p class="nove">Bitka: Za každého Kriminála v tvojom balíčku udelíš súperovi 1 Ranu navyše.</p>
+<p class="preco">Čím väčšia banda za ním, tým presvedčivejší. Dnešný efekt odmeňuje vlastné Dlhy, nový nákup jedného tagu. Dá sa aj ponechať pôvodný a nový dať inej karte.</p></div>
+<div class="karta"><b>Šofér</b> <span class="tagy">Občan · Chlap · Pracujúci</span>
+<p class="dnes">Dnes: Bitka: Ak si v tomto kole nedal NA EX, udelíš súperovi 1 Pecku navyše a dostaneš 1 cigaretu.</p>
+<p class="nove">Bitka: Ak si v tomto kole nedal NA EX, udelíš súperovi 1 Pecku navyše a dostaneš 1 cigaretu za každého Pracujúceho v tvojom balíčku.</p>
+<p class="preco">Odvezie z roboty celú partiu a každý mu dá na benzín. Triezvy šofér ostáva podmienkou.</p></div>
+</div>
+<div class="mriezka">
+<div><h3>Rozhodnutie hráča</h3><p>Koľko kariet jedného tagu nakúpiť. Každá ďalšia zvýši silu, ale riedi ruku a berie miesto lepším kartám. Opačný smer ako Obeta, takže tieto dve mechaniky sa navzájom brzdia.</p></div>
+<div><h3>Zásah</h3><p><span class="znamka n">len karty</span> počítanie celého balíčka engine pozná (Absťák). Server smie zverejniť len výsledok efektu, nie zloženie balíčka (CLAUDE.md, pravidlo 2).</p>
+<h3>Riziká</h3><p>Hromadenie jedného tagu, teda stomp a snowball za kúpy. Bot ťažšie ohodnotí kartu, ktorej hodnota závisí od budúcich kúp. Výsledok efektu prezradí súperovi počet tagu v balíčku.</p></div>
+</div>
+<p><b>Čo zmerať:</b> počet kariet jedného tagu v balíčku na konci partie (medián, maximum); podiel tuhého a cigariet z takých efektov; súvislosť s výhrou a s rozdielom špakov.</p>
+</article>
+
+<article class="mech" id="m5" data-z="pravidlo engine">
+<h2><span class="poradie">5</span>Banda: efekt rastie s radom rovnakého tagu (a variant Kraj)</h2>
+<p class="zdroj">The Witcher: Old World (dlhšie kombo udrie silnejšie), Gwent (Morale Boost na celý riadok) · <a href="../kniznica/2026-11-08-deckbuilding.html#nadvaznost-a-retaz">knižnica: nadväznosť</a> · <a href="../kniznica/2026-11-08-deckbuilding.html#riadok-a-kraj">knižnica: kraj</a></p>
+<p><b>Ako:</b> Banda = nepretržitý rad tvojich kariet s tým istým tagom na jednej strane línie, bez cudzej karty medzi nimi. Efekt karty rastie s dĺžkou bandy. Keďže sa kladie len na vonkajší koniec strany (§6), súper bandu zastaví podstrčením karty na koniec tvojej strany. Stojí ho to kartu z limitu, môže spustiť tvoj Konflikt a jeho karta tam boduje pre neho.</p>
+<div class="karty">
+<div class="karta"><b>Recidivista</b> <span class="tagy">Občan · Kriminál · Chlap · Zviera</span>
+<p class="dnes">Dnes: Prehra: Po bitke sa vráti do tvojej ruky.</p>
+<p class="nove">Prehra: Po bitke sa vráti do tvojej ruky. <b>Banda:</b> Za každého ďalšieho Kriminála v jeho bande udelíš v bitke súperovi 1 Ranu navyše.</p>
+<p class="preco">Starý známy z partie. Pri prehre sa vracia do ruky, takže bandu ťahá z kola do kola.</p></div>
+</div>
+<pre class="linia">tvoja strana                                lokalita   súperova strana
+Recidivista · Vymáhač · Podvodník · [ Krčma ] · …           banda 3: Recidivista +2 Rany
+
+súper podstrčí na koniec tvojej strany:
+Policajtka(súper) · Recidivista · Vymáhač · Podvodník · [ Krčma ] · …
+ďalší tvoj Kriminál ide za Policajtku, bandu už nepredĺži</pre>
+<p><b>Variant Kraj</b> (Gwent Morale Boost): efekt ráta tvoje karty s tagom v celom kraji, nie v nepretržitom rade. Je jednoduchší a netreba nový pojem, ale súper ho nevie zablokovať. Sústredenie do jedného kraja zároveň dá prevahu nad hranou lokality (§6).</p>
+<div class="mriezka">
+<div><h3>Rozhodnutie hráča</h3><p>Ty: bandu natiahnuť, alebo kartu dať inam (spoj, prevaha, druhá strana). Súper: obetovať kartu z limitu na zablokovanie konca. Mechanika dáva druhému hráčovi dôvod reagovať, čo ostatné frakčné mechaniky robia slabšie.</p></div>
+<div><h3>Zásah</h3><p><span class="znamka s">pravidlo</span> pojem „rad“ alebo „banda“ v §6. <span class="znamka v">engine</span> výpočet radu a náhľad v klientovi (zvýrazniť bandu). Zladená reťaz (roadmapa #88) meria spoje akcií, banda tagy. Dá sa zaviesť jeden pojem „rad“ pre obe.</p>
+<h3>Riziká</h3><p>Nováčik musí čítať tagy suseda. Zablokovanie môže byť silnejšie ako banda. Kraj ako celok sa s prevahou násobí.</p></div>
+</div>
+<p><b>Čo zmerať:</b> priemerná a najdlhšia banda v línii; koľkokrát súper koniec zablokoval; či sa zmení počet podstrčení.</p>
+</article>
+
+<article class="mech" id="m6" data-z="karty">
+<h2><span class="poradie">6</span>Zvolanie: karta privolá kumpánov z balíčka</h2>
+<p class="zdroj">Gwent v Witcher 3 (Muster: „Find any cards with the same name in your deck and play them instantly“) · <a href="../kniznica/2026-11-08-deckbuilding.html#kumpan-spojenec-frakcie">knižnica: Kumpán, kritika náhody</a></p>
+<p><b>Ako:</b> Nástup karty vezme z doberacieho balíčka do ruky kartu rovnakého mena alebo tagu. Je to odpoveď na hlavnú výčitku spojencov v Star Realms: správne karty nepridú v správnej kombinácii. Sama osebe je slabá, s Kumpánom alebo Bandou dodá hustotu.</p>
+<div class="karty">
+<div class="karta"><b>Dvojčatá</b> <span class="tagy">Občan · Chlap · Závislý</span>
+<p class="dnes">Dnes: Furt: Do prevahy sa rátajú za dvoch.</p>
+<p class="nove">Furt: Do prevahy sa rátajú za dvoch. <b>Nástup:</b> Ak sú druhé Dvojčatá v tvojom doberacom balíčku, vezmi si ich do ruky.</p>
+<p class="preco">Kde je jedno, je aj druhé. V balíčku Občanov sú 2 kópie, takže druhé Dvojčatá treba aj kúpiť.</p></div>
+<div class="karta"><b>Traktorista</b> <span class="tagy">Občan · Autorita · Chlap</span>
+<p class="dnes">Dnes: Bitka: Ak máš v jeho kraji prevahu, udelíš súperovi 1 Pecku navyše. Inak získaš 1 Dlh.</p>
+<p class="nove"><b>Nástup:</b> Pozri 3 vrchné karty svojho doberacieho balíčka; Autority si vezmi do ruky, ostatné vráť naspodok.</p>
+<p class="preco">Zvezie z družstva celé vedenie. Variant podľa tagu namiesto mena, vzor je Vízia (pozrieť vrch balíčka, §7).</p></div>
+</div>
+<div class="mriezka">
+<div><h3>Rozhodnutie hráča</h3><p>Zahrať zvolávača skoro (karty do ruky na ďalšie Zhromaždenie), alebo ho šetriť, kým je v balíčku čo zvolať.</p></div>
+<div><h3>Zásah</h3><p><span class="znamka n">len karty</span> Hasič a Vízia už berú karty z balíčkov. Server posiela vrch balíčka len majiteľovi (ako pri Vízii).</p>
+<h3>Riziká</h3><p>Ťahanie kariet navyše je silné, keď dobratie je len do troch (v11.9). Dvojčatá v štartovke nie sú, ale Závislý áno, preto zvolávať podľa Závislého nie.</p></div>
+</div>
+<p><b>Čo zmerať:</b> ako často zvolanie niečo nájde; počet kariet v ruke po Nástupe; či sa s ním častejšie zapne Kumpán.</p>
+</article>
+
+<article class="mech" id="m7" data-z="karty">
+<h2><span class="poradie">7</span>Udavač: karta na súperovej strane mu pomôže, tebe dá karty</h2>
+<p class="zdroj">Gwent v Witcher 3 (Spy: „Place on your opponent's battlefield (counts towards opponent's total) and draw 2 cards from your deck“) · <a href="../kniznica/2026-11-08-deckbuilding.html#spion-podstrcenie-s-odmenou">knižnica</a></p>
+<p><b>Ako:</b> Nástup s podmienkou strany: ak kartu vyložíš na súperovu stranu, doberieš si 2 karty a jej akcie sa rátajú súperovi. Výnimka z pravidla „akcie sa rátajú majiteľovi“ už existuje pri Kočovníkovi (§16).</p>
+<div class="karty">
+<div class="karta"><b>Bzdocha</b> <span class="tagy">Občan · Influencer · Žena</span>
+<p class="dnes">Dnes: Pitka: Súper hrá Pitku pred tebou; vidíš jeho NA EX.</p>
+<p class="nove"><b>Nástup:</b> Ak ju vyložíš na súperovu stranu, doberieš si 2 karty. Jej akcie sa rátajú súperovi.</p>
+<p class="preco">Sedí pri jeho stole, pije na jeho účet a všetko donesie tebe. Ukážka mechaniky, dnešný efekt Bzdochy je vlastná identita karty a nemusí sa meniť; udavač sa hodí aj na novú kartu s tagom Kriminál alebo Influencer.</p></div>
+</div>
+<div class="mriezka">
+<div><h3>Rozhodnutie hráča</h3><p>Obetovať silu v tejto bitke za karty do ďalších kôl. Najviac sa oplatí v kole, ktoré hráč aj tak púšťa.</p></div>
+<div><h3>Zásah</h3><p><span class="znamka n">len karty</span> efekt v engine a riadok výkladu v §16 (komu sa karta ráta do prevahy: dnes podstrčená karta je v partii majiteľa).</p>
+<h3>Riziká</h3><p>Michal chce, aby hráč vyhrával veľkosťou výhry, nie striedaním rolí (v9.2). Ak 2 karty prevážia stratu bitky, hráči budú bitky púšťať zámerne. Špak za kartu v línii (§14) dostane víťaz aj za udavača.</p></div>
+</div>
+<p><b>Čo zmerať:</b> ako často sa udavač hrá v kole, ktoré majiteľ prehral; rozdiel v počte kariet v ruke pred finále.</p>
+</article>
+
+<article class="mech" id="m8" data-z="karty pravidlo">
+<h2><span class="poradie">8</span>Bratia: dve kópie tej istej karty vedľa seba</h2>
+<p class="zdroj">Gwent v Witcher 3 (Tight Bond: „Place next to a card of the same name to double the strength of both cards“) · <a href="../kniznica/2026-11-08-deckbuilding.html#nadvaznost-a-retaz">knižnica</a></p>
+<p><b>Ako:</b> Keď v tvojej partii susedia dve kópie tej istej karty, aktívne akcie oboch sa rátajú dvakrát. Balíček Občanov má každú kartu v 2 kópiách (§3), takže bratov treba kúpiť oboch.</p>
+<div class="karty">
+<div class="karta"><b>Pes</b> <span class="tagy">Zviera</span>
+<p class="dnes">Dnes: Furt: Jeho aktívne akcie na spoji so súperovou kartou sa rátajú dvakrát.</p>
+<p class="nove">Furt: Jeho aktívne akcie na spoji so súperovou kartou sa rátajú dvakrát. <b>Svorka:</b> keď susedí s druhým Psom, aktívne akcie oboch sa rátajú dvakrát.</p>
+<p class="preco">Jeden pes šteká, dva hryzú. Pes má 3 Rany, svorka ich zdvojí.</p></div>
+</div>
+<div class="mriezka">
+<div><h3>Rozhodnutie hráča</h3><p>Kúpiť aj druhú kópiu, keď sa objaví v šenku; pri stavbe šenku poslať súperovi chýbajúceho brata naspodok.</p></div>
+<div><h3>Zásah</h3><p><span class="znamka n">len karty</span> pre jednotlivé karty. <span class="znamka s">pravidlo</span> ak by platilo pre všetky karty (nový riadok v §6 Modifikátory na spoji).</p>
+<h3>Riziká</h3><p>Najviac náhody zo všetkých: obe kópie musia prísť do šenku a do ruky naraz. Ako pravidlo pre všetky karty by ×2 zvýšilo frekvenciu násobkov nad Michalových 15–20 % pri Forsáži.</p></div>
+</div>
+<p><b>Čo zmerať:</b> ako často má hráč obe kópie karty v balíčku; ako často ležia vedľa seba.</p>
+</article>
+
+<h2>Ako mechaniky spolu súvisia</h2>
+<ul>
+<li><b>Kumpán + Zvolanie:</b> Zvolanie dodá hustotu, ktorú Kumpán potrebuje, a zmenší náhodu, ktorú recenzenti vyčítajú Star Realms. Dá sa začať dvojicou tagov (napr. Kriminál a Pracujúci), každý po 3 kartách.</li>
+<li><b>Obeta proti Partii v balíčku:</b> Obeta balíček zmenšuje, Partia v balíčku odmeňuje jeho veľkosť v jednom tagu. Spolu dávajú dva protichodné plány, nie jednu správnu cestu.</li>
+<li><b>Banda a Zladená reťaz (#88):</b> obe sú „rad v línii“. Ak sa niektorá zavedie, druhá by mala použiť ten istý pojem.</li>
+<li><b>Šenok ako frakčný draft:</b> každá frakčná mechanika (1, 4, 5, 6, 8) zvýši váhu tajnej stavby šenku (§5). Hráč pri nej rozhoduje, čo dá súperovi do ponuky a čo pošle naspodok.</li>
+<li><b>Zásady Michala:</b> žiadna mechanika nemá strop; Obeta sa neplatí menou, ktorú vyrába; Cirhózu nič nové nespáli. Riziko „vedenie sa nedá dobehnúť“ majú hlavne 1, 4 a 5, preto ich treba merať spolu so snowballom (roadmapa #7).</li>
+</ul>
+
+<footer>NA EX! · Študent · vetva <code>student/2026-11-08-deckbuilding</code> · <code>docs/napady/deckbuilding-mechaniky.html</code> · texty kariet „Dnes“ sú doslova zo sady v55 (<code>packages/core/data/cards.json</code> v master); nové texty sú ukážky mechaník, nie schválené zmeny · zdroje cudzích hier sú v <a href="../kniznica/2026-11-08-deckbuilding.html">knižnici</a>.</footer>
+</main>
+<script>
+(function () {
+  "use strict";
+  // Filter podľa zásahu: skryje riadky prehľadu aj články mechaník.
+  var tl = document.querySelectorAll(".filtre button");
+  tl.forEach(function (b) {
+    b.addEventListener("click", function () {
+      tl.forEach(function (x) { x.setAttribute("aria-pressed", String(x === b)); });
+      var z = b.getAttribute("data-z");
+      document.querySelectorAll("#prehlad tbody tr, article.mech").forEach(function (el) {
+        el.hidden = z !== "vsetko" && el.getAttribute("data-z").split(" ").indexOf(z) < 0;
+      });
+    });
+  });
+})();
+</script>
+</body>
+</html>

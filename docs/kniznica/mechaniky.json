@@ -718,5 +718,209 @@
     "merat": "Úspešnosť hráča, ktorý prvý podrazil staršieho (cieľ najviac 65 %). Úspešnosť pri stave 4 : 2 stojacich. Počet zmien vedenia v súčte pečene za partiu.",
     "temy": ["pata-laket-otocka"],
     "pridane": "2026-11-01"
+  },
+  {
+    "id": "kumpan-spojenec-frakcie",
+    "nazov": "Spojenec frakcie: efekt navyše, keď máš v hre ďalšiu kartu toho istého tagu (Ally, Fremen Bond, Superpower)",
+    "problem": "Karta v NA EX! nesie až štyri z 13 tagov, ale šesť tagov (Kriminál, Influencer, Autorita, Zahraničný, Pracujúci, Závislý) dnes nečíta žiadne pravidlo ani efekt (PRAVIDLA §2 Tagy, sada v55). Nákup v šenku je voľba podľa akcií a efektu jednej karty. Balíček nemá identitu a hráč nemá dôvod skladať karty, ktoré k sebe patria (roadmapa #123 Lepšie využiť tagy).",
+    "ako": "1. Každá karta patrí k frakcii (ikona na karte). 2. Okrem hlavného účinku má riadok Spojenec (Ally) so symbolom frakcie. 3. Riadok sa odomkne, keď má hráč v tomto ťahu v hre ďalšiu kartu tej istej frakcie; v Star Realms a Hero Realms sa rátajú aj základne a šampióni, ktorí ostávajú v hre z minulých ťahov. 4. Odomknutý riadok sa smie použiť kedykoľvek v hlavnej fáze, v Hero Realms raz za ťah. 5. Varianty: dvojitý spojenec (treba dve ďalšie karty frakcie), karta dvoch frakcií ráta za obe, Legendary ráta len karty zahrané v tomto ťahu PRED touto kartou (poradie je rozhodnutie), Dune: Imperium ráta karty v hre bez ohľadu na poradie.",
+    "hry": [
+      {
+        "nazov": "Star Realms (Kastle, Dougherty, 2014, 2 hráči)",
+        "preco": "Hlavný účinok lode platí vždy, spojenec je bonus. Pravidlá: „an Ally Ability is triggered as soon as you have another Ship or Base of that faction in play“. Hráč pri nákupe z radu 5 kariet váži, či zoberie silnú kartu inej frakcie, alebo slabšiu kartu frakcie, ktorú už má. Základne ostávajú v hre a zapínajú spojencov aj v ďalších ťahoch.",
+        "zdroj": "https://rulespal.com/star-realms/rulebook"
+      },
+      {
+        "nazov": "Star Realms — Darwin Kastle (autor) o frakciách",
+        "preco": "„many ships are weak in the late game if you're not activating their ally abilities“, ale aj „acquiring a good card that you can use now often better than acquiring a great card that you can't use until later“. Odporúča sústrediť sa na malý počet frakcií a brať základne, lebo zapínajú spojencov.",
+        "zdroj": "https://www.starrealms.com/news/a-colony-wars-strategy-primer-from-darwin-kastle"
+      },
+      {
+        "nazov": "Star Realms — scenár Loyalty for Sale",
+        "preco": "Variant, kde sa spojenci zapínajú už pri kúpe karty tej frakcie. Autor článku pri ňom kupoval aj zo 3–4 frakcií; ukazuje, že spúšťač spojenca je ladiaca páka, ktorá mení, ako veľmi sa oplatí držať jednej frakcie.",
+        "zdroj": "https://www.starrealms.com/news/arena-tips-week-20-loyalty-for-sale"
+      },
+      {
+        "nazov": "Hero Realms (Kastle, Dougherty, 2016)",
+        "preco": "Rovnaký spojenec („as soon as you have another card of that faction in play“, každý raz za ťah) plus šampióni, ktorí ostávajú v hre. Frakcia Guild je „organized-crime syndicate“, teda tematický vzor pre tag Kriminál.",
+        "zdroj": "https://www.herorealms.com/base-game-rules/"
+      },
+      {
+        "nazov": "Legendary: A Marvel Deck Building Game (Devin Low, 2012)",
+        "preco": "Superpower so symbolom triedy alebo tímu platí, len ak si kartu tej triedy zahral SKÔR v tomto ťahu. S dvoma Hulkmi v ruke sa schopnosť zapne len na druhom. Hráč teda rozhoduje o poradí zahrania, nielen o zložení ruky. Karty s dvoma triedami rátajú za obe, rozšírenie Dark City pridalo schopnosti, ktoré chcú dve rôzne triedy naraz.",
+        "zdroj": "https://cardgamer.com/living-card-games/legendary/how-to-play-marvel-legendary/"
+      },
+      {
+        "nazov": "Legendary — Dark City (dva symboly) a Black Panther (dve triedy)",
+        "preco": "Schopnosť s dvoma symbolmi chce obe triedy skôr v ťahu; karta s dvoma symbolmi triedy ráta za obe, preto zapína spojencov viacerých smerov.",
+        "zdroj": "https://rulespal.com/legendary-dark-city/rulebook"
+      },
+      {
+        "nazov": "Dune: Imperium (Paul Dennen, 2020)",
+        "preco": "Fremen Bond: „You may use this effect if you have one or more other Fremen cards in play“; dve karty s Fremen Bond sa zapnú navzájom bez ohľadu na poradie. Podľa citovaného autora sa však ráta len odhalenie v ťahu odhalenia, takže hráč volí, či kartu zahrá skôr (agent) alebo ju podrží na odhalenie kvôli spojencovi.",
+        "zdroj": "https://steamcommunity.com/app/1689500/discussions/0/4294816752272908610"
+      },
+      {
+        "nazov": "Clank! Catacombs (Dire Wolf, 2022)",
+        "preco": "Spoločník dá kartu navyše, ak máš v hracej oblasti ďalšieho spoločníka, bez ohľadu na poradie. Ten istý spúšťač v hre s inou témou (dungeon, riziko hluku).",
+        "zdroj": "https://rulespal.com/clank-catacombs/rulebook"
+      }
+    ],
+    "kritika": "Meeple Like Us (Star Realms): synergia frakcií vedie k „overwhelmingly powerful combinations“, ktoré sú pre súpera skľučujúce. Výhra pôsobí náhodne, lebo správne karty nemusia prísť v správnej kombinácii. Recenzent by chcel karty, ktorými sa dá súperovej zostave brániť (https://www.meeplelikeus.co.uk/star-realms-2014/). Mark Rosewater (Magic): lineárny dizajn („Each tribal card dictates that your deck have many more like it“) je čitateľný, ale hráči môžu mať pocit, že im dizajnér podáva hotové balíčky (https://magic.wizards.com/en/articles/archive/making-magic/come-together-2003-10-06-0). Mechanika, ktorá funguje len s podmnožinou kariet, sa volá parazitická (https://mtg.gamepedia.com/Parasitic).",
+    "prevod": "Nový spúšťač Kumpán (tag): „Kumpán Kriminál: <efekt>.“ Efekt platí, kým máš v partii (karty natočené k tebe, na ktorejkoľvek strane línie) ďalšiu odkrytú kartu s týmto tagom. Primárny účinok karty sú jej akcie na hranách, Kumpán je riadok efektu, presne ako hlavný účinok a spojenec v Star Realms. Vyhodnocuje sa ako Furt, skrytá Záverečná sa neráta a karta s dvoma tagmi ráta za oba (Liberál už ráta za Ženu aj Chlapa, §16). Podstrčený kumpán na súperovej strane sa ráta, lebo je v tvojej partii, takže podstrčenie dostane druhý účel. NA EX kumpána neodstráni; odstráni ho spálenie (Poľovník, Krokodíl). Stavba šenku (§5: každý tajne dá 4 z 8 kariet do šenku a 4 naspodok) sa stane frakčným draftom: súperovho kumpána môžeš poslať naspodok. Karty: začať tagmi, ktoré dnes nič nečíta. V balíčku Občanov je Pracujúci 8 druhov, Influencer 7, Autorita 7, Kriminál 6, Zahraničný 5 a Závislý 4 (každý druh v 2 kópiách). Scorecard sa nemení. Výučba: jedna veta pri prvej karte s Kumpánom a zvýraznenie tagu na karte, keď je kumpán v línii.",
+    "rizika": "Závislý je v štartovom balíčku trikrát (Miňištrant, Pijan, Dievčina na vydaj), takže Kumpán Závislý by platil skoro vždy; Pamätník raz (Milujúca manželka). Tag so 4 druhmi sa zíde zriedka, Chlap (23 druhov) skoro vždy, takže Kumpán treba písať na tagy s 5 až 8 druhmi. Lineárnosť: balíček „všetko Kriminál“ sa môže stať jedinou správnou stratégiou a priniesť stomp (Michal chce výsledky okolo 15 : 13, nie 88 : 10). Náhoda šenku: frakcia, ktorá nepríde, je mŕtva. Dlhší text na karte (Michal: efekty stroho). Bot musí vedieť ohodnotiť kartu podľa budúcich kumpánov.",
+    "merat": "Ako často sa Kumpán zapne na zahratú kartu s Kumpánom, po tagoch. Úspešnosť hráča s aspoň 3 kartami jedného tagu v balíčku oproti hráčovi bez nich. Koľko súperových kumpánov hráči pri stavbe šenku pošlú naspodok. Či boti podstrkujú kumpánov na súperovu stranu.",
+    "temy": ["deckbuilding"],
+    "pridane": "2026-11-08"
+  },
+  {
+    "id": "nadvaznost-a-retaz",
+    "nazov": "Nadväznosť: bonus podľa karty, ku ktorej priložíš (reťaz farieb, poradie, rovnaké meno vedľa seba)",
+    "problem": "Línia NA EX! je reťaz: karta sa kladie na vonkajší koniec strany a páruje sa so susedom (PRAVIDLA §6). Susedstvo dnes číta akcie (spoj na rovnakom indexe) a len niekoľko efektov číta tagy suseda (Sypač, Snúbenica a Vdova Chlapa, Opatrovateľka Pamätníka, Dohadzovačka pohlavie). Poradie kariet v rade je preto skladačka akcií, nie identity, a súper nemá dôvod sledovať, aké tagy ležia na konci tvojej strany.",
+    "ako": "The Witcher: Old World: 1. Každá akčná karta má farebne kódovaný manéver, niektoré majú na okraji záložku (rozšírenie kombá) inej farby. 2. Ďalšiu kartu smieš do kombá pripojiť, len ak má farbu, ktorú ukazuje záložka v reťazi. 3. Kombo sa vyhodnotí zľava doprava, každá karta pridá poškodenie, štít alebo kartu na ďalší ťah. 4. Dlhšie kombo udrie silnejšie. 5. Karty v balíčku sú zároveň životy: zásah znamená prísť o karty. Gwent (Witcher 3): Tight Bond, karta vedľa karty s rovnakým menom zdvojí silu oboch. Legendary: schopnosť platí, len ak predtým v ťahu prišla karta danej triedy.",
+    "hry": [
+      {
+        "nazov": "The Witcher: Old World (Łukasz Woźniak, 2023)",
+        "preco": "Kombo je skladačka z ruky: hráč volí, či reťaz natiahnuť (silnejší úder), alebo si kartu nechať, lebo karty sú zároveň životy. Recenzia: „You can do combos with other cards to do more damage, increase your armour points“ a „your cards are the ones you fight with but also the number of life points you have“.",
+        "zdroj": "https://www.gamereactor.eu/the-witcher-old-world-1511243/"
+      },
+      {
+        "nazov": "The Witcher: Old World — rozšírenia Mages, Ciri, Monster Trail",
+        "preco": "Kombo mágov sa vyhodnocuje zľava doprava (Mages). Ciri smie raz za boj považovať jednu kartu za rozšírenie ľubovoľnej farby (žolík do reťaze). Monster Trail pridal sivú farbu, ktorá nepasuje k žiadnemu rozšíreniu, teda silné karty, ktoré reťaz ukončia.",
+        "zdroj": "https://rulespal.com/the-witcher-old-world-ciri/rulebook"
+      },
+      {
+        "nazov": "Gwent v The Witcher 3 (CD Projekt Red, 2015)",
+        "preco": "Tight Bond: „Place next to a card of the same name to double the strength of both cards.“ Odmena za susedstvo rovnakých kariet; hráč rozhoduje, či kópie zahrať spolu v jednom kole.",
+        "zdroj": "https://gamerguides.com/the-witcher-3-wild-hunt/database/gwent/unit-cards-2"
+      },
+      {
+        "nazov": "Legendary: A Marvel Deck Building Game",
+        "preco": "Poradie zahrania rozhoduje: „if you've previously played a Strength card on your turn“. Prvá karta reťaze je štartér, ďalšie čerpajú bonus.",
+        "zdroj": "https://cardgamer.com/living-card-games/legendary/how-to-play-marvel-legendary/"
+      }
+    ],
+    "kritika": "Gamereactor vyčíta The Witcher: Old World ťažko použiteľnú knihu pravidiel; kombá sú najsilnejšie až s rozšíreniami. Reťaz závisí od toho, čo príde do ruky, preto rozšírenia pridali žolíkov (Ciri), z vlastných vedomostí, neoverené. Tight Bond zvyšuje výkyvy, lebo kópie treba mať v ruke naraz (z vlastných vedomostí, neoverené). V NA EX! hrozí prekrytie s existujúcimi spúšťačmi Podpora a Konflikt (§16) a so Zladenou reťazou (roadmapa #88).",
+    "prevod": "Dve úrovne. (a) Lacná: Podpora a Konflikt s tagom. Spúšťače už existujú (§6, §16), efekt len pomenuje tag: „Podpora (Kriminál): …“ sa spustí, keď sa priložením stretne s tvojím Kriminálom, „Konflikt (Kriminál): …“ keď sa stretne so súperovým Kriminálom. Sypač a Snúbenica to robia s Chlapom, Policajtka to do v10.3 robila s Kriminálom. Pribudne dôvod sledovať tagy na súperovom konci strany. (b) Banda: efekt rastie s dĺžkou nepretržitého radu tvojich kariet s tým istým tagom (bez cudzej karty medzi nimi). Keďže sa kladie len na vonkajší koniec, súper bandu zastaví podstrčením karty na koniec tvojej strany. Stojí ho to kartu z limitu, spustí tvoj Konflikt a jeho karta tam boduje pre neho. Zladená reťaz (#88) meria akcie, banda tagy; dajú sa zlúčiť do jedného pojmu „rad“.",
+    "rizika": "Banda potrebuje novú definíciu (nepretržitý rad) v §6 a výpočet v engine; nováčik musí čítať tagy suseda (UI: zvýrazniť tagy v náhľade spoja). Zablokovanie konca môže byť silnejšie ako banda sama. Podpora a Konflikt s tagom nemenia pravidlá, len pridajú text na kartu.",
+    "merat": "Priemerná a najdlhšia banda (rad rovnakého tagu) v línii. Koľkokrát súper koniec strany zablokoval podstrčením. Ako často sa spustí Podpora a Konflikt s tagom na kartu za partiu.",
+    "temy": ["deckbuilding"],
+    "pridane": "2026-11-08"
+  },
+  {
+    "id": "obeta-za-ucinok",
+    "nazov": "Obeta: spáľ vlastnú kartu za okamžitý účinok (scrap, sacrifice, banish, exhaust)",
+    "problem": "Balíček v NA EX! sa skoro nepreriedi: štyri štartovacie karty ostávajú celú hru, Absťák a nepriznaná Cirhóza ho zanášajú (PRAVIDLA §8, §11) a spáliť kartu vie len Vízia (§7 krok 7), Krokodíl, Poľovník a Dievčina na vydaj (§16). Kupuje sa ľahko (šenok, Zastávka, Cintorín, Predavačka), zbaviť sa karty ťažko (roadmapa #53 Ruka plná mŕtvych kariet a dobieranie naslepo).",
+    "ako": "Star Realms: 1. Karta má schopnosť so symbolom koša (Scrap). 2. Hráč ju smie použiť v hlavnej fáze popri hlavnom účinku a spojencovi. 3. Karta ide na šrotovisko, teda navždy z balíčka. 4. Karta zošrotovaná inak ako vlastnou schopnosťou túto schopnosť nespustí. Hero Realms rovnako (Sacrifice). Ascension: vyhnanie (Banish) karty z ruky alebo zo stredného radu do Prázdna. Slay the Spire: Exhaust (karta do konca boja zmizne) a karty, ktoré za každé vyčerpanie dajú štít alebo kartu (Feel No Pain, Dark Embrace).",
+    "hry": [
+      {
+        "nazov": "Star Realms",
+        "preco": "Šrot je obeta: karta dá jednorazový účinok a zároveň zmizne z balíčka, takže balíček sa zlepší. Pravidlá: „Scrapping a card in any other way does not give you the Scrap Ability.“",
+        "zdroj": "https://rulespal.com/star-realms/rulebook"
+      },
+      {
+        "nazov": "Star Realms — Darwin Kastle o šrotovaní",
+        "preco": "„try hard to get a few Machine Cult scrapping cards early to help you clear out your starting cards“ a v neskorej hre šrotovať agresívne. Rozhodnutie je o načasovaní: obeta teraz, alebo karta ešte niekoľko kôl.",
+        "zdroj": "https://www.starrealms.com/news/a-colony-wars-strategy-primer-from-darwin-kastle"
+      },
+      {
+        "nazov": "Hero Realms",
+        "preco": "„If a card is sacrificed for any reason other than its Sacrifice Ability, that ability does not trigger.“ Obeta je voľba majiteľa, nie odmena za stratu.",
+        "zdroj": "https://www.herorealms.com/base-game-rules/"
+      },
+      {
+        "nazov": "Ascension (Justin Gary a kol., 2010)",
+        "preco": "Vyhnanie karty zo stredného radu (zbaviť súpera ponuky) aj z vlastnej ruky (preriedenie); vyhnaná karta z ruky už nedá účinok.",
+        "zdroj": "https://rulespal.com/ascension/rulebook"
+      },
+      {
+        "nazov": "Dominion (Donald X. Vaccarino, 2008)",
+        "preco": "Autor chcel štartovacie karty ako balast („I didn't want your initial cards to really be your deck“), ale nechcel, aby sa balíček dal zmenšiť triviálne. Preto sa zbaviť karty niečo stojí.",
+        "zdroj": "https://dominionstrategy.com/2013/06/24/the-secret-history-of-dominion/"
+      },
+      {
+        "nazov": "Slay the Spire (MegaCrit, 2019)",
+        "preco": "Exhaust preriedi balíček počas boja a karty, ktoré za vyčerpanie platia (Feel No Pain, Dark Embrace), menia obetu na stratégiu. Návody upozorňujú, že stavba vyžaduje disciplínu pri preriedení.",
+        "zdroj": "https://finalboss.io/slay-the-spire-2-how-to-build-ironclad"
+      }
+    ],
+    "kritika": "Meeple Like Us: šrot je skoro len vo frakcii Machine Cult, preto je o tieto karty ostrý boj a treba dúfať, že karta príde v správnej chvíli (https://www.meeplelikeus.co.uk/star-realms-2014/). Dominion: rýchle preriedenie (Chapel) je pre začiatočníka pasca, z vlastných vedomostí, neoverené. Donald X. Chapel neľutuje (https://dominionstrategy.com/2012/12/21/interview-with-donald-x-vaccarino-part-ii-dominion/).",
+    "prevod": "Spúšťač Obeta: „Obeta: <účinok>.“ Hráč ho použije v Pitke ako Kšeft (raz, kým Pitku neskončil, nie počas odpovede na NA EX, §7), ale namiesto ceny kartu spáli z línie (navždy z hry). Medzera sa uzavrie a spoje sa prepočítajú ako po Poľovníkovi (§16). Cena je vstavaná: karta prestane dávať akcie, jej partner na spoji stratí pár a v línii je o kartu menej, teda víťaz dostane o 1 špak menej (§14). Variant z ruky: Obeta karty z ruky ako ťah v Zhromaždení. Cirhózu Obeta spáliť nesmie, lebo parkovanie Cirhózy je zámer (zamietnuté N3, Spoveď). Kšeft karty sa platí cigaretami, Obeta kartou, takže nevzniká karta, ktorá si vyrába vlastnú menu.",
+    "rizika": "Nový druh ťahu v Pitke (engine, klient, bot, ťahák). Ak je účinok obete silnejší ako karta v balíčku, hráči kupujú karty len na spálenie (vzor Aristocrats z témy Päta, Lakeť, Otočka). Menší balíček s dobratím do troch (v11.9) častejšie ťahá najlepšie karty, čo zrýchli snowball. Satira: obeta musí mať príbeh (strýko odíde späť do Ameriky, hasič vyhorí), nie abstraktné „zošrotuj“.",
+    "merat": "Veľkosť balíčka na konci partie s obetou a bez nej. V ktorom kole sa obeta používa. Úspešnosť hráča, ktorý obetoval aspoň 2 karty. Koľko Absťákov a štartoviek ostane v balíčku na konci.",
+    "temy": ["deckbuilding"],
+    "pridane": "2026-11-08"
+  },
+  {
+    "id": "sila-podla-zlozenia-balicka",
+    "nazov": "Sila podľa zloženia balíčka (Perfected Strike, Gardens)",
+    "problem": "NA EX! odmeňuje to, čo leží v línii v tomto kole. Čo hráč za partiu nakúpil, sa v celom balíčku ráta len cez Absťák (−1 tuhé za každý kus v ruke aj oboch balíčkoch, PRAVIDLA §8), teda len trestom. Chýba odmena za to, ako hráč balíček skladá.",
+    "ako": "Slay the Spire, Perfected Strike: 1. Deal 6 damage. 2. Plus 2 poškodenia (vylepšená 3) za každú kartu s „Strike“ v mene v celom balíčku. 3. Ráta sa v chvíli zahrania; Strike, ktorý medzitým zmizol (Exhaust), sa už neráta. 4. Ráta aj seba a svoje kópie. Dominion, Gardens: koncom hry 1 bod za každých 10 kariet v balíčku (z vlastných vedomostí, neoverené).",
+    "hry": [
+      {
+        "nazov": "Slay the Spire — Perfected Strike",
+        "preco": "„Deal 6 damage. Deals 2 additional damage for ALL your cards containing \"Strike\".“ Hráč rozhoduje, či si nechá základné Strike (ktoré by inak vyhodil) a či berie ďalšie karty so Strike. Jedna karta zmení hodnotu celej skupiny.",
+        "zdroj": "https://slaythespire.wiki.gg/wiki/Perfected_Strike"
+      },
+      {
+        "nazov": "Dominion — Gardens (z vlastných vedomostí, neoverené)",
+        "preco": "Opačný pól: odmena za veľký balíček, teda za lacné kupovanie. Rovnaká myšlienka „karta ráta celý balíček“ dá úplne inú stratégiu.",
+        "zdroj": "z vlastných vedomostí, neoverené"
+      }
+    ],
+    "kritika": "Perfected Strike ide proti preriedeniu: hráč, ktorý vyhadzuje základné Strike, ho oslabí (z vlastných vedomostí, neoverené). Rosewater: karta, ktorá ráta svoj kmeň, diktuje, že balíček musí mať veľa ďalších (https://magic.wizards.com/en/articles/archive/making-magic/come-together-2003-10-06-0).",
+    "prevod": "Efekt ráta tag v celom balíčku hráča (ruka, doberací, odhadzovací a línia), rovnaký dosah ako Absťák (§8), takže engine takéto počítanie pozná. Príklad: Vymáhač „Bitka: 1 Rana navyše za každého Kriminála v tvojom balíčku.“ Bez stropu (CLAUDE.md); brzdou je riedenie, lebo každý Kriminál navyše je karta, ktorá zaberá miesto v ruke a v línii. Verejnosť: kúpy zo šenku sú verejné, ale spálenie Víziou a odhodenie Vdovou nie úplne. Klient smie ukázať len počet, ktorý súper mohol odvodiť, a server nesmie poslať zloženie balíčka (CLAUDE.md, pravidlo 2).",
+    "rizika": "Hromadenie jedného tagu vedie k stompu a snowballu za kúpy. Odhad sily pre bota je ťažší (hodnota karty závisí od budúcich kúp). Počítadlo tagov v rozhraní pridá na stôl ďalšie číslo.",
+    "merat": "Počet kariet jedného tagu v balíčku na konci partie (medián, maximum). Podiel tuhého alebo cigariet z takýchto efektov. Súvislosť s výhrou a s rozdielom špakov.",
+    "temy": ["deckbuilding"],
+    "pridane": "2026-11-08"
+  },
+  {
+    "id": "riadok-a-kraj",
+    "nazov": "Efekt na celý rad: kraj línie ako riadok (Gwent Morale Boost, Commander's Horn)",
+    "problem": "Línia NA EX! má dva kraje (PRAVIDLA §6 Kraje, Prevaha). Kraj dnes rozhoduje o prevahe nad hranou lokality a o efektoch Ihriska a Traktoristu. Susedské efekty (Silná nezávislá žena, Opatrovateľka, Zámočník) siahajú len na susedov. Hráč nemá dôvod stavať kraj ako jednu jednotku.",
+    "ako": "Gwent (Witcher 3): 1. Každý hráč má tri riadky (blízky boj, diaľkový, obliehací), sila kola je súčet. 2. Morale Boost: „Adds +1 to all units in the row (excluding itself)“. 3. Commander's Horn zdvojí silu jednotiek v riadku (hrdinov nie). 4. Počasie oslabí riadok oboch hráčov a Scorch zabije najsilnejšie karty (z vlastných vedomostí, neoverené). Hráč rozhoduje, či sústrediť silu do jedného riadku a riskovať odpoveď, alebo ju rozložiť.",
+    "hry": [
+      {
+        "nazov": "Gwent v The Witcher 3 — Morale Boost",
+        "preco": "Malý plošný bonus pre riadok: odmena za to, že karty jedného druhu ležia spolu.",
+        "zdroj": "https://gamerguides.com/the-witcher-3-wild-hunt/database/gwent/unit-cards-2"
+      },
+      {
+        "nazov": "Gwent v The Witcher 3 — Commander's Horn",
+        "preco": "Zdvojenie celého riadku robí z voľby riadku hlavné rozhodnutie kola; odpoveďou súpera je oslabiť práve ten riadok.",
+        "zdroj": "https://thewitcher3.wiki.fextralife.com/Commander's+Horn+(Gwent+Card)"
+      }
+    ],
+    "kritika": "Sústredenie do jedného riadku robí kolo výkyvným; bez plošných odpovedí (počasie, Scorch) vyhrá, kto zdvojí väčší riadok (z vlastných vedomostí, neoverené).",
+    "prevod": "Furt efekt s dosahom „tvoje karty v tomto kraji“ (kraj = polovica línie podľa hrany lokality, §6). Mierna verzia (Morale Boost): „+1 Rana za každú ďalšiu tvoju kartu s tagom X v jej kraji.“ Silná verzia (Horn): „aktívne akcie tvojich X v tomto kraji sa rátajú dvakrát“, čo je Forsáž pre celý kraj. Michal chce Forsáž v 15 až 20 % bitiek, takže len s podmienkou tagu a len na jednu druhú akcie. Súvis s prevahou: sústredenie do kraja dá aj prevahu nad hranou, rozloženie ju oslabí. Odpovede už existujú: Vandal otočí lokalitu (kraje si vymenia hrany), NA EX ruší aktívne akcie, Mäsiar umlčí efekty Zvierat.",
+    "rizika": "Násobok na celý kraj ľahko prerastie (tuhé v desiatkach). Nováčik musí vedieť, kde kraj začína a končí (dnes ho ukazuje lokalita). Prekrytie s prevahou: kto sústredí, má oboje.",
+    "merat": "Podiel kariet hráča v jednom kraji. Rozptyl tuhého v bitke pred zavedením a po ňom. Ako často je víťaz bitky ten, kto sústredil.",
+    "temy": ["deckbuilding"],
+    "pridane": "2026-11-08"
+  },
+  {
+    "id": "spion-podstrcenie-s-odmenou",
+    "nazov": "Špión: karta na súperovej strane mu pomôže, tebe dá karty (Gwent Spy)",
+    "problem": "Podstrčenie (PRAVIDLA §13) je dnes sabotáž: karta ostáva tvoja, jej akcie bodujú tebe a súperovi zaberie koniec strany. Okrem Konfliktu nemá karta na súperovej strane inú odmenu a hráč nemá dôvod dať súperovi silu za niečo, čo sa mu vráti neskôr.",
+    "ako": "Gwent (Witcher 3): 1. Špióna vyložíš na súperovo bojisko. 2. Jeho sila sa ráta súperovi. 3. Ty si doberieš 2 karty z balíčka. 4. Partia je na dve vyhraté kolá z troch a ruka sa medzi kolami nedopĺňa (z vlastných vedomostí, neoverené), preto karta navyše rozhoduje neskoršie kolo.",
+    "hry": [
+      {
+        "nazov": "Gwent v The Witcher 3 — Spy",
+        "preco": "„Place on your opponent's battlefield (counts towards opponent's total) and draw 2 cards from your deck.“ Hráč obetuje silu v tomto kole za karty do ďalšieho.",
+        "zdroj": "https://gamerguides.com/the-witcher-3-wild-hunt/database/gwent/unit-cards-2"
+      },
+      {
+        "nazov": "NA EX! — Kočovník (vlastný precedens)",
+        "preco": "Akcie Kočovníka dostane hráč s prevahou v jeho kraji (PRAVIDLA §16), teda výnimka z „akcie sa rátajú majiteľovi“ už existuje.",
+        "zdroj": "docs/PRAVIDLA.md §16"
+      }
+    ],
+    "kritika": "Špióni patria vo Witcher 3 Gwente medzi najsilnejšie karty, lebo karta v ruke rozhoduje o dvoch vyhratých kolách z troch (z vlastných vedomostí, neoverené).",
+    "prevod": "Nástup: „Ak ju vyložíš na súperovu stranu, doberieš si 2 karty; jej akcie sa rátajú súperovi.“ Výnimka z pravidla „akcie sa rátajú majiteľovi“ je v §16 už pri Kočovníkovi. Pasuje ku kartám s tagom Kriminál alebo Influencer (udavač, bonzák, klebetnica). Najviac sa oplatí v kole, ktoré hráč aj tak púšťa. Treba určiť, či sa ráta do prevahy majiteľovi, alebo súperovi (dnes podstrčená karta je v partii majiteľa).",
+    "rizika": "Karty navyše sú výhoda v ďalších kolách. Michal chce, aby hráč vyhrával veľkosťou výhry, nie striedaním rolí (v9.2). Ak 2 karty prevážia stratu bitky, hráči budú bitky púšťať zámerne. Špaky za karty v línii (§14) idú víťazovi aj za špióna.",
+    "merat": "Ako často sa špión hrá v kole, ktoré jeho majiteľ prehral. Rozdiel v počte kariet v ruke pred finále. Úspešnosť hráča so špiónom v balíčku.",
+    "temy": ["deckbuilding"],
+    "pridane": "2026-11-08"
   }
 ]
