@@ -1,0 +1,329 @@
+<!doctype html>
+<html lang="sk"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Vízia a Kšeft — NA EX!</title>
+<style>
+:root{--bg:#14110e;--pl:#1e1914;--pl2:#28211a;--ok:#3d3229;--tx:#f1e8d8;--tl:#b6a790;--sl:#8b7d6a;--ak:#e9ad45;--zel:#7cbf74;--cer:#d0563f;
+--dob:#5ea6e0;--zla:#e0614a;--mod:#e6b04a;--mak:#b48ae6;--viz:#4cc2ad;color-scheme:dark}
+@media (prefers-color-scheme:light){:root{--bg:#f6f1e7;--pl:#fffaf1;--pl2:#f0e7d6;--ok:#dccdb3;--tx:#2a2016;--tl:#6b5b45;--sl:#7a6a52;--ak:#a8680f;--zel:#3f7f38;--cer:#b0402c;
+--dob:#2f6fae;--zla:#b53b26;--mod:#9a6a10;--mak:#7a4fb5;--viz:#1f8070;color-scheme:light}}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--tx);font:15px/1.5 system-ui,"Segoe UI",Roboto,sans-serif}
+main{max-width:1100px;margin:0 auto;padding:14px 14px 90px}
+h1,h2,h3{font-family:Georgia,serif;line-height:1.2}h1{font-size:clamp(1.4rem,5vw,2rem);margin:0 0 4px}
+h2{font-size:1.25rem;margin:30px 0 10px;padding-bottom:4px;border-bottom:1px solid var(--ok)}h3{font-size:1.02rem;margin:0 0 6px}
+p{margin:0 0 9px}.mini{color:var(--sl);font-size:.84rem}.box{background:var(--pl);border:1px solid var(--ok);border-radius:12px;padding:11px 13px;margin:0 0 12px}
+.box>:last-child{margin-bottom:0}.ok{color:var(--zel);font-weight:600}.zle{color:var(--cer);font-weight:600}
+nav{position:sticky;top:0;z-index:5;background:var(--bg);padding:7px 0;display:flex;gap:6px;overflow-x:auto;border-bottom:1px solid var(--ok);margin:10px 0 14px}
+nav a{flex:none;color:var(--tl);text-decoration:none;border:1px solid var(--ok);background:var(--pl);padding:4px 11px;border-radius:999px;font-size:.88rem}
+.a{display:inline-block;font-size:.8rem;font-weight:600;padding:0 6px;border-radius:6px;border:1px solid currentColor;margin:1px 1px;white-space:nowrap}
+.a.dob{color:var(--dob)}.a.zla{color:var(--zla)}.a.mod{color:var(--mod)}.a.mak{color:var(--mak)}.a.viz{color:var(--viz);background:color-mix(in srgb,var(--viz) 16%,transparent)}
+.a.blk{color:var(--sl);border-style:dashed}.a.nic{color:var(--sl);border-color:transparent}.a.nova{box-shadow:0 0 0 2px var(--ak)}
+.slt{display:inline-flex;gap:2px}
+.mriezka{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(330px,100%),1fr));gap:12px}
+.karta,.kseft{background:var(--pl);border:1px solid var(--ok);border-radius:12px;padding:11px 12px;min-width:0}
+.karta.ponecha{border-color:var(--viz)}.typ{font:600 .72rem system-ui;color:var(--tl);border:1px solid var(--ok);border-radius:999px;padding:1px 7px;vertical-align:middle}
+.stit{font:600 .72rem system-ui;color:var(--tl);background:var(--pl2);border-radius:999px;padding:1px 7px;vertical-align:middle}.stit.ok{color:var(--viz)}
+table{border-collapse:collapse;width:100%}td,th{padding:4px 6px;border-bottom:1px solid var(--ok);text-align:left;vertical-align:top}th{font-size:.8rem;color:var(--tl);font-weight:600}
+table.str td:first-child{color:var(--tl);font-size:.8rem;white-space:nowrap}.num{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+.tab{overflow-x:auto}.tab table{min-width:520px}
+tr.odp td{background:color-mix(in srgb,var(--ak) 12%,transparent)}
+ol.alt{padding-left:18px;margin:6px 0}ol.alt li{margin:6px 0}ol.alt li.odp{background:color-mix(in srgb,var(--ak) 12%,transparent);border-radius:8px;padding:4px 6px}
+.text{font-family:Georgia,serif}.dnes{color:var(--tl)}
+.ot li{margin:5px 0}code{background:var(--pl2);padding:0 4px;border-radius:4px;font-size:.86em}
+.kod{font-family:ui-monospace,Consolas,monospace;font-size:.82rem}
+</style></head><body><main>
+<h1>Vízia a Kšeft</h1>
+<p class="mini">Vymyselník · 2026-11-08 · na rozhodnutie Michalovi · nad <code>cards.json</code> v master (Zrejúca, v11.13) a rozpracovaným stavom tvorcu (zhodné). Hra ani tvorca sa nemenia, kým nerozhodneš.</p>
+<nav><a href="#suhrn">Súhrn</a><a href="#vizia">Vízia: cieľ</a><a href="#vizia-karty">Vízia: karty</a><a href="#kseft">Kšeft: karty</a><a href="#cigarety">Cigarety</a><a href="#otazky">Otázky</a><a href="#program">Pre programátora</a></nav>
+
+<section id="suhrn">
+<div class="box">
+<p><b>Vízia:</b> odporúčam cieľ <b>V2 — 3 karty</b>: Veštica, Krištáľová guľa a Kostol. Na Veštici a Guli je Vízia jediná dobrá akcia na svojej strane, zvyšok strany sú <span class="a zla">Hazard</span> a <span class="a zla">Pečeň</span>. Kostol dostane na hranu Pečeň namiesto druhej Viery. Z balíčka Občania zmizne 6 z 8 kariet s Víziou. Zo štartovacej ruky zmizne Dievčinina Vízia, ktorú dnes má každý hráč od prvého kola. V tlači ostane 11 kariet s Víziou z 611, dnes ich je 84.</p>
+<p><b>Kšeft:</b> odporúčam, aby sa namiesto Kšeftu platilo <b>fajčením</b>. Fajčenie je jediné odbytisko cigariet bez dna, cena rastie 1, 2, 3 a nie je to strop. Dnes je mŕtve („ani jedno fajčenie v partii“). Strýko, Predavačka a Predsedova vila dostanú text v tvare, ktorý hra pozná z Krabičky cigariet: „Za každé 2 cigarety, ktoré v tejto Pitke vyfajčíš, …“. Zberný dvor: „Keď fajčíš, smieš si namiesto dobratia vziať kartu z odhadzovacieho balíčka.“ Sklad: Nástroj zo šenku do Dedičstva za bežnú, rastúcu cenu Dedičstva.</p>
+<p><b>Spolu to sedí:</b> menej Vízií znamená menej kariet zadarmo. Karty sa potom kupujú cigaretami (fajčenie, šenok), a to je presne odbytisko, ktoré po Kšefte treba.</p>
+</div>
+<div class="box mini">
+<b>Nesúlad zadania s dátami.</b> Zoznam v zadaní (13 kariet s Víziou, 6 s Kšeftom) nesedí s <code>cards.json</code> v master ani s tvorcom na živom webe (2026-11-08):
+Vízia je na <b>11</b> kartách, spolu 16 ikon:
+Finančná poradkyňa 2×, Veštica 1×, Starosta 1×, Poštárka 2×, Dievčina na vydaj 1×, Kostol 1×, Bzdocha 1×, Strýko z Ameriky 1×, Sklad 2×, Horoskop 1×, Krištáľová guľa 3×.
+<b>Stryná, Hrobár, Liberál a Profesionálny tipér Víziu nemajú</b>, majú ju Starosta a Sklad (2×).
+Obecný úrad Kšeft nemá od v11.13 (Pitka: zdvojenie, <code>PRAVIDLA.md:1853</code>), takže Kšeft majú <b>5</b> kariet.
+</div>
+</section>
+
+<section id="vizia">
+<h2>A · Vízia — koľko kariet</h2>
+<div class="box">
+<p><b>Prečo je silná.</b> Vízia sa vyhodnotí v <b>každej Pitke</b>, nie raz za kolo. Jedna aktívna Vízia v línii dá 2–4 pozretia za kolo a každé je karta zadarmo, alebo spálená Cirhóza či Absťák. Absťák nevie spáliť nič iné (<code>PRAVIDLA.md:1535</code>). Fajčenie stojí za kartu 1, 2, 3 cigarety a nerest.</p>
+<p class="mini">Doklady: playtest štýlov 2026-11-06 (165715): Sabotér „Vízia ako spaľovňa (K4 11 Vízií)“, Vízie spálili Sabotérovi 2 Cirhózy. 010635: víťaz otočil 28 : 40 na 50 : 23 s „8 cigaretami, 9 kartami a Víziou“.
+Boti (200 partií, štyri povahy, Druhá liga, master): hráč za partiu pozrie Víziou 5,5 karty: <b>3,1 si vezme zadarmo a 2,4 spáli</b>. Fajčením si dobere 6,1 karty a zo šenku kúpi asi 13. Vízia je teda 14 % kariet navyše a skoro celé čistenie balíčka.</p>
+</div>
+<div class="tab"><table>
+<tr><th>Cieľ</th><th>Karty s Víziou</th><th class="num">Občania (web)</th><th class="num">Náradie (web)</th><th class="num">Štart</th><th class="num">Tlač</th></tr>
+<tr><td>dnes</td><td>11 kariet: 4 Občania, Dievčina (štart), 2 Nástroje, 2 starší, 2 lokality</td><td class="num">8 z 82</td><td class="num">4 z 44</td><td class="num">každý hráč</td><td class="num">84 z 611</td></tr>
+<tr><td><b>V1</b> „Len veštci“</td><td>Veštica, Krištáľová guľa</td><td class="num">2 z 82</td><td class="num">2 z 44</td><td class="num">nikto</td><td class="num">10 z 611</td></tr>
+<tr class="odp"><td><b>V2</b> „Veštci a Kostol“ · odporúčam</td><td>Veštica, Krištáľová guľa, Kostol (lokalita 3)</td><td class="num">2 z 82</td><td class="num">2 z 44</td><td class="num">nikto</td><td class="num">11 z 611</td></tr>
+<tr><td><b>V3</b> „Päť“</td><td>V2 + Horoskop + Poštárka (starší)</td><td class="num">2 z 82</td><td class="num">4 z 44</td><td class="num">nikto</td><td class="num">16 z 611</td></tr>
+</table></div>
+<p class="mini">Web: balíček Občania má 41 druhov po 2 kusoch (82), Náradie 22 druhov po 2 (44), štartovacie karty má každý hráč v ruke (<code>constants.ts:36</code>, <code>engine.ts:1637</code>). Tlač = permutácie × kópie z tvorcu (651 kariet, z toho 40 kliatob). Krištáľová guľa a Horoskop majú po návrhu 4 varianty, preto tlač v riadkoch V1–V3 rastie u nich z 2 na 4.</p>
+<div class="box">
+<p><b>Prečo V2.</b> Veštica a Krištáľová guľa sú Vízia už menom a obrázkom. Guľa musí Víziu mať, inak je jej Dedičstvo mŕtve. Kostol je lokalita: v partii je cieľom najviac raz, jeho Víziu dostane, kto má v kraji prevahu (§6), a zjavenie v kostole sedí. V1 je čistejšia, ale Guľa má potom v Dedičstve čo zosilňovať len pri Veštici a druhej Guli v línii. V3 nechá Víziu aj na Horoskope a Poštárke. Poštárka je starší a do ruky príde len presvedčením, takže je to skôr kozmetika.</p>
+<p><b>Ako je oslabený zvyšok.</b> Pravidlo pre karty, ktoré Víziu ponechajú: <b>Vízia je na svojej strane jediná dobrá akcia, zvyšok strany sú Hazard a Pečeň</b>. Karta, ktorá v Pitke ukáže budúcnosť, si to zaplatí Dlhom a pečeňou. Druhá strana sa nemení (Veštica), alebo dostane tiež Hazard (Guľa). Lokalita Kostol je výnimka: Viera k nemu patrí, preto zlá akcia nahradí len jednu z dvoch.</p>
+<p class="mini">Pravidlo Vízie (§2, §7 krok 7) nemením. Riziko: Absťák a Cirhózu spáli menej Vízií. Absťák sa tak stane trvalejším. Ak to playtest ukáže, pomôže Zberný dvor ZD-B nižšie, ktorý smie spáliť kartu z ruky výslovne aj s Absťákom.</p>
+</div>
+</section>
+
+<section id="vizia-karty">
+<h2>A · Karta po karte</h2>
+<p class="mini">Zvýraznená akcia = nová. Varianty sú prepočítané algoritmom tvorcu (<code>tvorba/src/varianty.ts</code>), pri Občanovi 4–8, Nástroji 2–4, staršom 1. Odpory sa nemenia, takže B+ aj „najviac 1 Odpor“ ostávajú.</p>
+<h3>Ponechajú Víziu (V2), zvyšok slabší</h3>
+<div class="mriezka">
+<div class="karta ponecha">
+<h3>Veštica <span class="typ">Občan</span> <span class="stit ok">Vízia ostáva</span></h3>
+<table class="str"><tr><th></th><th>dnes</th><th>návrh</th></tr>
+<tr><td>ľavá</td><td><span class="a zla">Pečeň</span> <span class="a mak">Povera</span> <span class="a viz">Vízia</span> <span class="mini">· 3 voľné sloty (blok 0)</span></td><td><span class="a viz">Vízia</span> <span class="a zla">Pečeň</span> <span class="a zla nova">Hazard</span> <span class="mini">· 3 voľné sloty (blok 0)</span></td></tr>
+<tr><td>pravá</td><td><span class="a mak">Povera</span> <span class="a mak">Povera</span> <span class="mini">· 2 voľné sloty (blok 0, 3)</span></td><td><span class="mini">bez zmeny</span></td></tr>
+<tr><td>varianty</td><td>6 × 1 = <b>6</b></td><td>6 × 1 = <b>6</b> <span class="ok">(4–8)</span></td></tr>
+<tr><td>tlač</td><td>6 × 1 kópií = 6 kariet</td><td>6 × 1 = 6</td></tr>
+</table>
+<p class="mini">Efekt: Prehra: Preskúmaj súperov a svoj doberací balík. Vymeň jednu jeho kartu za tvoju a karty vráť.</p>
+<p>Povera na ľavej strane → Hazard. Na ľavej strane je Vízia jediná dobrá akcia (s Pečeňou a Hazardom), pravá Povera ×2 ostáva, je to mäkká karta z dávky 2026-11-06. Silnejšie oslabenie (pravá len 1 Povera) by dalo 12 variantov.</p></div>
+<div class="karta ponecha">
+<h3>Krištáľová guľa <span class="typ">Nástroj</span> <span class="stit ok">Vízia ostáva</span></h3>
+<table class="str"><tr><th></th><th>dnes</th><th>návrh</th></tr>
+<tr><td>ľavá</td><td><span class="a viz">Vízia</span> <span class="a viz">Vízia</span> <span class="mini">· 2 voľné sloty (blok 1, 2)</span></td><td><span class="a viz">Vízia</span> <span class="a zla nova">Pečeň</span> <span class="mini">· 2 voľné sloty (blok 1, 2)</span></td></tr>
+<tr><td>pravá</td><td><span class="a mak">Povera</span> <span class="a viz">Vízia</span> <span class="mini">· 2 voľné sloty (blok 0, 3)</span></td><td><span class="a mak">Povera</span> <span class="a zla nova">Hazard</span> <span class="mini">· 2 voľné sloty (blok 0, 3)</span></td></tr>
+<tr><td>varianty</td><td>1 × 2 = <b>2</b></td><td>2 × 2 = <b>4</b> <span class="ok">(2–4)</span></td></tr>
+<tr><td>tlač</td><td>2 × 1 kópií = 2 kariet</td><td>4 × 1 = 4</td></tr>
+</table>
+<p class="mini">Efekt: Dedičstvo: Tvoje Vízie ukážu 2 vrchné karty — jednu si vezmi alebo spáľ, druhú vráť navrch.</p>
+<p>Dnes 3 Vízie na jednej karte. Návrh: 1 Vízia + Pečeň, druhá strana Povera + Hazard, stále 4 akcie (2 + 2). Varianty 2 → 4. <b>Dedičstvo:</b> G1 (odporúčam) ostáva, zosilňuje Veštice, Kostol a druhú Guľu v línii. G2: „Dedičstvo: Na konci každej Pitky sa pozri na vrchnú kartu svojho doberacieho balíčka; smieš ju dať naspodok.“ Je to výber bez karty, pre V1, kde by G1 nemala čo zosilňovať.</p></div>
+<div class="karta ponecha">
+<h3>Kostol <span class="typ">Lokalita</span> <span class="stit ok">Vízia ostáva</span></h3>
+<table class="str"><tr><th></th><th>dnes</th><th>návrh</th></tr>
+<tr><td>ľavá</td><td><span class="slt"><span class="a dob">Viera</span><span class="a dob">Viera</span><span class="a viz">Vízia</span><span class="a blk">×</span></span></td><td><span class="slt"><span class="a dob">Viera</span><span class="a zla nova">Pečeň</span><span class="a viz">Vízia</span><span class="a blk">×</span></span></td></tr>
+<tr><td>pravá</td><td><span class="slt"><span class="a blk">×</span><span class="a mod">Pakt</span><span class="a mak">Povera</span><span class="a mak">Pohoršenie</span></span></td><td><span class="mini">bez zmeny</span></td></tr>
+<tr><td>varianty</td><td>1 × 1 = <b>1</b></td><td>1 × 1 = <b>1</b> <span class="ok">(nerátajú sa)</span></td></tr>
+
+</table>
+
+<p>Lokalita, Vízia na hrane ostáva (V2). Druhá Viera → Pečeň (omšové víno), na hrane je teda Viera, Pečeň, Vízia. Počet Pitiek sa nemení (3 akcie). <b>V1:</b> Vízia → Pečeň a Viera ×2 ostanú.</p></div>
+</div>
+<h3>Vízia preč</h3>
+<div class="mriezka">
+<div class="karta">
+<h3>Finančná poradkyňa <span class="typ">Občan</span> <span class="stit">bez Vízie</span></h3>
+<table class="str"><tr><th></th><th>dnes</th><th>návrh</th></tr>
+<tr><td>ľavá</td><td><span class="a zla">Hazard</span> <span class="a zla">Hazard</span> <span class="a viz">Vízia</span> <span class="mini">· 3 voľné sloty (blok 0)</span></td><td><span class="a zla">Hazard</span> <span class="a zla">Hazard</span> <span class="a dob nova">Obmedzenie</span> <span class="mini">· 3 voľné sloty (blok 0)</span></td></tr>
+<tr><td>pravá</td><td><span class="a zla">Hazard</span> <span class="a viz">Vízia</span> <span class="mini">· 2 voľné sloty (blok 0, 3)</span></td><td><span class="a mak nova">Povera</span> <span class="a zla">Hazard</span> <span class="mini">· 2 voľné sloty (blok 0, 3)</span></td></tr>
+<tr><td>varianty</td><td>3 × 2 = <b>6</b></td><td>3 × 2 = <b>6</b> <span class="ok">(4–8)</span></td></tr>
+<tr><td>tlač</td><td>6 × 4 kópií = 24 kariet</td><td>6 × 4 = 24</td></tr>
+</table>
+
+<p>Dnes 2 Vízie, 4 kópie v tlači — 24 tlačených kariet, najčastejšia Vízia vôbec. Vízia → Obmedzenie („poradí ti šetriť na cigaretách“) a Povera („investuj do kryptomien“). Jej Hazardy dostáva súper, takže karta ostáva útočná cez Dlhy.</p></div>
+<div class="karta">
+<h3>Bzdocha <span class="typ">Občan</span> <span class="stit">bez Vízie</span></h3>
+<table class="str"><tr><th></th><th>dnes</th><th>návrh</th></tr>
+<tr><td>ľavá</td><td><span class="a zla">Pečeň</span> <span class="a mak">Povera</span> <span class="a mak">Povera</span> <span class="mini">· 3 voľné sloty (blok 0)</span></td><td><span class="mini">bez zmeny</span></td></tr>
+<tr><td>pravá</td><td><span class="a mod">Pakt</span> <span class="a viz">Vízia</span> <span class="mini">· 2 voľné sloty (blok 0, 3)</span></td><td><span class="a mod">Pakt</span> <span class="a mak nova">Pohoršenie</span> <span class="mini">· 2 voľné sloty (blok 0, 3)</span></td></tr>
+<tr><td>varianty</td><td>3 × 2 = <b>6</b></td><td>3 × 2 = <b>6</b> <span class="ok">(4–8)</span></td></tr>
+<tr><td>tlač</td><td>6 × 4 kópií = 24 kariet</td><td>6 × 4 = 24</td></tr>
+</table>
+
+<p>Vízia → Pohoršenie. Bzdocha vidí súperovo NA EX (efekt), budúcnosť navyše nepotrebuje. Klebety sú Pohoršenie. Alternatíva: Povera.</p></div>
+<div class="karta">
+<h3>Dievčina na vydaj <span class="typ">Občan · štartovacia</span> <span class="stit">bez Vízie</span></h3>
+<table class="str"><tr><th></th><th>dnes</th><th>návrh</th></tr>
+<tr><td>ľavá</td><td><span class="a dob">Cigareta</span> <span class="a zla">Hazard</span> <span class="mini">· 2 voľné sloty (blok 0, 3)</span></td><td><span class="mini">bez zmeny</span></td></tr>
+<tr><td>pravá</td><td><span class="a mod">Pakt</span> <span class="a viz">Vízia</span> <span class="mini">· 2 voľné sloty (blok 0, 3)</span></td><td><span class="a mod">Pakt</span> <span class="a dob nova">Poldeci</span> <span class="mini">· 2 voľné sloty (blok 0, 3)</span></td></tr>
+<tr><td>varianty</td><td>2 × 2 = <b>4</b></td><td>2 × 2 = <b>4</b> <span class="ok">(4–8)</span></td></tr>
+<tr><td>tlač</td><td>4 × 4 kópií = 16 kariet</td><td>4 × 4 = 16</td></tr>
+</table>
+
+<p>Štartovacia karta, takže <b>dnes má Víziu každý hráč od prvého kola</b>. Vízia → Poldeci (pripije si s každým). Alternatíva: Povera (veští z kávy o ženíchovi). Jej Prehra ráta aktívne akcie, nová akcia sa aktivuje rovnako ľahko. Pozor na výučbu (variant <code>dievcina_na_vydaj/1/0</code>).</p></div>
+<div class="karta">
+<h3>Strýko z Ameriky <span class="typ">Občan</span> <span class="stit">bez Vízie</span></h3>
+<table class="str"><tr><th></th><th>dnes</th><th>návrh</th></tr>
+<tr><td>ľavá</td><td><span class="a dob">Cigareta</span> <span class="a dob">Cigareta</span> <span class="mini">· 2 voľné sloty (blok 0, 1)</span></td><td><span class="mini">bez zmeny</span></td></tr>
+<tr><td>pravá</td><td><span class="a dob">Cigareta</span> <span class="a viz">Vízia</span> <span class="mini">· 3 voľné sloty (blok 1)</span></td><td><span class="a dob nova">Rana</span> <span class="a dob nova">Poldeci</span> <span class="mini">· 3 voľné sloty (blok 1)</span></td></tr>
+<tr><td>varianty</td><td>1 × 6 = <b>6</b></td><td>1 × 6 = <b>6</b> <span class="ok">(4–8)</span></td></tr>
+<tr><td>tlač</td><td>6 × 1 kópií = 6 kariet</td><td>6 × 1 = 6</td></tr>
+</table>
+
+<p>Spolu s Kšeftom (SZ-A nižšie): Cigareta a Vízia vpravo → Rana a Poldeci (platí rundu). Cigarety 3 → 2, lebo nový efekt míňa cigarety fajčením. Pri SZ-B alebo SZ-C len Vízia → Poldeci.</p></div>
+<div class="karta">
+<h3>Horoskop <span class="typ">Nástroj</span> <span class="stit">bez Vízie</span></h3>
+<table class="str"><tr><th></th><th>dnes</th><th>návrh</th></tr>
+<tr><td>ľavá</td><td><span class="a mak">Povera</span> <span class="a mak">Povera</span> <span class="mini">· 2 voľné sloty (blok 2, 3)</span></td><td><span class="mini">bez zmeny</span></td></tr>
+<tr><td>pravá</td><td><span class="a mak">Povera</span> <span class="a viz">Vízia</span> <span class="mini">· 2 voľné sloty (blok 0, 1)</span></td><td><span class="a mak">Povera</span> <span class="a zla nova">Hazard</span> <span class="mini">· 2 voľné sloty (blok 0, 1)</span></td></tr>
+<tr><td>varianty</td><td>1 × 2 = <b>2</b></td><td>1 × 2 = <b>2</b> <span class="ok">(2–4)</span></td></tr>
+<tr><td>tlač</td><td>2 × 1 kópií = 2 kariet</td><td>2 × 1 = 2</td></tr>
+</table>
+
+<p>Vízia → Hazard (šťastné čísla na tiket). Povery ostávajú, Dedičstvo (Povera sila 2) sa nemení. <b>V3:</b> Vízia ostane a ľavá Povera ×2 → Povera + Pečeň (varianty 2 → 4).</p></div>
+<div class="karta">
+<h3>Starosta <span class="typ">Starší</span> <span class="stit">bez Vízie</span></h3>
+<table class="str"><tr><th></th><th>dnes</th><th>návrh</th></tr>
+<tr><td>ľavá</td><td><span class="slt"><span class="a mod">Posilnenie</span><span class="a dob">Cigareta</span><span class="a mod">Posilnenie</span><span class="a blk">×</span></span></td><td><span class="mini">bez zmeny</span></td></tr>
+<tr><td>pravá</td><td><span class="slt"><span class="a blk">×</span><span class="a zla">Hazard</span><span class="a mod">Pakt</span><span class="a viz">Vízia</span></span></td><td><span class="slt"><span class="a blk">×</span><span class="a zla">Hazard</span><span class="a mod">Pakt</span><span class="a dob nova">Robota</span></span></td></tr>
+<tr><td>varianty</td><td>1 × 1 = <b>1</b></td><td>1 × 1 = <b>1</b> <span class="ok">(vždy 1)</span></td></tr>
+
+</table>
+
+<p>Vízia → Robota (verejnoprospešné práce). Alternatíva: Obmedzenie.</p></div>
+<div class="karta">
+<h3>Poštárka <span class="typ">Starší</span> <span class="stit">bez Vízie</span></h3>
+<table class="str"><tr><th></th><th>dnes</th><th>návrh</th></tr>
+<tr><td>ľavá</td><td><span class="slt"><span class="a blk">×</span><span class="a viz">Vízia</span><span class="a mak">Pohoršenie</span><span class="a mak">Povera</span></span></td><td><span class="slt"><span class="a blk">×</span><span class="a dob nova">Obmedzenie</span><span class="a mak">Pohoršenie</span><span class="a mak">Povera</span></span></td></tr>
+<tr><td>pravá</td><td><span class="slt"><span class="a viz">Vízia</span><span class="a zla">Hazard</span><span class="a mod">Posilnenie</span><span class="a blk">×</span></span></td><td><span class="slt"><span class="a mak nova">Pohoršenie</span><span class="a zla">Hazard</span><span class="a mod">Posilnenie</span><span class="a blk">×</span></span></td></tr>
+<tr><td>varianty</td><td>1 × 1 = <b>1</b></td><td>1 × 1 = <b>1</b> <span class="ok">(vždy 1)</span></td></tr>
+
+</table>
+
+<p>Vízia vľavo → Obmedzenie (dôchodok donesie zajtra), vpravo → Pohoršenie (číta cudzie pohľadnice). <b>V3:</b> ľavá Vízia ostane, Pohoršenie vedľa nej → Pečeň.</p></div>
+<div class="karta">
+<h3>Sklad <span class="typ">Lokalita</span> <span class="stit">bez Vízie</span></h3>
+<table class="str"><tr><th></th><th>dnes</th><th>návrh</th></tr>
+<tr><td>ľavá</td><td><span class="slt"><span class="a viz">Vízia</span><span class="a blk">×</span><span class="a viz">Vízia</span><span class="a blk">×</span></span></td><td><span class="slt"><span class="a dob nova">Robota</span><span class="a blk">×</span><span class="a dob nova">Obmedzenie</span><span class="a blk">×</span></span></td></tr>
+<tr><td>pravá</td><td><span class="slt"><span class="a dob">Pecka</span><span class="a blk">×</span><span class="a mod">Posilnenie</span><span class="a blk">×</span></span></td><td><span class="mini">bez zmeny</span></td></tr>
+<tr><td>varianty</td><td>1 × 1 = <b>1</b></td><td>1 × 1 = <b>1</b> <span class="ok">(nerátajú sa)</span></td></tr>
+
+</table>
+
+<p>Lokalita, Vízia ×2 → Robota (pri vreciach) a Obmedzenie (strážnica nepustí). Dve akcie na hrane, počet Pitiek sa nemení. Nový efekt Skladu je v časti B.</p></div>
+</div>
+</section>
+
+<section id="kseft">
+<h2>B · Kšeft zaniká — karta po karte</h2>
+<div class="box">
+<p><b>Princíp odporúčania:</b> kšeftom sa stane <b>fajčenie</b>. Nevzniká nové tlačidlo ani cena. Efekt pridá k fajčeniu niečo navyše. Fajčenie má rastúcu cenu (1, 2, 3 v každej Pitke, <code>PRAVIDLA.md:953</code>), je nerest (Chuť) a dá kartu. Odbytisko je teda bez dna a nie je to strop. Text „Za každé 2 cigarety, ktoré … vyfajčíš“ už hra pozná z Krabičky cigariet, počíta sa to rovnako: platené cigarety, fajčenie zadarmo na Benzínke nie.</p>
+<p class="mini">Spúšťače len existujúce (Pitka, Zhromaždenie, Prehra, Nástup, Furt, Bitka). Lokalita nemá Nástup, Konflikt ani Podporu. Pri každej karte je odporúčaná alternatíva zvýraznená.</p>
+</div>
+<div class="mriezka">
+<div class="kseft">
+<h3>Zberný dvor <span class="typ">Lokalita</span></h3>
+<p class="dnes"><b>Dnes:</b> Kšeft: Za 1 cigaretu si vezmi do ruky ľubovoľnú kartu zo svojho odhadzovacieho balíčka.</p>
+
+<ol class="alt"><li class="odp"><b>ZD-A · odporúčam</b> — <i>Šrot</i><br><span class="text">Pitka: Keď fajčíš, smieš si namiesto dobratia vziať do ruky ľubovoľnú kartu zo svojho odhadzovacieho balíčka.</span><br><span class="mini">Dnešný účinok (vybraná karta z odhadzovacieho), len cena je fajčenie: 1, 2, 3 v Pitke namiesto 1 za Pitku. Obaja hráči, ako dnes.</span></li><li class=""><b>ZD-B</b> — <i>Kontajner</i><br><span class="text">Pitka: Na konci Pitky smie každý hráč spáliť 1 kartu z ruky — aj Cirhózu alebo Absťák.</span><br><span class="mini">Bez cigariet. Nahrádza spaľovanie Víziou, ktoré po časti A ubudne. Odbytisko cigariet nie je.</span></li><li class=""><b>ZD-C</b> — <i>Výmena</i><br><span class="text">Bitka: Po bitke si každý hráč smie vymeniť 1 kartu z ruky za 1 kartu zo svojho odhadzovacieho balíčka.</span><br><span class="mini">Bez cigariet. Blízko Cintorína (Prehra, karta z odhadzovacieho), preto až tretia.</span></li></ol>
+
+</div>
+<div class="kseft">
+<h3>Sklad <span class="typ">Lokalita</span></h3>
+<p class="dnes"><b>Dnes:</b> Kšeft: Za 2 cigarety si zober do Dedičstva kartu Nástroja zo šenku. Do šenku sa dotiahne nová karta Nástroja.</p>
+
+<ol class="alt"><li class="odp"><b>SK-A · odporúčam</b> — <i>Zo skladu rovno do rodiny</i><br><span class="text">Zhromaždenie: Nástroj zo šenku smieš vyložiť do Dedičstva ako z ruky, za bežnú cenu Dedičstva. Do šenku sa dotiahne nový Nástroj.</span><br><span class="mini">Zachová tvoj zámer z v11.13 (Nástroj zo šenku do Dedičstva). Platí sa spoločnou rastúcou cenou Dedičstva (1, 2, 3…), takže čím neskôr, tým drahšie. Je to ťah v Zhromaždení, nie Kšeft.</span></li><li class=""><b>SK-B</b> — <i>Pod vrecami</i><br><span class="text">Pitka: Keď fajčíš, smieš si namiesto dobratia vziať do ruky Nástroj zo šenku. Do šenku sa dotiahne nový Nástroj.</span><br><span class="mini">Rovnaký vzor ako ZD-A. Nástroj ide do ruky, Dedičstvo sa platí zvlášť.</span></li><li class=""><b>SK-C</b> — <i>Pri strážnici</i><br><span class="text">Bitka: Za každý svoj Nástroj v línii máš 1 tuhé poškodenie navyše.</span><br><span class="mini">Náradie ako zbraň, vzor Lesnej cesty (Zvieratá). Cigarety nemíňa. Karta zo šenku pre porazeného by bola zamietnutá N9 (karta zadarmo).</span></li></ol>
+<p class="mini">Hrana: Vízia ×2 → Robota a Obmedzenie (časť A).</p>
+</div>
+<div class="kseft">
+<h3>Predsedova vila <span class="typ">Lokalita</span></h3>
+<p class="dnes"><b>Dnes:</b> Kšeft: Za 2 cigarety zdvihni svoje reči pri jednom staršom o stupeň. Staršieho v ohrození nie.</p>
+<p class="mini">Pinnacle, hrá sa len vo finále. Dnes je to najlepší výmenný kurz cigariet na špaky (2 cigarety = stupeň rečí, ten po finále dá 1–2 špaky; výkupné je 5 : 1).</p>
+<ol class="alt"><li class="odp"><b>PV-A · odporúčam</b> — <i>Recepcia u predsedu</i><br><span class="text">Pitka: Za každé 2 cigarety, ktoré v tejto Pitke vyfajčíš, zdvihni svoje reči pri jednom staršom o stupeň.</span><br><span class="mini">Kurz ostáva 2 : 1, len sa platí fajčením (rastúca cena, nerest, karta navyše). Bez obmedzenia raz za Pitku. Stupeň sa pridáva ako dnes (ďalší v bežnom poradí, kým je kam).</span></li><li class=""><b>PV-B</b> — <i>Predsedov bar</i><br><span class="text">Pitka: Za každé doliatie zdvihni svoje reči pri jednom staršom o stupeň.</span><br><span class="mini">Doliatie stojí 2 cigarety, kurz je ako dnes. Prirodzene ho obmedzujú vypité poldeci, nie strop.</span></li><li class=""><b>PV-C</b> — <i>Švédske stoly</i><br><span class="text">Pitka: Barter stojí 3 cigarety namiesto 5.</span><br><span class="mini">Lacnejší poldeci vo finále = viac NA EX. Cigarety míňa, rečiam sa nevenuje.</span></li></ol>
+<p class="mini">Text karty dnes hovorí „Staršieho v ohrození nie“, ohrozenie však zaniklo. Engine pustí stupeň, kým je kam (<code>engine.ts:4299</code>, <code>PRAVIDLA.md:1855</code>). Nový text to už neobsahuje.</p>
+</div>
+<div class="kseft">
+<h3>Strýko z Ameriky <span class="typ">Občan</span></h3>
+<p class="dnes"><b>Dnes:</b> Kšeft: Za 2 cigarety udelíš v tejto bitke súperovi 1 Ranu navyše.</p>
+<p class="mini">Dnes vyrába 3 cigarety a Kšeftom ich mení na Rany. Tvoja zásada z 2026-11-02 (Predavačka): akcia ani Kšeft nemá platiť zdrojom, ktorý karta sama vyrába. Preto pri SZ-A uberám jednu Cigaretu. Odložená otázka „Kšeft Strýka za Dlh“ zaniká s Kšeftom.</p>
+<ol class="alt"><li class="odp"><b>SZ-A · odporúčam</b> — <i>Dolárový frajer</i><br><span class="text">Pitka: Za každé 2 cigarety, ktoré v tejto Pitke vyfajčíš, udelíš v bitke súperovi 1 Ranu navyše.</span><br><span class="mini">Dnešná identita (cigarety → Rany), platí sa fajčením. Akcie: vpravo Cigareta, Vízia → Rana, Poldeci (Cigarety 3 → 2, varianty 6 → 6). Rany navyše sa pripočítajú v bitke ako dnes (<code>kseftRany</code>).</span></li><li class=""><b>SZ-B</b> — <i>Runda</i><br><span class="text">Nástup: Ty aj súper otočíte po 1 vypitom poldeci na plný.</span><br><span class="mini">Strýko platí rundu všetkým. Cigarety nemíňa, ostane čistý zdroj (3 Cigarety). Akcie: len Vízia → Poldeci.</span></li><li class=""><b>SZ-C</b> — <i>Na veľkej nohe</i><br><span class="text">Furt: Každé tvoje fajčenie stojí o 1 cigaretu viac a dá 1 kartu navyše.</span><br><span class="mini">Americké balenie: fajčenie 2, 3, 4 za 2 karty. Najväčšie odbytisko zo všetkých, karty aj Chuť. Akcie: Vízia → Poldeci.</span></li></ol>
+
+</div>
+<div class="kseft">
+<h3>Predavačka <span class="typ">Občan</span></h3>
+<p class="dnes"><b>Dnes:</b> Kšeft: Za 1 cigaretu si dober 1 kartu.</p>
+<p class="mini">Tvoje rozhodnutie 2026-11-02 bolo „bez akcie Cigareta“. Dáta ju od identity kariet (2026-11-03, commit 6a5e3cfa) majú vpravo 2× znova. Pri PR-A ju vraciam na tvoje rozhodnutie.</p>
+<ol class="alt"><li class="odp"><b>PR-A · odporúčam</b> — <i>Pod pultom</i><br><span class="text">Pitka: Za každé 2 cigarety, ktoré v tejto Pitke vyfajčíš, si dober 1 kartu navyše.</span><br><span class="mini">Dnes 1 cigareta = 1 karta raz za Pitku. Po novom fajčenie 1 + 2 = 3 cigarety dá 3 karty. Je to Krabička cigariet na vlastné fajčenie. Akcie: vpravo Cigareta ×2, Obmedzenie → Obmedzenie ×2, Pakt (varianty 6 → 6).</span></li><li class=""><b>PR-B</b> — <i>Pre vás nemáme</i><br><span class="text">Pitka: Súperovo fajčenie v tejto Pitke stojí o 1 cigaretu viac.</span><br><span class="mini">Autorita nad súperom, sedí k jej Obmedzeniu. Cigarety míňa súper, no fajčenie mu zdražie, takže môže fajčiť menej. Akcie bez zmeny.</span></li><li class=""><b>PR-C</b> — <i>Na zošit</i><br><span class="text">Pitka: Smieš fajčiť aj bez cigariet; za každú chýbajúcu cigaretu získaš 1 Dlh.</span><br><span class="mini">Sedí k jej Hazardu a Robote (zošit sa spláca). Hromadeniu cigariet nepomôže, je to pomoc pre hráča bez cigariet.</span></li></ol>
+<div class="karta">
+<h3>Predavačka <span class="typ">Občan</span></h3>
+<table class="str"><tr><th></th><th>dnes</th><th>návrh</th></tr>
+<tr><td>ľavá</td><td><span class="a zla">Hazard</span> <span class="a dob">Robota</span> <span class="mini">· 2 voľné sloty (blok 2, 3)</span></td><td><span class="mini">bez zmeny</span></td></tr>
+<tr><td>pravá</td><td><span class="a dob">Cigareta</span> <span class="a dob">Cigareta</span> <span class="a dob">Obmedzenie</span> <span class="mini">· 3 voľné sloty (blok 0)</span></td><td><span class="a dob">Obmedzenie</span> <span class="a dob nova">Obmedzenie</span> <span class="a mod nova">Pakt</span> <span class="mini">· 3 voľné sloty (blok 0)</span></td></tr>
+<tr><td>varianty</td><td>2 × 3 = <b>6</b></td><td>2 × 3 = <b>6</b> <span class="ok">(4–8)</span></td></tr>
+<tr><td>tlač</td><td>6 × 2 kópií = 12 kariet</td><td>6 × 2 = 12</td></tr>
+</table>
+
+<p>Akcie pri PR-A: Cigareta ×2 → Obmedzenie a Pakt, ako po tvojom rozhodnutí 2026-11-02 (Cigareta → druhé Obmedzenie). Pri PR-B a PR-C sa akcie nemenia.</p></div>
+</div>
+</div>
+</section>
+
+<section id="cigarety">
+<h2>B · Kam pôjdu cigarety</h2>
+<div class="box">
+<p>Boti, 200 partií (štyri povahy, Druhá liga, master): hráč za partiu získa <b>28</b> cigariet, minie <b>26,5</b> a na konci mu ostane <b>4,6</b>. Kšefty sú len <b>2 %</b> miňania. Hlavné odbytiská sú šenok a fajčenie. Kšeft teda nebol hlavné odbytisko, aspoň nie u botov. AI hromadia cigarety pasom, nie preto, že by chýbal Kšeft.</p>
+<div class="tab"><table>
+<tr><th>Odbytisko</th><th class="num">boti: cigarety na hráča a partiu</th><th>po zániku Kšeftu</th></tr>
+<tr><td>Šenok (branie)</td><td class="num">14,8 · 56 %</td><td>bez zmeny; po V2 sa kariet kupuje viac</td></tr>
+<tr><td>Fajčenie</td><td class="num">6,6 · 25 %</td><td><b>rastie</b> — ZD-A, PV-A, SZ-A, PR-A pridajú fajčeniu účinok</td></tr>
+<tr><td>Záverečná</td><td class="num">1,8</td><td>bez zmeny</td></tr>
+<tr><td>Dedičstvo</td><td class="num">1,3</td><td>rastie pri SK-A (Nástroj zo šenku za cenu Dedičstva)</td></tr>
+<tr><td>Barter a doliatie</td><td class="num">1,1</td><td>bez zmeny (PV-B, PV-C by ich zvýšili)</td></tr>
+<tr><td>Kšeft Strýka a Predavačky</td><td class="num">0,33</td><td>zaniká → fajčenie (SZ-A, PR-A)</td></tr>
+<tr><td>Kšeft Skladu</td><td class="num">0,28</td><td>zaniká → Dedičstvo (SK-A)</td></tr>
+<tr><td>Kšeft Zberného dvora a Vily</td><td class="num">0,00</td><td>boti ho nepoužili; AI playtesteri Vilu áno (+5 za 2 cigarety) → fajčenie (ZD-A, PV-A)</td></tr>
+<tr><td>Výpalné a prevody</td><td class="num">≈ 0,4</td><td>bez zmeny</td></tr>
+</table></div>
+<p class="mini">Boti cigarety nehromadia (končia so 4–5), AI playtesteri a hráči, čo pasujú, áno (Hela 21, Vilo 14 pred finále). Čísla botov preto ukazujú, <i>kde</i> sa míňa, nie koľko prebytku vznikne u človeka.</p>
+</div>
+<div class="box">
+<p><b>Treba náhradu?</b> Pri odporúčanej sade nie. Kšeft dnes míňa cigarety len vtedy, keď je karta v línii alebo lokalita cieľom. Rovnako to bude s fajčiarskymi efektmi, len bez dna: fajčenie zdražuje samo. K tomu V2 uberie väčšinu kariet zadarmo z Vízie, takže karty sa budú viac kupovať šenkom (1 / 3 za 2) a fajčením. Výkupné 5 : 1 nemením (N14 3 : 1 si zamietol 2026-11-06).</p>
+<p class="mini">Keby si vybral alternatívy bez cigariet (ZD-B, SK-C, SZ-B, PR-C), ubudne odbytisko asi o 0,6 cigarety na hráča a partiu. Vtedy by som navrhol aspoň Strýka SZ-C alebo Vilu PV-A ako to jediné, čo cigarety míňa.</p>
+</div>
+</section>
+
+<section id="otazky">
+<h2>Otázky na teba</h2>
+<ol class="ot">
+<li><b>Vízia:</b> V1, V2 (odporúčam) alebo V3? A Guľa: Dedičstvo G1 ostáva (odporúčam), alebo G2?</li>
+<li><b>Oslabenie:</b> súhlasíš s pravidlom „Vízia je na svojej strane jediná dobrá akcia, zvyšok Hazard a Pečeň“? Ktoré náhrady Vízie na ostatných kartách meníš? Ku každej je jedna alternatíva.</li>
+<li><b>Kšeft:</b> súhlasíš s princípom „kšeftom je fajčenie“? Vyber pri každej z 5 kariet A / B / C.</li>
+<li><b>Strýko a Predavačka:</b> uberiem im Cigaretu podľa tvojej zásady z 2026-11-02? (Predavačka ju má späť od identity kariet 2026-11-03.)</li>
+<li><b>Prečo Kšeft zaniká?</b> Ak pre tlačidlá pod kartami a ťahy navyše, odporúčanie platí. Ak preto, že nechceš „platiť za efekt“ vôbec, platí to aj pre Sklad SK-A a Predavačku PR-C a vybral by som iné.</li>
+</ol>
+</section>
+
+<section id="program">
+<h2>Pre programátora — čo zasiahne zánik Kšeftu</h2>
+<p class="mini">Len zoznam, cesty k master 5b942f87. Karty mení admin v tvorcovi (rozpracovaný stav), potom <code>cards.json</code> cez sada-do-repa. Číslo riadka je prvý výskyt.</p>
+<div class="box kod">
+<b>Jadro (packages/core/src)</b><br>
+engine.ts:654, 662, 1967–1968 — príkaz <code>kseft</code> (aj starý <code>vykup</code> Zberného dvora preložený na Kšeft); záznamy partií v archíve ho nesú, prehrávač ich musí vedieť dohrať<br>
+engine.ts:2025 — <code>case "kseft"</code> → <code>cmdKseft</code> (4307–4381): Strýko, Predavačka, Zberný dvor, Sklad, Vila<br>
+engine.ts:4260–4296 — <code>KSEFTY_KARIET</code>, <code>KSEFTY_LOKALIT</code>, <code>VILA_CENA</code>, <code>moznostiKseftu</code>; 6300 legálne ťahy<br>
+engine.ts:288–289 — <code>pitkaStav.kseft</code> (použité Kšefty v Pitke)<br>
+engine.ts:591–592, 6021 — <code>kseftRany</code> (Rany Strýka; pri SZ-A ich treba počítať z fajčenia)<br>
+engine.ts:142, 570, 1014, 4544, 6022 — <code>kseftyKola</code> <b>nie je Kšeft</b>, drží <code>hranyPosilnene</code> Starostu (schopnosť väzňa); ostáva, len premenovať<br>
+engine.ts:4299–4304 — <code>vilaNaStarsieho</code>; elders.ts:79–82 zdroj markera <code>"kseft"</code>, 343 <code>dalsiStupenReci</code> (pri PV-A/PV-B sa použije ďalej)<br>
+engine.ts:3906 — komentár nerestí (platby za Kšefty)<br>
+types.ts:109–110, 120, 132 — spúšťač <code>"Kšeft"</code> v <code>Trigger</code> a <code>ALL_TRIGGERS</code><br>
+constants.ts:157–161 — <code>EFEKT.STRYKO_CENA</code>, <code>PREDAVACKA_CENA</code>, <code>SKLAD_CENA</code> (a <code>ZBERNY_DVOR_CENA</code>)<br>
+effects.ts:40–43, 127, 161, 164, 170, 172, 529–530 — stav efektov a Rany Strýka v bitke<br>
+view.ts:241–244, 419–420, 704 — <code>kseftRany</code>, <code>kseftyKola</code> vo view (overiť <code>viewFor</code> test)<br>
+bot.ts:300, 1559–1563 — bot zvažuje Kšefty (odbytisko cigariet); 1216 <code>kseftyKola</code> Starostu; nové fajčiarske efekty bot musí oceniť pri <code>smoke</code><br>
+historiaLokalit.ts:63, vyucba.ts:241 — komentáre a Kšeft lokality vo výučbe<br>
+<br><b>Server a tvorca</b><br>
+packages/server/src/scenar.ts:29 — cigarety navyše „na Kšefty“<br>
+packages/tvorba/src/predvolene.ts:38, 102–104 — popis akcie Cigareta a kľúčové slovo Kšeft (tooltip); text.ts:83<br>
+packages/tvorba/test/texty.test.ts:75–101<br>
+<br><b>Klient (apps/web/src)</b><br>
+hra/KseftPodKartou.tsx, hra/kseftyNaStole.ts, hra/volbaVily.ts — celé súbory (tlačidlá Kšeftu, voľba staršieho pri Vile)<br>
+hra/HernaPlocha.tsx:110, 255, 684–694, 799, 1134–1143, 2790–2806, 2886, 3190, 4205, 4317, 4791–4802, 6514–6560<br>
+hra/UkazkaStola.tsx:45–47, 254–258, 462–465 · Vyucba.tsx:188–189, 325 · Panely.tsx:31 · Prehravac.tsx:48 · ikonyZdrojov.tsx:2 · krokySuhrnu.ts:8 · textyStarsich.ts:14<br>
+hra/hra.css:3250, 9458–9700 (štýly Kšeftu) · teplomery.css:785<br>
+stranky/pravidla/kapitoly.tsx:362, 379, 413, 503, 959–967 · slovnik.ts:35<br>
+test: kseftyNaStole.test.ts (celý), krokySuhrnu.test.ts:39–69, vyucbaCasti.test.ts:70–71, vyucbaOvladanie.test.ts:15–31<br>
+<br><b>Testy jadra (packages/core/test)</b><br>
+autority-v104 (33–187), lokality-v11-13 (156–198, 312–314), v7-efekty (312–450), v7-karty (138–144), vyucba (352, 842–960), strach-reci (205–215), prisun-zdrojov (46, 104), lokality-20261020:138, nahlady-cena-20261027:197, napovedy:82, schopnost-vazna:154, tahak:100<br>
+<br><b>Pravidlá a texty</b><br>
+docs/PRAVIDLA.md:490 (Cigareta platí… Kšefty), 562, 621, 825–826, 985, <b>1003–1014 (§7 Kšeft)</b>, 1086 (nie sú nerest), 1333 (reči z Vily), 1745, 1851–1855 (§15), 1954 (Predavačka), 1976 (Strýko), 2010 (slovník), 2115–2116, 2157 (2 na 2), 2203 (Päta)<br>
+docs/PRAVIDLA.md:891 — „hrozba Kšeftu Vychovávateľky“ je zastarané už dnes (Vychovávateľka má schopnosť väzňa)<br>
+tools/playtest/tahak.md:91, 102–120, 178, 266 · tools/playtest/hrac.ts:394, 417, 645, 970–997 · tools/bot/turnaj.ts:126–131<br>
+packages/core/data/vyucba/prva-hra.json:2396–2593 — finále výučby učí Kšeft Predsedovej vily („chcem ťa naučiť kšeftovať“); napovedy.json:124 (výučbu prerobiť až pri vypálení)<br>
+tools/vyucba/v-prehliadaci.ts:12, 289–367 · tools/rozhodca/mapa.json:1406–2424 · docs/kniznica/mechaniky.json:478<br>
+tools/admin/zastarane.json — pridať vzor „Kšeft“ (dnes 73–77, 329–338 len Kšeft väzňa / Obecného úradu)<br>
+.claude/agents/naex-admin.md:163, naex-playtester.md:86 · tools/admin/ilustrator-lekcie.md:379 · tools/playtest/mobil-playtest.md:44, 53<br>
+<br><b>Vízia (časť A) — len dáta</b><br>
+Kód sa nemení, mení sa sada v tvorcovi. Overiť: prva-hra.json:110, 147–197 (varianty Dievčiny, Finančnej poradkyne, Veštice, Strýka podľa indexu, po zmene akcií sa môžu posunúť), <code>npx vitest run</code> (testy, ktoré berú karty z cards.json), PRAVIDLA §16 Krištáľová guľa (1688) len pri G2.
+</div>
+</section>
+</main></body></html>
