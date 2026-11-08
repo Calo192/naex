@@ -936,7 +936,7 @@
     "Pracujúci",
     "Chlap"
    ],
-   "effect_text": "Furt: Akcie nástrojov v jeho okolí sú posilnené.",
+   "effect_text": "Furt: Pod neho smieš podložiť ľubovoľne veľa Nástrojov.",
    "triggers": [
     "Furt"
    ],
@@ -2827,7 +2827,7 @@
    "tags": [
     "Zviera"
    ],
-   "effect_text": "Furt: Nástroj vedľa Koňa s ním tvorí spoj. Roboty Koňa pália o 1 Dlh viac.",
+   "effect_text": "Furt: Kým leží v línii, Nástroj smieš podložiť aj pod Zviera. Roboty Koňa pália o 1 Dlh viac.",
    "triggers": [
     "Furt"
    ],
