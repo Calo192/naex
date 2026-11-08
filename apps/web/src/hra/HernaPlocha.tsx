@@ -4150,6 +4150,14 @@ export function HernaPlocha({
         // každá ďalšia stojí plný poldeci, server dostane ťah až po „potvrdiť“ na stole.
         if (vylozenia.length === 0 || plan === null) {
           const zaPas = cigaretyZaPas(data, view, ja, view.hraci[ja].rukaPocet);
+          // Náradie (Michal 2026-11-08): Nástroj v ruke sa zasúva pod kartu v línii, nielen odkazuje.
+          const nastrojVRuke = ruka.some((k) => ponukaPre(k).length > 0);
+          const pokynNaradia =
+            !nastrojVRuke ? null : (
+              <>
+                Nástroj zasuň pod kartu v línii za {cigariet(KONSTANTY.CENA_PODLOZENIA)} alebo vylož do Dedičstva.{" "}
+              </>
+            );
           // Pas je nevratný: potvrdenie len keď ešte niečo vyložiť môžem (UX N1, U10).
           const mozemVylozit = zostava > 0 && [...moznostiMiesta.values()].some((m) => m.karty.size > 0);
           if (odlozenyPas.caka !== null) {
@@ -4183,12 +4191,14 @@ export function HernaPlocha({
               // Pri vyčerpanom limite pokyn „potiahni kartu“ zavádzal (playtest výučby 20261025, K11).
               <>
                 <strong>Na stôl už nič nevyložíš.</strong> Pasuj do Pitky{zaPas > 0 ? ` — dostaneš ${cigariet(zaPas)}` : ""}.{" "}
+                {pokynNaradia}
                 <span className="tlmene">{[...moznostiMiesta.values()].find((m) => m.dovod !== null)?.dovod ?? ""}</span>
               </>
             ) : (
               <>
                 Potiahni kartu z ruky na stôl, alebo klikni na <strong>+</strong> na konci línie — vysunú sa karty, ktoré sa tam spoja. Alebo
                 pasuj do Pitky (cigareta za každú nevyloženú kartu).{" "}
+                {pokynNaradia}
                 <span className="tlmene">
                   Ďalšie karty v tom istom ťahu smieš pridať, každá ťa stojí plný poldeci (limit −1, pečeň +1){plne === 0 ? " — teraz žiadny nemáš" : ""}.
                 </span>
