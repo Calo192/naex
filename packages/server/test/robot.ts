@@ -4,7 +4,7 @@
 import { expect } from "vitest";
 import { WebSocket } from "ws";
 import type { ClientState, Command } from "@naex/core";
-import { cieleVykladania, cielLokalitaId, krokStavby, lineState, navrhRozdelenia, naexCieleVLinii, zablokovaneStrany } from "@naex/core";
+import { cieleVykladania, cielLokalitaId, krokStavby, moznostiNaexVPohlade, navrhRozdelenia, zablokovaneStrany } from "@naex/core";
 import { loadDataFromDisk } from "../src/server.ts";
 
 /** Dáta sady pre pravidlá vykladania — robot ich pozná ako hráč (verejné karty). */
@@ -165,16 +165,16 @@ export class Robot {
         if (view.vizia !== null) return { type: "vizia", vziat: true };
         const p = view.pitkaStav;
         if (p?.reakcia === ja) return { type: "bezReakcie" };
-        // Krčma: s plným poldeci treba dať NA EX — na vlastného Občana, inak na hocikoho v línii.
-        // NA EX naraz (v5): skryté NA EX už dané — Krčma je spokojná.
-        if (view.ciel?.lokalita?.defId === "krcma" && p !== null && !p.naexPouzity[ja] && (p.skryteNaex ?? []).length === 0 && view.hraci[ja].poldeciPlne > 0) {
-          const ciele = new Set(naexCieleVLinii(DATA, lineState(view), ja));
-          const linia = [...view.strany[0], ...view.strany[1]];
-          const ciel = linia.find((pl) => pl.playedBy === ja && ciele.has(pl.card.uid)) ?? linia.find((pl) => ciele.has(pl.card.uid));
-          if (ciel !== undefined) return { type: "naex", uid: ciel.card.uid };
-          // Súperova Záverečná lícom dole v strany nie je, a predsa je cieľ — Krčma by skipNaex odmietla.
-          const naRube = (view.zaverecne ?? []).find((z) => ciele.has(z.uid));
-          if (naRube !== undefined) return { type: "naex", uid: naRube.uid };
+        // Krčma: s plným poldeci treba dať NA EX — na vlastného Občana, inak kamkoľvek, kam smie.
+        // „Už dal“ aj ciele presne ako motor (krcmaVyzaduje): rátajú sa len MOJE skryté NA EX —
+        // súperove vidí robot s Klebetnicou a Krčmu neuspokoja; cieľom môže byť aj Zviera
+        // (Injekcia, lievik) či súperova Záverečná na rube (moznostiNaexVPohlade ich pozná).
+        const dal = (p?.skryteNaex ?? []).filter((x) => x.hrac === ja).length + (p?.naexPocet?.[ja] ?? 0) > 0;
+        if (view.ciel?.lokalita?.defId === "krcma" && p !== null && !dal) {
+          const ciele = moznostiNaexVPohlade(DATA, view);
+          const moj = [...view.strany[0], ...view.strany[1]].find((pl) => pl.playedBy === ja && ciele.includes(pl.card.uid));
+          const ciel = moj?.card.uid ?? ciele[0];
+          if (ciel !== undefined) return { type: "naex", uid: ciel };
         }
         return { type: "skipNaex" };
       }
