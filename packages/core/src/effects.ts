@@ -88,13 +88,13 @@ export const REGISTER: Readonly<Record<string, EfektStatus>> = {
   milujuca_manzelka: "impl", // Pitka (v7, M2): tvoje poškodenie pečene v Pitke −1 (prirastkyPitky)
   ministrant: "impl", // Spoločník: Zahraničný {Pecka} (navyse.ts); starý Nástup — Viera ako Pecka pri Konflikte — len stará sada (partia.ts)
   nealko: "impl", // Dedičstvo: tvoj prah Cirhózy je o 2 vyšší (prahCirhozyBonus)
-  niekoho_stryna: "impl", // Konflikt: Závislý {Pohoršenie} (navyse.ts); stará Pitka — bez NA EX +1 pečeň — len stará sada (prirastkyPitky)
+  niekoho_stryna: "impl", // Konflikt: {Pohoršenie} pri ktorejkoľvek súperovej karte (navyse.ts; 2026-11-08 bez tagu, predtým Závislý); stará Pitka — bez NA EX +1 pečeň — len stará sada (prirastkyPitky)
   noviny: "impl", // Dedičstvo: Hádka (v11.5): víťaz hádky — súper odhodí 1 náhodnú kartu z ruky (engine novinyPoHadke)
   pasca: "impl", // Dedičstvo: Bitka (v7): súper v kole priložil kartu k tvojej → Rana navyše (bitkaMody; v zápise {Rana} evaluateLine)
   pijan: "impl", // Bitka (v7): Rana navyše za každé vlastné NA EX v kole (bitkaMody; v zápise {Rana} evaluateLine)
   policajtka: "impl", // Nepriateľ: Kriminál {Petelica} (navyse.ts); stará Pitka — zadĺženie za akciu zrušenú Odporom (pokutaPolicajtky) — a starší Konflikt (Dlh, za Kriminála 2 cigarety) len staré sady
   postarka: "impl", // Schopnosť väzňa: 4 cigarety
-  praudovravec: "impl", // Konflikt: Autorita {Pohoršenie} (navyse.ts); starý Furt (Dezinformátor — Odpor na spojoch posilní) a umlčanie Autorít len stará sada (partia.ts)
+  praudovravec: "impl", // Konflikt: {Pohoršenie} pri ktorejkoľvek súperovej karte (navyse.ts; 2026-11-08 bez tagu, predtým Autorita); starý Furt (Dezinformátor — Odpor na spojoch posilní) a umlčanie Autorít len stará sada (partia.ts)
   dvojcata: "impl", // Furt: do prevahy sa rátajú za dvoch (partia.ts, Michal 2026-10-20)
   puska: "impl", // Dedičstvo (Náradie 2026-10-30): prepojenú Petelicu namiesto zrušenia ráta za 2 (partia.ts puskaChrani)
   recidivista: "impl", // Nepriateľ: Zahraničný {Pecka} (navyse.ts); stará Prehra — po bitke do ruky — len stará sada (koniecBitky)
@@ -103,7 +103,7 @@ export const REGISTER: Readonly<Record<string, EfektStatus>> = {
   svaty_text: "impl", // Dedičstvo: hodnota tvojej Viery o 1 vyššia v tlmení tuhého; Povery ruší 1 : 1 (computeDamage)
   veterinar: "impl", // Schopnosť väzňa: odhodí priznané Cirhózy a Cirhózy na ruke
   veteran: "impl", // Furt: NA EX naňho aktívne akcie zdvojí (nezruší), neaktívne nezdvojí (partia.ts, Michal 2026-10-23)
-  velmi_smutiaca_vdova: "impl", // Konflikt: Chlap — súper odhodí 1 náhodnú kartu z ruky (2026-11-08); staré znenie z balíčka za Chlapov (konflikt)
+  velmi_smutiaca_vdova: "impl", // Konflikt: súper odhodí 1 náhodnú kartu z ruky, pri ktorejkoľvek jeho karte (2026-11-08 bez tagu, predtým Chlap); staré znenie z balíčka za Chlapov (konflikt)
   vestica: "impl", // Spoločník: Pamätník {Povera} {Povera} (navyse.ts); stará Prehra — výmena kariet v balíčkoch (krok bitky 5b) — len stará sada
   vychovavatelka: "impl", // Schopnosť väzňa: súper v tomto Zhromaždení hneď pasuje bez cigariet
   vinko: "impl", // Dedičstvo: poldeci navyše; nedolieva poldeci za cigarety (Michal 2026-10-19)
@@ -133,7 +133,7 @@ export const REGISTER: Readonly<Record<string, EfektStatus>> = {
   zahradkar: "impl", // Exekúcia (Michal 2026-10-28): v línii v tvojej partii ťa exekúcia v tomto kole obíde (zahradkarChrani)
   svokra: "impl", // Bitka: za každú tvoju kartu so súperovým NA EX súperovi Rana (Michal 2026-10-26)
   sarlatan: "impl", // Spoločník: Autorita {Povera} {Povera} (navyse.ts); starý Konflikt — Dlhy Viera, Povery Rana — len stará sada (partia.ts)
-  podvodnik: "impl", // Konflikt: Influencer {Obmedzenie} (navyse.ts); starý Konflikt — cigareta, inak zadĺženie — len stará sada (engine konflikt)
+  podvodnik: "impl", // Konflikt: {Obmedzenie} pri ktorejkoľvek súperovej karte (navyse.ts; 2026-11-08 bez tagu, predtým Influencer); starý Konflikt — cigareta, inak zadĺženie — len stará sada (engine konflikt)
   cierna_macka: "impl", // Furt (v8.3): tvoje Povery sa Vierou nerušia — vždy mäkké (computeDamage)
   anonymny_alkoholik: "impl", // Furt (v11.5): Poškodenie pečene tvojich kariet v jeho okolí sa ráta ako Viera (partia.ts)
   // Roadmapa #71 (2026-10-23).
@@ -236,7 +236,7 @@ export function efektPotlaceny(data: GameData, state: Pick<VerejnyStav, "strany"
   if (def === undefined || !def.tags.includes("Autorita" as Tag)) return false;
   // v7: Praudovravec je Dezinformátor (Odpor na jeho spojoch posilní, partia.ts) —
   // Autority už neumlčí. Umlčanie ostáva len pre sady s jeho starým textom.
-  // Frakcie (2026-11-08): „Konflikt: Autorita“ je podmienka akcie navyše, nie umlčanie.
+  // Frakcie (2026-11-08): Praudovravec má Konflikt s akciou navyše (efektyNavyse), nie umlčanie.
   const praudovravec = data.cards.get("praudovravec");
   return vPartii(state, opponentOf(p), "praudovravec") && praudovravec?.effectText.includes("Autorit") === true && efektyNavyse(praudovravec).length === 0;
 }
