@@ -144,6 +144,22 @@
     filter 0.15s ease;
 }
 
+/* Jamka: prázdny index tam, kde ešte môže vzniknúť spoj (ruka, otvorená hrana línie) —
+   hráč vidí, ktoré indexy hrany sú prázdne (Michal 2026-11-08, docs/napady/spoje-indexy-mocky.html, mock A). */
+.kl-jamka {
+  position: absolute;
+  box-sizing: border-box;
+  left: calc(var(--x) * var(--pt));
+  top: calc(var(--y) * var(--pt));
+  width: calc(var(--s) * var(--pt));
+  height: calc(var(--s) * var(--pt));
+  border-radius: calc(var(--r) * var(--pt));
+  background: rgba(20, 14, 8, 0.45);
+  border: calc(0.75 * var(--pt)) dashed rgba(255, 255, 255, 0.8);
+  box-shadow: inset 0 calc(1.4 * var(--pt)) calc(2.4 * var(--pt)) rgba(0, 0, 0, 0.7);
+  pointer-events: none;
+}
+
 /* Neviditeľná kotva slotu — línia podľa nej zarovná akcie na spoji (zarovnanieLinie.ts). */
 .kl-kotva {
   position: absolute;

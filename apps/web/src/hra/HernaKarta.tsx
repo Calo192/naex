@@ -72,6 +72,8 @@ export interface HernaKartaProps {
   readonly hranaVnutorna?: "left" | "right" | undefined;
   /** Sloty vytlačených strán (indexy zhora), ktoré vytvoria spoj — výber miesta na stole. */
   readonly spoj?: { readonly left: readonly number[]; readonly right: readonly number[] } | undefined;
+  /** Vytlačené strany s jamkami na prázdnych indexoch (ruka, otvorená hrana línie). */
+  readonly jamky?: { readonly left: boolean; readonly right: boolean } | undefined;
   /** Zrážka NA EX (v5): karta je počas bitky Výtržník — každá jej akcia je Rana pre majiteľa. */
   readonly vytrznik?: boolean | undefined;
   /** Prepínač výberu (stavba šenku): aria-pressed a pri plnom výbere aria-disabled. */
@@ -79,7 +81,7 @@ export interface HernaKartaProps {
   readonly zakazana?: boolean | undefined;
 }
 
-export function HernaKarta({ karta, sada, data, sirka, otocena = false, eval: ev, onClick, vybrana, bezPopisov, hranaVnutorna, spoj, vytrznik = false, stlacena, zakazana }: HernaKartaProps) {
+export function HernaKarta({ karta, sada, data, sirka, otocena = false, eval: ev, onClick, vybrana, bezPopisov, hranaVnutorna, spoj, jamky, vytrznik = false, stlacena, zakazana }: HernaKartaProps) {
   const vytlacene = printedSides(data, karta);
   const stol = useContext(ZarStolaKontext);
   // Lupa a karta na stole majú rovnaký kľúč — lupa otvorená po iskre ju už nezopakuje.
@@ -141,6 +143,7 @@ export function HernaKarta({ karta, sada, data, sirka, otocena = false, eval: ev
       bezPopisov={bezPopisov ?? false}
       slotyBezFokusu
       spoj={spoj === undefined ? undefined : { lava: spoj.left, prava: spoj.right }}
+      jamky={jamky === undefined ? undefined : { lava: jamky.left, prava: jamky.right }}
       idKarty={karta.defId}
       uidKarty={karta.uid}
     />
