@@ -1,0 +1,415 @@
+<!doctype html>
+<html lang="sk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Bez „tvojej a súperovej strany“ · súpis a návrh · NA EX!</title>
+<style>
+:root { --pozadie:#14110e; --plocha:#1e1914; --plocha-2:#28211a; --okraj:#3d3229; --text:#f1e8d8; --tlmeny:#b6a790;
+  --slaby:#9d8f7b; --akcent:#e9ad45; --zelena:#7cbf74; --modra:#5aa9d6; --cervena:#e07a6a; --fialova:#c39be8; color-scheme: dark; }
+* { box-sizing: border-box; }
+html { background: var(--pozadie); color: var(--text); }
+body { margin: 0; font: 16px/1.5 Roboto, "Segoe UI", system-ui, sans-serif; }
+h1, h2, h3 { font-family: Bitter, Georgia, serif; line-height: 1.2; margin: 1.2em 0 .45em; }
+h1 { font-size: clamp(1.5rem, 1.1rem + 2vw, 2.1rem); margin-top: .3em; }
+h2 { font-size: 1.3rem; color: var(--akcent); }
+h3 { font-size: 1.05rem; }
+.obal { max-width: 960px; margin: 0 auto; padding: 16px 16px 80px; }
+.panel { background: var(--plocha); border: 1px solid var(--okraj); border-radius: 12px; padding: 12px 14px; margin: 10px 0; }
+code { font-family: Consolas, "Cascadia Mono", monospace; font-size: .84em; background: var(--plocha-2); padding: 0 4px; border-radius: 4px; }
+.tlmene { color: var(--tlmeny); }
+.poznamka { font-size: .85rem; color: var(--slaby); }
+ul.v { list-style: none; padding: 0; margin: 0; }
+ul.v > li { border-top: 1px solid var(--okraj); padding: 7px 0; }
+ul.v > li:first-child { border-top: 0; }
+.st { color: var(--cervena); text-decoration: line-through; text-decoration-color: rgba(224,122,106,.6); }
+.nv { color: var(--zelena); }
+.kto { display: inline-block; min-width: 1.7em; text-align: center; font-size: .72rem; font-weight: 800; border-radius: 5px; padding: 0 5px; margin-right: 4px; vertical-align: 1px; }
+.kto.p { background: var(--modra); color: #0c1a24; }
+.kto.a { background: var(--akcent); color: #2b1b03; }
+.kto.m { background: var(--fialova); color: #1f1030; }
+.kto.n { border: 1px solid var(--slaby); color: var(--slaby); }
+.michal { border-left: 3px solid var(--fialova); padding-left: 8px; }
+.odp { border: 1px solid var(--zelena); border-radius: 10px; padding: 8px 12px; }
+table { border-collapse: collapse; width: 100%; font-size: .92rem; }
+th, td { border-top: 1px solid var(--okraj); padding: 6px 6px; text-align: left; vertical-align: top; }
+th { color: var(--tlmeny); font-weight: 600; }
+ol.q > li { margin: 0 0 12px; }
+</style>
+</head>
+<body>
+<div class="obal">
+
+<p class="poznamka">Vymyselník · 2026-11-08 · vetva <code>napady/bez-strany</code> · základ <code>origin/master</code> 3b6b03c6</p>
+<h1>Línia má dva konce, žiaden nie je tvoj</h1>
+
+<div class="panel michal">
+<b>Michal 2026-11-08:</b> „Nepoužívať — neexistuje nič ako moja strana, súperova strana.“<br>
+Predtým: „Hráči môžu položiť karty na 2 strany preto, aby mali viac možností, nie preto, že to je nejaká ‚súperova strana‘.“
+</div>
+
+<div class="panel">
+<b>V skratke.</b> V jadre hry „tvoja/súperova strana“ <b>nenesie žiadne pravidlo okrem Mosta</b>. Ostatné výskyty sú len pomenovania a dajú sa
+nahradiť pojmami, ktoré hra už má: <b>kraj</b> (polovica línie, menom z lokality) a <b>koniec línie</b> (kam sa vykladá).
+Kde treba smer voči hráčovi (Most, výklad obrazovky), navrhujem <b>vľavo / vpravo od lokality</b>.
+Súpis má <b>148 položiek</b>: 137 treba zmeniť, 11 je história, citát alebo iný význam a ostanú.
+Dve otázky pre Michala sú na konci (Most, podstrčenie a achievement Podstrkovač).
+</div>
+
+<p class="tlmene">Kto mení:
+<span class="kto p">P</span> programátor (PRAVIDLA, ťahák, UI, hlášky jadra, klient AI) ·
+<span class="kto a">A</span> admin (texty kariet v tvorcovi, potom <code>cards.json</code> cez sada-do-repa) ·
+<span class="kto m">M</span> Michal (Melicharove texty vo výučbe) ·
+<span class="kto n">—</span> nemeniť.</p>
+
+<!-- ================================================================= -->
+<h2>1. Čo pojem v hre naozaj robí</h2>
+
+<div class="panel">
+<h3>Ako jadro drží líniu</h3>
+<p>Línia sú dve polia <code>strany[0]</code> a <code>strany[1]</code> (<code>partia.ts:106</code>). Pole <code>strany[p]</code> je
+<b>polovica línie vľavo od lokality z pohľadu hráča p</b>. Hráč 0 ju vidí vľavo, hráč 1 tú druhú, takže každý vidí „svoje“ pole vľavo
+(<code>HernaPlocha.tsx:2813–2819</code>, <code>hrac.ts:480</code>). Polovica je s hráčom spojená <b>len polohou na obrazovke</b>, nie vlastníctvom.</p>
+
+<h3>a) Cieľ <code>vlastna</code> / <code>superova</code> pri priložení</h3>
+<p><code>vylozDoLinie</code> (<code>engine.ts:2883–2890</code>): <code>vlastna</code> = pridať na koniec <code>strany[p]</code>,
+<code>superova</code> = na koniec <code>strany[súper]</code>. Karta dostane <code>playedBy = p</code> v oboch prípadoch. Limit, partia, akcie
+aj efekty sú rovnaké. Cieľ teda určuje <b>len to, na ktorý koniec línie karta ide</b>, nič iné. Výnimkou je len Most (c).</p>
+
+<h3>b) Otočenie o 180°: riadi ho majiteľ karty, nie koniec línie</h3>
+<p><code>makeElem(…, rotated = playedBy === 1)</code> (<code>partia.ts:946–950</code>): vo všeobecnom ráme (pohľad hráča 0) sú
+<b>všetky karty hráča 1 otočené, nech ležia kdekoľvek</b>, a karty hráča 0 nie sú otočené nikde. Otočená karta má efektívnu ľavú hranu =
+vytlačenú pravú odzadu a efektívnu pravú = vytlačenú ľavú odzadu, indexy 0↔3, 1↔2 (<code>partia.ts:396–397</code>).</p>
+<p>Z pohľadu majiteľa karta stojí rovno na oboch koncoch. Mení sa len to, <b>ktorá vytlačená hrana je vnútorná</b> (obrátená k lokalite):
+vľavo od lokality je to jeho <b>pravá</b> hrana, vpravo <b>ľavá</b> (<code>hrany.ts:119–124</code>). Ostatné je len „hrana k lokalite“.</p>
+<p class="poznamka">Dva texty sú preto aj dnes nepresné: PRAVIDLA r. 661 „na súperovu stranu teda ide ‚nohami hore‘“ a Heatmapa
+„ako na súperovej strane (otočené o 180°)“. Nohami hore je pre teba <b>každá súperova karta</b>. Tvoja karta na druhom konci otočená nie je.</p>
+
+<h3>c) Most: jediné skutočné pravidlo</h3>
+<p><code>lenVlastnaStrana</code> (<code>effects.ts:369</code>) zakáže cieľ <code>superova</code>: pri vykladaní (<code>engine.ts:2884</code>),
+v ponuke cieľov (<code>engine.ts:5316</code>, preto aj pri odpovedi na NA EX cez <code>cieleOdpovede</code> <code>engine.ts:3887</code>)
+aj v dôvode auto-pasu (<code>engine.ts:5347</code>). Každý hráč smie <b>len na koniec vľavo od lokality zo svojho pohľadu</b>.
+Natočenie Mosta (vyberá víťaz hádky) tým rozhodne, kto stavia pri kaplnke a kto pod mostom.
+<b>Bez väzby „hráč ↔ koniec“ sa toto pravidlo opísať nedá.</b> Treba pomenovanie smeru (časť 2) alebo iné pravidlo (otázka 1).</p>
+
+<h3>d) Prevaha v kraji: bez vlastníctva</h3>
+<p><code>prevaha</code> / <code>prevahaStran</code> (<code>partia.ts:311–316, 359–361</code>): v každom kraji sa sčítajú Občania, Zvieratá
+a Starešinovia podľa <code>playedBy</code> (Dvojčatá 2, Brigádnik 0). Pri rovnosti vyhrá majiteľ karty <code>strany[k][0]</code>, teda karty
+pri lokalite. Komu kraj „patrí“, sa nikde neráta. Akcie hrany dostane hráč s prevahou (<code>partia.ts:1052</code>). Náhradné
+<code>?? side</code> sa uplatní len v prázdnom kraji, kde hrana nemá partnera, takže v hre nikdy.</p>
+
+<h3>e) Skrytá Záverečná: zatvorí koniec línie pre oboch</h3>
+<p>Karta so <code>zaverecna: true</code> na konci zatvorí ten koniec pre oboch hráčov (<code>engine.ts:2894, 5318–5319</code>,
+<code>zablokovane[]</code>). NA EX na ňu smie dať len súper toho, kto ju zahral (§13; na Kostole tak majiteľ na tom konci nemá cieľ).
+Rozhoduje <b>majiteľ karty</b>, nie koniec, na ktorom leží.</p>
+
+<h3>f) Ostatné, tiež bez vlastníctva</h3>
+<p>Počet Pitiek sa ráta po krajoch. Odpoveď na NA EX ide „na druhý kraj“ (<code>krajOdpovede</code> je index konca,
+<code>engine.ts:3887</code>). Poľovník a Dohadzovačka hľadajú „druhý kraj“ voči polohe karty, nie voči hráčovi. Kostol pripúšťa
+oba konce. Vandal vymení, ktorá hrana leží v ktorom kraji. Ani jedno pravidlo nepotrebuje vlastníka konca.</p>
+
+<h3>g) Mimo pravidiel</h3>
+<p>Štatistiky <code>kartyDoSuperovej</code> (<code>statistiky.ts:286</code>) a <code>podstrcene</code> (<code>statistikyKariet.ts:65</code>),
+achievement <b>Podstrkovač</b> (<code>achievementy.json:553</code>, metrika <code>stat.kartyDoSuperovej</code>) a heuristika bota pri
+natočení (<code>bot.ts:1288</code>). Tieto počítajú presne „vyložené na koniec <code>strany[súper]</code>“. Bez pojmu strácajú
+definíciu (otázka 2).</p>
+</div>
+
+<!-- ================================================================= -->
+<h2>2. Pomenovanie bez vlastníctva</h2>
+
+<div class="panel">
+<p><b>Základ pre všetky varianty</b> (pojmy, ktoré už v hre sú):</p>
+<ul>
+<li><b>kraj</b> = polovica línie od lokality, menom z hrany lokality (Krčma: pri výčape / pri dverách). Majú ho všetky lokality
+v <code>cards.json</code> (19/19), takže aj pinnacle vo finále. Nahradí „stranu“ ako polovicu.</li>
+<li><b>koniec línie</b> = miesto, kam sa vykladá. Línia má dva konce. Nahradí „koniec svojej/súperovej strany“.</li>
+<li><b>kdekoľvek v línii</b> nahradí „na ktorejkoľvek strane“.</li>
+<li>Slovo „strana“ ostane len pre <b>hranu karty</b> (ľavá/pravá strana karty). Tam nejde o vlastníctvo, dlhodobo sa hodí „hrana“.</li>
+</ul>
+<p>Pre miesta, kde treba smer voči hráčovi (Most, opis obrazovky, výklad vnútornej hrany):</p>
+<table>
+<tr><th>Variant</th><th>Príklad</th><th>Za</th><th>Proti</th></tr>
+<tr><td><b>A · vľavo / vpravo od lokality</b> (z tvojho pohľadu)</td><td>„kraj vľavo“, „na koniec línie po svojej ľavici“</td>
+<td>Je to len geometria, žiadne vlastníctvo. Sedí s obrazovkou (každý má „svoje“ pole vľavo) aj s výkladom hrán (vľavo je vnútorná
+tvoja pravá hrana).</td><td>Súperovo „vľavo“ je tvoje „vpravo“, preto sa nehodí do spoločného logu. Tam patria mená krajov.</td></tr>
+<tr><td><b>B · pri tebe / oproti tebe</b> (bližší / vzdialený koniec)</td><td>„koniec pri tebe“</td><td>Krátke, Melichar to už používa
+(„Pecka pri tebe“).</td><td>Geometricky nepravdivé: oba konce sú od oboch hráčov rovnako ďaleko. „Pri tebe“ znie znova ako „tvoje“,
+čo Michal zakázal.</td></tr>
+<tr><td><b>C · len mená krajov</b></td><td>„pri výčape“, „pri dverách“</td><td>Bez vlastníctva, jednotné pre oboch, ideálne do logu
+a rekapitulácie.</td><td>Most sa ním nedá napísať všeobecne. Mená sa menia s lokalitou a Vandal ich prehodí.</td></tr>
+</table>
+<p class="odp"><b>Odporúčam A + C:</b> v spoločných textoch (log, rekapitulácia, pravidlá) <b>mená krajov a „koniec línie“</b>,
+v texte pre jedného hráča a v Moste <b>„vľavo / vpravo od lokality“</b>. Variant B nepoužiť.</p>
+</div>
+
+<!-- ================================================================= -->
+<h2>3. Most a Kostol (texty kariet)</h2>
+
+<div class="panel">
+<h3>Most <span class="kto a">A</span> <code>cards.json</code> (most) · zrkadlo PRAVIDLA r. 1870</h3>
+<p class="st">Zhromaždenie: Karty sa smú vykladať len na vlastnú stranu (aj odpoveď na NA EX).</p>
+<ul>
+<li><b>M1 (rovnaké pravidlo, iný text):</b> <span class="nv">„Zhromaždenie: Každý vykladá len na koniec línie po svojej ľavici
+(aj odpoveď na NA EX).“</span> Kód sa nemení.</li>
+<li><b>M2 (nové pravidlo):</b> <span class="nv">„Zhromaždenie: Kartu smieš priložiť len k lokalite alebo k svojej karte (aj odpoveď
+na NA EX).“</span> Väzba ide cez majiteľa karty, nie cez koniec línie. Prvý, kto priloží k lokalite, si koniec „zaberie“ hrou, nie
+pravidlom. Mení <code>lenVlastnaStrana</code> a test.</li>
+</ul>
+<p class="odp"><b>Odporúčam M1:</b> zachová hru (aj natočenie Mosta podľa hádky) a mení len slová. M2 je zaujímavé, ale je to nové
+pravidlo do dávky, nie preklad (otázka 1).</p>
+
+<h3>Kostol <span class="kto a">A</span> <code>cards.json</code> (kostol) · zrkadlo PRAVIDLA r. 1852</h3>
+<p class="st">Pitka: NA EX sa smie dať len na poslednú kartu línie na jednej alebo druhej strane.</p>
+<ul>
+<li><b>K1:</b> <span class="nv">„Pitka: NA EX sa smie dať len na kartu na konci línie (na ktoromkoľvek z dvoch koncov).“</span></li>
+<li><b>K2:</b> <span class="nv">„Pitka: NA EX sa smie dať len na jednu z dvoch krajných kariet línie.“</span></li>
+</ul>
+<p class="odp"><b>Odporúčam K1:</b> „krajná karta“ v K2 sa pletie s pojmom <b>kraj</b> (polovica línie). Prvá časť textu
+(„Zhromaždenie: Nikto nesmie vypiť.“) ostáva.</p>
+
+<h3>Ostatné texty kariet so „stranou“ <span class="kto a">A</span> (nejde o vlastníctvo, len o jednotný pojem)</h3>
+<ul class="v">
+<li><code>cards.json</code> vandal: <span class="st">„jej hrany si vymenia strany“</span> → <span class="nv">„jej hrany si vymenia kraje“</span></li>
+<li><code>cards.json</code> polovnik: <span class="st">„na druhej strane lokality“</span> → <span class="nv">„v druhom kraji“</span></li>
+<li><code>cards.json</code> dohadzovacka: <span class="st">„z druhej strany lokality“</span> → <span class="nv">„z druhého kraja“</span></li>
+</ul>
+<p class="poznamka">Poradie: admin zmení texty v tvorcovi (rozpracovaný stav pre Zrejúcu), potom <code>sada-do-repa.ts</code> skopíruje
+<code>cards.json</code> do master a nakoniec sa mení značka <code>dorovnajSoSeedom</code> (CLAUDE.md, pravidlo 5). Ihrisko už má „kraj“.</p>
+</div>
+
+<!-- ================================================================= -->
+<h2>4. Súpis výskytov a náhrady</h2>
+<p class="poznamka">Riadky sú z <code>origin/master</code> 3b6b03c6. Súvislý odsek na viacerých riadkoch je jeden výskyt (napr. 1028–1031).
+Hľadal som tvary „strana“ a obraty „k tebe / k súperovi / pri tebe“ pri hranách a krajoch. Hranu karty (ľavá/pravá strana karty)
+v súpise nemám.</p>
+
+<h3>4.1 docs/PRAVIDLA.md <span class="kto p">P</span> (49 zmeniť, 6 nechať)</h3>
+<ul class="v">
+<li><code>PRAVIDLA.md:643</code> <span class="st">na svoju alebo súperovu stranu</span> → <span class="nv">na jeden z dvoch koncov línie</span></li>
+<li><code>PRAVIDLA.md:647</code> nadpis <span class="st">Línia, strany a kraje</span> → <span class="nv">Línia, konce a kraje</span></li>
+<li><code>PRAVIDLA.md:650–651</code> <span class="st">delí ju na dve strany — tvoju (vľavo z tvojho pohľadu) a súperovu</span> → <span class="nv">delí ju na dva kraje, pomenované podľa hrán lokality (§15); línia má dva konce a žiaden nepatrí hráčovi</span></li>
+<li><code>PRAVIDLA.md:653–654</code> <span class="st">na vonkajší koniec jednej zo strán — tvojej aj súperovej. Strana určuje len to…</span> → <span class="nv">na ktorýkoľvek z dvoch koncov línie. Koniec určuje len to, kde karta leží a s čím susedí.</span></li>
+<li><code>PRAVIDLA.md:656</code> <span class="st">(prvá karta strany s lokalitou)</span> → <span class="nv">(prvá karta kraja s lokalitou)</span></li>
+<li><code>PRAVIDLA.md:657–659</code> <span class="st">na jeho strane je vnútorná jeho pravá hrana, na súperovej jeho ľavá</span> → <span class="nv">v kraji vľavo od lokality (z jeho pohľadu) je vnútorná jeho pravá hrana, v kraji vpravo ľavá</span></li>
+<li><code>PRAVIDLA.md:660</code> <span class="st">obrátená ku ktorej strane</span> → <span class="nv">ku ktorému kraju</span></li>
+<li><code>PRAVIDLA.md:661</code> <span class="st">(na súperovu stranu teda ide „nohami hore“)</span> → <span class="nv">(pre súpera je teda nohami hore, nech leží na ktoromkoľvek konci)</span> · oprava faktu, časť 1b</li>
+<li><code>PRAVIDLA.md:663–664</code> <span class="st">nech ležia na ktorejkoľvek strane</span> → <span class="nv">nech ležia kdekoľvek v línii</span></li>
+<li><code>PRAVIDLA.md:668–669</code> <span class="st">„Tvoja/súperova strana“ ostáva len ako pomenovanie, ku komu kraj prilieha.</span> → <span class="nv">Kraj ani koniec línie nepatria nikomu.</span></li>
+<li><code>PRAVIDLA.md:671</code> <span class="st">na konci strany, kam sa vykladá … na prázdnu stranu</span> → <span class="nv">na konci línie, kam sa vykladá … do prázdneho kraja</span></li>
+<li><code>PRAVIDLA.md:804</code> <span class="st">Vyloženie na súperovu stranu sa počíta do limitu hráča, ktorý kartu zahral</span> → <span class="nv">Vyloženie na ktorýkoľvek koniec línie míňa limit hráča, ktorý kartu zahral</span></li>
+<li><code>PRAVIDLA.md:858–859</code> <span class="st">na ktorejkoľvek strane</span> → <span class="nv">kdekoľvek v línii</span></li>
+<li><code>PRAVIDLA.md:943</code> <span class="st">na koniec svojej alebo súperovej strany</span> → <span class="nv">na ktorýkoľvek koniec línie</span></li>
+<li><code>PRAVIDLA.md:1022–1023</code> <span class="st">na jej dvoch stranách</span> → <span class="nv">v jej dvoch krajoch</span></li>
+<li><code>PRAVIDLA.md:1028–1031</code> <span class="st">na jednej strane lokality … na druhej … na niektorej strane … podľa strán, nie podľa hráčov … hranu pri strane, kde leží</span> → <span class="nv">v jednom kraji … v druhom … v niektorom kraji … podľa krajov, nie podľa hráčov … hranu kraja, kde leží</span></li>
+<li><code>PRAVIDLA.md:1245–1246</code> <span class="st">na oboch stranách, jeho aj súperove</span> → <span class="nv">v oboch krajoch, jeho aj súperove</span></li>
+<li><code>PRAVIDLA.md:1251</code> <span class="st">(svoju partiu, na ktorejkoľvek strane)</span> → <span class="nv">(svoju partiu, kdekoľvek v línii)</span></li>
+<li><code>PRAVIDLA.md:1301–1302</code> <span class="st">nech leží na ktorejkoľvek strane</span> → <span class="nv">nech leží kdekoľvek v línii</span></li>
+<li><code>PRAVIDLA.md:1648</code> <span class="st">na konci strany, kam sa vykladá</span> → <span class="nv">na konci línie, kam sa vykladá</span></li>
+<li><code>PRAVIDLA.md:1650–1651</code> <span class="st">na prázdnu stranu — svoju ani súperovu</span> → <span class="nv">do prázdneho kraja (na žiadnom konci)</span></li>
+<li><code>PRAVIDLA.md:1730</code> §13 Záverečná <span class="st">na koniec svojej alebo súperovej strany</span> → <span class="nv">na ktorýkoľvek koniec línie</span></li>
+<li><code>PRAVIDLA.md:1742</code> <span class="st">tá strana je dovtedy zablokovaná</span> → <span class="nv">ten koniec línie je dovtedy zavretý (pre oboch)</span></li>
+<li><code>PRAVIDLA.md:1751</code> nadpis <span class="st">Podstrčenie (sabotér)</span> → podľa otázky 2</li>
+<li><code>PRAVIDLA.md:1753–1754</code> <span class="st">Súperovi môžeš na jeho stranu podstrčiť kartu … zaberie mu koniec strany</span> → <span class="nv">Svoju kartu môžeš priložiť k súperovej — jej Odpor mu zruší akciu na spoji, jej akcie bodujú pre teba a zaberie koniec línie, kde súper stavia</span></li>
+<li><code>PRAVIDLA.md:1758</code> <span class="st">Podstrčený Kočovník je výnimka</span> → <span class="nv">Kočovník je výnimka</span> (kód dáva jeho akcie hráčovi s prevahou vždy, <code>partia.ts:1050</code>)</li>
+<li><code>PRAVIDLA.md:1759–1760</code> <span class="st">Podstrčený Pes platí … zdvoja aj na súperovej strane</span> → <span class="nv">Pes platí kdekoľvek v línii — jeho aktívne akcie na spoji so súperovou kartou sa zdvoja</span></li>
+<li><code>PRAVIDLA.md:1760–1761</code> <span class="st">na Moste sa na súperovu stranu nevykladá (§15)</span> → <span class="nv">na Moste každý vykladá len po svojej ľavici (§15)</span></li>
+<li><code>PRAVIDLA.md:1773</code> tabuľka špakov <span class="st">na oboch stranách</span> → <span class="nv">v celej línii</span></li>
+<li><code>PRAVIDLA.md:1847</code> Lesná cesta <span class="st">(natočené k tebe, na ktorejkoľvek strane)</span> → <span class="nv">(natočené k tebe, kdekoľvek v línii)</span></li>
+<li><code>PRAVIDLA.md:1852</code> Kostol <span class="st">na jednej alebo druhej strane</span> → <span class="nv">na ktoromkoľvek z dvoch koncov línie</span> (podľa K1)</li>
+<li><code>PRAVIDLA.md:1859</code> Kultúrny dom <span class="st">(svoju partiu, na ktorejkoľvek strane)</span> → <span class="nv">(svoju partiu, kdekoľvek v línii)</span></li>
+<li><code>PRAVIDLA.md:1870</code> Most <span class="st">len na vlastnú stranu</span> → <span class="nv">každý len na koniec línie po svojej ľavici</span> (podľa M1)</li>
+<li><code>PRAVIDLA.md:1872</code> Družstvo <span class="st">na ktorejkoľvek strane</span> → <span class="nv">kdekoľvek v línii</span></li>
+<li><code>PRAVIDLA.md:1876–1877</code> <span class="st">na vonkajšom konci strany … ku ktorej strane</span> → <span class="nv">na konci línie … ku ktorému kraju</span></li>
+<li><code>PRAVIDLA.md:1879</code> <span class="st">Strana bez karty cieľ nemá — ostáva koniec druhej strany</span> → <span class="nv">Prázdny kraj cieľ nemá — ostáva druhý koniec línie</span></li>
+<li><code>PRAVIDLA.md:1881–1882</code> <span class="st">tá strana v tej chvíli cieľ nemá</span> → <span class="nv">ten koniec v tej chvíli cieľ nemá</span></li>
+<li><code>PRAVIDLA.md:1883–1884</code> <span class="st">posledná karta svojej strany … na tej strane cieľ nemá</span> → <span class="nv">posledná karta na svojom konci línie … na tom konci cieľ nemá</span></li>
+<li><code>PRAVIDLA.md:1913</code> Konflikt <span class="st">(na koniec strany, …)</span> → <span class="nv">(na koniec línie, …)</span></li>
+<li><code>PRAVIDLA.md:1915–1916</code> Podpora <span class="st">na ktorejkoľvek strane</span> → <span class="nv">kdekoľvek v línii</span></li>
+<li><code>PRAVIDLA.md:1963</code> Záhradkár <span class="st">(jeho karta, aj na súperovej strane)</span> → <span class="nv">(jeho karta, kdekoľvek v línii)</span></li>
+<li><code>PRAVIDLA.md:1965</code> Poľovník <span class="st">na druhej strane lokality (oproti strane, kde Poľovník leží — platí aj podstrčený)</span> → <span class="nv">v druhom kraji (oproti kraju, kde Poľovník leží, nech ho zahral ktokoľvek)</span></li>
+<li><code>PRAVIDLA.md:1968</code> Dohadzovačka <span class="st">z druhej strany lokality … na vonkajší koniec jej strany … medzera na druhej strane</span> → <span class="nv">z druhého kraja … na koniec línie za ňou … medzera v druhom kraji</span></li>
+<li><code>PRAVIDLA.md:1972</code> Svokra <span class="st">(na ktorejkoľvek strane, …)</span> → <span class="nv">(kdekoľvek v línii, …)</span></li>
+<li><code>PRAVIDLA.md:2042</code> slovník Partia <span class="st">na ktorejkoľvek strane</span> → <span class="nv">kdekoľvek v línii</span></li>
+<li><code>PRAVIDLA.md:2061</code> slovník <span class="st">Strana | polovica línie od lokality — tvoja a súperova</span> → <span class="nv">heslo zrušiť; pridať „Koniec línie | jeden z dvoch koncov, kam sa vykladá; nepatrí nikomu (§6)“; v hesle Kraj doplniť „nepatrí nikomu“</span></li>
+<li><code>PRAVIDLA.md:2078</code> §18 <span class="st">strana línie, partia, …</span> → <span class="nv">partia, …</span> (vypustiť)</li>
+<li><code>PRAVIDLA.md:2100</code> §18.2 <span class="st">strana línie, prevaha v kraji, partia</span> → <span class="nv">prevaha v kraji, partia</span></li>
+<li><code>PRAVIDLA.md:2147</code> §18.6 <span class="st">na koniec strany svojho alebo súperovho tímu</span> → <span class="nv">na ktorýkoľvek koniec línie</span></li>
+</ul>
+<p><b>Nechať</b> <span class="kto n">—</span> (história zmien v hlavičke, citáty, iný význam):</p>
+<ul class="v">
+<li><code>PRAVIDLA.md:22, 27</code> zoznam zmien v11.13 (Lesná cesta, Družstvo): história. Pri dávke s touto zmenou pribudne nový záznam.</li>
+<li><code>PRAVIDLA.md:75</code> citát Michala ku Kostolu: citát</li>
+<li><code>PRAVIDLA.md:181</code> pôvodný text Poľovníka v zmenách v10.4: história</li>
+<li><code>PRAVIDLA.md:208, 296</code> zmeny v10.2 a v8: história</li>
+<li><code>PRAVIDLA.md:1491</code> „pridal na jeho stranu“: citát Michala, význam „spojenec“</li>
+<li><code>PRAVIDLA.md:1907</code> „susedia v línii na oboch stranách“: oba susedia karty, nie vlastníctvo (môže ostať)</li>
+</ul>
+
+<h3>4.2 tools/playtest/tahak.md <span class="kto p">P</span> (8)</h3>
+<p class="poznamka">Čísla v ťaháku stráži test. Po úprave spustiť <code>npx vitest run</code>.</p>
+<ul class="v">
+<li><code>tahak.md:14</code> <span class="st">na oboch stranách</span> → <span class="nv">v celej línii</span></li>
+<li><code>tahak.md:53</code> <span class="st">na koniec svojej aj súperovej strany (target vlastna / superova)</span> → <span class="nv">na ktorýkoľvek z dvoch koncov línie (target vlastna = koniec vľavo od lokality, superova = vpravo; názvy sú len technické)</span></li>
+<li><code>tahak.md:55</code> <span class="st">Podstrčený „sabotér“</span> → <span class="nv">Tvoja karta priložená k súperovej</span></li>
+<li><code>tahak.md:62–63</code> <span class="st">lokalita ju delí na dve strany (tvoja, súperova) … na ktorejkoľvek strane</span> → <span class="nv">lokalita ju delí na dva kraje; línia má dva konce, žiaden nie je tvoj … kdekoľvek v línii</span></li>
+<li><code>tahak.md:74–76</code> <span class="st">z jej dvoch strán … podľa strán … (aj podstrčená)</span> → <span class="nv">z jej dvoch krajov … podľa krajov … (aj karta priložená k súperovej)</span></li>
+<li><code>tahak.md:100, 104</code> <span class="st">Lesná cesta … na ktorejkoľvek strane; Most (len na vlastnú stranu)</span> → <span class="nv">kdekoľvek v línii; Most (každý len na koniec vľavo od lokality)</span></li>
+<li><code>tahak.md:194–197</code> <span class="st">z druhej strany lokality … na koniec jej strany … na druhej strane lokality</span> → <span class="nv">z druhého kraja … na koniec línie za ňou … v druhom kraji</span></li>
+<li><code>tahak.md:226–227</code> <span class="st">na prázdnu stranu (svoju ani súperovu …)</span> → <span class="nv">do prázdneho kraja (na žiadny koniec …)</span></li>
+</ul>
+
+<h3>4.3 Webový klient apps/web/src <span class="kto p">P</span> (40 zmeniť, 1 nechať)</h3>
+<p><b>Stôl (HernaPlocha.tsx).</b> Na koncoch línie odporúčam meno kraja so šípkou, napr. „◀ pri výčape“. Fallback bez lokality je
+„vľavo / vpravo“.</p>
+<ul class="v">
+<li><code>HernaPlocha.tsx:164–165</code> POPIS_CIELA <span class="st">na tvoju stranu / na súperovu stranu (ostane tvoja)</span> → <span class="nv">na koniec vľavo / na koniec vpravo</span> (s menom kraja: „k výčapu“)</li>
+<li><code>HernaPlocha.tsx:2840</code> title Dohadzovačky <span class="st">z druhej strany lokality … (na koniec svojej strany)</span> → <span class="nv">z druhého kraja … (na koniec línie za ňou)</span></li>
+<li><code>HernaPlocha.tsx:2988</code> nazovMiesta <span class="st">na tvoju stranu / na súperovu stranu</span> → <span class="nv">„na koniec — {kraj}“</span></li>
+<li><code>HernaPlocha.tsx:3020</code> nazov <span class="st">na tvoju stranu / na súperovu stranu</span> → rovnako ako 2988</li>
+<li><code>HernaPlocha.tsx:3180</code> popisKraja <span class="st">„tvoja strana“ / „strana — {meno}“</span> → <span class="nv">„vľavo“ / „vpravo“</span> (keď kraj nemá meno)</li>
+<li><code>HernaPlocha.tsx:3201–3202</code> <span class="st">◀ k tebe · k súperovi ▶</span> → <span class="nv">◀ vľavo · vpravo ▶</span></li>
+<li><code>HernaPlocha.tsx:3208</code> <span class="st">k tebe {ikony} · k súperovi {ikony}</span> → <span class="nv">vľavo {ikony} · vpravo {ikony}</span></li>
+<li><code>HernaPlocha.tsx:3258</code> <span class="st">Na tvoju stranu / Na súperovu stranu:</span> → <span class="nv">Na koniec {kraj}:</span></li>
+<li><code>HernaPlocha.tsx:3336</code> <span class="st">z dvoch strán</span> → <span class="nv">z dvoch krajov</span></li>
+<li><code>HernaPlocha.tsx:4047, 4181</code> <span class="st">na + na konci strany</span> → <span class="nv">na + na konci línie</span></li>
+<li><code>HernaPlocha.tsx:4369</code> title odhadu <span class="st">na koniec tvojej/svojej strany</span> → <span class="nv">na koniec {kraj}</span></li>
+<li><code>HernaPlocha.tsx:5989</code> <span class="st">K tebe je hrana „…“, k súperovi „…“ / Ľavá hrana karty je k tebe, pravá k súperovi.</span> → <span class="nv">Vľavo je hrana „…“, vpravo „…“ / Ľavá hrana karty je vľavo, pravá vpravo.</span></li>
+<li><code>HernaPlocha.tsx:5996–5997</code> <span class="st">◀ k tebe · k súperovi ▶</span> → <span class="nv">◀ vľavo · vpravo ▶</span></li>
+<li><code>HernaPlocha.tsx:6169</code> <span class="st">Hrana k tebe: … · hrana k súperovi: …</span> → <span class="nv">Vľavo: … · vpravo: …</span></li>
+</ul>
+<p><b>Panely, rekapitulácia, ostatné</b></p>
+<ul class="v">
+<li><code>Panely.tsx:1493</code> <span class="st">na jej dvoch stranách</span> → <span class="nv">v jej dvoch krajoch</span></li>
+<li><code>Panely.tsx:1519</code> <span class="st">obrátené ku ktorej strane</span> → <span class="nv">obrátené ku ktorému kraju</span></li>
+<li><code>Panely.tsx:1560</code> <span class="st">na hociktorú stranu línie</span> → <span class="nv">na hociktorý koniec línie</span></li>
+<li><code>Rekapitulacia.tsx:311</code> <span class="st">na tvoju stranu / na súperovu stranu / na svoju stranu</span> → <span class="nv">„{kraj}“</span> (rovnaké pre oboch hráčov)</li>
+<li><code>StavkaBitky.tsx:10</code> <span class="st">(na oboch stranách, v čase bitky)</span> → <span class="nv">(v celej línii, v čase bitky)</span></li>
+<li><code>Heatmapa.tsx:149</code> <span class="st">Prepínač ako na súperovej strane</span> → <span class="nv">Prepínač ako súperova karta</span> (oprava faktu, časť 1b)</li>
+<li><code>Heatmapa.tsx:198</code> <span class="st">ako na súperovej strane (otočené o 180°)</span> → <span class="nv">ako súperova karta (otočená o 180°)</span></li>
+<li><code>Statistiky.tsx:474</code> <span class="st">Z toho {n} do súperovej partie.</span> → podľa otázky 2. „Do súperovej partie“ je chyba už dnes, karta je v tvojej partii.</li>
+<li><code>JednotnyBar.tsx:2</code> a <code>Panely.tsx:1224</code>: komentár, „strana“ tu znamená polovicu baru s údajmi hráča, nie líniu. <span class="kto n">—</span> nechať</li>
+</ul>
+<p><b>Stránka Pravidlá</b> (<code>stranky/pravidla/</code>)</p>
+<ul class="v">
+<li><code>kapitoly.tsx:240</code> <span class="st">na dve &lt;P k="strana"&gt;strany&lt;/P&gt;</span> → <span class="nv">na dva &lt;P k="kraj"&gt;kraje&lt;/P&gt;</span></li>
+<li><code>kapitoly.tsx:291</code> <span class="st">Kartu kladieš na koniec svojej alebo súperovej strany; ostáva tvoja.</span> → <span class="nv">Kartu kladieš na ktorýkoľvek koniec línie; ostáva tvoja.</span></li>
+<li><code>kapitoly.tsx:298</code> nadpis <span class="st">Línia a dve strany</span> → <span class="nv">Línia, dva konce a dva kraje</span></li>
+<li><code>kapitoly.tsx:300–301</code> <span class="st">delí na tvoju a súperovu stranu … koniec svojej alebo súperovej strany</span> → <span class="nv">delí na dva kraje … ktorýkoľvek z dvoch koncov línie — žiaden nie je tvoj</span></li>
+<li><code>kapitoly.tsx:343</code> <span class="st">z jej dvoch strán</span> → <span class="nv">z jej dvoch krajov</span></li>
+<li><code>kapitoly.tsx:355–357</code> <span class="st">na jej dvoch stranách … na jednej strane … podľa strán</span> → <span class="nv">v jej dvoch krajoch … v jednom kraji … podľa krajov</span></li>
+<li><code>kapitoly.tsx:423–424</code> <span class="st">na koniec svojej alebo jeho strany</span> → <span class="nv">na ktorýkoľvek koniec línie</span></li>
+<li><code>kapitoly.tsx:576</code> <span class="st">na oboch stranách</span> → <span class="nv">v celej línii</span></li>
+<li><code>kapitoly.tsx:833</code> <span class="st">na prázdnu stranu, svoju ani súperovu</span> → <span class="nv">do prázdneho kraja, na žiadnom konci</span></li>
+<li><code>kapitoly.tsx:860</code> <span class="st">Podstrčenie: karta na súperovej strane ostáva tvoja.</span> → podľa otázky 2, napr. <span class="nv">Karta je tvoja, nech leží na ktoromkoľvek konci.</span></li>
+<li><code>kapitoly.tsx:879–880</code> Záverečná <span class="st">koniec svojej alebo súperovej strany</span> → <span class="nv">ktorýkoľvek koniec línie</span></li>
+<li><code>kapitoly.tsx:884–888</code> Podstrčenie <span class="st">Karta vyložená na súperovu stranu … zaberieš mu koniec strany</span> → <span class="nv">Karta priložená k súperovej … zaberieš koniec línie, kde stavia</span> (podľa otázky 2)</li>
+<li><code>kapitoly.tsx:957</code> <span class="st">na ktorejkoľvek strane</span> → <span class="nv">kdekoľvek v línii</span></li>
+<li><code>kapitoly.tsx:960</code> Most <span class="st">Karty len na vlastnú stranu</span> → <span class="nv">Každý len na koniec línie po svojej ľavici</span></li>
+<li><code>kapitoly.tsx:1003</code> <span class="st">na oboch stranách</span> → <span class="nv">v celej línii</span></li>
+<li><code>slovnik.ts:57</code> Partia <span class="st">nech ležia na ktorejkoľvek strane</span> → <span class="nv">nech ležia kdekoľvek v línii</span></li>
+<li><code>slovnik.ts:65</code> Podstrčenie <span class="st">Karta vyložená na súperovu stranu</span> → podľa otázky 2</li>
+<li><code>slovnik.ts:82</code> heslo <span class="st">Strana</span> → <span class="nv">zrušiť, pridať „Koniec línie“</span>. Odkazy <code>k="strana"</code> (kapitoly 240, 301) presmerovať na <code>kraj</code>.</li>
+</ul>
+
+<h3>4.4 Hlášky a chyby jadra packages/core/src <span class="kto p">P</span> (14 zmeniť, 1 nechať)</h3>
+<p class="poznamka">Log vidia obaja hráči, preto doň patria mená krajov (variant C), nie „vľavo“.</p>
+<ul class="v">
+<li><code>engine.ts:2883</code> <span class="st">Kartu možno vyložiť len na tvoju alebo súperovu stranu.</span> → <span class="nv">Kartu možno vyložiť len na koniec línie.</span></li>
+<li><code>engine.ts:2884</code> <span class="st">Most: karty sa smú vykladať len na vlastnú stranu.</span> → <span class="nv">Most: každý vykladá len na koniec línie po svojej ľavici.</span></li>
+<li><code>engine.ts:2895</code> <span class="st">… urobil poslednou na strane.</span> → <span class="nv">… urobil poslednou na tom konci línie.</span></li>
+<li><code>engine.ts:2913</code> <span class="st">odpovedá … na koniec svojej/súperovej strany.</span> → <span class="nv">odpovedá … na koniec línie {kraj}.</span></li>
+<li><code>engine.ts:3315</code> Dohadzovačka <span class="st">sa presúva z druhej strany lokality</span> → <span class="nv">sa presúva z druhého kraja</span></li>
+<li><code>engine.ts:3392</code> Vandal <span class="st">jej hrany si vymenili strany</span> → <span class="nv">jej hrany si vymenili kraje</span></li>
+<li><code>engine.ts:3681</code> <span class="st">len na koniec strany hráča N (druhý kraj línie)</span> → <span class="nv">len na druhý koniec línie ({kraj})</span></li>
+<li><code>engine.ts:3715</code> <span class="st">(koniec strany hráča N)</span> → <span class="nv">({kraj})</span></li>
+<li><code>engine.ts:3738</code> <span class="st">pri strane hráča N</span> → <span class="nv">v kraji vľavo/vpravo od lokality hráča 1</span> (fallback bez mena; kraj má meno vždy, keď leží lokalita)</li>
+<li><code>engine.ts:4622</code> <span class="st">Živnostník už nie je na konci strany</span> → <span class="nv">… na konci línie</span></li>
+<li><code>engine.ts:5347</code> auto-pas <span class="st">na tejto lokalite sa vykladá len na vlastnú</span> → <span class="nv">na Moste sa vykladá len po svojej ľavici</span></li>
+<li><code>engine.ts:5357–5358</code> auto-pas <span class="st">obe strany: … / tvoja strana: … / súperova strana: …</span> → <span class="nv">oba konce: … / {kraj}: … / {kraj}: …</span></li>
+<li><code>vyucba.ts:540–541</code> <span class="st">na svoju stranu línie / na súperovu stranu línie</span> → <span class="nv">na koniec línie vľavo / vpravo</span> (výučba hovorí s jedným hráčom)</li>
+<li><code>effects.ts:143, 368</code> komentáre Mosta „len na vlastnú stranu“ → spolu s premenovaním identifikátorov (časť 5)</li>
+<li><code>momenty.ts:232</code> „má na svojej strane … presvedčeného staršieho“: význam „spojenec“, nie línia. <span class="kto n">—</span> nechať</li>
+</ul>
+
+<h3>4.5 Klient AI playtesterov tools/playtest/hrac.ts <span class="kto p">P</span> (6)</h3>
+<ul class="v">
+<li><code>hrac.ts:480</code> <span class="st">(tvoja strana vľavo, lokalita v strede, súperova strana vpravo)</span> → <span class="nv">(kraj vľavo, lokalita v strede, kraj vpravo; konce línie nepatria nikomu)</span></li>
+<li><code>hrac.ts:484</code> <span class="st">nech leží na ktorejkoľvek strane</span> → <span class="nv">nech leží kdekoľvek v línii</span></li>
+<li><code>hrac.ts:488</code> <span class="st">(tvoja strana) / (súperova strana)</span> → <span class="nv">(vľavo) / (vpravo)</span></li>
+<li><code>hrac.ts:510, 521</code> <span class="st">[… na tvojej strane] / [… na súperovej strane]</span> → <span class="nv">[… vľavo] / [… vpravo]</span></li>
+<li><code>hrac.ts:667</code> <span class="st">na TVOJU stranu sa k lokalite obráti PRAVÁ, na SÚPEROVU ĽAVÁ</span> → <span class="nv">vľavo od lokality sa k nej obráti PRAVÁ, vpravo ĽAVÁ</span></li>
+<li><code>hrac.ts:771–772</code> <span class="st">na koniec tvojej strany / na koniec súperovej strany (karta ostane tvoja…)</span> → <span class="nv">na koniec línie vľavo / vpravo (karta je tvoja na oboch)</span></li>
+</ul>
+
+<h3>4.6 Dáta <span class="kto a">A</span> / <span class="kto p">P</span> (6 zmeniť, 2 nechať)</h3>
+<ul class="v">
+<li><span class="kto a">A</span><code>cards.json</code> most, kostol, vandal, polovnik, dohadzovacka: časť 3 (5 kariet)</li>
+<li><span class="kto p">P</span><code>achievementy.json:553</code> Podstrkovač <span class="st">Vylož … kariet na súperovu stranu.</span> → podľa otázky 2</li>
+<li><span class="kto n">—</span><code>vyucba/napovedy.json:204</code> „podmienka: strana línie …“: interný popis, ide s identifikátormi</li>
+<li><span class="kto n">—</span><code>tools/playtest/hraci.json:32</code>, <code>styly.json:50, 54</code> „dedina na svojej strane“, „prehovára na svoju stranu“: význam „spojenec“</li>
+</ul>
+
+<h3>4.7 Výučba packages/core/data/vyucba/prva-hra.json <span class="kto m">M</span> (14), Michalove texty</h3>
+<p class="poznamka">Toto sú len návrhy. Zmení ich Michal alebo ich schváli doslova. Kľúče zvýraznenia (<code>prevaha</code>,
+<code>linia:dvojcata</code>) a <code>target</code> v krokoch sa nemenia. Po zmene treba prehrať <code>tools/vyucba/prehraj.ts</code>
+a <code>npx vitest run</code>.</p>
+<ul class="v michal">
+<li><code>prva-hra.json:239</code> Michalov text: <span class="st">aby jej Pecka bola pri tebe … ktorá hrana bude pri tebe. Hrana pri tebe môže byť tvoja, tú druhú berie súper.</span> → návrh: <span class="nv">aby jej Pecka bola vľavo, tam budeš vykladať … ktorá hrana bude kde. Hranu dostane ten, kto má v jej kraji prevahu.</span></li>
+<li><code>prva-hra.json:258</code> Michalov text: <span class="st">pri tebe by nebolo žiadne tuhé</span> → <span class="nv">vľavo by nebolo žiadne tuhé</span></li>
+<li><code>prva-hra.json:278, 1066</code> Michalov text: <span class="st">Peckou k sebe</span> → <span class="nv">Peckou doľava</span> (alebo ponechať ako Melicharov slang, tam nejde o „stranu“)</li>
+<li><code>prva-hra.json:504</code> Michalov text: <span class="st">hrana pri tebe je tvoja, lebo pri nej leží tvoja karta</span> → <span class="nv">hrana vľavo je tvoja, lebo pri nej leží tvoja karta</span></li>
+<li><code>prva-hra.json:512</code> Michalov text (možnosť kvízu): <span class="st">Leží na mojej strane.</span> → <span class="nv">Leží vľavo, pri mne.</span></li>
+<li><code>prva-hra.json:513</code> Michalov text: <span class="st">Strana nerozhoduje, rozhoduje partner na spoji.</span> → <span class="nv">Kde leží, nerozhoduje, rozhoduje partner na spoji.</span></li>
+<li><code>prva-hra.json:812</code> Michalov text: <span class="st">za každú kartu v línii na oboch stranách – päť</span> → <span class="nv">za každú kartu v línii – päť</span></li>
+<li><code>prva-hra.json:1027</code> Michalov text: <span class="st">kto má pri ňom na svojej polovici viac ľudí</span> → <span class="nv">kto má v kraji viac ľudí</span></li>
+<li><code>prva-hra.json:1200</code> Michalov text: <span class="st">nie na ktorej strane ležia</span> → <span class="nv">nie na ktorom konci ležia</span></li>
+<li><code>prva-hra.json:1292</code> Michalov text: <span class="st">položil Dvojčatá na koniec tvojej strany</span> → <span class="nv">položil Dvojčatá na koniec línie vľavo, k tvojim kartám</span></li>
+<li><code>prva-hra.json:1310</code> Michalov text: <span class="st">ktoré ležia na tvojej strane?</span> → <span class="nv">ktoré ležia medzi tvojimi kartami?</span></li>
+<li><code>prva-hra.json:1313, 1315</code> Michalov text: <span class="st">Mne, ležia u mňa. / Ležia u teba, ale sú jeho.</span> → <span class="nv">Mne, ležia pri mojich. / Ležia pri tvojich, ale sú jeho.</span></li>
+<li><code>prva-hra.json:1435</code> Michalov text: <span class="st">na koniec svojej strany, za Liberála</span> → <span class="nv">na koniec línie za Liberála</span></li>
+<li><code>prva-hra.json:1523</code> Michalov text: <span class="st">Na koniec tvojej strany.</span> → <span class="nv">Na koniec línie vľavo.</span></li>
+</ul>
+<p class="poznamka"><code>prva-hra.json:1864</code> „si k sebe natočil vchod“ hovorí o natočení, nie o vlastníctve. Navrhujem nechať.</p>
+
+<!-- ================================================================= -->
+<h2>5. Identifikátory v kóde (len súpis)</h2>
+<div class="panel">
+<p>Premenovanie je samostatná úloha. <b>Riziko:</b> <code>target: "vlastna" | "superova"</code> je aj v protokole klienta (AI hráči,
+ťahák), v uložených príkazoch partií (štatistiky čítajú <code>c.target</code>) a vo výučbe (<code>"target": "superova"</code>). Premenovať
+ich treba so spätnou kompatibilitou, napr. prijať aj staré hodnoty.</p>
+<ul>
+<li><code>CielVykladania = "vlastna" | "superova" | …</code> <code>engine.ts:697</code>; príkaz <code>zaverecna</code> <code>engine.ts:640</code>, <code>cmdZaverecna</code> <code>2761</code>, <code>cieleOdpovede</code> <code>3884–3887</code>, <code>cieleVykladania.smie</code> <code>5314–5328</code>, <code>6331</code></li>
+<li><code>StranaLinie</code> <code>hrany.ts:49</code>; <code>StranyLokality.kTebe / kSuperovi</code> <code>hrany.ts:35–40</code>; <code>naMojej</code> <code>hrany.ts:120</code></li>
+<li><code>lenVlastnaStrana</code> <code>effects.ts:369</code> (použitia <code>engine.ts:103, 2884, 5316, 5347</code>)</li>
+<li><code>dovodyAutoPasu</code>: <code>moja</code>, <code>superova</code> <code>engine.ts:5356</code></li>
+<li><code>bot.ts:1009, 1031, 1442</code> <code>kam: "vlastna" | "superova"</code></li>
+<li><code>statistiky.ts:286</code> <code>kartyDoSuperovej</code>; <code>statistikyKariet.ts:14–17, 65</code> <code>vylozene</code>/<code>podstrcene</code>; metrika achievementu <code>stat.kartyDoSuperovej</code></li>
+<li><code>nahlady.ts:393</code>, <code>HernaPlocha.tsx:160, 2986</code> (<code>miestoNaKonci(p, ciel)</code>), CSS triedy <code>kraj-prevaha moja / superova</code> (<code>HernaPlocha.tsx:3186</code>)</li>
+<li>Pole <code>strany</code> v <code>GameState</code>/<code>LineState</code> (všade) môže ostať. Je to dátová štruktúra „dva kraje“, nie text pre hráča.</li>
+</ul>
+</div>
+
+<!-- ================================================================= -->
+<h2>6. Otázky pre Michala</h2>
+<ol class="q">
+<li><b>Most.</b> Je to jediné pravidlo, ktoré bez „tvojej strany“ nejde opísať: dnes každý vykladá len na koniec po svojej ľavici
+a natočenie Mosta rozhodne, kto stavia pri kaplnke.<br>
+<span class="odp" style="display:block;margin-top:6px"><b>Odporúčanie:</b> ponechať pravidlo s textom M1 („Každý vykladá len na koniec
+línie po svojej ľavici“). Kód sa nemení. Variant M2 („len k lokalite alebo k svojej karte“) je nové pravidlo do budúcej dávky.</span></li>
+<li><b>Podstrčenie a achievement Podstrkovač.</b> „Podstrčiť“ dnes znamená „vyložiť na súperovu stranu“. Bez nej pojem nemá
+definíciu. Achievement Podstrkovač (<code>achievementy.json:553</code>) a štatistika „vyložené do súperovej“ počítajú práve to.<br>
+<span class="odp" style="display:block;margin-top:6px"><b>Odporúčanie:</b> podstrčenie predefinovať na „<b>priložiť svoju kartu
+k súperovej</b>“ (to robí sabotér s Odporom). Podstrkovač potom ráta karty, ktorých vnútorný sused pri priložení je súperova karta.
+To je nová metrika pre programátora. Doterajší držitelia achievement nestratia (achievementy sa neodoberajú). Druhá možnosť: pojem
+podstrčenie z pravidiel vypustiť (§6 už hovorí, že karta smie na oba konce a ostáva tvoja) a Podstrkovač nechať ako LEGACY.</span></li>
+<li><b>Melicharove texty vo výučbe</b> (4.7, 14 miest): schváliš návrhy, alebo ich prepíšeš sám? Výučba sa podľa CLAUDE.md robí až pri
+prechode na Vypálenú. Texty pravidiel, UI a hlášok môžu ísť do Zrejúcej hneď.</li>
+</ol>
+
+<p class="poznamka">Spolu 148 položiek súpisu (položka = jedno miesto; súvislý odsek alebo rovnaký text na susedných riadkoch je jedna): PRAVIDLA 55 (49 + 6 nechať), ťahák 8, web 41 (40 + 1 nechať), jadro 15 (14 + 1 nechať),
+hrac.ts 6, karty a dáta 8 (6 + 2 nechať), výučba 15 (14 + 1 nechať). Kód hry som nemenil.</p>
+
+</div>
+</body>
+</html>
