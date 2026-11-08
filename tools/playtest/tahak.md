@@ -132,7 +132,7 @@ rozpore s `docs/PRAVIDLA.md` platí `docs/PRAVIDLA.md` a rozpor zapíš do
   odhadzovacieho balíčka do ruky (`uid`).
 - **Identita kariet (v11.5):** **Sypač** (Podpora): keď sa priložením stretne s tvojím Chlapom, ten má do konca
   kola **Rany ako Pecky**. **Podvodník** (Konflikt): súper ti dá **1 cigaretu**, ak žiadnu nemá, získa **1 zadĺženie** (rovno Dlh, pozri Prah Dlhu).
-  **Opatrovateľka** (Furt): tvoji Pamätníci v jej okolí majú aktívne akcie **posilnené** (×2). **Anonymný alkoholik**
+  **Opatrovateľka** (Furt): tvoji Pamätníci v jej okolí majú aktívne akcie **posilnené** (×2). **Silná nezávislá žena** (Furt, 2026-11-08): zdvojí aktívne akcie len tvojich susedných **Občanov a Starešinov**, nie Zviera ani Nástroj (ani Recidivistu). **Anonymný alkoholik**
   (Furt): Poškodenie pečene tvojich kariet v jeho okolí sa ráta ako **Viera**. **Kôň** (Furt): Nástroj vedľa neho
   s ním tvorí spoj; **Roboty Koňa pália o 1 Dlh viac**. **Noviny** (Dedičstvo: Hádka): keď vyhráš hádku, súper
   odhodí **1 náhodnú kartu z ruky**. Výtržník má vždy Rany (aj Sypač).

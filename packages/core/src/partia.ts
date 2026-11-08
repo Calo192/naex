@@ -809,7 +809,9 @@ function kartoveEfekty(segments: readonly (readonly Elem[])[], umlcane: Readonly
     } else if (e.defId === "silna_nezavisla_zena") {
       // Michal 2026-10-18: podporuje okolie — aktívne akcie susedných kariet
       // toho istého majiteľa sa rátajú dvakrát (lokalitu a cudzie karty nie).
-      for (const s of okolie(e)) if (!s.isLokalita && s.owner === e.owner) zdvojAktivne(s, e.defId);
+      // Michal 2026-11-08: len ľudí — Občanov a Starešinov; Zviera ani Nástroj nie,
+      // ani keď je zároveň Občan (Recidivista).
+      for (const s of okolie(e)) if (!s.isLokalita && s.owner === e.owner && podporiSilnaZena(s.tags)) zdvojAktivne(s, e.defId);
     } else if (e.defId === "pes" && !umlcane.has(e.uid)) {
       // Pes (Furt, v7): aktívne akcie na spoji so súperovou kartou ×2 — strana k tomu susedovi.
       const [lavy, pravy] = susedia.get(e) ?? [null, null];
@@ -831,6 +833,11 @@ function kartoveEfekty(segments: readonly (readonly Elem[])[], umlcane: Readonly
       zdvojAktivne(e, e.defId);
     }
   }
+}
+
+/** Koho Silná nezávislá žena podporí: Občana či Starešinu, nie Zviera ani Nástroj (Michal 2026-11-08). */
+function podporiSilnaZena(tags: readonly Tag[]): boolean {
+  return (tags.includes("Občan") || tags.includes("Starešina")) && !tags.includes("Zviera") && !tags.includes("Nástroj");
 }
 
 /** Aktívne akcie jednej strany karty sa rátajú dvakrát (Pes). */
