@@ -15,6 +15,8 @@ stránka Pravidlá — `VERZIA_PRAVIDIEL_PRESNA`).
 - **Akcie navyše podmienené tagom** (§6, §16): spúšťače **Spoločník: tag** a **Nepriateľ: tag** a **Podpora / Konflikt s tagom**. Na karte je podmienka v poli efektu a akcie navyše v pečati dole v ilustrácii.
 - Nové efekty 17 kariet (§16) a lokalít Zberný dvor, Sklad a Predsedova vila (§15).
 
+**Bez „tvojej a súperovej strany“** (Michal 2026-11-08; pravidlá sa nemenia, len pomenovania, docs/napady/bez-strany.html): línia má dva **konce** a dva **kraje** a žiaden nepatrí hráčovi (§6). **Podstrčiť** = priložiť svoju kartu k súperovej (§13). **Most:** každý vykladá len na koniec línie po svojej ľavici (§15). **Kostol:** NA EX len na kartu na konci línie, na ktoromkoľvek z dvoch koncov (§15).
+
 **Zmeny v11.13 oproti v11.12** (Michal 2026-11-06, Zrejúca; staré znenia v `docs/pravidla-historia.md`, sekcia v11.13):
 
 Sedem lokalít má nový efekt a sada v55 aj nové hrany (§15). Režimy 2 na 2 (§18) a Päta, Lakeť, Otočka (§19) sú **len v Zrejúcej**; hráči Vypálenej dostanú len Kalamitu 1 na 1.
@@ -640,35 +642,35 @@ Po braní začína Zhromaždenie (§6).
 ## 6. Zhromaždenie
 
 Hráči striedavo vykladajú karty do línie, **začína útočník**. Na svojom ťahu
-hráč vyloží kartu na svoju alebo súperovu stranu (v jednom ťahu aj viac kariet,
+hráč vyloží kartu na jeden z dvoch koncov línie (v jednom ťahu aj viac kariet,
 §13), prizná kliatby (§11) alebo vyloží Nástroj do Dedičstva (§12). Vyloženie
 Nástroja sa v striedaní počíta ako ťah, priznanie nie.
 
-### Línia, strany a kraje
+### Línia, konce a kraje
 
 - Karty tvoria **jednu súvislú líniu**, vetvenie nie je povolené. **Lokalita**
-  leží v jej strede a delí ju na dve **strany** — tvoju (vľavo z tvojho
-  pohľadu) a súperovu. Aj vo finále leží v strede lokalita — pinnacle
+  leží v jej strede a delí ju na dva **kraje**, pomenované podľa hrán
+  lokality (§15). Línia má dva **konce** a žiaden nepatrí hráčovi. Aj vo finále leží v strede lokalita — pinnacle
   (§14b).
-- Kartu vykladáš vždy na **vonkajší koniec** jednej zo strán — **tvojej aj
-  súperovej**. Strana určuje len to, kde karta leží a s čím susedí.
+- Kartu vykladáš vždy na **koniec línie** — na ktorýkoľvek z dvoch. Koniec
+  určuje len to, kde karta leží a s čím susedí.
 - **Vnútorná hrana** karty je tá, ktorá je obrátená k lokalite — ňou sa karta
-  páruje so susedom bližšie k stredu (prvá karta strany s lokalitou).
+  páruje so susedom bližšie k stredu (prvá karta kraja s lokalitou).
   **Vonkajšia hrana** ostáva voľná pre ďalšiu kartu. Z pohľadu hráča, ktorý
-  kartu zahral: na jeho strane je vnútorná jeho pravá hrana, na súperovej jeho
-  ľavá. Web aj klient agentov ukazujú náhľad spoja pred vyložením a ktorá hrana
-  lokality je obrátená ku ktorej strane.
-- Karta je vždy **natočená k hráčovi, ktorý ju zahral** (na súperovu stranu
-  teda ide „nohami hore“). Ten je jej **majiteľ** a karta je v **jeho partii**:
-  **partia hráča = všetky karty natočené k nemu**, nech ležia na ktorejkoľvek
-  strane. Text karty „v tvojej partii“ = medzi tvojimi kartami.
+  kartu zahral: v kraji vľavo od lokality je vnútorná jeho pravá hrana,
+  v kraji vpravo jeho ľavá. Web aj klient agentov ukazujú náhľad spoja pred vyložením a ktorá hrana
+  lokality je obrátená ku ktorému kraju.
+- Karta je vždy **natočená k hráčovi, ktorý ju zahral** (pre súpera je teda
+  „nohami hore“, nech leží na ktoromkoľvek konci línie). Ten je jej **majiteľ** a karta je v **jeho partii**:
+  **partia hráča = všetky karty natočené k nemu**, nech ležia kdekoľvek
+  v línii. Text karty „v tvojej partii“ = medzi tvojimi kartami.
 - **Akcie** karty sa rátajú jej majiteľovi (výnimka: akcie Nástroja, §12). Na spoji sa karta páruje so susedmi bežne: susedova akcia
   sa aktivuje a pripíše sa majiteľovi susednej karty. **Efekty** karty (Nástup, Furt, Bitka, Výhra…) patria majiteľovi.
 - **Kraje:** polovice línie sa volajú podľa hrán lokality — každá lokalita má
-  vlastné (Krčma: *pri výčape* / *pri dverách*; zoznam v §15). „Tvoja/súperova
-  strana“ ostáva len ako pomenovanie, ku komu kraj prilieha.
+  vlastné (Krčma: *pri výčape* / *pri dverách*; zoznam v §15). Kraj ani koniec
+  línie nepatria nikomu.
 - Nástroj tvorí spoj len s Občanom alebo Starešinom a nesmie susediť
-  s Nástrojom na konci strany, kam sa vykladá, ani s lokalitou — na prázdnu stranu
+  s Nástrojom na konci línie, kam sa vykladá, ani s lokalitou — do prázdneho kraja
   sa nevyloží (v10.2, §12). Kliatba do línie nepatrí.
   Za skrytú Záverečnú ani odpoveď lícom dole sa nepriloží, kým sa neotočí (§7, §13).
 - **Konflikt (v11.3):** keď sa karta so spúšťačom Konflikt **priložením** ocitne
@@ -752,8 +754,7 @@ podrobne:
   (rozhoduje stav v okamihu výberu, §7) — potom pôsobí ako vždy: aktívne po obrátení zruší,
   neaktívne zdvojí.
 - Pri lokalite sa obráti len hrana pri tom kraji. **Nástroj** sa neobráti (v10.3). Odpor
-  **Praudovravca** sa na jeho spojoch ráta ako Posilnenie, takže tam Vzbura nevznikne (vznikne
-  Forsáž). Posilnenie a Odpor **Výtržníka** sú Rany — Vzburu nevyvolajú (§7).
+  Praudovravca ako Posilnenie (Dezinformátor, v7) má len stará sada. Posilnenie a Odpor **Výtržníka** sú Rany — Vzburu nevyvolajú (§7).
 
 **Vzbura a Forsáž s Nástrojom** (v10.3, Michal 2026-11-02): na spoji Nástroja s Občanom či
 Starešinom dostane Vzburu aj Forsáž **len Občan / Starešina**; Nástroj ostáva bez nich (jeho
@@ -767,8 +768,7 @@ neaktívne akcie sa neaktivujú, aktívne sa nezdvoja).
 - Akcie aktívne po **Vzbure** (nespojené, v11.1; aj aktivované Výhernými žrebmi) Forsáž zdvojí
   tiež; spojené akcie karty so Vzburou sú neaktívne, tie nezdvojí. Vzbura z Odporu proti
   Posilneniu a Forsáž na tej istej karte sa násobia (×4).
-- **Odpor Praudovravca** sa na jeho spojoch ráta ako Posilnenie, takže Forsáž vytvára
-  (s Posilnením aj s Odporom suseda). **Pakt** proti Posilneniu je Posilnenie, teda tiež Forsáž.
+- **Pakt** proti Posilneniu je Posilnenie, teda tiež Forsáž.
 - **NA EX** na jednu z kariet spoja zruší jej Posilnenie, a tým aj Forsáž — obom kartám
   (rovnaký princíp ako „NA EX zruší aj ×2 partnerovi“, §7). Energeťák a Veterán to zastavia
   ako dnes. Ostatné akcie karty NA EX ruší a zdvojuje ako vždy.
@@ -780,7 +780,7 @@ Hranu lokality aktivuje karta, ktorá s ňou tvorí spoj, no jej akcie dostane
 hráč s **prevahou** v tom kraji: kto tam má **viac svojich Občanov, Zvierat
 a Starešinov** (Nástroje, Cirhóza ani iné karty sa nerátajú; Dvojčatá za
 dvoch, §16). Pri rovnosti má prevahu hráč, ktorého karta v tom kraji leží
-**hneď pri lokalite** (vyložená ako prvá). Jedna podstrčená karta teda
+**hneď pri lokalite** (vyložená ako prvá). Jedna súperova karta v kraji teda
 **neukradne akcie hrany**, ale tvorí s nimi spoj: ako prvá karta pri lokalite
 určuje, ktoré akcie hrany sa aktivujú, a tie potom dostane hráč s prevahou —
 o akcie treba v kraji prevládnuť. Natočenie lokality (volí obranca) určuje,
@@ -801,7 +801,7 @@ limit vykladania = plné poldeci + 1
 - Samotná akcia Poldeci sa do limitu nezapočítava — otáča poldeci až pri
   bitke, takže sa prejaví o kolo neskôr.
 - Priznanie (§11) ani Nástroj (do línie aj do Dedičstva, §12) limit nemíňajú.
-- Vyloženie na súperovu stranu sa počíta do limitu **hráča, ktorý kartu
+- Vyloženie na ktorýkoľvek koniec línie míňa limit **hráča, ktorý kartu
   zahral** — bez výnimky (aj Kočovník).
 - Každá ďalšia karta v tom istom ťahu stojí plný poldeci (Vypiť, §13), takže
   zostávajúci limit hneď klesne.
@@ -853,10 +853,10 @@ v partii každý hráč, nečaká nikto (kto skončí neskôr, vidí NA EX toho 
 ### NA EX
 
 NA EX smie hráč dať **iba v Pitke**, kým ju neskončil, v základe **najviac raz
-za Pitku** (Vínna pivnica dvakrát; na Kostole len na poslednú kartu línie,
+za Pitku** (Vínna pivnica dvakrát; na Kostole len na kartu na konci línie,
 §15). Vyberie jednu kartu
-v línii s tagom **Občan alebo Starešina** — **svoju aj súperovu**, na
-ktorejkoľvek strane — a položí na ňu jeden plný poldeci. NA EX vyberá
+v línii s tagom **Občan alebo Starešina** — **svoju aj súperovu**, kdekoľvek
+v línii — a položí na ňu jeden plný poldeci. NA EX vyberá
 **skryto**: súper nevidí, či NA EX dal, ani kam (`viewFor` mu to nepošle),
 kým sa NA EX neodkryjú.
 
@@ -940,7 +940,7 @@ a susedova Pecka platí ×1.
 ### Odpoveď na NA EX
 
 Po odkrytí smie hráč za **každé súperovo NA EX** vyložiť **jednu kartu
-z ruky** na koniec svojej alebo súperovej strany — **lícom dole, štýlom Záverečnej, ale
+z ruky** na ktorýkoľvek koniec línie — **lícom dole, štýlom Záverečnej, ale
 zadarmo** (v9.2, Michal 2026-10-30):
 
 1. Najprv **útočník** (na NA EX obrancu) vyloží odpoveď lícom dole na jeden kraj línie.
@@ -1019,16 +1019,16 @@ sa do ďalšej Pitky neprenáša.
 
 ### Počet Pitiek
 
-Pitiek v kole = **1 + menší z počtov aktivovaných akcií lokality** na jej
-dvoch stranách. Akciu lokality aktivuje karta, ktorá s ňou tvorí spoj; ráta sa
+Pitiek v kole = **1 + menší z počtov aktivovaných akcií lokality** v jej
+dvoch krajoch. Akciu lokality aktivuje karta, ktorá s ňou tvorí spoj; ráta sa
 každá aktívna akcia hrany (aj Odpor či Posilnenie v páre). **Odpor na hrane
 lokality** sa ráta ako jej aktívna akcia; akcia hrany, ktorú zrušil **Odpor
 karty** v páre, sa neráta.
 
-Príklad: na jednej strane lokality sú aktivované 3 jej akcie, na druhej 1 →
-**2 Pitky**; keď je na niektorej strane 0, kolo má 1 Pitku. Ráta sa **podľa
-strán, nie podľa hráčov**: nezáleží na tom, kto kartu zahral (aj podstrčená
-karta aktivuje hranu pri strane, kde leží), ani kto má v kraji prevahu. Akcia
+Príklad: v jednom kraji sú aktivované 3 akcie lokality, v druhom 1 →
+**2 Pitky**; keď je v niektorom kraji 0, kolo má 1 Pitku. Ráta sa **podľa
+krajov, nie podľa hráčov**: nezáleží na tom, kto kartu zahral (aj súperova
+karta aktivuje hranu kraja, kde leží), ani kto má v kraji prevahu. Akcia
 hrany zdvojená Posilnením (×2) je stále **jedna** aktivovaná akcia. Pred každou Pitkou je Zhromaždenie
 (limit sa ráta nanovo, začína útočník). Počet sa prepočítava s líniou počas
 kola (vykladanie, odpoveď, NA EX); už začatá Pitka sa vždy dopije. Lokality
@@ -1138,7 +1138,7 @@ Bitka sa vyhodnotí po poslednej Pitke kola, v tomto poradí (v11 Strach a reči
 | 4d | Exekúcia (Michal 2026-10-28): Robota (aj z priazne Robota, v9), potom Exekútor každému s priznaným Dlhom — Dlhy a špaky (Advokát ich uberie); Záhradkár ju obíde | §11 |
 | 4e | **Nakladačka** — víťaz bitky ju rozdelí na svoj strach a smie **zajímať** (5 bodov za staršieho na červenom strachu už pred touto Nakladačkou, v11.6; väzeň, krádež, výhra väzňami hneď); potom **hádka** — víťaz hádky ju rozdelí na svoje reči na teplomeroch súpera a smie **presviedčať** (3 body pri rečiach na celom teplomere, v11.12) — voľne medzi starších, 1 / 2 / 3 za stupeň, zvyšok prepadne; vo finále sa nerozdeľujú — špaky 1 : 1 dostali v kroku 4a | §9.1, §9.4, §10 |
 | 5 | Poldeci | §9.5 |
-| 5b | Veštica | Spoločník: Pamätník (frakcie): 2 Povery navyše. Krok bitky 5b (výmena kariet balíčkov) má len stará sada |
+| 5b | Veštica: výmena kariet balíčkov — len stará sada (v sade v55 má Veštica Spoločník: Pamätník, §16) | §9.5b |
 | 6c | **Porazený dostane 1 cigaretu** (pri sekere a po finále nikto), priazne Kmotra (Dlhy súperovi) a Fajčiara (cigarety, v9), **výpalné** (v11.9, §10; po finále nie), efekty Výhra a Prehra (Recidivista, Dievčina), Krokodíl | §9.4, §10, §16 |
 | 7 | Návrat kariet | §9.7 |
 | 7a | Cintorín (porazený si smie vziať do ruky 1 kartu zo svojho odhadzovacieho balíčka, už aj s kartami z tejto línie; v11.13) | §15 |
@@ -1242,13 +1242,13 @@ Nakladačka       = |rozdiel tuhého|        (pri remíze v tuhom ju nikto nezí
 ```
 
 **Špaky za bitku (krok 4a, v8, Michal 2026-10-28):** víťaz dostane **1 špak za
-každú kartu, ktorá v čase bitky leží v línii** pri lokalite — na oboch stranách,
+každú kartu, ktorá v čase bitky leží v línii** pri lokalite — v oboch krajoch,
 jeho aj súperove, aj odkrytá Záverečná, aj vo finále. Nerátajú sa priznané karty
 (kliatby), Dedičstvo, lokalita ani karty, ktoré z línie počas kola zmizli
 (spálené efektom — Poľovník, Krokodíl, Dievčina). Počet Pitiek špaky neurčuje.
 Víťaz dostane **vždy aspoň 1 špak**. Absťáky špaky **neuberajú** (trestajú ranou
 menej, §8). **Víťaz hádky, ktorý prehral bitku** (v11.11), dostane 1 špak za každú svoju kartu
-v línii (svoju partiu, na ktorejkoľvek strane); víťaz bitky za všetky karty ako vždy, aj keď hádku
+v línii (svoju partiu, nech leží kdekoľvek); víťaz bitky za všetky karty ako vždy, aj keď hádku
 tiež vyhral, navyše nič. Vo finále víťaz dostane navyše **1 špak za každý bod Nakladačky** (v9.1,
 nižšie). Na Kultúrnom dome (v11.13) dostane každý hráč, aj víťaz, len 1 špak za každú svoju
 kartu v línii; víťazovi ostáva aspoň 1 a špaky zo sekery navyše (§15). Víťaz si **lokalitu neberie** —
@@ -1298,11 +1298,12 @@ nikto a **po finále nikto** (Michal 2026-11-02). Do v10 dostal cigaretu za kaž
 Poldeci ležiace na kartách cez NA EX sa teraz **vypijú** — každý tomu, kto NA EX
 dal (na Výtržníkovi oba, každému jeho). Za každú aktívnu akciu Poldeci sa
 jeden vypitý poldeci otočí späť na plný. Ak hráč nemá žiadny vypitý poldeci,
-akcia vyjde naprázdno. Týka sa **majiteľa karty**, nech leží na ktorejkoľvek
-strane.
+akcia vyjde naprázdno. Týka sa **majiteľa karty**, nech leží kdekoľvek
+v línii.
 
 ### 9.5b Veštica
 
+**Len stará sada** — Veštica v sade v55 má Spoločník: Pamätník (§16) a tento krok sa preskočí.
 Porazený s Vešticou vo svojej partii si prezrie oba doberacie balíčky,
 vymení jednu svoju kartu za súperovu a oba balíčky sa zamiešajú (§16).
 Ak je doberací balíček niektorého hráča prázdny, najprv sa doň zamieša jeho
@@ -1645,10 +1646,10 @@ k súperovi.
   dvoch hráčov dá každému akcie jeho spoja; podstrčený Nástroj tak pracuje pre
   súpera a súperov Nástroj vedľa tvojho Občana pre teba.
 - **Efekt Nástroja v línii neplatí** — len v Dedičstve.
-- Nástroj nesmie susediť s Nástrojom na konci strany, kam sa vykladá
+- Nástroj nesmie susediť s Nástrojom na konci línie, kam sa vykladá
   (susedstvo je fyzické).
-- **Vedľa lokality sa Nástroj nevykladá** (v10.2, Michal 2026-11-01): na prázdnu stranu
-  — svoju ani súperovu, ani vo finále na pinnacle — ho vyložiť nemožno. Platí pre každé
+- **Vedľa lokality sa Nástroj nevykladá** (v10.2, Michal 2026-11-01): do prázdneho kraja
+  — na žiadnom konci línie, ani vo finále na pinnacle — ho vyložiť nemožno. Platí pre každé
   vyloženie do línie: bežné, ďalšiu kartu ťahu po Vypiť (§13, Nástroj smie za kartu
   vyloženú v tom istom ťahu), Záverečnú aj odpoveď na NA EX. Za Živnostníka ho priložiť
   smieš (leží za ním, nie pri lokalite). Do Dedičstva sa vykladá ako doteraz. Pravidlo je
@@ -1727,7 +1728,7 @@ nepije (v ťahu teda len jedna karta).
 ### Záverečná
 
 Na svojom ťahu v Zhromaždení smie hráč za **1 cigaretu** zahrať kartu z ruky
-ako **Záverečnú** — lícom dole na koniec svojej alebo súperovej strany. Je to
+ako **Záverečnú** — lícom dole na ktorýkoľvek koniec línie. Je to
 voliteľné a hráč tým v tomto Zhromaždení **končí s vykladaním** (ako pas, ale
 **bez cigariet za pas**); v jednom Zhromaždení teda najviac jedna.
 
@@ -1739,7 +1740,7 @@ voliteľné a hráč tým v tomto Zhromaždení **končí s vykladaním** (ako p
   (aktivuje, zdvojí či zruší), mu hra neukáže a odhad bitky ju nezarátava —
   uvidí ju až po otočení.
 - **Za ňu sa nedá priložiť** žiadna karta (ani odpoveď na NA EX), kým sa
-  neotočí — tá strana je dovtedy zablokovaná.
+  neotočí — ten koniec línie je dovtedy zavretý pre oboch.
 - **NA EX** na ňu smie v Pitke dať len **súper** a prejde vždy (nekontroluje
   sa tag ani aktívne a neaktívne akcie — odmietnutie by kartu prezradilo);
   vyhodnotí sa ako na každej karte. Majiteľ na ňu NA EX dať nesmie.
@@ -1750,15 +1751,11 @@ voliteľné a hráč tým v tomto Zhromaždení **končí s vykladaním** (ako p
 
 ### Podstrčenie (sabotér)
 
-Súperovi môžeš na jeho stranu podstrčiť kartu — jej Odpor mu zruší akciu na
-spoji, jej akcie bodujú pre teba a zaberie mu koniec strany. Karta ostáva
-v tvojej partii a míňa tvoj limit (§6). Jedna podstrčená karta neukradne akcie
-hrany lokality, ale tvorí s nimi spoj: ak leží pri lokalite, určuje, ktoré
-akcie hrany sa aktivujú, a dostane ich hráč s prevahou v kraji (§6).
-Podstrčený Kočovník je výnimka z „akcie bodujú pre teba“ — jeho akcie dostane
-hráč s prevahou v jeho kraji (§16). **Podstrčený Pes platí** — jeho aktívne akcie
-na spoji so súperovou kartou sa zdvoja aj na súperovej strane (§16); na Moste
-sa na súperovu stranu nevykladá (§15).
+**Podstrčiť** = priložiť svoju kartu k súperovej (Michal 2026-11-08). Jej Odpor
+súperovi zruší akciu na spoji, jej akcie bodujú pre teba a zaberie koniec línie,
+kde súper stavia. Karta ostáva v tvojej partii a míňa tvoj limit (§6).
+**Podstrčený Pes platí** — jeho aktívne akcie na spoji so súperovou kartou sa
+zdvoja (§16). Na Moste každý vykladá len na koniec línie po svojej ľavici (§15).
 
 ---
 
@@ -1770,7 +1767,7 @@ verejné. Vyhrá, kto má na konci hry (po finále) viac špakov; rovnosť je re
 
 | Odkiaľ | Koľko | Kedy |
 |---|---|---|
-| Vyhratá bitka | 1 za každú kartu v línii na oboch stranách (v8; aj finále), **aspoň 1** (od v8.1 bez zrážky za Absťáky); plus špaky zo sekery | krok 4a (§9.4) |
+| Vyhratá bitka | 1 za každú kartu v celej línii (v8; aj finále), **aspoň 1** (od v8.1 bez zrážky za Absťáky); plus špaky zo sekery | krok 4a (§9.4) |
 | Bitka o Kultúrny dom (v11.13) | víťaz aj porazený 1 za každú svoju kartu v línii (víťaz aspoň 1, plus sekera) | krok 4a (§15) |
 | Vyhraná hádka pri prehratej bitke alebo sekere (v11.11) | 1 za každú svoju kartu v línii; na Kultúrnom dome pri prehratej bitke nie druhýkrát | krok 4a (§9.4) |
 | Starší po bitke (v11.12) | stupne žltá **1**, oranžová **2**, červená **2** dostane, kto ich drží: víťaz za svoj strach bez stupňov, ktoré obsadil súper, obaja pri každej bitke za svoje reči | krok 4b (§10) |
@@ -1844,19 +1841,19 @@ finále): Poľovnícka chata, Predsedova vila, Herňa. Hrany sú v `cards.json`
 
 | Lokalita | Kedy | Efekt v7 a v8 |
 |---|---|---|
-| Lesná cesta | Bitka | Za každé **svoje Zviera v línii** (natočené k tebe, na ktorejkoľvek strane) **2 tuhé** navyše (v11.13), bez stropu; skrytá Záverečná sa neráta. |
+| Lesná cesta | Bitka | Za každé **svoje Zviera v línii** (natočené k tebe, v ktoromkoľvek kraji) **2 tuhé** navyše (v11.13), bez stropu; skrytá Záverečná sa neráta. |
 | Cintorín | Prehra | Porazený si smie vziať do ruky **1 kartu zo svojho odhadzovacieho balíčka** (v11.13); smie aj nič. Berie sa až po návrate kariet (§9 krok 7a), takže v balíčku sú už aj jeho karty z práve odohranej línie (Michal 2026-11-07); spálené karty nie. Cirhóza vzatá do ruky sa hneď vráti do balíčka ako každá nepriznaná (krok 7b). Pri prázdnom balíčku a pri sekere sa nič nedeje. |
 | Jednota | Pitka | Kto má viac priznaných Dlhov, nesmie v tejto Pitke fajčiť ani dolievať (doliatie = 2 cigarety za vypitý poldeci; barter smie). Pri rovnosti smú obaja. |
 | Benzínka | Pitka | **Prvé fajčenie každého hráča v každej Pitke je zadarmo** (v11.13), ďalšie stojí 2, potom 3 (poradie cien ako inde, len prvá platba odpadá). Fajčenie zadarmo nie je nerest a do Krabičky cigariet sa neráta. |
 | Kar | Pitka | Poškodenie pečene za NA EX dostane **súper** hráča, ktorý ho dal (poldeci a nerest ostávajú dávajúcemu). |
-| Kostol | Zhromaždenie, Pitka | Nikto nesmie vypiť (v ťahu teda len jedna karta). **NA EX sa smie dať len na poslednú kartu línie** — najďalej od Kostola, na jednej alebo druhej strane; na výber sú oba konce (v11.7, Michal 2026-11-06). |
+| Kostol | Zhromaždenie, Pitka | Nikto nesmie vypiť (v ťahu teda len jedna karta). **NA EX sa smie dať len na kartu na konci línie** (na ktoromkoľvek z dvoch koncov) — najďalej od Kostola; na výber sú oba konce (v11.7, Michal 2026-11-06). |
 | Zberný dvor | Pitka | Na konci Pitky (krok 7b, po Vízii, pred otočením Záverečných) smie každý hráč spáliť 1 kartu z ruky, nie kliatbu (Cirhózu ani Absťák); rozhoduje obranca, potom útočník. Súper vidí len to, že hráč kartu spálil. |
 | Sklad | Zhromaždenie | Nástroj zo šenku smieš vyložiť rovno do Dedičstva za cenu Dedičstva (§12), nie za cenu šenku; je to ťah a spoločná cena potom stúpne. Z vrchu Náradia príde do šenku nový Nástroj, verejne; z prázdneho nič. Smie každý hráč, koľkokrát chce. Kraje pri vreciach / pri sklade. |
 | Obecný úrad | Pitka | Platí pre oboch: **všetky cigarety a Dlhy získané počas fázy Pitka**, z akcií aj z efektov kariet, **sa rátajú dvakrát** (v11.13). Obmedzenie sa odráta pred zdvojnásobením: (akcie − Obmedzenie) × 2. Platby, cigarety za pas zo Zhromaždenia a Dlhy mimo Pitky sa nezdvojujú. Výherný automat: zdvojnásobí sa zadĺženie, prah ostáva 2; aj jeho Dlh v poslednej Pitke sa ráta dvakrát. Robota tu páli 1 Dlh ako inde. |
 | Poľovnícka chata | Furt | Aktívne Rany, Pecky a Petelice z hrán lokality sa rátajú dvakrát (Hazard, Pečeň, Posilnenie, Pohoršenie nie). Kraje pri trofejach / na posede. |
 | Predsedova vila | Pitka | Za každé 2 cigarety, ktoré v tejto Pitke vyfajčíš (zaplatené, ako pri Krabičke cigariet), zdvihni svoje reči pri jednom staršom o stupeň v bežnom poradí (v11.12), kým je kam; staršieho vyberáš ty. Kraje pri bazéne / v pracovni. |
 | Herňa | Bitka | Víťaz dostane navyše toľko špakov, koľko má porazený priznaných Dlhov (pri bitke, pred Robotou a Exekútorom; bez stropu); pri sekere nič. Kraje pri automatoch / v zadnej miestnosti. |
-| Kultúrny dom | Bitka | **Každý hráč dostane špaky len za svoje karty v línii, aj víťaz** (v11.13): 1 špak za každú svoju kartu (svoju partiu, na ktorejkoľvek strane). Víťazovi ostáva aspoň 1 špak a špaky zo sekery navyše; špaky za výhru hádky (v11.11) sa porazenému nepripočítavajú druhýkrát. Pri sekere nikto nie je víťaz ani porazený — špaky kola idú na sekeru ako inde a víťaz hádky dostane za svoje karty hneď (§9.4). Nakladačka sa rozdeľuje ako inde (§9.4). |
+| Kultúrny dom | Bitka | **Každý hráč dostane špaky len za svoje karty v línii, aj víťaz** (v11.13): 1 špak za každú svoju kartu (svoju partiu, kdekoľvek v línii). Víťazovi ostáva aspoň 1 špak a špaky zo sekery navyše; špaky za výhru hádky (v11.11) sa porazenému nepripočítavajú druhýkrát. Pri sekere nikto nie je víťaz ani porazený — špaky kola idú na sekeru ako inde a víťaz hádky dostane za svoje karty hneď (§9.4). Nakladačka sa rozdeľuje ako inde (§9.4). |
 | Ihrisko | Bitka | V každom kraji +2 tuhé tomu, kto tam má viac svojich Občanov, Zvierat a Starešinov (pri rovnosti nikto) — rátajú sa ako do prevahy, **Dvojčatá za dve** (v8, návrh #32); z oboch krajov teda až +4. |
 
 Ďalšie lokality — tie, ktoré v tabuľke vyššie nie sú (Krčma, Zastávka, Most, Vínna pivnica, Družstvo); staré znenia v6 lokalít z tabuľky vyššie sú v `docs/pravidla-historia.md` (audit 2026-10-31 ich odtiaľto vyradil). Akcie na hranách určujú počet Pitiek (§7); efekt platí v kole,
@@ -1867,21 +1864,21 @@ nikto ju neovláda.
 |---|---|---|
 | Krčma | Pitka | Kto má plný poldeci a Občana či Starešinu v línii (vlastného či súperovho), musí dať NA EX (skryto ako vždy, §7) — bez neho Pitku neskončí. Prah Cirhózy je v kole o Krčmu obom o 2 vyšší (sčíta sa s Nealkom). |
 | Zastávka | Pitka | (v9.1) Po **prvej Pitke kola** si každý hráč vezme **zadarmo 1 kartu zo šenku** — najprv útočník, potom obranca. Šenok sa medzi nimi nedopĺňa; jediná karta pripadne útočníkovi, z prázdneho šenku sa neberie nič. Do v9 spoločný limit vykladania. |
-| Most | Zhromaždenie, Pitka | Karty sa smú vykladať len na vlastnú stranu — aj odpoveď na NA EX. |
+| Most | Zhromaždenie, Pitka | Každý vykladá len na koniec línie po svojej ľavici — aj odpoveď na NA EX. |
 | Vínna pivnica | Pitka | NA EX smie hráč dať v Pitke až dvakrát (obe skryto, na dve rôzne karty). |
-| Družstvo | Zhromaždenie | Karty s akciou Robota na ktorejkoľvek strane nemíňajú limit vykladania (v11.13). |
+| Družstvo | Zhromaždenie | Karty s akciou Robota na ktorejkoľvek hrane nemíňajú limit vykladania (v11.13). |
 
 **Kostol a NA EX — ako to hra robí (v11.7):**
 
-- **Posledná karta** je karta na vonkajšom konci strany v okamihu výberu NA EX. Otočenie Kostola na NA EX
-  nemá vplyv (mení len, ktorá hrana prilieha ku ktorej strane). Keď posledná karta z línie zmizne, je
+- **Karta na konci línie** (posledná karta) je karta na jednom z dvoch koncov línie v okamihu výberu NA EX.
+  Otočenie Kostola na NA EX nemá vplyv (mení len, ktorá hrana prilieha ku ktorému kraju). Keď posledná karta z línie zmizne, je
   poslednou karta pred ňou.
-- **Strana bez karty** cieľ nemá — ostáva koniec druhej strany. V prázdnej línii sa NA EX dať nedá.
+- **Prázdny kraj** cieľ nemá — ostáva druhý koniec línie. V prázdnej línii sa NA EX dať nedá.
 - **Ostatné podmienky NA EX platia ďalej** (§7). Koniec, ktorý ich nespĺňa (Nástroj, už na ňom leží poldeci,
-  Vzbura, nemá aktívnu aj neaktívnu akciu), nie je cieľ a NA EX sa **neposúva** na kartu pred ním — tá strana
+  Vzbura, nemá aktívnu aj neaktívnu akciu), nie je cieľ a NA EX sa **neposúva** na kartu pred ním — ten koniec
   v tej chvíli cieľ nemá.
-- **Skrytá Záverečná** je posledná karta svojej strany, kým sa neotočí (za ňu sa nedá priložiť, §13). Súper na
-  ňu NA EX smie a prejde vždy; majiteľ na ňu nesmie, takže na tej strane cieľ nemá. **Karta pred ňou cieľom
+- **Skrytá Záverečná** je posledná karta na svojom konci línie, kým sa neotočí (za ňu sa nedá priložiť, §13). Súper na
+  ňu NA EX smie a prejde vždy; majiteľ na ňu nesmie, takže na tom konci cieľ nemá. **Karta pred ňou cieľom
   nie je pre nikoho.** Po otočení je to bežná posledná karta. Výklad Developera 2026-11-06, na potvrdenie
   Michalom.
 - **Zrážka:** obaja môžu vybrať ten istý koniec — je z neho Výtržník ako vždy. Súperovo skryté NA EX koniec
@@ -1910,10 +1907,10 @@ ohľadu na majiteľa (aj lokalita či starší v strede). Texty kariet sú od v7
 
 **Konflikt (v11.3, Michal 2026-11-03):** efekt karty, ktorá sa **priložením**
 ocitne vedľa **súperovej** karty — je jedno, či ju prikladáš ty k súperovej
-karte, alebo súper svoju k nej (na koniec strany, v Zhromaždení aj odpoveďou na
+karte, alebo súper svoju k nej (na koniec línie, v Zhromaždení aj odpoveďou na
 NA EX). Do v11.2 len druhé. **Podpora (v11.3)** je zrkadlo Konfliktu: efekt karty,
 ktorá sa priložením stretne s **vlastnou** kartou (s kartou toho istého hráča,
-na ktorejkoľvek strane). Ráta sa len priloženie: **NA EX**, zrážka ani presun či
+kdekoľvek v línii). Ráta sa len priloženie: **NA EX**, zrážka ani presun či
 uzavretie medzery (Dohadzovačka, Poľovník) ich nespúšťajú. **Nástroj** ich
 nespúšťa — ani priložený, ani ležiaci. Poradie: Nástup priloženej karty, potom
 jej Konflikt a Podpora, potom Konflikt a Podpora ležiacej. Záverečná ich vyvolá
@@ -1960,16 +1957,16 @@ bitky, Noviny hneď po rozhodnutí hádky, Kôň v kroku Exekútora. Michal ich 
 | Dievčina na vydaj | Podpora: Zahraničný (frakcie): 1 Pohoršenie navyše za každé stretnutie, do konca kola |
 | Snúbenica | Nepriateľ: Autorita (frakcie): 1 Pohoršenie navyše |
 | Bzdocha | Pitka: Súper hrá Pitku pred tebou; vidíš jeho NA EX. Majiteľ čaká, kým súper skončí svoju časť Pitky, potom hrá a vidí súperove skryté NA EX; majú ju obaja → nečaká nikto (§7, Michal 2026-10-27). |
-| Záhradkár | Exekúcia (Michal 2026-10-28): „Exekúcia v tomto kole pre teba neplatí.“ Keď leží odkrytý v línii v partii majiteľa (jeho karta, aj na súperovej strane), Exekútor ho v kroku exekúcie (§9, 4c) obíde — nezhorí mu žiadny Dlh ani špak. Nespáli sa; v ruke či v balíčkoch nerobí nič. Súperov Záhradkár ťa nechráni. |
+| Záhradkár | Exekúcia (Michal 2026-10-28): „Exekúcia v tomto kole pre teba neplatí.“ Keď leží odkrytý v línii v partii majiteľa (jeho karta, kdekoľvek v línii), Exekútor ho v kroku exekúcie (§9, 4c) obíde — nezhorí mu žiadny Dlh ani špak. Nespáli sa; v ruke či v balíčkoch nerobí nič. Súperov Záhradkár ťa nechráni. |
 | Anonymný alkoholik | Furt (v11.5, Michal 2026-11-03): aktívne akcie **Poškodenie pečene tvojich kariet** (natočených k tebe) v jeho okolí sa rátajú ako **Viera** — v Pitke nedajú pečeň, v bitke ako každá Viera rušia Povery a tlmia tuhé; s násobkami (×2 = 2 Viery). Súperove karty a hrana lokality nie (hrana nie je karta); jeho vlastné akcie tiež nie. Lícom dole ako ostatné Furt efekty akcií. Do v11.4 Nástup: priznal nepriznané Cirhózy z odhadzovacieho balíčka. |
-| Poľovník | Nástup (v10.4, Michal 2026-11-02): na **druhej strane lokality** (oproti strane, kde Poľovník leží — platí aj podstrčený) sa **spáli súperovo Zviera, ktoré je od lokality najďalej**. Súperovo = karta s tagom Zviera natočená k súperovi toho, kto Poľovníka zahral (aj Recidivista — Zviera aj Občan); vlastné Zvieratá nestrieľa. Povinné, bez voľby, hneď pri Nástupe (ako Dohadzovačka). Spálená karta ide navždy z hry, medzera sa uzavrie a spoje aj prevaha sa prepočítajú; na špaky sa už neráta (§14). Spálenie **nie je priloženie** — Konflikt ani Pasca sa nespustia. **Skrytú Záverečnú** nestrieľa (vyberie najvzdialenejšie z odkrytých); ako Záverečná či odpoveď na NA EX sa Poľovník vyhodnotí pri otočení a karty, ktoré sa otáčajú v tej istej chvíli, nestrieľa (keď prišiel, ležali lícom dole). Poldeci z NA EX na spálenej karte sa hneď vypije tomu, kto NA EX dal (ako v bitke, §9.5, s nerestou). Dvojčatá nie sú Zviera; Kôň po spálení s Nástrojom spoj netvorí (Nástroj ostáva ležať, §12). Vo finále rovnako. Ak na druhej strane súperovo Zviera nie je, nič sa nestane. |
+| Poľovník | Nástup (v10.4, Michal 2026-11-02): v **druhom kraji** (oproti kraju, kde Poľovník leží, nech ho zahral ktokoľvek) sa **spáli súperovo Zviera, ktoré je od lokality najďalej**. Súperovo = karta s tagom Zviera natočená k súperovi toho, kto Poľovníka zahral (aj Recidivista — Zviera aj Občan); vlastné Zvieratá nestrieľa. Povinné, bez voľby, hneď pri Nástupe (ako Dohadzovačka). Spálená karta ide navždy z hry, medzera sa uzavrie a spoje aj prevaha sa prepočítajú; na špaky sa už neráta (§14). Spálenie **nie je priloženie** — Konflikt ani Pasca sa nespustia. **Skrytú Záverečnú** nestrieľa (vyberie najvzdialenejšie z odkrytých); ako Záverečná či odpoveď na NA EX sa Poľovník vyhodnotí pri otočení a karty, ktoré sa otáčajú v tej istej chvíli, nestrieľa (keď prišiel, ležali lícom dole). Poldeci z NA EX na spálenej karte sa hneď vypije tomu, kto NA EX dal (ako v bitke, §9.5, s nerestou). Dvojčatá nie sú Zviera; Kôň po spálení s Nástrojom spoj netvorí (Nástroj ostáva ležať, §12). Vo finále rovnako. Ak v druhom kraji súperovo Zviera nie je, nič sa nestane. |
 | Predavačka | Podpora (frakcie, bez tagu): dober si 1 kartu — pri každom stretnutí s vlastnou kartou |
 | Vedúcko | Furt (v10.4, Michal 2026-11-02): **aktívne Roboty kariet, ktoré s ním susedia** (obe strany oboch susedov, aj súperových), sa rátajú ako **Pecky** majiteľa tej akcie (komu by patrila Robota) — Dlh nepália, dávajú 2 tuhé. Robota ostáva spárovaná a aktívna, len sa ráta ako Pecka: Posilnenie aj Forsáž ju zdvoja ako Pecku, Fúrik ani špak za Robotu bez Dlhu sa na ňu neuplatnia. **Hrana lokality nie je karta** — Robota lokality ostáva Robotou (ako pri Silnej nezávislej žene). Zrušená Robota ostáva zrušená. Robota premenená Profesionálnym tipérom je jeho premena, nie Robota karty. Lícom dole (Záverečná) sa ráta ako ostatné Furt efekty akcií (Silná nezávislá žena). |
-| Dohadzovačka | Nástup (Michal 2026-10-28): keď ju hráč priloží k Občanovi alebo Starešinovi O2 (jej vnútorný sused, karta ktoréhokoľvek hráča), z **druhej strany lokality** sa **najvzdialenejší** (od lokality) Občan alebo Starešina opačného pohlavia ako O2 (Žena ↔ Chlap; karta ktoréhokoľvek hráča) presunie za Dohadzovačku — na vonkajší koniec jej strany. Príklad: „O1 … … O2“, Dohadzovačka za O2 → „… … O2 · Dohadzovačka · O1“. Presun je **povinný**, bez voľby. Karta ostáva svojho majiteľa a natočená k nemu, medzera na druhej strane sa uzavrie a spoje sa prepočítajú. Karta s oboma tagmi (Liberál) sa ráta ako oboje — ako O2 hľadá Ženu aj Chlapa, ako O1 sa hodí k obom. Presun **nie je priloženie**: Konflikt presunutej ani susednej karty sa nespustí a Pasca ho neráta. Skrytá Záverečná sa nepresúva (a ako O2 nerozhoduje); ako Záverečná sa Dohadzovačka vyhodnotí pri otočení. Ak O2 nemá Ženu ani Chlapa, nie je Občan ani Starešina, alebo na druhej strane nie je vhodný O1, nič sa nestane. Do 2026-10-28 Bitka: karta zo šenku za zmiešané spoje. |
+| Dohadzovačka | Nástup (Michal 2026-10-28): keď ju hráč priloží k Občanovi alebo Starešinovi O2 (jej vnútorný sused, karta ktoréhokoľvek hráča), z **druhého kraja** sa **najvzdialenejší** (od lokality) Občan alebo Starešina opačného pohlavia ako O2 (Žena ↔ Chlap; karta ktoréhokoľvek hráča) presunie za Dohadzovačku — na koniec línie za ňou. Príklad: „O1 … … O2“, Dohadzovačka za O2 → „… … O2 · Dohadzovačka · O1“. Presun je **povinný**, bez voľby. Karta ostáva svojho majiteľa a natočená k nemu, medzera v druhom kraji sa uzavrie a spoje sa prepočítajú. Karta s oboma tagmi (Liberál) sa ráta ako oboje — ako O2 hľadá Ženu aj Chlapa, ako O1 sa hodí k obom. Presun **nie je priloženie**: Konflikt presunutej ani susednej karty sa nespustí a Pasca ho neráta. Skrytá Záverečná sa nepresúva (a ako O2 nerozhoduje); ako Záverečná sa Dohadzovačka vyhodnotí pri otočení. Ak O2 nemá Ženu ani Chlapa, nie je Občan ani Starešina, alebo v druhom kraji nie je vhodný O1, nič sa nestane. Do 2026-10-28 Bitka: karta zo šenku za zmiešané spoje. |
 | Sypač (id `kulturista`) | Podpora (v11.5, Michal 2026-11-03): keď sa priložením stretne s **tvojím Chlapom** (oboma smermi, §16 Podpora), ten má do konca kola **Rany ako Pecky** — každá jeho aktívna Rana (aj z premeny Šarlatána či Výtržníka) sa ráta ako Pecka (2 tuhé; Vidly ju nezosilnia, Boxer áno). Rany hrany lokality nie; Sypač sám seba nie. Pri ďalšom stretnutí sa nič nezmení. Do v11.4 Pitka: ako Výtržník mal Pecky namiesto Rán; do v10.2 Kulturista s Úplatkom. |
 | Vymáhač | Bitka: za každé 2 tvoje priznané Dlhy Rana navyše (za každého Vymáhača). |
 | Finančná poradkyňa | Pitka: Dlhy z jej akcií dostáva súper, nie majiteľ. |
-| Svokra | Bitka: za každú kartu majiteľa (na ktorejkoľvek strane, aj Svokru samu), na ktorej leží súperov poldeci z NA EX, udelí súperovi Ranu; ráta sa aj zrážka (Výtržník), vlastné NA EX nie. Každá Svokra zvlášť. |
+| Svokra | Bitka: za každú kartu majiteľa (kdekoľvek v línii, aj Svokru samu), na ktorej leží súperov poldeci z NA EX, udelí súperovi Ranu; ráta sa aj zrážka (Výtržník), vlastné NA EX nie. Každá Svokra zvlášť. |
 | Hasič | Podpora (frakcie, bez tagu; do v11.13 Nástup): z majiteľovho odhadzovacieho balíčka sa vytiahne náhodná karta (aj kliatba, aj Absťák); majiteľ si ju nechá v ruke, alebo ju vráti. Kým nerozhodne, hra čaká. Prázdny balíček = nič |
 | Šofér | Bitka (v11.5): ak si v tomto kole nedal NA EX, udelíš súperovi Pecku navyše (+2 tuhé) a **na začiatku bitky dostaneš 1 cigaretu** — za každého Šoféra. Do v11.4 bez cigarety. |
 | Traktorista | Bitka (v sade v53 Traktorista, Chlap; id `traktoristka`, predtým Traktoristka): s prevahou v kraji, kde leží, Pecka navyše; bez nej dostaneš na začiatku bitky Dlh. |
@@ -1980,7 +1977,7 @@ bitky, Noviny hneď po rozhodnutí hádky, Kôň v kroku Exekútora. Michal ich 
 | Silná nezávislá žena | Furt (Michal 2026-11-08): aktívne akcie tvojich **Občanov a Starešinov**, ktorí s ňou susedia, sa rátajú dvakrát. Zviera ani Nástroj nie, ani keď je zároveň Občan (Recidivista); lokalitu a súperove karty nie. Predtým zdvojovala všetky tvoje susedné karty. |
 | Zámočník | Aktívne akcie Nástrojov v jeho okolí sa rátajú dvakrát. |
 | Veterán | Furt: NA EX na Veterána jeho aktívne akcie nezruší, ale zdvojí; neaktívne ostanú neaktívne. |
-| Veštica | Prehra: porazený vymení jednu svoju kartu doberacieho balíčka za súperovu (§9.5b). |
+| Veštica | Spoločník: Pamätník (frakcie): 2 Povery navyše. Starý efekt (Prehra: výmena kariet balíčkov, §9.5b) má len stará sada. |
 | Degustátorka | Nástup: ak má súper viac plných poldeci ako ty, jeden sa mu otočí na vypitý (nie nerest ani pečeň). |
 | Vandal | Nástup: lokalita sa otočí o 180° (hrany si vymenia kraje). |
 | Kôň | Furt: Nástroj vedľa neho s ním tvorí spoj ako s Občanom. **Roboty Koňa pália o 1 Dlh viac** (v11.5): každá jeho aktívna Robota (s násobkami) spáli v kroku Exekútora o 1 priznaný Dlh viac; čo nemá čo spáliť, dá špak ako každá Robota (§11). Sčíta sa s Fúrikom. Vedľa Mäsiara ani jedno neplatí; Robota, ktorú Vedúcko ráta ako Pecku, nepáli. |
@@ -2025,8 +2022,9 @@ bitky, Noviny hneď po rozhodnutí hádky, Kôň v kroku Exekútora. Michal ich 
 | Vzbura | Odpor + Odpor na spoji (v11.1): obe karty sa obrátia — nespojené akcie aktívne, spojené neaktívne; Odpor + Posilnenie: len karta s Odporom, navyše posilnená; NA EX na ňu nejde; Nástroj nie, lokalita len hranu (§6, §7) |
 | Pakt | akcia (v7): na spoji sa správa ako akcia, s ktorou je v páre (§2) |
 | Čiarky na účte | zadĺženie pod prahom Dlhu (len s Výherným automatom); neprepadá ani po Pitke, ani po kole (D6, §8) |
-| Kraj | polovica línie od lokality, pomenovaná podľa hrany lokality (Krčma: pri výčape / pri dverách) (§6) |
+| Kraj | polovica línie od lokality, pomenovaná podľa hrany lokality (Krčma: pri výčape / pri dverách); nepatrí nikomu (§6) |
 | Línia | celý rad kariet v kole; lokalita v strede (§6) |
+| Koniec línie | jeden z dvoch koncov línie, kam sa vykladá; nepatrí nikomu (§6) |
 | NA EX | plný poldeci na Občana či Starešinu v línii, vybraný v Pitke skryto: zruší jeho aktívne akcie a zdvojí neaktívne (§7) |
 | Nástup | vyhodnotenie pri zahraní karty |
 | Nerest | len konzumácia (v9.1): Vypiť 1, NA EX 2, vyfajčená cigareta 1 — porovnávajú sa s Chuťou (§8) |
@@ -2039,7 +2037,7 @@ bitky, Noviny hneď po rozhodnutí hádky, Kôň v kroku Exekútora. Michal ich 
 | Hádka | spúšťač (v11.5, Noviny): efekt, keď sa v bitke rozhodne hádka. Krok bitky (v10, v11): kto má viac mäkkého, vyhral hádku o rozdiel („Ana vyhrala hádku o 3“); po bodovaní ho rozdelí na svoje reči na teplomeroch súpera (1 / 2 / 3 za stupeň), vo finále 1 : 1 na špaky (§9.1) |
 | Reči | blok stupňov hráča na teplomere súpera; dvíha ich hádka a Predsedova vila, stupne 1 / 2 / 2 bodujú pri každej bitke tomu, kto ich drží, klesajú zospodu po prehratej hádke, priazeň nedávajú (§10, v11.12) |
 | Strach | marker hráča pri staršom 0–3 — ako veľmi sa ho starší bojí; neklesá; dvíha ho Nakladačka; priazeň = strach súpera − tvoj strach (§10, v11) |
-| Partia | všetky karty natočené k hráčovi (jeho karty), na ktorejkoľvek strane (§6) |
+| Partia | všetky karty natočené k hráčovi (jeho karty), kdekoľvek v línii (§6) |
 | Zajatie | pri rozdelení Nakladačky za 5 bodov staršieho, pri ktorom je tvoj strach 3 už pred touto Nakladačkou (od minulého kola; dotiahnutý v tom istom rozdelení nestačí, v11.6): väzeň, krádež špakov; vo finále nie (§9.4, §10, v11.4; v9–v11.3 pokus o zajatie v drafte) |
 | Presvedčenie | pri rozdelení hádky za 3 body ktoréhokoľvek staršieho, keď máš reči na celom teplomere: reči aj priazeň ostávajú, jeho karta natrvalo do tvojho balíčka; kto prvý, toho je (§9.1, §10, v11.4) |
 | Väzeň | zajatý starší v priznaných kartách držiteľa („v pivnici“) — nedáva priazeň ani strach, držiteľ má jeho schopnosť (raz za hru); ráta sa ako jeho červená; väzni na výhru podľa ligy (2 / 3 / 4); pri zajatí krádež špakov (v11) |
@@ -2058,7 +2056,6 @@ bitky, Noviny hneď po rozhodnutí hádky, Kôň v kroku Exekútora. Michal ich 
 | Stav staršieho | stupeň staršieho pre hráča: pokojný (0), znepokojený (1), vystrašený (2), vydesený (3) — jeho strach; do priazne, výhry strachom a zajatia sa ráta celý, aj obsadený rečami (§10, v11.12) |
 | Od seba / k sebe | smer posunu markera na stupnici; od seba staršieho desí, k sebe upokojuje (§10) |
 | Zaplatený / držaný stupeň | stupeň, ktorý starší už zaplatil, a stupeň, na ktorom marker stál na konci minulého kola a neustúpil; ústup ich zmaže (§10) |
-| Strana | polovica línie od lokality — tvoja a súperova (§6) |
 | Šenok | ponuka kariet lícom nahor; obaja vidia, čo berú (§5) |
 | Útočník / obranca | útočník je **porazený z minulej bitky** (v prvom kole náhodne, pri sekere ostáva; vo finále menej špakov, §14b) — vykladá prvý a na NA EX odpovedá prvý (lícom dole); obranca je víťaz minulej bitky — volí a natáča cieľ, berie zo šenku prvý (na prvom ťahu 1 kartu, v9.2), na NA EX odpovedá druhý na druhý kraj línie; Pitku hrajú obaja naraz (§4, §7) |
 | Výtržník | karta, na ktorú obaja dali NA EX v tej istej Pitke (zrážka): všetky jej akcie sú aktívne Rany pre majiteľa, len počas jednej bitky (§7) |
@@ -2075,7 +2072,7 @@ bitky, Noviny hneď po rozhodnutí hádky, Kôň v kroku Exekútora. Michal ich 
 
 Dva **tímy** po dvoch hráčoch, štyri zariadenia, jedna partia (Michal 2026-10-28).
 Platí všetko z §1–§17 s rozdielmi nižšie. Zásada: **tím je hráč z 1 na 1 s dvoma
-rukami.** Všetko, čo pravidlá hovoria o hráčovi — strana línie, partia, zdroje,
+rukami.** Všetko, čo pravidlá hovoria o hráčovi — partia, zdroje,
 balíčky, kliatby, Chuť, strach a reči, väzni, špaky, útočník a obranca —, v 2 na 2
 platí pre tím. Osobná je len **ruka** a **ťah**.
 
@@ -2097,7 +2094,7 @@ platí pre tím. Osobná je len **ruka** a **ťah**.
 
 | Tímu | Hráčovi |
 |---|---|
-| strana línie, prevaha v kraji, partia (karty natočené k tímu) | ruka |
+| prevaha v kraji, partia (karty natočené k tímu) | ruka |
 | doberací a odhadzovací balíček | ťah v poradí |
 | poldeci (plné, vypité, na NA EX) a limit vykladania | karta zo stavby šenku |
 | cigarety, cena fajčenia v Pitke | — |
@@ -2144,8 +2141,8 @@ platí pre tím. Osobná je len **ruka** a **ťah**.
 
 ### 18.6 Zhromaždenie (k §6, §13)
 
-- Hráč na ťahu vykladá **zo svojej ruky** na koniec strany svojho alebo súperovho
-  tímu. Karta je natočená k jeho tímu a patrí do partie tímu.
+- Hráč na ťahu vykladá **zo svojej ruky** na ktorýkoľvek koniec
+  línie. Karta je natočená k jeho tímu a patrí do partie tímu.
 - **Limit vykladania je tímový:** plné poldeci tímu + 1 (Michal 2026-10-28). Míňa ho
   každé vyloženie ktoréhokoľvek člena. **Vypiť** platí plným poldeci tímu.
 - **Pas hráča** (Michal 2026-11-02, Q1 — nahrádza „cigarety hneď každému za seba“

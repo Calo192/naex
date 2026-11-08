@@ -374,7 +374,7 @@ export function viewFor(data: GameData, state: GameState, miesto: Miesto): Clien
     };
   };
 
-  // Záverečná súpera: v strany nie je, súper vie len, že na konci strany leží rub.
+  // Záverečná súpera: v strany nie je, súper vie len, že na konci línie leží rub.
   const skryta = (pl: PlacedCard): boolean => pl.zaverecna === true && pl.playedBy !== ja;
   const skrySuperove = (strana: PlayerId): readonly PlacedCard[] =>
     state.strany[strana].some(skryta) ? state.strany[strana].filter((pl) => !skryta(pl)) : state.strany[strana];

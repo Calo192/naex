@@ -778,7 +778,7 @@ async function main(): Promise<void> {
         }
       }
       if (n > 8) console.log(`… a ďalších ${n - 8} variantov.`);
-      console.log("\nV línii: karta podstrčená na súperovu stranu sa číta podľa PRAVIDIEL §6 — over, ktorá hrana sa dotkne lokality.");
+      console.log("\nV línii: karta vpravo od lokality (natočená k majiteľovi) sa číta podľa PRAVIDIEL §6 — over, ktorá hrana sa dotkne lokality.");
       break;
     }
 

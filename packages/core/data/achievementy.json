@@ -550,8 +550,8 @@
       "id": "podstrkovac",
       "nazov": "Podstrkovač",
       "kategoria": "linia",
-      "popis": "Vylož v jednej partii aspoň {prah} kariet na súperovu stranu.",
-      "metrika": "stat.kartyDoSuperovej",
+      "popis": "Podstrč v jednej partii aspoň {prah} kariet — priložených k súperovej karte.",
+      "metrika": "stat.kartyPodstrcene",
       "rozsah": "partia",
       "prahy": [
         12,

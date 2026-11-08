@@ -202,9 +202,9 @@ describe("výučba — zlý ťah povie, čo chýba (playtest výučby, návrh 1)
     const p = porovnajSKrokom(data, state, { type: "tah", kroky: [{ type: "place", uid: a.uid, target: "vlastna" }] }, ocakava);
     expect(p.zhoda).toBe(false);
     expect(p.navyse).toEqual([]);
-    expect(p.chybajuce.map((x) => x.popis)).toEqual(["vypi poldeci (Vypiť)", `polož kartu „${meno(b)}“ na svoju stranu línie`]);
+    expect(p.chybajuce.map((x) => x.popis)).toEqual(["vypi poldeci (Vypiť)", `polož kartu „${meno(b)}“ na koniec línie vľavo`]);
     expect(p.chybajuce[1]?.uid).toBe(b.uid);
-    expect(textChybyKroku(p)).toBe(`Takto nie — ešte chýba: vypi poldeci (Vypiť), polož kartu „${meno(b)}“ na svoju stranu línie.`);
+    expect(textChybyKroku(p)).toBe(`Takto nie — ešte chýba: vypi poldeci (Vypiť), polož kartu „${meno(b)}“ na koniec línie vľavo.`);
   });
 
   it("celý ťah v inom poradí prejde; karta na zlé miesto je navyše aj chýba", () => {
@@ -213,8 +213,8 @@ describe("výučba — zlý ťah povie, čo chýba (playtest výučby, návrh 1)
     const zle = kroky.map((c) => (c.type === "place" && c.uid === a.uid ? { ...c, target: "superova" as const } : c));
     const p = porovnajSKrokom(data, state, { type: "tah", kroky: zle }, ocakava);
     expect(p.zhoda).toBe(false);
-    expect(p.navyse.map((x) => x.popis)).toEqual([`polož kartu „${meno(a)}“ na súperovu stranu línie`]);
-    expect(p.chybajuce.map((x) => x.popis)).toEqual([`polož kartu „${meno(a)}“ na svoju stranu línie`]);
+    expect(p.navyse.map((x) => x.popis)).toEqual([`polož kartu „${meno(a)}“ na koniec línie vpravo`]);
+    expect(p.chybajuce.map((x) => x.popis)).toEqual([`polož kartu „${meno(a)}“ na koniec línie vľavo`]);
     expect(textChybyKroku({ zhoda: false, chybajuce: [], navyse: p.navyse })).toMatch(/^Takto nie — toto teraz nie: /);
   });
 

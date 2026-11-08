@@ -237,7 +237,7 @@ export const KAPITOLY: readonly Kapitola[] = [
         <H3 id="ciel">Cieľ kola</H3>
         <p>
           Obranca vyberie lokalitu, o ktorú sa bude biť, a víťaz hádky z minulého kola ju <P k="natocenie">natočí</P> (v prvom kole a po remíze v hádke ten, kto vyberá). Lokalita leží v strede línie a delí ju
-          na dve <P k="strana">strany</P>. Natočenie určuje, ktorá hrana lokality patrí ktorému <P k="kraj">kraju</P> — akcie
+          na dva <P k="kraj">kraje</P>. Natočenie určuje, ktorá hrana lokality patrí ktorému kraju — akcie
           hrany dostane, kto v tom kraji má <a href="#zhromazdenie-prevaha">prevahu</a>. Efekt lokality platí len v kole, keď sa
           o ňu bije (<a href="#lokality">tabuľka lokalít</a>). Vo finále vyberá obranca — kto vedie — z troch pinnacle lokalít a hrá sa o ňu ako o každú inú.
         </p>
@@ -288,17 +288,17 @@ export const KAPITOLY: readonly Kapitola[] = [
     kratky: "Zhromaždenie a spoje",
     obrazok: "06-zhromazdenie",
     vSkratke: [
-      "Kartu kladieš na koniec svojej alebo súperovej strany; ostáva tvoja.",
+      "Kartu kladieš na ktorýkoľvek koniec línie; ostáva tvoja.",
       "Akcia platí, len keď sa na spoji stretne s akciou suseda v rovnakej výške.",
       "Limit vykladania = plné poldeci + 1.",
       "Pas dá cigaretu za každú kartu, ktorú si ešte smel vyložiť a máš ju v ruke.",
     ],
     obsah: (s) => (
       <>
-        <H3 id="zhromazdenie-linia">Línia a dve strany</H3>
+        <H3 id="zhromazdenie-linia">Línia, dva konce a dva kraje</H3>
         <p>
-          Karty tvoria <strong>jednu súvislú <P k="linia">líniu</P></strong> bez vetvenia. Lokalita v strede ju delí na tvoju
-          a súperovu <P k="strana">stranu</P>. Na ťahu položíš kartu na <strong>koniec svojej alebo súperovej strany</strong>.
+          Karty tvoria <strong>jednu súvislú <P k="linia">líniu</P></strong> bez vetvenia. Lokalita v strede ju delí na dva{" "}
+          <P k="kraj">kraje</P>. Na ťahu položíš kartu na <strong>ktorýkoľvek z dvoch <P k="koniec-linie">koncov línie</P></strong> — žiaden nie je tvoj.
           Karta je vždy natočená k tebe a ostáva tvoja — je v tvojej <P k="partia">partii</P> a jej akcie aj efekty sa rátajú
           tebe, nech leží kdekoľvek. Aj vo finále leží v strede lokalita — pinnacle — a karty sa kladú k nej ako v každom kole.
         </p>
@@ -327,7 +327,7 @@ export const KAPITOLY: readonly Kapitola[] = [
         <p>
           Akcie hrany lokality dostane hráč s <P k="prevaha">prevahou</P> v tom <P k="kraj">kraji</P> — kto tam má viac svojich{" "}
           <strong>Občanov, Zvierat a Starešinov</strong> (Nástroje ani Cirhóza sa nerátajú). Pri rovnosti hráč, ktorého karta
-          v kraji leží hneď pri lokalite. Jedna podstrčená karta teda neukradne akcie hrany, ale tvorí s nimi spoj: ako prvá
+          v kraji leží hneď pri lokalite. Jedna súperova karta v kraji teda neukradne akcie hrany, ale tvorí s nimi spoj: ako prvá
           karta pri lokalite určuje, ktoré akcie hrany sa aktivujú, a tie dostane hráč s prevahou. Kraje majú mená podľa lokality, napríklad
           v Krčme „pri výčape“ a „pri dverách“.
         </p>
@@ -340,7 +340,7 @@ export const KAPITOLY: readonly Kapitola[] = [
     nazov: "Pitka a NA EX",
     obrazok: "07-pitka-a-naex",
     vSkratke: [
-      "Počet Pitiek = 1 + menší počet aktivovaných akcií lokality z jej dvoch strán.",
+      "Počet Pitiek = 1 + menší počet aktivovaných akcií lokality z jej dvoch krajov.",
       "Pitku hráte obaja naraz, každý skončí sám; NA EX sa odkryjú naraz a odpovede na ne idú lícom dole.",
       "NA EX vyberáte skryto; odkryje sa, keď ste hotoví obaja.",
       "NA EX zruší aktívne a zdvojí neaktívne akcie karty; karta musí mať oboje.",
@@ -352,9 +352,9 @@ export const KAPITOLY: readonly Kapitola[] = [
         <H3 id="pitka-pocet">Koľko Pitiek</H3>
         <p>
           Po Zhromaždení nasleduje <P k="pitka">Pitka</P>. V bitke je ich <strong>1 + menší z počtov aktivovaných akcií lokality</strong>{" "}
-          na jej dvoch stranách (1 až 5). Akciu lokality aktivuje karta, ktorá s ňou tvorí spoj; Odpor na hrane lokality sa ráta,
-          akcia hrany zrušená Odporom karty nie. Ak sú na jednej strane lokality aktivované 3 jej akcie a na druhej 1, pijú sa{" "}
-          <strong>2 Pitky</strong> — ráta sa podľa strán, nie podľa toho, kto kartu zahral; akcia ×2 je stále jedna. Pred každou Pitkou je Zhromaždenie. Počet sa počas kola mení s líniou — začatá Pitka sa vždy
+          v jej dvoch krajoch (1 až 5). Akciu lokality aktivuje karta, ktorá s ňou tvorí spoj; Odpor na hrane lokality sa ráta,
+          akcia hrany zrušená Odporom karty nie. Ak sú v jednom kraji aktivované 3 akcie lokality a v druhom 1, pijú sa{" "}
+          <strong>2 Pitky</strong> — ráta sa podľa krajov, nie podľa toho, kto kartu zahral; akcia ×2 je stále jedna. Pred každou Pitkou je Zhromaždenie. Počet sa počas kola mení s líniou — začatá Pitka sa vždy
           dopije. Úroveň lokality je počet akcií na jej hrane (1, 2, 3, pinnacle 4), takže kolo má 1 až 5 Pitiek. Počet Pitiek špaky neurčuje — víťaz bitky dostane špak za každú kartu v línii.
         </p>
         <H3 id="pitka-poradie">Poradie Pitky</H3>
@@ -394,7 +394,7 @@ export const KAPITOLY: readonly Kapitola[] = [
         <ul>
           <li>Nedá sa dať na kartu, na ktorej už poldeci leží.</li>
           <li>Akcia zrušená Odporom nie je ani aktívna, ani neaktívna — NA EX ju nezdvojí.</li>
-          <li>Na Kostole len na poslednú kartu línie, najďalej od Kostola — na jednom alebo druhom konci.</li>
+          <li>Na Kostole len na kartu na konci línie (na ktoromkoľvek z dvoch koncov), najďalej od Kostola.</li>
           <li>NA EX na kartu pri lokalite mení len akcie karty — akcie hrany lokality ostávajú aktívne.</li>
           <li>
             NA EX na kartu s Posilnením zruší Posilnenie aj ×2, ktoré dávalo partnerovi na spoji — partnerova akcia (aj hrana
@@ -420,8 +420,8 @@ export const KAPITOLY: readonly Kapitola[] = [
         </p>
         <H3 id="naex-odpoved">Odpoveď na NA EX</H3>
         <p>
-          Po odkrytí smieš za <strong>každé súperovo NA EX vyložiť jednu kartu</strong> z ruky na koniec svojej alebo jeho
-          strany — <strong>lícom dole, zadarmo</strong>; <P k="odpoved">odpoveď</P> limit vykladania nemíňa. Najprv odpovedá{" "}
+          Po odkrytí smieš za <strong>každé súperovo NA EX vyložiť jednu kartu</strong> z ruky na ktorýkoľvek koniec
+          línie — <strong>lícom dole, zadarmo</strong>; <P k="odpoved">odpoveď</P> limit vykladania nemíňa. Najprv odpovedá{" "}
           <strong>útočník</strong>, potom <strong>obranca</strong> — len na druhý kraj línie (keď útočník neodpovedal, na
           ktorýkoľvek). Súperovu odpoveď nevidíš, kým sa obe <strong>neotočia naraz</strong>; až potom sa vyhodnotí ich Nástup
           a Pitka. Najlepšie tak, aby si spároval neaktívne akcie karty s NA EX: tie sa stanú aktívnymi a NA EX ich zruší.
@@ -573,7 +573,7 @@ export const KAPITOLY: readonly Kapitola[] = [
           sekere ostáva útočníkom, starší bodujú obom len za reči a cigaretu za prehru nedostane nikto.
         </p>
         <p className="zvyraznene">
-          Víťaz dostane 1 <P k="spak">špak</P> za každú kartu, ktorá pri bitke leží v línii — na oboch stranách, aj odkrytá
+          Víťaz dostane 1 <P k="spak">špak</P> za každú kartu, ktorá pri bitke leží v línii — v celej línii, aj odkrytá
           Záverečná, aj vo finále; priznané karty, Dedičstvo a karty, ktoré z línie počas kola zmizli, sa nerátajú.
           Absťáky špaky nezrážajú. Lokalitu si neberie — ide na krčmovú{" "}
           <P k="nastenka">nástenku</P> s jeho menom a špakmi. <strong>Nakladačka</strong> je rozdiel tuhého poškodenia — drží ju
@@ -830,7 +830,7 @@ export const KAPITOLY: readonly Kapitola[] = [
         <H3 id="nastroje-linia">Nástroj v línii</H3>
         <p>
           <P k="nastroj">Nástroj</P> nemíňa limit vykladania a NA EX naň dať nemožno. Nástroj nesmie susediť s Nástrojom a{" "}
-          <strong>vedľa lokality sa nevykladá</strong> — na prázdnu stranu, svoju ani súperovu, ho nevyložíš (v ťahu po Vypiť
+          <strong>vedľa lokality sa nevykladá</strong> — do prázdneho kraja, na žiadny koniec línie, ho nevyložíš (v ťahu po Vypiť
           smie za kartu, ktorú si práve vyložil; za Živnostníka áno). Náradie musí mať kto používať. Spoj s ním vznikne len pri karte s tagom <strong>Občan alebo Starešina</strong>; pri
           lokalite, karte staršieho či inej karte sa neaktivuje nič.
         </p>
@@ -857,7 +857,7 @@ export const KAPITOLY: readonly Kapitola[] = [
     vSkratke: [
       "Vypiť: každá ďalšia karta v ťahu stojí plný poldeci.",
       "Záverečná: karta lícom dole za 1 cigaretu, otočí sa na konci Pitky.",
-      "Podstrčenie: karta na súperovej strane ostáva tvoja.",
+      "Podstrčenie: svoju kartu priložíš k súperovej; ostáva tvoja.",
       "Posilnenie zdvojí, Odpor zruší, Odpor proti Odporu = Vzbura, Posilnenie proti Posilneniu = Forsáž.",
     ],
     obsah: () => (
@@ -877,25 +877,15 @@ export const KAPITOLY: readonly Kapitola[] = [
         <H3 id="pokrocile-zaverecna">Záverečná</H3>
         <p>
           V Zhromaždení smieš za 1 cigaretu zahrať kartu <strong>lícom dole</strong> ako <P k="zaverecna">Záverečnú</P> — na
-          koniec svojej alebo súperovej strany. Míňa limit a potom už v tom Zhromaždení nevykladáš (pas za ňu cigarety nedá).
+          ktorýkoľvek koniec línie. Míňa limit a potom už v tom Zhromaždení nevykladáš (pas za ňu cigarety nedá).
           Súper ju nevidí, nesmie za ňu priložiť kartu (ani odpoveďou na NA EX) a NA EX na ňu smie dať len on — vtedy prejde
           vždy. Otočí sa na <strong>konci Pitky</strong>; až vtedy platí jej Nástup a efekty.
         </p>
         <H3 id="pokrocile-podstrcenie">Podstrčenie (sabotér)</H3>
         <p>
-          Karta vyložená na súperovu stranu je <P k="podstrcenie">podstrčená</P>: ostáva tvoja, jej akcie aj efekty sa rátajú
+          Kartu priloženú k súperovej <P k="podstrcenie">podstrčíš</P>: ostáva tvoja, jej akcie aj efekty sa rátajú
           tebe a so súperovými susedmi sa páruje normálne — aktivuje im akcie na spoji, ktoré dostane súper. Pošli mu sabotéra:
-          tvoj Odpor mu zruší akciu, ktorú potreboval, a zaberieš mu koniec strany.
-        </p>
-        <p>
-          Akcie hrany lokality podstrčená karta neukradne, ale tvorí s nimi spoj: keď leží pri lokalite ako prvá, určuje, ktoré
-          akcie hrany sa aktivujú. Dostane ich hráč s prevahou v kraji.
-        </p>
-        <p>
-          <strong>Kočovník</strong> je výnimka: „Furt: Jeho akcie sa počítajú hráčovi, ktorý má v jeho kraji prevahu.“ Všetky
-          jeho akcie — aj Rana, Hazard či Poškodenie pečene — dostane ten, kto v kraji prevláda. Do prevahy sa Kočovník ráta
-          svojmu majiteľovi, pri rovnosti rozhoduje karta hneď pri lokalite. Škodlivé akcie sa súperovi dajú podhodiť, ale
-          súper to vie ovplyvniť kartami, ktoré do kraja vyloží.
+          tvoj Odpor mu zruší akciu, ktorú potreboval, a zaberieš koniec línie, kde stavia.
         </p>
         <H3 id="pokrocile-modifikatory">Posilnenie, Odpor, Vzbura a Forsáž</H3>
         <ul>
@@ -912,7 +902,7 @@ export const KAPITOLY: readonly Kapitola[] = [
           <li>
             <strong>Posilnenie proti Posilneniu = <P k="forsaz">Forsáž</P>:</strong> obe karty majú všetky svoje aktívne akcie
             posilnené (×2) — aj tie, ktoré sú aktívne po Vzbure, aj zlé ako Hazard. Akcia, ktorú navyše posilní Posilnenie suseda
-            z druhej strany, má ×4.
+            z druhého spoja, má ×4.
           </li>
           <li>
             Ak sa Odpor stretne s Posilnením, vznikne Vzbura len pre kartu s Odporom: obráti sa a všetky jej aktívne akcie
@@ -951,13 +941,13 @@ export const KAPITOLY: readonly Kapitola[] = [
         </thead>
         <tbody>
           <tr><td>Krčma</td><td>Pitka</td><td>Kto má plný poldeci a kam ho dať, musí dať NA EX. Prah Cirhózy je obom o 2 vyšší.</td></tr>
-          <tr><td>Kostol</td><td>Zhromaždenie, Pitka</td><td>Nikto nesmie vypiť (v ťahu len jedna karta). NA EX len na poslednú kartu línie, najďalej od Kostola — na jednom alebo druhom konci.</td></tr>
+          <tr><td>Kostol</td><td>Zhromaždenie, Pitka</td><td>Nikto nesmie vypiť (v ťahu len jedna karta). NA EX len na kartu na konci línie (na ktoromkoľvek z dvoch koncov), najďalej od Kostola.</td></tr>
           <tr><td>Benzínka</td><td>Pitka</td><td>Prvé fajčenie každého hráča v každej Pitke je zadarmo, ďalšie stojí 2, potom 3.</td></tr>
           <tr><td>Zastávka</td><td>Pitka</td><td>Po prvej Pitke kola si každý vezme zadarmo 1 kartu zo šenku — najprv útočník, potom obranca (z prázdneho šenku nič).</td></tr>
-          <tr><td>Lesná cesta</td><td>Bitka</td><td>Za každé tvoje Zviera v línii, na ktorejkoľvek strane, 2 tuhé navyše.</td></tr>
+          <tr><td>Lesná cesta</td><td>Bitka</td><td>Za každé tvoje Zviera v línii, v ktoromkoľvek kraji, 2 tuhé navyše.</td></tr>
           <tr><td>Ihrisko</td><td>Bitka</td><td>V každom kraji +2 tuhé tomu, kto tam má viac svojich Občanov, Zvierat a Starešinov (Dvojčatá za dve) — spolu až +4.</td></tr>
           <tr><td>Zberný dvor</td><td>Pitka</td><td>Na konci Pitky smie každý spáliť 1 kartu z ruky, nie kliatbu.</td></tr>
-          <tr><td>Most</td><td>Zhromaždenie, Pitka</td><td>Karty len na vlastnú stranu, aj odpoveď na NA EX.</td></tr>
+          <tr><td>Most</td><td>Zhromaždenie, Pitka</td><td>Každý vykladá len na koniec línie po svojej ľavici, aj odpoveď na NA EX.</td></tr>
           <tr><td>Kar</td><td>Pitka</td><td>Poškodenie pečene za NA EX dostane súper hráča, ktorý ho dal.</td></tr>
           <tr><td>Cintorín</td><td>Prehra</td><td>Porazený si smie vziať do ruky 1 kartu zo svojho odhadzovacieho balíčka (pri sekere nikto).</td></tr>
           <tr><td>Obecný úrad</td><td>Pitka</td><td>Cigarety a Dlhy získané v Pitke sa obom rátajú dvakrát: (akcie − Obmedzenie) × 2. Platby a cigarety za pas nie.</td></tr>
@@ -1000,7 +990,7 @@ export const KAPITOLY: readonly Kapitola[] = [
             </tr>
           </thead>
           <tbody>
-            <tr><td>Vyhratá bitka</td><td>1 za každú kartu v línii na oboch stranách (aj finále), aspoň 1; k tomu špaky zo sekery</td></tr>
+            <tr><td>Vyhratá bitka</td><td>1 za každú kartu v celej línii (aj finále), aspoň 1; k tomu špaky zo sekery</td></tr>
             <tr><td>Bitka o Kultúrny dom</td><td>víťaz aj porazený 1 za každú svoju kartu v línii</td></tr>
             <tr><td>Vyhraná hádka pri prehratej bitke alebo sekere</td><td>1 za každú svoju kartu v línii; na Kultúrnom dome nie druhýkrát</td></tr>
             <tr><td>Starší po bitke</td><td>stupne žltá 1, oranžová 2, červená 2 dostane, kto ich drží: víťaz za svoj strach bez stupňov, ktoré obsadil súper, obaja pri každej bitke za svoje reči; kto prehral hádku, tomu reči klesnú zospodu o stupeň</td></tr>

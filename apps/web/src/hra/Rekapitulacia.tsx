@@ -308,7 +308,7 @@ function riadkyNaex(naex: NaexRekapitulacie, odpovede: readonly OdpovedNaNaex[],
     out.push({
       druh: "odpoved",
       kto: o.hrac,
-      casti: o.defId === null ? [text("odpoveď: žiadna")] : [text("odpoveď"), { t: "karta", defId: o.defId, majitel: o.hrac }, text(strana === ja ? "na tvoju stranu" : o.hrac === ja ? "na súperovu stranu" : "na svoju stranu")],
+      casti: o.defId === null ? [text("odpoveď: žiadna")] : [text("odpoveď"), { t: "karta", defId: o.defId, majitel: o.hrac }, text(strana === ja ? "na koniec línie vľavo" : "na koniec línie vpravo")],
       krok: 0,
     });
   }

@@ -471,7 +471,7 @@ export function Statistiky({ profil, vlastny }: { readonly profil: ProfilHraca; 
           <Udaj nazov="ťahov" hodnota={cislo(s.tahy)} vyrazny />
           <Udaj nazov="ťahov na partiu" hodnota={priemer(s.tahy, s.partie, 0)} />
           <Udaj nazov="kôl na partiu" hodnota={priemer(s.kola, s.partie)} />
-          <Udaj nazov="vyložených kariet" hodnota={cislo(s.kartyVylozene)} pomoc={`Z toho ${s.kartyDoSuperovej} do súperovej partie.`} />
+          <Udaj nazov="vyložených kariet" hodnota={cislo(s.kartyVylozene)} pomoc={`Z toho ${s.kartyPodstrcene} podstrčených — priložených k súperovej karte (ráta sa od 8. 11. 2026).`} />
           <Udaj nazov="priemerná partia" hodnota={trvanie(profil.casSpolu / Math.max(1, s.partie))} />
           <Udaj nazov="pri stole spolu" hodnota={trvanie(profil.casSpolu)} />
         </Sekcia>

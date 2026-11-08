@@ -11,9 +11,12 @@ export interface StatKarty {
   readonly partie: number;
   /** Koľkokrát si ju hráč vzal zo šenku. */
   readonly zoSenku: number;
-  /** Vyložená na vlastnú stranu línie. */
+  /** Vyložená na koniec línie vľavo od lokality (target vlastna). */
   readonly vylozene: number;
-  /** Vyložená na súperovu stranu (podstrčená). */
+  /**
+   * Vyložená na koniec línie vpravo (target superova). Meno ostáva z čias „súperovej strany“;
+   * podstrčenie podľa pravidiel (priložiť k súperovej karte, Michal 2026-11-08) ráta statistiky.ts.
+   */
   readonly podstrcene: number;
   /** Priznaná (kliatby) alebo položená do Dedičstva (Nástroje). */
   readonly priznane: number;
