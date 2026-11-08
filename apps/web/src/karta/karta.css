@@ -696,3 +696,193 @@ body:not(.tahanie-aktivne) .ruka-rad > .tahatelna:is(:hover, :focus-visible) .kl
   opacity: 1;
   filter: drop-shadow(0 0 calc(3 * var(--pt)) rgba(255, 196, 64, 0.95)) drop-shadow(0 0 calc(0.6 * var(--pt)) #000);
 }
+
+/* Preškolenie {X}→{Y} — pečať R5 „pilulka“ (Michal 2026-11-08, docs/napady/premeny-akcii.html):
+   jeden rám v tvare slotu, v ňom pôvodná akcia (tlmená), šípka a nová. --u je výška rámu. */
+.kl-pil {
+  --u: calc(var(--s) * var(--pt));
+  position: absolute;
+  z-index: 1;
+  left: calc(var(--x) * var(--pt));
+  top: calc(var(--y) * var(--pt));
+  display: flex;
+  align-items: center;
+  gap: calc(var(--u) * 0.05);
+  height: var(--u);
+  padding: calc(var(--u) * 0.1);
+  border-radius: calc(var(--r) * var(--pt));
+  background: var(--farba);
+  box-shadow:
+    0 0 0 max(1px, calc(var(--u) * 0.035)) #fff,
+    calc(var(--u) * 0.03) calc(var(--u) * 0.06) 0 calc(var(--u) * 0.035) rgba(0, 0, 0, 0.45);
+  cursor: help;
+  box-sizing: border-box;
+}
+
+.kl-pil-volna {
+  --u: var(--pil, 20px);
+  position: relative;
+  left: auto;
+  top: auto;
+  flex: none;
+  border-radius: calc(var(--u) * 0.22);
+  background: rgba(0, 0, 0, 0.28);
+}
+
+.kl-pil-a {
+  display: block;
+  flex: none;
+  width: calc(var(--u) * 0.8);
+  height: calc(var(--u) * 0.8);
+}
+
+.kl-pil-a .ikona-akcie {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border-radius: calc(var(--u) * 0.16);
+}
+
+.kl-pil-z {
+  opacity: 0.75;
+}
+
+.kl-pil-sipka {
+  flex: none;
+  width: calc(var(--u) * 0.3);
+  height: calc(var(--u) * 0.36);
+  background: #000;
+  clip-path: polygon(0 36%, 52% 36%, 52% 10%, 100% 50%, 52% 90%, 52% 64%, 0 64%);
+}
+
+.kl-pil-volna .kl-pil-sipka {
+  background: #fff;
+}
+
+.kl-pil.kl-pil-akt {
+  box-shadow:
+    0 0 0 calc(0.8 * var(--pt)) #ffe08a,
+    0 0 calc(9 * var(--pt)) calc(3 * var(--pt)) rgba(255, 196, 64, 0.85);
+  animation: kl-pulz 1.6s ease-in-out infinite;
+}
+
+.kl-pil.kl-pil-spi {
+  opacity: 0.5;
+  filter: grayscale(1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .kl-pil.kl-pil-akt {
+    animation: none;
+  }
+}
+
+/* Otočená karta: pečať sa číta zľava doprava aj nohami hore. */
+.kl-otocena .kl-pil:not(.kl-pil-volna) {
+  transform: rotate(180deg);
+}
+
+/* D2: premenený slot ukáže novú akciu a pôvodnú malú v rohu (Nástroj, efekt karty, Výtržník). */
+.kl-roh {
+  position: absolute;
+  left: -18%;
+  top: -18%;
+  width: 52%;
+  height: 52%;
+  padding: 6%;
+  border-radius: 22%;
+  background: var(--farba);
+  box-shadow:
+    0 0 0 max(1px, calc(0.5 * var(--pt))) #fff,
+    0 0 calc(2 * var(--pt)) rgba(0, 0, 0, 0.8);
+  z-index: 2;
+  box-sizing: border-box;
+}
+
+.kl-roh .ikona-akcie {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border-radius: 18%;
+}
+
+/* Roh leží na vnútornej strane slotu — pri okraji karty by ho orezala hrana. */
+.kl-roh-lava .kl-roh {
+  left: auto;
+  right: -18%;
+}
+
+/* Hrany Nástroja (Náradie 2026-11-08, rám V1 z naradie-mock-stol.html): horná a dolná hrana,
+   farba hovorí, čo robí — zelená posila, červená sabotáž, modrá kartový účinok. */
+.kl-hrana-n {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: calc(var(--h) * var(--pt));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  z-index: 1;
+  cursor: help;
+}
+
+.kl-hrana-n-horna {
+  top: 0;
+}
+
+.kl-hrana-n-dolna {
+  bottom: 0;
+}
+
+.kl-smer-posila {
+  background: #3f7f38;
+}
+
+.kl-smer-sabotaz {
+  background: #9c3a28;
+}
+
+.kl-smer-ucinok {
+  background: #246c78;
+}
+
+.kl-smer-obojaka {
+  background: #a8641c;
+}
+
+.kl-hrana-n-nazov {
+  position: absolute;
+  left: calc(4 * var(--pt));
+  font-size: calc(5.5 * var(--pt));
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  opacity: 0.85;
+  white-space: nowrap;
+}
+
+.kl-hrana-n-horna .kl-hrana-n-nazov {
+  top: calc(1.5 * var(--pt));
+}
+
+.kl-hrana-n-dolna .kl-hrana-n-nazov {
+  bottom: calc(1.5 * var(--pt));
+}
+
+.kl-hrana-ucinok {
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  font-size: calc(11 * var(--pt));
+}
+
+.kl-hrana-n-pretrca {
+  box-shadow: inset 0 0 0 calc(1.4 * var(--pt)) #ffe08a;
+}
+
+.kl-hrana-n-tlmena {
+  filter: grayscale(0.7) brightness(0.7);
+}
+
+.kl-otocena .kl-hrana-n > * {
+  transform: rotate(180deg);
+}

@@ -11,6 +11,7 @@
 // potrebná — Git Bash ju aj tak prepisuje) namiesto partie.
 // --klik klikne na prvok (CSS selektor, napr. ".tlacidlo-naex") a odfotí výsledok;
 // --klik sa dá zopakovať — kliky idú postupne, po každom snímka.
+// --vyrez selektor odfotí len okolie prvku (dá sa zopakovať); pri stole vypíše, či stránka scrolluje.
 // --schema noc odfotí web vo farebnej schéme (id z apps/web/src/lib/schemy.ts).
 // --par w9 [--prehod] odfotí web s párom farieb hráča (apps/web/src/lib/paryHraca.ts);
 // pár uložený v účte má prednosť, preto len pre účty, ktoré si ho v profile nevybrali.
@@ -69,6 +70,8 @@ if (msys?.[1] !== undefined) cesta = msys[1].replace(/\\/g, "/");
 if (!cesta.startsWith("/")) cesta = `/${cesta}`;
 /** CSS selektory prvkov, na ktoré sa postupne klikne (--klik sa dá zopakovať); po každom snímka. */
 const kliky = args.flatMap((a, i) => (args[i - 1] === "--klik" ? [a] : []));
+/** CSS selektory prvkov, ktorých okolie sa odfotí samostatne (--vyrez sa dá zopakovať). */
+const vyrezy = args.flatMap((a, i) => (args[i - 1] === "--vyrez" ? [a] : []));
 /** Farebná schéma webu (apps/web/src/lib/schemy.ts), napr. „noc"; inak tá z účtu. */
 const schema = volba("--schema");
 const par = volba("--par");
@@ -188,8 +191,8 @@ try {
 
   const cas = new Date().toISOString().slice(11, 19).replace(/:/g, "");
   const subory: string[] = [];
-  const foto = async (cast: string): Promise<void> => {
-    const r = await posli("Page.captureScreenshot", { format: "png" });
+  const foto = async (cast: string, clip?: { x: number; y: number; width: number; height: number; scale: number }): Promise<void> => {
+    const r = await posli("Page.captureScreenshot", { format: "png", ...(clip === undefined ? {} : { clip }) });
     const subor = join(ucet.vystup, `${cas}-${ucet.predpona}${nazov}-${cast}.png`);
     writeFileSync(subor, Buffer.from(String(r.data), "base64"));
     subory.push(subor);
@@ -206,6 +209,12 @@ try {
   } else {
     await foto("hore");
   }
+  if (!web || cesta.startsWith("/hra")) {
+    // Stôl sa má zmestiť bez scrollovania (Michal 2026-10-24) — výpis to povie bez pozerania snímky.
+    const r = await js("[document.documentElement.scrollHeight, window.innerHeight, document.documentElement.scrollWidth, window.innerWidth].join(',')");
+    const [sh, ih, sw, iw] = String((r.result as { value?: string } | undefined)?.value ?? "0,0,0,0").split(",").map(Number);
+    console.log(`scroll: ${sh! > ih! + 1 || sw! > iw! + 1 ? `ÁNO (${sw}×${sh} v okne ${iw}×${ih})` : "nie"}`);
+  }
   for (const [i, klik] of kliky.entries()) {
     const r = await js(`(() => { const el = document.querySelector(${JSON.stringify(klik)}); if (!el) return "nenájdený"; el.click(); return "ok"; })()`);
     const vysledok = (r.result as { value?: string } | undefined)?.value;
@@ -213,6 +222,21 @@ try {
     await pockaj(900);
     await foto(kliky.length === 1 ? "klik" : `klik${i + 1}`);
   }
+  // --vyrez selektor: snímka len okolia prvku po klikoch, pri --hover s myšou na prvku (kontrola detailu).
+  const odfotVyrezy = async (): Promise<void> => {
+    for (const [i, sel] of vyrezy.entries()) {
+      const r = await js(`(() => { const el = document.querySelector(${JSON.stringify(sel)}); if (!el) return null; const b = el.getBoundingClientRect(); return [b.left, b.top, b.width, b.height]; })()`);
+      const b = (r.result as { value?: number[] | null } | undefined)?.value ?? null;
+      if (b === null || b.length !== 4) {
+        console.error(`--vyrez: prvok ${sel} sa nenašiel`);
+        continue;
+      }
+      const o = 16;
+      const x = Math.max(0, b[0]! - o);
+      const y = Math.max(0, b[1]! - o);
+      await foto(vyrezy.length === 1 ? "vyrez" : `vyrez${i + 1}`, { x, y, width: Math.min(sirka - x, b[2]! + 2 * o), height: Math.min(vyska - y, b[3]! + 2 * o), scale: 1 });
+    }
+  };
   let bod = hover;
   if (hoverSel !== undefined) {
     const r = await js(`(() => { const el = document.querySelector(${JSON.stringify(hoverSel)}); if (!el) return null; const b = el.getBoundingClientRect(); return [Math.round(b.left + b.width / 2), Math.round(b.top + b.height / 2)]; })()`);
@@ -220,10 +244,16 @@ try {
     if (bod === undefined) console.error(`--hover: prvok ${hoverSel} sa nenašiel`);
   }
   if (bod !== undefined && bod.length === 2) {
+    // Stôl berie prvý pohyb po načítaní ako šum (lupa sa ukáže až po skutočnom pohybe myši) — najprv pohyb mimo.
+    await posli("Input.dispatchMouseEvent", { type: "mouseMoved", x: 1, y: 1 });
+    await posli("Input.dispatchMouseEvent", { type: "mouseMoved", x: 30, y: 30 });
     await posli("Input.dispatchMouseEvent", { type: "mouseMoved", x: bod[0], y: bod[1] });
     await pockaj(700);
     await foto("hover");
+    await odfotVyrezy();
     await posli("Input.dispatchMouseEvent", { type: "mouseMoved", x: 2, y: 2 });
+  } else {
+    await odfotVyrezy();
   }
   if (!plna) {
     await js("window.scrollTo(0, document.documentElement.scrollHeight)");

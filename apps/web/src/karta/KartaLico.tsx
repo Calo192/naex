@@ -7,11 +7,13 @@
 import { useLayoutEffect, useMemo, useRef, useState, type CSSProperties, type ReactNode } from "react";
 import type { KartaNavrh, RozlozenieStrany, Vzhlad } from "@naex/tvorba";
 import { farbaKarty, formatujEfekt, geometriaKarty } from "@naex/tvorba";
-import { popisPodmienky, rozborNavyse, textBezAkcii } from "@naex/core";
+import type { HranaNastroja, KtoraHrana } from "@naex/core";
+import { menoAkcie, popisPodmienky, rozborNavyse, textBezAkcii, textBezHran } from "@naex/core";
 import { mediaUrl } from "../lib/api.ts";
 import { IkonaAkcie } from "./IkonaAkcie.tsx";
 import { useTip, type TipObsah } from "./Tip.tsx";
 import type { ZarSlotu } from "./zar.ts";
+import { POPIS_UCINKU, hranyZTextu, preskoleniaZTextu, smerHrany, textBezPreskolenia } from "./preskolenie.ts";
 import "./karta.css";
 
 /** Stav slotu v hre (živé vyhodnotenie línie). */
@@ -36,6 +38,22 @@ export interface NavyseNaKarte {
   readonly ako?: readonly string[];
   /** Podpora a Konflikt: ktorá vytlačená strana susedí s kartou, s ktorou sa efekt spustil (šípka svieti). */
   readonly sipky?: { readonly lava: boolean; readonly prava: boolean };
+}
+
+/**
+ * Stav Preškolenia {X}→{Y} z textu karty v hre (pečať R5, Michal 2026-11-08): krat 0 = nemá čo
+ * meniť (pečať sivá), N = koľko akcií práve mení (×N od 2); šípky k susedom ako pri Podpore.
+ */
+export interface PreskolenieNaKarte {
+  readonly krat: number;
+  readonly sipky?: { readonly lava: boolean; readonly prava: boolean };
+}
+
+/** Pôvodná akcia premeneného slotu (D2): kreslí sa malá v rohu, popis ide do nápovedy. */
+export interface RohSlotu {
+  readonly akcia: string;
+  /** „Preškolenie: Vidly“, „Výtržník“… */
+  readonly preco: string;
 }
 
 export type VzhladKarty = Pick<
@@ -80,6 +98,12 @@ export interface KartaLicoProps {
    * hry (glosár, tvorca): pečať ako vytlačená, bez stavu.
    */
   readonly navyse?: readonly NavyseNaKarte[] | undefined;
+  /** Preškolenia {X}→{Y} v hre, v poradí textu; chýba = mimo hry (pečať bez stavu). */
+  readonly preskolenia?: readonly PreskolenieNaKarte[] | undefined;
+  /** Sloty premenené Nástrojom, efektom karty či Výtržníkom — pôvodná akcia v rohu (D2). */
+  readonly rohy?: { readonly lava: readonly (RohSlotu | null)[]; readonly prava: readonly (RohSlotu | null)[] } | undefined;
+  /** Karta Nástroja v lupe podloženého Nástroja: pretŕčajúca hrana svieti, druhá je tlmená. */
+  readonly aktivnaHrana?: KtoraHrana | undefined;
   /** Bez tooltipov a efektu — malá karta v zozname. */
   readonly bezPopisov?: boolean;
   /**
@@ -102,11 +126,21 @@ export function KartaLico(props: KartaLicoProps) {
   const { tip, ukaz, skry } = useTip();
   const [bezObrazka, setBezObrazka] = useState(false);
   const farba = farbaKarty(karta, vzhlad.kategorie);
-  const efektyNavyse = useMemo(() => rozborNavyse(karta.efekt).efekty, [karta.efekt]);
+  // Nástroj s hranami (Náradie 2026-11-08) má rám V1: hrany hore a dole, v strede len Dedičstvo.
+  const hranyN = useMemo(() => hranyZTextu(karta.efekt, karta.tagy), [karta.efekt, karta.tagy]);
+  // Zápis {X}→{Y} kreslí pečať Preškolenia — v texte ostáva len slovo (ako pri akciách navyše).
+  const zakladEfektu = useMemo(() => textBezPreskolenia(hranyN === null ? karta.efekt : textBezHran(karta.efekt)), [karta.efekt, hranyN]);
+  const preskoleniaTextu = useMemo(() => preskoleniaZTextu(karta.efekt), [karta.efekt]);
+  const efektyNavyse = useMemo(() => rozborNavyse(zakladEfektu).efekty, [zakladEfektu]);
   const g = useMemo(
     () => geometriaKarty({ ...karta, maTagy: karta.tagy.length > 0 }),
     [karta.sirkaMm, karta.vyskaMm, karta.mierkaTextu, karta.mierkaIkon, karta.tagy.length],
   );
+
+  /** Výška hrany Nástroja v bodoch — to, čo spod hostiteľa pretŕča (mock 2, M2). */
+  const vyskaHrany = g.vyska * PODIEL_HRANY;
+  // Rám V1: pás s názvom a Dedičstvo sa posunú hore o hranu, dolná hrana tak nezakryje text.
+  const posunN = hranyN === null ? 0 : vyskaHrany;
 
   const hover = (obsah: TipObsah) =>
     bezPopisov
@@ -133,13 +167,25 @@ export function KartaLico(props: KartaLicoProps) {
       );
     }
     const zar = props.zar?.[strana][i] ?? null;
-    return ikona(`${strana}${i}`, r, kluc, sloty?.[strana][i] ?? null, zar, `${props.spoj?.[strana].includes(i) === true ? " kl-spoj" : ""}${zar === null ? "" : ` kl-zar-${strana}`}`);
+    const roh = props.rohy?.[strana][i] ?? null;
+    return ikona(
+      `${strana}${i}`,
+      r,
+      kluc,
+      sloty?.[strana][i] ?? null,
+      zar,
+      `${props.spoj?.[strana].includes(i) === true ? " kl-spoj" : ""}${zar === null ? "" : ` kl-zar-${strana}`}${roh === null ? "" : ` kl-s-rohom kl-roh-${strana}`}`,
+      undefined,
+      undefined,
+      roh,
+    );
   };
 
   /** Ikona akcie v ráme slotu — na hrane karty aj v pečati akcií navyše (rovnaký tvar aj žiar). */
-  const ikona = (key: string, r: { readonly x: number; readonly y: number; readonly w: number }, kluc: string, st: SlotStav | null, zar: ZarNaKarte | null, trieda: string, navyse?: string, odznak?: number) => {
+  const ikona = (key: string, r: { readonly x: number; readonly y: number; readonly w: number }, kluc: string, st: SlotStav | null, zar: ZarNaKarte | null, trieda: string, navyse?: string, odznak?: number, roh: RohSlotu | null = null) => {
     const akcia = vzhlad.akcie.find((a) => a.kluc === kluc);
     const nazov = akcia?.nazov ?? kluc;
+    const povodna = roh === null ? undefined : vzhlad.akcie.find((a) => a.kluc === roh.akcia);
     const stavText =
       navyse !== undefined
         ? navyse
@@ -151,7 +197,7 @@ export function KartaLico(props: KartaLicoProps) {
         data-akcia={kluc}
         style={{ "--x": r.x, "--y": r.y, "--s": r.w, "--r": g.polomerSlotu } as CSSProperties}
         tabIndex={bezPopisov ? undefined : props.slotyBezFokusu === true ? -1 : 0}
-        aria-label={`${nazov}: ${akcia?.popis ?? ""}${zar === null ? "" : ` ${zar.popis}`}`}
+        aria-label={`${nazov}: ${akcia?.popis ?? ""}${roh === null ? "" : ` Bola ${povodna?.nazov ?? roh.akcia}.`}${zar === null ? "" : ` ${zar.popis}`}`}
         {...hover({
           nadpis: nazov,
           ikona: (
@@ -162,6 +208,7 @@ export function KartaLico(props: KartaLicoProps) {
           text: (
             <>
               {akcia?.popis ?? "Akcia bez popisu."}
+              {roh !== null && <span className="tip-stav">{`Bola ${povodna?.nazov ?? roh.akcia} — ${roh.preco}.`}</span>}
               {zar !== null && <span className={`tip-zar tip-zar-${zar.smer}`}>{zar.popis}</span>}
               {stavText !== null && <span className="tip-stav">{stavText}</span>}
             </>
@@ -171,6 +218,11 @@ export function KartaLico(props: KartaLicoProps) {
         <IkonaAkcie kluc={kluc} akcia={akcia} zar={zar?.smer === "plus"} />
         {zar?.smer === "plus" && <Iskra nova={zar.nova} />}
         {zar !== null && !bezPopisov && <span className="kl-zar-stitok">{zar.stitok}</span>}
+        {roh !== null && (
+          <span className="kl-roh" aria-hidden="true">
+            <IkonaAkcie kluc={roh.akcia} akcia={povodna} />
+          </span>
+        )}
         {(odznak ?? (st === null ? 1 : st.nasobok)) > 1 && <span className="kl-nasobok">×{odznak ?? st?.nasobok}</span>}
       </span>
     );
@@ -182,7 +234,7 @@ export function KartaLico(props: KartaLicoProps) {
    * aktívna akcia, ×N až od 2.
    */
   const pecat = () => {
-    if (efektyNavyse.length === 0) return null;
+    if (efektyNavyse.length === 0 && preskoleniaTextu.length === 0) return null;
     const vzor = g.slotyLave[0] ?? g.slotyPrave[0];
     if (vzor === undefined) return null;
     const w = vzor.w;
@@ -197,10 +249,15 @@ export function KartaLico(props: KartaLicoProps) {
     const sipkaW = w * 0.32;
     const sipkovych = efektyNavyse.filter((e) => e.spustac === "Podpora" || e.spustac === "Konflikt").length;
     const ikon = skupiny.reduce((n, g2) => n + g2.length, 0);
-    const sirkaRadu = ikon * w + (ikon - 1) * medzera + sipkovych * 2 * (sipkaW + medzera * 0.5);
+    // Preškolenie (R5, Michal 2026-11-08): pilulka A1 → A2 v jednom ráme; šípky k susedom pri Podpore, Konflikte aj Furt.
+    const sirkaPilulky = sirkaPilulkyPt(w);
+    const pilulkySoSipkami = preskoleniaTextu.filter((p) => maSipky(p.spustac)).length;
+    const poloziek = ikon + preskoleniaTextu.length;
+    const sirkaRadu =
+      ikon * w + preskoleniaTextu.length * sirkaPilulky + Math.max(0, poloziek - 1) * medzera + (sipkovych + pilulkySoSipkami) * 2 * (sipkaW + medzera * 0.5);
     let x = (g.sirka - sirkaRadu) / 2;
-    const y = g.pas.y - w - 5;
-    return efektyNavyse.flatMap((e, ei) => {
+    const y = g.pas.y - posunN - w - 5;
+    const navyse = efektyNavyse.flatMap((e, ei) => {
       const stav = props.navyse?.[ei];
       const podmienka = popisPodmienky(e);
       const sSipkami = e.spustac === "Podpora" || e.spustac === "Konflikt";
@@ -234,6 +291,47 @@ export function KartaLico(props: KartaLicoProps) {
       });
       return [...lava, ...ikony, ...(sSipkami ? [sipka("prava")] : [])];
     });
+    const pilulky = preskoleniaTextu.flatMap((p, pi) => {
+      const stav = props.preskolenia?.[pi];
+      const sSipkami = maSipky(p.spustac);
+      const sipka = (strana: "lava" | "prava") => {
+        const el = (
+          <span
+            key={`presk${pi}-sipka-${strana}`}
+            className={`kl-navyse-sipka kl-navyse-sipka-${strana}${stav?.sipky?.[strana] === true ? " kl-navyse-sipka-sviti" : ""}`}
+            style={{ "--x": x, "--y": y + w / 2, "--s": sipkaW } as CSSProperties}
+            aria-hidden="true"
+          />
+        );
+        x += sipkaW + medzera * 0.5;
+        return el;
+      };
+      const lava = sSipkami ? [sipka("lava")] : [];
+      const tip: TipObsah = {
+        nadpis: "Preškolenie",
+        text: (
+          <>
+            {`${menoAkcie(p.z)} sa ráta ako ${menoAkcie(p.na)}.`}
+            {stav !== undefined && <span className="tip-stav">{stav.krat === 0 ? "Teraz nemá čo preškoliť." : `Teraz preškoľuje ${stav.krat}×.`}</span>}
+          </>
+        ),
+      };
+      const el = (
+        <Pilulka
+          key={`presk${pi}`}
+          z={p.z}
+          na={p.na}
+          vzhlad={vzhlad}
+          trieda={stav === undefined ? "" : stav.krat === 0 ? " kl-pil-spi" : " kl-pil-akt"}
+          style={{ "--x": x, "--y": y, "--s": w, "--r": g.polomerSlotu } as CSSProperties}
+          krat={stav?.krat ?? 1}
+          udalosti={hover(tip)}
+        />
+      );
+      x += sirkaPilulky + (sSipkami ? medzera * 0.5 : medzera);
+      return [...lava, el, ...(sSipkami ? [sipka("prava")] : [])];
+    });
+    return [...navyse, ...pilulky];
   };
 
   /** Rám okolo stĺpca slotov jednej strany (playtest 20261017-164450: ktorá hrana sa spáruje). */
@@ -283,7 +381,7 @@ export function KartaLico(props: KartaLicoProps) {
       onKeyDown={onClick !== undefined ? (e) => (e.key === "Enter" || e.key === " ") && onClick() : undefined}
     >
       <div className="kl-plocha">
-        <div className="kl-ilustracia" style={{ "--h": g.obrazok.h } as CSSProperties}>
+        <div className="kl-ilustracia" style={{ "--h": g.obrazok.h - posunN } as CSSProperties}>
           {obrazok !== null ? (
             <img src={obrazok} alt="" draggable={false} />
           ) : karta.obrazok !== null && !bezObrazka ? (
@@ -306,7 +404,7 @@ export function KartaLico(props: KartaLicoProps) {
           )}
         </div>
 
-        <div className="kl-pas" style={{ "--y": g.pas.y, "--h": g.pas.h } as CSSProperties}>
+        <div className="kl-pas" style={{ "--y": g.pas.y - posunN, "--h": g.pas.h } as CSSProperties}>
           <div className="kl-nazov" style={{ "--f": g.velkostNazvu } as CSSProperties}>
             {karta.nazov}
           </div>
@@ -318,15 +416,31 @@ export function KartaLico(props: KartaLicoProps) {
         </div>
 
         <Efekt
-          text={efektyNavyse.length > 0 ? textBezAkcii(karta.efekt) : karta.efekt}
+          text={efektyNavyse.length > 0 ? textBezAkcii(zakladEfektu) : zakladEfektu}
           vzhlad={vzhlad}
-          y={g.efekt.y}
+          y={g.efekt.y - posunN}
           h={g.efekt.h}
           okraj={g.okrajTextu}
           velkost={g.velkostEfektu}
           hover={hover}
         />
 
+        {hranyN !== null &&
+          (["horna", "dolna"] as const).map((kde) => {
+            const h = hranyN[kde];
+            const stav = props.aktivnaHrana === undefined ? "" : props.aktivnaHrana === kde ? " kl-hrana-n-pretrca" : " kl-hrana-n-tlmena";
+            return (
+              <div
+                key={kde}
+                className={`kl-hrana-n kl-hrana-n-${kde} kl-smer-${smerHrany(h)}${stav}`}
+                style={{ "--h": vyskaHrany } as CSSProperties}
+                {...hover({ nadpis: kde === "horna" ? "Horná hrana" : "Dolná hrana", text: popisHranyNastroja(h) })}
+              >
+                <span className="kl-hrana-n-nazov">{karta.nazov}</span>
+                <ObsahHrany hrana={h} vzhlad={vzhlad} pil={`calc(${vyskaHrany * 0.62} * var(--pt))`} />
+              </div>
+            );
+          })}
         {pecat()}
         {props.hranaVnutorna !== undefined && [hrana("lava"), hrana("prava")]}
         {lava.map((k, i) => slot("lava", i, k))}
@@ -426,3 +540,66 @@ function Efekt({
     </div>
   );
 }
+
+/** Šírka pilulky Preškolenia v jednotkách slotu (karta.css .kl-pil: odsadenie, dve ikony, šípka). */
+export const SIRKA_PILULKY = 2.2;
+const sirkaPilulkyPt = (slot: number): number => SIRKA_PILULKY * slot;
+/** Podpora a Konflikt platia so susedom, Furt pri susedoch — pečať má šípky k obom. */
+const maSipky = (spustac: string | null): boolean => spustac === "Podpora" || spustac === "Konflikt" || spustac === "Furt";
+
+/**
+ * Pečať Preškolenia R5 „pilulka“ (Michal 2026-11-08, docs/napady/premeny-akcii.html): jeden rám,
+ * v ňom pôvodná akcia, šípka a nová. Tá istá na karte s efektom, na hrane Nástroja aj pod hostiteľom.
+ * Bez `style` s --x/--y leží v riadku (kl-pil-volna, veľkosť --pil).
+ */
+export function Pilulka({
+  z,
+  na,
+  vzhlad,
+  trieda = "",
+  style,
+  krat = 1,
+  udalosti,
+}: {
+  readonly z: string;
+  readonly na: string;
+  readonly vzhlad: Pick<Vzhlad, "akcie">;
+  readonly trieda?: string;
+  readonly style?: CSSProperties;
+  readonly krat?: number;
+  readonly udalosti?: Record<string, unknown>;
+}) {
+  const az = vzhlad.akcie.find((a) => a.kluc === z);
+  const an = vzhlad.akcie.find((a) => a.kluc === na);
+  return (
+    <span className={`kl-pil${trieda}`} style={style} aria-label={`${az?.nazov ?? z} → ${an?.nazov ?? na}`} {...udalosti}>
+      <span className="kl-pil-a kl-pil-z">
+        <IkonaAkcie kluc={z} akcia={az} />
+      </span>
+      <i className="kl-pil-sipka" aria-hidden="true" />
+      <span className="kl-pil-a">
+        <IkonaAkcie kluc={na} akcia={an} />
+      </span>
+      {krat > 1 && <span className="kl-nasobok">×{krat}</span>}
+    </span>
+  );
+}
+
+/** Obsah hrany Nástroja: pilulka premeny alebo slovo kartového účinku. */
+export function ObsahHrany({ hrana, vzhlad, pil }: { readonly hrana: HranaNastroja; readonly vzhlad: Pick<Vzhlad, "akcie">; readonly pil?: string }) {
+  return hrana.druh === "akcia" ? (
+    <Pilulka z={hrana.z} na={hrana.na} vzhlad={vzhlad} trieda=" kl-pil-volna" {...(pil === undefined ? {} : { style: { "--pil": pil } as CSSProperties })} />
+  ) : (
+    <b className="kl-hrana-ucinok">{hrana.ucinok.toLocaleUpperCase("sk")}</b>
+  );
+}
+
+/** Nápoveda hrany Nástroja: čo pretŕčajúca hrana robí hostiteľovi. */
+export function popisHranyNastroja(hrana: HranaNastroja): string {
+  return hrana.druh === "akcia"
+    ? `Preškolenie ${menoAkcie(hrana.z)} → ${menoAkcie(hrana.na)}: všetky ${menoAkcie(hrana.z)} hostiteľa sa rátajú ako ${menoAkcie(hrana.na)}.`
+    : (POPIS_UCINKU[hrana.ucinok] ?? hrana.ucinok);
+}
+
+/** Hrana Nástroja ako podiel výšky karty (mock 2: 36 px pri karte vysokej 190 px). */
+export const PODIEL_HRANY = 0.17;

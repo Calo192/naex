@@ -10255,3 +10255,143 @@ button.pecat.kseft-pod-tlacidlo.ne:hover {
 .vestica-paticka .vestica-su {
   color: var(--su);
 }
+
+/* ---- Náradie: Nástroj pod kartou v línii (Michal 2026-11-08, naradie-mock-stol-2.html, M2) ----
+   Hostiteľ leží na Nástroji posunutý o jednu hranu; spod neho trčí len hrana Nástroja —
+   farba hovorí, čo robí (karta.css kl-smer-*), rám čí je (moja / súperova farba). */
+.s-nastrojmi {
+  position: relative;
+  display: flex;
+  flex: none;
+  box-sizing: content-box;
+}
+
+.pas-nastroja {
+  position: absolute;
+  left: 0;
+  right: 0;
+  z-index: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  padding: 0 4px 0 5px;
+  box-sizing: border-box;
+  border: 2px solid var(--ja);
+  color: #fff;
+  cursor: zoom-in;
+  font-family: var(--nadpis);
+  box-shadow: 0 6px 14px color-mix(in srgb, var(--tma) 55%, transparent);
+}
+
+.pas-nastroja.pas-supera {
+  border-color: var(--su);
+}
+
+.s-nastrojmi-dole > .pas-nastroja {
+  border-top: 0;
+  border-radius: 0 0 7px 7px;
+}
+
+.s-nastrojmi-hore > .pas-nastroja {
+  border-bottom: 0;
+  border-radius: 7px 7px 0 0;
+}
+
+/* Mäkký tieň hostiteľa na Nástroj — vidno, že leží pod kartou. */
+.pas-nastroja::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 8px;
+  pointer-events: none;
+}
+
+.s-nastrojmi-dole > .pas-nastroja::before {
+  top: 0;
+  background: linear-gradient(color-mix(in srgb, var(--tma) 45%, transparent), transparent);
+}
+
+.s-nastrojmi-hore > .pas-nastroja::before {
+  bottom: 0;
+  background: linear-gradient(transparent, color-mix(in srgb, var(--tma) 45%, transparent));
+}
+
+/* Meno Nástroja vľavo, hrana za ním — na úzkej karte sa meno skráti, hrana nikdy. */
+.pas-nastroja-nazov {
+  flex: 0 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 0.56rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  opacity: 0.88;
+}
+
+.pas-nastroja > .kl-pil,
+.pas-nastroja > .kl-hrana-ucinok {
+  flex: none;
+  margin: 0 auto;
+}
+.pas-nastroja .kl-hrana-ucinok {
+  font-size: 0.68rem;
+  letter-spacing: 0.12em;
+}
+
+.pas-nastroja:focus-visible {
+  outline: 3px solid var(--akcent);
+  outline-offset: 1px;
+}
+
+/* Zasunutý v návrhu: hrana pulzuje zlatým rámom, kým hráč nepotvrdí; klik ju otočí. */
+.pas-nastroja.pas-navrh {
+  cursor: pointer;
+  outline: 2px dashed var(--akcent);
+  outline-offset: 1px;
+}
+
+.pas-nastroja-otoc {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  padding: 0;
+  border-radius: 50%;
+  border: 2px solid var(--akcent);
+  background: var(--tma);
+  color: var(--akcent);
+  font-size: 0.95rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.pas-nastroja-otoc:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+/* Vybraný Nástroj v ruke: karty, pod ktoré sa dá zasunúť, majú zlatý rám; ostatné zošednú. */
+.s-lupou.podloz-ciel > .kl {
+  cursor: pointer;
+  outline: 3px solid var(--akcent);
+  outline-offset: 2px;
+}
+
+.s-lupou.podloz-ciel.nad-cielom > .kl {
+  box-shadow: 0 0 0 3px var(--akcent), 0 0 22px color-mix(in srgb, var(--akcent) 70%, transparent);
+}
+
+.s-lupou.podloz-nie {
+  opacity: 0.45;
+  filter: saturate(0.4);
+}
+
+.s-lupou.podloz-presun > .kl {
+  cursor: pointer;
+  outline: 2px dashed var(--akcent);
+  outline-offset: 2px;
+}
