@@ -7,11 +7,12 @@
 // poradím slotov. Na čítanie ju narovná lupa (Lupa.tsx).
 
 import { createContext, useContext } from "react";
-import type { CardInstance, CardLineEval, ClientState, GameData, NavyseStav, PlayerId } from "@naex/core";
-import { akciaVytrznika, defOf, efektyNavyse, printedSides, stavNavyseVRuke } from "@naex/core";
+import type { CardInstance, CardLineEval, ClientState, GameData, KtoraHrana, NavyseStav, PlayerId, PodlozenyNastroj } from "@naex/core";
+import { akciaVytrznika, defOf, efektyNavyse, preskoleniaHostitela, printedSides, stavNavyseVRuke } from "@naex/core";
 import type { KartaNavrh, RozlozenieStrany, Sada } from "@naex/tvorba";
 import { PREDVOLENE_NASTAVENIA } from "@naex/tvorba";
-import { KartaLico, type NavyseNaKarte, type SlotStav, type ZarNaKarte } from "../karta/KartaLico.tsx";
+import { KartaLico, type NavyseNaKarte, type PreskolenieNaKarte, type RohSlotu, type SlotStav, type ZarNaKarte } from "../karta/KartaLico.tsx";
+import { preskoleniaZTextu } from "../karta/preskolenie.ts";
 import { zarSlotu } from "../karta/zar.ts";
 import { vzhladSady } from "../lib/sada.tsx";
 
@@ -25,6 +26,8 @@ export interface ZarStola {
   readonly videne: Map<string, number>;
   /** Pečate Nástrojov v Dedičstve (LineEval.navyseDedicstva) podľa uid karty. */
   readonly navyseDedicstva?: ReadonlyMap<number, readonly NavyseStav[]>;
+  /** Vyhodnotenie línie podľa uid — pečať Preškolenia počíta, koľko akcií susedov práve mení. */
+  readonly evaly?: ReadonlyMap<number, CardLineEval>;
 }
 
 export const ZarStolaKontext = createContext<ZarStola | null>(null);
@@ -109,20 +112,72 @@ export interface HernaKartaProps {
   /** Prepínač výberu (stavba šenku): aria-pressed a pri plnom výbere aria-disabled. */
   readonly stlacena?: boolean | undefined;
   readonly zakazana?: boolean | undefined;
+  /** Nástroje pod kartou v línii (aj zasunutý v návrhu) — nápoveda premeneného slotu povie, ktorý ho zmenil. */
+  readonly podlozene?: readonly PodlozenyNastroj[] | undefined;
+  /** Karta Nástroja v lupe podloženého Nástroja: pretŕčajúca hrana. */
+  readonly aktivnaHrana?: KtoraHrana | undefined;
 }
 
-export function HernaKarta({ karta, sada, data, sirka, otocena = false, eval: ev, onClick, vybrana, bezPopisov, hranaVnutorna, spoj, jamky, vytrznik = false, stlacena, zakazana }: HernaKartaProps) {
+/**
+ * Stav pečatí Preškolenia karty v línii: koľko akcií susedov sa práve ráta ako nová akcia
+ * a ku ktorému susedovi svieti šípka. Mimo línie undefined (pečať ako vytlačená).
+ */
+function stavPreskoleni(efekt: string, stol: ZarStola | null, uid: number): PreskolenieNaKarte[] | undefined {
+  const presk = preskoleniaZTextu(efekt);
+  if (presk.length === 0 || stol === null || stol.evaly === undefined) return undefined;
+  const strana = stol.view.strany.find((st) => st.some((x) => x.card.uid === uid));
+  if (strana === undefined) return undefined;
+  const i = strana.findIndex((x) => x.card.uid === uid);
+  const susedia = [strana[i - 1], strana[i + 1]].filter((x) => x !== undefined);
+  return presk.map((p) => {
+    let krat = 0;
+    const od: number[] = [];
+    for (const s of susedia) {
+      const ev = stol.evaly?.get(s.card.uid);
+      const n = ev === undefined ? 0 : [...ev.left, ...ev.right].filter((se) => se?.naKarte === true && se.action === p.z && se.ako === p.na).length;
+      if (n > 0) od.push(s.card.uid);
+      krat += n;
+    }
+    return { krat, sipky: sipkyKSusedom(stol.view, uid, od) };
+  });
+}
+
+export function HernaKarta({ karta, sada, data, sirka, otocena = false, eval: ev, onClick, vybrana, bezPopisov, hranaVnutorna, spoj, jamky, vytrznik = false, stlacena, zakazana, podlozene, aktivnaHrana }: HernaKartaProps) {
   const vytlacene = printedSides(data, karta);
   const stol = useContext(ZarStolaKontext);
+  const vzhladK = vzhladKarty(sada, data, karta.defId);
+  // Ktorý Nástroj premenil ktorú akciu — do nápovedy rohu (D2).
+  const premeny = podlozene === undefined || podlozene.length === 0 ? null : preskoleniaHostitela(data, { podlozene });
+  const menoNastroja = (a: string): string | null => {
+    const p = premeny?.get(a as Parameters<NonNullable<typeof premeny>["get"]>[0]);
+    const n = p === undefined ? undefined : podlozene?.find((x) => x.card.uid === p.uid);
+    return n === undefined ? null : (data.cards.get(n.card.defId)?.name ?? null);
+  };
   // Lupa a karta na stole majú rovnaký kľúč — lupa otvorená po iskre ju už nezopakuje.
   const teraz = Date.now();
-  const strana = (ps: "left" | "right"): { roz: RozlozenieStrany; sloty: (SlotStav | null)[] | null } => {
-    // Výtržník kreslí Rany na miestach vytlačených akcií; premenu Tipéra, Vedúcka, Sypača
-    // a Anonymného alkoholika kreslí slot (Michal 2026-11-08) — hráč má vidieť, čo karta naozaj robí.
+  const strana = (ps: "left" | "right"): { roz: RozlozenieStrany; sloty: (SlotStav | null)[] | null; rohy: (RohSlotu | null)[] } => {
+    // Výtržník kreslí Rany na miestach vytlačených akcií; preškolenie efektom karty či Nástrojom
+    // kreslí slot (Michal 2026-11-08) — hráč má vidieť, čo karta naozaj robí, a v rohu, čo bolo (D2).
+    const rohy: (RohSlotu | null)[] = [null, null, null, null];
     const roz = [0, 1, 2, 3].map((k) => {
       const a = vytlacene[ps][k] ?? null;
       const se = ev?.[ps][k];
-      return a === null ? null : se?.naKarte === true && se.ako !== undefined ? se.ako : vytrznik ? akciaVytrznika() : a;
+      if (a === null) return null;
+      if (vytrznik) {
+        const r = akciaVytrznika();
+        if (r !== a) rohy[k] = { akcia: a, preco: "Výtržník" };
+        return r;
+      }
+      if (se?.povodna !== undefined) {
+        const meno = menoNastroja(se.povodna);
+        rohy[k] = { akcia: se.povodna, preco: meno === null ? "Preškolenie" : `Preškolenie: ${meno}` };
+        return se.action;
+      }
+      if (se?.naKarte === true && se.ako !== undefined) {
+        rohy[k] = { akcia: a, preco: "Preškolenie" };
+        return se.ako;
+      }
+      return a;
     }) as unknown as RozlozenieStrany;
     const sloty =
       ev === undefined || ev === null
@@ -131,7 +186,7 @@ export function HernaKarta({ karta, sada, data, sirka, otocena = false, eval: ev
             const se = ev[ps][k];
             return se === null || se === undefined ? null : { stav: se.stav, nasobok: se.nasobok };
           });
-    return { roz, sloty };
+    return { roz, sloty, rohy };
   };
   const l = strana("left");
   const p = strana("right");
@@ -180,9 +235,14 @@ export function HernaKarta({ karta, sada, data, sirka, otocena = false, eval: ev
     <span>{[ev.vzbura ? "Vzbura!" : null, ev.forsaz ? "Forsáž!" : null].filter((x) => x !== null).join(" ")}</span>
   ) : undefined;
 
+  const preskolenia = kde?.miesto === "linia" ? stavPreskoleni(vzhladK.efekt, stol, karta.uid) : undefined;
+  const sRohmi = l.rohy.some((r) => r !== null) || p.rohy.some((r) => r !== null);
   return (
     <KartaLico
-      karta={vzhladKarty(sada, data, karta.defId)}
+      karta={vzhladK}
+      preskolenia={preskolenia}
+      rohy={sRohmi ? { lava: l.rohy, prava: p.rohy } : undefined}
+      aktivnaHrana={aktivnaHrana}
       lava={l.roz}
       prava={p.roz}
       vzhlad={vzhladSady(sada)}

@@ -62,6 +62,9 @@
 //   &stop=autopas  ťah, po ktorom hra za hráča ?ja pasuje (nemá čo vyložiť) a súper vykladá ďalej —
 //                  po načítaní sa dohrá, stôl ukáže okno „Pasuješ“ s dôvodmi (&i=k: k-tý taký, od 0);
 //                  &kto=super: pasuje súper — hráč ?ja vidí pečiatku „nemá čo vyložiť“
+//   &stop=naradie  Zhromaždenie od 2. kola, hráč ?ja na ťahu: Nástroje podložené pod jeho aj súperove karty
+//                  (Zámočník s dvoma), Vedúcko s pečaťou Preškolenia, v ruke Nástroje na zasunutie —
+//                  sada dostane na ukážku hrany Nástrojov (ukazkaNaradia.ts)
 //   &stop=nastroj  Zhromaždenie od 2. kola, hráč ?ja na ťahu — do ruky dostane Vidly
 //                  a cigarety na Dedičstvo (tlačidlo „odkazujem“)
 //   &stop=pecen    ako nastroj, ale do ruky dostane dvoch Pijanov a pečeň 2 — výstraha pečene
@@ -102,6 +105,7 @@ import { useStolNaSirku } from "./zariadenie.ts";
 import { OtocTelefon } from "./OtocTelefon.tsx";
 import { ULOZENY_REZIM_LINIE } from "./HernaPlocha.tsx";
 import { zaciatokKola as zaciatokKolaSuhrnu } from "./krokySuhrnu.ts";
+import { sNaradim, sadaSNaradim } from "./ukazkaNaradia.ts";
 
 interface Krok {
   readonly stav: GameState;
@@ -469,6 +473,8 @@ function odohrajSeed(data: GameData, seed: number): { readonly odohrane: Odohran
       return najdene({ zaciatok: sNastrojom(s, ja), dohraj: [] });
     if (stop === "frakcie" && s.kolo >= 2 && s.faza === "zhromazdenie" && naTahu(s) === ja && s.zhromazdenieStav?.pasoval[ja] === false)
       return najdene({ zaciatok: sFrakciami(s, ja), dohraj: [] });
+    if (stop === "naradie" && s.kolo >= 2 && s.faza === "zhromazdenie" && naTahu(s) === ja && s.zhromazdenieStav?.pasoval[ja] === false)
+      return najdene({ zaciatok: sNaradim(s, ja), dohraj: [] });
     if (stop === "skryte" && s.kolo >= 2 && s.faza === "zhromazdenie" && naTahu(s) === ja && s.zhromazdenieStav?.pasoval[ja] === false)
       return najdene({ zaciatok: sSkrytymiAkciami(s, ja), dohraj: [] });
     if (stop === "pecen" && s.kolo >= 2 && s.faza === "zhromazdenie" && naTahu(s) === ja && s.zhromazdenieStav?.pasoval[ja] === false)
@@ -654,7 +660,10 @@ function odohrajSeed(data: GameData, seed: number): { readonly odohrane: Odohran
 
 export function UkazkaStola() {
   const { sada } = useSada();
-  const sadaUkazky = useMemo(() => (sada === null || q().get("stop") !== "skryte" ? sada : sadaSoSkrytymiAkciami(sada)), [sada]);
+  const sadaUkazky = useMemo(
+    () => (sada === null ? sada : q().get("stop") === "skryte" ? sadaSoSkrytymiAkciami(sada) : q().get("stop") === "naradie" ? sadaSNaradim(sada) : sada),
+    [sada],
+  );
   if (sadaUkazky === null) return <p className="tlmene">Načítavam sadu…</p>;
   return <Ukazka sada={sadaUkazky} />;
 }
