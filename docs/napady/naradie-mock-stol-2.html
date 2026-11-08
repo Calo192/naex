@@ -1,0 +1,302 @@
+<!doctype html>
+<html lang="sk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Náradie pod kartou v offsete: mocky 2 — NA EX!</title>
+<style>
+:root { --pozadie:#14110e; --plocha:#1e1914; --plocha-2:#28211a; --okraj:#3d3229; --text:#f1e8d8; --tlmeny:#b6a790; --slaby:#8b7d6a;
+  --akcent:#e9ad45; --zelena:#7cbf74; --cervena:#d0563f; --modra:#5cc0cf; --oranzova:#e08a3a; --ja:#5cc0cf; --super:#d0563f; color-scheme: dark; }
+@media (prefers-color-scheme: light) { :root:not([data-theme="dark"]) { --pozadie:#f6f1e7; --plocha:#fffaf1; --plocha-2:#f0e7d6; --okraj:#dccdb3; --text:#2a2016;
+  --tlmeny:#6b5b45; --slaby:#7a6a52; --akcent:#a8680f; --zelena:#3f7f38; --cervena:#b0402c; --modra:#2a7f8c; --oranzova:#b0601a; --ja:#2a7f8c; --super:#b0402c; color-scheme: light; } }
+:root[data-theme="light"] { --pozadie:#f6f1e7; --plocha:#fffaf1; --plocha-2:#f0e7d6; --okraj:#dccdb3; --text:#2a2016;
+  --tlmeny:#6b5b45; --slaby:#7a6a52; --akcent:#a8680f; --zelena:#3f7f38; --cervena:#b0402c; --modra:#2a7f8c; --oranzova:#b0601a; --ja:#2a7f8c; --super:#b0402c; color-scheme: light; }
+* { box-sizing: border-box; }
+body { margin:0; background:var(--pozadie); color:var(--text); font:16px/1.5 system-ui, "Segoe UI", Roboto, sans-serif; }
+main { max-width: 1080px; margin: 0 auto; padding: 16px 16px 120px; }
+h1, h2, h3 { font-family: Georgia, serif; line-height: 1.2; }
+h1 { font-size: clamp(1.5rem, 6vw, 2.2rem); margin: 0 0 6px; }
+h2 { font-size: 1.25rem; margin: 34px 0 10px; padding-bottom: 4px; border-bottom: 1px solid var(--okraj); }
+h3 { font-size: 1.02rem; margin: 18px 0 6px; color: var(--akcent); }
+p { margin: 0 0 10px; }
+a { color: var(--akcent); }
+.box { background: var(--plocha); border: 1px solid var(--okraj); border-radius: 12px; padding: 12px 14px; margin: 0 0 12px; }
+.box.zv { border-color: var(--akcent); } .box.rec { border-color: var(--zelena); } .box.riz { border-color: var(--cervena); }
+.box > :last-child { margin-bottom: 0; }
+.mini { color: var(--slaby); font-size: .85rem; }
+ul, ol { padding-left: 20px; } li { margin-bottom: 5px; }
+nav.skupiny { position: sticky; top: 0; z-index: 3; background: var(--pozadie); padding: 8px 0; display: flex; gap: 6px; overflow-x: auto; border-bottom: 1px solid var(--okraj); }
+nav.skupiny a { flex: none; font-size: .85rem; text-decoration: none; color: var(--tlmeny); background: var(--plocha); border: 1px solid var(--okraj); border-radius: 999px; padding: 4px 11px; }
+section, h2 { scroll-margin-top: 52px; }
+.kon { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+@media (max-width: 680px) { .kon { grid-template-columns: 1fr; } }
+.kon .box { margin: 0; }
+.chip { display: inline-block; font-size: .72rem; padding: 0 7px; border-radius: 999px; border: 1px solid currentColor; white-space: nowrap; vertical-align: 1px; }
+.chip.ok { color: var(--zelena); } .chip.sab { color: var(--cervena); } .chip.m { color: var(--modra); }
+.kroky { counter-reset: k; list-style: none; padding: 0; }
+.kroky li { position: relative; padding-left: 30px; margin-bottom: 8px; }
+.kroky li::before { counter-increment: k; content: counter(k); position: absolute; left: 0; top: 1px; width: 22px; height: 22px; border-radius: 50%; background: var(--akcent); color: #1a1410; font-weight: 700; font-size: .8rem; text-align: center; line-height: 22px; }
+
+/* ---------- stôl ---------- */
+.stol { background: radial-gradient(ellipse at 50% 30%, #35563c, #22382a 70%, #1a2a20); border: 1px solid #0f1a13; border-radius: 14px; padding: 18px 18px 18px; margin: 10px 0 14px; overflow-x: auto; position: relative; }
+.strana { color: #cfe0cc; font: 700 .72rem system-ui; letter-spacing: .14em; text-transform: uppercase; opacity: .7; text-align: center; }
+.strana.s { color: #f0b0a0; } .strana.j { color: #a8e4ec; }
+.linia { display: flex; gap: 16px; justify-content: center; align-items: center; min-width: max-content; padding: var(--hore, 90px) 10px var(--dole, 90px); }
+.pop { font-size: .78rem; color: #d7e4d6; text-align: center; margin: 8px auto 0; max-width: 200px; }
+.leg { display: flex; gap: 14px; flex-wrap: wrap; font-size: .8rem; color: var(--tlmeny); margin: 6px 0 10px; align-items: center; }
+.leg .sw { display: inline-block; width: 14px; height: 14px; border-radius: 3px; vertical-align: -2px; margin-right: 4px; }
+
+/* ---------- hracia karta ---------- */
+.k { position: relative; width: 132px; height: 190px; background: #fff; border-radius: 7px; box-shadow: 0 1px 2px rgba(0,0,0,.4), 0 10px 26px rgba(0,0,0,.38); color: #222; font-family: Roboto, "Segoe UI", system-ui, sans-serif; flex: none; z-index: 1; }
+.k .il { position: absolute; inset: 0 0 auto 0; height: 86px; border-radius: 7px 7px 0 0; background: linear-gradient(160deg, #6b5338, #2a2420); }
+.k .pas { position: absolute; left: 0; right: 0; top: 86px; height: 30px; background: var(--f, #7a4a2a); color: #fff; display: flex; flex-direction: column; align-items: center; justify-content: center; line-height: 1.1; }
+.k .pas b { font-size: .72rem; } .k .pas i { font-size: .56rem; font-style: normal; opacity: .85; }
+.k .ef { position: absolute; left: 14px; right: 14px; top: 120px; bottom: 8px; font-size: .56rem; line-height: 1.25; text-align: center; color: #5a3a22; display: flex; align-items: center; justify-content: center; }
+.sl { position: absolute; width: 22px; height: 22px; border-radius: 6px; background: var(--f, #7a4a2a); color: #fff; font: 800 .58rem/1 system-ui; display: flex; align-items: center; justify-content: center; box-shadow: 0 0 0 1.5px #fff, 1px 2px 0 1.5px rgba(0,0,0,.45); z-index: 2; }
+.sl.L { left: -6px; } .sl.R { right: -6px; }
+.sl.y1 { top: 10px; } .sl.y2 { top: 40px; } .sl.y3 { top: 70px; } .sl.y4 { top: 100px; }
+.sl.neakt { opacity: .45; filter: saturate(.3); }
+.sl.prem { box-shadow: 0 0 0 1.5px #fff, 0 0 0 3.5px var(--zn, var(--zelena)), 1px 2px 0 1.5px rgba(0,0,0,.45); }
+.sl.prem::after { content: attr(data-z); position: absolute; right: -9px; top: -9px; width: 14px; height: 14px; border-radius: 50%; background: #1a1410; color: #bbb; font-size: .42rem; display: flex; align-items: center; justify-content: center; text-decoration: line-through; border: 1px solid #555; }
+.sl.zrus { opacity: .35; } .sl.zrus::before { content: ""; position: absolute; inset: 9px -3px auto -3px; height: 3px; background: #c33; transform: rotate(-40deg); }
+.sl.x2::after { content: "×2"; position: absolute; right: -9px; top: -9px; min-width: 15px; height: 14px; padding: 0 2px; border-radius: 7px; background: #1a1410; color: #f1c766; font-size: .46rem; display: flex; align-items: center; justify-content: center; border: 1px solid #a07a2c; }
+.k.ciel { outline: 3px solid var(--akcent); outline-offset: 3px; box-shadow: 0 0 0 6px rgba(233,173,69,.25), 0 10px 26px rgba(0,0,0,.38); }
+.k.mimo { opacity: .45; filter: grayscale(.4); }
+
+/* ---------- Nástroj (rám s dvoma hranami, názov na každej hrane) ---------- */
+.n { position: relative; width: 132px; height: 190px; background: #fff; border-radius: 7px; box-shadow: 0 1px 2px rgba(0,0,0,.4), 0 10px 26px rgba(0,0,0,.38); color: #222; font-family: Roboto, "Segoe UI", system-ui, sans-serif; flex: none; overflow: hidden; }
+.n .hr { position: absolute; left: 0; right: 0; height: 32px; display: flex; align-items: center; justify-content: center; gap: 6px; color: #fff; font: 800 .62rem system-ui; }
+.n .hr.h { top: 0; } .n .hr.d { bottom: 0; }
+.n .hr.pos { background: #3f7f38; } .n .hr.sab { background: #9c3a28; } .n .hr.kar { background: #246c78; }
+.n .hr .ik { width: 18px; height: 18px; border-radius: 5px; background: rgba(255,255,255,.18); border: 1.5px solid #fff; font: 800 .5rem/1 system-ui; display: flex; align-items: center; justify-content: center; }
+.n .hr .kz { font-size: .7rem; letter-spacing: .12em; }
+.n .hr .nz { position: absolute; left: 6px; font-size: .5rem; font-weight: 700; opacity: .85; letter-spacing: .04em; }
+.n .hr.h .nz { top: 2px; } .n .hr.d .nz { bottom: 2px; }
+.n .hr .tx { position: absolute; right: 6px; font-size: .46rem; opacity: .8; }
+.n .hr.h .tx { bottom: 2px; } .n .hr.d .tx { top: 2px; }
+.n .il { position: absolute; left: 0; right: 0; top: 32px; height: 64px; background: linear-gradient(160deg, #4a4a52, #26262c); }
+.n .pas { position: absolute; left: 0; right: 0; top: 96px; height: 24px; background: #4a4a52; color: #fff; display: flex; flex-direction: column; align-items: center; justify-content: center; line-height: 1.05; }
+.n .pas b { font-size: .68rem; } .n .pas i { font-size: .52rem; font-style: normal; opacity: .85; }
+.n .ded { position: absolute; left: 10px; right: 10px; top: 122px; bottom: 34px; font-size: .5rem; line-height: 1.2; text-align: center; color: #33333a; display: flex; align-items: center; justify-content: center; }
+.n .ded b { display: block; font-size: .46rem; letter-spacing: .1em; color: #777; }
+
+/* ---------- podložený Nástroj: predĺženie hostiteľa ---------- */
+.host { position: relative; flex: none; }
+.host .n { position: absolute; left: 0; z-index: 0; border: 2px solid var(--maj, var(--ja)); box-shadow: 0 8px 20px rgba(0,0,0,.45); }
+/* dole (moja postava): Nástroj posunutý nadol o --v, vidno jeho spodok */
+.host.dole .n { top: var(--v); }
+/* hore (súperova postava): posunutý nahor, vidno jeho vršok */
+.host.hore .n { top: calc(-1 * var(--v)); }
+/* pri podložení sa Nástroj natočí tak, aby zvolená hrana bola na trčiacom konci: tu ho kreslíme už natočený */
+.host .n.otoc { transform: rotate(180deg); } .host .n.otoc > * { transform: rotate(180deg); }
+.host .n.otoc .hr.h { top: auto; bottom: 0; } .host .n.otoc .hr.d { bottom: auto; top: 0; }
+.host .n.otoc .il { top: auto; bottom: 32px; } .host .n.otoc .pas { top: auto; bottom: 96px; } .host .n.otoc .ded { top: 34px; bottom: 122px; }
+.host .vl { position: absolute; left: 50%; transform: translateX(-50%); white-space: nowrap; font: 700 .6rem system-ui; letter-spacing: .1em; }
+.host.dole .vl { top: calc(190px + var(--v) + 6px); } .host.hore .vl { bottom: calc(190px + var(--v) + 6px); }
+.host.ja .vl { color: #9fe0ea; } .host.super .vl { color: #f0a090; }
+.host.dole .k { border-radius: 7px 7px 0 0; } .host.hore .k { border-radius: 0 0 7px 7px; }
+/* mäkký tieň hostiteľa na Nástroj: vidno, že leží pod ním */
+.host.dole .n::after, .host.hore .n::after { content: ""; position: absolute; left: 0; right: 0; height: 14px; pointer-events: none; }
+.host.dole .n::after { top: calc(190px - var(--v) - 2px); background: linear-gradient(rgba(0,0,0,.35), transparent); }
+.host.hore .n::after { bottom: calc(190px - var(--v) - 2px); background: linear-gradient(transparent, rgba(0,0,0,.35)); }
+
+/* ---------- ťah (zasunutie) ---------- */
+.pokyn { margin: 0 auto 10px; width: max-content; max-width: 100%; background: rgba(0,0,0,.45); color: #f1e8d8; border: 1px solid rgba(255,255,255,.15); border-radius: 999px; padding: 5px 14px; font-size: .82rem; }
+.pokyn b { color: var(--akcent); }
+.cigik { display: inline-block; width: 14px; height: 5px; border-radius: 2px; background: linear-gradient(90deg, #e8e2d6 70%, #d58a3a 70%); vertical-align: middle; }
+.pecat { display: inline-flex; align-items: center; justify-content: center; gap: 8px; background: var(--akcent); color: #1a1410; border: 0; border-radius: 999px; padding: 6px 14px; font: 800 .74rem system-ui; letter-spacing: .06em; box-shadow: 0 6px 16px rgba(0,0,0,.4); }
+.pecat .cig { display: inline-flex; align-items: center; gap: 3px; background: rgba(0,0,0,.18); border-radius: 999px; padding: 1px 7px; font-size: .68rem; }
+.otocit { position: absolute; right: -14px; width: 30px; height: 30px; border-radius: 50%; background: #1e1914; color: var(--akcent); border: 2px solid var(--akcent); font: 800 1rem/26px system-ui; text-align: center; z-index: 4; box-shadow: 0 4px 12px rgba(0,0,0,.5); }
+.ruka { display: flex; gap: 8px; justify-content: center; padding: 10px 10px 0; }
+.ruka .n, .ruka .k { position: static; width: 92px; height: 132px; transform: none; border: 0; }
+.ruka .n .hr { height: 22px; font-size: .5rem; } .ruka .n .hr .nz, .ruka .n .hr .tx { display: none; } .ruka .n .il { top: 22px; height: 44px; } .ruka .n .pas { top: 66px; height: 18px; } .ruka .n .ded { top: 86px; bottom: 24px; font-size: .4rem; }
+.ruka .n .hr .ik { width: 13px; height: 13px; font-size: .4rem; }
+.ruka .k .il { height: 56px; } .ruka .k .pas { top: 56px; height: 22px; } .ruka .k .ef { top: 82px; font-size: .42rem; }
+.ruka .sl { width: 16px; height: 16px; font-size: .44rem; } .ruka .sl.y1{top:6px} .ruka .sl.y2{top:28px}
+.ruka .vyb { outline: 3px solid var(--akcent); outline-offset: 3px; transform: translateY(-10px); }
+.ruka .duch { opacity: .3; outline: 2px dashed var(--akcent); }
+.sipka { position: absolute; left: 50%; transform: translateX(-50%); color: var(--akcent); font-size: 1.6rem; line-height: 1; z-index: 4; text-shadow: 0 2px 6px rgba(0,0,0,.6); }
+/* telefón */
+.tel { width: 340px; height: 170px; margin: 0 auto; background: #0e0c0a; border: 3px solid #333; border-radius: 16px; position: relative; overflow: hidden; }
+.tel .scena { position: absolute; inset: 0; background: radial-gradient(ellipse at 50% 20%, #35563c, #22382a 70%); }
+.tel .mk { position: absolute; width: 40px; height: 58px; background: #fff; border-radius: 3px; top: 44px; }
+.tel .mn { position: absolute; width: 40px; height: 16px; border-radius: 0 0 4px 4px; color: #fff; font: 800 .4rem/16px system-ui; text-align: center; }
+.tel .mn.pos { background: #3f7f38; } .tel .mn.sab { background: #9c3a28; } .tel .mn.kar { background: #246c78; }
+.tel .mn.h { border-radius: 4px 4px 0 0; }
+.tel .rk { position: absolute; left: 0; right: 0; bottom: 0; height: 40px; background: linear-gradient(transparent, rgba(0,0,0,.5)); }
+.tel .mr { position: absolute; bottom: -10px; width: 30px; height: 42px; background: #fff; border-radius: 3px; }
+</style>
+</head>
+<body>
+<main>
+<h1>Náradie pod kartou v offsete: mocky 2</h1>
+<p class="mini">2026-11-08 · Michal: karty ležia jedna na druhej, vrchná (hostiteľ) je v offsete po dlhšej strane, aby spod nej bolo vidno efekt Náradia; prečnieva zospodu alebo zvrchu podľa toho, čiu postavu ovplyvňuje · nahrádza časti 2 až 4 z <a href="naradie-mock-stol.html">prvého mocku</a> (pásik pod kartou zamietnutý); rám Nástroja, zoznam hrán a pravidlá sa nemenia · CSS náčrt, nie kód hry · <b>Michal 2026-11-08 vybral M2 (offset 36 px, len hrana)</b> pre všetky obrazovky; ťah zasunutia s otočením podľa časti Ťah</p>
+
+<nav class="skupiny">
+  <a href="#princip">Princíp</a><a href="#m1">M1 offset 64</a><a href="#m2">M2 offset 36</a><a href="#m3">M3 offset 96</a><a href="#tah">Ťah zasunutia</a><a href="#telefon">Telefón</a><a href="#vyber">Výber</a>
+</nav>
+
+<section id="princip">
+<h2>Princíp</h2>
+<div class="box zv">
+<ul>
+  <li><b>Dve karty na sebe.</b> Nástroj leží na stole, hostiteľ na ňom, posunutý po dlhšej strane (offset). Spod hostiteľa vidno koniec Nástroja so zvolenou hranou, teda jeho efekt. Nič sa nekreslí navyše, je to tá istá karta Nástroja ako v ruke.</li>
+  <li><b>Smer trčania = čia postava.</b> Pod mojou kartou trčí <b>dole</b> (ku mne), pod súperovou <b>hore</b> (k nemu). Nezáleží na tom, čí je Nástroj: môj sabotážny Nástroj pod súperovou kartou trčí hore.</li>
+  <li><b>Čí je Nástroj</b> hovorí rám trčiacej karty: modrý môj, červený súperov (farby hráčov zo schém). Po bitke sa vracia tomu, koho rám má.</li>
+  <li><b>Čo robí</b> hovorí farba hrany na trčiacom konci: zelená posila, červená sabotáž, modrá kartový účinok. Na hrane je malým písmom aj názov Nástroja, aby bol čitateľný pri každom rozložení.</li>
+  <li>Premenené sloty hostiteľa svietia farbou hrany s prečiarknutou pôvodnou akciou v rožku, kartové účinky kreslia to, čo dnes (NA EX škrty a ×2, Vzbura obrátenie, Forsáž ×2, Výtržník Rany).</li>
+</ul>
+</div>
+<p>Tri rozloženia sa líšia len <b>veľkosťou offsetu</b>, teda koľko Nástroja spod hostiteľa vidno. Vo všetkých je ten istý stôl: moja Hasič s Vidlami ▼ (Rana → Pecka), súperova Dievčina na vydaj s mojím Automatom (Cigareta → Dlh), súperova Veštica s jeho Vínkom (NA EX), moja Pijanka bez Nástroja.</p>
+<div class="leg"><span><span class="sw" style="background:#3f7f38"></span>posila</span><span><span class="sw" style="background:#9c3a28"></span>sabotáž</span><span><span class="sw" style="background:#246c78"></span>kartový účinok</span><span><span class="sw" style="border:2px solid var(--ja);background:transparent"></span>môj Nástroj</span><span><span class="sw" style="border:2px solid var(--super);background:transparent"></span>súperov Nástroj</span></div>
+</section>
+
+<section id="m1">
+<h2>M1 · Offset 64 px (hrana + kus karty)</h2>
+<div class="stol">
+<p class="strana s">súper</p>
+<div class="linia" style="--hore:84px;--dole:84px">
+  <div class="host ja">
+    <div class="k" style="--f:#7a4a2a"><span class="sl L y1">R</span><span class="sl L y2">D</span><span class="sl R y1 neakt">Pč</span><span class="sl R y2">½</span><div class="il"></div><div class="pas"><b>Pijan</b><i>Občan · Závislý</i></div><div class="ef">Prehra: za každý tvoj plný poldeci udelíš Ranu.</div></div>
+  </div>
+  <div class="host ja dole" style="--v:64px;--maj:var(--ja)">
+    <div class="k" style="--f:#2f5d8a"><span class="sl L y1 prem" data-z="R">P</span><span class="sl L y2">Po</span><span class="sl R y1 prem" data-z="R">P</span><span class="sl R y2 neakt">T</span><div class="il"></div><div class="pas"><b>Hasič</b><i>Občan · Autorita</i></div><div class="ef">Hasí, čo horí.</div></div>
+    <div class="n"><div class="hr h kar"><span class="nz">VIDLY</span><span class="kz">VZBURA</span></div><div class="il"></div><div class="pas"><b>Vidly</b><i>Nástroj</i></div><div class="ded"><span><b>DEDIČSTVO</b>Tvoje Rany udeľujú o 1 poškodenie viac.</span></div><div class="hr d pos"><span class="nz">VIDLY</span><span class="ik">R</span> → <span class="ik">P</span><span class="tx">Rana → Pecka</span></div></div>
+    <span class="vl">MOJA · MOJE VIDLY</span>
+  </div>
+  <div class="host super hore" style="--v:64px;--maj:var(--ja)">
+    <div class="n otoc"><div class="hr h pos"><span class="nz">AUTOMAT</span><span class="ik">D</span> → <span class="ik">½</span><span class="tx">Dlh → Poldeci</span></div><div class="il"></div><div class="pas"><b>Výherný automat</b><i>Nástroj</i></div><div class="ded"><span><b>DEDIČSTVO</b>Prah Dlhu +1. V poslednej Pitke kola získaš 1 Dlh.</span></div><div class="hr d sab"><span class="nz">AUTOMAT</span><span class="ik">C</span> → <span class="ik">D</span><span class="tx">Cigareta → Dlh</span></div></div>
+    <div class="k" style="--f:#8a6a2a"><span class="sl L y1 prem" data-z="C" style="--zn:#d0563f">D</span><span class="sl L y2">V</span><span class="sl R y1">D</span><span class="sl R y2 prem neakt" data-z="C" style="--zn:#d0563f">D</span><div class="il"></div><div class="pas"><b>Dievčina na vydaj</b><i>Občan · Závislý</i></div><div class="ef">Čaká na ženícha.</div></div>
+    <span class="vl">SÚPEROVA · MÔJ AUTOMAT</span>
+  </div>
+  <div class="host super hore" style="--v:64px;--maj:var(--super)">
+    <div class="n"><div class="hr h kar"><span class="nz">VÍNKO</span><span class="kz">NA EX</span></div><div class="il"></div><div class="pas"><b>Vínko</b><i>Nástroj</i></div><div class="ded"><span><b>DEDIČSTVO</b>Počíta sa ako plný poldeci navyše.</span></div><div class="hr d pos"><span class="nz">VÍNKO</span><span class="ik">Pč</span> → <span class="ik">½</span><span class="tx">Pečeň → Poldeci</span></div></div>
+    <div class="k" style="--f:#5a3a6a"><span class="sl L y1 zrus">Vi</span><span class="sl L y2 x2">Pč</span><span class="sl R y1 x2">Po</span><span class="sl R y2 zrus">Vz</span><div class="il"></div><div class="pas"><b>Veštica</b><i>Občan · Zahraničný</i></div><div class="ef">Vidí, čo iní nevidia.</div></div>
+    <span class="vl">SÚPEROVA · JEHO VÍNKO</span>
+  </div>
+</div>
+<p class="strana j">ja</p>
+</div>
+<div class="kon">
+<div class="box rec"><h3>Za</h3><ul><li>Vyzerá ako zasunutá karta: vidno hranu aj kus ilustrácie alebo textu, hostiteľ vrhá tieň. Presne „predĺžená karta“.</li><li>Hrana 32 px je čitateľná ako na karte v ruke, názov Nástroja je na hrane.</li><li>Pod súperovou kartou sa Automat natočil (sabotážna hrana hore): vidno, že natočenie je mechanika, nie dekorácia.</li></ul></div>
+<div class="box riz"><h3>Proti</h3><ul><li>Línia narastie o 64 px hore aj dole (128 px). Na notebooku 1366×650 musí stôl zmenšiť karty alebo línia zoberie miesto starším a ruke. Stôl je bez scrollu.</li><li>Pri Zámočníkovi s viacerými Nástrojmi treba vejár (každý ďalší o 20 px nižšie), inak sa prekryjú.</li></ul></div>
+</div>
+</section>
+
+<section id="m2">
+<h2>M2 · Offset 36 px (len hrana)</h2>
+<div class="stol">
+<p class="strana s">súper</p>
+<div class="linia" style="--hore:56px;--dole:56px">
+  <div class="host ja">
+    <div class="k" style="--f:#7a4a2a"><span class="sl L y1">R</span><span class="sl L y2">D</span><span class="sl R y1 neakt">Pč</span><span class="sl R y2">½</span><div class="il"></div><div class="pas"><b>Pijan</b><i>Občan · Závislý</i></div><div class="ef">Prehra: za každý tvoj plný poldeci udelíš Ranu.</div></div>
+  </div>
+  <div class="host ja dole" style="--v:36px;--maj:var(--ja)">
+    <div class="k" style="--f:#2f5d8a"><span class="sl L y1 prem" data-z="R">P</span><span class="sl L y2">Po</span><span class="sl R y1 prem" data-z="R">P</span><span class="sl R y2 neakt">T</span><div class="il"></div><div class="pas"><b>Hasič</b><i>Občan · Autorita</i></div><div class="ef">Hasí, čo horí.</div></div>
+    <div class="n"><div class="hr h kar"><span class="nz">VIDLY</span><span class="kz">VZBURA</span></div><div class="il"></div><div class="pas"><b>Vidly</b><i>Nástroj</i></div><div class="ded"></div><div class="hr d pos"><span class="nz">VIDLY</span><span class="ik">R</span> → <span class="ik">P</span><span class="tx">Rana → Pecka</span></div></div>
+    <span class="vl">MOJA · MOJE VIDLY</span>
+  </div>
+  <div class="host super hore" style="--v:36px;--maj:var(--ja)">
+    <div class="n otoc"><div class="hr h pos"><span class="nz">AUTOMAT</span><span class="ik">D</span> → <span class="ik">½</span></div><div class="il"></div><div class="pas"><b>Výherný automat</b><i>Nástroj</i></div><div class="ded"></div><div class="hr d sab"><span class="nz">AUTOMAT</span><span class="ik">C</span> → <span class="ik">D</span><span class="tx">Cigareta → Dlh</span></div></div>
+    <div class="k" style="--f:#8a6a2a"><span class="sl L y1 prem" data-z="C" style="--zn:#d0563f">D</span><span class="sl L y2">V</span><span class="sl R y1">D</span><span class="sl R y2 prem neakt" data-z="C" style="--zn:#d0563f">D</span><div class="il"></div><div class="pas"><b>Dievčina na vydaj</b><i>Občan · Závislý</i></div><div class="ef">Čaká na ženícha.</div></div>
+    <span class="vl">SÚPEROVA · MÔJ AUTOMAT</span>
+  </div>
+  <div class="host super hore" style="--v:36px;--maj:var(--super)">
+    <div class="n"><div class="hr h kar"><span class="nz">VÍNKO</span><span class="kz">NA EX</span></div><div class="il"></div><div class="pas"><b>Vínko</b><i>Nástroj</i></div><div class="ded"></div><div class="hr d pos"><span class="nz">VÍNKO</span><span class="ik">Pč</span> → <span class="ik">½</span></div></div>
+    <div class="k" style="--f:#5a3a6a"><span class="sl L y1 zrus">Vi</span><span class="sl L y2 x2">Pč</span><span class="sl R y1 x2">Po</span><span class="sl R y2 zrus">Vz</span><div class="il"></div><div class="pas"><b>Veštica</b><i>Občan · Zahraničný</i></div><div class="ef">Vidí, čo iní nevidia.</div></div>
+    <span class="vl">SÚPEROVA · JEHO VÍNKO</span>
+  </div>
+</div>
+<p class="strana j">ja</p>
+</div>
+<div class="kon">
+<div class="box rec"><h3>Za</h3><ul><li>Línia narastie len o 36 px na každú stranu. Zmestí sa na notebook aj s dnešnou veľkosťou kariet.</li><li>Všetko podstatné je na hrane: farba, premena alebo účinok, názov Nástroja, rám majiteľa.</li><li>Zámočník: štítky pod sebou po 36 px, bez prekrytia.</li></ul></div>
+<div class="box riz"><h3>Proti</h3><ul><li>Menej „karty“: trčí len pás, pocit zasunutej karty je slabší. Rám majiteľa po bokoch to čiastočne vráti.</li><li>Ilustráciu Nástroja na stole nevidno, len v lupe.</li></ul></div>
+</div>
+</section>
+
+<section id="m3">
+<h2>M3 · Offset 96 px (hrana + pás s názvom)</h2>
+<div class="stol">
+<p class="strana s">súper</p>
+<div class="linia" style="--hore:116px;--dole:116px">
+  <div class="host ja dole" style="--v:96px;--maj:var(--ja)">
+    <div class="k" style="--f:#2f5d8a"><span class="sl L y1 prem" data-z="R">P</span><span class="sl L y2">Po</span><span class="sl R y1 prem" data-z="R">P</span><span class="sl R y2 neakt">T</span><div class="il"></div><div class="pas"><b>Hasič</b><i>Občan · Autorita</i></div><div class="ef">Hasí, čo horí.</div></div>
+    <div class="n"><div class="hr h kar"><span class="nz">VIDLY</span><span class="kz">VZBURA</span></div><div class="il"></div><div class="pas"><b>Vidly</b><i>Nástroj</i></div><div class="ded"><span><b>DEDIČSTVO</b>Tvoje Rany udeľujú o 1 poškodenie viac.</span></div><div class="hr d pos"><span class="nz">VIDLY</span><span class="ik">R</span> → <span class="ik">P</span><span class="tx">Rana → Pecka</span></div></div>
+    <span class="vl">MOJA · MOJE VIDLY</span>
+  </div>
+  <div class="host super hore" style="--v:96px;--maj:var(--ja)">
+    <div class="n otoc"><div class="hr h pos"><span class="nz">AUTOMAT</span><span class="ik">D</span> → <span class="ik">½</span></div><div class="il"></div><div class="pas"><b>Výherný automat</b><i>Nástroj</i></div><div class="ded"><span><b>DEDIČSTVO</b>Prah Dlhu +1. V poslednej Pitke kola získaš 1 Dlh.</span></div><div class="hr d sab"><span class="nz">AUTOMAT</span><span class="ik">C</span> → <span class="ik">D</span><span class="tx">Cigareta → Dlh</span></div></div>
+    <div class="k" style="--f:#8a6a2a"><span class="sl L y1 prem" data-z="C" style="--zn:#d0563f">D</span><span class="sl L y2">V</span><span class="sl R y1">D</span><span class="sl R y2 prem neakt" data-z="C" style="--zn:#d0563f">D</span><div class="il"></div><div class="pas"><b>Dievčina na vydaj</b><i>Občan · Závislý</i></div><div class="ef">Čaká na ženícha.</div></div>
+    <span class="vl">SÚPEROVA · MÔJ AUTOMAT</span>
+  </div>
+</div>
+<p class="strana j">ja</p>
+</div>
+<div class="kon">
+<div class="box"><h3>Za</h3><ul><li>Najviac karty: vidno hranu, Dedičstvo aj pás s názvom a ilustráciu. Nástroj má na stole plnú identitu.</li></ul></div>
+<div class="box riz"><h3>Proti</h3><ul><li>Línia narastie o 192 px. Na notebooku nereálne bez zmenšenia kariet asi na 70 %, čo zhorší čitateľnosť slotov hostiteľov. Neodporúčam.</li></ul></div>
+</div>
+</section>
+
+<section id="tah">
+<h2>Ťah zasunutia (bez ponuky)</h2>
+<p>Keď Nástroj leží pod hostiteľom a vidno ho, výber hrany nepotrebuje ponuku. Hráč kartu <b>zasunie</b> a trčiaci koniec <b>otočí</b>, kým ťah nepotvrdí.</p>
+<ol class="kroky">
+  <li><b>Vyber Nástroj v ruke</b> (klik alebo ťah myšou). Hostitelia, pod ktorých sa dá podložiť, dostanú zlatý rám, ostatní zošednú. Pokyn: „Zasuň pod kartu · 1 cigareta · alebo vylož do Dedičstva“.</li>
+  <li><b>Klikni na hostiteľa</b> (alebo pusť kartu na ňom). Nástroj priletí a zasunie sa pod kartu správnym smerom: pod mojou dole, pod súperovou hore. Trčí prvá hrana, ktorá má na tejto karte čo robiť; sloty hostiteľa hneď ukážu náhľad premeny.</li>
+  <li><b>Otoč</b>: tlačidlo ⟲ na trčiacom konci (alebo klik na trčiaci koniec, alebo medzerník) preklopí Nástroj, trčí druhá hrana, náhľad sa prepne. Hrana, ktorá na tejto karte nič nerobí, sa preklopiť dá, ale trčí tlmená s textom „nemá Cigaretu“.</li>
+  <li><b>Pečiatka „Zasunúť · 1 cigareta“</b> pri trčiacom konci. Bez cigarety šedá s dôvodom. Esc alebo klik mimo vráti Nástroj do ruky. Po potvrdení sa ⟲ aj pečiatka stratia, natočenie je pevné. Log: „Michal zasunul Vidly (Rana → Pecka) pod Hasiča“.</li>
+</ol>
+<div class="stol">
+<p class="strana s">súper</p>
+<div class="pokyn">Zasuň <b>Vidly</b> pod kartu · <span class="cigik"></span> 1 cigareta · alebo vylož do Dedičstva</div>
+<div class="linia" style="--hore:60px;--dole:120px">
+  <div class="host ja">
+    <div class="k mimo" style="--f:#7a4a2a"><span class="sl L y1">C</span><span class="sl L y2">D</span><span class="sl R y1">V</span><div class="il"></div><div class="pas"><b>Dievčina na vydaj</b><i>Občan</i></div><div class="ef"></div></div>
+    <div class="pop">už má Nástroj: bez rámu, šedá</div>
+  </div>
+  <div class="host ja dole" style="--v:64px;--maj:var(--ja)">
+    <div class="k ciel" style="--f:#2f5d8a"><span class="sl L y1 prem" data-z="R">P</span><span class="sl L y2">Po</span><span class="sl R y1 prem" data-z="R">P</span><span class="sl R y2 neakt">T</span><div class="il"></div><div class="pas"><b>Hasič</b><i>Občan · Autorita</i></div><div class="ef">Hasí, čo horí.</div></div>
+    <div class="n" style="box-shadow:0 0 0 3px rgba(233,173,69,.5), 0 8px 20px rgba(0,0,0,.45)"><div class="hr h kar"><span class="nz">VIDLY</span><span class="kz">VZBURA</span></div><div class="il"></div><div class="pas"><b>Vidly</b><i>Nástroj</i></div><div class="ded"><span><b>DEDIČSTVO</b>Tvoje Rany udeľujú o 1 poškodenie viac.</span></div><div class="hr d pos"><span class="nz">VIDLY</span><span class="ik">R</span> → <span class="ik">P</span><span class="tx">Rana → Pecka</span></div></div>
+    <button class="otocit" style="top:calc(190px + 64px - 36px)" title="Otočiť: Vzbura">⟲</button>
+    <div style="position:absolute;left:50%;transform:translateX(-50%);top:calc(190px + 64px + 10px);white-space:nowrap"><button class="pecat">ZASUNÚŤ <span class="cig"><span class="cigik"></span> 1</span></button></div>
+  </div>
+  <div class="host super">
+    <div class="k ciel" style="--f:#8a6a2a"><span class="sl L y1">Pč</span><span class="sl L y2">Vi</span><span class="sl R y1">C</span><span class="sl R y2">Po</span><div class="il"></div><div class="pas"><b>Veštica</b><i>Občan</i></div><div class="ef"></div></div>
+    <div class="pop">súperova karta je cieľ tiež, Nástroj by trčal hore</div>
+  </div>
+</div>
+<p class="strana j">ja</p>
+</div>
+<div class="box"><h3>Prečo bez ponuky</h3><ul>
+  <li>Hráč vidí presne to, čo bude na stole: zasunutá karta s trčiacou hranou a náhľad slotov. Žiadny medzikrok, žiadne okno nad líniou.</li>
+  <li>Otočenie je jedno tlačidlo na mieste, kde sa pozerá. Na telefóne ťuk na trčiaci koniec.</li>
+  <li>Ponuka hrany z prvého mocku ostáva ako záloha pre prístupnosť (klávesnica: medzerník otočí, Enter potvrdí).</li>
+</ul></div>
+</section>
+
+<section id="telefon">
+<h2>Telefón (na šírku)</h2>
+<p>Na telefóne platí M2 (štítok 36 px): línia je nízka a ruka je dole. Štítky nad súperovými kartami trčia hore k súperovmu pultu, pod mojimi dole k ruke. Ťuk na štítok otvorí lupu s celou kartou Nástroja.</p>
+<div class="tel"><div class="scena">
+  <div class="mn h kar" style="left:70px;top:28px">NA EX</div><div class="mk" style="left:70px"></div>
+  <div class="mk" style="left:124px"></div>
+  <div class="mk" style="left:178px"></div><div class="mn pos" style="left:178px;top:102px">R → P</div>
+  <div class="mk" style="left:232px"></div><div class="mn sab" style="left:232px;top:102px">C → D</div>
+  <div class="rk"></div><div class="mr" style="left:120px"></div><div class="mr" style="left:156px"></div><div class="mr" style="left:192px"></div>
+</div></div>
+</section>
+
+<section id="vyber">
+<h2>Výber</h2>
+<div class="box zv"><p><b>Rozhodnuté (Michal 2026-11-08): M2, offset 36 px, na počítači aj telefóne.</b> Spod hostiteľa vidno len hranu Nástroja s názvom a rámom majiteľa; celú kartu ukáže lupa a nápoveda pod myšou. Zámočník: ďalšie Nástroje po 36 px pod sebou.</p></div>
+<div class="box rec">
+<p><b>Odporúčam M1 (offset 64 px) na počítači a M2 (36 px) na telefóne a notebooku pod 700 px výšky.</b> M1 ukáže hranu aj kus karty, takže je jasné, že pod hostiteľom leží celá karta, a hrana s názvom je čitateľná. Keď stôl nemá výšku, prepne sa na M2 rovnakou logikou, ako dnes zmenšuje karty. M3 neodporúčam, línia by zožrala stôl.</p>
+<p>Ťah: zasunutie s otočením namiesto ponuky. Jadro sa nemení (zámer <code>podloz {nastrojId, hostitelId, hrana}</code> je ten istý), mení sa len klient.</p>
+</div>
+<p class="mini">Odovzdané Leaderovi pre fázu 2 (klient) 2026-11-08.</p>
+</section>
+</main>
+</body>
+</html>
