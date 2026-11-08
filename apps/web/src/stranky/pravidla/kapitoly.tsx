@@ -359,7 +359,7 @@ export const KAPITOLY: readonly Kapitola[] = [
         </p>
         <H3 id="pitka-poradie">Poradie Pitky</H3>
         <p>
-          <strong>Pitku hráte obaja naraz.</strong> Kým ju neskončíš, smieš fajčiť, doliať, barterovať, použiť Kšefty
+          <strong>Pitku hráte obaja naraz.</strong> Kým ju neskončíš, smieš fajčiť, doliať, barterovať
           a skryto vybrať NA EX — súperove nákupy vidíš hneď, jeho NA EX nie. Keď skončíš, nedá sa to vrátiť. Keď ste hotoví
           obaja, NA EX sa odkryjú <strong>naraz</strong> a odpovedáte na ne lícom dole — najprv útočník, potom obranca na druhý kraj línie; obe sa otočia naraz. Jediná výnimka
           je <strong>Bzdocha</strong>: jej majiteľ čaká, kým súper skončí, a potom hrá a vidí jeho NA EX. Potom sa Pitka vyhodnotí:
@@ -376,7 +376,7 @@ export const KAPITOLY: readonly Kapitola[] = [
           </li>
           <li>Záverečné karty sa otočia lícom hore (kapitola <a href="#pokrocile">Pokročilé ťahy</a>).</li>
         </ol>
-        <p className="tlmene">Pitka sama karty nedáva — doberáš si ich fajčením, Víziou a efektmi kariet (Kšefty, Zastávka).</p>
+        <p className="tlmene">Pitka sama karty nedáva — doberáš si ich fajčením, Víziou a efektmi kariet (Zastávka, Predavačka).</p>
         <H3 id="naex">NA EX</H3>
         <p>
           V Pitke, kým ju neskončíš, položíš plný poldeci na kartu v línii s tagom <strong>Občan</strong> alebo{" "}
@@ -410,7 +410,7 @@ export const KAPITOLY: readonly Kapitola[] = [
         <H3 id="naex-odkrytie">Odkrytie a Výtržník</H3>
         <p>
           Keď ste hotoví obaja, NA EX sa odkryjú <strong>naraz</strong> — oba poldeci ľahnú na karty súčasne. Až vtedy sa
-          pripíše pečeň (na Kare ju dostane súper) a vyhodnotí sa hrozba Kšeftu Vychovávateľky. Potom odpovede.
+          pripíše pečeň (na Kare ju dostane súper) a vyhodnotí sa hrozba schopnosti Vychovávateľky. Potom odpovede.
         </p>
         <p className="zvyraznene">
           <strong>Zrážka:</strong> ak ste obaja vybrali tú istú kartu, je z nej <P k="vytrznik">Výtržník</P>. So susedmi sa
@@ -500,7 +500,7 @@ export const KAPITOLY: readonly Kapitola[] = [
         <p>
           <P k="nerest">Nerest</P> je len to, čo vypiješ a vyfajčíš: <strong>Vypiť</strong> v Zhromaždení 1, každé <strong>NA EX 2</strong>{" "}
           (je to väčšia dávka) a každá vyfajčená cigareta 1 (druhé fajčenie v Pitke za 2 cigarety teda 2; fajčenie zadarmo nič).
-          Doliatie, barter, šenok, Záverečná, Dedičstvo ani cigarety za Kšefty lokalít nerest nie sú.
+          Doliatie, barter, šenok, Záverečná, Dedičstvo nerest nie sú.
         </p>
         <p>
           <P k="chut">Chuť</P> je tvoje verejné číslo, na začiatku 0 — kto si zvykne, musí pokračovať. Na konci kola:
@@ -956,15 +956,15 @@ export const KAPITOLY: readonly Kapitola[] = [
           <tr><td>Zastávka</td><td>Pitka</td><td>Po prvej Pitke kola si každý vezme zadarmo 1 kartu zo šenku — najprv útočník, potom obranca (z prázdneho šenku nič).</td></tr>
           <tr><td>Lesná cesta</td><td>Bitka</td><td>Za každé tvoje Zviera v línii, na ktorejkoľvek strane, 2 tuhé navyše.</td></tr>
           <tr><td>Ihrisko</td><td>Bitka</td><td>V každom kraji +2 tuhé tomu, kto tam má viac svojich Občanov, Zvierat a Starešinov (Dvojčatá za dve) — spolu až +4.</td></tr>
-          <tr><td>Zberný dvor</td><td>Kšeft</td><td>Za 1 cigaretu ľubovoľná karta z tvojho odhadzovacieho balíčka do ruky.</td></tr>
+          <tr><td>Zberný dvor</td><td>Pitka</td><td>Na konci Pitky smie každý spáliť 1 kartu z ruky, nie kliatbu.</td></tr>
           <tr><td>Most</td><td>Zhromaždenie, Pitka</td><td>Karty len na vlastnú stranu, aj odpoveď na NA EX.</td></tr>
           <tr><td>Kar</td><td>Pitka</td><td>Poškodenie pečene za NA EX dostane súper hráča, ktorý ho dal.</td></tr>
           <tr><td>Cintorín</td><td>Prehra</td><td>Porazený si smie vziať do ruky 1 kartu zo svojho odhadzovacieho balíčka (pri sekere nikto).</td></tr>
           <tr><td>Obecný úrad</td><td>Pitka</td><td>Cigarety a Dlhy získané v Pitke sa obom rátajú dvakrát: (akcie − Obmedzenie) × 2. Platby a cigarety za pas nie.</td></tr>
           <tr><td>Jednota</td><td>Pitka</td><td>Kto má viac priznaných Dlhov, nesmie v tejto Pitke fajčiť ani dolievať.</td></tr>
-          <tr><td>Sklad</td><td>Kšeft</td><td>Za 2 cigarety Nástroj zo šenku do Dedičstva; do šenku príde z Náradia nový Nástroj.</td></tr>
+          <tr><td>Sklad</td><td>Zhromaždenie</td><td>Nástroj zo šenku smieš vyložiť rovno do Dedičstva za cenu Dedičstva; do šenku príde z Náradia nový Nástroj.</td></tr>
           <tr><td>Poľovnícka chata</td><td>Furt</td><td>Aktívne Rany, Pecky a Petelice z hrán sa rátajú dvakrát (len finále).</td></tr>
-          <tr><td>Predsedova vila</td><td>Kšeft</td><td>Za 2 cigarety pridaj svoje reči pri jednom staršom o stupeň (len finále).</td></tr>
+          <tr><td>Predsedova vila</td><td>Pitka</td><td>Za každé 2 cigarety, ktoré v Pitke vyfajčíš, zdvihni svoje reči pri jednom staršom o stupeň.</td></tr>
           <tr><td>Herňa</td><td>Bitka</td><td>Víťaz dostane navyše toľko špakov, koľko má porazený priznaných Dlhov (len finále).</td></tr>
           <tr><td>Kultúrny dom</td><td>Bitka</td><td>Každý hráč dostane špaky len za svoje karty v línii, aj víťaz.</td></tr>
           <tr><td>Vínna pivnica</td><td>Pitka</td><td>NA EX až dvakrát za Pitku.</td></tr>

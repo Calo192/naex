@@ -37,6 +37,8 @@ import type { Action, CardInstance, Miesto, PlayerId, SideLayout, Slot, Tag } fr
 import { opponentOf } from "./types.ts";
 import type { GameData } from "./data.ts";
 import { defOf, printedSides } from "./data.ts";
+import type { NavyseStav } from "./navyse.ts";
+import { efektyNavyse, stavNavyse } from "./navyse.ts";
 
 /** Karta ležiaca v partii. */
 export interface PlacedCard {
@@ -77,6 +79,11 @@ export interface PlacedCard {
    * Rany ako Pecky. Samostatne od premeny — Šarlatán či Miňištrant ju môžu mať tiež.
    */
   readonly ranyAkoPecky?: true;
+  /**
+   * Akcie navyše (frakcie, Michal 2026-11-08): koľkokrát sa v tomto kole spustil efekt
+   * navyše [i] karty (navyse.ts efektyNavyse) — Podpora a Konflikt pri každom stretnutí.
+   */
+  readonly navyse?: readonly number[];
   /** Hrobár (Konflikt, v7): za túto kartu sa na jej strane už nič nepriloží. */
   readonly posledna?: true;
   /** Po bitke ide karta z hry (Vdova, Hrobár — Konflikt v7). */
@@ -126,6 +133,8 @@ export interface CardLineEval {
   readonly forsaz: boolean;
   readonly left: readonly (SlotEval | null)[];
   readonly right: readonly (SlotEval | null)[];
+  /** Efekty s akciami navyše a koľkokrát platia (navyse.ts); chýba = karta ich nemá. */
+  readonly navyse?: readonly NavyseStav[];
 }
 
 export type ActionSums = Readonly<Partial<Record<Action, number>>>;
@@ -185,6 +194,11 @@ interface Elem {
   readonly uid: number;
   readonly defId: string;
   readonly tags: readonly Tag[];
+  /**
+   * Karta nemá efekt s akciami navyše — Kočovník, Opatrovateľka a Praudovravec ho v sade
+   * frakcií (2026-11-08) dostali namiesto Furtu; ich starý efekt platí len pre staré sady.
+   */
+  readonly staryEfekt: boolean;
   /** Majiteľ karty — dostane jej aktívne akcie; lokalita má strany rozdelené. */
   readonly owner: PlayerId;
   readonly isLokalita: boolean;
@@ -274,7 +288,7 @@ function presbiter(
       const su = opponentOf(e.owner);
       if (prevahaKrajov[k] !== su) continue;
       if (kraje[k].some((x) => x !== e && x.owner === e.owner && rataSaDoPrevahy(x.tags))) continue;
-      if (elems.some((x) => x.defId === "praudovravec" && x.owner === su)) continue;
+      if (elems.some((x) => x.defId === "praudovravec" && x.staryEfekt && x.owner === su)) continue;
       let aktivnych = 0;
       for (const side of [0, 1] as const) {
         for (let i = 0; i < 4; i++) if (e.stav[side]![i] === "aktivna") aktivnych += e.nasobok[side]![i] as number;
@@ -373,6 +387,7 @@ function makeElem(
     uid: card.uid,
     defId: card.defId,
     tags: defOf(data, card).tags,
+    staryEfekt: efektyNavyse(defOf(data, card)).length === 0,
     owner,
     isLokalita,
     strana,
@@ -486,7 +501,7 @@ function resolveJunction(
   const x = { tags: a.tags, stred: a.isLokalita, defId: a.defId, umlcany: umlcane.has(a.uid) };
   if (!spojVznikne(x, { tags: b.tags, stred: b.isLokalita, defId: b.defId, umlcany: umlcane.has(b.uid) })) return;
   // Praudovravec (Dezinformátor, v7): Odpor na jeho spojoch neruší, ale posilní.
-  const dezinformator = (!a.isLokalita && a.defId === "praudovravec") || (!b.isLokalita && b.defId === "praudovravec");
+  const dezinformator = (!a.isLokalita && a.defId === "praudovravec" && a.staryEfekt) || (!b.isLokalita && b.defId === "praudovravec" && b.staryEfekt);
   for (let k = 0; k < 4; k++) {
     let actA = a.effRight[k];
     let actB = b.effLeft[k];
@@ -822,7 +837,7 @@ function kartoveEfekty(segments: readonly (readonly Elem[])[], umlcane: Readonly
       // Vedúcko (Furt, Michal 2026-11-02): Roboty susedných kariet (oboch hráčov, lokalita nie —
       // ako Silná nezávislá žena) sa rátajú ako Pecky; Dlh nepália, dávajú tuhé.
       for (const s of okolie(e)) if (!s.isLokalita) s.robotaAkoPecka = true;
-    } else if (e.defId === "opatrovatelka") {
+    } else if (e.defId === "opatrovatelka" && e.staryEfekt) {
       // Opatrovateľka (Furt, v11.5): aktívne akcie tvojich Pamätníkov v jej okolí sú posilnené.
       for (const s of okolie(e)) if (!s.isLokalita && s.owner === e.owner && s.tags.includes("Pamätník")) zdvojAktivne(s, e.defId);
     } else if (e.defId === "anonymny_alkoholik") {
@@ -1032,7 +1047,7 @@ export function evaluateLine(data: GameData, line: LineState): LineEval {
         // Kočovník (Furt, Michal 2026-10-24): všetky jeho akcie dostane hráč
         // s prevahou v jeho kraji — súper, ktorý tam prevládne, berie aj škodlivé.
         // Zrušená akcia sa zapíše tomu, komu by inak patrila.
-        const kocovnik = elem.defId === "kocovnik" && elem.strana !== null ? (susedLokality[elem.strana] ?? elem.owner) : null;
+        const kocovnik = elem.defId === "kocovnik" && elem.staryEfekt && elem.strana !== null ? (susedLokality[elem.strana] ?? elem.owner) : null;
         const nastroj = susedNastroja.get(elem)?.[side] ?? null;
         const target: PlayerId = elem.isLokalita ? (susedLokality[side] ?? side) : (kocovnik ?? nastroj ?? elem.owner);
         const tiper = elem.tiper[side]![k] ?? null;
@@ -1076,6 +1091,29 @@ export function evaluateLine(data: GameData, line: LineState): LineEval {
   // Efektívna ľavá strana karty v strede susedí so stranou hráča 0, pravá s hráčom 1.
   const aktivne = (side: 0 | 1): number => (stred === null ? 0 : stred.stav[side]!.filter((x) => x === "aktivna").length);
 
+  // Akcie navyše (frakcie): majiteľovi karty, mimo hrán — nič, čo mení akcie na spojoch, ich nemení.
+  // Pred Presbiterom, ktorý uberá z celého súčtu Viery.
+  const tagy = (defId: string): readonly Tag[] => data.cards.get(defId)?.tags ?? [];
+  for (const strana of line.strany) {
+    for (const pl of strana) {
+      const def = defOf(data, pl.card);
+      const efekty = efektyNavyse(def);
+      if (efekty.length === 0) continue;
+      const stav = stavNavyse(tagy, efekty, line.strany, pl, umlcane);
+      const ev = cards.get(pl.card.uid);
+      if (ev !== undefined) cards.set(pl.card.uid, { ...ev, navyse: stav });
+      for (const e of stav) {
+        if (e.krat === 0) continue;
+        const dovod = `akcia navyše (${e.spustac}${e.tag === null ? "" : `: ${e.tag}`})`;
+        for (const a of new Set(e.akcie)) {
+          const hodnota = e.krat * e.akcie.filter((x) => x === a).length;
+          sums[pl.playedBy][a] = (sums[pl.playedBy][a] ?? 0) + hodnota;
+          pridajZdroj(pl.playedBy, a, { defId: def.id, uid: pl.card.uid, hodnota, vStrede: false, dovody: [dovod] });
+        }
+      }
+    }
+  }
+
   presbiter([partia0, partia1], susedLokality, elems, sums, zdroje);
 
   return { sums, cards, aktivneStredu: [aktivne(0), aktivne(1)], zdroje, zrusene, zruseneOdporom };
@@ -1115,6 +1153,13 @@ export function prispevkyKariet(line: LineState, ev: LineEval): KartaVBitke[] {
       aktivne += slot.nasobok;
       tuhe += (TUHE[ako] ?? 0) * slot.nasobok;
       if (ZLE.includes(ako)) zle += slot.nasobok;
+    }
+    for (const n of e?.navyse ?? []) {
+      for (const a of n.akcie) {
+        aktivne += n.krat;
+        tuhe += (TUHE[a] ?? 0) * n.krat;
+        if (ZLE.includes(a)) zle += n.krat;
+      }
     }
     out.push({ uid: placed.card.uid, defId: placed.card.defId, majitel: placed.playedBy, akcii, aktivne, tuhe, zle });
   }

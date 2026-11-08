@@ -1,7 +1,7 @@
 {
   "id": "prva-hra",
   "nazov": "Prvá hra",
-  "verzia": "v11-13-lokality-2026-11-07",
+  "verzia": "v11-13-frakcie-2026-11-08",
   "zverejnena": true,
   "casti": [
     {
@@ -2393,7 +2393,7 @@
         "uid": "lokality:predsedova_vila",
         "otocena": false
       },
-      "melichar": "Finále: posledná bitka, o lokalitu štvrtej úrovne. Útočí, kto má menej špakov – Štamgast; ty vyberáš a natáčaš. Vyber Predsedovu vilu, ako leží. Má Kšeft: v Pitke za 2 [Cigareta] cigarety pridáš svojim rečiam pri jednom staršom ďalší stupeň. Smie ho použiť každý, aj ty.",
+      "melichar": "Finále: posledná bitka, o lokalitu štvrtej úrovne. Útočí, kto má menej špakov – Štamgast; ty vyberáš a natáčaš. Vyber Predsedovu vilu, ako leží.",
       "hlaskaChyby": "nervy/19_ach_boha",
       "zvyraznit": [
         "lokality"
@@ -2410,7 +2410,7 @@
               "type": "chooseLocation",
               "uid": "lokality:herna"
             },
-            "text": "Herňa dá víťazovi toľko špakov, koľko má porazený Dlhov. Pekné, ale ja ťa chcem naučiť kšeftovať. Vila.",
+            "text": "Herňa dá víťazovi toľko špakov, koľko má porazený Dlhov. Pekné, ale ja chcem vilu.",
             "hlaska": "urazky/marha"
           },
           {
@@ -2418,7 +2418,7 @@
               "type": "chooseLocation",
               "uid": "lokality:polovnicka_chata"
             },
-            "text": "Poľovnícka chata zdvojuje tuhé z hrán, aj Štamgastovi. Ja ťa chcem naučiť kšeftovať. Vila.",
+            "text": "Poľovnícka chata zdvojuje tuhé z hrán, aj Štamgastovi. Ja chcem vilu.",
             "hlaska": "nervy/16_to_zas_bude_vyzerat"
           },
           {
@@ -2509,7 +2509,7 @@
       "prikaz": {
         "type": "draftStop"
       },
-      "melichar": "Viac nekupuj, klikni už neťahám (P). Cigarety budeš potrebovať: Kšeft aj doliatie niečo stoja.",
+      "melichar": "Viac nekupuj, klikni už neťahám (P). Cigarety budeš potrebovať: doliatie niečo stojí.",
       "hlaskaChyby": "nervy/bud_ticho",
       "zvyraznit": [
         "tlacidlo:pas",
@@ -2572,25 +2572,10 @@
       "prikaz": {
         "type": "pass"
       },
-      "melichar": "Teraz pasuj (P), hoci smieš ešte dve karty: pas sa platí kartami v ruke, takže dostaneš dve [Cigareta] cigarety. Na Kšeft vily potrebuješ dve. Policajtku a Pijana vyložíš v ďalšom Zhromaždení.",
+      "melichar": "Teraz pasuj (P), hoci smieš ešte dve karty: pas sa platí kartami v ruke, takže dostaneš dve [Cigareta] cigarety. Na doliatie potrebuješ dve. Policajtku a Pijana vyložíš v ďalšom Zhromaždení.",
       "hlaskaChyby": "urazky/vyjebany",
       "zvyraznit": [
         "tlacidlo:pas"
-      ]
-    },
-    {
-      "id": "k-kseft",
-      "kto": "hrac",
-      "prikaz": {
-        "type": "kseft",
-        "uid": "ciel:predsedova_vila",
-        "elderId": "veterinar"
-      },
-      "melichar": "Kšeft vily: za 2 [Cigareta] cigarety pridaj svojim rečiam pri Veterinárovi ďalší stupeň – červenú. Celý Štamgastov teplomer je potom tvoj: dá ti 5 namiesto 3, vyhráš či prehráš. Mimo finále by si ho s plným teplomerom smel za 3 z hádky aj presvedčiť. Kšeft nie je ťah a každý ho smie raz za Pitku.",
-      "hlaskaChyby": "urazky/marha",
-      "zvyraznit": [
-        "starsi:veterinar",
-        "tlacidlo:kseft"
       ]
     },
     {
@@ -2799,7 +2784,7 @@
     {
       "id": "i-bitka-finale",
       "kto": "info",
-      "melichar": "Finále je tvoje, 22 : 6. Špaky: šesť za karty v línii a Nakladačka 16 sa vo finále mení na špaky jedna ku jednej. Starší: Veterinár 5 za reči na celom teplomere, Krčmárka 3 za oranžový strach, Starosta a Autobusár po 1 za žltý; exekútor ti zobral dva, Štamgastovi jeden. Vo finále sa nezajíma ani nepresviedča.",
+      "melichar": "Finále je tvoje, 22 : 6. Špaky: šesť za karty v línii a Nakladačka 16 sa vo finále mení na špaky jedna ku jednej. Starší: Veterinár 3 za reči po oranžovú, Krčmárka 3 za oranžový strach, Starosta a Autobusár po 1 za žltý; exekútor ti zobral dva, Štamgastovi jeden. Vo finále sa nezajíma ani nepresviedča.",
       "zvyraznit": [
         "bitka-ucet",
         "bar:body",
@@ -2809,7 +2794,7 @@
     {
       "id": "i-koniec",
       "kto": "info",
-      "melichar": "Koniec hry. Zvyšné plné poldeci a cigarety sa vykúpia: plný poldeci 1 špak, päť cigariet 1 špak; tebe to dalo 2, Štamgastovi 5 – nahrabal si dvadsaťjeden cigariet. A dve Cirhózy – z druhého kola a z finále – ti ležia v balíčku nepriznané a stoja ťa 6 špakov; Štamgasta jeho jedna 3. 53 : 15.",
+      "melichar": "Koniec hry. Zvyšné plné poldeci a cigarety sa vykúpia: plný poldeci 1 špak, päť cigariet 1 špak; tebe to dalo 2, Štamgastovi 5 – nahrabal si dvadsaťjeden cigariet. A dve Cirhózy – z druhého kola a z finále – ti ležia v balíčku nepriznané a stoja ťa 6 špakov; Štamgasta jeho jedna 3. 51 : 15.",
       "zvyraznit": [
         "bar:body",
         "nastenka"

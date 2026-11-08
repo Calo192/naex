@@ -42,10 +42,9 @@ import {
   sReciNizsie,
   pohladPoRozdeleni,
   pultStarsich,
-  vilaNaStarsieho,
   NAZVY_ZON,
   CERVENA,
-  VILA_CENA,
+  skladPonuka,
   priazenPre,
   spakyOdStarsieho,
   ktoNatacaLokalitu,
@@ -391,7 +390,7 @@ function vykresli(v: ClientState, mena: readonly string[]): string {
   const jehoSkryteNaex = superoveSkryteNaex(v);
   const vidimCezBzdochu = v.pitkaStav !== null && vidiVolbuSupera(DATA, v, ja);
   const lineEval = evaluateLine(DATA, lineState(vs));
-  // Celý verejný stôl: Šofér, Strýko, Vychovávateľka, Pasca a Vidly čítajú aj NA EX v kole, Kšefty a špaky (playtest v7 131033).
+  // Celý verejný stôl: Šofér, Vychovávateľka, Pasca a Vidly čítajú aj NA EX v kole, schopnosti väzňov a špaky (playtest v7 131033).
   const stol: VerejnyStav = vs;
   for (const p of [ja, su] as const) {
     const h = v.hraci[p];
@@ -414,7 +413,7 @@ function vykresli(v: ClientState, mena: readonly string[]): string {
           ? `na konci kola karta Absťák do odhadzovacieho balíčka, ak nepribudne ešte ${textNeresti(z.doBezpecia)}`
           : "Absťák nepríde";
     out.push(
-      `  CHUŤ ${z.chut} | dnes ${z.teraz}${z.naexNaStole > 0 ? ` (z toho ${z.naexNaStole} NA EX na stole, každé za ${KONSTANTY.NEREST_NAEX})` : ""}${z.doBezpecia > 0 ? ` | chýba ${z.doBezpecia}` : ""} → ${vyhlad}; Chuť po kole ${z.chutPo}. ABSŤÁK v balíčku: ${z.abstaky} (v bitke −${z.ubera} tuhé). Nerest = Vypiť 1, NA EX ${KONSTANTY.NEREST_NAEX}, každá vyfajčená cigareta 1; doliatie, barter, šenok, Dedičstvo a Kšefty lokalít nie.`,
+      `  CHUŤ ${z.chut} | dnes ${z.teraz}${z.naexNaStole > 0 ? ` (z toho ${z.naexNaStole} NA EX na stole, každé za ${KONSTANTY.NEREST_NAEX})` : ""}${z.doBezpecia > 0 ? ` | chýba ${z.doBezpecia}` : ""} → ${vyhlad}; Chuť po kole ${z.chutPo}. ABSŤÁK v balíčku: ${z.abstaky} (v bitke −${z.ubera} tuhé). Nerest = Vypiť 1, NA EX ${KONSTANTY.NEREST_NAEX}, každá vyfajčená cigareta 1; doliatie, barter, šenok a Dedičstvo nie.`,
     );
     if (h.priznane.length > 0) out.push(`  priznané: ${h.priznane.map((k) => meno(k.defId)).join(", ")}`);
     if (h.dedicstvo.length > 0) out.push(`  dedičstvo: ${h.dedicstvo.map((k) => meno(k.defId)).join(", ")}`);
@@ -618,7 +617,7 @@ function vykresli(v: ClientState, mena: readonly string[]): string {
     `  STRACH (0 sivá, 1 žltá, 2 oranžová, 3 červená) — ako veľmi sa starší bojí hráča; neklesá. REČI — žiadne, alebo stupeň NAD vlastným strachom; keď strach dorastie na stupeň rečí, reči zaniknú; pri červenom strachu reči nie sú. ` +
       `PRIAZEŇ pre teba = súperov strach − tvoj strach (najmenej 0; reči sa nerátajú) — vyšší strach ti teda dáva body, ale súperovi priazeň. Stav staršieho podľa vyššieho strachu: ${STAV_STARSIEHO.map((x, i) => `${i} ${x}`).join(", ")}. ` +
       `PO KAŽDEJ BITKE starší bodujú: víťaz dostane špaky za svoj NAJVYŠŠÍ marker (reči, ak ich má, inak strach), porazený a pri sekere obaja LEN ZA REČI (${SPAKY_STUPNOV}); reči, ktoré bodovali, potom klesnú o stupeň. ` +
-      `DVÍHANIE: víťaz bitky rozdelí Nakladačku na svoj strach, víťaz hádky hádku na svoje reči na SÚPEROVOM teplomere, Predsedova vila pridá tvoje reči o stupeň za ${cigariet(VILA_CENA)}, Kapybara zhodí súperovým rečiam spodný stupeň. Stupeň stojí ${CENY_STUPNOV} (napr. strach zo sivej na červenú ${cenaDvihnutia(0, CERVENA)}), strach na stupeň so súperovými rečami o ${KONSTANTY.REC_PRIRAZKA} viac. ` +
+      `DVÍHANIE: víťaz bitky rozdelí Nakladačku na svoj strach, víťaz hádky hádku na svoje reči na SÚPEROVOM teplomere, Predsedova vila za každé 2 cigarety vyfajčené v Pitke pridá tvoje reči o stupeň, Kapybara zhodí súperovým rečiam spodný stupeň. Stupeň stojí ${CENY_STUPNOV} (napr. strach zo sivej na červenú ${cenaDvihnutia(0, CERVENA)}), strach na stupeň so súperovými rečami o ${KONSTANTY.REC_PRIRAZKA} viac. ` +
       `ZAJATIE (v11.4): pri rozdelení Nakladačky zajmeš za ${KONSTANTY.CENA_ZAJATIA} staršieho s tvojím červeným strachom (väzeň, súper ti odovzdá špaky za svoj najvyšší marker pri ňom). PRESVEDČENIE (v11.4): pri rozdelení hádky za ${KONSTANTY.CENA_PRESVEDCENIA} staršieho, ktorý sa súpera bojí viac než teba, keď sú tvoje reči pri ňom na červenej — reči zaniknú, priazeň ostane, jeho karta ide tebe do ruky a natrvalo do tvojho balíčka. Vo finále ani jedno.`,
   );
   out.push(
@@ -642,7 +641,7 @@ function vykresli(v: ClientState, mena: readonly string[]): string {
       bodovanie: "po bodovaní o stupeň nižšie",
       zanik: "zanikli pod strachom",
       presvedcenie: "zanikli presvedčením",
-      kseft: "Predsedova vila",
+      vila: "Predsedova vila",
       nastup: "Kapybara",
     };
     const nazovStarsieho = (id: string): string => meno(v.starsi.find((x) => x.elderId === id)?.karta.defId ?? v.vazni.find((x) => x.elderId === id)?.karta.defId ?? id);
@@ -783,7 +782,27 @@ function moznosti(v: ClientState): string[] {
   const su = (ja === 0 ? 1 : 0) as PlayerId;
   const nv = v.volbaNastupu;
   if (nv !== null && nv.hrac === ja) {
-    // Voľby v7: karta zo šenku (Zastávka), Nástroj za Živnostníka, Kapybara.
+    // Voľby v7: karta zo šenku (Zastávka), Nástroj za Živnostníka, Kapybara; frakcie (2026-11-08): Vdova, Zberný dvor, vila.
+    if (nv.typ === "vdova") {
+      for (const k of v.ruka) c({ type: "odhod", uid: k.uid }, `VDOVA: odhoď z ruky ${popisKarty(k)} do odhadzovacieho balíčka (povinne jednu)`);
+      return out;
+    }
+    if (nv.typ === "dvor") {
+      c({ type: "spal", uid: null }, "ZBERNÝ DVOR: nič nepáliť");
+      for (const k of v.ruka) if (!(DATA.cards.get(k.defId)?.tags ?? []).includes("Kliatba")) c({ type: "spal", uid: k.uid }, `ZBERNÝ DVOR: spáľ z ruky ${popisKarty(k)} — navždy z hry, tenší balíček`);
+      return out;
+    }
+    if (nv.typ === "vila") {
+      for (const e of v.starsi) {
+        const na = dalsiStupenReci(e, ja);
+        if (na === null) continue;
+        const pred = spakovStarsieho(e, ja);
+        const eP = sMarkerom(e, ja, "reci", na);
+        const po = spakovStarsieho(eP, ja);
+        c({ type: "vila", elderId: e.elderId }, `PREDSEDOVA VILA: tvoje reči pri ${meno(e.karta.defId)} ${opisReci(e, ja)} → ${opisReci(eP, ja)} (tvoje špaky od neho po bitke: pri výhre ${pred.vyhra} → ${po.vyhra}, pri prehre ${pred.prehra} → ${po.prehra})`);
+      }
+      return out;
+    }
     if (nv.typ === "senok") {
       for (const k of v.senok) c({ type: "senok", uid: k.uid }, `ZO ŠENKU: vezmi si ${popisKarty(k)} do ruky`);
       return out;
@@ -875,6 +894,9 @@ function moznosti(v: ClientState): string[] {
           `VYPIŤ do dna: plný poldeci → vypitý; limit vykladania hneď ${zostava} → ${Math.max(0, zostava - 1)}, zato ďalšou kartou ti ťah neskončí; pečeň +1 (vyhodnotí sa v najbližšej Pitke)${zostava <= 1 ? ". POZOR: po vypití už nič nevyložíš" : ""}`,
         );
       }
+      // Sklad (frakcie 2026-11-08): Nástroj zo šenku rovno do Dedičstva za cenu Dedičstva.
+      if (z !== null && skladPonuka(DATA, v) && v.hraci[ja].cigarety >= v.cenaDedicstva)
+        for (const k of v.senok) if ((DATA.cards.get(k.defId)?.tags ?? []).includes("Nástroj")) c({ type: "place", uid: k.uid, target: "dedicstvo" }, `SKLAD: ${popisKarty(k)} zo šenku rovno do Dedičstva za ${cigariet(v.cenaDedicstva)} (do šenku príde z Náradia nový Nástroj)`);
       if (z !== null) {
         for (const k of v.ruka) {
           for (const t of cieleVykladania(DATA, v.strany, ja, k, z.zostavaLimit[ja], v.hraci[ja].cigarety >= v.cenaDedicstva, cielLokalitaId(v), zablokovaneStrany(v))) {
@@ -967,40 +989,6 @@ function moznosti(v: ClientState): string[] {
       if (h.cigarety >= cenaBarteru) c({ type: "barter" }, `barter ${cenaBarteru} cigariet → nový plný poldeci navyše`);
       if (h.cigarety >= KONSTANTY.REFILL_CENA && h.poldeciVypite > 0 && !h.dedicstvo.some((x) => x.defId === "vinko") && !jednotaZakazuje(v, ja))
         c({ type: "refillPoldeci" }, `${KONSTANTY.REFILL_CENA} cigarety → dolej vypitý poldeci`);
-      // Kšeft (v7): každá karta raz za Pitku; Kšeft lokality smie použiť každý hráč.
-      if (pk !== null && pk.reakcia === null) {
-        const pouzite = pk.kseft?.[ja] ?? [];
-        for (const pl of [...v.strany[0], ...v.strany[1]]) {
-          if (pl.playedBy !== ja || pl.zaverecna === true || pouzite.includes(pl.card.uid)) continue;
-          const uid = pl.card.uid;
-          if (pl.card.defId === "stryko_z_ameriky" && h.cigarety >= KONSTANTY.EFEKT.STRYKO_CENA) c({ type: "kseft", uid }, `KŠEFT Strýko z Ameriky: za ${cigariet(KONSTANTY.EFEKT.STRYKO_CENA)} udelíš v bitke tohto kola súperovi 1 Ranu navyše (raz za Pitku)`);
-          if (pl.card.defId === "predavacka" && h.cigarety >= KONSTANTY.EFEKT.PREDAVACKA_CENA && jeCoTahat(h.doberaciPocet, h.odhadzovaci.length))
-            c({ type: "kseft", uid }, `KŠEFT Predavačka: za ${cigariet(KONSTANTY.EFEKT.PREDAVACKA_CENA)} si doberieš 1 kartu (raz za Pitku, nie je to fajčenie)`);
-        }
-
-        const lok = v.ciel?.lokalita ?? null;
-        if (lok !== null && !pouzite.includes(lok.uid)) {
-          if (lok.defId === "zberny_dvor" && h.cigarety >= KONSTANTY.EFEKT.ZBERNY_DVOR_CENA)
-            for (const k of h.odhadzovaci) c({ type: "kseft", uid: lok.uid, kartaUid: k.uid }, `KŠEFT Zberný dvor: za ${KONSTANTY.EFEKT.ZBERNY_DVOR_CENA} cigaretu ${popisKarty(k)} z tvojho odhadzovacieho balíčka do ruky (raz za Pitku)`);
-          if (lok.defId === "sklad" && h.cigarety >= KONSTANTY.EFEKT.SKLAD_CENA)
-            for (const k of v.senok) if ((DATA.cards.get(k.defId)?.tags ?? []).includes("Nástroj")) c({ type: "kseft", uid: lok.uid, kartaUid: k.uid }, `KŠEFT Sklad: za ${cigariet(KONSTANTY.EFEKT.SKLAD_CENA)} ${popisKarty(k)} zo šenku do Dedičstva (raz za Pitku; do šenku príde z Náradia nový Nástroj)`);
-          // Predsedova vila (v11): moje reči o stupeň nad vyšší z mojich markerov — tá istá podmienka ako jadro.
-          if (lok.defId === "predsedova_vila" && h.cigarety >= VILA_CENA) {
-            for (const e of v.starsi) {
-              if (!vilaNaStarsieho(e, ja)) continue;
-              const na = dalsiStupenReci(e, ja);
-              if (na === null) continue;
-              const pred = spakovStarsieho(e, ja);
-              const eP = sMarkerom(e, ja, "reci", na);
-              const po = spakovStarsieho(eP, ja);
-              c(
-                { type: "kseft", uid: lok.uid, elderId: e.elderId },
-                `KŠEFT Predsedova vila: za ${cigariet(VILA_CENA)} tvoje reči pri ${meno(e.karta.defId)} ${opisReci(e, ja)} → ${opisReci(eP, ja)} (súperov strach ${stupenText(e.strach[su])}; tvoje špaky od neho po bitke: pri výhre ${pred.vyhra} → ${po.vyhra}, pri prehre ${pred.prehra} → ${po.prehra}; raz za Pitku)`,
-              );
-            }
-          }
-        }
-      }
       if (v.ciel?.lokalita?.defId === "krcma" && naexMoznosti > 0) out.push("(Krčma: kým máš plný poldeci a kam ho dať, musíš dať NA EX — hotovo zatiaľ nejde)");
       else
         c(

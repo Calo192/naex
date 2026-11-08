@@ -1,23 +1,20 @@
-// Kšefty pod kartou (Michal 2026-11-02: „Chcem, aby to bolo vidno pod kartou, ktorá Kšeft
-// ponúka.“) — predtým stáli na hrane stola medzi Fajčiť a Doliať. Tu je bez Reactu, čo pod
-// ktorou kartou leží: Strýko v línii a lokalita s Kšeftom; schopnosti väzňov (v11.2, namiesto
-// Kšeftu väzňa) v okne Pivnica. Ponuka je tá istá ako v legalCommands (jadro); čo sa nedá,
-// ostane ako obrys s dôvodom.
+// Efekty pod kartou (Michal 2026-11-02: „Chcem, aby to bolo vidno pod kartou, ktorá to
+// ponúka.“): Sklad pod lokalitou v Zhromaždení (frakcie 2026-11-08) a schopnosti väzňov (v11.2)
+// v okne Pivnica. Kšeft zanikol (frakcie 2026-11-08). Ponuka je tá istá ako v legalCommands
+// (jadro); čo sa nedá, ostane ako obrys s dôvodom.
 
 import {
   KONSTANTY,
-  VILA_CENA,
-  jeCoTahat,
   opponentOf,
   ponukaSchopnostiVazna,
   schopnostBezUcinku,
+  skladPonuka,
   stavSchopnostiVaznaZPohladu,
   tahSchopnosti,
   type ClientState,
   type Command,
   type GameData,
 } from "@naex/core";
-import { klucVily, moznostiVily } from "./volbaVily.ts";
 
 /** Čím sa Kšeft platí: cigarety (karty, lokality); schopnosť väzňa nestojí nič, je raz za hru (v11.2). */
 export type CenaKseftu = { readonly cigarety: number } | { readonly raz: true };
@@ -43,8 +40,6 @@ export type AkciaKseftu =
   | { readonly typ: "prikaz"; readonly prikaz: Command }
   /** Najprv voľba (starší a smer, karta) — ponuka nad tlačidlom. */
   | { readonly typ: "volba"; readonly nadpis: string; readonly riadky: readonly RiadokVolby[] }
-  /** Zberný dvor: karta z odhadzovacieho balíčka sa vyberá v pilulke (mode vykup). */
-  | { readonly typ: "vykup" }
   /** Autobusár (v11.2): ľubovoľne veľa kariet, každá za cenaZaKus cigariet — výber, potom potvrdenie. */
   | {
       readonly typ: "karty";
@@ -74,110 +69,42 @@ export interface KseftNaStole {
   readonly akcia: AkciaKseftu;
 }
 
-const KSEFT_KARTY: Readonly<Record<string, { readonly cena: number; readonly zisk: string; readonly tip: string }>> = {
-  stryko_z_ameriky: { cena: KONSTANTY.EFEKT.STRYKO_CENA, zisk: "+1 Rana", tip: "Kšeft Strýka: za 2 cigarety udelíš v bitke tohto kola súperovi 1 Ranu navyše." },
-  predavacka: { cena: KONSTANTY.EFEKT.PREDAVACKA_CENA, zisk: "+1 karta", tip: "Kšeft Predavačky: za 1 cigaretu si doberieš 1 kartu." },
-};
-
 const cigariet = (n: number): string => (n === 1 ? "1 cigaretu" : n >= 2 && n <= 4 ? `${n} cigarety` : `${n} cigariet`);
 
 /**
- * Kšefty, ktoré má hráč teraz na stole — každý pod svojou kartou, a schopnosti jeho väzňov.
- * Kšefty sú prázdne mimo jeho Pitky (odpoveď na NA EX, po „Skončiť Pitku“); použitý Kšeft
- * ostane ako obrys s dôvodom.
+ * Efekty pod kartou, ktoré hráč teraz smie použiť — Sklad pod lokalitou (Zhromaždenie, frakcie
+ * 2026-11-08) a schopnosti jeho väzňov. Kšeft zanikol (frakcie 2026-11-08).
  */
 export function kseftyNaStole(data: GameData, view: ClientState): KseftNaStole[] {
-  return [...kseftyPitky(data, view), ...schopnostiVaznov(data, view)];
+  return [...efektyLokality(data, view), ...schopnostiVaznov(data, view)];
 }
 
-function kseftyPitky(data: GameData, view: ClientState): KseftNaStole[] {
-  const ja = view.ja;
-  const pitka = view.pitkaStav;
-  if (view.faza !== "pitka" || pitka === null || pitka.reakcia !== null || pitka.hotovy[ja]) return [];
-  const h = view.hraci[ja];
-  const meno = (defId: string): string => data.cards.get(defId)?.name ?? defId;
-  const pouzite = pitka.kseft?.[ja] ?? [];
-  const vizia = view.vizia !== null ? "Najprv dokonči Víziu." : null;
-  const pouzityText = "Tento Kšeft si v tejto Pitke už použil.";
-  const out: KseftNaStole[] = [];
-
-  // Kšeft karty (v7): karta odkrytá v hráčovej partii, aj podstrčená k súperovi; skrytá Záverečná nie.
-  for (const pl of [...view.strany[0], ...view.strany[1]]) {
-    const k = KSEFT_KARTY[pl.card.defId];
-    if (k === undefined || pl.playedBy !== ja || pl.zaverecna === true) continue;
-    const uid = pl.card.uid;
-    const pouzity = pouzite.includes(uid);
-    out.push({
-      uid,
-      druh: "karta",
-      defId: pl.card.defId,
-      nazov: meno(pl.card.defId),
-      cena: { cigarety: k.cena },
-      zisk: k.zisk,
-      tip: k.tip,
-      dovod: pouzity
-        ? pouzityText
-        : vizia ??
-          (h.cigarety < k.cena
-            ? `${meno(pl.card.defId)} chce ${cigariet(k.cena)}, máš ${h.cigarety}.`
-            : pl.card.defId === "predavacka" && !jeCoTahat(h.doberaciPocet, h.odhadzovaci.length)
-              ? "Nemáš z čoho ťahať."
-              : null),
-      pouzity,
-      akcia: { typ: "prikaz", prikaz: { type: "kseft", uid } },
-    });
-  }
-
-  // Kšeft lokality — smie ho každý hráč, každý raz za Pitku.
+/** Sklad: Nástroj zo šenku rovno do Dedičstva za cenu Dedičstva — v Zhromaždení na mojom ťahu. */
+function efektyLokality(data: GameData, view: ClientState): KseftNaStole[] {
   const lok = view.ciel?.lokalita ?? null;
-  if (lok !== null) {
-    const uid = lok.uid;
-    const pouzity = pouzite.includes(uid);
-    const spolu = (cena: number, zisk: string, tip: string, inak: string | null, akcia: AkciaKseftu): KseftNaStole => ({
-      uid,
+  if (lok === null || !skladPonuka(data, view) || view.faza !== "zhromazdenie" || !view.mozemHrat) return [];
+  const meno = (defId: string): string => data.cards.get(defId)?.name ?? defId;
+  const cena = view.cenaDedicstva;
+  const nastroje = view.senok.filter((k) => data.cards.get(k.defId)?.tags.includes("Nástroj") === true);
+  const h = view.hraci[view.ja];
+  return [
+    {
+      uid: lok.uid,
       druh: "lokalita",
       defId: lok.defId,
       nazov: meno(lok.defId),
       cena: { cigarety: cena },
-      zisk,
-      tip,
-      dovod: pouzity ? pouzityText : vizia ?? (h.cigarety < cena ? `${meno(lok.defId)}: Kšeft stojí ${cigariet(cena)}, máš ${h.cigarety}.` : inak),
-      pouzity,
-      akcia,
-    });
-    if (lok.defId === "sklad") {
-      const c = KONSTANTY.EFEKT.SKLAD_CENA;
-      const nastroje = view.senok.filter((k) => data.cards.get(k.defId)?.tags.includes("Nástroj") === true);
-      out.push(
-        spolu(c, "Nástroj do Dedičstva", `Kšeft Skladu: za ${cigariet(c)} si vezmeš zo šenku Nástroj do Dedičstva (namiesto jeho ceny). Do šenku príde z Náradia nový Nástroj.`, nastroje.length === 0 ? "V šenku nie je Nástroj." : null, {
-          typ: "volba",
-          nadpis: "Kšeft Skladu · Nástroj zo šenku",
-          riadky: nastroje.map((k) => ({ kluc: String(k.uid), meno: meno(k.defId), vpravo: { text: "do Dedičstva", prikaz: { type: "kseft", uid, kartaUid: k.uid } } })),
-        }),
-      );
-    }
-    if (lok.defId === "zberny_dvor") {
-      const c = KONSTANTY.EFEKT.ZBERNY_DVOR_CENA;
-      out.push(spolu(c, "karta zo šrotu", "Kšeft Zberného dvora: za cigaretu ľubovoľná karta z tvojho odhadzovacieho balíčka do ruky — vyberieš ju klikom.", h.odhadzovaci.length === 0 ? "Tvoj odhadzovací balíček je prázdny." : null, { typ: "vykup" }));
-    }
-    if (lok.defId === "predsedova_vila") {
-      const moznosti = moznostiVily(view);
-      out.push(
-        spolu(VILA_CENA, "reči", `Kšeft Predsedovej vily: za ${cigariet(VILA_CENA)} zdvihneš svoje reči pri jednom staršom o stupeň — vyberieš ktorého.`, moznosti.length === 0 ? "Niet staršieho, pri ktorom by Vila smela zdvihnúť tvoje reči." : null, {
-          typ: "volba",
-          nadpis: "Kšeft vily · reči o stupeň",
-          riadky: moznosti.map((m) => ({
-            kluc: m.elderId,
-            meno: meno(m.defId),
-            // Jedno tlačidlo na staršieho (v11): reči o stupeň — pred a po, nech je vidno, čo kúpi.
-            vpravo: { text: `reči ${m.pred} → ${m.po}`, prikaz: { type: "kseft", uid, elderId: m.elderId }, vyucba: klucVily(m.elderId) },
-          })),
-        }),
-      );
-    }
-  }
-
-  return out;
+      zisk: "Nástroj do Dedičstva",
+      tip: `Sklad: Nástroj zo šenku vyložíš rovno do Dedičstva za cenu Dedičstva (teraz ${cigariet(cena)}). Do šenku sa dotiahne nový Nástroj.`,
+      dovod: nastroje.length === 0 ? "V šenku nie je Nástroj." : h.cigarety < cena ? `Dedičstvo stojí ${cigariet(cena)}, máš ${h.cigarety}.` : null,
+      pouzity: false,
+      akcia: {
+        typ: "volba",
+        nadpis: "Sklad · Nástroj zo šenku do Dedičstva",
+        riadky: nastroje.map((k) => ({ kluc: String(k.uid), meno: meno(k.defId), vpravo: { text: "do Dedičstva", prikaz: { type: "place", uid: k.uid, target: "dedicstvo" } } })),
+      },
+    },
+  ];
 }
 
 /** Krátky zisk schopnosti väzňa na tlačidle — celé znenie (elders.json) je v nápovede. */

@@ -37,7 +37,7 @@ const PITKA_STAV = {
   postarka: [false, false],
   starosta: [false, false],
   naexPocet: [0, 0],
-  vykup: [false, false],
+  
 } as const;
 
 function vPitke(seed: number, g: GameData = data, strany: GameState["strany"] = [[], []]): GameState {

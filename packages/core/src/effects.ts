@@ -18,6 +18,7 @@ import { evaluateLine, prevahaStran, silaVKraji, zvieratAUmlcane } from "./parti
 import type { PlayerState } from "./player.ts";
 import { limitVykladania } from "./player.ts";
 import { KONSTANTY } from "./constants.ts";
+import { efektyNavyse } from "./navyse.ts";
 
 /**
  * Verejná časť stavu, z ktorej čítajú efekty ovplyvňujúce bitku a prahy.
@@ -37,8 +38,6 @@ export interface VerejnyStav {
   readonly spaky?: readonly [number, number];
   /** Hráč dal v tomto kole NA EX (Šofér). */
   readonly naexVKole?: readonly [boolean, boolean];
-  /** Rany navyše kúpené Kšeftom v tomto kole (Strýko z Ameriky v7). */
-  readonly kseftRany?: readonly [number, number];
   /** Účinky schopností väzňov do konca kola (v11.2: Starosta). */
   readonly kseftyKola?: KseftyKola;
   /** Koľkokrát súper v tomto kole priložil kartu ku karte hráča (Pasca v7). */
@@ -124,7 +123,9 @@ export const REGISTER: Readonly<Record<string, EfektStatus>> = {
   furik: "impl", // Dedičstvo: tvoje Roboty pália o 1 Dlh viac (exekucieBitky)
   kristalova_gula: "impl", // Dedičstvo: Vízia ukáže 2 vrchné karty, jednu vezmi či spáľ, druhú vráť navrch (cmdVizia)
   profesionalny_tiper: "impl", // Furt: posilnené akcie na jeho spojoch — súperove posilnený Hazard, tvoje posilnená Robota (partia.ts)
-  zberny_dvor: "impl", // Kšeft: za cigaretu ľubovoľná karta z vlastného odhadzovacieho balíčka
+  // Frakcie (Michal 2026-11-08, docs/napady/frakcie-final.json): Kšeft zanikol. Efekty „Spúšťač: Tag
+  // {Akcia}“ vyhodnocuje jadro z textu (navyse.ts); staré efekty 14 kariet platia len pre staré sady.
+  zberny_dvor: "impl", // Pitka (frakcie): na konci Pitky smie každý spáliť 1 kartu z ruky, nie kliatbu (zbernyDvor)
   zamocnik: "impl", // Furt: akcie nástrojov v okolí posilnené
   zivnostnik: "impl", // Nástup (v7): v tom istom ťahu smie za neho priložiť Nástroj z ruky (voľba nastroj)
   pes: "impl", // Furt (v7): aktívne akcie na spoji so súperovou kartou ×2 (partia.ts)
@@ -158,18 +159,18 @@ export const REGISTER: Readonly<Record<string, EfektStatus>> = {
   klebetnica: "impl", // Pitka (Bzdocha, Michal 2026-10-27): majiteľ hrá Pitku po súperovi a vidí jeho NA EX (zacniPitku, viewFor)
   dohadzovacka: "impl", // Nástup (Michal 2026-10-28): najvzdialenejší Občan opačného pohlavia ako jej sused z druhej strany sa presunie za ňu (presunDohadzovackou)
   vandal: "impl", // Nástup: otoč lokalitu o 180°
-  stryko_z_ameriky: "impl", // Kšeft: za 2 cigarety Rana navyše v bitke kola
+  stryko_z_ameriky: "native", // Nepriateľ: Autorita — 2 Rany navyše (navyse.ts)
   // Autority, kolo 2 (Michal 2026-11-02) — v sade ich pridá admin.
   polovnik: "impl", // Nástup: spáli súperovo Zviera na druhej strane, najďalej od lokality (spalPolovnikom)
-  predavacka: "impl", // Kšeft: za 1 cigaretu 1 karta z doberacieho balíčka (cmdKseft)
+  predavacka: "impl", // Podpora (frakcie): dober si 1 kartu (engine podpora)
   veducko: "impl", // Furt: Roboty susedných kariet sa rátajú ako Pecky (partia.ts robotaAkoPecka)
   masiar: "impl", // Furt (Michal 2026-10-28): efekty Zvierat v jeho okolí neplatia (partia.ts zvieratAUmlcane)
   kulturista: "impl", // Sypač, Podpora (v11.5): tvoj Chlap má do konca kola Rany ako Pecky (engine podpora, partia.ts ranyAkoPecky)
   traktoristka: "impl", // Bitka: s prevahou v jej kraji Pecka navyše, inak Dlh
   vymahac: "impl", // Bitka: za každé 2 priznané Dlhy Rana navyše
-  sklad: "impl", // Kšeft (v11.13): za 2 cigarety Nástroj zo šenku do Dedičstva, do šenku nový z Náradia
+  sklad: "impl", // Zhromaždenie (frakcie): Nástroj zo šenku rovno do Dedičstva za cenu Dedičstva (zoSkladu)
   polovnicka_chata: "impl", // Furt: tuhé z hrán ×2 (partia.ts)
-  predsedova_vila: "impl", // Kšeft: za 2 cigarety posun markera o 1
+  predsedova_vila: "impl", // Pitka (frakcie): za každé 2 vyfajčené cigarety reči o stupeň (predsedovaVila)
   herna: "impl", // Bitka: víťaz + špaky za priznané Dlhy porazeného (vyplatSpaky)
 };
 
@@ -219,7 +220,7 @@ export function vDedicstve(state: VerejnyStav, p: PlayerId, defId: string): bool
 
 /**
  * Efekt „patrí“ hráčovi p: je to jeho karta v línii alebo v jeho Dedičstve.
- * Prebudenie starších zaniklo (v9) — ich efekt je Kšeft väzňa.
+ * Prebudenie starších zaniklo (v9) — od v11.2 majú schopnosť väzňa.
  */
 export function efektHraca(state: VerejnyStav, p: PlayerId, defId: string): boolean {
   return vPartii(state, p, defId) || vDedicstve(state, p, defId);
@@ -235,7 +236,9 @@ export function efektPotlaceny(data: GameData, state: Pick<VerejnyStav, "strany"
   if (def === undefined || !def.tags.includes("Autorita" as Tag)) return false;
   // v7: Praudovravec je Dezinformátor (Odpor na jeho spojoch posilní, partia.ts) —
   // Autority už neumlčí. Umlčanie ostáva len pre sady s jeho starým textom.
-  return vPartii(state, opponentOf(p), "praudovravec") && data.cards.get("praudovravec")?.effectText.includes("Autorit") === true;
+  // Frakcie (2026-11-08): „Konflikt: Autorita“ je podmienka akcie navyše, nie umlčanie.
+  const praudovravec = data.cards.get("praudovravec");
+  return vPartii(state, opponentOf(p), "praudovravec") && praudovravec?.effectText.includes("Autorit") === true && efektyNavyse(praudovravec).length === 0;
 }
 
 /**
@@ -526,8 +529,6 @@ export function bitkaMody(data: GameData, state: VerejnyStav, p: PlayerId): Bitk
   // pasca (Dedičstvo: Bitka, v7): súper v tomto kole priložil kartu k tvojej → Rana navyše
   // (v9.1 podľa textu karty v tvorcovi od sady v36; predtým Pecka).
   if (vDedicstve(state, p, "pasca") && (state.prilozeniaKu?.[p] ?? 0) > 0) pridaj("pasca", state.hraci[p].dedicstvo.filter((k) => k.defId === "pasca").length);
-  // stryko_z_ameriky (Kšeft, v7): Rany kúpené v Pitkách tohto kola.
-  pridaj("stryko_z_ameriky", state.kseftRany?.[p] ?? 0);
   // ihrisko (Michal 2026-10-20): v každom kraji +2 tuhé tomu, kto tam má viac svojich Občanov, Zvierat
   // a Starešinov — rátajú sa ako do prevahy, Dvojčatá za dve (v8, Michal 2026-10-28, návrh #32).
   if (jeCielLokalita(state, "ihrisko")) {
@@ -614,7 +615,7 @@ export function vplyvyNaAkcie(state: Pick<VerejnyStav, "hraci"> & Partial<Pick<V
 /**
  * Puška a Vidly (Dedičstvo, v7): každá aktívna Petelica, resp. Rana hráča p
  * z vyložených akcií udelí o 1 poškodenie viac; Rany navyše z efektov kariet
- * (Svokra, Pijan, Vymáhač, Strýko) nie (Michal 2026-10-27). Jeden výpočet pre
+ * (Svokra, Pijan, Vymáhač) nie (Michal 2026-10-27). Jeden výpočet pre
  * bitku aj rozpis poškodenia.
  */
 export function nastrojeTuhe(state: VerejnyStav, p: PlayerId, sums: { readonly Rana?: number; readonly Pecka?: number; readonly Petelica?: number }): readonly { readonly zdroj: string; readonly tuhe: number }[] {

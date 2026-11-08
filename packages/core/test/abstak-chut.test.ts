@@ -73,7 +73,7 @@ function predKoncomKola(seed: number, uprav: (s: GameState) => GameState = (s) =
 const koniecKola = (s: GameState): GameState => apply(data, s, { type: "cintorin", uid: null }, 0).state;
 
 function pitkaStav(naTahuHrac: PlayerId): PitkaStav {
-  return { naTahu: naTahuHrac, hotovy: [false, false], naexPouzity: [false, false], fajcenie: [0, 0], reakcia: null, postarka: [false, false], starosta: [false, false], naexPocet: [0, 0], vykup: [false, false] };
+  return { naTahu: naTahuHrac, hotovy: [false, false], naexPouzity: [false, false], fajcenie: [0, 0], reakcia: null, postarka: [false, false], starosta: [false, false], naexPocet: [0, 0] };
 }
 
 describe("§8 Chuť: koniec kola (v9.1)", () => {

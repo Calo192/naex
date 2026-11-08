@@ -177,7 +177,7 @@ describe("v5 bod 6: priazne v5 (sila 1 / 2 / 3)", () => {
         { ...s0.hraci[0], ruka: [], cigarety: 5 },
         { ...s0.hraci[1], ruka: [], cigarety: 5, poldeciPlne: 1, poldeciVypite: 1 },
       ],
-      pitkaStav: { naTahu: 1, hotovy: [false, false], naexPouzity: [false, false], fajcenie: [0, 0], reakcia: null, postarka: [false, false], starosta: [false, false], naexPocet: [0, 0], vykup: [false, false] },
+      pitkaStav: { naTahu: 1, hotovy: [false, false], naexPouzity: [false, false], fajcenie: [0, 0], reakcia: null, postarka: [false, false], starosta: [false, false], naexPocet: [0, 0] },
     };
     return { s, ciel: lavy.uid };
   }
@@ -302,7 +302,7 @@ describe("v5 bod 2: NA EX naraz + Výtržník", () => {
         { ...s0.hraci[0], ruka: [], cigarety: 1, poldeciPlne: 1, poldeciVypite: 0 },
         { ...s0.hraci[1], ruka: [], cigarety: 1, poldeciPlne: 1, poldeciVypite: 0 },
       ],
-      pitkaStav: { naTahu: 1, hotovy: [false, false], naexPouzity: [false, false], fajcenie: [0, 0], reakcia: null, postarka: [false, false], starosta: [false, false], naexPocet: [0, 0], vykup: [false, false] },
+      pitkaStav: { naTahu: 1, hotovy: [false, false], naexPouzity: [false, false], fajcenie: [0, 0], reakcia: null, postarka: [false, false], starosta: [false, false], naexPocet: [0, 0] },
     };
     return { s, lavy: lavy.uid, pol: pol.uid };
   }
@@ -464,7 +464,7 @@ describe("v5 bod 2: skryté NA EX na súperovu Záverečnú", () => {
       lokalityVHre: s0.lokalityVHre.slice(1),
       strany: [[], [{ card: inst("pijan"), playedBy: 1 }, { card: zaverecna, playedBy: 1, zaverecna: true }]],
       hraci: [{ ...s0.hraci[0], poldeciPlne: 1, cigarety: 1 }, s0.hraci[1]],
-      pitkaStav: { naTahu: 0, hotovy: [false, false], naexPouzity: [false, false], fajcenie: [0, 0], reakcia: null, postarka: [false, false], starosta: [false, false], naexPocet: [0, 0], vykup: [false, false] },
+      pitkaStav: { naTahu: 0, hotovy: [false, false], naexPouzity: [false, false], fajcenie: [0, 0], reakcia: null, postarka: [false, false], starosta: [false, false], naexPocet: [0, 0] },
     };
     const po = apply(data, s, { type: "naex", uid: uidZaverecnej(1) }, 0).state;
     const pohlad = viewFor(data, po, 0);

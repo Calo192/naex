@@ -142,63 +142,6 @@ describe("Benzínka (v11.13)", () => {
   });
 });
 
-describe("Sklad (v11.13)", () => {
-  const nastroj = (): { s: GameState; vidly: CardInstance; dalsi: CardInstance } => {
-    const vidly = inst("vidly");
-    const dalsi = inst("furik");
-    const s0 = vPitke("sklad");
-    return { s: { ...s0, senok: [...s0.senok, vidly], naradie: [dalsi, ...s0.naradie] }, vidly, dalsi };
-  };
-
-  it("2 cigarety: Nástroj zo šenku do Dedičstva, z vrchu Náradia príde nový verejne; cena Dedičstva rastie ako vždy", () => {
-    const { s, vidly, dalsi } = nastroj();
-    const uid = s.ciel?.lokalita?.uid ?? 0;
-    const cmd: Command = { type: "kseft", uid, kartaUid: vidly.uid };
-    expect(legalCommands(data, s, 0)).toContainEqual(cmd);
-    const cena = cenaDedicstva(s);
-    const { state: po, events } = applySPrisunom(data, s, cmd, 0);
-    expect(po.hraci[0].dedicstvo.map((k) => k.uid)).toContain(vidly.uid);
-    expect(po.hraci[0].cigarety).toBe(5 - KONSTANTY.EFEKT.SKLAD_CENA);
-    expect(kniha(events, 0)).toBe(-KONSTANTY.EFEKT.SKLAD_CENA);
-    expect(po.senok.map((k) => k.uid)).not.toContain(vidly.uid);
-    expect(po.senok.map((k) => k.uid)).toContain(dalsi.uid);
-    expect(po.naradie[0]?.uid).not.toBe(dalsi.uid);
-    expect(po.naradie).toHaveLength(s.naradie.length - 1);
-    expect(cenaDedicstva(po)).toBe(cena + 1);
-    // Nový Nástroj je v šenku verejný, súper ho vidí; poradie Náradia nie.
-    const uSupera = viewFor(data, po, 1);
-    expect(uSupera.senok.map((k) => k.uid)).toContain(dalsi.uid);
-    expect(uSupera.naradiePocet).toBe(po.naradie.length);
-    expect(JSON.stringify(uSupera)).not.toContain(JSON.stringify(po.naradie[0]));
-  });
-
-  it("prázdne Náradie: nepríde nič", () => {
-    const { s, vidly } = nastroj();
-    const bez = { ...s, naradie: [] };
-    const po = apply(data, bez, { type: "kseft", uid: s.ciel?.lokalita?.uid ?? 0, kartaUid: vidly.uid }, 0).state;
-    expect(po.senok).toHaveLength(bez.senok.length - 1);
-  });
-
-  it("bez Nástroja v šenku ani bez 2 cigariet sa neponúka; Občana server odmietne; raz za Pitku", () => {
-    const s = vPitke("sklad");
-    const uid = s.ciel?.lokalita?.uid ?? 0;
-    expect(legalCommands(data, s, 0).some((c) => c.type === "kseft")).toBe(false);
-    expect(() => apply(data, s, { type: "kseft", uid, kartaUid: s.senok[0]?.uid ?? 0 }, 0)).toThrow(/Nástroj/);
-    const { s: sn, vidly } = nastroj();
-    expect(legalCommands(data, sHracom(sn, 0, { cigarety: 1 }), 0).some((c) => c.type === "kseft")).toBe(false);
-    const po = apply(data, sn, { type: "kseft", uid, kartaUid: vidly.uid }, 0).state;
-    expect(legalCommands(data, po, 0).some((c) => c.type === "kseft")).toBe(false);
-    // Súper ho smie, Kšeft lokality má každý hráč raz za Pitku.
-    expect(legalCommands(data, po, 1).some((c) => c.type === "kseft")).toBe(true);
-  });
-
-  it("starý Kšeft zanikol: súperov odhadzovací balíček sa nedá vziať", () => {
-    const s = sHracom(vPitke("sklad"), 1, { odhadzovaci: [inst("masiar")] });
-    expect(legalCommands(data, s, 0).some((c) => c.type === "kseft")).toBe(false);
-    expect(() => apply(data, s, { type: "kseft", uid: s.ciel?.lokalita?.uid ?? 0 }, 0)).toThrow(/Nástroj/);
-  });
-});
-
 describe("Družstvo (v11.13)", () => {
   it("karta s akciou Robota limit nemíňa, Pracujúci bez Roboty áno", () => {
     const koniec = cieleVykladania;
@@ -307,11 +250,6 @@ describe("Obecný úrad (v11.13)", () => {
       zhromazdenieStav: { naTahu: 0, zostavaLimit: [2, 2], pasoval: [false, false], navyse: [0, 0] } as unknown as GameState["zhromazdenieStav"],
     };
     expect(apply(data, uZhrom, { type: "schopnostVazna", elderId: e.elderId }, 0).state.hraci[0].cigarety - uZhrom.hraci[0].cigarety).toBe(KONSTANTY.POSTARKA_CIGARETY);
-  });
-
-  it("starý Kšeft (presun Dlhu) zanikol úplne", () => {
-    const s = sHracom(vPitke("obecny_urad"), 0, { dlhy: 2, cigarety: 9 });
-    expect(legalCommands(data, s, 0).some((c) => c.type === "kseft")).toBe(false);
   });
 
   it("pohľad klienta aj výhľad cigariet ťahu rátajú dvakrát", () => {

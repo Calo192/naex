@@ -193,7 +193,6 @@ describe("v6: špaky sú verejné", () => {
       postarka: [false, false] as const,
       starosta: [false, false] as const,
       naexPocet: [0, 0] as const,
-      vykup: [false, false] as const,
     };
     const bez: GameState = { ...s0, faza: "pitka", pitkaStav: pitka };
     const s: GameState = { ...bez, pitkaStav: { ...pitka, skryteNaex: [{ hrac: 0, uid: 999001 }] } };

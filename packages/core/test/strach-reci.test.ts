@@ -187,32 +187,4 @@ describe("§10 zajatie v11: krádež, väzni podľa ligy, Predsedova vila", () =
     expect(t.nastenka.at(-1)?.kradez).toEqual([2, -2]);
     expect(t.spaky[1]).toBe(0);
   });
-
-  it("Predsedova vila: za 2 cigarety moje reči o ďalší stupeň súperovho teplomera; pri plnom teplomere nie", () => {
-    const p0 = pred({ markery: { 0: [[1, 0], [2, 0]] }, sums: [{}, {}] });
-    const s0: GameState = { ...p0, starsi: p0.starsi.map((e, i) => (i === 2 ? { ...e, reci: [3, 0], reciOd: [1, 0] } : e)) };
-    const vila = { uid: 9_999_001, defId: "predsedova_vila", leftLayout: 0, rightLayout: 0 };
-    const s: GameState = {
-      ...s0,
-      faza: "pitka",
-      bitkaStav: null,
-      ciel: { typ: "lokalita", lokalita: vila },
-      pitkyCelkom: 1,
-      pitkaCislo: 1,
-      hraci: [{ ...s0.hraci[0], cigarety: 5 }, s0.hraci[1]],
-      pitkaStav: { naTahu: 0, hotovy: [false, false], naexPouzity: [false, false], fajcenie: [0, 0], reakcia: null, postarka: [false, false], starosta: [false, false], naexPocet: [0, 0], vykup: [false, false] },
-    };
-    const ponuka = legalCommands(data, s, 0).filter((c) => c.type === "kseft");
-    const ids = ponuka.map((c) => (c.type === "kseft" ? c.elderId : null));
-    expect(ids).toContain(id(0));
-    expect(ids).toContain(id(1));
-    expect(ids).not.toContain(id(2));
-    expect(ids).toContain(id(3));
-    const t = apply(data, s, { type: "kseft", uid: vila.uid, elderId: id(0) }, 0).state;
-    // Prvé reči idú na vrch súperovho strachu (oranžová), na prázdnom teplomere na žltú.
-    expect(elder(t, 0)).toMatchObject({ strach: [1, 2], reci: [2, 0], reciOd: [2, 0] });
-    expect(t.hraci[0].cigarety).toBe(s.hraci[0].cigarety - 2);
-    const u = apply(data, s, { type: "kseft", uid: vila.uid, elderId: id(1) }, 0).state;
-    expect(elder(u, 1)).toMatchObject({ reci: [1, 0], reciOd: [1, 0] });
-  });
 });

@@ -2,7 +2,7 @@
 // diakritika v herných pojmoch a zmenený text efektu, ktorý hra vyhodnocuje
 // kódom (zmena textu nezmení správanie — treba upraviť aj jadro).
 
-import { ALL_TRIGGERS, REGISTER } from "@naex/core";
+import { ALL_TRIGGERS, REGISTER, rozborNavyse } from "@naex/core";
 import type { AkciaDef, KartaNavrh, KlucoveSlovo } from "./typy.ts";
 import { sPredponouVazna } from "./text.ts";
 
@@ -72,6 +72,8 @@ export function kontrolaTextov(karty: readonly KartaNavrh[], podklady: PodkladyT
       if (!(ALL_TRIGGERS as readonly string[]).includes(sp)) problem("chyba", `Spúšťač „${sp}:“ hra nepozná (${ALL_TRIGGERS.join(", ")}).`);
     }
     for (const m of t.matchAll(/:\s*([\p{Ll}])/gu)) problem("upozornenie", `Za dvojbodkou malé písmeno „${m[1] ?? ""}…“ — veta začína veľkým.`);
+    // Akcie navyše (frakcie 2026-11-08): „Spoločník: Tag {Akcia}.“ — preklep by hra pri načítaní odmietla.
+    for (const ch of rozborNavyse(t).chyby) problem("chyba", ch);
     if (!/[.!?]\s*$/u.test(t)) problem("upozornenie", "Text nekončí bodkou.");
     if (/ {2,}/.test(t) || t !== t.trim()) problem("upozornenie", "Dvojitá medzera alebo medzera na začiatku či konci.");
 
@@ -84,6 +86,8 @@ export function kontrolaTextov(karty: readonly KartaNavrh[], podklady: PodkladyT
       }
     }
 
+    // Efekt „Spúšťač: Tag {Akcia}.“ vyhodnocuje jadro zo samotného textu — zmena textu je zmena správania.
+    const navyse = rozborNavyse(t).efekty.length > 0;
     const stav = REGISTER[k.id];
     const zverejneny = podklady.zverejnene?.find((z) => z.id === k.id);
     // Schopnosť väzňa (v11.2) hra berie z elders.json, nie z textu karty: zmena oproti
@@ -94,10 +98,10 @@ export function kontrolaTextov(karty: readonly KartaNavrh[], podklady: PodkladyT
       if (schopnost !== starsi.schopnost.trim()) {
         problem("chyba", `Text nesedí so schopnosťou väzňa v elders.json — hra vyhodnotí a ukáže „Väzeň — raz za hru: ${starsi.schopnost}“, kým sa neupraví jadro.`);
       }
-    } else if (schopnost === undefined && zverejneny !== undefined && zverejneny.efekt.trim() !== k.efekt.trim() && (stav === "impl" || stav === "native")) {
+    } else if (schopnost === undefined && zverejneny !== undefined && zverejneny.efekt.trim() !== k.efekt.trim() && !navyse && (stav === "impl" || stav === "native")) {
       problem("chyba", "Zmenený text efektu, ktorý hra vyhodnocuje kódom — správanie sa nezmení, kým sa neupraví jadro (effects.ts).");
     }
-    if (zverejneny === undefined && stav === undefined) {
+    if (zverejneny === undefined && stav === undefined && !navyse) {
       problem("upozornenie", "Nová karta s efektom — hra ho nevyhodnotí (manual), len pripomenie v logu, kým ho vývoj nenaprogramuje.");
     }
   }

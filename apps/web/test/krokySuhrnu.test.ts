@@ -39,7 +39,7 @@ describe("súhrn po bitke: fázy teplomerov", () => {
   // b: Kšeft vily z Pitky (pred bitkou) ostane v stave „pred“; reči 1 bodujú a zaniknú.
   // c: Fero ho zajal; Janove reči pred tým klesli.
   const zmeny: ZmenaMarkera[] = [
-    z(b, { hrac: 0, marker: "reci", z: 0, na: 1, zdroj: "kseft" }),
+    z(b, { hrac: 0, marker: "reci", z: 0, na: 1, zdroj: "vila" }),
     z(a, { hrac: 0, marker: "reci", z: 2, na: 1, zdroj: "bodovanie" }),
     z(b, { hrac: 0, marker: "reci", z: 1, na: 0, zdroj: "bodovanie" }),
     z(c, { hrac: 0, marker: "reci", z: 2, na: 1, zdroj: "bodovanie" }),

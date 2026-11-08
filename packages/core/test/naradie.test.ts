@@ -231,7 +231,7 @@ describe("Náradie mimo línie (§11, §12)", () => {
         strany: [[own(k()), own(k())], []],
         pitkyCelkom: 1,
         pitkaCislo: 1,
-        pitkaStav: { naTahu: 0, hotovy: [false, false], naexPouzity: [false, false], fajcenie: [0, 0], reakcia: null, postarka: [false, false], starosta: [false, false], naexPocet: [0, 0], vykup: [false, false] },
+        pitkaStav: { naTahu: 0, hotovy: [false, false], naexPouzity: [false, false], fajcenie: [0, 0], reakcia: null, postarka: [false, false], starosta: [false, false], naexPocet: [0, 0] },
         hraci: [{ ...s0.hraci[0], poldeciPlne: 0, poldeciVypite: 2 }, s0.hraci[1]],
       };
       return jogurt ? sDedicstvom(zaklad, 0, ["jogurt"]) : zaklad;

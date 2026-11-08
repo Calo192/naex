@@ -44,7 +44,7 @@ function poOdkryti(seed: number): { s: GameState; events: readonly Event[]; odpo
       { ...s0.hraci[0], ruka: [ruka0], cigarety: 1, poldeciPlne: 1, poldeciVypite: 0 },
       { ...s0.hraci[1], ruka: [ruka1], cigarety: 1, poldeciPlne: 1, poldeciVypite: 0 },
     ],
-    pitkaStav: { naTahu: 1, hotovy: [false, false], naexPouzity: [false, false], fajcenie: [0, 0], reakcia: null, postarka: [false, false], starosta: [false, false], naexPocet: [0, 0], vykup: [false, false] },
+    pitkaStav: { naTahu: 1, hotovy: [false, false], naexPouzity: [false, false], fajcenie: [0, 0], reakcia: null, postarka: [false, false], starosta: [false, false], naexPocet: [0, 0] },
   };
   s = apply(sada, s, { type: "naex", uid: lavy0.uid }, 1).state;
   s = apply(sada, s, { type: "skipNaex" }, 1).state;

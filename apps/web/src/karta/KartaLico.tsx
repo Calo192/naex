@@ -7,6 +7,7 @@
 import { useLayoutEffect, useMemo, useRef, useState, type CSSProperties, type ReactNode } from "react";
 import type { KartaNavrh, RozlozenieStrany, Vzhlad } from "@naex/tvorba";
 import { farbaKarty, formatujEfekt, geometriaKarty } from "@naex/tvorba";
+import { rozborNavyse, textBezAkcii } from "@naex/core";
 import { mediaUrl } from "../lib/api.ts";
 import { IkonaAkcie } from "./IkonaAkcie.tsx";
 import { useTip, type TipObsah } from "./Tip.tsx";
@@ -22,6 +23,15 @@ export interface SlotStav {
 /** Žeravá či vyhasnutá ikona v slote; nova = prvé zobrazenie (odletí iskra). */
 export interface ZarNaKarte extends ZarSlotu {
   readonly nova: boolean;
+}
+
+/**
+ * Stav efektu s akciami navyše v hre (frakcie, Michal 2026-11-08): krat 0 = podmienka nesplnená
+ * (pečať sivá), 1 = platí, 2+ = platí toľkokrát (odznak ×N). zar = posilnenie ikon z Dedičstva.
+ */
+export interface NavyseNaKarte {
+  readonly krat: number;
+  readonly zar?: readonly (ZarNaKarte | null)[];
 }
 
 export type VzhladKarty = Pick<
@@ -61,6 +71,11 @@ export interface KartaLicoProps {
    * hráč inak nevidí, kde spoj nevznikne. Len tam, kde ešte môže vzniknúť — ruka a otvorená hrana línie.
    */
   readonly jamky?: { readonly lava: boolean; readonly prava: boolean } | undefined;
+  /**
+   * Akcie navyše v hre — stav každého efektu „Spúšťač: Tag {Akcia}“ v poradí textu. Chýba = mimo
+   * hry (glosár, tvorca): pečať ako vytlačená, bez stavu.
+   */
+  readonly navyse?: readonly NavyseNaKarte[] | undefined;
   /** Bez tooltipov a efektu — malá karta v zozname. */
   readonly bezPopisov?: boolean;
   /**
@@ -83,6 +98,7 @@ export function KartaLico(props: KartaLicoProps) {
   const { tip, ukaz, skry } = useTip();
   const [bezObrazka, setBezObrazka] = useState(false);
   const farba = farbaKarty(karta, vzhlad.kategorie);
+  const efektyNavyse = useMemo(() => rozborNavyse(karta.efekt).efekty, [karta.efekt]);
   const g = useMemo(
     () => geometriaKarty({ ...karta, maTagy: karta.tagy.length > 0 }),
     [karta.sirkaMm, karta.vyskaMm, karta.mierkaTextu, karta.mierkaIkon, karta.tagy.length],
@@ -112,16 +128,22 @@ export function KartaLico(props: KartaLicoProps) {
         />
       );
     }
-    const akcia = vzhlad.akcie.find((a) => a.kluc === kluc);
-    const st = sloty?.[strana][i] ?? null;
     const zar = props.zar?.[strana][i] ?? null;
+    return ikona(`${strana}${i}`, r, kluc, sloty?.[strana][i] ?? null, zar, `${props.spoj?.[strana].includes(i) === true ? " kl-spoj" : ""}${zar === null ? "" : ` kl-zar-${strana}`}`);
+  };
+
+  /** Ikona akcie v ráme slotu — na hrane karty aj v pečati akcií navyše (rovnaký tvar aj žiar). */
+  const ikona = (key: string, r: { readonly x: number; readonly y: number; readonly w: number }, kluc: string, st: SlotStav | null, zar: ZarNaKarte | null, trieda: string, navyse?: string, odznak?: number) => {
+    const akcia = vzhlad.akcie.find((a) => a.kluc === kluc);
     const nazov = akcia?.nazov ?? kluc;
     const stavText =
-      st === null ? null : st.stav === "aktivna" ? `Aktívna${st.nasobok > 1 ? ` ×${st.nasobok}` : ""}` : st.stav === "zrusena" ? "Zrušená Odporom" : "Neaktívna — na spoji nemá pár";
+      navyse !== undefined
+        ? navyse
+        : st === null ? null : st.stav === "aktivna" ? `Aktívna${st.nasobok > 1 ? ` ×${st.nasobok}` : ""}` : st.stav === "zrusena" ? "Zrušená Odporom" : "Neaktívna — na spoji nemá pár";
     return (
       <span
-        key={`${strana}${i}`}
-        className={`kl-slot${st === null ? "" : ` kl-${st.stav}`}${props.spoj?.[strana].includes(i) === true ? " kl-spoj" : ""}${zar === null ? "" : ` kl-zar-${zar.smer} kl-zar-${strana}${zar.nova ? " kl-zar-nova" : ""}`}`}
+        key={key}
+        className={`kl-slot${st === null ? "" : ` kl-${st.stav}`}${trieda}${zar === null ? "" : ` kl-zar-${zar.smer}${zar.nova ? " kl-zar-nova" : ""}`}`}
         data-akcia={kluc}
         style={{ "--x": r.x, "--y": r.y, "--s": r.w, "--r": g.polomerSlotu } as CSSProperties}
         tabIndex={bezPopisov ? undefined : props.slotyBezFokusu === true ? -1 : 0}
@@ -145,9 +167,46 @@ export function KartaLico(props: KartaLicoProps) {
         <IkonaAkcie kluc={kluc} akcia={akcia} zar={zar?.smer === "plus"} />
         {zar?.smer === "plus" && <Iskra nova={zar.nova} />}
         {zar !== null && !bezPopisov && <span className="kl-zar-stitok">{zar.stitok}</span>}
-        {st !== null && st.nasobok > 1 && <span className="kl-nasobok">×{st.nasobok}</span>}
+        {(odznak ?? (st === null ? 1 : st.nasobok)) > 1 && <span className="kl-nasobok">×{odznak ?? st?.nasobok}</span>}
       </span>
     );
+  };
+
+  /**
+   * Pečať akcií navyše (M3, Michal 2026-11-08): ikony v dolnom strede ilustrácie, v tvare slotu
+   * na hrane — nová forma by sa musela vysvetľovať. Nesplnená podmienka sivá, splnená žiari ako
+   * aktívna akcia, ×N až od 2.
+   */
+  const pecat = () => {
+    if (efektyNavyse.length === 0) return null;
+    const vzor = g.slotyLave[0] ?? g.slotyPrave[0];
+    if (vzor === undefined) return null;
+    const w = vzor.w;
+    const medzera = w * 0.3;
+    // Rovnaké akcie jedného efektu sú jedna ikona s odznakom ×N (Veštica: 2 Povery = Povera ×2).
+    const skupiny = efektyNavyse.map((e) => [...new Set(e.akcie)].map((a) => ({ a, kusov: e.akcie.filter((x) => x === a).length, prva: e.akcie.indexOf(a) })));
+    const ikon = skupiny.reduce((n, g2) => n + g2.length, 0);
+    const x0 = (g.sirka - ikon * w - (ikon - 1) * medzera) / 2;
+    const y = g.pas.y - w - 5;
+    let n = 0;
+    return efektyNavyse.flatMap((e, ei) => {
+      const stav = props.navyse?.[ei];
+      const podmienka = `${e.spustac}${e.tag === null ? "" : `: ${e.tag}`}`;
+      return (skupiny[ei] ?? []).map(({ a, kusov, prva }) => {
+        const r = { x: x0 + n * (w + medzera), y, w };
+        n++;
+        // Stavy ako na hrane: splnená = aktívna (žiar), nesplnená = neaktívna a sivá; mimo hry ako vytlačená.
+        const st: SlotStav | null = stav === undefined ? null : { stav: stav.krat === 0 ? "neaktivna" : "aktivna", nasobok: 1 };
+        const text =
+          stav === undefined
+            ? `Akcia navyše — ${podmienka}.`
+            : stav.krat === 0
+              ? `Akcia navyše — ${podmienka}: podmienka nesplnená.`
+              : `Akcia navyše — ${podmienka}: platí${stav.krat > 1 ? ` ${stav.krat}×` : ""}.`;
+        const zar = stav?.zar?.[prva] ?? null;
+        return ikona(`navyse${ei}-${a}`, r, a, st, zar, ` kl-navyse${stav !== undefined && stav.krat === 0 ? " kl-navyse-spi" : ""}${zar !== null ? " kl-zar-prava" : ""}`, text, kusov * Math.max(1, stav?.krat ?? 1));
+      });
+    });
   };
 
   /** Rám okolo stĺpca slotov jednej strany (playtest 20261017-164450: ktorá hrana sa spáruje). */
@@ -232,7 +291,7 @@ export function KartaLico(props: KartaLicoProps) {
         </div>
 
         <Efekt
-          text={karta.efekt}
+          text={efektyNavyse.length > 0 ? textBezAkcii(karta.efekt) : karta.efekt}
           vzhlad={vzhlad}
           y={g.efekt.y}
           h={g.efekt.h}
@@ -241,6 +300,7 @@ export function KartaLico(props: KartaLicoProps) {
           hover={hover}
         />
 
+        {pecat()}
         {props.hranaVnutorna !== undefined && [hrana("lava"), hrana("prava")]}
         {lava.map((k, i) => slot("lava", i, k))}
         {prava.map((k, i) => slot("prava", i, k))}

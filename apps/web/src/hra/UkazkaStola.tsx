@@ -42,9 +42,11 @@
 //   &stop=bzdocha  ako pitka, hráč ?ja má v línii Bzdochu a súper už skončil so skrytým NA EX —
 //                  stôl ukáže súperovu voľbu (Bzdocha, v7)
 //   &stop=bzdocha-caka  ako pitka, hráč ?ja má Bzdochu a čaká, kým súper skončí Pitku
+//   &stop=frakcie  Zhromaždenie od 2. kola, hráč ?ja na ťahu: pečať akcií navyše (M3) platí, sivá, ×2,
+//                  posilnená Vidlami; v ruke Spoločník, ktorý by platil, a sivý Konflikt (sada so špecifikáciou frakcií)
 //   &stop=kseft    prvá Pitka, v ktorej hráč ?ja hrá: v línii Strýko z Ameriky, lokalita &lok=defId
-//                  (predvolene predsedova_vila; sklad, obecny_urad, zberny_dvor), väzni &vazni=defId,…
-//                  (predvolene hrobar,veterinar) — tlačidlá Kšeftov pod kartami a schopnosti väzňov (v11.2);
+//                  (predvolene predsedova_vila), väzni &vazni=defId,… (predvolene hrobar,veterinar) —
+//                  schopnosti väzňov (v11.2; Kšeft zanikol, frakcie 2026-11-08);
 //                  na Strýkovi leží súperovo NA EX (Farár), súperov odhadzovací balíček nie je prázdny
 //                  (Hrobár); &pouzite=defId,… tieto schopnosti väzňov sú už minuté
 //   &stop=zaverecna koniec Pitky so súperovou Záverečnou lícom dole — po načítaní sa otočí;
@@ -251,9 +253,9 @@ function sPecenouSuseda(data: GameData, s: GameState, p: PlayerId): GameState {
 }
 
 /**
- * Kšefty v Pitke: hráčovi p dá do línie Strýka z Ameriky, lokalitu s Kšeftom (&lok, predvolene
- * Predsedova vila), väzňov zo starších (&vazni, predvolene Hrobár a Veterinár), Dlh, cigarety
- * a plné poldeci — každý Kšeft má tlačidlo pod svojou kartou.
+ * Schopnosti väzňov v Pitke: hráčovi p dá do línie Strýka z Ameriky (so súperovým NA EX pre Farára),
+ * lokalitu (&lok), väzňov zo starších (&vazni, predvolene Hrobár a Veterinár), Dlh, cigarety
+ * a plné poldeci. Názov stop=kseft ostal z čias Kšeftu (zanikol, frakcie 2026-11-08).
  */
 function sKseftami(s: GameState, p: PlayerId, lok: string, vazni: readonly string[], pouzite: readonly string[] = []): GameState {
   let uid = s.nextUid;
@@ -286,6 +288,29 @@ function sKseftami(s: GameState, p: PlayerId, lok: string, vazni: readonly strin
     vazni: [...s.vazni, ...noviVazni],
     hraci: p === 0 ? [h, sOdh] : [sOdh, h],
   };
+}
+
+/**
+ * Akcie navyše (frakcie, Michal 2026-11-08), pečať M3 vo všetkých stavoch: Strýko z Ameriky
+ * (Nepriateľ: Autorita, súperova Policajtka) platí a Vidly v Dedičstve mu Rany posilnia; Policajtka
+ * (Nepriateľ: Kriminál) nemá súperovho Kriminála — sivá; Opatrovateľka sa už dvakrát stretla
+ * s Pamätníkom — ×2. V ruke Šarlatán (Spoločník: Autorita — platil by) a Podvodník (Konflikt — sivý).
+ * Potrebuje sadu s textami zo špecifikácie (docs/napady/frakcie-final.json).
+ */
+function sFrakciami(s: GameState, p: PlayerId): GameState {
+  let uid = s.nextUid;
+  const su = opponentOf(p);
+  const k = (defId: string): CardInstance => ({ uid: uid++, defId, leftLayout: 0, rightLayout: 0 });
+  const strany: [GameState["strany"][0], GameState["strany"][1]] = [[], []];
+  strany[p] = [
+    { card: k("stryko_z_ameriky"), playedBy: p },
+    { card: k("milujuca_manzelka"), playedBy: p },
+    { card: k("opatrovatelka"), playedBy: p, navyse: [2] },
+    { card: k("policajtka"), playedBy: p },
+  ];
+  strany[su] = [{ card: k("policajtka"), playedBy: su }, { card: k("pijan"), playedBy: su }];
+  const h = { ...s.hraci[p], ruka: [k("sarlatan"), k("podvodnik"), k("vestica")], dedicstvo: [...s.hraci[p].dedicstvo, k("vidly")] };
+  return { ...s, nextUid: uid, strany, hraci: p === 0 ? [h, s.hraci[su]] : [s.hraci[su], h] };
 }
 
 /** Hráčovi p pridá priznané Dlhy — exekúcia v najbližšej bitke. */
@@ -391,6 +416,8 @@ function odohrajSeed(data: GameData, seed: number): { readonly odohrane: Odohran
       return najdene({ zaciatok: s, dohraj: [] });
     if (stop === "nastroj" && s.kolo >= 2 && s.faza === "zhromazdenie" && naTahu(s) === ja && s.zhromazdenieStav?.pasoval[ja] === false)
       return najdene({ zaciatok: sNastrojom(s, ja), dohraj: [] });
+    if (stop === "frakcie" && s.kolo >= 2 && s.faza === "zhromazdenie" && naTahu(s) === ja && s.zhromazdenieStav?.pasoval[ja] === false)
+      return najdene({ zaciatok: sFrakciami(s, ja), dohraj: [] });
     if (stop === "pecen" && s.kolo >= 2 && s.faza === "zhromazdenie" && naTahu(s) === ja && s.zhromazdenieStav?.pasoval[ja] === false)
       return najdene({ zaciatok: sPecenou(s, ja), dohraj: [] });
     if (stop === "pecen-sused" && s.kolo >= 2 && s.faza === "zhromazdenie" && naTahu(s) === ja && s.zhromazdenieStav?.pasoval[ja] === false)

@@ -6,6 +6,8 @@
 
 import type { CardInstance, PlayerId } from "./types.ts";
 import type { GameData } from "./data.ts";
+import { defOf } from "./data.ts";
+import { efektyNavyse } from "./navyse.ts";
 import {
   cielLokalitaId,
   cieleVykladania,
@@ -448,7 +450,7 @@ export function efektyPrehry(data: GameData, v: ClientState): EfektyPrehry {
   const pre = (porazeny: PlayerId): number => {
     const partia = partiaHraca(v, porazeny).filter((pl) => pl.zaverecna !== true);
     return partia
-      .filter((pl) => pl.card.defId === "dievcina_na_vydaj" && !spalit.has(pl.card.uid) && !efektPotlaceny(data, v, porazeny, pl.card.defId))
+      .filter((pl) => pl.card.defId === "dievcina_na_vydaj" && efektyNavyse(defOf(data, pl.card)).length === 0 && !spalit.has(pl.card.uid) && !efektPotlaceny(data, v, porazeny, pl.card.defId))
       .reduce((a, pl) => a + aktivne(pl.card.uid), 0);
   };
   return { dievcina: [pre(0), pre(1)] };

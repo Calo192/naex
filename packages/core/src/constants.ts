@@ -143,7 +143,6 @@ export const KONSTANTY = {
    */
   EFEKT: {
     IHRISKO_TUHE: 2,
-    ZBERNY_DVOR_CENA: 1,
     SVOKRA_RANY: 1,
     NEALKO_PRAH_CIRHOZY: 2,
     KRCMA_PRAH_CIRHOZY: 2,
@@ -154,12 +153,6 @@ export const KONSTANTY = {
     VDOVA_ODHOD_ZA_CHLAPA: 1,
     /** Krabička cigariet (v7): za každých toľko cigariet, ktoré súper vyfajčí, 1 karta. */
     CIGORKY_ZA_KARTU: 2,
-    /** Kšeft Strýka (v7, plan.md 14.0). */
-    STRYKO_CENA: 2,
-    /** Kšeft Predavačky (Michal 2026-11-02): za toľko cigariet 1 karta z doberacieho balíčka. */
-    PREDAVACKA_CENA: 1,
-    /** Kšeft Skladu (v11.13): za toľko cigariet Nástroj zo šenku do Dedičstva. */
-    SKLAD_CENA: 2,
     /** Lesná cesta (v11.13): tuhé navyše za každé svoje Zviera v línii. */
     LESNA_CESTA_TUHE: 2,
     /** Obecný úrad (v11.13): cigarety a Dlhy získané v Pitke sa rátajú toľkokrát. */

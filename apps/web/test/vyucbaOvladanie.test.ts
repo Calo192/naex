@@ -1,4 +1,4 @@
-// Ovládanie výučby po playteste nováčikov 20261030-184959: Kšeft vily tlačidlami namiesto
+// Ovládanie výučby po playteste nováčikov 20261030-184959: voľba vily tlačidlami namiesto
 // rozbaľovača, Dedičstvo svieti od začiatku kroku, hlásenia v bubline oddelené od vety
 // Melichara, Enter na konci časti.
 
@@ -6,13 +6,13 @@ import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it } from "vitest";
 import type { CardInstance, Command, PolozkaVykladania } from "@naex/core";
-import { klucVily, moznostiVily } from "../src/hra/volbaVily.ts";
+import { moznostiVily } from "../src/hra/volbaVily.ts";
 import { kartaVyucbyDoOblasti } from "../src/hra/odkazTahu.ts";
 import { enterNaKonciCasti, kluceZOcakavania, kusOddeleny } from "../src/hra/Vyucba.tsx";
 
 const karta = (uid: number, defId: string): CardInstance => ({ uid, defId }) as unknown as CardInstance;
 
-describe("Kšeft vily", () => {
+describe("Predsedova vila (frakcie 2026-11-08)", () => {
   const view = {
     starsi: [
       { elderId: "starosta", karta: karta(90, "starosta"), strach: [0, 0], reci: [0, 0], reciOd: [0, 0] },
@@ -23,14 +23,6 @@ describe("Kšeft vily", () => {
 
   it("ponúkne starších, pri ktorých moje reči ešte nie sú na celom súperovom teplomere", () => {
     expect(moznostiVily(view).map((m) => m.elderId)).toEqual(["starosta"]);
-  });
-
-  // Tlačidlo a ponuka vily ležia pod lokalitou (KseftPodKartou) — testuje ich kseftyNaStole.test.ts.
-  // v11: Kšeft vily zdvihne moje reči pri staršom — smer (k sebe / od seba) už nie je.
-  it("výučba rozsvieti staršieho a tlačidlo Kšeftu, ktoré krok čaká", () => {
-    const c: Command = { type: "kseft", uid: 7, elderId: "starosta" };
-    expect(kluceZOcakavania(c)).toContain("starsi:starosta");
-    expect(kluceZOcakavania(c)).toContain(klucVily("starosta", false));
   });
 });
 

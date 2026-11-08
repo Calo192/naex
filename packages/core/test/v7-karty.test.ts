@@ -41,7 +41,7 @@ function sHracom(s: GameState, p: PlayerId, h: Partial<PlayerState>): GameState 
 }
 
 function pitkaStav(naTahu: PlayerId): PitkaStav {
-  return { naTahu, hotovy: [false, false], naexPouzity: [false, false], fajcenie: [0, 0], reakcia: null, postarka: [false, false], starosta: [false, false], naexPocet: [0, 0], vykup: [false, false] };
+  return { naTahu, hotovy: [false, false], naexPouzity: [false, false], fajcenie: [0, 0], reakcia: null, postarka: [false, false], starosta: [false, false], naexPocet: [0, 0] };
 }
 
 /** Pitka na lokalite `lok` (hráč 0 na ťahu). */
@@ -133,21 +133,6 @@ describe("lokality podľa úrovní a finále na pinnacle (plan.md 7)", () => {
       expect(lokalitNevybranych(viewFor(data, finale, p))).toBe(0);
     }
   });
-});
-
-describe("Kšeft (v7)", () => {
-
-  it("Strýko z Ameriky: za 2 cigarety Rana navyše v bitke kola", () => {
-    const k = inst("stryko_z_ameriky");
-    const s = sHracom(vPitke("zastavka", [[lezi(k, 0)], []]), 0, { cigarety: 2 });
-    const po = apply(data, s, { type: "kseft", uid: k.uid }, 0).state;
-    expect(po.kseftRany).toEqual([1, 0]);
-    expect(bitkaMody(data, po, 0).tuheZdroje).toContainEqual({ zdroj: "stryko_z_ameriky", tuhe: 1 });
-  });
-
-
-
-  // Predsedova vila v11 (reči o stupeň) stráži strach-reci.test.ts.
 });
 
 describe("efekty v bitke (v7)", () => {
