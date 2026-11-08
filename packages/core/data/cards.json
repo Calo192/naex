@@ -273,7 +273,7 @@
    "tags": [
     "Nástroj"
    ],
-   "effect_text": "Dedičstvo: Bitka: Ak súper v tomto kole priložil kartu k tvojej, udelíš mu 1 Ranu navyše.",
+   "effect_text": "Dedičstvo: Bitka: Ak súper v tomto kole priložil kartu k tvojej {Rana}.",
    "triggers": [
     "Dedičstvo",
     "Bitka"
@@ -421,7 +421,7 @@
    "tags": [
     "Nástroj"
    ],
-   "effect_text": "Dedičstvo: Tvoj prah Dlhu je o 1 vyšší. V poslednej Pitke kola získaš 1 Dlh.",
+   "effect_text": "Dedičstvo: Tvoj prah Dlhu je o 1 vyšší. Posledná Pitka kola: {Hazard}.",
    "triggers": [
     "Dedičstvo"
    ],
@@ -598,7 +598,7 @@
     "Závislý",
     "Chlap"
    ],
-   "effect_text": "Bitka: Za každé NA EX, ktoré si v tomto kole dal, udelíš súperovi 1 Ranu navyše.",
+   "effect_text": "Bitka: Za každé NA EX, ktoré si v tomto kole dal {Rana}.",
    "triggers": [
     "Bitka"
    ],
@@ -760,7 +760,7 @@
     "Kriminál",
     "Žena"
    ],
-   "effect_text": "Konflikt: Chlap — Súper odhodí 1 kartu z ruky.",
+   "effect_text": "Konflikt: Chlap — Súper odhodí 1 náhodnú kartu z ruky.",
    "triggers": [
     "Konflikt"
    ],
@@ -1986,7 +1986,7 @@
    "tags": [
     "Lokalita"
    ],
-   "effect_text": "Zhromaždenie: Nikto nesmie vypiť. Pitka: NA EX sa smie dať len na poslednú kartu línie na jednej alebo druhej strane.",
+   "effect_text": "Zhromaždenie: Nikto nesmie vypiť. Pitka: NA EX sa smie dať len na kartu na konci línie (na ktoromkoľvek z dvoch koncov).",
    "triggers": [
     "Zhromaždenie",
     "Pitka"
@@ -2049,7 +2049,7 @@
     "Autorita",
     "Žena"
    ],
-   "effect_text": "Bitka: Za každú tvoju kartu so súperovým NA EX udelíš súperovi Ranu.",
+   "effect_text": "Bitka: Za každú tvoju kartu so súperovým NA EX {Rana}.",
    "triggers": [
     "Bitka"
    ],
@@ -2238,7 +2238,7 @@
    "tags": [
     "Lokalita"
    ],
-   "effect_text": "Zhromaždenie: Karty sa smú vykladať len na vlastnú stranu (aj odpoveď na NA EX).",
+   "effect_text": "Zhromaždenie: Každý vykladá len na koniec línie po svojej ľavici (aj odpoveď na NA EX).",
    "triggers": [
     "Zhromaždenie"
    ],
@@ -2669,7 +2669,7 @@
     "Chlap",
     "Pracujúci"
    ],
-   "effect_text": "Bitka: Ak si v tomto kole nedal NA EX, udelíš súperovi 1 Pecku navyše a dostaneš 1 cigaretu.",
+   "effect_text": "Bitka: Ak si v tomto kole nedal NA EX {Pecka} a dostaneš 1 cigaretu.",
    "triggers": [
     "Bitka"
    ],
@@ -3066,7 +3066,7 @@
     "Pamätník",
     "Žena"
    ],
-   "effect_text": "Nástup: Ak susedíš s Občanom alebo Starešinom, za teba sa presunie najvzdialenejší Občan alebo Starešina opačného pohlavia ako tvoj sused z druhej strany lokality.",
+   "effect_text": "Nástup: Ak susedíš s Občanom alebo Starešinom, za teba sa presunie najvzdialenejší Občan alebo Starešina opačného pohlavia ako tvoj sused z druhého kraja.",
    "triggers": [
     "Nástup"
    ],
@@ -3105,7 +3105,7 @@
     "Kriminál",
     "Chlap"
    ],
-   "effect_text": "Nástup: Otoč lokalitu o 180° — jej hrany si vymenia strany.",
+   "effect_text": "Nástup: Otoč lokalitu o 180° — jej hrany si vymenia kraje.",
    "triggers": [
     "Nástup"
    ],
@@ -3269,7 +3269,7 @@
     "Autorita",
     "Chlap"
    ],
-   "effect_text": "Bitka: Ak máš v jeho kraji prevahu, udelíš súperovi 1 Pecku navyše. Inak získaš 1 Dlh.",
+   "effect_text": "Bitka: Ak máš v jeho kraji prevahu {Pecka}. Inak získaš 1 Dlh.",
    "triggers": [
     "Bitka"
    ],
@@ -3308,7 +3308,7 @@
     "Kriminál",
     "Chlap"
    ],
-   "effect_text": "Bitka: Za každé 2 tvoje priznané Dlhy udelíš súperovi 1 Ranu navyše.",
+   "effect_text": "Bitka: Za každé 2 tvoje priznané Dlhy {Rana}.",
    "triggers": [
     "Bitka"
    ],
@@ -4142,7 +4142,7 @@
     "Chlap",
     "Pamätník"
    ],
-   "effect_text": "Nástup: Spáľ súperovo Zviera na druhej strane lokality, ktoré je od nej najďalej.",
+   "effect_text": "Nástup: Spáľ súperovo Zviera v druhom kraji, ktoré je od lokality najďalej.",
    "triggers": [
     "Nástup"
    ],
