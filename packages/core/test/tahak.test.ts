@@ -43,7 +43,7 @@ describe("ťahák AI hráčov sedí s constants.ts", () => {
     ["Forsáž (v10.3)", "Posilnenie + Posilnenie na spoji = **Forsáž** — obe karty spoja majú **všetky aktívne akcie posilnené ×2**"],
     ["Poľovník (v10.4)", "**spáli súperovo Zviera, ktoré je od lokality najďalej**"],
     ["Kšeft zanikol, akcie navyše (frakcie)", "**Posilnenie, Odpor, Forsáž, NA EX ani Silná žena ju nemenia**"],
-    ["Vdova (frakcie)", "súper **vyberie a odhodí"],
+    ["Vdova (frakcie)", "súper odhodí **1 náhodnú kartu z ruky**"],
     ["Predsedova vila (frakcie)", "vyfajčíš, tvoje reči pri jednom staršom o ďalší stupeň**"],
     ["Sypač (v11.5)", "**Sypač** (Podpora): keď sa priložením stretne s tvojím Chlapom, ten má do konca kola **Rany ako Pecky**"],
     ["Zastávka (v9.1)", "Zastávka (v9.1: po **prvej Pitke kola** si každý vezme **zadarmo 1 kartu zo šenku**, najprv útočník, potom obranca"],

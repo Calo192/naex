@@ -598,11 +598,11 @@ export interface HasicVolba {
   readonly hrac: PlayerId;
   /**
    * Voľba, ktorá čaká ako Hasič (v7): karta zo šenku (Zastávka),
-   * Nástroj za Živnostníka, starší pre Kapybaru; frakcie (2026-11-08): karta z ruky, ktorú
-   * odhodí súper Vdovy, karta z ruky na spálenie (Zberný dvor), starší pre reči (Predsedova vila).
-   * Chýba = Hasič.
+   * Nástroj za Živnostníka, starší pre Kapybaru; frakcie (2026-11-08): karta z ruky na spálenie
+   * (Zberný dvor), starší pre reči (Predsedova vila). Chýba = Hasič. Vdova od 2026-11-08 voľbu
+   * nemá — kartu vyberie náhoda.
    */
-  readonly typ?: "senok" | "nastroj" | "kapybara" | "vdova" | "dvor" | "vila";
+  readonly typ?: "senok" | "nastroj" | "kapybara" | "dvor" | "vila";
   readonly uid: number;
   /**
    * Čo hra odložila do rozhodnutia: odpoveď na NA EX by hneď vyhodnotila
@@ -660,8 +660,6 @@ export type Command =
   | { readonly type: "nastroj"; readonly uid: number | null }
   // Kapybara (Nástup, v11): starší, pri ktorom súperove reči klesnú o stupeň.
   | { readonly type: "kapybara"; readonly elderId: string }
-  // Veľmi smútiaca vdova (Konflikt: Chlap, frakcie 2026-11-08): súper vyberie kartu z ruky, ktorú odhodí.
-  | { readonly type: "odhod"; readonly uid: number }
   // Zberný dvor (Pitka, frakcie): na konci Pitky spáliť 1 kartu z ruky (nie kliatbu), alebo nič (uid null).
   | { readonly type: "spal"; readonly uid: number | null }
   // Predsedova vila (Pitka, frakcie): za každé 2 vyfajčené cigarety reči pri staršom o stupeň.
@@ -1011,7 +1009,9 @@ export function lokalitNevybranych(s: Pick<GameState, "lokalityVHre" | "ciel" | 
  * Línia zo stavu — server aj klienti (ClientState spĺňa VerejnyStav), aby
  * náhľady rátali s tým istým ako bitka (aj s Pascou v Dedičstve).
  */
-export function lineState(s: VerejnyStav & { readonly lokalitaOtocena: boolean }): LineState {
+export function lineState(
+  s: VerejnyStav & { readonly lokalitaOtocena: boolean } & Partial<Pick<GameState, "faza" | "pitkaCislo" | "pitkyCelkom">>,
+): LineState {
   return {
     lokalita: s.ciel?.lokalita ?? null,
     lokalitaOtocena: s.lokalitaOtocena,
@@ -1020,6 +1020,14 @@ export function lineState(s: VerejnyStav & { readonly lokalitaOtocena: boolean }
     nastroje: [s.hraci[0].dedicstvo.map((k) => k.defId), s.hraci[1].dedicstvo.map((k) => k.defId)],
     // Schopnosť väzňa Starosta (v11.2) platí do konca kola.
     ...(s.kseftyKola?.hranyPosilnene === true ? { hranyPosilnene: true } : {}),
+    // Skryté akcie (Michal 2026-11-08): podmienky slovami akcií navyše — všetko verejné.
+    kolo: {
+      naexVKole: s.naexVKole ?? [false, false],
+      dlhy: [s.hraci[0].dlhy, s.hraci[1].dlhy],
+      prilozeniaKu: s.prilozeniaKu ?? [0, 0],
+      dedicstvo: [s.hraci[0].dedicstvo, s.hraci[1].dedicstvo],
+      poslednaPitka: s.faza === "pitka" && (s.pitkaCislo ?? 0) >= (s.pitkyCelkom ?? 0),
+    },
   };
 }
 
@@ -1934,7 +1942,7 @@ function applyPrikaz(
     need(kto === kapitan(state, hracId), "NA EX a koniec Pitky za tím volí kapitán.");
   }
   need(state.vizia === null || cmd.type === "vizia", "Najprv rozhodni o karte z Vízie.");
-  need(!cakaHasic(state) || ["hasic", "senok", "nastroj", "kapybara", "odhod", "spal", "vila"].includes(cmd.type) || vTahu, HASIC_NAJPRV);
+  need(!cakaHasic(state) || ["hasic", "senok", "nastroj", "kapybara", "spal", "vila"].includes(cmd.type) || vTahu, HASIC_NAJPRV);
 
   switch (cmd.type) {
     case "chooseLocation":
@@ -2002,7 +2010,6 @@ function applyPrikaz(
     case "kapybara":
       cmdKapybara(s, data, cmd, hracId, events);
       break;
-    case "odhod":
     case "spal":
     case "vila":
       cmdVolbaFrakcie(s, data, cmd, kto, events);
@@ -2971,17 +2978,31 @@ export function spustiSpoj(data: GameData, spustac: "Konflikt" | "Podpora", nosi
  * `druha` (frakcie): počty spustení efektov navyše po novom stretnutí, alebo null, keď
  * karta taký efekt s vyhovujúcim tagom nemá.
  */
-function navysePoSpoji(data: GameData, spustac: "Konflikt" | "Podpora", nositel: Pick<PlacedCard, "card" | "navyse">, druha: Pick<PlacedCard, "card">): number[] | null {
+function navysePoSpoji(
+  data: GameData,
+  spustac: "Konflikt" | "Podpora",
+  nositel: Pick<PlacedCard, "card" | "navyse" | "navyseOd">,
+  druha: Pick<PlacedCard, "card">,
+): Required<Pick<PlacedCard, "navyse" | "navyseOd">> | null {
   const efekty = efektyNavyse(defOf(data, nositel.card));
   const jeho = defOf(data, druha.card).tags;
   let zmena = false;
-  const out = efekty.map((e, i) => {
+  const navyse: number[] = [];
+  const navyseOd: number[][] = [];
+  efekty.forEach((e, i) => {
     const n = nositel.navyse?.[i] ?? 0;
-    if (e.spustac !== spustac || !splnaTag(e.tag, jeho)) return n;
-    zmena = true;
-    return n + 1;
+    const od = [...(nositel.navyseOd?.[i] ?? [])];
+    // Šípka pečate ukáže k susedovi, s ktorým sa efekt spustil (Michal 2026-11-08).
+    if (e.spustac === spustac && splnaTag(e.tag, jeho)) {
+      zmena = true;
+      navyse.push(n + 1);
+      navyseOd.push([...od, druha.card.uid]);
+    } else {
+      navyse.push(n);
+      navyseOd.push(od);
+    }
   });
-  return zmena ? out : null;
+  return zmena ? { navyse, navyseOd } : null;
 }
 
 /** Vyvolá ležiaca karta Konflikt, keď sa k nej priloží `prilozena`? (Miňištrant, plan.md 13.1) */
@@ -3037,7 +3058,7 @@ export function sPrilozenou<T extends VerejnyStav & { readonly lokalitaOtocena: 
     const jeho = defOf(data, b.card).tags;
     for (const spustac of ["Konflikt", "Podpora"] as const) {
       const navyse = spustiSpoj(data, spustac, a, b) ? navysePoSpoji(data, spustac, a, b) : null;
-      if (navyse !== null) a = { ...a, navyse };
+      if (navyse !== null) a = { ...a, ...navyse };
     }
     if (spustiSpoj(data, "Konflikt", a, b)) {
       switch (a.card.defId) {
@@ -3109,7 +3130,8 @@ function potlacenyPriPrilozeni(s: MutState, data: GameData, nositel: DeepMutable
 function pridajNavyse(data: GameData, spustac: "Konflikt" | "Podpora", nositel: DeepMutable<PlacedCard>, druha: DeepMutable<PlacedCard>, events: Event[]): boolean {
   const navyse = navysePoSpoji(data, spustac, nositel as PlacedCard, druha as PlacedCard);
   if (navyse === null) return false;
-  nositel.navyse = navyse;
+  nositel.navyse = [...navyse.navyse];
+  nositel.navyseOd = navyse.navyseOd.map((x) => [...x]);
   const def = defOf(data, nositel.card as CardInstance);
   const akcie = efektyNavyse(def)
     .filter((e) => e.spustac === spustac)
@@ -3132,14 +3154,19 @@ function konflikt(s: MutState, data: GameData, nositel: DeepMutable<PlacedCard>,
   switch (def.id) {
     case "velmi_smutiaca_vdova": {
       if (vdovaZRuky(def)) {
-        // Frakcie (2026-11-08): súper vyberie a odhodí 1 kartu z ruky; hra počká ako pri Hasičovi.
-        const m = kapitan(s, opp);
-        if (rukaMiesta(s as GameState, m).length === 0) {
+        // Michal 2026-11-08: súper odhodí 1 náhodnú kartu z ruky — vyberie ju generátor partie,
+        // nie súper; ruka je skrytá, kartu sa dozvie len on.
+        const ruka = rukaMiestaMut(s, kapitan(s, opp));
+        if (ruka.length === 0) {
           events.push({ type: "log", text: `Konflikt — Veľmi smútiaca vdova: hráč ${opp + 1} nemá v ruke kartu, nič neodhodí.` });
           break;
         }
-        s.hasicVolby = [...(s.hasicVolby ?? []), { hrac: opp, typ: "vdova", uid: 0, potom: null, miesto: m }];
-        events.push({ type: "log", text: `Konflikt — Veľmi smútiaca vdova pri karte ${jeho.name}: hráč ${opp + 1} odhodí 1 kartu z ruky.` });
+        const [i, rng] = rngInt(s.rng, ruka.length);
+        s.rng = rng;
+        const karta = ruka.splice(i, 1)[0] as DeepMutable<CardInstance>;
+        hrac(s, opp).odhadzovaci.push(karta);
+        events.push({ type: "log", text: `Konflikt — Veľmi smútiaca vdova pri karte ${jeho.name}: hráč ${opp + 1} odhadzuje 1 náhodnú kartu z ruky.` });
+        events.push({ type: "log", pre: opp, text: `Vdova ti z ruky odhodila: ${defOf(data, karta as CardInstance).name}.` });
         break;
       }
       const chlapi = chlapiPriVdove(data, s as GameState, nositel.card.uid as number, opp);
@@ -4356,7 +4383,6 @@ function volbyNastupu(data: GameData, state: GameState): Command[] {
   if (volba.typ === "senok") return state.senok.map((k) => ({ type: "senok", uid: k.uid }) as Command);
   if (volba.typ === "kapybara") return state.starsi.filter((e) => e.reci[opponentOf(volba.hrac)] > 0).map((e) => ({ type: "kapybara", elderId: e.elderId }) as Command);
   const ruka = (): readonly CardInstance[] => rukaMiesta(state, volba.miesto ?? kapitan(state, volba.hrac));
-  if (volba.typ === "vdova") return ruka().map((k) => ({ type: "odhod", uid: k.uid }) as Command);
   if (volba.typ === "dvor") return [{ type: "spal", uid: null }, ...ruka().filter((k) => !jeKliatba(data, k)).map((k) => ({ type: "spal", uid: k.uid }) as Command)];
   if (volba.typ === "vila") return state.starsi.filter((e) => dalsiStupenReci(e, volba.hrac) !== null).map((e) => ({ type: "vila", elderId: e.elderId }) as Command);
   if (volba.typ === "nastroj") {
@@ -4705,19 +4731,14 @@ function zahodNemozneVily(s: MutState, events: Event[]): void {
   events.push({ type: "log", text: `Predsedova vila: hráč ${prva.hrac + 1} nemá pri žiadnom staršom kam zdvihnúť reči.` });
 }
 
-/** Voľby zo sady frakcií: odhodenie pre Vdovu, spálenie na Zbernom dvore, reči z vily. */
-function cmdVolbaFrakcie(s: MutState, data: GameData, cmd: Extract<Command, { type: "odhod" | "spal" | "vila" }>, kto: Miesto, events: Event[]): void {
+/** Voľby zo sady frakcií: spálenie na Zbernom dvore, reči z vily. */
+function cmdVolbaFrakcie(s: MutState, data: GameData, cmd: Extract<Command, { type: "spal" | "vila" }>, kto: Miesto, events: Event[]): void {
   const p = timMiesta(kto);
   const [volba, ...dalsie] = s.hasicVolby ?? [];
-  const typ = cmd.type === "odhod" ? "vdova" : cmd.type === "spal" ? "dvor" : "vila";
+  const typ = cmd.type === "spal" ? "dvor" : "vila";
   need(volba !== undefined && volba.hrac === p && volba.typ === typ, "Teraz o tomto nerozhoduješ.");
   const m = volba.miesto ?? kapitan(s, p);
-  if (cmd.type === "odhod") {
-    need(rukaMiestaMut(s, m).some((k) => k.uid === cmd.uid), "Karta nie je v ruke.");
-    const karta = vezmiZRuky(s, m, cmd.uid);
-    hrac(s, p).odhadzovaci.push(karta as DeepMutable<CardInstance>);
-    events.push({ type: "log", text: `Veľmi smútiaca vdova: hráč ${p + 1} odhadzuje z ruky ${defOf(data, karta).name}.` });
-  } else if (cmd.type === "spal") {
+  if (cmd.type === "spal") {
     if (cmd.uid !== null) {
       const vRuke = rukaMiestaMut(s, m).find((k) => k.uid === cmd.uid);
       need(vRuke !== undefined, "Karta nie je v ruke.");

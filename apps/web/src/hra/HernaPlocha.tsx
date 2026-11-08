@@ -49,7 +49,7 @@ import type {
   ZobrataVerejne,
   Zdvih,
 } from "@naex/core";
-import { prveFajcenieZadarmo, opisReci, sReciNizsie, sRadom, ktoNatacaLokalitu, odhadSpakovKola, type StavOdhadu, riadkyCakajuceho, riadkyCakajucichPoldeci, KONSTANTY, jeCoTahat, jeFinaleNaNastenke, cigaretyZaPas, spakov, efektyPrehry, hrozbaKliatob, mozeEsteNaex, textHrozbyKliatob, textyEfektovPrehry, cenaKliatby, battleOutcome, prebytokNaRozdelenie, nahladPitky, pocet, tvar, vyhladDlhov, evaluateLine, pocitadloBitky, pitkaPredBitkou, hrozbaNaex, krokStavby, planVykladania, barterCena, limitBuduceKolo, limitZhromazdenia, lineState, nahladZajatia, prevahaStran, krajeStran, dovodZakazuFajcit, defOf, jednotaZakazuje, cenaFajceniaHraca, naexLimitMinuty as naexLimitMinutyHraca, sMojimiSkrytymiNaex, sPrilozenou, vystrahaPecene, nahladNaexNaKartu, najhorsiaOdpovedNaNaex, cenaTahu, nahladVylozenia, moznostiNaexVPohlade, zablokovaneStrany, NASTROJ_PRI_LOKALITE, favourStarsieho, krokRozdelenia, cieleOdpovede, maxZoSenku, bodyRozdelenia, printedSides, poskodenieBitky, rozpisPoskodenia, prahyHraca, scorecardStarsieho, stavKraja, stavkaBitky, stavZavislosti, stranyLokality, vidiVolbuSupera, hraVPitke, cakaSBzdochou, opponentOf, majitelPresvedcenej, moznostiAkcie, cenaAkcieUplna, zdvihyPreAkcie, navrhRozdelenia, pohladPoRozdeleni, priazenHraca, priazenSila, pultStarsich, spakyTeraz, NAZVY_ZON, reciNizsie, vazniNaVyhru } from "@naex/core";
+import { prveFajcenieZadarmo, opisReci, sReciNizsie, sRadom, ktoNatacaLokalitu, odhadSpakovKola, type StavOdhadu, riadkyCakajuceho, riadkyCakajucichPoldeci, KONSTANTY, jeCoTahat, jeFinaleNaNastenke, cigaretyZaPas, spakov, efektyPrehry, hrozbaKliatob, mozeEsteNaex, textHrozbyKliatob, textyEfektovPrehry, cenaKliatby, battleOutcome, prebytokNaRozdelenie, nahladPitky, pocet, tvar, vyhladDlhov, evaluateLine, efektyNavyse, pocitadloBitky, pitkaPredBitkou, hrozbaNaex, krokStavby, planVykladania, barterCena, limitBuduceKolo, limitZhromazdenia, lineState, nahladZajatia, prevahaStran, krajeStran, dovodZakazuFajcit, defOf, jednotaZakazuje, cenaFajceniaHraca, naexLimitMinuty as naexLimitMinutyHraca, sMojimiSkrytymiNaex, sPrilozenou, vystrahaPecene, nahladNaexNaKartu, najhorsiaOdpovedNaNaex, cenaTahu, nahladVylozenia, moznostiNaexVPohlade, zablokovaneStrany, NASTROJ_PRI_LOKALITE, favourStarsieho, krokRozdelenia, cieleOdpovede, maxZoSenku, bodyRozdelenia, printedSides, poskodenieBitky, rozpisPoskodenia, prahyHraca, scorecardStarsieho, stavKraja, stavkaBitky, stavZavislosti, stranyLokality, vidiVolbuSupera, hraVPitke, cakaSBzdochou, opponentOf, majitelPresvedcenej, moznostiAkcie, cenaAkcieUplna, zdvihyPreAkcie, navrhRozdelenia, pohladPoRozdeleni, priazenHraca, priazenSila, pultStarsich, spakyTeraz, NAZVY_ZON, reciNizsie, vazniNaVyhru } from "@naex/core";
 import type { Moment, ActionSums, DopadyNahladu, KliatbyNahladu, NahladNaexNaKartu, PrebytokNahladu, NahladVylozenia, PolozkaVykladania, Rod, Slot, StranaLinie, VystrahaPecene } from "@naex/core";
 import { IkonaAkcie } from "../karta/IkonaAkcie.tsx";
 import { KoniecHry } from "./KoniecHry.tsx";
@@ -541,7 +541,12 @@ export function HernaPlocha({
   };
   // Žeravé ikony (Michal 2026-10-30): karty v ruke a línii vedia, čo ich majiteľovi posilňuje Dedičstvo.
   const videneZaru = useRef(new Map<string, number>()).current;
-  const zarStola = useMemo(() => ({ view, videne: videneZaru }), [view, videneZaru]);
+  // Pečate Nástrojov v Dedičstve (Pasca, Výherný automat — skryté akcie 2026-11-08) z tej istej línie ako server.
+  const zarStola = useMemo(() => {
+    const sPecatou = view.hraci.some((h) => h.dedicstvo.some((k) => efektyNavyse(defOf(data, k)).some((e) => e.dedicstvo === true)));
+    const navyseDedicstva = sPecatou ? evaluateLine(data, lineState(view)).navyseDedicstva : undefined;
+    return { view, videne: videneZaru, ...(navyseDedicstva === undefined ? {} : { navyseDedicstva }) };
+  }, [view, videneZaru, data]);
   const super_ = opponentOf(ja);
   const [mode, setMode] = useState<Mode>({ typ: "ziadny" });
   const [vrstva, setVrstva] = useState<Vrstva | null>(null);
@@ -3773,24 +3778,23 @@ export function HernaPlocha({
     if (view.volbaNastupu !== null && view.volbaNastupu.hrac === ja) {
       // Voľby v7 čakajú ako Hasič: karta zo šenku (Zastávka), Nástroj za Živnostníka, Kapybara.
       const nv = view.volbaNastupu;
-      if (nv.typ === "vdova" || nv.typ === "dvor") {
-        // Frakcie (2026-11-08): Vdova — súper vyberie kartu z ruky na odhodenie; Zberný dvor — spáliť 1 kartu z ruky, nie kliatbu.
-        const vdova = nv.typ === "vdova";
-        const ponuka = vdova ? view.ruka : view.ruka.filter((k) => !defOf(data, k).tags.includes("Kliatba"));
+      if (nv.typ === "dvor") {
+        // Frakcie (2026-11-08): Zberný dvor — spáliť 1 kartu z ruky, nie kliatbu.
+        const ponuka = view.ruka.filter((k) => !defOf(data, k).tags.includes("Kliatba"));
         const nic = <button onClick={() => posli({ type: "spal", uid: null })}>nič nepáliť</button>;
         return {
-          nadpis: vdova ? "Veľmi smútiaca vdova" : "Zberný dvor",
+          nadpis: "Zberný dvor",
           text: (
             <span className="vizia-text">
-              <span>{vdova ? "Vyber kartu z ruky, ktorú odhodíš do odhadzovacieho balíčka." : "Smieš spáliť 1 kartu z ruky (nie kliatbu) — navždy z hry."}</span>{" "}
+              <span>Smieš spáliť 1 kartu z ruky (nie kliatbu) — navždy z hry.</span>{" "}
               {ponuka.map((k) => (
                 <span key={k.uid} className="vizia-karta">
-                  {karta({ karta: k, sirka: 72, onClick: () => posli(vdova ? { type: "odhod", uid: k.uid } : { type: "spal", uid: k.uid }) })}
+                  {karta({ karta: k, sirka: 72, onClick: () => posli({ type: "spal", uid: k.uid }) })}
                 </span>
               ))}
             </span>
           ),
-          ...(vdova ? {} : naSirku ? { druha: nic } : { vpravo: <span className="pecat pecat-tichy">{nic}</span> }),
+          ...(naSirku ? { druha: nic } : { vpravo: <span className="pecat pecat-tichy">{nic}</span> }),
         };
       }
       if (nv.typ === "vila") {

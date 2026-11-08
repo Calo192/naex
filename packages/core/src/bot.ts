@@ -32,7 +32,7 @@ import { defOf, printedSides } from "./data.ts";
 import type { RngState } from "./rng.ts";
 import { rngInt, rngNext, rngSeed, rngShuffle } from "./rng.ts";
 import { evaluateLine } from "./partia.ts";
-import { efektyNavyse } from "./navyse.ts";
+import { efektyNavyse, jeSlovami } from "./navyse.ts";
 import { KONSTANTY, vazniNaVyhru } from "./constants.ts";
 import { abstakyVBitke, spakyPriExekucii, zhoriPriExekucii } from "./battle.ts";
 import type { ElderState } from "./elders.ts";
@@ -406,6 +406,8 @@ export function hodnotaKarty(data: GameData, karta: CardInstance, kolPoTejto?: n
   // Akcie navyše (frakcie): odhad, ako často sa podmienka splní — Spoločník a Nepriateľ platia
   // raz, Podpora a Konflikt pri každom stretnutí; v bitke ich presne vidí evaluateLine.
   for (const e of efektyNavyse(def)) {
+    // Podmienka slovami (Pijan, Šofér, Pasca… — skryté akcie 2026-11-08): hodnotu karty už nesie BONUS_EFEKTU.
+    if (jeSlovami(e)) continue;
     const casto = e.spustac === "Spoločník" || e.spustac === "Nepriateľ" ? 0.4 : 0.5;
     for (const a of e.akcie) v += casto * VAHA_AKCIE[a] * (HOSPODARSKE.has(a) ? hospodarstvo : 1);
   }
@@ -1244,8 +1246,6 @@ function volbaHasica(data: GameData, state: GameState): Command | null {
   if (volba === undefined) return null;
   if (volba.typ === "kapybara" || volba.typ === "nastroj" || volba.typ === "vila") return null;
   const ruka = [...state.hraci[volba.hrac].ruka].sort((a, b) => hodnotaKarty(data, a) - hodnotaKarty(data, b));
-  // Vdova: súperovi odhodí z ruky najslabšiu kartu.
-  if (volba.typ === "vdova") return ruka[0] === undefined ? null : { type: "odhod", uid: ruka[0].uid };
   if (volba.typ === "dvor") {
     // Zberný dvor: spáli najslabšiu kartu, ktorá nie je kliatba, len keď za veľa nestojí — tenší balíček.
     const slaba = ruka.find((x) => !defOf(data, x).tags.includes("Kliatba"));

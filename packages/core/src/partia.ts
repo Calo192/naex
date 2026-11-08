@@ -37,8 +37,8 @@ import type { Action, CardInstance, Miesto, PlayerId, SideLayout, Slot, Tag } fr
 import { opponentOf } from "./types.ts";
 import type { GameData } from "./data.ts";
 import { defOf, printedSides } from "./data.ts";
-import type { NavyseStav } from "./navyse.ts";
-import { efektyNavyse, stavNavyse } from "./navyse.ts";
+import type { EfektNavyse, NavyseStav } from "./navyse.ts";
+import { efektyNavyse, jeSlovami, popisPodmienky, stavNavyse } from "./navyse.ts";
 
 /** Karta ležiaca v partii. */
 export interface PlacedCard {
@@ -84,6 +84,8 @@ export interface PlacedCard {
    * navyše [i] karty (navyse.ts efektyNavyse) — Podpora a Konflikt pri každom stretnutí.
    */
   readonly navyse?: readonly number[];
+  /** Uid kariet, s ktorými sa efekt navyše [i] spustil (Podpora, Konflikt) — šípky pečate k susedom. */
+  readonly navyseOd?: readonly (readonly number[])[];
   /** Hrobár (Konflikt, v7): za túto kartu sa na jej strane už nič nepriloží. */
   readonly posledna?: true;
   /** Po bitke ide karta z hry (Vdova, Hrobár — Konflikt v7). */
@@ -112,6 +114,26 @@ export interface LineState {
   readonly nastroje?: readonly [readonly string[], readonly string[]];
   /** Schopnosť väzňa Starosta (v11.2): všetky aktívne akcie hrán lokality sú posilnené — aj tie, ktoré sa vyhodnocujú v Pitke. */
   readonly hranyPosilnene?: boolean;
+  /**
+   * Stav kola pre akcie navyše s podmienkou slovami (skryté akcie, Michal 2026-11-08: Pijan,
+   * Svokra, Vymáhač, Šofér, Traktorista, Pasca, Výherný automat). Chýba = také podmienky
+   * nesplní nič (testy, ukážky).
+   */
+  readonly kolo?: StavKolaLinie;
+}
+
+/** Verejný stav kola, z ktorého jadro vyhodnotí podmienky slovami (engine.ts lineState). */
+export interface StavKolaLinie {
+  /** Hráč dal v tomto kole NA EX (Šofér). */
+  readonly naexVKole: readonly [boolean, boolean];
+  /** Priznané Dlhy (Vymáhač). */
+  readonly dlhy: readonly [number, number];
+  /** Koľkokrát súper v tomto kole priložil kartu ku karte hráča (Pasca). */
+  readonly prilozeniaKu: readonly [number, number];
+  /** Dedičstvo hráčov — Nástroje s efektom „Dedičstvo: … {Akcia}“. */
+  readonly dedicstvo: readonly [readonly CardInstance[], readonly CardInstance[]];
+  /** Prebieha posledná Pitka kola (Výherný automat). */
+  readonly poslednaPitka: boolean;
 }
 
 export type SlotStav = "neaktivna" | "aktivna" | "zrusena";
@@ -123,6 +145,8 @@ export interface SlotEval {
   readonly nasobok: number;
   /** Akcia sa ráta ako iná (Šarlatán: Viera v jeho okolí platí ako Vízia). */
   readonly ako?: Action;
+  /** Karta kreslí na slote `ako` namiesto vytlačenej akcie (Tipér, Vedúcko, Sypač, Anonymný alkoholik). */
+  readonly naKarte?: true;
 }
 
 /** Vyhodnotenie jednej karty — sloty vo VYTLAČENOM ráme karty. */
@@ -179,6 +203,8 @@ export interface LineEval {
    * súperovi; Odpor lokality sa neráta (Policajtka, Pitka: zadĺženie za každú).
    */
   readonly zruseneOdporom: readonly [number, number];
+  /** Akcie navyše Nástrojov v Dedičstve (Pasca, Výherný automat) podľa uid karty. */
+  readonly navyseDedicstva?: ReadonlyMap<number, readonly NavyseStav[]>;
 }
 
 /**
@@ -237,6 +263,8 @@ interface Elem {
   readonly zrusilOdporom: (PlayerId | null)[][];
   /** tiper[side][k]: posilnená akcia na spoji Profesionálneho tipéra — jeho majiteľ (premena pri súčte). */
   readonly tiper: (PlayerId | null)[][];
+  /** akoTipera[side][k]: akcia, ktorou sa posilnená akcia na spoji Tipéra ráta (Robota či Dlh) — kreslí ju karta. */
+  readonly akoTipera: (Action | null)[][];
   /** puska[side][k]: Petelica, ktorú Puška zachránila pred zrušením — ráta sa o 1 poškodenie menej. */
   readonly puska: boolean[][];
   /** Vedúcko v okolí: vytlačené Roboty karty sa rátajú ako Pecky. */
@@ -409,6 +437,7 @@ function makeElem(
     spojena: [0, 1].map(() => [false, false, false, false]),
     zrusilOdporom: [0, 1].map(() => [null, null, null, null]),
     tiper: [0, 1].map(() => [null, null, null, null]),
+    akoTipera: [0, 1].map(() => [null, null, null, null]),
     puska: [0, 1].map(() => [false, false, false, false]),
     robotaAkoPecka: false,
     pecenAkoViera: false,
@@ -903,11 +932,24 @@ function elemEval(elem: Elem): CardLineEval {
     const actions = side === 0 ? elem.effLeft : elem.effRight;
     const action = actions[idx];
     if (action == null) return null;
+    // Michal 2026-11-08: keď efekt mení akciu, zmenená akcia je vidieť na karte, ktorej sa týka —
+    // Profesionálny tipér, Vedúcko, Sypač a Anonymný alkoholik. Šarlatán a Výtržník nie (zatiaľ).
+    const tip = elem.akoTipera[side]![idx] ?? null;
+    const zmena: Action | null =
+      tip !== null
+        ? tip
+        : elem.tiper[side]![idx] != null
+          ? null
+          : (action === "Robota" && elem.robotaAkoPecka) || (action === "Rana" && elem.ranyAkoPecky)
+            ? "Pecka"
+            : action === "PoškodeniePečene" && elem.pecenAkoViera
+              ? "Viera"
+              : null;
     return {
       action,
       stav: elem.stav[side]![idx] as SlotStav,
       nasobok: elem.nasobok[side]![idx] as number,
-      ...(elem.vieraAkoVizia && action === "Viera" ? { ako: "Vízia" as const } : {}),
+      ...(zmena !== null && zmena !== action ? { ako: zmena, naKarte: true as const } : elem.vieraAkoVizia && action === "Viera" ? { ako: "Vízia" as const } : {}),
     };
   };
   return {
@@ -1055,6 +1097,7 @@ export function evaluateLine(data: GameData, line: LineState): LineEval {
         const vedRobota = tiper === null && action === "Robota" && elem.robotaAkoPecka;
         const aaPecen = tiper === null && action === "PoškodeniePečene" && elem.pecenAkoViera;
         const ako: Action = tiper !== null ? (target === tiper ? "Robota" : "Dlh") : elem.puska[side]![k] || vedRobota ? "Pecka" : aaPecen ? "Viera" : akciaPoPremene(elem, action);
+        if (tiper !== null) elem.akoTipera[side]![k] = ako;
         if (zrusil != null) {
           (zrusene[target][ako] ??= []).push({ defId: elem.defId, uid: elem.uid, hodnota: 0, vStrede: elem.isLokalita, dovody: [zrusil] });
           // Hrable (Dedičstvo, Náradie 2026-10-30): akcia zrušená tvojím Odporom sa ráta ako tvoja a je posilnená.
@@ -1091,32 +1134,134 @@ export function evaluateLine(data: GameData, line: LineState): LineEval {
   // Efektívna ľavá strana karty v strede susedí so stranou hráča 0, pravá s hráčom 1.
   const aktivne = (side: 0 | 1): number => (stred === null ? 0 : stred.stav[side]!.filter((x) => x === "aktivna").length);
 
-  // Akcie navyše (frakcie): majiteľovi karty, mimo hrán — nič, čo mení akcie na spojoch, ich nemení.
-  // Pred Presbiterom, ktorý uberá z celého súčtu Viery.
+  // Akcie navyše (frakcie): majiteľovi karty, mimo hrán — nič, čo mení akcie na spojoch, ich nemení,
+  // okrem premeny Vedúcka a Sypača (Michal 2026-11-08). Pred Presbiterom, ktorý uberá z celého súčtu Viery.
   const tagy = (defId: string): readonly Tag[] => data.cards.get(defId)?.tags ?? [];
+  const elemPodla = new Map(elems.map((e) => [e.uid, e]));
+  const pripocitaj = (p: PlayerId, defId: string, uid: number, stav: readonly NavyseStav[]): void => {
+    for (const e of stav) {
+      // Výherný automat: Dlh dáva motor na konci poslednej Pitky (engine pokracujPoPitke), nie súčet.
+      if (e.krat === 0 || e.spustac === "Posledná Pitka kola") continue;
+      const dovod = `akcia navyše (${popisPodmienky(e)})`;
+      const pocty = new Map<string, { a: Action; ako: Action; n: number }>();
+      e.akcie.forEach((a, j) => {
+        const ako = e.ako?.[j] ?? a;
+        const k = `${a}>${ako}`;
+        const x = pocty.get(k);
+        if (x === undefined) pocty.set(k, { a, ako, n: 1 });
+        else x.n += 1;
+      });
+      for (const { a, ako, n } of pocty.values()) {
+        const hodnota = e.krat * n;
+        const pricina = a === "Robota" ? "veducko" : a === "PoškodeniePečene" ? "anonymny_alkoholik" : "kulturista";
+        const dovody = ako === a ? [dovod] : [dovod, `karta:${pricina}`];
+        sums[p][ako] = (sums[p][ako] ?? 0) + hodnota;
+        pridajZdroj(p, ako, { defId, uid, hodnota, vStrede: false, dovody });
+      }
+    }
+  };
   for (const strana of line.strany) {
     for (const pl of strana) {
       const def = defOf(data, pl.card);
       const efekty = efektyNavyse(def);
       if (efekty.length === 0) continue;
-      const stav = stavNavyse(tagy, efekty, line.strany, pl, umlcane);
+      const slovami = efekty.map((e) => (jeSlovami(e) ? kratSlovami(data, line, pl, e) : 0));
+      const elem = elemPodla.get(pl.card.uid);
+      const stav = stavNavyse(tagy, efekty, line.strany, pl, umlcane, slovami).map((e) => premenNavyse(e, elem));
       const ev = cards.get(pl.card.uid);
       if (ev !== undefined) cards.set(pl.card.uid, { ...ev, navyse: stav });
-      for (const e of stav) {
-        if (e.krat === 0) continue;
-        const dovod = `akcia navyše (${e.spustac}${e.tag === null ? "" : `: ${e.tag}`})`;
-        for (const a of new Set(e.akcie)) {
-          const hodnota = e.krat * e.akcie.filter((x) => x === a).length;
-          sums[pl.playedBy][a] = (sums[pl.playedBy][a] ?? 0) + hodnota;
-          pridajZdroj(pl.playedBy, a, { defId: def.id, uid: pl.card.uid, hodnota, vStrede: false, dovody: [dovod] });
-        }
-      }
+      pripocitaj(pl.playedBy, def.id, pl.card.uid, stav);
+    }
+  }
+  const navyseDedicstva = new Map<number, readonly NavyseStav[]>();
+  for (const p of [0, 1] as const) {
+    for (const k of line.kolo?.dedicstvo[p] ?? []) {
+      const def = defOf(data, k);
+      const efekty = efektyNavyse(def);
+      if (!efekty.some((e) => e.dedicstvo === true)) continue;
+      const stav = efekty.map((e): NavyseStav => ({ ...e, krat: kratVDedicstve(line, p, def.id, e) }));
+      navyseDedicstva.set(k.uid, stav);
+      pripocitaj(p, def.id, k.uid, stav);
     }
   }
 
   presbiter([partia0, partia1], susedLokality, elems, sums, zdroje);
 
-  return { sums, cards, aktivneStredu: [aktivne(0), aktivne(1)], zdroje, zrusene, zruseneOdporom };
+  return { sums, cards, aktivneStredu: [aktivne(0), aktivne(1)], zdroje, zrusene, zruseneOdporom, ...(navyseDedicstva.size > 0 ? { navyseDedicstva } : {}) };
+}
+
+/**
+ * Premena akcií navyše karty (Michal 2026-11-08): Vedúcko v okolí z Roboty urobí Pecku,
+ * Sypač tvojmu Chlapovi z Rany Pecku, Anonymný alkoholik tvojim susedom z Poškodenia pečene
+ * Vieru — ako na hrane. Iné modifikátory ich nemenia; Tipér mení len posilnené akcie na spoji.
+ */
+function premenNavyse(e: NavyseStav, elem: Elem | undefined): NavyseStav {
+  if (elem === undefined) return e;
+  const ako = e.akcie.map((a): Action =>
+    (a === "Robota" && elem.robotaAkoPecka) || (a === "Rana" && elem.ranyAkoPecky) ? "Pecka" : a === "PoškodeniePečene" && elem.pecenAkoViera ? "Viera" : a,
+  );
+  return ako.some((a, j) => a !== e.akcie[j]) ? { ...e, ako } : e;
+}
+
+/**
+ * Koľkokrát platí efekt navyše s podmienkou slovami karty v línii (skryté akcie, Michal
+ * 2026-11-08). Podmienku vyhodnocuje jadro podľa karty, text ju len opisuje — ten istý
+ * výpočet, aký mali tieto karty ako tuhé navyše (effects.ts bitkaMody). Neznáma karta:
+ * bez podmienky platí raz, s podmienkou nikdy (tvorca to hlási).
+ */
+function kratSlovami(data: GameData, line: LineState, pl: PlacedCard, e: EfektNavyse): number {
+  const kolo = line.kolo;
+  // Efekt Dedičstva v línii neplatí — Nástroj v línii je len akcie na hranách.
+  if (kolo === undefined || e.dedicstvo === true) return 0;
+  if (e.spustac === "Posledná Pitka kola") return kolo.poslednaPitka ? 1 : 0;
+  const p = pl.playedBy;
+  const q = opponentOf(p);
+  const vsetky = [...line.strany[0], ...line.strany[1]];
+  switch (pl.card.defId) {
+    case "pijan":
+      // Za každé NA EX majiteľa v tomto kole — poldeci z neho leží na karte do kroku 5 bitky.
+      return vsetky.reduce((n, x) => n + (x.naexBy === p ? 1 : 0) + (x.naexBy2 === p ? 1 : 0), 0);
+    case "svokra":
+      // Za každú kartu majiteľa so súperovým NA EX na ktorejkoľvek strane, aj pri zrážke (Výtržník).
+      if (autorityUmlcane(data, line.strany, p)) return 0;
+      return vsetky.filter((x) => x.playedBy === p && (x.naexBy === q || x.naexBy2 === q)).length;
+    case "vymahac":
+      return Math.floor(kolo.dlhy[p] / 2);
+    case "sofer":
+      return kolo.naexVKole[p] ? 0 : 1;
+    case "traktoristka": {
+      // Prevaha v kraji, kde leží; vo finále bez lokality kraje nie sú.
+      if (line.lokalita === null) return 0;
+      const strana = line.strany[0].includes(pl) ? 0 : 1;
+      return prevahaStran(data, line.strany)[strana] === p ? 1 : 0;
+    }
+    default:
+      return e.podmienka === undefined ? 1 : 0;
+  }
+}
+
+/** Koľkokrát platí efekt navyše Nástroja v Dedičstve hráča p (Pasca, Výherný automat). */
+function kratVDedicstve(line: LineState, p: PlayerId, defId: string, e: EfektNavyse): number {
+  const kolo = line.kolo;
+  if (kolo === undefined || e.dedicstvo !== true) return 0;
+  if (e.spustac === "Posledná Pitka kola") return kolo.poslednaPitka ? 1 : 0;
+  if (e.spustac !== "Bitka") return 0;
+  // Pasca: súper v tomto kole priložil kartu (akúkoľvek, aj lícom dole) k tvojej — za každú Pascu.
+  if (defId === "pasca") return kolo.prilozeniaKu[p] > 0 ? 1 : 0;
+  return e.podmienka === undefined ? 1 : 0;
+}
+
+/** Karty, ktorých podmienku slovami jadro pozná — na inej karte ju tvorca hlási ako chybu. */
+export const PODMIENKY_SLOVAMI: readonly string[] = ["pijan", "svokra", "vymahac", "sofer", "traktoristka", "pasca", "vyherny_automat"];
+
+/**
+ * Praudovravec starej sady: Autority hráča p neuplatňujú efekt, keď v súperovej partii leží
+ * odkrytý Praudovravec so starým textom (effects.ts efektPotlaceny).
+ */
+export function autorityUmlcane(data: GameData, strany: LineState["strany"], p: PlayerId): boolean {
+  const praudovravec = data.cards.get("praudovravec");
+  if (praudovravec === undefined || !praudovravec.effectText.includes("Autorit") || efektyNavyse(praudovravec).length > 0) return false;
+  return [...strany[0], ...strany[1]].some((x) => x.playedBy !== p && x.card.defId === "praudovravec" && x.zaverecna !== true);
 }
 
 /** Príspevok karty v línii k bitke — štatistiky partií a simulácia sily kariet v tvorcovi. */

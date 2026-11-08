@@ -666,3 +666,33 @@ body:not(.tahanie-aktivne) .ruka-rad > .tahatelna:is(:hover, :focus-visible) .kl
   opacity: 0.5;
   filter: grayscale(1);
 }
+
+/* Šípky pečate pri Podpore a Konflikte (mock M3, Michal 2026-11-08): ukazujú k susedom,
+   svieti tá, pri ktorej susedovi sa efekt spustil. Farby ako aktívna akcia (kl-aktivna). */
+.kl-navyse-sipka {
+  position: absolute;
+  z-index: 1;
+  left: calc(var(--x) * var(--pt));
+  top: calc(var(--y) * var(--pt));
+  width: calc(var(--s) * var(--pt));
+  height: calc(var(--s) * 1.6 * var(--pt));
+  margin-top: calc(var(--s) * -0.8 * var(--pt));
+  background: #fff;
+  opacity: 0.55;
+  filter: drop-shadow(0 0 calc(1.2 * var(--pt)) #000);
+  pointer-events: none;
+}
+
+.kl-navyse-sipka-lava {
+  clip-path: polygon(100% 0, 0 50%, 100% 100%);
+}
+
+.kl-navyse-sipka-prava {
+  clip-path: polygon(0 0, 100% 50%, 0 100%);
+}
+
+.kl-navyse-sipka-sviti {
+  background: #ffcf4d;
+  opacity: 1;
+  filter: drop-shadow(0 0 calc(3 * var(--pt)) rgba(255, 196, 64, 0.95)) drop-shadow(0 0 calc(0.6 * var(--pt)) #000);
+}
