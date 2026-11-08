@@ -119,26 +119,20 @@ export interface HernaKartaProps {
 }
 
 /**
- * Stav pečatí Preškolenia karty v línii: koľko akcií susedov sa práve ráta ako nová akcia
- * a ku ktorému susedovi svieti šípka. Mimo línie undefined (pečať ako vytlačená).
+ * Stav pečatí Preškolenia karty v línii z jadra (CardLineEval.skolitel): koľko akcií práve
+ * preškoľuje a ku ktorému susedovi svieti šípka — len k tomu, komu niečo preškolil (preskolena).
+ * Mimo línie undefined (pečať ako vytlačená).
  */
 function stavPreskoleni(efekt: string, stol: ZarStola | null, uid: number): PreskolenieNaKarte[] | undefined {
   const presk = preskoleniaZTextu(efekt);
   if (presk.length === 0 || stol === null || stol.evaly === undefined) return undefined;
-  const strana = stol.view.strany.find((st) => st.some((x) => x.card.uid === uid));
-  if (strana === undefined) return undefined;
-  const i = strana.findIndex((x) => x.card.uid === uid);
-  const susedia = [strana[i - 1], strana[i + 1]].filter((x) => x !== undefined);
+  const skolitel = stol.evaly.get(uid)?.skolitel;
+  if (skolitel === undefined) return undefined;
   return presk.map((p) => {
-    let krat = 0;
-    const od: number[] = [];
-    for (const s of susedia) {
-      const ev = stol.evaly?.get(s.card.uid);
-      const n = ev === undefined ? 0 : [...ev.left, ...ev.right].filter((se) => se?.naKarte === true && se.action === p.z && se.ako === p.na).length;
-      if (n > 0) od.push(s.card.uid);
-      krat += n;
-    }
-    return { krat, sipky: sipkyKSusedom(stol.view, uid, od) };
+    const s = skolitel.find((x) => x.z === p.z && x.na === p.na && x.spustac === p.spustac);
+    if (s === undefined) return { krat: 0 };
+    const od = s.ku.filter((k) => (stol.evaly?.get(k)?.preskolena ?? []).some((x) => x.od === uid && x.z === p.z && x.akcii > 0));
+    return { krat: s.akcii, sipky: sipkyKSusedom(stol.view, uid, od) };
   });
 }
 
@@ -169,7 +163,9 @@ export function HernaKarta({ karta, sada, data, sirka, otocena = false, eval: ev
         return r;
       }
       if (se?.povodna !== undefined) {
-        const meno = menoNastroja(se.povodna);
+        // Nástroj pod kartou, inak Školiteľ v línii (jadro: SlotEval.preskolil).
+        const skolitel = se.preskolil === undefined ? undefined : stol?.view.strany.flat().find((x) => x.card.uid === se.preskolil);
+        const meno = menoNastroja(se.povodna) ?? (skolitel === undefined ? null : (data.cards.get(skolitel.card.defId)?.name ?? null));
         rohy[k] = { akcia: se.povodna, preco: meno === null ? "Preškolenie" : `Preškolenie: ${meno}` };
         return se.action;
       }

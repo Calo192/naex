@@ -1,8 +1,8 @@
 // Ukážka Náradia na stole (/hra/ukazka-stola?stop=naradie): kým admin nezadá hrany Nástrojov
 // do tvorcu (rozpracovaný stav, cards.json podľa pravidla 5), dostane ich sada len v prehliadači —
 // texty zo zoznamu pre admina (packages/core/test/data/naradie-hrany.json, v5) a Nástroje bez slotov.
-// Vedúcko, Sypač, Anonymný alkoholik a Tipér dostanú na líci zápis Preškolenia, ktorý pripravuje
-// jadro (feature/obcania-kategorie); hra ich zatiaľ vyhodnocuje po starom, mení sa len líce.
+// Vedúcko, Sypač, Anonymný alkoholik a Tipér dostanú zápis Preškolenia na líci aj v hre (jadro ho
+// číta z textu, packages/core/src/preskolenie.ts) — kým ho admin nezapíše do tvorcu.
 
 import type { CardInstance, GameState, PlayerId } from "@naex/core";
 import { opponentOf } from "@naex/core";
@@ -33,18 +33,21 @@ const HRANY_NASTROJOV: Readonly<Record<string, string>> = {
   zrkadlo: "Dedičstvo: Tvoj Pakt kopíruje prepojenú akciu dvakrát. Hore: {Odpor}→{Pakt}. Dole: {Pakt}→{Odpor}.",
 };
 
-/** Líce kariet s Preškolením v zápise jadra (Leader 2026-11-08) — len vzhľad, pravidlá ich ešte nečítajú. */
+/** Školitelia v zápise jadra (docs/napady/obcania-kategorie.json): text efektu a jeho spúšťač. */
 const LICE_PRESKOLENIA: Readonly<Record<string, string>> = {
   veducko: "Furt: Preškolenie {Robota}→{Pecka}.",
   kulturista: "Podpora: Preškolenie {Rana}→{Pecka}.",
   anonymny_alkoholik: "Podpora: Preškolenie {PoškodeniePečene}→{Viera}.",
   profesionalny_tiper: "Konflikt: Preškolenie {Cigareta}→{Dlh}.",
 };
+const SPUSTAC_PRESKOLENIA: Readonly<Record<string, string>> = { veducko: "Furt", kulturista: "Podpora", anonymny_alkoholik: "Podpora", profesionalny_tiper: "Konflikt" };
 
-/** Sada s hranami Nástrojov (hra aj líce) a so zápisom Preškolenia na líci štyroch Občanov. */
+/** Sada s hranami Nástrojov a so zápisom Preškolenia štyroch Občanov (hra aj líce). */
 export function sadaSNaradim(sada: Sada): Sada {
   const bezSlotov = { blocked: [], actions: {} };
   const cards = (sada.cardsJson as { cards: { id: string; effect_text: string }[] }).cards.map((c) => {
+    const lice = LICE_PRESKOLENIA[c.id];
+    if (lice !== undefined) return { ...c, effect_text: lice, triggers: [SPUSTAC_PRESKOLENIA[c.id]] };
     const text = HRANY_NASTROJOV[c.id];
     return text === undefined ? c : { ...c, effect_text: text, left: bezSlotov, right: bezSlotov, permutations: { total: 1, left: 1, right: 1 } };
   });
