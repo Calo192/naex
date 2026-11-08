@@ -39,8 +39,8 @@ import type { GameData } from "./data.ts";
 import { defOf } from "./data.ts";
 import type { ChachaStav, RngState, Semienko } from "./rng.ts";
 import { rngInt, rngSeed, rngShuffle } from "./rng.ts";
-import type { ActionSums, KartaVBitke, LineEval, LineState, PlacedCard } from "./partia.ts";
-import { evaluateLine, okolieVLinii, prevahaStran, prispevkyKariet, zvieratAUmlcane } from "./partia.ts";
+import type { ActionSums, KartaVBitke, LineEval, LineState, PlacedCard, PreskolenieOdSkolitela } from "./partia.ts";
+import { dlhyPoslednejPitky, evaluateLine, okolieVLinii, prevahaStran, prispevkyKariet, zvieratAUmlcane } from "./partia.ts";
 import { efektyNavyse, podmienkySpoja, splnaTag } from "./navyse.ts";
 import type { KtoraHrana } from "./naradie.ts";
 import { KTORE_HRANY, hranyNastroja, ucinkyNastrojov } from "./naradie.ts";
@@ -115,9 +115,8 @@ import {
   partiaHraca,
   zvieraPlati,
   naexNaZviera,
-  traktoristkyBezPrevahy,
-  soferiBezNaex,
 } from "./effects.ts";
+import { menoAkcie, preskoleniaKarty } from "./preskolenie.ts";
 import type { VerejnyHrac, VerejnyStav } from "./effects.ts";
 import type { Favour } from "./types.ts";
 
@@ -3056,6 +3055,44 @@ function navysePoSpoji(
   return zmena ? { navyse, navyseOd } : null;
 }
 
+/**
+ * Preškolenia karty `druha` po stretnutí so Školiteľom `nositel` Podporou či Konfliktom (Michal
+ * 2026-11-08): do konca kola má akciu X ako Y. Null = nositeľ nemá Preškolenie s týmto spúšťačom;
+ * tá istá dvojica sa druhý raz nezapíše (nič nové).
+ */
+export function preskoleniaPoSpoji(
+  data: GameData,
+  spustac: "Konflikt" | "Podpora",
+  nositel: Pick<PlacedCard, "card">,
+  druha: Pick<PlacedCard, "preskolenia">,
+): readonly PreskolenieOdSkolitela[] | null {
+  const efekty = preskoleniaKarty(defOf(data, nositel.card)).filter((e) => e.spustac === spustac);
+  if (efekty.length === 0) return null;
+  const out = [...(druha.preskolenia ?? [])];
+  for (const e of efekty) {
+    if (out.some((p) => p.od === nositel.card.uid && p.z === e.z && p.spustac === spustac)) continue;
+    out.push({ z: e.z, na: e.na, od: nositel.card.uid, spustac });
+  }
+  return out;
+}
+
+/** Školiteľ pri Podpore či Konflikte zapíše preškolenie na druhú kartu; true = karta je Školiteľ s týmto spúšťačom. */
+function preskolPriSpoji(data: GameData, spustac: "Konflikt" | "Podpora", nositel: DeepMutable<PlacedCard>, druha: DeepMutable<PlacedCard>, events: Event[]): boolean {
+  const nove = preskoleniaPoSpoji(data, spustac, nositel as PlacedCard, druha as PlacedCard);
+  if (nove === null) return false;
+  const pred = druha.preskolenia?.length ?? 0;
+  if (nove.length === pred) return true;
+  druha.preskolenia = nove.map((p) => ({ ...p }));
+  const def = defOf(data, nositel.card as CardInstance);
+  const jeho = defOf(data, druha.card as CardInstance);
+  const co = nove
+    .slice(pred)
+    .map((p) => `${menoAkcie(p.z)} ako ${menoAkcie(p.na)}`)
+    .join(", ");
+  events.push({ type: "log", text: `${spustac} — Preškolenie: ${def.name} hráča ${(nositel.playedBy as number) + 1} pri karte ${jeho.name}: tá má do konca kola ${co}.` });
+  return true;
+}
+
 /** Vyvolá ležiaca karta Konflikt, keď sa k nej priloží `prilozena`? (Miňištrant, plan.md 13.1) */
 export function vyvolaKonflikt(data: GameData, lezi: PlacedCard, prilozena: Pick<PlacedCard, "card" | "playedBy">): boolean {
   return spustiSpoj(data, "Konflikt", lezi, prilozena);
@@ -3108,8 +3145,12 @@ export function sPrilozenou<T extends VerejnyStav & { readonly lokalitaOtocena: 
     if (efektPotlaceny(data, s, a.playedBy, a.card.defId)) return [a, b];
     const jeho = defOf(data, b.card).tags;
     for (const spustac of ["Konflikt", "Podpora"] as const) {
-      const navyse = spustiSpoj(data, spustac, a, b) ? navysePoSpoji(data, spustac, a, b) : null;
+      if (!spustiSpoj(data, spustac, a, b)) continue;
+      const navyse = navysePoSpoji(data, spustac, a, b);
       if (navyse !== null) a = { ...a, ...navyse };
+      // Školiteľ (Michal 2026-11-08): karta, s ktorou sa stretol, má do konca kola akciu X ako Y.
+      const preskolenia = preskoleniaPoSpoji(data, spustac, a, b);
+      if (preskolenia !== null) b = { ...b, preskolenia };
     }
     if (spustiSpoj(data, "Konflikt", a, b)) {
       switch (a.card.defId) {
@@ -3127,7 +3168,6 @@ export function sPrilozenou<T extends VerejnyStav & { readonly lokalitaOtocena: 
     }
     if (spustiSpoj(data, "Podpora", a, b) && jeho.includes("Chlap")) {
       if (a.card.defId === "snubenica" && maNaex(b, opponentOf(a.playedBy))) return [a, bezNaex(b, opponentOf(a.playedBy))];
-      if (a.card.defId === "kulturista") return [a, { ...b, ranyAkoPecky: true }];
     }
     return [a, b];
   };
@@ -3201,7 +3241,8 @@ function konflikt(s: MutState, data: GameData, nositel: DeepMutable<PlacedCard>,
   const opp = opponentOf(p);
   const def = defOf(data, nositel.card as CardInstance);
   const jeho = defOf(data, druha.card as CardInstance);
-  if (pridajNavyse(data, "Konflikt", nositel, druha, events)) return;
+  const preskolil = preskolPriSpoji(data, "Konflikt", nositel, druha, events);
+  if (pridajNavyse(data, "Konflikt", nositel, druha, events) || preskolil) return;
   switch (def.id) {
     case "velmi_smutiaca_vdova": {
       if (vdovaZRuky(def)) {
@@ -3260,7 +3301,8 @@ function konflikt(s: MutState, data: GameData, nositel: DeepMutable<PlacedCard>,
       events.push({ type: "log", text: `Konflikt — Snúbenica: ${jeho.name} ide po bitke do odhadzovacieho balíčka hráča ${p + 1} a je jeho.` });
       break;
     default:
-      events.push({ type: "manualEfekt", defId: def.id, nazov: def.name, text: def.effectText, hrac: p });
+      // Implementovaná karta so starým textom (prechod sady) nemá čo pripomínať.
+      if (jeEfektManual(def.id)) events.push({ type: "manualEfekt", defId: def.id, nazov: def.name, text: def.effectText, hrac: p });
   }
 }
 
@@ -3271,7 +3313,8 @@ function podpora(s: MutState, data: GameData, nositel: DeepMutable<PlacedCard>, 
   const opp = opponentOf(p);
   const def = defOf(data, nositel.card as CardInstance);
   const jeho = defOf(data, druha.card as CardInstance);
-  if (pridajNavyse(data, "Podpora", nositel, druha, events)) return;
+  const preskolil = preskolPriSpoji(data, "Podpora", nositel, druha, events);
+  if (pridajNavyse(data, "Podpora", nositel, druha, events) || preskolil) return;
   switch (def.id) {
     case "snubenica":
       // Michal 2026-11-03: Snúbenica vráti súperovo NA EX z vlastného Chlapa.
@@ -3289,14 +3332,9 @@ function podpora(s: MutState, data: GameData, nositel: DeepMutable<PlacedCard>, 
       if (kde !== null) nastupEfekt(s, data, "hasic", p, kde.strana, events);
       break;
     }
-    case "kulturista":
-      // Sypač (v11.5): tvoj Chlap má do konca kola Rany ako Pecky (partia.ts akciaPoPremene).
-      if (!jeho.tags.includes("Chlap") || druha.ranyAkoPecky === true) break;
-      druha.ranyAkoPecky = true;
-      events.push({ type: "log", text: `Podpora — Sypač hráča ${p + 1}: ${jeho.name} má do konca kola Rany ako Pecky.` });
-      break;
     default:
-      events.push({ type: "manualEfekt", defId: def.id, nazov: def.name, text: def.effectText, hrac: p });
+      // Implementovaná karta so starým textom (prechod sady) nemá čo pripomínať.
+      if (jeEfektManual(def.id)) events.push({ type: "manualEfekt", defId: def.id, nazov: def.name, text: def.effectText, hrac: p });
   }
 }
 
@@ -4900,6 +4938,12 @@ function pokracujPoPitke(s: MutState, data: GameData, events: Event[]): void {
       for (let i = nasobokTeraz(s); i > 0; i--) pridajDlh(s, p, events);
     }
   }
+  // Hazard navyše „Posledná Pitka kola“ kariet v línii (Traktorista bez prevahy v jeho kraji, Michal
+  // 2026-11-08): Dlh z Pitky ako Výherný automat. Prevaha sa ráta teraz — po otočení Záverečných.
+  for (const d of dlhyPoslednejPitky(data, lineState(s as GameState))) {
+    events.push({ type: "log", text: `${defOf(data, { defId: d.defId }).name}: hráč ${d.hrac + 1} — posledná Pitka kola, Hazard navyše: Dlh.` });
+    for (let i = d.dlhy * nasobokTeraz(s); i > 0; i--) pridajDlh(s, d.hrac, events);
+  }
   zacniBitku(s, data, events);
 }
 
@@ -4925,13 +4969,13 @@ function robotaPali(sums: ActionSums, furikov = 0, priazen = 0, kon = 0): number
 
 /**
  * Kôň (Furt, v11.5): aktívne Roboty Koňov hráča p v línii (s násobkami) — každá páli o 1 Dlh
- * viac. Kôň vedľa Mäsiara efekt nemá; Robota premenená Vedúckom či Tipérom už nie je Robota.
+ * viac. Kôň vedľa Mäsiara efekt nemá; preškolená Robota (Vedúcko) už nie je Robota.
  */
 export function robotyKona(data: GameData, s: Pick<VerejnyStav, "strany" | "ciel">, vyhodnotenie: LineEval, p: PlayerId): number {
   const kone = new Set(partiaHraca(s, p).filter((pl) => pl.card.defId === "kon" && pl.zaverecna !== true).map((pl) => pl.card.uid));
   if (kone.size === 0) return 0;
   const umlcane = zvieratAUmlcane(data, { lokalita: s.ciel?.lokalita ?? null, strany: s.strany });
-  return (vyhodnotenie.zdroje[p].Robota ?? []).reduce((n, z) => n + (kone.has(z.uid) && !umlcane.has(z.uid) && !z.dovody.includes("karta:profesionalny_tiper") ? z.hodnota : 0), 0);
+  return (vyhodnotenie.zdroje[p].Robota ?? []).reduce((n, z) => n + (kone.has(z.uid) && !umlcane.has(z.uid) ? z.hodnota : 0), 0);
 }
 
 /** Fúriky v Dedičstve hráča p. */
@@ -4976,23 +5020,6 @@ function zacniBitku(s: MutState, data: GameData, events: Event[]): void {
     spalit: [],
     vesticaHotova: false,
   };
-
-  // Traktoristka (v7, Na leasing): bez prevahy v jej kraji Dlh — pred Exekútorom.
-  for (const p of [0, 1] as const) {
-    for (let i = traktoristkyBezPrevahy(data, s as GameState, p); i > 0; i--) {
-      events.push({ type: "log", text: `Traktoristka: hráč ${p + 1} nemá v jej kraji prevahu — leasing ide na Dlh.` });
-      pridajDlh(s, p, events);
-    }
-  }
-
-  // Šofér (Bitka, v11.5): bez NA EX v tomto kole dostane majiteľ za každého Šoféra 1 cigaretu
-  // (Pecku navyše ráta bitkaMody).
-  for (const p of [0, 1] as const) {
-    const n = soferiBezNaex(s as GameState, p);
-    if (n === 0) continue;
-    zmenCigarety(s, p, "sofer", n, events);
-    events.push({ type: "log", text: `Šofér: hráč ${p + 1} v tomto kole nedal NA EX — dostáva ${cigariet(n)}.` });
-  }
 
   manualEfekty(s, data, "Bitka", events);
   manualEfekty(s, data, "Furt", events);

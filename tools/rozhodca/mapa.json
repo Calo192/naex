@@ -1637,14 +1637,13 @@
     {
       "id": "16.karta.profesionalny-tiper",
       "paragraf": "16. Výklad kariet",
-      "pravidlo": "Profesionálny tipér (Furt, v8.4): posilnené akcie na jeho spojoch — súperove ako posilnený Hazard, tvoje ako posilnená Robota; posilnená aj Forsážou (v10.4).",
+      "pravidlo": "Profesionálny tipér — Školiteľ, Konflikt: Preškolenie {Cigareta}→{Hazard} (Michal 2026-11-08, T1): súperova karta, s ktorou sa priložením stretne (oboma smermi), má do konca kola Cigarety ako Hazard.",
       "stav": "pokryte",
       "testy": [
-        "packages/core/test/naradie.test.ts › Profesionálny tipér: tvoja posilnená akcia na jeho spoji sa ráta ako posilnená Robota",
-        "packages/core/test/naradie.test.ts › Profesionálny tipér: súperova posilnená akcia na jeho spoji sa ráta ako posilnený Hazard",
-        "packages/core/test/autority-v104.test.ts › Profesionálny tipér ráta aj Forsáž (v10.4) › akcie spoja s Forsážou sú pre jeho majiteľa posilnená Robota"
+        "packages/core/test/skolitelia.test.ts › Konflikt — súperova karta, s ktorou sa Školiteľ stretne priložením (Profesionálny tipér) › Tipér priložený k súperovej karte: jej Cigarety sú do konca kola Hazard súpera; k vlastnej nič",
+        "packages/core/test/skolitelia.test.ts › Konflikt — súperova karta, s ktorou sa Školiteľ stretne priložením (Profesionálny tipér) › aj keď súper priloží svoju kartu k Tipérovi (Konflikt oboma smermi, §16)"
       ],
-      "poznamka": "O4: rozsah na jeho spojoch."
+      "poznamka": "Do 2026-11-08 Furt (v8.4): posilnené akcie na jeho spojoch — testy odstránené so starým efektom."
     },
     {
       "id": "16.karta.pes",
@@ -1805,12 +1804,15 @@
     {
       "id": "16.karta.sypac",
       "paragraf": "16. Výklad kariet",
-      "pravidlo": "Sypač (id kulturista, Pitka, v10.3): ako Výtržník má všetky akcie na hranách aktívne Pecky namiesto Rán. Úplatok zanikol.",
+      "pravidlo": "Sypač (id kulturista) — Školiteľ, Podpora: Preškolenie {Rana}→{Pecka} (Michal 2026-11-08): tvoja karta (bez tagu), s ktorou sa priložením stretne, má do konca kola Rany ako Pecky, aj Rany navyše; súperova nie.",
       "stav": "pokryte",
       "testy": [
-        "packages/core/test/pravidla-v103.test.ts › ako Výtržník má všetky akcie aktívne Pecky, nie Rany; iný Výtržník Rany"
+        "packages/core/test/skolitelia.test.ts › Podpora — tvoja karta, s ktorou sa Školiteľ stretne priložením, do konca kola (Sypač, Anonymný alkoholik) › Sypač priložený k tvojej Žene: tá má Rany ako Pecky (tag Chlap padol); log to povie",
+        "packages/core/test/identita-kariet-v115.test.ts › Sypač (Podpora: Preškolenie {Rana}→{Pecka}, 2026-11-08 bez tagu Chlap) › priložený k tvojej karte — Chlapovi aj Žene — tá má do konca kola Rany ako Pecky; aj keď ju priložíš k nemu",
+        "packages/core/test/identita-kariet-v115.test.ts › Sypač (Podpora: Preškolenie {Rana}→{Pecka}, 2026-11-08 bez tagu Chlap) › súperova karta nie (Podpora je len k tvojej); náhľad (sPrilozenou) vidí to isté ako motor",
+        "packages/core/test/identita-kariet-v115.test.ts › Sypač (Podpora: Preškolenie {Rana}→{Pecka}, 2026-11-08 bez tagu Chlap) › Rany preškolenej karty sa v súčtoch rátajú ako Pecky ešte pred spojmi, partnerove Rany nie"
       ],
-      "poznamka": "v10.3 (Michal 2026-11-02) — Developer, na prejdenie rozhodcom."
+      "poznamka": "v10.3 Pitka (ako Výtržník s Peckami), v11.5 Podpora len s Chlapom; od 2026-11-08 Školiteľ bez tagu."
     },
     {
       "id": "16.karta.zivnostnik",
@@ -2284,10 +2286,66 @@
     {
       "id": "16.karta.veducko",
       "paragraf": "16. Výklad kariet",
-      "pravidlo": "Vedúcko (Furt, v10.4): aktívne Roboty susedných kariet (aj súperových) sa rátajú ako Pecky ich majiteľa; Posilnenie ich zdvojí; hrana lokality nie.",
+      "pravidlo": "Vedúcko — Školiteľ, Furt: Preškolenie {Robota}→{Pecka} (Michal 2026-11-08): Roboty oboch susedov (aj súperových) sú pred spojmi Pecky ich majiteľa; Posilnenie ich zdvojí; karta sama ani hrana lokality nie.",
       "stav": "pokryte",
       "testy": [
-        "packages/core/test/autority-v104.test.ts › Vedúcko (Furt, v10.4) › aktívne Roboty susednej karty sú Pecky jej majiteľa (aj súperovej) — posilnená ×2; bez Vedúcka Roboty"
+        "packages/core/test/autority-v104.test.ts › Vedúcko (Furt, v10.4) › aktívne Roboty susednej karty sú Pecky jej majiteľa (aj súperovej) — posilnená ×2; bez Vedúcka Roboty",
+        "packages/core/test/skolitelia.test.ts › Furt — obaja susedia, karty oboch hráčov, kým susedia (Vedúcko) › Roboty oboch susedov sú pred spojmi Pecky — aj súperovej karty; bez Vedúcka Roboty",
+        "packages/core/test/skolitelia.test.ts › Furt — obaja susedia, karty oboch hráčov, kým susedia (Vedúcko) › karta sama ani hrana lokality sa nepreškolí; keď sused odíde, premena skončí"
+      ]
+    },
+    {
+      "id": "16.karta.anonymny-alkoholik.skolitel",
+      "paragraf": "16. Výklad kariet",
+      "pravidlo": "Anonymný alkoholik — Školiteľ, Podpora: Preškolenie {Pečeň}→{Viera} (2026-11-08): tvoja karta, s ktorou sa priložením stretne, má do konca kola Poškodenie pečene ako Vieru; súperova nie.",
+      "stav": "pokryte",
+      "testy": [
+        "packages/core/test/skolitelia.test.ts › Podpora — tvoja karta, s ktorou sa Školiteľ stretne priložením, do konca kola (Sypač, Anonymný alkoholik) › Anonymný alkoholik: tvoja karta s pečeňou má Vieru; súperova karta nič (to by bol Konflikt)",
+        "packages/core/test/identita-kariet-v115.test.ts › Anonymný alkoholik (Podpora: Preškolenie {PoškodeniePečene}→{Viera}, 2026-11-08) › priložený k tvojej karte — jej Poškodenie pečene sa do konca kola ráta ako Viera; v Pitke pečeň nedá"
+      ]
+    },
+    {
+      "id": "16.karta.sofer.navyse",
+      "paragraf": "16. Výklad kariet",
+      "pravidlo": "Šofér: Bitka: Ak si v tomto kole nedal NA EX {Pecka} {Rana} (2026-11-08) — Pecka a Rana navyše; cigareta na začiatku bitky zanikla.",
+      "stav": "pokryte",
+      "testy": [
+        "packages/core/test/skolitelia.test.ts › Šofér: Bitka: Ak si v tomto kole nedal NA EX {Pecka} {Rana} › bez NA EX Pecka a Rana navyše v súčtoch; cigareta na začiatku bitky zanikla"
+      ]
+    },
+    {
+      "id": "6.preskolenie.skolitel",
+      "paragraf": "6. Zhromaždenie › Línia, konce a kraje",
+      "pravidlo": "Preškolenie Školiteľa (2026-11-08): akcia X dotknutej karty sa ráta ako Y pred spojmi, na oboch hranách aj v akciách navyše; Furt = obaja susedia, Podpora/Konflikt = karta, s ktorou sa stretne, do konca kola; každá akcia raz — Nástroj → Podpora a Konflikt v poradí spustenia → Furt; nereťazí sa; X ani Y nie je modifikátor.",
+      "stav": "pokryte",
+      "testy": [
+        "packages/core/test/skolitelia.test.ts › zápis „Spúšťač: Preškolenie {X}→{Y}.“ › chyby: neznáma akcia, X = Y, modifikátor spoja, iný spúšťač, chýbajúci zápis, slovo mimo spúšťača",
+        "packages/core/test/skolitelia.test.ts › jedna akcia sa preškolí raz: Nástroj pod kartou → Podpora a Konflikt v poradí spustenia → Furt › Nástroj vyhrá nad Podporou aj Furt; Podpora nad Furt; Furt, keď nič iné",
+        "packages/core/test/skolitelia.test.ts › jedna akcia sa preškolí raz: Nástroj pod kartou → Podpora a Konflikt v poradí spustenia → Furt › Podpora a Konflikt v poradí spustenia — prvá vyhrá",
+        "packages/core/test/skolitelia.test.ts › jedna akcia sa preškolí raz: Nástroj pod kartou → Podpora a Konflikt v poradí spustenia → Furt › nereťazí sa: Rana → Pecka a Pecka → Rana dajú z Rany Pecku a z Pecky Ranu",
+        "packages/core/test/skolitelia.test.ts › preškolenie mení aj akcie navyše dotknutej karty; Nástroj len hrany (§12) › Živnostník (Spoločník: Autorita {Robota}) vedľa Vedúcka: Robota navyše je Pecka — v súčtoch aj v pečati",
+        "packages/core/test/skolitelia.test.ts › preškolenie mení aj akcie navyše dotknutej karty; Nástroj len hrany (§12) › Fúrik dolnou hranou ({Robota}→{Hazard}) pod Živnostníkom: hrany Hazard, Robota navyše od Vedúcka Pecka",
+        "packages/core/test/skolitelia.test.ts › Podpora — tvoja karta, s ktorou sa Školiteľ stretne priložením, do konca kola (Sypač, Anonymný alkoholik) › každé spustenie ďalšia karta; tá istá dvojica druhý raz nič nové; náhľad (sPrilozenou) vidí to isté ako motor"
+      ]
+    },
+    {
+      "id": "16.obcania.kategorie",
+      "paragraf": "16. Výklad kariet",
+      "pravidlo": "Občania v troch kategóriách (2026-11-08): Školiteľ (Preškolenie), efekt s vedľajšou akciou (akcie navyše), textový efekt; Podpora a Konflikt bez tagu.",
+      "stav": "pokryte",
+      "testy": [
+        "packages/core/test/skolitelia.test.ts › budúca sada: 8 zmenených Občanov (test/data/obcania-kategorie.json pre admina) › zoznam sedí so záväzným zadaním: 4 Školitelia, 4 s vedľajšou akciou",
+        "packages/core/test/skolitelia.test.ts › zápis „Spúšťač: Preškolenie {X}→{Y}.“ › nie je to akcia navyše ani tag: rozbor navyše ho preskočí, Podpora a Konflikt sú bez tagu, text karty bez piktogramov"
+      ]
+    },
+    {
+      "id": "16.karta.traktorista",
+      "paragraf": "16. Výklad kariet",
+      "pravidlo": "Traktorista: s prevahou v jeho kraji Pecka navyše; Posledná Pitka kola: bez prevahy Hazard navyše — Dlh na konci poslednej Pitky kola (prevaha po otočení Záverečných).",
+      "stav": "pokryte",
+      "testy": [
+        "packages/core/test/skolitelia.test.ts › Traktorista: Posledná Pitka kola: Bez prevahy v jeho kraji {Dlh} — prevaha po otočení Záverečných › bez prevahy v jeho kraji dá na konci poslednej Pitky Dlh; s prevahou nie (vtedy Pecka v bitke)",
+        "packages/core/test/skolitelia.test.ts › Traktorista: Posledná Pitka kola: Bez prevahy v jeho kraji {Dlh} — prevaha po otočení Záverečných › v skoršej Pitke kola nič; pečať Posledná Pitka kola svieti len v poslednej; náhľad Dlhov s ním ráta"
       ]
     },
     {

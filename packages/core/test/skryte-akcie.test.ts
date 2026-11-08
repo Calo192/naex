@@ -2,8 +2,7 @@
 // dávali Ranu, Pecku či Hazard slovami, sú v zápise akcie navyše „Bitka: podmienka {Akcia}.“
 // (Pasca, Pijan, Svokra, Vymáhač, Šofér, Traktorista, Výherný automat). Rany a Pecky idú do
 // súčtov, takže ich zosilnia Vidly a Valaška; inak sa výsledok v hre nemení. Staré texty
-// platia ďalej, kým admin nezapíše nové. K tomu Vedúcko a Sypač menia aj akcie navyše
-// a pečať Podpory a Konfliktu má šípky k susedom.
+// platia ďalej, kým admin nezapíše nové. K tomu pečať Podpory a Konfliktu má šípky k susedom.
 // Očakávané hodnoty sú z pravidla (špecifikácia), nie z kódu.
 
 import { describe, expect, it } from "vitest";
@@ -241,79 +240,10 @@ describe("počítadlo a rekapitulácia bitky", () => {
   });
 });
 
-describe("Vedúcko a Sypač menia aj akcie navyše (Michal 2026-11-08)", () => {
-  it("Vedúcko: Robota navyše Živnostníka vedľa neho je Pecka — v súčtoch aj v stave pečate", () => {
-    const ziv = inst("zivnostnik");
-    // Vedúcko je Autorita — Živnostník (Spoločník: Autorita {Robota}) platí.
-    const ev = evaluateLine(nova, lineState(stol(nova, { strany: [[lezi(inst("veducko"), 0), lezi(ziv, 0)], []] })));
-    const stav = ev.cards.get(ziv.uid)?.navyse?.[0];
-    expect(stav?.krat).toBe(1);
-    expect(stav?.ako).toEqual(["Pecka"]);
-    const zdroje = ev.zdroje[0];
-    expect(zdroje.Pecka?.some((z) => z.uid === ziv.uid && z.dovody.includes("karta:veducko"))).toBe(true);
-    expect(zdroje.Robota?.some((z) => z.uid === ziv.uid && z.dovody.some((d) => d.startsWith("akcia navyše")))).not.toBe(true);
-  });
+// Vedúcko, Sypač, Anonymný alkoholik a Tipér sú od 2026-11-08 Školitelia — preškolenie hrán aj akcií
+// navyše a čo vidno na karte skúša skolitelia.test.ts na budúcej sade.
 
-  it("Sypač: tvoj Chlap má aj Rany navyše ako Pecky; ostatné modifikátory akcie navyše nemenia", () => {
-    const pijan = inst("pijan");
-    const x: Stol = { strany: [[lezi(pijan, 0, { naexBy: 0, ranyAkoPecky: true })], []] };
-    const ev = evaluateLine(nova, lineState(stol(nova, x)));
-    expect(ev.cards.get(pijan.uid)?.navyse?.[0]?.ako).toEqual(["Pecka"]);
-    expect(ev.zdroje[0].Pecka?.some((z) => z.uid === pijan.uid && z.dovody.includes("karta:kulturista"))).toBe(true);
-    const navyse = (e: typeof ev, a: "Rana" | "Pecka") => (e.zdroje[0][a] ?? []).filter((z) => z.uid === pijan.uid && z.dovody[0]?.startsWith("akcia navyše") === true).reduce((n, z) => n + z.hodnota, 0);
-    expect(navyse(ev, "Pecka")).toBe(1);
-    expect(navyse(ev, "Rana")).toBe(0);
-    // Bez Sypača tá istá karta dá Ranu navyše.
-    const bez = evaluateLine(nova, lineState(stol(nova, { strany: [[lezi(pijan, 0, { naexBy: 0 })], []] })));
-    expect(navyse(bez, "Rana")).toBe(1);
-    expect(navyse(bez, "Pecka")).toBe(0);
-  });
-
-  it("zmenenú akciu na hrane vidno na dotknutej karte (ako: Pecka)", () => {
-    // Chlap s vytlačenou Ranou: jeho Rany ako Pecky (Sypač).
-    const chlap = [...nova.cards.values()].find((d) => d.tags.includes("Chlap") && d.tags.includes("Občan") && (() => {
-      const st = printedSides(nova, { defId: d.id, leftLayout: 0, rightLayout: 0 });
-      return [...st.left, ...st.right].includes("Rana");
-    })());
-    expect(chlap).toBeDefined();
-    const k = inst(chlap!.id);
-    const ev = evaluateLine(nova, lineState(stol(nova, { strany: [[lezi(k, 0, { ranyAkoPecky: true })], []] })));
-    const sloty = [...(ev.cards.get(k.uid)?.left ?? []), ...(ev.cards.get(k.uid)?.right ?? [])].filter((x) => x?.action === "Rana");
-    expect(sloty.length).toBeGreaterThan(0);
-    for (const x of sloty) expect(x?.ako).toBe("Pecka");
-  });
-});
-
-describe("premenu Anonymného alkoholika a Tipéra vidno na karte (Michal 2026-11-08)", () => {
-  it("Anonymný alkoholik: Poškodenie pečene navyše suseda je Viera — v súčtoch aj v pečati; hrana tiež", () => {
-    // Akcia navyše s pečeňou v sade zatiaľ nie je — Miňištrant na skúšku: „Spoločník: Závislý {Poškodenie pečene}.“
-    const d = sadaSoZmenami(frakcieJson, skryteJson, { karty: [{ id: "ministrant", effect_text: "Spoločník: Závislý {Poškodenie pečene}." }] });
-    const min = inst("ministrant");
-    const aa = inst("anonymny_alkoholik");
-    const ev = evaluateLine(d, lineState(stol(d, { strany: [[lezi(aa, 0), lezi(min, 0)], []] })));
-    const stav = ev.cards.get(min.uid)?.navyse?.[0];
-    expect(stav?.krat).toBe(1);
-    expect(stav?.ako).toEqual(["Viera"]);
-    expect(ev.zdroje[0].Viera?.some((z) => z.uid === min.uid && z.dovody.includes("karta:anonymny_alkoholik"))).toBe(true);
-    expect(ev.zdroje[0].PoškodeniePečene?.some((z) => z.uid === min.uid && z.dovody[0]?.startsWith("akcia navyše") === true)).not.toBe(true);
-    for (const x of [...(ev.cards.get(min.uid)?.left ?? []), ...(ev.cards.get(min.uid)?.right ?? [])]) {
-      if (x?.action === "PoškodeniePečene") expect(x).toMatchObject({ ako: "Viera", naKarte: true });
-    }
-  });
-
-  it("Profesionálny tipér: posilnené akcie na jeho spoji karta ukáže ako Robotu (svoje) — na oboch kartách spoja", () => {
-    const T_R: Layout4 = ["Posilnenie", "Pecka", null, null];
-    const A_L: Layout4 = ["Posilnenie", "Rana", null, null];
-    const d = syntheticData([makeDef("profesionalny_tiper", EMPTY, T_R), makeDef("a", A_L, EMPTY)]);
-    const t = instanceFor(d, "profesionalny_tiper", EMPTY, T_R);
-    const a = instanceFor(d, "a", A_L, EMPTY);
-    const ev = evaluateLine(d, { lokalita: null, lokalitaOtocena: false, strany: [[], [lezi(t, 0), lezi(a, 0)]] });
-    expect(ev.sums[0]).toEqual({ Robota: 4 });
-    const sloty = [t, a].flatMap((k) => [...(ev.cards.get(k.uid)?.left ?? []), ...(ev.cards.get(k.uid)?.right ?? [])]).filter((x) => x?.action === "Pecka" || x?.action === "Rana");
-    expect(sloty).toHaveLength(2);
-    for (const x of sloty) expect(x).toMatchObject({ ako: "Robota", naKarte: true });
-  });
-
+describe("premenu Šarlatána a Výtržníka karta nekreslí (Michal 2026-11-08)", () => {
   it("Šarlatán ani Výtržník sa na karte zatiaľ nekreslia", () => {
     const k = inst("pijan");
     const ev = evaluateLine(nova, lineState(stol(nova, { strany: [[lezi(k, 0, { vytrznik: true, naexBy: 0, naexBy2: 1 })], []] })));

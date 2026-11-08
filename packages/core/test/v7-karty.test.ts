@@ -152,7 +152,8 @@ describe("efekty v bitke (v7)", () => {
     expect(navyse({ ...s, naexVKole: [true, false] }, "sofer", "Pecka")).toBe(0);
   });
 
-  it("Traktoristka: s prevahou v jej kraji Pecka navyše, bez nej Dlh na začiatku bitky", () => {
+  // Dlh bez prevahy dáva od 2026-11-08 len zápis „Posledná Pitka kola: … {Dlh}“ (skolitelia.test.ts).
+  it("Traktoristka: s prevahou v jej kraji Pecka navyše, bez nej nie", () => {
     const t = inst("traktoristka");
     const s = vPitke("zastavka", [[lezi(t, 0)], []]);
     expect(navyse(s, "traktoristka", "Pecka")).toBe(1);
@@ -160,10 +161,6 @@ describe("efekty v bitke (v7)", () => {
     // Súperove dve karty v jej kraji — prevahu má súper.
     const bez = vPitke("zastavka", [[lezi(t, 0), lezi(inst("masiar"), 1), lezi(inst("masiar"), 1)], []]);
     expect(navyse(bez, "traktoristka", "Pecka")).toBe(0);
-    let st = bez;
-    for (let i = 0; i < 2 && st.faza === "pitka"; i++) st = apply(data, st, { type: "skipNaex" }, st.pitkaStav!.naTahu).state;
-    // Dlh z Traktoristky príde pred Exekútorom — ten ho hneď zhorí (bez prahu, 2026-10-28).
-    expect(st.hraci[0].dlhy + (st.nastenka.at(-1)?.exekutor[0] ?? 0)).toBeGreaterThanOrEqual(1);
   });
 
   it("Milujúca manželka: pečeň majiteľa v Pitke o 1 menšia", () => {

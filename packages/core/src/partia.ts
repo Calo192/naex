@@ -22,6 +22,8 @@
 //    všetky aktívne akcie posilnené; lokalita len hranu pri tom kraji.
 //  - Vzbura obráti aktivitu karty (v11.1, Michal 2026-11-02): nespojené akcie sú aktívne,
 //    spojené neaktívne; na lokalite len strana patriaca danej partii.
+//  - Preškolenie (Michal 2026-11-08, preskolenie.ts): akcie karty premení ešte pred spojmi prvá
+//    premena v poradí podložený Nástroj → Podpora a Konflikt Školiteľa → Furt Školiteľa (premenyVLinii).
 //  - Podložený Nástroj (Náradie, Michal 2026-11-08, naradie.ts): akciová hrana premení akcie
 //    hostiteľa ešte pred spojmi, kartová mu dá Vzburu, Forsáž, NA EX či Výtržníka tou istou
 //    cestou, akou ich karta dostane inak — v poradí spoje → Vzbura → Výherné žreby → Forsáž →
@@ -45,6 +47,8 @@ import type { EfektNavyse, NavyseStav } from "./navyse.ts";
 import { efektyNavyse, jeSlovami, popisPodmienky, stavNavyse } from "./navyse.ts";
 import type { PodlozenyNastroj } from "./naradie.ts";
 import { preskolStranu, preskoleniaHostitela, ucinkyNastrojov } from "./naradie.ts";
+import type { SpustacPreskolenia } from "./preskolenie.ts";
+import { preskoleniaKarty } from "./preskolenie.ts";
 
 /** Karta ležiaca v partii. */
 export interface PlacedCard {
@@ -81,10 +85,10 @@ export interface PlacedCard {
    */
   readonly premena?: "sarlatan" | "ministrant";
   /**
-   * Sypač (Podpora, v11.5): tvoj Chlap, s ktorým sa priložením stretol, má do konca kola
-   * Rany ako Pecky. Samostatne od premeny — Šarlatán či Miňištrant ju môžu mať tiež.
+   * Preškolenia od Školiteľov z Podpory a Konfliktu (Michal 2026-11-08) v poradí spustenia —
+   * platia do konca kola, aj keď sa karty rozídu (preskolenie.ts).
    */
-  readonly ranyAkoPecky?: true;
+  readonly preskolenia?: readonly PreskolenieOdSkolitela[];
   /**
    * Akcie navyše (frakcie, Michal 2026-11-08): koľkokrát sa v tomto kole spustil efekt
    * navyše [i] karty (navyse.ts efektyNavyse) — Podpora a Konflikt pri každom stretnutí.
@@ -147,6 +151,48 @@ export interface StavKolaLinie {
   readonly poslednaPitka: boolean;
 }
 
+/** Preškolenie od Školiteľa zapísané na kartu, s ktorou sa stretol Podporou či Konfliktom (engine). */
+export interface PreskolenieOdSkolitela {
+  readonly z: Action;
+  readonly na: Action;
+  /** uid Školiteľa. */
+  readonly od: number;
+  readonly spustac: "Podpora" | "Konflikt";
+}
+
+/** Odkiaľ je preškolenie akcie karty — v poradí prednosti. */
+export type ZdrojPreskolenia = "Nástroj" | SpustacPreskolenia;
+
+/** Preškolenie, ktoré platí na karte v línii (dotknutá karta — klient ju označí). */
+export interface PremenaNaKarte {
+  readonly z: Action;
+  readonly na: Action;
+  /** uid podloženého Nástroja alebo Školiteľa. */
+  readonly od: number;
+  readonly zdroj: ZdrojPreskolenia;
+  /** Koľko akcií karty premenilo — vytlačené na oboch hranách aj akcie navyše; 0 = karta akciu z nemá. */
+  readonly akcii: number;
+}
+
+/** Efekt Preškolenie Školiteľa v línii — pre pečať (pilulku) na jeho karte. */
+export interface StavSkolitela {
+  readonly spustac: SpustacPreskolenia;
+  readonly z: Action;
+  readonly na: Action;
+  /** Karty, ktoré preškoľuje (šípky k nim) — Furt: susedia, Podpora a Konflikt: karty, s ktorými sa stretol. */
+  readonly ku: readonly number[];
+  /** Koľko akcií na nich premenil; 0 = sivá pilulka (akciu nemajú, alebo ju skôr preškolil Nástroj či iný Školiteľ). */
+  readonly akcii: number;
+}
+
+/** Preškolenie akcie, ako ho čítajú hrany (naradie.ts preskolStranu): na čo a kto. */
+export interface PremenaAkcie {
+  readonly na: Action;
+  /** uid Nástroja či Školiteľa. */
+  readonly uid: number;
+  readonly zdroj: ZdrojPreskolenia;
+}
+
 export type SlotStav = "neaktivna" | "aktivna" | "zrusena";
 
 export interface SlotEval {
@@ -154,12 +200,17 @@ export interface SlotEval {
   readonly stav: SlotStav;
   /** Koľkokrát sa akcia počíta (2 = Posilnenie alebo NA EX; 0 = zrušená/neaktívna). */
   readonly nasobok: number;
-  /** Akcia sa ráta ako iná (Šarlatán: Viera v jeho okolí platí ako Vízia). */
+  /** Akcia sa ráta ako iná (stará sada: premena Šarlatána, Viera v jeho okolí ako Vízia). */
   readonly ako?: Action;
-  /** Karta kreslí na slote `ako` namiesto vytlačenej akcie (Tipér, Vedúcko, Sypač, Anonymný alkoholik). */
+  /**
+   * Karta kreslí na slote `ako` namiesto vytlačenej akcie. Od Školiteľov (2026-11-08) ho nič
+   * nenastavuje — preškolenie je v `action` a `povodna`.
+   */
   readonly naKarte?: true;
-  /** Vytlačená akcia, ktorú podložený Nástroj premenil na `action` (klient ju kreslí prečiarknutú v rožku). */
+  /** Vytlačená akcia, ktorú preškolil podložený Nástroj či Školiteľ na `action` (klient ju kreslí prečiarknutú v rožku). */
   readonly povodna?: Action;
+  /** uid Nástroja či Školiteľa, ktorý slot preškolil (pri `povodna`). */
+  readonly preskolil?: number;
 }
 
 /** Vyhodnotenie jednej karty — sloty vo VYTLAČENOM ráme karty. */
@@ -172,6 +223,10 @@ export interface CardLineEval {
   readonly right: readonly (SlotEval | null)[];
   /** Efekty s akciami navyše a koľkokrát platia (navyse.ts); chýba = karta ich nemá. */
   readonly navyse?: readonly NavyseStav[];
+  /** Preškolenia, ktoré na karte platia, v poradí prednosti; chýba = žiadne. */
+  readonly preskolena?: readonly PremenaNaKarte[];
+  /** Školiteľ: jeho efekty Preškolenie a koho preškoľujú; chýba = karta nie je Školiteľ. */
+  readonly skolitel?: readonly StavSkolitela[];
 }
 
 export type ActionSums = Readonly<Partial<Record<Action, number>>>;
@@ -267,8 +322,12 @@ interface Elem {
   readonly naexBy: PlayerId | undefined;
   /** NA EX z podloženého Vínka — ako NA EX, len bez poldeca (nie je nerest, nepije sa). */
   readonly naexNastroj: boolean;
-  /** povodne[side][k]: vytlačená akcia, ktorú podložený Nástroj premenil (efektívny rám). */
+  /** povodne[side][k]: vytlačená akcia, ktorú preškolil Nástroj či Školiteľ (efektívny rám). */
   readonly povodne: (Action | null)[][];
+  /** preskolil[side][k]: uid Nástroja či Školiteľa pri povodne. */
+  readonly preskolil: (number | null)[][];
+  /** Preškolenia karty (premenyVLinii). */
+  readonly premeny: PremenyKarty;
   /** Šarlatán v okolí: Viera tejto karty sa ráta ako Vízia (do v6; v7 nepoužíva). */
   vieraAkoVizia: boolean;
   /** Premena akcií do konca kola (PlacedCard.premena). */
@@ -283,18 +342,8 @@ interface Elem {
   readonly spojena: boolean[][];
   /** zrusilOdporom[side][k]: majiteľ Odporu, ktorý akciu zrušil (Hrable). */
   readonly zrusilOdporom: (PlayerId | null)[][];
-  /** tiper[side][k]: posilnená akcia na spoji Profesionálneho tipéra — jeho majiteľ (premena pri súčte). */
-  readonly tiper: (PlayerId | null)[][];
-  /** akoTipera[side][k]: akcia, ktorou sa posilnená akcia na spoji Tipéra ráta (Robota či Dlh) — kreslí ju karta. */
-  readonly akoTipera: (Action | null)[][];
   /** puska[side][k]: Petelica, ktorú Puška zachránila pred zrušením — ráta sa o 1 poškodenie menej. */
   readonly puska: boolean[][];
-  /** Vedúcko v okolí: vytlačené Roboty karty sa rátajú ako Pecky. */
-  robotaAkoPecka: boolean;
-  /** Anonymný alkoholik majiteľa v okolí (v11.5): Poškodenie pečene karty sa ráta ako Viera. */
-  pecenAkoViera: boolean;
-  /** Sypač (PlacedCard.ranyAkoPecky): Rany karty sa rátajú ako Pecky. */
-  readonly ranyAkoPecky: boolean;
 }
 
 /** Má hráč p v Dedičstve Nástroj defId? (LineState.nastroje) */
@@ -431,14 +480,16 @@ function makeElem(
   naexBy: PlayerId | undefined,
   strana: PlayerId | null,
   pl?: PlacedCard,
+  premeny: PremenyKarty = BEZ_PREMIEN,
 ): Elem {
   const printed = printedSides(data, card);
-  // Podložený Nástroj preškolí akcie hostiteľa ešte pred spojmi — susedia sa párujú už s preškolenými.
+  // Preškolenie (Nástroj, Školiteľ) platí ešte pred spojmi — susedia sa párujú už s preškolenými akciami.
   const sNastrojom = pl?.podlozene !== undefined && pl.podlozene.length > 0;
-  const premeny = sNastrojom ? preskoleniaHostitela(data, pl) : null;
-  const strany = premeny === null ? null : { left: preskolStranu(premeny, printed.left), right: preskolStranu(premeny, printed.right) };
+  const h = premeny.hrany;
+  const strany = h.size === 0 ? null : { left: preskolStranu(h, printed.left), right: preskolStranu(h, printed.right) };
   const akcie = (s: NonNullable<typeof strany>["left"]): Slot[] => s.map((x) => x?.akcia ?? null);
   const povodne = (s: NonNullable<typeof strany>["left"]): (Action | null)[] => s.map((x) => x?.povodna ?? null);
+  const kto = (s: NonNullable<typeof strany>["left"]): (number | null)[] => s.map((x) => x?.nastroj ?? null);
   const ucinky: ReadonlySet<string> = sNastrojom ? ucinkyNastrojov(data, pl) : new Set();
   return {
     uid: card.uid,
@@ -458,6 +509,13 @@ function makeElem(
         : rotated
           ? [povodne(strany.right).reverse(), povodne(strany.left).reverse()]
           : [povodne(strany.left), povodne(strany.right)],
+    preskolil:
+      strany === null
+        ? [[null, null, null, null], [null, null, null, null]]
+        : rotated
+          ? [kto(strany.right).reverse(), kto(strany.left).reverse()]
+          : [kto(strany.left), kto(strany.right)],
+    premeny,
     stav: [freshStav(), freshStav()],
     nasobok: [freshNasobok(), freshNasobok()],
     vzbura: [false, false],
@@ -473,13 +531,74 @@ function makeElem(
     posilnene: [],
     spojena: [0, 1].map(() => [false, false, false, false]),
     zrusilOdporom: [0, 1].map(() => [null, null, null, null]),
-    tiper: [0, 1].map(() => [null, null, null, null]),
-    akoTipera: [0, 1].map(() => [null, null, null, null]),
     puska: [0, 1].map(() => [false, false, false, false]),
-    robotaAkoPecka: false,
-    pecenAkoViera: false,
-    ranyAkoPecky: pl?.ranyAkoPecky === true,
   };
+}
+
+/** Preškolenia jednej karty: akcia → na čo a kto. */
+export interface PremenyKarty {
+  /** Akcie na hranách — Nástroj pod kartou aj Školitelia. */
+  readonly hrany: ReadonlyMap<Action, PremenaAkcie>;
+  /** Akcie navyše — len Školitelia (Nástroj preškoľuje hrany, PRAVIDLA §12). */
+  readonly navyse: ReadonlyMap<Action, PremenaAkcie>;
+}
+
+const BEZ_PREMIEN: PremenyKarty = { hrany: new Map(), navyse: new Map() };
+
+/**
+ * Preškolenia kariet v línii (Michal 2026-11-08) podľa uid, každé v poradí prednosti: akcia sa
+ * preškolí raz, prvou premenou v poradí podložený Nástroj (v poradí podloženia) → Podpora
+ * a Konflikt Školiteľa (v poradí spustenia, PlacedCard.preskolenia) → Furt Školiteľa, s ktorým
+ * karta susedí (karty oboch hráčov; aj lícom dole, ako Furt efekty akcií). Premeny sa nereťazia —
+ * výstup jednej nie je vstupom inej. Lokalita ani karta v strede nič nedostane. Akcie navyše
+ * preškolí len Školiteľ — Nástroj mení hrany.
+ */
+export function premenyVLinii(data: GameData, line: Pick<LineState, "lokalita" | "strany">): ReadonlyMap<number, PremenyKarty> {
+  const out = new Map<number, { hrany: Map<Action, PremenaAkcie>; navyse: Map<Action, PremenaAkcie> }>();
+  const vsetky = [...line.strany[0], ...line.strany[1]];
+  const pridaj = (uid: number, z: Action, p: PremenaAkcie): void => {
+    let m = out.get(uid);
+    if (m === undefined) {
+      m = { hrany: new Map(), navyse: new Map() };
+      out.set(uid, m);
+    }
+    if (!m.hrany.has(z)) m.hrany.set(z, p);
+    if (p.zdroj !== "Nástroj" && !m.navyse.has(z)) m.navyse.set(z, p);
+  };
+  for (const pl of vsetky) {
+    if (pl.podlozene !== undefined && pl.podlozene.length > 0) {
+      for (const [z, p] of preskoleniaHostitela(data, pl)) pridaj(pl.card.uid, z, { na: p.na, uid: p.uid, zdroj: "Nástroj" });
+    }
+    for (const p of pl.preskolenia ?? []) pridaj(pl.card.uid, p.z, { na: p.na, uid: p.od, zdroj: p.spustac });
+  }
+  for (const pl of vsetky) {
+    const furt = preskoleniaKarty(defOf(data, pl.card)).filter((e) => e.spustac === "Furt");
+    if (furt.length === 0) continue;
+    for (const s of okolieVLinii(line, pl.card.uid)) {
+      if (s === null) continue;
+      for (const e of furt) pridaj(s.card.uid, e.z, { na: e.na, uid: pl.card.uid, zdroj: "Furt" });
+    }
+  }
+  return out;
+}
+
+/** Preškolenia, ktoré platia na karte, s počtom premenených akcií (vytlačené na oboch hranách a akcie navyše). */
+function preskolenaKarta(data: GameData, card: CardInstance, premeny: PremenyKarty): PremenaNaKarte[] {
+  const p = printedSides(data, card);
+  const navyse = efektyNavyse(defOf(data, card)).flatMap((e) => e.akcie);
+  const out = new Map<string, PremenaNaKarte>();
+  const pridaj = (z: Action, x: PremenaAkcie, n: number): void => {
+    const k = `${x.uid}:${x.zdroj}:${z}`;
+    const bolo = out.get(k);
+    out.set(k, { z, na: x.na, od: x.uid, zdroj: x.zdroj, akcii: (bolo?.akcii ?? 0) + n });
+  };
+  for (const [z, x] of premeny.hrany) pridaj(z, x, [...p.left, ...p.right].filter((a) => a === z).length);
+  // Školiteľ, ktorého na hranách predbehol Nástroj, ostáva len pri akciách navyše, ktoré karta má.
+  for (const [z, x] of premeny.navyse) {
+    const n = navyse.filter((a) => a === z).length;
+    if (n > 0 || out.has(`${x.uid}:${x.zdroj}:${z}`)) pridaj(z, x, n);
+  }
+  return [...out.values()];
 }
 
 /**
@@ -663,37 +782,6 @@ function vyherneZreby(elem: Elem, line: Pick<LineState, "nastroje">): void {
 }
 
 /**
- * Profesionálny tipér (Furt, Náradie 2026-10-30): posilnené akcie na jeho spojoch
- * sa rátajú inak — súperove ako posilnený Hazard, tvoje ako posilnená Robota.
- * Rozsah: jeho strany a strany susedov k nemu. Posilnená = ×2 z Posilnenia (po NA EX) alebo
- * z Forsáže (Michal 2026-11-02; Forsáž, ktorú NA EX zrušil, sa nepočíta).
- */
-const jePosilnena = (dovody: readonly string[]): boolean => dovody.includes("Posilnenie") || dovody.includes("Forsáž");
-
-function profesionalnyTiper(segments: readonly (readonly Elem[])[]): void {
-  for (const seg of segments) {
-    seg.forEach((t, i) => {
-      if (t.isLokalita || t.defId !== "profesionalny_tiper") return;
-      const oznac = (e: Elem, side: 0 | 1): void => {
-        for (let k = 0; k < 4; k++) {
-          if (e.stav[side]![k] === "aktivna" && jePosilnena(e.dovody[side]![k] ?? [])) e.tiper[side]![k] = t.owner;
-        }
-      };
-      const lavy = seg[i - 1];
-      const pravy = seg[i + 1];
-      if (lavy !== undefined) {
-        oznac(t, 0);
-        oznac(lavy, 1);
-      }
-      if (pravy !== undefined) {
-        oznac(t, 1);
-        oznac(pravy, 0);
-      }
-    });
-  }
-}
-
-/**
  * Zruší NA EX Posilnenie tejto karty? Veteránovi nie, Energeťák majiteľa ho chráni
  * (Dedičstvo, Náradie 2026-10-30). Lokalita NA EX nedostáva.
  */
@@ -870,16 +958,9 @@ function kartoveEfekty(segments: readonly (readonly Elem[])[], umlcane: Readonly
       for (const [side, sused] of [[0, lavy], [1, pravy]] as const) {
         if (sused !== null && !sused.isLokalita && sused.owner !== e.owner) zdvojStranu(e, side, e.defId);
       }
-    } else if (e.defId === "veducko") {
-      // Vedúcko (Furt, Michal 2026-11-02): Roboty susedných kariet (oboch hráčov, lokalita nie —
-      // ako Silná nezávislá žena) sa rátajú ako Pecky; Dlh nepália, dávajú tuhé.
-      for (const s of okolie(e)) if (!s.isLokalita) s.robotaAkoPecka = true;
     } else if (e.defId === "opatrovatelka" && e.staryEfekt) {
       // Opatrovateľka (Furt, v11.5): aktívne akcie tvojich Pamätníkov v jej okolí sú posilnené.
       for (const s of okolie(e)) if (!s.isLokalita && s.owner === e.owner && s.tags.includes("Pamätník")) zdvojAktivne(s, e.defId);
-    } else if (e.defId === "anonymny_alkoholik") {
-      // Anonymný alkoholik (Furt, v11.5): Poškodenie pečene tvojich kariet v jeho okolí sa ráta ako Viera.
-      for (const s of okolie(e)) if (!s.isLokalita && s.owner === e.owner) s.pecenAkoViera = true;
     } else if (e.defId === "liberal" && rovnovaha[e.owner]) {
       // Liberál (Furt, v10.3): s rovnako ženami a chlapmi v partii majiteľa sú jeho aktívne akcie posilnené.
       zdvojAktivne(e, e.defId);
@@ -901,12 +982,12 @@ function zdvojStranu(elem: Elem, side: 0 | 1, zdroj: string): void {
   }
 }
 
-/** Akcia, ktorou sa slot karty ráta (v7): premena Šarlatána a Miňištranta, potom Sypač (Rany ako Pecky). */
+/** Akcia, ktorou sa slot karty ráta — staré sady (v7): premena Šarlatána a Miňištranta. */
 function akciaPoPremene(elem: Elem, action: Action): Action {
-  let a: Action = elem.vieraAkoVizia && action === "Viera" ? "Vízia" : action;
-  if (elem.premena === "sarlatan") a = a === "Dlh" ? "Viera" : a === "Povera" ? "Rana" : a;
-  else if (elem.premena === "ministrant" && a === "Viera") a = "Pecka";
-  return elem.ranyAkoPecky && a === "Rana" ? "Pecka" : a;
+  const a: Action = elem.vieraAkoVizia && action === "Viera" ? "Vízia" : action;
+  if (elem.premena === "sarlatan") return a === "Dlh" ? "Viera" : a === "Povera" ? "Rana" : a;
+  if (elem.premena === "ministrant" && a === "Viera") return "Pecka";
+  return a;
 }
 
 /**
@@ -940,26 +1021,16 @@ function elemEval(elem: Elem): CardLineEval {
     const actions = side === 0 ? elem.effLeft : elem.effRight;
     const action = actions[idx];
     if (action == null) return null;
-    // Michal 2026-11-08: keď efekt mení akciu, zmenená akcia je vidieť na karte, ktorej sa týka —
-    // Profesionálny tipér, Vedúcko, Sypač a Anonymný alkoholik. Šarlatán a Výtržník nie (zatiaľ).
-    const tip = elem.akoTipera[side]![idx] ?? null;
-    const zmena: Action | null =
-      tip !== null
-        ? tip
-        : elem.tiper[side]![idx] != null
-          ? null
-          : (action === "Robota" && elem.robotaAkoPecka) || (action === "Rana" && elem.ranyAkoPecky)
-            ? "Pecka"
-            : action === "PoškodeniePečene" && elem.pecenAkoViera
-              ? "Viera"
-              : null;
+    // Michal 2026-11-08: preškolená akcia je vidieť na karte, ktorej sa týka — `action` je už nová,
+    // `povodna` vytlačená (Nástroj aj Školiteľ). Šarlatán a Výtržník nie (zatiaľ).
     const povodna = elem.povodne[side]![idx] ?? null;
+    const preskolil = elem.preskolil[side]![idx] ?? null;
     return {
       action,
-      ...(povodna !== null ? { povodna } : {}),
+      ...(povodna !== null ? { povodna, ...(preskolil !== null ? { preskolil } : {}) } : {}),
       stav: elem.stav[side]![idx] as SlotStav,
       nasobok: elem.nasobok[side]![idx] as number,
-      ...(zmena !== null && zmena !== action ? { ako: zmena, naKarte: true as const } : elem.vieraAkoVizia && action === "Viera" ? { ako: "Vízia" as const } : {}),
+      ...(elem.vieraAkoVizia && action === "Viera" ? { ako: "Vízia" as const } : {}),
     };
   };
   return {
@@ -991,16 +1062,23 @@ export function evaluateLine(data: GameData, line: LineState): LineEval {
   const elems: Elem[] = [];
   const segments: Elem[][] = [];
   const umlcane = zvieratAUmlcane(data, line);
+  // Školiteľ, ktorý akciu preškolil, je karta v línii — rozpis súčtov ho uvedie ako dôvod.
+  const vLinii = new Map([...line.strany[0], ...line.strany[1]].map((pl) => [pl.card.uid, pl.card.defId]));
+  const dovodSkolitela = (uid: number | null): string | null => {
+    const defId = uid === null ? undefined : vLinii.get(uid);
+    return defId === undefined ? null : `karta:${defId}`;
+  };
 
   // Výtržník NA EX nezdvojuje — jeho akcie sa prepíšu na Rany nižšie.
   const vytrznici = new Set<number>();
   // Injekcia pod kartou (Náradie) z nej robí Výtržníka tou istou cestou ako zrážka NA EX.
   for (const strana of line.strany) for (const p of strana) if (p.vytrznik === true || ucinkyNastrojov(data, p).has("Výtržník")) vytrznici.add(p.card.uid);
+  const premeny = premenyVLinii(data, line);
   const partia0 = line.strany[0].map((p) =>
-    makeElem(data, p.card, p.playedBy, p.playedBy === 1, false, vytrznici.has(p.card.uid) ? undefined : p.naexBy, 0, p),
+    makeElem(data, p.card, p.playedBy, p.playedBy === 1, false, vytrznici.has(p.card.uid) ? undefined : p.naexBy, 0, p, premeny.get(p.card.uid)),
   );
   const partia1 = line.strany[1].map((p) =>
-    makeElem(data, p.card, p.playedBy, p.playedBy === 1, false, vytrznici.has(p.card.uid) ? undefined : p.naexBy, 1, p),
+    makeElem(data, p.card, p.playedBy, p.playedBy === 1, false, vytrznici.has(p.card.uid) ? undefined : p.naexBy, 1, p, premeny.get(p.card.uid)),
   );
   // Posilnenie a Odpor Výtržníka sú už len Rany (v6.1, Michal 2026-10-27): suseda
   // nezdvojujú ani nerušia, spoj s nimi je obyčajný pár. Ostatné akcie sa spárujú
@@ -1052,7 +1130,6 @@ export function evaluateLine(data: GameData, line: LineState): LineEval {
   for (const elem of elems) zrusPosilnenie(elem, line);
   for (const elem of elems) applyNaex(elem, line);
   for (const elem of elems) puskaChrani(elem, line);
-  profesionalnyTiper(segments);
   kartoveEfekty(segments, umlcane, [rovnovahaPohlavi(data, line.strany, 0), rovnovahaPohlavi(data, line.strany, 1)]);
   // Výtržník (zrážka NA EX naraz, v5): každá akcia karty je aktívna Rana pre
   // majiteľa. Spoje susedov sa rátajú s vytlačenými akciami
@@ -1100,12 +1177,8 @@ export function evaluateLine(data: GameData, line: LineState): LineEval {
         // Zrušená akcia sa zapíše tomu, komu by inak patrila.
         const kocovnik = elem.defId === "kocovnik" && elem.staryEfekt && elem.strana !== null ? (susedLokality[elem.strana] ?? elem.owner) : null;
         const target: PlayerId = elem.isLokalita ? (susedLokality[side] ?? side) : (kocovnik ?? elem.owner);
-        const tiper = elem.tiper[side]![k] ?? null;
         // Puška: zachránená Petelica udeľuje 2 — v súčtoch sa ráta ako Pecka (2 tuhé).
-        const vedRobota = tiper === null && action === "Robota" && elem.robotaAkoPecka;
-        const aaPecen = tiper === null && action === "PoškodeniePečene" && elem.pecenAkoViera;
-        const ako: Action = tiper !== null ? (target === tiper ? "Robota" : "Dlh") : elem.puska[side]![k] || vedRobota ? "Pecka" : aaPecen ? "Viera" : akciaPoPremene(elem, action);
-        if (tiper !== null) elem.akoTipera[side]![k] = ako;
+        const ako: Action = elem.puska[side]![k] ? "Pecka" : akciaPoPremene(elem, action);
         if (zrusil != null) {
           (zrusene[target][ako] ??= []).push({ defId: elem.defId, uid: elem.uid, hodnota: 0, vStrede: elem.isLokalita, dovody: [zrusil] });
           // Hrable (Dedičstvo, Náradie 2026-10-30): akcia zrušená tvojím Odporom sa ráta ako tvoja a je posilnená.
@@ -1127,10 +1200,10 @@ export function evaluateLine(data: GameData, line: LineState): LineEval {
         const dovody = [...(elem.dovody[side]![k] ?? [])];
         if (chata) dovody.push("karta:polovnicka_chata");
         if (starosta) dovody.push("karta:starosta");
-        if (tiper !== null) dovody.push("karta:profesionalny_tiper");
-        else if (vedRobota) dovody.push("karta:veducko");
-        else if (aaPecen) dovody.push("karta:anonymny_alkoholik");
-        else if (ako !== action) dovody.push(`karta:${elem.premena ?? (elem.ranyAkoPecky ? "kulturista" : "sarlatan")}`);
+        // Preškolil Školiteľ — rozpis ukáže, kto (Nástroj pod kartou leží na očiach).
+        const skolitel = dovodSkolitela(elem.preskolil[side]![k] ?? null);
+        if (skolitel !== null) dovody.push(skolitel);
+        if (ako !== action && !elem.puska[side]![k]) dovody.push(`karta:${elem.premena ?? "sarlatan"}`);
         pridajZdroj(target, ako, { defId: elem.defId, uid: elem.uid, hodnota, vStrede: elem.isLokalita, dovody });
       }
     }
@@ -1143,7 +1216,7 @@ export function evaluateLine(data: GameData, line: LineState): LineEval {
   const aktivne = (side: 0 | 1): number => (stred === null ? 0 : stred.stav[side]!.filter((x) => x === "aktivna").length);
 
   // Akcie navyše (frakcie): majiteľovi karty, mimo hrán — nič, čo mení akcie na spojoch, ich nemení,
-  // okrem premeny Vedúcka a Sypača (Michal 2026-11-08). Pred Presbiterom, ktorý uberá z celého súčtu Viery.
+  // okrem preškolenia karty (Michal 2026-11-08). Pred Presbiterom, ktorý uberá z celého súčtu Viery.
   const tagy = (defId: string): readonly Tag[] => data.cards.get(defId)?.tags ?? [];
   const elemPodla = new Map(elems.map((e) => [e.uid, e]));
   const pripocitaj = (p: PlayerId, defId: string, uid: number, stav: readonly NavyseStav[]): void => {
@@ -1151,18 +1224,19 @@ export function evaluateLine(data: GameData, line: LineState): LineEval {
       // Výherný automat: Dlh dáva motor na konci poslednej Pitky (engine pokracujPoPitke), nie súčet.
       if (e.krat === 0 || e.spustac === "Posledná Pitka kola") continue;
       const dovod = `akcia navyše (${popisPodmienky(e)})`;
-      const pocty = new Map<string, { a: Action; ako: Action; n: number }>();
+      const pocty = new Map<string, { a: Action; ako: Action; od: number | null; n: number }>();
       e.akcie.forEach((a, j) => {
         const ako = e.ako?.[j] ?? a;
+        const od = e.akoOd?.[j] ?? null;
         const k = `${a}>${ako}`;
         const x = pocty.get(k);
-        if (x === undefined) pocty.set(k, { a, ako, n: 1 });
+        if (x === undefined) pocty.set(k, { a, ako, od, n: 1 });
         else x.n += 1;
       });
-      for (const { a, ako, n } of pocty.values()) {
+      for (const { a, ako, od, n } of pocty.values()) {
         const hodnota = e.krat * n;
-        const pricina = a === "Robota" ? "veducko" : a === "PoškodeniePečene" ? "anonymny_alkoholik" : "kulturista";
-        const dovody = ako === a ? [dovod] : [dovod, `karta:${pricina}`];
+        const pricina = ako === a ? null : (dovodSkolitela(od) ?? (od === null ? null : "Nástroj"));
+        const dovody = pricina === null ? [dovod] : [dovod, pricina];
         sums[p][ako] = (sums[p][ako] ?? 0) + hodnota;
         pridajZdroj(p, ako, { defId, uid, hodnota, vStrede: false, dovody });
       }
@@ -1193,22 +1267,47 @@ export function evaluateLine(data: GameData, line: LineState): LineEval {
     }
   }
 
+  // Preškolenia (Michal 2026-11-08): na dotknutej karte čo a kto, na Školiteľovi koho preškoľuje.
+  const premenene = new Map<string, number>();
+  for (const pl of [...line.strany[0], ...line.strany[1]]) {
+    const m = premeny.get(pl.card.uid);
+    if (m === undefined) continue;
+    const preskolena = preskolenaKarta(data, pl.card, m);
+    for (const p of preskolena) premenene.set(`${p.od}:${p.zdroj}:${p.z}:${pl.card.uid}`, p.akcii);
+    const ev = cards.get(pl.card.uid);
+    if (ev !== undefined) cards.set(pl.card.uid, { ...ev, preskolena });
+  }
+  for (const pl of [...line.strany[0], ...line.strany[1]]) {
+    const efekty = preskoleniaKarty(defOf(data, pl.card));
+    if (efekty.length === 0) continue;
+    const susedia = okolieVLinii(line, pl.card.uid).flatMap((s) => (s === null ? [] : [s.card.uid]));
+    const skolitel = efekty.map((e): StavSkolitela => {
+      const ku =
+        e.spustac === "Furt"
+          ? susedia
+          : [...line.strany[0], ...line.strany[1]].filter((x) => (x.preskolenia ?? []).some((p) => p.od === pl.card.uid && p.spustac === e.spustac && p.z === e.z)).map((x) => x.card.uid);
+      const akcii = ku.reduce((n, uid) => n + (premenene.get(`${pl.card.uid}:${e.spustac}:${e.z}:${uid}`) ?? 0), 0);
+      return { spustac: e.spustac, z: e.z, na: e.na, ku, akcii };
+    });
+    const ev = cards.get(pl.card.uid);
+    if (ev !== undefined) cards.set(pl.card.uid, { ...ev, skolitel });
+  }
+
   presbiter([partia0, partia1], susedLokality, elems, sums, zdroje);
 
   return { sums, cards, aktivneStredu: [aktivne(0), aktivne(1)], zdroje, zrusene, zruseneOdporom, ...(navyseDedicstva.size > 0 ? { navyseDedicstva } : {}) };
 }
 
 /**
- * Premena akcií navyše karty (Michal 2026-11-08): Vedúcko v okolí z Roboty urobí Pecku,
- * Sypač tvojmu Chlapovi z Rany Pecku, Anonymný alkoholik tvojim susedom z Poškodenia pečene
- * Vieru — ako na hrane. Iné modifikátory ich nemenia; Tipér mení len posilnené akcie na spoji.
+ * Preškolenie akcií navyše karty (Michal 2026-11-08): Školiteľ mení akcie navyše dotknutej karty
+ * tak ako jej hrany; podložený Nástroj len hrany (§12). Iné modifikátory spoja ich nemenia.
  */
 function premenNavyse(e: NavyseStav, elem: Elem | undefined): NavyseStav {
-  if (elem === undefined) return e;
-  const ako = e.akcie.map((a): Action =>
-    (a === "Robota" && elem.robotaAkoPecka) || (a === "Rana" && elem.ranyAkoPecky) ? "Pecka" : a === "PoškodeniePečene" && elem.pecenAkoViera ? "Viera" : a,
-  );
-  return ako.some((a, j) => a !== e.akcie[j]) ? { ...e, ako } : e;
+  const m = elem?.premeny.navyse;
+  if (m === undefined || m.size === 0) return e;
+  const ako = e.akcie.map((a): Action => m.get(a)?.na ?? a);
+  if (!ako.some((a, j) => a !== e.akcie[j])) return e;
+  return { ...e, ako, akoOd: e.akcie.map((a) => m.get(a)?.uid ?? null) };
 }
 
 /**
@@ -1221,9 +1320,14 @@ function kratSlovami(data: GameData, line: LineState, pl: PlacedCard, e: EfektNa
   const kolo = line.kolo;
   // Efekt Dedičstva v línii neplatí — Nástroj v línii je len akcie na hranách.
   if (kolo === undefined || e.dedicstvo === true) return 0;
-  if (e.spustac === "Posledná Pitka kola") return kolo.poslednaPitka ? 1 : 0;
   const p = pl.playedBy;
   const q = opponentOf(p);
+  if (e.spustac === "Posledná Pitka kola") {
+    if (!kolo.poslednaPitka) return 0;
+    // Traktorista (Michal 2026-11-08): bez prevahy v jeho kraji; vo finále bez lokality kraje nie sú — prevahu nemá nikto.
+    if (pl.card.defId === "traktoristka") return line.lokalita === null || prevahaStran(data, line.strany)[stranaKarty(line, pl)] !== p ? 1 : 0;
+    return e.podmienka === undefined ? 1 : 0;
+  }
   const vsetky = [...line.strany[0], ...line.strany[1]];
   switch (pl.card.defId) {
     case "pijan":
@@ -1237,15 +1341,47 @@ function kratSlovami(data: GameData, line: LineState, pl: PlacedCard, e: EfektNa
       return Math.floor(kolo.dlhy[p] / 2);
     case "sofer":
       return kolo.naexVKole[p] ? 0 : 1;
-    case "traktoristka": {
+    case "traktoristka":
       // Prevaha v kraji, kde leží; vo finále bez lokality kraje nie sú.
       if (line.lokalita === null) return 0;
-      const strana = line.strany[0].includes(pl) ? 0 : 1;
-      return prevahaStran(data, line.strany)[strana] === p ? 1 : 0;
-    }
+      return prevahaStran(data, line.strany)[stranaKarty(line, pl)] === p ? 1 : 0;
     default:
       return e.podmienka === undefined ? 1 : 0;
   }
+}
+
+/** Kraj, v ktorom karta leží (strana línie). */
+function stranaKarty(line: Pick<LineState, "strany">, pl: PlacedCard): PlayerId {
+  return line.strany[0].some((x) => x.card.uid === pl.card.uid) ? 0 : 1;
+}
+
+/** Dlh z akcie Hazard navyše „Posledná Pitka kola“ karty v línii — motor ho dá na konci poslednej Pitky. */
+export interface DlhPoslednejPitky {
+  readonly uid: number;
+  readonly defId: string;
+  readonly hrac: PlayerId;
+  readonly dlhy: number;
+}
+
+/**
+ * Hazardy navyše „Posledná Pitka kola“ kariet v línii (Traktorista bez prevahy v jeho kraji,
+ * Michal 2026-11-08): ako Výherný automat v Dedičstve do súčtov nejdú — každý dá majiteľovi
+ * na konci poslednej Pitky kola Dlh (engine pokracujPoPitke; náhľad vyhladDlhov). Ráta sa
+ * z línie tak, ako by bola posledná Pitka teraz.
+ */
+export function dlhyPoslednejPitky(data: GameData, line: LineState): DlhPoslednejPitky[] {
+  const vsetky = [...line.strany[0], ...line.strany[1]];
+  if (!vsetky.some((pl) => efektyNavyse(defOf(data, pl.card)).some((e) => e.spustac === "Posledná Pitka kola"))) return [];
+  const kolo: StavKolaLinie = { naexVKole: [false, false], dlhy: [0, 0], prilozeniaKu: [0, 0], dedicstvo: [[], []], ...line.kolo, poslednaPitka: true };
+  const ev = evaluateLine(data, { ...line, kolo });
+  const out: DlhPoslednejPitky[] = [];
+  for (const pl of vsetky) {
+    const dlhy = (ev.cards.get(pl.card.uid)?.navyse ?? [])
+      .filter((e) => e.spustac === "Posledná Pitka kola")
+      .reduce((n, e) => n + e.krat * (e.ako ?? e.akcie).filter((a) => a === "Dlh").length, 0);
+    if (dlhy > 0) out.push({ uid: pl.card.uid, defId: pl.card.defId, hrac: pl.playedBy, dlhy });
+  }
+  return out;
 }
 
 /** Koľkokrát platí efekt navyše Nástroja v Dedičstve hráča p (Pasca, Výherný automat). */
@@ -1324,7 +1460,7 @@ export function prispevkyKariet(line: LineState, ev: LineEval): KartaVBitke[] {
  * karty na oboch stranách bez ohľadu na majiteľa, aj lokalita v strede (null
  * v zozname = lokalita).
  */
-export function okolieVLinii(line: LineState, uid: number): (PlacedCard | null)[] {
+export function okolieVLinii(line: Pick<LineState, "lokalita" | "strany">, uid: number): (PlacedCard | null)[] {
   const lava = [...line.strany[0]].reverse();
   const stred: (PlacedCard | null)[] = line.lokalita !== null ? [null] : [];
   const useky: (PlacedCard | null)[][] =

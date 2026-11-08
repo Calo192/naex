@@ -120,9 +120,17 @@ rozpore s `docs/PRAVIDLA.md` platí `docs/PRAVIDLA.md` a rozpor zapíš do
   kola (×2 pri dvoch susedoch). Konflikt na kartách tag nemá (2026-11-08): platí pri ktorejkoľvek súperovej karte.
   Akcia navyše je tvoja aktívna akcia mimo hrán: ráta sa ako tá istá akcia v jej kroku (Obmedzenie a Cigareta v každej
   Pitke, Rany v bitke, Robota pri exekúcii); **Posilnenie, Odpor, Forsáž, NA EX ani Silná žena ju nemenia**; Náradie
-  v Dedičstve (Vidly, Valaška, Svätý text), Vedúcko (Robota ako Pecka), Sypač (Rana ako Pecka) a Anonymný alkoholik
-  (Poškodenie pečene ako Viera) áno. „Bitka: podmienka {Rana}“ (Pijan, Svokra, Vymáhač, Šofér, Traktorista, Pasca) je akcia
-  navyše v bitke, toľkokrát, koľkokrát podmienka platí. Skrytá Záverečná podmienku nesplní ani nedostane. V texte efektu sú akcie navyše zapísané ako {Povera}.
+  v Dedičstve (Vidly, Valaška, Svätý text) a Preškolenie Školiteľa áno. „Bitka: podmienka {Rana}“ (Pijan, Svokra, Vymáhač,
+  Šofér, Traktorista, Pasca) je akcia navyše v bitke, toľkokrát, koľkokrát podmienka platí; „Posledná Pitka kola: … {Hazard}“
+  (Traktorista bez prevahy v jeho kraji, Výherný automat) dá na konci poslednej Pitky kola Dlh. Skrytá Záverečná podmienku
+  nesplní ani nedostane. V texte efektu sú akcie navyše zapísané ako {Povera}.
+- **Školitelia — Preškolenie (2026-11-08):** „Furt/Podpora/Konflikt: **Preškolenie** {X}→{Y}.“ — akcia X **inej** karty sa
+  ráta ako Y (pre majiteľa tej akcie), **pred spojmi**, na oboch hranách aj v akciách navyše. **Furt** = obaja susedia
+  Školiteľa (karty oboch hráčov), kým susedia; **Podpora** = tvoja karta, s ktorou sa priložením stretne, do konca kola;
+  **Konflikt** = súperova karta, s ktorou sa stretne, do konca kola. Každá akcia sa preškolí raz: Nástroj pod kartou →
+  Podpora a Konflikt v poradí spustenia → Furt; nereťazí sa. **Vedúcko** (Furt): Roboty susedov sú **Pecky**. **Sypač**
+  (Podpora): tvoja karta má **Rany ako Pecky**. **Anonymný alkoholik** (Podpora): tvoja karta má **Poškodenie pečene ako
+  Vieru**. **Profesionálny tipér** (Konflikt): súperova karta má **Cigarety ako Hazard** (Dlh namiesto cigarety).
 - **Schopnosť väzňa (v11.2, 2026-11-02; Kšeft väzňa zanikol):** každý tvoj väzeň má schopnosť, ktorú
   použiješ **raz za hru, kedy chceš** — vo **svojom ťahu** pri braní zo šenku, v Zhromaždení alebo v Pitke
   (kým ju neskončíš, nie pri odpovedi na NA EX), aj vo finále; nie je to ťah a nič nestojí. Potom je
@@ -136,9 +144,9 @@ rozpore s `docs/PRAVIDLA.md` platí `docs/PRAVIDLA.md` a rozpor zapíš do
   (**už nevyloží nič**, aj keď ju použiješ prvým ťahom) a **za pas nedostane cigarety**; ty vykladáš ďalej. **Autobusár** (len pri braní zo šenku): ber zo šenku, koľko chceš, **každú kartu za 1
   cigaretu** (`uids`); potom s braním končíš a pokračuje súper. **Hrobár:** 1 karta zo súperovho
   odhadzovacieho balíčka do ruky (`uid`).
-- **Identita kariet (v11.5):** **Sypač** (Podpora): keď sa priložením stretne s tvojím Chlapom, ten má do konca
+- **Identita kariet (v11.5):** **Sypač** (Podpora, Školiteľ): keď sa priložením stretne s tvojou kartou, tá má do konca
   kola **Rany ako Pecky** (aj Rany navyše). **Silná nezávislá žena** (Furt, 2026-11-08): zdvojí aktívne akcie len tvojich susedných **Občanov a Starešinov**, nie Zviera ani Nástroj (ani Recidivistu). **Anonymný alkoholik**
-  (Furt): Poškodenie pečene tvojich kariet v jeho okolí sa ráta ako **Viera**. **Kôň** (Furt): kým leží v línii,
+  (Podpora, Školiteľ): tvoja karta, s ktorou sa stretne, má Poškodenie pečene ako **Vieru**. **Kôň** (Furt): kým leží v línii,
   Nástroj smieš podložiť aj pod Zviera; **Roboty Koňa pália o 1 Dlh viac**. **Noviny** (Dedičstvo: Hádka): keď vyhráš hádku, súper
   odhodí **1 náhodnú kartu z ruky**. Výtržník má vždy Rany (aj Sypač).
 - **Konflikt (v11.3):** efekt karty, keď sa **priložením** ocitne vedľa **súperovej** karty — či ju prikladáš
@@ -221,8 +229,8 @@ rozpore s `docs/PRAVIDLA.md` platí `docs/PRAVIDLA.md` a rozpor zapíš do
   vypitý poldeci hneď v Pitke), Energeťák (tvoje Posilnenie nemožno zrušiť NA EX), Horoskop: tvoje Povery majú silu 2
   (v10; každá dá 2 mäkké), Svätý text: hodnota tvojej Viery je o 1 vyššia (len v tlmení tuhého; Povery ruší 1 : 1), Fúrik (Robota páli o 1 Dlh viac), Krištáľová guľa (Vízia ukáže 2 vrchné
   karty: o jednej rozhodneš — `{"type":"vizia","vziat":true,"druha":true}` je o druhej —, druhá ostane navrchu).
-  **Profesionálny tipér** (Furt): posilnené akcie na jeho spojoch (Posilnením aj Forsážou, v10.4) — súperove ako
-  posilnený Hazard, tvoje ako posilnená Robota.
+  **Profesionálny tipér** (Konflikt, Školiteľ, 2026-11-08): súperova karta, s ktorou sa priložením stretne, má do konca
+  kola Cigarety ako Hazard.
 - **Podloženie Nástroja (Náradie, Michal 2026-11-08):** Nástroj sa **do línie nevykladá**. Z ruky ho
   **podložíš pod Občana alebo Starešinu v línii — svojho aj súperovho** — za **1 cigaretu**:
   `{"type":"podloz","nastrojId":<uid z ruky>,"hostitelId":<uid karty v línii>,"hrana":"horna"|"dolna"}`.
@@ -250,7 +258,7 @@ rozpore s `docs/PRAVIDLA.md` platí `docs/PRAVIDLA.md` a rozpor zapíš do
   nezdvojí (v6.1).
   Súperova **Svokra** mu v bitke dá Ranu navyše
   (akcia navyše; Vidly jej majiteľa ju zosilnia) za každú jeho kartu, na ktorej leží tvoj poldeci z NA EX — NA EX na svoje karty ju nespustí.
-  Šofér (v11.5): ak si v kole nedal NA EX, v bitke Pecka navyše (Valaška +1) a na začiatku bitky 1 cigareta. **Pijan** (v7): za každé tvoje NA EX v kole
+  Šofér (2026-11-08): ak si v kole nedal NA EX, v bitke Pecka a Rana navyše (Valaška a Vidly +1; cigareta zanikla). **Pijan** (v7): za každé tvoje NA EX v kole
   Rana navyše (Vidly +1). Injekcia v Dedičstve: NA EX aj na Zviera. **Stryná** (frakcie: Konflikt → Pohoršenie navyše pri ktorejkoľvek súperovej karte). **Bzdocha** (Pitka): súper hrá Pitku pred tebou — čakáš, kým skončí, a vidíš jeho NA EX. Veterán (v4): NA EX mu
   aktívne akcie zdvojí (nezruší), neaktívne nechá.
   **Skryto (v5):** `naex` súper nevidí do odkrytia; odpovedáš po odkrytí za každé súperovo NA EX —
@@ -301,14 +309,14 @@ rozpore s `docs/PRAVIDLA.md` platí `docs/PRAVIDLA.md` a rozpor zapíš do
   rátajú Dlhy pred exekúciou. Prehra nie je, na konci hry Dlhy nič. **Záhradkár** (Exekúcia, 2026-10-28):
   keď leží v línii v tvojej partii, exekúcia ťa v tomto kole obíde (žiadny Dlh ani špak); nespáli sa.
   Vymáhač: za každé 2 tvoje priznané Dlhy +1 Rana; Traktorista: s prevahou v jeho kraji Pecka navyše (akcie navyše; Vidly a Valaška +1),
-  inak Dlh.
+  bez nej Dlh na konci poslednej Pitky kola (prevaha po otočení Záverečných).
 - **Karty v7 v bitke a po nej:** Pes — jeho aktívne akcie na spoji so súperovou kartou ×2 (platí aj podstrčený); Mäsiar —
   efekty Zvierat v jeho okolí neplatia (ich akcie platia; 2026-10-28); Krokodíl — na konci bitky sa spália všetci Občania a Zvieratá
   v jeho okolí; Vidly (Dedičstvo) — každá tvoja Rana o 1 poškodenie viac, aj Rana navyše (Pijan, Svokra, Vymáhač, Pasca, frakcie); Puška (Dedičstvo, 2026-10-30) — tvoju prepojenú Petelicu, ktorú by zrušil Odpor či NA EX, ráta namiesto zrušenia za 2; Pasca
   (Dedičstvo) — keď súper v kole priložil kartu k tvojej, Rana navyše (v9.1); Krabička (Dedičstvo) — za každé
   2 cigarety, ktoré súper vyfajčí, karta; **Liberál (Furt, v10.3)** — keď máš v partii rovnako žien
-  a chlapov (on sa ráta za oboch, skrytá Záverečná nie), všetky jeho aktívne akcie sú posilnené ×2. **Vedúcko (Furt, v10.4)** — Roboty kariet, ktoré s ním susedia (aj
-  súperových; hrana lokality nie), sa rátajú ako **Pecky** (aj ich Roboty navyše) ich majiteľa: Dlh nepália, dávajú 2 tuhé (posilnená ×2).
+  a chlapov (on sa ráta za oboch, skrytá Záverečná nie), všetky jeho aktívne akcie sú posilnené ×2. **Vedúcko (Furt, Školiteľ)** — Roboty kariet, ktoré s ním susedia (aj
+  súperových; hrana lokality nie), sú pred spojmi **Pecky** (aj ich Roboty navyše) ich majiteľa: Dlh nepália, dávajú 2 tuhé (posilnená ×2).
 - **Zajatie (v11.4, 2026-11-03):** pokus o zajatie v drafte a jeho cigareta **zanikli**. Kto **rozdeľuje
   Nakladačku**, smie pri staršom, pri ktorom je **tvoj strach 3** (červená) **už pred touto Nakladačkou** (od minulého kola, v11.6 — dotiahnutý v tom istom
   rozdelení nestačí), ho **zajať za 5 bodov** Nakladačky — `{"type":"prebytok","zdvihy":[…],"zajatia":[elderId,…]}`.

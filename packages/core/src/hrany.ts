@@ -11,12 +11,12 @@
 // stretnú sloty s rovnakým indexom aj v tomto ráme (otočenie celej línie
 // o 180° pre hráča 1 zachová páry).
 
-import type { CardInstance, PlayerId, Slot } from "./types.ts";
+import type { Action, CardInstance, PlayerId, Slot } from "./types.ts";
 import { opponentOf } from "./types.ts";
 import type { GameData } from "./data.ts";
 import { defOf, printedSides } from "./data.ts";
 import type { ActionSums, LineEval, LineState, PlacedCard } from "./partia.ts";
-import { evaluateLine } from "./partia.ts";
+import { evaluateLine, premenyVLinii } from "./partia.ts";
 import type { KartaSNastrojmi } from "./naradie.ts";
 import { preskolenaStrana, preskoleniaHostitela } from "./naradie.ts";
 import { bitkaMody, zadlzeniePitkyZLinie } from "./effects.ts";
@@ -29,11 +29,17 @@ export interface HranyZPohladu {
 
 /**
  * Hrany karty tak, ako ich vidí divák (zhora nadol); `otocena` = karta je voči nemu nohami hore.
- * Karta v línii (`vLinii`) má akcie už premenené podloženým Nástrojom — s nimi sa páruje.
+ * Karta v línii (`vLinii`) má akcie už premenené podloženým Nástrojom — s nimi sa páruje;
+ * `premeny` (partia.ts premenyVLinii) pridajú aj Školiteľov.
  */
-export function hranyZPohladu(data: GameData, karta: CardInstance, otocena: boolean, vLinii?: KartaSNastrojmi): HranyZPohladu {
+export function hranyZPohladu(
+  data: GameData,
+  karta: CardInstance,
+  otocena: boolean,
+  vLinii?: KartaSNastrojmi,
+  premeny: ReadonlyMap<Action, { readonly na: Action; readonly uid: number }> = vLinii === undefined ? new Map() : preskoleniaHostitela(data, vLinii),
+): HranyZPohladu {
   const tlac = printedSides(data, karta);
-  const premeny = vLinii === undefined ? new Map() : preskoleniaHostitela(data, vLinii);
   const p = { left: preskolenaStrana(premeny, tlac.left), right: preskolenaStrana(premeny, tlac.right) };
   return otocena
     ? { lava: [...p.right].reverse(), prava: [...p.left].reverse() }
@@ -125,17 +131,21 @@ export function nahladVylozenia(
 ): NahladVylozenia {
   const p = kam === "vlastna" ? ja : opponentOf(ja);
   const naMojej = kam === "vlastna";
+  const strana = line.strany[p];
+  const nova: readonly PlacedCard[] = [...strana, { card: karta, playedBy: ja }];
+  const strany: LineState["strany"] = p === 0 ? [nova, line.strany[1]] : [line.strany[0], nova];
+  // Furt Školiteľa preškolí oboch susedov — páry sa ukážu už s preškolenými akciami.
+  const premenyPo = premenyVLinii(data, { lokalita: line.lokalita, strany });
   // Hráčova karta je k nemu natočená; jeho strana je vľavo od lokality,
   // takže k stredu sa na nej obracia pravá hrana, na súperovej ľavá.
-  const moje = hranyZPohladu(data, karta, false);
+  const moje = hranyZPohladu(data, karta, false, undefined, premenyPo.get(karta.uid)?.hrany);
   const vnutorna = naMojej ? moje.prava : moje.lava;
   const vonkajsia = naMojej ? moje.lava : moje.prava;
 
-  const strana = line.strany[p];
   const krajna = strana[strana.length - 1];
   let sused: SusedNaSpoji | null = null;
   if (krajna !== undefined) {
-    const h = hranyZPohladu(data, krajna.card, krajna.playedBy !== ja, krajna);
+    const h = hranyZPohladu(data, krajna.card, krajna.playedBy !== ja, krajna, premenyPo.get(krajna.card.uid)?.hrany);
     sused = { karta: krajna.card, stred: false, majitel: krajna.playedBy, hrana: naMojej ? h.lava : h.prava };
   } else if (line.lokalita !== null) {
     const s = stranyLokality(data, line.lokalita, line.lokalitaOtocena, ja);
@@ -151,8 +161,6 @@ export function nahladVylozenia(
     }
   }
 
-  const nova: readonly PlacedCard[] = [...strana, { card: karta, playedBy: ja }];
-  const strany: LineState["strany"] = p === 0 ? [nova, line.strany[1]] : [line.strany[0], nova];
   // Zadĺženie tak, ako ho pripíše Pitka — Finančná poradkyňa posiela Dlh súperovi, Policajtka pridá pokutu.
   const sumy = (s: LineState["strany"], ev: LineEval): readonly [ActionSums, ActionSums] => {
     const z = zadlzeniePitkyZLinie(data, { strany: s }, ev);

@@ -1,0 +1,86 @@
+{
+  "poznamka": "Občania v troch kategóriách (Michal 2026-11-08, docs/napady/obcania-kategorie.json, vetva napady/obcania-kategorie 631278c1): Školitelia, Efekt s vedľajšou akciou, Textový efekt; Podpora a Konflikt bez tagu. Admin prepíše v tvorcovi Vypálenej (rozpracovaný stav, nezverejniť) text efektu 8 kariet na effect_text; spúšťače (triggers) tvorca odvodí z textu. Testy jadra stoja na sade cards.json + tieto texty + hrany Nástrojov (test/obcaniaData.ts).",
+  "karty": [
+    {
+      "id": "anonymny_alkoholik",
+      "nazov": "Anonymný alkoholik",
+      "kategoria": "skolitel",
+      "effect_text": "Podpora: Preškolenie {PoškodeniePečene}→{Viera}.",
+      "triggers": [
+        "Podpora"
+      ],
+      "predtym": "Furt: Akcie Poškodenie pečene tvojich kariet v jeho okolí sa rátajú ako Viera."
+    },
+    {
+      "id": "profesionalny_tiper",
+      "nazov": "Profesionálny tipér",
+      "kategoria": "skolitel",
+      "effect_text": "Konflikt: Preškolenie {Cigareta}→{Dlh}.",
+      "triggers": [
+        "Konflikt"
+      ],
+      "predtym": "Furt: Posilnené akcie na jeho spojoch sa rátajú inak — súperove ako posilnený Hazard, tvoje ako posilnená Robota."
+    },
+    {
+      "id": "kulturista",
+      "nazov": "Sypač",
+      "kategoria": "skolitel",
+      "effect_text": "Podpora: Preškolenie {Rana}→{Pecka}.",
+      "triggers": [
+        "Podpora"
+      ],
+      "predtym": "Podpora: Keď sa stretne s tvojím Chlapom, ten má do konca kola Rany ako Pecky."
+    },
+    {
+      "id": "veducko",
+      "nazov": "Vedúcko",
+      "kategoria": "skolitel",
+      "effect_text": "Furt: Preškolenie {Robota}→{Pecka}.",
+      "triggers": [
+        "Furt"
+      ],
+      "predtym": "Furt: Roboty kariet, ktoré s ním susedia, sa rátajú ako Pecky."
+    },
+    {
+      "id": "dievcina_na_vydaj",
+      "nazov": "Dievčina na vydaj",
+      "kategoria": "akcia_navyse",
+      "effect_text": "Podpora: {Povera}.",
+      "triggers": [
+        "Podpora"
+      ],
+      "predtym": "Podpora: Zahraničný {Pohoršenie}."
+    },
+    {
+      "id": "opatrovatelka",
+      "nazov": "Opatrovateľka",
+      "kategoria": "akcia_navyse",
+      "effect_text": "Spoločník: Pamätník {Robota}.",
+      "triggers": [
+        "Spoločník"
+      ],
+      "predtym": "Podpora: Pamätník {Robota}."
+    },
+    {
+      "id": "sofer",
+      "nazov": "Šofér",
+      "kategoria": "akcia_navyse",
+      "effect_text": "Bitka: Ak si v tomto kole nedal NA EX {Pecka} {Rana}.",
+      "triggers": [
+        "Bitka"
+      ],
+      "predtym": "Bitka: Ak si v tomto kole nedal NA EX {Pecka} a dostaneš 1 cigaretu."
+    },
+    {
+      "id": "traktoristka",
+      "nazov": "Traktorista",
+      "kategoria": "akcia_navyse",
+      "effect_text": "Bitka: Ak máš v jeho kraji prevahu {Pecka}. Posledná Pitka kola: Bez prevahy v jeho kraji {Dlh}.",
+      "triggers": [
+        "Bitka",
+        "Posledná Pitka kola"
+      ],
+      "predtym": "Bitka: Ak máš v jeho kraji prevahu {Pecka}. Inak získaš 1 Dlh."
+    }
+  ]
+}

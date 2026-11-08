@@ -261,7 +261,8 @@ const VAHA_AKCIE: Readonly<Record<Action, number>> = {
  */
 const BONUS_EFEKTU: Readonly<Record<string, number>> = {
   silna_nezavisla_zena: 1,
-  // Náradie (2026-10-30): premena posilnených akcií na jeho spojoch vidí odhad bitky.
+  // Školitelia (2026-11-08): preškolenie Podporou a Konfliktom ráta simulácia vyloženia (sPrilozenou),
+  // Furt odhad bitky aj Pitky (evaluateLine). Tipér: súperove Cigarety ako Hazard.
   profesionalny_tiper: 0.3,
   liberal: 0.4,
   zamocnik: 0.3,
@@ -275,9 +276,9 @@ const BONUS_EFEKTU: Readonly<Record<string, number>> = {
   svokra: 0.4,
   // Identita kariet (v11.5): Konflikt — cigareta od súpera (bez nej zadĺženie); priloženie ráta sPrilozenou len v bitke.
   podvodnik: 0.4,
-  // Furt (v11.5): pečeň susedov ako Viera — odhad bitky aj Pitky to vidí z evaluateLine.
+  // Podpora (Školiteľ): pečeň tvojej karty ako Viera — sPrilozenou.
   anonymny_alkoholik: 0.3,
-  // Furt (v11.5): posilnení Pamätníci v okolí — tuhé vidí odhad bitky.
+  // Spoločník: Pamätník {Robota} — akciu navyše ráta cyklus v hodnotaKarty.
   opatrovatelka: 0.2,
   farar: 0.4,
   starosta: 0.6,
@@ -291,8 +292,8 @@ const BONUS_EFEKTU: Readonly<Record<string, number>> = {
   zahradkar: 0.4,
   cierna_macka: 0.5,
   pes: 0.5,
-  // Bitka (v11.5): Pecku vidí odhad bitky, cigareta navyše je zvyšok.
-  sofer: 0.4,
+  // Bitka: Pecku a Ranu navyše vidí odhad bitky (cigareta zanikla 2026-11-08).
+  sofer: 0.3,
   snubenica: 0.5,
   zivnostnik: 0.4,
   velmi_smutiaca_vdova: 0.4,
@@ -302,7 +303,7 @@ const BONUS_EFEKTU: Readonly<Record<string, number>> = {
   predavacka: 0.5,
   // Nástup spáli súperovo Zviera — bitku ráta simulácia vyloženia, zvyšok hry SPALENIE_ZA_KARTU.
   polovnik: 0.4,
-  // Furt: Roboty susedov ako Pecky — tuhé ráta odhad bitky, Dlh, ktorý Robota nespáli, tiež.
+  // Furt (Školiteľ): Roboty susedov ako Pecky — tuhé ráta odhad bitky, Dlh, ktorý Robota nespáli, tiež.
   veducko: 0.3,
   krokodil: 0.4,
   // Furt: spoj s Nástrojom a (v11.5) Roboty o 1 Dlh viac (paleneDlhyVBitke).
@@ -313,7 +314,7 @@ const BONUS_EFEKTU: Readonly<Record<string, number>> = {
   // Nástup presunie súperovu kartu z druhej strany — účinok ráta simulácia vyloženia (sPrilozenou).
   dohadzovacka: 0.3,
   masiar: 0.2,
-  // Sypač (v11.5, Podpora): vlastný Chlap s Ranami ako Peckami — simulácia vyloženia (sPrilozenou).
+  // Sypač (Podpora, Školiteľ bez tagu): tvoja karta s Ranami ako Peckami — simulácia vyloženia (sPrilozenou).
   kulturista: 0.3,
   vandal: 0.2,
   traktoristka: 0.3,

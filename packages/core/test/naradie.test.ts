@@ -1,5 +1,6 @@
 // Náradie (Michal 2026-10-30, docs/napady/naradie-akcie.html, sekcia Rozhodnuté):
-// 12 Nástrojov do Dedičstva, Profesionálny tipér a zmena akcie Robota (§2, §11, §12, §16).
+// 12 Nástrojov do Dedičstva a zmena akcie Robota (§2, §11, §12, §16). Profesionálny tipér je od
+// 2026-11-08 Školiteľ na Konflikte (skolitelia.test.ts).
 // Karty pridá Admin do sady — tu sa skúšajú na testovacích kartách a inštanciách v Dedičstve.
 
 import { describe, expect, it } from "vitest";
@@ -100,19 +101,6 @@ describe("Náradie v línii (§12)", () => {
     expect(evaluateLine(s.data, s.l).sums[0]).toEqual({ Petelica: 3 });
   });
 
-  it("Profesionálny tipér: tvoja posilnená akcia na jeho spoji sa ráta ako posilnená Robota", () => {
-    const s = par([null, "Posilnenie", null, null], [null, "Petelica", null, null], [], { aId: "profesionalny_tiper" });
-    expect(evaluateLine(s.data, s.l).sums[0]).toEqual({ Robota: 2 });
-  });
-
-  it("Profesionálny tipér: súperova posilnená akcia na jeho spoji sa ráta ako posilnený Hazard", () => {
-    // Tipér hráča 0 s Posilnením, vedľa karta hráča 1 s Pečkou na spoji.
-    const data = syntheticData([makeDef("profesionalny_tiper", [null, "Posilnenie", null, null], EMPTY), makeDef("c", [null, null, "Pecka", null], EMPTY)]);
-    const t = instanceFor(data, "profesionalny_tiper", [null, "Posilnenie", null, null], EMPTY);
-    const c = instanceFor(data, "c", [null, null, "Pecka", null], EMPTY);
-    const ev = evaluateLine(data, { lokalita: null, lokalitaOtocena: false, strany: [[own(t), { card: c, playedBy: 1 }], []] });
-    expect(ev.sums).toEqual([{}, { Dlh: 2 }]);
-  });
 });
 
 /** Sada v26 a testovacie Nástroje (Admin ich pridá do sady; cards.json sa skopíruje potom). */

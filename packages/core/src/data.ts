@@ -21,6 +21,7 @@ import type { CardVariants } from "./variants.ts";
 import { cardVariants } from "./variants.ts";
 import { rozborNavyse } from "./navyse.ts";
 import { chybyZapisuHran } from "./naradie.ts";
+import { rozborPreskoleniKarty } from "./preskolenie.ts";
 
 export interface GameData {
   readonly cards: ReadonlyMap<string, CardDef>;
@@ -134,6 +135,9 @@ export function parseCards(json: unknown): ReadonlyMap<string, CardDef> {
     if (chybyNavyse.length > 0) fail(`${path}.effect_text`, chybyNavyse.join(" "));
     const chybyHranKarty = chybyZapisuHran(def);
     if (chybyHranKarty.length > 0) fail(`${path}.effect_text`, chybyHranKarty.join(" "));
+    // Preškolenie Školiteľa (2026-11-08): preklep v akcii by premenu potichu vypol.
+    const chybyPreskolenia = rozborPreskoleniKarty(def.effectText).chyby;
+    if (chybyPreskolenia.length > 0) fail(`${path}.effect_text`, chybyPreskolenia.join(" "));
     if (cards.has(id)) fail(path, "duplicitné id");
     cards.set(id, def);
   }

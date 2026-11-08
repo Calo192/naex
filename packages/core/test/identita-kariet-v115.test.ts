@@ -1,6 +1,7 @@
 // Identita kariet (v11.5, Michal 2026-11-03, docs/napady/identita-kariet): nové efekty
 // Novín, Opatrovateľky, Podvodníka, Anonymného alkoholika, Šoféra, Sypača a Koňa.
-// Karty sú syntetické s textami a spúšťačmi novej sady — akcie v sade mení admin.
+// Karty sú syntetické s textami a spúšťačmi novej sady — akcie v sade mení admin. Anonymný
+// alkoholik, Sypač a Šofér majú od 2026-11-08 texty Občanov v troch kategóriách (Školitelia).
 
 import { describe, expect, it } from "vitest";
 import cardsJson from "../data/cards.json";
@@ -37,10 +38,10 @@ const def = (id: string, l: Layout4, r: Layout4, extra?: Parameters<typeof makeD
 };
 const defs = [
   def("opatrovatelka", EMPTY, PECKA0, { tags: ["Občan", "Zahraničný", "Pracujúci", "Žena"], triggers: ["Furt"] }),
-  def("anonymny_alkoholik", EMPTY, PECKA0, { tags: ["Občan", "Závislý", "Chlap"], triggers: ["Furt"] }),
+  def("anonymny_alkoholik", EMPTY, PECKA0, { tags: ["Občan", "Závislý", "Chlap"], triggers: ["Podpora"], effectText: "Podpora: Preškolenie {PoškodeniePečene}→{Viera}." }),
   def("podvodnik", EMPTY, EMPTY, { tags: ["Občan", "Kriminál", "Chlap"], triggers: ["Konflikt"] }),
-  def("kulturista", EMPTY, EMPTY, { tags: ["Občan", "Influencer", "Chlap"], triggers: ["Podpora"] }),
-  def("sofer", EMPTY, EMPTY, { tags: ["Občan", "Chlap", "Pracujúci"], triggers: ["Bitka"] }),
+  def("kulturista", EMPTY, EMPTY, { tags: ["Občan", "Influencer", "Chlap"], triggers: ["Podpora"], effectText: "Podpora: Preškolenie {Rana}→{Pecka}." }),
+  def("sofer", EMPTY, EMPTY, { tags: ["Občan", "Chlap", "Pracujúci"], triggers: ["Bitka"], effectText: "Bitka: Ak si v tomto kole nedal NA EX {Pecka} {Rana}." }),
   def("kon", ["Robota", null, null, null], EMPTY, { tags: ["Zviera"], triggers: ["Furt"] }),
   // Pamätník s Ranou na ľavej strane; vytlačená pravá je jej zrkadlo (súperovi otočená karta ju má vľavo).
   def("i_pamatnik", RANA0, [null, null, null, "Rana"], { tags: ["Občan", "Pamätník", "Žena"] }),
@@ -158,9 +159,13 @@ describe("Opatrovateľka (Furt, v11.5)", () => {
   });
 });
 
-describe("Anonymný alkoholik (Furt, v11.5)", () => {
-  it("Poškodenie pečene tvojej karty v jeho okolí sa ráta ako Viera — aj v Pitke pečeň nedá", () => {
-    const line = linia([lezi(karta("i_pecen"), 0), lezi(karta("anonymny_alkoholik"), 0)]);
+describe("Anonymný alkoholik (Podpora: Preškolenie {PoškodeniePečene}→{Viera}, 2026-11-08)", () => {
+  it("priložený k tvojej karte — jej Poškodenie pečene sa do konca kola ráta ako Viera; v Pitke pečeň nedá", () => {
+    const pecen = lezi(karta("i_pecen"), 0);
+    const aa = karta("anonymny_alkoholik");
+    const po = priloz(zhromazdenie([[pecen], []], [aa]), aa.uid);
+    expect(naKarte(po, pecen.card.uid).preskolenia).toEqual([{ z: "PoškodeniePečene", na: "Viera", od: aa.uid, spustac: "Podpora" }]);
+    const line = linia(po.strany[0] as PlacedCard[]);
     const ev = evaluateLine(data, line);
     expect(ev.sums[0]).toEqual({ Viera: 1, Pecka: 1 });
     expect(ev.zdroje[0].Viera?.[0]?.dovody).toContain("karta:anonymny_alkoholik");
@@ -168,10 +173,14 @@ describe("Anonymný alkoholik (Furt, v11.5)", () => {
     expect(prirastkyPitky(data, stav, ev).poskodeniePecene).toEqual([0, 0]);
   });
 
-  it("súperova karta pri ňom ostáva s pečeňou; bez neho pečeň ostáva pečeňou", () => {
-    const cudzia = evaluateLine(data, linia([lezi(karta("i_pecen"), 1), lezi(karta("anonymny_alkoholik"), 0)]));
-    expect(cudzia.sums[1]).toEqual({ PoškodeniePečene: 1 });
-    const bez = evaluateLine(data, linia([lezi(karta("i_pecen"), 0), lezi(karta("i_partner"), 0)]));
+  it("súperova karta pri ňom ostáva s pečeňou (Podpora je len k tvojej); bez stretnutia pečeň ostáva pečeňou", () => {
+    const cudzia = lezi(karta("i_pecen"), 1);
+    const aa = karta("anonymny_alkoholik");
+    const po = priloz(zhromazdenie([[cudzia], []], [aa]), aa.uid);
+    expect(naKarte(po, cudzia.card.uid).preskolenia).toBeUndefined();
+    expect(evaluateLine(data, linia(po.strany[0] as PlacedCard[])).sums[1]).toEqual({ PoškodeniePečene: 1 });
+    // Ležia vedľa seba, ale nestretli sa priložením (Furt to už nie je).
+    const bez = evaluateLine(data, linia([lezi(karta("i_pecen"), 0), lezi(karta("anonymny_alkoholik"), 0)]));
     expect(bez.sums[0].PoškodeniePečene).toBe(1);
   });
 });
@@ -202,43 +211,49 @@ describe("Podvodník (Konflikt, v11.5)", () => {
   });
 });
 
-describe("Sypač (Podpora, v11.5)", () => {
-  it("priložený k tvojmu Chlapovi — ten má do konca kola Rany ako Pecky; aj keď Chlapa priložíš k nemu", () => {
-    const chlap = lezi(karta("i_chlap"), 0);
-    const syp = karta("kulturista");
-    expect(naKarte(priloz(zhromazdenie([[chlap], []], [syp]), syp.uid), chlap.card.uid).ranyAkoPecky).toBe(true);
-    const chlap2 = karta("i_chlap");
-    expect(naKarte(priloz(zhromazdenie([[lezi(karta("kulturista"), 0)], []], [chlap2]), chlap2.uid), chlap2.uid).ranyAkoPecky).toBe(true);
-  });
-
-  it("Žena ani súperov Chlap nie; náhľad (sPrilozenou) vidí to isté ako motor", () => {
-    for (const pl of [lezi(karta("i_zena"), 0), lezi(karta("i_chlap"), 1)]) {
+describe("Sypač (Podpora: Preškolenie {Rana}→{Pecka}, 2026-11-08 bez tagu Chlap)", () => {
+  it("priložený k tvojej karte — Chlapovi aj Žene — tá má do konca kola Rany ako Pecky; aj keď ju priložíš k nemu", () => {
+    for (const id of ["i_chlap", "i_zena"]) {
+      const pl = lezi(karta(id), 0);
       const syp = karta("kulturista");
-      expect(naKarte(priloz(zhromazdenie([[pl], []], [syp]), syp.uid), pl.card.uid).ranyAkoPecky).toBeUndefined();
+      expect(naKarte(priloz(zhromazdenie([[pl], []], [syp]), syp.uid), pl.card.uid).preskolenia, id).toEqual([{ z: "Rana", na: "Pecka", od: syp.uid, spustac: "Podpora" }]);
     }
-    const chlap = lezi(karta("i_chlap"), 0);
-    const syp = karta("kulturista");
-    expect(naKarte(sPrilozenou(data, zhromazdenie([[chlap], []], [syp]), 0, syp, 0), chlap.card.uid).ranyAkoPecky).toBe(true);
+    const chlap2 = karta("i_chlap");
+    const syp2 = karta("kulturista");
+    expect(naKarte(priloz(zhromazdenie([[lezi(syp2, 0)], []], [chlap2]), chlap2.uid), chlap2.uid).preskolenia?.[0]?.od).toBe(syp2.uid);
   });
 
-  it("Rany Chlapa sa v súčtoch rátajú ako Pecky, partnerove Rany nie", () => {
-    const chlap = lezi(karta("i_chlap"), 0, { ranyAkoPecky: true });
+  it("súperova karta nie (Podpora je len k tvojej); náhľad (sPrilozenou) vidí to isté ako motor", () => {
+    const cudzi = lezi(karta("i_chlap"), 1);
+    const syp = karta("kulturista");
+    expect(naKarte(priloz(zhromazdenie([[cudzi], []], [syp]), syp.uid), cudzi.card.uid).preskolenia).toBeUndefined();
+    const chlap = lezi(karta("i_chlap"), 0);
+    const syp2 = karta("kulturista");
+    const s = zhromazdenie([[chlap], []], [syp2]);
+    expect(naKarte(sPrilozenou(data, s, 0, syp2, 0), chlap.card.uid).preskolenia).toEqual(naKarte(priloz(s, syp2.uid), chlap.card.uid).preskolenia);
+  });
+
+  it("Rany preškolenej karty sa v súčtoch rátajú ako Pecky ešte pred spojmi, partnerove Rany nie", () => {
+    const syp = karta("kulturista");
+    const chlap = lezi(karta("i_chlap"), 0, { preskolenia: [{ z: "Rana", na: "Pecka", od: syp.uid, spustac: "Podpora" }] });
     expect(evaluateLine(data, linia([chlap, lezi(karta("i_partner"), 0)])).sums[0]).toEqual({ Pecka: 1, Rana: 1 });
     expect(evaluateLine(data, linia([lezi(chlap.card, 0), lezi(karta("i_partner"), 0)])).sums[0]).toEqual({ Rana: 2 });
   });
 });
 
-describe("Šofér (Bitka, v11.5)", () => {
-  it("bez NA EX v kole: Pecka navyše a na začiatku bitky 1 cigareta; s NA EX nič", () => {
+describe("Šofér (Bitka: Ak si v tomto kole nedal NA EX {Pecka} {Rana}, 2026-11-08)", () => {
+  it("bez NA EX v kole: Pecka a Rana navyše, cigareta už nie; s NA EX nič", () => {
     const s = vPitke([[lezi(karta("sofer"), 0)], []]);
-    expect(bitkaMody(data, s, 0).tuheZdroje).toContainEqual({ zdroj: "sofer", tuhe: 2 });
+    // Akcie navyše ráta línia (Vidly a Valaška ich zosilnia), nie tuhé navyše bitky.
+    expect(bitkaMody(data, s, 0).tuheZdroje.some((z) => z.zdroj === "sofer")).toBe(false);
     const b = doBitky(s);
     expect(b.faza).toBe("bitka");
-    expect(b.hraci[0].cigarety).toBe(s.hraci[0].cigarety + 1);
-    expect(b.hraci[1].cigarety).toBe(s.hraci[1].cigarety);
+    expect(evaluateLine(data, lineState(b)).sums[0]).toMatchObject({ Pecka: 1, Rana: 1 });
+    expect(b.hraci[0].cigarety).toBe(s.hraci[0].cigarety);
     const sNaex = { ...s, naexVKole: [true, false] as const };
-    expect(bitkaMody(data, sNaex, 0).tuheZdroje.some((z) => z.zdroj === "sofer")).toBe(false);
-    expect(doBitky(sNaex).hraci[0].cigarety).toBe(s.hraci[0].cigarety);
+    const ev = evaluateLine(data, lineState(sNaex));
+    expect(ev.sums[0].Pecka ?? 0).toBe(0);
+    expect(ev.sums[0].Rana ?? 0).toBe(0);
   });
 });
 

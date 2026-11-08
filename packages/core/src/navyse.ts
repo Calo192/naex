@@ -24,12 +24,15 @@
 // Akcia navyše je aktívna akcia majiteľa karty mimo jej hrán: do súčtov ide ako tá
 // istá akcia a vyhodnotí sa v jej kroku. Nie je na spoji, preto ju nemení Posilnenie,
 // Odpor, Forsáž, NA EX ani Silná žena; mení ju Náradie v Dedičstve, efekty, ktoré
-// menia všetky akcie hráča (rátajú zo súčtov), a premena Vedúcka a Sypača (Michal 2026-11-08).
+// menia všetky akcie hráča (rátajú zo súčtov), a preškolenie karty — podložený Nástroj
+// a Školitelia (preskolenie.ts, Michal 2026-11-08).
+//
+// „Spúšťač: Preškolenie {X}→{Y}.“ (Školitelia) akcia navyše nie je — číta ho preskolenie.ts.
 
 import type { Action, CardDef, PlayerId, Tag } from "./types.ts";
 import { ALL_TAGS } from "./types.ts";
 import { hranySlovami, textBezHran } from "./naradie.ts";
-import { akciaZTokenu } from "./preskolenie.ts";
+import { akciaZTokenu, textBezPreskoleni } from "./preskolenie.ts";
 
 export type SpustacTagom = "Spoločník" | "Nepriateľ" | "Podpora" | "Konflikt";
 /** Spúšťače s podmienkou slovami (skryté akcie, Michal 2026-11-08). */
@@ -78,8 +81,9 @@ export interface RozborNavyse {
 
 /** Prečíta efekty s akciami navyše z textu efektu karty. */
 export function rozborNavyse(celyText: string): RozborNavyse {
-  // Hrany Nástroja („Dole: {Rana}→{Pecka}.“) číta naradie.ts — akcie navyše to nie sú.
-  const text = textBezHran(celyText);
+  // Hrany Nástroja („Dole: {Rana}→{Pecka}.“) číta naradie.ts, Preškolenie Školiteľov preskolenie.ts —
+  // akcie navyše to nie sú.
+  const text = textBezPreskoleni(textBezHran(celyText));
   const efekty: EfektNavyse[] = [];
   const chyby: string[] = [];
   let tokenovVEfektoch = 0;
@@ -121,9 +125,9 @@ export function efektyNavyse(def: Pick<CardDef, "effectText" | "tags">): readonl
   return efekty;
 }
 
-/** Text efektu bez piktogramov {Akcia} — tie kreslí karta zvlášť (pečať v ilustrácii). */
+/** Text efektu bez piktogramov {Akcia} — tie kreslí karta zvlášť (pečať v ilustrácii; Preškolenie pilulka). */
 export function textBezAkcii(text: string): string {
-  return hranySlovami(text)
+  return textBezPreskoleni(hranySlovami(text))
     .replace(TOKEN, "")
     .replace(/[ \t]+([.,!?])/gu, "$1")
     // „Posledná Pitka kola: {Hazard}.“ či „Podpora: {Robota}.“ — bez piktogramu ostala dvojbodka pred bodkou.
@@ -140,8 +144,8 @@ export function podmienkySpoja(def: Pick<CardDef, "effectText" | "tags">, spusta
   const out: (Tag | null)[] = efektyNavyse(def)
     .filter((e) => e.spustac === spustac)
     .map((e) => e.tag);
-  // Efekty s piktogramami sú už v zozname — zvyšok textu je efekt slovami.
-  const slovami = def.effectText.replace(EFEKT, " ");
+  // Efekty s piktogramami sú už v zozname — zvyšok textu je efekt slovami (Preškolenie bez tagu).
+  const slovami = textBezPreskoleni(def.effectText).replace(EFEKT, " ");
   for (const m of slovami.matchAll(new RegExp(`(?:^|[\\s.!?])${spustac}:\\s*([\\p{L}]+)?`, "gu"))) {
     const slovo = m[1] ?? "";
     out.push((ALL_TAGS as readonly string[]).includes(slovo) ? (slovo as Tag) : null);
@@ -169,8 +173,10 @@ export interface KartaPodmienky {
 export interface NavyseStav extends EfektNavyse {
   /** Koľkokrát platí: 0 = nesplnené, Spoločník a Nepriateľ najviac 1, Podpora a Konflikt za každé stretnutie. */
   readonly krat: number;
-  /** Akcia, ktorou sa akcia [j] ráta (Vedúcko: Robota ako Pecka, Sypač: Rana ako Pecka); chýba = bez zmeny. */
+  /** Akcia, ktorou sa akcia [j] ráta po preškolení (Nástroj pod kartou, Školiteľ); chýba = bez zmeny. */
   readonly ako?: readonly Action[];
+  /** uid karty, ktorá akciu [j] preškolila (Nástroj či Školiteľ); null = nepreškolená. */
+  readonly akoOd?: readonly (number | null)[];
   /** Podpora a Konflikt: uid kariet, s ktorými sa efekt spustil. */
   readonly od?: readonly number[];
 }

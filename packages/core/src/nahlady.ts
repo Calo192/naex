@@ -22,10 +22,10 @@ import {
   sPrilozenou,
   zablokovaneStrany,
 } from "./engine.ts";
-import { efektPotlaceny, naexPecenSuperovi, nasobokPitky, partiaHraca, soferiBezNaex, svokraRany, traktoristkyBezPrevahy } from "./effects.ts";
+import { efektPotlaceny, naexPecenSuperovi, nasobokPitky, partiaHraca, svokraRany } from "./effects.ts";
 import { opponentOf } from "./types.ts";
 import type { LineEval } from "./partia.ts";
-import { evaluateLine } from "./partia.ts";
+import { dlhyPoslednejPitky, evaluateLine } from "./partia.ts";
 import type { BattleOutcome, DamageResult } from "./battle.ts";
 import { battleOutcome, zhoriPriExekucii } from "./battle.ts";
 import { zahradkarChrani } from "./engine.ts";
@@ -59,9 +59,11 @@ export interface DlhyDoBitky {
 export function vyhladDlhov(data: GameData, stol: StolNahladu, dalsiePitky: number): readonly [DlhyDoBitky, DlhyDoBitky] {
   const nahlad = nahladPitky(data, stol);
   // D6 (v7): zvyšok zadĺženia sa medzi Pitkami nemaže — sčíta sa za všetky Pitky.
-  // Výherný automat (Dedičstvo, v7): v poslednej Pitke kola Dlh za kus.
-  // Traktoristka bez prevahy v jej kraji: Dlh na začiatku bitky (zacniBitku).
-  const automat = (p: PlayerId): number => stol.hraci[p].dedicstvo.filter((k) => k.defId === "vyherny_automat").length * nasobokPitky(stol) + traktoristkyBezPrevahy(data, stol, p);
+  // Výherný automat (Dedičstvo, v7) a Hazard navyše „Posledná Pitka kola“ z línie (Traktorista bez
+  // prevahy v jeho kraji, 2026-11-08): v poslednej Pitke kola Dlh za kus (engine pokracujPoPitke).
+  const zLinie = dlhyPoslednejPitky(data, lineState(stol));
+  const automat = (p: PlayerId): number =>
+    (stol.hraci[p].dedicstvo.filter((k) => k.defId === "vyherny_automat").length + zLinie.reduce((n, d) => n + (d.hrac === p ? d.dlhy : 0), 0)) * nasobokPitky(stol);
   const noveDlhy = ([0, 1] as const).map((p) => Math.floor((nahlad[p].zadlzenie + nahlad[p].zadlzenieZoStola * (1 + dalsiePitky)) / nahlad[p].prahDlhu) + automat(p)) as [number, number];
   const kapacita = paleneDlhyVBitke(data, stol);
   const pre = (p: PlayerId): DlhyDoBitky => {
@@ -160,10 +162,8 @@ export function dopadyNahladu(
     // Vo Vízii je táto Pitka už vyhodnotená — ako nahladPitky.
     const tato = s.vizia === null ? cigaretyZPitky(sums, nasobokPitky(s))[p] : 0;
     const dalej = cigaretyZPitky(sums, nasobokPitky(s))[p] * dalsie;
-    // Šofér (v11.5): cigaretu dá na začiatku bitky, keď majiteľ v kole nedal NA EX.
-    const sofer = s.faza === "bitka" ? 0 : soferiBezNaex(s, p);
     return {
-      cigarety: s.hraci[p].cigarety + tato + dalej + sofer,
+      cigarety: s.hraci[p].cigarety + tato + dalej,
       makke: poskodenieBitky(data, stolPriPoskodeni(data, s, dalsie), sums).makke[p],
     };
   };

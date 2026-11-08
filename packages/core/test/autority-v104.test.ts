@@ -1,7 +1,8 @@
 // Pravidlá v10.4 (Michal 2026-11-02, docs/napady/autority.html kolo 2 a odpor-vzbura-poc.html):
 // Poľovník (Nástup: spáli súperovo Zviera), Vedúcko
-// (Furt: Roboty susedov ako Pecky), Policajtka (Pitka: pokutový blok za zrušené akcie),
-// Profesionálny tipér ráta aj Forsáž. Karty v sade pridá či zmení admin — testy majú vlastné.
+// (Furt: Roboty susedov ako Pecky — od 2026-11-08 Školiteľ „Furt: Preškolenie {Robota}→{Pecka}.“),
+// Policajtka (Pitka: pokutový blok za zrušené akcie). Profesionálny tipér je od 2026-11-08
+// Školiteľ na Konflikte (skolitelia.test.ts). Karty v sade pridá či zmení admin — testy majú vlastné.
 
 import { describe, expect, it } from "vitest";
 import cardsJson from "../data/cards.json";
@@ -162,7 +163,7 @@ describe("Vedúcko (Furt, v10.4)", () => {
   const A_R: Layout4 = [null, null, "Robota", "Robota"];
   const V_R: Layout4 = ["Cigareta", "Posilnenie", null, null];
   const zostav = (vId: string) => {
-    const d = syntheticData([makeDef("a", A_L, A_R), makeDef(vId, EMPTY, V_R)]);
+    const d = syntheticData([makeDef("a", A_L, A_R), makeDef(vId, EMPTY, V_R, { effectText: "Furt: Preškolenie {Robota}→{Pecka}.", triggers: ["Furt"] })]);
     return { d, a: instanceFor(d, "a", A_L, A_R), v: instanceFor(d, vId, EMPTY, V_R) };
   };
 
@@ -174,8 +175,8 @@ describe("Vedúcko (Furt, v10.4)", () => {
     expect(moja.zdroje[0].Pecka?.map((z) => z.dovody)).toContainEqual(["Posilnenie", "karta:veducko"]);
     const superova = evaluateLine(d, linia(lezi(a, 1), lezi(v, 0)));
     expect(superova.sums[1]).toEqual({ Pecka: 3 });
-    const bez = zostav("niekto");
-    expect(evaluateLine(bez.d, linia(lezi(bez.a, 0), lezi(bez.v, 0))).sums[0]).toEqual({ Robota: 3, Cigareta: 1 });
+    const bez = syntheticData([makeDef("a", A_L, A_R), makeDef("niekto", EMPTY, V_R)]);
+    expect(evaluateLine(bez, linia(lezi(instanceFor(bez, "a", A_L, A_R), 0), lezi(instanceFor(bez, "niekto", EMPTY, V_R), 0))).sums[0]).toEqual({ Robota: 3, Cigareta: 1 });
   });
 });
 
@@ -206,16 +207,3 @@ describe("Policajtka — pokutový blok (Pitka, v10.4)", () => {
   });
 });
 
-describe("Profesionálny tipér ráta aj Forsáž (v10.4)", () => {
-  it("akcie spoja s Forsážou sú pre jeho majiteľa posilnená Robota", () => {
-    const T_R: Layout4 = ["Posilnenie", "Pecka", null, null];
-    const A_L: Layout4 = ["Posilnenie", "Rana", null, null];
-    const d: GameData = syntheticData([makeDef("profesionalny_tiper", EMPTY, T_R), makeDef("a", A_L, EMPTY)]);
-    const t = instanceFor(d, "profesionalny_tiper", EMPTY, T_R);
-    const a = instanceFor(d, "a", A_L, EMPTY);
-    expect(evaluateLine(d, linia(lezi(a, 0), lezi(t, 0))).sums[0]).toEqual({ Robota: 4 });
-    // Bez Tipéra je to Forsáž: Pecka aj Rana ×2.
-    const d2 = syntheticData([makeDef("x", EMPTY, T_R), makeDef("a", A_L, EMPTY)]);
-    expect(evaluateLine(d2, linia(lezi(instanceFor(d2, "a", A_L, EMPTY), 0), lezi(instanceFor(d2, "x", EMPTY, T_R), 0))).sums[0]).toEqual({ Pecka: 2, Rana: 2 });
-  });
-});

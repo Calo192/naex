@@ -285,7 +285,9 @@ function kartaVLinii(
         const a = p[ps][idx as 0 | 1 | 2 | 3];
         if (a === null || a === undefined) return "—";
         const st = e?.[ps][idx];
-        return st === null || st === undefined ? a : `${a}${ZNAK[st.stav]}${st.nasobok > 1 ? `×${st.nasobok}` : ""}`;
+        // Preškolená akcia (Nástroj pod kartou, Školiteľ): „Robota→Pecka“ — ráta sa ako tá druhá.
+        const akcia = st?.povodna !== undefined ? `${st.povodna}→${st.action}` : a;
+        return st === null || st === undefined ? a : `${akcia}${ZNAK[st.stav]}${st.nasobok > 1 ? `×${st.nasobok}` : ""}`;
       })
       .join(", ");
   };

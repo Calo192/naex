@@ -9,7 +9,7 @@ import cardsJson from "../../../packages/core/data/cards.json";
 import eldersJson from "../../../packages/core/data/elders.json";
 import scorecardsJson from "../../../packages/core/data/scorecards.json";
 import type { ClientState, GameState, PlayerId, StarsiVerejne, Stupen, Vazen } from "@naex/core";
-import { apply, krokRozdelenia, loadGameData, naTahu, navrhRozdelenia, pultStarsich, setupGame, tahBota, viewFor } from "@naex/core";
+import { apply, krokRozdelenia, krokyZdvihu, loadGameData, naTahu, navrhRozdelenia, pultStarsich, setupGame, tahBota, viewFor } from "@naex/core";
 import { klikNaStupen, radStarsich, stupneRozdelenia, suhrnRozdelenia } from "../src/hra/teplomery.ts";
 import { LiniaStarsich, type MiestoVLinii } from "../src/hra/LiniaStarsich.tsx";
 
@@ -54,9 +54,12 @@ describe("rozdeľovanie klikom na stupeň", () => {
       const z1 = klikNaStupen(v, p, [], e.elderId, prvy.stupen);
       expect(z1).toEqual([{ elderId: e.elderId, na: prvy.stupen }]);
       expect(stupneRozdelenia(v, p, z1, e.elderId).find((st) => st.stupen === prvy.stupen)?.stav).toBe("vybrany");
-      // Klik na najvyšší vybraný ho vráti o stupeň (pod terajší = bez zdvihu).
+      // Klik na najvyšší vybraný ho vráti o krok (pred prvým krokom = bez zdvihu). Reči nejdú
+      // po stupňoch zdola — krok pred ním berie poradie krokov zdvihu.
       const spat = klikNaStupen(v, p, z1, e.elderId, prvy.stupen);
-      expect(spat.find((z) => z.elderId === e.elderId)?.na ?? null).toBe(prvy.stupen - 1 > (stupne.filter((st) => st.stav === "pod").length) ? prvy.stupen - 1 : null);
+      const kroky = krokyZdvihu(e, p, sumar0.marker);
+      const predtym = kroky[kroky.findIndex((x) => x.na === prvy.stupen) - 1]?.na ?? null;
+      expect(spat.find((z) => z.elderId === e.elderId)?.na ?? null).toBe(predtym);
       // Klik na červenú zdvihne tak vysoko, ako body stačia.
       const cervena = klikNaStupen(v, p, [], e.elderId, 3);
       const cena = suhrnRozdelenia(v, p, cervena)!;

@@ -3,7 +3,7 @@
 // kódom (zmena textu nezmení správanie — treba upraviť aj jadro).
 
 import type { Tag } from "@naex/core";
-import { ALL_TRIGGERS, PODMIENKY_SLOVAMI, REGISTER, chybyHran, rozborNavyse, textBezHran } from "@naex/core";
+import { ALL_TRIGGERS, PODMIENKY_SLOVAMI, REGISTER, chybyHran, rozborNavyse, rozborPreskoleniKarty, textBezHran } from "@naex/core";
 import type { AkciaDef, KartaNavrh, KlucoveSlovo } from "./typy.ts";
 import { sPredponouVazna } from "./text.ts";
 
@@ -78,6 +78,8 @@ export function kontrolaTextov(karty: readonly KartaNavrh[], podklady: PodkladyT
     for (const m of t.matchAll(/:\s*([\p{Ll}])/gu)) problem("upozornenie", `Za dvojbodkou malé písmeno „${m[1] ?? ""}…“ — veta začína veľkým.`);
     // Akcie navyše (frakcie 2026-11-08): „Spoločník: Tag {Akcia}.“ — preklep by hra pri načítaní odmietla.
     for (const ch of rozborNavyse(t).chyby) problem("chyba", ch);
+    // Školitelia (2026-11-08): „Furt: Preškolenie {Robota}→{Pecka}.“ — preklep by hra pri načítaní odmietla.
+    for (const ch of rozborPreskoleniKarty(t).chyby) problem("chyba", ch);
     if (!/[.!?]\s*$/u.test(t)) problem("upozornenie", "Text nekončí bodkou.");
     if (/ {2,}/.test(t) || t !== t.trim()) problem("upozornenie", "Dvojitá medzera alebo medzera na začiatku či konci.");
 
@@ -91,7 +93,8 @@ export function kontrolaTextov(karty: readonly KartaNavrh[], podklady: PodkladyT
     }
 
     // Efekt „Spúšťač: Tag {Akcia}.“ vyhodnocuje jadro zo samotného textu — zmena textu je zmena správania.
-    const navyse = rozborNavyse(t).efekty.length > 0;
+    // Preškolenie Školiteľa vyhodnocuje jadro tiež zo samotného textu.
+    const navyse = rozborNavyse(t).efekty.length > 0 || rozborPreskoleniKarty(t).efekty.length > 0;
     // Skryté akcie (2026-11-08): podmienku slovami („Bitka: Ak … {Pecka}“) vyhodnocuje jadro podľa karty.
     if (rozborNavyse(t).efekty.some((e) => e.podmienka !== undefined) && !PODMIENKY_SLOVAMI.includes(k.id)) {
       problem("chyba", "Podmienku slovami pred piktogramom akcie hra pri tejto karte nepozná — akcia navyše by nikdy neplatila, kým ju nenaprogramuje vývoj.");
