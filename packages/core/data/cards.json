@@ -760,7 +760,7 @@
     "Kriminál",
     "Žena"
    ],
-   "effect_text": "Konflikt: Chlap — Súper odhodí 1 náhodnú kartu z ruky.",
+   "effect_text": "Konflikt: Súper odhodí 1 náhodnú kartu z ruky.",
    "triggers": [
     "Konflikt"
    ],
@@ -969,7 +969,7 @@
     "Influencer",
     "Chlap"
    ],
-   "effect_text": "Konflikt: Autorita {Pohoršenie}.",
+   "effect_text": "Konflikt: {Pohoršenie}.",
    "triggers": [
     "Konflikt"
    ],
@@ -1066,7 +1066,7 @@
     "Pamätník",
     "Žena"
    ],
-   "effect_text": "Konflikt: Závislý {Pohoršenie}.",
+   "effect_text": "Konflikt: {Pohoršenie}.",
    "triggers": [
     "Konflikt"
    ],
@@ -2126,7 +2126,7 @@
     "Kriminál",
     "Chlap"
    ],
-   "effect_text": "Konflikt: Influencer {Obmedzenie}.",
+   "effect_text": "Konflikt: {Obmedzenie}.",
    "triggers": [
     "Konflikt"
    ],
