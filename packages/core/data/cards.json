@@ -1624,7 +1624,7 @@
    "tags": [
     "Lokalita"
    ],
-   "effect_text": "Pitka: Prvé fajčenie každého hráča v tejto Pitke je zadarmo.",
+   "effect_text": "Pitka: Každé fajčenie v tejto Pitke stojí o 1 cigaretu menej.",
    "triggers": [
     "Pitka"
    ],
