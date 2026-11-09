@@ -2955,7 +2955,7 @@
     "Pamätník",
     "Žena"
    ],
-   "effect_text": "Nástup: Ak susedíš s Občanom alebo Starešinom, za teba sa presunie najvzdialenejší Občan alebo Starešina opačného pohlavia ako tvoj sused z druhého kraja.",
+   "effect_text": "Nástup: Ak susedíš s Občanom alebo Starešinom, za teba sa presunie karta z konca druhého kraja, ak je to Občan alebo Starešina opačného pohlavia ako tvoj sused.",
    "triggers": [
     "Nástup"
    ],

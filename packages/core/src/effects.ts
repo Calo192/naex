@@ -159,7 +159,7 @@ export const REGISTER: Readonly<Record<string, EfektStatus>> = {
   kohut: "impl", // Pitka (v7): posledné slovo pri odpovediach na NA EX má majiteľ (odhalNaex)
   degustatorka: "impl", // Nástup: súperovi s viac plnými poldeci vyžerie jeden — otočí sa na vypitý
   klebetnica: "impl", // Pitka (Bzdocha, Michal 2026-10-27): majiteľ hrá Pitku po súperovi a vidí jeho NA EX (zacniPitku, viewFor)
-  dohadzovacka: "impl", // Nástup (Michal 2026-10-28): najvzdialenejší Občan opačného pohlavia ako jej sused z druhej strany sa presunie za ňu (presunDohadzovackou)
+  dohadzovacka: "impl", // Nástup (Michal 2026-10-28, v11.19): karta z konca druhého kraja, ak je to Občan opačného pohlavia ako jej sused, sa presunie za ňu (presunDohadzovackou)
   vandal: "impl", // Nástup: otoč lokalitu o 180°
   stryko_z_ameriky: "native", // Nepriateľ: Autorita — 2 Rany navyše (navyse.ts)
   // Autority, kolo 2 (Michal 2026-11-02) — v sade ich pridá admin.

@@ -1,4 +1,4 @@
-# Ťahák — platné pravidlá NA EX! (v11.18 Vedúcko Podporou, Snúbenica, Traktorista a Miňištrant, v11.17 NA EX × Odpor a Posilnenie, Kapybara, Telefón, Krokodíl a hrany Náradia, v11.16 Vypiť len s limitom, pas bez ohľadu na ruku, Degustátorka hneď, odpoveď na NA EX za poldeci, Nástroj len pod svoje karty, Školiteľ aj Zviera, v11.15 Benzínka o 1 lacnejšie, v11.14 frakcie, Preškolenie a podloženie Nástrojov, v11.13 Lokality, v11.12 Reči na súperovom teplomere, zajatie a presvedčenie, identita kariet, Kostol na konci línie, každý Hazard je Dlh, 2026-11-09, Zrejúca; sada = cards.json v master)
+# Ťahák — platné pravidlá NA EX! (v11.19 Dohadzovačka len z konca kraja, v11.18 Vedúcko Podporou, Snúbenica, Traktorista a Miňištrant, v11.17 NA EX × Odpor a Posilnenie, Kapybara, Telefón, Krokodíl a hrany Náradia, v11.16 Vypiť len s limitom, pas bez ohľadu na ruku, Degustátorka hneď, odpoveď na NA EX za poldeci, Nástroj len pod svoje karty, Školiteľ aj Zviera, v11.15 Benzínka o 1 lacnejšie, v11.14 frakcie, Preškolenie a podloženie Nástrojov, v11.13 Lokality, v11.12 Reči na súperovom teplomere, zajatie a presvedčenie, identita kariet, Kostol na konci línie, každý Hazard je Dlh, 2026-11-09, Zrejúca; sada = cards.json v master)
 
 Spoločný ťahák AI hráčov — playtester (Zrejúca) ho číta z master, protihráč na
 Vypálenej z vetvy `vypalena` (tam platí jej verzia pravidiel). Podrobne v `docs/PRAVIDLA.md` (zmeny v jeho úvode). Pri
@@ -207,8 +207,9 @@ rozpore s `docs/PRAVIDLA.md` platí `docs/PRAVIDLA.md` a rozpor zapíš do
   karta lícom dole, míňa limit, potom už v Zhromaždení nevykladáš (bez cigariet za pas). Súper ju
   nevidí, za ňu nepriloží (ani odpoveď na NA EX), NA EX na ňu smie len on (prejde vždy); akciu jeho
   karty, ktorú spáruje, mu výpis ani odhad bitky neukáže. Otočí sa na konci Pitky — až vtedy Nástup a Konflikt, ktorý priložením vyvolala.
-- **Nástup bez voľby:** Dohadzovačka (Nástup, 2026-10-28): keď ju priložíš k Občanovi či Starešinovi, z druhého
-  kraja sa najvzdialenejší Občan alebo Starešina opačného pohlavia ako jej sused presunie za ňu
+- **Nástup bez voľby:** Dohadzovačka (Nástup, 2026-10-28, v11.19): keď ju priložíš k Občanovi či Starešinovi,
+  presunie sa za ňu **len karta z konca druhého kraja** (najďalej od lokality), ak je to Občan alebo Starešina
+  opačného pohlavia ako jej sused; inak (iná karta na konci, skrytá Záverečná, prázdny kraj) sa nič nestane
   (na koniec línie za ňou; povinné, karta ostáva majiteľovi, Konflikt sa nespustí). **Poľovník (Nástup, v10.4):**
   v druhom kraji sa **spáli súperovo Zviera, ktoré je od lokality najďalej** (povinné, bez voľby;
   vlastné Zvieratá nie, skrytá Záverečná nie; medzera sa uzavrie, Konflikt sa nespustí). Ak tam žiadne nie je, nič.

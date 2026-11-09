@@ -1,6 +1,7 @@
 // Dohadzovačka — nový efekt (Michal 2026-10-28): Nástup: keď ju hráč priloží k Občanovi
-// alebo Starešinovi O2, z druhej strany lokality sa najvzdialenejší Občan alebo Starešina
-// opačného pohlavia ako O2 presunie za ňu (na vonkajší koniec jej strany). Povinné, bez voľby.
+// alebo Starešinovi O2, karta z konca druhého kraja sa presunie za ňu (na koniec línie), ak je
+// to Občan alebo Starešina opačného pohlavia ako O2. Povinné, bez voľby. Od v11.19 (Michal
+// 2026-11-09) len karta z konca — hlbšie v druhom kraji sa nehľadá.
 
 import { describe, expect, it } from "vitest";
 import cardsJson from "../data/cards.json";
@@ -56,6 +57,29 @@ describe("Dohadzovačka (Nástup, Michal 2026-10-28)", () => {
     expect(ids(st)).toEqual([["hasic"], ["svokra", "dohadzovacka", "zamocnik"]]);
   });
 
+  it("partia Michala (v11.19): Silná nezávislá žena · Veterán | Dvojčatá · Dohadzovačka → nič; Silná žena spoza Veterána nejde", () => {
+    const d = inst("dohadzovacka");
+    const s = vZhromazdeni([[lezi(inst("silna_nezavisla_zena"), 0), lezi(inst("veteran"), 0)], [lezi(inst("dvojcata"), 1)]], d);
+    const { state, events } = apply(data, s, { type: "place", uid: d.uid, target: "superova" }, 0);
+    expect(ids(state)).toEqual([
+      ["silna_nezavisla_zena", "veteran"],
+      ["dvojcata", "dohadzovacka"],
+    ]);
+    expect(events.some((e) => e.type === "log" && e.text.startsWith("Dohadzovačka:"))).toBe(false);
+    expect(ids(sPrilozenou(data, s, 1, d, 0))).toEqual(ids(state));
+  });
+
+  it("presúva len kartu z konca druhého kraja: koniec nevhodný (rovnaké pohlavie, Zviera) → nič, aj keď hlbšie vhodný je", () => {
+    const d = inst("dohadzovacka");
+    // O2 Pijan (Chlap) hľadá Ženu; na konci druhého kraja je Vandal (Chlap), Policajtka pri lokalite ostáva.
+    expect(presunDohadzovackou(data, [[lezi(inst("pijan"), 0), lezi(d, 0)], [lezi(inst("policajtka"), 1), lezi(inst("vandal"), 1)]], 0, d.uid).presunuta).toBeNull();
+    const d2 = inst("dohadzovacka");
+    expect(presunDohadzovackou(data, [[lezi(inst("pijan"), 0), lezi(d2, 0)], [lezi(inst("svokra"), 1), lezi(inst("pes"), 1)]], 0, d2.uid).presunuta).toBeNull();
+    // Prázdny druhý kraj.
+    const d3 = inst("dohadzovacka");
+    expect(presunDohadzovackou(data, [[lezi(inst("pijan"), 0), lezi(d3, 0)], []], 0, d3.uid).presunuta).toBeNull();
+  });
+
   it("nič sa nestane: O2 nie je Občan ani Starešina, nemá pohlavie, alebo na druhej strane nie je vhodný O1", () => {
     const pes = presunDohadzovackou(data, [[lezi(inst("pes"), 0), lezi(inst("dohadzovacka"), 0)], [lezi(inst("svokra"), 1)]] as const, 0, -1);
     expect(pes.presunuta).toBeNull();
@@ -68,7 +92,7 @@ describe("Dohadzovačka (Nástup, Michal 2026-10-28)", () => {
     expect(presunDohadzovackou(data, [[lezi(d3, 0)], [lezi(inst("svokra"), 1)]], 0, d3.uid).presunuta).toBeNull();
   });
 
-  it("skrytá Záverečná sa nepresúva — presunie sa najvzdialenejší z ostatných; karta s oboma tagmi sa ráta ako oboje", () => {
+  it("skrytá Záverečná na konci sa nepresúva a nič sa nestane; karta s oboma tagmi sa ráta ako oboje", () => {
     const d = inst("dohadzovacka");
     const r = presunDohadzovackou(
       data,
@@ -76,8 +100,8 @@ describe("Dohadzovačka (Nástup, Michal 2026-10-28)", () => {
       0,
       d.uid,
     );
-    expect(r.presunuta?.card.defId).toBe("svokra");
-    expect(ids(r).map((x) => x.length)).toEqual([3, 1]);
+    expect(r.presunuta).toBeNull();
+    expect(ids(r).map((x) => x.length)).toEqual([2, 2]);
     // Liberál (Žena aj Chlap) ako O2 hľadá oboje; ako O1 sa hodí k Žene aj k Chlapovi.
     const d2 = inst("dohadzovacka");
     expect(presunDohadzovackou(data, [[lezi(inst("liberal"), 0), lezi(d2, 0)], [lezi(inst("vandal"), 1)]], 0, d2.uid).presunuta?.card.defId).toBe("vandal");

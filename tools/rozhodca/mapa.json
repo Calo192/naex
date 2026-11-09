@@ -2288,13 +2288,15 @@
     {
       "id": "16.karta.dohadzovacka",
       "paragraf": "16. Výklad kariet",
-      "pravidlo": "Dohadzovačka (Nástup, Michal 2026-10-28): priložená k Občanovi či Starešinovi O2 presunie z druhej strany lokality najvzdialenejšieho Občana či Starešinu opačného pohlavia za seba; povinné, karta ostáva majiteľovi, nie je to priloženie (Konflikt nie), skrytá Záverečná sa nepresúva, karta s oboma tagmi ráta ako oboje.",
+      "pravidlo": "Dohadzovačka (Nástup, Michal 2026-10-28; v11.19 2026-11-09): priložená k Občanovi či Starešinovi O2 presunie za seba len kartu z konca druhého kraja, ak je to Občan či Starešina opačného pohlavia (inak nič, hlbšie sa nehľadá); povinné, karta ostáva majiteľovi, nie je to priloženie (Konflikt nie), skrytá Záverečná na konci sa nepresúva, karta s oboma tagmi ráta ako oboje.",
       "stav": "pokryte",
       "testy": [
         "packages/core/test/dohadzovacka.test.ts › príklad Michala: „O1 … … O2“ + Dohadzovačka za O2 → „… … O2 · Dohadzovačka · O1“; karta ostáva majiteľovi",
         "packages/core/test/dohadzovacka.test.ts › na súperovej strane: O2 je súperova Žena, presunie sa môj Chlap z mojej strany",
+        "packages/core/test/dohadzovacka.test.ts › partia Michala (v11.19): Silná nezávislá žena · Veterán | Dvojčatá · Dohadzovačka → nič; Silná žena spoza Veterána nejde",
+        "packages/core/test/dohadzovacka.test.ts › presúva len kartu z konca druhého kraja: koniec nevhodný (rovnaké pohlavie, Zviera) → nič, aj keď hlbšie vhodný je",
         "packages/core/test/dohadzovacka.test.ts › nič sa nestane: O2 nie je Občan ani Starešina, nemá pohlavie, alebo na druhej strane nie je vhodný O1",
-        "packages/core/test/dohadzovacka.test.ts › skrytá Záverečná sa nepresúva — presunie sa najvzdialenejší z ostatných; karta s oboma tagmi sa ráta ako oboje",
+        "packages/core/test/dohadzovacka.test.ts › skrytá Záverečná na konci sa nepresúva a nič sa nestane; karta s oboma tagmi sa ráta ako oboje",
         "packages/core/test/dohadzovacka.test.ts › náhľad a bot (sPrilozenou) ukážu ten istý presun ako motor"
       ]
     },

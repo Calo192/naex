@@ -3346,3 +3346,13 @@ Staré znenie §16 (v11.14–v11.17):
 > | Traktorista | Bitka (id `traktoristka`): s prevahou v kraji, kde leží, **Pecka navyše** (akcia navyše, §6). Posledná Pitka kola (Michal 2026-11-08): bez prevahy v jeho kraji **Hazard navyše** — na konci poslednej Pitky kola dostaneš Dlh (ako Výherný automat; Obecný úrad ho zdvojí). Prevaha sa ráta v tej chvíli, po otočení Záverečných; vo finále (bez krajov) prevahu nemá nikto. Do 2026-11-08 Dlh na začiatku bitky. |
 
 Staré znenie §6 (časť, v11.14–v11.17): „pri spúšťači **Bitka** s podmienkou slovami (Pijan, Svokra, Vymáhač, Šofér, Traktorista, Pasca v Dedičstve)“; §16 Občania v troch kategóriách: „Podpora a Konflikt sú bez tagu; tag ostáva len pri Spoločníkovi a Nepriateľovi.“
+
+## v11.19 — Dohadzovačka len z konca kraja (Michal 2026-11-09, Zrejúca)
+
+Michal z vlastnej partie: bot priložil Dohadzovačku za Dvojčatá (Chlap) a z druhého kraja „Silná nezávislá žena · Veterán“ vytiahla Silnú ženu spoza Veterána. Dohadzovačka má presúvať len kartu z konca línie — tu mala byť bez efektu. Text karty v tvorcovi (rozpracovaný stav, nezverejnený); nové znenie: `docs/PRAVIDLA.md`, Zmeny v11.19 a §16.
+
+- Dohadzovačka: „Nástup: Ak susedíš s Občanom alebo Starešinom, za teba sa presunie najvzdialenejší Občan alebo Starešina opačného pohlavia ako tvoj sused z druhého kraja.“ → „Nástup: Ak susedíš s Občanom alebo Starešinom, za teba sa presunie karta z konca druhého kraja, ak je to Občan alebo Starešina opačného pohlavia ako tvoj sused.“
+
+Staré znenie §16 (2026-10-28 – v11.18):
+
+> | Dohadzovačka | Nástup (Michal 2026-10-28): keď ju hráč priloží k Občanovi alebo Starešinovi O2 (jej vnútorný sused, karta ktoréhokoľvek hráča), z **druhého kraja** sa **najvzdialenejší** (od lokality) Občan alebo Starešina opačného pohlavia ako O2 (Žena ↔ Chlap; karta ktoréhokoľvek hráča) presunie za Dohadzovačku — na koniec línie za ňou. Príklad: „O1 … … O2“, Dohadzovačka za O2 → „… … O2 · Dohadzovačka · O1“. Presun je **povinný**, bez voľby. Karta ostáva svojho majiteľa a natočená k nemu, medzera v druhom kraji sa uzavrie a spoje sa prepočítajú. Karta s oboma tagmi (Liberál) sa ráta ako oboje — ako O2 hľadá Ženu aj Chlapa, ako O1 sa hodí k obom. Presun **nie je priloženie**: Konflikt presunutej ani susednej karty sa nespustí a Pasca ho neráta. Skrytá Záverečná sa nepresúva (a ako O2 nerozhoduje); ako Záverečná sa Dohadzovačka vyhodnotí pri otočení. Ak O2 nemá Ženu ani Chlapa, nie je Občan ani Starešina, alebo v druhom kraji nie je vhodný O1, nič sa nestane. Do 2026-10-28 Bitka: karta zo šenku za zmiešané spoje. |

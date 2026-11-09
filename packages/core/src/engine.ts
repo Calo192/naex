@@ -3198,7 +3198,7 @@ export function sPrilozenou<T extends VerejnyStav & { readonly lokalitaOtocena: 
   }
   const zamen = (pl: PlacedCard): PlacedCard => (pl === sused && lezi !== null ? lezi : pl);
   let strany = ([0, 1] as const).map((q) => [...s.strany[q].map(zamen), ...(q === strana ? [nova] : [])]) as unknown as T["strany"];
-  // Dohadzovačka (Nástup): presun najvzdialenejšieho Občana opačného pohlavia za ňu.
+  // Dohadzovačka (Nástup): presun karty z konca druhého kraja za ňu (Občan opačného pohlavia).
   if (karta.defId === "dohadzovacka" && defOf(data, karta).triggers.includes("Nástup") && !efektPotlaceny(data, s, kto, "dohadzovacka")) {
     strany = presunDohadzovackou(data, strany, strana, karta.uid).strany;
   }
@@ -5068,11 +5068,11 @@ function zacniBitku(s: MutState, data: GameData, events: Event[]): void {
 /**
  * Dohadzovačka (Nástup, Michal 2026-10-28): leží na konci línie v kraji `strana` (uid). Ak jej
  * vnútorný sused O2 je Občan alebo Starešina s tagom Žena či Chlap (karta ktoréhokoľvek
- * hráča), z druhého kraja sa najvzdialenejší Občan alebo Starešina opačného
- * pohlavia presunie za ňu — na koniec línie; medzera sa uzavrie. Presun je
- * povinný, karta ostáva majiteľovi a natočená k nemu. Karta s oboma tagmi sa ráta ako
- * oboje. Presun nie je priloženie (Konflikt ani Pascu nespustí); skrytá Záverečná sa
- * nepresúva. Vráti nové strany a presunutú kartu (null = nič sa nestalo).
+ * hráča), karta z konca druhého kraja (najďalej od lokality) sa presunie za ňu — na koniec
+ * línie —, ak je to Občan alebo Starešina opačného pohlavia; inak sa nič nestane (v11.19).
+ * Medzera sa uzavrie. Presun je povinný, karta ostáva majiteľovi a natočená k nemu. Karta
+ * s oboma tagmi sa ráta ako oboje. Presun nie je priloženie (Konflikt ani Pascu nespustí);
+ * skrytá Záverečná na konci sa nepresúva. Vráti nové strany a presunutú kartu (null = nič).
  */
 export function presunDohadzovackou<S extends readonly [readonly PlacedCard[], readonly PlacedCard[]]>(
   data: GameData,
@@ -5090,17 +5090,15 @@ export function presunDohadzovackou<S extends readonly [readonly PlacedCard[], r
   if (!clovek(tagy2)) return nic;
   const hladam: Tag[] = [...(tagy2.includes("Žena") ? (["Chlap"] as const) : []), ...(tagy2.includes("Chlap") ? (["Žena"] as const) : [])];
   if (hladam.length === 0) return nic;
+  // v11.19 (Michal 2026-11-09): len karta z konca druhého kraja — hlbšie v línii sa nehľadá.
   const druha = strany[opponentOf(strana)];
-  for (let j = druha.length - 1; j >= 0; j--) {
-    const o1 = druha[j] as PlacedCard;
-    if (o1.zaverecna === true) continue;
-    const t = defOf(data, o1.card).tags;
-    if (!clovek(t) || !hladam.some((x) => t.includes(x))) continue;
-    const zostava = druha.filter((_, k) => k !== j);
-    const nova = [...moja, o1];
-    return { strany: (strana === 0 ? [nova, zostava] : [zostava, nova]) as unknown as S, presunuta: o1 };
-  }
-  return nic;
+  const o1 = druha.at(-1);
+  if (o1 === undefined || o1.zaverecna === true) return nic;
+  const t = defOf(data, o1.card).tags;
+  if (!clovek(t) || !hladam.some((x) => t.includes(x))) return nic;
+  const zostava = druha.slice(0, -1);
+  const nova = [...moja, o1];
+  return { strany: (strana === 0 ? [nova, zostava] : [zostava, nova]) as unknown as S, presunuta: o1 };
 }
 
 /**

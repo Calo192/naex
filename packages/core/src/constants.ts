@@ -301,13 +301,14 @@ export function vazniNaVyhru(lokalitCelkom: number): number {
 // v11.17 (Michal 2026-11-09, Zrejúca) bez novej značky: NA EX × Odpor a Posilnenie — zrušený Odpor pustí
 // partnera, neaktívny Odpor NA EX zahasí, neaktívne Posilnenie nedá NA EX zrušiť aktívne akcie.
 // v11.18 (Michal 2026-11-09, Zrejúca) bez novej značky: Vedúcko Podporou — Roboty ako Pecky len tvojej karte, s ktorou sa stretne.
+// v11.19 (Michal 2026-11-09, Zrejúca) bez novej značky: Dohadzovačka presúva len kartu z konca druhého kraja.
 export const VERZIA_PRAVIDIEL = "v11";
 /**
  * Presná verzia pravidiel vrátane dávky — hráč ju vidí na stránke Pravidlá, ktorá má
  * vždy odzrkadľovať správanie nasadenej hry (Michal 2026-10-31). Značka partií
  * (VERZIA_PRAVIDIEL) sa pri dávke nemení, táto áno.
  */
-export const VERZIA_PRAVIDIEL_PRESNA = "v11.18";
+export const VERZIA_PRAVIDIEL_PRESNA = "v11.19";
 /** Odkedy platí VERZIA_PRAVIDIEL_PRESNA — hráč ho vidí na stránke Pravidlá. */
 export const PRAVIDLA_PLATNE_OD = "2026-11-09";
 export type DlzkaHry = keyof typeof DLZKY_HRY;
