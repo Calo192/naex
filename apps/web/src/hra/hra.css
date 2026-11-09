@@ -10258,7 +10258,7 @@ button.pecat.kseft-pod-tlacidlo.ne:hover {
 
 /* ---- Náradie: Nástroj pod kartou v línii (Michal 2026-11-08, naradie-mock-stol-2.html, M2) ----
    Hostiteľ leží na Nástroji posunutý o jednu hranu; spod neho trčí len hrana Nástroja —
-   farba hovorí, čo robí (karta.css kl-smer-*), rám čí je (moja / súperova farba). */
+   vo farbe Nástroja (Michal 2026-11-09), rám čí je (moja / súperova farba). */
 .s-nastrojmi {
   position: relative;
   display: flex;
@@ -10316,19 +10316,6 @@ button.pecat.kseft-pod-tlacidlo.ne:hover {
 .s-nastrojmi-hore > .pas-nastroja::before {
   bottom: 0;
   background: linear-gradient(transparent, color-mix(in srgb, var(--tma) 45%, transparent));
-}
-
-/* Meno Nástroja vľavo, hrana za ním — na úzkej karte sa meno skráti, hrana nikdy. */
-.pas-nastroja-nazov {
-  flex: 0 1 auto;
-  min-width: 0;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  font-size: 0.56rem;
-  font-weight: 700;
-  letter-spacing: 0.03em;
-  opacity: 0.88;
 }
 
 .pas-nastroja > .kl-pil,

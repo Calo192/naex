@@ -47,60 +47,6 @@ export function hranyZTextu(efekt: string, tagy: readonly string[]): HranyNastro
   return r.horna !== null && r.dolna !== null ? { horna: r.horna, dolna: r.dolna } : null;
 }
 
-export type SmerHrany = "posila" | "sabotaz" | "obojaka" | "ucinok";
-
-/**
- * Čo hrana robí, podľa zoznamu hrán v5 (docs/napady/naradie-hrany-zoznam.html, Michal 2026-11-08):
- * farba hrany na karte aj pod hostiteľom — zelená posila, červená sabotáž, modrá kartový účinok.
- * Hrany sú voľné, smer len hovorí, komu premena zvyčajne pomáha; neznáma premena je obojaká.
- */
-const SMER_PRESKOLENIA: Readonly<Record<string, Exclude<SmerHrany, "ucinok">>> = {
-  "Posilnenie>PoškodeniePečene": "sabotaz",
-  "PoškodeniePečene>Poldeci": "posila",
-  "Poldeci>PoškodeniePečene": "sabotaz",
-  "Rana>Pecka": "posila",
-  "Rana>Petelica": "posila",
-  "Petelica>Rana": "sabotaz",
-  "Pecka>Petelica": "posila",
-  "Petelica>Pecka": "sabotaz",
-  "PoškodeniePečene>Rana": "posila",
-  "Pecka>Rana": "sabotaz",
-  "Cigareta>Rana": "obojaka",
-  "Cigareta>PoškodeniePečene": "sabotaz",
-  "Viera>Pohoršenie": "posila",
-  "Pohoršenie>Povera": "sabotaz",
-  "Povera>Viera": "posila",
-  "Viera>Povera": "sabotaz",
-  "Povera>Pohoršenie": "posila",
-  "Odpor>Povera": "sabotaz",
-  "PoškodeniePečene>Viera": "posila",
-  "Poldeci>Viera": "sabotaz",
-  "PoškodeniePečene>Cigareta": "posila",
-  "Dlh>Cigareta": "posila",
-  "Dlh>Poldeci": "posila",
-  "Cigareta>Dlh": "sabotaz",
-  "Dlh>Vízia": "posila",
-  "Vízia>Dlh": "sabotaz",
-  "Dlh>Robota": "posila",
-  "Robota>Dlh": "sabotaz",
-  "Dlh>Povera": "posila",
-  "Povera>Dlh": "sabotaz",
-  "Povera>Vízia": "posila",
-  "Vízia>Povera": "sabotaz",
-  "Odpor>Posilnenie": "posila",
-  "Posilnenie>Odpor": "sabotaz",
-  "Odpor>Pakt": "posila",
-  "Pakt>Odpor": "sabotaz",
-  "PoškodeniePečene>Obmedzenie": "posila",
-  "Pecka>Obmedzenie": "sabotaz",
-  "PoškodeniePečene>Posilnenie": "posila",
-  "PoškodeniePečene>Dlh": "obojaka",
-};
-
-export function smerHrany(h: HranaNastroja): SmerHrany {
-  return h.druh === "karta" ? "ucinok" : (SMER_PRESKOLENIA[`${h.z}>${h.na}`] ?? "obojaka");
-}
-
 /** Vety pravidiel ku kartovým účinkom hrany — nápoveda pod myšou (PRAVIDLA §12). */
 export const POPIS_UCINKU: Readonly<Record<string, string>> = {
   Forsáž: "Hostiteľ má Forsáž: jeho aktívne akcie sú posilnené ×2.",

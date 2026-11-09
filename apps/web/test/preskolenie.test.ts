@@ -3,7 +3,7 @@
 // pretŕčania podľa karty, nie podľa majiteľa Nástroja.
 
 import { describe, expect, it } from "vitest";
-import { hranyZTextu, preskoleniaZTextu, smerHrany, textBezPreskolenia } from "../src/karta/preskolenie.ts";
+import { hranyZTextu, preskoleniaZTextu, textBezPreskolenia } from "../src/karta/preskolenie.ts";
 import { smerPretrcania, vyskaHranyPod } from "../src/hra/PodlozeneNastroje.tsx";
 
 const VIDLY = "Dedičstvo: Tvoje Rany udeľujú o 1 poškodenie viac. Hore: Vzbura. Dole: {Rana}→{Pecka}.";
@@ -42,12 +42,6 @@ describe("hrany Nástroja na líci", () => {
     expect(hranyZTextu(VIDLY, ["Občan"])).toBeNull();
   });
 
-  it("farba hrany podľa zoznamu v5: posila, sabotáž, kartový účinok, obojaká", () => {
-    expect(smerHrany({ druh: "akcia", z: "Rana", na: "Pecka" })).toBe("posila");
-    expect(smerHrany({ druh: "akcia", z: "Cigareta", na: "Dlh" })).toBe("sabotaz");
-    expect(smerHrany({ druh: "karta", ucinok: "NA EX" })).toBe("ucinok");
-    expect(smerHrany({ druh: "akcia", z: "Cigareta", na: "Rana" })).toBe("obojaka");
-  });
 });
 
 describe("Nástroj pod kartou (M2)", () => {

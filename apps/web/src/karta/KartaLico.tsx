@@ -13,7 +13,7 @@ import { mediaUrl } from "../lib/api.ts";
 import { IkonaAkcie } from "./IkonaAkcie.tsx";
 import { useTip, type TipObsah } from "./Tip.tsx";
 import type { ZarSlotu } from "./zar.ts";
-import { POPIS_UCINKU, hranyZTextu, preskoleniaZTextu, smerHrany, textBezPreskolenia } from "./preskolenie.ts";
+import { POPIS_UCINKU, hranyZTextu, preskoleniaZTextu, textBezPreskolenia } from "./preskolenie.ts";
 import "./karta.css";
 
 /** Stav slotu v hre (živé vyhodnotenie línie). */
@@ -432,11 +432,10 @@ export function KartaLico(props: KartaLicoProps) {
             return (
               <div
                 key={kde}
-                className={`kl-hrana-n kl-hrana-n-${kde} kl-smer-${smerHrany(h)}${stav}`}
+                className={`kl-hrana-n kl-hrana-n-${kde}${stav}`}
                 style={{ "--h": vyskaHrany } as CSSProperties}
                 {...hover({ nadpis: kde === "horna" ? "Horná hrana" : "Dolná hrana", text: popisHranyNastroja(h) })}
               >
-                <span className="kl-hrana-n-nazov">{karta.nazov}</span>
                 <ObsahHrany hrana={h} vzhlad={vzhlad} pil={`calc(${vyskaHrany * 0.62} * var(--pt))`} />
               </div>
             );

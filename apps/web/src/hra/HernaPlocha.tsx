@@ -85,7 +85,7 @@ import { Medziobrazovka } from "./Medziobrazovka.tsx";
 import { SuhrnLokality } from "./SuhrnLokality.tsx";
 import { dalsiPohladSuhrnu, type KontextSuhrnu, type SuhrnBitky, type ZaciatokKola } from "./krokySuhrnu.ts";
 import { PAUZA_CIELA_MS, pauzaPoVolbeCiela, type PauzaCiela } from "./pauzaCiela.ts";
-import type { Sada } from "@naex/tvorba";
+import { farbaKarty, type Sada } from "@naex/tvorba";
 import { HernaKarta, ZarStolaKontext, vzhladKarty, type HernaKartaProps } from "./HernaKarta.tsx";
 import { useZarovnanieLinie } from "./zarovnanieLinie.ts";
 import { Lupa, maxMierkaLupy } from "./Lupa.tsx";
@@ -3014,7 +3014,7 @@ export function HernaPlocha({
         uid,
         <PodlozeneNastroje
           key={uid}
-          nastroje={podlozeneTu.map((n) => ({ n, hrana: aktivnaHrana(data, n), nazov: menoKarty(n.card.defId), navrh: n.card.uid === navrhUid }))}
+          nastroje={podlozeneTu.map((n) => ({ n, hrana: aktivnaHrana(data, n), nazov: menoKarty(n.card.defId), farba: farbaKarty(vzhladKarty(sada, data, n.card.defId), sada.kategorie), navrh: n.card.uid === navrhUid }))}
           smer={smerPretrcania(placed.playedBy, ja)}
           vyska={vyskaHranyPod(sirkaVLinii)}
           ja={ja}

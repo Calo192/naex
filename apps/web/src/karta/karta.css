@@ -812,8 +812,8 @@ body:not(.tahanie-aktivne) .ruka-rad > .tahatelna:is(:hover, :focus-visible) .kl
   right: -18%;
 }
 
-/* Hrany Nástroja (Náradie 2026-11-08, rám V1 z naradie-mock-stol.html): horná a dolná hrana,
-   farba hovorí, čo robí — zelená posila, červená sabotáž, modrá kartový účinok. */
+/* Hrany Nástroja (Náradie 2026-11-08, rám V1 z naradie-mock-stol.html): horná a dolná hrana
+   vo farbe stredného pruhu, bez mena karty (Michal 2026-11-09: žiadne farby navyše). */
 .kl-hrana-n {
   position: absolute;
   left: 0;
@@ -822,6 +822,7 @@ body:not(.tahanie-aktivne) .ruka-rad > .tahatelna:is(:hover, :focus-visible) .kl
   display: flex;
   align-items: center;
   justify-content: center;
+  background: var(--farba);
   color: #fff;
   z-index: 1;
   cursor: help;
@@ -833,40 +834,6 @@ body:not(.tahanie-aktivne) .ruka-rad > .tahatelna:is(:hover, :focus-visible) .kl
 
 .kl-hrana-n-dolna {
   bottom: 0;
-}
-
-.kl-smer-posila {
-  background: #3f7f38;
-}
-
-.kl-smer-sabotaz {
-  background: #9c3a28;
-}
-
-.kl-smer-ucinok {
-  background: #246c78;
-}
-
-.kl-smer-obojaka {
-  background: #a8641c;
-}
-
-.kl-hrana-n-nazov {
-  position: absolute;
-  left: calc(4 * var(--pt));
-  font-size: calc(5.5 * var(--pt));
-  font-weight: 700;
-  letter-spacing: 0.04em;
-  opacity: 0.85;
-  white-space: nowrap;
-}
-
-.kl-hrana-n-horna .kl-hrana-n-nazov {
-  top: calc(1.5 * var(--pt));
-}
-
-.kl-hrana-n-dolna .kl-hrana-n-nazov {
-  bottom: calc(1.5 * var(--pt));
 }
 
 .kl-hrana-ucinok {

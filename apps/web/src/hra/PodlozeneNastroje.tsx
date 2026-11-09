@@ -1,6 +1,6 @@
 // Podložené Nástroje pod kartou v línii (Náradie, Michal 2026-11-08, docs/napady/naradie-mock-stol-2.html,
 // rozloženie M2): Nástroj leží pod hostiteľom ako karta, hostiteľ je na ňom posunutý po dlhšej strane
-// a spod neho vidno len pretŕčajúcu hranu — farba hovorí, čo robí, rám čí je. Pod kartou natočenou
+// a spod neho vidno len pretŕčajúcu hranu vo farbe Nástroja (Michal 2026-11-09), rám hovorí, čí je. Pod kartou natočenou
 // ku mne trčí dole, pod súperovou hore (podľa karty, nie podľa majiteľa Nástroja). Zámočník: ďalšie
 // Nástroje po jednej hrane ďalej.
 
@@ -8,7 +8,6 @@ import type { CSSProperties, ReactNode } from "react";
 import type { HranaNastroja, PlayerId, PodlozenyNastroj } from "@naex/core";
 import type { Vzhlad } from "@naex/tvorba";
 import { ObsahHrany, PODIEL_HRANY, popisHranyNastroja } from "../karta/KartaLico.tsx";
-import { smerHrany } from "../karta/preskolenie.ts";
 import { useTip } from "../karta/Tip.tsx";
 
 /** Výška pretŕčajúcej hrany v px pri karte širokej `sirka` (mock M2: 36 px pri karte vysokej 190 px). */
@@ -25,6 +24,8 @@ export interface NastrojPodKartou {
   readonly n: PodlozenyNastroj;
   readonly hrana: HranaNastroja | null;
   readonly nazov: string;
+  /** Farba stredného pruhu karty Nástroja — hrana má tú istú (Michal 2026-11-09). */
+  readonly farba: string;
   /** Zasunutý v návrhu ťahu — dá sa otočiť, ešte nie je zaplatený. */
   readonly navrh?: boolean;
 }
@@ -60,7 +61,6 @@ export function PodlozeneNastroje({
       {obsah}
       {nastroje.map((x, i) => {
         const moj = x.n.majitel === ja;
-        const smerH = x.hrana === null ? "obojaka" : smerHrany(x.hrana);
         const popis = x.hrana === null ? "Nástroj bez hrán v sade." : popisHranyNastroja(x.hrana);
         const kto = moj ? "ty" : menoHraca(x.n.majitel);
         const navrat = moj ? "Po bitke sa vráti do tvojho odhadzovacieho balíčka." : `Po bitke sa vráti do odhadzovacieho balíčka hráča ${kto}.`;
@@ -71,8 +71,8 @@ export function PodlozeneNastroje({
             key={x.n.card.uid}
             role="button"
             tabIndex={0}
-            className={`pas-nastroja kl-smer-${smerH} ${moj ? "pas-moj" : "pas-supera"}${x.navrh === true ? " pas-navrh" : ""}`}
-            style={{ height: vyska, [smer === "dole" ? "bottom" : "top"]: odstup, "--pil": `${Math.round(vyska * 0.62)}px` } as CSSProperties}
+            className={`pas-nastroja ${moj ? "pas-moj" : "pas-supera"}${x.navrh === true ? " pas-navrh" : ""}`}
+            style={{ height: vyska, background: x.farba, [smer === "dole" ? "bottom" : "top"]: odstup, "--pil": `${Math.round(vyska * 0.62)}px` } as CSSProperties}
             aria-label={`${x.nazov}: ${popis} Podložil ${kto}.`}
             onMouseEnter={(e) => ukaz(e.currentTarget, { nadpis: x.nazov, text: <>{popis}<span className="tip-stav">{`Podložil ${kto}. ${navrat}`}</span></> })}
             onMouseLeave={skry}
@@ -85,7 +85,6 @@ export function PodlozeneNastroje({
               if (e.key === "Enter") lupa(x.n, e.currentTarget);
             }}
           >
-            <span className="pas-nastroja-nazov">{x.nazov}</span>
             {x.hrana !== null && <ObsahHrany hrana={x.hrana} vzhlad={vzhlad} />}
             {x.navrh === true && (
               <button
