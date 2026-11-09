@@ -568,6 +568,36 @@
         "neaktivn\\w* (?:odpor|posilnen)\\w*[^.!?]{0,60}(?:nic nerob|zbytocn|nemaj\\w* zmysel)"
       ],
       "pozn": "v11.17: NA EX na Odpore oživí akciu, ktorú Odpor rušil (×1); neaktívny Odpor je štít, neaktívne Posilnenie podrží aktívne akcie (vo Vypálenej od vypálenia v11.17 2026-11-09)"
+    },
+    {
+      "pojem": "Vedúcko Furt: Roboty susedov aj súpera ako Pecky",
+      "vzory": [
+        "veduck\\w*[^.!?]{0,80}(?:superov|obom sused|oboch sused|obaja sused|oba sused|furt)",
+        "furt\\W{0,3}preskolen"
+      ],
+      "pozn": "v11.18: Vedúcko — „Podpora: Preškolenie {Robota}→{Pecka}.“ — len tvoja karta, s ktorou sa stretne priložením, do konca kola (vo Vypálenej od vypálenia v11.18 2026-11-09)"
+    },
+    {
+      "pojem": "Snúbenica Nepriateľ: Autorita {Pohoršenie}",
+      "vzory": [
+        "snubenic\\w*[^.!?]{0,80}(?:autorit|pohorsen|nepriatel)"
+      ],
+      "pozn": "v11.18: Snúbenica — „Podpora: Chlap {Cigareta}.“ (vo Vypálenej od vypálenia v11.18 2026-11-09)"
+    },
+    {
+      "pojem": "Traktorista Pecka za prevahu",
+      "vzory": [
+        "traktorist\\w*[^.!?]{0,80}peck",
+        "peck\\w*[^.!?]{0,40}(?:za |s |pri )prevah"
+      ],
+      "pozn": "v11.18: Traktorista — „Posledná Pitka kola: Bez prevahy v jeho kraji {Dlh}.“; Pecka za prevahu zanikla, na ľavej strane Rana namiesto Pecky (vo Vypálenej od vypálenia v11.18 2026-11-09)"
+    },
+    {
+      "pojem": "Miňištrant Spoločník: Zahraničný",
+      "vzory": [
+        "ministrant\\w*[^.!?]{0,80}(?:spolocnik|zahranicn)"
+      ],
+      "pozn": "v11.18: Miňištrant — „Nepriateľ: Starešina {Pecka}.“ (vo Vypálenej od vypálenia v11.18 2026-11-09)"
     }
   ],
   "karty": [
