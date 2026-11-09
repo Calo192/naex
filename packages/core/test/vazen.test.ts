@@ -25,6 +25,7 @@ import {
   zdvihyPreAkcie,
   naTahu,
   naladaMomentu,
+  navrhRozdelenia,
   priazenHraca,
   setupGame,
   stavSchopnostiVazna,
@@ -233,6 +234,20 @@ describe("§10 zajatie pri rozdelení Nakladačky (v11.4)", () => {
     const priazen = events.findIndex((e) => e.type === "log" && /^Priazeň .+ dostáva Hráč 2\.$/.test(e.text));
     expect(priazen).toBeGreaterThan(-1);
     expect(priazen).toBeLessThan(events.findIndex((e) => e.type === "koniec"));
+  });
+
+  it("návrh rozdelenia pridá zajatia, ktoré dajú výhru väzňami (aj dve naraz); keď na výhru nestačia, nezajíma", () => {
+    const sVaznom = (body: number): GameState =>
+      vRozdeleni("prebytok", 0, body, { 0: { strach: [3, 0] }, 1: { strach: [3, 0] } }, (x) => {
+        const vazni: Vazen[] = [{ elderId: x.starsi[6]!.elderId, hrac: 0, poradie: 1, karta: x.starsi[6]!.karta, scorecard: x.starsi[6]!.scorecard, miesto: 6 }];
+        return { ...x, vazni, starsi: x.starsi.filter((_, j) => j !== 6) };
+      });
+    const s = sVaznom(10);
+    const navrh = navrhRozdelenia(viewFor(data, s, 0));
+    expect([...(navrh?.akcie ?? [])].sort()).toEqual([id(0), id(1)].sort());
+    const t = apply(data, s, navrh!.prikaz, 0).state;
+    expect(t.koniec?.dovod).toMatch(/výhra väzňami/);
+    expect(navrhRozdelenia(viewFor(data, sVaznom(9), 0))?.akcie).toEqual([]);
   });
 
   it("vo finále sa nezajíma: Nakladačka ide na špaky 1 : 1, zámer so zajatím server odmietne", () => {

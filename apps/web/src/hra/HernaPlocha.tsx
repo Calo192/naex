@@ -3674,9 +3674,12 @@ export function HernaPlocha({
               className="pecat pecat-tichy pecat-navrh-delenia"
               data-vyucba="tlacidlo:navrh-delenia"
               disabled={navrh === null || vyucba === true}
-              title="Návrh: rozdelí body tak, aby si mal po bitke čo najviac a súper čo najmenej — dá sa upraviť klikmi."
+              title={navrh !== null && navrh.akcie.length > akcieDelenia.length ? "Návrh: zajme starších na výhru väzňami a zvyšok rozdelí — dá sa upraviť klikmi." : "Návrh: rozdelí body tak, aby si mal po bitke čo najviac a súper čo najmenej — dá sa upraviť klikmi."}
               onClick={() => {
-                if (navrh !== null) setZdvihyDelenia(navrh.zdvihy);
+                if (navrh === null) return;
+                setZdvihyDelenia(navrh.zdvihy);
+                // Zajatia na výhru väzňami pridá návrh sám, keď hráč žiadne nevybral (jadro navrhRozdelenia).
+                if (navrh.akcie.length > akcieDelenia.length) setAkcieDelenia(navrh.akcie);
               }}
             >
               Návrh

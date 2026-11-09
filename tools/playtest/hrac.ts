@@ -52,7 +52,7 @@ import {
   spakov,
   battleOutcome,
   nahladZajatia,
-  moznostiAkcie,
+  vyberyAkcii,
   cenaAkcieUplna,
   ponukaSchopnostiVazna,
   stavSchopnostiVaznaZPohladu,
@@ -1082,7 +1082,21 @@ function moznosti(v: ClientState): string[] {
         }
         const navrh = navrhRozdelenia(v);
         const kluc = (z: readonly Zdvih[]): string => [...z].map((x) => `${x.elderId}:${x.na}`).sort().join(",");
-        const ponuka: (readonly Zdvih[])[] = navrh === null ? [] : [navrh.zdvihy];
+        // Zajatie / presvedčenie (v11.4): popis výberu akcií — viac naraz smie (§10), krádež sa sčíta.
+        const popisAkcii = (ids: readonly string[]): string => {
+          const mena = ids.map((id) => meno(v.starsi.find((x) => x.elderId === id)?.karta.defId ?? id)).join(" a ");
+          if (krok !== "prebytok") return `PRESVEDČENIE ${mena} (karta do tvojej ruky a balíčka; reči, strach oboch aj priazeň ostávajú)`;
+          const n = nahladZajatia(v);
+          const vaznov = n.mojichVaznov - 1 + ids.length;
+          const kradez = Math.min(ids.reduce((s, id) => s + nahladZajatia(v, id).kradez, 0), v.spaky[su]);
+          return `ZAJATIE ${mena} (väzňov ${vaznov}/${n.vazniNaVyhru}${vaznov >= n.vazniNaVyhru ? " — VÝHRA VÄZŇAMI HNEĎ" : ""}, súper ti odovzdá ${spakov(kradez)})`;
+        };
+        const navrhAkcie = navrh?.akcie ?? [];
+        if (navrh !== null && navrhAkcie.length > 0) {
+          const plan = planRozdelenia(v, ja, navrh.zdvihy, navrhAkcie);
+          if (plan?.prikaz != null) c(plan.prikaz, `NÁVRH: ${popisAkcii(navrhAkcie)}; zvyšok: ${popisRozdelenia(v, marker, navrh.zdvihy, plan.cena, plan.zvysok)}`);
+        }
+        const ponuka: (readonly Zdvih[])[] = navrh === null || navrhAkcie.length > 0 ? [] : [navrh.zdvihy];
         for (const z of kandidatiRozdelenia(v, ja, marker, body, 48)) {
           if (ponuka.length >= 8) break;
           if (!ponuka.some((x) => kluc(x) === kluc(z))) ponuka.push(z);
@@ -1090,20 +1104,14 @@ function moznosti(v: ClientState): string[] {
         ponuka.forEach((zdvihy, i) => {
           const plan = planRozdelenia(v, ja, zdvihy);
           if (plan?.prikaz == null) return;
-          c(plan.prikaz, `${i === 0 && navrh !== null ? "NÁVRH (najlepšia hodnota markerov podľa jadra): " : ""}${popisRozdelenia(v, marker, zdvihy, plan.cena, plan.zvysok)}`);
+          c(plan.prikaz, `${i === 0 && navrh !== null && navrhAkcie.length === 0 ? "NÁVRH (najlepšia hodnota markerov podľa jadra): " : ""}${popisRozdelenia(v, marker, zdvihy, plan.cena, plan.zvysok)}`);
         });
-        // Zajatie / presvedčenie (v11.4): pri každom možnom staršom jedno úplné rozdelenie s akciou.
-        for (const id of moznostiAkcie(v, ja, marker, body)) {
-          const navrhA = navrhRozdelenia(v, [id]);
-          const plan = navrhA === null ? null : planRozdelenia(v, ja, navrhA.zdvihy, [id]);
+        for (const ids of vyberyAkcii(v, ja, marker, body, 16)) {
+          if (ids.length === navrhAkcie.length && ids.every((id) => navrhAkcie.includes(id))) continue;
+          const navrhA = navrhRozdelenia(v, ids);
+          const plan = navrhA === null ? null : planRozdelenia(v, ja, navrhA.zdvihy, ids);
           if (navrhA === null || plan?.prikaz == null) continue;
-          const e = v.starsi.find((x) => x.elderId === id);
-          const n = nahladZajatia(v, id);
-          const co =
-            krok === "prebytok"
-              ? `ZAJATIE ${meno(e?.karta.defId ?? id)} (väzeň ${n.mojichVaznov}/${n.vazniNaVyhru}${n.vyhra ? " — VÝHRA VÄZŇAMI HNEĎ" : ""}, súper ti odovzdá ${spakov(n.kradez)})`
-              : `PRESVEDČENIE ${meno(e?.karta.defId ?? id)} (jeho karta do tvojej ruky a balíčka; reči, strach oboch aj priazeň ostávajú)`;
-          c(plan.prikaz, `${co}; zvyšok: ${popisRozdelenia(v, marker, navrhA.zdvihy, plan.cena, plan.zvysok)}`);
+          c(plan.prikaz, `${popisAkcii(ids)}; zvyšok: ${popisRozdelenia(v, marker, navrhA.zdvihy, plan.cena, plan.zvysok)}`);
         }
         if (ponuka.length === 0) out.push("(Body nestačia na žiadny stupeň — počkaj, server ich nechá prepadnúť.)");
         else out.push(`(Môžeš poslať aj vlastné úplné rozdelenie {"type":"${krok}","zdvihy":[…]} — klient ho pred odoslaním overí a povie, či by zvyšok ešte niekam stačil.)`);

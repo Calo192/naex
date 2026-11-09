@@ -46,7 +46,7 @@ import { kartyVRukach, pocetAbstakov, rukaClena } from "./player.ts";
 import { efektHraca, efektPotlaceny, vplyvyNaAkcie } from "./effects.ts";
 import type { VerejnyStav, VplyvNaAkciu } from "./effects.ts";
 import { favourStarsieho, kradezZaZajatie, priazenHraca, priazenSila, sMarkerom, spakyOdStarsieho, stupenStavu } from "./elders.ts";
-import { kandidatiRozdelenia, krokRozdelenia, bodyRozdelenia, markerRozdelenia, prikazRozdelenia } from "./rozdelenie.ts";
+import { kandidatiRozdelenia, krokRozdelenia, bodyRozdelenia, markerRozdelenia, moznostiAkcie, prikazRozdelenia } from "./rozdelenie.ts";
 import type { DamageResult } from "./battle.ts";
 
 export interface HracVerejne {
@@ -764,18 +764,40 @@ function hodnotaPohladu(view: Pick<ClientState, "starsi" | "vazni">, p: PlayerId
  * Nakladačku alebo hádku, dostane úplné rozdelenie — z ponuky úplných rozdelení
  * (kandidatiRozdelenia) to, po ktorom má najlepšiu hodnotu markerov. null, keď nerozdeľuje.
  * Akcie (zajatia / presvedčenia, v11.4) vyberá hráč sám — návrh rozdelí zvyšok popri nich.
+ * Výnimka: keď hráč žiadne nevybral a zajatia na body stačia na výhru väzňami, návrh ich
+ * pridá (`akcie`) — hodnota markerov väzňov nepozná a hráč, ktorý návrhu verí, by okamžitú
+ * výhru prehliadol (playtest 2026-11-09).
  */
-export function navrhRozdelenia(view: ClientState, akcie: readonly string[] = []): { readonly zdvihy: readonly Zdvih[]; readonly prikaz: Command } | null {
+export function navrhRozdelenia(
+  view: ClientState,
+  akcie: readonly string[] = [],
+): { readonly zdvihy: readonly Zdvih[]; readonly akcie: readonly string[]; readonly prikaz: Command } | null {
   const ja = view.ja;
   const krok = krokRozdelenia(view, ja);
   if (view.faza !== "bitka" || krok === null || !view.mozemHrat) return null;
   const marker = markerRozdelenia(krok);
+  const body = bodyRozdelenia(view, ja);
+  const vybrane = akcie.length === 0 && krok === "prebytok" ? (zajatiaNaVyhru(view, body) ?? akcie) : akcie;
   let najlepsie: { readonly zdvihy: readonly Zdvih[]; readonly v: number } | null = null;
-  for (const zdvihy of kandidatiRozdelenia(view, ja, marker, bodyRozdelenia(view, ja), 64, akcie)) {
+  for (const zdvihy of kandidatiRozdelenia(view, ja, marker, body, 64, vybrane)) {
     const v = hodnotaPohladu(pohladPoRozdeleni(view, ja, marker, zdvihy), ja);
     if (najlepsie === null || v > najlepsie.v) najlepsie = { zdvihy, v };
   }
-  return najlepsie === null ? null : { zdvihy: najlepsie.zdvihy, prikaz: prikazRozdelenia(krok, najlepsie.zdvihy, akcie) };
+  return najlepsie === null ? null : { zdvihy: najlepsie.zdvihy, akcie: vybrane, prikaz: prikazRozdelenia(krok, najlepsie.zdvihy, vybrane) };
+}
+
+/**
+ * Najmenej zajatí, ktoré na body Nakladačky dajú výhru väzňami (pri rovnosti tie s najväčšou
+ * krádežou); null, keď na výhru nestačia.
+ */
+export function zajatiaNaVyhru(view: ClientState, body: number): readonly string[] | null {
+  const chyba = vazniNaVyhru(view.lokalitCelkom) - view.vazni.filter((v) => v.hrac === view.ja).length;
+  if (chyba <= 0) return null;
+  const mozne = moznostiAkcie(view, view.ja, "strach", body)
+    .map((id) => ({ id, kradez: nahladZajatia(view, id).kradez }))
+    .sort((a, b) => b.kradez - a.kradez);
+  if (mozne.length < chyba || chyba * KONSTANTY.CENA_ZAJATIA > body) return null;
+  return mozne.slice(0, chyba).map((x) => x.id);
 }
 
 /** Stávka bitky z pohľadu `view.ja` (v6) — špaky za výhru a čo dostane súper, keď vyhrá on. */
