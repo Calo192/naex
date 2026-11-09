@@ -56,7 +56,7 @@ describe("ťahák AI hráčov sedí s constants.ts", () => {
     ["Svätý text (v10)", "Svätý text: hodnota tvojej Viery je o 1 vyššia (len v tlmení tuhého; Povery ruší 1 : 1)"],
     ["Viera ruší Povery na kusy (v10)", "jedna Viera zruší jednu Poveru, aj vylepšenú Horoskopom"],
     ["Robota bez Dlhu (v8.4)", "**za každý Dlh, ktorý nemá čo spáliť, 1 špak**"],
-    ["Telefón (v11.16)", "**Telefón (v11.16): remízu v hádke (nie 0 : 0) vyhrávaš ty, o 0"],
+    ["Telefón (v11.17)", "**Telefón (v11.17): remízu v hádke (nie 0 : 0) vyhrávaš ty, o 0"],
     ["Kmotor (v9)", "Kmotor: po bitke presunie 2 / 3 / 4 tvoje priznané Dlhy medzi súperove"],
     [
       "krádež pri zajatí (v11.4)",

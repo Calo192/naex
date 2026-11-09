@@ -15,6 +15,14 @@ stránka Pravidlá — `VERZIA_PRAVIDIEL_PRESNA`).
 - **Neaktívny Odpor pod NA EX je štít**: spáruje sa s poldecom a NA EX zahasí — karta je ako bez neho, poldeci sa aj tak vypije. Na kartu s neaktívnym Odporom sa NA EX nedá (nič by nezmenilo); štít platí pre súperovu skrytú Záverečnú a NA EX z Vínka, kým sa Odpor nespáruje.
 - **Neaktívne Posilnenie pod NA EX podrží aktívne akcie**: NA EX ich nezruší (ani Posilnenie na spoji), neaktívne zdvojí ×2 ako vždy. Do podmienky „aspoň 1 neaktívna akcia“ sa neaktívne Posilnenie neráta (ako Pakt).
 
+**Kapybara, Telefón, Krokodíl a hrany Náradia** (Michal 2026-11-09, Zrejúca, docs/napady/kapybara-telefon.html a docs/napady/naradie-len-svoje.html; texty kariet zapíše admin v tvorcovi, staré znenia v `docs/pravidla-historia.md`, sekcia v11.17):
+
+- **Kapybara** (Zviera) je **Školiteľ**: „Podpora: Preškolenie {Viera}→{Cigareta}. Konflikt: Preškolenie {Viera}→{Cigareta}. Furt: {Cigareta}.“ — karta, s ktorou sa priložením stretne (tvoja aj súperova), má do konca kola Viery ako Cigarety; sama má 1 Cigaretu navyše, kým leží, a na jednej strane akciu Posilnenie. Nástup (súperove reči o stupeň nižšie) zaniká. Mäsiar ju umlčí (§16).
+- **Akcie navyše bez podmienky** (§6): „Furt: {A}“ — platia raz, kým karta leží odkrytá v línii.
+- **Telefón** (Dedičstvo): „Hádka: Remíza v hádke je tvoja, ak nie je 0 : 0. Bitka: Za každú tvoju akciu zrušenú súperovým Odporom {Povera}.“ (§9.1, §16). Imunita Pohoršení voči Odporu a NA EX zaniká. Hrany ostávajú.
+- **Krokodíl**: „Konflikt: Občan {Spálenie}.“ — súperov Občan, s ktorým sa priložením stretne (oboma smermi), sa **na konci bitky spáli** (§6, §16). Spálenie všetkých Občanov a Zvierat v okolí zaniká.
+- **Hrany Náradia pod vlastné karty** (§12): 13 hrán, ktoré pod vlastnou kartou len škodili, má nové znenie, Nealko obe hrany a Vidly dolnú (kolízia so Sypačom) — tabuľka v §12. Pasca, Fúrik, Horoskop a Izolačka majú dolnú hranu posilnenia.
+
 **Zmeny v11.16 oproti v11.15** (Michal 2026-11-09, Zrejúca; staré znenia v `docs/pravidla-historia.md`, sekcia v11.16). Deväť zmien:
 
 - **Vypiť len so zostávajúcim limitom** (§6, §13): Vypiť smie hráč, len kým mu zostáva limit vykladania aspoň 1. Pri limite 0 by vypitie limit neznížilo a bola by to len kúpa neresti mimo Pitky — hra ho neponúkne a server ho odmietne.
@@ -25,14 +33,6 @@ stránka Pravidlá — `VERZIA_PRAVIDIEL_PRESNA`).
 - **Školiteľom môže byť aj Zviera** (§6, §16): Preškolenie má Občan aj Zviera, Starešina nie. **Mäsiar** umlčí aj Zviera-Školiteľa — kým s ním susedí, jeho Preškolenie neplatí (Furt ani zapísané z Podpory či Konfliktu).
 - **Pakt je akciou, ktorú kopíruje, pre všetky efekty** (§2): spresnenie, jadro to už hralo — „tvoje Pecky“, Vidly, Horoskop, Zapaľovač, Boxer… rátajú aj Pakt, ktorý akciu kopíruje.
 - **Odpoveď na NA EX stojí plný poldeci** (§7, §8): „Reakcia na NA EX bude fungovať ako dnes, ale bude stáť 1 poldeci — vypiť plný na vypitý.“ (Michal). Odpoveď ostáva, ako bola (jedna karta lícom dole za každé súperovo NA EX, mimo limitu, kraje podľa poradia); hráč pri nej otočí 1 plný poldeci na vypitý — ako pri Vypiť: **+1 poškodenie pečene** (v Pitke, prah Cirhózy sa skontroluje hneď) a **1 nerest**. Kto nemá plný poldeci, neodpovedá.
-
-**Kapybara, Telefón, Krokodíl a hrany Náradia** (Michal 2026-11-09, Zrejúca, docs/napady/kapybara-telefon.html a docs/napady/naradie-len-svoje.html; texty kariet zapíše admin v tvorcovi, staré znenia v `docs/pravidla-historia.md`, sekcia v11.16):
-
-- **Kapybara** (Zviera) je **Školiteľ**: „Podpora: Preškolenie {Viera}→{Cigareta}. Konflikt: Preškolenie {Viera}→{Cigareta}. Furt: {Cigareta}.“ — karta, s ktorou sa priložením stretne (tvoja aj súperova), má do konca kola Viery ako Cigarety; sama má 1 Cigaretu navyše, kým leží, a na jednej strane akciu Posilnenie. Nástup (súperove reči o stupeň nižšie) zaniká. Mäsiar ju umlčí (§16).
-- **Akcie navyše bez podmienky** (§6): „Furt: {A}“ — platia raz, kým karta leží odkrytá v línii.
-- **Telefón** (Dedičstvo): „Hádka: Remíza v hádke je tvoja, ak nie je 0 : 0. Bitka: Za každú tvoju akciu zrušenú súperovým Odporom {Povera}.“ (§9.1, §16). Imunita Pohoršení voči Odporu a NA EX zaniká. Hrany ostávajú.
-- **Krokodíl**: „Konflikt: Občan {Spálenie}.“ — súperov Občan, s ktorým sa priložením stretne (oboma smermi), sa **na konci bitky spáli** (§6, §16). Spálenie všetkých Občanov a Zvierat v okolí zaniká.
-- **Hrany Náradia pod vlastné karty** (§12): 13 hrán, ktoré pod vlastnou kartou len škodili, má nové znenie, Nealko obe hrany a Vidly dolnú (kolízia so Sypačom) — tabuľka v §12. Pasca, Fúrik, Horoskop a Izolačka majú dolnú hranu posilnenia.
 
 **Zmeny v11.15 oproti v11.14** (Michal 2026-11-09, Zrejúca; staré znenie v `docs/pravidla-historia.md`, sekcia v11.15):
 
@@ -746,13 +746,13 @@ počíta ako ťah, priznanie nie.
   s podmienkou slovami (Pijan, Svokra, Vymáhač, Šofér, Traktorista, Pasca v Dedičstve)
   toľkokrát, koľkokrát podmienka v bitke platí; pri spúšťači **Posledná Pitka kola** (Traktorista,
   Výherný automat v Dedičstve) Hazard navyše dá na konci poslednej Pitky kola Dlh; pri spúšťači
-  **Furt** bez podmienky („Furt: {Cigareta}“, Kapybara, v11.16) raz, kým karta leží odkrytá v línii. Mení ju Náradie
+  **Furt** bez podmienky („Furt: {Cigareta}“, Kapybara, v11.17) raz, kým karta leží odkrytá v línii. Mení ju Náradie
   v Dedičstve a čo mení všetky tvoje akcie toho druhu (Vidly, Valaška, Svätý text, Horoskop,
   Obecný úrad…) a **Preškolenie Školiteľa** (nižšie); podložený Nástroj ani Posilnenie, Odpor,
   Forsáž, NA EX či Silná žena ju nemenia. Keď Preškolenie mení akciu, karta, ktorej sa týka,
   ukáže preškolenú akciu na hrane aj v pečati (Michal 2026-11-08). Skrytá Záverečná podmienku
   nesplní ani akcie navyše nedostane.
-- **Spálenie v pečati** (Krokodíl, v11.16, Michal 2026-11-09): „Konflikt: Občan {Spálenie}“ — piktogram
+- **Spálenie v pečati** (Krokodíl, v11.17, Michal 2026-11-09): „Konflikt: Občan {Spálenie}“ — piktogram
   Spálenie nie je akcia. Karta, s ktorou sa nositeľ priložením stretne (pri Konflikte súperova, pri
   Podpore tvoja; s tagom za dvojbodkou len karta s tým tagom), sa **na konci bitky spáli** (krok 6c, §9): navždy z hry, do balíčka sa nevráti.
   Jej akcie v bitke ešte platia. Nástroj pod ňou ide tomu, kto ho podložil (§12); presvedčený starší je
@@ -1307,7 +1307,7 @@ víťaz hádky ju po výsledku bitky rozdelí na **svoje reči** na teplomeroch 
 **Noviny** (Dedičstvo: Hádka, v11.5): hneď ako sa hádka rozhodne (krok 1), porazený v hádke odhodí za
 každé Noviny v Dedičstve víťaza hádky 1 náhodnú kartu z ruky (§16).
 
-**Telefón** (Dedičstvo: Hádka, v11.16, Michal 2026-11-09): remízu v hádke vyhráva hráč s Telefónom
+**Telefón** (Dedičstvo: Hádka, v11.17, Michal 2026-11-09): remízu v hádke vyhráva hráč s Telefónom
 v Dedičstve, **o 0** — reči nedvíha, ale ostatné účinky výhry v hádke platia: porazenému v hádke klesnú
 reči (§10), víťaz hádky, ktorý prehral bitku, dostane špaky za svoje karty (§9.4) a spustia sa Noviny.
 Remíza **0 : 0** (nikto nemá mäkké) sa neráta — hádka nebola. Majú ho obaja → remíza ostáva.
@@ -1780,34 +1780,34 @@ hranu majú štyri Nástroje: **Energeťák** (Forsáž), **Vínko** (NA EX), **
 (Výtržník) a **Vidly** (Vzbura); každý z nich má na druhej hrane jedno preškolenie.
 **Puška** má dve hrany posilnenia (Petelica, Pecka); **Pasca, Fúrik, Horoskop a Izolačka** jednu
 hranu posilnenia a jedno preškolenie. Ostatných 13 Nástrojov má dve preškolenia. Nástroj sa podkladá
-**len pod vlastné karty** (v11.16, Michal 2026-11-09), preto hrany od v11.16 vlastnej karte
+**len pod vlastné karty** (v11.16, Michal 2026-11-09), preto hrany od v11.17 vlastnej karte
 pomáhajú, alebo pomôžu podľa suseda (Hrable, Zrkadlo, Jogurt dole, Telefón dole, Svätý text a
 Zapaľovač hore); 13 sabotáží zaniklo (docs/napady/naradie-len-svoje.html). Hrany stoja v texte
 karty za Dedičstvom („Hore: … Dole: …“):
 
 | Nástroj | Hore | Dole |
 |---|---|---|
-| Energeťák | Forsáž | {Poldeci}→{Posilnenie} (v11.16; predtým {Posilnenie}→{Pečeň}) |
+| Energeťák | Forsáž | {Poldeci}→{Posilnenie} (v11.17; predtým {Posilnenie}→{Pečeň}) |
 | Vínko | NA EX | {Pečeň}→{Poldeci} |
-| Injekcia | Výtržník | {Pečeň}→{Robota} (v11.16; predtým {Poldeci}→{Pečeň}) |
-| Vidly | Vzbura | {Robota}→{Petelica} (v11.16; predtým {Rana}→{Pecka} ako Sypač) |
+| Injekcia | Výtržník | {Pečeň}→{Robota} (v11.17; predtým {Poldeci}→{Pečeň}) |
+| Vidly | Vzbura | {Robota}→{Petelica} (v11.17; predtým {Rana}→{Pecka} ako Sypač) |
 | Puška | Posilnená {Petelica} | Posilnená {Pecka} |
-| Valaška | {Pecka}→{Petelica} | {Rana}→{Petelica} (v11.16; predtým {Petelica}→{Pecka}) |
-| Pasca | {Pečeň}→{Rana} | Posilnená {Rana} (v11.16; predtým {Pecka}→{Rana}) |
-| Zapaľovač | {Cigareta}→{Rana} | {Poldeci}→{Petelica} (v11.16; predtým {Cigareta}→{Pečeň}) |
-| Noviny | {Viera}→{Pohoršenie} | {Pečeň}→{Pohoršenie} (v11.16; predtým {Pohoršenie}→{Povera}) |
-| Svätý text | {Povera}→{Viera} | {Odpor}→{Viera} (v11.16; predtým {Viera}→{Povera}) |
+| Valaška | {Pecka}→{Petelica} | {Rana}→{Petelica} (v11.17; predtým {Petelica}→{Pecka}) |
+| Pasca | {Pečeň}→{Rana} | Posilnená {Rana} (v11.17; predtým {Pecka}→{Rana}) |
+| Zapaľovač | {Cigareta}→{Rana} | {Poldeci}→{Petelica} (v11.17; predtým {Cigareta}→{Pečeň}) |
+| Noviny | {Viera}→{Pohoršenie} | {Pečeň}→{Pohoršenie} (v11.17; predtým {Pohoršenie}→{Povera}) |
+| Svätý text | {Povera}→{Viera} | {Odpor}→{Viera} (v11.17; predtým {Viera}→{Povera}) |
 | Telefón | {Povera}→{Pohoršenie} | {Odpor}→{Povera} |
-| Nealko | {Pečeň}→{Povera} (v11.16; predtým {Pečeň}→{Viera} ako Anonymný alkoholik) | {Poldeci}→{Pohoršenie} (v11.16; predtým {Poldeci}→{Viera}) |
-| Krištáľová guľa | {Povera}→{Vízia} | {Pečeň}→{Vízia} (v11.16; predtým {Vízia}→{Povera}) |
+| Nealko | {Pečeň}→{Povera} (v11.17; predtým {Pečeň}→{Viera} ako Anonymný alkoholik) | {Poldeci}→{Pohoršenie} (v11.17; predtým {Poldeci}→{Viera}) |
+| Krištáľová guľa | {Povera}→{Vízia} | {Pečeň}→{Vízia} (v11.17; predtým {Vízia}→{Povera}) |
 | Krabička cigariet | {Pečeň}→{Cigareta} | {Hazard}→{Cigareta} |
-| Výherný automat | {Hazard}→{Poldeci} | {Hazard}→{Pecka} (v11.16; predtým {Cigareta}→{Hazard}) |
-| Výherné žreby | {Hazard}→{Vízia} | {Cigareta}→{Vízia} (v11.16; predtým {Vízia}→{Hazard}) |
-| Fúrik | {Hazard}→{Robota} | Posilnená {Robota} (v11.16; predtým {Robota}→{Hazard}) |
-| Horoskop | {Hazard}→{Povera} | Posilnená {Povera} (v11.16; predtým {Povera}→{Hazard}) |
+| Výherný automat | {Hazard}→{Poldeci} | {Hazard}→{Pecka} (v11.17; predtým {Cigareta}→{Hazard}) |
+| Výherné žreby | {Hazard}→{Vízia} | {Cigareta}→{Vízia} (v11.17; predtým {Vízia}→{Hazard}) |
+| Fúrik | {Hazard}→{Robota} | Posilnená {Robota} (v11.17; predtým {Robota}→{Hazard}) |
+| Horoskop | {Hazard}→{Povera} | Posilnená {Povera} (v11.17; predtým {Povera}→{Hazard}) |
 | Hrable | {Odpor}→{Posilnenie} | {Posilnenie}→{Odpor} |
 | Zrkadlo | {Odpor}→{Pakt} | {Pakt}→{Odpor} |
-| Izolačka | {Pečeň}→{Obmedzenie} | Posilnené {Obmedzenie} (v11.16; predtým {Pecka}→{Obmedzenie}) |
+| Izolačka | {Pečeň}→{Obmedzenie} | Posilnené {Obmedzenie} (v11.17; predtým {Pecka}→{Obmedzenie}) |
 | Jogurt | {Pečeň}→{Posilnenie} | {Pečeň}→{Hazard} |
 
 Každá dvojica X → Y je v sade jediná — aj so Školiteľmi (Anonymný alkoholik, Sypač, Tipér,
@@ -1894,7 +1894,7 @@ majiteľa; menia sa len **tvoje** akcie (karty, ktoré si zahral):
 | Hrable | Akcia zrušená tvojím Odporom sa ráta ako tvoja a je posilnená. | Zrušená akcia (nie Posilnenie, Odpor, Pakt) sa pripíše majiteľovi Odporu ×2. |
 | Zrkadlo | Tvoj Pakt kopíruje prepojenú akciu dvakrát. | Pakt sa premení na akciu partnera ×2; proti Posilneniu ostáva nič. |
 | Valaška | Tvoje Pecky udeľujú o 1 poškodenie viac. | Každá tvoja aktívna Pecka +1 tuhé — z vyložených akcií aj akcia navyše (Šofér, Traktorista, frakcie), aj preškolená (Vedúcko, Sypač). |
-| Telefón | Hádka: Remíza v hádke je tvoja, ak nie je 0 : 0. Bitka: Za každú tvoju akciu zrušenú súperovým Odporom {Povera}. | (v11.16, Michal 2026-11-09) Remízu v hádke s mäkkým vyhráš o 0 (§9.1); majú ho obaja = remíza. V bitke 1 Povera navyše (akcia navyše, §6) za každú tvoju akciu — aj Pakt či Posilnenie — ktorú na spoji zrušil Odpor súperovej karty (Odpor hrany lokality nie); za každý Telefón zvlášť. Do v11.15: tvoje Pohoršenia nemožno zrušiť Odporom a NA EX. |
+| Telefón | Hádka: Remíza v hádke je tvoja, ak nie je 0 : 0. Bitka: Za každú tvoju akciu zrušenú súperovým Odporom {Povera}. | (v11.17, Michal 2026-11-09) Remízu v hádke s mäkkým vyhráš o 0 (§9.1); majú ho obaja = remíza. V bitke 1 Povera navyše (akcia navyše, §6) za každú tvoju akciu — aj Pakt či Posilnenie — ktorú na spoji zrušil Odpor súperovej karty (Odpor hrany lokality nie); za každý Telefón zvlášť. Do v11.16: tvoje Pohoršenia nemožno zrušiť Odporom a NA EX. |
 | Jogurt | Tvoje Poldeci otáčajú vypitý poldeci hneď v Pitke, nie až v bitke. | Vo vyhodnotení každej Pitky otočia akcie Poldeci v línii toľko vypitých, koľko v kole ešte neotočili; v bitke (krok 5) len zvyšok. |
 | Energeťák | Tvoje Posilnenie nemožno zrušiť NA EX. | NA EX na kartu s tvojím Posilnením partnerovi ×2 nezruší. |
 | Horoskop | Tvoje Povery majú silu 2. | (v10) Každá tvoja zvyšná Povera dá 2 mäkké namiesto 1. S Vierou sa ruší stále 1 : 1 na kusy: jedna súperova Viera zruší jednu tvoju Poveru, teda 2 mäkké. Prenášanie klebiet do ďalšieho kola zaniklo. |
@@ -2147,7 +2147,7 @@ Občana je jedného z troch druhov. **Školiteľ** — „Spúšťač: Preškole
 Podpora alebo Konflikt (§6 Preškolenie Školiteľa): Vedúcko, Sypač, Anonymný alkoholik, Profesionálny
 tipér. **Efekt s vedľajšou akciou** — akcie navyše v pečati (§6): „Spoločník: tag {A}“, „Nepriateľ: tag
 {A}“, „Podpora: {A}“, „Konflikt: {A}“, „Bitka: podmienka {A}“, „Posledná Pitka kola: podmienka {A}“,
-„Furt: {A}“ bez podmienky (v11.16) a „Konflikt: Občan {Spálenie}“ (Krokodíl, v11.16).
+„Furt: {A}“ bez podmienky (v11.17) a „Konflikt: Občan {Spálenie}“ (Krokodíl, v11.17).
 **Textový efekt** — všetko ostatné slovami. Podpora a Konflikt sú bez tagu; tag ostáva len pri
 Spoločníkovi a Nepriateľovi.
 
@@ -2169,8 +2169,8 @@ Kôň v kroku Exekútora. Michal ich potvrdí.
 | Šarlatán | Spoločník: Autorita (frakcie): 2 Povery navyše |
 | Pes | Furt: jeho aktívne akcie na spoji so súperovou kartou (strana Psa k tej karte) sa rátajú dvakrát; násobky sa násobia (§7). Platí aj podstrčený či podstrčením vzniknutý spoj. |
 | Mäsiar | Furt (Michal 2026-10-28): **efekty Zvierat** v jeho okolí (oboch hráčov) neplatia, kým s ním susedia; ich **akcie sa rátajú normálne**. Týka sa Psa, Koňa a Čiernej mačky (Furt), Krokodíla (Spálenie na konci bitky — rozhoduje okolie na konci bitky), Kapybary (Cigareta navyše, kým susedia) a Recidivistu (Zviera aj Občan; Prehra — rozhoduje okolie v chvíli, keď sa efekt spúšťa). **Zviera-Školiteľ** (v11.16): jeho Preškolenie vedľa Mäsiara neplatí — Furt ani preškolenie, ktoré zapísal Podporou či Konfliktom, kým s Mäsiarom susedí. Mäsiar lícom dole (Záverečná) ešte nič neumlčí. Do 2026-10-28 Mäsiar rušil akcie Zvierat. |
-| Krokodíl | Konflikt: Občan {Spálenie} (v11.16, Michal 2026-11-09): súperov **Občan**, s ktorým sa Krokodíl priložením stretne (oboma smermi), sa **na konci bitky spáli** — Starešinu ani Zviera bez tagu Občan nie, Recidivistu (Občan aj Zviera) áno (§6 Spálenie v pečati, krok 6c) — za každé stretnutie ďalšia karta. Jej akcie v bitke ešte platia; Nástroj pod ňou ide tomu, kto ho podložil; presvedčený starší je nezničiteľný (§10). Vedľa Mäsiara na konci bitky nespáli nič. Do v11.15 Bitka: spálili sa všetci Občania a Zvieratá v jeho okolí (oboch hráčov). |
-| Kapybara | Školiteľ (v11.16, Michal 2026-11-09): Podpora aj Konflikt — Preškolenie {Viera}→{Cigareta}: karta, s ktorou sa priložením stretne (tvoja aj súperova, oboma smermi), má do konca kola **Viery ako Cigarety** (§6); a **Furt: {Cigareta}** — 1 Cigareta navyše, kým leží odkrytá v línii. Strany: Viera, Cigareta + Posilnenie (v11.16). Je Zviera: vedľa Mäsiara neplatí ani jedno. Do v11.15 Nástup: súperove reči pri jednom staršom klesli zospodu o stupeň. |
+| Krokodíl | Konflikt: Občan {Spálenie} (v11.17, Michal 2026-11-09): súperov **Občan**, s ktorým sa Krokodíl priložením stretne (oboma smermi), sa **na konci bitky spáli** — Starešinu ani Zviera bez tagu Občan nie, Recidivistu (Občan aj Zviera) áno (§6 Spálenie v pečati, krok 6c) — za každé stretnutie ďalšia karta. Jej akcie v bitke ešte platia; Nástroj pod ňou ide tomu, kto ho podložil; presvedčený starší je nezničiteľný (§10). Vedľa Mäsiara na konci bitky nespáli nič. Do v11.16 Bitka: spálili sa všetci Občania a Zvieratá v jeho okolí (oboch hráčov). |
+| Kapybara | Školiteľ (v11.17, Michal 2026-11-09): Podpora aj Konflikt — Preškolenie {Viera}→{Cigareta}: karta, s ktorou sa priložením stretne (tvoja aj súperova, oboma smermi), má do konca kola **Viery ako Cigarety** (§6); a **Furt: {Cigareta}** — 1 Cigareta navyše, kým leží odkrytá v línii. Strany: Viera, Cigareta + Posilnenie (v11.17). Je Zviera: vedľa Mäsiara neplatí ani jedno. Do v11.16 Nástup: súperove reči pri jednom staršom klesli zospodu o stupeň. |
 | Kohút | **Dočasne vyradený (v9.2, Michal 2026-10-30)** — posledné slovo pri odpovediach na NA EX zaniklo (odpovede lícom dole, §7); v sade karta nie je (vyradená v sade v51), prerobí sa. V jadre nemá účinok (TODO). Predtým: posledné slovo mal jeho majiteľ aj ako obranca. |
 | Pijan | Bitka: za každé NA EX, ktoré majiteľ v tomto kole dal (poldeci ešte leží na karte), **Rana navyše** (akcia navyše, §6; Vidly ju zosilnia) — za každého Pijana. |
 | Milujúca manželka | Pitka: tvoje poškodenie pečene v Pitke je o 1 menšie (najprv z akcií Poškodenie pečene, potom z Poldeci); latku Absťáku (Chuť) nemení, nie je Kliatba. |
@@ -2245,7 +2245,7 @@ Kôň v kroku Exekútora. Michal ich potvrdí.
 | Podpora | spúšťač (v11.3): zrkadlo Konfliktu — efekt karty, keď sa priložením stretne s inou kartou toho istého hráča (§6, §16) |
 | Vyvolať Konflikt | priložiť kartu k súperovej ležiacej karte so spúšťačom Konflikt (§16) |
 | Spoločník / Nepriateľ | spúšťač (frakcie): akcie navyše, kým je v tvojej / súperovej partii odkrytá karta s tagom (§6, §16) |
-| Akcia navyše | aktívna akcia majiteľa karty mimo jej hrán, z pečate v ilustrácii; ráta sa ako tá istá akcia (§6). „Furt: {A}“ platí bez podmienky, kým karta leží (v11.16); {Spálenie} v pečati nie je akcia — karta, s ktorou sa nositeľ stretne, sa na konci bitky spáli (§6) |
+| Akcia navyše | aktívna akcia majiteľa karty mimo jej hrán, z pečate v ilustrácii; ráta sa ako tá istá akcia (§6). „Furt: {A}“ platí bez podmienky, kým karta leží (v11.17); {Spálenie} v pečati nie je akcia — karta, s ktorou sa nositeľ stretne, sa na konci bitky spáli (§6) |
 | Bitka (akcia navyše) | podmienka slovami pred piktogramom („Bitka: Ak si v tomto kole nedal NA EX {Pecka}“): akcia navyše toľkokrát, koľkokrát podmienka platí v bitke (§6, §16) |
 | Forsáž | Posilnenie + Posilnenie na spoji (v10.3): obe karty majú všetky aktívne akcie posilnené (×2); lokalita len hranu; NA EX na jedno z Posilnení ju zruší (§6). Aj z Energeťáka pod kartou — tú NA EX nezruší (§12) |
 | Vzbura | Odpor + Odpor na spoji (v11.1): obe karty sa obrátia — nespojené akcie aktívne, spojené neaktívne; Odpor + Posilnenie: len karta s Odporom, navyše posilnená; NA EX na ňu nejde; lokalita len hranu (§6, §7). Aj z Vidiel pod kartou (§12) |
@@ -2375,7 +2375,7 @@ platí pre tím. Osobná je len **ruka** a **ťah**.
 - **Pas hráča** (Michal 2026-11-02, Q1 — nahrádza „cigarety hneď každému za seba“
   z 2026-10-28): pas člena len ukončí jeho vykladanie, **bez cigariet**. Keď pasuje aj
   druhý člen, tím dostane **1 cigaretu za každú kartu, ktorú ešte smel vyložiť**
-  (zvyšok limitu tímu), bez ohľadu na karty v rukách (v11.16; predtým najviac toľko,
+  (zvyšok limitu tímu), bez ohľadu na karty v rukách (v11.17; predtým najviac toľko,
   koľko mali obaja v rukách). Keď tím limit vyčerpá, cigarety nedostane. Zhromaždenie končí, keď skončili všetci štyria.
 - **Záverečná:** najviac **jedna za tím**, za 1 cigaretu tímu; ukončí vykladanie
   **celého tímu** bez cigariet (Michal 2026-10-28).

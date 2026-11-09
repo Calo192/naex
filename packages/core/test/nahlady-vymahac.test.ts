@@ -30,7 +30,10 @@ const data = loadGameData(cardsJson, eldersJson, scorecardsJson);
 describe("náhľad bitky ráta Vymáhača s Dlhmi po Pitkách kola", () => {
   it("Rany Vymáhača v náhľade = jeho Vymáhače × (polovica Dlhov pri poškodení − polovica dnešných)", () => {
     let najdene = 0;
-    for (let seed = 1; seed <= 60 && najdene < 3; seed++) {
+    // Partie botov s Vymáhačom, ktorý v kole získa Dlhy, sú zriedkavé a závisia od pravidiel; poradie
+    // semienok začína tým, ktoré ho po v11.17 (Kapybara, Telefón, Krokodíl) nájde hneď — len kvôli času testu.
+    for (let i = 0; i < 60 && najdene < 3; i++) {
+      const seed = 1 + ((i + 28) % 60);
       let s: GameState = setupGame(data, 7000 + seed);
       let rng = rngSeed(seed);
       for (let krok = 0; krok < 400 && s.koniec === null; krok++) {
