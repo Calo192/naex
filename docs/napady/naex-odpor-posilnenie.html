@@ -1,0 +1,241 @@
+<!doctype html>
+<html lang="sk"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>NA EX × Odpor × Posilnenie — mapa a návrhy</title>
+<style>
+:root{--bg:#f6f1e7;--karta:#fffdf8;--ink:#2b2118;--muted:#7a6a58;--akc:#8a3b12;--ok:#2e7d32;--zle:#c62828;--siva:#9e9384;--ty:#2f6db3;--super:#b8452d}
+*{box-sizing:border-box}body{margin:0;font:16px/1.5 system-ui,-apple-system,"Segoe UI",sans-serif;background:var(--bg);color:var(--ink)}
+main{max-width:880px;margin:0 auto;padding:14px}
+h1{font-size:1.4rem;margin:.2em 0}h2{font-size:1.15rem;margin:1.6em 0 .5em;color:var(--akc)}h3{font-size:1rem;margin:.2em 0 .4em}
+.lead{color:var(--muted);font-size:.95rem}
+.box{background:var(--karta);border-radius:10px;padding:12px 14px;margin:10px 0;box-shadow:0 1px 3px #0002}
+.odpor{border-left:5px solid var(--ok)}
+table{border-collapse:collapse;width:100%;background:var(--karta);font-size:.88rem}
+th,td{padding:6px 7px;border-bottom:1px solid #eadfcd;text-align:left;vertical-align:top}th{background:#efe3cf}
+code{font-size:.82rem;background:#efe3cf;border-radius:4px;padding:0 4px}
+.mrtve{color:var(--zle);font-weight:600}.ide{color:var(--ok);font-weight:600}
+details{background:var(--karta);border-radius:10px;margin:10px 0;box-shadow:0 1px 3px #0002}
+summary{cursor:pointer;padding:10px 14px;font-weight:600;list-style:none}
+summary::before{content:"▸ ";color:var(--akc)}details[open] summary::before{content:"▾ "}
+details>div{padding:0 14px 12px}
+.pravidlo{background:#efe3cf;border-radius:8px;padding:8px 10px;margin:6px 0;font-style:italic}
+.znamka{display:inline-block;border-radius:6px;padding:0 7px;font-size:.78rem;font-weight:700;color:#fff;margin-left:6px;vertical-align:middle}
+.z1{background:#2e7d32}.z2{background:#689f38}.z3{background:#f9a825}.z4{background:#c62828}
+/* schéma línie */
+.prepinac{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0}
+.prepinac button{border:1px solid #c9b79c;background:#fff;border-radius:16px;padding:3px 11px;font:inherit;font-size:.85rem;cursor:pointer}
+.prepinac button.on{background:var(--akc);color:#fff;border-color:var(--akc)}
+.linia{display:flex;gap:0;overflow-x:auto;padding:4px 0}
+.k{border:2px solid #b9a88c;border-radius:8px;background:#fff;min-width:118px;margin-right:6px;position:relative}
+.k.ty{border-color:var(--ty)}.k.super{border-color:var(--super)}
+.k .meno{font-size:.75rem;font-weight:700;text-align:center;padding:2px 4px;border-bottom:1px solid #eadfcd}
+.k.ty .meno{color:var(--ty)}.k.super .meno{color:var(--super)}
+.k .naex{position:absolute;top:-10px;right:-6px;background:#5d2a8a;color:#fff;font-size:.62rem;font-weight:700;border-radius:8px;padding:0 5px}
+.k .sl{display:grid;grid-template-columns:1fr 1fr;gap:2px;padding:3px}
+.c{font-size:.68rem;border-radius:4px;padding:1px 3px;text-align:center;min-height:1.35em;white-space:nowrap}
+.c.a{background:#e1f2e2;border:1px solid #7cbf74}
+.c.n{background:#f2efe9;border:1px dashed #b5aa98;color:#8a7f70}
+.c.z{background:#fbe3e0;border:1px solid #e09a90;color:#a33;text-decoration:line-through}
+.c.e{border:1px solid transparent}
+.c b{font-weight:700;color:#5d2a8a}
+.c.mrtva{outline:2px solid #c62828;outline-offset:-1px}
+.sucet{font-size:.85rem;margin:4px 0 0}
+.legenda{font-size:.8rem;color:var(--muted)}
+.legenda .c{display:inline-block;margin:0 2px}
+.poznamka{font-size:.86rem;color:#4a3d30;margin:.3em 0}
+ul li,ol li{margin:.3em 0}
+@media(max-width:560px){.tabm,.tabm thead,.tabm tbody,.tabm tr,.tabm th,.tabm td{display:block}.tabm thead{display:none}.tabm td{border:0;padding:2px 8px}.tabm tr{border-bottom:1px solid #eadfcd;padding:6px 0}.tabm td:first-child{font-weight:700}}
+</style></head><body><main>
+
+<h1>NA EX × Odpor × Posilnenie</h1>
+<p class="lead">Vymyselník, 2026-11-09 · vetva <code>napady/naex-odpor-posilnenie</code> · pravidlá v11.15 (Zrejúca, master 85600682). Podklad: Michal 2026-11-09 („Teraz sú to čisto mŕtve akcie pri NA EX.“), playtest <code>docs/playtesty/20261109-115955.html</code> (otázka Vila a Evy: „zrušený Odpor ďalej ruší“). Mapa je overená priamo v jadre (<code>evaluateLine</code> na syntetických kartách, 14 prípadov).</p>
+
+<div class="box odpor">
+<b>V skratke.</b> Odpor a Posilnenie sú modifikátory spoja. Do súčtov nikdy nejdú, robia niečo len cez partnera na spoji. NA EX však s nimi narába ako s bežnou akciou. Neaktívne „zdvojí“ (bez partnera teda zdvojí nič) a aktívne „zruší“. Pri Posilnení to zaberie (partner stratí ×2), pri Odpore nie (partner ostane zrušený). <b>Mŕtve sú tri miesta:</b> zdvojený neaktívny Odpor, zdvojené neaktívne Posilnenie a zrušený aktívny Odpor. Navrhujem šesť prístupov. <b>Odporúčam P2 „Poldeci ako partner“</b>: zrušený Odpor partnera pustí, neaktívny Odpor NA EX zruší a neaktívne Posilnenie ho posilní. Je to jedno pravidlo, všetky tri mŕtve miesta dostanú účinok a karty sa nemenia.
+</div>
+
+<h2>1. Ako to hrá jadro dnes</h2>
+<p class="legenda">Legenda schém: <span class="c a">aktívna</span> <span class="c n">neaktívna</span> <span class="c z">zrušená</span> <span class="c a">Pecka <b>×2</b></span> · rám <span style="color:var(--ty)">modrý = tvoja karta</span>, <span style="color:var(--super)">červený = súperova</span> · <span style="background:#5d2a8a;color:#fff;border-radius:8px;padding:0 5px;font-size:.7rem">NA EX</span> = poldeci na karte · <span class="c a mrtva">červený obrys</span> = mŕtva akcia. Spoj tvorí pravý stĺpec ľavej karty s ľavým stĺpcom pravej karty, riadok = index 0–3. Rozloženia kariet sú zjednodušené (len sloty, o ktoré ide).</p>
+
+<table class="tabm"><thead><tr><th>Prípad</th><th>Čo urobí jadro</th><th>Kde</th><th>Stav</th></tr></thead><tbody>
+<tr><td>Aktívny Odpor na karte s NA EX (ruší partnerovu akciu)</td><td>Odpor je „zrušený“, ale partnerova akcia <b>ostáva zrušená</b>. Na spoji sa nezmení nič.</td><td><code>partia.ts:723</code> (zrušenie zapíše spoj), <code>partia.ts:911–942</code> applyNaex ruší už len stav Odporu</td><td class="mrtve">mŕtve</td></tr>
+<tr><td>Neaktívny Odpor na karte s NA EX</td><td>„Zdvojený“ na aktívny ×2, ale modifikátor do súčtov nejde → nič.</td><td><code>partia.ts:285</code> MODIFIERS, <code>:1186</code></td><td class="mrtve">mŕtve</td></tr>
+<tr><td>Aktívne Posilnenie na karte s NA EX</td><td>Zrušené aj s ×2 partnerovi (partner ×1). Forsáž zanikne obom kartám.</td><td><code>partia.ts:900</code> zrusPosilnenie, <code>:817</code></td><td class="ide">funguje</td></tr>
+<tr><td>Neaktívne Posilnenie na karte s NA EX</td><td>„Zdvojené“ → nič.</td><td><code>partia.ts:1186</code></td><td class="mrtve">mŕtve</td></tr>
+<tr><td>Súperov Odpor (sused) ruší akciu karty s NA EX</td><td>Akcia nie je aktívna ani neaktívna, NA EX ju nezmení (§7 r. 932).</td><td><code>partia.ts:926–941</code></td><td class="ide">funguje</td></tr>
+<tr><td>Posilnenie suseda zdvojí akciu karty s NA EX</td><td>NA EX tú akciu zruší, Posilnenie suseda vyjde naprázdno. Veterán: ×4.</td><td>applyNaex</td><td>naprázdno (logické)</td></tr>
+<tr><td>Zdvojený Odpor / Posilnenie (Veterán, aktívne ×2)</td><td>Modifikátor ×2 → nič; partner má stále ×2, nie ×4.</td><td><code>partia.ts:922</code></td><td class="mrtve">mŕtve</td></tr>
+<tr><td>Vzbura</td><td>NA EX na kartu so Vzburou nejde. Keď Vzbura vznikne až po výbere, NA EX zruší Odpory spoja. Účinok to nemá, Vzbura ostáva. Nespojené Odpory a Posilnenia sú pod Vzburou „aktívne ×1“, teda tiež nič (rovnaký koreň, mimo NA EX).</td><td><code>partia.ts:867</code>, <code>:1145</code></td><td class="mrtve">mŕtve</td></tr>
+<tr><td>Hrable (Dedičstvo)</td><td>NA EX na kartu s Odporom nič nevráti: ukradnutá akcia ostáva tvoja ×2.</td><td><code>partia.ts:1205</code></td><td>NA EX bez vplyvu</td></tr>
+<tr><td>Energeťák (Dedičstvo)</td><td>Aktívne Posilnenie NA EX nezruší, partner ×2 aj Forsáž ostávajú. Neaktívne Posilnenie je mŕtve aj s ním.</td><td><code>partia.ts:792</code>, <code>:917</code></td><td>čiastočne</td></tr>
+<tr><td>Zapaľovač, Telefón (Dedičstvo)</td><td>Aktívne Cigarety, resp. Pohoršenia NA EX nezruší (ostanú ×1). Pakt, ktorý kopíruje Pohoršenie, je pod Telefónom pred NA EX tiež chránený (overené). Pred Odporom Pakt Pohoršením nikdy nie je, lebo proti Odporu nekopíruje.</td><td><code>partia.ts:916–919</code>, <code>:689</code></td><td>funguje (imunita)</td></tr>
+<tr><td>Výtržník (zrážka, Injekcia)</td><td>Odpor aj Posilnenie sú Rany.</td><td><code>partia.ts:1101–1109</code></td><td class="ide">funguje</td></tr>
+<tr><td>Podmienka výberu NA EX</td><td>Neaktívny <b>Pakt</b> sa do „aspoň jednej neaktívnej“ neráta, neaktívny Odpor a Posilnenie <b>áno</b>. Výsledok: NA EX smie na kartu, kde jediná neaktívna akcia je Odpor (len zruší). A na kartu, kde jediná aktívna je Odpor, smie <b>vlastné NA EX bez straty</b>: zdvojí neaktívne a „zruší“ len Odpor, ktorý ruší ďalej (overené).</td><td><code>engine.ts:4015</code></td><td class="mrtve">nekonzistentné</td></tr>
+</tbody></table>
+
+<p class="poznamka"><b>Rozpor v pravidlách:</b> §7 r. 951 „Akcia, ktorú karta zrušila Odporom, ostáva zrušená.“ proti r. 954–955 „Partner zrušenej akcie … (akejkoľvek, nielen Posilnenia) ostáva aktívny ×1.“ Jadro hrá prvú vetu (komentár <code>partia.ts:32</code> „Vzbura ani NA EX neoživujú akcie zrušené Odporom“). Druhá veta pri zrušenom Odpore nedáva zmysel: partner nebol aktívny, aby „ostal“. <b>Rozsah:</b> 20 zo 48 Občanov a Starešinov (42 %), teda kariet, na ktoré ide NA EX, má Odpor alebo Posilnenie (Odpor 11, Posilnenie 10, Praudovravec oboje).</p>
+
+<h3>Tri príklady (prepínaj dnes a návrhy)</h3>
+<div id="priklady"></div>
+
+<h2>2. Šesť prístupov</h2>
+<p class="lead">Každý prístup odpovedá aj na otázku z playtestu: <b>keď NA EX zruší Odpor, ožije akcia, ktorú rušil?</b> Známka vpravo je moje odporúčanie (zelená = beriem, červená = nie).</p>
+
+<details open><summary>P1 · Upratanie: NA EX ruší modifikátor aj s účinkom <span class="znamka z3">základ</span></summary><div>
+<div class="pravidlo">NA EX zruší modifikátor aj s jeho účinkom: zrušený Odpor partnera pustí (×1), zrušené Posilnenie mu vezme ×2. Neaktívny Odpor ani Posilnenie NA EX nezdvojí a do podmienky „aspoň jedna neaktívna“ sa nerátajú (ako Pakt).</div>
+<ul>
+<li><b>Ožije?</b> Áno, ×1. Odpor a Posilnenie sa správajú rovnako (dnes len Posilnenie). Rozpor r. 951 / 954 zmizne.</li>
+<li><b>Príklad:</b> Pijanova Rana rušená Odporom Vdovy, NA EX na Vdovu → Rana ožije (schéma 1, P1).</li>
+<li><b>Stratégia:</b> NA EX dostane nové použitie, odomknúť vlastnú akciu: NA EX na súperovu kartu s Odporom ti vráti Petelicu. Hrable majú protiťah. Odpadne „vlastné NA EX bez straty“ na kartu, kde jediná aktívna je Odpor.</li>
+<li><b>Riziká:</b> neaktívne modifikátory ostávajú nečinné, len ich už nič nesľubuje, takže Michalovo „niečo majú robiť“ splní len napoly. Pár kariet prestane byť cieľom NA EX (na Krčme sa tak ľahšie nájde povinná karta vo vlastnej partii).</li>
+<li><b>Karty:</b> žiadne.</li>
+<li><b>Kód:</b> zrušenie Odporom zapisovať ako <code>posilnene</code> (zoznam partnerov) a nový krok <code>zrusOdpor</code> pred applyNaex (rovnako ako zrusPosilnenie, <code>partia.ts:900</code>). Rešpektovať Vzburu partnera (spojená akcia pod Vzburou ostane neaktívna) a jeho vlastné NA EX. Podmienka <code>engine.ts:4015</code> vynechá Odpor a Posilnenie. PRAVIDLA §7 r. 946–955, ťahák, odtlačok sa zmení.</li>
+</ul></div></details>
+
+<details open><summary>P2 · Poldeci ako partner <span class="znamka z1">odporúčam</span></summary><div>
+<div class="pravidlo">Ako P1 pri aktívnych. Neaktívny Odpor alebo Posilnenie na karte s NA EX sa spáruje s poldecom: <b>Odpor NA EX zruší</b> (karta je ako bez neho, poldeci sa aj tak vypije), <b>Posilnenie ho posilní</b> (čo NA EX zdvojí, má ×4).</div>
+<ul>
+<li><b>Ožije?</b> Áno, ×1 (z P1).</li>
+<li><b>Prečo práve takto:</b> neaktívna akcia nemá partnera a NA EX jej ho dá v podobe poldeca. Odpor ruší, čo má oproti sebe, teda NA EX. Posilnenie zdvojuje, čo má oproti sebe, teda NA EX. Netreba nový pojem: ×4 už hra pozná (Forsáž s Posilnením suseda, Energeťák pod kartou s NA EX).</li>
+<li><b>Príklady:</b> schéma 2 (Hasič s neaktívnym Posilnením: Petelica a Rana ×4 = 16 tuhé), schéma 3 (Policajtka s neaktívnym Odporom: tvoje NA EX zhasne).</li>
+<li><b>Stratégia:</b> neaktívny Odpor je verejný štít proti súperovmu NA EX. Súper ho zloží odpoveďou: karta priložená k vonkajšej hrane Odpor spáruje a štít padne, čím odpovede dostanú novú úlohu. Neaktívne Posilnenie je dvojsečné. Na vlastnej karte s dobrými neaktívnymi akciami je to veľké NA EX, na súperovej s neaktívnym Hazardom či pečeňou veľký trest (4 Dlhy). Hráč číta celé hrany karty, nielen spoje.</li>
+<li><b>Riziká:</b> skoky sily ×4 (Hasič 16 tuhé namiesto 8). Odpor a Posilnenie na tej istej karte: vyhrá Odpor, NA EX zhasne aj s Posilnením. Dve neaktívne Posilnenia dajú ×4 raz (ako Vzbura s Posilnením na dvoch spojoch, §6). Pijan, Svokra, Šofér a Krčma rátajú aj zhasnuté NA EX (poldeci ležal). Na Krčme sa tak povinné NA EX dá „odložiť“ na vlastnú kartu so štítom.</li>
+<li><b>Karty:</b> netreba. Pri ×4 sa oplatí turnaj botov (<code>tools/bot/turnaj.ts</code>) a pozrieť, či Hasič, Poštárka a Sypač (Posilnenie + silné akcie) nevyčnievajú.</li>
+<li><b>Kód:</b> P1 a v <code>applyNaex</code> (<code>partia.ts:911</code>) pred cyklom: neaktívny Odpor → NA EX sa na karte neuplatní (len dôvod do rozpisu), neaktívne Posilnenie → násobok 4 namiesto 2. Rovnako Vínko (NA EX z Nástroja). Náhľady a bot idú cez evaluateLine samy. UI: pečiatka „Odpor zahasil NA EX“.</li>
+</ul></div></details>
+
+<details><summary>P3 · Opitý pomýli: NA EX obráti modifikátory <span class="znamka z2">druhá voľba</span></summary><div>
+<div class="pravidlo">NA EX obráti aktívne modifikátory karty: jej Odpor sa správa ako Posilnenie (partnerovu akciu zdvojí), jej Posilnenie ako Odpor (partnerovu akciu zruší). Neaktívne nezdvojí a do podmienky sa nerátajú.</div>
+<ul>
+<li><b>Ožije?</b> Áno, a s ×2.</li>
+<li><b>Príklad:</b> schéma 1, P3: NA EX na Vdovu → Pijanova Rana ×2.</li>
+<li><b>Stratégia:</b> najväčšie výkyvy. NA EX na súperov Odpor, ktorý ti zabíja Petelicu, ti ju zdvojí. Vlastné NA EX na kartu, ktorej Posilnenie zdvojuje súperovu akciu (podstrčená karta), tú akciu zruší. Sedí k povahe NA EX, ktoré aj tak všetko obracia (aktívne zruší, neaktívne zdvojí).</li>
+<li><b>Riziká:</b> neintuitívne („prečo Odpor posilní?“). Vilo a Eva už teraz hlásia priveľa výnimiek. Spoje modifikátor proti modifikátoru (Forsáž, Vzbura) treba vyňať a nechať ako dnes. Neaktívne ostávajú bez úlohy. Hrable: obrátený Odpor vráti ukradnutú akciu majiteľovi ×2. Energeťák „nemožno zrušiť NA EX“ treba čítať ako „neobráti“.</li>
+<li><b>Karty:</b> žiadne; text Energeťáka.</li>
+<li><b>Kód:</b> vymeniť Odpor ↔ Posilnenie na karte s NA EX ešte pred spojmi (v <code>makeElem</code>, NA EX je známe vopred) a obrátený modifikátor potom nerušiť v applyNaex ani zrusPosilnenie. Stredná práca, viac testov.</li>
+</ul></div></details>
+
+<details><summary>P4 · Spoj je svätý: NA EX modifikátory nechá tak <span class="znamka z3">ak chceš jednoduchosť</span></summary><div>
+<div class="pravidlo">NA EX mení len bežné akcie karty. Jej Odpor a Posilnenie pôsobia ďalej: Odpor ruší, Posilnenie zdvojí partnera, Forsáž ostáva. Neaktívne sa do podmienky nerátajú.</div>
+<ul>
+<li><b>Ožije?</b> Nie. Odpor ruší ďalej, teraz už výslovne podľa pravidla.</li>
+<li><b>Príklad:</b> schéma 1, P4: výsledok ako dnes, ale Odpor ostáva aktívny, nie „zrušený naoko“.</li>
+<li><b>Stratégia:</b> Posilnenie a NA EX tvoria kombo. NA EX na vlastnú kartu s Posilnením partnerovi neuberie. Forsáž je pevnejšia (ruší ju len Výtržník). NA EX prestane byť nástrojom proti súperovej Forsáži.</li>
+<li><b>Riziká:</b> berie hráčom fungujúcu interakciu (NA EX zhodí Forsáž). Forsáž zosilnie, hoci jej frekvencia má byť 15–20 %. Energeťákovo Dedičstvo „nemožno zrušiť NA EX“ by stratilo zmysel a treba nový text. Odpor a Posilnenie pri NA EX nerobia nič nové, len ostanú, čím sú.</li>
+<li><b>Karty:</b> Energeťák (nové Dedičstvo).</li>
+<li><b>Kód:</b> najmenší. Zrušiť zrusPosilnenie a naexRusiPosilnenie, applyNaex preskočí MODIFIERS, podmienka ich vynechá. PRAVIDLA §6 a §7 sa skrátia o štyri výnimky (Veterán s Posilnením, Energeťák, Forsáž pri NA EX, ×2 partnerovi).</li>
+</ul></div></details>
+
+<details><summary>P5 · Rozkaz: zdvojený modifikátor použije majiteľ <span class="znamka z4">nie teraz</span></summary><div>
+<div class="pravidlo">Neaktívny Odpor či Posilnenie, ktoré NA EX zdvojí, dá majiteľovi karty dva rozkazy v kraji tej karty: Odpor zruší dve súperove aktívne akcie, Posilnenie zdvojí dve jeho aktívne akcie. Aktívne ako v P1.</div>
+<ul>
+<li><b>Ožije?</b> Áno, ×1.</li>
+<li><b>Príklad:</b> schéma 3, P5: NA EX na Policajtku dá jej majiteľovi dva Odpory na tvoje Rany. Útok sa ti vypomstí.</li>
+<li><b>Stratégia:</b> najviac rozhodnutí. Dať NA EX na súperovu kartu s neaktívnym Odporom znamená dať mu zbraň. Vlastné NA EX je presná rana do kraja.</li>
+<li><b>Riziká:</b> nová voľba pri vyhodnotení (hra čaká ako pri Hasičovi, útočník volí prvý), dlhšia Pitka, UI na výber slotov, bot. „Dva“ je zdvojenie, nie strop, ale silné. Na telefóne zložité.</li>
+<li><b>Karty:</b> žiadne. <b>Kód:</b> veľký (nová voľba, stav rozkazov do bitky, viewFor, náhľady).</li>
+</ul></div></details>
+
+<details><summary>P6 · Cez karty: pravidlo P1 a mŕtvy stav oživí Dedičstvo <span class="znamka z3">doplnok</span></summary><div>
+<div class="pravidlo">Pravidlo P1. Účinok neaktívnych modifikátorov pod NA EX dostanú len hráči, ktorí si ho kúpia do Dedičstva: Energeťák „Tvoje neaktívne Posilnenie posilní NA EX na tej karte.“, Zapaľovač (alebo nový Nástroj) „Tvoj neaktívny Odpor zruší NA EX na tej karte.“</div>
+<ul>
+<li><b>Ožije?</b> Áno, ×1.</li>
+<li><b>Stratégia:</b> základné pravidlo ostane jednoduché a hĺbka je na želanie, za cigarety (cena Dedičstva rastie). Energeťák a Zapaľovač majú dnes najnižší power level (0,5), takže by si polepšili.</li>
+<li><b>Riziká:</b> účinok má len ten, kto má Nástroj, a hráč bez neho vidí neaktívne modifikátory pri NA EX stále ako nič. Pre Michalovu požiadavku „majú niečo robiť“ je to slabé.</li>
+<li><b>Karty:</b> Energeťák, Zapaľovač (Dedičstvo). <b>Kód:</b> P1 a dve podmienky v applyNaex.</li>
+</ul></div></details>
+
+<h2>3. Porovnanie</h2>
+<table class="tabm"><thead><tr><th>Prístup</th><th>Ožije?</th><th>Aktívny Odpor pod NA EX</th><th>Neaktívny Odpor</th><th>Neaktívne Posilnenie</th><th>Kód</th></tr></thead><tbody>
+<tr><td>Dnes</td><td>nie (rozpor v texte)</td><td class="mrtve">naoko zrušený</td><td class="mrtve">nič</td><td class="mrtve">nič</td><td>—</td></tr>
+<tr><td>P1 Upratanie</td><td>áno ×1</td><td>partner ožije</td><td>neráta sa</td><td>neráta sa</td><td>malý</td></tr>
+<tr><td>P2 Poldeci ako partner</td><td>áno ×1</td><td>partner ožije</td><td class="ide">zruší NA EX (štít)</td><td class="ide">NA EX ×4</td><td>malý</td></tr>
+<tr><td>P3 Opitý pomýli</td><td>áno ×2</td><td>partner ×2</td><td>neráta sa</td><td>neráta sa</td><td>stredný</td></tr>
+<tr><td>P4 Spoj je svätý</td><td>nie</td><td>ruší ďalej</td><td>neráta sa</td><td>neráta sa</td><td>najmenší</td></tr>
+<tr><td>P5 Rozkaz</td><td>áno ×1</td><td>partner ožije</td><td class="ide">2 zrušenia</td><td class="ide">2 zdvojenia</td><td>veľký</td></tr>
+<tr><td>P6 Cez karty</td><td>áno ×1</td><td>partner ožije</td><td>len s Nástrojom</td><td>len s Nástrojom</td><td>malý</td></tr>
+</tbody></table>
+
+<h2>4. Odporúčanie</h2>
+<div class="box odpor">
+<b>P2 „Poldeci ako partner“.</b> Ako jediný dá účinok všetkým trom mŕtvym miestam a na kartách nemení nič. Pravidlo stojí v dvoch vetách a opiera sa o to, čo hráč pozná: Odpor ruší, čo má oproti sebe, a Posilnenie zdvojuje, čo má oproti sebe. Rozpor r. 951 / 954 rozhodne v prospech oživenia, rovnako ako dnes pri Posilnení. Odpovede lícom dole dostanú novú úlohu (zložiť štít spárovaním). Overiť treba ×4: turnaj botov a jeden playtest so zameraním na NA EX. Ak bude ×4 priveľa, miernejšia verzia je „neaktívne Posilnenie: NA EX aktívne akcie nezruší“. Ak chceš radšej menej pravidiel než viac hĺbky, vezmi P4.
+</div>
+
+<h2>5. Otázky pre Michala</h2>
+<ol>
+<li>Ktorý prístup? Odporúčam P2 (P1 je jeho základ). Druhá voľba je P3, pri túžbe po jednoduchosti P4.</li>
+<li>Keď NA EX zruší Odpor, má akcia, ktorú rušil, ožiť? Odporúčam áno ×1 (P1, P2, P6). P3 dáva ×2, P4 nie. Podľa toho opravím §7 r. 951 a 954–955.</li>
+<li>P2: je ×4 pre akcie, ktoré NA EX zdvojí pri neaktívnom Posilnení, v poriadku? Alebo radšej miernejšie: „NA EX aktívne akcie tej karty nezruší“?</li>
+<li>P2: keď neaktívny Odpor NA EX zahasí, poldeci sa aj tak vypije a NA EX sa ráta Pijanovi, Svokre, Šoférovi aj povinnosti na Krčme? Odporúčam áno: kto nalial, ten nalial.</li>
+<li>Platí to isté pre NA EX z podloženého Vínka? Odporúčam áno, lebo je to NA EX bez poldeca.</li>
+<li>Nespojený Odpor a Posilnenie sú pod Vzburou „aktívne ×1“, teda tiež mŕtve. Riešiť v tej istej dávke, alebo nechať tak?</li>
+<li>Smiem po rozhodnutí pripraviť zadanie pre Developera (jadro, PRAVIDLA §7, ťahák, testy) a navrhnúť zameranie playtestu?</li>
+</ol>
+
+<script>
+// Sloty: "Akcia:stav[násobok]" — stav a/n/z, "" = prázdny; "!" na konci = mŕtva akcia.
+function k(meno, kto, naex, L, R){return {meno,kto,naex,L,R};}
+const P = {
+ 1: {nazov:"Schéma 1 — Odpor na karte s NA EX (prípad z playtestu: Pijan a Vdova)",
+     popis:"Vdova (súper) má Odpor proti Pijanovej Rane. Ty dáš NA EX na Vdovu: zrušíš jej Ranu a zdvojíš jej neaktívny Hazard a pečeň.",
+     stavy:{
+      "Dnes":{karty:[k("Pijan","ty",0,["","","",""],["","Rana:z","Hazard:a1",""]),k("Vdova","super",1,["","Odpor:z!","Rana:z",""],["Hazard:a2","Pečeň:a2","",""])],
+              sucet:"Ty: Hazard 1 (Pijanova Rana ostáva zrušená, hoci Odpor je „zrušený“). Súper: 2 Dlhy, pečeň 2."},
+      "P1 / P2 / P5 / P6":{karty:[k("Pijan","ty",0,["","","",""],["","Rana:a1","Hazard:a1",""]),k("Vdova","super",1,["","Odpor:z","Rana:z",""],["Hazard:a2","Pečeň:a2","",""])],
+              sucet:"Ty: Rana 1, Hazard 1 — zrušený Odpor Ranu pustil. Súper: 2 Dlhy, pečeň 2."},
+      "P3":{karty:[k("Pijan","ty",0,["","","",""],["","Rana:a2","Hazard:a1",""]),k("Vdova","super",1,["","Odpor→Posilnenie:a","Rana:z",""],["Hazard:a2","Pečeň:a2","",""])],
+              sucet:"Ty: Rana ×2, Hazard 1 — opitá Vdova Ranu nezastaví, ale zdvojí."},
+      "P4":{karty:[k("Pijan","ty",0,["","","",""],["","Rana:z","Hazard:a1",""]),k("Vdova","super",1,["","Odpor:a","Rana:z",""],["Hazard:a2","Pečeň:a2","",""])],
+              sucet:"Ako dnes, ale podľa pravidla: Odpor NA EX nemení, ruší ďalej."}
+     }},
+ 2: {nazov:"Schéma 2 — neaktívne Posilnenie (Hasič)",
+     popis:"Hasič (ty) má na vnútornej hrane spárovanú len pečeň. Posilnenie, Petelica aj Rana nemajú partnera. Dáš NA EX na Hasiča.",
+     stavy:{
+      "Bez NA EX":{karty:[k("Dvojčatá","super",0,["","","",""],["","Rana:a1","",""]),k("Hasič","ty",0,["","Pečeň:a1","Posilnenie:n",""],["","Petelica:n","Rana:n",""])],
+              sucet:"Ty: pečeň 1. Súper: Rana 1."},
+      "Dnes":{karty:[k("Dvojčatá","super",0,["","","",""],["","Rana:a1","",""]),k("Hasič","ty",1,["","Pečeň:z","Posilnenie:a2!",""],["","Petelica:a2","Rana:a2",""])],
+              sucet:"Ty: Petelica ×2 + Rana ×2 = 8 tuhé; „zdvojené“ Posilnenie nerobí nič."},
+      "P1 / P3 / P4":{karty:[k("Dvojčatá","super",0,["","","",""],["","Rana:a1","",""]),k("Hasič","ty",1,["","Pečeň:z","Posilnenie:n",""],["","Petelica:a2","Rana:a2",""])],
+              sucet:"8 tuhé ako dnes; Posilnenie sa do NA EX nezapája a nič nesľubuje."},
+      "P2":{karty:[k("Dvojčatá","super",0,["","","",""],["","Rana:a1","",""]),k("Hasič","ty",1,["","Pečeň:z","Posilnenie:a",""],["","Petelica:a4","Rana:a4",""])],
+              sucet:"Posilnenie posilní NA EX: Petelica ×4 + Rana ×4 = 16 tuhé. Na súperovej karte s neaktívnym Hazardom by to boli 4 Dlhy."},
+      "P5":{karty:[k("Dvojčatá","super",0,["","","",""],["","Rana:a1","",""]),k("Hasič","ty",1,["","Pečeň:z","Posilnenie:a",""],["","Petelica:a2","Rana:a2",""])],
+              sucet:"8 tuhé a dva rozkazy Posilnenia: zdvojíš napríklad Petelicu (×4) a Pecku inej svojej karty v tomto kraji."}
+     }},
+ 3: {nazov:"Schéma 3 — neaktívny Odpor (Policajtka)",
+     popis:"Policajtka (súper) má Rany spárované s tvojím Pijanom, Odpor bez partnera. Dáš NA EX na Policajtku, aby si jej zrušil Rany a zdvojil Hazard.",
+     stavy:{
+      "Dnes":{karty:[k("Pijan","ty",0,["","","",""],["Rana:a1","","","Rana:a1"]),k("Policajtka","super",1,["Rana:z","Odpor:a2!","Obmedz.:a2","Rana:z"],["","Hazard:a2","Obmedz.:a2",""])],
+              sucet:"Súper: 2 Dlhy, ale aj Obmedzenie ×4 (ty o 4 cigarety menej). Odpor „zdvojený“ — nič."},
+      "P1 / P3 / P4 / P6":{karty:[k("Pijan","ty",0,["","","",""],["Rana:a1","","","Rana:a1"]),k("Policajtka","super",1,["Rana:z","Odpor:n","Obmedz.:a2","Rana:z"],["","Hazard:a2","Obmedz.:a2",""])],
+              sucet:"Ako dnes; Odpor sa nezapája. Karta je cieľom vďaka Obmedzeniam a Hazardu."},
+      "P2":{karty:[k("Pijan","ty",0,["","","",""],["Rana:a1","","","Rana:a1"]),k("Policajtka","super",1,["Rana:a1","Odpor:a","Obmedz.:n","Rana:a1"],["","Hazard:n","Obmedz.:n",""])],
+              sucet:"Odpor zahasí NA EX: karta je ako bez neho, tvoj poldeci je vypitý. Takúto kartu nenapadneš — kým ju súperova odpoveď alebo tvoja karta k vonkajšej hrane nespáruje."},
+      "P5":{karty:[k("Pijan","ty",0,["","","",""],["Rana:z","","","Rana:z"]),k("Policajtka","super",1,["Rana:z","Odpor:a","Obmedz.:a2","Rana:z"],["","Hazard:a2","Obmedz.:a2",""])],
+              sucet:"Súper dostal dva rozkazy Odporu a zrušil tvoje dve Rany v kraji."}
+     }}
+};
+function slot(s){
+  if(!s) return '<div class="c e"></div>';
+  const mrtva = s.endsWith("!"); if(mrtva) s = s.slice(0,-1);
+  const i = s.lastIndexOf(":"); const meno = s.slice(0,i); const st = s.slice(i+1);
+  const stav = st[0]; const x = st.slice(1);
+  const nas = x && x !== "1" ? ' <b>×'+x+'</b>' : '';
+  return '<div class="c '+stav+(mrtva?' mrtva':'')+'">'+meno+nas+'</div>';
+}
+function karta(c){
+  let h = '<div class="k '+c.kto+'">'+(c.naex?'<span class="naex">NA EX</span>':'')+'<div class="meno">'+c.meno+'</div><div class="sl">';
+  for(let r=0;r<4;r++) h += slot(c.L[r]) + slot(c.R[r]);
+  return h + '</div></div>';
+}
+const root = document.getElementById("priklady");
+for(const [id,p] of Object.entries(P)){
+  const box = document.createElement("div"); box.className="box";
+  const mena = Object.keys(p.stavy);
+  box.innerHTML = '<h3>'+p.nazov+'</h3><p class="poznamka">'+p.popis+'</p><div class="prepinac">'+mena.map((m,i)=>'<button data-m="'+m+'"'+(i===0?' class="on"':'')+'>'+m+'</button>').join("")+'</div><div class="linia"></div><p class="sucet"></p>';
+  const kresli = (m)=>{const s=p.stavy[m]; box.querySelector(".linia").innerHTML=s.karty.map(karta).join(""); box.querySelector(".sucet").innerHTML='<b>'+m+':</b> '+s.sucet;
+    box.querySelectorAll(".prepinac button").forEach(b=>b.classList.toggle("on",b.dataset.m===m));};
+  box.querySelectorAll(".prepinac button").forEach(b=>b.addEventListener("click",()=>kresli(b.dataset.m)));
+  root.appendChild(box); kresli(mena[0]);
+}
+</script>
+</main></body></html>

@@ -1,0 +1,192 @@
+<!doctype html>
+<html lang="sk"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Kapybara a Telefón — prerobenie</title>
+<style>
+:root{--bg:#f6f1e7;--karta:#fffdf8;--ink:#2b2118;--muted:#7a6a58;--akc:#8a3b12;--ok:#2e7d32;--zle:#c62828}
+*{box-sizing:border-box}body{margin:0;font:16px/1.5 system-ui,-apple-system,"Segoe UI",sans-serif;background:var(--bg);color:var(--ink)}
+main{max-width:880px;margin:0 auto;padding:14px}
+h1{font-size:1.4rem;margin:.2em 0}h2{font-size:1.15rem;margin:1.6em 0 .5em;color:var(--akc)}h3{font-size:1rem;margin:.2em 0 .4em}
+.lead{color:var(--muted);font-size:.95rem}
+.box{background:var(--karta);border-radius:10px;padding:12px 14px;margin:10px 0;box-shadow:0 1px 3px #0002}
+.odpor{border-left:5px solid var(--ok)}
+table{border-collapse:collapse;width:100%;background:var(--karta);font-size:.88rem}
+th,td{padding:6px 7px;border-bottom:1px solid #eadfcd;text-align:left;vertical-align:top}th{background:#efe3cf}
+code{font-size:.82rem;background:#efe3cf;border-radius:4px;padding:0 4px}
+.prepinac{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0}
+.prepinac button{border:1px solid #c9b79c;background:#fff;border-radius:16px;padding:3px 11px;font:inherit;font-size:.85rem;cursor:pointer}
+.prepinac button.on{background:var(--akc);color:#fff;border-color:var(--akc)}
+.mock{display:flex;gap:14px;flex-wrap:wrap;align-items:flex-start}
+.kk{width:230px;border:3px solid #6b5a43;border-radius:12px;background:#fff;overflow:hidden;box-shadow:0 2px 6px #0003}
+.kk .hl{background:#3b2f22;color:#f3e6cf;padding:4px 8px;font-weight:700;display:flex;justify-content:space-between;font-size:.95rem}
+.kk .tg{font-size:.7rem;color:#c9b79c;font-weight:400}
+.kk .ilu{height:70px;background:repeating-linear-gradient(45deg,#e9dcc6,#e9dcc6 8px,#e2d3ba 8px,#e2d3ba 16px);display:flex;align-items:center;justify-content:center;color:#8a7a60;font-size:.75rem}
+.kk .ef{padding:7px 9px;font-size:.86rem;min-height:56px;border-top:1px solid #eadfcd}
+.kk .ak{display:flex;justify-content:space-between;padding:4px 8px 6px;font-size:.72rem;color:var(--muted);border-top:1px dashed #eadfcd}
+.p{display:inline-block;border-radius:4px;padding:0 4px;font-size:.78rem;font-weight:600;background:#e1f2e2;border:1px solid #7cbf74}
+.p.zla{background:#fbe3e0;border-color:#e09a90}.p.mk{background:#ece3f7;border-color:#a98bd0}
+.pil{display:inline-block;border:1px solid #8a3b12;border-radius:12px;padding:0 6px;font-size:.78rem;background:#fff6ec}
+.popis{flex:1;min-width:230px;font-size:.92rem}
+.popis p{margin:.3em 0}
+.sila{display:inline-block;background:#3b2f22;color:#fff;border-radius:6px;padding:0 6px;font-size:.78rem}
+.znamka{display:inline-block;border-radius:6px;padding:0 7px;font-size:.78rem;font-weight:700;color:#fff;margin-left:6px}
+.z1{background:#2e7d32}.z2{background:#689f38}.z3{background:#f9a825}
+.pribeh{font-style:italic;color:#4a3d30}
+ul li,ol li{margin:.3em 0}
+@media(max-width:560px){.tabm,.tabm thead,.tabm tbody,.tabm tr,.tabm th,.tabm td{display:block}.tabm thead{display:none}.tabm td{border:0;padding:2px 8px}.tabm tr{border-bottom:1px solid #eadfcd;padding:6px 0}.tabm td:first-child{font-weight:700}}
+</style></head><body><main>
+
+<h1>Kapybara a Telefón — prerobiť</h1>
+<p class="lead">Vymyselník, 2026-11-09 · vetva <code>napady/naex-odpor-posilnenie</code> · pravidlá v11.15, sada <code>cards.json</code> z master (Zrejúca). Podklad: Michal 2026-11-09 („Kapybara sa stane Školiteľ a Telefón prerobiť“), playtest <code>docs/playtesty/20261109-115955.html</code> (Jano: „Kapybara pri zajatí a Telefón pri Pakte“; Kapybara medzi „kartami, ktoré nikto nechce“).</p>
+
+<div class="box odpor">
+<b>V skratke.</b> <b>Kapybara</b> dnes zhodí súperovi spodný stupeň rečí pri jednom staršom. Na línii má len Vieru a Cigaretu, preto ju takmer nikto neberie. Navrhujem tri varianty Školiteľa (Furt, Podpora, Konflikt). Odporúčam <b>B „Podpora: Preškolenie {Hazard}→{Viera}“</b>: zasiahne polovicu kariet a ku kapybare sedí. <b>Telefón</b> má imunitu Pohoršení, ktorá vyrába výnimky (Pakt, Vzbura, „ani nezdvojí“). Navrhujem tri nové Dedičstvá bez imunity, hrany ostávajú. Odporúčam <b>T3 „Sťažnosť“</b>: Povera navyše za každú tvoju akciu zrušenú súperovým Odporom. Telefón ostane kartou proti Odporu a otázka Paktu zmizne.
+</div>
+
+<h2>1. Kapybara dnes</h2>
+<table class="tabm"><tbody>
+<tr><td>Karta</td><td>Kapybara · Zviera · <i>„Nástup: Súperove reči pri jednom staršom klesnú o stupeň.“</i> · ľavá <span class="p">Viera</span> (slot 1 alebo 2), pravá <span class="p">Cigareta</span> (slot 0 alebo 1) · 4 varianty</td></tr>
+<tr><td>Sila</td><td>power level 1 (Zrejúca), váha bota 0,4 (<code>bot.ts:303</code>)</td></tr>
+<tr><td>Playtest</td><td>Fero, Vilo: slabá (dve akcie, Nástup len −1 stupeň). Jano ju ocenil ako odpoveď (prevaha 3 : 2 a znížené reči).</td></tr>
+<tr><td>Zajatie</td><td>Krádež pri zajatí sa ráta z rečí okradnutého (§10), takže Kapybara ju zníži. Pravidlá to nepíšu, ale zrejme je to zámer. Prerobením otázka zanikne.</td></tr>
+<tr><td>Školiteľ a Zviera</td><td>§6 (Preškolenie Školiteľa) a §16 (Občania v troch kategóriách) píšu „<b>Občan</b> s efektom Preškolenie“. Jadro vylučuje len Starešinu (<code>preskolenie.ts</code>, <code>preskoleniaKarty</code>), takže Zviera ako Školiteľ technicky funguje. Treba upraviť text §6 („karta s efektom…“), alebo dať Kapybare aj tag Občan ako Recidivistovi (otázka 1).</td></tr>
+<tr><td>Mäsiar</td><td>„Efekty Zvierat v jeho okolí neplatia“ (§16). Jadro pri preškolení Mäsiara dnes neráta: Furt (<code>partia.ts:578</code> premenyVLinii) ani Podporu a Konflikt (<code>engine.ts:3069</code> preskoleniaPoSpoji). Pri Kapybare-Školiteľovi treba doplniť.</td></tr>
+<tr><td>Čo zanikne</td><td>Jediná karta, ktorá znižuje súperove reči. Proti rečiam ostane len výhra v hádke. Treba to vedieť pri Telefóne T2 (nižšie).</td></tr>
+</tbody></table>
+<p class="lead">Ako často je čo preškoliť: z 53 kariet, ktoré idú do línie (Občan, Zviera, Starešina), má Hazard 26, Rana 19, Pecka 9, Petelica 7. Dnešní Školitelia: Vedúcko Furt {Robota}→{Pecka} (power 0,5), Sypač Podpora {Rana}→{Pecka} (1), Anonymný alkoholik Podpora {Pečeň}→{Viera} (1,5), Profesionálny tipér Konflikt {Cigareta}→{Hazard} (2).</p>
+
+<div class="box"><h3>Kapybara — prepínaj varianty</h3>
+<div class="prepinac" id="kap-p"></div><div class="mock" id="kap-m"></div></div>
+
+<h2>2. Kapybara — tri varianty Školiteľa</h2>
+
+<div class="box"><h3>A · Zóna pokoja — Furt <span class="znamka z3">slabší</span></h3>
+<p><b>Text karty:</b> <span class="pil">Furt: Preškolenie {Pecka}→{Rana}.</span> Akcie ako dnes (Viera, Cigareta), 4 varianty.</p>
+<p><b>Čo robí:</b> Pecky oboch susedov (kariet oboch hráčov) sú Rany, kým s Kapybarou susedia.</p>
+<p class="pribeh"><b>Príbeh:</b> Vedľa kapybary sa nikto nevie poriadne nasrať. Kto prišiel s päsťou, odchádza s facičkou a s pocitom, že to vlastne nestálo za to.</p>
+<p><b>Prečo ku kapybare:</b> najkľudnejšie zviera na svete a všetko okolo nej spomalí.</p>
+<p><b>Sila:</b> <span class="sila">≈ 0,5</span> ako Vedúcko (tiež Furt). Pecka je len na 9 z 53 kariet a Furt zasiahne aj tvojho suseda.</p>
+<p><b>Riziká:</b> slabá, Kapybaru by ani tak nikto nechcel. Rovnaký pár {Pecka}→{Rana} má Pasca na dolnej hrane. Rozhodnutie je len „vedľa koho ju položím“.</p>
+</div>
+
+<div class="box odpor"><h3>B · Nič nerieši — Podpora <span class="znamka z1">odporúčam</span></h3>
+<p><b>Text karty:</b> <span class="pil">Podpora: Preškolenie {Hazard}→{Viera}.</span> Akcie ako dnes, 4 varianty.</p>
+<p><b>Čo robí:</b> tvoja karta, s ktorou sa Kapybara priložením stretne (oboma smermi), má do konca kola Hazardy ako Vieru. Tie nedajú Dlh, v bitke rušia Povery a tlmia tuhé.</p>
+<p class="pribeh"><b>Príbeh:</b> Exekútor zvonil trikrát. Kapybara ani nežmurkla, len si zadok ponorila hlbšie do jarku. Dlhy sú problém ľudí, čo ešte niečo chcú.</p>
+<p><b>Prečo ku kapybare:</b> stoický pokoj a „nič nerieším“. Vlastná Viera Kapybary k tomu sedí.</p>
+<p><b>Sila:</b> <span class="sila">≈ 1,5</span> ako Anonymný alkoholik, ktorý robí to isté s pečeňou. Hazard má polovica kariet (26 z 53), takže Podpora takmer vždy niečo preškolí. Dvakrát za kolo (dvaja susedia), za Dohadzovačkou či Poľovníkom aj viac.</p>
+<p><b>Riziká:</b> uberá Dlhy, teda aj Exekútora, a hra chce, aby Dlhy vznikali. Zasiahne však len tvoje karty pri Kapybare. Druhý Školiteľ, ktorý vyrába Vieru, je blízko Anonymného alkoholika. Ak sa to zdá priveľa, menší pár je {Hazard}→{Cigareta}, ten však už má Krabička cigariet na dolnej hrane a pridá cigarety, ktoré AI aj tak hromadia.</p>
+</div>
+
+<div class="box"><h3>C · Odzbrojí — Konflikt <span class="znamka z2">alternatíva</span></h3>
+<p><b>Text karty:</b> <span class="pil">Konflikt: Preškolenie {Rana}→{Povera}.</span> Akcie ako dnes, 4 varianty.</p>
+<p><b>Čo robí:</b> súperova karta, s ktorou sa Kapybara priložením stretne (oboma smermi), má do konca kola Rany ako Povery. Jej majiteľ tak dá 1 mäkké do hádky namiesto 1 tuhého do bitky a tvoja Viera tú Poveru zruší prvá.</p>
+<p class="pribeh"><b>Príbeh:</b> Kto ide na kapybaru s päsťou, skončí pri nej na zadku, odpľuje si cez plece a do večera rozpráva, že ho niekto preklial.</p>
+<p><b>Prečo ku kapybare:</b> so zvieraťom, ktoré sa nebráni, sa nedá biť. Vlastná Viera Kapybary zje Poveru, ktorú sama vyrobila.</p>
+<p><b>Sila:</b> <span class="sila">≈ 1</span> ako Sypač. Rana je na 19 z 53 kariet. Zo Školiteľov s Konfliktom je dnes len Tipér.</p>
+<p><b>Riziká:</b> nie je to čistá sabotáž, len presun poškodenia z bitky do hádky. Súperovi s Horoskopom (Povera 2) môže pomôcť a v boji o reči mu to môže pomôcť vždy. Hráč ťažšie odhadne, či uškodil. Čistá sabotáž by bola {Pecka}→{Rana}, ale Pecka je len na 9 kartách.</p>
+</div>
+
+<h3>Kapybara — porovnanie</h3>
+<table class="tabm"><thead><tr><th>Variant</th><th>Text</th><th>Zasiahne</th><th>Sila</th><th>Hlavné riziko</th></tr></thead><tbody>
+<tr><td>Dnes</td><td>Nástup: súperove reči −1 stupeň</td><td>1 starší</td><td>1</td><td>nikto ju nechce</td></tr>
+<tr><td>A Furt</td><td>{Pecka}→{Rana}</td><td>obaja susedia, 9/53</td><td>≈ 0,5</td><td>slabá</td></tr>
+<tr><td>B Podpora</td><td>{Hazard}→{Viera}</td><td>tvoji, 26/53</td><td>≈ 1,5</td><td>menej Dlhov</td></tr>
+<tr><td>C Konflikt</td><td>{Rana}→{Povera}</td><td>súperovi, 19/53</td><td>≈ 1</td><td>nejasný zisk</td></tr>
+</tbody></table>
+
+<h2>3. Telefón dnes</h2>
+<table class="tabm"><tbody>
+<tr><td>Karta</td><td>Telefón · Nástroj · <i>„Dedičstvo: Tvoje Pohoršenia nemožno zrušiť Odporom a NA EX. Hore: {Povera}→{Pohoršenie}. Dole: {Odpor}→{Povera}.“</i></td></tr>
+<tr><td>Sila</td><td>power level 1, váha bota 0,4 (<code>bot.ts:352</code>)</td></tr>
+<tr><td>Pakt</td><td>Pred NA EX jadro chráni aj Pakt, ktorý kopíruje Pohoršenie: imunita sa kontroluje na akcii po kopírovaní (<code>partia.ts:919</code>, overené). Pred Odporom situácia nenastane, lebo Pakt proti Odporu nekopíruje (<code>partia.ts:689</code>). Text karty to neprezradí.</td></tr>
+<tr><td>Ďalšie výnimky</td><td>„Ani nezdvojí“ pri NA EX (ako Zapaľovač), Vzbura („Telefón ju nezachráni“, §6 r. 795), veta v tabuľke akcií §2 r. 523. Imunita sa vetví do štyroch miest pravidiel.</td></tr>
+<tr><td>Hrany</td><td>Ostávajú vo všetkých variantoch: Hore {Povera}→{Pohoršenie} posilní mäkké, Dole {Odpor}→{Povera} je sabotáž Odporu. Obe sedia k telefónu (klebeta zosilnie, kto mal brániť, len kecá).</td></tr>
+</tbody></table>
+
+<div class="box"><h3>Telefón — prepínaj varianty</h3>
+<div class="prepinac" id="tel-p"></div><div class="mock" id="tel-m"></div></div>
+
+<h2>4. Telefón — tri varianty Dedičstva</h2>
+
+<div class="box"><h3>T1 · Posledné slovo <span class="znamka z2">alternatíva</span></h3>
+<p><b>Text karty:</b> <span class="pil">Dedičstvo: Hádka: Remízu v hádke vyhrávaš ty. Hore: {Povera}→{Pohoršenie}. Dole: {Odpor}→{Povera}.</span></p>
+<p><b>Výklad (§16):</b> majú ho obaja → remíza ostáva. Vyhratá remíza dá hádku za 0 bodov, no rátajú sa všetky ostatné účinky výhry v hádke: súperovi klesnú reči, ty dostaneš špaky za svoje karty, ak si prehral bitku (v11.11), a spustia sa Noviny.</p>
+<p class="pribeh"><b>Príbeh:</b> Kto má na stole pevnú linku, má vždy posledné slovo. Zdvihne, zloží, a kým sa ostatní nadýchnu, už to vie celá dedina.</p>
+<p><b>Pakt:</b> netýka sa (žiadna akcia v texte).</p>
+<p><b>Sila:</b> <span class="sila">≈ 1–1,5</span>. Remíza 0 : 0 (nikto nemá mäkké) je častá a s Telefónom by bola vždy tvoja výhra. Preto ide skôr k hornej hranici.</p>
+<p><b>Riziká:</b> kvôli 0 : 0 je silnejší, než vyzerá. Miernejšie znenie: „Remízu v hádke, v ktorej máš mäkké poškodenie, vyhrávaš ty.“ Téma posledného slova patrila Kohútovi (vyradený), ktorý by ju pri prerobení nemal.</p>
+</div>
+
+<div class="box"><h3>T2 · Celá dedina vie <span class="znamka z3">opatrne</span></h3>
+<p><b>Text karty:</b> <span class="pil">Dedičstvo: Hádka: Keď prehráš hádku, tvoje reči neklesnú. Hore: {Povera}→{Pohoršenie}. Dole: {Odpor}→{Povera}.</span></p>
+<p class="pribeh"><b>Príbeh:</b> Čo raz povieš do telefónu, to sa už nedá vziať späť. Krčmárka to vie do minúty, farár do hodiny a matka do večera aj s tým, čo si nepovedal.</p>
+<p><b>Pakt:</b> netýka sa.</p>
+<p><b>Sila:</b> <span class="sila">≈ 1,5</span>, v hre na reči (Klebetník, presvedčenie) viac.</p>
+<p><b>Riziká:</b> reči po prerobení Kapybary nebude čo znižovať a T2 ich ešte spevní. Hrozí snehová guľa (Klebetník už raz vyhral 13 zo 17 hádok), čo je proti zásade „odmena za väčšiu výzvu“. Pre hráča, ktorý reči nemá, je karta mŕtva.</p>
+</div>
+
+<div class="box odpor"><h3>T3 · Sťažnosť <span class="znamka z1">odporúčam</span></h3>
+<p><b>Text karty:</b> <span class="pil">Dedičstvo: Bitka: Za každú tvoju akciu, ktorú zrušil súperov Odpor {Povera}. Hore: {Povera}→{Pohoršenie}. Dole: {Odpor}→{Povera}.</span></p>
+<p><b>Výklad (§16):</b> ráta sa akcia, ktorá by patrila tebe a na spoji ju zrušil Odpor súperovej karty, v čase bitky. Odpor hrany lokality sa neráta (ako pri Policajtke). Povera navyše je akcia navyše v pečati (§6): Horoskop ju zosilní, Viera zruší. Za každý Telefón v Dedičstve zvlášť.</p>
+<p class="pribeh"><b>Príbeh:</b> Na teba sa nikto nepostaví zadarmo. Na každú facku je jeden telefonát na obecný úrad, dva farárovi a jeden anonymný, ktorý si ešte dlho všetci budú pamätať.</p>
+<p><b>Pakt:</b> jasné. Pakt, ktorý zrušil súperov Odpor, je tvoja zrušená akcia, takže sa ráta. Imunita zanikne, a s ňou aj otázka, čo Pakt kopíruje.</p>
+<p><b>Sila:</b> <span class="sila">≈ 1</span> ako dnes, proti hráčovi s veľa Odpormi (12 z 53 kariet ho má) viac. Bez stropu, rastie s tým, koľko ti súper ruší.</p>
+<p><b>Prečo:</b> Telefón ostane kartou proti Odporu, ako bol. Odmeňuje toho, komu súper ruší viac (väčšia výzva). Odstráni štyri výnimky z §2, §6 a §12. Zapadá do vzoru Pasca, Pijan, Svokra („Bitka: podmienka {Akcia}“). Dolná hrana {Odpor}→{Povera} dáva tú istú tému aj pod kartou.</p>
+<p><b>Riziká:</b> slabší proti súperovi bez Odporov (vtedy ostanú hrany). Ak by Michal v návrhu NA EX × Odpor zvolil P4 (Odpor pod NA EX ruší ďalej), rátajú sa aj tie zrušenia, čo je v poriadku.</p>
+</div>
+
+<h3>Telefón — porovnanie</h3>
+<table class="tabm"><thead><tr><th>Variant</th><th>Dedičstvo</th><th>Pakt</th><th>Sila</th><th>Hlavné riziko</th></tr></thead><tbody>
+<tr><td>Dnes</td><td>Pohoršenia nemožno zrušiť Odporom a NA EX</td><td>nejasné v texte</td><td>1</td><td>výnimky v 4 paragrafoch</td></tr>
+<tr><td>T1</td><td>Remízu v hádke vyhrávaš ty</td><td>netýka sa</td><td>≈ 1–1,5</td><td>0 : 0 je výhra</td></tr>
+<tr><td>T2</td><td>Reči po prehratej hádke neklesnú</td><td>netýka sa</td><td>≈ 1,5</td><td>snehová guľa rečí</td></tr>
+<tr><td>T3</td><td>Povera za každú akciu zrušenú súperovým Odporom</td><td>jasné (ráta sa)</td><td>≈ 1</td><td>proti hráčovi bez Odporov len hrany</td></tr>
+</tbody></table>
+
+<h2>5. Čo by sa zmenilo</h2>
+<table class="tabm"><thead><tr><th>Kde</th><th>Kapybara (B)</th><th>Telefón (T3)</th></tr></thead><tbody>
+<tr><td>Tvorca (rozpracovaný stav)</td><td>efekt, spúšťač Podpora; ilustrácia môže ostať</td><td>Dedičstvo, spúšťač Bitka; hrany bez zmeny</td></tr>
+<tr><td>PRAVIDLA</td><td>§6 a §16 Školiteľ aj Zviera; §16 riadok Kapybara a zmienka pri Mäsiarovi; §10 r. 1408 a zmeny v11.12 (r. 73, 204) o Kapybare a rečiach</td><td>§2 r. 523, §6 r. 795, §12 tabuľka Náradie r. 1790, §16 nový riadok Telefón</td></tr>
+<tr><td>Jadro</td><td>zmazať Nástup a voľbu „kapybara“ (<code>engine.ts:3480</code>, <code>:4519</code>, <code>:4797</code>); Mäsiar umlčí Školiteľa-Zviera (<code>partia.ts:578</code>, <code>engine.ts:3069</code>); bot (<code>bot.ts:303</code>, <code>:1183–1185</code>, <code>:1253</code>), <code>effects.ts:155</code></td><td>zmazať imunitu (<code>partia.ts:717–722</code>, <code>:918–919</code>, <code>effects.ts:119</code>, <code>:607</code>); nový prípad v <code>kratVDedicstve</code> z <code>zruseneOdporom</code> súpera</td></tr>
+<tr><td>Testy a ťahák</td><td>testy Kapybary (Nástup, Mäsiar), ťahák</td><td><code>hadka-v10.test.ts:109</code>, <code>tahak.test.ts:59</code>, <code>tahak.md:228</code></td></tr>
+</tbody></table>
+
+<h2>6. Otázky pre Michala</h2>
+<ol>
+<li>Smie byť Školiteľom Zviera (zmením v §6 „Občan“ na „karta“), alebo má Kapybara dostať aj tag Občan ako Recidivista (potom by na ňu išlo NA EX aj podloženie)? Odporúčam len Zviera.</li>
+<li>Ktorý variant Kapybary? Odporúčam B (Podpora {Hazard}→{Viera}), alternatíva C.</li>
+<li>Má Mäsiar umlčať Kapybaru-Školiteľa (efekt Zvieraťa)? Odporúčam áno: pri Furt kým susedia, pri Podpore a Konflikte sa vedľa Mäsiara nespustí. Platí to podľa §16 a jadro to treba doplniť.</li>
+<li>Kapybara bola jediná karta proti súperovým rečiam. Vadí, že taká karta zmizne? Ak áno, vhodný je Telefón T1 (súperovi pri tvojej výhre v remíze klesnú reči).</li>
+<li>Ktoré Dedičstvo Telefónu? Odporúčam T3 „Sťažnosť“. Hrany nechávam: Hore {Povera}→{Pohoršenie}, Dole {Odpor}→{Povera}.</li>
+<li>Všeobecne k Paktu: zapísať do §2, že Pakt, ktorý kopíruje akciu, je tou akciou pre všetky efekty („tvoje Pecky“, Vidly, Horoskop…)? Jadro to tak už hrá. Otázka by tým zmizla aj pri iných kartách.</li>
+</ol>
+
+<script>
+const AK = {Viera:"p",Cigareta:"p",Hazard:"p zla",Pecka:"p",Rana:"p",Povera:"p mk",Pohoršenie:"p mk",Odpor:"p zla"};
+const pil = (t)=>t.replace(/\{([^}]+)\}/g,(m,a)=>'<span class="'+(AK[a]||"p")+'">'+a+'</span>');
+const KAP = {
+ "Dnes":{ef:"Nástup: Súperove reči pri jednom staršom klesnú o stupeň.",popis:"Jednorazovo pri vyložení. Na línii len Viera a Cigareta. Vedľa Mäsiara sa nespustí."},
+ "A Furt":{ef:"Furt: Preškolenie {Pecka}→{Rana}.",popis:"Kým susedí: Pecky oboch susedov (aj tvoje) sú Rany. Sila ≈ 0,5."},
+ "B Podpora":{ef:"Podpora: Preškolenie {Hazard}→{Viera}.",popis:"Tvoja karta, s ktorou sa stretne priložením: do konca kola Hazardy ako Viera. Sila ≈ 1,5. Odporúčam."},
+ "C Konflikt":{ef:"Konflikt: Preškolenie {Rana}→{Povera}.",popis:"Súperova karta, s ktorou sa stretne priložením: do konca kola Rany ako Povery. Sila ≈ 1."}
+};
+const TEL = {
+ "Dnes":{ef:"Dedičstvo: Tvoje Pohoršenia nemožno zrušiť Odporom a NA EX.",popis:"Imunita. Nejasné: Pakt kopírujúci Pohoršenie (jadro ho pred NA EX chráni)."},
+ "T1":{ef:"Dedičstvo: Hádka: Remízu v hádke vyhrávaš ty.",popis:"Aj 0 : 0. Súperovi klesnú reči, tebe špaky za karty. Sila ≈ 1–1,5."},
+ "T2":{ef:"Dedičstvo: Hádka: Keď prehráš hádku, tvoje reči neklesnú.",popis:"Spevní reči. Sila ≈ 1,5. Riziko snehovej gule."},
+ "T3":{ef:"Dedičstvo: Bitka: Za každú tvoju akciu, ktorú zrušil súperov Odpor {Povera}.",popis:"Odplata za Odpor, bez imunity a bez otázky Paktu. Sila ≈ 1. Odporúčam."}
+};
+function kapKarta(v){return '<div class="kk"><div class="hl">Kapybara <span class="tg">Zviera</span></div><div class="ilu">ilustrácia</div><div class="ef">'+pil(v.ef)+'</div><div class="ak"><span>ľavá: '+pil("{Viera}")+'</span><span>pravá: '+pil("{Cigareta}")+'</span></div></div>';}
+function telKarta(v){return '<div class="kk"><div class="hl">Telefón <span class="tg">Nástroj</span></div><div class="ak"><span>Hore: '+pil("{Povera}")+' → '+pil("{Pohoršenie}")+'</span></div><div class="ilu">ilustrácia</div><div class="ef">'+pil(v.ef)+'</div><div class="ak"><span>Dole: '+pil("{Odpor}")+' → '+pil("{Povera}")+'</span></div></div>';}
+function prepinac(idP,idM,data,kresli){
+  const p=document.getElementById(idP), m=document.getElementById(idM), mena=Object.keys(data);
+  p.innerHTML=mena.map((x,i)=>'<button'+(i===0?' class="on"':'')+'>'+x+'</button>').join("");
+  const ukaz=(x)=>{m.innerHTML=kresli(data[x])+'<div class="popis"><p><b>'+x+'</b></p><p>'+data[x].popis+'</p></div>';
+    p.querySelectorAll("button").forEach(b=>b.classList.toggle("on",b.textContent===x));};
+  p.querySelectorAll("button").forEach(b=>b.addEventListener("click",()=>ukaz(b.textContent)));
+  ukaz(mena[0]);
+}
+prepinac("kap-p","kap-m",KAP,kapKarta);
+prepinac("tel-p","tel-m",TEL,telKarta);
+</script>
+</main></body></html>
