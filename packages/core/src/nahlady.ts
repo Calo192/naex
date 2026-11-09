@@ -349,6 +349,15 @@ export function poOdkrytiNaex(data: GameData, view: ClientState, uid: number): P
   hraci[su] = { ...hraci[su], pecen: hraci[su].pecen + (kar ? 1 : 0) };
   const naexPocet: [number, number] = [pitka?.naexPocet?.[0] ?? 0, pitka?.naexPocet?.[1] ?? 0];
   naexPocet[ja] += 1;
+  if (zrazka) {
+    // Pri zrážke sa odkryje aj súperovo NA EX na tej karte — karta ho už nesie, takže ho nikto
+    // neodkryje znova: jeho poldeci a pečeň (na Kare tebe) sa zúčtujú tu (playtest 2026-11-09, Šimon N7).
+    const s = hraci[su];
+    hraci[su] = { ...s, poldeciPlne: Math.max(0, s.poldeciPlne - 1), pecen: s.pecen + (kar ? 0 : 1) };
+    hraci[ja] = { ...hraci[ja], pecen: hraci[ja].pecen + (kar ? 1 : 0) };
+    naexPocet[su] += 1;
+    naexVKole[su] = true;
+  }
   const pitkaStav = pitka === null ? null : { ...pitka, naexPocet };
   return { view: { ...sKartou, hraci, pitkaStav }, svokra, kar };
 }

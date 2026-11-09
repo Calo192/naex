@@ -64,3 +64,35 @@ describe("náhľad NA EX ráta súperovo NA EX, ktoré hráč vidí cez Bzdochu"
     expect(porovnani).toBeGreaterThan(5);
   }, 60000);
 });
+
+describe("zrážka v náhľade: odkryje sa aj súperovo NA EX na tej karte (playtest 2026-11-09, Šimon N7)", () => {
+  it("obaja +1 pečeň (na Kare každý za súperovo NA EX) a každý o plný poldeci menej", () => {
+    let porovnani = 0;
+    for (let seed = 1; seed <= 20 && porovnani < 10; seed++) {
+      let s: GameState = setupGame(data, 8300 + seed);
+      let rng = rngSeed(seed);
+      for (let krok = 0; krok < 300 && s.koniec === null && porovnani < 10; krok++) {
+        const q: PlayerId | null = ([0, 1] as const).find((x) => mozeHrat(s, x)) ?? naTahu(s);
+        if (q === null) break;
+        if (s.faza === "pitka") {
+          const view = viewFor(data, s, q);
+          const su: PlayerId = q === 0 ? 1 : 0;
+          const ciel = moznostiNaexVPohlade(data, view)[0];
+          if (ciel !== undefined && view.pitkaStav !== null && (view.pitkaStav.skryteNaex ?? []).length === 0 && view.hraci[su].poldeciPlne > 0) {
+            const obaja: ClientState = { ...view, pitkaStav: { ...view.pitkaStav, skryteNaex: [{ hrac: q, uid: ciel }, { hrac: su, uid: ciel }] } };
+            const po = sMojimiSkrytymiNaex(data, obaja);
+            expect(po.hraci[q].pecen - view.hraci[q].pecen, `seed ${seed}`).toBe(1);
+            expect(po.hraci[su].pecen - view.hraci[su].pecen).toBe(1);
+            expect(view.hraci[su].poldeciPlne - po.hraci[su].poldeciPlne).toBe(1);
+            expect(po.strany.flat().find((x) => x.card.uid === ciel)?.vytrznik).toBe(true);
+            porovnani++;
+          }
+        }
+        const [n, r] = rngInt(rng, 2 ** 31);
+        rng = r;
+        s = apply(data, s, tahBota(data, s, q, n), q).state;
+      }
+    }
+    expect(porovnani).toBeGreaterThan(3);
+  }, 60000);
+});
