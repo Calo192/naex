@@ -1414,6 +1414,15 @@ body.tahanie-aktivne [data-vyucba-bublina] {
   font-weight: 700;
 }
 
+/* Natáča súper (v11.11, víťaz minulej hádky): klik kartu neotočí, preto nepulzuje ani tip nevolá ku kliku. */
+.linia-skupina.lokalita.navrh.natoci-super .partia-rad > .v-linii {
+  animation: none;
+}
+
+.linia-skupina.lokalita.navrh.natoci-super .otocit-tip {
+  color: var(--tlmeny);
+}
+
 @keyframes navrh-lokality {
   50% {
     box-shadow:

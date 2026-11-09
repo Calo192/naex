@@ -49,7 +49,7 @@ import type {
   ZobrataVerejne,
   Zdvih,
 } from "@naex/core";
-import { prveFajcenieZadarmo, opisReci, sReciNizsie, sRadom, ktoNatacaLokalitu, odhadSpakovKola, type StavOdhadu, riadkyCakajuceho, riadkyCakajucichPoldeci, KONSTANTY, jeCoTahat, jeFinaleNaNastenke, cigaretyZaPas, spakov, efektyPrehry, hrozbaKliatob, mozeEsteNaex, textHrozbyKliatob, textyEfektovPrehry, cenaKliatby, battleOutcome, prebytokNaRozdelenie, nahladPitky, pocet, tvar, vyhladDlhov, evaluateLine, efektyNavyse, pocitadloBitky, pitkaPredBitkou, hrozbaNaex, krokStavby, planVykladania, barterCena, limitBuduceKolo, limitZhromazdenia, lineState, nahladZajatia, prevahaStran, krajeStran, dovodZakazuFajcit, defOf, jednotaZakazuje, ponukaSenku, cenaFajceniaHraca, naexLimitMinuty as naexLimitMinutyHraca, sMojimiSkrytymiNaex, sPrilozenou, vystrahaPecene, nahladNaexNaKartu, najhorsiaOdpovedNaNaex, cenaTahu, nahladVylozenia, moznostiNaexVPohlade, zablokovaneStrany, NASTROJ_DO_LINIE, favourStarsieho, krokRozdelenia, cieleOdpovede, maxZoSenku, bodyRozdelenia, printedSides, poskodenieBitky, rozpisPoskodenia, prahyHraca, scorecardStarsieho, stavKraja, stavkaBitky, stavZavislosti, stranyLokality, vidiVolbuSupera, hraVPitke, cakaSBzdochou, opponentOf, majitelPresvedcenej, moznostiAkcie, cenaAkcieUplna, zdvihyPreAkcie, navrhRozdelenia, pohladPoRozdeleni, priazenHraca, priazenSila, pultStarsich, spakyTeraz, NAZVY_ZON, reciNizsie, vazniNaVyhru } from "@naex/core";
+import { prveFajcenieZadarmo, opisReci, sReciNizsie, sRadom, odhadSpakovKola, type StavOdhadu, riadkyCakajuceho, riadkyCakajucichPoldeci, KONSTANTY, jeCoTahat, jeFinaleNaNastenke, cigaretyZaPas, spakov, efektyPrehry, hrozbaKliatob, mozeEsteNaex, textHrozbyKliatob, textyEfektovPrehry, cenaKliatby, battleOutcome, prebytokNaRozdelenie, nahladPitky, pocet, tvar, vyhladDlhov, evaluateLine, efektyNavyse, pocitadloBitky, pitkaPredBitkou, hrozbaNaex, krokStavby, planVykladania, barterCena, limitBuduceKolo, limitZhromazdenia, lineState, nahladZajatia, prevahaStran, krajeStran, dovodZakazuFajcit, defOf, jednotaZakazuje, ponukaSenku, cenaFajceniaHraca, naexLimitMinuty as naexLimitMinutyHraca, sMojimiSkrytymiNaex, sPrilozenou, vystrahaPecene, nahladNaexNaKartu, najhorsiaOdpovedNaNaex, cenaTahu, nahladVylozenia, moznostiNaexVPohlade, zablokovaneStrany, NASTROJ_DO_LINIE, favourStarsieho, krokRozdelenia, cieleOdpovede, maxZoSenku, bodyRozdelenia, printedSides, poskodenieBitky, rozpisPoskodenia, prahyHraca, scorecardStarsieho, stavKraja, stavkaBitky, stavZavislosti, stranyLokality, vidiVolbuSupera, hraVPitke, cakaSBzdochou, opponentOf, majitelPresvedcenej, moznostiAkcie, cenaAkcieUplna, zdvihyPreAkcie, navrhRozdelenia, pohladPoRozdeleni, priazenHraca, priazenSila, pultStarsich, spakyTeraz, NAZVY_ZON, reciNizsie, vazniNaVyhru } from "@naex/core";
 import type { Moment, ActionSums, DopadyNahladu, KliatbyNahladu, NahladNaexNaKartu, PrebytokNahladu, NahladVylozenia, PolozkaVykladania, Rod, Slot, StranaLinie, VystrahaPecene } from "@naex/core";
 import type { KtoraHrana, MoznostPodlozenia, PodlozenyNastroj } from "@naex/core";
 import { aktivnaHrana, dovodNepodlozenia, hranyNastroja, ponukaPodlozenia, ucinkyNastrojov } from "@naex/core";
@@ -86,6 +86,7 @@ import { SuhrnLokality } from "./SuhrnLokality.tsx";
 import { dalsiPohladSuhrnu, type KontextSuhrnu, type SuhrnBitky, type ZaciatokKola } from "./krokySuhrnu.ts";
 import { PAUZA_CIELA_MS, pauzaPoVolbeCiela, type PauzaCiela } from "./pauzaCiela.ts";
 import { poslednaPitkaVDavke, stolZastavenia } from "./zastaveniePitky.ts";
+import { lokalitaVStrede, lokalitaZNavrhu, natacamNavrh, tipNavrhuLokality } from "./natocenieNavrhu.ts";
 import { naexNaKarte, PeciatkaNaex, type NaexNaKarte } from "./PeciatkaNaex.tsx";
 import { farbaKarty, type Sada } from "@naex/tvorba";
 import { HernaKarta, ZarStolaKontext, vzhladKarty, type HernaKartaProps } from "./HernaKarta.tsx";
@@ -1094,15 +1095,8 @@ export function HernaPlocha({
   })();
   /** Koľkatá karta do línie či do Dedičstva v ťahu (od 0) — od druhej stojí plný poldeci. */
   const poradieVTahu = (uid: number): number => vylozenia.filter((x) => x.ciel !== "priznanie").findIndex((x) => x.karta.uid === uid);
-  const lokalitaNavrh = (() => {
-    // v11.11: lokalitu vybral súper a natáčam ja — návrh je jej natočenie, nie voľba.
-    if (somNaTahu && view.faza === "natocenieCiela" && view.ciel?.lokalita != null) {
-      return { karta: view.ciel.lokalita, otocena: navrh?.typ === "lokalita" ? navrh.otocena : view.lokalitaOtocena };
-    }
-    if (navrh?.typ !== "lokalita" || !somNaTahu || view.faza !== "volbaCiela") return null;
-    const k = view.lokalityVHre.find((x) => x.uid === navrh.uid);
-    return k === undefined ? null : { karta: k, otocena: navrh.otocena };
-  })();
+  // v11.11: lokalitu vybral súper a natáčam ja — návrh je jej natočenie, nie voľba.
+  const lokalitaNavrh = lokalitaZNavrhu(view, somNaTahu, navrh?.typ === "lokalita" ? navrh : null);
   // Lokalita umiestnená z vrstvy: posuň stránku k stolu, nech ju ruka neprekrýva.
   const navrhLokality = navrh?.typ === "lokalita" ? navrh.uid : null;
   useEffect(() => {
@@ -2084,7 +2078,7 @@ export function HernaPlocha({
 
   const volimLokalitu = somNaTahu && view.faza === "volbaCiela" && view.koniec === null;
   /** v11.11: lokalitu vyberám, ale natočí ju súper — víťaz minulej hádky. */
-  const natociSuper = view.faza === "volbaCiela" && ktoNatacaLokalitu(view) !== ja;
+  const natociSuper = view.faza === "volbaCiela" && !natacamNavrh(view, ja);
   /** Klik na kartu v šenku: pridá ju do výberu (do limitu), opätovný klik ju vráti. */
   const prepniZoSenku = (uid: number): void => {
     const uids = zoSenku.map((k) => k.uid);
@@ -3243,6 +3237,8 @@ export function HernaPlocha({
   };
 
   const lokalita = view.ciel?.lokalita ?? null;
+  // Pri natočení cieľa server lokalitu už nesie, ale v strede leží hráčov návrh natočenia.
+  const stred = lokalitaVStrede(lokalita, view.lokalitaOtocena, lokalitaNavrh);
   // Natočenie lokality je v ráme hráča 1 opačné.
   const lokalitaNavrhOtocena = lokalitaNavrh !== null && lokalitaNavrh.otocena !== (ja === 1);
   // Jamky na prázdnych indexoch len na otvorenej hrane línie (Michal 2026-11-08, jamkyLinie.ts).
@@ -3256,12 +3252,7 @@ export function HernaPlocha({
     strany: [kartyKraja(0), kartyKraja(1)],
     navrh: [navrhKraja(0), navrhKraja(1)],
     zavreta: zavreteKraje,
-    stred:
-      lokalita !== null
-        ? { uid: lokalita.uid, otocena: view.lokalitaOtocena !== (ja === 1) }
-        : lokalitaNavrh !== null
-          ? { uid: lokalitaNavrh.karta.uid, otocena: lokalitaNavrhOtocena }
-          : null,
+    stred: stred === null ? null : { uid: stred.karta.uid, otocena: stred.otocena !== (ja === 1) },
   });
   // Ktorá hrana stredu je obrátená ku ktorej strane (playtest 20261017-164450:
   // Eva kvôli otočeniu lokality dala súperovi Petelicu). Natočenie je v ráme hráča 0.
@@ -3331,16 +3322,16 @@ export function HernaPlocha({
       </span>
     );
   const stredLinie = ((): ReactNode => {
-    if (lokalita !== null) {
+    if (stred !== null && !stred.navrh) {
       return kseftPod(
-        lokalita.uid,
+        stred.karta.uid,
         sLupou({
-          karta: lokalita,
+          karta: stred.karta,
           sirka: sirkaVLinii,
-          otocena: view.lokalitaOtocena !== (ja === 1),
-          eval: lineEval.cards.get(lokalita.uid) ?? null,
-          spoj: spojPre(lokalita.uid),
-          jamky: jamkyStola.get(lokalita.uid),
+          otocena: stred.otocena !== (ja === 1),
+          eval: lineEval.cards.get(stred.karta.uid) ?? null,
+          spoj: spojPre(stred.karta.uid),
+          jamky: jamkyStola.get(stred.karta.uid),
         }),
       );
     }
@@ -6365,7 +6356,7 @@ export function HernaPlocha({
                 <div className="partia-rad harmonika">{radStrany(ja)}</div>
               </div>
               <div
-                className={`linia-skupina lokalita${lokalitaNavrh !== null ? " navrh" : ""}${jeFinaleStola ? " finale" : ""}`}
+                className={`linia-skupina lokalita${lokalitaNavrh !== null ? " navrh" : ""}${lokalitaNavrh !== null && natociSuper ? " natoci-super" : ""}${jeFinaleStola ? " finale" : ""}`}
                 ref={lokalitaRef}
                 data-vyucba={lokalitaNavrh !== null ? "lokalita-navrh" : undefined}
               >
@@ -6382,8 +6373,8 @@ export function HernaPlocha({
                 <div className="partia-rad harmonika">{stredLinie}</div>
                 {popisStranStredu}
                 {lokalitaNavrh !== null && tahanie === null && (
-                  <span className="otocit-tip" data-vyucba="otocenie">
-                    {naSirku ? "ťuk" : "klik"} na kartu = otočiť ↻
+                  <span className="otocit-tip" data-vyucba={natociSuper ? undefined : "otocenie"}>
+                    {tipNavrhuLokality(!natociSuper, naSirku, menoHraca(super_))}
                   </span>
                 )}
               </div>
