@@ -867,3 +867,64 @@ body:not(.tahanie-aktivne) .ruka-rad > .tahatelna:is(:hover, :focus-visible) .kl
 .kl-otocena .kl-hrana-n > * {
   transform: rotate(180deg);
 }
+
+/* Karta Nástroja M2 „Plný obraz“ (Michal 2026-11-09, docs/napady/naradie-karta-mocky.html):
+   ilustrácia vyplní celý stred medzi hranami (štvorcový obrázok je tak vidno skoro celý),
+   meno a Dedičstvo ležia na jej stmavenom spodku nad dolnou hranou. */
+.kl-ilustracia-n {
+  top: calc(var(--t) * var(--pt));
+}
+
+.kl-nastroj-text {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: calc(var(--d) * var(--pt));
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: calc(24 * var(--pt)) calc(var(--o) * var(--pt)) calc(4 * var(--pt));
+  background: linear-gradient(to bottom, rgba(16, 12, 6, 0) 0%, rgba(16, 12, 6, 0.78) 34%, rgba(16, 12, 6, 0.92) 100%);
+  color: #fff;
+  pointer-events: none;
+}
+
+.kl-nastroj-text > * {
+  pointer-events: auto;
+}
+
+.kl-nastroj-text .kl-pas {
+  position: static;
+  height: auto;
+  padding: 0;
+  gap: calc(1 * var(--pt));
+  background: none;
+}
+
+.kl-nastroj-text .kl-nazov {
+  text-shadow: 0 calc(0.5 * var(--pt)) calc(2 * var(--pt)) #000;
+}
+
+.kl-nastroj-text .kl-tagy {
+  color: color-mix(in srgb, var(--farba) 55%, #fff);
+}
+
+.kl-nastroj-text .kl-efekt {
+  position: static;
+  width: 100%;
+  height: auto;
+  max-height: calc(44 * var(--pt));
+  margin-top: calc(3 * var(--pt));
+  padding: 0;
+  background: none;
+  color: #f1eedf;
+}
+
+.kl-nastroj-text .kl-efekt :is(b, i) {
+  color: color-mix(in srgb, var(--farba) 45%, #fff);
+}
+
+.kl-otocena > .kl-plocha > .kl-nastroj-text {
+  transform: rotate(180deg);
+}

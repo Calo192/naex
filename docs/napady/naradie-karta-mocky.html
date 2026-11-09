@@ -1,0 +1,244 @@
+<!doctype html>
+<html lang="sk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Karta Nástroja — mocky</title>
+<style>
+  :root { --bg:#1d211b; --panel:#272c24; --text:#ece8dc; --mut:#a9a593; --acc:#e0b850; --farba:#aaa862; --farba-tm:#7d7b3f; }
+  * { box-sizing: border-box; }
+  body { margin:0; background:var(--bg); color:var(--text); font:15px/1.5 Roboto,"Segoe UI",system-ui,sans-serif; }
+  main { max-width:1180px; margin:0 auto; padding:28px 16px 80px; }
+  h1 { font-size:26px; margin:0 0 6px; }
+  h2 { font-size:20px; margin:0 0 4px; }
+  .lead { color:var(--mut); margin:0 0 22px; max-width:820px; }
+  nav { display:flex; flex-wrap:wrap; gap:8px; margin:0 0 26px; }
+  nav a { color:var(--text); text-decoration:none; background:var(--panel); border:1px solid #3a4035; padding:6px 12px; border-radius:999px; font-size:14px; }
+  nav a:hover { border-color:var(--acc); }
+  section { background:var(--panel); border:1px solid #363c31; border-radius:14px; padding:20px 20px 24px; margin:0 0 26px; }
+  section.odpor { border-color:var(--acc); box-shadow:0 0 0 1px var(--acc) inset; }
+  .stitok { display:inline-block; font-size:12px; font-weight:700; letter-spacing:.06em; text-transform:uppercase; padding:2px 8px; border-radius:6px; background:#3a4035; color:var(--mut); margin-left:8px; vertical-align:3px; }
+  .odpor .stitok { background:var(--acc); color:#1d211b; }
+  .idea { color:var(--mut); margin:0 0 14px; max-width:900px; }
+  .pc { display:grid; grid-template-columns:1fr 1fr; gap:4px 24px; margin:0 0 18px; font-size:14px; }
+  .pc div::before { font-weight:700; margin-right:6px; }
+  .plus::before { content:"+"; color:#8fd18a; }
+  .minus::before { content:"−"; color:#e98f7f; }
+  .rad { display:flex; flex-wrap:wrap; gap:22px; align-items:flex-end; }
+  .rad + .rad { margin-top:22px; padding-top:18px; border-top:1px dashed #3a4035; }
+  .popis { font-size:12px; color:var(--mut); text-align:center; margin-top:6px; }
+  .skup { display:flex; flex-direction:column; align-items:center; }
+  .ruka { display:flex; gap:8px; }
+  .stol { background:#2f5132; border-radius:10px; padding:14px 22px 14px; }
+  .linia { position:relative; }
+  .linia .k.pod { position:absolute; left:0; z-index:0; }
+  .linia .k.host { position:relative; z-index:1; }
+  ul.spolu { margin:6px 0 0; padding-left:20px; }
+  ul.spolu li { margin:4px 0; }
+  .otazky li { margin:6px 0; }
+  code { background:#1a1e18; padding:1px 5px; border-radius:4px; font-size:13px; }
+
+  /* ===== karta (153 × 227 bodov, 54 × 80 mm) ===== */
+  .k { position:relative; width:var(--w); aspect-ratio:153/227; container-type:inline-size; flex:none;
+       border-radius:5.5% / 3.75%; overflow:hidden; background:#fff;
+       box-shadow:0 1px 2px rgba(0,0,0,.4), 0 10px 26px rgba(0,0,0,.38); }
+  .p { position:absolute; inset:0; --pt:calc(100cqw / 153); font-family:Roboto,"Segoe UI",system-ui,sans-serif; }
+  .p > * { position:absolute; left:0; right:0; }
+  .il { overflow:hidden; background:#2a2420; }
+  .il img { width:100%; height:100%; object-fit:cover; display:block; }
+  .pas { background:var(--farba); color:#fff; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:calc(1.4*var(--pt)); text-align:center; }
+  .nazov { font-weight:700; font-size:calc(11*var(--pt)); line-height:1.1; }
+  .tag { font-size:calc(7.15*var(--pt)); opacity:.95; }
+  .ef { background:#fff; color:color-mix(in srgb, var(--farba) 60%, #000); display:flex; align-items:center; justify-content:center; text-align:center;
+        padding:calc(2*var(--pt)) calc(5.7*var(--pt)); overflow:hidden; font-size:calc(7.15*var(--pt)*var(--m,1)); line-height:1.3; }
+  .ef b { color:color-mix(in srgb, var(--farba) 45%, #000); }
+  .hr { background:var(--farba); display:flex; align-items:center; justify-content:center; z-index:2; }
+  .jamka { position:absolute; left:auto; right:auto; width:calc(22.1*var(--pt)); height:calc(22.1*var(--pt)); border-radius:calc(5.3*var(--pt));
+           background:rgba(20,14,8,.45); border:calc(.75*var(--pt)) dashed rgba(255,255,255,.8); box-shadow:inset 0 calc(1.4*var(--pt)) calc(2.4*var(--pt)) rgba(0,0,0,.7); z-index:3; }
+
+  /* pilulka hrany */
+  .pil { --u:calc(24*var(--pt)); display:flex; align-items:center; gap:calc(var(--u)*.06); height:var(--u); padding:calc(var(--u)*.1); border-radius:calc(var(--u)*.22); background:rgba(0,0,0,.28); position:relative; }
+  .ik { height:100%; aspect-ratio:1; background:#151515; border:calc(var(--u)*.05) solid #fff; border-radius:calc(var(--u)*.2); display:grid; place-items:center; }
+  .ik svg { width:82%; height:82%; fill:#fff; }
+  .sip { width:calc(var(--u)*.3); height:calc(var(--u)*.36); background:#fff; clip-path:polygon(0 36%,52% 36%,52% 10%,100% 50%,52% 90%,52% 64%,0 64%); }
+  .x2 { position:absolute; right:calc(var(--u)*-.3); top:calc(var(--u)*-.22); background:#e0b850; color:#1d1a10; border-radius:999px; font-size:calc(var(--u)*.36); font-weight:800; padding:calc(var(--u)*.03) calc(var(--u)*.1); line-height:1.1; }
+  .ucinok { color:#fff; font-weight:800; letter-spacing:.12em; font-size:calc(11*var(--pt)); }
+
+  /* M2 — text na obraze */
+  .m2-text { z-index:2; padding:calc(26*var(--pt)) calc(6*var(--pt)) calc(5*var(--pt)); text-align:center; color:#fff;
+             background:linear-gradient(to bottom, rgba(16,12,6,0) 0%, rgba(16,12,6,.78) 34%, rgba(16,12,6,.92) 100%); }
+  .m2-text .nazov { text-shadow:0 1px 3px #000; }
+  .m2-text .tag { color:#d9d6a4; margin:calc(1*var(--pt)) 0 calc(3*var(--pt)); }
+  .m2-text .ef { position:static; background:none; color:#f1eedf; padding:0; height:auto; display:block; max-height:calc(42*var(--pt)); }
+  .m2-text .ef b { color:#e8e39a; }
+
+  /* M3 — medailón */
+  .m3-podklad { background:radial-gradient(circle at 50% 40%, var(--farba) 0%, var(--farba-tm) 100%); }
+  .m3-ram { left:calc(24.5*var(--pt)) !important; right:auto !important; width:calc(104*var(--pt)); border-radius:calc(7*var(--pt)); overflow:hidden;
+            box-shadow:0 0 0 calc(2*var(--pt)) #fff, 0 calc(2*var(--pt)) calc(6*var(--pt)) rgba(0,0,0,.55); z-index:1; }
+  .m3-ram img { width:100%; height:100%; object-fit:cover; display:block; }
+  .m3-stuha { left:calc(8*var(--pt)) !important; right:calc(8*var(--pt)) !important; z-index:2; background:#5c5a2c; color:#fff; display:flex; align-items:center; justify-content:center; gap:calc(4*var(--pt));
+              clip-path:polygon(0 0,100% 0,96% 50%,100% 100%,0 100%,4% 50%); }
+  .m3-stuha .nazov { font-size:calc(10*var(--pt)); }
+  .m3-stuha .tag { font-size:calc(6.4*var(--pt)); opacity:.8; }
+
+  .m3-ef { background:transparent !important; color:#fff !important; text-shadow:0 1px 2px rgba(0,0,0,.6); }
+  .m3-ef b { color:#fff6b8 !important; }
+
+  /* M4 — celá karta je obraz */
+  .m4-hr { background:linear-gradient(to bottom, rgba(18,15,8,.80), rgba(18,15,8,.62)); }
+  .m4-hr.dole { background:linear-gradient(to top, rgba(18,15,8,.80), rgba(18,15,8,.62)); }
+  .m4-hr.hore { box-shadow:inset 0 calc(-1.5*var(--pt)) 0 var(--farba); }
+  .m4-hr.dole { box-shadow:inset 0 calc(1.5*var(--pt)) 0 var(--farba); }
+  .m4-panel { left:calc(6*var(--pt)) !important; right:calc(6*var(--pt)) !important; z-index:2; border-radius:calc(5*var(--pt)); overflow:hidden; box-shadow:0 calc(1.5*var(--pt)) calc(5*var(--pt)) rgba(0,0,0,.5); }
+  .m4-panel .pas { position:static; padding:calc(3*var(--pt)) 0; background:color-mix(in srgb, var(--farba) 92%, transparent); }
+  .m4-panel .ef { position:static; background:rgba(255,255,255,.9); height:calc(36*var(--pt)); }
+
+  /* hostiteľ v línii (zjednodušený — bez slotov) */
+  .host-pas { background:#b3609f; }
+</style>
+</head>
+<body>
+<main>
+  <h1>Karta Nástroja — ako ukázať ilustráciu</h1>
+  <p class="lead">Dnes karta Nástroja ukáže z obrázka asi polovicu a ešte ju prekryjú jamky. Nižšie je dnešný stav a štyri rôzne rozloženia, každé v lupe, v ruke a pod hostiteľom v línii. Hrany (17 % výšky karty, pilulka premeny) a to, ako Nástroj trčí spod hostiteľa (M2 z mocku stola), ostávajú vo všetkých.</p>
+  <nav>
+    <a href="#dnes">Dnes</a><a href="#spolu">Spoločné pre všetky</a><a href="#m1">M1 Okno s ohniskom</a><a href="#m2">M2 Plný obraz</a><a href="#m3">M3 Medailón</a><a href="#m4">M4 Celá karta je obraz</a><a href="#otazky">Otázky</a>
+  </nav>
+
+  <section id="dnes">
+    <h2>Dnes <span class="stitok">origin/master</span></h2>
+    <p class="idea">Obrázok sa zmenší na 114 bodov výšky a oreže na stred, horných 38 bodov prekryje horná hrana. Z 153 bodov výšky obrázka ostane viditeľných 76, teda asi polovica. Valaška tak príde o sekeru, Puška o hlaveň. Ruka kreslí Nástroju aj jamky prázdnych indexov (tie bodkované „dierky“), lebo Nástroj nemá na hranách žiadnu akciu.</p>
+    <div class="rad" data-v="dnes"></div>
+  </section>
+
+  <section id="spolu">
+    <h2>Spoločné pre všetky mocky</h2>
+    <ul class="spolu">
+      <li><b>Bez jamiek.</b> Nástroj nikdy neleží v línii ako karta so slotmi, jamky mu nepatria ani v ruke. Stačí v <code>KartaLico</code> nekresliť jamky, keď má karta hrany Nástroja. Toto je oprava chyby, nie vec vkusu.</li>
+      <li><b>Hrany sa nemenia.</b> Výška 17 %, farba stredného pruhu, pilulka. Pod hostiteľom trčí z Nástroja rovnaký pás ako dnes (pri M4 je pás priesvitný a presvitá ním obrázok).</li>
+      <li><b>Ohnisko (M1, M4).</b> Tvorca by dostal bod „čo musí ostať v orezaní“ (klik do náhľadu ilustrácie). M2 a M3 ukážu skoro celý obrázok a ohnisko nepotrebujú.</li>
+    </ul>
+  </section>
+
+  <section id="m1">
+    <h2>M1 Okno s ohniskom <span class="stitok">najmenšia zmena</span></h2>
+    <p class="idea">Kostra ostáva ako dnes, ale obrázok začína až pod hornou hranou (nič ho neprekrýva), pás s menom je tenší a orezanie riadi ohnisko z tvorcu, nie stred.</p>
+    <div class="pc">
+      <div class="plus">Karta vyzerá ako dnes, kódu je najmenej.</div>
+      <div class="minus">Stále je vidno len asi 58 % obrázka (88 bodov výšky).</div>
+      <div class="plus">Predmet je vždy v okne vďaka ohnisku.</div>
+      <div class="minus">Ohnisko treba nastaviť všetkým 22 Nástrojom (Admin).</div>
+    </div>
+    <div class="rad" data-v="m1"></div>
+  </section>
+
+  <section id="m2" class="odpor">
+    <h2>M2 Plný obraz <span class="stitok">vybraté — Michal 2026-11-09</span></h2>
+    <p class="idea">Celý stred karty medzi hranami je ilustrácia, 153 × 150 bodov, takže štvorcový obrázok je vidno skoro celý. Meno a Dedičstvo ležia na stmavenom spodku obrázka.</p>
+    <div class="pc">
+      <div class="plus">Najviac obrázka (~98 %), bez ohniska a bez prekreslenia ilustrácií.</div>
+      <div class="minus">Text leží na obrázku, čo je iný jazyk než pri ostatných kartách.</div>
+      <div class="plus">Nástroj je na prvý pohľad iný typ karty než Občan.</div>
+      <div class="minus">Spodok obrázka (podlaha, stôl) je pod textom. Pri dlhom Dedičstve (Puška) prechod siaha vyššie.</div>
+    </div>
+    <div class="rad" data-v="m2"></div>
+  </section>
+
+  <section id="m3">
+    <h2>M3 Medailón</h2>
+    <p class="idea">Celý štvorcový obrázok bez orezania, v bielom rámiku na podklade vo farbe Nástroja. Meno je na stuhe pod rámikom, Dedičstvo pod ňou.</p>
+    <div class="pc">
+      <div class="plus">Obrázok je celý, nič ho neorezáva ani neprekrýva.</div>
+      <div class="minus">Obrázok je menší (104 bodov) a v ruke pri šírke 110 px je to už malá známka.</div>
+      <div class="plus">Predmet „v rámiku“ sedí k Nástroju: je to vec, nie človek.</div>
+      <div class="minus">Dedičstvo má menej miesta, dlhší text sa zmenší.</div>
+    </div>
+    <div class="rad" data-v="m3"></div>
+  </section>
+
+  <section id="m4">
+    <h2>M4 Celá karta je obraz</h2>
+    <p class="idea">Obrázok je pod celou kartou. Hrany sú tmavé priesvitné pásy s tenkou čiarou vo farbe Nástroja, meno a Dedičstvo sú na ostrovčeku v dolnej časti.</p>
+    <div class="pc">
+      <div class="plus">Obrázok na celú výšku. Aj spod hostiteľa vytŕča kúsok predmetu.</div>
+      <div class="minus">Boky obrázka sa orezávajú (vidno asi 67 % šírky), takže treba ohnisko.</div>
+      <div class="plus">Najväčší „wow“ efekt v ruke.</div>
+      <div class="minus">Pilulka na tmavom pozadí obrázka je čitateľná horšie ako na plnom páse, a na stole je M4 najodlišnejšie.</div>
+    </div>
+    <div class="rad" data-v="m4"></div>
+  </section>
+
+  <section id="otazky">
+    <h2>Otázky</h2>
+    <ol class="otazky">
+      <li><b>Ktoré rozloženie?</b> (dnes / M1 / M2 / M3 / M4). Odporúčam M2: ukáže skoro celý obrázok, hrany a stôl ostanú bez zmeny a nič netreba dopĺňať v tvorcovi.</li>
+      <li><b>Jamky na Nástroji</b> opraviť hneď a nezávisle od výberu? Odporúčam áno.</li>
+      <li>Pri M1 alebo M4: <b>ohnisko v tvorcovi</b> (Admin ho nastaví 22 Nástrojom), alebo radšej prekresliť ilustrácie s predmetom v strede?</li>
+    </ol>
+  </section>
+</main>
+
+<script>
+const IKONY = {"Pecka":[{"d":"M17.26 36.86C11.05 43.07 11.02 53.18 17.21 59.37C17.27 59.43 17.33 59.47 17.38 59.53C14.63 60.2 12.02 61.58 9.87 63.73C3.66 69.94 3.63 80.08 9.83 86.27C16.02 92.46 26.15 92.44 32.36 86.21C34.86 83.71 36.37 80.55 36.86 77.29C38.11 78.87 38.75 80.21 39.06 81.37C39.47 82.95 39.3 84.2 38.89 85.43C38.48 86.66 37.81 87.77 37.25 89.02C36.97 89.65 36.72 90.31 36.68 91.21C36.64 92.09 37.03 93.2 37.73 93.91C38.81 94.98 40.33 94.92 41.39 94.61C42.44 94.32 43.46 93.77 44.55 93.07C46.78 91.66 49.39 89.55 52.27 87.01C57.99 81.95 64.65 75.29 69.98 69.98C75.29 64.65 81.95 57.99 87.01 52.27C89.55 49.39 91.66 46.78 93.07 44.55C93.77 43.44 94.32 42.44 94.61 41.39C94.92 40.33 94.98 38.81 93.91 37.73C93.2 37.03 92.09 36.64 91.21 36.68C90.31 36.72 89.65 36.97 89.02 37.25C87.77 37.79 86.66 38.48 85.43 38.89C84.2 39.3 82.95 39.47 81.37 39.06C80.21 38.75 78.87 38.11 77.29 36.86C80.55 36.37 83.71 34.86 86.21 32.36C92.44 26.15 92.46 16.02 86.27 9.82C80.08 3.63 69.94 3.66 63.73 9.87C61.58 12.02 60.2 14.63 59.53 17.38C59.47 17.33 59.43 17.27 59.38 17.21C53.18 11.02 43.07 11.05 36.86 17.26C32.66 21.45 31.29 27.4 32.73 32.73C27.4 31.29 21.45 32.66 17.26 36.86L17.26 36.86M20.25 39.84C24.86 35.23 32.23 35.21 36.8 39.79C41.37 44.36 41.37 51.74 36.76 56.35C32.15 60.96 24.79 60.96 20.21 56.39C15.63 51.82 15.65 44.43 20.25 39.84L20.25 39.84M39.84 20.25C44.43 15.65 51.82 15.63 56.39 20.21C60.96 24.79 60.94 32.15 56.35 36.76C51.74 41.37 44.36 41.37 39.79 36.8C35.21 32.23 35.23 24.86 39.84 20.25M12.86 66.72C17.47 62.13 24.84 62.11 29.41 66.68C33.98 71.25 33.96 78.63 29.38 83.22C24.77 87.83 17.39 87.85 12.82 83.28C8.24 78.71 8.26 71.33 12.86 66.72L12.86 66.72M66.72 12.86C71.33 8.26 78.71 8.24 83.28 12.82C87.85 17.39 87.83 24.77 83.22 29.38C78.63 33.96 71.25 33.98 66.68 29.41C62.09 23.98 63.26 16.54 66.72 12.86L66.72 12.86M43.87 43.87C49.2 45.29 55.16 43.93 59.34 39.75C60.29 38.79 61.09 37.73 61.76 36.62C68.24 39.12 72.09 42.5 73.07 46.39C74.14 50.66 72.05 56.6 64.32 64.32C56.6 72.05 50.66 74.14 46.39 73.07C42.5 72.09 39.1 68.24 36.62 61.76C37.73 61.09 38.79 60.29 39.75 59.34C43.93 55.16 45.29 49.2 43.87 43.87L43.87 43.87","e":false}],"Petelica":[{"d":"M92.38 5.12L89.22 7.43L91.53 10.49L91.48 10.53L92.71 12.2L97.11 8.88L95.55 6.79L94.33 7.71L92.38 5.12L92.38 5.12M86.69 9.31L53.99 32.7C53.99 32.81 53.98 32.9 53.98 33L53.55 37.45C53.47 38.39 53.04 39.14 52.28 39.69L44.09 45.65C43.4 46.16 42.62 46.34 41.77 46.21C40.92 46.07 40.24 45.66 39.73 44.96L38.76 43.63L32.94 47.83C32.62 48.07 32.55 48.56 32.79 49L33.19 49.77C33.41 50.13 33.4 50.48 33.16 50.82L23.79 62.29C23.77 62.31 23.75 62.32 23.73 62.34L6.02 76.09C5.66 76.37 5.65 76.96 5.99 77.41L13.96 88C14.17 88.29 14.46 88.45 14.82 88.47L14.86 88.47C15.1 88.46 15.28 88.36 15.41 88.16L31.9 66.42C32.17 66.19 32.26 65.9 32.16 65.56C32.16 65.56 31.57 62.42 31.71 62.23C31.71 62.23 37.32 54.73 37.36 54.69L90.25 14.12L86.69 9.31L86.69 9.31M50.85 32.72L40.28 40.41L42.26 43.13L50.44 37.17L50.85 32.72M54.79 45.26L47.24 51.05L48.71 54.05C48.89 54.43 49.2 54.62 49.63 54.61L49.68 54.61C50.05 54.59 50.35 54.43 50.57 54.13L55.02 48.16C55.22 47.89 55.28 47.6 55.21 47.27L54.79 45.26L54.79 45.26M43.18 54.17L42.02 55.07C42.66 56.13 42.56 57.12 41.73 58.04C40.9 58.95 39.92 59.15 38.8 58.61L38.36 59.2L37.92 59.79C38.49 60.11 39.1 60.28 39.76 60.3C40.41 60.32 41.03 60.18 41.62 59.9C42.21 59.61 42.7 59.2 43.08 58.66C43.46 58.13 43.7 57.54 43.79 56.89C43.93 55.91 43.73 55 43.18 54.17L43.18 54.17","e":false}],"Posilnenie":[{"d":"M35.12 4.05L35.12 19.92L26.52 14.77L29.95 23.94L7.36 19.85L23.91 29.6L3.91 29.6L3.91 34.94L25.48 37.84L44.35 32.14C42.14 29.82 40.72 26.14 40.72 21.98C40.72 14.97 44.79 9.28 49.82 9.28C54.85 9.28 58.93 14.97 58.93 21.98C58.93 26.06 57.55 29.68 55.42 32L74.76 37.84L96.73 34.88L96.73 29.6L76.99 29.6L93.54 19.85L70.01 24.1L73.5 14.78L64 20.47L64 4.05L35.12 4.05M96.73 43.62L74.76 48L63.94 45.44L58.47 68.55L61.71 96.87L71.8 96.87L64.31 68.6L73.39 74.04L69.23 62.92L93.54 67.31L75.74 56.82L96.73 56.82L96.73 43.62L96.73 43.62M3.91 43.7L3.91 56.82L25.16 56.82L7.36 67.31L30.72 63.08L26.63 74.02L34.14 69.53L28.56 96.87L37.96 96.87L40.48 68.66L36.25 45.45L25.48 48L3.91 43.7","e":false}],"PoškodeniePečene":[{"d":"M30.1 19.23C15.55 19.14 6.95 27.96 5.72 36.41C3.03 56.82 0.88 75 14.04 80.66C18.19 82.45 41.32 61.89 57.64 57.37C59.64 44.92 59.54 38.76 58.32 26.68C58.32 26.68 57.69 23.01 54.89 22.4C49.11 21.13 39.11 19.2 30.1 19.23L30.1 19.23M82.43 21.24C76.51 21.22 69.57 21.94 63.81 23.1C62.5 23.36 61.73 26.09 61.87 26.81C63 38.38 63.14 43.91 61.4 56.01C93.82 42.48 96.64 33.27 96.27 29.3C95.69 23.02 89.8 21.27 82.43 21.24L82.43 21.24M55.6 61.45C47.91 64.31 39.98 69.44 33.4 74.06C37.32 75.22 44.46 75.35 47.95 73.39C51.52 70.3 54.68 66.09 55.6 61.45L55.6 61.45","e":false}]};
+const svg = (k) => `<svg viewBox="0 0 100 100">${IKONY[k].map(c => `<path d="${c.d}"${c.e ? ' fill-rule="evenodd"' : ""}/>`).join("")}</svg>`;
+const pil = (z, na) => `<span class="pil"><span class="ik">${svg(z)}</span><i class="sip"></i><span class="ik">${svg(na)}</span></span>`;
+const posil = (a) => `<span class="pil"><span class="ik">${svg(a)}</span><b class="x2">×2</b></span>`;
+const ucinok = (t) => `<b class="ucinok">${t}</b>`;
+
+const KARTY = [
+  { n: "Valaška", img: "valaska.jpg", ohn: "28% 24%", hore: pil("Pecka", "Petelica"), dole: pil("Petelica", "Pecka"),
+    ded: "<b>Dedičstvo:</b> Tvoje Pecky udeľujú o 1 poškodenie viac." },
+  { n: "Puška", img: "puska.jpg", ohn: "44% 52%", hore: posil("Petelica"), dole: posil("Pecka"),
+    ded: "<b>Dedičstvo:</b> Keď by tvoju prepojenú Petelicu zrušil iný efekt (Odpor, NA EX…), namiesto zrušenia udeľuje o 1 poškodenie menej." },
+  { n: "Energeťák", img: "energetak.jpg", ohn: "50% 60%", hore: ucinok("FORSÁŽ"), dole: pil("Posilnenie", "PoškodeniePečene"),
+    ded: "<b>Dedičstvo:</b> Tvoje Posilnenie nemožno zrušiť NA EX." },
+];
+const D = "naradie-karta/";
+const H = 38.55, V = 227;
+const box = (cls, top, h, inner = "", st = "") => `<div class="${cls}" style="top:calc(${top}*var(--pt));height:calc(${h}*var(--pt));${st}">${inner}</div>`;
+const hrany = (c, cls = "hr") => box(`${cls} hore`, 0, H, c.hore) + box(`${cls} dole`, V - H, H, c.dole);
+const pas = (c, top, h) => box("pas", top, h, `<div class="nazov">${c.n}</div><div class="tag">Nástroj</div>`);
+const ef = (c, top, h) => box("ef", top, h, `<div>${c.ded}</div>`);
+const img = (c, pos = "50% 50%") => `<img src="${D}${c.img}" alt="" style="object-position:${pos}">`;
+
+const VARIANTY = {
+  dnes: (c) => {
+    const sloty = [23.03, 51.33, 79.63, 107.93];
+    const jamky = sloty.map((y) => `<span class="jamka" style="left:calc(2.27*var(--pt));top:calc(${y}*var(--pt))"></span><span class="jamka" style="left:calc(128.69*var(--pt));top:calc(${y}*var(--pt))"></span>`).join("");
+    return box("il", 0, 153 - H, img(c)) + pas(c, 153 - H, 33.17) + ef(c, 186.24 - H, 40.54) + hrany(c) + jamky;
+  },
+  m1: (c) => box("il", H, 88, img(c, c.ohn)) + pas(c, H + 88, 22) + ef(c, H + 110, V - 2 * H - 110) + hrany(c),
+  m2: (c) => box("il", H, V - 2 * H, img(c)) + `<div class="m2-text" style="bottom:calc(${H}*var(--pt))"><div class="nazov">${c.n}</div><div class="tag">Nástroj</div><div class="ef"><div>${c.ded}</div></div></div>` + hrany(c),
+  m3: (c) => box("m3-podklad", H, V - 2 * H) + box("m3-ram", H + 6, 104, img(c)) +
+    box("m3-stuha", H + 104, 17, `<span class="nazov">${c.n}</span><span class="tag">Nástroj</span>`) +
+    box("ef m3-ef", H + 122, V - 2 * H - 125, `<div>${c.ded}</div>`) + hrany(c),
+  m4: (c) => box("il", 0, V, img(c, c.ohn)) + hrany(c, "hr m4-hr") +
+    `<div class="m4-panel" style="bottom:calc(${H + 5}*var(--pt))"><div class="pas"><div class="nazov">${c.n}</div><div class="tag">Nástroj</div></div><div class="ef"><div>${c.ded}</div></div></div>`,
+};
+const karta = (v, c, w, extra = "", st = "") => `<div class="k ${extra}" style="--w:${w}px;${st}"><div class="p">${VARIANTY[v](c)}</div></div>`;
+const host = (w) => `<div class="k host" style="--w:${w}px"><div class="p">${box("il", 0, 153, `<img src="${D}hostitel.jpg" alt="">`)}${box("pas host-pas", 153, 33.17, '<div class="nazov">Autobusár</div><div class="tag">Občan • Pracujúci</div>')}${box("ef", 186.24, 40.54, "<div>(zjednodušený hostiteľ — bez slotov)</div>", "color:#7a3f6d")}</div></div>`;
+const linia = (v, c, w) => {
+  const hrPx = (w * 227 / 153) * (H / V);
+  return `<div class="linia" style="width:${w}px;padding-bottom:${hrPx}px">${karta(v, c, w, "pod", `top:${hrPx}px`)}${host(w)}</div>`;
+};
+
+for (const el of document.querySelectorAll("[data-v]")) {
+  const v = el.dataset.v;
+  el.innerHTML =
+    KARTY.map((c) => `<div class="skup">${karta(v, c, 220)}<div class="popis">lupa · ${c.n}</div></div>`).join("") +
+    "";
+  el.insertAdjacentHTML("afterend", `<div class="rad">` +
+    `<div class="skup"><div class="ruka">${KARTY.map((c) => karta(v, c, 112)).join("")}</div><div class="popis">v ruke (112 px)</div></div>` +
+    `<div class="skup"><div class="stol">${linia(v, KARTY[0], 112)}</div><div class="popis">pod hostiteľom v línii (trčí dolná hrana)</div></div></div>`);
+}
+// Dlhší text sa zmenší, ako v hre (KartaLico/Efekt).
+requestAnimationFrame(() => {
+  for (const e of document.querySelectorAll(".ef")) {
+    let m = 1;
+    while (e.scrollHeight > e.clientHeight + 1 && m > 0.55) { m -= 0.05; e.style.setProperty("--m", m); }
+  }
+});
+</script>
+</body>
+</html>

@@ -139,8 +139,10 @@ export function KartaLico(props: KartaLicoProps) {
 
   /** Výška hrany Nástroja v bodoch — to, čo spod hostiteľa pretŕča (mock 2, M2). */
   const vyskaHrany = g.vyska * PODIEL_HRANY;
-  // Rám V1: pás s názvom a Dedičstvo sa posunú hore o hranu, dolná hrana tak nezakryje text.
+  // Nástroj (M2 „Plný obraz“, Michal 2026-11-09, docs/napady/naradie-karta-mocky.html): ilustrácia
+  // vyplní celý stred medzi hranami, meno a Dedičstvo ležia na jej stmavenom spodku.
   const posunN = hranyN === null ? 0 : vyskaHrany;
+  const nastroj = hranyN !== null;
 
   const hover = (obsah: TipObsah) =>
     bezPopisov
@@ -156,7 +158,8 @@ export function KartaLico(props: KartaLicoProps) {
     const r = (strana === "lava" ? g.slotyLave : g.slotyPrave)[i];
     if (r === undefined) return null;
     if (kluc === null) {
-      if (tlac || props.jamky?.[strana] !== true) return null;
+      // Nástroj neleží v línii so slotmi — jamky by mu len prekryli ilustráciu.
+      if (tlac || hranyN !== null || props.jamky?.[strana] !== true) return null;
       return (
         <span
           key={`${strana}${i}`}
@@ -381,7 +384,10 @@ export function KartaLico(props: KartaLicoProps) {
       onKeyDown={onClick !== undefined ? (e) => (e.key === "Enter" || e.key === " ") && onClick() : undefined}
     >
       <div className="kl-plocha">
-        <div className="kl-ilustracia" style={{ "--h": g.obrazok.h - posunN } as CSSProperties}>
+        <div
+          className={`kl-ilustracia${nastroj ? " kl-ilustracia-n" : ""}`}
+          style={{ "--t": nastroj ? vyskaHrany : 0, "--h": nastroj ? g.vyska - 2 * vyskaHrany : g.obrazok.h } as CSSProperties}
+        >
           {obrazok !== null ? (
             <img src={obrazok} alt="" draggable={false} />
           ) : karta.obrazok !== null && !bezObrazka ? (
@@ -404,26 +410,42 @@ export function KartaLico(props: KartaLicoProps) {
           )}
         </div>
 
-        <div className="kl-pas" style={{ "--y": g.pas.y - posunN, "--h": g.pas.h } as CSSProperties}>
-          <div className="kl-nazov" style={{ "--f": g.velkostNazvu } as CSSProperties}>
-            {karta.nazov}
-          </div>
-          {karta.tagy.length > 0 && (
-            <div className="kl-tagy" style={{ "--f": g.velkostTagov } as CSSProperties}>
-              {karta.tagy.join(" • ")}
+        {(() => {
+          const pas = (
+            <div className="kl-pas" style={{ "--y": g.pas.y, "--h": g.pas.h } as CSSProperties}>
+              <div className="kl-nazov" style={{ "--f": g.velkostNazvu } as CSSProperties}>
+                {karta.nazov}
+              </div>
+              {karta.tagy.length > 0 && (
+                <div className="kl-tagy" style={{ "--f": g.velkostTagov } as CSSProperties}>
+                  {karta.tagy.join(" • ")}
+                </div>
+              )}
             </div>
-          )}
-        </div>
-
-        <Efekt
-          text={efektyNavyse.length > 0 ? textBezAkcii(zakladEfektu) : zakladEfektu}
-          vzhlad={vzhlad}
-          y={g.efekt.y - posunN}
-          h={g.efekt.h}
-          okraj={g.okrajTextu}
-          velkost={g.velkostEfektu}
-          hover={hover}
-        />
+          );
+          const efekt = (
+            <Efekt
+              text={efektyNavyse.length > 0 ? textBezAkcii(zakladEfektu) : zakladEfektu}
+              vzhlad={vzhlad}
+              y={g.efekt.y}
+              h={g.efekt.h}
+              okraj={g.okrajTextu}
+              velkost={g.velkostEfektu}
+              hover={hover}
+            />
+          );
+          return nastroj ? (
+            <div className="kl-nastroj-text" style={{ "--d": vyskaHrany, "--o": g.okrajTextu } as CSSProperties}>
+              {pas}
+              {efekt}
+            </div>
+          ) : (
+            <>
+              {pas}
+              {efekt}
+            </>
+          );
+        })()}
 
         {hranyN !== null &&
           (["horna", "dolna"] as const).map((kde) => {
