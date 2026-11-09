@@ -222,11 +222,11 @@
       "pozn": "v11.5: Anonymný alkoholik má Furt (Poškodenie pečene v jeho okolí sa ráta ako Viera); ochrana pred NA EX zanikla"
     },
     {
-      "pojem": "Kapybara mení cigarety alebo hýbe markerom",
+      "pojem": "starý Nástup Kapybary: reči klesnú, cigarety, marker",
       "vzory": [
-        "kapybar\\w*[^.!?]{0,80}(?:cigaret|spak|marker)"
+        "kapybar\\w*[^.!?]{0,80}(?:rec(?:i|ami|iach)?(?![a-z])|marker|spak|nastup|klesn)"
       ],
-      "pozn": "Kapybara má Nástup: súperove reči pri jednom staršom klesnú o stupeň"
+      "pozn": "v11.17: Kapybara je Školiteľ — „Podpora: Preškolenie {Viera}→{Cigareta}. Konflikt: Preškolenie {Viera}→{Cigareta}. Furt: {Cigareta}.“; Nástup so súperovými rečami zanikol. Cigareta pri Kapybare je platná (vo Vypálenej od vypálenia v11.17 2026-11-09)"
     },
     {
       "pojem": "Dohadzovačka vymieňa priazne",
@@ -348,7 +348,7 @@
         "benzink\\w*[^.!?]{0,80}(?:najdalej|nefajci|nesmie fajcit|fajcit smie)",
         "(?:najdalej|nefajci|nesmie fajcit|fajcit smie)\\w*[^.!?]{0,80}benzink"
       ],
-      "pozn": "v11.13: na Benzínke je prvé fajčenie v každej Pitke zadarmo (vo Vypálenej od vypálenia 2026-11-07)"
+      "pozn": "v11.13 zanikol zákaz fajčenia podľa najvzdialenejšej karty; od v11.15 je na Benzínke každé fajčenie o 1 cigaretu lacnejšie (0, 1, 2 …)"
     },
     {
       "pojem": "Cintorín Nástroj",
@@ -482,6 +482,92 @@
         "ministrant\\w*[^.!?]{0,80}vier"
       ],
       "pozn": "frakcie: Praudovravec a Stryná Konflikt Pohoršenie, Recidivista Nepriateľ: Zahraničný, Dievčina Podpora Povera, Šarlatán Spoločník: Autorita, Podvodník Konflikt Obmedzenie, Snúbenica Nepriateľ: Autorita, Miňištrant Spoločník: Zahraničný (vo Vypálenej od vypálenia v11.14 2026-11-09)"
+    },
+    {
+      "pojem": "Nástroj pod súperovu kartu, sabotáž Nástrojom",
+      "vzory": [
+        "pod superov\\w* (?:\\w+ ){0,2}(?:kart|obcan|staresin|postav)",
+        "podloz\\w*[^.!?]{0,60}superov\\w* (?:\\w+ ){0,2}(?:kart|obcan|staresin)",
+        "svoj\\w* aj superov\\w*[^.!?]{0,40}(?:podloz|nastroj)",
+        "sabotaz",
+        "sabotuj"
+      ],
+      "pozn": "v11.16: Nástroj sa podkladá len pod vlastné karty; od v11.17 hrany Nástrojov bez sabotáží (14 hrán nových) (vo Vypálenej od vypálenia v11.17 2026-11-09)"
+    },
+    {
+      "pojem": "staré hrany Nástrojov (sabotážne)",
+      "vzory": [
+        "energetak\\w*[^.!?]{0,60}posilnen\\w* ?(?:→|->|na) ?pecen",
+        "injekci\\w*[^.!?]{0,60}poldec\\w* ?(?:→|->|na) ?pecen",
+        "valask\\w*[^.!?]{0,60}petelic\\w* ?(?:→|->|na) ?peck",
+        "zapalovac\\w*[^.!?]{0,60}cigaret\\w* ?(?:→|->|na) ?pecen",
+        "furik\\w*[^.!?]{0,60}robot\\w* ?(?:→|->|na) ?hazard",
+        "horoskop\\w*[^.!?]{0,60}pover\\w* ?(?:→|->|na) ?hazard"
+      ],
+      "pozn": "v11.17: hrany Nástrojov len pomáhajú vlastnej karte (tabuľka v PRAVIDLA.md §12) (vo Vypálenej od vypálenia v11.17 2026-11-09)"
+    },
+    {
+      "pojem": "Telefón: Pohoršenia nemožno zrušiť",
+      "vzory": [
+        "telefon\\w*[^.!?]{0,80}(?:imun|nemozno zrusit|nezrusi)",
+        "pohorsen\\w* (?:\\w+ ){0,3}(?:nemozno|nejde|nedaju) (?:\\w+ ){0,1}zrusit",
+        "imunit\\w* pohorsen"
+      ],
+      "pozn": "v11.17: Telefón v Dedičstve — „Hádka: Remíza v hádke je tvoja, ak nie je 0 : 0. Bitka: Za každú tvoju akciu zrušenú súperovým Odporom {Povera}.“; imunita Pohoršení zanikla (vo Vypálenej od vypálenia v11.17 2026-11-09)"
+    },
+    {
+      "pojem": "starý Krokodíl: spáli všetkých v okolí",
+      "vzory": [
+        "krokodil\\w*[^.!?]{0,80}(?:okol|vsetk|zvierat|sused)"
+      ],
+      "pozn": "v11.17: Krokodíl — „Konflikt: Občan {Spálenie}.“ — spáli len súperovho Občana, s ktorým sa priložením stretne (vo Vypálenej od vypálenia v11.17 2026-11-09)"
+    },
+    {
+      "pojem": "odpoveď na NA EX zadarmo",
+      "vzory": [
+        "odpoved\\w*[^.!?]{0,60}(?:zadarmo|nic nestoj|bez poldec|nestoji)",
+        "(?:zadarmo|nic nestoj)\\w*[^.!?]{0,40}odpoved",
+        "odpovedat (?:\\w+ ){0,3}(?:vzdy|kazdy)"
+      ],
+      "pozn": "v11.16: odpoveď na NA EX stojí plný poldeci (otočí sa na vypitý: +1 pečeň, 1 nerest); kto nemá plný poldeci, neodpovedá (vo Vypálenej od vypálenia v11.17 2026-11-09)"
+    },
+    {
+      "pojem": "Vypiť pri limite 0",
+      "vzory": [
+        "vypi\\w*[^.!?]{0,60}limit\\w* (?:je )?(?:0|nul)",
+        "limit\\w* (?:je )?(?:0|nul)\\w*[^.!?]{0,60}vypi",
+        "vypi\\w*[^.!?]{0,40}(?:bez limitu|mimo limit|po vycerpan)"
+      ],
+      "pozn": "v11.16: Vypiť smie hráč, len kým mu zostáva limit vykladania aspoň 1 (vo Vypálenej od vypálenia v11.17 2026-11-09)"
+    },
+    {
+      "pojem": "cigarety za pas najviac podľa kariet v ruke",
+      "vzory": [
+        "najviac[^.!?]{0,20}kolko[^.!?]{0,30}(?:kart|kariet)\\w* (?:\\w+ ){0,1}v ruke",
+        "pas(?:uj|ov|e|om|ne)?\\w*[^.!?]{0,80}(?:kart|kariet)\\w* (?:\\w+ ){0,1}v ruke",
+        "cigaret\\w* za pas[^.!?]{0,80}ruk",
+        "prazdn\\w* ruk\\w*[^.!?]{0,60}(?:pas|cigaret)"
+      ],
+      "pozn": "v11.16: za pas 1 cigareta za každú kartu zo zostávajúceho limitu bez ohľadu na karty v ruke (vo Vypálenej od vypálenia v11.17 2026-11-09)"
+    },
+    {
+      "pojem": "Benzínka: ďalšie fajčenie za 2",
+      "vzory": [
+        "benzink\\w*[^.!?]{0,100}(?:dalsi\\w* (?:\\w+ ){0,3}2|druh\\w* (?:\\w+ ){0,3}2|0, 2, 3|len prv\\w* fajc|iba prv\\w* fajc)",
+        "prv\\w* fajcen\\w* (?:\\w+ ){0,5}zadarmo[^.!?]{0,40}(?:dalsi|druh)\\w* (?:\\w+ ){0,3}2"
+      ],
+      "pozn": "v11.15: Benzínka — „Pitka: Každé fajčenie v tejto Pitke stojí o 1 cigaretu menej.“ (0, 1, 2 …); „prvé zadarmo“ ostáva pravdou, „ďalšie 2“ nie (vo Vypálenej od vypálenia v11.17 2026-11-09)"
+    },
+    {
+      "pojem": "NA EX: akcia zrušená Odporom ostáva zrušená, mŕtvy Odpor a Posilnenie",
+      "vzory": [
+        "(?:zrusen\\w* odpor\\w*|odpor\\w*[^.!?]{0,40}zrusil\\w*)[^.!?]{0,40}ostava zrusen",
+        "ostava zrusen",
+        "(?:odpor|posilnen)\\w*[^.!?]{0,60}mrtv",
+        "mrtv\\w*[^.!?]{0,40}(?:odpor|posilnen)",
+        "neaktivn\\w* (?:odpor|posilnen)\\w*[^.!?]{0,60}(?:nic nerob|zbytocn|nemaj\\w* zmysel)"
+      ],
+      "pozn": "v11.17: NA EX na Odpore oživí akciu, ktorú Odpor rušil (×1); neaktívny Odpor je štít, neaktívne Posilnenie podrží aktívne akcie (vo Vypálenej od vypálenia v11.17 2026-11-09)"
     }
   ],
   "karty": [
