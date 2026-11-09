@@ -55,6 +55,13 @@ describe("kontrola textov efektov", () => {
     expect(p.some((x) => x.uroven === "chyba" && x.text.includes("jadro"))).toBe(true);
   });
 
+  it("„Posledná Pitka kola:“ na začiatku je spúšťač (Traktorista v11.18)", () => {
+    const text = "Posledná Pitka kola: Bez prevahy v jeho kraji {Dlh}.";
+    const p = kontrolaTextov([karta(text, "traktoristka")], { ...podklady, zverejnene: [{ id: "traktoristka", efekt: text }] });
+    expect(p.filter((x) => x.uroven === "chyba")).toEqual([]);
+    expect(kontrolaTextov([karta("Posledná Pitka: Udelí ranu.")], podklady).some((x) => x.text.includes("nezačína spúšťačom"))).toBe(true);
+  });
+
   it("nová karta s efektom je manual", () => {
     const p = kontrolaTextov([karta("Bitka: Udelí ranu.", "nova_karta")], { ...podklady, zverejnene: [] });
     expect(p.map((x) => x.text).join(" ")).toContain("manual");

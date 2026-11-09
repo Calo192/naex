@@ -290,12 +290,14 @@ const BONUS_EFEKTU: Readonly<Record<string, number>> = {
   veterinar: 0.3,
   autobusar: 0.3,
   dievcina_na_vydaj: 0.3,
+  // Nepriateľ: Starešina {Pecka} (2026-11-09) — akciu navyše ráta cyklus v hodnotaKarty.
   ministrant: 0.3,
   zahradkar: 0.4,
   cierna_macka: 0.5,
   pes: 0.5,
   // Bitka: Pecku a Ranu navyše vidí odhad bitky (cigareta zanikla 2026-11-08).
   sofer: 0.3,
+  // Podpora: Chlap {Cigareta} (2026-11-09) — akciu navyše ráta simulácia vyloženia (sPrilozenou).
   snubenica: 0.5,
   // Podpora (2026-11-09): Nástroj zo šenku do ruky — vybraný, nie naslepo.
   zivnostnik: 0.5,
@@ -308,7 +310,7 @@ const BONUS_EFEKTU: Readonly<Record<string, number>> = {
   predavacka: 0.5,
   // Nástup spáli súperovo Zviera — bitku ráta simulácia vyloženia, zvyšok hry SPALENIE_ZA_KARTU.
   polovnik: 0.4,
-  // Furt (Školiteľ): Roboty susedov ako Pecky — tuhé ráta odhad bitky, Dlh, ktorý Robota nespáli, tiež.
+  // Podpora (Školiteľ, 2026-11-09): Roboty tvojej karty, s ktorou sa stretne, ako Pecky — simulácia vyloženia (sPrilozenou).
   veducko: 0.3,
   // Konflikt: Občan {Spálenie} (2026-11-09) — súperov Občan, s ktorým sa stretne, sa po bitke spáli (spalene pri vyložení).
   krokodil: 0.4,
@@ -323,6 +325,7 @@ const BONUS_EFEKTU: Readonly<Record<string, number>> = {
   // Sypač (Podpora, Školiteľ bez tagu): tvoja karta s Ranami ako Peckami — simulácia vyloženia (sPrilozenou).
   kulturista: 0.3,
   vandal: 0.2,
+  // Posledná Pitka kola: Dlh bez prevahy v jeho kraji (Pecka s prevahou zanikla 2026-11-09).
   traktoristka: 0.3,
   vymahac: 0.4,
   vychovavatelka: 0.4,

@@ -59,6 +59,8 @@ const VEDUCKO_PODPORA = "Podpora: Preškolenie {Robota}→{Pecka}.";
 const SYPAC = "Podpora: Preškolenie {Rana}→{Pecka}.";
 const AA = "Podpora: Preškolenie {PoškodeniePečene}→{Viera}.";
 const TIPER = "Konflikt: Preškolenie {Cigareta}→{Dlh}.";
+/** Traktorista od v11.18 (Michal 2026-11-09): Pecka s prevahou zanikla. */
+const TRAKTORISTA = "Posledná Pitka kola: Bez prevahy v jeho kraji {Dlh}.";
 
 const lezi = (card: CardInstance, playedBy: PlayerId, x: Partial<PlacedCard> = {}): PlacedCard => ({ card, playedBy, ...x });
 /** Bez lokality: strana 0 [A, B, C] je úsek C · B · A (C.pravá ↔ B.ľavá, B.pravá ↔ A.ľavá). */
@@ -110,15 +112,14 @@ describe("budúca sada: 8 zmenených Občanov (test/data/obcania-kategorie.json 
     expect(navyse("dievcina_na_vydaj")).toEqual([{ spustac: "Podpora", tag: null, akcie: ["Povera"] }]);
     expect(navyse("opatrovatelka")).toEqual([{ spustac: "Spoločník", tag: "Pamätník", akcie: ["Robota"] }]);
     expect(navyse("sofer")).toEqual([{ spustac: "Bitka", tag: null, akcie: ["Pecka", "Rana"], podmienka: "Ak si v tomto kole nedal NA EX" }]);
-    expect(navyse("traktoristka")).toEqual([
-      { spustac: "Bitka", tag: null, akcie: ["Pecka"], podmienka: "Ak máš v jeho kraji prevahu" },
-      { spustac: "Posledná Pitka kola", tag: null, akcie: ["Dlh"], podmienka: "Bez prevahy v jeho kraji" },
-    ]);
+    // Traktorista v11.18: zo zoznamu z 2026-11-08 ostal len Dlh bez prevahy.
+    expect(navyse("traktoristka")).toEqual([{ spustac: "Posledná Pitka kola", tag: null, akcie: ["Dlh"], podmienka: "Bez prevahy v jeho kraji" }]);
+    expect(efektyNavyse({ effectText: zoznam.karty.find((k) => k.id === "traktoristka")!.effect_text, tags: ["Občan"] })).toHaveLength(2);
   });
 
-  it("sada (cards.json) má texty 8 Občanov zo zoznamu a tých istých Školiteľov — Vedúcko od v11.18 Podpora", () => {
+  it("sada (cards.json) má texty 8 Občanov zo zoznamu a tých istých Školiteľov — Vedúcko od v11.18 Podpora, Traktorista bez Pecky", () => {
     for (const k of zoznam.karty) {
-      const text = k.id === "veducko" ? VEDUCKO_PODPORA : k.effect_text;
+      const text = k.id === "veducko" ? VEDUCKO_PODPORA : k.id === "traktoristka" ? TRAKTORISTA : k.effect_text;
       expect(defOf(dnesna, { defId: k.id }).effectText, k.id).toBe(text);
       expect(jeSkolitel(defOf(dnesna, { defId: k.id })), k.id).toBe(k.kategoria === "skolitel");
     }
@@ -472,7 +473,7 @@ describe("Traktorista: Posledná Pitka kola: Bez prevahy v jeho kraji {Dlh} — 
   const bezPrevahy = (t: CardInstance): GameState["strany"] => [[lezi(t, 0), lezi(inst("masiar"), 1), lezi(inst("vandal"), 1)], []];
   const dlhLog = (events: readonly Event[]) => events.filter((e) => e.type === "log" && /posledná Pitka kola, Hazard navyše: Dlh/.test(e.text)).length;
 
-  it("bez prevahy v jeho kraji dá na konci poslednej Pitky Dlh; s prevahou nie (vtedy Pecka v bitke)", () => {
+  it("bez prevahy v jeho kraji dá na konci poslednej Pitky Dlh; s prevahou nie (Pecka v bitke od v11.18 nie je)", () => {
     const t = inst("traktoristka");
     expect(dlhyPoslednejPitky(buduca, lineState(vPitke(bezPrevahy(t))))).toEqual([{ uid: t.uid, defId: "traktoristka", hrac: 0, dlhy: 1 }]);
     const bez = dohrajPitku(vPitke(bezPrevahy(t)));
@@ -482,14 +483,16 @@ describe("Traktorista: Posledná Pitka kola: Bez prevahy v jeho kraji {Dlh} — 
     expect(dlhyPoslednejPitky(buduca, lineState(s))).toEqual([]);
     const sPrev = dohrajPitku(s);
     expect(dlhLog(sPrev.events)).toBe(0);
-    expect(evaluateLine(buduca, lineState(sPrev.s)).cards.get(t2.uid)?.navyse?.map((e) => e.krat)).toEqual([1, 0]);
+    // V poslednej Pitke s prevahou pečať nesvieti a Pecka navyše nie je (v11.18).
+    expect(evaluateLine(buduca, lineState(s)).cards.get(t2.uid)?.navyse?.map((e) => e.krat)).toEqual([0]);
+    expect(evaluateLine(buduca, lineState(s)).sums[0].Pecka ?? 0).toBe(0);
   });
 
   it("v skoršej Pitke kola nič; pečať Posledná Pitka kola svieti len v poslednej; náhľad Dlhov s ním ráta", () => {
     const t = inst("traktoristka");
     const prva = vPitke(bezPrevahy(t), 2);
-    expect(evaluateLine(buduca, lineState(prva)).cards.get(t.uid)?.navyse?.[1]?.krat).toBe(0);
-    expect(evaluateLine(buduca, lineState(vPitke(bezPrevahy(t)))).cards.get(t.uid)?.navyse?.[1]?.krat).toBe(1);
+    expect(evaluateLine(buduca, lineState(prva)).cards.get(t.uid)?.navyse?.[0]?.krat).toBe(0);
+    expect(evaluateLine(buduca, lineState(vPitke(bezPrevahy(t)))).cards.get(t.uid)?.navyse?.[0]?.krat).toBe(1);
     // Náhľad Dlhov do bitky: o 1 viac, než keby Traktorista mal prevahu.
     const t2 = inst("traktoristka");
     const sPrev = vPitke([[lezi(t2, 0), lezi(inst("masiar"), 1)], []]);

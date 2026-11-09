@@ -3184,7 +3184,8 @@ export function sPrilozenou<T extends VerejnyStav & { readonly lokalitaOtocena: 
           return [a, jeho.includes("Chlap") ? { ...b, poBitkeK: a.playedBy } : b];
       }
     }
-    if (spustiSpoj(data, "Podpora", a, b) && jeho.includes("Chlap")) {
+    // Snúbenica stará sada: Podpora bez zápisu akcie navyše (od 2026-11-09 Podpora: Chlap {Cigareta}).
+    if (spustiSpoj(data, "Podpora", a, b) && jeho.includes("Chlap") && efektyNavyse(defOf(data, a.card)).length === 0) {
       if (a.card.defId === "snubenica" && maNaex(b, opponentOf(a.playedBy))) return [a, bezNaex(b, opponentOf(a.playedBy))];
     }
     return [a, b];
@@ -3340,8 +3341,9 @@ function podpora(s: MutState, data: GameData, nositel: DeepMutable<PlacedCard>, 
   if (pridajNavyse(data, "Podpora", nositel, druha, events) || preskolil) return;
   switch (def.id) {
     case "snubenica":
-      // Michal 2026-11-03: Snúbenica vráti súperovo NA EX z vlastného Chlapa.
-      if (!jeho.tags.includes("Chlap") || !maNaex(druha as PlacedCard, opp)) break;
+      // Michal 2026-11-03: Snúbenica vráti súperovo NA EX z vlastného Chlapa — len stará sada; od 2026-11-09
+      // „Podpora: Chlap {Cigareta}“ rieši pridajNavyse a pri inej karte sa nedeje nič.
+      if (efektyNavyse(def).length > 0 || !jeho.tags.includes("Chlap") || !maNaex(druha as PlacedCard, opp)) break;
       zlozNaex(s, druha, opp);
       events.push({ type: "log", text: `Podpora — Snúbenica hráča ${p + 1}: vracia NA EX hráča ${opp + 1} z karty ${jeho.name}; jeho poldeci sa vracia vypitý.` });
       break;

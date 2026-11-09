@@ -1,4 +1,4 @@
-# Ťahák — platné pravidlá NA EX! (v11.18 Vedúcko Podporou, v11.17 NA EX × Odpor a Posilnenie, Kapybara, Telefón, Krokodíl a hrany Náradia, v11.16 Vypiť len s limitom, pas bez ohľadu na ruku, Degustátorka hneď, odpoveď na NA EX za poldeci, Nástroj len pod svoje karty, Školiteľ aj Zviera, v11.15 Benzínka o 1 lacnejšie, v11.14 frakcie, Preškolenie a podloženie Nástrojov, v11.13 Lokality, v11.12 Reči na súperovom teplomere, zajatie a presvedčenie, identita kariet, Kostol na konci línie, každý Hazard je Dlh, 2026-11-09, Zrejúca; sada = cards.json v master)
+# Ťahák — platné pravidlá NA EX! (v11.18 Vedúcko Podporou, Snúbenica, Traktorista a Miňištrant, v11.17 NA EX × Odpor a Posilnenie, Kapybara, Telefón, Krokodíl a hrany Náradia, v11.16 Vypiť len s limitom, pas bez ohľadu na ruku, Degustátorka hneď, odpoveď na NA EX za poldeci, Nástroj len pod svoje karty, Školiteľ aj Zviera, v11.15 Benzínka o 1 lacnejšie, v11.14 frakcie, Preškolenie a podloženie Nástrojov, v11.13 Lokality, v11.12 Reči na súperovom teplomere, zajatie a presvedčenie, identita kariet, Kostol na konci línie, každý Hazard je Dlh, 2026-11-09, Zrejúca; sada = cards.json v master)
 
 Spoločný ťahák AI hráčov — playtester (Zrejúca) ho číta z master, protihráč na
 Vypálenej z vetvy `vypalena` (tam platí jej verzia pravidiel). Podrobne v `docs/PRAVIDLA.md` (zmeny v jeho úvode). Pri
@@ -84,7 +84,8 @@ rozpore s `docs/PRAVIDLA.md` platí `docs/PRAVIDLA.md` a rozpor zapíš do
   aktivujú (dostane ich hráč s prevahou). Kraje
   majú mená podľa lokality (Krčma: pri výčape / pri dverách).
   **Dvojčatá** — do prevahy sa rátajú za dvoch. **Kočovník** (Spoločník: Pamätník, 1 Pecka
-  navyše) — jeho akcie patria majiteľovi ako pri každej karte.
+  navyše) — jeho akcie patria majiteľovi ako pri každej karte. **Miňištrant** (Nepriateľ: Starešina, v11.18) — 1 Pecka
+  navyše, kým má súper v partii odkrytého Starešinu.
 - **Poradie (2026-10-20, v11.11):** cieľ kola vyberá **obranca** a natáča ho víťaz minulej hádky (obranca = víťaz
   poslednej bitky) a **berie zo šenku prvý (v9.2)**; **útočník** (porazený) berie zo šenku druhý a **vykladá
   prvý**. **Pitka naraz (2026-10-27):** v Pitke hráte **obaja súčasne** —
@@ -116,12 +117,12 @@ rozpore s `docs/PRAVIDLA.md` platí `docs/PRAVIDLA.md` a rozpor zapíš do
 - **Kšeft zanikol (frakcie, 2026-11-08).** **Akcie navyše:** karta s efektom „**Spoločník: Tag**“ má akcie
   z pečate (piktogramy dole v obrázku) navyše, kým máš v partii **inú** odkrytú kartu s tým tagom; „**Nepriateľ: Tag**“,
   kým ju má v partii súper — raz, aj pri viacerých takých kartách. „**Podpora**“ / „**Konflikt**“ ich pridá pri
-  každom stretnutí priložením s tvojou / súperovou kartou (s tagom, ak ho efekt uvádza, napr. „Podpora: Zahraničný“), do konca
+  každom stretnutí priložením s tvojou / súperovou kartou (s tagom, ak ho efekt uvádza — Snúbenica „Podpora: Chlap {Cigareta}“, v11.18), do konca
   kola (×2 pri dvoch susedoch). Konflikt na kartách tag nemá (2026-11-08): platí pri ktorejkoľvek súperovej karte.
   Akcia navyše je tvoja aktívna akcia mimo hrán: ráta sa ako tá istá akcia v jej kroku (Obmedzenie a Cigareta v každej
   Pitke, Rany v bitke, Robota pri exekúcii); **Posilnenie, Odpor, Forsáž, NA EX ani Silná žena ju nemenia**; Náradie
   v Dedičstve (Vidly, Valaška, Svätý text) a Preškolenie Školiteľa áno. „Bitka: podmienka {Rana}“ (Pijan, Svokra, Vymáhač,
-  Šofér, Traktorista, Pasca) je akcia navyše v bitke, toľkokrát, koľkokrát podmienka platí; „Posledná Pitka kola: … {Hazard}“
+  Šofér, Pasca) je akcia navyše v bitke, toľkokrát, koľkokrát podmienka platí; „Posledná Pitka kola: … {Hazard}“
   (Traktorista bez prevahy v jeho kraji, Výherný automat) dá na konci poslednej Pitky kola Dlh. „**Furt: {Cigareta}**“
   (Kapybara, v11.17) platí bez podmienky, kým karta leží. Skrytá Záverečná podmienku
   nesplní ani nedostane. V texte efektu sú akcie navyše zapísané ako {Povera}. **{Spálenie}** v pečati nie je akcia:
@@ -323,8 +324,8 @@ rozpore s `docs/PRAVIDLA.md` platí `docs/PRAVIDLA.md` a rozpor zapíš do
   poškodení a špakoch za bitku** (2026-10-28; Robota tesne pred ním), takže remíza a Herňa
   rátajú Dlhy pred exekúciou. Prehra nie je, na konci hry Dlhy nič. **Záhradkár** (Exekúcia, 2026-10-28):
   keď leží v línii v tvojej partii, exekúcia ťa v tomto kole obíde (žiadny Dlh ani špak); nespáli sa.
-  Vymáhač: za každé 2 tvoje priznané Dlhy +1 Rana; Traktorista: s prevahou v jeho kraji Pecka navyše (akcie navyše; Vidly a Valaška +1),
-  bez nej Dlh na konci poslednej Pitky kola (prevaha po otočení Záverečných).
+  Vymáhač: za každé 2 tvoje priznané Dlhy +1 Rana (akcia navyše; Vidly +1); Traktorista (v11.18 bez Pecky s prevahou):
+  bez prevahy v jeho kraji Dlh na konci poslednej Pitky kola (prevaha po otočení Záverečných).
 - **Karty v7 v bitke a po nej:** Pes — jeho aktívne akcie na spoji so súperovou kartou ×2 (platí aj podstrčený); Mäsiar —
   efekty Zvierat v jeho okolí neplatia (ich akcie platia; 2026-10-28); Krokodíl — na konci bitky sa spáli súperov Občan,
   s ktorým sa stretol (v11.17); Vidly (Dedičstvo) — každá tvoja Rana o 1 poškodenie viac, aj Rana navyše (Pijan, Svokra, Vymáhač, Pasca, frakcie); Puška (Dedičstvo, 2026-10-30) — tvoju prepojenú Petelicu, ktorú by zrušil Odpor či NA EX, ráta namiesto zrušenia za 2; Pasca

@@ -3328,3 +3328,21 @@ Staré znenie §16 Vedúcko (v11.14–v11.17):
 > | Vedúcko | Školiteľ — Furt: Preškolenie {Robota}→{Pecka} (Michal 2026-11-08, §6; do 2026-11-08 to isté slovami, v10.4): **Roboty kariet, ktoré s ním susedia** (obe hrany oboch susedov, aj súperových), sú pred spojmi **Pecky** majiteľa tej akcie (komu by patrila Robota) — Dlh nepália, dávajú 2 tuhé; Posilnenie aj Forsáž ich zdvoja ako Pecku, Fúrik ani špak za Robotu bez Dlhu sa na ne neuplatnia. **Hrana lokality nie je karta** — Robota lokality ostáva Robotou. Robotu, ktorú skôr preškolil Nástroj pod kartou či Podpora a Konflikt Školiteľa, nemení. Lícom dole (Záverečná) sa ráta ako ostatné Furt efekty akcií. Mení aj Roboty navyše susedov (§6); na karte suseda sa namiesto Roboty ukáže Pecka. |
 
 Staré znenie §6 Preškolenie Školiteľa (časť, v11.14–v11.17): „**Furt** — obaja susedia Školiteľa v línii (karty oboch hráčov), kým s ním susedia; karta sama ani hrana lokality nie; lícom dole ako ostatné Furt efekty akcií. **Podpora** — tvoja karta, s ktorou sa Školiteľ stretne priložením (oboma smermi), do konca kola, aj keď sa potom rozídu. **Konflikt** — súperova karta, s ktorou sa stretne priložením, do konca kola.“
+
+## v11.18 — Snúbenica, Traktorista, Miňištrant; kratšie texty Vandala a Degustátorky (Michal 2026-11-09, Zrejúca)
+
+Texty kariet v tvorcovi (rozpracovaný stav, nezverejnený); nové znenie: `docs/PRAVIDLA.md`, Zmeny v11.18 a §16.
+
+- Snúbenica: „Nepriateľ: Autorita {Pohoršenie}.“ → „Podpora: Chlap {Cigareta}.“
+- Traktorista: „Bitka: Ak máš v jeho kraji prevahu {Pecka}. Posledná Pitka kola: Bez prevahy v jeho kraji {Dlh}.“ → „Posledná Pitka kola: Bez prevahy v jeho kraji {Dlh}.“; ľavá strana Pecka + Pečeň → Rana + Pečeň.
+- Miňištrant: „Spoločník: Zahraničný {Pecka}.“ → „Nepriateľ: Starešina {Pecka}.“
+- Vandal: „Nástup: Otoč lokalitu o 180° — jej hrany si vymenia kraje.“ → „Nástup: Otoč lokalitu o 180°.“ (efekt sa nemení)
+- Degustátorka: „Nástup: Ak má súper viac plných poldeci ako ty, jeden mu vyžerie — otoč ho na vypitý.“ → „Nástup: Ak má súper viac plných poldeci ako ty, jeden mu vyžerie.“ (efekt sa nemení)
+
+Staré znenie §16 (v11.14–v11.17):
+
+> | Miňištrant | Spoločník: Zahraničný (frakcie): 1 Pecka navyše |
+> | Snúbenica | Nepriateľ: Autorita (frakcie): 1 Pohoršenie navyše |
+> | Traktorista | Bitka (id `traktoristka`): s prevahou v kraji, kde leží, **Pecka navyše** (akcia navyše, §6). Posledná Pitka kola (Michal 2026-11-08): bez prevahy v jeho kraji **Hazard navyše** — na konci poslednej Pitky kola dostaneš Dlh (ako Výherný automat; Obecný úrad ho zdvojí). Prevaha sa ráta v tej chvíli, po otočení Záverečných; vo finále (bez krajov) prevahu nemá nikto. Do 2026-11-08 Dlh na začiatku bitky. |
+
+Staré znenie §6 (časť, v11.14–v11.17): „pri spúšťači **Bitka** s podmienkou slovami (Pijan, Svokra, Vymáhač, Šofér, Traktorista, Pasca v Dedičstve)“; §16 Občania v troch kategóriách: „Podpora a Konflikt sú bez tagu; tag ostáva len pri Spoločníkovi a Nepriateľovi.“

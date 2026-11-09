@@ -88,7 +88,7 @@ export const REGISTER: Readonly<Record<string, EfektStatus>> = {
   lesna_cesta: "impl", // Bitka (v11.13): 2 tuhé za každé svoje Zviera v línii
   liberal: "impl", // Furt (v10.3): s rovnako ženami a chlapmi v partii majiteľa sú jeho aktívne akcie posilnené (partia.ts kartoveEfekty)
   milujuca_manzelka: "impl", // Pitka (v7, M2): tvoje poškodenie pečene v Pitke −1 (prirastkyPitky)
-  ministrant: "impl", // Spoločník: Zahraničný {Pecka} (navyse.ts); starý Nástup — Viera ako Pecka pri Konflikte — len stará sada (partia.ts)
+  ministrant: "impl", // Nepriateľ: Starešina {Pecka} (2026-11-09, navyse.ts; predtým Spoločník: Zahraničný {Pecka}); starý Nástup — Viera ako Pecka pri Konflikte — len stará sada (partia.ts)
   nealko: "impl", // Dedičstvo: tvoj prah Cirhózy je o 2 vyšší (prahCirhozyBonus)
   niekoho_stryna: "impl", // Konflikt: {Pohoršenie} pri ktorejkoľvek súperovej karte (navyse.ts; 2026-11-08 bez tagu, predtým Závislý); stará Pitka — bez NA EX +1 pečeň — len stará sada (prirastkyPitky)
   noviny: "impl", // Dedičstvo: Hádka (v11.5): víťaz hádky — súper odhodí 1 náhodnú kartu z ruky (engine novinyPoHadke)
@@ -140,7 +140,7 @@ export const REGISTER: Readonly<Record<string, EfektStatus>> = {
   anonymny_alkoholik: "impl", // Podpora: Preškolenie {PoškodeniePečene}→{Viera} (Školiteľ, 2026-11-08; preskolenie.ts, engine podpora)
   // Roadmapa #71 (2026-10-23).
   sofer: "impl", // Bitka: bez NA EX v kole {Pecka} {Rana} navyše (navyse.ts, partia.ts kratSlovami; 2026-11-08 bez cigarety); stará sada bez zápisu: Pecka (bitkaMody)
-  snubenica: "impl", // Nepriateľ: Autorita {Pohoršenie} (navyse.ts); stará Podpora — z vlastného Chlapa vráti súperovo NA EX — len stará sada
+  snubenica: "impl", // Podpora: Chlap {Cigareta} (2026-11-09, navyse.ts); predtým Nepriateľ: Autorita {Pohoršenie}; Podpora bez zápisu — z vlastného Chlapa vráti súperovo NA EX — len stará sada (engine podpora)
   // Nové lokality (Michal 2026-10-20, docs/playtesty/navrh-lokality.html).
   most: "impl", // Zhromaždenie: každý vykladá len na koniec línie po svojej ľavici (lenVlastnaStrana)
   cintorin: "impl", // Prehra (v11.13): porazený si smie vziať do ruky 1 kartu zo svojho odhadzovacieho balíčka (krok bitky cintorin)
@@ -157,7 +157,7 @@ export const REGISTER: Readonly<Record<string, EfektStatus>> = {
   kapybara: "impl", // Školiteľ (2026-11-09): Podpora aj Konflikt Preškolenie {Viera}→{Cigareta} (preskolenie.ts) a Furt: {Cigareta} (navyse.ts); starý Nástup — súperove reči o stupeň nižšie — zanikol
   kon: "impl", // Furt (Náradie 2026-11-08): kým leží, Nástroj smie aj pod Zviera (podlozenie.ts); v11.5 jeho Roboty pália o 1 Dlh viac (engine robotyKona)
   kohut: "impl", // Pitka (v7): posledné slovo pri odpovediach na NA EX má majiteľ (odhalNaex)
-  degustatorka: "impl", // Nástup: súperovi s viac plnými poldeci otočí jeden na vypitý
+  degustatorka: "impl", // Nástup: súperovi s viac plnými poldeci vyžerie jeden — otočí sa na vypitý
   klebetnica: "impl", // Pitka (Bzdocha, Michal 2026-10-27): majiteľ hrá Pitku po súperovi a vidí jeho NA EX (zacniPitku, viewFor)
   dohadzovacka: "impl", // Nástup (Michal 2026-10-28): najvzdialenejší Občan opačného pohlavia ako jej sused z druhej strany sa presunie za ňu (presunDohadzovackou)
   vandal: "impl", // Nástup: otoč lokalitu o 180°
@@ -168,7 +168,7 @@ export const REGISTER: Readonly<Record<string, EfektStatus>> = {
   veducko: "impl", // Podpora: Preškolenie {Robota}→{Pecka} — len tvoja karta, s ktorou sa stretne priložením, do konca kola (Školiteľ; 2026-11-09 namiesto Furt na oboch susedov; engine podpora)
   masiar: "impl", // Furt (Michal 2026-10-28): efekty Zvierat v jeho okolí neplatia (partia.ts zvieratAUmlcane)
   kulturista: "impl", // Sypač, Podpora: Preškolenie {Rana}→{Pecka} pri ktorejkoľvek tvojej karte (Školiteľ, 2026-11-08; engine podpora)
-  traktoristka: "impl", // Bitka: s prevahou v jeho kraji {Pecka}; Posledná Pitka kola: bez nej {Dlh} (2026-11-08, engine pokracujPoPitke); stará sada bez zápisu: Pecka (bitkaMody)
+  traktoristka: "impl", // Posledná Pitka kola: bez prevahy v jeho kraji {Dlh} (2026-11-08, engine pokracujPoPitke); Pecka s prevahou zanikla 2026-11-09 — v starých sadách so spúšťačom Bitka (navyše alebo bez zápisu v bitkaMody)
   vymahac: "impl", // Bitka: za každé 2 priznané Dlhy Rana navyše
   sklad: "impl", // Zhromaždenie (frakcie): Nástroj zo šenku rovno do Dedičstva za cenu Dedičstva (zoSkladu)
   polovnicka_chata: "impl", // Furt: tuhé z hrán ×2 (partia.ts)
@@ -574,8 +574,9 @@ export function bitkaMody(data: GameData, state: VerejnyStav, p: PlayerId): Bitk
   // ležia na kartách do kroku 5 bitky, takže sa rátajú zo stola ako pri Svokre.
   const naexMoje = [...state.strany[0], ...state.strany[1]].reduce((n, pl) => n + (pl.naexBy === p ? 1 : 0) + (pl.naexBy2 === p ? 1 : 0), 0);
   pridaj("pijan", pocetKariet("pijan") * naexMoje);
-  // traktoristka (v7, Na leasing): s prevahou v jej kraji Pecka navyše; Dlh bez nej dáva len zápis „Posledná Pitka kola“.
-  pridaj("traktoristka", 2 * traktoristkySPrevahou(data, state, p));
+  // traktoristka (v7, Na leasing): s prevahou v jej kraji Pecka navyše — len starý text so spúšťačom Bitka; od
+  // 2026-11-09 karta Pecku nemá a Dlh bez prevahy dáva len zápis „Posledná Pitka kola“.
+  if (data.cards.get("traktoristka")?.triggers.includes("Bitka") === true) pridaj("traktoristka", 2 * traktoristkySPrevahou(data, state, p));
   // vymahac (v7): za každé 2 priznané Dlhy majiteľa 1 Rana navyše.
   pridaj("vymahac", pocetKariet("vymahac") * Math.floor(state.hraci[p].dlhy / 2));
   // pasca (Dedičstvo: Bitka, v7): súper v tomto kole priložil kartu k tvojej → Rana navyše

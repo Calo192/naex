@@ -592,9 +592,9 @@
     "Závislý",
     "Chlap"
    ],
-   "effect_text": "Spoločník: Zahraničný {Pecka}.",
+   "effect_text": "Nepriateľ: Starešina {Pecka}.",
    "triggers": [
-    "Spoločník"
+    "Nepriateľ"
    ],
    "left": {
     "blocked": [
@@ -2670,9 +2670,9 @@
     "Žena",
     "Influencer"
    ],
-   "effect_text": "Nepriateľ: Autorita {Pohoršenie}.",
+   "effect_text": "Podpora: Chlap {Cigareta}.",
    "triggers": [
-    "Nepriateľ"
+    "Podpora"
    ],
    "left": {
     "blocked": [
@@ -2869,7 +2869,7 @@
     "Kriminál",
     "Žena"
    ],
-   "effect_text": "Nástup: Ak má súper viac plných poldeci ako ty, jeden mu vyžerie — otoč ho na vypitý.",
+   "effect_text": "Nástup: Ak má súper viac plných poldeci ako ty, jeden mu vyžerie.",
    "triggers": [
     "Nástup"
    ],
@@ -2994,7 +2994,7 @@
     "Kriminál",
     "Chlap"
    ],
-   "effect_text": "Nástup: Otoč lokalitu o 180° — jej hrany si vymenia kraje.",
+   "effect_text": "Nástup: Otoč lokalitu o 180°.",
    "triggers": [
     "Nástup"
    ],
@@ -3158,18 +3158,16 @@
     "Autorita",
     "Chlap"
    ],
-   "effect_text": "Bitka: Ak máš v jeho kraji prevahu {Pecka}. Posledná Pitka kola: Bez prevahy v jeho kraji {Dlh}.",
-   "triggers": [
-    "Bitka"
-   ],
+   "effect_text": "Posledná Pitka kola: Bez prevahy v jeho kraji {Dlh}.",
+   "triggers": [],
    "left": {
     "blocked": [
      0,
      1
     ],
     "actions": {
-     "Pecka": 1,
-     "PoškodeniePečene": 1
+     "PoškodeniePečene": 1,
+     "Rana": 1
     }
    },
    "right": {

@@ -87,14 +87,15 @@ describe("finále na pinnacle lokalite sa hrá ako bežné kolo (Michal 2026-10-
     expect(evaluateLine(data, lineState(v))).toEqual(evaluateLine(data, lineState({ ...v, ciel: { typ: "lokalita", lokalita: v.ciel!.lokalita! } })));
   });
 
-  it("náhľad vyloženia ráta tuhé navyše z lokality aj vo finále (Traktoristka s prevahou pri pinnacle)", () => {
+  // Traktorista Pecku s prevahou nemá od 2026-11-09 — akciu navyše v bitke tu dá Šofér bez NA EX.
+  it("náhľad vyloženia ráta tuhé navyše z lokality aj vo finále (Šofér pri pinnacle)", () => {
     const s = vPitkeFinale("polovnicka_chata", [[], []]);
-    const trakt = inst("traktoristka");
-    const finale = nahladVylozenia(data, lineState(s), 0, trakt, "vlastna");
-    const bezne = nahladVylozenia(data, lineState({ ...s, ciel: { typ: "lokalita", lokalita: s.ciel!.lokalita! } }), 0, trakt, "vlastna");
-    // Skryté akcie (Michal 2026-11-08): Pecka navyše s prevahou je v súčtoch (zmeny), nie v tuhých navyše.
-    const zdrojePecky = evaluateLine(data, { ...lineState(s), strany: [[lezi(trakt, 0)], []] }).zdroje[0].Pecka ?? [];
-    const navyse = zdrojePecky.filter((z) => z.uid === trakt.uid && z.dovody.some((d) => d.startsWith("akcia navyše")));
+    const sofer = inst("sofer");
+    const finale = nahladVylozenia(data, lineState(s), 0, sofer, "vlastna");
+    const bezne = nahladVylozenia(data, lineState({ ...s, ciel: { typ: "lokalita", lokalita: s.ciel!.lokalita! } }), 0, sofer, "vlastna");
+    // Skryté akcie (Michal 2026-11-08): Pecka navyše je v súčtoch (zmeny), nie v tuhých navyše.
+    const zdrojePecky = evaluateLine(data, { ...lineState(s), strany: [[lezi(sofer, 0)], []] }).zdroje[0].Pecka ?? [];
+    const navyse = zdrojePecky.filter((z) => z.uid === sofer.uid && z.dovody.some((d) => d.startsWith("akcia navyše")));
     expect(navyse.reduce((n, z) => n + z.hodnota, 0)).toBe(1);
     expect(finale.zmeny[0].Pecka).toBe(zdrojePecky.reduce((n, z) => n + z.hodnota, 0));
     expect(finale.tuhe[0]).toBe(0);

@@ -1620,10 +1620,13 @@
     {
       "id": "16.karta.snubenica",
       "paragraf": "16. Výklad kariet",
-      "pravidlo": "Snúbenica: vyložená vedľa karty s NA EX ju vráti jej majiteľovi do ruky a zaujme jej miesto; poldeci sa vypije tomu, kto NA EX dal.",
-      "stav": "na-overenie",
-      "testy": [],
-      "poznamka": "Efekty v7 (2026-10-27, plan.md 14) zmenili kartu alebo pravidlo — testy starého znenia odpojené; nové v packages/core/test/v7-efekty.test.ts. Frakcie (Michal 2026-11-08): Kšeft zanikol, 17 kariet a 3 lokality majú nové efekty — testy v packages/core/test/frakcie.test.ts; rozhodca prejde znova."
+      "pravidlo": "Snúbenica (v11.18): Podpora: Chlap {Cigareta} — za každé stretnutie priložením s tvojím Chlapom 1 Cigareta navyše do konca kola; súperovo NA EX z Chlapa už nevracia.",
+      "stav": "pokryte",
+      "testy": [
+        "packages/core/test/karty-v11-18.test.ts › Snúbenica: Podpora: Chlap {Cigareta} › pri tvojom Chlapovi Cigareta navyše do konca kola; pri tvojej Žene ani pri súperovom Chlapovi nič",
+        "packages/core/test/karty-v11-18.test.ts › Snúbenica: Podpora: Chlap {Cigareta} › súperovo NA EX na tvojom Chlapovi ostáva — vrátenie NA EX zaniklo (aj v náhľade sPrilozenou)"
+      ],
+      "poznamka": "Efekty v7 (2026-10-27, plan.md 14) zmenili kartu alebo pravidlo — testy starého znenia odpojené; nové v packages/core/test/v7-efekty.test.ts. Frakcie (Michal 2026-11-08): Kšeft zanikol, 17 kariet a 3 lokality majú nové efekty — testy v packages/core/test/frakcie.test.ts; rozhodca prejde znova. v11.18 (Michal 2026-11-09): Podpora: Chlap {Cigareta}."
     },
     {
       "id": "16.karta.krcmarka",
@@ -2378,11 +2381,21 @@
     {
       "id": "16.karta.traktorista",
       "paragraf": "16. Výklad kariet",
-      "pravidlo": "Traktorista: s prevahou v jeho kraji Pecka navyše; Posledná Pitka kola: bez prevahy Hazard navyše — Dlh na konci poslednej Pitky kola (prevaha po otočení Záverečných).",
+      "pravidlo": "Traktorista (v11.18): Posledná Pitka kola: bez prevahy v jeho kraji Hazard navyše — Dlh na konci poslednej Pitky kola (prevaha po otočení Záverečných); Pecka navyše s prevahou zanikla, ľavá strana Rana namiesto Pecky.",
       "stav": "pokryte",
       "testy": [
-        "packages/core/test/skolitelia.test.ts › Traktorista: Posledná Pitka kola: Bez prevahy v jeho kraji {Dlh} — prevaha po otočení Záverečných › bez prevahy v jeho kraji dá na konci poslednej Pitky Dlh; s prevahou nie (vtedy Pecka v bitke)",
-        "packages/core/test/skolitelia.test.ts › Traktorista: Posledná Pitka kola: Bez prevahy v jeho kraji {Dlh} — prevaha po otočení Záverečných › v skoršej Pitke kola nič; pečať Posledná Pitka kola svieti len v poslednej; náhľad Dlhov s ním ráta"
+        "packages/core/test/skolitelia.test.ts › Traktorista: Posledná Pitka kola: Bez prevahy v jeho kraji {Dlh} — prevaha po otočení Záverečných › bez prevahy v jeho kraji dá na konci poslednej Pitky Dlh; s prevahou nie (Pecka v bitke od v11.18 nie je)",
+        "packages/core/test/skolitelia.test.ts › Traktorista: Posledná Pitka kola: Bez prevahy v jeho kraji {Dlh} — prevaha po otočení Záverečných › v skoršej Pitke kola nič; pečať Posledná Pitka kola svieti len v poslednej; náhľad Dlhov s ním ráta",
+        "packages/core/test/karty-v11-18.test.ts › Traktorista bez Pecky s prevahou › ľavá strana Rana a Pečeň, Pecka nikde; s prevahou v jeho kraji ani Pecka navyše, ani tuhé navyše"
+      ]
+    },
+    {
+      "id": "16.karta.ministrant",
+      "paragraf": "16. Výklad kariet",
+      "pravidlo": "Miňištrant (v11.18): Nepriateľ: Starešina — 1 Pecka navyše, kým má súper v partii odkrytého Starešinu; vlastný Starešina ani skrytá Záverečná podmienku nesplní.",
+      "stav": "pokryte",
+      "testy": [
+        "packages/core/test/karty-v11-18.test.ts › Miňištrant: Nepriateľ: Starešina {Pecka} › Pecka navyše, keď v súperovej partii leží odkrytý Starešina; vlastný Starešina ani súperov Občan nie"
       ]
     },
     {

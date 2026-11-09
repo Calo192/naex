@@ -3,7 +3,7 @@
 // kódom (zmena textu nezmení správanie — treba upraviť aj jadro).
 
 import type { Tag } from "@naex/core";
-import { ALL_TRIGGERS, PODMIENKY_SLOVAMI, REGISTER, chybyHran, rozborNavyse, rozborPreskoleniKarty, textBezHran } from "@naex/core";
+import { ALL_TRIGGERS, PODMIENKY_SLOVAMI, REGISTER, SPUSTACE_SLOVAMI, chybyHran, rozborNavyse, rozborPreskoleniKarty, textBezHran } from "@naex/core";
 import type { AkciaDef, KartaNavrh, KlucoveSlovo } from "./typy.ts";
 import { sPredponouVazna } from "./text.ts";
 
@@ -69,8 +69,10 @@ export function kontrolaTextov(karty: readonly KartaNavrh[], podklady: PodkladyT
     // Hrany Nástroja („Hore: {Rana}→{Pecka}. Dole: Vzbura.“, Náradie 2026-11-08) nie sú spúšťače — číta ich jadro.
     for (const ch of chybyHran({ effectText: t, tags: k.tagy as readonly Tag[] })) problem("chyba", ch);
     const bezHran = textBezHran(t);
+    // „Posledná Pitka kola:“ (Traktorista od v11.18) je spúšťač akcie navyše z viacerých slov.
+    const slovami = SPUSTACE_SLOVAMI.some((s) => bezHran.trimStart().startsWith(`${s}:`));
     const prvy = /^\s*([\p{L}]+):/u.exec(bezHran);
-    if (prvy === null && bezHran !== "") problem("chyba", "Text nezačína spúšťačom v tvare „Spúšťač:“ (Bitka:, Furt:, Nástup:…).");
+    if (prvy === null && !slovami && bezHran !== "") problem("chyba", "Text nezačína spúšťačom v tvare „Spúšťač:“ (Bitka:, Furt:, Nástup:…).");
     for (const m of bezHran.matchAll(/(?:^|[.!?]\s*)([\p{Lu}][\p{L}]+):/gu)) {
       const sp = m[1] ?? "";
       if (!(ALL_TRIGGERS as readonly string[]).includes(sp)) problem("chyba", `Spúšťač „${sp}:“ hra nepozná (${ALL_TRIGGERS.join(", ")}).`);
