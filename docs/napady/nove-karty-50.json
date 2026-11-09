@@ -1,0 +1,2346 @@
+{
+ "source": "Návrh 50 nových kariet, 2026-11-09, pravidlá v11.18, nad sadou master 75d9ba23. Neschválené — čaká na Michalove verdikty (docs/napady/nove-karty-50.html).",
+ "cards": [
+  {
+   "n": 1,
+   "id": "aktivny_uchadzac",
+   "name": "Aktívny uchádzač o zamestnanie",
+   "type": "Občan",
+   "tags": [
+    "Občan",
+    "Závislý",
+    "Chlap"
+   ],
+   "prva_vlna": true,
+   "effect_text": "Pitka: Ak nemá aktívnu žiadnu akciu, dostaneš 2 cigarety.",
+   "kategoria": "Textový efekt",
+   "novy_spustac": null,
+   "left": {
+    "blocked": [],
+    "actions": {
+     "Odpor": 1,
+     "Cigareta": 1,
+     "Poldeci": 1
+    },
+    "allowed": {
+     "0": [
+      "Cigareta",
+      "Poldeci"
+     ],
+     "1": [
+      "Odpor"
+     ],
+     "2": [
+      "Cigareta",
+      "Poldeci"
+     ],
+     "3": [
+      "Cigareta",
+      "Poldeci"
+     ]
+    }
+   },
+   "right": {
+    "blocked": [
+     0,
+     1,
+     2,
+     3
+    ],
+    "actions": {}
+   },
+   "permutations": 6,
+   "power_level": {
+    "akcie": 2.5,
+    "efekt": 2,
+    "spolu": 4.5
+   },
+   "satira": "Prácu hľadá aktívne od roku 1998. Zatiaľ sa jej úspešne vyhýba.",
+   "medzera": "Karta bez spoja je dnes takmer vždy len strata. Žiadna karta nechce ostať sama a súper nemá dôvod cudziu kartu „zamestnať“."
+  },
+  {
+   "n": 2,
+   "id": "vitany_host",
+   "name": "Vítaný hosť",
+   "type": "Občan",
+   "tags": [
+    "Občan",
+    "Závislý",
+    "Chlap"
+   ],
+   "prva_vlna": false,
+   "effect_text": "Odpoveď: Nestojí ťa poldeci.",
+   "kategoria": "Textový efekt",
+   "novy_spustac": "Odpoveď",
+   "left": {
+    "blocked": [
+     3
+    ],
+    "actions": {
+     "PoškodeniePečene": 1,
+     "Poldeci": 1
+    },
+    "allowed": {
+     "0": [
+      "Poldeci"
+     ],
+     "1": [
+      "PoškodeniePečene"
+     ],
+     "2": [
+      "Poldeci"
+     ]
+    }
+   },
+   "right": {
+    "blocked": [
+     0
+    ],
+    "actions": {
+     "Obmedzenie": 1,
+     "Poldeci": 1,
+     "Cigareta": 1
+    },
+    "allowed": {
+     "1": [
+      "Poldeci",
+      "Cigareta"
+     ],
+     "2": [
+      "Obmedzenie"
+     ],
+     "3": [
+      "Poldeci",
+      "Cigareta"
+     ]
+    }
+   },
+   "permutations": 4,
+   "power_level": {
+    "akcie": 1.5,
+    "efekt": 1,
+    "spolu": 2.5
+   },
+   "satira": "Nikto ho nevolal. Kde sa otvára fľaša, tam je — a je tam o päť minút skôr než ty.",
+   "medzera": "Odpoveď na NA EX stojí od v11.16 plný poldeci, pečeň a nerest. Kto je nasucho, len sa pozerá. Karta na odpovede v sade nie je (Kohút vypadol)."
+  },
+  {
+   "n": 3,
+   "id": "samostatny_mladenec",
+   "name": "Samostatný mládenec",
+   "type": "Občan",
+   "tags": [
+    "Občan",
+    "Závislý",
+    "Chlap"
+   ],
+   "prva_vlna": true,
+   "effect_text": "Zhromaždenie: Ak ho priložíš k svojej Žene, nemíňa limit vykladania.",
+   "kategoria": "Textový efekt",
+   "novy_spustac": null,
+   "left": {
+    "blocked": [
+     2,
+     3
+    ],
+    "actions": {
+     "Pakt": 1,
+     "PoškodeniePečene": 1
+    },
+    "allowed": {
+     "0": [
+      "Pakt"
+     ],
+     "1": [
+      "PoškodeniePečene"
+     ]
+    }
+   },
+   "right": {
+    "blocked": [
+     0
+    ],
+    "actions": {
+     "Poldeci": 1,
+     "Cigareta": 1
+    }
+   },
+   "permutations": 6,
+   "power_level": {
+    "akcie": 1,
+    "efekt": 2,
+    "spolu": 3
+   },
+   "satira": "Štyridsaťdva rokov, vlastná izba, vlastná mama. Tepláky mu dnes vyžehlila tiež ona.",
+   "medzera": "Limit (plné poldeci + 1) je jediná brzda vykladania. Kartu mimo limitu pozná len Družstvo (karty s Robotou)."
+  },
+  {
+   "n": 4,
+   "id": "predbiehacka",
+   "name": "Predbiehačka",
+   "type": "Občan",
+   "tags": [
+    "Občan",
+    "Pamätník",
+    "Žena"
+   ],
+   "prva_vlna": true,
+   "effect_text": "Nástup: Vymeň si miesto so susednou kartou.",
+   "kategoria": "Textový efekt",
+   "novy_spustac": null,
+   "left": {
+    "blocked": [
+     3
+    ],
+    "actions": {
+     "Odpor": 1,
+     "Viera": 1
+    },
+    "allowed": {
+     "0": [
+      "Viera"
+     ],
+     "1": [
+      "Odpor"
+     ],
+     "2": [
+      "Viera"
+     ]
+    }
+   },
+   "right": {
+    "blocked": [
+     0
+    ],
+    "actions": {
+     "PoškodeniePečene": 1,
+     "Rana": 1
+    },
+    "allowed": {
+     "1": [
+      "PoškodeniePečene"
+     ],
+     "2": [
+      "Rana"
+     ],
+     "3": [
+      "Rana"
+     ]
+    }
+   },
+   "permutations": 4,
+   "power_level": {
+    "akcie": 2,
+    "efekt": 2,
+    "spolu": 4
+   },
+   "satira": "„Ja sa len niečo spýtam.“ Pýta sa tak štyridsať rokov a ešte nikdy nestála na konci.",
+   "medzera": "Poradie v línii sa po vyložení nemení (kartu presunie len Dohadzovačka). Kto leží hneď pri lokalite, určuje aktívne akcie hrany aj remízu v prevahe."
+  },
+  {
+   "n": 5,
+   "id": "verny_zakaznik",
+   "name": "Verný zákazník",
+   "type": "Občan",
+   "tags": [
+    "Občan",
+    "Pamätník",
+    "Chlap"
+   ],
+   "prva_vlna": true,
+   "effect_text": "Furt: Kým leží hneď pri lokalite, máš v jeho kraji prevahu ty.",
+   "kategoria": "Textový efekt",
+   "novy_spustac": null,
+   "left": {
+    "blocked": [
+     0,
+     3
+    ],
+    "actions": {
+     "Poldeci": 1,
+     "Cigareta": 1
+    }
+   },
+   "right": {
+    "blocked": [
+     0
+    ],
+    "actions": {
+     "Dlh": 1,
+     "Pecka": 1
+    },
+    "allowed": {
+     "1": [
+      "Dlh"
+     ],
+     "2": [
+      "Pecka"
+     ],
+     "3": [
+      "Pecka"
+     ]
+    }
+   },
+   "permutations": 4,
+   "power_level": {
+    "akcie": 1.5,
+    "efekt": 2,
+    "spolu": 3.5
+   },
+   "satira": "Na tej istej stoličke sedí od roku 1987. Stoličku už dvakrát vymenili. Jeho nie.",
+   "medzera": "Prevahu rozhoduje len počet kariet. Miesto pri lokalite má váhu iba pri remíze."
+  },
+  {
+   "n": 6,
+   "id": "odchadzajuci_host",
+   "name": "Odchádzajúci hosť",
+   "type": "Občan",
+   "tags": [
+    "Občan",
+    "Závislý",
+    "Chlap"
+   ],
+   "prva_vlna": false,
+   "effect_text": "Furt: Pitiek v tomto kole je o 1 viac.",
+   "kategoria": "Textový efekt",
+   "novy_spustac": null,
+   "left": {
+    "blocked": [
+     3
+    ],
+    "actions": {
+     "PoškodeniePečene": 1,
+     "Poldeci": 1
+    },
+    "allowed": {
+     "0": [
+      "Poldeci"
+     ],
+     "1": [
+      "PoškodeniePečene"
+     ],
+     "2": [
+      "Poldeci"
+     ]
+    }
+   },
+   "right": {
+    "blocked": [
+     0
+    ],
+    "actions": {
+     "Posilnenie": 1,
+     "Povera": 1
+    },
+    "allowed": {
+     "1": [
+      "Povera"
+     ],
+     "2": [
+      "Posilnenie"
+     ],
+     "3": [
+      "Povera"
+     ]
+    }
+   },
+   "permutations": 4,
+   "power_level": {
+    "akcie": 1.5,
+    "efekt": 1.5,
+    "spolu": 3
+   },
+   "satira": "Odchádza od ôsmej. Je pol tretej a práve objednáva „poslednú“.",
+   "medzera": "Počet Pitiek určuje len lokalita a spoje s ňou. Kolo sa kartou nedá natiahnuť."
+  },
+  {
+   "n": 7,
+   "id": "zodpovedna_matka",
+   "name": "Zodpovedná matka",
+   "type": "Občan",
+   "tags": [
+    "Občan",
+    "Influencer",
+    "Žena"
+   ],
+   "prva_vlna": false,
+   "effect_text": "Furt: Na ňu ani na susedné karty sa nedá dať NA EX.",
+   "kategoria": "Textový efekt",
+   "novy_spustac": null,
+   "left": {
+    "blocked": [
+     0
+    ],
+    "actions": {
+     "Odpor": 1,
+     "Cigareta": 1
+    },
+    "allowed": {
+     "1": [
+      "Odpor"
+     ],
+     "2": [
+      "Cigareta"
+     ],
+     "3": [
+      "Cigareta"
+     ]
+    }
+   },
+   "right": {
+    "blocked": [
+     0
+    ],
+    "actions": {
+     "Dlh": 1,
+     "Obmedzenie": 1,
+     "Cigareta": 1
+    },
+    "allowed": {
+     "1": [
+      "Dlh"
+     ],
+     "2": [
+      "Obmedzenie",
+      "Cigareta"
+     ],
+     "3": [
+      "Obmedzenie",
+      "Cigareta"
+     ]
+    }
+   },
+   "permutations": 4,
+   "power_level": {
+    "akcie": 2,
+    "efekt": 1.5,
+    "spolu": 3.5
+   },
+   "satira": "Pred deťmi sa u nej nepije. Deti sú od Vianoc u babky.",
+   "medzera": "Proti NA EX sa bránia len jednotlivé karty a Nástroje (Veterán, Zapaľovač, Puška). Chrániť sa nedá kus línie."
+  },
+  {
+   "n": 8,
+   "id": "suseda_za_zaclonou",
+   "name": "Suseda za záclonou",
+   "type": "Občan",
+   "tags": [
+    "Občan",
+    "Pamätník",
+    "Žena"
+   ],
+   "prva_vlna": false,
+   "effect_text": "Nástup: Pozri si súperovu ruku.",
+   "kategoria": "Textový efekt",
+   "novy_spustac": null,
+   "left": {
+    "blocked": [
+     0,
+     3
+    ],
+    "actions": {
+     "Vízia": 1,
+     "Povera": 1
+    }
+   },
+   "right": {
+    "blocked": [
+     0
+    ],
+    "actions": {
+     "PoškodeniePečene": 1,
+     "Obmedzenie": 1
+    },
+    "allowed": {
+     "1": [
+      "PoškodeniePečene"
+     ],
+     "2": [
+      "Obmedzenie"
+     ],
+     "3": [
+      "Obmedzenie"
+     ]
+    }
+   },
+   "permutations": 4,
+   "power_level": {
+    "akcie": 2,
+    "efekt": 1,
+    "spolu": 3
+   },
+   "satira": "Zvedavá nie je. Len náhodou stojí pri okne od šiestej rána.",
+   "medzera": "Súperova ruka je čierna skrinka. Bzdocha vidí len NA EX."
+  },
+  {
+   "n": 9,
+   "id": "doveryhodny_clovek",
+   "name": "Dôveryhodný človek",
+   "type": "Občan",
+   "tags": [
+    "Občan",
+    "Influencer",
+    "Chlap"
+   ],
+   "prva_vlna": false,
+   "effect_text": "Konflikt: Dober si 1 kartu.",
+   "kategoria": "Textový efekt",
+   "novy_spustac": null,
+   "left": {
+    "blocked": [
+     1,
+     2
+    ],
+    "actions": {
+     "Pakt": 1,
+     "Cigareta": 1
+    }
+   },
+   "right": {
+    "blocked": [
+     0
+    ],
+    "actions": {
+     "Dlh": 1,
+     "Povera": 1,
+     "Obmedzenie": 1
+    },
+    "allowed": {
+     "1": [
+      "Dlh"
+     ],
+     "2": [
+      "Povera",
+      "Obmedzenie"
+     ],
+     "3": [
+      "Povera",
+      "Obmedzenie"
+     ]
+    }
+   },
+   "permutations": 4,
+   "power_level": {
+    "akcie": 2,
+    "efekt": 2,
+    "spolu": 4
+   },
+   "satira": "Čo mu zveríš, ostane medzi vami. A medzi ním a celou krčmou.",
+   "medzera": "Karty navyše dnes dáva šenok, fajčenie, Vízia a Podpora vlastných kariet. Nič ich nedáva za to, že ideš do súpera."
+  },
+  {
+   "n": 10,
+   "id": "minimalista",
+   "name": "Minimalista",
+   "type": "Občan",
+   "tags": [
+    "Občan",
+    "Influencer",
+    "Chlap"
+   ],
+   "prva_vlna": false,
+   "effect_text": "Bitka: Ak máš prázdnu ruku {Petelica}.",
+   "kategoria": "Efekt s vedľajšou akciou",
+   "novy_spustac": null,
+   "left": {
+    "blocked": [
+     0,
+     3
+    ],
+    "actions": {
+     "Viera": 1,
+     "Povera": 1
+    }
+   },
+   "right": {
+    "blocked": [
+     0,
+     3
+    ],
+    "actions": {
+     "Poldeci": 1
+    }
+   },
+   "permutations": 4,
+   "power_level": {
+    "akcie": 3,
+    "efekt": 1.5,
+    "spolu": 4.5
+   },
+   "satira": "Nevlastní nič a je šťastný. Exekútor tomu hovorí úspešne ukončené konanie.",
+   "medzera": "Ruka nemá limit a držať karty nič nestojí. Žiadna karta neodmení toho, kto zahrá všetko."
+  },
+  {
+   "n": 11,
+   "id": "setrny_gazda",
+   "name": "Šetrný gazda",
+   "type": "Občan",
+   "tags": [
+    "Občan",
+    "Pamätník",
+    "Chlap"
+   ],
+   "prva_vlna": false,
+   "effect_text": "Bitka: Za každé 4 karty v tvojom doberacom a odhadzovacom balíčku {Rana}.",
+   "kategoria": "Efekt s vedľajšou akciou",
+   "novy_spustac": null,
+   "left": {
+    "blocked": [
+     0,
+     3
+    ],
+    "actions": {
+     "Robota": 1,
+     "Pecka": 1
+    }
+   },
+   "right": {
+    "blocked": [
+     0
+    ],
+    "actions": {
+     "PoškodeniePečene": 1,
+     "Cigareta": 1
+    },
+    "allowed": {
+     "1": [
+      "PoškodeniePečene"
+     ],
+     "2": [
+      "Cigareta"
+     ],
+     "3": [
+      "Cigareta"
+     ]
+    }
+   },
+   "permutations": 4,
+   "power_level": {
+    "akcie": 2.5,
+    "efekt": 1.5,
+    "spolu": 4
+   },
+   "satira": "Nič nevyhodí. Na dvore má tri škodovky, z ktorých raz poskladá jednu.",
+   "medzera": "Veľký balíček je len horší balíček. Cigarety sa nemajú kam minúť, lebo kupovať karty sa od istého bodu neoplatí."
+  },
+  {
+   "n": 12,
+   "id": "plachy_chlapec",
+   "name": "Plachý chlapec",
+   "type": "Občan",
+   "tags": [
+    "Občan",
+    "Kriminál",
+    "Chlap"
+   ],
+   "prva_vlna": false,
+   "effect_text": "Odhalenie: {Pohoršenie} {Pohoršenie}.",
+   "kategoria": "Efekt s vedľajšou akciou",
+   "novy_spustac": "Odhalenie",
+   "left": {
+    "blocked": [
+     3
+    ],
+    "actions": {
+     "Odpor": 1,
+     "Cigareta": 1
+    },
+    "allowed": {
+     "0": [
+      "Cigareta"
+     ],
+     "1": [
+      "Odpor"
+     ],
+     "2": [
+      "Cigareta"
+     ]
+    }
+   },
+   "right": {
+    "blocked": [
+     0
+    ],
+    "actions": {
+     "PoškodeniePečene": 1,
+     "Povera": 1
+    },
+    "allowed": {
+     "1": [
+      "PoškodeniePečene"
+     ],
+     "2": [
+      "Povera"
+     ],
+     "3": [
+      "Povera"
+     ]
+    }
+   },
+   "permutations": 4,
+   "power_level": {
+    "akcie": 1.5,
+    "efekt": 2,
+    "spolu": 3.5
+   },
+   "satira": "Tichý, slušný, vždy pozdraví. Dlhý kabát nosí aj v júli.",
+   "medzera": "Záverečná a odpoveď lícom dole sú len spôsob vyloženia. Žiadna karta nechce byť hraná lícom dole."
+  },
+  {
+   "n": 13,
+   "id": "poctivy_nalezca",
+   "name": "Poctivý nálezca",
+   "type": "Občan",
+   "tags": [
+    "Občan",
+    "Kriminál",
+    "Chlap"
+   ],
+   "prva_vlna": true,
+   "effect_text": "Nástup: Vyber 1 Nástroj v súperovom Dedičstve. Do konca kola platí tebe, nie jemu.",
+   "kategoria": "Textový efekt",
+   "novy_spustac": null,
+   "left": {
+    "blocked": [
+     0
+    ],
+    "actions": {
+     "Dlh": 1,
+     "Vízia": 1
+    },
+    "allowed": {
+     "1": [
+      "Dlh"
+     ],
+     "2": [
+      "Vízia"
+     ],
+     "3": [
+      "Vízia"
+     ]
+    }
+   },
+   "right": {
+    "blocked": [
+     0,
+     1
+    ],
+    "actions": {
+     "Cigareta": 1,
+     "Rana": 1
+    }
+   },
+   "permutations": 4,
+   "power_level": {
+    "akcie": 1.5,
+    "efekt": 2,
+    "spolu": 3.5
+   },
+   "satira": "Nájde všetko. Najradšej to, čo ešte nikto nestratil.",
+   "medzera": "Na súperovo Dedičstvo sa nedá siahnuť. Kto prvý vyloží Vidly alebo Vínko, má ich do konca hry a súper sa môže len dívať."
+  },
+  {
+   "n": 14,
+   "id": "ekolog",
+   "name": "Ekológ",
+   "type": "Občan",
+   "tags": [
+    "Občan",
+    "Kriminál",
+    "Pracujúci",
+    "Chlap"
+   ],
+   "prva_vlna": false,
+   "effect_text": "Nástup: Nástroje pod susednou kartou idú do tvojho odhadzovacieho balíčka.",
+   "kategoria": "Textový efekt",
+   "novy_spustac": null,
+   "left": {
+    "blocked": [
+     0
+    ],
+    "actions": {
+     "Dlh": 1,
+     "Robota": 1,
+     "Cigareta": 1
+    },
+    "allowed": {
+     "1": [
+      "Dlh"
+     ],
+     "2": [
+      "Robota",
+      "Cigareta"
+     ],
+     "3": [
+      "Robota",
+      "Cigareta"
+     ]
+    }
+   },
+   "right": {
+    "blocked": [
+     0,
+     1
+    ],
+    "actions": {
+     "Robota": 1,
+     "Pecka": 1
+    }
+   },
+   "permutations": 4,
+   "power_level": {
+    "akcie": 3,
+    "efekt": 1,
+    "spolu": 4
+   },
+   "satira": "Recykluje všetko, čo nie je privarené. Kanálové poklopy, zvodidlá, tvoje vidly.",
+   "medzera": "Podložený Nástroj leží do bitky a nedá sa vyhodiť. Proti karte s Energeťákom či Vidlami pod sebou súper nemá ťah."
+  },
+  {
+   "n": 15,
+   "id": "nefajciar",
+   "name": "Nefajčiar",
+   "type": "Občan",
+   "tags": [
+    "Občan",
+    "Závislý",
+    "Chlap"
+   ],
+   "prva_vlna": false,
+   "effect_text": "Konflikt: Súper ti dá 1 cigaretu.",
+   "kategoria": "Textový efekt",
+   "novy_spustac": null,
+   "left": {
+    "blocked": [
+     0
+    ],
+    "actions": {
+     "PoškodeniePečene": 1,
+     "Obmedzenie": 1
+    },
+    "allowed": {
+     "1": [
+      "PoškodeniePečene"
+     ],
+     "2": [
+      "Obmedzenie"
+     ],
+     "3": [
+      "Obmedzenie"
+     ]
+    }
+   },
+   "right": {
+    "blocked": [
+     1,
+     2
+    ],
+    "actions": {
+     "Obmedzenie": 1,
+     "Cigareta": 1
+    }
+   },
+   "permutations": 4,
+   "power_level": {
+    "akcie": 1.5,
+    "efekt": 1.5,
+    "spolu": 3
+   },
+   "satira": "Vlastné nemá od roku 2003. Fajčí zásadne len cudzie.",
+   "medzera": "Cigarety sa dajú súperovi len ubrať pri zdroji (Obmedzenie). Vziať mu ich z vrecka nevie žiadna karta."
+  },
+  {
+   "n": 16,
+   "id": "zberac_spakov",
+   "name": "Zberač špakov",
+   "type": "Občan",
+   "tags": [
+    "Občan",
+    "Závislý",
+    "Chlap"
+   ],
+   "prva_vlna": true,
+   "effect_text": "Pitka: Za každé 2 cigarety, ktoré súper vyfajčí, dostaneš 1 špak.",
+   "kategoria": "Textový efekt",
+   "novy_spustac": null,
+   "left": {
+    "blocked": [
+     0
+    ],
+    "actions": {
+     "PoškodeniePečene": 1,
+     "Vízia": 1
+    },
+    "allowed": {
+     "1": [
+      "PoškodeniePečene"
+     ],
+     "2": [
+      "Vízia"
+     ],
+     "3": [
+      "Vízia"
+     ]
+    }
+   },
+   "right": {
+    "blocked": [
+     0,
+     3
+    ],
+    "actions": {
+     "Cigareta": 1,
+     "Obmedzenie": 1
+    }
+   },
+   "permutations": 4,
+   "power_level": {
+    "akcie": 2,
+    "efekt": 1.5,
+    "spolu": 3.5
+   },
+   "satira": "Čo ty dofajčíš, on dozbiera. Popolníku pred krčmou hovorí švédsky stôl.",
+   "medzera": "Fajčenie je súperov motor na karty a jediná odpoveď naň je Krabička cigariet. Špak, ktorý po cigarete ostane, dnes nikto nezdvihne."
+  },
+  {
+   "n": 17,
+   "id": "mierotvorca",
+   "name": "Mierotvorca",
+   "type": "Občan",
+   "tags": [
+    "Občan",
+    "Závislý",
+    "Chlap"
+   ],
+   "prva_vlna": true,
+   "effect_text": "Konflikt: Preškolenie {Rana}→{Poldeci}.",
+   "kategoria": "Školiteľ",
+   "novy_spustac": null,
+   "left": {
+    "blocked": [
+     0,
+     3
+    ],
+    "actions": {
+     "Poldeci": 1,
+     "Viera": 1
+    }
+   },
+   "right": {
+    "blocked": [
+     0
+    ],
+    "actions": {
+     "PoškodeniePečene": 1,
+     "Poldeci": 1,
+     "Cigareta": 1
+    },
+    "allowed": {
+     "1": [
+      "PoškodeniePečene"
+     ],
+     "2": [
+      "Poldeci",
+      "Cigareta"
+     ],
+     "3": [
+      "Poldeci",
+      "Cigareta"
+     ]
+    }
+   },
+   "permutations": 4,
+   "power_level": {
+    "akcie": 2,
+    "efekt": 2,
+    "spolu": 4
+   },
+   "satira": "Každú bitku ukončí vetou „Chlapi, poďme na jedno.“ Ráno si nikto nepamätá ani bitku, ani vetu.",
+   "medzera": "Rana je najčastejšia útočná akcia sady a meniť ju vieš len na vlastných kartách (Sypač, Valaška). Súperove Rany nezmení nič."
+  },
+  {
+   "n": 18,
+   "id": "hluchy_dedo",
+   "name": "Hluchý dedo",
+   "type": "Občan",
+   "tags": [
+    "Občan",
+    "Pamätník",
+    "Chlap"
+   ],
+   "prva_vlna": false,
+   "effect_text": "Konflikt: Preškolenie {Pohoršenie}→{Povera}.",
+   "kategoria": "Školiteľ",
+   "novy_spustac": null,
+   "left": {
+    "blocked": [
+     3
+    ],
+    "actions": {
+     "Odpor": 1,
+     "Rana": 1
+    },
+    "allowed": {
+     "0": [
+      "Rana"
+     ],
+     "1": [
+      "Odpor"
+     ],
+     "2": [
+      "Rana"
+     ]
+    }
+   },
+   "right": {
+    "blocked": [
+     0
+    ],
+    "actions": {
+     "PoškodeniePečene": 1,
+     "Poldeci": 1,
+     "Povera": 1
+    },
+    "allowed": {
+     "1": [
+      "PoškodeniePečene"
+     ],
+     "2": [
+      "Poldeci",
+      "Povera"
+     ],
+     "3": [
+      "Poldeci",
+      "Povera"
+     ]
+    }
+   },
+   "permutations": 4,
+   "power_level": {
+    "akcie": 2,
+    "efekt": 1.5,
+    "spolu": 3.5
+   },
+   "satira": "Nepočuje nič. Okrem toho, čo sa oňho šepká na druhom konci dediny.",
+   "medzera": "Pohoršenie dáva 2 mäkké a Viera ho neruší. Proti hádke postavenej na Pohoršení pomôže len Odpor na správnom spoji, inak ju treba prekričať."
+  },
+  {
+   "n": 19,
+   "id": "pohostinna_gazdina",
+   "name": "Pohostinná gazdiná",
+   "type": "Občan",
+   "tags": [
+    "Občan",
+    "Pamätník",
+    "Žena"
+   ],
+   "prva_vlna": false,
+   "effect_text": "Nástup: Súperova Chuť stúpne o 2.",
+   "kategoria": "Textový efekt",
+   "novy_spustac": null,
+   "left": {
+    "blocked": [
+     3
+    ],
+    "actions": {
+     "PoškodeniePečene": 1,
+     "Poldeci": 1
+    },
+    "allowed": {
+     "0": [
+      "Poldeci"
+     ],
+     "1": [
+      "PoškodeniePečene"
+     ],
+     "2": [
+      "Poldeci"
+     ]
+    }
+   },
+   "right": {
+    "blocked": [
+     0
+    ],
+    "actions": {
+     "Posilnenie": 1,
+     "Pohoršenie": 1
+    },
+    "allowed": {
+     "1": [
+      "Pohoršenie"
+     ],
+     "2": [
+      "Posilnenie"
+     ],
+     "3": [
+      "Pohoršenie"
+     ]
+    }
+   },
+   "permutations": 4,
+   "power_level": {
+    "akcie": 2.5,
+    "efekt": 1.5,
+    "spolu": 4
+   },
+   "satira": "Odmietnuť je urážka. Prijať je hospitalizácia.",
+   "medzera": "Chuť a Absťák sú jediný systém hry, na ktorý nesiaha žiadna karta. Súperova latka je len jeho vec."
+  },
+  {
+   "n": 20,
+   "id": "stastlivec",
+   "name": "Šťastlivec",
+   "type": "Občan",
+   "tags": [
+    "Občan",
+    "Pracujúci",
+    "Chlap"
+   ],
+   "prva_vlna": true,
+   "effect_text": "Bitka: Ak máš menej špakov ako súper {Pecka} {Pecka}.",
+   "kategoria": "Efekt s vedľajšou akciou",
+   "novy_spustac": null,
+   "left": {
+    "blocked": [
+     0
+    ],
+    "actions": {
+     "Dlh": 1,
+     "Robota": 1
+    },
+    "allowed": {
+     "1": [
+      "Dlh"
+     ],
+     "2": [
+      "Robota"
+     ],
+     "3": [
+      "Robota"
+     ]
+    }
+   },
+   "right": {
+    "blocked": [],
+    "actions": {
+     "PoškodeniePečene": 1,
+     "Rana": 2
+    },
+    "allowed": {
+     "0": [
+      "Rana"
+     ],
+     "1": [
+      "PoškodeniePečene"
+     ],
+     "2": [
+      "Rana"
+     ],
+     "3": [
+      "Rana"
+     ]
+    }
+   },
+   "permutations": 6,
+   "power_level": {
+    "akcie": -0.5,
+    "efekt": 3,
+    "spolu": 2.5
+   },
+   "satira": "Vyhorel, žena odišla s kominárom, pes ho pohrýzol. On hovorí, že mohlo byť aj horšie. Aj bude.",
+   "medzera": "Karty nevedia, kto prehráva. Dobiehanie je dnes len v roli útočníka."
+  },
+  {
+   "n": 21,
+   "id": "clovek_s_nazorom",
+   "name": "Človek s vlastným názorom",
+   "type": "Občan",
+   "tags": [
+    "Občan",
+    "Influencer",
+    "Chlap"
+   ],
+   "prva_vlna": true,
+   "effect_text": "Furt: Tvoje priazne sú o 1 silnejšie.",
+   "kategoria": "Textový efekt",
+   "novy_spustac": null,
+   "left": {
+    "blocked": [
+     1,
+     2
+    ],
+    "actions": {
+     "Pakt": 1
+    }
+   },
+   "right": {
+    "blocked": [],
+    "actions": {
+     "PoškodeniePečene": 1,
+     "Posilnenie": 1,
+     "Cigareta": 1
+    },
+    "allowed": {
+     "0": [
+      "Cigareta"
+     ],
+     "1": [
+      "PoškodeniePečene"
+     ],
+     "2": [
+      "Posilnenie"
+     ],
+     "3": [
+      "Cigareta"
+     ]
+    }
+   },
+   "permutations": 4,
+   "power_level": {
+    "akcie": 2,
+    "efekt": 2.5,
+    "spolu": 4.5
+   },
+   "satira": "Názor má vždy vlastný. Zhodou okolností rovnaký ako ten, kto práve platí rundu.",
+   "medzera": "Priazeň starších určuje len rozdiel strachov. Žiadna karta s ňou nepracuje."
+  },
+  {
+   "n": 22,
+   "id": "susedska_hliadka",
+   "name": "Susedská hliadka",
+   "type": "Občan",
+   "tags": [
+    "Občan",
+    "Kriminál",
+    "Chlap"
+   ],
+   "prva_vlna": false,
+   "effect_text": "Furt: Súper v tomto kole nezajíma.",
+   "kategoria": "Textový efekt",
+   "novy_spustac": null,
+   "left": {
+    "blocked": [
+     0,
+     3
+    ],
+    "actions": {
+     "Rana": 1,
+     "Obmedzenie": 1
+    }
+   },
+   "right": {
+    "blocked": [
+     0
+    ],
+    "actions": {
+     "PoškodeniePečene": 1,
+     "Petelica": 1
+    },
+    "allowed": {
+     "1": [
+      "PoškodeniePečene"
+     ],
+     "2": [
+      "Petelica"
+     ],
+     "3": [
+      "Petelica"
+     ]
+    }
+   },
+   "permutations": 4,
+   "power_level": {
+    "akcie": 3.5,
+    "efekt": 1,
+    "spolu": 4.5
+   },
+   "satira": "Traja chlapi, jedna baterka, žiadny triezvy. Za päť rokov chytili jedného ježka.",
+   "medzera": "Proti zajatiu a výhre väzňami sa dá brániť len tým, že súper nevyhrá bitku. Keď ju prehrávaš, nemáš ťah."
+  },
+  {
+   "n": 23,
+   "id": "kultivovany_diskuter",
+   "name": "Kultivovaný diskutér",
+   "type": "Občan",
+   "tags": [
+    "Občan",
+    "Influencer",
+    "Chlap"
+   ],
+   "prva_vlna": false,
+   "effect_text": "Hádka: Ak prehráš hádku {Rana} {Rana} {Rana}.",
+   "kategoria": "Efekt s vedľajšou akciou",
+   "novy_spustac": null,
+   "left": {
+    "blocked": [
+     0
+    ],
+    "actions": {
+     "PoškodeniePečene": 1,
+     "Povera": 1
+    },
+    "allowed": {
+     "1": [
+      "PoškodeniePečene"
+     ],
+     "2": [
+      "Povera"
+     ],
+     "3": [
+      "Povera"
+     ]
+    }
+   },
+   "right": {
+    "blocked": [
+     0
+    ],
+    "actions": {
+     "Posilnenie": 1,
+     "Pecka": 1
+    },
+    "allowed": {
+     "1": [
+      "Pecka"
+     ],
+     "2": [
+      "Posilnenie"
+     ],
+     "3": [
+      "Pecka"
+     ]
+    }
+   },
+   "permutations": 4,
+   "power_level": {
+    "akcie": 3,
+    "efekt": 1,
+    "spolu": 4
+   },
+   "satira": "Diskutuje vecne a s nadhľadom. Keď mu dôjdu argumenty, príde na rad stolička.",
+   "medzera": "Hádka a bitka sa nestretnú: kto stavia na tuhé, mäkké hodí za hlavu a naopak. Výsledok hádky v tej istej bitke nič neznamená."
+  },
+  {
+   "n": 24,
+   "id": "pokojna_povaha",
+   "name": "Pokojná povaha",
+   "type": "Občan",
+   "tags": [
+    "Občan",
+    "Závislý",
+    "Chlap"
+   ],
+   "prva_vlna": true,
+   "effect_text": "Bitka: Za každý tvoj Absťák {Rana} {Rana}.",
+   "kategoria": "Efekt s vedľajšou akciou",
+   "novy_spustac": null,
+   "left": {
+    "blocked": [
+     3
+    ],
+    "actions": {
+     "Odpor": 1,
+     "Rana": 1
+    },
+    "allowed": {
+     "0": [
+      "Rana"
+     ],
+     "1": [
+      "Odpor"
+     ],
+     "2": [
+      "Rana"
+     ]
+    }
+   },
+   "right": {
+    "blocked": [
+     0,
+     3
+    ],
+    "actions": {
+     "Cigareta": 1
+    }
+   },
+   "permutations": 4,
+   "power_level": {
+    "akcie": 3,
+    "efekt": 1,
+    "spolu": 4
+   },
+   "satira": "Tretí deň nepije. Je úplne v pohode. Radšej sa naňho nepozeraj.",
+   "medzera": "Absťák je čistý trest: −1 tuhé a mŕtva karta v balíčku. Plán „nepijem a nesiem následky“ neexistuje."
+  },
+  {
+   "n": 25,
+   "id": "pracneschopny",
+   "name": "Práceneschopný",
+   "type": "Občan",
+   "tags": [
+    "Občan",
+    "Pamätník",
+    "Chlap"
+   ],
+   "prva_vlna": false,
+   "effect_text": "Pitka: Za každú tvoju priznanú Cirhózu {Cigareta}.",
+   "kategoria": "Efekt s vedľajšou akciou",
+   "novy_spustac": null,
+   "left": {
+    "blocked": [
+     0
+    ],
+    "actions": {
+     "PoškodeniePečene": 1,
+     "Viera": 1
+    },
+    "allowed": {
+     "1": [
+      "PoškodeniePečene"
+     ],
+     "2": [
+      "Viera"
+     ],
+     "3": [
+      "Viera"
+     ]
+    }
+   },
+   "right": {
+    "blocked": [
+     1,
+     2
+    ],
+    "actions": {
+     "Cigareta": 1,
+     "Poldeci": 1
+    }
+   },
+   "permutations": 4,
+   "power_level": {
+    "akcie": 1.5,
+    "efekt": 1.5,
+    "spolu": 3
+   },
+   "satira": "Na pečeň má papier, na papier dôchodok a na dôchodok účet v krčme.",
+   "medzera": "Priznaná Cirhóza je len trest (+1 tuhé súperovi v každej bitke). Kto pije naplno, nemá z toho nič."
+  },
+  {
+   "n": 26,
+   "id": "ferovy_hrac",
+   "name": "Férový hráč",
+   "type": "Občan",
+   "tags": [
+    "Občan",
+    "Kriminál",
+    "Chlap"
+   ],
+   "prva_vlna": false,
+   "effect_text": "Podpora: Preškolenie {Hazard}→{Rana}.",
+   "kategoria": "Školiteľ",
+   "novy_spustac": null,
+   "left": {
+    "blocked": [
+     0
+    ],
+    "actions": {
+     "Dlh": 1,
+     "Pecka": 1
+    },
+    "allowed": {
+     "1": [
+      "Dlh"
+     ],
+     "2": [
+      "Pecka"
+     ],
+     "3": [
+      "Pecka"
+     ]
+    }
+   },
+   "right": {
+    "blocked": [
+     0
+    ],
+    "actions": {
+     "Posilnenie": 1,
+     "Cigareta": 1
+    },
+    "allowed": {
+     "1": [
+      "Cigareta"
+     ],
+     "2": [
+      "Posilnenie"
+     ],
+     "3": [
+      "Cigareta"
+     ]
+    }
+   },
+   "permutations": 4,
+   "power_level": {
+    "akcie": 2.5,
+    "efekt": 2,
+    "spolu": 4.5
+   },
+   "satira": "Prehrávať vie so cťou. Najprv prevráti stôl, potom podá ruku — do tváre.",
+   "medzera": "Hazard je daň na polovici kariet línie. Zbaviť sa ho dá len Nástrojom pod kartou: jedna karta naraz a za cigaretu."
+  },
+  {
+   "n": 27,
+   "id": "obetava_matka",
+   "name": "Obetavá matka",
+   "type": "Občan",
+   "tags": [
+    "Občan",
+    "Pamätník",
+    "Žena"
+   ],
+   "prva_vlna": true,
+   "effect_text": "Nástup: Smieš spáliť susednú svoju kartu. Ak áno {Petelica} {Petelica}.",
+   "kategoria": "Efekt s vedľajšou akciou",
+   "novy_spustac": null,
+   "left": {
+    "blocked": [
+     0
+    ],
+    "actions": {
+     "PoškodeniePečene": 1,
+     "Robota": 1
+    },
+    "allowed": {
+     "1": [
+      "PoškodeniePečene"
+     ],
+     "2": [
+      "Robota"
+     ],
+     "3": [
+      "Robota"
+     ]
+    }
+   },
+   "right": {
+    "blocked": [
+     0,
+     3
+    ],
+    "actions": {
+     "Viera": 1,
+     "Pohoršenie": 1
+    }
+   },
+   "permutations": 4,
+   "power_level": {
+    "akcie": 3,
+    "efekt": 2,
+    "spolu": 5
+   },
+   "satira": "Celý život sa obetuje pre rodinu. Zatiaľ jej obetovala manžela, zaťa a dvoch susedov.",
+   "medzera": "Štartovacie karty sa z balíčka nedajú dostať (len náhodou cez Víziu alebo na Zbernom dvore). Obetovať vlastnú kartu za účinok sa nedá vôbec."
+  },
+  {
+   "n": 28,
+   "id": "ocity_svedok",
+   "name": "Očitý svedok",
+   "type": "Občan",
+   "tags": [
+    "Občan",
+    "Pamätník",
+    "Chlap"
+   ],
+   "prva_vlna": false,
+   "effect_text": "Spoločník: Kriminál {Viera} {Viera}.",
+   "kategoria": "Efekt s vedľajšou akciou",
+   "novy_spustac": null,
+   "left": {
+    "blocked": [
+     3
+    ],
+    "actions": {
+     "Odpor": 1,
+     "Cigareta": 1
+    },
+    "allowed": {
+     "0": [
+      "Cigareta"
+     ],
+     "1": [
+      "Odpor"
+     ],
+     "2": [
+      "Cigareta"
+     ]
+    }
+   },
+   "right": {
+    "blocked": [
+     2
+    ],
+    "actions": {
+     "PoškodeniePečene": 1,
+     "Poldeci": 1,
+     "Pakt": 1
+    },
+    "allowed": {
+     "0": [
+      "Poldeci",
+      "Pakt"
+     ],
+     "1": [
+      "PoškodeniePečene"
+     ],
+     "3": [
+      "Poldeci",
+      "Pakt"
+     ]
+    }
+   },
+   "permutations": 4,
+   "power_level": {
+    "akcie": 2,
+    "efekt": 1.5,
+    "spolu": 3.5
+   },
+   "satira": "Bol pri tom, stál na meter a nevidel nič. Podpísal to trikrát, zakaždým iným menom.",
+   "medzera": "Tag Kriminál je len terč (Policajtka). Šesť Kriminálov nemá jedinú kartu, ktorá by ich chcela vedľa seba."
+  },
+  {
+   "n": 29,
+   "id": "konstruktivny_kritik",
+   "name": "Konštruktívny kritik",
+   "type": "Občan",
+   "tags": [
+    "Občan",
+    "Pamätník",
+    "Chlap"
+   ],
+   "prva_vlna": false,
+   "effect_text": "Nepriateľ: Influencer {Povera} {Povera}.",
+   "kategoria": "Efekt s vedľajšou akciou",
+   "novy_spustac": null,
+   "left": {
+    "blocked": [
+     0
+    ],
+    "actions": {
+     "PoškodeniePečene": 1,
+     "Povera": 1
+    },
+    "allowed": {
+     "1": [
+      "PoškodeniePečene"
+     ],
+     "2": [
+      "Povera"
+     ],
+     "3": [
+      "Povera"
+     ]
+    }
+   },
+   "right": {
+    "blocked": [
+     0,
+     3
+    ],
+    "actions": {
+     "Vízia": 1,
+     "Povera": 1
+    }
+   },
+   "permutations": 4,
+   "power_level": {
+    "akcie": 2,
+    "efekt": 1.5,
+    "spolu": 3.5
+   },
+   "satira": "Pod každý príspevok napíše to isté: „Choď radšej robiť.“ Sám nerobí od revolúcie.",
+   "medzera": "Tag Influencer (7 kariet) nespomína žiadny efekt."
+  },
+  {
+   "n": 30,
+   "id": "bdela_obcianka",
+   "name": "Bdelá občianka",
+   "type": "Občan",
+   "tags": [
+    "Občan",
+    "Pamätník",
+    "Žena"
+   ],
+   "prva_vlna": false,
+   "effect_text": "Nepriateľ: Pracujúci {Obmedzenie} {Obmedzenie}.",
+   "kategoria": "Efekt s vedľajšou akciou",
+   "novy_spustac": null,
+   "left": {
+    "blocked": [
+     3
+    ],
+    "actions": {
+     "Odpor": 1,
+     "Obmedzenie": 1
+    },
+    "allowed": {
+     "0": [
+      "Obmedzenie"
+     ],
+     "1": [
+      "Odpor"
+     ],
+     "2": [
+      "Obmedzenie"
+     ]
+    }
+   },
+   "right": {
+    "blocked": [
+     0
+    ],
+    "actions": {
+     "PoškodeniePečene": 1,
+     "Povera": 1
+    },
+    "allowed": {
+     "1": [
+      "PoškodeniePečene"
+     ],
+     "2": [
+      "Povera"
+     ],
+     "3": [
+      "Povera"
+     ]
+    }
+   },
+   "permutations": 4,
+   "power_level": {
+    "akcie": 1.5,
+    "efekt": 2,
+    "spolu": 3.5
+   },
+   "satira": "Čo vidí, nahlási. Čo nevidí, nahlási tiež — pre istotu na tri úrady.",
+   "medzera": "Tag Pracujúci (8 kariet) nespomína žiadny efekt."
+  },
+  {
+   "n": 31,
+   "id": "milovnik_vidieka",
+   "name": "Milovník vidieka",
+   "type": "Občan",
+   "tags": [
+    "Občan",
+    "Zahraničný",
+    "Chlap"
+   ],
+   "prva_vlna": false,
+   "effect_text": "Nepriateľ: Zviera {Pohoršenie}.",
+   "kategoria": "Efekt s vedľajšou akciou",
+   "novy_spustac": null,
+   "left": {
+    "blocked": [
+     0,
+     3
+    ],
+    "actions": {
+     "Cigareta": 1,
+     "Obmedzenie": 1
+    }
+   },
+   "right": {
+    "blocked": [
+     0
+    ],
+    "actions": {
+     "Dlh": 1,
+     "Cigareta": 1,
+     "Vízia": 1
+    },
+    "allowed": {
+     "1": [
+      "Dlh"
+     ],
+     "2": [
+      "Cigareta",
+      "Vízia"
+     ],
+     "3": [
+      "Cigareta",
+      "Vízia"
+     ]
+    }
+   },
+   "permutations": 4,
+   "power_level": {
+    "akcie": 2.5,
+    "efekt": 1,
+    "spolu": 3.5
+   },
+   "satira": "Chalupu kúpil kvôli tichu a čerstvému vzduchu. Odvtedy žaluje kohúta, kravu aj hnoj.",
+   "medzera": "Proti Zvieratám stoja len Poľovník a Mäsiar. Tag Zviera nespomína žiadny Nepriateľ."
+  },
+  {
+   "n": 32,
+   "id": "milovnicka_zvierat",
+   "name": "Milovníčka zvierat",
+   "type": "Občan",
+   "tags": [
+    "Občan",
+    "Influencer",
+    "Žena"
+   ],
+   "prva_vlna": false,
+   "effect_text": "Spoločník: Zviera {Rana} {Rana}.",
+   "kategoria": "Efekt s vedľajšou akciou",
+   "novy_spustac": null,
+   "left": {
+    "blocked": [
+     3
+    ],
+    "actions": {
+     "Odpor": 1,
+     "Povera": 1
+    },
+    "allowed": {
+     "0": [
+      "Povera"
+     ],
+     "1": [
+      "Odpor"
+     ],
+     "2": [
+      "Povera"
+     ]
+    }
+   },
+   "right": {
+    "blocked": [
+     0
+    ],
+    "actions": {
+     "Posilnenie": 1,
+     "PoškodeniePečene": 1
+    },
+    "allowed": {
+     "1": [
+      "PoškodeniePečene"
+     ],
+     "2": [
+      "Posilnenie"
+     ],
+     "3": [
+      "PoškodeniePečene"
+     ]
+    }
+   },
+   "permutations": 4,
+   "power_level": {
+    "akcie": 2,
+    "efekt": 1.5,
+    "spolu": 3.5
+   },
+   "satira": "Ľudí neznáša. Psov má jedenásť, všetky hryzú a všetky „sa chcú len hrať“.",
+   "medzera": "Zvieratá odmeňuje len Lesná cesta a Kôň. Občan, ktorý by ich chcel v partii, nie je."
+  },
+  {
+   "n": 33,
+   "id": "kohut",
+   "name": "Kohút",
+   "type": "Zviera",
+   "tags": [
+    "Zviera"
+   ],
+   "prva_vlna": true,
+   "effect_text": "Furt: Pitiek v tomto kole je o 1 menej.",
+   "kategoria": "Textový efekt",
+   "novy_spustac": null,
+   "left": {
+    "blocked": [
+     0,
+     3
+    ],
+    "actions": {
+     "Pohoršenie": 1
+    }
+   },
+   "right": {
+    "blocked": [
+     0,
+     2,
+     3
+    ],
+    "actions": {
+     "Odpor": 1
+    },
+    "allowed": {
+     "1": [
+      "Odpor"
+     ]
+    }
+   },
+   "permutations": 2,
+   "power_level": {
+    "akcie": 3,
+    "efekt": 1.5,
+    "spolu": 4.5
+   },
+   "satira": "Kikiríka o štvrtej. Komu sa nepáči, môže si kúpiť chalupu inde.",
+   "medzera": "Kohút je od v9.2 vyradený a čaká na nový efekt. A kolo sa nedá skrátiť: kto vedie v línii alebo má málo kariet, musí dopiť všetky Pitky."
+  },
+  {
+   "n": 34,
+   "id": "koza",
+   "name": "Koza",
+   "type": "Zviera",
+   "tags": [
+    "Zviera"
+   ],
+   "prva_vlna": true,
+   "effect_text": "Nástup: Smieš spáliť 1 kartu z ruky, nie kliatbu.",
+   "kategoria": "Textový efekt",
+   "novy_spustac": null,
+   "left": {
+    "blocked": [
+     1,
+     2
+    ],
+    "actions": {
+     "Rana": 1
+    }
+   },
+   "right": {
+    "blocked": [
+     0,
+     3
+    ],
+    "actions": {
+     "Poldeci": 1
+    }
+   },
+   "permutations": 4,
+   "power_level": {
+    "akcie": 1.5,
+    "efekt": 2,
+    "spolu": 3.5
+   },
+   "satira": "Zožerie všetko. Aj to, čo si chcel ešte niekedy vidieť.",
+   "medzera": "Balíček sa dá preriediť len Víziou (naslepo) a na Zbernom dvore. Kto chce hrať len kúpené karty, nemá ako."
+  },
+  {
+   "n": 35,
+   "id": "kukucka",
+   "name": "Kukučka",
+   "type": "Zviera",
+   "tags": [
+    "Zviera"
+   ],
+   "prva_vlna": false,
+   "effect_text": "Nástup: Smieš dať 1 kartu z ruky, nie kliatbu, do súperovho odhadzovacieho balíčka.",
+   "kategoria": "Textový efekt",
+   "novy_spustac": null,
+   "left": {
+    "blocked": [
+     0,
+     3
+    ],
+    "actions": {
+     "Povera": 1
+    }
+   },
+   "right": {
+    "blocked": [
+     1,
+     2
+    ],
+    "actions": {
+     "Vízia": 1
+    }
+   },
+   "permutations": 4,
+   "power_level": {
+    "akcie": 2.5,
+    "efekt": 2,
+    "spolu": 4.5
+   },
+   "satira": "O svoje sa nestará. Nechá ich vychovať tomu, kto sa nevie brániť.",
+   "medzera": "Do súperovho balíčka sa nedá dostať nič. Zloženie balíčka je vec každého hráča zvlášť."
+  },
+  {
+   "n": 36,
+   "id": "svina",
+   "name": "Sviňa",
+   "type": "Zviera",
+   "tags": [
+    "Zviera"
+   ],
+   "prva_vlna": true,
+   "effect_text": "Spálenie: Dostaneš nový plný poldeci.",
+   "kategoria": "Textový efekt",
+   "novy_spustac": "Spálenie",
+   "left": {
+    "blocked": [
+     0,
+     3
+    ],
+    "actions": {
+     "Cigareta": 1
+    }
+   },
+   "right": {
+    "blocked": [
+     0,
+     3
+    ],
+    "actions": {
+     "Poldeci": 1
+    }
+   },
+   "permutations": 4,
+   "power_level": {
+    "akcie": 1.5,
+    "efekt": 2,
+    "spolu": 3.5
+   },
+   "satira": "Celý rok ju chovali ako člena rodiny. V decembri sa ukázalo, akého.",
+   "medzera": "Spálenie je vždy strata. Nič nechce byť spálené, takže karty, ktoré pália, sú len útok alebo upratovanie."
+  },
+  {
+   "n": 37,
+   "id": "somar",
+   "name": "Somár",
+   "type": "Zviera",
+   "tags": [
+    "Zviera"
+   ],
+   "prva_vlna": true,
+   "effect_text": "Furt: Nedá sa presunúť ani spáliť.",
+   "kategoria": "Textový efekt",
+   "novy_spustac": null,
+   "left": {
+    "blocked": [
+     0,
+     1,
+     2,
+     3
+    ],
+    "actions": {}
+   },
+   "right": {
+    "blocked": [],
+    "actions": {
+     "Odpor": 1,
+     "Robota": 1
+    },
+    "allowed": {
+     "0": [
+      "Robota"
+     ],
+     "1": [
+      "Odpor"
+     ],
+     "2": [
+      "Robota"
+     ],
+     "3": [
+      "Robota"
+     ]
+    }
+   },
+   "permutations": 3,
+   "power_level": {
+    "akcie": 2,
+    "efekt": 1.5,
+    "spolu": 3.5
+   },
+   "satira": "Kam ho postavíš, tam stojí. Kam ho nepostavíš, tam stojí tiež.",
+   "medzera": "Koniec línie je vždy otvorený: súper ti k poslednej karte podstrčí Odpor, Psa či Konflikt a nedá sa tomu zabrániť."
+  },
+  {
+   "n": 38,
+   "id": "opica",
+   "name": "Opica",
+   "type": "Zviera",
+   "tags": [
+    "Zviera"
+   ],
+   "prva_vlna": false,
+   "effect_text": "Pitka: Kto dá NA EX, dostane o 1 poškodenie pečene viac.",
+   "kategoria": "Textový efekt",
+   "novy_spustac": null,
+   "left": {
+    "blocked": [
+     1,
+     2
+    ],
+    "actions": {
+     "Pakt": 1
+    }
+   },
+   "right": {
+    "blocked": [
+     1,
+     2
+    ],
+    "actions": {
+     "Pakt": 1
+    }
+   },
+   "permutations": 4,
+   "power_level": {
+    "akcie": 2,
+    "efekt": 1.5,
+    "spolu": 3.5
+   },
+   "satira": "Kto pije, má ju. Kto nepije, musí sa na ňu pozerať.",
+   "medzera": "NA EX stojí toho, kto ho dá, vždy rovnako. Súper mu ho nevie zdražiť, len potrestať po fakte (Svokra)."
+  },
+  {
+   "n": 39,
+   "id": "postovy_holub",
+   "name": "Poštový holub",
+   "type": "Zviera",
+   "tags": [
+    "Zviera"
+   ],
+   "prva_vlna": false,
+   "effect_text": "Návrat: Po bitke sa ti vráti do ruky.",
+   "kategoria": "Textový efekt",
+   "novy_spustac": "Návrat",
+   "left": {
+    "blocked": [
+     0,
+     3
+    ],
+    "actions": {
+     "Vízia": 1
+    }
+   },
+   "right": {
+    "blocked": [
+     0,
+     3
+    ],
+    "actions": {
+     "Cigareta": 1
+    }
+   },
+   "permutations": 4,
+   "power_level": {
+    "akcie": 2.5,
+    "efekt": 1.5,
+    "spolu": 4
+   },
+   "satira": "Vždy sa vráti. Väčšinou s kartónom cigariet a bez kolku.",
+   "medzera": "Ruka sú tri náhodné karty. Žiadna karta nie je istá na ďalšie kolo."
+  },
+  {
+   "n": 40,
+   "id": "kliest",
+   "name": "Kliešť",
+   "type": "Zviera",
+   "tags": [
+    "Zviera"
+   ],
+   "prva_vlna": true,
+   "effect_text": "Furt: Efekt súperovej susednej karty neplatí.",
+   "kategoria": "Textový efekt",
+   "novy_spustac": null,
+   "left": {
+    "blocked": [
+     0,
+     3
+    ],
+    "actions": {
+     "Obmedzenie": 1
+    }
+   },
+   "right": {
+    "blocked": [
+     0,
+     3
+    ],
+    "actions": {
+     "Obmedzenie": 1
+    }
+   },
+   "permutations": 4,
+   "power_level": {
+    "akcie": 2,
+    "efekt": 2.5,
+    "spolu": 4.5
+   },
+   "satira": "Prisaje sa a o chvíľu z teba nič nie je. Na dedine sa tomu hovorí aj manželstvo.",
+   "medzera": "Efekt Občana sa nedá vypnúť. Mäsiar tíši len Zvieratá; na Silnú, nezávislú ženu, Veterána či Finančnú poradkyňu odpoveď nie je."
+  },
+  {
+   "n": 41,
+   "id": "pozor_zly_pes",
+   "name": "Tabuľka „Pozor, zlý pes“",
+   "type": "Nástroj",
+   "tags": [
+    "Nástroj"
+   ],
+   "prva_vlna": false,
+   "effect_text": "Dedičstvo: Neplatíš výpalné. Hore: {Cigareta}→{Obmedzenie}. Dole: {Poldeci}→{Rana}.",
+   "vaha_efektu": 1.5,
+   "satira": "Pes zdochol v deväťdesiatom ôsmom. Tabuľka stráži ďalej.",
+   "medzera": "Výpalné (cigareta za každého staršieho s červeným strachom, po každej bitke) kŕmi toho, kto vedie. Brániť sa mu nedá."
+  },
+  {
+   "n": 42,
+   "id": "posunuty_plot",
+   "name": "Posunutý plot",
+   "type": "Nástroj",
+   "tags": [
+    "Nástroj"
+   ],
+   "prva_vlna": true,
+   "effect_text": "Dedičstvo: Pri rovnosti v kraji máš prevahu ty. Hore: {Robota}→{Odpor}. Dole: {Obmedzenie}→{Pecka}.",
+   "vaha_efektu": 1.5,
+   "satira": "Každú jar o piaď ďalej. Sused to rieši šiesty rok, striedavo súdne a lopatou.",
+   "medzera": "Remízu v prevahe rozhoduje, kto vyložil k lokalite prvý. Kto príde do kraja druhý, musí súpera prečísliť."
+  },
+  {
+   "n": 43,
+   "id": "preukaz_dochodcu",
+   "name": "Preukaz dôchodcu",
+   "type": "Nástroj",
+   "tags": [
+    "Nástroj"
+   ],
+   "prva_vlna": false,
+   "effect_text": "Dedičstvo: V tvojej partii je vždy Pamätník. Hore: {Robota}→{Cigareta}. Dole: {Hazard}→{Viera}.",
+   "vaha_efektu": 1,
+   "satira": "Na fotke je dedo, ktorý zomrel v deväťdesiatom ôsmom. Revízor si to zatiaľ nevšimol.",
+   "medzera": "Spoločník stojí na tom, či tagová karta príde do ruky v správnom kole. Karta, ktorá by tag držala natrvalo, nie je."
+  },
+  {
+   "n": 44,
+   "id": "ploskacka",
+   "name": "Ploskačka",
+   "type": "Nástroj",
+   "tags": [
+    "Nástroj"
+   ],
+   "prva_vlna": false,
+   "effect_text": "Dedičstvo: Každé kolo sa ti do Chuti rátajú 2 neresti navyše. Hore: {Cigareta}→{Poldeci}. Dole: {Viera}→{Poldeci}.",
+   "vaha_efektu": 1.5,
+   "satira": "Vraj čaj. Čaj, ktorý horí modrým plameňom.",
+   "medzera": "Kto si v jednom kole dá veľa (Krčma, Vínna pivnica), nesie Chuť ďalšie kolá a odvyknúť vie len cez Absťák."
+  },
+  {
+   "n": 45,
+   "id": "budik",
+   "name": "Budík",
+   "type": "Nástroj",
+   "tags": [
+    "Nástroj"
+   ],
+   "prva_vlna": false,
+   "effect_text": "Dedičstvo: Na začiatku kola doberáš do 4 kariet. Hore: {Poldeci}→{Robota}. Dole: Posilnená {Cigareta}.",
+   "vaha_efektu": 3,
+   "satira": "Zvoní o piatej. Do roboty, ktorú nemáš od roku 2009.",
+   "medzera": "Dobratie do 3 kariet nemení nič. Kto chce širšiu ruku, musí ju každé kolo kupovať cigaretami."
+  },
+  {
+   "n": 46,
+   "id": "maskace",
+   "name": "Maskáče",
+   "type": "Nástroj",
+   "tags": [
+    "Nástroj"
+   ],
+   "prva_vlna": false,
+   "effect_text": "Dedičstvo: Záverečná ťa nestojí cigaretu. Hore: {Cigareta}→{Pecka}. Dole: {Viera}→{Rana}.",
+   "vaha_efektu": 1,
+   "satira": "Z armádneho výpredaja. V krčme ho v nich aj tak každý spozná.",
+   "medzera": "Záverečná stojí cigaretu a koniec vykladania, preto ju hráči skoro nehrajú. Blaf je v hre drahý."
+  },
+  {
+   "n": 47,
+   "id": "vozik_z_jednoty",
+   "name": "Vozík z Jednoty",
+   "type": "Nástroj",
+   "tags": [
+    "Nástroj"
+   ],
+   "prva_vlna": false,
+   "effect_text": "Dedičstvo: Dve karty zo šenku ťa stoja 2 cigarety. Hore: {Obmedzenie}→{Cigareta}. Dole: {Hazard}→{Obmedzenie}.",
+   "vaha_efektu": 1.5,
+   "satira": "Požičaný na päť minút. Piaty rok.",
+   "medzera": "Šenok nemá kartu, ktorá by menila jeho ceny (len Autobusár ako väzeň, raz za hru)."
+  },
+  {
+   "n": 48,
+   "id": "ista_tutovka",
+   "name": "Istá tutovka",
+   "type": "Tiket",
+   "tags": [
+    "Tiket"
+   ],
+   "prva_vlna": false,
+   "effect_text": "Bitka: Ak vyhráš bitku najviac o 3, dostaneš 3 špaky. Inak získaš 1 Dlh.",
+   "satira": "Nemôže to nevyjsť. Povedal to chlap, ktorému to nevyšlo sedemkrát.",
+   "medzera": "Hazard je v hre len trest (akcia dá Dlh). Staviť na vlastný odhad sa nedá a cigarety nemajú kam ísť v kole, kde nič nekupuješ."
+  },
+  {
+   "n": 49,
+   "id": "dohodnuty_zapas",
+   "name": "Dohodnutý zápas",
+   "type": "Tiket",
+   "tags": [
+    "Tiket"
+   ],
+   "prva_vlna": false,
+   "effect_text": "Bitka: Ak prehráš bitku najviac o 2, dostaneš 3 špaky. Inak získaš 1 Dlh.",
+   "satira": "Výsledok bol jasný už v utorok. Len rozhodcovi to zabudli povedať.",
+   "medzera": "Prehratá bitka je čistá strata. Kto vie, že nevyhrá, nemá o čo hrať."
+  },
+  {
+   "n": 50,
+   "id": "tip_od_svagra",
+   "name": "Tip od švagra",
+   "type": "Tiket",
+   "tags": [
+    "Tiket"
+   ],
+   "prva_vlna": false,
+   "effect_text": "Bitka: Ak malo kolo aspoň 3 Pitky, dostaneš 2 špaky. Inak získaš 1 Dlh.",
+   "satira": "Švagor má vždy zaručený tip. Švagor má aj tri exekúcie.",
+   "medzera": "O počte Pitiek rozhodujú spoje s lokalitou a nikto za ne nič nedostane. Dlhé kolo nie je cieľ, len dôsledok."
+  }
+ ],
+ "rework": [
+  {
+   "karta": "Praudovravec a Stryná",
+   "preco": "Obe karty majú od 8. 11. (Konflikt bez tagu) ten istý efekt: „Konflikt: {Pohoršenie}.“ Jedna z nich nemá vlastnú identitu.",
+   "navrh": "Stryná ostáva. Praudovravec: „Hádka: Ak prehráš hádku, tvoje reči neklesnú.“ On hádku ešte nikdy neprehral — aspoň podľa neho. Zároveň prvá karta, ktorá chráni reči."
+  },
+  {
+   "karta": "Strýko z Ameriky",
+   "preco": "Akcie (tri Cigarety a Poldeci) hovoria „bohatý strýko rozdáva“, efekt „Nepriateľ: Autorita {Rana} {Rana}“ hovorí „bije sa s úradmi“. Efekt je výplň po zániku Kšeftu.",
+   "navrh": "„Podpora: {Cigareta} {Cigareta}.“ Rodine dá vždy."
+  },
+  {
+   "karta": "Kohút",
+   "preco": "Vyradený od v9.2 (posledné slovo zaniklo), v pravidlách stojí „prerobí sa“ a v jadre TODO.",
+   "navrh": "Karta 33 v tomto dokumente: „Furt: Pitiek v tomto kole je o 1 menej.“"
+  },
+  {
+   "karta": "Veľmi smútiaca vdova (a Noviny)",
+   "preco": "„Súper odhodí 1 náhodnú kartu z ruky.“ Pri ruke troch kariet je to tretina súperovho kola bez rozhodnutia na oboch stranách. Playtest 20261108 ju označil za prisilnú a náhodnú.",
+   "navrh": "Súper si vyberie, ktorú kartu odhodí. Slabšie, ale je to rozhodnutie. To isté Noviny v Dedičstve."
+  },
+  {
+   "karta": "Finančná poradkyňa",
+   "preco": "Váha jej efektu v tvojom power leveli je +9, takmer dvakrát viac než druhá najvyššia (Poľovnícka chata 5, Vidly 4,5). Od v11.8 (každý Hazard = Dlh, bez prahu) dá súperovi Dlh za každý svoj aktívny Hazard v každej Pitke: 3 Hazardy × 3 Pitky = 9 Dlhov za kolo, s násobkami viac. Dáta z partií nemám.",
+   "navrh": "Zmerať v playteste. Ak sa potvrdí, ubrať jej jeden Hazard z hrán (nie strop v texte)."
+  },
+  {
+   "karta": "Mäsiar a Injekcia v Dedičstve",
+   "preco": "Obe sa viažu na Zvieratá a tých je päť druhov. Mäsiar má váhu efektu 0, Injekcia 0,5 — v hre skoro nikdy nič neurobia.",
+   "navrh": "Ak prejde väčšina kariet 33–40, obe ožijú samy a rework netreba. Ak nie, treba im nový efekt."
+  }
+ ]
+}
