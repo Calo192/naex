@@ -1,4 +1,4 @@
-# Ťahák — platné pravidlá NA EX! (v11.16 Vypiť len s limitom, pas bez ohľadu na ruku, Degustátorka hneď, odpoveď na NA EX za poldeci, Nástroj len pod svoje karty, Školiteľ aj Zviera, v11.15 Benzínka o 1 lacnejšie, v11.14 frakcie, Preškolenie a podloženie Nástrojov, v11.13 Lokality, v11.12 Reči na súperovom teplomere, zajatie a presvedčenie, identita kariet, Kostol na konci línie, každý Hazard je Dlh, 2026-11-09, Zrejúca; sada = cards.json v master)
+# Ťahák — platné pravidlá NA EX! (v11.17 NA EX × Odpor a Posilnenie, v11.16 Vypiť len s limitom, pas bez ohľadu na ruku, Degustátorka hneď, odpoveď na NA EX za poldeci, Nástroj len pod svoje karty, Školiteľ aj Zviera, v11.15 Benzínka o 1 lacnejšie, v11.14 frakcie, Preškolenie a podloženie Nástrojov, v11.13 Lokality, v11.12 Reči na súperovom teplomere, zajatie a presvedčenie, identita kariet, Kostol na konci línie, každý Hazard je Dlh, 2026-11-09, Zrejúca; sada = cards.json v master)
 
 Spoločný ťahák AI hráčov — playtester (Zrejúca) ho číta z master, protihráč na
 Vypálenej z vetvy `vypalena` (tam platí jej verzia pravidiel). Podrobne v `docs/PRAVIDLA.md` (zmeny v jeho úvode). Pri
@@ -164,7 +164,7 @@ rozpore s `docs/PRAVIDLA.md` platí `docs/PRAVIDLA.md` a rozpor zapíš do
   aktívne akcie posilnené ×2** (aj Hazard a Pečeň); akcia posilnená ešte Posilnením suseda **×4**.
   Lokalita len hranu pri tom kraji. NA EX
   na jednu z kariet spoja jej Posilnenie
-  zruší, a tým aj Forsáž (Energeťák v Dedičstve a Veterán to zastavia).
+  zruší, a tým aj Forsáž (Energeťák v Dedičstve, Veterán a nespárované Posilnenie tej karty to zastavia).
 - **Vzbura (v11.1):** Odpor + Odpor na spoji **obráti** obe karty — aktívne sú ich **nespojené** akcie
   (aj celá vonkajšia hrana), **spojené sú neaktívne** (aj posilnené susedom); zrušené Odporom ostávajú.
   **Odpor proti Posilneniu** = Vzbura len karty s Odporom a jej aktívne (nespojené) akcie sú **×2**
@@ -250,15 +250,21 @@ rozpore s `docs/PRAVIDLA.md` platí `docs/PRAVIDLA.md` a rozpor zapíš do
   karta odíde z línie skôr (Poľovník), ide do **odhadzovacieho balíčka toho, kto ho podložil**. Podloženie nie
   je priloženie — Konflikt, Podporu ani Pascu nespustí.
 - **NA EX na Občana alebo Starešinu v línii — svojho aj súperovho**, len na kartu
-  s aspoň 1 aktívnou a aspoň 1 neaktívnou akciou (2026-10-23; súperova Záverečná vždy). Zruší
+  s aspoň 1 aktívnou a aspoň 1 neaktívnou akciou (2026-10-23; súperova Záverečná vždy; neaktívny Pakt
+  a neaktívne Posilnenie sa nerátajú) a **nie na kartu s nespárovaným Odporom** (v11.17). Zruší
   karte aktívne akcie a zdvojí neaktívne; akcie sa rátajú majiteľovi karty.
   Pečeň +1 je tvoja. Súper smie po odkrytí odpovedať jednou kartou mimo limitu, **lícom dole, za plný poldeci** (v11.16: vypije ho ako pri Vypiť — pečeň +1 hneď, 1 nerest; bez plného poldeci neodpovedá)
   (`place` / `bezReakcie`) — po otočení smie zmeniť prevahu v kraji aj počet Pitiek; Nástup až pri otočení. Nie na kartu, na ktorej
   už poldeci leží, ani na kartu so Vzburou (v11.1). NA EX na kartu
   pri lokalite mení len akcie karty, akcie hrany lokality ostávajú aktívne. NA EX na kartu
   s Posilnením zruší Posilnenie aj ×2 partnera na spoji (2026-10-24; partner ostáva ×1,
-  aj hrana lokality). Akcia zrušená Odporom nie je ani aktívna, ani neaktívna — NA EX ju
-  nezdvojí (v6.1).
+  aj hrana lokality). **NA EX na kartu s Odporom zruší Odpor a akcia, ktorú rušil, ožije ×1**
+  (v11.17; aj hrana lokality — môže pridať Pitku; súperove Hrable o ňu prídu; Veteránovi Odpor nezruší).
+  Akcia zrušená Odporom nie je ani aktívna, ani neaktívna — NA EX na jej karte ju nezdvojí (v6.1).
+  **Poldeci ako partner (v11.17):** nespárovaný Odpor na karte s NA EX ho **zahasí** (karta ako bez
+  NA EX, poldeci sa aj tak vypije — nastane len na súperovej Záverečnej či z Vínka, kým sa Odpor
+  nespáruje); nespárované Posilnenie NA EX **podrží**: aktívne akcie karty nezruší (ani Posilnenie
+  na spoji), neaktívne zdvojí ×2. Oboje na karte = vyhrá Odpor.
   Súperova **Svokra** mu v bitke dá Ranu navyše
   (akcia navyše; Vidly jej majiteľa ju zosilnia) za každú jeho kartu, na ktorej leží tvoj poldeci z NA EX — NA EX na svoje karty ju nespustí.
   Šofér (2026-11-08): ak si v kole nedal NA EX, v bitke Pecka a Rana navyše (Valaška a Vidly +1; cigareta zanikla). **Pijan** (v7): za každé tvoje NA EX v kole

@@ -186,11 +186,11 @@ describe("§7 odpoveď na NA EX stojí plný poldeci (v11.16)", () => {
   });
 
   it("odpoveď z pohľadu: vypitý poldeci a nerest sa pripíšu hneď", () => {
-    const t = tahy.find((x) => x.cmd.type === "place" && x.pred.pitkaStav?.frontaReakcii?.length)!;
+    // Druhý ešte odpovedá — Pitka sa nevyhodnotila, zmenu vidno čistú. Bez plného poldeci či
+    // karty by druhý odpoveď vynechal a Pitka by sa vyhodnotila hneď.
+    const t = tahy.find((x) => x.cmd.type === "place" && x.pred.pitkaStav?.frontaReakcii?.length && apply(data, x.pred, x.cmd, x.pred.pitkaStav.reakcia as PlayerId).state.pitkaStav?.reakcia === opponentOf(x.pred.pitkaStav.reakcia as PlayerId))!;
     const q = t.pred.pitkaStav!.reakcia as PlayerId;
     const po = apply(data, t.pred, t.cmd, q).state;
-    // Druhý ešte odpovedá — Pitka sa nevyhodnotila, zmenu vidno čistú.
-    expect(po.pitkaStav?.reakcia).toBe(opponentOf(q));
     expect(po.hraci[q].poldeciPlne).toBe(t.pred.hraci[q].poldeciPlne - 1);
     expect(po.hraci[q].poldeciVypite).toBe(t.pred.hraci[q].poldeciVypite + 1);
     expect(po.hraci[q].nerestiTotoKolo).toBe(t.pred.hraci[q].nerestiTotoKolo + 1);

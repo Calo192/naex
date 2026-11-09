@@ -365,13 +365,16 @@
     {
       "id": "7.naex.aktivna-aj-neaktivna",
       "paragraf": "7. Pitka › NA EX",
-      "pravidlo": "NA EX len na kartu s aspoň 1 aktívnou a aspoň 1 neaktívnou akciou (aj Veterán); súperova skrytá Záverečná vždy a skryté Záverečné sa do posúdenia nerátajú (Michal 2026-10-23).",
+      "pravidlo": "NA EX len na kartu s aspoň 1 aktívnou a aspoň 1 neaktívnou akciou (aj Veterán; neaktívny Pakt a neaktívne Posilnenie sa nerátajú, v11.17) a nie na kartu s neaktívnym Odporom (v11.17); súperova skrytá Záverečná vždy a skryté Záverečné sa do posúdenia nerátajú (Michal 2026-10-23).",
       "stav": "pokryte",
       "testy": [
         "packages/core/test/naex-podmienka.test.ts › nie na osamotenú kartu (žiadna aktívna) ani na kartu so všetkými akciami aktívnymi; na zmiešanú áno",
         "packages/core/test/naex-podmienka.test.ts › Veterán výnimku nemá — so všetkými akciami aktívnymi naňho NA EX nejde",
         "packages/core/test/naex-podmienka.test.ts › server NA EX na osamotenú kartu odmietne",
-        "packages/core/test/naex-podmienka.test.ts › sused, ktorého akciu páruje len skrytá Záverečná, nie je cieľom pre nikoho — server aj klient súpera vidia to isté"
+        "packages/core/test/naex-podmienka.test.ts › sused, ktorého akciu páruje len skrytá Záverečná, nie je cieľom pre nikoho — server aj klient súpera vidia to isté",
+        "packages/core/test/naex-odpor-p2.test.ts › na kartu so štítom NA EX nejde; bez Odporu áno",
+        "packages/core/test/naex-odpor-p2.test.ts › výber: neaktívne Posilnenie sa do „neaktívnej“ neráta — sama by NA EX nič nezmenilo",
+        "packages/core/test/naex-odpor-p2.test.ts › výber: karta, ktorej jediná aktívna akcia je Odpor, je cieľ — NA EX partnera pustí"
       ]
     },
     {
@@ -452,12 +455,45 @@
     {
       "id": "7.naex.partner-zrusenej",
       "paragraf": "7. Pitka › NA EX",
-      "pravidlo": "Partner akcie, ktorú NA EX zrušil (akejkoľvek), ostáva na spoji aktívny ×1.",
+      "pravidlo": "Partner akcie, ktorú NA EX zrušil, ostáva na spoji aktívny ×1 — pri Posilnení prichádza o ×2, pri Odpore ožije (v11.17).",
       "stav": "pokryte",
       "testy": [
         "packages/core/test/naex-posilnenie.test.ts › NA EX zruší Pecku partnera, jeho Rana na spoji ostáva aktívna ×1"
       ],
       "poznamka": "Návrh #41 A (rozhodca, Michal 2026-10-28)."
+    },
+    {
+      "id": "7.naex.odpor",
+      "paragraf": "7. Pitka › NA EX",
+      "pravidlo": "NA EX na kartu s Odporom zruší Odpor aj zrušenie partnera: akcia, ktorú Odpor rušil, ožije ×1 (aj hrana lokality; pod Vzburou partnera neaktívna; NA EX na partnerovi ju zruší; Hrable o ňu prídu); Veteránovi Odpor nezruší; spoj Odpor–Odpor nič neoživí, Vzbura ostáva (v11.17, Michal 2026-11-09).",
+      "stav": "pokryte",
+      "testy": [
+        "packages/core/test/naex-odpor-p2.test.ts › akcia, ktorú Odpor rušil, ožije ×1; NA EX karte zruší Pecku a zdvojí Vieru",
+        "packages/core/test/naex-odpor-p2.test.ts › Hrable: zrušená akcia, ktorú Hrable kradli, sa po NA EX vráti majiteľovi ×1",
+        "packages/core/test/naex-odpor-p2.test.ts › partner pod Vzburou ožije ako spojený, teda neaktívny",
+        "packages/core/test/naex-odpor-p2.test.ts › partner s vlastným NA EX: ožije a jeho NA EX ho zruší",
+        "packages/core/test/naex-odpor-p2.test.ts › súperov Odpor na akcii karty s NA EX: bez NA EX na karte s Odporom akcia ostáva zrušená",
+        "packages/core/test/naex-odpor-p2.test.ts › Energeťák chráni Posilnenie, Odpor nie; Zapaľovač podrží Cigaretu a Odpor aj tak zruší",
+        "packages/core/test/naex-odpor-p2.test.ts › Veterán: NA EX mu Odpor nezruší (zdvojí ho naprázdno) — partner ostáva zrušený, Pecka ×2",
+        "packages/core/test/naex-odpor-p2.test.ts › hrana lokality zrušená Odporom karty ožije — aktivuje Pitku",
+        "packages/core/test/naex-odpor-p2.test.ts › Vzbura, ktorá vznikla až po výbere: NA EX zruší Odpory spoja, Vzbura ostáva, nič neožije"
+      ]
+    },
+    {
+      "id": "7.naex.poldeci-partner",
+      "paragraf": "7. Pitka › NA EX",
+      "pravidlo": "Poldeci ako partner (v11.17): neaktívny Odpor karty s NA EX ho zahasí (karta ako bez neho, aj Vínko a Veterán; Výtržník štít nemá), neaktívne Posilnenie ho podrží — aktívne akcie karty nezruší, neaktívne zdvojí ×2; oboje = vyhrá Odpor.",
+      "stav": "pokryte",
+      "testy": [
+        "packages/core/test/naex-odpor-p2.test.ts › NA EX zhasne: karta sa ráta ako bez neho a vyhodnotenie nesie naexStit",
+        "packages/core/test/naex-odpor-p2.test.ts › Odpor a Posilnenie bez partnera na jednej karte: vyhrá Odpor",
+        "packages/core/test/naex-odpor-p2.test.ts › štít platí aj pre NA EX z Vínka; keď sa Odpor spáruje, NA EX platí",
+        "packages/core/test/naex-odpor-p2.test.ts › Veterán so štítom: NA EX mu aktívne nezdvojí",
+        "packages/core/test/naex-odpor-p2.test.ts › zrážka (Výtržník): štít nevznikne, všetky akcie sú Rany",
+        "packages/core/test/naex-odpor-p2.test.ts › rekapitulácia: NA EX nič nezdvojilo ani nezrušilo, zahasil ho Odpor",
+        "packages/core/test/naex-odpor-p2.test.ts › Rana ostáva ×1, neaktívna Viera ×2 — nie ×4",
+        "packages/core/test/naex-odpor-p2.test.ts › aktívne Posilnenie tej karty NA EX tiež nezruší — partner má ×2 ďalej"
+      ]
     },
     {
       "id": "7.odpoved",

@@ -9,7 +9,7 @@
 import type { DamageResult } from "./battle.ts";
 import type { GameData } from "./data.ts";
 import type { BitkaNaNastenke, Event, RozpisPoskodenia } from "./engine.ts";
-import type { ActionSums, LineEval, LineState, ZdrojAkcie } from "./partia.ts";
+import type { ActionSums, LineEval, LineState, NaexStit, ZdrojAkcie } from "./partia.ts";
 import { evaluateLine } from "./partia.ts";
 import { sDlhmiPoradkyne } from "./effects.ts";
 import type { Action, PlayerId } from "./types.ts";
@@ -41,6 +41,8 @@ export interface NaexNaKarte {
    */
   readonly akcieZdvojene?: Readonly<Partial<Record<Action, number>>>;
   readonly akcieZrusene?: Readonly<Partial<Record<Action, number>>>;
+  /** Neaktívny Odpor NA EX zahasil, neaktívne Posilnenie ho podržalo (v11.17); chýba = ani jedno. */
+  readonly stit?: NaexStit;
 }
 
 export interface NaexRekapitulacie {
@@ -261,7 +263,7 @@ export function ucinokNaex(data: GameData, line: LineState, ev: LineEval = evalu
         akcieZdvojene[a] = nula(akcieZdvojene[a]) + 1;
       }
     });
-    karty.push({ uid: pl.card.uid, defId: pl.card.defId, majitel: pl.playedBy, dal: pl.naexBy as PlayerId, zdvojilo, zrusilo, akcieZdvojene, akcieZrusene });
+    karty.push({ uid: pl.card.uid, defId: pl.card.defId, majitel: pl.playedBy, dal: pl.naexBy as PlayerId, zdvojilo, zrusilo, akcieZdvojene, akcieZrusene, ...(s.naexStit !== undefined ? { stit: s.naexStit } : {}) });
   }
   const suma = (k: "zdvojilo" | "zrusilo"): Dvojica => dvojica((p) => karty.filter((x) => x.majitel === p).reduce((a, x) => a + x[k], 0));
   return { karty, zdvojilo: suma("zdvojilo"), zrusilo: suma("zrusilo") };

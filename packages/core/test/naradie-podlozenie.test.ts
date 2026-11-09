@@ -204,12 +204,17 @@ describe("hrana posilnenia (Puška, Michal 2026-11-09)", () => {
 
   it("násobí sa s Forsážou (×4); NA EX hostiteľa posilnené zruší a neaktívne zdvojí len ×2", () => {
     const lavy = instanceFor(sd, "lavy_posil", [null, null, "Posilnenie", null], EMPTY);
-    const sForsazou = (podlozene: readonly PodlozenyNastroj[]): LineState => ({ lokalita: null, lokalitaOtocena: false, strany: [[{ card: lavy, playedBy: 0 }, { card: strelec, playedBy: 0, podlozene }, { card: sused(), playedBy: 0 }], []] });
+    const sForsazou = (podlozene: readonly PodlozenyNastroj[], naexBy?: PlayerId): LineState => ({
+      lokalita: null,
+      lokalitaOtocena: false,
+      strany: [[{ card: lavy, playedBy: 0 }, { card: strelec, playedBy: 0, podlozene, ...(naexBy === undefined ? {} : { naexBy }) }, { card: sused(), playedBy: 0 }], []],
+    });
     expect(evaluateLine(sd, sForsazou([])).cards.get(strelec.uid)?.left[0]?.nasobok).toBe(2);
     const f = evaluateLine(sd, sForsazou(pod("puska_posil", "horna"))).cards.get(strelec.uid);
     expect(f?.left[0]?.nasobok).toBe(4);
     expect(f?.left[1]?.nasobok).toBe(2);
-    const naex = evaluateLine(sd, linia({ card: strelec, playedBy: 0, naexBy: 1, podlozene: pod("puska_posil", "dolna") }, sused()));
+    // Posilnenie strelca na spoji s ľavým (bez neho by neaktívne Posilnenie NA EX podržalo, v11.17).
+    const naex = evaluateLine(sd, sForsazou(pod("puska_posil", "dolna"), 1));
     expect(naex.cards.get(strelec.uid)?.left[1]).toMatchObject({ action: "Pecka", stav: "zrusena" });
     expect(naex.cards.get(strelec.uid)?.right[0]).toMatchObject({ action: "Pecka", stav: "aktivna", nasobok: 2 });
   });
@@ -246,7 +251,8 @@ describe("kartové účinky — presne ako dnešnou cestou", () => {
     const sForsazou = (podlozene: readonly PodlozenyNastroj[]): LineState => ({ lokalita: null, lokalitaOtocena: false, strany: [[{ card: lavy, playedBy: 0 }, { card: host, playedBy: 0, podlozene }, { card: sused, playedBy: 0 }], []] });
     expect(evaluateLine(sd, sForsazou([])).cards.get(host.uid)?.left[1]?.nasobok).toBe(2);
     expect(evaluateLine(sd, sForsazou(pod("energetak"))).cards.get(host.uid)?.left[1]?.nasobok).toBe(4);
-    const sNaex = evaluateLine(sd, linia({ card: host, playedBy: 0, naexBy: 1, podlozene: pod("energetak") }, sused));
+    // Posilnenie hostiteľa na spoji s ľavým — neaktívne by NA EX podržalo (v11.17).
+    const sNaex = evaluateLine(sd, { ...sForsazou(pod("energetak")), strany: [[{ card: lavy, playedBy: 0 }, { card: host, playedBy: 0, naexBy: 1, podlozene: pod("energetak") }, { card: sused, playedBy: 0 }], []] });
     expect(sNaex.cards.get(host.uid)?.left[1]).toMatchObject({ stav: "zrusena" });
     expect(sNaex.cards.get(host.uid)?.right[0]).toMatchObject({ action: "Viera", stav: "aktivna", nasobok: 2 });
     expect(sNaex.cards.get(host.uid)?.forsaz).toBe(true);
@@ -259,13 +265,17 @@ describe("kartové účinky — presne ako dnešnou cestou", () => {
     expect(zVinka.cards.get(host.uid)).toEqual(sPoldecom.cards.get(host.uid));
     expect(zVinka.sums).toEqual(sPoldecom.sums);
     const lok = makeDef("lok", ["Viera", "Viera", "Viera", "Viera"], ["Viera", "Viera", "Viera", "Viera"], { tags: ["Lokalita"] });
-    const sl = syntheticData([...sd.cards.values(), lok]);
+    // Hostiteľ bez Odporu na voľnej hrane — nespárovaný Odpor NA EX zahasí a cieľom by nebol (v11.17).
+    const R3: Layout4 = ["Rana", "Rana", null, "Rana"];
+    const sl = syntheticData([...sd.cards.values(), lok, makeDef("host_ciel", R3, H_R)]);
     const lokalita = instanceFor(sl, "lok", ["Viera", "Viera", "Viera", "Viera"], ["Viera", "Viera", "Viera", "Viera"]);
+    const hc = instanceFor(sl, "host_ciel", R3, H_R);
     const ciele = (pl: PlacedCard): number[] => naexCieleVLinii(sl, { lokalita, lokalitaOtocena: false, strany: [[pl], []] }, 1);
-    expect(ciele({ card: host, playedBy: 0 })).toEqual([host.uid]);
-    expect(ciele({ card: host, playedBy: 0, podlozene: pod("vinko") })).toEqual([]);
-    expect(ciele({ card: host, playedBy: 0, podlozene: pod("lievik") })).toEqual([]);
-    expect(ciele({ card: host, playedBy: 0, podlozene: pod("vidly") })).toEqual([]);
+    expect(ciele({ card: host, playedBy: 0 })).toEqual([]);
+    expect(ciele({ card: hc, playedBy: 0 })).toEqual([hc.uid]);
+    expect(ciele({ card: hc, playedBy: 0, podlozene: pod("vinko") })).toEqual([]);
+    expect(ciele({ card: hc, playedBy: 0, podlozene: pod("lievik") })).toEqual([]);
+    expect(ciele({ card: hc, playedBy: 0, podlozene: pod("vidly") })).toEqual([]);
   });
 
   it("Výtržník z Injekcie = Výtržník zo zrážky NA EX", () => {

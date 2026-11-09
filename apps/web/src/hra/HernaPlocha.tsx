@@ -2937,8 +2937,10 @@ export function HernaPlocha({
       const vybranaNaex = mode.typ === "naexCiel" && mode.uid === uid;
       const presunieSa = presunute.has(uid);
       const peciatkaNaex = naexNaKarteVLinii(naexBy, placed.naexBy2, skryteMoje, skryteSupera);
+      // Neaktívny Odpor či Posilnenie spárované s poldecom (v11.17) — hráč má vidieť, prečo NA EX nič nezrušilo.
+      const naexStit = lineEval.cards.get(uid)?.naexStit;
       const stitky =
-        nova || otocena || presunieSa || vytrznik || vybranaNaex || placed.zaverecna === true ? (
+        nova || otocena || presunieSa || vytrznik || vybranaNaex || naexStit !== undefined || placed.zaverecna === true ? (
           <>
             {presunieSa && (
               <span className="nova-stitok" title="Navrhnutá Dohadzovačka túto kartu po potvrdení presunie z druhého kraja za seba (na koniec línie).">
@@ -2956,6 +2958,18 @@ export function HernaPlocha({
                 title={`Zrážka NA EX: obaja ste dali poldeci na túto kartu. Do konca bitky je z nej Výtržník — každá jej akcia je Rana pre ${placed.playedBy === ja ? "teba" : menoHraca(placed.playedBy)}. Po bitke vytriezvie.`}
               >
                 <IkonaPoldeci /> Výtržník · Rany pre {placed.playedBy === ja ? "teba" : menoHraca(placed.playedBy)}
+              </span>
+            )}
+            {naexStit !== undefined && !vytrznik && (
+              <span
+                className="naex-nad"
+                title={
+                  naexStit === "Odpor"
+                    ? "Nespárovaný Odpor sa postavil proti poldecu a NA EX zahasil — karta sa ráta ako bez neho. Keď sa Odpor spáruje, NA EX začne platiť."
+                    : "Nespárované Posilnenie posilnilo NA EX: aktívne akcie karty nezrušil, neaktívne zdvojil."
+                }
+              >
+                <IkonaPoldeci /> {naexStit === "Odpor" ? "Odpor zahasil NA EX" : "Posilnenie drží akcie"}
               </span>
             )}
             {/* Nad kartou ako NA EX — pod ňou zakrýval text efektu (UI inšpekcia); za štítkom NA EX sa posunie vyššie. */}
@@ -4559,7 +4573,7 @@ export function HernaPlocha({
         const limitPoVybranej = vybrana === undefined ? limitPo : limitBuduceKolo(vybrana.odkrytie.view, ja, false, data);
         const textVyberu = naRub ? (
           <span className="naex-vyber-text">
-            <strong>NA EX na súperovu Záverečnú</strong> · nevieš, čo to je — prejde vždy, aktívne akcie zruší a neaktívne zdvojí ako pri každej karte · pečeň +1
+            <strong>NA EX na súperovu Záverečnú</strong> · nevieš, čo to je — prejde vždy, aktívne akcie zruší a neaktívne zdvojí ako pri každej karte (nespárovaný Odpor ho zahasí, nespárované Posilnenie aktívne podrží) · pečeň +1
           </span>
         ) :
           vybrana === undefined || odhad === null ? null : (

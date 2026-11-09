@@ -421,12 +421,26 @@ export const KAPITOLY: readonly Kapitola[] = [
         </p>
         <ul>
           <li>Nedá sa dať na kartu, na ktorej už poldeci leží, ani na kartu, pod ktorou leží Vínko, Injekcia alebo Vidly.</li>
-          <li>Akcia zrušená Odporom nie je ani aktívna, ani neaktívna — NA EX ju nezdvojí.</li>
+          <li>
+            Nedá sa dať ani na kartu s <strong>nespárovaným Odporom</strong> — ten by NA EX zahasil. Neaktívny Pakt
+            a neaktívne Posilnenie sa do neaktívnych akcií nerátajú.
+          </li>
+          <li>Akcia zrušená Odporom nie je ani aktívna, ani neaktívna — NA EX na jej karte ju nezdvojí.</li>
           <li>Na Kostole len na kartu na konci línie (na ktoromkoľvek z dvoch koncov), najďalej od Kostola.</li>
           <li>NA EX na kartu pri lokalite mení len akcie karty — akcie hrany lokality ostávajú aktívne.</li>
           <li>
             NA EX na kartu s Posilnením zruší Posilnenie aj ×2, ktoré dávalo partnerovi na spoji — partnerova akcia (aj hrana
             lokality) ostáva aktívna, ale len ×1. Rovnako pri každej zrušenej akcii: jej partner na spoji ostáva aktívny ×1.
+          </li>
+          <li>
+            NA EX na kartu s Odporom zruší Odpor a <strong>akcia, ktorú Odpor rušil, ožije</strong> (×1) — aj hrana lokality.
+            Takto si NA EX na súperovu kartu vrátiš akciu, ktorú ti jeho Odpor zabíjal.
+          </li>
+          <li>
+            <strong>Poldeci ako partner:</strong> nespárovaný Odpor alebo Posilnenie karty s NA EX sa spáruje s poldecom.
+            Odpor NA EX <strong>zahasí</strong> — karta je ako bez neho, poldeci sa aj tak vypije (stane sa to pri súperovej
+            Záverečnej či NA EX z Vínka, kým sa Odpor nespáruje). Posilnenie NA EX <strong>podrží</strong> — aktívne akcie
+            karty nezruší, neaktívne zdvojí. Keď má karta oboje, vyhrá Odpor.
           </li>
           <li>Veterán je výnimka: NA EX mu aktívne akcie zdvojí (nezruší) a neaktívne nechá.</li>
           <li>Súperovu Záverečnú (lícom dole) smie dostať NA EX vždy.</li>
@@ -981,6 +995,7 @@ export const KAPITOLY: readonly Kapitola[] = [
           </li>
           <li>
             NA EX na kartu s Posilnením zruší jej Posilnenie: partnerovi už nič nezdvojí a Forsáž zanikne obom kartám.
+            NA EX na kartu s Odporom zruší Odpor a akcia, ktorú rušil, ožije.
           </li>
         </ul>
       </>

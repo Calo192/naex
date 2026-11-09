@@ -522,11 +522,16 @@ function vykresli(v: ClientState, mena: readonly string[]): string {
       : jehoSkryteNaex.some((x) => x.uid === uid)
         ? " (súperovo skryté — vidíš ho cez Bzdochu, odkryje sa, keď skončíš)"
         : "";
+  // Poldeci ako partner (v11.17): nespárovaný Odpor NA EX zahasí, nespárované Posilnenie podrží aktívne akcie.
+  const stitText = (uid: number): string => {
+    const stit = lineEval.cards.get(uid)?.naexStit;
+    return stit === "Odpor" ? " — nespárovaný Odpor ho ZAHASIL (karta sa ráta ako bez NA EX, kým sa Odpor nespáruje)" : stit === "Posilnenie" ? " — nespárované Posilnenie ho podrží: aktívne akcie karty nezruší, neaktívne zdvojí" : "";
+  };
   // Zrážka (playtest 20261027-062058): pri dvoch NA EX na jednej karte treba oboch.
   const naexText = (pl: PlacedCard): string =>
     pl.naexBy === undefined
       ? ""
-      : `, NA EX: ${kto(pl.naexBy)}${pl.naexBy2 !== undefined ? ` aj ${kto(pl.naexBy2)} — zrážka${pl.vytrznik === true ? ", z karty je Výtržník" : ""}` : ""}${skryteText(pl.card.uid)}`;
+      : `, NA EX: ${kto(pl.naexBy)}${pl.naexBy2 !== undefined ? ` aj ${kto(pl.naexBy2)} — zrážka${pl.vytrznik === true ? ", z karty je Výtržník" : ""}` : ""}${skryteText(pl.card.uid)}${stitText(pl.card.uid)}`;
   const podlozeneText = (pl: PlacedCard): string =>
     (pl.podlozene ?? []).length === 0 ? "" : `, pod ňou: ${popisPodlozenych(DATA, pl).map((t, i) => `${t} — ${kto(pl.podlozene?.[i]?.majitel ?? ja)}`).join("; ")}`;
   const zaverecnaText = (pl: PlacedCard): string =>
@@ -996,6 +1001,17 @@ function moznosti(v: ClientState): string[] {
       const ciele = new Set(moznostiNaexVPohlade(DATA, v));
       const naexEste = ciele.size > 0;
       if (mojeSkryte.length > 0) out.push(`(Skryto si dal ${mojeSkryte.length === 1 ? "NA EX" : `${mojeSkryte.length} NA EX`} — odkryje sa, keď obaja skončíte Pitku; súper potom smie odpovedať jednou kartou lícom dole za každé.)`);
+      // Čo NA EX na karte urobí (v11.17): nespárované Posilnenie ho podrží, zrušený Odpor pustí partnera.
+      const evNaex = naexEste ? evaluateLine(DATA, lineState(v)) : null;
+      const ucinokNaexText = (uid: number, defId: string): string => {
+        if (defId === "veteran") return "Veterán: zdvojí jeho aktívne akcie a nezruší ich, neaktívne nechá";
+        const k = evNaex?.cards.get(uid);
+        const sloty = [...(k?.left ?? []), ...(k?.right ?? [])];
+        const posil = sloty.some((x) => x?.action === "Posilnenie" && x.stav === "neaktivna");
+        const odpor = sloty.some((x) => x?.action === "Odpor" && x.stav === "aktivna");
+        if (posil) return "nespárované Posilnenie NA EX podrží: aktívne akcie karty nezruší, neaktívne zdvojí";
+        return `zruší jej aktívne akcie, zdvojí neaktívne${odpor ? "; zrušený Odpor pustí akciu, ktorú rušil (ožije ×1)" : ""}`;
+      };
       if (naexEste) {
         for (const p of [0, 1] as const) {
           for (const pl of v.strany[p]) {
@@ -1004,7 +1020,7 @@ function moznosti(v: ClientState): string[] {
             const moja = pl.playedBy === ja;
             c(
               { type: "naex", uid: pl.card.uid },
-              `NA EX na ${moja ? "svoju" : "SÚPEROVU"} kartu ${meno(pl.card.defId)} (${p === ja ? "vľavo" : "vpravo"}) — ${pl.card.defId === "veteran" ? "Veterán: zdvojí jeho aktívne akcie a nezruší ich, neaktívne nechá" : "zruší jej aktívne akcie, zdvojí neaktívne"} (rátajú sa ${moja ? "tebe" : "súperovi"}; násobky sa násobia, NA EX × Silná žena = ×4); pečeň +1 tebe, poldeci sa pri bitke vypije; skryto — súper ho uvidí až po tom, čo obaja skončíte Pitku (ak naň dá NA EX aj on, je z karty Výtržník: všetky akcie Rany pre majiteľa), potom smie odpovedať jednou kartou${cenaNaexText(v, pl.card.uid)}`,
+              `NA EX na ${moja ? "svoju" : "SÚPEROVU"} kartu ${meno(pl.card.defId)} (${p === ja ? "vľavo" : "vpravo"}) — ${ucinokNaexText(pl.card.uid, pl.card.defId)} (rátajú sa ${moja ? "tebe" : "súperovi"}; násobky sa násobia, NA EX × Silná žena = ×4); pečeň +1 tebe, poldeci sa pri bitke vypije; skryto — súper ho uvidí až po tom, čo obaja skončíte Pitku (ak naň dá NA EX aj on, je z karty Výtržník: všetky akcie Rany pre majiteľa), potom smie odpovedať jednou kartou${cenaNaexText(v, pl.card.uid)}`,
             );
           }
         }

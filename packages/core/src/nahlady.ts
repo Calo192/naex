@@ -406,7 +406,10 @@ export function najhorsiaOdpoved(
   if (po.ciel === null || po.hraci[su].rukaPocet <= 0 || po.hraci[su].poldeciPlne < KONSTANTY.CENA_ODPOVEDE_POLDECI) return null;
   const hodnotaPreMna = (v: BattleOutcome): number =>
     (v.vitaz === null ? 0 : v.vitaz === ja ? 1000 : -1000) + (v.prebytokDrzi === null ? 0 : v.prebytokDrzi === ja ? v.prebytok : -v.prebytok);
-  const bitka = (s: ClientState): DamageResult => poskodenieStola(data, stolPriPoskodeni(data, s, dalsiePitky));
+  // Odpoveď smie zmeniť počet Pitiek (spáruje hranu lokality) — ďalšie Pitky ako cenaTahu, inak by
+  // náhľad nezarátal Dlhy z pridanej Pitky (napr. aktívny Dlh, ktorý NA EX pri neaktívnom Posilnení nezruší).
+  const pitkyPo = dalsiePitkyKola(data, po);
+  const bitka = (s: ClientState): DamageResult => poskodenieStola(data, stolPriPoskodeni(data, s, Math.max(0, dalsiePitky + dalsiePitkyKola(data, s) - pitkyPo)));
   let najhorsia: NajhorsiaOdpoved | null = null;
   let najhorsiaHodnota = hodnotaPreMna(battleOutcome(bitka(po)));
   const lokalita = cielLokalitaId(po);

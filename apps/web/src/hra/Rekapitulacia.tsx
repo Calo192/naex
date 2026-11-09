@@ -299,7 +299,10 @@ function riadkyNaex(naex: NaexRekapitulacie, odpovede: readonly OdpovedNaNaex[],
     if (x.akcieZrusene === undefined && x.zrusilo > 0) casti.push(text("✕"), tucne(x.zrusilo));
     if (zdvojene.length > 0) casti.push(text("×2"), { t: "akcie", akcie: zdvojene, kto: x.majitel });
     if (zrusene.length > 0) casti.push(text("✕"), { t: "akcie", akcie: zrusene, zrusene: true, kto: x.majitel });
-    if (x.zdvojilo + x.zrusilo === 0) casti.push(text("bez aktívnych akcií"));
+    // Neaktívny modifikátor karty sa spároval s poldecom (v11.17).
+    if (x.stit === "Odpor") casti.push(text("— nespárovaný Odpor NA EX zahasil"));
+    else if (x.stit === "Posilnenie") casti.push(text("— nespárované Posilnenie podržalo aktívne akcie"));
+    else if (x.zdvojilo + x.zrusilo === 0) casti.push(text("bez aktívnych akcií"));
     return { druh: "naex", kto: x.dal, casti, krok: 0 };
   });
   for (const o of odpovede) {

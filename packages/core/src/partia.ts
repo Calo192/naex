@@ -29,10 +29,13 @@
 //    cestou, akou ich karta dostane inak — v poradí spoje → Vzbura → Výherné žreby → Forsáž →
 //    NA EX → Výtržník. Hrana posilnenia (Puška) zdvojí aktívne X hostiteľa v kroku Forsáže.
 //    Odpor proti Posilneniu je Vzbura len karty s Odporom a jej aktívne akcie sú posilnené.
-//  - Vzbura ani NA EX neoživujú akcie zrušené Odporom.
-//  - NA EX mení len akcie cieľovej karty; zrušenie Odporom na susedovi
-//    ostáva. Výnimka: zrušené Posilnenie prestane zdvojovať partnera na spoji
-//    (Michal 2026-10-24, O1 z playtestu 20261024-075830).
+//  - Vzbura neoživuje akcie zrušené Odporom.
+//  - NA EX mení akcie cieľovej karty a cez jej modifikátory aj partnerov na spojoch: zrušené
+//    Posilnenie prestane zdvojovať partnera (Michal 2026-10-24, O1 z playtestu 20261024-075830),
+//    zrušený Odpor partnera pustí (v11.17, P2 „Poldeci ako partner“). Zrušenie Odporom suseda
+//    ostáva, kým ten sused NA EX nemá.
+//  - Neaktívny Odpor či Posilnenie karty s NA EX sa spáruje s poldecom (v11.17): Odpor NA EX
+//    zahasí, Posilnenie nedá NA EX zrušiť aktívne akcie karty.
 //
 // Efekty kariet, ktoré závisia od polohy v línii (Silná nezávislá žena,
 // Zámočník, Mäsiar, Pes, Liberál; premena Šarlatána a Miňištranta), sa vyhodnocujú tu, po spojoch
@@ -219,6 +222,11 @@ export interface CardLineEval {
   readonly vzbura: boolean;
   /** Forsáž (v10.3): Posilnenie proti Posilneniu na niektorom spoji karty, NA EX ju nezrušil; aj z Energeťáka pod kartou. */
   readonly forsaz: boolean;
+  /**
+   * NA EX na karte stretol neaktívny modifikátor (v11.17): „Odpor“ ho zahasil (karta je ako bez
+   * neho), „Posilnenie“ ho podržalo (aktívne akcie nezrušil). Chýba = NA EX platí celé alebo nie je.
+   */
+  readonly naexStit?: NaexStit;
   readonly left: readonly (SlotEval | null)[];
   readonly right: readonly (SlotEval | null)[];
   /** Efekty s akciami navyše a koľkokrát platia (navyse.ts); chýba = karta ich nemá. */
@@ -340,6 +348,10 @@ interface Elem {
   readonly zrusil: (string | null)[][];
   /** Akcie susedov, ktoré Posilnenie tejto karty zdvojilo — NA EX ich zdvojenie zruší. */
   readonly posilnene: { readonly elem: Elem; readonly side: 0 | 1; readonly k: number }[];
+  /** Akcie susedov, ktoré Odpor tejto karty zrušil — NA EX, ktorý Odpor zruší, ich pustí (v11.17). */
+  readonly odporom: { readonly elem: Elem; readonly side: 0 | 1; readonly k: number }[];
+  /** Neaktívny modifikátor spárovaný s poldecom NA EX (urciNaexStit); null = NA EX platí celé. */
+  naexStit: NaexStit | null;
   /** spojena[side][k]: slot má na spoji partnera (Výherné žreby rátajú podľa toho). */
   readonly spojena: boolean[][];
   /** zrusilOdporom[side][k]: majiteľ Odporu, ktorý akciu zrušil (Hrable). */
@@ -532,6 +544,8 @@ function makeElem(
     dovody: [0, 1].map(() => [[], [], [], []]),
     zrusil: [0, 1].map(() => [null, null, null, null]),
     posilnene: [],
+    odporom: [],
+    naexStit: null,
     spojena: [0, 1].map(() => [false, false, false, false]),
     zrusilOdporom: [0, 1].map(() => [null, null, null, null]),
     puska: [0, 1].map(() => [false, false, false, false]),
@@ -726,6 +740,7 @@ function resolveJunction(
         otherElem.stav[otherSide]![k] = "zrusena";
         otherElem.zrusil[otherSide]![k] = "Odpor";
         otherElem.zrusilOdporom[otherSide]![k] = odporElem.isLokalita ? null : odporElem.owner;
+        odporElem.odporom.push({ elem: otherElem, side: otherSide, k });
       }
       // Posilnenie + Odpor (v11.1, Michal 2026-11-02): Vzbura IBA karty s Odporom, jej aktívne akcie posilnené.
       if (otherAct === "Posilnenie") {
@@ -788,13 +803,72 @@ function vyherneZreby(elem: Elem, line: Pick<LineState, "nastroje">): void {
   }
 }
 
+/** Leží na karte NA EX — poldeci či Vínko pod ňou? */
+function maNaex(elem: Elem): boolean {
+  return elem.naexBy !== undefined || elem.naexNastroj;
+}
+
 /**
- * Zruší NA EX Posilnenie tejto karty? Veteránovi nie, Energeťák majiteľa ho chráni
- * (Dedičstvo, Náradie 2026-10-30). Lokalita NA EX nedostáva.
+ * Ruší NA EX aktívne akcie tejto karty? Nie, keď ho zahasil neaktívny Odpor, keď jej neaktívne
+ * Posilnenie aktívne akcie podrží (v11.17), ani Veteránovi (NA EX mu ich zdvojí).
+ */
+function naexRusiAktivne(elem: Elem): boolean {
+  return maNaex(elem) && elem.naexStit === null && elem.defId !== "veteran";
+}
+
+/**
+ * Zruší NA EX Posilnenie tejto karty? Len keď ruší aktívne akcie (naexRusiAktivne); Energeťák
+ * majiteľa ho chráni (Dedičstvo, Náradie 2026-10-30). Lokalita NA EX nedostáva.
  */
 function naexRusiPosilnenie(elem: Elem, line: Pick<LineState, "nastroje">): boolean {
-  if ((elem.naexBy === undefined && !elem.naexNastroj) || elem.defId === "veteran") return false;
+  if (!naexRusiAktivne(elem)) return false;
   return elem.isLokalita || !maNastroj(line, elem.owner, "energetak");
+}
+
+/** Neaktívny modifikátor karty, ktorý sa spáruje s poldecom NA EX (v11.17). */
+export type NaexStit = "Odpor" | "Posilnenie";
+
+/**
+ * Poldeci ako partner (v11.17, P2 v miernejšej podobe, docs/napady/naex-odpor-posilnenie.html):
+ * neaktívna akcia nemá partnera a NA EX jej ho dá v podobe poldeca. Neaktívny Odpor ruší, čo má
+ * oproti sebe — NA EX na karte zhasne a karta je ako bez neho (poldeci sa aj tak vypije).
+ * Neaktívne Posilnenie NA EX podrží: aktívne akcie karty nezruší, neaktívne zdvojí ako vždy
+ * (×4 z návrhu by bolo priveľa). Keď má karta oboje, vyhrá Odpor. Beží po Vzbure — nespojený
+ * Odpor karty so Vzburou je aktívny, štítom nie je.
+ */
+function urciNaexStit(elem: Elem): void {
+  if (!maNaex(elem) || elem.isLokalita) return;
+  let stit: NaexStit | null = null;
+  for (const side of [0, 1] as const) {
+    const actions = side === 0 ? elem.effLeft : elem.effRight;
+    for (let k = 0; k < 4; k++) {
+      const a = actions[k];
+      if ((a !== "Odpor" && a !== "Posilnenie") || elem.stav[side]![k] !== "neaktivna") continue;
+      if (a === "Odpor") stit = "Odpor";
+      else stit ??= "Posilnenie";
+    }
+  }
+  elem.naexStit = stit;
+}
+
+/**
+ * NA EX zruší Odpor karty a s ním aj zrušenie, ktoré dával partnerovi na spoji (v11.17, Michal
+ * 2026-11-09 — ako pri Posilnení): partnerova akcia ožije ×1; pod Vzburou partnera je spojená,
+ * teda neaktívna. Beží pred Výhernými žrebmi, Forsážou a NA EX partnera, aby oživená akcia prešla
+ * všetkým ako každá iná (NA EX na partnerovi ju zruší). Veteránovi NA EX Odpor nezruší.
+ */
+function zrusOdpor(elem: Elem): void {
+  if (!naexRusiAktivne(elem)) return;
+  for (const { elem: partner, side, k } of elem.odporom) {
+    if (partner.stav[side]![k] !== "zrusena" || partner.zrusil[side]![k] !== "Odpor") continue;
+    // Modifikátor (Posilnenie, Pakt) proti Odporu nemá čo zdvojiť ani kopírovať — ožije naprázdno.
+    const modifikator = MODIFIERS.includes((side === 0 ? partner.effLeft : partner.effRight)[k] as Action);
+    const neaktivna = partner.vzbura[side] && !modifikator;
+    partner.stav[side]![k] = neaktivna ? "neaktivna" : "aktivna";
+    partner.nasobok[side]![k] = neaktivna || modifikator ? 0 : 1;
+    partner.zrusil[side]![k] = null;
+    partner.zrusilOdporom[side]![k] = null;
+  }
 }
 
 /**
@@ -912,7 +986,7 @@ function zrusPosilnenie(elem: Elem, line: Pick<LineState, "nastroje">): void {
 }
 
 function applyNaex(elem: Elem, line: Pick<LineState, "nastroje">): void {
-  if (elem.naexBy === undefined && !elem.naexNastroj) return;
+  if (!maNaex(elem) || elem.naexStit === "Odpor") return;
   // Zapaľovač, Energeťák a Telefón (Dedičstvo, Náradie 2026-10-30, v10): tvoje aktívne Cigarety,
   // Posilnenie, resp. Pohoršenia NA EX nezruší (a nezdvojí — ostávajú, ako sú).
   const imunne: Action[] = [];
@@ -924,18 +998,19 @@ function applyNaex(elem: Elem, line: Pick<LineState, "nastroje">): void {
     zdvojAktivne(elem, "NA EX", "NA EX");
     return;
   }
+  const rusi = naexRusiAktivne(elem);
   for (const side of [0, 1] as const) {
     const actions = side === 0 ? elem.effLeft : elem.effRight;
     for (let k = 0; k < 4; k++) {
       if (actions[k] == null) continue;
       const stav = elem.stav[side]![k];
-      if (stav === "aktivna" && imunne.includes(actions[k] as Action)) continue;
+      if (stav === "aktivna" && (!rusi || imunne.includes(actions[k] as Action))) continue;
       if (stav === "aktivna") {
         elem.stav[side]![k] = "zrusena";
         elem.nasobok[side]![k] = 0;
         elem.zrusil[side]![k] = "NA EX";
-      } else if (stav === "neaktivna" && actions[k] !== "Pakt") {
-        // Neaktívny Pakt nemá čo zdvojiť (12.3 bod 6).
+      } else if (stav === "neaktivna" && !MODIFIERS.includes(actions[k] as Action)) {
+        // Neaktívny Pakt nemá čo zdvojiť (12.3 bod 6); neaktívne Posilnenie sa spárovalo s poldecom (urciNaexStit).
         elem.stav[side]![k] = "aktivna";
         elem.nasobok[side]![k] = 2;
         elem.dovody[side]![k]!.push("NA EX");
@@ -1058,6 +1133,7 @@ function elemEval(elem: Elem): CardLineEval {
     uid: elem.uid,
     vzbura: elem.vzbura[0] || elem.vzbura[1],
     forsaz: elem.forsaz[0] || elem.forsaz[1] || elem.forsazNastroj,
+    ...(elem.naexStit !== null ? { naexStit: elem.naexStit } : {}),
     left: [0, 1, 2, 3].map((k) => printedSlot(0, k)),
     right: [0, 1, 2, 3].map((k) => printedSlot(1, k)),
   };
@@ -1146,6 +1222,8 @@ export function evaluateLine(data: GameData, line: LineState): LineEval {
     }
   }
   for (const elem of elems) applyVzbura(elem);
+  for (const elem of elems) urciNaexStit(elem);
+  for (const elem of elems) zrusOdpor(elem);
   for (const elem of elems) vyherneZreby(elem, line);
   applyForsaz(forsaze, vzburyPosilnene, elems, line);
   for (const elem of elems) zrusPosilnenie(elem, line);

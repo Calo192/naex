@@ -3294,3 +3294,13 @@ Staré znenie §7 Odpoveď na NA EX (v9.2–v11.15): „Po odkrytí smie hráč 
 Staré znenie §12 Podloženie (v11.14–v11.15): „Nástroj z ruky zasunieš pod kartu s tagom **Občan alebo Starešina** v línii, **svoju alebo súperovu** … Hrany sú voľné: posila aj sabotáž, pod svoju aj pod súperovu kartu.“ Od v11.16 len pod vlastné karty.
 
 Staré znenie §6 Preškolenie Školiteľa (v11.14–v11.15): „**Občan** s efektom „Spúšťač: Preškolenie {X}→{Y}.“ …“ Od v11.16 Občan alebo Zviera; Mäsiar umlčí aj Zviera-Školiteľa. Pakt ako akcia, ktorú kopíruje, pre všetky efekty (§2) je spresnenie bez zmeny hry.
+
+## v11.17 — NA EX × Odpor a Posilnenie (Michal 2026-11-09, Zrejúca)
+
+Michal: „Teraz sú to čisto mŕtve akcie pri NA EX.“ Návrh `docs/napady/naex-odpor-posilnenie.html`, prístup P2 „Poldeci ako partner“ v miernejšej podobe (neaktívne Posilnenie nie ×4, ale „NA EX nezruší aktívne akcie“), ktorú zvolil Leader na Michalovo „použi svoj najlepší odhad“. Nové znenie: `docs/PRAVIDLA.md`, Zmeny v11.17, §6 a §7.
+
+Staré znenie §7 NA EX na kartu s Posilnením (v4–v11.16): „… partnerova akcia (aj akcia hrany lokality) ostáva aktívna, ale už len ×1. Akcia, ktorú karta zrušila Odporom, ostáva zrušená.“ a hneď za ním „**Partner zrušenej akcie** na spoji (akcie, ktorú NA EX zrušil — akejkoľvek, nielen Posilnenia) ostáva **aktívny ×1**: spoj zaniká len pre zrušenú akciu.“ Jadro hralo prvú vetu: NA EX Odpor „zrušil“, ale partner ostal zrušený.
+
+Staré znenie §7 podmienky výberu (v6.1–v11.16): „NA EX sa dá len na kartu, ktorá má **aspoň jednu aktívnu a aspoň jednu neaktívnu akciu** …“ — neaktívny Odpor a Posilnenie sa rátali do neaktívnych (NA EX ich „zdvojil“ naprázdno, do súčtov nejdú), neaktívny Pakt nie. NA EX tak smelo na kartu, kde jediná neaktívna akcia bola Odpor či Posilnenie.
+
+Staré správanie jadra pri neaktívnom Odpore a Posilnení pod NA EX (do v11.16): „zdvojené“ na aktívne ×2 bez účinku; ostatné akcie karty NA EX zrušil a zdvojil ako vždy.

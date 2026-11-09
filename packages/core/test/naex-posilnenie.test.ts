@@ -66,11 +66,13 @@ describe("§7 NA EX na kartu s Posilnením (O1, Michal 2026-10-24)", () => {
 
   it("platí aj na súperovej karte: majiteľ partnera stratí ×2", () => {
     // Súperov posilňovač podstrčený vedľa partnera hráča 0; otočený o 180° — Posilnenie
-    // musí byť na vytlačenej ľavej strane odzadu, aby ležalo na spoji.
+    // musí byť na vytlačenej ľavej strane odzadu, aby ležalo na spoji. Vonkajšia hrana bez
+    // Posilnenia — neaktívne Posilnenie by NA EX podržalo (v11.17, naex-odpor-p2.test.ts).
     const obe: Layout4 = [null, null, null, "Posilnenie"];
-    const s = syntheticData([makeDef("posil_obe", obe, POSIL, { tags: ["Občan"] }), makeDef("partner", PARTNER_L, PARTNER_P, { tags: ["Občan"] })]);
+    const von: Layout4 = [null, "Rana", null, null];
+    const s = syntheticData([makeDef("posil_obe", obe, von, { tags: ["Občan"] }), makeDef("partner", PARTNER_L, PARTNER_P, { tags: ["Občan"] })]);
     const p = instanceFor(s, "partner", PARTNER_L, PARTNER_P);
-    const posil = instanceFor(s, "posil_obe", obe, POSIL);
+    const posil = instanceFor(s, "posil_obe", obe, von);
     const bez = linia(s, lezi(p, 0), lezi(posil, 1));
     const sNaex = linia(s, lezi(p, 0), lezi(posil, 1, 0));
     expect(bez.sums[0].Pecka).toBe(2);

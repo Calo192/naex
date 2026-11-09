@@ -276,7 +276,8 @@ describe("účtovná kniha poldeci", () => {
     const nakup = KROKY.filter((k) => k.cmd.type === "refillPoldeci" || k.cmd.type === "barter");
     expect(nakup.length).toBeGreaterThan(0);
     for (const { events, kto, cmd } of nakup) {
-      expect(prisunPoldeci(events)[kto]?.riadky).toEqual([{ zdroj: cmd.type === "barter" ? "barter" : "doliatie", suma: 1 }]);
+      // Keď ťah Pitku dohrá (nevyhnutné ťahy hrá hra sama), pribudnú aj akcie Poldeci z jej vyhodnotenia.
+      expect(prisunPoldeci(events)[kto]?.riadky).toContainEqual({ zdroj: cmd.type === "barter" ? "barter" : "doliatie", suma: 1 });
     }
   });
 
