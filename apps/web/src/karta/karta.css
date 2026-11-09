@@ -837,6 +837,12 @@ body:not(.tahanie-aktivne) .ruka-rad > .tahatelna:is(:hover, :focus-visible) .kl
   right: -18%;
 }
 
+/* Pri rohu vpravo hore by ×N zakryl (Michal 2026-11-09) — násobiteľ ide do pravého dolného rohu. */
+.kl-roh-lava .kl-nasobok {
+  top: auto;
+  bottom: calc(-4 * var(--pt));
+}
+
 /* Hrany Nástroja (Náradie 2026-11-08, rám V1 z naradie-mock-stol.html): horná a dolná hrana
    vo farbe stredného pruhu, bez mena karty (Michal 2026-11-09: žiadne farby navyše). */
 .kl-hrana-n {
