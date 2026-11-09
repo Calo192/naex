@@ -125,7 +125,7 @@ rozpore s `docs/PRAVIDLA.md` platí `docs/PRAVIDLA.md` a rozpor zapíš do
   (Traktorista bez prevahy v jeho kraji, Výherný automat) dá na konci poslednej Pitky kola Dlh. „**Furt: {Cigareta}**“
   (Kapybara, v11.16) platí bez podmienky, kým karta leží. Skrytá Záverečná podmienku
   nesplní ani nedostane. V texte efektu sú akcie navyše zapísané ako {Povera}. **{Spálenie}** v pečati nie je akcia:
-  **Krokodíl** (Konflikt: {Spálenie}, v11.16) — súperova karta, s ktorou sa priložením stretne (prikladáš ty aj súper),
+  **Krokodíl** (Konflikt: Občan {Spálenie}, v11.16) — súperov Občan, s ktorým sa priložením stretne (prikladáš ty aj súper),
   sa **na konci bitky spáli** (navždy z hry; jej akcie v bitke ešte platia; vedľa Mäsiara nič).
 - **Školitelia — Preškolenie (2026-11-08; v11.16 aj Zviera, to vedľa Mäsiara neplatí):** „Furt/Podpora/Konflikt: **Preškolenie** {X}→{Y}.“ — akcia X **inej** karty sa
   ráta ako Y (pre majiteľa tej akcie), **pred spojmi**, na oboch hranách aj v akciách navyše. **Furt** = obaja susedia
@@ -326,8 +326,8 @@ rozpore s `docs/PRAVIDLA.md` platí `docs/PRAVIDLA.md` a rozpor zapíš do
   Vymáhač: za každé 2 tvoje priznané Dlhy +1 Rana; Traktorista: s prevahou v jeho kraji Pecka navyše (akcie navyše; Vidly a Valaška +1),
   bez nej Dlh na konci poslednej Pitky kola (prevaha po otočení Záverečných).
 - **Karty v7 v bitke a po nej:** Pes — jeho aktívne akcie na spoji so súperovou kartou ×2 (platí aj podstrčený); Mäsiar —
-  efekty Zvierat v jeho okolí neplatia (ich akcie platia; 2026-10-28); Krokodíl — na konci bitky sa spáli súperova karta,
-  s ktorou sa stretol (v11.16); Vidly (Dedičstvo) — každá tvoja Rana o 1 poškodenie viac, aj Rana navyše (Pijan, Svokra, Vymáhač, Pasca, frakcie); Puška (Dedičstvo, 2026-10-30) — tvoju prepojenú Petelicu, ktorú by zrušil Odpor či NA EX, ráta namiesto zrušenia za 2; Pasca
+  efekty Zvierat v jeho okolí neplatia (ich akcie platia; 2026-10-28); Krokodíl — na konci bitky sa spáli súperov Občan,
+  s ktorým sa stretol (v11.16); Vidly (Dedičstvo) — každá tvoja Rana o 1 poškodenie viac, aj Rana navyše (Pijan, Svokra, Vymáhač, Pasca, frakcie); Puška (Dedičstvo, 2026-10-30) — tvoju prepojenú Petelicu, ktorú by zrušil Odpor či NA EX, ráta namiesto zrušenia za 2; Pasca
   (Dedičstvo) — keď súper v kole priložil kartu k tvojej, Rana navyše (v9.1); Krabička (Dedičstvo) — za každé
   2 cigarety, ktoré súper vyfajčí, karta; **Liberál (Furt, v10.3)** — keď máš v partii rovnako žien
   a chlapov (on sa ráta za oboch, skrytá Záverečná nie), všetky jeho aktívne akcie sú posilnené ×2. **Vedúcko (Furt, Školiteľ)** — Roboty kariet, ktoré s ním susedia (aj

@@ -77,7 +77,7 @@ export const SLOVNIK: readonly PojemSlovnika[] = [
   { id: "priznanie", pojem: "Priznanie", popis: "Kliatbu vyložíš mimo línie do svojej hracej oblasti — natrvalo z balíčka." },
   { id: "sekera", pojem: "Na sekeru", popis: "Bitka bez víťaza (remíza v tuhom, Absťákoch aj Dlhoch): jej špaky vezme víťaz najbližšej bitky, vo finále prepadnú." },
   { id: "senok", pojem: "Šenok", popis: "Ponuka kariet lícom nahor; beriete z nej 1 kartu za 1 cigaretu alebo 2 za 3." },
-  { id: "spalenie", pojem: "Spáliť", popis: "Karta ide navždy z hry — nevracia sa do žiadneho balíčka (napr. Vízia). Spálený Dlh zmizne z počítadla. Plameň v pečati (Krokodíl): karta, s ktorou sa stretne, sa na konci bitky spáli." },
+  { id: "spalenie", pojem: "Spáliť", popis: "Karta ide navždy z hry — nevracia sa do žiadneho balíčka (napr. Vízia). Spálený Dlh zmizne z počítadla. Plameň v pečati (Krokodíl): karta, s ktorou sa stretne (súperov Občan), sa na konci bitky spáli." },
   { id: "spoj", pojem: "Spoj", popis: "Miesto, kde sa dotknú hrany dvoch kariet alebo karty a lokality." },
   { id: "starsi", pojem: "Starší", popis: "Vážená osoba dediny; každý hráč má pri ňom svoj teplomer 0–3 — svoj strach a na ňom súperove reči. Po bitke dáva špaky a priazeň tomu, koho sa bojí menej." },
   { id: "stupen", pojem: "Stupeň", popis: "Poloha na stupnici staršieho: 0 pokojný, 1 znepokojený, 2 vystrašený, 3 vydesený. Stupeň staršieho pre hráča je jeho strach; reči súpera ležia na tej istej stupnici. Vstup stojí 1 / 2 / 3, po bitke dá 1 / 3 / 5 špakov, stupne môže držať súper." },

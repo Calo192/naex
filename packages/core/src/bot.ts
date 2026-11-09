@@ -310,7 +310,7 @@ const BONUS_EFEKTU: Readonly<Record<string, number>> = {
   polovnik: 0.4,
   // Furt (Školiteľ): Roboty susedov ako Pecky — tuhé ráta odhad bitky, Dlh, ktorý Robota nespáli, tiež.
   veducko: 0.3,
-  // Konflikt: {Spálenie} (2026-11-09) — súperova karta, s ktorou sa stretne, sa po bitke spáli (spalene pri vyložení).
+  // Konflikt: Občan {Spálenie} (2026-11-09) — súperov Občan, s ktorým sa stretne, sa po bitke spáli (spalene pri vyložení).
   krokodil: 0.4,
   // Furt: spoj s Nástrojom a (v11.5) Roboty o 1 Dlh viac (paleneDlhyVBitke).
   kon: 0.4,

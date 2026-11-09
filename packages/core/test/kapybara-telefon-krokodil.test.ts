@@ -2,7 +2,7 @@
 // a docs/napady/naradie-len-svoje.html). Kapybara je Školiteľ (Podpora aj Konflikt {Viera}→{Cigareta})
 // s akciou navyše bez podmienky „Furt: {Cigareta}“; Telefón v Dedičstve vyhrá remízu v hádke (nie 0 : 0)
 // a dá Poveru za každú akciu zrušenú súperovým Odporom, imunita Pohoršení zaniká; Krokodíl „Konflikt:
-// {Spálenie}“ spáli na konci bitky súperovu kartu, s ktorou sa stretol. Texty sú z test/data/karty-20261109.json
+// Občan {Spálenie}“ spáli na konci bitky súperovho Občana, s ktorým sa stretol (Leader 2026-11-09: len Občan). Texty sú z test/data/karty-20261109.json
 // (cards.json ich dostane až od admina); očakávané hodnoty sú z pravidla (PRAVIDLA §6, §9.1, §12, §16).
 
 import { describe, expect, it } from "vitest";
@@ -171,6 +171,7 @@ describe("zápis: akcie navyše bez podmienky (Furt) a {Spálenie}", () => {
 
   it("„Konflikt: {Spálenie}.“ — účinok v pečati, nie akcia; inde než pri Konflikte či Podpore je to chyba", () => {
     expect(rozborNavyse("Konflikt: {Spálenie}.")).toEqual({ efekty: [{ spustac: "Konflikt", tag: null, akcie: [], ucinky: ["Spálenie"] }], chyby: [] });
+    expect(rozborNavyse("Konflikt: Občan {Spálenie}.")).toEqual({ efekty: [{ spustac: "Konflikt", tag: "Občan", akcie: [], ucinky: ["Spálenie"] }], chyby: [] });
     expect(rozborNavyse("Spoločník: Pamätník {Spálenie}.").chyby[0]).toMatch(/Konflikt alebo Podporu/);
     expect(textBezAkcii("Konflikt: {Spálenie}.")).toBe("Konflikt.");
   });
@@ -320,7 +321,19 @@ describe("Telefón (Dedičstvo): remíza v hádke a Povera za akciu zrušenú s�
 
 // --- Krokodíl --------------------------------------------------------------------------
 
-describe("Krokodíl — Konflikt: {Spálenie}", () => {
+describe("Krokodíl — Konflikt: Občan {Spálenie}", () => {
+  it("len súperov Občan: Starešinu ani Zviera bez tagu Občan neoznačí, Recidivistu (Občan aj Zviera) áno", () => {
+    expect(efektyNavyse(defOf(data, { defId: "krokodil" }))).toEqual([{ spustac: "Konflikt", tag: "Občan", akcie: [], ucinky: ["Spálenie"] }]);
+    const oznacene = (id: string): readonly number[] => {
+      const cudzia = lezi(karta(id), 1);
+      const kro = karta("krokodil");
+      return naKarte(priloz(zhromazdenie([[cudzia], []], [kro]), kro.uid).state, kro.uid)?.navyseOd?.[0] ?? [];
+    };
+    expect(oznacene("farar")).toEqual([]);
+    expect(oznacene("pes")).toEqual([]);
+    expect(oznacene("recidivista")).toHaveLength(1);
+  });
+
   it("priložený k súperovej karte ju označí; k tvojej nie (to by bola Podpora)", () => {
     const cudzia = lezi(karta("s_robota"), 1);
     const kro = karta("krokodil");

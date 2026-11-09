@@ -13,7 +13,7 @@
     },
     {
       "id": "krokodil",
-      "effect_text": "Konflikt: {Spálenie}.",
+      "effect_text": "Konflikt: Občan {Spálenie}.",
       "triggers": ["Konflikt"]
     },
     {

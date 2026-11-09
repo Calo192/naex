@@ -350,7 +350,7 @@ export const KAPITOLY: readonly Kapitola[] = [
           a rátajú sa ako tie isté akcie. Pri Spoločníkovi a Nepriateľovi platia raz, kým platí podmienka; pri Furt (bez podmienky) raz,
           kým karta leží; pri Podpore a Konflikte za každé stretnutie, do konca kola. Posilnenie, Odpor, NA EX ani podložený Nástroj ich
           nemenia, Nástroje v Dedičstve (napríklad Valaška) áno. Plameň <P k="spalenie">Spálenie</P> v pečati (Krokodíl) nie je akcia:
-          karta, s ktorou sa stretne, sa na konci bitky spáli.
+          karta, s ktorou sa stretne (pri Krokodílovi súperov Občan), sa na konci bitky spáli.
         </p>
         <p>
           <P k="skolitel">Školiteľ</P> (Občan alebo Zviera) má efekt <P k="preskolenie">Preškolenie</P> X → Y: akcia X inej karty sa ráta ako Y —

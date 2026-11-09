@@ -153,7 +153,7 @@ export const REGISTER: Readonly<Record<string, EfektStatus>> = {
   // Sada v7 (revízia, Michal 2026-10-27) — schválené novinky, nové karty a lokality.
   vidly: "impl", // Dedičstvo (v7): Rany o 1 poškodenie viac (nastrojeTuhe)
   lievik: "impl", // Dedičstvo: NA EX aj na Zviera (naexCieleVLinii)
-  krokodil: "impl", // Konflikt: {Spálenie} (2026-11-09): súperova karta, s ktorou sa stretne, sa na konci bitky spáli (navyse.ts, partia.ts spaleniaZoSpojov, engine vratKartyPoBitke); starý Bitka — Občania a Zvieratá v okolí — zanikol
+  krokodil: "impl", // Konflikt: Občan {Spálenie} (2026-11-09): súperov Občan, s ktorou sa stretne, sa na konci bitky spáli (navyse.ts, partia.ts spaleniaZoSpojov, engine vratKartyPoBitke); starý Bitka — Občania a Zvieratá v okolí — zanikol
   kapybara: "impl", // Školiteľ (2026-11-09): Podpora aj Konflikt Preškolenie {Viera}→{Cigareta} (preskolenie.ts) a Furt: {Cigareta} (navyse.ts); starý Nástup — súperove reči o stupeň nižšie — zanikol
   kon: "impl", // Furt (Náradie 2026-11-08): kým leží, Nástroj smie aj pod Zviera (podlozenie.ts); v11.5 jeho Roboty pália o 1 Dlh viac (engine robotyKona)
   kohut: "impl", // Pitka (v7): posledné slovo pri odpovediach na NA EX má majiteľ (odhalNaex)
