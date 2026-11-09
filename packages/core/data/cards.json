@@ -265,7 +265,7 @@
    "tags": [
     "Nástroj"
    ],
-   "effect_text": "Dedičstvo: Keď by tvoju prepojenú Petelicu zrušil iný efekt (Odpor, NA EX…), namiesto zrušenia udeľuje o 1 poškodenie menej. Hore: {Rana}→{Petelica}. Dole: {Petelica}→{Rana}.",
+   "effect_text": "Dedičstvo: Keď by tvoju prepojenú Petelicu zrušil iný efekt (Odpor, NA EX…), namiesto zrušenia udeľuje o 1 poškodenie menej. Hore: Posilnená {Petelica}. Dole: Posilnená {Pecka}.",
    "triggers": [
     "Dedičstvo"
    ],

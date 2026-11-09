@@ -72,6 +72,15 @@ describe("kontrola textov efektov", () => {
     // Nová kópia Nástroja s hranami a bez Dedičstva nie je „manual“ — nemá čo naprogramovať.
     expect(jadro("Hore: Vzbura. Dole: {Rana}→{Pecka}.", "vidly_2")).toEqual([]);
   });
+
+  it("hrana posilnenia „Posilnená {X}“ (Puška, 2026-11-09) prejde, preklep v akcii je chyba", () => {
+    const puska = (efekt: string): KartaNavrh => ({ ...navrhy.find((k) => k.id === "puska")!, efekt });
+    const dedicstvo = "Dedičstvo: Keď by tvoju prepojenú Petelicu zrušil iný efekt (Odpor, NA EX…), namiesto zrušenia udeľuje o 1 poškodenie menej.";
+    const chyby = (efekt: string) => kontrolaTextov([puska(efekt)], { ...podklady, zverejnene: [{ id: "puska", efekt: dedicstvo }] }).filter((x) => x.uroven === "chyba");
+    expect(chyby(`${dedicstvo} Hore: Posilnená {Petelica}. Dole: Posilnená {Pecka}.`)).toEqual([]);
+    expect(chyby(`${dedicstvo} Hore: Posilnený {Hazard}. Dole: Posilnené {Obmedzenie}.`)).toEqual([]);
+    expect(chyby(`${dedicstvo} Hore: Posilnená {Petelicka}. Dole: Posilnená {Pecka}.`).map((x) => x.text).join(" ")).toContain("Petelicka");
+  });
 });
 
 describe("Schopnosť väzňa (v11.2): „Väzeň — raz za hru:“ je spúšťač Väzeň", () => {

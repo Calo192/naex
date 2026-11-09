@@ -37,6 +37,10 @@ stránka Pravidlá — `VERZIA_PRAVIDIEL_PRESNA`).
 
 - **Predavačka** „Podpora: Vezmi si zo šenku 1 Občana.“ (predtým dober si 1 kartu) a **Živnostník** „Podpora: Vezmi si zo šenku 1 Nástroj.“ (predtým Spoločník: Autorita {Robota} a s Nástupom Nástroj z ruky hneď pod neho — zaniká). Podpora bez tagu: pri každom stretnutí s vlastnou kartou si majiteľ vyberie zo šenku kartu s tagom Občan, resp. Nástroj, a vezme si ju **zadarmo do ruky**; bez takej karty v šenku nič, šenok sa nedopĺňa (§16).
 
+**Puška posilňuje — pripravené pre ďalšiu dávku** (Michal 2026-11-09, Zrejúca):
+
+- **Puška** má namiesto dvoch preškolení dve **hrany posilnenia** (§12): „Hore: Posilnená {Petelica}. Dole: Posilnená {Pecka}.“ — aktívne Petelice, resp. Pecky karty, pod ktorou trčí, sú posilnené (×2) ako pri Posilnení. Dedičstvo ostáva.
+
 **Bez „tvojej a súperovej strany“** (Michal 2026-11-08; pravidlá sa nemenia, len pomenovania, docs/napady/bez-strany.html): línia má dva **konce** a dva **kraje** a žiaden nepatrí hráčovi (§6). **Podstrčiť** = priložiť svoju kartu k súperovej (§13). **Most:** každý vykladá len na koniec línie po svojej ľavici (§15). **Kostol:** NA EX len na kartu na konci línie, na ktoromkoľvek z dvoch koncov (§15).
 
 **Zmeny v11.13 oproti v11.12** (Michal 2026-11-06, Zrejúca; staré znenia v `docs/pravidla-historia.md`, sekcia v11.13):
@@ -1692,10 +1696,12 @@ voľby P1–P6): Nástroj sa do línie **nevykladá** ako samostatná karta. Hr�
 ### Nástroj: dve hrany
 
 Nástroj nemá sloty. Má **hornú a dolnú hranu** a v strede ilustráciu a text Dedičstva.
-Hrana je **akciová** — preškolenie **X → Y** — alebo **kartová** — účinok na celú kartu,
-pod ktorou leží. Kartovú hranu majú štyri Nástroje: **Energeťák** (Forsáž), **Vínko**
-(NA EX), **Injekcia** (Výtržník) a **Vidly** (Vzbura); každý z nich má na druhej hrane
-jedno preškolenie. Ostatných 18 Nástrojov má dve preškolenia. Hrany sú voľné: posila
+Hrana je **akciová** — preškolenie **X → Y** —, **hrana posilnenia** — posilnená akcia **X**
+(Michal 2026-11-09) — alebo **kartová** — účinok na celú kartu, pod ktorou leží. Kartovú
+hranu majú štyri Nástroje: **Energeťák** (Forsáž), **Vínko** (NA EX), **Injekcia**
+(Výtržník) a **Vidly** (Vzbura); každý z nich má na druhej hrane jedno preškolenie.
+**Puška** má dve hrany posilnenia (Petelica, Pecka). Ostatných 17 Nástrojov má dve
+preškolenia. Hrany sú voľné: posila
 aj sabotáž, pod svoju aj pod súperovu kartu. Hrany všetkých 22 Nástrojov sú v zozname
 v5.
 
@@ -1715,6 +1721,15 @@ v5.
   s preškolenou akciou. Ak karta X nemá, Nástroj pod ňou nerobí nič (podložiť ho smieš,
   je to tvoj ťah). Pod Zámočníkom sa každá akcia preškolí raz, prvým podloženým
   Nástrojom s touto akciou — preškolenia sa nereťazia.
+- **Hrana posilnenia X** (zápis „Posilnená {X}“, tvar podľa rodu: Posilnený {Hazard},
+  Posilnené {Obmedzenie}) posilní **všetky aktívne X** na oboch hranách karty (×2) ako
+  Posilnenie (§6). Platí na akciu, ktorá je X **po preškolení** (Nástroj, Školiteľ): Rana
+  preškolená na Petelicu sa posilní, Petelica preškolená na Pecku pod „Posilnená
+  {Petelica}“ nie. Uplatní sa v kroku **Forsáže** (poradie nižšie) a násobí sa s ostatnými
+  násobkami (Forsáž ×4, Posilnenie suseda, Silná žena…). NA EX karty posilnené X zruší
+  (sú aktívne) a neaktívne X zdvojí len ×2; Výtržník z nich urobí Rany ×1. Akcie navyše
+  nemení (ako preškolenie Nástrojom). Pod Zámočníkom dva Nástroje s tou istou akciou
+  posilnia raz. Ak karta X nemá, Nástroj pod ňou nerobí nič.
 - **Kartová hrana** dá karte účinok z §6 alebo §7 a uplatní sa tam, kde ten účinok stojí
   dnes: preškolenie → spoje → **Vzbura** → Výherné žreby → **Forsáž** → **NA EX** →
   efekty kariet → **Výtržník**. Karta sa správa presne tak, ako keby jej ten stav vznikol
@@ -2082,7 +2097,7 @@ Kôň v kroku Exekútora. Michal ich potvrdí.
 | Noviny | Dedičstvo: Hádka (v11.5, Michal 2026-11-03): keď vyhráš hádku (krok 1 bitky, §9.1; aj vo finále), súper **odhodí 1 náhodnú kartu z ruky** do svojho odhadzovacieho balíčka — za každé Noviny v Dedičstve. Remíza v hádke nič; súper s prázdnou rukou nič. Do v11.4 Dedičstvo: Prehra (Titulka): špaky za Dlhy víťaza navyše. |
 | Krabička cigariet | Dedičstvo: Pitka: za každé 2 cigarety, ktoré súper v Pitke vyfajčí (rátajú sa zaplatené cigarety), si hneď doberieš 1 kartu. Nie je to nerest. |
 | Pasca | Dedičstvo: Bitka: ak súper v tomto kole priložil kartu (akúkoľvek, aj lícom dole) k tvojej, máš **1 Ranu navyše** (akcia navyše, §6; Vidly ju zosilnia; za každú Pascu v Dedičstve) (v9.1 podľa textu karty od sady v36; predtým Pecku). |
-| Puška | Dedičstvo (Michal 2026-10-30, mení v7 „+1 k Petelici“): keď by tvoju **prepojenú** Petelicu zrušil iný efekt (Odpor, NA EX…), namiesto zrušenia udeľuje o 1 poškodenie menej (3 → 2; v súčtoch sa ráta ako Pecka). Prepojená = má na spoji partnera (aktívna len zo Vzbury nie); na karte so Vzburou (v11.1) sa Puška neuplatní — prepojená Petelica je tam neaktívna. súperove Hrable nemajú čo ukradnúť (zrušenie nenastalo); Výtržník akcie nezrušuje (mení na Rany) — Puška sa neuplatní; NA EX ďalej zdvojí neaktívne akcie karty, prepojená Petelica ostane na 2. Text karty v sade v53 už znie podľa tohto pravidla. |
+| Puška | **Hrany** (Michal 2026-11-09): Hore: Posilnená {Petelica}, Dole: Posilnená {Pecka} — aktívne Petelice, resp. Pecky hostiteľa ×2 (§12). Dedičstvo (Michal 2026-10-30, mení v7 „+1 k Petelici“): keď by tvoju **prepojenú** Petelicu zrušil iný efekt (Odpor, NA EX…), namiesto zrušenia udeľuje o 1 poškodenie menej (3 → 2; v súčtoch sa ráta ako Pecka). Prepojená = má na spoji partnera (aktívna len zo Vzbury nie); na karte so Vzburou (v11.1) sa Puška neuplatní — prepojená Petelica je tam neaktívna. súperove Hrable nemajú čo ukradnúť (zrušenie nenastalo); Výtržník akcie nezrušuje (mení na Rany) — Puška sa neuplatní; NA EX ďalej zdvojí neaktívne akcie karty, prepojená Petelica ostane na 2. Text karty v sade v53 už znie podľa tohto pravidla. |
 | Náradie (v8.4) | Zapaľovač, Výherné žreby, Izolačka, Hrable, Zrkadlo, Valaška, Telefón, Jogurt, Energeťák, Horoskop, Fúrik, Krištáľová guľa — §12, tabuľka Náradie. |
 | Profesionálny tipér | Školiteľ — Konflikt: Preškolenie {Cigareta}→{Hazard} (Michal 2026-11-08, T1, §6): súperova karta, s ktorou sa priložením stretne (oboma smermi), má do konca kola **Cigarety ako Hazard** — namiesto cigarety Dlh súperovi, aj Cigarety navyše. Do 2026-11-08 Furt (v8.4): posilnené akcie na jeho spojoch — súperove ako posilnený Hazard, tvoje ako posilnená Robota. |
 | Vidly | Dedičstvo: každá tvoja aktívna Rana — z vyložených kariet (aj hrany lokality) aj akcia navyše (§6: frakcie, Pijan, Svokra, Vymáhač, Pasca) — udelí o 1 poškodenie viac (Michal 2026-11-08; výnimka z 2026-10-27 zrušená). |

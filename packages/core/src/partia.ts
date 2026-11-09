@@ -27,7 +27,7 @@
 //  - Podložený Nástroj (Náradie, Michal 2026-11-08, naradie.ts): akciová hrana premení akcie
 //    hostiteľa ešte pred spojmi, kartová mu dá Vzburu, Forsáž, NA EX či Výtržníka tou istou
 //    cestou, akou ich karta dostane inak — v poradí spoje → Vzbura → Výherné žreby → Forsáž →
-//    NA EX → Výtržník.
+//    NA EX → Výtržník. Hrana posilnenia (Puška) zdvojí aktívne X hostiteľa v kroku Forsáže.
 //    Odpor proti Posilneniu je Vzbura len karty s Odporom a jej aktívne akcie sú posilnené.
 //  - Vzbura ani NA EX neoživujú akcie zrušené Odporom.
 //  - NA EX mení len akcie cieľovej karty; zrušenie Odporom na susedovi
@@ -46,7 +46,7 @@ import { defOf, printedSides } from "./data.ts";
 import type { EfektNavyse, NavyseStav } from "./navyse.ts";
 import { efektyNavyse, jeSlovami, popisPodmienky, stavNavyse } from "./navyse.ts";
 import type { PodlozenyNastroj } from "./naradie.ts";
-import { preskolStranu, preskoleniaHostitela, ucinkyNastrojov } from "./naradie.ts";
+import { posilneniaHostitela, preskolStranu, preskoleniaHostitela, ucinkyNastrojov } from "./naradie.ts";
 import type { SpustacPreskolenia } from "./preskolenie.ts";
 import { preskoleniaKarty } from "./preskolenie.ts";
 
@@ -319,6 +319,8 @@ interface Elem {
    * Forsážou či Vzburou z Odporu proti Posilneniu sa násobí (naradie-hrany-zoznam.html v5).
    */
   forsazNastroj: boolean;
+  /** Hrany posilnenia podložených Nástrojov (Puška): akcia → defId Nástroja; aktívne X ×2 tam, kde Forsáž. */
+  readonly posilneniaNastrojom: ReadonlyMap<Action, string>;
   readonly naexBy: PlayerId | undefined;
   /** NA EX z podloženého Vínka — ako NA EX, len bez poldeca (nie je nerest, nepije sa). */
   readonly naexNastroj: boolean;
@@ -522,6 +524,7 @@ function makeElem(
     vzburaPosilnena: [false, false],
     forsaz: [false, false],
     forsazNastroj: ucinky.has("Forsáž"),
+    posilneniaNastrojom: sNastrojom ? posilneniaHostitela(data, pl) : BEZ_POSILNENI,
     naexBy,
     naexNastroj: naexBy === undefined && ucinky.has("NA EX") && !ucinky.has("Výtržník") && pl?.vytrznik !== true,
     vieraAkoVizia: false,
@@ -544,6 +547,7 @@ export interface PremenyKarty {
 }
 
 const BEZ_PREMIEN: PremenyKarty = { hrany: new Map(), navyse: new Map() };
+const BEZ_POSILNENI: ReadonlyMap<Action, string> = new Map();
 
 /**
  * Preškolenia kariet v línii (Michal 2026-11-08) podľa uid, každé v poradí prednosti: akcia sa
@@ -800,6 +804,9 @@ function naexRusiPosilnenie(elem: Elem, line: Pick<LineState, "nastroje">): bool
  * Rovnako Vzbura z Odporu proti Posilneniu (v11.1, Michal 2026-11-02): karta s Odporom má
  * po obrátení všetky aktívne akcie posilnené (×2, s Forsážou ×4); NA EX, ktorý Posilnenie
  * partnera zruší, ruší aj toto zdvojenie (§7), obrátenie ostáva.
+ *
+ * Hrana posilnenia „Posilnená {X}“ (Puška, Michal 2026-11-09) zdvojí v tom istom kroku aktívne X
+ * hostiteľa — ako Forsáž z Energeťáka, len jednej akcii; NA EX hostiteľa ich potom zruší.
  */
 function applyForsaz(
   forsaze: readonly SpojForsaze[],
@@ -833,6 +840,17 @@ function applyForsaz(
           elem.nasobok[side]![k] = nasobok * 2;
           elem.dovody[side]![k]!.push(dovod);
         }
+      }
+      // Hrana posilnenia (Puška, Michal 2026-11-09): len akcia X — po preškolení, preto effLeft/effRight.
+      if (elem.posilneniaNastrojom.size === 0 || elem.isLokalita) continue;
+      const actions = side === 0 ? elem.effLeft : elem.effRight;
+      for (let k = 0; k < 4; k++) {
+        const a = actions[k];
+        const nastroj = a == null ? undefined : elem.posilneniaNastrojom.get(a);
+        const nasobok = elem.nasobok[side]![k] as number;
+        if (nastroj === undefined || elem.stav[side]![k] !== "aktivna" || nasobok === 0) continue;
+        elem.nasobok[side]![k] = nasobok * 2;
+        elem.dovody[side]![k]!.push(`karta:${nastroj}`);
       }
     }
   }

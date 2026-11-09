@@ -9,19 +9,39 @@
 //   Dedičstvo: Tvoje Rany udeľujú o 1 poškodenie viac. Hore: Vzbura. Dole: {Rana}→{Pecka}.
 //
 // Akciová hrana „{X}→{Y}“ mení všetky X na oboch hranách hostiteľa na Y ešte pred spojmi.
+// Hrana posilnenia „Posilnená {X}“ (Puška, Michal 2026-11-09) posilní aktívne X hostiteľa (×2)
+// tam, kde Forsáž — X po preškolení.
 // Kartová hrana je slovo — Forsáž, NA EX, Výtržník, Vzbura — a dá hostiteľovi ten stav
 // bez vedľajších nákladov cesty, ktorou vzniká inak (poldeci, nerest, pečeň). Text hrany
 // sa len prečíta; čo hrana robí, rozhoduje jadro (partia.ts evaluateLine).
 
 import type { Action, CardDef, CardInstance, Miesto, PlayerId, SideLayout, Slot } from "./types.ts";
-import { preskolenieSlovami, rozborPreskolenia } from "./preskolenie.ts";
+import { akciaZTokenu, menoAkcie, preskolenieSlovami, rozborPreskolenia } from "./preskolenie.ts";
 
 export type UcinokNastroja = "Forsáž" | "NA EX" | "Výtržník" | "Vzbura";
 export const UCINKY_NASTROJA: readonly UcinokNastroja[] = ["Forsáž", "NA EX", "Výtržník", "Vzbura"];
 
 export type HranaNastroja =
   | { readonly druh: "akcia"; readonly z: Action; readonly na: Action }
-  | { readonly druh: "karta"; readonly ucinok: UcinokNastroja };
+  | { readonly druh: "karta"; readonly ucinok: UcinokNastroja }
+  | { readonly druh: "posilnenie"; readonly akcia: Action };
+
+/** Zápis hrany posilnenia „Posilnená {Petelica}“ — tvar slova podľa rodu akcie, hra berie ktorýkoľvek. */
+const POSILNENA = /^Posilnen[áýé]\s*\{([^{}]+)\}$/u;
+
+const MUZSKE: readonly Action[] = ["Dlh", "Odpor", "Pakt"];
+const STREDNE: readonly Action[] = ["Poldeci", "Obmedzenie", "Pohoršenie", "Posilnenie"];
+
+/** „Posilnená Petelica“, „Posilnený Hazard“, „Posilnené Obmedzenie“. */
+export function posilnenaSlovami(a: Action): string {
+  const tvar = MUZSKE.includes(a) ? "Posilnený" : STREDNE.includes(a) ? "Posilnené" : "Posilnená";
+  return `${tvar} ${menoAkcie(a)}`;
+}
+
+/** Hrana slovami pre log a ponuku: „Rana → Pecka“, „Vzbura“, „Posilnená Petelica“. */
+export function hranaSlovami(h: HranaNastroja): string {
+  return h.druh === "akcia" ? preskolenieSlovami(h) : h.druh === "karta" ? h.ucinok : posilnenaSlovami(h.akcia);
+}
 
 export type KtoraHrana = "horna" | "dolna";
 export const KTORE_HRANY: readonly KtoraHrana[] = ["horna", "dolna"];
@@ -60,9 +80,16 @@ function hranaZTextu(obsah: string, kde: string, chyby: string[]): HranaNastroja
     for (const ch of r.chyby) chyby.push(`„${kde}: ${obsah}“ — ${ch}`);
     return r.preskolenie === null ? null : { druh: "akcia", ...r.preskolenie };
   }
+  const posil = POSILNENA.exec(obsah);
+  if (posil !== null) {
+    const akcia = akciaZTokenu(posil[1] ?? "");
+    if (akcia !== null) return { druh: "posilnenie", akcia };
+    chyby.push(`„${kde}: ${obsah}“ — {${posil[1] ?? ""}} nie je akcia, ktorú hra pozná.`);
+    return null;
+  }
   const ucinok = UCINKY_NASTROJA.find((u) => bezDiakritiky(u) === bezDiakritiky(obsah));
   if (ucinok !== undefined) return { druh: "karta", ucinok };
-  chyby.push(`„${kde}: ${obsah}“ — hrana je preškolenie {Akcia}→{Akcia} alebo účinok ${UCINKY_NASTROJA.join(", ")}.`);
+  chyby.push(`„${kde}: ${obsah}“ — hrana je preškolenie {Akcia}→{Akcia}, posilnenie „Posilnená {Akcia}“ alebo účinok ${UCINKY_NASTROJA.join(", ")}.`);
   return null;
 }
 
@@ -93,10 +120,10 @@ export function textBezHran(text: string): string {
 /** Text efektu s hranami slovami („Dole: Rana → Pecka“) — kým karta nemá rám s hranami, hráč ich číta z textu. */
 export function hranySlovami(text: string): string {
   return text.replace(HRANA, (cely: string, kde: string, obsah: string) => {
-    const p = rozborPreskolenia(obsah)?.preskolenie ?? null;
-    if (p === null) return cely;
+    const h = hranaZTextu(obsah.trim(), kde, []);
+    if (h === null || h.druh === "karta") return cely;
     const koniec = /[.!?]\s*$/u.exec(cely)?.[0] ?? "";
-    return `${kde}: ${preskolenieSlovami(p)}${koniec}`;
+    return `${kde}: ${hranaSlovami(h)}${koniec}`;
   });
 }
 
@@ -167,6 +194,19 @@ export function preskoleniaHostitela(data: DataNaradia, pl: KartaSNastrojmi): Re
   for (const n of pl.podlozene ?? []) {
     const h = aktivnaHrana(data, n);
     if (h?.druh === "akcia" && !out.has(h.z)) out.set(h.z, { na: h.na, uid: n.card.uid });
+  }
+  return out;
+}
+
+/**
+ * Posilnenia akcií hostiteľa: akcia → defId Nástroja, ktorého hrana ju posilňuje (prvý v poradí
+ * podloženia). Dva Nástroje s tou istou akciou pod Zámočníkom posilnia raz — ako dve Forsáže.
+ */
+export function posilneniaHostitela(data: DataNaradia, pl: KartaSNastrojmi): ReadonlyMap<Action, string> {
+  const out = new Map<Action, string>();
+  for (const n of pl.podlozene ?? []) {
+    const h = aktivnaHrana(data, n);
+    if (h?.druh === "posilnenie" && !out.has(h.akcia)) out.set(h.akcia, n.card.defId);
   }
   return out;
 }

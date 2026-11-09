@@ -8,7 +8,7 @@ import { useLayoutEffect, useMemo, useRef, useState, type CSSProperties, type Re
 import type { KartaNavrh, RozlozenieStrany, Vzhlad } from "@naex/tvorba";
 import { farbaKarty, formatujEfekt, geometriaKarty } from "@naex/tvorba";
 import type { HranaNastroja, KtoraHrana } from "@naex/core";
-import { menoAkcie, popisPodmienky, rozborNavyse, textBezAkcii, textBezHran } from "@naex/core";
+import { menoAkcie, popisPodmienky, posilnenaSlovami, rozborNavyse, textBezAkcii, textBezHran } from "@naex/core";
 import { mediaUrl } from "../lib/api.ts";
 import { IkonaAkcie } from "./IkonaAkcie.tsx";
 import { useTip, type TipObsah } from "./Tip.tsx";
@@ -584,10 +584,26 @@ export function Pilulka({
   );
 }
 
-/** Obsah hrany Nástroja: pilulka premeny alebo slovo kartového účinku. */
+/**
+ * Obsah hrany Nástroja: pilulka premeny, posilnená akcia alebo slovo kartového účinku. Posilnená
+ * akcia (Puška, Michal 2026-11-09) je ikona v tom istom ráme s odznakom ×2 — tak hra ukazuje
+ * posilnenú akciu na hrane karty.
+ */
 export function ObsahHrany({ hrana, vzhlad, pil }: { readonly hrana: HranaNastroja; readonly vzhlad: Pick<Vzhlad, "akcie">; readonly pil?: string }) {
+  const style = pil === undefined ? undefined : ({ "--pil": pil } as CSSProperties);
+  if (hrana.druh === "posilnenie") {
+    const a = vzhlad.akcie.find((x) => x.kluc === hrana.akcia);
+    return (
+      <span className="kl-pil kl-pil-volna kl-pil-posil" style={style} aria-label={posilnenaSlovami(hrana.akcia)}>
+        <span className="kl-pil-a">
+          <IkonaAkcie kluc={hrana.akcia} akcia={a} />
+        </span>
+        <span className="kl-nasobok">×2</span>
+      </span>
+    );
+  }
   return hrana.druh === "akcia" ? (
-    <Pilulka z={hrana.z} na={hrana.na} vzhlad={vzhlad} trieda=" kl-pil-volna" {...(pil === undefined ? {} : { style: { "--pil": pil } as CSSProperties })} />
+    <Pilulka z={hrana.z} na={hrana.na} vzhlad={vzhlad} trieda=" kl-pil-volna" {...(style === undefined ? {} : { style })} />
   ) : (
     <b className="kl-hrana-ucinok">{hrana.ucinok.toLocaleUpperCase("sk")}</b>
   );
@@ -595,6 +611,9 @@ export function ObsahHrany({ hrana, vzhlad, pil }: { readonly hrana: HranaNastro
 
 /** Nápoveda hrany Nástroja: čo pretŕčajúca hrana robí hostiteľovi. */
 export function popisHranyNastroja(hrana: HranaNastroja): string {
+  if (hrana.druh === "posilnenie") {
+    return `${posilnenaSlovami(hrana.akcia)}: aktívna akcia ${menoAkcie(hrana.akcia)} hostiteľa sa ráta dvakrát (×2), ako pri Posilnení.`;
+  }
   return hrana.druh === "akcia"
     ? `Preškolenie ${menoAkcie(hrana.z)} → ${menoAkcie(hrana.na)}: všetky ${menoAkcie(hrana.z)} hostiteľa sa rátajú ako ${menoAkcie(hrana.na)}.`
     : (POPIS_UCINKU[hrana.ucinok] ?? hrana.ucinok);

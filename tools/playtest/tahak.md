@@ -239,7 +239,9 @@ rozpore s `docs/PRAVIDLA.md` platí `docs/PRAVIDLA.md` a rozpor zapíš do
   platí len tá, ktorú zvolíš (pretŕča spod karty); natočenie sa nemení. Pod kartou leží **najviac jeden**
   Nástroj (pod **Zámočníka** ľubovoľne veľa), pod **Zviera** len kým v línii leží **Kôň**; pod kartu lícom
   dole nie. **Akciová hrana X → Y** zmení **všetky** X na oboch hranách karty na Y ešte **pred spojmi**
-  (susedia sa párujú už s Y); bez X nerobí nič. **Kartová hrana** dá karte stav ako inou cestou:
+  (susedia sa párujú už s Y); bez X nerobí nič. **Hrana posilnenia X** (Puška: Posilnená Petelica / Posilnená
+  Pecka, 2026-11-09) posilní všetky **aktívne** X karty ×2 ako Posilnenie (X po preškolení; s Forsážou ×4, NA EX
+  ich zruší). **Kartová hrana** dá karte stav ako inou cestou:
   **Energeťák — Forsáž** (aktívne ×2; NA EX ju nezruší), **Vínko — NA EX** (aktívne zrušené, neaktívne ×2;
   bez poldeca, nie je to nerest, nepije sa; skutočné NA EX na ňu už nejde; nie pod kartu s poldecom či so Vzburou),
   **Injekcia — Výtržník** (všetky akcie aktívne Rany pre majiteľa karty), **Vidly — Vzbura** (nespojené

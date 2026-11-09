@@ -88,9 +88,9 @@
     {
       "id": "puska",
       "nazov": "Puška",
-      "hore": "{Rana}→{Petelica}",
-      "dole": "{Petelica}→{Rana}",
-      "effect_text": "Dedičstvo: Keď by tvoju prepojenú Petelicu zrušil iný efekt (Odpor, NA EX…), namiesto zrušenia udeľuje o 1 poškodenie menej. Hore: {Rana}→{Petelica}. Dole: {Petelica}→{Rana}."
+      "hore": "Posilnená {Petelica}",
+      "dole": "Posilnená {Pecka}",
+      "effect_text": "Dedičstvo: Keď by tvoju prepojenú Petelicu zrušil iný efekt (Odpor, NA EX…), namiesto zrušenia udeľuje o 1 poškodenie menej. Hore: Posilnená {Petelica}. Dole: Posilnená {Pecka}."
     },
     {
       "id": "svaty_text",

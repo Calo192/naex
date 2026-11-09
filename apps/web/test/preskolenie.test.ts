@@ -42,6 +42,13 @@ describe("hrany Nástroja na líci", () => {
     expect(hranyZTextu(VIDLY, ["Občan"])).toBeNull();
   });
 
+  it("Puška (Michal 2026-11-09): hrany posilnenia, text Dedičstva bez nich", () => {
+    const puska = "Dedičstvo: Keď by tvoju prepojenú Petelicu zrušil iný efekt (Odpor, NA EX…), namiesto zrušenia udeľuje o 1 poškodenie menej. Hore: Posilnená {Petelica}. Dole: Posilnená {Pecka}.";
+    expect(hranyZTextu(puska, ["Nástroj"])).toEqual({ horna: { druh: "posilnenie", akcia: "Petelica" }, dolna: { druh: "posilnenie", akcia: "Pecka" } });
+    expect(preskoleniaZTextu(puska)).toEqual([]);
+    expect(textBezPreskolenia(puska)).toBe(puska);
+  });
+
 });
 
 describe("Nástroj pod kartou (M2)", () => {

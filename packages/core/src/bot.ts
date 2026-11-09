@@ -1484,6 +1484,7 @@ function zhromazdenie(v: Volba): Command | null {
  * Kandidáti podloženia (Náradie 2026-11-08): pre každý Nástroj v ruke posila pod vlastnú kartu
  * s najviac zdrojovými slotmi a sabotáž pod súperovu s najcennejšou akciou, ktorú hrana zmení.
  * Kartový účinok ide pod kartu s najviac akciami — či pomôže, či uškodí, ukáže až výpočet.
+ * Posilnenie akcie (Puška) ide ako preškolenie: pod kartu, kde X najviac pomôže či uškodí.
  */
 function kandidatiPodlozenia(v: Volba): Command[] {
   const { data, state, ja } = v;
@@ -1500,12 +1501,16 @@ function kandidatiPodlozenia(v: Volba): Command[] {
     const moja = hostitel.playedBy === ja;
     let h: number;
     if (hrana.druh === "karta") h = akcie.length;
-    else {
+    else if (hrana.druh === "posilnenie") {
+      // Posilnenie zdvojí X — zisk je váha X za každý výskyt: posila pri dobrej akcii, sabotáž pri zlej.
+      const zisk = akcie.filter((a) => a === hrana.akcia).length * VAHA_AKCIE[hrana.akcia];
+      h = moja ? zisk : -zisk;
+    } else {
       const zdroj = akcie.filter((a) => a === hrana.z).length;
       const zisk = VAHA_AKCIE[hrana.na] - VAHA_AKCIE[hrana.z];
       h = zdroj * (moja ? zisk : -zisk);
     }
-    if (hrana.druh === "akcia" && h <= 0) continue;
+    if (hrana.druh !== "karta" && h <= 0) continue;
     const kluc = `${karta.defId}/${moja ? "posila" : "sabotaz"}`;
     const doteraz = najlepsie.get(kluc);
     if (doteraz === undefined || h > doteraz.h) najlepsie.set(kluc, { cmd, h });

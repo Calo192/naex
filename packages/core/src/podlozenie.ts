@@ -8,8 +8,8 @@ import { defOf, printedSides } from "./data.ts";
 import type { LineState, PlacedCard } from "./partia.ts";
 import { evaluateLine, zvieratAUmlcane } from "./partia.ts";
 import type { HranaNastroja, KtoraHrana } from "./naradie.ts";
-import { KTORE_HRANY, aktivnaHrana, hranyNastroja, preskoleniaHostitela, ucinkyNastrojov } from "./naradie.ts";
-import { preskolenieSlovami, menoAkcie } from "./preskolenie.ts";
+import { KTORE_HRANY, aktivnaHrana, hranaSlovami, hranyNastroja, posilnenaSlovami, posilneniaHostitela, preskolStranu, preskoleniaHostitela, ucinkyNastrojov } from "./naradie.ts";
+import { menoAkcie } from "./preskolenie.ts";
 
 
 /** Pod Zámočníka smie ľubovoľne veľa Nástrojov, pod ostatné karty jeden. */
@@ -43,11 +43,19 @@ function konPusta(data: GameData, line: LineState): boolean {
   return p.kon;
 }
 
-/** Má karta na tejto hrane čo robiť pod hostiteľom (preškolenie nájde svoju akciu, účinok ešte nemá)? */
+/** Má karta na tejto hrane čo robiť pod hostiteľom (preškolenie či posilnenie nájde svoju akciu, účinok ešte nemá)? */
 export function hranaMaCoRobit(data: GameData, hostitel: PlacedCard, hrana: HranaNastroja): boolean {
   if (hrana.druh === "karta") return !ucinkyNastrojov(data, hostitel).has(hrana.ucinok);
+  if (hrana.druh === "posilnenie") return !posilneniaHostitela(data, hostitel).has(hrana.akcia) && pocetPoPreskoleni(data, hostitel, hrana.akcia) > 0;
   if (preskoleniaHostitela(data, hostitel).has(hrana.z)) return false;
   return pocetAkcie(data, hostitel, hrana.z) > 0;
+}
+
+/** Koľko akcií `a` má karta na oboch hranách po preškolení Nástrojmi pod ňou — tie posilnenie posilní. */
+function pocetPoPreskoleni(data: GameData, pl: PlacedCard, a: string): number {
+  const p = printedSides(data, pl.card);
+  const premeny = preskoleniaHostitela(data, pl);
+  return [...preskolStranu(premeny, p.left), ...preskolStranu(premeny, p.right)].filter((x) => x?.akcia === a).length;
 }
 
 /** Koľko vytlačených akcií `a` má karta na oboch hranách. */
@@ -125,6 +133,10 @@ export function ponukaPodlozenia(data: GameData, line: LineState, nastroj: CardI
 /** Čo hrana spraví na karte — text pre ponuku hrany a log. */
 export function popisHrany(data: GameData, hostitel: PlacedCard, hrana: HranaNastroja): string {
   if (hrana.druh === "karta") return hrana.ucinok;
+  if (hrana.druh === "posilnenie") {
+    const n = pocetPoPreskoleni(data, hostitel, hrana.akcia);
+    return n === 0 ? `nemá ${menoAkcie(hrana.akcia)}` : `${posilnenaSlovami(hrana.akcia)}${n > 1 ? ` (${n}×)` : ""}`;
+  }
   const n = pocetAkcie(data, hostitel, hrana.z);
   if (n === 0) return `nemá ${menoAkcie(hrana.z)}`;
   const krat = n > 1 ? ` ×${n}` : "";
@@ -136,6 +148,6 @@ export function popisPodlozenych(data: GameData, pl: PlacedCard): string[] {
   return (pl.podlozene ?? []).map((n) => {
     const h = aktivnaHrana(data, n);
     const meno = defOf(data, n.card).name;
-    return h === null ? meno : `${meno} (${h.druh === "akcia" ? preskolenieSlovami(h) : h.ucinok})`;
+    return h === null ? meno : `${meno} (${hranaSlovami(h)})`;
   });
 }

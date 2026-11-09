@@ -17,6 +17,7 @@ import {
   evaluateLine,
   hranySlovami,
   hranyNastroja,
+  popisPodlozenych,
   legalCommands,
   loadGameData,
   naexCieleVLinii,
@@ -47,6 +48,17 @@ describe("zápis hrán v texte efektu", () => {
     expect(rozborNavyse(pasca)).toEqual({ efekty: [{ spustac: "Bitka", tag: null, akcie: ["Rana"], podmienka: "Ak súper v tomto kole priložil kartu k tvojej", dedicstvo: true }], chyby: [] });
     expect(textBezHran(pasca)).toBe("Dedičstvo: Bitka: Ak súper v tomto kole priložil kartu k tvojej {Rana}.");
     expect(hranySlovami("Hore: {Hazard}→{Robota}. Dole: Forsáž.")).toBe("Hore: Hazard → Robota. Dole: Forsáž.");
+  });
+
+  it("hrana posilnenia „Posilnená {X}“ (Puška, Michal 2026-11-09): tvar podľa rodu, preklep je chyba", () => {
+    const puska = "Dedičstvo: Keď by tvoju prepojenú Petelicu zrušil iný efekt (Odpor, NA EX…), namiesto zrušenia udeľuje o 1 poškodenie menej. Hore: Posilnená {Petelica}. Dole: Posilnená {Pecka}.";
+    expect(rozborHran(puska)).toEqual({ horna: { druh: "posilnenie", akcia: "Petelica" }, dolna: { druh: "posilnenie", akcia: "Pecka" }, chyby: [] });
+    expect(rozborHran("Hore: Posilnený {Hazard}. Dole: Posilnené {Obmedzenie}.")).toMatchObject({ horna: { akcia: "Dlh" }, dolna: { akcia: "Obmedzenie" } });
+    expect(chybyHran({ effectText: "Hore: Posilnená {Petelicka}. Dole: Vzbura.", tags: ["Nástroj"] })[0]).toMatch(/Petelicka/);
+    expect(chybyHran({ effectText: puska, tags: ["Nástroj"] })).toEqual([]);
+    // Dedičstvo s piktogramom nie je akcia navyše; hrany slovami pre text bez rámu.
+    expect(rozborNavyse(puska)).toEqual({ efekty: [], chyby: [] });
+    expect(hranySlovami("Hore: Posilnená {Petelica}. Dole: Posilnený {Hazard}.")).toBe("Hore: Posilnená Petelica. Dole: Posilnený Hazard.");
   });
 
   it("preškolenie {X}→{Y} je spoločná funkcia — nie len pre Nástroj", () => {
@@ -83,18 +95,23 @@ describe("zoznam hrán pre admina (packages/core/test/data/naradie-hrany.json)",
     }
   });
 
-  it("štyri kartové účinky (P1) a každé preškolenie X → Y v sade raz", () => {
+  it("štyri kartové účinky (P1), Puška posilňuje (2026-11-09) a každé preškolenie X → Y v sade raz", () => {
     const ucinky = zoznam.nastroje.flatMap((n) => {
       const h = hranyNastroja({ effectText: n.effect_text, tags: ["Nástroj"] });
       return [h?.horna, h?.dolna].flatMap((x) => (x?.druh === "karta" ? [`${n.id}:${x.ucinok}`] : []));
     });
     expect(ucinky.sort()).toEqual(["energetak:Forsáž", "lievik:Výtržník", "vidly:Vzbura", "vinko:NA EX"]);
+    const posilnenia = zoznam.nastroje.flatMap((n) => {
+      const h = hranyNastroja({ effectText: n.effect_text, tags: ["Nástroj"] });
+      return [h?.horna, h?.dolna].flatMap((x) => (x?.druh === "posilnenie" ? [`${n.id}:${x.akcia}`] : []));
+    });
+    expect(posilnenia).toEqual(["puska:Petelica", "puska:Pecka"]);
     const dvojice = zoznam.nastroje.flatMap((n) => {
       const h = hranyNastroja({ effectText: n.effect_text, tags: ["Nástroj"] });
       return [h?.horna, h?.dolna].flatMap((x) => (x?.druh === "akcia" ? [`${x.z}>${x.na}`] : []));
     });
-    expect(dvojice).toHaveLength(40);
-    expect(new Set(dvojice).size).toBe(40);
+    expect(dvojice).toHaveLength(38);
+    expect(new Set(dvojice).size).toBe(38);
   });
 
   it("keď cards.json hrany už má, sedia so zoznamom (pravidlo 5: prepisuje ich admin v tvorcovi)", () => {
@@ -125,6 +142,9 @@ const sd: GameData = syntheticData([
   nastrojDef("vinko", "NA EX", "{Pečeň}→{Poldeci}"),
   nastrojDef("lievik", "Výtržník", "{Poldeci}→{Pečeň}"),
   makeDef("zamocnik", H_L, H_R),
+  makeDef("strelec", ["Petelica", "Pecka", null, "Rana"], ["Pecka", null, "Posilnenie", null]),
+  nastrojDef("puska_posil", "Posilnená {Petelica}", "Posilnená {Pecka}"),
+  nastrojDef("boxer", "{Pecka}→{Petelica}", "{Petelica}→{Pecka}"),
 ]);
 const host = instanceFor(sd, "host", H_L, H_R);
 const kartaS = (id: string, right: Layout4): CardInstance => instanceFor(sd, id, EMPTY, right);
@@ -159,6 +179,51 @@ describe("preškolenie akciovou hranou", () => {
     const sused = kartaS("sused_rana", ["Rana", "Pecka", null, "Viera"]);
     const dva: PlacedCard = { card: zam, playedBy: 0, podlozene: [...pod("puska"), ...pod("vidly", "dolna")] };
     expect(evaluateLine(sd, linia(dva, sused)).cards.get(zam.uid)?.left[1]).toMatchObject({ action: "Petelica", povodna: "Rana" });
+  });
+});
+
+describe("hrana posilnenia (Puška, Michal 2026-11-09)", () => {
+  const S_L: Layout4 = ["Petelica", "Pecka", null, "Rana"];
+  const S_R: Layout4 = ["Pecka", null, "Posilnenie", null];
+  const strelec = instanceFor(sd, "strelec", S_L, S_R);
+  const sused = (): CardInstance => kartaS("sused_rana", ["Rana", "Pecka", null, "Viera"]);
+
+  it("hore posilní aktívne Petelice hostiteľa ×2, dole Pecky; iné akcie ani suseda nemení", () => {
+    const bez = evaluateLine(sd, linia({ card: strelec, playedBy: 0 }, sused()));
+    expect(bez.sums[0]).toEqual({ Petelica: 1, Pecka: 2, Rana: 2, Viera: 1 });
+    const hore = evaluateLine(sd, linia({ card: strelec, playedBy: 0, podlozene: pod("puska_posil", "horna") }, sused()));
+    expect(hore.sums[0]).toEqual({ Petelica: 2, Pecka: 2, Rana: 2, Viera: 1 });
+    expect(hore.cards.get(strelec.uid)?.left[0]).toMatchObject({ action: "Petelica", stav: "aktivna", nasobok: 2 });
+    expect(hore.cards.get(strelec.uid)?.forsaz).toBe(false);
+    expect(hore.zdroje[0].Petelica?.[0]?.dovody).toEqual(["karta:puska_posil"]);
+    const dole = evaluateLine(sd, linia({ card: strelec, playedBy: 0, podlozene: pod("puska_posil", "dolna") }, sused()));
+    // Pecka hostiteľa na spoji ×2, Pecka suseda ×1; Pecka na voľnej pravej hrane ostáva neaktívna.
+    expect(dole.sums[0]).toEqual({ Petelica: 1, Pecka: 3, Rana: 2, Viera: 1 });
+    expect(dole.cards.get(strelec.uid)?.right[0]).toMatchObject({ action: "Pecka", stav: "neaktivna", nasobok: 0 });
+  });
+
+  it("násobí sa s Forsážou (×4); NA EX hostiteľa posilnené zruší a neaktívne zdvojí len ×2", () => {
+    const lavy = instanceFor(sd, "lavy_posil", [null, null, "Posilnenie", null], EMPTY);
+    const sForsazou = (podlozene: readonly PodlozenyNastroj[]): LineState => ({ lokalita: null, lokalitaOtocena: false, strany: [[{ card: lavy, playedBy: 0 }, { card: strelec, playedBy: 0, podlozene }, { card: sused(), playedBy: 0 }], []] });
+    expect(evaluateLine(sd, sForsazou([])).cards.get(strelec.uid)?.left[0]?.nasobok).toBe(2);
+    const f = evaluateLine(sd, sForsazou(pod("puska_posil", "horna"))).cards.get(strelec.uid);
+    expect(f?.left[0]?.nasobok).toBe(4);
+    expect(f?.left[1]?.nasobok).toBe(2);
+    const naex = evaluateLine(sd, linia({ card: strelec, playedBy: 0, naexBy: 1, podlozene: pod("puska_posil", "dolna") }, sused()));
+    expect(naex.cards.get(strelec.uid)?.left[1]).toMatchObject({ action: "Pecka", stav: "zrusena" });
+    expect(naex.cards.get(strelec.uid)?.right[0]).toMatchObject({ action: "Pecka", stav: "aktivna", nasobok: 2 });
+  });
+
+  it("posilní akciu po preškolení: Rana → Petelica áno, Petelica → Pecka už nie", () => {
+    const zam = instanceFor(sd, "zamocnik", H_L, H_R);
+    const sRanou = kartaS("sused_rana", ["Rana", "Pecka", null, "Viera"]);
+    // Zámočník: Rany na indexe 1 a 3 aktívne (Rana suseda na indexe 0 zrušil Odpor hostiteľa).
+    const preskolene = evaluateLine(sd, linia({ card: zam, playedBy: 0, podlozene: [...pod("puska_posil", "horna"), ...pod("puska")] }, sRanou));
+    expect(preskolene.sums[0].Petelica).toBe(4);
+    expect(preskolene.cards.get(zam.uid)?.left[1]).toMatchObject({ action: "Petelica", povodna: "Rana", nasobok: 2 });
+    const zrusene = evaluateLine(sd, linia({ card: strelec, playedBy: 0, podlozene: [...pod("boxer", "dolna"), ...pod("puska_posil", "horna")] }, sused()));
+    expect(zrusene.sums[0].Petelica).toBeUndefined();
+    expect(zrusene.sums[0].Pecka).toBe(3);
   });
 });
 
@@ -290,7 +355,10 @@ describe("ťah podloženia (§12)", () => {
     const masiar = inst("masiar");
     const ponuka = ponukaPodlozenia(dataH, line(lezi(masiar, 0)), puska);
     expect(ponuka).toHaveLength(2);
-    for (const m of ponuka) expect(m.maCoRobit).toBe(/→/.test(m.popis));
+    for (const m of ponuka) expect(m.maCoRobit).toBe(!m.popis.startsWith("nemá"));
+    // Puška: Mäsiar nemá Petelicu, má dve Pecky.
+    expect(ponuka.map((m) => m.popis)).toEqual(["nemá Petelica", "Posilnená Pecka (2×)"]);
+    expect(popisPodlozenych(dataH, lezi(masiar, 0, { podlozene: [{ card: puska, majitel: 0, hrana: "dolna" }] }))).toEqual(["Puška (Posilnená Pecka)"]);
   });
 });
 

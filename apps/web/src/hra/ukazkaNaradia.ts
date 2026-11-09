@@ -21,7 +21,7 @@ const HRANY_NASTROJOV: Readonly<Record<string, string>> = {
   nealko: "Dedičstvo: Tvoj prah Cirhózy je o 2 vyšší. Hore: {Pečeň}→{Viera}. Dole: {Poldeci}→{Viera}.",
   noviny: "Dedičstvo: Hádka: Ak vyhráš hádku, súper odhodí 1 náhodnú kartu z ruky. Hore: {Viera}→{Pohoršenie}. Dole: {Pohoršenie}→{Povera}.",
   pasca: "Dedičstvo: Bitka: Ak súper v tomto kole priložil kartu k tvojej {Rana}. Hore: {Pečeň}→{Rana}. Dole: {Pecka}→{Rana}.",
-  puska: "Dedičstvo: Keď by tvoju prepojenú Petelicu zrušil iný efekt (Odpor, NA EX…), namiesto zrušenia udeľuje o 1 poškodenie menej. Hore: {Rana}→{Petelica}. Dole: {Petelica}→{Rana}.",
+  puska: "Dedičstvo: Keď by tvoju prepojenú Petelicu zrušil iný efekt (Odpor, NA EX…), namiesto zrušenia udeľuje o 1 poškodenie menej. Hore: Posilnená {Petelica}. Dole: Posilnená {Pecka}.",
   svaty_text: "Dedičstvo: Hodnota tvojej Viery je o 1 vyššia. Hore: {Povera}→{Viera}. Dole: {Viera}→{Povera}.",
   telefon: "Dedičstvo: Tvoje Pohoršenia nemožno zrušiť Odporom a NA EX. Hore: {Povera}→{Pohoršenie}. Dole: {Odpor}→{Povera}.",
   boxer: "Dedičstvo: Tvoje Pecky udeľujú o 1 poškodenie viac. Hore: {Pecka}→{Petelica}. Dole: {Petelica}→{Pecka}.",
@@ -68,7 +68,8 @@ export function sadaSNaradim(sada: Sada): Sada {
  * Stôl s podloženými Nástrojmi: moje Vedúcko so Živnostníkom (Preškolenie Robota → Pecka),
  * môj Hasič s mojimi Vidlami (Rana → Pecka, trčí dole), Zámočník s dvoma Nástrojmi (môj Krabička
  * cigariet, súperov Zapaľovač), súperova Dievčina na vydaj s mojím Automatom (Cigareta → Hazard,
- * trčí hore) a jeho Veštica s jeho Vínkom (NA EX). V ruke Puška, Energeťák a Pasca na zasunutie.
+ * trčí hore), jeho Vandal s jeho Puškou (Posilnená Petelica) a Veštica s jeho Vínkom (NA EX).
+ * V ruke Puška, Energeťák a Pasca na zasunutie.
  */
 export function sNaradim(s: GameState, p: PlayerId): GameState {
   let uid = s.nextUid;
@@ -90,6 +91,7 @@ export function sNaradim(s: GameState, p: PlayerId): GameState {
   ];
   strany[su] = [
     { card: k("dievcina_na_vydaj"), playedBy: su, podlozene: [{ card: k("vyherny_automat"), majitel: p, hrana: "dolna" }] },
+    { card: k("vandal"), playedBy: su, podlozene: [{ card: k("puska"), majitel: su, hrana: "horna" }] },
     { card: k("vestica"), playedBy: su, podlozene: [{ card: k("vinko"), majitel: su, hrana: "horna" }] },
   ];
   const h = { ...s.hraci[p], ruka: [k("puska"), k("energetak"), k("pasca"), ...s.hraci[p].ruka.slice(0, 2)], cigarety: Math.max(3, s.hraci[p].cigarety) };

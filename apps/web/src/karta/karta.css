@@ -759,6 +759,20 @@ body:not(.tahanie-aktivne) .ruka-rad > .tahatelna:is(:hover, :focus-visible) .kl
   background: #fff;
 }
 
+/* Hrana posilnenia (Puška): odznak ×2 ako na posilnenej akcii hrany karty; pod hostiteľom na stole
+   nie je --pt (pás nie je vo vnútri karty), preto veľkosť podľa výšky rámu. */
+.kl-pil-volna .kl-nasobok {
+  right: calc(var(--u) * -0.3);
+  top: calc(var(--u) * -0.22);
+  padding: calc(var(--u) * 0.03) calc(var(--u) * 0.1);
+  font-size: calc(var(--u) * 0.36);
+}
+
+/* Otočená karta: obsah hrany sa otáča späť celý (.kl-hrana-n > *), odznak už nie. */
+.kl-otocena .kl-pil-volna .kl-nasobok {
+  transform: none;
+}
+
 .kl-pil.kl-pil-akt {
   box-shadow:
     0 0 0 calc(0.8 * var(--pt)) #ffe08a,
