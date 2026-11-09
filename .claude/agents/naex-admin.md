@@ -143,10 +143,18 @@ Návrh v tvorcovi (`KartaNavrh`, `packages/tvorba/src/typy.ts`):
   sa v tlači objaví `kopie`-krát. **Frekvencia v balíčku = permutácie × kópie**
   — viac akcií na menej voľných pozíciách = menej permutácií = karta je
   v balíčku zriedkavejšia. Pozri `A prehlad`.
+- **Počet variantov podľa druhu** (Michal 2026-11-03, platí pre každú novú
+  a upravenú kartu): **Starší vždy 1**, **Občan 4–8** (aj Recidivista, hoci
+  má tag Zviera), **Zviera 2–4** (okrem Recidivistu). Lokality, kliatby
+  a Nástroje (od reworku Náradia nemajú sloty, ale dve hrany a Dedičstvo,
+  PRAVIDLA §12) sa nerátajú. Ak pevné pozície (Odpory B+, `povolene`/`blokovane`)
+  zrazia kartu pod spodnú hranicu, uvoľni pozície, ktoré pravidlo slotov
+  nedrží; ak to nejde, opýtaj sa Michala. Najviac 1 Odpor na karte.
 - **Aktivácia (jadro hry, §6)**: karty ležia v línii vedľa seba a vedľa lokality.
   Akcia sa aktivuje, keď sa **pravá strana jednej karty a ľavá strana susednej
-  stretnú na rovnakej pozícii** s akciou na oboch (spoj). Podstrčená karta na
-  súperovej strane sa číta podľa §6 — pred návrhom si spoje prepočítaj (`evaluateLine`). Nespárované akcie sú neaktívne; NA EX ich zdvojí a aktívne
+  stretnú na rovnakej pozícii** s akciou na oboch (spoj). Karta priložená
+  k súperovej sa číta podľa §6 — pred návrhom si spoje prepočítaj
+  (`evaluateLine`). Nespárované akcie sú neaktívne; NA EX ich zdvojí a aktívne
   zruší.
 - **Akcie** (`A vzhlad`, PRAVIDLA §2): útok Rana 1 / Pecka 2 / Petelica 3 tuhého,
   Povera a Pohoršenie (mäkké poškodenie — hádka), Viera (obrana), Posilnenie,
@@ -160,8 +168,9 @@ Návrh v tvorcovi (`KartaNavrh`, `packages/tvorba/src/typy.ts`):
   Influencer, Pamätník. Tagy nemajú pravidlá, kým na ne neodkazuje efekt —
   ale NA EX ide len na Občana a Starešinu, Nástroje nemíňajú limit atď.
 - **Efekt**: text v tvare `Spúšťač: Čo sa stane.` Spúšťače: Nástup, Furt,
-  Bitka, Pitka, Zhromaždenie, Dedičstvo, Výhra, Prehra, Kšeft, Konflikt,
-  Exekúcia, Väzeň (`ALL_TRIGGERS`). Používaj ustálené slová z kľúčových slov
+  Bitka, Pitka, Zhromaždenie, Dedičstvo, Výhra, Prehra, Konflikt, Podpora,
+  Spoločník, Nepriateľ, Hádka, Exekúcia, Väzeň (`ALL_TRIGGERS` v
+  `packages/core/src/types.ts`; Kšeft zanikol v11.14). Používaj ustálené slová z kľúčových slov
   (`trocha`, `zopár`, `priznaj`…) — dostanú tučné písmo a tooltip.
 - **Stav efektu v jadre** (`REGISTER` v `packages/core/src/effects.ts`):
   `native`/`impl` = hra ho vyhodnocuje; **`manual`** = hra ho len pripomenie
@@ -170,7 +179,7 @@ Návrh v tvorcovi (`KartaNavrh`, `packages/tvorba/src/typy.ts`):
   **Zmena textu implementovaného efektu nezmení jeho správanie** — kód treba
   upraviť tiež (zadanie pre vývoj). `A texty` to stráži.
 - **Starší** ležia na ukazovateľoch; druh priazne nedáva starší, ale
-  **bodovacia karta**, ktorú pri príprave dostane náhodne (`A starsi`,
+  **karta priazne** (v kóde scorecard), ktorú pri príprave dostane náhodne (`A starsi`,
   PRAVIDLÁ §10); špaky pri staršom dávajú strach a reči (§9, §14).
 - **Zverejnenie**: z návrhov vznikne `cards.json` sady (`zverejnenie.ts`);
   zastaví ho chyba návrhu, neznáma akcia alebo chyba v jadre. Zverejnená sada

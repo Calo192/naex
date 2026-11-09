@@ -6,18 +6,18 @@ Dvaja hráči, dva prehliadače, cez internet. Web má tri časti: **pravidlá**
 a **hra**; k tomu účty s úrovňami admin / subadmin / hráč / návštevník a profil
 (herné meno, avatar).
 
-`docs/PRAVIDLA.md` je špecifikácia pravidiel — v `master` v11 Strach a reči
-(Zrejúca), vo vetve `vypalena` v10.4 (Vypálená, hrajú ju hráči). Kto čo robí
+`docs/PRAVIDLA.md` je špecifikácia pravidiel — v `master` Zrejúcej, vo vetve
+`vypalena` Vypálenej (hrajú ju hráči); verzia je v jeho hlavičke. Kto čo robí
 a o aké zdroje sa nebiť: `docs/SESSIONS.md`. Pôvodné zadanie (M0–M10, otvorené
 otázky) je `docs/BRIEF.md` — história; platforma M11–M14 je v `README.md`.
 
 ## Rozsah
 
-Hra je **1 na 1** a pribúda formát **2 na 2** — dva tímy po dvoch hráčoch,
-ktorý bude súčasťou hry (Michal 2026-10-28; roadmapa #21–#31, otázky
-docs/napady/2na2-otazky.html). Rozhodnuté: jedna línia, strany patria tímom,
-poradie striedavo tímy U1 → O1 → U2 → O2, „súper“ = druhý tím ako celok.
-Kým nie je § Formát 2 na 2 v PRAVIDLA.md, platí všetko pre 1 na 1.
+Základný režim je **Kalamita 1 na 1**. Ďalšie režimy sú zatiaľ len v Zrejúcej
+(`REZIMY_LEN_V_ZREJUCEJ` v `packages/server/src/zrejuca.ts` — po uvoľnení
+režimu ho odtiaľ vyškrtni): **2 na 2** (PRAVIDLA §18; dva tímy, jedna línia,
+poradie U1 → O1 → U2 → O2, „súper“ = druhý tím ako celok) a **Päta, Lakeť,
+Otočka** (§19, len 1 na 1). Čo §18 a §19 nemenia, platí ako v Kalamite.
 
 ## Nemenné pravidlá
 
@@ -124,8 +124,13 @@ naex-admin (`admin.ts novinka-pridaj`) — novinka sa píše až po nasadení na
   vstavané `node:sqlite` (rozhodnutie Michala 2026-10-10), heslá `node:crypto`.
 
 ## Čo nerobiť
-- **Hráčom sa nikdy neodoberajú achievementy** (Michal 2026-11-06). Keď sa achievement stane nedosiahnuteľným a odstráni sa z hry, hráčom, ktorí ho už majú, ostáva ako **„LEGACY ACHIEVEMENT“** — odmena za vernosť a za dosiahnutie, keď ešte existoval. Nikomu inému sa už neponúka.
 
+- **Hráčom sa nikdy neodoberajú achievementy** (Michal 2026-11-06). Keď sa
+  achievement stane nedosiahnuteľným a odstráni sa z hry, hráčom, ktorí ho už
+  majú, ostáva ako **„LEGACY ACHIEVEMENT“**; nikomu inému sa už neponúka.
+- **„Moja / súperova strana“ línie neexistuje** (Michal 2026-11-08): línia má
+  dva konce a žiadny nepatrí hráčovi; „strana“ je len ľavá/pravá strana karty.
+  Platí pre pravidlá, karty, návrhy aj texty UI (tímy v 2 na 2 sú iná vec).
 - **Žiadne umelé stropy a limity zdrojov** („najviac X cigariet“, „najviac N za Pitku“,
   „nad X prepadne“). Prebytok, ktorý sa hromadí, musí hra riešiť tým, že dá hráčovi
   možnosť ho minúť alebo zúžitkovať — nová akcia, karta, výkupné za špaky (Michal 2026-10-27).

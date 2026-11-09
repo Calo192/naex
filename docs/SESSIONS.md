@@ -29,6 +29,7 @@ viac kôl dizajnu). Vtedy pre ňu platí časť „Ďalšia session“ nižšie.
 | `naex-prevadzkar` | Sonnet | živý server: dostupnosť, logy, disk, zálohy, certifikát — len číta, lokálne (SSH), denne |
 | `naex-analytik` | Sonnet | správanie ľudí: lievik výučby, partie, retencia, známky — len číta, lokálne (heslo admina), týždenne |
 | `naex-korektor` | Sonnet | jazyk a pojmy vo všetkých textoch — zoznam opráv podľa príjemcu, nič nemení |
+| `naex-hrac-stylu`, `naex-sudca-stylov` | podľa definície | playtest herných štýlov (skill `/naex-styly`) |
 | `Explore` (vstavaný) | — | kde je čo v kóde |
 | playtest, stratég, rozhodca, bot-tréner, developer | podľa definície | cez svoje skilly (`/naex-playtest`, `/naex-strategia`, …) |
 | kontrola štýlu ilustrácií | — | skill `/naex-kontrola-stylu` (agent `naex-ilustrator` v režime kontroly) |
@@ -124,12 +125,6 @@ Pracuje vo vlastnom pracovisku z tabuľky, ktoré jej pridelí Leader. Do master
 nemerguje. Leaderovi pošle meno vetvy a jednu vetu. Rolu jej dá Leader.
 Po `/clear` platí meno okna. Odovzdanie vedie v
 `F:\Projects\handoff\<rola>.md`.
-
-## Prechod (2026-10-24)
-
-Sessions z režimu viacerých sessions (UX/UI, New features, Bugfixing, Admin,
-Playtest, UI Inspector, Navrhár) dokončia rozrobené úlohy a potom sa
-nepoužívajú. Ich worktree ostávajú ako pracoviská agentov.
 
 ## Ťažké výpočty: limit procesov (Leader 2026-10-24)
 

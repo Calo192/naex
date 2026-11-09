@@ -59,7 +59,14 @@ nie lokálny (`$A overit --zivy` ráta kódom z master, takže môže klamať). 
 sada obsahuje niečo, čo starý kód nepozná (napr. priazeň „Ohováračka“ z v11.10:
 `zverejnenie.ts` vráti 422 „názov nie je žiadna priazeň“), urob najprv krok 4
 a až potom zverejni. Do tej doby sa nedá ani núdzovo zverejniť; dočasne pomôže
-vrátiť názov „Alkoholik“, ktorý berie starý aj nový kód.
+vrátiť názov „Alkoholik“, ktorý berie starý aj nový kód. Stalo sa znova
+2026-11-09 (Puška „Posilnená“): **nová syntax v sade = najprv nasadiť kód,
+potom zverejniť.** Overený postup: uzávierka → nasadiť kód → uzávierku zapnúť
+znova (reštart kontajnera ju zruší) → `zverejni` → uzávierku vypnúť. Príkazy
+nereťaz cez `;` — pri chybe zverejnenia musíš zastaviť.
+
+Pri vypálení nahraj do Vypálenej aj váhy power levelu Zrejúcej (každá
+inštancia má vlastné; `PUT /api/admin/power-level`).
 
 ## 4. Posun vetvy a nasadenie Vypálenej
 

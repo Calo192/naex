@@ -115,7 +115,9 @@ databáza (partie, štatistiky), účty, relácie a tvorca kariet z Vypálenej (
 **Nasadzuje sa hneď, keď to Michal povie — nikdy sa na nič nečaká** (Michal
 2026-11-02): žiadna uzávierka, žiadne čakanie na partie (aj rozohrané partie
 testerov v Zrejúcej sa zhodia — to je v poriadku). Kroky 1, 3, 4 a 6 z Vypálenej
-neplatia; postup:
+neplatia. **Vypálenú a Zrejúcu nikdy nenasadzuj paralelne** — dve `nahraj.sh`
+naraz zabalili Zrejúcu z hlavného stromu aj s necommitnutými zmenami; po
+jednom a po každom over verziu (`$A server-stav`). Postup:
 
 1. Čistý master a overenie:
    ```bash
