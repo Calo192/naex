@@ -7,13 +7,13 @@ vo feedback.md.
 ## Skúsenosti
 
 ### jano-1 · Keď súper v Zhromaždení spasuje a ja ešte mám karty, položím všetko v poradí, ktoré chráni koniec línie, lebo po pase už nemôže zablokovať hranu ani doložiť telo.
-- stav: neoverená
-- pravidlá: v8
-- potvrdenia: 3
+- stav: overená
+- pravidlá: v11
+- potvrdenia: 4
 - vyvrátenia: 0
-- dátum: 2026-10-28
-- partie: 20261027-131033-1, 20261027-161907-1, 20261028-090549-2
-- prečo: PRAVIDLA §6 (Pas a koniec Zhromaždenia). 131033-1 K3 Jano: Fero spasoval s 2 kartami v ruke, Jano položil Veterána a vyhral 9 : 5; K4 po Ferovom pase Dievčina + Veterán (+3, +3), 11 : 13 → 13 : 13 (denník Jana K3/K4). 161907 K4: po Evinom pase (Zh 2/3) Jano položil Praudovravca (Mäsiar +4 tuhé) a Policajtku, 2 : 3 → 8 : 1 (Eva potvrdila, 1 : 8). 090549: P2 K3 Eva spasovala s 2 kartami hneď po Janovej prvej karte, Jano doložil Kulturistu, Dvojčatá a Hasiča a vyhral 6 : 0.
+- dátum: 2026-11-09
+- partie: 20261027-131033-1, 20261027-161907-1, 20261028-090549-2, 20261109-115955-1
+- prečo: PRAVIDLA §6 (Pas a koniec Zhromaždenia). 131033-1 K3 Jano: Fero spasoval s 2 kartami v ruke, Jano položil Veterána a vyhral 9 : 5; K4 po Ferovom pase Dievčina + Veterán (+3, +3), 11 : 13 → 13 : 13 (denník Jana K3/K4). 161907 K4: po Evinom pase (Zh 2/3) Jano položil Praudovravca (Mäsiar +4 tuhé) a Policajtku, 2 : 3 → 8 : 1 (Eva potvrdila, 1 : 8). 090549: P2 K3 Eva spasovala s 2 kartami hneď po Janovej prvej karte, Jano doložil Kulturistu, Dvojčatá a Hasiča a vyhral 6 : 0. 20261109-115955-1 K2 Zh2 a K4 Zh2: Šimon spasoval, Jano doložil Pijana + Manželku a Manželku bez jeho reakcie (K2 12 : 7, K4 12 : 5).
 
 ### jano-2 · Keď je bitka tesne prehraná alebo remízová v tuhom, skontrolujem pred bitkou Absťáky a priznané Dlhy oboch, lebo remízu v tuhom rozhoduje menej Absťákov, potom menej Dlhov.
 - stav: neoverená
@@ -44,3 +44,21 @@ vo feedback.md.
 - dátum: 2026-10-31
 - partie: 20261031-004030-3
 - prečo: PRAVIDLA §13 Záverečná (míňa limit, končí vykladanie, za ňu sa nedá priložiť). K3 Jano [vypiť, Šofér, Záverečná] pri Helinom kraji: bitka 7 : 1 (+9 špakov); K5 Záverečná (Recidivista, junk) v Helinom kraji pri 3 : 3 s kartou pri lokalite → 7 : 4 a väzeň Krčmárka (+8). Hela: „Jano trikrát hrozil Záverečnou na koniec kraja a ja som nemala protiťah“ (K3 1 : 7, K5 4 : 7). Cena: 1 cigareta, ktorú treba mať aj na finále (jano-3).
+
+### jano-6 · Keď mám Vymáhača aj Záhradkára, nechám Dlhy rásť (vlastné NA EX na karty s Hazardom, lokalita so zdvojením), lebo Vymáhač dá Ranu za každé 2 priznané Dlhy a Záhradkár mi v tom kole zruší exekúciu.
+- stav: overená
+- pravidlá: v11
+- potvrdenia: 1
+- vyvrátenia: 0
+- dátum: 2026-11-09
+- partie: 20261109-115955-1
+- prečo: §16 Vymáhač a Záhradkár, §11. 20261109-115955-1: K4 13 Dlhov = 6 Rán (bitka 18 : 9), K5 ~17 Dlhov = 8 Rán (22 : 8), exekúcia 0 v K2, K4 aj K5. Jano mal 15 priznaných Dlhov na konci a hra skončila pred finále, takže ho nestáli nič; bez Záhradkára by Exekútor zhoril polovicu Dlhov a rovnako špakov.
+
+### jano-7 · Keď súper vyhráva hádky a jeho reči na mojom teplomere bodujú 10 a viac za bitku, prestanem sa baviť o špakoch a idem na výhru väzňami: Nakladačku dávam na červený strach o kolo skôr a v ďalšej výhre zajmem dvoch starších naraz (5 + 5), lebo reči bodujú aj porazenému a body nedobehnem.
+- stav: overená
+- pravidlá: v11
+- potvrdenia: 1
+- vyvrátenia: 0
+- dátum: 2026-11-09
+- partie: 20261109-115955-1
+- prečo: §9.4 bod 6 (viac zajatí v jednom rozdelení), §1 (3 väzni = výhra hneď), §10. 20261109-115955-1: Šimonove reči bodovali 3, 13, 13, 19 špakov (spolu 48 proti Janovým 8 za starších); Jano K3 zajal Autobusára (Nakladačka 8), K4 Starosta na červenú (9), K5 Nakladačka 14 → Hrobár + Starosta, 3 väzni, výhra pri 64 : 53 a prehranom bodovaní.
