@@ -87,6 +87,7 @@ import {
   sDlhmiPoradkyne,
   zakazVypit,
   nahladVylozenia,
+  sPrilozenou,
   moznostiNaexVPohlade,
   naexLimitMinuty,
   hrozbaKliatob,
@@ -780,7 +781,9 @@ function popisStranLokality(v: ClientState, k: CardInstance, otocena: boolean): 
 function popisVylozenia(v: ClientState, k: CardInstance, kam: "vlastna" | "superova"): string {
   const su = (v.ja === 0 ? 1 : 0) as PlayerId;
   const line = lineState(v);
-  const n = nahladVylozenia(DATA, line, v.ja, k, kam, v.naexVKole);
+  // Konflikt a Podpora pri priložení (playtest 2026-11-09, Hela N4) — línia, akú zloží motor.
+  const stranyPo = sPrilozenou(DATA, v, kam === "vlastna" ? v.ja : su, k, v.ja).strany;
+  const n = nahladVylozenia(DATA, line, v.ja, k, kam, v.naexVKole, stranyPo);
   const s = n.sused;
   const spoj =
     s === null

@@ -1555,7 +1555,9 @@ export function HernaPlocha({
       const nova: readonly PlacedCard[] = [...strany[kam], { card: x.karta, playedBy: ja }];
       strany = kam === 0 ? [nova, strany[1]] : [strany[0], nova];
     }
-    const n = nahladVylozenia(data, { ...lineState(view), strany }, ja, posledna.karta, posledna.ciel === "vlastna" ? "vlastna" : "superova", view.naexVKole);
+    // Konflikt a Podpora pri priložení ukáže náhľad tak, ako ich zloží motor (sPrilozenou).
+    const stranyPo = sPrilozenou(data, { ...view, strany }, posledna.ciel === "vlastna" ? ja : super_, posledna.karta, ja).strany;
+    const n = nahladVylozenia(data, { ...lineState(view), strany }, ja, posledna.karta, posledna.ciel === "vlastna" ? "vlastna" : "superova", view.naexVKole, stranyPo);
     return { n, uid: posledna.karta.uid, spoj: textSpoja(n), ja: textZmienVylozenia(n, ja), su: textZmienVylozenia(n, super_) };
     // vylozenia sú odvodené z navrh a view.
   }, [data, view, navrh, ja, super_, sada]);

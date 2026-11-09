@@ -128,12 +128,17 @@ export function nahladVylozenia(
   karta: CardInstance,
   kam: StranaLinie,
   naexVKole?: readonly [boolean, boolean],
+  /**
+   * Línia po vyložení tak, ako ju zloží motor (sPrilozenou: Konflikt a Podpora oboch kariet,
+   * Miňištrant, Šarlatán) — bez nej sa karta len priloží a spúšťače spoja náhľad nevidí.
+   */
+  stranyPo?: LineState["strany"],
 ): NahladVylozenia {
   const p = kam === "vlastna" ? ja : opponentOf(ja);
   const naMojej = kam === "vlastna";
   const strana = line.strany[p];
   const nova: readonly PlacedCard[] = [...strana, { card: karta, playedBy: ja }];
-  const strany: LineState["strany"] = p === 0 ? [nova, line.strany[1]] : [line.strany[0], nova];
+  const strany: LineState["strany"] = stranyPo ?? (p === 0 ? [nova, line.strany[1]] : [line.strany[0], nova]);
   // Furt Školiteľa preškolí oboch susedov — páry sa ukážu už s preškolenými akciami.
   const premenyPo = premenyVLinii(data, { lokalita: line.lokalita, strany });
   // Hráčova karta je k nemu natočená; jeho strana je vľavo od lokality,

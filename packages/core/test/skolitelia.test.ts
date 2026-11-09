@@ -368,6 +368,24 @@ describe("Konflikt — súperova karta, s ktorou sa Školiteľ stretne priložen
     expect(loguje(priloz(zhromazdenie([[s], []], [tip2]), tip2.uid))).toBe(true);
   });
 
+  it("náhľad vyloženia s líniou zo sPrilozenou vidí Konflikt oboch kariet (playtest 2026-11-09, Hela N4)", () => {
+    const tip = karta("profesionalny_tiper");
+    const s = zhromazdenie([[lezi(karta("s_cig"), 1)], []], [tip]);
+    const bez = nahladVylozenia(data, lineState(s), 0, tip, "vlastna", s.naexVKole);
+    const s_ = nahladVylozenia(data, lineState(s), 0, tip, "vlastna", s.naexVKole, sPrilozenou(data, s, 0, tip, 0).strany);
+    // Bez spúšťača spoj súperovi zapne Cigarety; Tipér ich motor preškolí na Hazard (Dlh).
+    expect(bez.zmeny[1].Cigareta ?? 0).toBeGreaterThan(0);
+    expect(s_.zmeny[1].Cigareta ?? 0).toBeLessThanOrEqual(0);
+    expect(s_.zmeny[1].Dlh ?? 0).toBeGreaterThan(bez.zmeny[1].Dlh ?? 0);
+    // Ležiaci Praudovravec súpera: priložením k nemu mu spustíš Konflikt — Pohoršenie navyše jemu.
+    const zena = karta("s_zena");
+    const p = zhromazdenie([[lezi(karta("praudovravec"), 1)], []], [zena]);
+    const n = nahladVylozenia(data, lineState(p), 0, zena, "vlastna", p.naexVKole, sPrilozenou(data, p, 0, zena, 0).strany);
+    const motor = evaluateLine(data, lineState(priloz(p, zena.uid).state)).sums[1].Pohoršenie ?? 0;
+    expect((evaluateLine(data, lineState(p)).sums[1].Pohoršenie ?? 0) + (n.zmeny[1].Pohoršenie ?? 0)).toBe(motor);
+    expect(n.zmeny[1].Pohoršenie ?? 0).toBeGreaterThan(0);
+  });
+
   it("aj keď súper priloží svoju kartu k Tipérovi (Konflikt oboma smermi, §16)", () => {
     const tip = lezi(karta("profesionalny_tiper"), 0);
     const cig = karta("s_cig");
