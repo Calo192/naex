@@ -196,6 +196,14 @@ export function stolPriPoskodeni(data: GameData, s: ClientState, dalsiePitky: nu
   return { ...s, hraci };
 }
 
+/**
+ * Poškodenie bitky na stole zo stolPriPoskodeni: línia sa vyhodnotí s Dlhmi po Pitkách kola —
+ * Vymáhač (Rana za každé 2 priznané Dlhy) ich v bitke ráta tiež (playtest 2026-11-09).
+ */
+export function poskodenieStola(data: GameData, stol: ClientState): DamageResult {
+  return poskodenieBitky(data, stol, evaluateLine(data, lineState(stol)).sums);
+}
+
 /** Ďalšie Pitky kola na stole `s` — ten istý výpočet ako aktualizujPitky a koniec Pitky v motore. */
 export function dalsiePitkyKola(data: GameData, s: ClientState): number {
   if (s.faza !== "pitka" && s.faza !== "zhromazdenie") return 0;
@@ -253,8 +261,8 @@ export function cenaTahu(data: GameData, pred: ClientState, po: ClientState, cen
   const dalsie: DalsiePitky = [dPred, Math.max(0, dPred + dalsiePitkyKola(data, po) - dalsiePitkyKola(data, pred))];
   const bitkaPred = stolPriPoskodeni(data, pred, dalsie[0]);
   const bitkaPo = stolPriPoskodeni(data, po, dalsie[1]);
-  const poskPred = poskodenieBitky(data, bitkaPred, liniaPred.sums);
-  const poskPo = poskodenieBitky(data, bitkaPo, liniaPo.sums);
+  const poskPred = poskodenieStola(data, bitkaPred);
+  const poskPo = poskodenieStola(data, bitkaPo);
   return {
     pred: poskPred,
     po: poskPo,
@@ -372,7 +380,7 @@ export function najhorsiaOdpoved(
   if (po.ciel === null || po.hraci[su].rukaPocet <= 0) return null;
   const hodnotaPreMna = (v: BattleOutcome): number =>
     (v.vitaz === null ? 0 : v.vitaz === ja ? 1000 : -1000) + (v.prebytokDrzi === null ? 0 : v.prebytokDrzi === ja ? v.prebytok : -v.prebytok);
-  const bitka = (s: ClientState): DamageResult => poskodenieBitky(data, stolPriPoskodeni(data, s, dalsiePitky), evaluateLine(data, lineState(s)).sums);
+  const bitka = (s: ClientState): DamageResult => poskodenieStola(data, stolPriPoskodeni(data, s, dalsiePitky));
   let najhorsia: NajhorsiaOdpoved | null = null;
   let najhorsiaHodnota = hodnotaPreMna(battleOutcome(bitka(po)));
   const lokalita = cielLokalitaId(po);
@@ -508,7 +516,7 @@ export function hrozbaKliatob(data: GameData, view: ClientState, hrac: PlayerId,
     let spaky = k.body - (dlhyPo[obet].exekucia - dlhyPred[obet].exekucia);
     // Herňa (Bitka, v7): víťaz dostane navyše toľko špakov, koľko má porazený priznaných Dlhov.
     if (view.ciel.lokalita?.defId === "herna") {
-      const vitaz = battleOutcome(poskodenieBitky(data, stolPriPoskodeni(data, po, dPo), evaluateLine(data, lineState(po)).sums)).vitaz;
+      const vitaz = battleOutcome(poskodenieStola(data, stolPriPoskodeni(data, po, dPo))).vitaz;
       if (vitaz === hrac) spaky -= dlhyPo[obet].priPoskodeni - dlhyPred[obet].priPoskodeni;
     }
     const h: HrozbaKliatob = { hrac, obet, uid, cirhozy, dlhy, spaky };

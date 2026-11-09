@@ -31,7 +31,7 @@ import {
   naTahu,
   nerozdelenaHadka,
   planRozdelenia,
-  poskodenieBitky,
+  poskodenieStola,
   rngInt,
   rngSeed,
   sPrilozenou,
@@ -137,7 +137,7 @@ describe("najhoršia odpoveď na NA EX: žiadna skutočná odpoveď nedopadne ho
           const v = viewFor(data, t, p);
           // Bez hádky (mäkké 0 : 0, v10) sa bitka vyhodnotí hneď v tom istom ťahu — poškodenie je v udalosti.
           const vysledok = events.find((e) => e.type === "bitkaVysledok");
-          const d = vysledok?.type === "bitkaVysledok" ? vysledok.damage : poskodenieBitky(data, stolPriPoskodeni(data, v, n.dalsiePitky[1]), evaluateLine(data, lineState(v)).sums);
+          const d = vysledok?.type === "bitkaVysledok" ? vysledok.damage : poskodenieStola(data, stolPriPoskodeni(data, v, n.dalsiePitky[1]));
           const h = hodnota(battleOutcome(d), p);
           odpovede++;
           expect(h, `seed ${seed}: NA EX na ${uid}, odpoveď ${karta.defId} → ${c.target}`).toBeGreaterThanOrEqual(hranica);

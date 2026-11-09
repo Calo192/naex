@@ -92,12 +92,12 @@ import {
   hrozbaKliatob,
   mozeEsteNaex,
   textHrozbyKliatob,
-  poskodenieBitky,
   prahyHraca,
   printedSides,
   scorecardStarsieho,
   stranyLokality,
   stolPriPoskodeni,
+  poskodenieStola,
   dalsiePitkyKola,
   krajeStran,
   prevahaStran,
@@ -558,9 +558,9 @@ function vykresli(v: ClientState, mena: readonly string[]): string {
   out.push(`Tvoje aktívne akcie (tvoja partia + akcie lokality, ktoré aktivuje tvoja karta): ${sumy(ja)}`);
   out.push(`Súperove aktívne akcie: ${sumy(su)}`);
   if (v.ciel !== null && v.koniec === null) {
-    // Priznané Dlhy (strop mäkkého, remíza) také, aké budú pri poškodení: s Dlhmi z Pitiek kola,
+    // Priznané Dlhy (strop mäkkého, remíza, Vymáhač) také, aké budú pri poškodení: s Dlhmi z Pitiek kola,
     // exekúcia až po poškodení (v8, 3ab061b) — ako hrozba a najhoršia odpoveď v jadre.
-    const d = v.bitkaStav?.damage ?? poskodenieBitky(DATA, stolPriPoskodeni(DATA, vs, dalsiePitkyKola(DATA, vs)), lineEval.sums);
+    const d = v.bitkaStav?.damage ?? poskodenieStola(DATA, stolPriPoskodeni(DATA, vs, dalsiePitkyKola(DATA, vs)));
     const nerozdelena = v.bitkaStav?.damage == null ? nerozdelenaHadka(DATA, { ...stol, lokalitaOtocena: v.lokalitaOtocena, bitkaStav: v.bitkaStav }, lineEval.sums) : null;
     const finaleHadky = v.ciel.typ === "finale";
     out.push(
