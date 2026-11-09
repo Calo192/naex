@@ -3274,3 +3274,17 @@ Staré znenie §12 Nástroj v línii (do v11.13, skrátené):
 Michal: „treba upraviť, nech prvé fajčenie je zadarmo, druhé za 1 atď.“ Nové znenie: `docs/PRAVIDLA.md`, Zmeny v11.15, §7 a §15.
 
 Staré znenie §15 (v11.13–v11.14): „**Prvé fajčenie každého hráča v každej Pitke je zadarmo** (v11.13), ďalšie stojí 2, potom 3 (poradie cien ako inde, len prvá platba odpadá). Fajčenie zadarmo nie je nerest a do Krabičky cigariet sa neráta.“
+
+## v11.16 — Vypiť, pas, Degustátorka a podloženie naprázdno (Michal 2026-11-09, Zrejúca)
+
+Nové znenie: `docs/PRAVIDLA.md`, Zmeny v11.16, §6, §12, §13, §16 a §18.
+
+Staré znenie §6 Pas (v6.1–v11.15): „**Pas:** kto pasuje, do najbližšej Pitky už nevykladá (súper vykladá sám) a dostane **1 cigaretu za každú kartu, ktorú ešte smel vyložiť** (zostávajúci limit), **najviac toľko, koľko má kariet v ruke** — teda min(zostávajúci limit, karty v ruke); s prázdnou rukou nedostane nič (v6.1).“
+
+Staré znenie §18 Pas hráča (2 na 2, do v11.15): „Keď pasuje aj druhý člen, tím dostane **1 cigaretu za každú kartu, ktorú ešte smel vyložiť** (zvyšok limitu tímu), **najviac toľko, koľko majú obaja v rukách** spolu.“
+
+Staré znenie §13 Vypiť (do v11.15): „Piť smie **opakovane**, kým má plné poldeci — každé vypitie pridá ďalšie vyloženie bez odovzdania ťahu.“ Pri zostávajúcom limite 0 sa smelo vypiť (limit ostal 0, pečeň +1, nerest +1).
+
+Staré znenie §6 Limit vykladania a §16 Degustátorka (do v11.15): „Limit sa počíta **nanovo na začiatku každého Zhromaždenia**. Výnimka: Vínko vyložené do Dedičstva v Zhromaždení zvýši zostávajúci limit hneď (§16).“ Degustátorka súperovi poldeci otočila na vypitý, no jeho zostávajúci limit sa znížil až v ďalšom Zhromaždení.
+
+Podloženie naprázdno (§12) pravidlá dovoľovali aj predtým; hra (legalCommands, klient AI hráčov) ponúkala len hrany, ktoré pod kartou niečo urobia.

@@ -212,7 +212,7 @@ describe("viewFor 2 na 2 — Zhromaždenie a Pitka", () => {
     const u1 = miestoNaTahu(s) as Miesto;
     const zaPas = (m: Miesto): number => {
       const v = viewFor(data, s, m);
-      return cigaretyZaPas(data, v, m, v.hraci[v.ja].rukaPocet);
+      return cigaretyZaPas(data, v, m);
     };
     expect(zaPas(u1)).toBe(0);
     const cig = s.hraci[timMiesta(u1)].cigarety;

@@ -907,14 +907,15 @@ function moznosti(v: ClientState): string[] {
     }
     case "zhromazdenie": {
       const z = v.zhromazdenieStav;
-      c({ type: "pass" }, `pasovať (do Pitky už nevykladáš, súper vykladá sám; dostaneš ${cigaretyZaPas(DATA, v, ja, v.hraci[ja].rukaPocet)} cig. — cigaretu za každú kartu, ktorú si ešte smel vyložiť, najviac toľko, koľko máš kariet v ruke)`);
+      c({ type: "pass" }, `pasovať (do Pitky už nevykladáš, súper vykladá sám; dostaneš ${cigaretyZaPas(DATA, v, ja)} cig. — cigaretu za každú kartu, ktorú si ešte smel vyložiť, aj keď už nemáš čo vyložiť)`);
       // V Zhromaždení sa nefajčí (§7) — motor smoke odmietne, preto ho ani neponúkať.
       if (zakazVypit(v)) out.push("(Kostol: nikto nesmie vypiť — v ťahu len jedna karta)");
-      if (v.hraci[ja].poldeciPlne > 0 && z !== null && !zakazVypit(v)) {
+      // v11.16: pri limite 0 sa nepije — motor vypit odmietne, preto ho ani neponúkať.
+      if (v.hraci[ja].poldeciPlne > 0 && z !== null && z.zostavaLimit[ja] > 0 && !zakazVypit(v)) {
         const zostava = z.zostavaLimit[ja];
         c(
           { type: "vypit" },
-          `VYPIŤ do dna: plný poldeci → vypitý; limit vykladania hneď ${zostava} → ${Math.max(0, zostava - 1)}, zato ďalšou kartou ti ťah neskončí; pečeň +1 (vyhodnotí sa v najbližšej Pitke)${zostava <= 1 ? ". POZOR: po vypití už nič nevyložíš" : ""}`,
+          `VYPIŤ do dna: plný poldeci → vypitý; limit vykladania hneď ${zostava} → ${zostava - 1}, zato ďalšou kartou ti ťah neskončí; pečeň +1 (vyhodnotí sa v najbližšej Pitke)${zostava <= 1 ? ". POZOR: po vypití už nič nevyložíš" : ""}`,
         );
       }
       // Sklad (frakcie 2026-11-08): Nástroj zo šenku rovno do Dedičstva za cenu Dedičstva.
@@ -928,17 +929,17 @@ function moznosti(v: ClientState): string[] {
               c({ type: "zaverecna", uid: k.uid, target: t }, `ZÁVEREČNÁ: ${meno(k.defId)} lícom dole → ${POPIS_CIELA[t]} za ${KONSTANTY.CENA_ZAVERECNEJ} cig.; súper ju nevidí do konca Pitky a za ňu nepriloží (ani odpoveď na NA EX), ty už v tomto Zhromaždení nevykladáš (bez cigariet za pas); Nástup až pri otočení`);
           }
         }
-        // Podloženie (Náradie 2026-11-08): Nástroj pod kartu v línii za cigaretu — ponúkajú sa len hrany, ktoré niečo urobia.
+        // Podloženie (Náradie 2026-11-08): Nástroj pod kartu v línii za cigaretu — aj hrana, ktorá nič nezmení (v11.16), s varovaním.
         if (v.hraci[ja].cigarety >= KONSTANTY.CENA_PODLOZENIA && !skoncilVykladanie(z, ja)) {
           const line = lineState(v);
           const vsetky = [...v.strany[0], ...v.strany[1]];
           for (const k of v.ruka) {
             for (const m of ponukaPodlozenia(DATA, line, k)) {
               const host = vsetky.find((pl) => pl.card.uid === m.hostitel);
-              if (!m.maCoRobit || host === undefined) continue;
+              if (host === undefined) continue;
               c(
                 { type: "podloz", nastrojId: k.uid, hostitelId: m.hostitel, hrana: m.hrana },
-                `PODLOŽ ${meno(k.defId)} pod ${meno(host.card.defId)} (${host.playedBy === ja ? "tvoja" : "súperova"} karta), ${m.hrana === "horna" ? "horná" : "dolná"} hrana: ${m.popis}; za ${cigariet(KONSTANTY.CENA_PODLOZENIA)}, je to ťah, limit nemíňa; leží do bitky, potom ide do tvojho odhadzovacieho balíčka`,
+                `PODLOŽ ${meno(k.defId)} pod ${meno(host.card.defId)} (${host.playedBy === ja ? "tvoja" : "súperova"} karta), ${m.hrana === "horna" ? "horná" : "dolná"} hrana: ${m.popis}${m.maCoRobit ? "" : " — NAPRÁZDNO, hrana tu nič nezmení (len minieš cigaretu a ťah)"}; za ${cigariet(KONSTANTY.CENA_PODLOZENIA)}, je to ťah, limit nemíňa; leží do bitky, potom ide do tvojho odhadzovacieho balíčka`,
               );
             }
           }

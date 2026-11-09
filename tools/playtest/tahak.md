@@ -1,4 +1,4 @@
-# Ťahák — platné pravidlá NA EX! (v11.15 Benzínka o 1 lacnejšie, v11.14 frakcie, Preškolenie a podloženie Nástrojov, v11.13 Lokality, v11.12 Reči na súperovom teplomere, zajatie a presvedčenie, identita kariet, Kostol na konci línie, každý Hazard je Dlh, 2026-11-09, Zrejúca; sada = cards.json v master)
+# Ťahák — platné pravidlá NA EX! (v11.16 Vypiť len s limitom, pas bez ohľadu na ruku, Degustátorka hneď, v11.15 Benzínka o 1 lacnejšie, v11.14 frakcie, Preškolenie a podloženie Nástrojov, v11.13 Lokality, v11.12 Reči na súperovom teplomere, zajatie a presvedčenie, identita kariet, Kostol na konci línie, každý Hazard je Dlh, 2026-11-09, Zrejúca; sada = cards.json v master)
 
 Spoločný ťahák AI hráčov — playtester (Zrejúca) ho číta z master, protihráč na
 Vypálenej z vetvy `vypalena` (tam platí jej verzia pravidiel). Podrobne v `docs/PRAVIDLA.md` (zmeny v jeho úvode). Pri
@@ -56,9 +56,10 @@ rozpore s `docs/PRAVIDLA.md` platí `docs/PRAVIDLA.md` a rozpor zapíš do
   („podstrčená“, sabotér) s Odporom zruší súperovi akciu na spoji. Každá vyložená karta míňa limit
   vykladania. **Limit = plné poldeci + 1** — NA EX limit nemíňa, ale
   jeho poldeci na karte sa neráta (v4), takže v ďalšom Zhromaždení kola máš limit o 1 nižší.
+  Súperova **Degustátorka**, ktorá ti v Zhromaždení vyžerie plný poldeci, ti zostávajúci limit zníži o 1 **hneď** (v11.16).
 - **Pas** (`pass`): do Pitky už nevykladáš; dostaneš 1 cigaretu za každú kartu, ktorú
-  si ešte smel vyložiť, **najviac toľko, koľko máš kariet v ruke** (v6.1) — s prázdnou
-  rukou nič.
+  si ešte smel vyložiť (zostávajúci limit) — **v11.16 bez ohľadu na karty v ruke**, aj s prázdnou
+  rukou (limit 3, vyložil si 1, ruka prázdna → pas dá 2 cigarety).
 - **Názvoslovie:** línia = celý rad; lokalita ju delí na dva **kraje**; línia má dva
   **konce**, žiaden nie je tvoj. **Tvoja partia** = všetky tvoje karty, kdekoľvek v línii.
   Akcie: Hazard (v8.2, kľúč v príkazoch a súčtoch ostáva `Dlh`; každá akcia = 1 Dlh),
@@ -66,7 +67,7 @@ rozpore s `docs/PRAVIDLA.md` platí `docs/PRAVIDLA.md` a rozpor zapíš do
 - **Viac kariet v jednom ťahu Zhromaždenia:** prvá je zadarmo, **každá ďalšia
   stojí plný poldeci** (Vypiť: limit −1, pečeň +1, nerest) — dve karty za sebou
   potrebujú limit aspoň 3, tri karty limit 5 (každé Vypiť limit zníži, preto pri limite 3 najviac
-  dve karty v jednom ťahu). V klientovi príkaz
+  dve karty v jednom ťahu). **Pri zostávajúcom limite 0 sa nepije** (v11.16 — server vypit odmietne). V klientovi príkaz
   `{"type":"tah","kroky":[…]}` (priznania, potom karty a pred každou okrem
   poslednej `{"type":"vypit"}` — pri dvoch kartách **vypit, karta, karta**; „karta,
   vypit, karta“ server odmietne), alebo jednotlivé `place` / `vypit`.
@@ -238,7 +239,7 @@ rozpore s `docs/PRAVIDLA.md` platí `docs/PRAVIDLA.md` a rozpor zapíš do
   platí len tá, ktorú zvolíš (pretŕča spod karty); natočenie sa nemení. Pod kartou leží **najviac jeden**
   Nástroj (pod **Zámočníka** ľubovoľne veľa), pod **Zviera** len kým v línii leží **Kôň**; pod kartu lícom
   dole nie. **Akciová hrana X → Y** zmení **všetky** X na oboch hranách karty na Y ešte **pred spojmi**
-  (susedia sa párujú už s Y); bez X nerobí nič. **Hrana posilnenia X** (Puška: Posilnená Petelica / Posilnená
+  (susedia sa párujú už s Y); bez X nerobí nič (podložiť smieš aj tak — ponuka ho označí NAPRÁZDNO, len minieš cigaretu a ťah). **Hrana posilnenia X** (Puška: Posilnená Petelica / Posilnená
   Pecka, 2026-11-09) posilní všetky **aktívne** X karty ×2 ako Posilnenie (X po preškolení; s Forsážou ×4, NA EX
   ich zruší). **Kartová hrana** dá karte stav ako inou cestou:
   **Energeťák — Forsáž** (aktívne ×2; NA EX ju nezruší), **Vínko — NA EX** (aktívne zrušené, neaktívne ×2;

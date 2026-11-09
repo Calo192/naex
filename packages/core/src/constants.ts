@@ -293,13 +293,15 @@ export function vazniNaVyhru(lokalitCelkom: number): number {
 // v11.14 (vo Vypálenej od 2026-11-09) bez novej značky: frakcie bez Kšeftu, Občania v troch
 // kategóriách (Preškolenie), Náradie sa podkladá pod kartu, Predavačka a Živnostník berú zo šenku.
 // v11.15 (Michal 2026-11-09, Zrejúca) bez novej značky: Benzínka — každé fajčenie o 1 cigaretu lacnejšie.
+// v11.16 (Michal 2026-11-09, Zrejúca) bez novej značky: Vypiť len so zostávajúcim limitom, cigarety za pas
+// bez ohľadu na karty v ruke, Degustátorka zníži súperov limit hneď, podloženie naprázdno sa ponúka.
 export const VERZIA_PRAVIDIEL = "v11";
 /**
  * Presná verzia pravidiel vrátane dávky — hráč ju vidí na stránke Pravidlá, ktorá má
  * vždy odzrkadľovať správanie nasadenej hry (Michal 2026-10-31). Značka partií
  * (VERZIA_PRAVIDIEL) sa pri dávke nemení, táto áno.
  */
-export const VERZIA_PRAVIDIEL_PRESNA = "v11.15";
+export const VERZIA_PRAVIDIEL_PRESNA = "v11.16";
 /** Odkedy platí VERZIA_PRAVIDIEL_PRESNA — hráč ho vidí na stránke Pravidlá. */
 export const PRAVIDLA_PLATNE_OD = "2026-11-09";
 export type DlzkaHry = keyof typeof DLZKY_HRY;

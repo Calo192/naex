@@ -1,5 +1,5 @@
-// Pravidlá v6.1 (Michal 2026-10-27, interview o playtestoch v6): pas platí najviac za
-// karty v ruke, akcia zrušená Odporom nie je ani aktívna, ani neaktívna (NA EX ju
+// Pravidlá v6.1 (Michal 2026-10-27, interview o playtestoch v6): pas platil najviac za
+// karty v ruke (od v11.16 už nie, Michal 2026-11-09), akcia zrušená Odporom nie je ani aktívna, ani neaktívna (NA EX ju
 // nezdvojí), Posilnenie aj Odpor Výtržníka sú už len Rany. Strach a Noviny len víťazovi stráži
 // spaky-v6.test.ts, cenu patronátu elders.test.ts. Očakávané hodnoty sú z textu
 // PRAVIDLA.md (§6, §7), nie z kódu.
@@ -36,8 +36,8 @@ function vZhromazdeni(seed: number): GameState {
   return s;
 }
 
-describe("§6 pas (v6.1): cigarety najviac za karty v ruke", () => {
-  it("s prázdnou rukou pas nedá nič, s jednou kartou najviac 1", () => {
+describe("§6 pas (v11.16): cigarety za celý zvyšok limitu, karty v ruke ho neobmedzujú", () => {
+  it("aj s prázdnou rukou či jednou kartou dá pas cigaretu za každú kartu zvyšku limitu", () => {
     const s = vZhromazdeni(4);
     expect(s.faza).toBe("zhromazdenie");
     const p = naTahu(s)!;
@@ -47,8 +47,9 @@ describe("§6 pas (v6.1): cigarety najviac za karty v ruke", () => {
       hraci: s.hraci.map((h, i) => (i === p ? { ...h, ruka } : h)) as unknown as GameState["hraci"],
     });
     const zisk = (t: GameState): number => apply(data, t, { type: "pass" }, p).state.hraci[p].cigarety - t.hraci[p].cigarety;
-    expect(zisk(sRukou([]))).toBe(0);
-    expect(zisk(sRukou(s.hraci[p].ruka.slice(0, 1)))).toBe(1);
+    const zvysok = s.zhromazdenieStav!.zostavaLimit[p];
+    expect(zisk(sRukou([]))).toBe(zvysok);
+    expect(zisk(sRukou(s.hraci[p].ruka.slice(0, 1)))).toBe(zvysok);
   });
 });
 

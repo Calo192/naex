@@ -1562,7 +1562,7 @@ export function PriebehKola({
               <span className="tip-riadok">
                 Kedykoľvek na ťahu: priznať Cirhózu (kartu za ňu nedostaneš, súper za ňu v bitke +1 tuhé), Nástroj do Dedičstva (za cigarety, cena rastie);
                 fajčí sa až v Pitke. Kto pasuje, do Pitky už nevykladá a dostane cigaretu za každú kartu, ktorú ešte smel
-                vyložiť, najviac toľko, koľko má kariet v ruke. Končí, keď obaja vyčerpajú limit alebo pasujú.
+                vyložiť, aj keď už nemá čím. Končí, keď obaja vyčerpajú limit alebo pasujú.
               </span>
               {viac && <span className="tip-stav">{pocetPozn}</span>}
             </>

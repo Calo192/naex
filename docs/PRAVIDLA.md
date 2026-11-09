@@ -1,6 +1,6 @@
 # NA EX! — pravidlá (špecifikácia)
 
-**Pravidlá v11.15 (platné od 2026-11-09)** — Benzínka o cigaretu lacnejšie (v11.15), Frakcie, Občania v troch kategóriách, Náradie a karta zo šenku (v11.14), Lokality (v11.13), Reči na súperovom teplomere (v11.12), Hádka platí (v11.11), Ohováračka namiesto Alkoholika (v11.10), Dobratie do troch a výpalné (v11.9), Každý Hazard je Dlh (v11.8), Kostol a koniec línie (v11.7), Zajatie od minulého kola (v11.6), Identita kariet (v11.5), Zajatie Nakladačkou a presvedčenie (v11.4), Konflikt oboma smermi a Podpora (v11.3), Schopnosť väzňa (v11.2), Vzbura obráti kartu (v11.1) a Strach a reči (Michal 2026-11-02, docs/napady/strach-reci.html,
+**Pravidlá v11.16 (platné od 2026-11-09)** — Vypiť, pas, Degustátorka a podloženie naprázdno (v11.16), Benzínka o cigaretu lacnejšie (v11.15), Frakcie, Občania v troch kategóriách, Náradie a karta zo šenku (v11.14), Lokality (v11.13), Reči na súperovom teplomere (v11.12), Hádka platí (v11.11), Ohováračka namiesto Alkoholika (v11.10), Dobratie do troch a výpalné (v11.9), Každý Hazard je Dlh (v11.8), Kostol a koniec línie (v11.7), Zajatie od minulého kola (v11.6), Identita kariet (v11.5), Zajatie Nakladačkou a presvedčenie (v11.4), Konflikt oboma smermi a Podpora (v11.3), Schopnosť väzňa (v11.2), Vzbura obráti kartu (v11.1) a Strach a reči (Michal 2026-11-02, docs/napady/strach-reci.html,
 verzia 2) na v10.4
 (Hádka v10 — Michal 2026-11-01, docs/napady/hadka.html, verzia 4; v9 zmrazené 2026-10-30, krok 2
 revízie starších, docs/napady/starsi-krok2-zadanie.html; dávky v9.1 Chuť, v9.2 šenok a NA EX naraz,
@@ -8,6 +8,13 @@ v9.3 Výtržník prebíja Úplatok; v10.1 zajatie pred šenkom; v10.2 Nástroj n
 Forsáž, Úplatok zrušený; v10.4 pojem Spáliť, Autority). Sada kariet: Vypálená hrá zverejnenú sadu v49, Zrejúca rozpracovaný stav tvorcu nad ňou (`cards.json` v master). Pravidlá sa
 menia len v dávkach; celá dávka dostane ďalšiu verziu (značka partií `v11`; presnú verziu ukazuje
 stránka Pravidlá — `VERZIA_PRAVIDIEL_PRESNA`).
+
+**Zmeny v11.16 oproti v11.15** (Michal 2026-11-09, Zrejúca; staré znenia v `docs/pravidla-historia.md`, sekcia v11.16). Štyri zmeny:
+
+- **Vypiť len so zostávajúcim limitom** (§6, §13): Vypiť smie hráč, len kým mu zostáva limit vykladania aspoň 1. Pri limite 0 by vypitie limit neznížilo a bola by to len kúpa neresti mimo Pitky — hra ho neponúkne a server ho odmietne.
+- **Cigarety za pas bez ohľadu na karty v ruke** (§6, §18): za pas dostane hráč 1 cigaretu za každú kartu, ktorú ešte smel vyložiť (zostávajúci limit), aj keď v ruke nič nemá — „ak hráč mohol zahrať 3 karty, 1 zahral, na ruke má 0 kariet, pasne — stále dostane cigarety“ (Michal). Predtým najviac toľko, koľko mal kariet v ruke (v6.1). V 2 na 2 rovnako pre tím.
+- **Degustátorka zníži súperov limit hneď** (§6, §16): keď v Zhromaždení vyžerie súperovi plný poldeci, súperov zostávajúci limit vykladania hneď klesne o 1 — ako pri Vypiť a (opačne) pri Vínku v Dedičstve. Predtým sa to prejavilo až v ďalšom Zhromaždení.
+- **Podloženie naprázdno hra ponúka** (§12): podložiť Nástroj pod kartu, na ktorej hrana nič nezmení, pravidlá dovoľovali aj predtým; hra ho teraz ponúka (tlmene, s upozornením „hrana tu nič nezmení“) a robí ho aj server.
 
 **Zmeny v11.15 oproti v11.14** (Michal 2026-11-09, Zrejúca; staré znenie v `docs/pravidla-historia.md`, sekcia v11.15):
 
@@ -862,8 +869,10 @@ limit vykladania = plné poldeci + 1
   zahral** — bez výnimky (aj Kočovník).
 - Každá ďalšia karta v tom istom ťahu stojí plný poldeci (Vypiť, §13), takže
   zostávajúci limit hneď klesne.
-- Limit sa počíta **nanovo na začiatku každého Zhromaždenia**. Výnimka: Vínko
-  vyložené do Dedičstva v Zhromaždení zvýši zostávajúci limit hneď (§16).
+- Limit sa počíta **nanovo na začiatku každého Zhromaždenia**. Výnimky: Vínko
+  vyložené do Dedičstva v Zhromaždení zvýši zostávajúci limit hneď (§16) a
+  **Degustátorka**, ktorá v Zhromaždení vyžerie súperovi plný poldeci, mu zostávajúci
+  limit hneď zníži o 1 (v11.16, §16).
 - **Na začiatku každého kola** (pred voľbou cieľa a stavbou šenku) sa každému
   hráčovi otočí **jeden vypitý poldeci na plný**. Viac vypitých si treba doliať
   (cigarety, barter, akcia Poldeci, Krčmárka — §7, §9.5, §16).
@@ -877,9 +886,9 @@ Zhromaždenie končí, keď obaja odohrajú svoj limit alebo obaja pasujú.
 
 **Pas:** kto pasuje, do najbližšej Pitky už nevykladá (súper vykladá sám)
 a dostane **1 cigaretu za každú kartu, ktorú ešte smel vyložiť** (zostávajúci
-limit), **najviac toľko, koľko má kariet v ruke** — teda min(zostávajúci limit,
-karty v ruke); s prázdnou rukou nedostane nič (v6.1). Platí to, aj keď pasuje
-hra za neho. Pasovanie ruší aj nevyužité ťahy navyše
+limit) — **bez ohľadu na to, koľko má kariet v ruke** (v11.16, Michal 2026-11-09):
+kto smel vyložiť 3 karty, vyložil 1 a ruku má prázdnu, za pas dostane 2 cigarety.
+Platí to, aj keď pasuje hra za neho. Pasovanie ruší aj nevyužité ťahy navyše
 z Vypiť. Kto v Zhromaždení nemá čo vyložiť, za toho hra pasuje (fajčiť sa
 v Zhromaždení nedá, §7). **Záverečná** (§13) ukončí vykladanie ako pas, ale bez
 cigariet.
@@ -1723,7 +1732,9 @@ v5.
 - **Akciová hrana X → Y** preškolí **všetky výskyty** akcie X na oboch hranách karty na Y
   (Rana ×2 → Pecka ×2). Preškolenie prebehne **ešte pred spojmi**: susedia sa párujú už
   s preškolenou akciou. Ak karta X nemá, Nástroj pod ňou nerobí nič (podložiť ho smieš,
-  je to tvoj ťah). Pod Zámočníkom sa každá akcia preškolí raz, prvým podloženým
+  je to tvoj ťah; hra také podloženie ponúka tlmene s upozornením „hrana tu nič nezmení“,
+  v11.16). To isté platí pre hranu posilnenia bez X a pre kartovú hranu, ktorej stav
+  karta už má. Pod Zámočníkom sa každá akcia preškolí raz, prvým podloženým
   Nástrojom s touto akciou — preškolenia sa nereťazia.
 - **Hrana posilnenia X** (zápis „Posilnená {X}“, tvar podľa rodu: Posilnený {Hazard},
   Posilnené {Obmedzenie}) posilní **všetky aktívne X** na oboch hranách karty (×2) ako
@@ -1821,8 +1832,10 @@ ukončí. Za každé vypitie:
   sa vyhodnocuje len v Pitke: +1 sa pripíše dopredu a prah Cirhózy sa
   skontroluje v najbližšej Pitke.
 
-Piť smie **opakovane**, kým má plné poldeci — každé vypitie pridá ďalšie
-vyloženie bez odovzdania ťahu. Pasovanie nevyužité ťahy navyše ruší. Vypitý
+Piť smie **opakovane**, kým má plné poldeci **a zostávajúci limit aspoň 1** — každé
+vypitie pridá ďalšie vyloženie bez odovzdania ťahu. **Pri limite 0 sa nepije** (v11.16,
+Michal 2026-11-09): vypitie by limit už neznížilo a bola by to len kúpa neresti mimo
+Pitky; hra ho neponúkne a server ho odmietne. Pasovanie nevyužité ťahy navyše ruší. Vypitý
 poldeci sa dá doliať (§7) a jeden sa doleje sám na začiatku kola. Keďže každé
 Vypiť zníži limit o 1, dve karty v jednom ťahu treba limit aspoň 3, tri karty
 limit 5 — **pri limite 3 sú v jednom ťahu najviac dve karty**. V kole o Kostol sa
@@ -2091,7 +2104,7 @@ Kôň v kroku Exekútora. Michal ich potvrdí.
 | Zámočník | Furt (Náradie, Michal 2026-11-08): pod neho smieš podložiť **ľubovoľne veľa Nástrojov** (§12) — každý ťahom za cigaretu; každá jeho akcia sa preškolí raz, prvým podloženým Nástrojom s ňou. Predtým: aktívne akcie Nástrojov v jeho okolí ×2. |
 | Veterán | Furt: NA EX na Veterána jeho aktívne akcie nezruší, ale zdvojí; neaktívne ostanú neaktívne. |
 | Veštica | Spoločník: Pamätník (frakcie): 2 Povery navyše. Starý efekt (Prehra: výmena kariet balíčkov, §9.5b) má len stará sada. |
-| Degustátorka | Nástup: ak má súper viac plných poldeci ako ty, jeden sa mu otočí na vypitý (nie nerest ani pečeň). |
+| Degustátorka | Nástup: ak má súper viac plných poldeci ako ty, jeden sa mu otočí na vypitý (nie nerest ani pečeň). V Zhromaždení mu tým **hneď klesne zostávajúci limit vykladania o 1** (v11.16, Michal 2026-11-09; predtým až v ďalšom Zhromaždení), najmenej na 0. |
 | Vandal | Nástup: lokalita sa otočí o 180° (hrany si vymenia kraje). |
 | Kôň | Furt (Náradie, Michal 2026-11-08): kým leží v línii (odkrytý, neumlčaný Mäsiarom), smie každý hráč podložiť Nástroj aj pod **Zviera** — pod Koňa aj pod ostatné Zvieratá (§12). **Roboty Koňa pália o 1 Dlh viac** (v11.5): každá jeho aktívna Robota (s násobkami) spáli v kroku Exekútora o 1 priznaný Dlh viac; čo nemá čo spáliť, dá špak ako každá Robota (§11). Sčíta sa s Fúrikom. Vedľa Mäsiara ani jedno neplatí; Robota, ktorú Vedúcko ráta ako Pecku, nepáli. |
 | Čierna mačka | (v8.3, P5 rozhodol Michal 2026-10-30) Furt: majiteľove Povery sa Vierou nerušia — v hádke dajú vždy mäkké (v10), súperova Viera ostáva na tuhé. |
@@ -2176,7 +2189,7 @@ Kôň v kroku Exekútora. Michal ich potvrdí.
 | Šenok | ponuka kariet lícom nahor; obaja vidia, čo berú (§5) |
 | Útočník / obranca | útočník je **porazený z minulej bitky** (v prvom kole náhodne, pri sekere ostáva; vo finále menej špakov, §14b) — vykladá prvý a na NA EX odpovedá prvý (lícom dole); obranca je víťaz minulej bitky — volí a natáča cieľ, berie zo šenku prvý (na prvom ťahu 1 kartu, v9.2), na NA EX odpovedá druhý na druhý kraj línie; Pitku hrajú obaja naraz (§4, §7) |
 | Výtržník | karta, na ktorú obaja dali NA EX v tej istej Pitke (zrážka): všetky jej akcie sú aktívne Rany pre majiteľa, len počas jednej bitky (§7) |
-| Vypiť | otočiť plný poldeci na vypitý: limit −1, pečeň +1, ďalšia karta v tom istom ťahu (§13) |
+| Vypiť | otočiť plný poldeci na vypitý: limit −1, pečeň +1, ďalšia karta v tom istom ťahu; len pri zostávajúcom limite aspoň 1 (v11.16, §13) |
 | Výkupné | po finále 1 špak za každý plný poldeci a 1 špak za každých celých 5 cigariet, bez stropu (§14) |
 | Záverečná | karta lícom dole za cigaretu, ukončí vykladanie v Zhromaždení; otočí sa na konci Pitky (§13) |
 | Spálenie (spáliť) | karta ide navždy z hry, nevracia sa do žiadneho balíčka (v10.4, Michal 2026-11-02; predtým „zahodenie“). Spálený Dlh zmizne z počítadla (Robota, Exekútor). Opak odhodenia |
@@ -2265,8 +2278,8 @@ platí pre tím. Osobná je len **ruka** a **ťah**.
 - **Pas hráča** (Michal 2026-11-02, Q1 — nahrádza „cigarety hneď každému za seba“
   z 2026-10-28): pas člena len ukončí jeho vykladanie, **bez cigariet**. Keď pasuje aj
   druhý člen, tím dostane **1 cigaretu za každú kartu, ktorú ešte smel vyložiť**
-  (zvyšok limitu tímu), **najviac toľko, koľko majú obaja v rukách** spolu. Keď tím
-  limit vyčerpá, cigarety nedostane. Zhromaždenie končí, keď skončili všetci štyria.
+  (zvyšok limitu tímu), bez ohľadu na karty v rukách (v11.16; predtým najviac toľko,
+  koľko mali obaja v rukách). Keď tím limit vyčerpá, cigarety nedostane. Zhromaždenie končí, keď skončili všetci štyria.
 - **Záverečná:** najviac **jedna za tím**, za 1 cigaretu tímu; ukončí vykladanie
   **celého tímu** bez cigariet (Michal 2026-10-28).
 - **Priznanie:** Cirhózu z ruky smie priznať jej držiteľ; ide medzi priznané karty tímu.

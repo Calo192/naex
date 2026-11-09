@@ -10398,6 +10398,13 @@ button.pecat.kseft-pod-tlacidlo.ne:hover {
   box-shadow: 0 0 0 3px var(--akcent), 0 0 22px color-mix(in srgb, var(--akcent) 70%, transparent);
 }
 
+/* Podloženie naprázdno (v11.16): smie sa, ale hrana tu nič nezmení — rám prerušovaný a karta pritlmená. */
+.s-lupou.podloz-ciel.podloz-prazdne > .kl {
+  outline-style: dashed;
+  outline-color: color-mix(in srgb, var(--akcent) 55%, transparent);
+  opacity: 0.7;
+}
+
 .s-lupou.podloz-nie {
   opacity: 0.45;
   filter: saturate(0.4);

@@ -34,6 +34,7 @@ import { rngInt, rngNext, rngSeed, rngShuffle } from "./rng.ts";
 import { evaluateLine } from "./partia.ts";
 import { efektyNavyse, jeSlovami } from "./navyse.ts";
 import { hranyNastroja } from "./naradie.ts";
+import { hranaMaCoRobit } from "./podlozenie.ts";
 import { KONSTANTY, vazniNaVyhru } from "./constants.ts";
 import { abstakyVBitke, spakyPriExekucii, zhoriPriExekucii } from "./battle.ts";
 import type { ElderState } from "./elders.ts";
@@ -1064,7 +1065,7 @@ function dohrajZhromazdenie(k: Kontext, s: GameState): GameState {
   const limit: [number, number] = [z.zostavaLimit[0], z.zostavaLimit[1]];
   const pasoval: [boolean, boolean] = [z.pasoval[0], z.pasoval[1]];
   const navyse: [number, number] = [z.navyse[0], z.navyse[1]];
-  // Pas dáva cigaretu za každú kartu, ktorú hráč ešte smel vyložiť a má v ruke (kartyZaPas).
+  // Pas dáva cigaretu za každú kartu, ktorú hráč ešte smel vyložiť (kartyZaPas).
   // Bez nej skutočný pas (s cigaretami) vyzeral lepšie než vykladanie, po
   // ktorom sa v nanečisto dohranom Zhromaždení pasuje zadarmo — a vo v5
   // rozhoduje súboj o Cigarety (bot pasoval o poslednú bitku).
@@ -1076,7 +1077,7 @@ function dohrajZhromazdenie(k: Kontext, s: GameState): GameState {
     if (v === null) {
       pasoval[q] = true;
       navyse[q] = 0;
-      cigarety[q] += kartyZaPas({ zostavaLimit: limit }, q, ruky[q].length) * KONSTANTY.CIGARETY_ZA_PAS_NA_KARTU;
+      cigarety[q] += kartyZaPas({ zostavaLimit: limit }, q) * KONSTANTY.CIGARETY_ZA_PAS_NA_KARTU;
     } else {
       strany = sKartou(k.data, { ...s, strany }, q, v).strany;
       ruky[q] = ruky[q].filter((x) => x.uid !== v.karta.uid);
@@ -1496,6 +1497,8 @@ function kandidatiPodlozenia(v: Volba): Command[] {
     const hostitel = [...state.strany[0], ...state.strany[1]].find((pl) => pl.card.uid === cmd.hostitelId);
     const hrany = karta === undefined ? null : hranyNastroja(defOf(data, karta));
     if (karta === undefined || hostitel === undefined || hrany === null) continue;
+    // Podloženie naprázdno legalCommands ponúka (v11.16) — botovi by len minulo cigaretu.
+    if (!hranaMaCoRobit(data, hostitel, hrany[cmd.hrana])) continue;
     const strany = printedSides(data, hostitel.card);
     const akcie = [...strany.left, ...strany.right].filter((a): a is Action => a !== null);
     const hrana = hrany[cmd.hrana];

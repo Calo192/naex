@@ -2983,6 +2983,12 @@ export function HernaPlocha({
       ];
       const nastrojVyber = nastrojKPodlozeniu;
       const smieSem = (k: CardInstance): boolean => ponukaPre(k).some((m) => m.hostitel === uid);
+      // Podloženie naprázdno (v11.16, Michal 2026-11-09): ponúka sa, ale tlmene — ani jedna hrana tu nič nezmení.
+      const naprazdno = (k: CardInstance): MoznostPodlozenia | null => {
+        const tu = ponukaPre(k).filter((m) => m.hostitel === uid);
+        return tu.length > 0 && tu.every((m) => !m.maCoRobit) ? (tu[0] ?? null) : null;
+      };
+      const prazdne = nastrojKPodlozeniu !== null && smieSem(nastrojKPodlozeniu) ? naprazdno(nastrojKPodlozeniu) : null;
       const presunPodlozenie = podlozenieNavrh !== null && podlozenieNavrh.hostitel !== uid && smieSem(podlozenieNavrh.nastroj) ? podlozenieNavrh.nastroj : null;
       const klikPodlozenia =
         nastrojVyber !== null ? (smieSem(nastrojVyber) ? () => zasun(nastrojVyber, uid) : undefined) : presunPodlozenie !== null ? () => zasun(presunPodlozenie, uid) : null;
@@ -3006,6 +3012,7 @@ export function HernaPlocha({
           ...(jeCiel(cielPodlozenia) ? { ciel: cielPodlozenia } : {}),
           trieda: [
             nastrojVyber !== null ? (smieSem(nastrojVyber) ? "podloz-ciel" : "podloz-nie") : "",
+            prazdne !== null ? "podloz-prazdne" : "",
             nastrojVyber === null && presunPodlozenie !== null ? "podloz-presun" : "",
             nadCielom(cielPodlozenia) ? "nad-cielom" : "",
             naexMozny && naexCiele.has(uid) ? "naex-mozny" : "",
@@ -3023,6 +3030,7 @@ export function HernaPlocha({
             .trim() || undefined,
           ...(mode.typ === "naexCiel" && !naexCiele.has(uid) ? { titul: dovodBezNaexNaKartu(placed) } : {}),
           ...(nastrojVyber !== null && !smieSem(nastrojVyber) ? { titul: dovodBezPodlozenia(nastrojVyber, uid) } : {}),
+          ...(prazdne !== null ? { titul: `Hrana tu nič nezmení (${prazdne.popis}) — podložiť smieš, len minieš cigaretu a ťah.` } : {}),
           ...(stitky !== undefined ? { stitok: stitky } : {}),
         },
       );
@@ -3619,6 +3627,7 @@ export function HernaPlocha({
           dovod: hJa.cigarety < cena ? `Nemáš cigaretu — zasunutie stojí ${cigariet(cena)}.` : null,
           tip:
             `${menoKarty(p.nastroj.defId)}${moznost === undefined ? "" : ` (${moznost.popis})`} pod kartu ${hostitelKarta === undefined ? "" : menoKarty(hostitelKarta.card.defId)} za ${cigariet(cena)}. ` +
+            (moznost !== undefined && !moznost.maCoRobit ? "Pozor: hrana tu nič nezmení. " : "") +
             "Je to tvoj ťah, limit nemíňa. Nástroj tam leží do bitky, potom sa vráti do tvojho odhadzovacieho balíčka.",
           akcia: () => posli({ type: "podloz", nastrojId: p.nastroj.uid, hostitelId: p.hostitel, hrana: p.hrana }),
           zrus: { akcia: () => setNavrh(null), popis: "Vrátiť Nástroj do ruky" },
@@ -4188,7 +4197,7 @@ export function HernaPlocha({
         // Celý ťah naraz (Michal 2026-10-19): karty sa ťahajú na stôl ako návrh,
         // každá ďalšia stojí plný poldeci, server dostane ťah až po „potvrdiť“ na stole.
         if (vylozenia.length === 0 || plan === null) {
-          const zaPas = cigaretyZaPas(data, view, ja, view.hraci[ja].rukaPocet);
+          const zaPas = cigaretyZaPas(data, view, ja);
           // Náradie (Michal 2026-11-08): Nástroj v ruke sa zasúva pod kartu v línii, nielen odkazuje.
           const nastrojVRuke = ruka.some((k) => ponukaPre(k).length > 0);
           const pokynNaradia =

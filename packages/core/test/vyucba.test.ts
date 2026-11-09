@@ -706,10 +706,11 @@ describe("výučba Prvá hra — 2. a 3. časť (pravidlá v8, exekúcia po poš
     expect(koniec.koniec?.vitaz).toBe(0);
     // Frakcie (2026-11-08): finále vyhrá hráč 27 : 5 (Policajtka má Petelicu navyše proti Recidivistovi, Rany navyše
     // Pijanov zosilnia Vidly); Farára zajal v 3. kole (vo finále sa nezajíma). Hráč má dve nepriznané Cirhózy (−6):
-    // 60 + vykúpenie 2 − 6 = 56, Štamgast jednu: 13 + 5 − 3 = 15. Výhra strachom ani väzňami nenastala.
+    // 60 + vykúpenie 3 − 6 = 57, Štamgast jednu: 13 + 5 − 3 = 15. Výhra strachom ani väzňami nenastala.
     // Konflikt bez tagu (2026-11-08): hráč nemá v 2. kole Dlh z Praudovravca, exekútor mu nezobral špak — o 1 viac.
-    expect(koniec.koniec?.body).toEqual([56, 15]);
-    expect(cela.kroky[i("i-koniec")]?.melichar).toContain("56 : 15");
+    // Pas bez ohľadu na ruku (v11.16): v 3. kole dostane hráč za prázdnu ruku 3 cigarety, na konci ich má 8 — špak navyše.
+    expect(koniec.koniec?.body).toEqual([57, 15]);
+    expect(cela.kroky[i("i-koniec")]?.melichar).toContain("57 : 15");
     expect(koniec.vazni.map((v) => [v.elderId, v.hrac])).toEqual([["farar", 0]]);
     // Nepriznané Cirhózy: hráčova z 2. kola a z finále (i-koniec, q-koniec), Štamgastova z 2. kola.
     expect(koniec.koniec?.cirhozy).toEqual([2, 1]);
@@ -853,8 +854,8 @@ describe("výučba Prvá hra — 2. a 3. časť (pravidlá v8, exekúcia po poš
     // Výpalné (v11.9) za väzňa: Farár sa ráta ako červený strach držiteľa; Štamgast dostal 2 (prehra, Fajčiar), 1 dal.
     expect(kolo4.hraci[1].cigarety).toBe(vyhra.hraci[1].cigarety + 1);
     expect(body(kolo4)).toEqual([27, 9]);
-    // Do finále má hráč 5 cigariet (2 z výpalného) — s pasom a Cigaretou vily stačí na Policajtku, Kšeft a doliatie.
-    expect(kolo4.hraci[0].cigarety).toBe(5);
+    // Do finále má hráč 8 cigariet (2 z výpalného, 3 za pas s prázdnou rukou, v11.16) — s pasom a Cigaretou vily stačí na Policajtku a doliatie.
+    expect(kolo4.hraci[0].cigarety).toBe(8);
     expect(pocetAbstakov(kolo4.hraci[0])).toBe(0);
     expect(pocetAbstakov(kolo4.hraci[1])).toBe(0);
   });

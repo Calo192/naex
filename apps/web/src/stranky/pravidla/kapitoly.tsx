@@ -318,14 +318,15 @@ export const KAPITOLY: readonly Kapitola[] = [
         <p>
           V Zhromaždení vykladáte striedavo, začína útočník. Za jedno Zhromaždenie vyložíš najviac{" "}
           <P k="limit">plné poldeci + 1</P> kariet — aj bez plných poldeci aspoň jednu. Limit sa ráta nanovo na začiatku každého
-          Zhromaždenia. NA EX limit nemíňa (dáva sa v Pitke), ale jeho poldeci odíde zo zásoby na kartu — v ďalšom
-          Zhromaždení kola máš limit o 1 nižší a pri bitke sa vypije. Podloženie Nástroja ani Dedičstvo limit nemíňajú.
+          Zhromaždenia; hneď ho menia len Vínko v Dedičstve (+1), Vypiť a súperova Degustátorka (−1). NA EX limit nemíňa
+          (dáva sa v Pitke), ale jeho poldeci odíde zo zásoby na kartu — v ďalšom Zhromaždení kola máš limit o 1 nižší a pri
+          bitke sa vypije. Podloženie Nástroja ani Dedičstvo limit nemíňajú.
         </p>
         <UkazkaLimitu />
         <p>
           Keď nechceš vykladať, <P k="pas">pasuješ</P>: do Pitky už nevykladáš, súper môže pokračovať sám a ty dostaneš{" "}
-          <strong>cigaretu za každú kartu</strong>, ktorú si ešte smel vyložiť — najviac toľko, koľko máš kariet v ruke (s prázdnou
-          rukou nič). Keď nemáš inú možnosť, hra pasuje za teba.
+          <strong>cigaretu za každú kartu</strong>, ktorú si ešte smel vyložiť, aj keď ti v ruke už nič neostalo. Keď nemáš inú možnosť, hra pasuje
+          za teba.
         </p>
         <H3 id="zhromazdenie-prevaha">Prevaha v kraji</H3>
         <p>
@@ -897,6 +898,10 @@ export const KAPITOLY: readonly Kapitola[] = [
             špakov za karty v línii.
           </li>
           <li>Podložený Nástroj a jeho hrana sú verejné.</li>
+          <li>
+            Podložiť smieš aj pod kartu, na ktorej hrana nič nezmení (karta nemá akciu, ktorú preškoľuje) — je to tvoj ťah za
+            cigaretu. Hra takú kartu ponúkne tlmene s upozornením „hrana tu nič nezmení“.
+          </li>
         </ul>
         <H3 id="nastroje-dedicstvo">Dedičstvo</H3>
         <p>
@@ -925,7 +930,8 @@ export const KAPITOLY: readonly Kapitola[] = [
         <p>
           V Zhromaždení smieš na svojom ťahu vyložiť aj viac kariet. Prvá je zadarmo, <strong>každá ďalšia ťa stojí plný
           poldeci</strong> — <P k="vypit">vypiješ</P> ho: limit hneď klesne o 1, pečeň +1 (vyhodnotí sa v najbližšej Pitke) a ráta
-          sa to ako nerest. Dve karty za sebou teda potrebujú limit aspoň 3. Súper medzitým nereaguje. Poradie je{" "}
+          sa to ako nerest. Dve karty za sebou teda potrebujú limit aspoň 3. Vypiť smieš, len kým ti zostáva limit — pri limite 0
+          nie. Súper medzitým nereaguje. Poradie je{" "}
           <strong>Vypiť, karta, karta</strong> — bez vypitia prvá karta ťah ukončí. V Kostole vypiť nesmie nikto.
         </p>
         <p className="zvyraznene">

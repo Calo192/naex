@@ -228,32 +228,30 @@ export function skoncilVykladanie(z: Pick<ZhromazdenieStav, "pasoval" | "skoncil
 }
 
 /**
- * Za koľko kariet dostane hráč cigarety, keď teraz pasuje (§6):
- * zvyšok limitu, najviac toľko, koľko má kariet v ruke (v6.1, Michal 2026-10-27 —
- * s prázdnou rukou pas nič nedá).
+ * Za koľko kariet dostane hráč cigarety, keď teraz pasuje (§6): celý zvyšok limitu.
+ * Karty v ruke ho od v11.16 neobmedzujú (Michal 2026-11-09) — kto vyložil všetko, čo
+ * mal, dostane cigarety aj za limit, ktorý už nemal čím využiť.
  */
-export function kartyZaPas(z: Pick<ZhromazdenieStav, "zostavaLimit">, p: PlayerId, vRuke: number): number {
-  return Math.max(0, Math.min(z.zostavaLimit[p], vRuke));
+export function kartyZaPas(z: Pick<ZhromazdenieStav, "zostavaLimit">, p: PlayerId): number {
+  return Math.max(0, z.zostavaLimit[p]);
 }
 
 /**
  * Cigarety, ktoré hráč p dostane, keď teraz pasuje — jeden výpočet pre motor aj
  * náhľad pasu: karty za pas (kartyZaPas) a Izolačka (id pistalka) v súperovom
  * Dedičstve (Náradie 2026-10-30): súperove aktívne Obmedzenia v línii ich uberajú, najmenej 0.
- * V 2 na 2 pasuje miesto `kto`: kým partner vykladá, pas cigarety nedá (Michal 2026-11-02, Q1);
- * `vRuke` sú karty v oboch rukách tímu.
+ * V 2 na 2 pasuje miesto `kto`: kým partner vykladá, pas cigarety nedá (Michal 2026-11-02, Q1).
  */
 export function cigaretyZaPas(
   data: GameData,
   s: VerejnyStav & { readonly lokalitaOtocena: boolean; readonly zhromazdenieStav: Pick<ZhromazdenieStav, "pasoval" | "zostavaLimit" | "skoncili"> | null },
   kto: Miesto,
-  vRuke: number,
 ): number {
   const z = s.zhromazdenieStav;
   if (z === null) return 0;
   const p = timMiesta(kto);
   if (z.skoncili !== undefined && !z.skoncili[partnerMiesta(kto)]) return 0;
-  const karty = kartyZaPas(z, p, vRuke);
+  const karty = kartyZaPas(z, p);
   const zaPas = karty * KONSTANTY.CIGARETY_ZA_PAS_NA_KARTU;
   const q = opponentOf(p);
   if (zaPas === 0 || !vDedicstve(s, q, "pistalka")) return zaPas;
@@ -2957,6 +2955,9 @@ function vylozDoLinie(
 /** Dôvod pre server aj klienta, keď sa Nástroj vykladá do línie (Náradie 2026-11-08). */
 export const NASTROJ_DO_LINIE = "Nástroj sa do línie nevykladá — podlož ho pod Občana či Starešinu alebo ho vylož do Dedičstva.";
 
+/** Dôvod pre server aj klienta, keď hráč pije pri vyčerpanom limite vykladania (v11.16, §13). */
+export const VYPIT_BEZ_LIMITU = "Vypiť sa dá, len kým ti zostáva limit vykladania — pri limite 0 nie.";
+
 /**
  * Podloženie (Náradie, Michal 2026-11-08, PRAVIDLA §12): Nástroj z ruky pod kartu v línii
  * (svoju aj súperovu) za cigaretu, zvolená hrana pretŕča. Je to ťah v striedaní, limit
@@ -3528,7 +3529,13 @@ function nastupEfekt(
       if (s.hraci[opp].poldeciPlne > s.hraci[p].poldeciPlne) {
         zmenPoldeci(s, opp, "degustatorka", -1, events);
         hrac(s, opp).poldeciVypite += 1;
-        events.push({ type: "log", text: `Degustátorka: hráčovi ${opp + 1} vyžerie plný poldeci — je vypitý.` });
+        // v11.16 (Michal 2026-11-09): súperov zostávajúci limit klesne hneď, ako pri Vypiť a Vínku.
+        const z = s.zhromazdenieStav;
+        if (s.faza === "zhromazdenie" && z !== null) uberLimit(z, opp, 1);
+        events.push({
+          type: "log",
+          text: `Degustátorka: hráčovi ${opp + 1} vyžerie plný poldeci — je vypitý${s.faza === "zhromazdenie" && z !== null ? `, limit mu klesá na ${z.zostavaLimit[opp]}` : ""}.`,
+        });
       } else events.push({ type: "log", text: `Degustátorka: hráč ${opp + 1} nemá viac plných poldeci — nič nevyžerie.` });
       break;
     }
@@ -3564,7 +3571,7 @@ function cmdPass(s: MutState, data: GameData, kto: Miesto, events: Event[]): voi
   z.navyse[p] = 0;
   if (z.skoncili !== undefined) {
     // 2 na 2 (Michal 2026-11-02): pas člena len ukončí jeho vykladanie. Cigarety za zvyšok
-    // limitu dostane tím, až keď pasuje aj druhý — najviac toľko, koľko majú obaja v rukách.
+    // limitu dostane tím, až keď pasuje aj druhý.
     z.skoncili[kto] = true;
     if (!z.skoncili[partnerMiesta(kto)]) {
       events.push({ type: "log", text: `Hráč ${kto + 1} pasuje do Pitky — tím vykladá ďalej.` });
@@ -3574,11 +3581,10 @@ function cmdPass(s: MutState, data: GameData, kto: Miesto, events: Event[]): voi
   }
   z.pasoval[p] = true;
   // Pas (Michal 2026-10-20): cigareta za každú kartu, ktorú hráč ešte smel
-  // vyložiť a má ju v ruke — aj keď pasuje hra za neho. Do Pitky už nehrá,
-  // súper vykladá sám.
-  const vRuke = kartyVRukach(s.hraci[p]).length;
-  const karty = kartyZaPas(z, p, vRuke);
-  const ziska = cigaretyZaPas(data, s as GameState, kto, vRuke);
+  // vyložiť — aj keď pasuje hra za neho; karty v ruke ju od v11.16 neobmedzujú.
+  // Do Pitky už nehrá, súper vykladá sám.
+  const karty = kartyZaPas(z, p);
+  const ziska = cigaretyZaPas(data, s as GameState, kto);
   const pistalka = karty * KONSTANTY.CIGARETY_ZA_PAS_NA_KARTU - ziska;
   if (pistalka > 0) events.push({ type: "log", text: `${data.cards.get("pistalka")?.name ?? "Izolačka"}: súperove Obmedzenia uberajú hráčovi ${p + 1} ${cigariet(pistalka)} za pas.` });
   zmenCigarety(s, p, "pas", ziska, events);
@@ -3604,6 +3610,9 @@ function cmdVypit(s: MutState, kto: Miesto, events: Event[]): void {
   need(!skoncilVykladanie(z, kto), "Už si pasoval.");
   need(!zakazVypit(s as GameState), "Kostol: nikto nesmie vypiť.");
   need(s.hraci[p].poldeciPlne > 0, "Nemáš plný poldeci.");
+  // v11.16 (Michal 2026-11-09): pri limite 0 by vypitie limit neznížilo — bola by to len
+  // kúpa neresti mimo Pitky.
+  need(z.zostavaLimit[p] > 0, VYPIT_BEZ_LIMITU);
   const player = hrac(s, p);
   zmenPoldeci(s, p, "platba", -1, events);
   player.poldeciVypite += 1;
@@ -5391,9 +5400,10 @@ export function planVykladania(
     // Každá karta okrem poslednej: najprv Vypiť, aby ďalšia neukončila ťah.
     if (i < tahove.length - 1) {
       if (plne <= 0) return chyba("Na ďalšiu kartu v tom istom ťahu treba plný poldeci.");
+      if (zostava <= 0) return chyba(VYPIT_BEZ_LIMITU);
       plne -= 1;
       poldeci += 1;
-      zostava = Math.max(0, zostava - 1);
+      zostava -= 1;
       kroky.push({ type: "vypit" });
     }
     const cena = cenaDedicstva({ dedicstvaVylozene: dedicstva });
@@ -6492,15 +6502,13 @@ export function legalCommands(data: GameData, state: GameState, kto: Miesto): Co
           }
         }
       }
-      // Podloženie (Náradie 2026-11-08): len hrany, ktoré pod kartou niečo urobia — prázdne podloženie
-      // pravidlá dovolia (cmdPodloz), ponúkať ho nemá zmysel.
+      // Podloženie (Náradie 2026-11-08): aj hrana, ktorá pod kartou nič nezmení — pravidlá ho dovolia
+      // a hra ho ponúka (Michal 2026-11-09, v11.16); bot ho z kandidátov vyradí sám.
       if (state.hraci[p].cigarety >= KONSTANTY.CENA_PODLOZENIA && !skoncilVykladanie(z, kto)) {
         const line = lineState(state);
         for (const karta of ruka) {
           if (!defOf(data, karta).tags.includes("Nástroj")) continue;
-          for (const m of ponukaPodlozenia(data, line, karta)) {
-            if (m.maCoRobit) vylozenia.push({ type: "podloz", nastrojId: karta.uid, hostitelId: m.hostitel, hrana: m.hrana });
-          }
+          for (const m of ponukaPodlozenia(data, line, karta)) vylozenia.push({ type: "podloz", nastrojId: karta.uid, hostitelId: m.hostitel, hrana: m.hrana });
         }
       }
       // Sklad (Zhromaždenie, frakcie): Nástroj zo šenku rovno do Dedičstva za cenu Dedičstva.
@@ -6508,9 +6516,9 @@ export function legalCommands(data: GameData, state: GameState, kto: Miesto): Co
         for (const k of state.senok) if (jeNaradie(data, k)) vylozenia.push({ type: "place", uid: k.uid, target: "dedicstvo" });
       }
       // Vypiť len znižuje limit — keď sa nedá nič vyložiť, nepomôže (priznanie
-      // ťah neodovzdáva, tomu vypitie tiež nepridá).
+      // ťah neodovzdáva, tomu vypitie tiež nepridá). Pri limite 0 sa nesmie (v11.16).
       const doLinie = vylozenia.some((c) => c.type === "place" && c.target !== "priznanie");
-      if (doLinie && state.hraci[p].poldeciPlne > 0 && !skoncilVykladanie(z, kto) && !zakazVypit(state)) out.push({ type: "vypit" });
+      if (doLinie && state.hraci[p].poldeciPlne > 0 && z.zostavaLimit[p] > 0 && !skoncilVykladanie(z, kto) && !zakazVypit(state)) out.push({ type: "vypit" });
       // Fajčiť sa v Zhromaždení nesmie (v5, Michal 2026-10-24) — len v Pitke.
       out.push(...vylozenia);
       break;
