@@ -288,6 +288,21 @@ export function sMojimiSkrytymiNaex(data: GameData, view: ClientState): ClientSt
   return v;
 }
 
+/**
+ * Súperove skryté NA EX, ktoré hráč s Bzdochou vidí (server ich pošle len jemu), odkryté tak,
+ * ako ich odkryje motor — bitka „pred“ v náhľade NA EX je potom tá z odhadu bitky (playtest
+ * 2026-11-09, Vilo N7). NA EX na kartu `okrem` ostáva skryté: zrážku na nej zloží poOdkrytiNaex.
+ */
+export function sVidenymiSuperovymiNaex(data: GameData, view: ClientState, okrem?: number): ClientState {
+  const su = opponentOf(view.ja);
+  let v = view;
+  for (const x of (view.pitkaStav?.skryteNaex ?? []).filter((y) => y.hrac === su && y.uid !== okrem)) {
+    const po = poOdkrytiNaex(data, { ...v, ja: su }, x.uid);
+    if (po !== null) v = { ...po.view, ja: view.ja };
+  }
+  return v;
+}
+
 /** Pohľad po odkrytí jedného NA EX hráča `view.ja` a čo pri ňom motor zúčtoval. */
 export interface PoOdkrytiNaex {
   readonly view: ClientState;
@@ -421,7 +436,7 @@ export function najhorsiaOdpoved(
  * na tú istú kartu hráč vidí (Bzdocha); platí, ak súper neodpovie.
  */
 export function nahladNaexNaKartu(data: GameData, view: ClientState, uid: number, ceny: readonly [CenyKliatob, CenyKliatob]): NahladNaexNaKartu | null {
-  const zaklad = sMojimiSkrytymiNaex(data, view);
+  const zaklad = sVidenymiSuperovymiNaex(data, sMojimiSkrytymiNaex(data, view), uid);
   const odkrytie = poOdkrytiNaex(data, zaklad, uid);
   if (odkrytie === null) return null;
   return { ...cenaTahu(data, zaklad, odkrytie.view, ceny), odkrytie };
