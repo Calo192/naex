@@ -162,7 +162,7 @@
    "tags": [
     "Nástroj"
    ],
-   "effect_text": "Dedičstvo: Hádka: Ak vyhráš hádku, súper odhodí 1 náhodnú kartu z ruky. Hore: {Viera}→{Pohoršenie}. Dole: {Pohoršenie}→{Povera}.",
+   "effect_text": "Dedičstvo: Hádka: Ak vyhráš hádku, súper odhodí 1 náhodnú kartu z ruky. Hore: {Viera}→{Pohoršenie}. Dole: {Pečeň}→{Pohoršenie}.",
    "triggers": [
     "Dedičstvo",
     "Hádka"
@@ -239,7 +239,7 @@
    "tags": [
     "Nástroj"
    ],
-   "effect_text": "Dedičstvo: Bitka: Ak súper v tomto kole priložil kartu k tvojej {Rana}. Hore: {Pečeň}→{Rana}. Dole: {Pecka}→{Rana}.",
+   "effect_text": "Dedičstvo: Bitka: Ak súper v tomto kole priložil kartu k tvojej karte {Rana}. Hore: {Pečeň}→{Rana}. Dole: Posilnená {Rana}.",
    "triggers": [
     "Dedičstvo",
     "Bitka"
@@ -290,7 +290,7 @@
    "tags": [
     "Nástroj"
    ],
-   "effect_text": "Dedičstvo: Hodnota tvojej Viery je o 1 vyššia. Hore: {Povera}→{Viera}. Dole: {Viera}→{Povera}.",
+   "effect_text": "Dedičstvo: Hodnota tvojej Viery je o 1 vyššia. Hore: {Povera}→{Viera}. Dole: {Odpor}→{Viera}.",
    "triggers": [
     "Dedičstvo"
    ],
@@ -315,7 +315,7 @@
    "tags": [
     "Nástroj"
    ],
-   "effect_text": "Dedičstvo: Tvoj prah Cirhózy je o 2 vyšší. Hore: {Pečeň}→{Viera}. Dole: {Poldeci}→{Viera}.",
+   "effect_text": "Dedičstvo: Tvoj prah Cirhózy je o 2 vyšší. Hore: {Pečeň}→{Povera}. Dole: {Poldeci}→{Pohoršenie}.",
    "triggers": [
     "Dedičstvo"
    ],
@@ -340,7 +340,7 @@
    "tags": [
     "Nástroj"
    ],
-   "effect_text": "Dedičstvo: Tvoj prah Dlhu je o 1 vyšší. Posledná Pitka kola: {Hazard}. Hore: {Hazard}→{Poldeci}. Dole: {Cigareta}→{Hazard}.",
+   "effect_text": "Dedičstvo: Tvoj prah Dlhu je o 1 vyšší. Posledná Pitka kola: {Hazard}. Hore: {Hazard}→{Poldeci}. Dole: {Hazard}→{Pecka}.",
    "triggers": [
     "Dedičstvo"
    ],
@@ -2706,7 +2706,7 @@
    "tags": [
     "Nástroj"
    ],
-   "effect_text": "Dedičstvo: Tvoje Rany udeľujú o 1 poškodenie viac. Hore: Vzbura. Dole: {Rana}→{Pecka}.",
+   "effect_text": "Dedičstvo: Tvoje Rany udeľujú o 1 poškodenie viac. Hore: Vzbura. Dole: {Robota}→{Petelica}.",
    "triggers": [
     "Dedičstvo"
    ],
@@ -2731,7 +2731,7 @@
    "tags": [
     "Nástroj"
    ],
-   "effect_text": "Dedičstvo: NA EX smieš dať aj na Zviera. Hore: Výtržník. Dole: {Poldeci}→{Pečeň}.",
+   "effect_text": "Dedičstvo: NA EX smieš dať aj na Zviera. Hore: Výtržník. Dole: {Pečeň}→{Robota}.",
    "triggers": [
     "Dedičstvo"
    ],
@@ -2756,9 +2756,9 @@
    "tags": [
     "Zviera"
    ],
-   "effect_text": "Bitka: Na konci bitky sa spália všetci Občania a Zvieratá v jeho okolí.",
+   "effect_text": "Konflikt: Občan {Spálenie}.",
    "triggers": [
-    "Bitka"
+    "Konflikt"
    ],
    "left": {
     "blocked": [
@@ -2792,9 +2792,11 @@
    "tags": [
     "Zviera"
    ],
-   "effect_text": "Nástup: Súperove reči pri jednom staršom klesnú o stupeň.",
+   "effect_text": "Podpora: Preškolenie {Viera}→{Cigareta}. Konflikt: Preškolenie {Viera}→{Cigareta}. Furt: {Cigareta}.",
    "triggers": [
-    "Nástup"
+    "Podpora",
+    "Konflikt",
+    "Furt"
    ],
    "left": {
     "blocked": [
@@ -2811,7 +2813,8 @@
      3
     ],
     "actions": {
-     "Cigareta": 1
+     "Cigareta": 1,
+     "Posilnenie": 1
     }
    },
    "permutations": {
@@ -3478,7 +3481,7 @@
    "tags": [
     "Nástroj"
    ],
-   "effect_text": "Dedičstvo: Tvoje Pecky udeľujú o 1 poškodenie viac. Hore: {Pecka}→{Petelica}. Dole: {Petelica}→{Pecka}.",
+   "effect_text": "Dedičstvo: Tvoje Pecky udeľujú o 1 poškodenie viac. Hore: {Pecka}→{Petelica}. Dole: {Rana}→{Petelica}.",
    "triggers": [
     "Dedičstvo"
    ],
@@ -3503,7 +3506,7 @@
    "tags": [
     "Nástroj"
    ],
-   "effect_text": "Dedičstvo: Tvoje Posilnenie nemožno zrušiť NA EX. Hore: Forsáž. Dole: {Posilnenie}→{Pečeň}.",
+   "effect_text": "Dedičstvo: Tvoje Posilnenie nemožno zrušiť NA EX. Hore: Forsáž. Dole: {Poldeci}→{Posilnenie}.",
    "triggers": [
     "Dedičstvo"
    ],
@@ -3528,7 +3531,7 @@
    "tags": [
     "Nástroj"
    ],
-   "effect_text": "Dedičstvo: Tvoje Roboty pália o 1 Dlh viac. Hore: {Hazard}→{Robota}. Dole: {Robota}→{Hazard}.",
+   "effect_text": "Dedičstvo: Tvoje Roboty pália o 1 Dlh viac. Hore: {Hazard}→{Robota}. Dole: Posilnená {Robota}.",
    "triggers": [
     "Dedičstvo"
    ],
@@ -3553,7 +3556,7 @@
    "tags": [
     "Nástroj"
    ],
-   "effect_text": "Dedičstvo: Tvoje Povery majú silu 2. Hore: {Hazard}→{Povera}. Dole: {Povera}→{Hazard}.",
+   "effect_text": "Dedičstvo: Tvoje Povery majú silu 2. Hore: {Hazard}→{Povera}. Dole: Posilnená {Povera}.",
    "triggers": [
     "Dedičstvo"
    ],
@@ -3628,7 +3631,7 @@
    "tags": [
     "Nástroj"
    ],
-   "effect_text": "Dedičstvo: Tvoje Vízie ukážu 2 vrchné karty — jednu si vezmi alebo spáľ, druhú vráť navrch. Hore: {Povera}→{Vízia}. Dole: {Vízia}→{Povera}.",
+   "effect_text": "Dedičstvo: Tvoje Vízie ukážu 2 vrchné karty — jednu si vezmi alebo spáľ, druhú vráť navrch. Hore: {Povera}→{Vízia}. Dole: {Pečeň}→{Vízia}.",
    "triggers": [
     "Dedičstvo"
    ],
@@ -3653,7 +3656,7 @@
    "tags": [
     "Nástroj"
    ],
-   "effect_text": "Dedičstvo: Tvoje Obmedzenia uberajú aj cigarety, ktoré súper dostane za pas. Hore: {Pečeň}→{Obmedzenie}. Dole: {Pecka}→{Obmedzenie}.",
+   "effect_text": "Dedičstvo: Tvoje Obmedzenia uberajú aj cigarety, ktoré súper dostane za pas. Hore: {Pečeň}→{Obmedzenie}. Dole: Posilnené {Obmedzenie}.",
    "triggers": [
     "Dedičstvo"
    ],
@@ -3717,9 +3720,11 @@
    "tags": [
     "Nástroj"
    ],
-   "effect_text": "Dedičstvo: Tvoje Pohoršenia nemožno zrušiť Odporom a NA EX. Hore: {Povera}→{Pohoršenie}. Dole: {Odpor}→{Povera}.",
+   "effect_text": "Dedičstvo: Hádka: Remíza v hádke je tvoja, ak nie je 0 : 0. Bitka: Za každú tvoju akciu zrušenú súperovým Odporom {Povera}. Hore: {Povera}→{Pohoršenie}. Dole: {Odpor}→{Povera}.",
    "triggers": [
-    "Dedičstvo"
+    "Dedičstvo",
+    "Hádka",
+    "Bitka"
    ],
    "left": {
     "blocked": [],
@@ -3742,7 +3747,7 @@
    "tags": [
     "Nástroj"
    ],
-   "effect_text": "Dedičstvo: Tvoje Hazardy sú aktívne, keď nie sú spojené, a neaktívne, keď sú spojené. Hore: {Hazard}→{Vízia}. Dole: {Vízia}→{Hazard}.",
+   "effect_text": "Dedičstvo: Tvoje Hazardy sú aktívne, keď nie sú spojené, a neaktívne, keď sú spojené. Hore: {Hazard}→{Vízia}. Dole: {Cigareta}→{Vízia}.",
    "triggers": [
     "Dedičstvo"
    ],
@@ -3767,7 +3772,7 @@
    "tags": [
     "Nástroj"
    ],
-   "effect_text": "Dedičstvo: Tvoje aktívne Cigarety nemožno zrušiť NA EX. Hore: {Cigareta}→{Rana}. Dole: {Cigareta}→{Pečeň}.",
+   "effect_text": "Dedičstvo: Tvoje aktívne Cigarety nemožno zrušiť NA EX. Hore: {Cigareta}→{Rana}. Dole: {Poldeci}→{Petelica}.",
    "triggers": [
     "Dedičstvo"
    ],
