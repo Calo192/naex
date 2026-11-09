@@ -5002,30 +5002,6 @@ button.auto-hotovo-odkaz {
   color: var(--slaby-text);
 }
 
-/* Záložky vrstvy Karty: Balíček · Odhodené · Priznané · Dedičstvo. */
-.karty-zalozky {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-  margin-bottom: 12px;
-}
-
-.karty-zalozky button {
-  padding: 6px 14px;
-  border-radius: 999px;
-  border: 1px solid var(--okraj-svetly);
-  background: var(--plocha-2);
-  color: var(--tlmeny);
-  font: 600 0.88rem/1.2 var(--pismo);
-  cursor: pointer;
-}
-
-.karty-zalozky button.aktivna {
-  border-color: var(--akcent);
-  background: var(--akcent);
-  color: var(--na-akcente);
-}
-
 /* Na stole nie je ruka cez obsah — pätka stavby ostáva pod kartami. */
 .vrstva-fazy .draft-panel.stavba .draft-paticka {
   position: static;
@@ -6243,35 +6219,6 @@ button.auto-hotovo-odkaz {
   right: auto;
 }
 
-
-.balicek-skupina h3 {
-  margin: 0 0 8px;
-  font: 700 0.75rem/1.2 var(--pismo);
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  color: var(--slaby);
-}
-
-.balicek-skupina h3 b {
-  color: var(--text);
-  font-variant-numeric: tabular-nums;
-}
-
-.balicek-skupina .s-lupou {
-  position: relative;
-}
-
-.balicek-kusov {
-  position: absolute;
-  top: -6px;
-  right: -6px;
-  padding: 3px 7px;
-  border-radius: 99px;
-  background: var(--akcent);
-  color: var(--na-akcente);
-  font: 800 0.8rem/1 var(--pismo);
-  pointer-events: none;
-}
 
 /* ---- prepnutý bar (Michal 2026-10-27, dizajn spaky-starsi-20261027) ----
  * Nástenka (klik na Špaky): päť zdrojov ustúpi dlaždiciam špakov. Línia starších (klik na

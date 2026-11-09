@@ -1,0 +1,560 @@
+<!doctype html>
+<html lang="sk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Karty hráča: 8 mockov — NA EX!</title>
+<style>
+:root { --pozadie:#14110e; --plocha:#1e1914; --plocha-2:#28211a; --okraj:#3d3229; --text:#f1e8d8; --tlmeny:#b6a790; --slaby:#8b7d6a;
+  --akcent:#e9ad45; --zelena:#7cbf74; --cervena:#d0563f; color-scheme: dark; }
+@media (prefers-color-scheme: light) { :root:not([data-theme="dark"]) { --pozadie:#f6f1e7; --plocha:#fffaf1; --plocha-2:#f0e7d6; --okraj:#dccdb3; --text:#2a2016;
+  --tlmeny:#6b5b45; --slaby:#7a6a52; --akcent:#a8680f; --zelena:#3f7f38; --cervena:#b0402c; color-scheme: light; } }
+:root[data-theme="light"] { --pozadie:#f6f1e7; --plocha:#fffaf1; --plocha-2:#f0e7d6; --okraj:#dccdb3; --text:#2a2016;
+  --tlmeny:#6b5b45; --slaby:#7a6a52; --akcent:#a8680f; --zelena:#3f7f38; --cervena:#b0402c; color-scheme: light; }
+* { box-sizing: border-box; }
+body { margin:0; background:var(--pozadie); color:var(--text); font:16px/1.5 system-ui, "Segoe UI", Roboto, sans-serif; }
+main { max-width: 1280px; margin: 0 auto; padding: 16px 16px 120px; }
+h1, h2 { font-family: Georgia, serif; line-height: 1.2; }
+h1 { font-size: clamp(1.5rem, 5vw, 2.2rem); margin: 0 0 6px; }
+h2 { font-size: 1.3rem; margin: 40px 0 6px; padding-bottom: 4px; border-bottom: 1px solid var(--okraj); }
+h2 small { font: 400 .9rem system-ui; color: var(--tlmeny); margin-left: 8px; }
+p { margin: 0 0 10px; max-width: 900px; }
+.mini { color: var(--slaby); font-size: .85rem; }
+.box { background: var(--plocha); border: 1px solid var(--okraj); border-radius: 12px; padding: 12px 14px; margin: 0 0 12px; }
+.box.zv { border-color: var(--akcent); }
+.box > :last-child { margin-bottom: 0; }
+ul { padding-left: 20px; margin: 0 0 10px; } li { margin-bottom: 4px; }
+nav.skupiny { position: sticky; top: 0; z-index: 9; background: var(--pozadie); padding: 8px 0; display: flex; gap: 6px; overflow-x: auto; border-bottom: 1px solid var(--okraj); align-items: center; }
+nav.skupiny a { flex: none; font-size: .85rem; text-decoration: none; color: var(--tlmeny); background: var(--plocha); border: 1px solid var(--okraj); border-radius: 999px; padding: 4px 11px; }
+.prep { flex: none; display: inline-flex; border: 1px solid var(--akcent); border-radius: 999px; overflow: hidden; margin-right: 10px; }
+.prep button { border: 0; background: transparent; color: var(--text); font: 600 .85rem system-ui; padding: 5px 14px; cursor: pointer; }
+.prep button.akt { background: var(--akcent); color: #2b1b03; }
+section { scroll-margin-top: 56px; }
+.kon { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+@media (max-width: 680px) { .kon { grid-template-columns: 1fr; } }
+.kon .box { margin: 0; font-size: .92rem; }
+.kon b.p { color: var(--zelena); } .kon b.m { color: var(--cervena); }
+table { border-collapse: collapse; width: 100%; font-size: .9rem; }
+th, td { text-align: left; padding: 6px 8px; border-bottom: 1px solid var(--okraj); vertical-align: top; }
+th { color: var(--tlmeny); font-weight: 600; }
+.tw { overflow-x: auto; }
+
+/* ================= obrazovka hry (vždy tmavá, pevných 1240 × 620) ================= */
+.obal { margin: 10px 0 12px; overflow: hidden; }
+.obr { width: 1240px; height: 620px; position: relative; overflow: hidden; border-radius: 12px; border: 1px solid #0f1a13; color: #f1e8d8; font: 14px/1.4 system-ui, "Segoe UI", sans-serif;
+  --akc:#e9ad45; --pl:#1e1914; --pl2:#28211a; --okr:#3d3229; --okr2:#57483a; --tl:#b6a790; --sl:#8b7d6a; --jaf:#5cc0cf; --suf:#e0805f; }
+.obr p { max-width: none; }
+.obr button { font-family: inherit; }
+.stol { position: absolute; inset: 0; background: radial-gradient(ellipse at 50% 40%, #35563c, #22382a 70%, #1a2a20); }
+.stol.rozm { filter: blur(2.5px) saturate(.8); }
+.stol .hb { position: absolute; inset: 0 0 auto 0; height: 56px; background: rgba(12,10,8,.72); border-bottom: 1px solid rgba(255,255,255,.08); }
+.dl { position: absolute; display: flex; align-items: center; gap: 8px; background: #1e1914; border: 1px solid #3d3229; border-radius: 10px; padding: 4px 12px 4px 4px; font-size: 11.5px; line-height: 1.25; }
+.dl img { width: 36px; height: 36px; border-radius: 8px; object-fit: cover; }
+.dl b { display: block; font-size: 13px; } .dl span { color: var(--tl); }
+.dl.su { left: 14px; top: 5px; border-color: var(--suf); } .dl.ja { left: 14px; bottom: 8px; border-color: var(--jaf); }
+.dl.akt { box-shadow: 0 0 0 3px rgba(233,173,69,.7); z-index: 3; }
+.stol .ln { position: absolute; left: 0; right: 0; top: 160px; display: flex; justify-content: center; gap: 14px; align-items: flex-start; }
+.stol .rk { position: absolute; left: 0; right: 0; bottom: -88px; display: flex; justify-content: center; gap: 8px; }
+.tma { position: absolute; inset: 0; background: #0a0806; }
+
+/* ---------- karta (zjednodušené líce: ilustrácia, názov, efekt) ---------- */
+.kt { --f: hsl(var(--h) 34% 56%); width: var(--w); aspect-ratio: 150/222; font-size: calc(var(--w) / 15); background: var(--f); border-radius: .55em; position: relative; flex: none;
+  box-shadow: 0 1px 2px rgba(0,0,0,.45), 0 8px 20px rgba(0,0,0,.4); overflow: hidden; display: flex; flex-direction: column; color: #fff; font-family: Roboto, "Segoe UI", system-ui, sans-serif; }
+.kt .il { flex: 0 0 48%; background: #333 center/cover; }
+.kt.nast { padding-top: 1.5em; } .kt.nast .il { flex-basis: 40%; }
+.kt .pas { flex: none; padding: .35em .3em; text-align: center; line-height: 1.1; }
+.kt .pas b { display: block; font-size: 1.05em; } .kt .pas i { font-size: .72em; font-style: normal; opacity: .9; }
+.kt .ef { flex: 1; background: #fff; color: hsl(var(--h) 32% 30%); font-size: .62em; line-height: 1.25; padding: .4em .9em; display: flex; align-items: center; justify-content: center; text-align: center; margin-bottom: .7em; overflow: hidden; }
+.kt .ef span { display: block; }
+.kt.nast .ef { margin-bottom: 1.5em; }
+.kt.mini .ef { display: none; } .kt.mini .il { flex: 1; } .kt.mini.nast { padding-top: 1em; } .kt.mini .pas i { display: none; } .kt.mini .pas b { font-size: 2em; } .kt.mini .pas { padding: .7em .2em .9em; }
+.kt .x { position: absolute; top: .35em; right: .35em; background: #14110e; color: var(--akc); border: 1px solid var(--akc); border-radius: 999px; font: 800 11px/1.3 system-ui; padding: 0 6px; }
+.rub { width: var(--w); aspect-ratio: 150/222; border-radius: calc(var(--w) / 27); flex: none; border: calc(var(--w) / 22) solid #e8d9b8; background: repeating-linear-gradient(45deg, #5b2a1e 0 6px, #6b3424 6px 12px);
+  display: flex; align-items: center; justify-content: center; color: #e8d9b8; font: 800 calc(var(--w) / 6.5) Georgia, serif; letter-spacing: .04em; box-shadow: 0 6px 14px rgba(0,0,0,.45); }
+.rub.kop { box-shadow: 3px 3px 0 #3a1a12, 3px 3px 0 1px #cdbd9a, 6px 6px 0 #3a1a12, 6px 6px 0 1px #cdbd9a, 9px 9px 0 #3a1a12, 9px 9px 0 1px #cdbd9a, 12px 20px 22px rgba(0,0,0,.5); position: relative; }
+.rub.kop em { position: absolute; right: -14px; top: -10px; background: var(--akc); color: #2b1b03; font: 800 13px/1 system-ui; padding: 4px 8px; border-radius: 999px; box-shadow: 0 2px 6px rgba(0,0,0,.5); }
+
+/* ---------- spoločné diely ---------- */
+.pn { position: absolute; background: linear-gradient(#211b15, #1a1510); border: 1px solid var(--okr2); border-radius: 14px; box-shadow: 0 24px 60px rgba(0,0,0,.6); }
+.zav { position: absolute; top: 12px; right: 14px; width: 30px; height: 30px; border-radius: 50%; border: 1px solid var(--okr2); background: rgba(0,0,0,.25); color: var(--tl); font-size: 18px; line-height: 1; cursor: pointer; z-index: 5; }
+.obr h4 { margin: 0; font: 700 11.5px system-ui; letter-spacing: .13em; text-transform: uppercase; color: var(--tl); white-space: nowrap; }
+.obr h4 b { margin-left: 8px; background: var(--akc); color: #2b1b03; border-radius: 999px; padding: 0 8px; letter-spacing: 0; font-size: 12px; }
+.obr h4 i { font-style: normal; text-transform: none; letter-spacing: 0; color: var(--sl); font-weight: 400; margin-left: 10px; }
+.skp { display: flex; gap: 14px; }
+.sk > span { display: block; font-size: 10.5px; color: var(--tl); letter-spacing: .05em; margin-bottom: 3px; white-space: nowrap; } .sk > span b { color: var(--akc); }
+.mn { display: flex; gap: 4px; } .mn.pr { gap: 0; } .mn.pr > * + * { margin-left: var(--ov); }
+.cigik { display: inline-block; width: 16px; height: 5px; border-radius: 2px; background: linear-gradient(90deg, #e8e2d6 70%, #d58a3a 70%); vertical-align: middle; }
+.hl { display: flex; align-items: center; gap: 14px; padding: 13px 60px 13px 18px; border-bottom: 1px solid var(--okr); }
+.hl img { width: 54px; height: 54px; border-radius: 12px; object-fit: cover; border: 2px solid var(--hc); }
+.kto b { font: 700 20px/1.15 Georgia, serif; display: block; } .kto span { color: var(--tl); font-size: 12px; }
+.staty { margin-left: auto; display: flex; gap: 8px; }
+.st { min-width: 84px; background: var(--pl2); border: 1px solid var(--okr); border-radius: 10px; padding: 5px 10px; text-align: center; }
+.st b { display: block; font: 800 22px/1.1 Georgia, serif; color: var(--akc); } .st span { font-size: 10.5px; color: var(--tl); white-space: nowrap; }
+
+/* ---------- M1 Vitrína ---------- */
+.m1 { left: 70px; top: 26px; width: 1100px; height: 568px; display: flex; flex-direction: column; }
+.m1-pol { display: grid; grid-template-columns: 1fr 1fr; flex: 1; min-height: 0; }
+.m1-pol.ja { grid-template-columns: 1fr 1.9fr; }
+.m1-pol section { padding: 12px 22px 0; display: flex; flex-direction: column; }
+.m1-pol section + section { border-left: 1px solid var(--okr); }
+.m1-rad { flex: 1; display: flex; gap: 16px; justify-content: center; align-items: flex-end; background: radial-gradient(ellipse at 50% 100%, rgba(233,173,69,.2), transparent 65%); }
+.m1-pol section::after { content: ""; height: 12px; margin: 0 -6px; border-radius: 3px; background: linear-gradient(#8a6a3c, #5c4424); box-shadow: 0 10px 18px rgba(0,0,0,.55); }
+.m1-kop { display: grid; grid-template-columns: 1.75fr 1fr; border-top: 1px solid var(--okr); margin-top: 20px; }
+.m1-kop section { padding: 10px 22px 14px; } .m1-kop section + section { border-left: 1px solid var(--okr); }
+.m1-kop h4 { margin-bottom: 8px; }
+.m1-kop .ruka { display: flex; gap: 5px; align-items: center; } .m1-kop .txt { font-size: 12px; color: var(--tl); max-width: 300px; }
+.m1-kop .vz { display: flex; gap: 12px; align-items: center; }
+
+/* ---------- M2 Zásuvka ---------- */
+.m2 { right: 0; top: 0; bottom: 0; width: 460px; border-radius: 14px 0 0 14px; border-right: 0; display: flex; flex-direction: column; }
+.m2 .hl { padding: 12px 54px 8px 14px; border: 0; } .m2 .hl img { width: 44px; height: 44px; }
+.cps { display: flex; gap: 6px; flex-wrap: wrap; padding: 0 14px 10px; border-bottom: 1px solid var(--okr); }
+.cp { font-size: 11.5px; background: var(--pl2); border: 1px solid var(--okr); border-radius: 999px; padding: 1px 9px; color: var(--tl); white-space: nowrap; } .cp b { color: var(--akc); margin-right: 4px; }
+.m2 .tel { flex: 1; overflow: auto; padding: 0 14px 34px; scrollbar-width: thin; scrollbar-color: #57483a transparent; }
+.m2::after { content: ""; position: absolute; left: 1px; right: 12px; bottom: 0; height: 36px; background: linear-gradient(transparent, #1a1510); pointer-events: none; border-radius: 0 0 0 14px; }
+.m2 h4 { padding: 9px 0 6px; }
+.rw { display: flex; gap: 10px; align-items: center; padding: 6px 10px 6px 6px; border-radius: 9px; background: var(--pl2); border-left: 4px solid hsl(var(--h) 34% 56%); margin-bottom: 5px; }
+.rw .th { width: var(--t, 44px); height: var(--t, 44px); border-radius: 7px; background: #333 center/cover; flex: none; }
+.rw b { font-size: 13.5px; } .rw i { font-style: normal; font-size: 10px; color: hsl(var(--h) 45% 72%); margin-left: 6px; text-transform: uppercase; letter-spacing: .08em; }
+.rw p { margin: 1px 0 0; font-size: 11.5px; line-height: 1.3; color: var(--tl); }
+.rw .n { margin-left: auto; font: 800 16px Georgia, serif; color: var(--akc); padding-left: 6px; }
+.rw.v { --t: 72px; padding: 8px 12px 8px 8px; } .rw.v b { font-size: 15px; } .rw.v p { font-size: 12.5px; }
+.typy { display: flex; height: 8px; border-radius: 4px; overflow: hidden; margin-bottom: 4px; } .typy i { flex: var(--n); background: hsl(var(--h) 34% 56%); }
+.typy-l { display: flex; gap: 12px; font-size: 10.5px; color: var(--tl); margin-bottom: 6px; white-space: nowrap; } .typy-l i { display: inline-block; width: 8px; height: 8px; border-radius: 2px; background: hsl(var(--h) 34% 56%); margin-right: 4px; }
+.trs { display: grid; grid-template-columns: 1fr 1fr; gap: 4px 8px; }
+.tr { height: 26px; display: flex; align-items: center; border-radius: 6px; overflow: hidden; background: var(--pl2); font-size: 12px; position: relative; border-left: 4px solid hsl(var(--h) 34% 56%); }
+.tr .slz { position: absolute; right: 0; top: 0; bottom: 0; width: 62%; background: center 28%/cover; -webkit-mask-image: linear-gradient(90deg, transparent, #000 75%); mask-image: linear-gradient(90deg, transparent, #000 75%); opacity: .8; }
+.tr span { position: relative; padding-left: 8px; text-shadow: 0 1px 2px #000, 0 0 6px #000; font-weight: 600; white-space: nowrap; }
+.tr em { position: relative; margin-left: auto; background: #14110e; color: var(--akc); font: 800 12px system-ui; padding: 0 7px; height: 100%; display: flex; align-items: center; }
+
+/* ---------- M3 Šenk ---------- */
+.m3 { position: absolute; left: 50px; top: 20px; width: 1140px; height: 580px; border-radius: 14px; overflow: hidden; border: 1px solid #6b4a2a; box-shadow: 0 24px 60px rgba(0,0,0,.6);
+  background: repeating-linear-gradient(90deg, rgba(0,0,0,.2) 0 2px, transparent 2px 126px), linear-gradient(#5d3d23, #4a2f1b); }
+.stit { display: inline-block; background: linear-gradient(#d9b56a, #a8823a); color: #2b1b03; font: 800 11px Georgia, serif; letter-spacing: .12em; text-transform: uppercase; padding: 4px 14px; border-radius: 4px; box-shadow: inset 0 0 0 2px rgba(255,255,255,.25), 0 3px 8px rgba(0,0,0,.5); white-space: nowrap; }
+.m3 .meno { position: absolute; left: 26px; top: 14px; display: flex; align-items: center; gap: 10px; }
+.m3 .meno img { width: 40px; height: 40px; border-radius: 50%; border: 3px solid #d9b56a; object-fit: cover; }
+.m3 .meno .stit { font-size: 14px; padding: 6px 18px; }
+.m3 .stena { position: absolute; left: 30px; right: 30px; top: 64px; height: 304px; display: flex; gap: 40px; align-items: flex-end; }
+.m3 .blok { display: flex; flex-direction: column; align-items: center; gap: 0; height: 100%; justify-content: flex-end; }
+.m3 .blok > .stit { margin-bottom: auto; }
+.m3 .klince { display: flex; gap: 26px; padding-top: 34px; align-items: flex-start; }
+.zaves { position: relative; transform: rotate(var(--r)); transform-origin: 50% -22px; }
+.zaves::before { content: ""; position: absolute; left: 50%; top: -27px; width: 10px; height: 10px; margin-left: -5px; border-radius: 50%; background: radial-gradient(circle at 35% 35%, #eee, #777 60%, #333); box-shadow: 0 2px 3px rgba(0,0,0,.6); z-index: 2; }
+.zaves::after { content: ""; position: absolute; left: 50%; top: -22px; width: 44px; height: 44px; margin-left: -22px; border-left: 1.5px solid #d8c9a6; border-top: 1.5px solid #d8c9a6; transform: rotate(45deg); z-index: -1; }
+.m3 .polica { position: relative; padding: 0 16px 16px; display: flex; gap: 12px; align-items: flex-end; }
+.m3 .polica::after { content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 16px; background: linear-gradient(#a57b45, #6f4f28); border-radius: 2px; box-shadow: 0 12px 16px rgba(0,0,0,.5); }
+.m3 .polica .kt { transform: rotate(var(--r)); transform-origin: 50% 100%; }
+.m3 .kr { margin-left: auto; align-self: flex-start; width: 270px; background: #22302a; border: 8px solid #7a5530; border-radius: 4px; padding: 10px 16px 12px; font-family: "Segoe Print", "Bradley Hand", "Comic Sans MS", cursive; color: #e9efe6; box-shadow: inset 0 0 30px rgba(0,0,0,.5), 0 8px 18px rgba(0,0,0,.5); transform: rotate(.8deg); }
+.kr u { display: block; text-decoration: none; font-size: 12px; opacity: .7; letter-spacing: .1em; text-transform: uppercase; margin-bottom: 2px; }
+.kr div { display: flex; justify-content: space-between; align-items: baseline; font-size: 15px; border-bottom: 1px dashed rgba(255,255,255,.16); padding: 2px 0; } .kr div b { font-size: 20px; color: #ffe9a8; }
+.kr small { display: block; font-size: 11.5px; opacity: .75; margin-top: 6px; line-height: 1.3; }
+.m3 .pult { position: absolute; left: 0; right: 0; bottom: 0; height: 196px; background: linear-gradient(#2c1b0f, #1d1109); border-top: 10px solid #8a6238; box-shadow: 0 -10px 24px rgba(0,0,0,.45); padding: 14px 22px; display: flex; gap: 30px; align-items: flex-start; }
+.m3 .pult .cast { display: flex; gap: 22px; align-items: flex-start; } .m3 .pult .cast > div > .stit { margin-bottom: 10px; font-size: 10px; }
+.m3 .pult .txt { font-size: 12px; color: #d8c9a6; max-width: 260px; margin-top: 6px; }
+
+/* ---------- M4 Spis ---------- */
+.m4 { position: absolute; left: 80px; top: 30px; width: 1080px; height: 572px; background: linear-gradient(#c9a66b, #b8935a); border-radius: 4px 16px 16px 4px; box-shadow: 0 24px 60px rgba(0,0,0,.6), inset 0 0 0 1px rgba(0,0,0,.2); padding: 16px 22px; color: #2a2016; font-family: "Courier New", monospace; }
+.m4::before { content: attr(data-spis); position: absolute; top: -22px; left: 40px; height: 23px; padding: 3px 18px 0; background: #c9a66b; border-radius: 8px 8px 0 0; font: 700 12px "Courier New", monospace; letter-spacing: .08em; }
+.m4 .zav { top: 6px; right: 8px; background: rgba(0,0,0,.12); color: #2a2016; border-color: rgba(0,0,0,.35); width: 26px; height: 26px; }
+.m4 .listy { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; height: var(--lh); margin-right: 24px; }
+.list { background-color: #f4ecd8; background-image: repeating-linear-gradient(transparent 0 23px, rgba(60,90,140,.12) 23px 24px); box-shadow: 0 3px 10px rgba(0,0,0,.35); padding: 12px 18px; position: relative; transform: rotate(var(--r)); }
+.list h5 { margin: 0 0 10px; font: 700 13px "Courier New", monospace; letter-spacing: .12em; border-bottom: 2px solid #2a2016; padding-bottom: 4px; }
+.m4 .dva { display: flex; gap: 18px; }
+.fot { width: 76px; height: 90px; object-fit: cover; border: 4px solid #fff; box-shadow: 0 2px 6px rgba(0,0,0,.4); transform: rotate(-3deg); flex: none; }
+.rdk { font-size: 13px; margin: 0 0 3px; } .rdk b { font-size: 15px; } .rdk.sl { color: #6b5b45; }
+.pec { position: absolute; border: 3px double #b0402c; color: #b0402c; font: 800 17px Georgia, serif; letter-spacing: .14em; padding: 2px 12px; transform: rotate(-11deg); opacity: .85; border-radius: 6px; text-transform: uppercase; z-index: 3; background: rgba(244,236,216,.55); }
+.tp { position: relative; } .tp::before { content: ""; position: absolute; top: -7px; left: 50%; width: 44px; height: 14px; margin-left: -22px; background: rgba(255,236,150,.8); transform: rotate(-4deg); z-index: 2; box-shadow: 0 1px 2px rgba(0,0,0,.25); }
+.m4 .lep { display: flex; gap: 14px; margin-top: 12px; }
+.inv { display: flex; gap: 12px; align-items: center; margin-bottom: 8px; } .inv p { margin: 0; font-size: 12.5px; line-height: 1.35; max-width: none; } .m4 .su .inv p { font-size: 14px; } .inv p b { display: block; font-size: 14px; letter-spacing: .06em; text-transform: uppercase; }
+.m4 .vrecka { display: grid; grid-template-columns: 1.8fr 1fr; gap: 18px; margin: 14px 24px 0 0; }
+.vr { background: #e3d3ac; border: 1px dashed #7a5a2c; padding: 8px 12px 10px; box-shadow: 0 2px 6px rgba(0,0,0,.25); }
+.vr h5 { margin: 0 0 6px; font: 700 12px "Courier New", monospace; letter-spacing: .08em; }
+.m4 .sk > span { color: #5a4a35; font-family: system-ui; } .m4 .sk > span b { color: #8a4a0f; }
+.m4 .usi { position: absolute; right: -1px; top: 70px; display: flex; flex-direction: column; gap: 6px; }
+
+/* ---------- M5 Na plsti ---------- */
+.m5 { position: absolute; inset: 0; background: radial-gradient(ellipse at 50% 45%, rgba(46,84,56,.93), rgba(14,26,18,.97) 78%); }
+.m5 .tit { position: absolute; top: 14px; left: 50%; transform: translateX(-50%); display: flex; gap: 10px; align-items: center; background: rgba(12,10,8,.8); border: 1px solid var(--okr2); border-radius: 999px; padding: 5px 20px 5px 6px; white-space: nowrap; }
+.m5 .tit img { width: 34px; height: 34px; border-radius: 50%; object-fit: cover; } .m5 .tit b { font: 700 16px Georgia, serif; } .m5 .tit span { color: var(--tl); font-size: 12px; }
+.zona { position: absolute; display: flex; flex-direction: column; align-items: center; }
+.pop { font: 700 11px system-ui; letter-spacing: .2em; text-transform: uppercase; color: #cfe0cc; opacity: .9; margin-top: 12px; white-space: nowrap; } .pop b { color: #ffe9a8; margin-left: 6px; letter-spacing: 0; font-size: 13px; } .pop i { display: block; font-style: normal; letter-spacing: .02em; text-transform: none; font-weight: 400; opacity: .75; }
+.vej { display: flex; justify-content: center; align-items: flex-end; } .vej .kt, .vej .rub { transform: rotate(var(--r, 0deg)) translateY(var(--y, 0)); } .vej .kt + .kt { margin-left: var(--ov, 10px); }
+.zets { display: flex; padding-left: 12px; } .zet { width: 36px; height: 36px; border-radius: 50%; border: 3px dashed rgba(255,255,255,.75); background: var(--c); box-shadow: 0 3px 0 rgba(0,0,0,.5), 0 6px 10px rgba(0,0,0,.35); margin-left: -12px; }
+
+/* ---------- M6 Zrkadlo ---------- */
+.m6 { left: 60px; top: 22px; width: 1120px; height: 576px; display: flex; flex-direction: column; overflow: hidden; }
+.m6 .zv { position: absolute; top: 0; bottom: 0; width: 495px; background: linear-gradient(rgba(233,173,69,.1), rgba(233,173,69,.03)); pointer-events: none; }
+.m6 .zv.l { left: 0; } .m6 .zv.p { right: 0; }
+.m6 .rd { display: grid; grid-template-columns: 1fr 130px 1fr; align-items: center; position: relative; }
+.m6 .rd.vs { padding: 12px 0; border-bottom: 1px solid var(--okr); }
+.m6 .rd > .l { display: flex; justify-content: flex-end; align-items: center; gap: 8px; padding: 6px 14px; text-align: right; }
+.m6 .rd > .p { display: flex; align-items: center; gap: 8px; padding: 6px 14px; }
+.m6 .rd > .s { text-align: center; font: 700 10.5px system-ui; letter-spacing: .13em; text-transform: uppercase; color: var(--tl); }
+.m6 .vs img { width: 50px; height: 50px; border-radius: 12px; object-fit: cover; border: 2px solid var(--hc); }
+.m6 .vs .s { font: 800 20px Georgia, serif; color: var(--sl); letter-spacing: .1em; }
+.m6 .cis { font: 800 26px Georgia, serif; color: var(--akc); min-width: 34px; text-align: center; }
+.m6 .rd.c { border-top: 1px solid var(--okr); } .m6 .rd.c .cis { font-size: 19px; } .m6 .rd.c > .l, .m6 .rd.c > .p { padding: 2px 14px; }
+.m6 .spod { display: grid; grid-template-columns: 1fr 130px 1fr; border-top: 1px solid var(--okr); margin-top: auto; position: relative; }
+.m6 .spod > div { padding: 8px 14px 12px; } .m6 .spod .txt { font-size: 12px; color: var(--tl); }
+.ats { display: flex; gap: 4px; flex-wrap: wrap; margin-top: 4px; }
+
+/* ---------- dlaždica s ilustráciou (M6, M7) ---------- */
+.at { width: var(--s); position: relative; flex: none; }
+.at .o { width: var(--s); height: var(--s); border-radius: 9px; background: #333 center/cover; border-bottom: 4px solid hsl(var(--h) 34% 56%); box-shadow: 0 4px 10px rgba(0,0,0,.4); }
+.at span { display: block; font-size: 10.5px; text-align: center; margin-top: 3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: var(--tl); }
+.at em { position: absolute; top: 3px; right: 3px; background: #14110e; color: var(--akc); border: 1px solid var(--akc); border-radius: 999px; font: 800 10.5px/1.3 system-ui; padding: 0 5px; }
+.at.vyb .o { outline: 3px solid var(--akc); outline-offset: 2px; } .at.vyb span { color: #f1e8d8; }
+
+/* ---------- M7 Galéria s detailom ---------- */
+.m7 { left: 50px; top: 22px; width: 1140px; height: 576px; display: grid; grid-template-columns: 186px 1fr 310px; overflow: hidden; }
+.m7 .kol { padding: 18px 16px; border-right: 1px solid var(--okr); text-align: center; }
+.m7 .kol img { width: 104px; height: 104px; border-radius: 16px; border: 2px solid var(--hc); object-fit: cover; }
+.m7 .kol .kto { margin: 8px 0 12px; }
+.ri { display: flex; justify-content: space-between; align-items: baseline; font-size: 12.5px; padding: 5px 2px; border-bottom: 1px solid var(--okr); color: var(--tl); text-align: left; } .ri b { color: var(--akc); font: 800 16px Georgia, serif; }
+.m7 .mr { padding: 14px 20px; overflow: hidden; }
+.m7 .dvoj { display: flex; gap: 34px; } .m7 .dvoj > div { flex: none; }
+.m7 .dla { display: flex; flex-wrap: wrap; gap: 8px; margin: 7px 0 14px; }
+.m7 .at { cursor: pointer; }
+.m7 .skp { margin: 7px 0 12px; gap: 6px 16px; flex-wrap: wrap; } .m7 .skp .dla { margin: 0; }
+.m7 .det { border-left: 1px solid var(--okr); padding: 44px 18px 16px; display: flex; flex-direction: column; align-items: center; background: rgba(0,0,0,.22); }
+.det .kde { margin: 12px 0 6px; } .det p { font-size: 13.5px; line-height: 1.45; margin: 0; text-align: center; } .det p b { color: var(--akc); }
+
+/* ---------- M8 Podnos ---------- */
+.m8 { left: 14px; right: 14px; height: 196px; display: flex; align-items: stretch; }
+.m8.hore { top: 68px; } .m8.dole { bottom: 76px; }
+.m8::before { content: ""; position: absolute; left: 56px; width: 16px; height: 16px; background: #211b15; border-left: 1px solid var(--okr2); border-top: 1px solid var(--okr2); transform: rotate(45deg); }
+.m8.hore::before { top: -9px; } .m8.dole::before { bottom: -9px; transform: rotate(225deg); background: #1a1510; }
+.m8 .seg { padding: 10px 16px; border-right: 1px solid var(--okr); display: flex; flex-direction: column; } .m8 .seg:last-of-type { border: 0; }
+.m8 .ob { flex: 1; display: flex; gap: 10px; align-items: center; }
+.m8 .kap { font-size: 11.5px; color: var(--tl); line-height: 1.3; } .m8 .kap b { display: block; color: #f1e8d8; font-size: 13px; }
+.m8 .ja-ja { align-items: flex-start; justify-content: center; gap: 6px; }
+.m8 .ja-ja img { width: 44px; height: 44px; border-radius: 10px; border: 2px solid var(--hc); object-fit: cover; }
+.m8 .cps { padding: 0; border: 0; flex-direction: column; align-items: flex-start; gap: 4px; }
+.m8 .zav { top: 8px; right: 8px; width: 26px; height: 26px; font-size: 15px; }
+.m8 .sez { font-size: 12px; color: var(--tl); } .m8 .sez div { display: flex; align-items: center; gap: 6px; white-space: nowrap; } .m8 .sez i { width: 9px; height: 9px; border-radius: 2px; background: hsl(var(--h) 34% 56%); } .m8 .sez b { color: #f1e8d8; margin-left: auto; padding-left: 12px; }
+.m8 .seg.vyb { background: rgba(233,173,69,.09); box-shadow: inset 0 3px 0 var(--akc); }
+.m8-pop { right: 14px; bottom: 284px; padding: 10px 16px 14px; }
+.m8-pop h4 { margin-bottom: 8px; }
+.m8-pop::after { content: ""; position: absolute; left: 262px; bottom: -9px; width: 16px; height: 16px; background: #1a1510; border-right: 1px solid var(--okr2); border-bottom: 1px solid var(--okr2); transform: rotate(45deg); }
+</style>
+</head>
+<body>
+<main>
+<h1>Karty hráča: 8 mockov</h1>
+<p class="mini">2026-11-09 · Michal: okno po kliku na svoje alebo súperove karty je dnes príliš minimalistické; chce vidieť hlavne súperove priznané karty (Cirhózy) aj Náradie, vo svojich navyše doberací a odhadzovací balíček ako teraz, ale krajšie · 8 rozdielnych rozložení na výber · CSS náčrt, nie kód hry; karty sú zjednodušené (ilustrácia, názov, efekt), v hre ostáva líce karty a lupa ako dnes · <b>Michal 2026-11-09 vybral M7 Galéria s detailom</b> (apps/web/src/hra/GaleriaKariet.tsx)</p>
+
+<nav class="skupiny">
+  <span class="prep"><button data-kto="su" class="akt">Súperove karty</button><button data-kto="ja">Moje karty</button></span>
+  <a href="#m1">M1 Vitrína</a><a href="#m2">M2 Zásuvka</a><a href="#m3">M3 Šenk</a><a href="#m4">M4 Spis</a><a href="#m5">M5 Na plsti</a><a href="#m6">M6 Zrkadlo</a><a href="#m7">M7 Galéria</a><a href="#m8">M8 Podnos</a><a href="#vyber">Výber</a>
+</nav>
+
+<section id="spolocne">
+<h2>Čo majú všetky spoločné</h2>
+<div class="box zv">
+<ul>
+  <li><b>Priznané kliatby a Náradie (Dedičstvo) vidno naraz.</b> Žiadne prepínanie záložiek medzi nimi, dnes sú to dve záložky a po otvorení vidno len jednu.</li>
+  <li><b>Počítadlá sú čísla, nie veta v podnadpise:</b> Dlhy, Absťáky, nepriznané Cirhózy, väzni. Nulové sa neukazujú.</li>
+  <li><b>Súper:</b> len to, čo je verejné aj dnes (priznané kliatby, Dedičstvo, počítadlá, väzni). <b>Ja:</b> navyše doberací balíček zoskupený podľa typu (poradie ostáva tajné) a odhadzovací balíček.</li>
+  <li>Prepínač hore mení všetkých 8 mockov naraz: <b>Súperove karty</b> (Bot Božena: 2 priznané Cirhózy, Fúrik a Vidly) alebo <b>Moje karty</b> (1 Cirhóza, 3 Nástroje, balíček 12, odhodené 4).</li>
+</ul>
+</div>
+</section>
+
+<section id="m1">
+<h2>M1 Vitrína <small>okno v strede, dve police vedľa seba</small></h2>
+<p>Hlavička s počítadlami ako veľkými číslami, pod ňou dve osvetlené police: kliatby vľavo, Náradie vpravo, karty vo veľkosti, v akej sa dajú čítať. V mojich kartách je pod policami pás s dvoma balíčkami.</p>
+<div class="obal"><div class="obr" data-m="1"></div></div>
+<div class="kon"><div class="box"><b class="p">Plus:</b> najbližšie k dnešnému oknu, všetko naraz bez kliku, veľké karty, čísla na prvý pohľad.</div><div class="box"><b class="m">Mínus:</b> zakryje celý stôl; pri 6 a viac Nástrojoch sa polica musí zmenšiť alebo prekryť karty.</div></div>
+</section>
+
+<section id="m2">
+<h2>M2 Zásuvka <small>panel sprava, riadky s čitateľným efektom</small></h2>
+<p>Stôl ostane viditeľný. Karty sú riadky: výrez ilustrácie, názov a celý text efektu písmom, ktoré sa dá čítať bez lupy. Balíček je zoznam ako v deck trackeri s farebným pásom typov.</p>
+<div class="obal"><div class="obr" data-m="2"></div></div>
+<div class="kon"><div class="box"><b class="p">Plus:</b> efekt Náradia prečítaš hneď, stôl vidno popri tom (čo súperovo Náradie robí s kartami v línii), dobre sa prenesie na telefón.</div><div class="box"><b class="m">Mínus:</b> nevidno celé karty, len riadky; zakryje pravú časť línie; menej „kartový“ pocit.</div></div>
+</section>
+
+<section id="m3">
+<h2>M3 Šenk <small>náradie na klincoch, kliatby na polici, balíčky na pulte</small></h2>
+<p>Okno je stena za pultom: Dedičstvo visí na klincoch, priznané Cirhózy stoja na polici, počítadlá sú napísané kriedou na tabuli. V mojich kartách ležia na pulte dve kôpky s rozloženými kartami.</p>
+<div class="obal"><div class="obr" data-m="3"></div></div>
+<div class="kon"><div class="box"><b class="p">Plus:</b> najviac atmosféry, miesta majú význam (stena = natrvalo, pult = v obehu), ľahko sa pamätá, kde čo je.</div><div class="box"><b class="m">Mínus:</b> najviac kreslenia (drevo, tabuľa) a nové farby mimo tokenov schém; pri veľa kartách sa scéna zle naťahuje.</div></div>
+</section>
+
+<section id="m4">
+<h2>M4 Spis <small>zakladač s dvoma listami a pečiatkami</small></h2>
+<p>Hráč ako spis: vľavo zdravotná karta s Cirhózami a počítadlami, vpravo súpis majetku, kde je pri každom Nástroji efekt napísaný strojom. Jazyk pečiatky ako pri NA EX!. Moje balíčky sú prílohy pod listami.</p>
+<div class="obal"><div class="obr" data-m="4"></div></div>
+<div class="kon"><div class="box"><b class="p">Plus:</b> nadväzuje na pečiatku NA EX!, efekt Náradia je čitateľný pri karte, humor sedí k hre (diagnóza, majetok).</div><div class="box"><b class="m">Mínus:</b> svetlý papier na tmavom stole svieti a nemení sa so schémou; texty „úradu“ treba napísať a udržiavať.</div></div>
+</section>
+
+<section id="m5">
+<h2>M5 Na plsti <small>bez okna, karty rozložené priamo na stole</small></h2>
+<p>Stôl stmavne a karty sa vyložia na plsť ako fyzické: kliatby vo vejári, Náradie vedľa, Dlhy ako žetóny. Moje balíčky sú kôpky s roztiahnutým obsahom.</p>
+<div class="obal"><div class="obr" data-m="5"></div></div>
+<div class="kon"><div class="box"><b class="p">Plus:</b> najväčšie karty, žiadne rámy ani záložky, pôsobí ako skutočný stôl; dobre znesie animáciu rozloženia.</div><div class="box"><b class="m">Mínus:</b> prekryté karty vo vejári sa zle čítajú bez lupy; pevné zóny na plsti sa pri veľa kartách musia prepočítať.</div></div>
+</section>
+
+<section id="m6">
+<h2>M6 Zrkadlo <small>ja a súper vedľa seba</small></h2>
+<p>Jedno okno pre obe dlaždice: vľavo ja, vpravo súper, v strede názvy riadkov. Zvýraznená je strana, na ktorú si klikol. Odpovedá na otázku „kto má čo navyše“.</p>
+<div class="obal"><div class="obr" data-m="6"></div></div>
+<div class="kon"><div class="box"><b class="p">Plus:</b> porovnanie bez preklikávania medzi dvoma oknami; počítadlá oboch hráčov na jednom mieste.</div><div class="box"><b class="m">Mínus:</b> karty sú menšie (dvaja hráči na šírku); môj balíček má menej miesta; vo formáte 2 na 2 by boli štyri stĺpce.</div></div>
+</section>
+
+<section id="m7">
+<h2>M7 Galéria s detailom <small>tri stĺpce: hráč, dlaždice, veľká karta</small></h2>
+<p>Vľavo hráč a počítadlá, v strede všetky karty ako dlaždice s ilustráciou, vpravo veľká karta s textom efektu veľkým písmom. Prejdi myšou po dlaždiciach, detail sa mení.</p>
+<div class="obal"><div class="obr" data-m="7"></div></div>
+<div class="kon"><div class="box"><b class="p">Plus:</b> znesie veľa kariet (celý balíček aj odhodené naraz), text vždy čitateľný, ilustrácie vyniknú.</div><div class="box"><b class="m">Mínus:</b> na dotyku treba ťuknúť namiesto prejdenia myšou; dlaždice bez akcií, tie vidno až v detaile.</div></div>
+</section>
+
+<section id="m8">
+<h2>M8 Podnos <small>pás vysunutý z dlaždice hráča</small></h2>
+<p>Najmenší zásah: z dlaždice hráča sa vysunie pás (súper zhora, ja zdola nad rukou). Stôl ostane hrateľne viditeľný. Balíček je kôpka s rozpisom typov, obsah sa rozbalí klikom (v mocku rozbalený).</p>
+<div class="obal"><div class="obr" data-m="8"></div></div>
+<div class="kon"><div class="box"><b class="p">Plus:</b> rýchly pohľad bez straty stola, jasné, čie karty sú (vyrastá z dlaždice), efekt Náradia je popísaný vedľa karty.</div><div class="box"><b class="m">Mínus:</b> málo miesta na výšku, balíček je až na druhý klik; pri veľa Nástrojoch treba vodorovný posun.</div></div>
+</section>
+
+<section id="vyber">
+<h2>Výber</h2>
+<div class="tw"><table>
+<tr><th>Mock</th><th>Stôl vidno</th><th>Efekt Náradia bez lupy</th><th>Veľa kariet</th><th>Telefón na šírku</th><th>Práca</th></tr>
+<tr><td>M1 Vitrína</td><td>nie</td><td>nie (veľká karta)</td><td>stredne</td><td>s úpravou</td><td>malá</td></tr>
+<tr><td>M2 Zásuvka</td><td>áno</td><td>áno</td><td>dobre (posun)</td><td>áno</td><td>malá</td></tr>
+<tr><td>M3 Šenk</td><td>nie</td><td>nie</td><td>slabo</td><td>ťažko</td><td>veľká</td></tr>
+<tr><td>M4 Spis</td><td>nie</td><td>áno (Náradie)</td><td>stredne</td><td>ťažko</td><td>stredná</td></tr>
+<tr><td>M5 Na plsti</td><td>stmavený</td><td>nie</td><td>slabo</td><td>s úpravou</td><td>stredná</td></tr>
+<tr><td>M6 Zrkadlo</td><td>nie</td><td>nie</td><td>stredne</td><td>ťažko</td><td>stredná</td></tr>
+<tr><td>M7 Galéria</td><td>nie</td><td>áno (detail)</td><td>najlepšie</td><td>s úpravou</td><td>stredná</td></tr>
+<tr><td>M8 Podnos</td><td>áno</td><td>áno (súper)</td><td>stredne</td><td>áno</td><td>malá</td></tr>
+</table></div>
+<div class="box zv" style="margin-top:12px">
+<p><b>Odporúčanie:</b> M1 Vitrína ako základ (všetko naraz, veľké karty, najmenej roboty), s riadkami efektu z M2 pre telefón. Ak má okno niesť atmosféru krčmy, tak M3 Šenk; ak je dôležitejšie vidieť pri tom stôl, tak M8 Podnos. Dá sa aj kombinovať, napríklad polica z M1 so žetónmi Dlhov z M5.</p>
+</div>
+</section>
+</main>
+
+<script>
+const IMG = '../../packages/server/seed/karty/';
+const AV = '../../packages/server/seed/avatary/';
+// [názov, typ, odtieň kategórie z tvorcu, efekt]
+const K = {
+  cirhoza: ['Cirhóza', 'Kliatba', 90, 'Bitka: Ak je priznaná, súper má +1 tuhé poškodenie. Nepriznaná ide po bitke do tvojho odhadzovacieho balíčka; na konci hry ti zoberie 3 špaky.'],
+  furik: ['Fúrik', 'Nástroj', 60, 'Dedičstvo: Tvoje Roboty pália o 1 Dlh viac.'],
+  vidly: ['Vidly', 'Nástroj', 60, 'Dedičstvo: Tvoje Rany udeľujú o 1 poškodenie viac.'],
+  vinko: ['Vínko', 'Nástroj', 60, 'Dedičstvo: Počíta sa, akoby si mal plný poldeci navyše. Nemôžeš dolievať poldeci za cigarety.'],
+  hrable: ['Hrable', 'Nástroj', 60, 'Dedičstvo: Akcia zrušená tvojím Odporom sa ráta ako tvoja a je posilnená.'],
+  vyherny_automat: ['Výherný automat', 'Nástroj', 60, 'Dedičstvo: Tvoj prah Dlhu je o 1 vyšší. V poslednej Pitke kola získaš 1 Dlh.'],
+  puska: ['Puška', 'Nástroj', 60, 'Dedičstvo: Keď by tvoju prepojenú Petelicu zrušil iný efekt (Odpor, NA EX…), namiesto zrušenia udeľuje o 1 poškodenie menej.'],
+  noviny: ['Noviny', 'Nástroj', 60, 'Dedičstvo: Prehra: Za každý priznaný Dlh, ktorý má víťaz navyše oproti tebe, dostaneš 1 špak.'],
+  pes: ['Pes', 'Zviera', 120, 'Furt: Jeho aktívne akcie na spoji so súperovou kartou sa rátajú dvakrát.'],
+  cierna_macka: ['Čierna mačka', 'Zviera', 120, 'Furt: Tvoje Povery sa Vierou nerušia.'],
+  kon: ['Kôň', 'Zviera', 120, 'Furt: Nástroj vedľa Koňa s ním tvorí spoj.'],
+  krokodil: ['Krokodíl', 'Zviera', 120, 'Bitka: Na konci bitky sa spália všetci Občania a Zvieratá v jeho okolí.'],
+  pijan: ['Pijan', 'Občan', 300, 'Bitka: Za každé NA EX, ktoré si v tomto kole dal, udelíš súperovi 1 Ranu navyše.'],
+  hasic: ['Hasič', 'Občan', 270, 'Nástup: Vytiahni náhodnú kartu zo svojho odhadzovacieho balíčka (aj kliatbu) a rozhodni sa, či si ju necháš, alebo ju odhodíš.'],
+  policajtka: ['Policajtka', 'Občan', 270, 'Pitka: Za každú súperovu akciu, ktorú v tejto Pitke zruší tvoj Odpor, získa súper 1 zadĺženie.'],
+  svokra: ['Svokra', 'Občan', 270, 'Bitka: Za každú tvoju kartu so súperovým NA EX udelíš súperovi Ranu.'],
+  vestica: ['Veštica', 'Občan', 210, 'Prehra: Preskúmaj súperov a svoj doberací balík. Vymeň jednu jeho kartu za tvoju a karty vráť.'],
+  zamocnik: ['Zámočník', 'Občan', 150, 'Furt: Akcie nástrojov v jeho okolí sú posilnené.'],
+  podvodnik: ['Podvodník', 'Občan', 240, 'Prehra: Jeden tvoj priznaný Dlh sa presunie medzi súperove priznané.'],
+  farar: ['Farár', 'Starešina', 0, 'Väzeň — raz za hru: Odstráň jedno súperovo NA EX z karty. Jeho poldeci ostáva vypitý.'],
+};
+const HR = {
+  su: { meno: 'Bot Božena', av: AV + 'boti/teta_gizka.jpg', hc: '#e0805f', priz: ['cirhoza', 'cirhoza'], nepriz: 1, dlhy: 3, abst: 1, ded: ['furik', 'vidly'], vazni: ['farar'], ruka: 5 },
+  ja: { meno: 'Michal', av: AV + 'avatar-07.jpg', hc: '#5cc0cf', priz: ['cirhoza'], nepriz: 2, dlhy: 1, abst: 0, ded: ['vinko', 'hrable', 'vyherny_automat'], vazni: [], ruka: 5,
+    bal: [['Občania', [['hasic', 1], ['pijan', 2], ['podvodnik', 1], ['policajtka', 1], ['vestica', 1], ['zamocnik', 1]]], ['Zvieratá', [['cierna_macka', 1], ['pes', 1]]], ['Nástroje', [['noviny', 1], ['puska', 1]]], ['Kliatby', [['cirhoza', 1]]]],
+    odh: ['svokra', 'kon', 'krokodil', 'cirhoza'] },
+};
+const BAL_N = 12, VAZNI_MAX = 3, CENA_DED = 3;
+const HUE = { 'Občania': 300, 'Zvieratá': 120, 'Nástroje': 60, 'Kliatby': 90 };
+
+const ef = (t) => { const i = t.indexOf(':'); return i < 0 ? t : '<b>' + t.slice(0, i + 1) + '</b>' + t.slice(i + 1); };
+const url = (id) => `url('${IMG}${id}@512.jpg')`;
+function kt(id, w, o = {}) {
+  const [n, t, h, e] = K[id];
+  return `<div class="kt${t === 'Nástroj' ? ' nast' : ''}${w < 80 ? ' mini' : ''} ${o.cls || ''}" style="--w:${w}px;--h:${h};${o.st || ''}" data-id="${id}"><div class="il" style="background-image:${url(id)}"></div><div class="pas"><b>${n}</b><i>${t}</i></div><div class="ef"><span>${ef(e)}</span></div>${o.x ? `<span class="x">${o.x}</span>` : ''}</div>`;
+}
+const rub = (w, o = {}) => `<div class="rub ${o.cls || ''}" style="--w:${w}px;${o.st || ''}">${w >= 60 ? 'NA EX!' : ''}${o.n ? `<em>${o.n}</em>` : ''}</div>`;
+const sucet = (ks) => ks.reduce((s, x) => s + x[1], 0);
+const skup = (w, ov) => `<div class="skp">${HR.ja.bal.map(([n, ks]) => `<div class="sk"><span>${n} <b>${sucet(ks)}</b></span><div class="mn${ov ? ' pr' : ''}" style="--ov:${ov || 0}px">${ks.map(([id, p]) => kt(id, w, { x: p > 1 ? '×' + p : '' })).join('')}</div></div>`).join('')}</div>`;
+const typy = () => `<div class="typy">${HR.ja.bal.map(([n, ks]) => `<i style="--n:${sucet(ks)};--h:${HUE[n]}"></i>`).join('')}</div><div class="typy-l">${HR.ja.bal.map(([n, ks]) => `<span><i style="--h:${HUE[n]}"></i>${n} ${sucet(ks)}</span>`).join('')}</div>`;
+function staty(h) {
+  return [[h.priz.length, 'Cirhózy priznané'], [h.nepriz, 'Cirhózy nepriznané'], [h.dlhy, 'Dlhy'], [h.abst, h.abst === 1 ? 'Absťák' : 'Absťáky'], [h.vazni.length ? h.vazni.length + '/' + VAZNI_MAX : 0, 'Väzni']].filter((s) => s[0] !== 0);
+}
+const hl = (h, sub, stat = true) => `<div class="hl" style="--hc:${h.hc}"><img src="${h.av}" alt=""><div class="kto"><b>${h.meno}</b><span>${sub}</span></div>${stat ? `<div class="staty">${staty(h).map(([n, t]) => `<div class="st"><b>${n}</b><span>${t}</span></div>`).join('')}</div>` : ''}</div>`;
+const cps = (h) => `<div class="cps">${staty(h).map(([n, t]) => `<span class="cp"><b>${n}</b>${t}</span>`).join('')}</div>`;
+const zav = '<button class="zav" aria-label="Zavrieť">×</button>';
+
+function stol(dim, rozm, akt) {
+  const linia = ['hasic', 'pes', 'policajtka', 'krokodil', 'vestica', 'zamocnik'], ruka = ['pijan', 'svokra', 'noviny', 'podvodnik', 'cierna_macka'];
+  const pos = [0, 18, -10, 12, -6, 16];
+  return `<div class="stol${rozm ? ' rozm' : ''}"><div class="hb"></div>
+    <div class="dl su${akt === 'su' ? ' akt' : ''}"><img src="${HR.su.av}" alt=""><div><b>Bot Božena</b><span>v ruke 5 · karty 4</span></div></div>
+    <div class="ln">${linia.map((id, i) => kt(id, 104, { st: `margin-top:${pos[i]}px` })).join('')}</div>
+    <div class="rk">${ruka.map((id) => kt(id, 104)).join('')}</div>
+    <div class="dl ja${akt === 'ja' ? ' akt' : ''}"><img src="${HR.ja.av}" alt=""><div><b>Michal</b><span>balíček 12 · karty 4</span></div></div>
+  </div><div class="tma" style="opacity:${dim}"></div>`;
+}
+
+const M = {};
+
+// M1 Vitrína
+M[1] = (k) => { const h = HR[k], ja = k === 'ja', w = ja ? 150 : 180;
+  return stol(.72, true) + `<div class="pn m1">${zav}${hl(h, ja ? 'tvoje karty' : 'priznané karty a dedičstvo')}
+  <div class="m1-pol${ja ? ' ja' : ''}">
+    <section><h4>Priznané kliatby<b>${h.priz.length}</b><i>natrvalo mimo balíčka</i></h4><div class="m1-rad">${h.priz.map((id) => kt(id, w)).join('')}</div></section>
+    <section><h4>Dedičstvo · Náradie<b>${h.ded.length}</b><i>${ja ? `ďalší stojí ${CENA_DED} <span class="cigik"></span> (cena rastie pre oboch)` : 'pasívne efekty, platia stále'}</i></h4><div class="m1-rad">${h.ded.map((id) => kt(id, w)).join('')}</div></section>
+  </div>
+  <div class="m1-kop">${ja
+    ? `<section><h4>Doberací balíček<b>${BAL_N}</b><i>podľa typu, poradie je tajné</i></h4>${skup(52)}</section>
+       <section><h4>Odhadzovací<b>${h.odh.length}</b><i>naposledy odhodená vľavo</i></h4><div class="mn">${h.odh.map((id) => kt(id, 52)).join('')}</div></section>`
+    : `<section><h4>Pivnica · väzni<b>${h.vazni.length}/${VAZNI_MAX}</b></h4><div class="vz">${h.vazni.map((id) => kt(id, 56)).join('')}<p class="txt">Väzeň nedáva priazeň a ráta sa držiteľovi ako červený strach. Jeho Kšeft má len držiteľ.</p></div></section>
+       <section><h4>V ruke<b>${h.ruka}</b></h4><div class="ruka">${Array(h.ruka).fill(rub(40)).join('')}</div></section>`}
+  </div></div>`; };
+
+// M2 Zásuvka
+M[2] = (k) => { const h = HR[k], ja = k === 'ja';
+  const rw = (id, n, v) => { const [nz, t, hu, e] = K[id]; return `<div class="rw${v ? ' v' : ''}" style="--h:${hu}"><span class="th" style="background-image:${url(id)}"></span><div><b>${nz}</b><i>${t}</i><p>${ef(e)}</p></div>${n > 1 ? `<span class="n">×${n}</span>` : ''}</div>`; };
+  const tr = (id, n) => `<div class="tr" style="--h:${K[id][2]}"><span class="slz" style="background-image:${url(id)}"></span><span>${K[id][0]}</span>${n > 1 ? `<em>×${n}</em>` : ''}</div>`;
+  return stol(.4, false, k) + `<div class="pn m2">${zav}${hl(h, ja ? 'tvoje karty' : 'priznané karty a dedičstvo', false)}${cps(h)}
+  <div class="tel">
+    <h4>Priznané kliatby<b>${h.priz.length}</b></h4>${rw('cirhoza', h.priz.length, !ja)}
+    <h4>Dedičstvo · Náradie<b>${h.ded.length}</b>${ja ? `<i>ďalší ${CENA_DED} <span class="cigik"></span></i>` : ''}</h4>${h.ded.map((id) => rw(id, 1, !ja)).join('')}
+    ${ja ? `<h4>Doberací balíček<b>${BAL_N}</b><i>poradie je tajné</i></h4>${typy()}<div class="trs">${h.bal.flatMap(([, ks]) => ks.map(([id, p]) => tr(id, p))).join('')}</div>
+            <h4>Odhadzovací<b>${h.odh.length}</b></h4><div class="trs">${h.odh.map((id) => tr(id, 1)).join('')}</div>`
+         : `<h4>Pivnica · väzni<b>${h.vazni.length}/${VAZNI_MAX}</b></h4>${h.vazni.map((id) => rw(id, 1, true)).join('')}`}
+  </div></div>`; };
+
+// M3 Šenk
+M[3] = (k) => { const h = HR[k], ja = k === 'ja', w = ja ? 124 : 136, rot = [-2.2, 1.6, -1.2, 2];
+  return stol(.75, true) + `<div class="m3">${zav}
+  <div class="meno"><img src="${h.av}" alt=""><span class="stit">${ja ? 'Tvoj šenk' : h.meno + ' · čo má za pultom'}</span></div>
+  <div class="stena">
+    <div class="blok"><span class="stit">Dedičstvo · ${h.ded.length}</span><div class="klince">${h.ded.map((id, i) => `<div class="zaves" style="--r:${rot[i]}deg">${kt(id, w)}</div>`).join('')}</div></div>
+    <div class="blok"><span class="stit">Priznané kliatby · ${h.priz.length}</span><div class="polica">${h.priz.map((id, i) => kt(id, w, { st: `--r:${[-3, 2.5][i]}deg` })).join('')}</div></div>
+    <div class="kr"><u>${ja ? 'na sekeru' : 'Božena na sekeru'}</u>
+      <div><span>Dlhy</span><b>${h.dlhy}</b></div>${h.abst ? `<div><span>Absťák</span><b>${h.abst}</b></div>` : ''}
+      <div><span>Cirhóza nepriznaná</span><b>${h.nepriz}</b></div>${h.vazni.length ? `<div><span>Väzni v pivnici</span><b>${h.vazni.length}/${VAZNI_MAX}</b></div>` : ''}
+      ${ja ? `<small>Ďalší Nástroj do Dedičstva: ${CENA_DED} <span class="cigik"></span>, cena rastie pre oboch.</small>` : ''}</div>
+  </div>
+  <div class="pult">${ja
+    ? `<div class="cast"><div><span class="stit">Doberací</span><br>${rub(64, { cls: 'kop', n: BAL_N })}</div><div>${skup(54, -6)}</div></div>
+       <div class="cast" style="margin-left:auto"><div><span class="stit">Odhodené</span><br>${rub(64, { cls: 'kop', n: h.odh.length })}</div><div class="sk"><span>naposledy odhodená vľavo</span><div class="mn pr" style="--ov:-6px">${h.odh.map((id) => kt(id, 54)).join('')}</div></div></div>`
+    : `<div class="cast"><div><span class="stit">Pivnica · ${h.vazni.length}/${VAZNI_MAX}</span><br>${h.vazni.map((id) => kt(id, 84)).join('')}</div><p class="txt">Väzeň nedáva priazeň a ráta sa držiteľovi ako červený strach. Jeho Kšeft má len držiteľ.</p></div>
+       <div class="cast" style="margin-left:auto"><div><span class="stit">V ruke · ${h.ruka}</span><div class="mn pr" style="--ov:-20px;margin-top:10px">${Array(h.ruka).fill(rub(62)).join('')}</div></div></div>`}
+  </div></div>`; };
+
+// M4 Spis
+M[4] = (k) => { const h = HR[k], ja = k === 'ja', w = ja ? 124 : 150, wi = ja ? 62 : 130;
+  return stol(.75, true) + `<div class="m4" data-spis="SPIS · ${h.meno.toUpperCase()}">${zav}
+  <div class="listy${ja ? '' : ' su'}" style="--lh:${ja ? 384 : 536}px">
+    <div class="list" style="--r:-.5deg"><h5>ZDRAVOTNÁ KARTA</h5><span class="pec" style="left:${ja ? 190 : 268}px;top:${ja ? 240 : 336}px">Priznané</span>
+      <div class="dva"><img class="fot" src="${h.av}" alt=""><div>
+        <p class="rdk">Meno: <b>${h.meno}</b></p>
+        <p class="rdk">Diagnóza: Cirhóza, priznaná <b>${h.priz.length}×</b></p>
+        <p class="rdk sl">Podozrenie (nepriznaná): <b>${h.nepriz}×</b></p>
+        <p class="rdk">Dlhy: <b>${h.dlhy}</b>${h.abst ? ` · Absťák: <b>${h.abst}</b>` : ''}</p></div></div>
+      <div class="lep">${h.priz.map((id, i) => `<div class="tp" style="transform:rotate(${[-2, 1.5][i]}deg)">${kt(id, w)}</div>`).join('')}</div>
+      ${ja ? '' : `<h5 style="margin-top:16px">V PIVNICI (${h.vazni.length}/${VAZNI_MAX})</h5>${h.vazni.map((id) => `<div class="inv">${kt(id, 60)}<p><b>${K[id][0]}</b>Väzeň nedáva priazeň a ráta sa držiteľovi ako červený strach.</p></div>`).join('')}`}
+    </div>
+    <div class="list" style="--r:.4deg"><h5>SÚPIS MAJETKU · DEDIČSTVO (${h.ded.length})</h5>
+      ${h.ded.map((id, i) => `<div class="inv">${kt(id, wi)}<p><b>${i + 1}. ${K[id][0]}</b>${K[id][3].replace('Dedičstvo: ', '')}</p></div>`).join('')}
+      ${ja ? `<p class="rdk sl">Ďalší zápis: ${CENA_DED} <span class="cigik"></span>, cena rastie pre oboch.</p>` : ''}
+    </div>
+  </div>
+  ${ja ? `<div class="vrecka"><div class="vr"><h5>PRÍLOHA A · DOBERACÍ BALÍČEK (${BAL_N} ks, poradie tajné)</h5>${skup(46)}</div><div class="vr"><h5>PRÍLOHA B · ODHODENÉ (${h.odh.length} ks)</h5><div class="sk"><span>naposledy odhodená vľavo</span><div class="mn">${h.odh.map((id) => kt(id, 46)).join('')}</div></div></div></div>` : ''}
+  </div>`; };
+
+// M5 Na plsti
+M[5] = (k) => { const h = HR[k], ja = k === 'ja';
+  const zet = (n, c) => `<div class="zets">${Array(n).fill(`<span class="zet" style="--c:${c}"></span>`).join('')}</div>`;
+  const tit = `<div class="tit"><img src="${h.av}" alt=""><b>${h.meno}</b><span>${ja ? 'tvoje karty' : 'vyložené karty'}</span></div>${zav}`;
+  if (!ja) return stol(0, true) + `<div class="m5">${tit}
+    <div class="zona" style="left:150px;top:84px;width:400px"><div class="vej" style="--ov:-34px">${kt('cirhoza', 176, { st: '--r:-6deg;--y:6px' })}${kt('cirhoza', 176, { st: '--r:5deg' })}</div><div class="pop">Priznané kliatby<b>2</b></div></div>
+    <div class="zona" style="left:650px;top:84px;width:440px"><div class="vej" style="--ov:22px">${kt('furik', 176, { st: '--r:-1.5deg' })}${kt('vidly', 176, { st: '--r:2deg' })}</div><div class="pop">Dedičstvo · Náradie<b>2</b></div></div>
+    <div class="zona" style="left:210px;top:455px;width:150px;height:110px;justify-content:flex-end">${zet(3, '#b0402c')}<div class="pop">Dlhy<b>3</b></div></div>
+    <div class="zona" style="left:400px;top:455px;width:150px;height:110px;justify-content:flex-end">${zet(1, '#7d4a8f')}<div class="pop">Absťák<b>1</b></div></div>
+    <div class="zona" style="left:600px;top:455px;width:190px;height:110px;justify-content:flex-end">${rub(46, { st: 'transform:rotate(-4deg)' })}<div class="pop">Cirhóza nepriznaná<b>1</b></div></div>
+    <div class="zona" style="left:850px;top:455px;width:190px;height:110px;justify-content:flex-end">${kt('farar', 48, { st: 'transform:rotate(3deg)' })}<div class="pop">Pivnica<b>1/${VAZNI_MAX}</b></div></div>
+  </div>`;
+  return stol(0, true) + `<div class="m5">${tit}
+    <div class="zona" style="left:150px;top:70px;width:200px"><div class="vej">${kt('cirhoza', 140, { st: '--r:-3deg' })}</div><div class="pop">Priznané kliatby<b>1</b></div></div>
+    <div class="zona" style="left:400px;top:70px;width:480px"><div class="vej" style="--ov:16px">${h.ded.map((id, i) => kt(id, 140, { st: `--r:${[-1.5, 1, 2][i]}deg` })).join('')}</div><div class="pop">Dedičstvo · Náradie<b>3</b><i>ďalší stojí ${CENA_DED} <span class="cigik"></span></i></div></div>
+    <div class="zona" style="left:930px;top:110px;width:150px">${zet(1, '#b0402c')}<div class="pop">Dlhy<b>1</b></div></div>
+    <div class="zona" style="left:930px;top:200px;width:170px"><div class="vej" style="--ov:-30px">${rub(42, { st: '--r:-5deg' })}${rub(42, { st: '--r:4deg;margin-left:-30px' })}</div><div class="pop">Cirhóza nepriznaná<b>2</b></div></div>
+    <div class="zona" style="left:40px;top:360px;width:760px;flex-direction:row;align-items:flex-start;gap:26px"><div>${rub(84, { cls: 'kop', n: BAL_N })}</div><div><div class="vej" style="--ov:-24px;justify-content:flex-start">${h.bal.flatMap(([, ks], g) => ks.map(([id, p], i) => kt(id, 84, { x: p > 1 ? '×' + p : '', st: `--r:${((g * 3 + i) % 3) - 1}deg;${i === 0 && g > 0 ? 'margin-left:-8px' : ''}` }))).join('')}</div><div class="pop" style="text-align:left">Doberací balíček<b>${BAL_N}</b><i>Občania 7 · Zvieratá 2 · Nástroje 2 · Kliatby 1 · poradie je tajné</i></div></div></div>
+    <div class="zona" style="left:880px;top:360px;width:320px"><div class="vej" style="--ov:-34px">${h.odh.slice().reverse().map((id, i) => kt(id, 84, { st: `--r:${[-4, -1, 2, 5][i]}deg` })).join('')}</div><div class="pop">Odhadzovací<b>${h.odh.length}</b><i>naposledy odhodená navrchu</i></div></div>
+  </div>`; };
+
+// M6 Zrkadlo
+M[6] = (k) => { const a = HR.ja, b = HR.su;
+  const at = (id, s, n) => `<div class="at" style="--s:${s}px;--h:${K[id][2]}"><div class="o" style="background-image:${url(id)}"></div>${n > 1 ? `<em>×${n}</em>` : ''}</div>`;
+  const rd = (naz, l, p, nl, np, c) => `<div class="rd${c ? ' c' : ''}"><div class="l">${l}<span class="cis">${nl}</span></div><div class="s">${naz}</div><div class="p"><span class="cis">${np}</span>${p}</div></div>`;
+  return stol(.72, true) + `<div class="pn m6">${zav}<div class="zv ${k === 'ja' ? 'l' : 'p'}"></div>
+  <div class="rd vs"><div class="l" style="--hc:${a.hc}"><div class="kto"><b>${a.meno}</b><span>ty</span></div><img src="${a.av}" alt=""></div><div class="s">VS</div><div class="p" style="--hc:${b.hc}"><img src="${b.av}" alt=""><div class="kto"><b>${b.meno}</b><span>súper</span></div></div></div>
+  ${rd('Priznané kliatby', a.priz.map((id) => kt(id, 82)).join(''), b.priz.map((id) => kt(id, 82)).join(''), a.priz.length, b.priz.length)}
+  ${rd('Dedičstvo<br>Náradie', a.ded.map((id) => kt(id, 82)).join(''), b.ded.map((id) => kt(id, 82)).join(''), a.ded.length, b.ded.length)}
+  ${rd('Dlhy', '', '', a.dlhy, b.dlhy, 1)}${rd('Cirhózy nepriznané', '', '', a.nepriz, b.nepriz, 1)}${rd('Absťáky', '', '', a.abst, b.abst, 1)}${rd('Väzni', '', b.vazni.map((id) => at(id, 26, 1)).join(''), a.vazni.length + '/' + VAZNI_MAX, b.vazni.length + '/' + VAZNI_MAX, 1)}
+  <div class="spod"><div style="display:flex;gap:16px"><div><h4>Doberací<b>${BAL_N}</b><i>poradie tajné</i></h4><div class="ats" style="flex-wrap:nowrap">${a.bal.flatMap(([, ks]) => ks.map(([id, p]) => at(id, 26, p))).join('')}</div></div><div><h4>Odhodené<b>${a.odh.length}</b></h4><div class="ats" style="flex-wrap:nowrap">${a.odh.map((id) => at(id, 26, 1)).join('')}</div></div></div><div></div>
+  <div><h4>V ruke<b>${b.ruka}</b></h4><div class="ats">${Array(b.ruka).fill(rub(22)).join('')}</div><p class="txt" style="margin:4px 0 0">Súperov balíček a odhodené karty nevidíš.</p></div></div>
+  </div>`; };
+
+// M7 Galéria s detailom
+const det = (id, kde) => `${kt(id, 200)}<span class="cp kde">${kde}</span><p><b>${K[id][0]}</b><br>${K[id][3]}</p>`;
+M[7] = (k) => { const h = HR[k], ja = k === 'ja', s = ja ? 82 : 132;
+  const at = (id, s, kde, n, vyb) => `<div class="at${vyb ? ' vyb' : ''}" style="--s:${s}px;--h:${K[id][2]}" data-id="${id}" data-kde="${kde}"><div class="o" style="background-image:${url(id)}"></div><span>${K[id][0]}</span>${n > 1 ? `<em>×${n}</em>` : ''}</div>`;
+  return stol(.72, true) + `<div class="pn m7">${zav}
+  <div class="kol" style="--hc:${h.hc}"><img src="${h.av}" alt=""><div class="kto"><b>${h.meno}</b><span>${ja ? 'tvoje karty' : 'súper'}</span></div>
+    ${staty(h).map(([n, t]) => `<div class="ri"><span>${t}</span><b>${n}</b></div>`).join('')}<div class="ri"><span>Dedičstvo</span><b>${h.ded.length}</b></div>${ja ? `<div class="ri"><span>Balíček</span><b>${BAL_N}</b></div><div class="ri"><span>Odhodené</span><b>${h.odh.length}</b></div><div class="ri"><span>Ďalší Nástroj</span><b>${CENA_DED} <span class="cigik"></span></b></div>` : `<div class="ri"><span>V ruke</span><b>${h.ruka}</b></div>`}</div>
+  <div class="mr">
+    <div class="dvoj"><div><h4>Priznané kliatby<b>${h.priz.length}</b></h4><div class="dla">${h.priz.map((id) => at(id, s, 'Priznaná kliatba', 1)).join('')}</div></div>
+      <div><h4>Dedičstvo · Náradie<b>${h.ded.length}</b></h4><div class="dla">${h.ded.map((id, i) => at(id, s, 'Dedičstvo', 1, i === 0)).join('')}</div></div></div>
+    ${ja ? `<h4>Doberací balíček<b>${BAL_N}</b><i>podľa typu, poradie je tajné</i></h4><div class="skp">${h.bal.map(([n, ks]) => `<div class="sk"><span>${n} <b>${sucet(ks)}</b></span><div class="dla">${ks.map(([id, p]) => at(id, 62, 'Doberací balíček', p)).join('')}</div></div>`).join('')}</div>
+            <h4>Odhadzovací<b>${h.odh.length}</b><i>naposledy odhodená vľavo</i></h4><div class="dla">${h.odh.map((id) => at(id, 62, 'Odhadzovací balíček', 1)).join('')}</div>`
+         : `<h4>Pivnica · väzni<b>${h.vazni.length}/${VAZNI_MAX}</b></h4><div class="dla">${h.vazni.map((id) => at(id, 104, 'Väzeň v pivnici', 1)).join('')}</div>`}
+  </div>
+  <div class="det">${det(h.ded[0], 'Dedičstvo')}</div>
+  </div>`; };
+
+// M8 Podnos
+M[8] = (k) => { const h = HR[k], ja = k === 'ja';
+  const kto = `<div class="seg ja-ja" style="--hc:${h.hc}"><div style="display:flex;gap:8px;align-items:center"><img src="${h.av}" alt=""><div class="kto"><b style="font-size:16px">${h.meno}</b></div></div>${cps(h)}</div>`;
+  const kap = (id, w) => `<div class="kap" style="width:${w}px"><b>${K[id][0]}</b>${K[id][3].replace('Dedičstvo: ', '').split('. Nepriznaná')[0]}</div>`;
+  if (!ja) return stol(.3, false, 'su') + `<div class="pn m8 hore">${zav}${kto}
+    <div class="seg"><h4>Priznané kliatby<b>2</b></h4><div class="ob">${kt('cirhoza', 92)}${kt('cirhoza', 92)}${kap('cirhoza', 124)}</div></div>
+    <div class="seg" style="flex:1"><h4>Dedičstvo · Náradie<b>2</b></h4><div class="ob">${h.ded.map((id) => kt(id, 92) + kap(id, 120)).join('')}</div></div>
+    <div class="seg" style="padding-right:52px"><h4>Pivnica<b>1/${VAZNI_MAX}</b></h4><div class="ob">${kt('farar', 76)}</div></div>
+  </div>`;
+  return stol(.3, false, 'ja') + `<div class="pn m8-pop"><h4>Doberací balíček<b>${BAL_N}</b><i>podľa typu, poradie je tajné</i></h4>${skup(52)}</div>
+  <div class="pn m8 dole">${zav}${kto}
+    <div class="seg"><h4>Kliatby<b>1</b></h4><div class="ob">${kt('cirhoza', 92)}</div></div>
+    <div class="seg"><h4>Dedičstvo · Náradie<b>3</b><i>ďalší ${CENA_DED} <span class="cigik"></span></i></h4><div class="ob">${h.ded.map((id) => kt(id, 92)).join('')}</div></div>
+    <div class="seg vyb" style="flex:1"><h4>Doberací<b>${BAL_N}</b></h4><div class="ob" style="gap:26px">${rub(70, { cls: 'kop' })}<div class="sez">${h.bal.map(([n, ks]) => `<div><i style="--h:${HUE[n]}"></i>${n}<b>${sucet(ks)}</b></div>`).join('')}</div></div></div>
+    <div class="seg" style="padding-right:44px"><h4>Odhodené<b>${h.odh.length}</b></h4><div class="ob"><div class="mn pr" style="--ov:-18px">${h.odh.slice().reverse().map((id) => kt(id, 70)).join('')}</div></div></div>
+  </div>`; };
+
+let kto = 'su';
+function kresli() {
+  document.querySelectorAll('.obr').forEach((o) => { o.innerHTML = M[o.dataset.m](kto); });
+  document.querySelectorAll('.prep button').forEach((b) => b.classList.toggle('akt', b.dataset.kto === kto));
+}
+function mierka() {
+  document.querySelectorAll('.obal').forEach((o) => { o.firstElementChild.style.zoom = Math.min(1, o.clientWidth / 1240); });
+}
+document.querySelector('.prep').addEventListener('click', (e) => { const b = e.target.closest('button'); if (b) { kto = b.dataset.kto; kresli(); } });
+document.addEventListener('mouseover', (e) => {
+  const a = e.target.closest('.m7 .at'); if (!a) return;
+  const m = a.closest('.m7'); m.querySelectorAll('.at.vyb').forEach((x) => x.classList.remove('vyb')); a.classList.add('vyb');
+  m.querySelector('.det').innerHTML = det(a.dataset.id, a.dataset.kde);
+});
+window.addEventListener('resize', mierka);
+const QP = new URLSearchParams(location.search);
+if (QP.get('k') === 'ja') kto = 'ja';
+// ?m=3 ukáže len jeden mock (na snímky)
+if (QP.get('m')) document.querySelectorAll('main > section, main > h1, main > p, nav.skupiny').forEach((x) => { if (x.id !== 'm' + QP.get('m')) x.style.display = 'none'; });
+kresli(); mierka();
+</script>
+</body>
+</html>

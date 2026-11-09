@@ -71,7 +71,7 @@ import { RekapitulaciaPitkyVrstva, type OdpovedNaNaex, type PiktogramyRekapitula
 import { mediaUrl } from "../lib/api.ts";
 import { useStolVHlavicke, useStrazOdchodu } from "../lib/odchod.ts";
 import { HlavickaPartie } from "./HlavickaPartie.tsx";
-import { skupinyBalicka } from "./doberaciBalicek.ts";
+import { GaleriaKariet, type SekciaKariet } from "./GaleriaKariet.tsx";
 import { SkratkyNapoveda, escVratiNavrh, tlacidloNavratu, useSkratky, type VrstvyPreEsc } from "./skratky.tsx";
 import type { RezimStran } from "./bar.ts";
 import { KARTA_MIN as NASTENKA_KARTA_MIN, rozmerNastenky, type ListokNaVyber } from "./rozlozenieNastenky.ts";
@@ -194,8 +194,8 @@ function textVolbySenku(zdroj: string | undefined): string {
  * „vestica“ ukazuje doberacie balíčky, ktoré hráčovi podľa karty odhalil server.
  */
 type Vrstva = "senok" | "lokality" | "log" | "vestica" | "karty" | "pivnica";
-/** Záložky vrstvy Karty (Michal 2026-10-23, #76) — súper ukazuje len Priznané a Dedičstvo. */
-type ZalozkaKariet = "balicek" | "odhodene" | "priznane" | "dedicstvo";
+/** Sekcia, pri ktorej sa otvorí vrstva Karty (Michal 2026-10-23, #76) — súper ukazuje len Priznané a Dedičstvo. */
+type ZalozkaKariet = SekciaKariet;
 
 /**
  * Pokyn ťahu (Michal 2026-10-21): nadpis a text sú v pilulke na hornej hrane
@@ -6621,91 +6621,22 @@ export function HernaPlocha({
         </VrstvaPanel>
       )}
 
-      {vrstva === "karty" &&
-        (() => {
-          const h = view.hraci[kartyHrac];
-          const moje = kartyHrac === ja;
-          const vazniHraca = view.vazni.filter((v) => v.hrac === kartyHrac);
-          const zalozky: readonly (readonly [ZalozkaKariet, string])[] = [
-            ...(moje
-              ? ([
-                  ["balicek", `Balíček ${h.doberaciPocet}`],
-                  ["odhodene", `Odhodené ${h.odhadzovaci.length}`],
-                ] as const)
-              : []),
-            ["priznane", `Priznané ${h.priznane.length}${vazniHraca.length > 0 ? ` · väzni ${vazniHraca.length}` : ""}`],
-            ["dedicstvo", `Dedičstvo ${h.dedicstvo.length}`],
-          ];
-          const zal: ZalozkaKariet = moje || kartyZalozka === "priznane" || kartyZalozka === "dedicstvo" ? kartyZalozka : "priznane";
-          const k = view.nepriznaneKliatby[kartyHrac];
-          const nepriznane = k.cirhoza > 0 ? `Cirhóza ×${k.cirhoza}` : "";
-          // Dlh je od v8.2 počítadlo; Absťák (v9.1) karta, ktorej poloha je skrytá — v záložke ich ukáže riadok s počtom.
-          const pocitadla = [h.dlhy > 0 ? `Dlhy ${h.dlhy}` : "", h.abstaky > 0 ? `Absťáky ${h.abstaky}` : ""].filter((x) => x !== "").join(" · ");
-          const POZN: Record<ZalozkaKariet, string> = {
-            balicek: "tvoje karty zoskupené podľa typu a mena — poradie v balíčku je tajné",
-            odhodene: "tvoj odhadzovací balíček — keď sa minie doberací, zamieša sa doň",
-            priznane: `priznané kliatby — natrvalo mimo balíčka${pocitadla === "" ? "" : ` · priznané počítadlá: ${pocitadla}`}${nepriznane === "" ? "" : ` · nepriznané: ${nepriznane}`}`,
-            dedicstvo: moje ? `Nástroje s pasívnym efektom · ďalší stojí ${cigariet(view.cenaDedicstva)} (cena rastie pre oboch)` : "Nástroje s pasívnym efektom",
-          };
-          const karty = (ks: readonly CardInstance[]): ReactNode => (
-            <div className="vrstva-karty harmonika">
-              {ks.length === 0 && <span className="popis">Zatiaľ nič.</span>}
-              {ks.map((x) => sLupou({ karta: x, sirka: SIRKA_VO_VRSTVE }))}
-            </div>
-          );
-          return (
-            <VrstvaPanel nazov={moje ? "Tvoje karty" : `Karty — ${menoHraca(kartyHrac)}`} pozn={POZN[zal]} skryta={tahanie !== null} onZavri={() => setVrstva(null)}>
-              <div className="karty-zalozky" role="tablist" aria-label="Karty hráča">
-                {zalozky.map(([id, text]) => (
-                  <button key={id} type="button" role="tab" aria-selected={zal === id} className={zal === id ? "aktivna" : undefined} onClick={() => setKartyZalozka(id)}>
-                    {text}
-                  </button>
-                ))}
-              </div>
-              {zal === "balicek" && (
-                <>
-                  {hJa.doberaciPocet === 0 && <span className="popis">Balíček je prázdny — pri ďalšom ťahaní sa doň zamiešajú odhodené karty.</span>}
-                  {skupinyBalicka(data, view.mojBalicekZlozenie).map((s) => (
-                    <section key={s.nazov} className="balicek-skupina">
-                      <h3>
-                        {s.nazov} <b>{s.pocet}</b>
-                      </h3>
-                      <div className="vrstva-karty">
-                        {s.karty.map((k) =>
-                          sLupou(
-                            { karta: k.karta, sirka: SIRKA_VO_VRSTVE },
-                            k.pocet > 1 ? { stitok: <span className="balicek-kusov">×{k.pocet}</span> } : {},
-                          ),
-                        )}
-                      </div>
-                    </section>
-                  ))}
-                </>
-              )}
-              {zal === "odhodene" && karty(h.odhadzovaci)}
-              {zal === "priznane" && karty(h.priznane)}
-              {zal === "priznane" && vazniHraca.length > 0 && (
-                <section className="balicek-skupina pivnica" data-vyucba="pivnica">
-                  <h3>
-                    Pivnica — väzni <b>{vazniHraca.length}</b>/{vazniNaVyhru(view.lokalitCelkom)}
-                  </h3>
-                  <p className="popis">
-                    Väzeň nedáva priazeň a ráta sa držiteľovi ako červený strach. {moje ? "Jeho Kšeft spustíš v Pitke za vypitý plný poldeci, raz za Pitku." : "Jeho Kšeft má len držiteľ."}
-                  </p>
-                  <div className="vrstva-karty">
-                    {vazniHraca.map((v) =>
-                      sLupou(
-                        { karta: v.karta, sirka: SIRKA_VO_VRSTVE },
-                        { stitok: <span className="balicek-kusov">{v.poradie}. zajatý</span> },
-                      ),
-                    )}
-                  </div>
-                </section>
-              )}
-              {zal === "dedicstvo" && karty(h.dedicstvo)}
-            </VrstvaPanel>
-          );
-        })()}
+      {vrstva === "karty" && (
+        <GaleriaKariet
+          key={kartyHrac}
+          view={view}
+          data={data}
+          sada={sada}
+          hrac={kartyHrac}
+          moje={kartyHrac === ja}
+          meno={kartyHrac === ja ? (hraci[ja]?.meno ?? "ty") : menoHraca(kartyHrac)}
+          avatar={hraci[kartyHrac]?.avatar ?? null}
+          sekcia={kartyHrac === ja || kartyZalozka === "dedicstvo" ? kartyZalozka : "priznane"}
+          velka={(k, sirka) => sLupou({ karta: k, sirka })}
+          skryta={tahanie !== null}
+          onZavri={() => setVrstva(null)}
+        />
+      )}
 
       {vrstva === "pivnica" && (
         <VrstvaPanel

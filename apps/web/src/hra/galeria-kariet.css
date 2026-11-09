@@ -1,0 +1,330 @@
+/* Vrstva Karty ako galéria s detailom (GaleriaKariet.tsx, Michal 2026-11-09, mock M7):
+ * tri stĺpce — hráč a počítadlá · dlaždice s ilustráciami · veľká karta s efektom slovami. */
+
+.vrstva-panel.galeria-kariet {
+  /* Detail potrebuje výšku aj pri pár kartách; stred sa posúva sám. */
+  height: 100%;
+  max-height: 620px;
+}
+
+.vrstva-panel.galeria-kariet .vrstva-obsah {
+  flex: 1;
+  min-height: 0;
+  padding: 0;
+  overflow: hidden;
+}
+
+.gk {
+  display: grid;
+  grid-template-columns: 190px minmax(0, 1fr) 330px;
+  flex: 1;
+  min-height: 0;
+}
+
+/* ---- hráč a počítadlá ---- */
+.gk-hrac {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  padding: 18px 16px;
+  border-right: 1px solid var(--okraj);
+  overflow-y: auto;
+}
+
+.gk-hrac .avatar {
+  border-radius: 16px;
+  flex: none;
+}
+
+.gk-pocitadla {
+  width: 100%;
+}
+
+.gk-riadok {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 8px;
+  padding: 5px 2px;
+  border-bottom: 1px solid var(--okraj);
+  font-size: 0.8rem;
+  color: var(--tlmeny);
+}
+
+.gk-riadok b {
+  color: var(--akcent);
+  font: 800 1rem/1.1 var(--pismo);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.gk-cena {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.gk-cena .ikona-cigareta {
+  width: 1.5em;
+  height: 1.5em;
+  fill: currentColor;
+}
+
+/* ---- dlaždice ---- */
+.gk-stred {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 16px 20px 18px;
+  overflow-y: auto;
+  min-width: 0;
+}
+
+.gk-dvojica {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px 34px;
+}
+
+.gk-stred h3 {
+  margin: 0 0 8px;
+  font: 700 0.75rem/1.2 var(--pismo);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--tlmeny);
+}
+
+.gk-stred h3 b {
+  margin-left: 4px;
+  padding: 1px 8px;
+  border-radius: 99px;
+  background: var(--akcent);
+  color: var(--na-akcente);
+  letter-spacing: 0;
+  font-variant-numeric: tabular-nums;
+}
+
+.gk-stred h3 span {
+  margin-left: 10px;
+  font-weight: 400;
+  letter-spacing: 0;
+  text-transform: none;
+  color: var(--slaby-text);
+}
+
+.gk-stred .popis {
+  display: block;
+  margin: -2px 0 8px;
+  font-size: 0.8rem;
+  color: var(--slaby-text);
+}
+
+.gk-skupiny {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 18px;
+}
+
+.gk-skupina h4 {
+  margin: 0 0 4px;
+  font: 600 0.72rem/1.2 var(--pismo);
+  color: var(--tlmeny);
+}
+
+.gk-skupina h4 b {
+  color: var(--akcent);
+}
+
+.gk-dlazdice {
+  --s: 68px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  min-height: 24px;
+}
+
+/* Priznané, Dedičstvo a väzni sú to hlavné — väčšie; súper nemá balíčky, miesta je dosť. */
+.gk-dlazdice.hlavne {
+  --s: 92px;
+}
+
+.galeria-kariet.supera .gk-dlazdice.hlavne {
+  --s: 132px;
+}
+
+/* Dlaždica je tlačidlo (klávesnica, dotyk) — vzhľad všeobecného tlačidla zo styles.css jej nepatrí. */
+.gk-dlazdica,
+.gk-dlazdica:hover:not(:disabled) {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 0;
+  width: var(--s);
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: none;
+  color: var(--tlmeny);
+  font: inherit;
+  cursor: pointer;
+  text-align: center;
+}
+
+.gk-obraz {
+  display: block;
+  flex: none;
+  width: var(--s);
+  height: var(--s);
+  border-radius: 9px;
+  border-bottom: 4px solid var(--farba);
+  background: var(--farba);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
+  overflow: hidden;
+}
+
+.gk-obraz img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.gk-nazov {
+  display: block;
+  margin-top: 3px;
+  font-size: 0.68rem;
+  line-height: 1.2;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.gk-kusov {
+  position: absolute;
+  top: 3px;
+  right: 3px;
+  padding: 2px 6px;
+  border-radius: 99px;
+  background: var(--akcent);
+  color: var(--na-akcente);
+  font: 800 0.72rem/1 var(--pismo);
+  pointer-events: none;
+}
+
+.gk-dlazdica.vybrana .gk-obraz,
+.gk-dlazdica:focus-visible .gk-obraz {
+  outline: 3px solid var(--akcent);
+  outline-offset: 2px;
+}
+
+.gk-dlazdica:focus-visible {
+  outline: none;
+}
+
+.gk-dlazdica.vybrana .gk-nazov {
+  color: var(--text);
+}
+
+/* ---- detail ---- */
+.gk-detail {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  padding: 18px 18px 14px;
+  border-left: 1px solid var(--okraj);
+  background: color-mix(in srgb, var(--pozadie) 45%, transparent);
+  min-height: 0;
+  overflow: hidden;
+}
+
+.gk-kde {
+  flex: none;
+  padding: 1px 10px;
+  border: 1px solid var(--okraj);
+  border-radius: 99px;
+  background: var(--plocha-2);
+  font-size: 0.72rem;
+  color: var(--tlmeny);
+  white-space: nowrap;
+}
+
+.gk-efekt {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  text-align: center;
+  font-size: 0.86rem;
+  line-height: 1.45;
+}
+
+.gk-efekt p {
+  margin: 0;
+}
+
+.gk-meno {
+  display: block;
+  color: var(--akcent);
+}
+
+/* Vysoké okno (1600 × 1000, 1920 × 1080): miesta je dosť, ilustrácie môžu byť väčšie. */
+@media (min-width: 1500px) and (min-height: 900px) {
+  .gk-dlazdice {
+    --s: 84px;
+  }
+
+  .gk-dlazdice.hlavne {
+    --s: 112px;
+  }
+}
+
+/* ---- užšie okno a telefón na šírku: počítadlá do pásika hore, detail užší ---- */
+@media (max-width: 1100px), (max-height: 560px) {
+  .gk {
+    grid-template-columns: minmax(0, 1fr) 250px;
+    grid-template-rows: auto minmax(0, 1fr);
+  }
+
+  .gk-hrac {
+    grid-column: 1;
+    flex-direction: row;
+    padding: 8px 16px;
+    border-right: 0;
+    border-bottom: 1px solid var(--okraj);
+    overflow: visible;
+  }
+
+  .gk-hrac .avatar {
+    display: none;
+  }
+
+  .gk-pocitadla {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 2px 14px;
+  }
+
+  .gk-riadok {
+    border: 0;
+    padding: 0;
+    gap: 5px;
+  }
+
+  .gk-stred {
+    grid-column: 1;
+    padding: 10px 16px 12px;
+  }
+
+  .gk-detail {
+    grid-column: 2;
+    grid-row: 1 / span 2;
+    padding: 10px 12px;
+  }
+
+  .gk-dlazdice.hlavne,
+  .galeria-kariet.supera .gk-dlazdice.hlavne {
+    --s: 84px;
+  }
+}
