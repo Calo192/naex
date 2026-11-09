@@ -159,6 +159,8 @@ export const KONSTANTY = {
     LESNA_CESTA_TUHE: 2,
     /** Obecný úrad (v11.13): cigarety a Dlhy získané v Pitke sa rátajú toľkokrát. */
     OBECNY_URAD_NASOBOK: 2,
+    /** Benzínka (v11.15): každé fajčenie v Pitke stojí o toľko cigariet menej, najmenej 0. */
+    BENZINKA_ZLAVA: 1,
   },
 
   /**
@@ -290,13 +292,14 @@ export function vazniNaVyhru(lokalitCelkom: number): number {
 // ďalšiu lokalitu, reči uberajú zo špakov za strach.
 // v11.14 (vo Vypálenej od 2026-11-09) bez novej značky: frakcie bez Kšeftu, Občania v troch
 // kategóriách (Preškolenie), Náradie sa podkladá pod kartu, Predavačka a Živnostník berú zo šenku.
+// v11.15 (Michal 2026-11-09, Zrejúca) bez novej značky: Benzínka — každé fajčenie o 1 cigaretu lacnejšie.
 export const VERZIA_PRAVIDIEL = "v11";
 /**
  * Presná verzia pravidiel vrátane dávky — hráč ju vidí na stránke Pravidlá, ktorá má
  * vždy odzrkadľovať správanie nasadenej hry (Michal 2026-10-31). Značka partií
  * (VERZIA_PRAVIDIEL) sa pri dávke nemení, táto áno.
  */
-export const VERZIA_PRAVIDIEL_PRESNA = "v11.14";
+export const VERZIA_PRAVIDIEL_PRESNA = "v11.15";
 /** Odkedy platí VERZIA_PRAVIDIEL_PRESNA — hráč ho vidí na stránke Pravidlá. */
 export const PRAVIDLA_PLATNE_OD = "2026-11-09";
 export type DlzkaHry = keyof typeof DLZKY_HRY;

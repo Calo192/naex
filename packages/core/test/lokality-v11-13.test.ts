@@ -1,5 +1,5 @@
 // Lokality v11.13 (Michal 2026-11-06): nové efekty Lesnej cesty, Cintorína, Obecného úradu, Skladu,
-// Kultúrneho domu, Družstva a Benzínky. Očakávané hodnoty sú z pravidla (PRAVIDLA.md §15), nie z kódu.
+// Kultúrneho domu, Družstva a Benzínky (od v11.15 zľava na každé fajčenie). Očakávané hodnoty sú z pravidla (PRAVIDLA.md §15), nie z kódu.
 
 import { describe, expect, it } from "vitest";
 import cardsJson from "../data/cards.json";
@@ -89,14 +89,15 @@ describe("Lesná cesta (v11.13)", () => {
   });
 });
 
-describe("Benzínka (v11.13)", () => {
-  it("cena: 0, 2, 3 — poradie ako inde, len prvá platba odpadá", () => {
-    expect([0, 1, 2].map((uz) => cenaFajcenia(uz, 1, true))).toEqual([0, 2, 3]);
-    expect(cenaFajcenia(0, 3, true)).toBe(5);
+describe("Benzínka (v11.15)", () => {
+  it("cena: každé fajčenie o 1 lacnejšie — 0, 1, 2; inde 1, 2, 3", () => {
+    expect([0, 1, 2].map((uz) => cenaFajcenia(uz, 1, true))).toEqual([0, 1, 2]);
+    expect(cenaFajcenia(0, 3, true)).toBe(3);
+    expect(cenaFajcenia(1, 2, true)).toBe(3);
     expect([0, 1, 2].map((uz) => cenaFajcenia(uz))).toEqual([1, 2, 3]);
   });
 
-  it("bez cigariet sa prvé dá, karta príde, nerest ani platba nie; druhé už stojí 2", () => {
+  it("bez cigariet sa prvé dá, karta príde, nerest ani platba nie; druhé už stojí 1", () => {
     const s = sHracom(vPitke("benzinka"), 0, { cigarety: 0, nerestiTotoKolo: 0 });
     expect(cenaFajceniaHraca(s, 0)).toBe(0);
     expect(legalCommands(data, s, 0)).toContainEqual({ type: "smoke", pocet: 1 });
@@ -105,20 +106,32 @@ describe("Benzínka (v11.13)", () => {
     expect(po.hraci[0].cigarety).toBe(0);
     expect(po.hraci[0].nerestiTotoKolo).toBe(0);
     expect(events.some((e) => e.type === "zmenaCigariet")).toBe(false);
-    expect(cenaFajceniaHraca(po, 0)).toBe(2);
+    expect(cenaFajceniaHraca(po, 0)).toBe(1);
     expect(legalCommands(data, po, 0).some((c) => c.type === "smoke")).toBe(false);
     // Bez ďalšej voľby hra hráčovu Pitku dohrá sama — druhé fajčenie sa skúša v stave, kde ešte hrá.
     const pitka = po.pitkaStav;
     if (pitka === null) throw new Error("Pitka");
-    const hra = { ...sHracom(po, 0, { cigarety: 1 }), pitkaStav: { ...pitka, hotovy: [false, false] as [boolean, boolean], naTahu: 0 as PlayerId } };
-    expect(() => apply(data, hra, { type: "smoke", pocet: 1 }, 0)).toThrow(/2 cigarety/);
+    const hra = { ...sHracom(po, 0, { cigarety: 0 }), pitkaStav: { ...pitka, hotovy: [false, false] as [boolean, boolean], naTahu: 0 as PlayerId } };
+    expect(() => apply(data, hra, { type: "smoke", pocet: 1 }, 0)).toThrow(/1 cigaretu/);
+  });
+
+  it("zaplatená cigareta za 1 je nerest a platba ako inde", () => {
+    const s = sHracom(vPitke("benzinka"), 0, { cigarety: 5, nerestiTotoKolo: 0 });
+    const pitka = s.pitkaStav;
+    if (pitka === null) throw new Error("Pitka");
+    const druhe = { ...s, pitkaStav: { ...pitka, fajcenie: [1, 0] as [number, number] } };
+    const { state: po, events } = applySPrisunom(data, druhe, { type: "smoke", pocet: 1 }, 0);
+    expect(po.hraci[0].cigarety).toBe(4);
+    expect(po.hraci[0].nerestiTotoKolo).toBe(1);
+    expect(events).toContainEqual(expect.objectContaining({ type: "zmenaCigariet", hrac: 0, zdroj: "platba", suma: -1 }));
+    expect(cenaFajceniaHraca(po, 0)).toBe(2);
   });
 
   it("platí pre každého hráča zvlášť a v každej Pitke znova; pohľad klienta vidí tú istú cenu", () => {
     const s = vPitke("benzinka");
     const po = apply(data, s, { type: "smoke", pocet: 1 }, 0).state;
     expect(cenaFajceniaHraca(po, 1)).toBe(0);
-    expect(cenaFajceniaHraca(viewFor(data, po, 0), 0)).toBe(2);
+    expect(cenaFajceniaHraca(viewFor(data, po, 0), 0)).toBe(1);
     expect(cenaFajceniaHraca(viewFor(data, po, 1), 1)).toBe(0);
     const pitka = po.pitkaStav;
     if (pitka === null) throw new Error("Pitka");
@@ -130,10 +143,15 @@ describe("Benzínka (v11.13)", () => {
     expect(legalCommands(data, s, 0).some((c) => c.type === "smoke")).toBe(true);
   });
 
-  it("Jednota ďalej zakazuje, Benzínka to neobíde; súperova Krabička zo zadarmo fajčenia kartu nedá", () => {
+  it("Jednota ďalej zakazuje, Benzínka to neobíde; súperova Krabička zo zadarmo fajčenia kartu nedá, zo zaplatených áno", () => {
     const b = sHracom(vPitke("benzinka"), 1, { dedicstvo: [inst("cigorky")] });
     const po = apply(data, b, { type: "smoke", pocet: 1 }, 0).state;
     expect(po.hraci[1].ruka.length).toBe(b.hraci[1].ruka.length);
+    // Tri naraz: 0 + 1 + 2 = 3 vyfajčené cigarety, Krabička za každé 2 → 1 karta, neresti 3.
+    const tri = applySPrisunom(data, b, { type: "smoke", pocet: 3 }, 0).state;
+    expect(tri.hraci[0].cigarety).toBe(b.hraci[0].cigarety - 3);
+    expect(tri.hraci[0].nerestiTotoKolo).toBe(b.hraci[0].nerestiTotoKolo + 3);
+    expect(tri.hraci[1].ruka.length).toBe(b.hraci[1].ruka.length + 1);
     const j = sHracom(vPitke("jednota"), 0, { dlhy: 3 });
     expect(legalCommands(data, j, 0).some((c) => c.type === "smoke")).toBe(false);
   });

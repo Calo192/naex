@@ -13,7 +13,7 @@ import { defOf, printedSides } from "./data.ts";
 import type { GameState, KseftyKola } from "./engine.ts";
 import type { ElderState } from "./elders.ts";
 import type { CardInstance } from "./types.ts";
-import type { LineEval, PlacedCard } from "./partia.ts";
+import type { ActionSums, LineEval, PlacedCard, ZdrojAkcie, ZdrojeAkcii } from "./partia.ts";
 import { evaluateLine, prevahaStran, silaVKraji, zvieratAUmlcane } from "./partia.ts";
 import type { PlayerState } from "./player.ts";
 import { limitVykladania } from "./player.ts";
@@ -69,7 +69,7 @@ export const REGISTER: Readonly<Record<string, EfektStatus>> = {
   // Starší (v9, krok 2 revízie): v línii len akcie; od v11.2 schopnosť väzňa raz za hru
   // (elders.json, engine.ts cmdSchopnostVazna) — text karty v cards.json je z čias Kšeftu väzňa.
   autobusar: "impl", // Schopnosť väzňa: karty zo šenku po cigarete, potom koniec brania
-  benzinka: "impl", // Pitka (v11.13): prvé fajčenie každého hráča v každej Pitke zadarmo (engine cenaFajcenia)
+  benzinka: "impl", // Pitka (v11.15): každé fajčenie o 1 cigaretu lacnejšie, prvé zadarmo (engine cenaFajcenia)
   cigorky: "impl", // Dedičstvo: Pitka (v7): za každé 2 cigarety, ktoré súper vyfajčí, karta (cmdSmoke)
   kocovnik: "native", // Spoločník: Pamätník {Pecka} (navyse.ts); starý Furt — akcie hráčovi s prevahou v kraji — len stará sada (evaluateLine)
   cirhoza: "native", // Bitka: dodatočná rana od súpera (cirhozaBonus)
@@ -241,29 +241,60 @@ export function efektPotlaceny(data: GameData, state: Pick<VerejnyStav, "strany"
   return vPartii(state, opponentOf(p), "praudovravec") && praudovravec?.effectText.includes("Autorit") === true && efektyNavyse(praudovravec).length === 0;
 }
 
+/** Dôvod pri Dlhu v rozpise súpera: dala ho jeho Finančná poradkyňa (sDlhmiPoradkyne). */
+export const DOVOD_PORADKYNE = "Dlh zo súperovej karty";
+
 /**
- * Zadĺženie z aktívnych akcií Dlh v línii, [hráč 0, hráč 1]. financna_poradkyna
- * (Michal 2026-10-18): Dlh z jej akcií dostáva súper, nie jej majiteľ. Jeden
- * výpočet pre Pitku (prirastkyPitky) aj náhľad vyloženia (nahladVylozenia) —
+ * Línia, v ktorej Dlh Finančnej poradkyne patrí súperovi — v súčtoch aj v rozpise zdrojov
+ * (Michal 2026-10-18: „Dlhy, ktoré vygeneruje táto karta, dostáva súper“). Bar, panel bitky,
+ * náhľad NA EX a rekapitulácia Pitky ho predtým ukazovali pri majiteľke, hoci Pitka ho
+ * pripísala súperovi (Michal 2026-11-09: „dáva komu dlhy? mne alebo súperovi?“).
+ * Ráta sa Dlh, ktorý karta naozaj dala (rozpis zdrojov): po preškolení, ×2, nie zrušený.
+ * Dlh zrušený Odporom majiteľa s Hrabľami je jeho (Hrable), nie poradkynin.
+ * Opakované volanie nič nezmení — presunutý Dlh leží u súpera a jeho poradkyňa to nie je.
+ */
+export function sDlhmiPoradkyne(data: GameData, state: Pick<VerejnyStav, "strany">, linia: LineEval): LineEval {
+  const presun: [ZdrojAkcie[], ZdrojAkcie[]] = [[], []];
+  for (const p of [0, 1] as const) {
+    const poradkyne = new Set(
+      partiaHraca(state, p)
+        .filter((pl) => pl.card.defId === "financna_poradkyna" && !efektPotlaceny(data, state, p, "financna_poradkyna"))
+        .map((pl) => pl.card.uid),
+    );
+    if (poradkyne.size === 0) continue;
+    presun[p] = (linia.zdroje[p].Dlh ?? []).filter((z) => poradkyne.has(z.uid) && z.hodnota > 0 && !z.dovody.includes("karta:hrable"));
+  }
+  if (presun[0].length + presun[1].length === 0) return linia;
+  const spolu = (xs: readonly ZdrojAkcie[]): number => xs.reduce((n, z) => n + z.hodnota, 0);
+  // Bez Dlhu kľúč zmizne — bar by inak ukázal dlaždicu „Dlh 0“.
+  const bezDlhu = <T extends { readonly Dlh?: unknown }>(o: T): Omit<T, "Dlh"> => {
+    const { Dlh: _dlh, ...zvysok } = o;
+    return zvysok;
+  };
+  const pre = (p: PlayerId): { sums: ActionSums; zdroje: ZdrojeAkcii } => {
+    const su = opponentOf(p);
+    const zdroje = [
+      ...(linia.zdroje[p].Dlh ?? []).filter((z) => !presun[p].includes(z)),
+      ...presun[su].map((z) => ({ ...z, dovody: [...z.dovody, DOVOD_PORADKYNE] })),
+    ];
+    const dlh = Math.max(0, (linia.sums[p].Dlh ?? 0) - spolu(presun[p])) + spolu(presun[su]);
+    return {
+      sums: dlh === 0 ? bezDlhu(linia.sums[p]) : { ...linia.sums[p], Dlh: dlh },
+      zdroje: zdroje.length === 0 ? bezDlhu(linia.zdroje[p]) : { ...linia.zdroje[p], Dlh: zdroje },
+    };
+  };
+  const [a, b] = [pre(0), pre(1)];
+  return { ...linia, sums: [a.sums, b.sums], zdroje: [a.zdroje, b.zdroje] };
+}
+
+/**
+ * Zadĺženie z aktívnych akcií Dlh v línii, [hráč 0, hráč 1], s Dlhom Finančnej poradkyne
+ * u súpera (sDlhmiPoradkyne). Jeden výpočet pre Pitku (prirastkyPitky) aj náhľady —
  * náhľad ho predtým pripísal majiteľovi (playtest 2026-10-22).
  */
 export function zadlzenieZLinie(data: GameData, state: Pick<VerejnyStav, "strany">, vyhodnotenie: LineEval): readonly [number, number] {
-  const poradkynaDlhy = [0, 0] as [number, number];
-  for (const p of [0, 1] as const) {
-    for (const placed of partiaHraca(state, p)) {
-      if (placed.card.defId !== "financna_poradkyna" || efektPotlaceny(data, state, p, "financna_poradkyna")) continue;
-      const ev = vyhodnotenie.cards.get(placed.card.uid);
-      if (ev === undefined) continue;
-      for (const strana of [ev.left, ev.right]) {
-        for (const slot of strana) {
-          if (slot?.action === "Dlh" && slot.stav === "aktivna") poradkynaDlhy[p] += slot.nasobok;
-        }
-      }
-    }
-  }
-  const sums = vyhodnotenie.sums;
-  const pre = (p: PlayerId): number => Math.max(0, (sums[p].Dlh ?? 0) - poradkynaDlhy[p]) + poradkynaDlhy[opponentOf(p)];
-  return [pre(0), pre(1)];
+  const sums = sDlhmiPoradkyne(data, state, vyhodnotenie).sums;
+  return [sums[0].Dlh ?? 0, sums[1].Dlh ?? 0];
 }
 
 
@@ -346,7 +377,7 @@ export function dovodZakazuFajcit(_data: GameData, state: VerejnyStav, p: Player
   return null;
 }
 
-/** Benzínka (Pitka, v11.13): prvé fajčenie každého hráča v každej Pitke je zadarmo, ďalšie stoja ako inde. */
+/** Benzínka (Pitka, v11.15): každé fajčenie stojí o 1 cigaretu menej (0, 1, 2 …), prvé v každej Pitke je teda zadarmo. */
 export function prveFajcenieZadarmo(state: Pick<VerejnyStav, "ciel">): boolean {
   return jeCielLokalita(state, "benzinka");
 }

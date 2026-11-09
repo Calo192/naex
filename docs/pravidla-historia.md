@@ -3268,3 +3268,9 @@ Staré znenie §12 Nástroj v línii (do v11.13, skrátené):
 > - Nástroj nesmie susediť s Nástrojom na konci strany, kam sa vykladá (susedstvo je fyzické).
 > - **Vedľa lokality sa Nástroj nevykladá** (v10.2, Michal 2026-11-01) — do prázdneho kraja ho vyložiť nemožno, ani vo finále na pinnacle.
 > - Nástroj sa do limitu vykladania **nezapočítava vôbec**, ale jeho vyloženie (do línie aj do Dedičstva) sa v striedaní počíta ako ťah (§6).
+
+## v11.15 — Benzínka o cigaretu lacnejšie (Michal 2026-11-09, Zrejúca)
+
+Michal: „treba upraviť, nech prvé fajčenie je zadarmo, druhé za 1 atď.“ Nové znenie: `docs/PRAVIDLA.md`, Zmeny v11.15, §7 a §15.
+
+Staré znenie §15 (v11.13–v11.14): „**Prvé fajčenie každého hráča v každej Pitke je zadarmo** (v11.13), ďalšie stojí 2, potom 3 (poradie cien ako inde, len prvá platba odpadá). Fajčenie zadarmo nie je nerest a do Krabičky cigariet sa neráta.“

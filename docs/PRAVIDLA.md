@@ -1,6 +1,6 @@
 # NA EX! — pravidlá (špecifikácia)
 
-**Pravidlá v11.14 (platné od 2026-11-09)** — Frakcie, Občania v troch kategóriách, Náradie a karta zo šenku (v11.14), Lokality (v11.13), Reči na súperovom teplomere (v11.12), Hádka platí (v11.11), Ohováračka namiesto Alkoholika (v11.10), Dobratie do troch a výpalné (v11.9), Každý Hazard je Dlh (v11.8), Kostol a koniec línie (v11.7), Zajatie od minulého kola (v11.6), Identita kariet (v11.5), Zajatie Nakladačkou a presvedčenie (v11.4), Konflikt oboma smermi a Podpora (v11.3), Schopnosť väzňa (v11.2), Vzbura obráti kartu (v11.1) a Strach a reči (Michal 2026-11-02, docs/napady/strach-reci.html,
+**Pravidlá v11.15 (platné od 2026-11-09)** — Benzínka o cigaretu lacnejšie (v11.15), Frakcie, Občania v troch kategóriách, Náradie a karta zo šenku (v11.14), Lokality (v11.13), Reči na súperovom teplomere (v11.12), Hádka platí (v11.11), Ohováračka namiesto Alkoholika (v11.10), Dobratie do troch a výpalné (v11.9), Každý Hazard je Dlh (v11.8), Kostol a koniec línie (v11.7), Zajatie od minulého kola (v11.6), Identita kariet (v11.5), Zajatie Nakladačkou a presvedčenie (v11.4), Konflikt oboma smermi a Podpora (v11.3), Schopnosť väzňa (v11.2), Vzbura obráti kartu (v11.1) a Strach a reči (Michal 2026-11-02, docs/napady/strach-reci.html,
 verzia 2) na v10.4
 (Hádka v10 — Michal 2026-11-01, docs/napady/hadka.html, verzia 4; v9 zmrazené 2026-10-30, krok 2
 revízie starších, docs/napady/starsi-krok2-zadanie.html; dávky v9.1 Chuť, v9.2 šenok a NA EX naraz,
@@ -8,6 +8,10 @@ v9.3 Výtržník prebíja Úplatok; v10.1 zajatie pred šenkom; v10.2 Nástroj n
 Forsáž, Úplatok zrušený; v10.4 pojem Spáliť, Autority). Sada kariet: zverejnená v48 (`cards.json`). Pravidlá sa
 menia len v dávkach; celá dávka dostane ďalšiu verziu (značka partií `v11`; presnú verziu ukazuje
 stránka Pravidlá — `VERZIA_PRAVIDIEL_PRESNA`).
+
+**Zmeny v11.15 oproti v11.14** (Michal 2026-11-09, Zrejúca; staré znenie v `docs/pravidla-historia.md`, sekcia v11.15):
+
+- **Benzínka** (Pitka, §7, §15): **každé fajčenie stojí o 1 cigaretu menej** — prvé fajčenie hráča v Pitke zadarmo, druhé 1, tretie 2 atď. (inde 1, 2, 3). Predtým odpadla len prvá platba (0, 2, 3). Každá zaplatená cigareta je nerest (§8) a ráta sa do Krabičky cigariet ako inde; fajčenie zadarmo nie.
 
 **Zmeny v11.14 oproti v11.13** (vo Vypálenej od 2026-11-09, sada v48; v Zrejúcej od 2026-11-08; staré znenia v `docs/pravidla-historia.md`, sekcia v11.14). Štyri časti:
 
@@ -53,7 +57,7 @@ Sedem lokalít má nový efekt a sada v55 aj nové hrany (§15). Režimy 2 na 2 
 - **Sklad** (Zhromaždenie; od frakcií bez Kšeftu): Nástroj zo šenku smieš vyložiť rovno do Dedičstva **za cenu Dedičstva** (§12, §15), nie za cenu šenku; je to ťah a spoločná cena potom stúpne. Z vrchu Náradia príde do šenku nový Nástroj, verejne; z prázdneho nič. Starý Kšeft (vrchná karta súperovho odhadzovacieho balíčka) zanikol.
 - **Kultúrny dom** (Bitka): **každý hráč dostane špaky len za svoje karty v línii, aj víťaz**. Špaky za výhru hádky (v11.11) sa tu nepripočítavajú druhýkrát. Pri sekere sa nemení nič (§9.4).
 - **Družstvo** (Zhromaždenie): limit vykladania nemíňa **karta s akciou Robota** na ktorejkoľvek strane, nie tag Pracujúci.
-- **Benzínka** (Pitka): **prvé fajčenie každého hráča v každej Pitke je zadarmo**, ďalšie stojí 2, potom 3. Zákaz fajčenia podľa najvzdialenejšej karty zanikol.
+- **Benzínka** (Pitka): **prvé fajčenie každého hráča v každej Pitke je zadarmo**, ďalšie stojí 2, potom 3 (od v11.15 každé o 1 lacnejšie). Zákaz fajčenia podľa najvzdialenejšej karty zanikol.
 - **Výklad programátora, na potvrdenie Michalom:** (1) Kultúrny dom pri sekere: špaky kola čakajú ako inde a víťaz hádky dostane za svoje karty hneď, raz. (2) Víťaz na Kultúrnom dome dostane aspoň 1 špak (§9.4), aj bez vlastnej karty v línii. (3) Fajčenie zadarmo nie je nerest a do Krabičky cigariet sa neráta: žiadna cigareta sa neminula. (4) Obecný úrad: Dlh Výherného automatu v poslednej Pitke sa ráta dvakrát (je to Dlh z Pitky), rovnako schopnosť Poštárky použitá v Pitke (8 cigariet) a Konflikt v Pitke (odpoveď na NA EX). (5) Sklad: spoločná cena Dedičstva stúpne ako pri bežnom vložení.
 - **Výučba Prvá hra** hrá rovnaké pravidlá ako bežná partia; jej scenár sa prerába pri vypálení.
 
@@ -1025,8 +1029,8 @@ Pitiek**. Po odpovediach sa Pitka vyhodnotí.
   každá Pitka začína znova od 1 a každý hráč má počítadlo zvlášť (je verejné).
   Nie je to strop — fajčiť sa dá stále, len drahšie. Každá vyfajčená cigareta
   je nerest (§8), teda druhé fajčenie 2 neresti. **V Zhromaždení sa nefajčí.** Keď sú doberací aj odhadzovací balíček
-  prázdne, **fajčiť sa nedá** — cigareta by nedala kartu. Na Benzínke je prvé
-  fajčenie v každej Pitke zadarmo (§15).
+  prázdne, **fajčiť sa nedá** — cigareta by nedala kartu. Na Benzínke je každé
+  fajčenie o 1 cigaretu lacnejšie — prvé v Pitke zadarmo, druhé 1, tretie 2 (v11.15, §15).
 - **Doliatie, 2 cigarety** (počas Pitky) → otoč jeden vypitý poldeci späť na
   plný. S Vínkom v Dedičstve nie (§16).
 - **Stokársky barter, 5 cigariet** → nový plný poldeci
@@ -1138,7 +1142,7 @@ vlastného tela — kto si zvykne, musí pokračovať.
 |---|---|
 | Vypiť v Zhromaždení (poldeci navyše, §13) | 1 |
 | **NA EX** (poldeci sa vypije v bitke; každé NA EX hráča, pri zrážke Výtržníka každý za svoje) | **2** |
-| vyfajčená cigareta (za každú zaplatenú — druhé fajčenie v Pitke 2 atď.; fajčenie zadarmo na Benzínke nič) | 1 |
+| vyfajčená cigareta (za každú zaplatenú — druhé fajčenie v Pitke 2, na Benzínke 1 atď.; fajčenie zadarmo na Benzínke nič) | 1 |
 
 **Nie sú nerest:** doliatie, barter, šenok, Záverečná, Dedičstvo,
 akcie Cigareta a Poldeci.
@@ -1943,7 +1947,7 @@ finále): Poľovnícka chata, Predsedova vila, Herňa. Hrany sú v `cards.json`
 | Lesná cesta | Bitka | Za každé **svoje Zviera v línii** (natočené k tebe, v ktoromkoľvek kraji) **2 tuhé** navyše (v11.13), bez stropu; skrytá Záverečná sa neráta. |
 | Cintorín | Prehra | Porazený si smie vziať do ruky **1 kartu zo svojho odhadzovacieho balíčka** (v11.13); smie aj nič. Berie sa až po návrate kariet (§9 krok 7a), takže v balíčku sú už aj jeho karty z práve odohranej línie (Michal 2026-11-07); spálené karty nie. Cirhóza vzatá do ruky sa hneď vráti do balíčka ako každá nepriznaná (krok 7b). Pri prázdnom balíčku a pri sekere sa nič nedeje. |
 | Jednota | Pitka | Kto má viac priznaných Dlhov, nesmie v tejto Pitke fajčiť ani dolievať (doliatie = 2 cigarety za vypitý poldeci; barter smie). Pri rovnosti smú obaja. |
-| Benzínka | Pitka | **Prvé fajčenie každého hráča v každej Pitke je zadarmo** (v11.13), ďalšie stojí 2, potom 3 (poradie cien ako inde, len prvá platba odpadá). Fajčenie zadarmo nie je nerest a do Krabičky cigariet sa neráta. |
+| Benzínka | Pitka | **Každé fajčenie stojí o 1 cigaretu menej** (v11.15): prvé fajčenie hráča v Pitke zadarmo, druhé 1, tretie 2 atď. (inde 1, 2, 3; každá Pitka a každý hráč zvlášť). Zaplatená cigareta je nerest a ráta sa do Krabičky cigariet ako inde; fajčenie zadarmo nie. |
 | Kar | Pitka | Poškodenie pečene za NA EX dostane **súper** hráča, ktorý ho dal (poldeci a nerest ostávajú dávajúcemu). |
 | Kostol | Zhromaždenie, Pitka | Nikto nesmie vypiť (v ťahu teda len jedna karta). **NA EX sa smie dať len na kartu na konci línie** (na ktoromkoľvek z dvoch koncov) — najďalej od Kostola; na výber sú oba konce (v11.7, Michal 2026-11-06). |
 | Zberný dvor | Pitka | Na konci Pitky (krok 7b, po Vízii, pred otočením Záverečných) smie každý hráč spáliť 1 kartu z ruky, nie kliatbu (Cirhózu ani Absťák); rozhoduje obranca, potom útočník. Súper vidí len to, že hráč kartu spálil. |

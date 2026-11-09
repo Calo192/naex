@@ -35,7 +35,7 @@ export const SLOVNIK: readonly PojemSlovnika[] = [
   { id: "spolocnik", pojem: "Spoločník", popis: "Spúšťač: karta má akcie navyše z pečate v obrázku, kým máš v partii inú odkrytú kartu s tagom za dvojbodkou — raz, aj pri viacerých." },
   { id: "nepriatel", pojem: "Nepriateľ", popis: "Spúšťač: karta má akcie navyše z pečate v obrázku, kým má súper v partii odkrytú kartu s tagom za dvojbodkou — raz, aj pri viacerých." },
   { id: "akcia-navyse", pojem: "Akcia navyše", popis: "Akcia z pečate v obrázku karty: aktívna akcia majiteľa karty mimo hrán, ráta sa ako tá istá akcia. Posilnenie, Odpor, Forsáž, NA EX ani podložený Nástroj ju nemenia; Nástroje v Dedičstve a Preškolenie Školiteľa áno." },
-  { id: "fajcenie", pojem: "Fajčenie", popis: "Karta z balíčka hneď; smieš len v Pitke, kým ju neskončíš. Prvé fajčenie v Pitke stojí 1 cigaretu, druhé 2, tretie 3… a každá Pitka začína od 1. Na Benzínke je prvé zadarmo." },
+  { id: "fajcenie", pojem: "Fajčenie", popis: "Karta z balíčka hneď; smieš len v Pitke, kým ju neskončíš. Prvé fajčenie v Pitke stojí 1 cigaretu, druhé 2, tretie 3… a každá Pitka začína od 1. Na Benzínke je každé o 1 lacnejšie, prvé zadarmo." },
   { id: "kliatba", pojem: "Kliatba", popis: "Čo škodí majiteľovi: karty Cirhóza a Absťák a počítadlo Dlh (hneď priznaný). Priznať sa dá len Cirhóza." },
   { id: "kolo", pojem: "Kolo", popis: "Cieľ, šenok, potom Zhromaždenie s Pitkou 1- až 4-krát (na pinnacle vo finále až 5-krát) a nakoniec bitka o lokalitu." },
   { id: "koniec-linie", pojem: "Koniec línie", popis: "Jeden z dvoch koncov línie, kam sa vykladá; nepatrí nikomu — kartu kladieš na ktorýkoľvek." },

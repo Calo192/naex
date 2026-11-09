@@ -1,4 +1,4 @@
-# Ťahák — platné pravidlá NA EX! (v11.14 frakcie, Preškolenie a podloženie Nástrojov, v11.13 Lokality, v11.12 Reči na súperovom teplomere, zajatie a presvedčenie, identita kariet, Kostol na konci línie, každý Hazard je Dlh, 2026-11-09, Zrejúca; sada = cards.json v master)
+# Ťahák — platné pravidlá NA EX! (v11.15 Benzínka o 1 lacnejšie, v11.14 frakcie, Preškolenie a podloženie Nástrojov, v11.13 Lokality, v11.12 Reči na súperovom teplomere, zajatie a presvedčenie, identita kariet, Kostol na konci línie, každý Hazard je Dlh, 2026-11-09, Zrejúca; sada = cards.json v master)
 
 Spoločný ťahák AI hráčov — playtester (Zrejúca) ho číta z master, protihráč na
 Vypálenej z vetvy `vypalena` (tam platí jej verzia pravidiel). Podrobne v `docs/PRAVIDLA.md` (zmeny v jeho úvode). Pri
@@ -95,7 +95,7 @@ rozpore s `docs/PRAVIDLA.md` platí `docs/PRAVIDLA.md` a rozpor zapíš do
   neodpovedal, na ktorýkoľvek); obe sa **otočia naraz** a Pitka sa vyhodnotí — posledné slovo nemá nikto.
 - **Lokality** — efekt platí v kole o ňu: Krčma (s plným
   poldeci povinné NA EX; prah Cirhózy obom +2), Kostol (nikto nevypije — v ťahu 1 karta; **v11.7: NA EX len
-  na kartu na konci línie (na ktoromkoľvek z dvoch koncov), najďalej od Kostola** — koniec bez podmienok NA EX sa neposúva na kartu pred ním, skrytá Záverečná je posledná, NA EX už dané ostáva), Benzínka (v11.13: prvé fajčenie v každej Pitke zadarmo, ďalšie 2, 3…; zadarmo nie je nerest), Zastávka (v9.1: po **prvej Pitke kola** si každý
+  na kartu na konci línie (na ktoromkoľvek z dvoch koncov), najďalej od Kostola** — koniec bez podmienok NA EX sa neposúva na kartu pred ním, skrytá Záverečná je posledná, NA EX už dané ostáva), Benzínka (v11.15: každé fajčenie o 1 cigaretu lacnejšie — prvé v Pitke zadarmo, ďalšie 1, 2…; zadarmo nie je nerest, zaplatená cigareta áno), Zastávka (v9.1: po **prvej Pitke kola** si každý
   vezme **zadarmo 1 kartu zo šenku**, najprv útočník, potom obranca — `{"type":"senok","uid":…}`;
   z prázdneho šenku nič), Lesná cesta (v11.13: 2 tuhé za každé svoje Zviera v línii, v ktoromkoľvek kraji, bez stropu),
   Ihrisko (+2 tuhé za každý kraj, kde máš viac svojich Občanov, Zvierat a Starešinov — Dvojčatá za dve, v8), Zberný
@@ -181,7 +181,7 @@ rozpore s `docs/PRAVIDLA.md` platí `docs/PRAVIDLA.md` a rozpor zapíš do
 - **Výpalné (v11.9):** súper ti hneď po bitke dá **1 cigaretu za každého staršieho** s tvojím červeným strachom (väzeň sa ráta), koľko má; po finále nie. Máš ho teda na šenok.
   Karty navyše: šenok, fajčenie (`smoke`: karta hneď, **len v Pitke** (v5), v Zhromaždení
   nie; **prvé fajčenie v Pitke 1 cigareta, druhé 2, tretie 3…**, každá Pitka znova od 1
-  (2026-10-27; na Benzínke prvé zadarmo), každá vyfajčená cigareta je nerest (v9.1: druhé fajčenie za 2 = 2 neresti); s prázdnym doberacím aj odhadzovacím balíčkom sa fajčiť
+  (2026-10-27; na Benzínke každé o 1 lacnejšie, prvé zadarmo), každá vyfajčená cigareta je nerest (v9.1: druhé fajčenie za 2 = 2 neresti); s prázdnym doberacím aj odhadzovacím balíčkom sa fajčiť
   nedá), Vízia, efekty (zo šenku Zastávka, Predavačka, Živnostník). Priznanie Cirhózy kartu nedá. Malý balíček prehru nespôsobí (v5).
   Keď sa doberací balíček minie, odhadzovací sa zamieša a stane sa z neho nový
   doberací balíček (pri každom ťahaní).

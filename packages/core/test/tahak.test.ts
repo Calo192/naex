@@ -98,7 +98,7 @@ describe("ťahák AI hráčov sedí s constants.ts", () => {
     ],
     ["Dlh ako počítadlo (v8.2), Absťák karta (v9.1)", "**Dlh je počítadlo, nie karta**"],
     ["Lesná cesta (v11.13)", `Lesná cesta (v11.13: ${KONSTANTY.EFEKT.LESNA_CESTA_TUHE} tuhé za každé svoje Zviera v línii`],
-    ["Benzínka (v11.13)", `Benzínka (v11.13: prvé fajčenie v každej Pitke zadarmo, ďalšie ${cenaFajcenia(1)}, ${cenaFajcenia(2)}…`],
+    ["Benzínka (v11.15)", `Benzínka (v11.15: každé fajčenie o ${KONSTANTY.EFEKT.BENZINKA_ZLAVA} cigaretu lacnejšie — prvé v Pitke zadarmo, ďalšie ${cenaFajcenia(1, 1, true)}, ${cenaFajcenia(2, 1, true)}…`],
   ])("%s", (_, ocakavane) => {
     expect(tahak).toContain(ocakavane);
   });

@@ -53,6 +53,7 @@ import { prveFajcenieZadarmo, opisReci, sReciNizsie, sRadom, odhadSpakovKola, ty
 import type { Moment, ActionSums, DopadyNahladu, KliatbyNahladu, NahladNaexNaKartu, PrebytokNahladu, NahladVylozenia, PolozkaVykladania, Rod, Slot, StranaLinie, VystrahaPecene } from "@naex/core";
 import type { KtoraHrana, MoznostPodlozenia, PodlozenyNastroj } from "@naex/core";
 import { aktivnaHrana, dovodNepodlozenia, hranyNastroja, ponukaPodlozenia, ucinkyNastrojov } from "@naex/core";
+import { sDlhmiPoradkyne } from "@naex/core";
 import { IkonaAkcie } from "../karta/IkonaAkcie.tsx";
 import { PodlozeneNastroje, smerPretrcania, vyskaHranyPod } from "./PodlozeneNastroje.tsx";
 import { vzhladSady } from "../lib/sada.tsx";
@@ -1212,7 +1213,8 @@ export function HernaPlocha({
     };
     // lineState: rovnaká línia ako na serveri.
     // V režime Päta, Lakeť, Otočka dávajú akcie aj rady starších: bar a odhad bitky rátajú ako server.
-    const lineEval = sRadom(data, view, evaluateLine(data, lineState({ ...stol, lokalitaOtocena: lokalitaNavrh?.otocena ?? view.lokalitaOtocena })));
+    // Dlh Finančnej poradkyne ukáže bar aj panel bitky pri súperovi, ktorému ho Pitka pripíše.
+    const lineEval = sDlhmiPoradkyne(data, stol, sRadom(data, view, evaluateLine(data, lineState({ ...stol, lokalitaOtocena: lokalitaNavrh?.otocena ?? view.lokalitaOtocena }))));
     // Klebety z hádky (v10) platia už v tejto bitke — odhad ich ráta (priazeň po hádke).
     const stolSKlebetami = { ...stol, bitkaStav: view.bitkaStav } as VerejnyStav;
     const odhad = ciel === null ? null : poskodenieBitky(data, stolSKlebetami, lineEval.sums);
@@ -1434,22 +1436,24 @@ export function HernaPlocha({
       if (placed === undefined) continue;
       const n = nahladNaexNaKartu(data, view, uid, cenyKliatob);
       if (n === null) continue;
-      const ev = n.liniaPo;
+      // Dlh Finančnej poradkyne pri súperovi, ako ho pripíše Pitka (NA EX nemení, čie karty ležia).
+      const ev = sDlhmiPoradkyne(data, view, n.liniaPo);
+      const liniaPred = sDlhmiPoradkyne(data, view, n.liniaPred);
       const zmeny = ([0, 1] as const).map((p) => {
-        const kluce = new Set([...Object.keys(ev.sums[p]), ...Object.keys(n.liniaPred.sums[p])]) as Set<keyof (typeof ev.sums)[0]>;
+        const kluce = new Set([...Object.keys(ev.sums[p]), ...Object.keys(liniaPred.sums[p])]) as Set<keyof (typeof ev.sums)[0]>;
         const out2: string[] = [];
         for (const k of kluce) {
-          const rozdiel = (ev.sums[p][k] ?? 0) - (n.liniaPred.sums[p][k] ?? 0);
+          const rozdiel = (ev.sums[p][k] ?? 0) - (liniaPred.sums[p][k] ?? 0);
           if (rozdiel !== 0) out2.push(`${nazov(k)} ${rozdiel > 0 ? "+" : "−"}${Math.abs(rozdiel)}`);
         }
         return out2;
       }) as [string[], string[]];
       // Vzorec: akcie tejto karty po NA EX s dôvodmi zdvojenia (Rana 4: ×2 NA EX, ×2 Silná žena).
-      const zdrojeMajitela = ev.zdroje[placed.playedBy];
+      // Z oboch strán — Dlh Finančnej poradkyne leží v rozpise súpera.
       const vzorec: string[] = [];
-      for (const [akcia, zoznam] of Object.entries(zdrojeMajitela)) {
+      for (const [akcia, zoznam] of ev.zdroje.flatMap((zdroje) => Object.entries(zdroje))) {
         for (const z of zoznam ?? []) {
-          if (z.defId !== placed.card.defId || z.hodnota <= 0) continue;
+          if (z.uid !== uid || z.hodnota <= 0) continue;
           const dovody = z.dovody.map(dovod);
           vzorec.push(`${nazov(akcia)} ${z.hodnota}${dovody.length > 0 ? ` (${dovody.join(" · ")})` : ""}`);
         }
@@ -4466,8 +4470,8 @@ export function HernaPlocha({
                     : null,
               tip:
                 cenaFajc === 0
-                  ? `Benzínka: prvé fajčenie v každej Pitke je zadarmo, hneď si doberieš kartu. Ďalšie v tejto Pitke stojí ${cigariet(cenaFajceniaHraca(view, ja, 2))}. Nerest je len vyfajčená cigareta, zadarmo žiadna.`
-                  : `Fajčiť za ${cigariet(cenaFajc)}: hneď si doberieš kartu. Ďalšie fajčenie v tejto Pitke stojí ${cigariet(cenaFajceniaHraca(view, ja, 2) - cenaFajc)}, nová Pitka začína ${prveFajcenieZadarmo(view) ? "zadarmo" : `od ${cigariet(KONSTANTY.CENA_FAJCENIA_ZAKLAD)}`}. Každá vyfajčená cigareta je nerest.`,
+                  ? `Benzínka: každé fajčenie je o 1 cigaretu lacnejšie, prvé v Pitke zadarmo — hneď si doberieš kartu. Ďalšie v tejto Pitke stojí ${cigariet(cenaFajceniaHraca(view, ja, 2))}. Nerest je len vyfajčená cigareta, zadarmo žiadna.`
+                  : `Fajčiť za ${cigariet(cenaFajc)}${prveFajcenieZadarmo(view) ? " (Benzínka: o 1 lacnejšie)" : ""}: hneď si doberieš kartu. Ďalšie fajčenie v tejto Pitke stojí ${cigariet(cenaFajceniaHraca(view, ja, 2) - cenaFajc)}, nová Pitka začína ${prveFajcenieZadarmo(view) ? "zadarmo" : `od ${cigariet(KONSTANTY.CENA_FAJCENIA_ZAKLAD)}`}. Každá vyfajčená cigareta je nerest.`,
               akcia: () => cmd({ type: "smoke", pocet: 1 }),
             })}
             {pecatNakupu({

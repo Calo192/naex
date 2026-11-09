@@ -4117,14 +4117,14 @@ export function jeCoTahat(doberaci: number, odhadzovaci: number): boolean {
 /**
  * Cena fajčenia (Michal 2026-10-27): `pocet` ďalších fajčení po `uz` fajčeniach
  * v tej istej Pitke — k-te stojí CENA_FAJCENIA_ZAKLAD + (k − 1) × PRIRASTOK,
- * viac naraz je súčet (1 + 2 + …). Benzínka (v11.13): prvá platba v Pitke odpadá, ďalšie stoja
- * rovnako (0, 2, 3 …).
+ * viac naraz je súčet (1 + 2 + …). Benzínka (v11.15, Michal 2026-11-09): každé fajčenie
+ * stojí o BENZINKA_ZLAVA menej (0, 1, 2 …) — zľava platí na každé fajčenie, nielen na prvé.
  */
-export function cenaFajcenia(uz: number, pocet = 1, prveZadarmo = false): number {
+export function cenaFajcenia(uz: number, pocet = 1, benzinka = false): number {
+  const zlava = benzinka ? KONSTANTY.EFEKT.BENZINKA_ZLAVA : 0;
   let cena = 0;
   for (let i = 0; i < pocet; i++) {
-    if (prveZadarmo && uz + i === 0) continue;
-    cena += KONSTANTY.CENA_FAJCENIA_ZAKLAD + (uz + i) * KONSTANTY.CENA_FAJCENIA_PRIRASTOK;
+    cena += Math.max(0, KONSTANTY.CENA_FAJCENIA_ZAKLAD + (uz + i) * KONSTANTY.CENA_FAJCENIA_PRIRASTOK - zlava);
   }
   return cena;
 }
@@ -4150,7 +4150,7 @@ function cmdSmoke(s: MutState, data: GameData, cmd: { pocet?: number }, kto: Mie
   zmenCigarety(s, p, "platba", -cena, events);
   // Nerest je každá vyfajčená cigareta (§8) — aj tie, o ktoré je ďalšie fajčenie drahšie;
   // platby cigaretami za iné veci (doliatie, barter) od v9.1 nerest nie sú.
-  // Fajčenie zadarmo na Benzínke žiadnu cigaretu neminie — nerest ani Krabička z neho nie sú.
+  // Benzínka zľavňuje cenu, nie nerest: ráta sa len zaplatená cigareta, fajčenie zadarmo nerest ani Krabičku nedá.
   hrac(s, p).nerestiTotoKolo += cena;
   const tahane = tahaj(s, kto, kolko, events);
   pitka.fajcenie[p] += kolko;

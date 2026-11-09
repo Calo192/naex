@@ -83,6 +83,8 @@ import {
   dovodZakazuFajcit,
   jednotaZakazuje,
   cenaFajceniaHraca,
+  prveFajcenieZadarmo,
+  sDlhmiPoradkyne,
   zakazVypit,
   nahladVylozenia,
   moznostiNaexVPohlade,
@@ -404,7 +406,8 @@ function vykresli(v: ClientState, mena: readonly string[]): string {
   const mojeSkryteNaex = (v.pitkaStav?.skryteNaex ?? []).filter((x) => x.hrac === ja);
   const jehoSkryteNaex = superoveSkryteNaex(v);
   const vidimCezBzdochu = v.pitkaStav !== null && vidiVolbuSupera(DATA, v, ja);
-  const lineEval = evaluateLine(DATA, lineState(vs));
+  // Dlh Finančnej poradkyne v súčtoch súpera, ako ho pripíše Pitka.
+  const lineEval = sDlhmiPoradkyne(DATA, vs, evaluateLine(DATA, lineState(vs)));
   // Celý verejný stôl: Šofér, Vychovávateľka, Pasca a Vidly čítajú aj NA EX v kole, schopnosti väzňov a špaky (playtest v7 131033).
   const stol: VerejnyStav = vs;
   for (const p of [ja, su] as const) {
@@ -1008,7 +1011,7 @@ function moznosti(v: ClientState): string[] {
       const zakazFajc = dovodZakazuFajcit(DATA, v, ja);
       if (zakazFajc !== null) out.push(`(${zakazFajc})`);
       else if (h.cigarety >= cenaFajc && jeCoTahat(h.doberaciPocet, h.odhadzovaci.length)) {
-        c({ type: "smoke", pocet: 1 }, cenaFajc === 0 ? `fajči zadarmo (Benzínka: prvé fajčenie v Pitke) — hneď si doberieš kartu (ťah nekončí); ďalšie v tejto Pitke za 2 cigarety` : `fajči za ${cigariet(cenaFajc)} — hneď si doberieš kartu (ťah nekončí); ďalšie fajčenie v tejto Pitke o cigaretu drahšie`);
+        c({ type: "smoke", pocet: 1 }, cenaFajc === 0 ? `fajči zadarmo (Benzínka: každé fajčenie o 1 cigaretu lacnejšie) — hneď si doberieš kartu (ťah nekončí); ďalšie v tejto Pitke za ${cigariet(cenaFajceniaHraca(v, ja, 2))}` : `fajči za ${cigariet(cenaFajc)}${prveFajcenieZadarmo(v) ? " (Benzínka: o 1 lacnejšie)" : ""} — hneď si doberieš kartu (ťah nekončí); ďalšie fajčenie v tejto Pitke o cigaretu drahšie`);
       }
       const cenaBarteru = barterCena(DATA, v, ja);
       if (h.cigarety >= cenaBarteru) c({ type: "barter" }, `barter ${cenaBarteru} cigariet → nový plný poldeci navyše`);

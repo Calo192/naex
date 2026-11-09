@@ -38,7 +38,7 @@ import { KONSTANTY, vazniNaVyhru } from "./constants.ts";
 import { abstakyVBitke, spakyPriExekucii, zhoriPriExekucii } from "./battle.ts";
 import type { ElderState } from "./elders.ts";
 import { kradezZaZajatie, priazenPre, spakyOdStarsieho, spakyZaReci, spakyZaStrach, spakyZaStupen, strachZ, vydesil } from "./elders.ts";
-import { jeCielLokalita, nasobokPitky, partiaHraca } from "./effects.ts";
+import { jeCielLokalita, nasobokPitky, partiaHraca, sDlhmiPoradkyne } from "./effects.ts";
 import { stranyLokality } from "./hrany.ts";
 import { stavZavislosti } from "./zavislost.ts";
 import type { Command, GameState } from "./engine.ts";
@@ -710,7 +710,8 @@ function kartyVStavke(s: GameState, q: PlayerId, sanca: number): number {
 function hodnotaBitky(k: Kontext, s: GameState, q: PlayerId, ostrost: number): number {
   const data = k.data;
   const o = opponentOf(q);
-  const sums = evaluateLine(data, lineState(s)).sums;
+  // Dlh Finančnej poradkyne zadlžuje súpera, nie jej majiteľa.
+  const sums = sDlhmiPoradkyne(data, s, evaluateLine(data, lineState(s))).sums;
   const dmg = poskodenieBitky(data, s, sums);
   // Remíza v tuhom (v6): vyhrá menej Absťákov, potom menej priznaných Dlhov, inak sekera (šanca ½).
   // Abstinent (v10) Absťáky odpustí aj pri remíze.
@@ -1609,7 +1610,7 @@ function pitka(v: Volba): Command | null {
   const cenaFajc = cenaFajceniaHraca(state, ja);
   const fajcenieStoji = finale && vykladaniPotom(state) === 0 && vykupneHraca({ poldeciPlne: h.poldeciPlne, cigarety: h.cigarety - cenaFajc }, skryte).spaky < vykupneTeraz;
   const ziskKarty = zdroje * (uzitokRuky(state, ja, h.ruka.length + 1) - uzitokRuky(state, ja, h.ruka.length));
-  // Benzínka (v11.13): prvé fajčenie je zadarmo — karta nič nestojí, kým sa dá ešte vyložiť.
+  // Benzínka (v11.15): prvé fajčenie je zadarmo, ďalšie o 1 lacnejšie — karta nič nestojí, kým sa dá ešte vyložiť.
   if (smoke !== undefined && cenaFajc === 0 && maCoTahat && !(finale && vykladaniPotom(state) === 0)) return smoke;
   if (smoke !== undefined && !fajcenieStoji && maCoTahat && ziskKarty > cenaCigariet(k, state, ja, cenaFajc)) return smoke;
 

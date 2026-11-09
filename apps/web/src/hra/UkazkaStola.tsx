@@ -54,7 +54,9 @@
 //                  (predvolene predsedova_vila), väzni &vazni=defId,… (predvolene hrobar,veterinar) —
 //                  schopnosti väzňov (v11.2; Kšeft zanikol, frakcie 2026-11-08);
 //                  na Strýkovi leží súperovo NA EX (Farár), súperov odhadzovací balíček nie je prázdny
-//                  (Hrobár); &pouzite=defId,… tieto schopnosti väzňov sú už minuté
+//                  (Hrobár); &pouzite=defId,… tieto schopnosti väzňov sú už minuté;
+//                  &poradkyna=ja|super: na koniec línie Finančná poradkyňa hráča ?ja / súpera s aktívnym Dlhom
+//                  (bar a panel bitky ho majú ukázať pri jej súperovi)
 //   &stop=zaverecna koniec Pitky so súperovou Záverečnou lícom dole — po načítaní sa otočí;
 //                  &dalsia=1 dohrá aj súperovu ďalšiu Záverečnú na tú istú stranu
 //   &moment=typ    pečiatka momentu (napr. vyprask, zvrat) pri prvej dohranej bitke či Pitke — snímky
@@ -96,7 +98,7 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import type { CardInstance, Command, Event, GameData, GameState, HistoriaLokalit, LokalitaVHistorii, PlacedCard, PlayerId, StavMomentov, Stupen, TypMomentu, Vazen } from "@naex/core";
-import { MOMENTY, NOVE_MOMENTY, apply, applySPrisunom, nahladPitky, prisunZUdalosti, eventsFor, lokalityPreKlienta, novaHistoriaLokalit, zapisDoHistorie, momenty, moznostiNaex, mozeHrat, naTahu, obmedzMomenty, rngInt, rngSeed, sPrilozenou, setupGame, tahBota, viewFor, vystrahaPecene, opponentOf } from "@naex/core";
+import { MOMENTY, NOVE_MOMENTY, apply, evaluateLine, lineState, applySPrisunom, nahladPitky, prisunZUdalosti, eventsFor, lokalityPreKlienta, novaHistoriaLokalit, zapisDoHistorie, momenty, moznostiNaex, mozeHrat, naTahu, obmedzMomenty, rngInt, rngSeed, sPrilozenou, setupGame, tahBota, viewFor, vystrahaPecene, opponentOf } from "@naex/core";
 import type { Sada } from "@naex/tvorba";
 import { useSada } from "../lib/sada.tsx";
 import { useHerneData } from "../stranky/Ukazky.tsx";
@@ -178,6 +180,22 @@ function sVesticou(s: GameState, p: PlayerId): GameState {
   const balicek = (h: GameState["hraci"][number]) => ({ ...h, doberaci: [...h.doberaci, ...h.odhadzovaci], odhadzovaci: [] });
   const hraci = [balicek(s.hraci[0]), balicek(s.hraci[1])] as unknown as GameState["hraci"];
   return { ...s, hraci, bitkaStav: { ...b, krok: "vestica", caka: p, vitaz: opponentOf(p), prebytokZostava: 0, vesticaHotova: false } };
+}
+
+/** Finančná poradkyňa hráča kto na konci jeho strany v prvom rozložení, v ktorom jej Dlh platí (ukážka komu ide). */
+function sPoradkynou(data: GameData, s: GameState, kto: PlayerId): GameState {
+  const varianty = data.variants.get("financna_poradkyna");
+  if (varianty === undefined) return s;
+  for (let l = 0; l < varianty.left.length; l++) {
+    for (let r = 0; r < varianty.right.length; r++) {
+      const karta: CardInstance = { uid: s.nextUid, defId: "financna_poradkyna", leftLayout: l, rightLayout: r };
+      const strany: [GameState["strany"][0], GameState["strany"][1]] = [[...s.strany[0]], [...s.strany[1]]];
+      strany[kto] = [...strany[kto], { card: karta, playedBy: kto }];
+      const po: GameState = { ...s, nextUid: s.nextUid + 1, strany };
+      if ((evaluateLine(data, lineState(po)).zdroje[kto].Dlh ?? []).some((z) => z.uid === karta.uid)) return po;
+    }
+  }
+  return s;
 }
 
 /**
@@ -573,7 +591,9 @@ function odohrajSeed(data: GameData, seed: number): { readonly odohrane: Odohran
     if (stop === "kseft" && s.faza === "pitka" && s.ciel?.lokalita != null && mozeHrat(s, ja) && s.pitkaStav?.reakcia === null && !s.pitkaStav.hotovy[ja] && s.vizia === null) {
       const vazni = (p.get("vazni") ?? "hrobar,veterinar").split(",").filter((x) => x !== "");
       const pouzite = (p.get("pouzite") ?? "").split(",").filter((x) => x !== "");
-      return najdene({ zaciatok: sKseftami(s, ja, p.get("lok") ?? "predsedova_vila", vazni, pouzite), dohraj: [] });
+      const k = sKseftami(s, ja, p.get("lok") ?? "predsedova_vila", vazni, pouzite);
+      const poradkyna = p.get("poradkyna");
+      return najdene({ zaciatok: poradkyna === "ja" || poradkyna === "super" ? sPoradkynou(data, k, poradkyna === "ja" ? ja : opponentOf(ja)) : k, dohraj: [] });
     }
     const bzdochaStop = stop === "bzdocha" || stop === "bzdocha-caka";
     if (bzdochaStop && s.faza === "pitka" && s.pitkaStav !== null && s.pitkaStav.reakcia === null && s.vizia === null && !s.pitkaStav.hotovy[0] && !s.pitkaStav.hotovy[1]) {

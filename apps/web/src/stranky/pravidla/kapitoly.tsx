@@ -457,7 +457,7 @@ export const KAPITOLY: readonly Kapitola[] = [
         <ul>
           <li>
             <P k="fajcenie">Fajčenie</P> — karta z balíčka hneď; len v Pitke, kým ju neskončíš, v Zhromaždení nie. Prvé fajčenie
-            v Pitke stojí 1 cigaretu, druhé 2, tretie 3… a každá Pitka začína znova od 1. Na Benzínke je prvé fajčenie v každej Pitke zadarmo.
+            v Pitke stojí 1 cigaretu, druhé 2, tretie 3… a každá Pitka začína znova od 1. Na Benzínke je každé fajčenie o 1 cigaretu lacnejšie: prvé zadarmo, druhé 1, tretie 2…
           </li>
           <li>
             <P k="doliatie">Doliatie</P> — v Pitke za 2 cigarety otočíš vypitý poldeci späť na plný (nie s Vínkom v Dedičstve).
@@ -525,7 +525,7 @@ export const KAPITOLY: readonly Kapitola[] = [
         <H3 id="cena-abstak">Neresti, Chuť a Absťák</H3>
         <p>
           <P k="nerest">Nerest</P> je len to, čo vypiješ a vyfajčíš: <strong>Vypiť</strong> v Zhromaždení 1, každé <strong>NA EX 2</strong>{" "}
-          (je to väčšia dávka) a každá vyfajčená cigareta 1 (druhé fajčenie v Pitke za 2 cigarety teda 2; fajčenie zadarmo nič).
+          (je to väčšia dávka) a každá vyfajčená cigareta 1 (druhé fajčenie v Pitke za 2 cigarety teda 2, na Benzínke za 1 cigaretu 1; fajčenie zadarmo nič).
           Doliatie, barter, šenok, Záverečná, Dedičstvo nerest nie sú.
         </p>
         <p>
@@ -1000,7 +1000,7 @@ export const KAPITOLY: readonly Kapitola[] = [
         <tbody>
           <tr><td>Krčma</td><td>Pitka</td><td>Kto má plný poldeci a kam ho dať, musí dať NA EX. Prah Cirhózy je obom o 2 vyšší.</td></tr>
           <tr><td>Kostol</td><td>Zhromaždenie, Pitka</td><td>Nikto nesmie vypiť (v ťahu len jedna karta). NA EX len na kartu na konci línie (na ktoromkoľvek z dvoch koncov), najďalej od Kostola.</td></tr>
-          <tr><td>Benzínka</td><td>Pitka</td><td>Prvé fajčenie každého hráča v každej Pitke je zadarmo, ďalšie stojí 2, potom 3.</td></tr>
+          <tr><td>Benzínka</td><td>Pitka</td><td>Každé fajčenie stojí o 1 cigaretu menej: prvé v Pitke zadarmo, druhé 1, tretie 2…</td></tr>
           <tr><td>Zastávka</td><td>Pitka</td><td>Po prvej Pitke kola si každý vezme zadarmo 1 kartu zo šenku — najprv útočník, potom obranca (z prázdneho šenku nič).</td></tr>
           <tr><td>Lesná cesta</td><td>Bitka</td><td>Za každé tvoje Zviera v línii, v ktoromkoľvek kraji, 2 tuhé navyše.</td></tr>
           <tr><td>Ihrisko</td><td>Bitka</td><td>V každom kraji +2 tuhé tomu, kto tam má viac svojich Občanov, Zvierat a Starešinov (Dvojčatá za dve) — spolu až +4.</td></tr>

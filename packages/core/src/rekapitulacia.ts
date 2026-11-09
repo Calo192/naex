@@ -11,6 +11,7 @@ import type { GameData } from "./data.ts";
 import type { BitkaNaNastenke, Event, RozpisPoskodenia } from "./engine.ts";
 import type { ActionSums, LineEval, LineState, ZdrojAkcie } from "./partia.ts";
 import { evaluateLine } from "./partia.ts";
+import { sDlhmiPoradkyne } from "./effects.ts";
 import type { Action, PlayerId } from "./types.ts";
 
 type Dvojica = readonly [number, number];
@@ -446,8 +447,9 @@ export function rekapitulaciaPitky(data: GameData, v: VstupRekapitulaciePitky): 
       zisk: v.cigarety,
     },
     vizia: dvojica((p) => nula(sums[p].Vízia)),
-    // Dlh a pečeň ukazujú prírastky z kariet na stole (Liberál, Veterinár, Manželka ich menia).
-    akcie: akcieRekapitulacie(v.linia, AKCIE_PITKY, (p, a) =>
+    // Dlh a pečeň ukazujú prírastky z kariet na stole (Liberál, Veterinár, Manželka ich menia);
+    // Dlh Finančnej poradkyne pri súperovi, ktorému ho Pitka pripísala.
+    akcie: akcieRekapitulacie(sDlhmiPoradkyne(data, v.line, v.linia), AKCIE_PITKY, (p, a) =>
       a === "Dlh" ? v.zadlzenieZoStola[p] : a === "PoškodeniePečene" ? v.poskodeniePecene[p] : a === "Poldeci" ? v.poldeci[p] : nula(sums[p][a]),
     ),
   };
