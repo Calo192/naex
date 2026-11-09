@@ -1560,7 +1560,7 @@ export function PriebehKola({
               Striedavo vykladáte karty z ruky na hociktorý koniec línie, začína útočník. Limit vykladania = plné poldeci + poldeci na
               stole + 1; každá ďalšia karta v tom istom ťahu stojí plný poldeci.
               <span className="tip-riadok">
-                Kedykoľvek na ťahu: priznať kliatbu (za Cirhózu sa nedoberá; Dlh sa prizná sám pri dobratí), Nástroj do Dedičstva (za cigarety, cena rastie);
+                Kedykoľvek na ťahu: priznať Cirhózu (kartu za ňu nedostaneš, súper za ňu v bitke +1 tuhé), Nástroj do Dedičstva (za cigarety, cena rastie);
                 fajčí sa až v Pitke. Kto pasuje, do Pitky už nevykladá a dostane cigaretu za každú kartu, ktorú ešte smel
                 vyložiť, najviac toľko, koľko má kariet v ruke. Končí, keď obaja vyčerpajú limit alebo pasujú.
               </span>

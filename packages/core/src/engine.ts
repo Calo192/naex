@@ -3093,7 +3093,7 @@ function preskolPriSpoji(data: GameData, spustac: "Konflikt" | "Podpora", nosite
   const jeho = defOf(data, druha.card as CardInstance);
   // Zápis ostáva aj bez akcie X (nič nemení), log len pri skutočnej zmene — hráč by čakal premenu, ktorá nenastala.
   const vytlacene = printedSides(data, druha.card as CardInstance);
-  const akcie = new Set<string>([...vytlacene.left, ...vytlacene.right, ...efektyNavyse(jeho).flatMap((e) => e.akcie)]);
+  const akcie = new Set<string | null>([...vytlacene.left, ...vytlacene.right, ...efektyNavyse(jeho).flatMap((e) => e.akcie)]);
   const co = nove
     .slice(pred)
     .filter((p) => akcie.has(p.z))

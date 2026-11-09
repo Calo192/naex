@@ -243,6 +243,13 @@ async function pripoj(): Promise<Spojenie> {
 let DATA: GameData;
 const meno = (defId: string): string => DATA.cards.get(defId)?.name ?? defId;
 
+/** Koniec línie, kde ležia karty strany p — konce nepatria hráčom (Michal 2026-11-08), menujú sa krajom lokality. */
+function koniecLinie(v: ClientState, p: PlayerId): string {
+  const kraj = krajeStran(DATA, v.ciel?.lokalita ?? null, v.lokalitaOtocena)[p];
+  const kde = p === v.ja ? "vľavo" : "vpravo";
+  return kraj === null ? `koniec línie ${kde}` : `koniec línie ${kde} (kraj „${kraj}“)`;
+}
+
 function strany(karta: CardInstance): { left: string[]; right: string[] } {
   const s = printedSides(DATA, karta);
   const f = (a: readonly (string | null)[]) => a.map((x) => x ?? "—");
@@ -371,7 +378,7 @@ function cenaNaexText(v: ClientState, uid: number): string {
   const odpoved =
     odp === null
       ? ""
-      : `, po najhoršej možnej odpovedi súpera až ${odp.damage.tuhe[ja]}:${odp.damage.tuhe[su]} (napr. ${meno(odp.karta.defId)} na koniec ${odp.strana === ja ? "tvojej" : "jeho"} strany; jeho ruku nevidíš)`;
+      : `, po najhoršej možnej odpovedi súpera až ${odp.damage.tuhe[ja]}:${odp.damage.tuhe[su]} (napr. ${meno(odp.karta.defId)} na ${koniecLinie(v, odp.strana)}; jeho ruku nevidíš)`;
   const limitPo = limitBuduceKolo(n.odkrytie.view, ja, false, DATA);
   const limitBez = limitBuduceKolo(sMojimiSkrytymiNaex(DATA, v), ja, false, DATA);
   const limit = `; v ďalšom kole limit ${limitPo === limitBez ? `ostane ${limitBez}` : `${limitPo} namiesto ${limitBez}`}`;
@@ -543,9 +550,9 @@ function vykresli(v: ClientState, mena: readonly string[]): string {
         "vonkajšia hrana",
       ]),
     );
-  // Záverečná súpera (roadmapa #83): leží lícom dole na konci strany, nevieš čo to je.
+  // Záverečná súpera (roadmapa #83): leží lícom dole na konci línie, nevieš čo to je.
   for (const z of vs.zaverecne.filter((x) => x.majitel !== ja))
-    out.push(`  [SÚPEROVA ${z.odpoved === true ? "ODPOVEĎ NA NA EX" : "ZÁVEREČNÁ"} lícom dole na konci ${z.strana === ja ? "tvojej" : "súperovej"} strany${z.naexBy !== null ? `, NA EX: ${kto(z.naexBy)}${skryteText(z.uid)}` : ""} — nevieš, čo to je, ráta sa do bitky (v súčtoch nižšie chýba); za ňu sa nedá priložiť, ${z.odpoved === true ? "otočí sa spolu s odpoveďou druhého hráča, pred vyhodnotením Pitky" : "otočí sa na konci Pitky"}]`);
+    out.push(`  [SÚPEROVA ${z.odpoved === true ? "ODPOVEĎ NA NA EX" : "ZÁVEREČNÁ"} lícom dole — ${koniecLinie(v, z.strana)}${z.naexBy !== null ? `, NA EX: ${kto(z.naexBy)}${skryteText(z.uid)}` : ""} — nevieš, čo to je, ráta sa do bitky (v súčtoch nižšie chýba); za ňu sa nedá priložiť, ${z.odpoved === true ? "otočí sa spolu s odpoveďou druhého hráča, pred vyhodnotením Pitky" : "otočí sa na konci Pitky"}]`);
 
   const sumy = (p: PlayerId) => Object.entries(lineEval.sums[p]).map(([a, n]) => `${a} ${n}`).join(", ") || "nič";
   out.push(`Tvoje aktívne akcie (tvoja partia + akcie lokality, ktoré aktivuje tvoja karta): ${sumy(ja)}`);
@@ -790,7 +797,7 @@ function popisVylozenia(v: ClientState, k: CardInstance, kam: "vlastna" | "super
 const POPIS_CIELA: Record<string, string> = {
   vlastna: "na koniec línie vľavo",
   superova: "na koniec línie vpravo (karta je tvoja na oboch koncoch, natočená k tebe)",
-  priznanie: "priznať — kliatba je NAVŽDY mimo balíčka (čistí ho) a hneď si dobereš kartu (za Cirhózu nie; Dlh sa prizná sám, keď si ho dobereš); nemíňa limit a neodovzdá ťah (môžeš priznať viac kliatob za sebou a potom ešte vyložiť); priznaný Dlh sa ráta k Exekútorovi a súperovým Poverám",
+  priznanie: "priznať Cirhózu — je NAVŽDY mimo balíčka (čistí ho) a na konci hry nestojí 3 špaky, ale súper za ňu v bitke dostane +1 tuhé; kartu za ňu nedostaneš; nemíňa limit a neodovzdá ťah (môžeš priznať viac Cirhóz za sebou a potom ešte vyložiť)",
   dedicstvo: "do Dedičstva — pasívny efekt Nástroja platí, kým tam leží (cena vyššie, rastie pre oboch)",
 };
 
@@ -897,7 +904,7 @@ function moznosti(v: ClientState): string[] {
     }
     case "zhromazdenie": {
       const z = v.zhromazdenieStav;
-      c({ type: "pass" }, `pasovať (do Pitky už nevykladáš, súper vykladá sám; dostaneš ${cigaretyZaPas(DATA, v, ja, v.hraci[ja].rukaPocet)} cig. — cigaretu za každú kartu, ktorú si ešte smel vyložiť, najviac toľko, koľko máš kariet v ruke; na Zastávke len z vlastného limitu)`);
+      c({ type: "pass" }, `pasovať (do Pitky už nevykladáš, súper vykladá sám; dostaneš ${cigaretyZaPas(DATA, v, ja, v.hraci[ja].rukaPocet)} cig. — cigaretu za každú kartu, ktorú si ešte smel vyložiť, najviac toľko, koľko máš kariet v ruke)`);
       // V Zhromaždení sa nefajčí (§7) — motor smoke odmietne, preto ho ani neponúkať.
       if (zakazVypit(v)) out.push("(Kostol: nikto nesmie vypiť — v ťahu len jedna karta)");
       if (v.hraci[ja].poldeciPlne > 0 && z !== null && !zakazVypit(v)) {
@@ -965,7 +972,7 @@ function moznosti(v: ClientState): string[] {
         out.push(
           kraj === null
             ? `(Odpoveď ide LÍCOM DOLE — súper ju neuvidí, kým neodpovie aj on${v.utocnik === ja ? "; obranca potom smie len na druhý kraj línie" : ""}. Obe sa otočia naraz a Pitka sa vyhodnotí.)`
-            : `(Súper odpovedal lícom dole na koniec ${kraj === ja ? "tvojej" : "svojej"} strany — ty smieš len na druhý kraj línie. Potom sa obe otočia naraz.)`,
+            : `(Súper odpovedal lícom dole na ${koniecLinie(v, kraj)} — ty smieš len na druhý koniec línie. Potom sa obe otočia naraz.)`,
         );
         c({ type: "bezReakcie" }, "na súperovo NA EX neodpovedať (v tejto Pitke už neodpovedáš)");
         for (const k of v.ruka) {
@@ -1095,7 +1102,7 @@ function moznosti(v: ClientState): string[] {
           const co =
             krok === "prebytok"
               ? `ZAJATIE ${meno(e?.karta.defId ?? id)} (väzeň ${n.mojichVaznov}/${n.vazniNaVyhru}${n.vyhra ? " — VÝHRA VÄZŇAMI HNEĎ" : ""}, súper ti odovzdá ${spakov(n.kradez)})`
-              : `PRESVEDČENIE ${meno(e?.karta.defId ?? id)} (jeho karta do tvojej ruky a balíčka, tvoje reči pri ňom zaniknú)`;
+              : `PRESVEDČENIE ${meno(e?.karta.defId ?? id)} (jeho karta do tvojej ruky a balíčka; reči, strach oboch aj priazeň ostávajú)`;
           c(plan.prikaz, `${co}; zvyšok: ${popisRozdelenia(v, marker, navrhA.zdvihy, plan.cena, plan.zvysok)}`);
         }
         if (ponuka.length === 0) out.push("(Body nestačia na žiadny stupeň — počkaj, server ich nechá prepadnúť.)");
