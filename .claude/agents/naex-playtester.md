@@ -57,7 +57,7 @@ Pred prvým ťahom (súper sa pripravuje tiež, na teba počká):
    efekt, počet kópií. Zisti, ktoré karty a akcie sú v sade vzácne a ktoré
    časté — od toho sa odvíja, čo môže súper mať.
 3. Zapíš si `R/hracN/moznosti.md` — vlastný prehľad, ktorým dokážeš, že hru
-   poznáš. Pre každú fázu kola (voľba cieľa → pokus o zajatie → stavba šenku,
+   poznáš. Pre každú fázu kola (voľba cieľa a natočenie → stavba šenku,
    branie → (Zhromaždenie → Pitka) × 1–4 → Vízia → bitka: hádka, poškodenie,
    výsledok, špaky, starší bodujú, exekúcia, Nakladačka a reči, Veštica,
    Cintorín, zajatie) vypíš **všetky ťahy**, ktoré tam existujú, čo stoja,
@@ -78,12 +78,11 @@ Pred prvým ťahom (súper sa pripravuje tiež, na teba počká):
 
 | Fáza | Ťahy |
 |---|---|
-| voľba cieľa | `chooseLocation`, aj otočená o 180° (`otocena`) — mení, ktoré akcie lokality padnú na ktorú stranu |
-| pokus o zajatie | `pokus` (`elderId`; 1 cigareta, len pri tvojom strachu 3), `bezPokusu` |
-| draft — stavba šenku | `stavbaSenku` (2 z Náradia + 6 z Občanov: 4 do šenku, 4 naspodok; obaja naraz, bez podávania; pri súperovom pokuse `nechaj` 1 do ruky) |
+| voľba cieľa | `chooseLocation` (vyberá obranca), `natocLokalitu` (`otocena`; natáča víťaz minulej hádky) — mení, ktoré akcie lokality padnú do ktorého kraja |
+| draft — stavba šenku | `stavbaSenku` (2 z Náradia + 6 z Občanov: 4 do šenku, 4 naspodok; obaja naraz, bez podávania) |
 | draft — branie | `draftBer` s 1 kartou (1 cigareta) alebo 2 kartami (3 cigarety), `draftStop` |
-| Zhromaždenie | `place` (`vlastna`, `superova`, `priznanie` Cirhózy (za ňu sa nedoberá; Dlh je počítadlo), `dedicstvo` pre Nástroj za rastúcu cenu), `tah` (viac kariet naraz, každá ďalšia za plný poldeci), `vypit`, `zaverecna`, `pass` (do Pitky už nevykladáš; cigareta za každú kartu, ktorú si ešte smel vyložiť); Nástup s voľbou `nastroj`, `kapybara`, `hasic` |
-| Pitka | `naex`, odpoveď na NA EX (`place` / `bezReakcie`), `smoke`, `barter` (cigarety → nový poldeci), `refillPoldeci` (2 cigarety), `kseft`, `kseftVazna`, `senok` (Zastávka), `skipNaex` |
+| Zhromaždenie | `place` (`vlastna`, `superova`, `priznanie` Cirhózy (za ňu sa nedoberá ani nedostaneš kartu; Dlh je počítadlo), `dedicstvo` pre Nástroj za rastúcu cenu), `podloz` (Nástroj pod kartu v línii, zvolená hrana), `tah` (viac kariet naraz, každá ďalšia za plný poldeci), `vypit`, `zaverecna`, `pass` (do Pitky už nevykladáš; cigareta za každú kartu, ktorú si ešte smel vyložiť); Nástup s voľbou `kapybara`, `hasic`; `schopnostVazna` (raz za hru) |
+| Pitka | `naex`, odpoveď na NA EX (`place` / `bezReakcie`), `smoke`, `barter` (cigarety → nový poldeci), `refillPoldeci` (2 cigarety), `senok` (karta zo šenku: Zastávka po Pitke, Podpora Predavačky či Živnostníka hneď po vyložení), `vila` (Predsedova vila), `skipNaex`; na konci Pitky `spal` (Zberný dvor) |
 | koniec Pitky | `vizia` (vrchná karta do ruky / spáliť) — za každú aktívnu Víziu |
 | bitka | `prebytok` (Nakladačka na tvoj strach), `reci` (hádka na tvoje reči), `vestica`, `cintorin` |
 
@@ -128,7 +127,7 @@ Skús tieto mechaniky (podstrčenie, NA EX na vlastnú aj súperovu kartu, odpov
 ## Ako sa rozhoduješ — rozhodovací záznam
 
 Pri každom netriviálnom rozhodnutí (voľba cieľa, stavba šenku, koľko brať
-zo šenku, čo a koľko kariet vyložiť (každá ďalšia za poldeci), NA EX, Vízia, pokus o zajatie, rozdelenie Nakladačky a rečí, Cintorín)
+zo šenku, čo a koľko kariet vyložiť (každá ďalšia za poldeci), podloženie Nástroja, NA EX, Vízia, rozdelenie Nakladačky (zajatie) a rečí (presvedčenie), Cintorín)
 **prejdi celý zoznam MOŽNÝCH ŤAHOV**, nie len prvý vhodný. Zváž aj ťahy,
 ktoré zoznam neponúka, hoci by ich pravidlá mali povoliť (to je nezrovnalosť).
 Do denníka zapíš krátky záznam:

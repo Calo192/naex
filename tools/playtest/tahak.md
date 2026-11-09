@@ -82,9 +82,8 @@ rozpore s `docs/PRAVIDLA.md` platí `docs/PRAVIDLA.md` a rozpor zapíš do
   s nimi spoj: ako prvá karta pri lokalite určuje, ktoré akcie hrany sa
   aktivujú (dostane ich hráč s prevahou). Kraje
   majú mená podľa lokality (Krčma: pri výčape / pri dverách).
-  **Dvojčatá** — do prevahy sa rátajú za dvoch; **Kočovník** (len stará sada; frakcie: Spoločník) — Furt: jeho akcie
-  (aj Rana, Hazard, Poškodenie pečene) sa počítajú hráčovi, ktorý má v jeho kraji
-  prevahu; do prevahy sa ráta majiteľovi, pri rovnosti rozhoduje karta pri lokalite.
+  **Dvojčatá** — do prevahy sa rátajú za dvoch. **Kočovník** (Spoločník: Pamätník, 1 Pecka
+  navyše) — jeho akcie patria majiteľovi ako pri každej karte.
 - **Poradie (2026-10-20, v11.11):** cieľ kola vyberá **obranca** a natáča ho víťaz minulej hádky (obranca = víťaz
   poslednej bitky) a **berie zo šenku prvý (v9.2)**; **útočník** (porazený) berie zo šenku druhý a **vykladá
   prvý**. **Pitka naraz (2026-10-27):** v Pitke hráte **obaja súčasne** —
