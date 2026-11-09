@@ -392,32 +392,96 @@
     {
       "pojem": "Zberný dvor výkup",
       "vzory": [
-        "zbernw* dvorw*[^.!?]{0,80}(?:cigaret|odhadzovac)",
-        "vykupw* zo srot"
+        "zbern\\w* dvor\\w*[^.!?]{0,80}(?:cigaret|odhadzovac)",
+        "vykup\\w* zo srot"
       ],
       "pozn": "frakcie: na Zbernom dvore sa na konci Pitky smie spáliť 1 karta z ruky"
     },
     {
       "pojem": "Kočovník a prevaha",
       "vzory": [
-        "kocovnikw*[^.!?]{0,80}prevah"
+        "kocovnik\\w*[^.!?]{0,80}prevah"
       ],
       "pozn": "frakcie: Kočovník má Spoločník: Pamätník, jeho akcie patria majiteľovi"
     },
     {
       "pojem": "Veštica výmena kariet",
       "vzory": [
-        "vesticw*[^.!?]{0,80}vymen"
+        "vestic\\w*[^.!?]{0,80}vymen"
       ],
       "pozn": "frakcie: Veštica má Spoločník: Pamätník (2 Povery navyše), krok bitky 5b zanikol"
     },
     {
       "pojem": "Pokutový blok Policajtky",
       "vzory": [
-        "pokutovw* blok",
-        "policajtkw*[^.!?]{0,80}zadlzen"
+        "pokutov\\w* blok",
+        "policajtk\\w*[^.!?]{0,80}zadlzen"
       ],
       "pozn": "frakcie: Policajtka má Nepriateľ: Kriminál (Petelica navyše)"
+    },
+    {
+      "pojem": "Nástroj vykladaný do línie",
+      "vzory": [
+        "nastroj\\w* v linii",
+        "vylozi\\w*[^.!?]{0,40}nastroj\\w*[^.!?]{0,30}do linie",
+        "nastroj\\w*[^.!?]{0,60}vedla lokalit",
+        "spoj\\w* s nastroj",
+        "nastroj\\w* vedla (?:kona|nastroj)",
+        "zamocnik\\w*[^.!?]{0,80}posiln"
+      ],
+      "pozn": "Náradie: Nástroj sa do línie nevykladá, podloží sa pod Občana či Starešinu za 1 cigaretu (horná a dolná hrana); Zámočník berie viac Nástrojov, Kôň dovolí podložiť pod Zviera; Dedičstvo ostáva (vo Vypálenej od vypálenia v11.14 2026-11-09)"
+    },
+    {
+      "pojem": "starý Živnostník",
+      "vzory": [
+        "zivnostnik\\w*[^.!?]{0,80}(?:prilozi|nastup|dedicstv|spolocnik|robot)"
+      ],
+      "pozn": "Živnostník: „Podpora: Vezmi si zo šenku 1 Nástroj.“ (vo Vypálenej od vypálenia v11.14 2026-11-09)"
+    },
+    {
+      "pojem": "Predavačka dobratie",
+      "vzory": [
+        "predavack\\w*[^.!?]{0,80}dober",
+        "dober\\w*[^.!?]{0,40}predavack"
+      ],
+      "pozn": "Predavačka: „Podpora: Vezmi si zo šenku 1 Občana.“ (vo Vypálenej od vypálenia v11.14 2026-11-09)"
+    },
+    {
+      "pojem": "Tipér: posilnené ako Hazard a Robota",
+      "vzory": [
+        "tiper\\w*[^.!?]{0,80}posilnen",
+        "posilnen\\w* hazard"
+      ],
+      "pozn": "Profesionálny tipér: „Konflikt: Preškolenie {Cigareta}→{Hazard}.“ (vo Vypálenej od vypálenia v11.14 2026-11-09)"
+    },
+    {
+      "pojem": "Šofér a cigareta, Traktorista inak Dlh",
+      "vzory": [
+        "sofer\\w*[^.!?]{0,80}cigaret",
+        "traktorist\\w*[^.!?]{0,60}inak[^.!?]{0,20}dlh"
+      ],
+      "pozn": "Šofér: Bitka bez NA EX Pecka a Rana navyše, bez cigarety; Traktoristov Dlh až v poslednej Pitke kola (vo Vypálenej od vypálenia v11.14 2026-11-09)"
+    },
+    {
+      "pojem": "Vdova a doberací balíček",
+      "vzory": [
+        "vdov\\w*[^.!?]{0,80}(?:doberac|chlap)"
+      ],
+      "pozn": "Veľmi smútiaca vdova: „Konflikt: Súper odhodí 1 náhodnú kartu z ruky.“ (vo Vypálenej od vypálenia v11.14 2026-11-09)"
+    },
+    {
+      "pojem": "staré efekty kariet pred frakciami",
+      "vzory": [
+        "praudovravc\\w*[^.!?]{0,80}ako posilnen",
+        "stryn\\w*[^.!?]{0,80}nedal",
+        "recidivist\\w*[^.!?]{0,80}(?:vrati|do ruky)",
+        "dievcin\\w*[^.!?]{0,80}spal",
+        "sarlatan\\w*[^.!?]{0,80}ako (?:vier|ran)",
+        "podvodnik\\w*[^.!?]{0,80}(?:cigaret|zadlzen)",
+        "snubenic\\w*[^.!?]{0,80}(?:vrati|vypit)",
+        "ministrant\\w*[^.!?]{0,80}vier"
+      ],
+      "pozn": "frakcie: Praudovravec a Stryná Konflikt Pohoršenie, Recidivista Nepriateľ: Zahraničný, Dievčina Podpora Povera, Šarlatán Spoločník: Autorita, Podvodník Konflikt Obmedzenie, Snúbenica Nepriateľ: Autorita, Miňištrant Spoločník: Zahraničný (vo Vypálenej od vypálenia v11.14 2026-11-09)"
     }
   ],
   "karty": [
