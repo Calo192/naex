@@ -1470,9 +1470,9 @@
     "Pracujúci",
     "Chlap"
    ],
-   "effect_text": "Spoločník: Autorita {Robota}.",
+   "effect_text": "Podpora: Vezmi si zo šenku 1 Nástroj.",
    "triggers": [
-    "Spoločník"
+    "Podpora"
    ],
    "left": {
     "blocked": [
@@ -3944,7 +3944,7 @@
     "Žena",
     "Pracujúci"
    ],
-   "effect_text": "Podpora: Dober si 1 kartu.",
+   "effect_text": "Podpora: Vezmi si zo šenku 1 Občana.",
    "triggers": [
     "Podpora"
    ],

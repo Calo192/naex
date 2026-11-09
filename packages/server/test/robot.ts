@@ -111,10 +111,9 @@ export class Robot {
     if (view.hasicVolba !== null) return { type: "hasic", nechat: true };
     const nv = view.volbaNastupu;
     if (nv !== null && nv.hrac === ja) {
-      // v7: karta zo šenku, Nástroj za Živnostníka (robot nič), Kapybara (v11: prvý starší so súperovými rečami).
-      const zoSenku = view.senok[0];
+      // v7: karta zo šenku (Predavačka a Živnostník len svojho druhu), Kapybara (v11: prvý starší so súperovými rečami).
+      const zoSenku = view.senok.find((k) => nv.tag === undefined || (DATA.cards.get(k.defId)?.tags ?? []).includes(nv.tag));
       if (nv.typ === "senok" && zoSenku !== undefined) return { type: "senok", uid: zoSenku.uid };
-      if (nv.typ === "nastroj") return { type: "nastroj", uid: null };
       const kapybara = view.starsi.find((e) => e.reci[ja === 0 ? 1 : 0] > 0);
       if (nv.typ === "kapybara" && kapybara !== undefined) return { type: "kapybara", elderId: kapybara.elderId };
       // Frakcie (2026-11-08): Zberný dvor — nič nepáli; vila — prvý starší s voľným stupňom.

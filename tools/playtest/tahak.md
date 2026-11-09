@@ -154,8 +154,9 @@ rozpore s `docs/PRAVIDLA.md` platí `docs/PRAVIDLA.md` a rozpor zapíš do
   Nástroja nič; NA EX, zrážka ani presun (Dohadzovačka, Poľovník) nič. Najprv Nástup priloženej karty, potom
   Konflikt a Podpora priloženej, potom ležiacej. **Podpora (v11.3)** je zrkadlo: spustí sa, keď sa priložením
   stretnú **dve tvoje** karty. **Veľmi smútiaca vdova (Konflikt, frakcie):** pri ktorejkoľvek súperovej karte
-  súper odhodí **1 náhodnú kartu z ruky** (vyberie ju hra, nikto nevolí). **Predavačka (Podpora, frakcie):** dober si
-  1 kartu. **Hasič (Podpora, frakcie):** voľba ako predtým, len spúšťač je Podpora namiesto Nástupu.
+  súper odhodí **1 náhodnú kartu z ruky** (vyberie ju hra, nikto nevolí). **Predavačka a Živnostník (Podpora, 2026-11-09):**
+  vezmi si zo šenku zadarmo do ruky 1 Občana (Predavačka), resp. 1 Nástroj (Živnostník) — voľba
+  `{"type":"senok","uid":<uid>}` len z kariet toho druhu; bez takej karty v šenku nič. **Hasič (Podpora, frakcie):** voľba ako predtým, len spúšťač je Podpora namiesto Nástupu.
 - **Pakt (v7, akcia):** na spoji sa správa ako akcia, s ktorou je v páre (aj zlá: Hazard, Pečeň).
   Pakt s Paktom nerobí nič, s Posilnením sa stane Posilnením (= Forsáž), Odpor ho zruší; neaktívny Pakt NA EX nezdvojí.
 - **Forsáž (v10.3):** Posilnenie + Posilnenie na spoji = **Forsáž** — obe karty spoja majú **všetky
@@ -181,7 +182,7 @@ rozpore s `docs/PRAVIDLA.md` platí `docs/PRAVIDLA.md` a rozpor zapíš do
   Karty navyše: šenok, fajčenie (`smoke`: karta hneď, **len v Pitke** (v5), v Zhromaždení
   nie; **prvé fajčenie v Pitke 1 cigareta, druhé 2, tretie 3…**, každá Pitka znova od 1
   (2026-10-27; na Benzínke prvé zadarmo), každá vyfajčená cigareta je nerest (v9.1: druhé fajčenie za 2 = 2 neresti); s prázdnym doberacím aj odhadzovacím balíčkom sa fajčiť
-  nedá), Vízia, efekty (Zastávka, Predavačka). Priznanie Cirhózy kartu nedá. Malý balíček prehru nespôsobí (v5).
+  nedá), Vízia, efekty (zo šenku Zastávka, Predavačka, Živnostník). Priznanie Cirhózy kartu nedá. Malý balíček prehru nespôsobí (v5).
   Keď sa doberací balíček minie, odhadzovací sa zamieša a stane sa z neho nový
   doberací balíček (pri každom ťahaní).
 - **Kliatby (v8.2, 2026-10-30):** **Dlh je počítadlo, nie karta** — vzniká rovno priznaný,
@@ -244,8 +245,7 @@ rozpore s `docs/PRAVIDLA.md` platí `docs/PRAVIDLA.md` a rozpor zapíš do
   **Injekcia — Výtržník** (všetky akcie aktívne Rany pre majiteľa karty), **Vidly — Vzbura** (nespojené
   aktívne, spojené neaktívne). Podložený Nástroj **leží do bitky**, vyhodiť sa nedá; po bitke, alebo keď
   karta odíde z línie skôr (Poľovník), ide do **odhadzovacieho balíčka toho, kto ho podložil**. Podloženie nie
-  je priloženie — Konflikt, Podporu ani Pascu nespustí. **Živnostník** (keď má Nástup): hneď pod neho smieš
-  podložiť Nástroj z ruky za cigaretu, mimo ťahu (`{"type":"nastroj","uid":<uid>,"hrana":"horna"}`).
+  je priloženie — Konflikt, Podporu ani Pascu nespustí.
 - **NA EX na Občana alebo Starešinu v línii — svojho aj súperovho**, len na kartu
   s aspoň 1 aktívnou a aspoň 1 neaktívnou akciou (2026-10-23; súperova Záverečná vždy). Zruší
   karte aktívne akcie a zdvojí neaktívne; akcie sa rátajú majiteľovi karty.

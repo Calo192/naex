@@ -2323,8 +2323,8 @@
         "packages/core/test/skolitelia.test.ts › jedna akcia sa preškolí raz: Nástroj pod kartou → Podpora a Konflikt v poradí spustenia → Furt › Nástroj vyhrá nad Podporou aj Furt; Podpora nad Furt; Furt, keď nič iné",
         "packages/core/test/skolitelia.test.ts › jedna akcia sa preškolí raz: Nástroj pod kartou → Podpora a Konflikt v poradí spustenia → Furt › Podpora a Konflikt v poradí spustenia — prvá vyhrá",
         "packages/core/test/skolitelia.test.ts › jedna akcia sa preškolí raz: Nástroj pod kartou → Podpora a Konflikt v poradí spustenia → Furt › nereťazí sa: Rana → Pecka a Pecka → Rana dajú z Rany Pecku a z Pecky Ranu",
-        "packages/core/test/skolitelia.test.ts › preškolenie mení aj akcie navyše dotknutej karty; Nástroj len hrany (§12) › Živnostník (Spoločník: Autorita {Robota}) vedľa Vedúcka: Robota navyše je Pecka — v súčtoch aj v pečati",
-        "packages/core/test/skolitelia.test.ts › preškolenie mení aj akcie navyše dotknutej karty; Nástroj len hrany (§12) › Fúrik dolnou hranou ({Robota}→{Hazard}) pod Živnostníkom: hrany Hazard, Robota navyše od Vedúcka Pecka",
+        "packages/core/test/skolitelia.test.ts › preškolenie mení aj akcie navyše dotknutej karty; Nástroj len hrany (§12) › Opatrovateľka (Spoločník: Pamätník {Robota}) vedľa Vedúcka: Robota navyše je Pecka — v súčtoch aj v pečati",
+        "packages/core/test/skolitelia.test.ts › preškolenie mení aj akcie navyše dotknutej karty; Nástroj len hrany (§12) › Fúrik dolnou hranou ({Robota}→{Hazard}) pod Opatrovateľkou: hrany Hazard, Robota navyše od Vedúcka Pecka",
         "packages/core/test/skolitelia.test.ts › Podpora — tvoja karta, s ktorou sa Školiteľ stretne priložením, do konca kola (Sypač, Anonymný alkoholik) › každé spustenie ďalšia karta; tá istá dvojica druhý raz nič nové; náhľad (sPrilozenou) vidí to isté ako motor"
       ]
     },

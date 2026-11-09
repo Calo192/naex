@@ -49,7 +49,7 @@ import type {
   ZobrataVerejne,
   Zdvih,
 } from "@naex/core";
-import { prveFajcenieZadarmo, opisReci, sReciNizsie, sRadom, ktoNatacaLokalitu, odhadSpakovKola, type StavOdhadu, riadkyCakajuceho, riadkyCakajucichPoldeci, KONSTANTY, jeCoTahat, jeFinaleNaNastenke, cigaretyZaPas, spakov, efektyPrehry, hrozbaKliatob, mozeEsteNaex, textHrozbyKliatob, textyEfektovPrehry, cenaKliatby, battleOutcome, prebytokNaRozdelenie, nahladPitky, pocet, tvar, vyhladDlhov, evaluateLine, efektyNavyse, pocitadloBitky, pitkaPredBitkou, hrozbaNaex, krokStavby, planVykladania, barterCena, limitBuduceKolo, limitZhromazdenia, lineState, nahladZajatia, prevahaStran, krajeStran, dovodZakazuFajcit, defOf, jednotaZakazuje, cenaFajceniaHraca, naexLimitMinuty as naexLimitMinutyHraca, sMojimiSkrytymiNaex, sPrilozenou, vystrahaPecene, nahladNaexNaKartu, najhorsiaOdpovedNaNaex, cenaTahu, nahladVylozenia, moznostiNaexVPohlade, zablokovaneStrany, NASTROJ_DO_LINIE, favourStarsieho, krokRozdelenia, cieleOdpovede, maxZoSenku, bodyRozdelenia, printedSides, poskodenieBitky, rozpisPoskodenia, prahyHraca, scorecardStarsieho, stavKraja, stavkaBitky, stavZavislosti, stranyLokality, vidiVolbuSupera, hraVPitke, cakaSBzdochou, opponentOf, majitelPresvedcenej, moznostiAkcie, cenaAkcieUplna, zdvihyPreAkcie, navrhRozdelenia, pohladPoRozdeleni, priazenHraca, priazenSila, pultStarsich, spakyTeraz, NAZVY_ZON, reciNizsie, vazniNaVyhru } from "@naex/core";
+import { prveFajcenieZadarmo, opisReci, sReciNizsie, sRadom, ktoNatacaLokalitu, odhadSpakovKola, type StavOdhadu, riadkyCakajuceho, riadkyCakajucichPoldeci, KONSTANTY, jeCoTahat, jeFinaleNaNastenke, cigaretyZaPas, spakov, efektyPrehry, hrozbaKliatob, mozeEsteNaex, textHrozbyKliatob, textyEfektovPrehry, cenaKliatby, battleOutcome, prebytokNaRozdelenie, nahladPitky, pocet, tvar, vyhladDlhov, evaluateLine, efektyNavyse, pocitadloBitky, pitkaPredBitkou, hrozbaNaex, krokStavby, planVykladania, barterCena, limitBuduceKolo, limitZhromazdenia, lineState, nahladZajatia, prevahaStran, krajeStran, dovodZakazuFajcit, defOf, jednotaZakazuje, ponukaSenku, cenaFajceniaHraca, naexLimitMinuty as naexLimitMinutyHraca, sMojimiSkrytymiNaex, sPrilozenou, vystrahaPecene, nahladNaexNaKartu, najhorsiaOdpovedNaNaex, cenaTahu, nahladVylozenia, moznostiNaexVPohlade, zablokovaneStrany, NASTROJ_DO_LINIE, favourStarsieho, krokRozdelenia, cieleOdpovede, maxZoSenku, bodyRozdelenia, printedSides, poskodenieBitky, rozpisPoskodenia, prahyHraca, scorecardStarsieho, stavKraja, stavkaBitky, stavZavislosti, stranyLokality, vidiVolbuSupera, hraVPitke, cakaSBzdochou, opponentOf, majitelPresvedcenej, moznostiAkcie, cenaAkcieUplna, zdvihyPreAkcie, navrhRozdelenia, pohladPoRozdeleni, priazenHraca, priazenSila, pultStarsich, spakyTeraz, NAZVY_ZON, reciNizsie, vazniNaVyhru } from "@naex/core";
 import type { Moment, ActionSums, DopadyNahladu, KliatbyNahladu, NahladNaexNaKartu, PrebytokNahladu, NahladVylozenia, PolozkaVykladania, Rod, Slot, StranaLinie, VystrahaPecene } from "@naex/core";
 import type { KtoraHrana, MoznostPodlozenia, PodlozenyNastroj } from "@naex/core";
 import { aktivnaHrana, dovodNepodlozenia, hranyNastroja, ponukaPodlozenia, ucinkyNastrojov } from "@naex/core";
@@ -179,6 +179,13 @@ const ODHALENIE_MS = 2200;
 const PORADIE = "poradie:";
 /** Cieľ ťahania: karta v línii, pod ktorú sa Nástroj zasunie (Náradie 2026-11-08). */
 const PODLOZIT = "podlozit:";
+
+/** Pokyn voľby karty zo šenku podľa karty, ktorá ju dala (Zastávka nemá zdroj). */
+function textVolbySenku(zdroj: string | undefined): string {
+  if (zdroj === "predavacka") return "Predavačka — vezmi si zo šenku Občana do ruky.";
+  if (zdroj === "zivnostnik") return "Živnostník — vezmi si zo šenku Nástroj do ruky.";
+  return "Vyber si kartu zo šenku do ruky.";
+}
 
 /**
  * Čo netreba mať na stole stále — otvára sa ako vrstva cez obrazovku.
@@ -1110,6 +1117,7 @@ export function HernaPlocha({
   const hJa = view.hraci[ja];
   const limitTeraz = limitZhromazdenia(view, ja);
   const zoSenkuLimit = kolkoMozemBrat;
+  const mojaVolbaSenku = view.volbaNastupu?.typ === "senok" && view.volbaNastupu.hrac === ja ? view.volbaNastupu : null;
   // Keď hráč má vyberať kartu zo šenku (Starosta) či Vešticu, vrstva sa otvorí
   // sama. Raz za fázu — ak ju zavrie, znova sa nevnucuje. Cieľ kola sa vyberá
   // na stole (Michal 2026-10-19), nie vo vrstve.
@@ -3915,7 +3923,7 @@ export function HernaPlocha({
       };
     }
     if (view.volbaNastupu !== null && view.volbaNastupu.hrac === ja) {
-      // Voľby v7 čakajú ako Hasič: karta zo šenku (Zastávka), Nástroj za Živnostníka, Kapybara.
+      // Voľby v7 čakajú ako Hasič: karta zo šenku (Zastávka, Predavačka, Živnostník), Kapybara.
       const nv = view.volbaNastupu;
       if (nv.typ === "dvor") {
         // Frakcie (2026-11-08): Zberný dvor — spáliť 1 kartu z ruky, nie kliatbu.
@@ -3951,26 +3959,21 @@ export function HernaPlocha({
           ),
         };
       }
-      if (nv.typ === "senok" || nv.typ === "nastroj") {
-        const zoSenku = nv.typ === "senok";
-        const ponuka = zoSenku ? view.senok : view.ruka.filter((k) => defOf(data, k).tags.includes("Nástroj"));
+      if (nv.typ === "senok") {
+        // Podpora Predavačky (len Občan) a Živnostníka (len Nástroj) ponúka len kartu toho druhu.
+        const ponuka = ponukaSenku(data, view, nv);
         return {
-          nadpis: zoSenku ? "Karta zo šenku" : "Živnostník",
+          nadpis: nv.zdroj === "predavacka" ? "Predavačka" : nv.zdroj === "zivnostnik" ? "Živnostník" : "Karta zo šenku",
           text: (
             <span className="vizia-text">
-              <span>{zoSenku ? "Vyber si kartu zo šenku do ruky." : "Smieš za Živnostníka hneď priložiť Nástroj z ruky — limit nemíňa."}</span>{" "}
+              <span>{textVolbySenku(nv.zdroj)}</span>{" "}
               {ponuka.map((k) => (
                 <span key={k.uid} className="vizia-karta">
-                  {karta({ karta: k, sirka: 72, onClick: () => posli(zoSenku ? { type: "senok", uid: k.uid } : { type: "nastroj", uid: k.uid }) })}
+                  {karta({ karta: k, sirka: 72, onClick: () => posli({ type: "senok", uid: k.uid }) })}
                 </span>
               ))}
             </span>
           ),
-          ...(zoSenku
-            ? {}
-            : naSirku
-              ? { druha: <button onClick={() => posli({ type: "nastroj", uid: null })}>bez Nástroja</button> }
-              : { vpravo: <button className="pecat pecat-tichy" onClick={() => posli({ type: "nastroj", uid: null })}>bez Nástroja</button> }),
         };
       }
       return {
@@ -6450,7 +6453,9 @@ export function HernaPlocha({
         <VrstvaPanel
           nazov={`Šenok · ${view.senok.length}`}
           pozn={
-            zoSenkuLimit > 0
+            mojaVolbaSenku !== null
+              ? textVolbySenku(mojaVolbaSenku.zdroj)
+              : zoSenkuLimit > 0
               ? `klikni na ${zoSenkuLimit === 1 ? "kartu" : `0–${zoSenkuLimit} kariet`} — vybrané idú do ruky`
               : `Náradie ${view.naradiePocet} · Občania ${view.obcaniaPocet}`
           }
@@ -6480,13 +6485,17 @@ export function HernaPlocha({
             {radSenkuSTienmi(view.senok, (k) => {
               const z: Zdroj = { karta: k, odkial: "senok", navrh: false };
               const vybrana = zoSenku.some((x) => x.uid === k.uid);
+              // Predavačka a Živnostník (Podpora) dovolia len kartu svojho druhu — ostatné sú zosivené.
+              const mimoPonuky = mojaVolbaSenku !== null && !ponukaSenku(data, view, mojaVolbaSenku).some((x) => x.uid === k.uid);
               const props = {
                 karta: k,
                 sirka: SIRKA_VO_VRSTVE,
                 vybrana,
                 onClick:
-                  view.volbaNastupu?.typ === "senok" && view.volbaNastupu.hrac === ja
-                    ? () => posli({ type: "senok", uid: k.uid })
+                  mojaVolbaSenku !== null
+                    ? mimoPonuky
+                      ? undefined
+                      : () => posli({ type: "senok", uid: k.uid })
                     : zoSenkuLimit > 0
                       ? () => prepniZoSenku(k.uid)
                       : undefined,
@@ -6495,6 +6504,7 @@ export function HernaPlocha({
                 obsah: vybrana ? karta(props) : tahatelna(z, karta(props)),
                 zdroj: z,
                 odstran: vybrana ? () => prepniZoSenku(k.uid) : undefined,
+                trieda: mimoPonuky ? "mimo-ponuky" : undefined,
               });
             }, SIRKA_VO_VRSTVE)}
           </div>

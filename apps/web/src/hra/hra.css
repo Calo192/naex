@@ -10382,3 +10382,9 @@ button.pecat.kseft-pod-tlacidlo.ne:hover {
   outline: 2px dashed var(--akcent);
   outline-offset: 2px;
 }
+
+/* Voľba zo šenku len jedného druhu (Predavačka Občan, Živnostník Nástroj): ostatné karty zosivené. */
+.mimo-ponuky .kl {
+  opacity: 0.38;
+  filter: grayscale(0.85);
+}

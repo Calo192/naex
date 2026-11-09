@@ -68,6 +68,7 @@ import {
   cieleOdpovede,
   cieleVykladania,
   ponukaPodlozenia,
+  ponukaSenku,
   skoncilVykladanie,
   popisPodlozenych,
   cielLokalitaId,
@@ -798,7 +799,7 @@ function moznosti(v: ClientState): string[] {
   const su = (ja === 0 ? 1 : 0) as PlayerId;
   const nv = v.volbaNastupu;
   if (nv !== null && nv.hrac === ja) {
-    // Voľby v7: karta zo šenku (Zastávka), Nástroj za Živnostníka, Kapybara; frakcie (2026-11-08): Zberný dvor, vila.
+    // Voľby v7: karta zo šenku (Zastávka, Predavačka, Živnostník), Kapybara; frakcie (2026-11-08): Zberný dvor, vila.
     if (nv.typ === "dvor") {
       c({ type: "spal", uid: null }, "ZBERNÝ DVOR: nič nepáliť");
       for (const k of v.ruka) if (!(DATA.cards.get(k.defId)?.tags ?? []).includes("Kliatba")) c({ type: "spal", uid: k.uid }, `ZBERNÝ DVOR: spáľ z ruky ${popisKarty(k)} — navždy z hry, tenší balíček`);
@@ -816,18 +817,9 @@ function moznosti(v: ClientState): string[] {
       return out;
     }
     if (nv.typ === "senok") {
-      for (const k of v.senok) c({ type: "senok", uid: k.uid }, `ZO ŠENKU: vezmi si ${popisKarty(k)} do ruky`);
-      return out;
-    }
-    if (nv.typ === "nastroj") {
-      c({ type: "nastroj", uid: null }, "ŽIVNOSTNÍK: Nástroj pod neho nepodkladať");
-      const line = lineState(v);
-      const zivnostnici = new Set([...v.strany[0], ...v.strany[1]].filter((pl) => pl.card.defId === "zivnostnik" && pl.playedBy === ja).map((pl) => pl.card.uid));
-      for (const k of v.ruka) {
-        for (const m of ponukaPodlozenia(DATA, line, k)) {
-          if (zivnostnici.has(m.hostitel) && m.maCoRobit) c({ type: "nastroj", uid: k.uid, hrana: m.hrana }, `ŽIVNOSTNÍK: podlož pod neho ${popisKarty(k)}, ${m.hrana === "horna" ? "horná" : "dolná"} hrana: ${m.popis} (za ${cigariet(KONSTANTY.CENA_PODLOZENIA)}, mimo ťahu)`);
-        }
-      }
+      // Predavačka ponúka len Občanov, Živnostník len Nástroje (Podpora, 2026-11-09).
+      const kto = nv.zdroj === "predavacka" ? "PREDAVAČKA" : nv.zdroj === "zivnostnik" ? "ŽIVNOSTNÍK" : "ZO ŠENKU";
+      for (const k of ponukaSenku(DATA, v, nv)) c({ type: "senok", uid: k.uid }, `${kto}: vezmi si zo šenku ${popisKarty(k)} zadarmo do ruky`);
       return out;
     }
     // Kapybara (v11): súperove reči pri jednom staršom o stupeň nižšie — povinne, ponúka sa len tam, kde nejaké má.

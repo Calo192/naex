@@ -86,6 +86,8 @@
 //   &hasic=1       v prvom Zhromaždení, keď je hráč ?ja na ťahu, mu dá Hasiča a pár kariet
 //                  do odhadzovacieho balíčka a vyloží ho — stôl ukáže voľbu Hasiča; &hasic=prazdny:
 //                  odhadzovací balíček prázdny, Hasič sa vyloží po načítaní — stôl ukáže hlásenie
+//   &senok=predavacka|zivnostnik  v prvom Zhromaždení, keď je hráč ?ja na ťahu, vyloží kartu k jeho Pijanovi
+//                  a šenok naplní Občanmi, Nástrojmi a Starešinom — stôl ukáže voľbu karty zo šenku (Podpora)
 //   &markery=i:s0.s1.r0.r1,… strach a reči i-teho staršieho (od 0): strach hráča 1 a 2, reči hráča 1 a 2
 //                  (0–3; reči len nad strachom, inak 0) — snímky teplomerov a Pultu
 //   &vazen=i:p,…   i-teho staršieho (od 0) zajme hráč p (0 / 1) — snímka väzňa s pečiatkou (R3)
@@ -205,6 +207,20 @@ function sHasicom(s: GameState, p: PlayerId, prazdny: boolean): { readonly stav:
   return { stav, tah: { type: "place", uid: hasic.uid, target: "vlastna" } };
 }
 
+/** Podpora Predavačky či Živnostníka: karta do ruky, vlastný Pijan na koniec línie a pestrý šenok. */
+function sPodporouSenku(s: GameState, p: PlayerId, defId: string): { readonly stav: GameState; readonly tah: Command } {
+  let uid = s.nextUid;
+  const karta = (id: string): CardInstance => ({ uid: uid++, defId: id, leftLayout: 0, rightLayout: 0 });
+  const nova = karta(defId);
+  const pijan = { card: karta("pijan"), playedBy: p };
+  const senok = ["vandal", "vidly", "veterinar", "masiar", "furik"].map(karta);
+  const h = s.hraci[p];
+  const novy = { ...h, ruka: [...h.ruka, nova] };
+  const strany: GameState["strany"] = p === 0 ? [[...s.strany[0], pijan], s.strany[1]] : [s.strany[0], [...s.strany[1], pijan]];
+  const stav: GameState = { ...s, nextUid: uid, senok, strany, hraci: p === 0 ? [novy, s.hraci[1]] : [s.hraci[0], novy] };
+  return { stav, tah: { type: "place", uid: nova.uid, target: "vlastna" } };
+}
+
 /**
  * Hráčovi p dá Bzdochu do línie (p čaká, kým súper skončí Pitku). Bez `caka` súper
  * dá skryté NA EX a Pitku skončí — p hrá po ňom a vidí ho.
@@ -284,7 +300,7 @@ function sKseftami(s: GameState, p: PlayerId, lok: string, vazni: readonly strin
     ...(pouzite.includes(e.karta.defId) ? { pouzita: true as const } : {}),
   }));
   const sOdh = s.hraci[su].odhadzovaci.length > 0 ? s.hraci[su] : { ...s.hraci[su], odhadzovaci: [{ uid: uid++, defId: "pijan", leftLayout: 0, rightLayout: 0 }, { uid: uid++, defId: "ministrant", leftLayout: 0, rightLayout: 0 }] };
-  // Doberací balíček pre fajčenie a Predavačku — v prvej Pitke býva prázdny.
+  // Doberací balíček pre fajčenie — v prvej Pitke býva prázdny.
   const doberaci = s.hraci[p].doberaci.length > 0 ? s.hraci[p].doberaci : [{ uid: uid++, defId: "pijan", leftLayout: 0, rightLayout: 0 }, { uid: uid++, defId: "masiar", leftLayout: 0, rightLayout: 0 }];
   const h = { ...s.hraci[p], doberaci, cigarety: Math.max(s.hraci[p].cigarety, 9), poldeciPlne: Math.max(s.hraci[p].poldeciPlne, 3), dlhy: Math.max(s.hraci[p].dlhy, 1) };
   const ciel = s.ciel === null || s.ciel.lokalita == null ? s.ciel : { ...s.ciel, lokalita: { ...s.ciel.lokalita, defId: lok } };
@@ -459,7 +475,12 @@ function odohrajSeed(data: GameData, seed: number): { readonly odohrane: Odohran
   const autopasKto = p.get("kto") === "super" ? opponentOf(ja) : ja;
   const exekucia = p.get("exekutor") === "1";
   const hasic = p.get("hasic") === "1" || p.get("hasic") === "prazdny" ? p.get("hasic") : null;
+  const podporaSenku = p.get("senok");
   for (let n = 0; n < 8000 && s.koniec === null; n++) {
+    if ((podporaSenku === "predavacka" || podporaSenku === "zivnostnik") && s.faza === "zhromazdenie" && naTahu(s) === ja) {
+      const x = sPodporouSenku(s, ja, podporaSenku);
+      return najdene({ zaciatok: apply(data, x.stav, x.tah, ja).state, dohraj: [] });
+    }
     if (hasic !== null && s.faza === "zhromazdenie" && naTahu(s) === ja) {
       const x = sHasicom(s, ja, hasic === "prazdny");
       // S prázdnym balíčkom sa Hasič vyloží až na stole, aby hráč videl hlásenie (pečiatku kroku).
@@ -658,10 +679,41 @@ function odohrajSeed(data: GameData, seed: number): { readonly odohrane: Odohran
   return { odohrane: { zaciatok: s, dohraj: [], historia }, najdene: !["zaverecna", "vizia", "vestica", "cintorin", "cigarety-pride", "cigarety-dopad", "poldeci-pride", "poldeci-dopad"].includes(stop) && !(stop === "suhrn" && p.get("rucne") !== null) };
 }
 
+/** Podpora Predavačky a Živnostníka (Michal 2026-11-09) — kým ju admin nezapíše do tvorcu, ukážka ju dá sade len v prehliadači. */
+const TEXTY_PODPORY_SENKU: Readonly<Record<string, string>> = {
+  predavacka: "Podpora: Vezmi si zo šenku 1 Občana.",
+  zivnostnik: "Podpora: Vezmi si zo šenku 1 Nástroj.",
+};
+
+function sadaSPodporouSenku(sada: Sada): Sada {
+  const text = (id: string): string | undefined => TEXTY_PODPORY_SENKU[id];
+  const cards = (sada.cardsJson as { cards: { id: string; effect_text: string; triggers: string[] }[] }).cards.map((c) => {
+    const t = text(c.id);
+    return t === undefined ? c : { ...c, effect_text: t, triggers: ["Podpora"] };
+  });
+  return {
+    ...sada,
+    karty: sada.karty.map((k) => {
+      const t = text(k.id);
+      return t === undefined ? k : { ...k, efekt: t };
+    }),
+    cardsJson: { ...(sada.cardsJson as object), cards },
+  };
+}
+
 export function UkazkaStola() {
   const { sada } = useSada();
   const sadaUkazky = useMemo(
-    () => (sada === null ? sada : q().get("stop") === "skryte" ? sadaSoSkrytymiAkciami(sada) : q().get("stop") === "naradie" ? sadaSNaradim(sada) : sada),
+    () =>
+      sada === null
+        ? sada
+        : q().get("stop") === "skryte"
+          ? sadaSoSkrytymiAkciami(sada)
+          : q().get("stop") === "naradie"
+            ? sadaSNaradim(sada)
+            : q().get("senok") !== null
+              ? sadaSPodporouSenku(sada)
+              : sada,
     [sada],
   );
   if (sadaUkazky === null) return <p className="tlmene">Načítavam sadu…</p>;

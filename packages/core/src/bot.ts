@@ -68,6 +68,7 @@ import {
   vykupneHraca,
   cenaFajceniaHraca,
   ktoNatacaLokalitu,
+  ponukaSenku,
 } from "./engine.ts";
 
 /**
@@ -295,11 +296,13 @@ const BONUS_EFEKTU: Readonly<Record<string, number>> = {
   // Bitka: Pecku a Ranu navyše vidí odhad bitky (cigareta zanikla 2026-11-08).
   sofer: 0.3,
   snubenica: 0.5,
-  zivnostnik: 0.4,
+  // Podpora (2026-11-09): Nástroj zo šenku do ruky — vybraný, nie naslepo.
+  zivnostnik: 0.5,
   velmi_smutiaca_vdova: 0.4,
   niekoho_stryna: 0.3,
   kapybara: 0.4,
   stryko_z_ameriky: 0.5,
+  // Podpora (2026-11-09): Občan zo šenku do ruky — vybraný, nie naslepo z balíčka.
   predavacka: 0.5,
   // Nástup spáli súperovo Zviera — bitku ráta simulácia vyloženia, zvyšok hry SPALENIE_ZA_KARTU.
   polovnik: 0.4,
@@ -1176,9 +1179,9 @@ export function tahBota(data: GameData, stav: GameState, ja: PlayerId, seed: num
   };
   const volba: Volba = { data, state, ja, legal, vzorky, k, nahoda };
 
-  // Voľby, ktoré menia stôl (Kapybara, Nástroj za Živnostníka), si zahrá nanečisto.
+  // Voľby, ktoré menia stôl (Kapybara, Predsedova vila), si zahrá nanečisto.
   const typ = state.hasicVolby?.[0]?.typ;
-  if (typ === "kapybara" || typ === "nastroj" || typ === "vila") return najlepsi(volba, legal, (po) => hodnotaStavu(k, po, 1.5)) ?? prvy;
+  if (typ === "kapybara" || typ === "vila") return najlepsi(volba, legal, (po) => hodnotaStavu(k, po, 1.5)) ?? prvy;
   const cmd = rozhodni(volba);
   return cmd ?? prvy;
 }
@@ -1246,7 +1249,7 @@ function schopnostBota(data: GameData, state: GameState, ja: PlayerId, legal: re
 function volbaHasica(data: GameData, state: GameState): Command | null {
   const volba = state.hasicVolby?.[0];
   if (volba === undefined) return null;
-  if (volba.typ === "kapybara" || volba.typ === "nastroj" || volba.typ === "vila") return null;
+  if (volba.typ === "kapybara" || volba.typ === "vila") return null;
   const ruka = [...state.hraci[volba.hrac].ruka].sort((a, b) => hodnotaKarty(data, a) - hodnotaKarty(data, b));
   if (volba.typ === "dvor") {
     // Zberný dvor: spáli najslabšiu kartu, ktorá nie je kliatba, len keď za veľa nestojí — tenší balíček.
@@ -1254,8 +1257,8 @@ function volbaHasica(data: GameData, state: GameState): Command | null {
     return { type: "spal", uid: slaba !== undefined && hodnotaKarty(data, slaba) < 1 ? slaba.uid : null };
   }
   if (volba.typ === "senok") {
-    // Zastávka: zo šenku najlepšiu kartu.
-    const best = [...state.senok].sort((a, b) => hodnotaKarty(data, b) - hodnotaKarty(data, a))[0];
+    // Zastávka: zo šenku najlepšiu kartu; Predavačka najlepšieho Občana, Živnostník najlepší Nástroj.
+    const best = [...ponukaSenku(data, state, volba)].sort((a, b) => hodnotaKarty(data, b) - hodnotaKarty(data, a))[0];
     return best === undefined ? null : { type: "senok", uid: best.uid };
   }
   const karta = state.hraci[volba.hrac].odhadzovaci.find((k) => k.uid === volba.uid);

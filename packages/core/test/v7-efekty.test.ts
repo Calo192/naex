@@ -399,24 +399,18 @@ describe("Zhromaždenie a Nástup (v7)", () => {
     expect(po.hraci[0].cigarety).toBe(s.hraci[0].cigarety + 2);
   });
 
-  it("Starosta v línii od v9 Nástup nemá; Živnostník (Nástroj pod neho, Náradie 2026-11-08); Anonymný alkoholik od v11.5 Nástup nemá", () => {
+  it("Starosta v línii od v9 Nástup nemá; Živnostník Nástup nemá ani v starej sade (Nástroj pod neho zanikol 2026-11-09); Anonymný alkoholik od v11.5 Nástup nemá", () => {
     const starosta = inst("starosta");
     const s = vZhromazdeni("zastavka", [[], []], [starosta]);
     const po = apply(data, s, { type: "place", uid: starosta.uid, target: "vlastna" }, 0).state;
     expect(legalCommands(data, po, 0).some((c) => c.type === "senok")).toBe(false);
 
+    // Sada pred frakciami (Živnostník s Nástupom) s hranami Nástrojov: voľba Nástroja pod neho už neexistuje.
     const ziv = inst("zivnostnik");
-    const vidly = inst("vidly");
-    const sz = vZhromazdeni("zastavka", [[], []], [ziv, vidly]);
+    const sz = vZhromazdeni("zastavka", [[], []], [ziv, inst("vidly")]);
     const pz = apply(dataH, sz, { type: "place", uid: ziv.uid, target: "vlastna" }, 0).state;
-    expect(legalCommands(dataH, pz, 0)).toContainEqual({ type: "nastroj", uid: vidly.uid, hrana: "horna" });
-    const pn = apply(dataH, pz, { type: "nastroj", uid: vidly.uid, hrana: "horna" }, 0).state;
-    expect(pn.strany[0].map((pl) => pl.card.uid)).toEqual([ziv.uid]);
-    expect(pn.strany[0][0]?.podlozene).toEqual([{ card: vidly, majitel: 0, hrana: "horna" }]);
-    expect(pn.hraci[0].cigarety).toBe(pz.hraci[0].cigarety - 1);
-    expect(pn.zhromazdenieStav?.zostavaLimit[0]).toBe(2);
-    // Bez hrán v sade (stará sada) Živnostník nič neponúkne.
-    expect(apply(data, sz, { type: "place", uid: ziv.uid, target: "vlastna" }, 0).state.hasicVolby ?? []).toEqual([]);
+    expect(pz.hasicVolby ?? []).toEqual([]);
+    expect(legalCommands(dataH, pz, 0).some((c) => (c.type as string) === "nastroj")).toBe(false);
 
     const aa = inst("anonymny_alkoholik");
     const sa = sHracom(vZhromazdeni("zastavka", [[], []], [aa]), 0, { odhadzovaci: [inst("cirhoza"), inst("cirhoza"), inst("masiar")] });

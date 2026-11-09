@@ -376,7 +376,7 @@ export const KAPITOLY: readonly Kapitola[] = [
           </li>
           <li>Záverečné karty sa otočia lícom hore (kapitola <a href="#pokrocile">Pokročilé ťahy</a>).</li>
         </ol>
-        <p className="tlmene">Pitka sama karty nedáva — doberáš si ich fajčením, Víziou a efektmi kariet (Zastávka, Predavačka).</p>
+        <p className="tlmene">Pitka sama karty nedáva — doberáš si ich fajčením a Víziou; kartu zo šenku ti dajú efekty kariet (Zastávka, Predavačka, Živnostník).</p>
         <H3 id="naex">NA EX</H3>
         <p>
           V Pitke, kým ju neskončíš, položíš plný poldeci na kartu v línii s tagom <strong>Občan</strong> alebo{" "}
@@ -831,7 +831,7 @@ export const KAPITOLY: readonly Kapitola[] = [
         <p>
           <P k="nastroj">Nástroj</P> nemíňa limit vykladania a NA EX naň dať nemožno. Nástroj nesmie susediť s Nástrojom a{" "}
           <strong>vedľa lokality sa nevykladá</strong> — do prázdneho kraja, na žiadny koniec línie, ho nevyložíš (v ťahu po Vypiť
-          smie za kartu, ktorú si práve vyložil; za Živnostníka áno). Náradie musí mať kto používať. Spoj s ním vznikne len pri karte s tagom <strong>Občan alebo Starešina</strong>; pri
+          smie za kartu, ktorú si práve vyložil). Náradie musí mať kto používať. Spoj s ním vznikne len pri karte s tagom <strong>Občan alebo Starešina</strong>; pri
           lokalite, karte staršieho či inej karte sa neaktivuje nič.
         </p>
         <p className="zvyraznene">

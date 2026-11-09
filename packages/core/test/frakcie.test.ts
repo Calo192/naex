@@ -16,6 +16,7 @@ import type { CardInstance, Command, GameData, GameState, PlacedCard, PlayerId }
 import {
   apply,
   cardVariants,
+  defOf,
   cenaDedicstva,
   efektyNavyse,
   evaluateLine,
@@ -216,14 +217,12 @@ describe("Podpora a Konflikt s tagom (zápis zo špecifikácie frakcií) — pri
     expect(bez.strany[0].find((pl) => pl.card.uid === pod.uid)?.navyse).toBeUndefined();
   });
 
-  it("Predavačka (Podpora bez tagu): pri vlastnej karte si majiteľ doberie 1 kartu", () => {
+  it("Predavačka so znením zo sady frakcií („Dober si 1 kartu“) ťahá z balíčka ako predtým", () => {
     const pr = inst("predavacka");
     const s = sHracom(zhromazdenie("zastavka", [[lezi(inst("pijan"), 0)], []], [pr]), 0, { doberaci: [inst("vandal")] });
     const po = apply(data, s, { type: "place", uid: pr.uid, target: "vlastna" }, 0).state;
     expect(po.hraci[0].ruka.map((k) => k.defId)).toEqual(["vandal"]);
-    // K súperovej karte nič (Podpora je medzi vlastnými).
-    const su = sHracom(zhromazdenie("zastavka", [[lezi(inst("pijan"), 1)], []], [pr]), 0, { doberaci: [inst("vandal")] });
-    expect(apply(data, su, { type: "place", uid: pr.uid, target: "vlastna" }, 0).state.hraci[0].ruka).toEqual([]);
+    expect(po.hasicVolby ?? []).toEqual([]);
   });
 
   it("Hasič: Podpora namiesto Nástupu — k súperovej karte nič, k vlastnej voľba ako predtým", () => {
@@ -445,5 +444,110 @@ describe("Konflikt bez tagu (Michal 2026-11-08) — karty zo skutočného cards.
     const jehoRuka = [inst("vandal"), inst("masiar"), inst("hasic")];
     const vlastna = sHracom(zhromazdenie("zastavka", [[lezi(inst("pijan"), 0)], []], [vd], sada), 1, { ruka: jehoRuka });
     expect(apply(sada, vlastna, { type: "place", uid: vd.uid, target: "vlastna" }, 0).state.hraci[1].ruka).toHaveLength(3);
+  });
+});
+
+describe("Predavačka a Živnostník: Podpora — karta zo šenku zadarmo do ruky (Michal 2026-11-09)", () => {
+  const sada = loadGameData(cardsJson, eldersJson, scorecardsJson);
+  /** Hráč 0 vyloží `karta` k Pijanovi hráča `susedov`; šenok podľa `senok`. */
+  const vylozenie = (karta: CardInstance, senok: CardInstance[], ruka: CardInstance[] = [], susedov: PlayerId = 0): GameState => ({
+    ...zhromazdenie("zastavka", [[lezi(inst("pijan"), susedov)], []], [karta, ...ruka], sada),
+    senok,
+  });
+  const poloz = (s: GameState, uid: number) => apply(sada, s, { type: "place", uid, target: "vlastna" }, 0);
+  const log = (events: readonly { type: string; text?: string }[], co: string) => events.some((e) => e.type === "log" && e.text?.includes(co) === true);
+
+  it("texty zo sady: Podpora bez tagu, Živnostník už nemá Spoločníka ani Robotu navyše", () => {
+    expect(defOf(sada, { defId: "predavacka" })).toMatchObject({ effectText: "Podpora: Vezmi si zo šenku 1 Občana.", triggers: ["Podpora"] });
+    expect(defOf(sada, { defId: "zivnostnik" })).toMatchObject({ effectText: "Podpora: Vezmi si zo šenku 1 Nástroj.", triggers: ["Podpora"] });
+    expect(efektyNavyse(defOf(sada, { defId: "zivnostnik" }))).toEqual([]);
+  });
+
+  it("Predavačka: zo šenku len Občana (nie Starešinu, Nástroj ani Zviera) — zadarmo do ruky, šenok sa nedopĺňa", () => {
+    const pr = inst("predavacka");
+    const vandal = inst("vandal");
+    const masiar = inst("masiar");
+    const vidly = inst("vidly");
+    const veterinar = inst("veterinar");
+    const kapybara = inst("kapybara");
+    const po = poloz(vylozenie(pr, [vidly, veterinar, vandal, kapybara, masiar]), pr.uid);
+    expect(po.state.hasicVolby).toEqual([expect.objectContaining({ hrac: 0, typ: "senok", tag: "Občan", zdroj: "predavacka" })]);
+    expect(log(po.events, "Predavačka")).toBe(true);
+    expect(legalCommands(sada, po.state, 0)).toEqual([
+      { type: "senok", uid: vandal.uid },
+      { type: "senok", uid: masiar.uid },
+    ]);
+    for (const zla of [vidly, veterinar, kapybara]) expect(() => apply(sada, po.state, { type: "senok", uid: zla.uid }, 0)).toThrow();
+    const vzal = apply(sada, po.state, { type: "senok", uid: masiar.uid }, 0).state;
+    expect(vzal.hraci[0].ruka).toEqual([masiar]);
+    expect(vzal.hraci[0].cigarety).toBe(po.state.hraci[0].cigarety);
+    expect(vzal.senok.map((k) => k.uid)).toEqual([vidly.uid, veterinar.uid, vandal.uid, kapybara.uid]);
+    expect(vzal.hasicVolby ?? []).toEqual([]);
+  });
+
+  it("Živnostník: zo šenku len Nástroj; k súperovej karte nič (Podpora je medzi vlastnými)", () => {
+    const ziv = inst("zivnostnik");
+    const vidly = inst("vidly");
+    const furik = inst("furik");
+    const po = poloz(vylozenie(ziv, [inst("vandal"), vidly, inst("veterinar"), furik]), ziv.uid).state;
+    expect(po.hasicVolby).toEqual([expect.objectContaining({ typ: "senok", tag: "Nástroj", zdroj: "zivnostnik" })]);
+    expect(legalCommands(sada, po, 0)).toEqual([
+      { type: "senok", uid: vidly.uid },
+      { type: "senok", uid: furik.uid },
+    ]);
+    expect(apply(sada, po, { type: "senok", uid: furik.uid }, 0).state.hraci[0].ruka).toEqual([furik]);
+    expect(poloz(vylozenie(ziv, [vidly], [], 1), ziv.uid).state.hasicVolby ?? []).toEqual([]);
+  });
+
+  it("v šenku nie je karta toho druhu: nič sa nestane, log to povie, partia pokračuje", () => {
+    const pr = inst("predavacka");
+    const po = poloz(vylozenie(pr, [inst("vidly"), inst("veterinar")]), pr.uid);
+    expect(po.state.hasicVolby ?? []).toEqual([]);
+    expect(po.state.hraci[0].ruka).toEqual([]);
+    expect(log(po.events, "v šenku nie je Občan")).toBe(true);
+    const ziv = inst("zivnostnik");
+    const pz = poloz(vylozenie(ziv, []), ziv.uid);
+    expect(pz.state.hasicVolby ?? []).toEqual([]);
+    expect(log(pz.events, "v šenku nie je Nástroj")).toBe(true);
+  });
+
+  it("2× Podpora: Predavačka k vlastnej Predavačke — dve voľby; keď prvá vezme posledného Občana, druhá prepadne", () => {
+    const prva = lezi(inst("predavacka"), 0);
+    const pr = inst("predavacka");
+    const vandal = inst("vandal");
+    const masiar = inst("masiar");
+    const s: GameState = { ...zhromazdenie("zastavka", [[prva], []], [pr], sada), senok: [vandal, masiar, inst("vidly")] };
+    const po = poloz(s, pr.uid).state;
+    expect(po.hasicVolby?.map((v) => v.zdroj)).toEqual(["predavacka", "predavacka"]);
+    const jedna = apply(sada, po, { type: "senok", uid: vandal.uid }, 0).state;
+    expect(jedna.hasicVolby).toHaveLength(1);
+    const obe = apply(sada, jedna, { type: "senok", uid: masiar.uid }, 0).state;
+    expect(obe.hraci[0].ruka.map((k) => k.uid)).toEqual([vandal.uid, masiar.uid]);
+    expect(obe.hasicVolby ?? []).toEqual([]);
+
+    const p1 = poloz({ ...s, senok: [vandal, inst("vidly")] }, pr.uid).state;
+    expect(p1.hasicVolby).toHaveLength(2);
+    const r = apply(sada, p1, { type: "senok", uid: vandal.uid }, 0);
+    expect(r.state.hasicVolby ?? []).toEqual([]);
+    expect(log(r.events, "v šenku už nie je Občan")).toBe(true);
+
+    // Ležiaca Predavačka spustí Podporu znova, keď sa k nej priloží ďalšia vlastná karta.
+    const pijan = inst("pijan");
+    const dalsia: GameState = { ...zhromazdenie("zastavka", [[prva], []], [pijan], sada), senok: [masiar] };
+    expect(poloz(dalsia, pijan.uid).state.hasicVolby).toEqual([expect.objectContaining({ zdroj: "predavacka", tag: "Občan" })]);
+  });
+
+  it("viewFor: voľbu (tag aj zdroj) vidia obaja, súper sa o ruke nedozvie nič navyše; bot vezme Občana", () => {
+    const pr = inst("predavacka");
+    const tajna = inst("pijan");
+    const vandal = inst("vandal");
+    const po = poloz(vylozenie(pr, [inst("vidly"), vandal], [tajna]), pr.uid).state;
+    for (const m of [0, 1] as const) expect(viewFor(sada, po, m).volbaNastupu).toEqual({ typ: "senok", hrac: 0, tag: "Občan", zdroj: "predavacka" });
+    const vzal = apply(sada, po, { type: "senok", uid: vandal.uid }, 0).state;
+    const superov = viewFor(sada, vzal, 1);
+    expect(JSON.stringify(superov)).not.toContain(`"uid":${tajna.uid}`);
+    expect(superov.volbaNastupu).toBeNull();
+    // Bot: z ponuky len Občania — Vidly by si nevzal, hoci ležia v šenku prvé.
+    expect(tahBota(sada, po, 0, 5)).toEqual({ type: "senok", uid: vandal.uid });
   });
 });

@@ -7,7 +7,6 @@ import cardsJson from "../data/cards.json";
 import eldersJson from "../data/elders.json";
 import scorecardsJson from "../data/scorecards.json";
 import predFrakciamiJson from "./data/cards-pred-frakciami.json";
-import { sHranami } from "./naradieData.ts";
 import {
   DLZKY_HRY,
   KONSTANTY,
@@ -38,7 +37,6 @@ import type { GameState, Miesto } from "../src/index.ts";
 
 const data = loadGameData(cardsJson, eldersJson, scorecardsJson);
 const stara = loadGameData(predFrakciamiJson, eldersJson, scorecardsJson);
-const staraSHranami = loadGameData(sHranami(predFrakciamiJson), eldersJson, scorecardsJson);
 
 describe("miesta pri stole", () => {
   it("miesta 0 a 1 sú prví členovia tímov — v 1 na 1 je miesto hráč", () => {
@@ -420,22 +418,29 @@ describe("karta „do ruky“ ide tomu, kto efekt spustil (Q4)", () => {
     expect(rukaMiesta(koniec, kap).length).toBe(rukaKapitana);
   });
 
-  it("Živnostník: Nástroj pod neho podloží člen, ktorý ho vyložil, a len zo svojej ruky", () => {
-    // Živnostník s Nástupom je zo sady pred frakciami (2026-11-08); Náradie (2026-11-08): Nástroj sa pod neho podkladá.
-    const data = staraSHranami;
-    const { s, partner } = partnerNaTahu("zivnostnik");
-    const tim = timMiesta(partner);
-    const clen = clenMiesta(partner);
-    const nastroj = karta("vidly", 90003);
-    const hraci = [...s.hraci] as [GameState["hraci"][0], GameState["hraci"][1]];
-    const h = hraci[tim];
-    hraci[tim] = clen === 0 ? { ...h, ruka: [...h.ruka, nastroj] } : { ...h, rukaDruheho: [...(h.rukaDruheho ?? []), nastroj] };
-    const po = apply(data, { ...s, hraci }, { type: "place", uid: 90001, target: "vlastna" }, partner).state;
-    expect(po.hasicVolby?.[0]?.miesto).toBe(partner);
-    expect(legalCommands(data, po, partner)).toContainEqual({ type: "nastroj", uid: 90003, hrana: "horna" });
-    const podlozeny = apply(data, po, { type: "nastroj", uid: 90003, hrana: "horna" }, partner).state;
-    const ziv = [...podlozeny.strany[0], ...podlozeny.strany[1]].find((pl) => pl.card.uid === 90001);
-    expect(ziv?.podlozene).toEqual([{ card: nastroj, majitel: tim, hrana: "horna", miesto: partner }]);
+  it("Predavačka a Živnostník: zo šenku berie člen, ktorý kartu vyložil, a karta ide do jeho ruky", () => {
+    // Podpora (Michal 2026-11-09): k Pijanovi, ktorého vyložil kapitán tímu.
+    for (const [defId, vziat, ina] of [["predavacka", "vandal", "vidly"], ["zivnostnik", "vidly", "vandal"]] as const) {
+      const { s: s0, partner } = partnerNaTahu(defId);
+      const tim = timMiesta(partner);
+      const kap = kapitan(s0, tim);
+      const pijan = { card: karta("pijan", 90004), playedBy: tim, miesto: kap };
+      const dobra = karta(vziat, 90005);
+      const s: GameState = {
+        ...s0,
+        senok: [karta(ina, 90006), dobra],
+        strany: s0.strany.map((st, q) => (q === tim ? [...st, pijan] : st)) as unknown as GameState["strany"],
+      };
+      const po = apply(data, s, { type: "place", uid: 90001, target: "vlastna" }, partner).state;
+      expect(po.hasicVolby?.[0]).toMatchObject({ typ: "senok", zdroj: defId, miesto: partner });
+      expect(miestoNaTahu(po)).toBe(partner);
+      expect(legalCommands(data, po, partner)).toEqual([{ type: "senok", uid: dobra.uid }]);
+      expect(() => apply(data, po, { type: "senok", uid: dobra.uid }, kap)).toThrow();
+      const rukaKapitana = rukaMiesta(po, kap).length;
+      const koniec = apply(data, po, { type: "senok", uid: dobra.uid }, partner).state;
+      expect(rukaMiesta(koniec, partner)).toContainEqual(dobra);
+      expect(rukaMiesta(koniec, kap).length).toBe(rukaKapitana);
+    }
   });
 
   it("Veterinár vidí Cirhózy v oboch rukách tímu", () => {

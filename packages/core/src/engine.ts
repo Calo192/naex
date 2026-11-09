@@ -600,20 +600,22 @@ export interface GameState {
 export interface HasicVolba {
   readonly hrac: PlayerId;
   /**
-   * Voľba, ktorá čaká ako Hasič (v7): karta zo šenku (Zastávka),
-   * Nástroj za Živnostníka, starší pre Kapybaru; frakcie (2026-11-08): karta z ruky na spálenie
+   * Voľba, ktorá čaká ako Hasič (v7): karta zo šenku (Zastávka; od 2026-11-09 aj Podpora
+   * Predavačky a Živnostníka), starší pre Kapybaru; frakcie (2026-11-08): karta z ruky na spálenie
    * (Zberný dvor), starší pre reči (Predsedova vila). Chýba = Hasič. Vdova od 2026-11-08 voľbu
-   * nemá — kartu vyberie náhoda.
+   * nemá — kartu vyberie náhoda; Nástroj pod Živnostníka zanikol 2026-11-09.
    */
-  readonly typ?: "senok" | "nastroj" | "kapybara" | "dvor" | "vila";
+  readonly typ?: "senok" | "kapybara" | "dvor" | "vila";
   readonly uid: number;
   /**
    * Čo hra odložila do rozhodnutia: odpoveď na NA EX by hneď vyhodnotila
    * Pitku a otočená Záverečná by ju ukončila — s kartou ešte nerozhodnutou.
    */
   readonly potom: "reakcia" | "odpovede" | "koniecPitky" | "bitka" | "zastavka" | null;
-  /** Živnostník: strana, na ktorej leží — Nástroj sa priloží za neho. */
-  readonly strana?: PlayerId;
+  /** Karta zo šenku: len karta s týmto tagom (Predavačka Občan, Živnostník Nástroj); chýba = hocijaká (Zastávka). */
+  readonly tag?: Tag;
+  /** Karta zo šenku: defId karty, ktorej Podpora voľbu dala; chýba = Zastávka. */
+  readonly zdroj?: string;
   /** 2 na 2: rozhoduje člen, ktorý kartu vyložil, a karta ide do jeho ruky; chýba = kapitán. */
   readonly miesto?: Miesto;
 }
@@ -659,9 +661,6 @@ export type Command =
   | { readonly type: "hasic"; readonly nechat: boolean }
   // Karta zo šenku zadarmo (Zastávka).
   | { readonly type: "senok"; readonly uid: number }
-  // Živnostník (Nástup, Náradie 2026-11-08): Nástroj z ruky, ktorý podloží pod neho hranou `hrana`
-  // (chýba = prvá, ktorá má čo robiť), alebo nič (uid null).
-  | { readonly type: "nastroj"; readonly uid: number | null; readonly hrana?: KtoraHrana }
   // Podloženie (Náradie, Michal 2026-11-08): Nástroj z ruky pod kartu v línii, zvolená hrana pretŕča.
   | { readonly type: "podloz"; readonly nastrojId: number; readonly hostitelId: number; readonly hrana: KtoraHrana }
   // Kapybara (Nástup, v11): starší, pri ktorom súperove reči klesnú o stupeň.
@@ -1948,7 +1947,7 @@ function applyPrikaz(
     need(kto === kapitan(state, hracId), "NA EX a koniec Pitky za tím volí kapitán.");
   }
   need(state.vizia === null || cmd.type === "vizia", "Najprv rozhodni o karte z Vízie.");
-  need(!cakaHasic(state) || ["hasic", "senok", "nastroj", "kapybara", "spal", "vila"].includes(cmd.type) || vTahu, najprvVolba(state, hracId));
+  need(!cakaHasic(state) || ["hasic", "senok", "kapybara", "spal", "vila"].includes(cmd.type) || vTahu, najprvVolba(state, hracId));
 
   switch (cmd.type) {
     case "chooseLocation":
@@ -2012,9 +2011,6 @@ function applyPrikaz(
 
     case "senok":
       cmdSenok(s, data, cmd, kto, events);
-      break;
-    case "nastroj":
-      cmdNastroj(s, data, cmd, kto, events);
       break;
     case "kapybara":
       cmdKapybara(s, data, cmd, hracId, events);
@@ -2972,7 +2968,7 @@ function cmdPodloz(
   ukonciVykladanie(s, data, p, events);
 }
 
-/** Podloží Nástroj z ruky miesta `kto` za cigaretu — ťah v Zhromaždení aj Živnostník (cmdNastroj). */
+/** Podloží Nástroj z ruky miesta `kto` za cigaretu (ťah v Zhromaždení). */
 function podlozNastroj(s: MutState, data: GameData, cmd: { nastrojId: number; hostitelId: number; hrana: KtoraHrana }, kto: Miesto, events: Event[]): void {
   const p = timMiesta(kto);
   need(KTORE_HRANY.includes(cmd.hrana), "Hrana je horná alebo dolná.");
@@ -3307,6 +3303,9 @@ function konflikt(s: MutState, data: GameData, nositel: DeepMutable<PlacedCard>,
   }
 }
 
+/** Podpora Predavačky a Živnostníka (Michal 2026-11-09): tag karty, ktorú si majiteľ vezme zo šenku. */
+const TAG_ZO_SENKU: Readonly<Record<string, Tag>> = { predavacka: "Občan", zivnostnik: "Nástroj" };
+
 /** Podpora (v11.3): efekt karty `nositel`, ktorá sa priložením stretla s vlastnou kartou `druha`. */
 function podpora(s: MutState, data: GameData, nositel: DeepMutable<PlacedCard>, druha: DeepMutable<PlacedCard>, events: Event[]): void {
   if (potlacenyPriPrilozeni(s, data, nositel, "Podpora", events)) return;
@@ -3324,9 +3323,23 @@ function podpora(s: MutState, data: GameData, nositel: DeepMutable<PlacedCard>, 
       events.push({ type: "log", text: `Podpora — Snúbenica hráča ${p + 1}: vracia NA EX hráča ${opp + 1} z karty ${jeho.name}; jeho poldeci sa vracia vypitý.` });
       break;
     case "predavacka":
-      // Frakcie (2026-11-08): Podpora bez tagu — majiteľ si doberie 1 kartu (Kšeft zanikol).
-      if (tahaj(s, nositel.miesto ?? kapitan(s, p), 1, events).length > 0) events.push({ type: "log", text: `Podpora — Predavačka hráča ${p + 1}: dober si 1 kartu.` });
+    case "zivnostnik": {
+      // Michal 2026-11-09: Podpora bez tagu — majiteľ si vezme zo šenku zadarmo 1 Občana (Predavačka),
+      // resp. 1 Nástroj (Živnostník). Text zo sady frakcií („Dober si 1 kartu“) ťahá ako predtým.
+      if (def.id === "predavacka" && !def.effectText.includes("šenk")) {
+        if (tahaj(s, nositel.miesto ?? kapitan(s, p), 1, events).length > 0) events.push({ type: "log", text: `Podpora — Predavačka hráča ${p + 1}: dober si 1 kartu.` });
+        break;
+      }
+      const tag = TAG_ZO_SENKU[def.id] as Tag;
+      if (!s.senok.some((k) => defOf(data, k as CardInstance).tags.includes(tag))) {
+        events.push({ type: "log", text: `Podpora — ${def.name} hráča ${p + 1}: v šenku nie je ${tag} — nič si neberie.` });
+        break;
+      }
+      const miesto = nositel.miesto === undefined ? {} : { miesto: nositel.miesto };
+      s.hasicVolby = [...(s.hasicVolby ?? []), { hrac: p, typ: "senok", uid: nositel.card.uid as number, potom: null, tag, zdroj: def.id, ...miesto }];
+      events.push({ type: "log", text: `Podpora — ${def.name} hráča ${p + 1}: berie si zo šenku zadarmo 1 ${tag === "Občan" ? "Občana" : tag}.` });
       break;
+    }
     case "hasic": {
       // Frakcie: Hasič má namiesto Nástupu Podporu bez tagu — účinok a voľba ostávajú.
       const kde = najdiVLinii(s, nositel.card.uid as number);
@@ -3448,17 +3461,6 @@ function nastupEfekt(
       events.push({ type: "log", text: `Poľovník hráča ${p + 1} strieľa: ${defOf(data, spalena.card).name} hráča ${opp + 1} sa spáli — navždy z hry.` });
       vypiPoldeciSpalenej(s, spalena, events);
       vratPodlozene(s, data, spalena, events);
-      break;
-    }
-    case "zivnostnik": {
-      // Náradie (2026-11-08): hneď pod neho smie podložiť Nástroj z ruky — mimo ťahu, za cigaretu ako každé podloženie.
-      const ziv = s.strany[strana].at(-1);
-      if (ziv === undefined || ziv.card.defId !== "zivnostnik" || s.hraci[p].cigarety < KONSTANTY.CENA_PODLOZENIA) break;
-      const line = lineState(s as GameState);
-      const moze = rukaMiesta(s as GameState, spustil ?? kapitan(s, p)).some((k) => ponukaPodlozenia(data, line, k).some((m) => m.hostitel === ziv.card.uid));
-      if (!moze) break;
-      s.hasicVolby = [...(s.hasicVolby ?? []), { hrac: p, typ: "nastroj", uid: ziv.card.uid, potom: null, strana, ...zaSpustil }];
-      events.push({ type: "log", text: `Živnostník: hráč ${p + 1} smie pod neho podložiť Nástroj z ruky.` });
       break;
     }
     case "kapybara": {
@@ -4426,15 +4428,14 @@ function cmdVizia(s: MutState, data: GameData, cmd: { vziat: boolean; druha?: tr
 }
 
 /**
- * Odmietnutie ťahu, kým čaká voľba z fronty hasicVolby — tá nesie aj šenok, Živnostníka,
- * Kapybaru, Zberný dvor a Predsedovu vilu, hláška preto pomenuje voľbu, ktorá je na rade.
+ * Odmietnutie ťahu, kým čaká voľba z fronty hasicVolby — tá nesie aj šenok (Zastávka, Predavačka,
+ * Živnostník), Kapybaru, Zberný dvor a Predsedovu vilu, hláška preto pomenuje voľbu, ktorá je na rade.
  */
 function najprvVolba(state: Pick<GameState, "hasicVolby">, p: PlayerId): string {
   const volba = state.hasicVolby?.[0];
   if (volba === undefined) return "";
   const co =
-    volba.typ === "senok" ? "o karte zo šenku (Zastávka)"
-    : volba.typ === "nastroj" ? "o Nástroji pod Živnostníka"
+    volba.typ === "senok" ? `o karte zo šenku (${volba.zdroj === "predavacka" ? "Predavačka" : volba.zdroj === "zivnostnik" ? "Živnostník" : "Zastávka"})`
     : volba.typ === "kapybara" ? "o staršom pre Kapybaru"
     : volba.typ === "dvor" ? "o karte na spálenie (Zberný dvor)"
     : volba.typ === "vila" ? "o staršom, pri ktorom Predsedova vila zdvihne reči"
@@ -4484,7 +4485,7 @@ function cmdHasic(s: MutState, data: GameData, cmd: { nechat: boolean }, kto: Mi
   dokonciPoVolbe(s, data, volba, events);
 }
 
-/** Po voľbe Hasiča, šenku, Živnostníka či Kapybary dobehne, čo hra kvôli nej odložila. */
+/** Po voľbe Hasiča, šenku či Kapybary dobehne, čo hra kvôli nej odložila. */
 function dokonciPoVolbe(s: MutState, data: GameData, volba: HasicVolba, events: Event[]): void {
   if (volba.potom === "reakcia") ukonciReakciu(s, data, events);
   else if (volba.potom === "odpovede") poKoleOdpovedi(s, data, events, true);
@@ -4496,25 +4497,15 @@ function dokonciPoVolbe(s: MutState, data: GameData, volba: HasicVolba, events: 
   }
 }
 
-/** Príkazy, ktoré čakajúca voľba (Hasič, šenok, Živnostník, Kapybara…) dovoľuje. */
+/** Príkazy, ktoré čakajúca voľba (Hasič, šenok, Kapybara…) dovoľuje. */
 function volbyNastupu(data: GameData, state: GameState): Command[] {
   const volba = state.hasicVolby?.[0];
   if (volba === undefined) return [];
-  if (volba.typ === "senok") return state.senok.map((k) => ({ type: "senok", uid: k.uid }) as Command);
+  if (volba.typ === "senok") return ponukaSenku(data, state, volba).map((k) => ({ type: "senok", uid: k.uid }) as Command);
   if (volba.typ === "kapybara") return state.starsi.filter((e) => e.reci[opponentOf(volba.hrac)] > 0).map((e) => ({ type: "kapybara", elderId: e.elderId }) as Command);
   const ruka = (): readonly CardInstance[] => rukaMiesta(state, volba.miesto ?? kapitan(state, volba.hrac));
   if (volba.typ === "dvor") return [{ type: "spal", uid: null }, ...ruka().filter((k) => !jeKliatba(data, k)).map((k) => ({ type: "spal", uid: k.uid }) as Command)];
   if (volba.typ === "vila") return state.starsi.filter((e) => dalsiStupenReci(e, volba.hrac) !== null).map((e) => ({ type: "vila", elderId: e.elderId }) as Command);
-  if (volba.typ === "nastroj") {
-    const line = lineState(state);
-    const ziv = zivnostnikVolby(state, volba);
-    const out: Command[] = [{ type: "nastroj", uid: null }];
-    if (ziv === null || state.hraci[volba.hrac].cigarety < KONSTANTY.CENA_PODLOZENIA) return out;
-    for (const k of rukaMiesta(state, volba.miesto ?? kapitan(state, volba.hrac))) {
-      for (const m of ponukaPodlozenia(data, line, k)) if (m.hostitel === ziv.card.uid && m.maCoRobit) out.push({ type: "nastroj", uid: k.uid, hrana: m.hrana });
-    }
-    return out;
-  }
   return [{ type: "hasic", nechat: true }, { type: "hasic", nechat: false }];
 }
 
@@ -4750,46 +4741,42 @@ function cmdSchopnostVazna(s: MutState, data: GameData, cmd: { elderId: string; 
   if (defId === "autobusar") dalsiVBerani(s, data, events);
 }
 
-/** Karta zo šenku zadarmo (Zastávka). */
+/** Karty šenku, ktoré voľba dovoľuje vziať — Predavačka len Občana, Živnostník len Nástroj. */
+export function ponukaSenku(data: GameData, state: Pick<GameState, "senok">, volba: Pick<HasicVolba, "tag">): readonly CardInstance[] {
+  const tag = volba.tag;
+  return tag === undefined ? state.senok : state.senok.filter((k) => defOf(data, k).tags.includes(tag));
+}
+
+/** Karta zo šenku zadarmo (Zastávka, Podpora Predavačky a Živnostníka). */
 function cmdSenok(s: MutState, data: GameData, cmd: { uid: number }, kto: Miesto, events: Event[]): void {
   const p = timMiesta(kto);
   const [volba, ...dalsie] = s.hasicVolby ?? [];
   need(volba !== undefined && volba.hrac === p && volba.typ === "senok", "Teraz neberieš kartu zo šenku.");
   const idx = s.senok.findIndex((k) => k.uid === cmd.uid);
   need(idx !== -1, "Karta nie je v šenku.");
+  need(ponukaSenku(data, s as GameState, volba).some((k) => k.uid === cmd.uid), `Zo šenku si teraz smieš vziať len kartu s tagom ${volba.tag ?? ""}.`);
   s.hasicVolby = dalsie;
   const karta = s.senok.splice(idx, 1)[0] as DeepMutable<CardInstance>;
   events.push({ type: "log", text: `Hráč ${p + 1} si berie zo šenku ${defOf(data, karta as CardInstance).name}.` });
   doRuky(s, kto, karta);
   dokonciPoVolbe(s, data, volba, events);
+  preskocPrazdneVolbySenku(s, data, events);
 }
 
-/** Živnostník, pod ktorého voľba podkladá — podľa uid, staré uloženia (uid 0) podľa konca línie. */
-function zivnostnikVolby(state: Pick<GameState, "strany">, volba: HasicVolba): PlacedCard | null {
-  const vsetky = [...state.strany[0], ...state.strany[1]];
-  const ziv = volba.uid !== 0 ? vsetky.find((pl) => pl.card.uid === volba.uid) : state.strany[volba.strana ?? volba.hrac].at(-1);
-  return ziv !== undefined && ziv.card.defId === "zivnostnik" ? ziv : null;
-}
-
-/** Živnostník (Nástup, Náradie 2026-11-08): Nástroj z ruky pod neho za cigaretu, mimo ťahu; null = nič. */
-function cmdNastroj(s: MutState, data: GameData, cmd: { uid: number | null; hrana?: KtoraHrana }, kto: Miesto, events: Event[]): void {
-  const p = timMiesta(kto);
-  const [volba, ...dalsie] = s.hasicVolby ?? [];
-  need(volba !== undefined && volba.hrac === p && volba.typ === "nastroj", "Teraz nepodkladáš Nástroj pod Živnostníka.");
-  if (cmd.uid !== null) {
-    const ziv = zivnostnikVolby(s as GameState, volba as HasicVolba);
-    need(ziv !== null, "Živnostník už v línii nie je — Nástroj sa pod neho nepodloží.");
-    const karta = rukaMiestaMut(s, kto).find((k) => k.uid === cmd.uid);
-    need(karta !== undefined, "Pod Živnostníka smieš podložiť len Nástroj z ruky.");
-    const hrany = hranyNastroja(defOf(data, karta as CardInstance));
-    const hrana = cmd.hrana ?? KTORE_HRANY.find((h) => hrany !== null && hranaMaCoRobit(data, ziv, hrany[h])) ?? "horna";
+/**
+ * Druhá Podpora tej istej karty (či ďalšej Predavačky) čaká vo fronte, kým prvá vezme kartu —
+ * keď medzitým zo šenku zmizol posledný Občan či Nástroj, voľba bez možnosti by partiu zasekla.
+ */
+function preskocPrazdneVolbySenku(s: MutState, data: GameData, events: Event[]): void {
+  for (;;) {
+    const [volba, ...dalsie] = s.hasicVolby ?? [];
+    if (volba === undefined || volba.typ !== "senok" || volba.tag === undefined) return;
+    if (ponukaSenku(data, s as GameState, volba).length > 0) return;
     s.hasicVolby = dalsie;
-    podlozNastroj(s, data, { nastrojId: cmd.uid, hostitelId: ziv.card.uid, hrana }, kto, events);
-  } else {
-    s.hasicVolby = dalsie;
-    events.push({ type: "log", text: `Živnostník: hráč ${p + 1} pod neho Nástroj nepodkladá.` });
+    const meno = volba.zdroj === undefined ? "karta" : defOf(data, { defId: volba.zdroj }).name;
+    events.push({ type: "log", text: `Podpora — ${meno} hráča ${volba.hrac + 1}: v šenku už nie je ${volba.tag} — nič si neberie.` });
+    dokonciPoVolbe(s, data, volba as HasicVolba, events);
   }
-  dokonciPoVolbe(s, data, volba, events);
 }
 
 /** Kapybara (Nástup, v7): marker vybraného staršieho o 1 pole k stredu. */

@@ -127,7 +127,7 @@ export const REGISTER: Readonly<Record<string, EfektStatus>> = {
   // {Akcia}“ vyhodnocuje jadro z textu (navyse.ts); staré efekty 14 kariet platia len pre staré sady.
   zberny_dvor: "impl", // Pitka (frakcie): na konci Pitky smie každý spáliť 1 kartu z ruky, nie kliatbu (zbernyDvor)
   zamocnik: "impl", // Furt (Náradie 2026-11-08): pod neho smie ľubovoľne veľa Nástrojov (podlozenie.ts)
-  zivnostnik: "impl", // Spoločník: Autorita {Robota} (navyse.ts); Nástup (Náradie 2026-11-08) — Nástroj z ruky pod neho za cigaretu (voľba nastroj), keď ho karta má
+  zivnostnik: "impl", // Podpora (2026-11-09): Nástroj zo šenku do ruky (engine podpora, voľba senok)
   pes: "impl", // Furt (v7): aktívne akcie na spoji so súperovou kartou ×2 (partia.ts)
   kostol: "impl", // Zhromaždenie: nikto nevypije; Pitka (v11.7): NA EX len na kartu na konci línie
   zahradkar: "impl", // Exekúcia (Michal 2026-10-28): v línii v tvojej partii ťa exekúcia v tomto kole obíde (zahradkarChrani)
@@ -162,7 +162,7 @@ export const REGISTER: Readonly<Record<string, EfektStatus>> = {
   stryko_z_ameriky: "native", // Nepriateľ: Autorita — 2 Rany navyše (navyse.ts)
   // Autority, kolo 2 (Michal 2026-11-02) — v sade ich pridá admin.
   polovnik: "impl", // Nástup: spáli súperovo Zviera na druhej strane, najďalej od lokality (spalPolovnikom)
-  predavacka: "impl", // Podpora (frakcie): dober si 1 kartu (engine podpora)
+  predavacka: "impl", // Podpora (2026-11-09): Občan zo šenku do ruky (engine podpora, voľba senok)
   veducko: "impl", // Furt: Preškolenie {Robota}→{Pecka} — susedia oboch hráčov (Školiteľ, 2026-11-08; partia.ts premenyVLinii)
   masiar: "impl", // Furt (Michal 2026-10-28): efekty Zvierat v jeho okolí neplatia (partia.ts zvieratAUmlcane)
   kulturista: "impl", // Sypač, Podpora: Preškolenie {Rana}→{Pecka} pri ktorejkoľvek tvojej karte (Školiteľ, 2026-11-08; engine podpora)
