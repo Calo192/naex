@@ -222,6 +222,19 @@ describe("§10 zajatie pri rozdelení Nakladačky (v11.4)", () => {
     expect(t.koniec?.dovod).toMatch(/výhra väzňami/);
   });
 
+  it("výhra väzňami so zdvihom v tom istom rozdelení: priazeň zo zdvihu je v logu pred koncom hry, koniec je posledný", () => {
+    const s = vRozdeleni("prebytok", 0, 6, { 0: { strach: [3, 0] }, 1: { strach: [0, 0] } }, (x) => {
+      const vazni: Vazen[] = [5, 6].map((j, i) => ({ elderId: x.starsi[j]!.elderId, hrac: 0, poradie: i + 1, karta: x.starsi[j]!.karta, scorecard: x.starsi[j]!.scorecard, miesto: j }));
+      return { ...x, vazni, starsi: x.starsi.filter((_, j) => j !== 5 && j !== 6) };
+    });
+    const { state: t, events } = apply(data, s, { type: "prebytok", zdvihy: [{ elderId: id(1), na: 1 }], zajatia: [id(0)] }, 0);
+    expect(t.koniec?.dovod).toMatch(/výhra väzňami/);
+    expect(events.at(-1)?.type).toBe("koniec");
+    const priazen = events.findIndex((e) => e.type === "log" && /^Priazeň .+ dostáva Hráč 2\.$/.test(e.text));
+    expect(priazen).toBeGreaterThan(-1);
+    expect(priazen).toBeLessThan(events.findIndex((e) => e.type === "koniec"));
+  });
+
   it("vo finále sa nezajíma: Nakladačka ide na špaky 1 : 1, zámer so zajatím server odmietne", () => {
     const s = vRozdeleni("prebytok", 0, 6, { 0: { strach: [3, 0] } }, (x) => ({
       ...x,

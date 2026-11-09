@@ -358,6 +358,16 @@ describe("Konflikt — súperova karta, s ktorou sa Školiteľ stretne priložen
     expect(naKarte(priloz(zhromazdenie([[moja], []], [tip2]), tip2.uid).state, moja.card.uid).preskolenia).toBeUndefined();
   });
 
+  it("karta bez Cigarety: log preškolenie nehlási (nič sa nezmenilo), pri karte s Cigaretou áno (playtest 2026-11-09)", () => {
+    const loguje = (r: { readonly events: readonly Event[] }): boolean => r.events.some((e) => e.type === "log" && /Preškolenie: /.test(e.text));
+    const bez = lezi(karta("s_zena"), 1);
+    const tip = karta("profesionalny_tiper");
+    expect(loguje(priloz(zhromazdenie([[bez], []], [tip]), tip.uid))).toBe(false);
+    const s = lezi(karta("s_cig"), 1);
+    const tip2 = karta("profesionalny_tiper");
+    expect(loguje(priloz(zhromazdenie([[s], []], [tip2]), tip2.uid))).toBe(true);
+  });
+
   it("aj keď súper priloží svoju kartu k Tipérovi (Konflikt oboma smermi, §16)", () => {
     const tip = lezi(karta("profesionalny_tiper"), 0);
     const cig = karta("s_cig");

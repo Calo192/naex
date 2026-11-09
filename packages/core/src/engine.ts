@@ -36,7 +36,7 @@ import {
 } from "./pata.ts";
 import { clenMiesta, miestaFormatu, miestoClena, opponentOf, priazenZKluca, timMiesta } from "./types.ts";
 import type { GameData } from "./data.ts";
-import { defOf } from "./data.ts";
+import { defOf, printedSides } from "./data.ts";
 import type { ChachaStav, RngState, Semienko } from "./rng.ts";
 import { rngInt, rngSeed, rngShuffle } from "./rng.ts";
 import type { ActionSums, KartaVBitke, LineEval, LineState, PlacedCard, PreskolenieOdSkolitela } from "./partia.ts";
@@ -2059,9 +2059,18 @@ function applyPrikaz(
   dohrajNevyhnutne(data, s, events);
   // Nevyhnutné ťahy smú odkryť NA EX (hotovo za hráča) — aj to mení počet Pitiek.
   aktualizujPitky(s, data);
-  events.push(...zaznamyPriazne(data, state, s as GameState));
-  if (s.pata !== undefined) priznajCirhozyPata(s, events);
-  return { state: s as GameState, events };
+  const dodatky: Event[] = [...zaznamyPriazne(data, state, s as GameState)];
+  if (s.pata !== undefined) priznajCirhozyPata(s, dodatky);
+  return { state: s as GameState, events: predKoncom(events, dodatky) };
+}
+
+/**
+ * Záznamy, ktoré vznikli ešte v tom istom ťahu (priazeň po zdvihu Nakladačky), patria pred
+ * vyhlásenie konca hry — za ním by pôsobili ako udalosť po konci (playtest 2026-11-09).
+ */
+function predKoncom(events: readonly Event[], dodatky: readonly Event[]): Event[] {
+  const i = events.findIndex((e) => e.type === "koniec");
+  return i === -1 ? [...events, ...dodatky] : [...events.slice(0, i), ...dodatky, ...events.slice(i)];
 }
 
 /**
@@ -3082,10 +3091,15 @@ function preskolPriSpoji(data: GameData, spustac: "Konflikt" | "Podpora", nosite
   druha.preskolenia = nove.map((p) => ({ ...p }));
   const def = defOf(data, nositel.card as CardInstance);
   const jeho = defOf(data, druha.card as CardInstance);
+  // Zápis ostáva aj bez akcie X (nič nemení), log len pri skutočnej zmene — hráč by čakal premenu, ktorá nenastala.
+  const vytlacene = printedSides(data, druha.card as CardInstance);
+  const akcie = new Set<string>([...vytlacene.left, ...vytlacene.right, ...efektyNavyse(jeho).flatMap((e) => e.akcie)]);
   const co = nove
     .slice(pred)
+    .filter((p) => akcie.has(p.z))
     .map((p) => `${menoAkcie(p.z)} ako ${menoAkcie(p.na)}`)
     .join(", ");
+  if (co === "") return true;
   events.push({ type: "log", text: `${spustac} — Preškolenie: ${def.name} hráča ${(nositel.playedBy as number) + 1} pri karte ${jeho.name}: tá má do konca kola ${co}.` });
   return true;
 }
