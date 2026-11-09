@@ -1,7 +1,7 @@
 // Mäsiar — nový efekt (Michal 2026-10-28): „Furt: Efekty Zvierat v jeho okolí neplatia.“
 // Akcie susedných Zvierat sa odteraz rátajú normálne; neplatia efekty Zvierat (oboch hráčov),
 // kým susedia s Mäsiarom: Pes, Kôň, Čierna mačka (Furt), Krokodíl (Bitka), Kohút (Pitka),
-// Recidivista (Prehra), Kapybara (Nástup).
+// Recidivista (Prehra). Kapybara a Krokodíl od 2026-11-09: kapybara-telefon-krokodil.test.ts.
 
 import { describe, expect, it } from "vitest";
 import cardsJson from "../data/cards.json";
@@ -66,26 +66,4 @@ describe("Mäsiar (Furt, Michal 2026-10-28): efekty Zvierat v jeho okolí neplat
     expect(zvieraPlati(data, stol([[lezi(inst("cierna_macka"), 0)], []]), 0, "cierna_macka")).toBe(true);
   });
 
-  it("Kapybara priložená k Mäsiarovi sa nespustí", () => {
-    const kap = inst("kapybara");
-    const s0 = stol([[lezi(inst("masiar"), 1)], []], {
-      faza: "zhromazdenie",
-      utocnik: 0,
-      pitkyCelkom: 1,
-      pitkaCislo: 0,
-      zhromazdenieStav: { naTahu: 0, zostavaLimit: [3, 3], pasoval: [false, false], navyse: [0, 0] },
-    });
-    const s: GameState = {
-      ...s0,
-      // Kapybara (v11) potrebuje súperove reči.
-      starsi: s0.starsi.map((e, i) => (i === 0 ? { ...e, strach: [0, 0] as const, reci: [0, 2] as const } : e)),
-      hraci: [{ ...s0.hraci[0], ruka: [kap] }, s0.hraci[1]],
-    };
-    const { state, events } = apply(data, s, { type: "place", uid: kap.uid, target: "vlastna" }, 0);
-    expect(state.hasicVolby ?? []).toEqual([]);
-    expect(events.some((e) => e.type === "log" && e.text.startsWith("Mäsiar: Kapybara"))).toBe(true);
-    // Bez Mäsiara sa Kapybara spustí (voľba staršieho).
-    const bez = apply(data, { ...s, strany: [[lezi(inst("pijan"), 1)], []] }, { type: "place", uid: kap.uid, target: "vlastna" }, 0).state;
-    expect(bez.hasicVolby?.[0]?.typ).toBe("kapybara");
-  });
 });

@@ -7,16 +7,21 @@
 import { useLayoutEffect, useMemo, useRef, useState, type CSSProperties, type ReactNode } from "react";
 import type { KartaNavrh, RozlozenieStrany, Vzhlad } from "@naex/tvorba";
 import { farbaKarty, formatujEfekt, geometriaKarty } from "@naex/tvorba";
-import type { HranaNastroja, KtoraHrana } from "@naex/core";
+import type { Action, HranaNastroja, KtoraHrana } from "@naex/core";
 import { menoAkcie, popisPodmienky, posilnenaSlovami, rozborNavyse, textBezAkcii, textBezHran } from "@naex/core";
 import { mediaUrl } from "../lib/api.ts";
 import { IkonaAkcie } from "./IkonaAkcie.tsx";
 import { useTip, type TipObsah } from "./Tip.tsx";
 import type { ZarSlotu } from "./zar.ts";
-import { POPIS_UCINKU, hranyZTextu, preskoleniaZTextu, textBezPreskolenia } from "./preskolenie.ts";
+import { POPIS_UCINKU, hranyZTextu, preskoleniaZTextu, textBezPreskolenia, type PreskolenieVTexte } from "./preskolenie.ts";
 import "./karta.css";
 
 /** Stav slotu v hre (živé vyhodnotenie línie). */
+/** Piktogramy v pečati, ktoré nie sú akcie tvorcu (Krokodíl {Spálenie}, Michal 2026-11-09). */
+const POPIS_PIKTOGRAMU: Readonly<Record<string, string>> = {
+  Spálenie: "Karta ide navždy z hry — nevracia sa do žiadneho balíčka.",
+};
+
 export interface SlotStav {
   readonly stav: "aktivna" | "zrusena" | "neaktivna";
   readonly nasobok: number;
@@ -190,6 +195,7 @@ export function KartaLico(props: KartaLicoProps) {
   const ikona = (key: string, r: { readonly x: number; readonly y: number; readonly w: number }, kluc: string, st: SlotStav | null, zar: ZarNaKarte | null, trieda: string, navyse?: string, odznak?: number, roh: RohSlotu | null = null) => {
     const akcia = vzhlad.akcie.find((a) => a.kluc === kluc);
     const nazov = akcia?.nazov ?? kluc;
+    const popis = akcia?.popis ?? POPIS_PIKTOGRAMU[kluc];
     const povodna = roh === null ? undefined : vzhlad.akcie.find((a) => a.kluc === roh.akcia);
     const stavText =
       navyse !== undefined
@@ -202,7 +208,7 @@ export function KartaLico(props: KartaLicoProps) {
         data-akcia={kluc}
         style={{ "--x": r.x, "--y": r.y, "--s": r.w, "--r": g.polomerSlotu } as CSSProperties}
         tabIndex={bezPopisov ? undefined : props.slotyBezFokusu === true ? -1 : 0}
-        aria-label={`${nazov}: ${akcia?.popis ?? ""}${roh === null ? "" : ` Bola ${povodna?.nazov ?? roh.akcia}.`}${zar === null ? "" : ` ${zar.popis}`}`}
+        aria-label={`${nazov}: ${popis ?? ""}${roh === null ? "" : ` Bola ${povodna?.nazov ?? roh.akcia}.`}${zar === null ? "" : ` ${zar.popis}`}`}
         {...hover({
           nadpis: nazov,
           ikona: (
@@ -212,7 +218,7 @@ export function KartaLico(props: KartaLicoProps) {
           ),
           text: (
             <>
-              {akcia?.popis ?? "Akcia bez popisu."}
+              {popis ?? "Akcia bez popisu."}
               {roh !== null && <span className="tip-stav">{`Bola ${povodna?.nazov ?? roh.akcia} — ${roh.preco}.`}</span>}
               {zar !== null && <span className={`tip-zar tip-zar-${zar.smer}`}>{zar.popis}</span>}
               {stavText !== null && <span className="tip-stav">{stavText}</span>}
@@ -246,20 +252,25 @@ export function KartaLico(props: KartaLicoProps) {
     const medzera = w * 0.3;
     // Rovnaké akcie jedného efektu sú jedna ikona s odznakom ×N (Veštica: 2 Povery = Povera ×2).
     // Vedúcko a Sypač (Michal 2026-11-08): pečať ukáže akciu, ktorou sa akcia ráta (Robota → Pecka).
+    // Krokodíl (Michal 2026-11-09): {Spálenie} nie je akcia, v pečati stojí za akciami ako ďalšia ikona.
     const skupiny = efektyNavyse.map((e, ei) => {
       const ako = e.akcie.map((a, j) => props.navyse?.[ei]?.ako?.[j] ?? a);
-      return [...new Set(ako)].map((a) => ({ a, kusov: ako.filter((x) => x === a).length, prva: ako.indexOf(a) }));
+      const akcie: { a: string; kusov: number; prva: number }[] = [...new Set(ako)].map((a) => ({ a, kusov: ako.filter((x) => x === a).length, prva: ako.indexOf(a) }));
+      return [...akcie, ...(e.ucinky ?? []).map((u) => ({ a: u, kusov: 1, prva: -1 }))];
     });
     // Podpora a Konflikt majú po bokoch šípky k susedom (mock M3) — miesto pre ne v rade.
     const sipkaW = w * 0.32;
     const sipkovych = efektyNavyse.filter((e) => e.spustac === "Podpora" || e.spustac === "Konflikt").length;
     const ikon = skupiny.reduce((n, g2) => n + g2.length, 0);
     // Preškolenie (R5, Michal 2026-11-08): pilulka A1 → A2 v jednom ráme; šípky k susedom pri Podpore, Konflikte aj Furt.
+    // To isté preškolenie s viacerými spúšťačmi (Kapybara: Podpora aj Konflikt, 2026-11-09) je jedna pilulka —
+    // dve by sa do pečate nezmestili a hráč by v nich hľadal rozdiel.
+    const pilulkyTextu = zlucPreskolenia(preskoleniaTextu, props.preskolenia);
     const sirkaPilulky = sirkaPilulkyPt(w);
-    const pilulkySoSipkami = preskoleniaTextu.filter((p) => maSipky(p.spustac)).length;
-    const poloziek = ikon + preskoleniaTextu.length;
+    const pilulkySoSipkami = pilulkyTextu.filter((p) => p.sSipkami).length;
+    const poloziek = ikon + pilulkyTextu.length;
     const sirkaRadu =
-      ikon * w + preskoleniaTextu.length * sirkaPilulky + Math.max(0, poloziek - 1) * medzera + (sipkovych + pilulkySoSipkami) * 2 * (sipkaW + medzera * 0.5);
+      ikon * w + pilulkyTextu.length * sirkaPilulky + Math.max(0, poloziek - 1) * medzera + (sipkovych + pilulkySoSipkami) * 2 * (sipkaW + medzera * 0.5);
     let x = (g.sirka - sirkaRadu) / 2;
     const y = g.pas.y - posunN - w - 5;
     const navyse = efektyNavyse.flatMap((e, ei) => {
@@ -285,20 +296,20 @@ export function KartaLico(props: KartaLicoProps) {
         x += w + (gi < vsetky.length - 1 || !sSipkami ? medzera : medzera * 0.5);
         // Stavy ako na hrane: splnená = aktívna (žiar), nesplnená = neaktívna a sivá; mimo hry ako vytlačená.
         const st: SlotStav | null = stav === undefined ? null : { stav: stav.krat === 0 ? "neaktivna" : "aktivna", nasobok: 1 };
+        const co = prva < 0 ? `${a} karty, s ktorou sa stretne, na konci bitky` : "Akcia navyše";
         const text =
           stav === undefined
-            ? `Akcia navyše — ${podmienka}.`
+            ? `${co} — ${podmienka}.`
             : stav.krat === 0
-              ? `Akcia navyše — ${podmienka}: podmienka nesplnená.`
-              : `Akcia navyše — ${podmienka}: platí${stav.krat > 1 ? ` ${stav.krat}×` : ""}.`;
+              ? `${co} — ${podmienka}: podmienka nesplnená.`
+              : `${co} — ${podmienka}: platí${stav.krat > 1 ? ` ${stav.krat}×` : ""}.`;
         const zar = stav?.zar?.[prva] ?? null;
         return ikona(`navyse${ei}-${a}`, r, a, st, zar, ` kl-navyse${stav !== undefined && stav.krat === 0 ? " kl-navyse-spi" : ""}${zar !== null ? " kl-zar-prava" : ""}`, text, kusov * Math.max(1, stav?.krat ?? 1));
       });
       return [...lava, ...ikony, ...(sSipkami ? [sipka("prava")] : [])];
     });
-    const pilulky = preskoleniaTextu.flatMap((p, pi) => {
-      const stav = props.preskolenia?.[pi];
-      const sSipkami = maSipky(p.spustac);
+    const pilulky = pilulkyTextu.flatMap((p, pi) => {
+      const { stav, sSipkami } = p;
       const sipka = (strana: "lava" | "prava") => {
         const el = (
           <span
@@ -577,6 +588,27 @@ export const SIRKA_PILULKY = 2.2;
 const sirkaPilulkyPt = (slot: number): number => SIRKA_PILULKY * slot;
 /** Podpora a Konflikt platia so susedom, Furt pri susedoch — pečať má šípky k obom. */
 const maSipky = (spustac: string | null): boolean => spustac === "Podpora" || spustac === "Konflikt" || spustac === "Furt";
+
+/** Preškolenia pečate zlúčené podľa X → Y; stav spúšťačov sa sčíta (krát) a šípky svietia, keď svieti ktorákoľvek. */
+function zlucPreskolenia(
+  text: readonly PreskolenieVTexte[],
+  stavy: readonly PreskolenieNaKarte[] | undefined,
+): { readonly z: Action; readonly na: Action; readonly sSipkami: boolean; readonly stav: PreskolenieNaKarte | undefined }[] {
+  const out: { z: Action; na: Action; sSipkami: boolean; stav: PreskolenieNaKarte | undefined }[] = [];
+  text.forEach((p, i) => {
+    const s = stavy?.[i];
+    const x = out.find((o) => o.z === p.z && o.na === p.na);
+    if (x === undefined) {
+      out.push({ z: p.z, na: p.na, sSipkami: maSipky(p.spustac), stav: s });
+      return;
+    }
+    x.sSipkami ||= maSipky(p.spustac);
+    if (s === undefined) return;
+    const sipky = x.stav?.sipky === undefined && s.sipky === undefined ? undefined : { lava: x.stav?.sipky?.lava === true || s.sipky?.lava === true, prava: x.stav?.sipky?.prava === true || s.sipky?.prava === true };
+    x.stav = { krat: (x.stav?.krat ?? 0) + s.krat, ...(sipky === undefined ? {} : { sipky }) };
+  });
+  return out;
+}
 
 /**
  * Pečať Preškolenia R5 „pilulka“ (Michal 2026-11-08, docs/napady/premeny-akcii.html): jeden rám,

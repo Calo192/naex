@@ -197,7 +197,7 @@ export interface PohladSuhrnu {
  * Zhromaždením; súhrn bitky príde s prvým pohľadom ďalšieho kola — bez ohľadu na to, kto čo rozdeľoval.
  * Stačí aj Draft: keď súper ako obranca vyberie lokalitu hneď, pohľad s voľbou cieľa môže prísť
  * neskoro (pomalé spojenie, návrat po výpadku) a súhrn by sa stratil spolu so začiatkom ďalšieho kola.
- * Do Zhromaždenia sa markery nemenia (Kapybara až pri Nástupe) a zmeny markerov z bitky sa mažú až
+ * Do Zhromaždenia sa markery nemenia a zmeny markerov z bitky sa mažú až
  * na začiatku Pitky.
  */
 export function dalsiPohladSuhrnu(zaciatok: ZaciatokKola | null, v: Pick<ClientState, "kolo" | "faza" | "koniec" | "starsi" | "vazni" | "zmenyMarkerov" | "nastenka">): PohladSuhrnu {

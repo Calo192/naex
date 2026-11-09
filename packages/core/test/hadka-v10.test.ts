@@ -106,19 +106,20 @@ describe("§9 krok Hádka — mäkké poškodenie (computeDamage)", () => {
 
 // Rozdelenie hádky na priazne v motore (v10) zaniklo s v11 — hádka dvíha reči (strach-reci.test.ts).
 
-describe("Telefón (Dedičstvo, v10): tvoje Pohoršenia nemožno zrušiť Odporom a NA EX", () => {
+// Telefón do 2026-11-09 chránil Pohoršenia pred Odporom a NA EX; imunita zanikla (kapybara-telefon-krokodil.test.ts).
+describe("Telefón (Dedičstvo) od 2026-11-09 Pohoršenia nechráni", () => {
   const own = (card: CardInstance, naex = false): PlacedCard => ({ card, playedBy: 0, ...(naex ? { naexBy: 1 as PlayerId } : {}) });
 
-  it("Odpor súpera na spoji s mojím Pohoršením ho nezruší", () => {
+  it("Odpor súpera na spoji s mojím Pohoršením ho zruší aj s Telefónom", () => {
     const syn = syntheticData([makeDef("a", [null, "Pohoršenie", null, null], EMPTY), makeDef("c", [null, null, "Odpor", null], EMPTY)]);
     const a = instanceFor(syn, "a", [null, "Pohoršenie", null, null], EMPTY);
     const c = instanceFor(syn, "c", [null, null, "Odpor", null], EMPTY);
     const strany = [[own(a), { card: c, playedBy: 1 as PlayerId }], []] as const;
     expect(evaluateLine(syn, { lokalita: null, lokalitaOtocena: false, strany, nastroje: [[], []] }).sums).toEqual([{}, {}]);
-    expect(evaluateLine(syn, { lokalita: null, lokalitaOtocena: false, strany, nastroje: [["telefon"], []] }).sums).toEqual([{ Pohoršenie: 1 }, {}]);
+    expect(evaluateLine(syn, { lokalita: null, lokalitaOtocena: false, strany, nastroje: [["telefon"], []] }).sums).toEqual([{}, {}]);
   });
 
-  it("NA EX moje aktívne Pohoršenia nezruší (ostatné áno)", () => {
+  it("NA EX moje aktívne Pohoršenia zruší aj s Telefónom", () => {
     const par = (nastroje: readonly string[]) => {
       const syn = syntheticData([makeDef("a", ["Pohoršenie", "Rana", null, null], EMPTY), makeDef("b", EMPTY, ["Pohoršenie", "Rana", null, null])]);
       const a = instanceFor(syn, "a", ["Pohoršenie", "Rana", null, null], EMPTY);
@@ -126,7 +127,7 @@ describe("Telefón (Dedičstvo, v10): tvoje Pohoršenia nemožno zrušiť Odporo
       return evaluateLine(syn, { lokalita: null, lokalitaOtocena: false, strany: [[own(a, true), own(b)], []], nastroje: [nastroje, []] }).sums[0];
     };
     expect(par([])).toEqual({ Pohoršenie: 1, Rana: 1 });
-    expect(par(["telefon"])).toEqual({ Pohoršenie: 2, Rana: 1 });
+    expect(par(["telefon"])).toEqual({ Pohoršenie: 1, Rana: 1 });
   });
 });
 

@@ -1,0 +1,95 @@
+{
+  "zdroj": "Michal 2026-11-09 (docs/napady/kapybara-telefon.html, docs/napady/naradie-len-svoje.html) — Kapybara Školiteľ, Telefón T1 + T3, Krokodíl Konflikt {Spálenie}, Pasca a 15 Nástrojov s novými hranami; texty v zápise tvorcu, kým ich admin neprenesie do cards.json",
+  "karty": [
+    {
+      "id": "kapybara",
+      "effect_text": "Podpora: Preškolenie {Viera}→{Cigareta}. Konflikt: Preškolenie {Viera}→{Cigareta}. Furt: {Cigareta}.",
+      "triggers": ["Podpora", "Konflikt", "Furt"]
+    },
+    {
+      "id": "telefon",
+      "effect_text": "Dedičstvo: Hádka: Remíza v hádke je tvoja, ak nie je 0 : 0. Bitka: Za každú tvoju akciu zrušenú súperovým Odporom {Povera}. Hore: {Povera}→{Pohoršenie}. Dole: {Odpor}→{Povera}.",
+      "triggers": ["Dedičstvo", "Hádka", "Bitka"]
+    },
+    {
+      "id": "krokodil",
+      "effect_text": "Konflikt: {Spálenie}.",
+      "triggers": ["Konflikt"]
+    },
+    {
+      "id": "pasca",
+      "effect_text": "Dedičstvo: Bitka: Ak súper v tomto kole priložil kartu k tvojej karte {Rana}. Hore: {Pečeň}→{Rana}. Dole: Posilnená {Rana}.",
+      "triggers": ["Dedičstvo", "Bitka"]
+    },
+    {
+      "id": "energetak",
+      "effect_text": "Dedičstvo: Tvoje Posilnenie nemožno zrušiť NA EX. Hore: Forsáž. Dole: {Poldeci}→{Posilnenie}.",
+      "triggers": ["Dedičstvo"]
+    },
+    {
+      "id": "lievik",
+      "effect_text": "Dedičstvo: NA EX smieš dať aj na Zviera. Hore: Výtržník. Dole: {Pečeň}→{Robota}.",
+      "triggers": ["Dedičstvo"]
+    },
+    {
+      "id": "vidly",
+      "effect_text": "Dedičstvo: Tvoje Rany udeľujú o 1 poškodenie viac. Hore: Vzbura. Dole: {Robota}→{Petelica}.",
+      "triggers": ["Dedičstvo"]
+    },
+    {
+      "id": "boxer",
+      "effect_text": "Dedičstvo: Tvoje Pecky udeľujú o 1 poškodenie viac. Hore: {Pecka}→{Petelica}. Dole: {Rana}→{Petelica}.",
+      "triggers": ["Dedičstvo"]
+    },
+    {
+      "id": "zapalovac",
+      "effect_text": "Dedičstvo: Tvoje aktívne Cigarety nemožno zrušiť NA EX. Hore: {Cigareta}→{Rana}. Dole: {Poldeci}→{Petelica}.",
+      "triggers": ["Dedičstvo"]
+    },
+    {
+      "id": "noviny",
+      "effect_text": "Dedičstvo: Hádka: Ak vyhráš hádku, súper odhodí 1 náhodnú kartu z ruky. Hore: {Viera}→{Pohoršenie}. Dole: {Pečeň}→{Pohoršenie}.",
+      "triggers": ["Dedičstvo", "Hádka"]
+    },
+    {
+      "id": "svaty_text",
+      "effect_text": "Dedičstvo: Hodnota tvojej Viery je o 1 vyššia. Hore: {Povera}→{Viera}. Dole: {Odpor}→{Viera}.",
+      "triggers": ["Dedičstvo"]
+    },
+    {
+      "id": "nealko",
+      "effect_text": "Dedičstvo: Tvoj prah Cirhózy je o 2 vyšší. Hore: {Pečeň}→{Povera}. Dole: {Poldeci}→{Pohoršenie}.",
+      "triggers": ["Dedičstvo"]
+    },
+    {
+      "id": "kristalova_gula",
+      "effect_text": "Dedičstvo: Tvoje Vízie ukážu 2 vrchné karty — jednu si vezmi alebo spáľ, druhú vráť navrch. Hore: {Povera}→{Vízia}. Dole: {Pečeň}→{Vízia}.",
+      "triggers": ["Dedičstvo"]
+    },
+    {
+      "id": "vyherny_automat",
+      "effect_text": "Dedičstvo: Tvoj prah Dlhu je o 1 vyšší. Posledná Pitka kola: {Hazard}. Hore: {Hazard}→{Poldeci}. Dole: {Hazard}→{Pecka}.",
+      "triggers": ["Dedičstvo"]
+    },
+    {
+      "id": "vyherne_zreby",
+      "effect_text": "Dedičstvo: Tvoje Hazardy sú aktívne, keď nie sú spojené, a neaktívne, keď sú spojené. Hore: {Hazard}→{Vízia}. Dole: {Cigareta}→{Vízia}.",
+      "triggers": ["Dedičstvo"]
+    },
+    {
+      "id": "furik",
+      "effect_text": "Dedičstvo: Tvoje Roboty pália o 1 Dlh viac. Hore: {Hazard}→{Robota}. Dole: Posilnená {Robota}.",
+      "triggers": ["Dedičstvo"]
+    },
+    {
+      "id": "horoskop",
+      "effect_text": "Dedičstvo: Tvoje Povery majú silu 2. Hore: {Hazard}→{Povera}. Dole: Posilnená {Povera}.",
+      "triggers": ["Dedičstvo"]
+    },
+    {
+      "id": "pistalka",
+      "effect_text": "Dedičstvo: Tvoje Obmedzenia uberajú aj cigarety, ktoré súper dostane za pas. Hore: {Pečeň}→{Obmedzenie}. Dole: Posilnené {Obmedzenie}.",
+      "triggers": ["Dedičstvo"]
+    }
+  ]
+}

@@ -70,6 +70,8 @@ function n(v: number | undefined): number {
 export interface VysledokHadky {
   readonly vitaz: PlayerId | null;
   readonly velkost: number;
+  /** Remízu vyhral Telefón v Dedičstve víťaza (Michal 2026-11-09) — hádka o 0. */
+  readonly telefon?: true;
 }
 
 export function vysledokHadky(makke: readonly [number, number]): VysledokHadky {

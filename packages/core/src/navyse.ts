@@ -9,6 +9,11 @@
 //   Nepriateľ: T  — v súperovej partii je odkrytá karta s tagom T; raz, kým to platí
 //   Podpora: T    — pri každom stretnutí priložením s vlastnou kartou s tagom T, do konca kola
 //   Konflikt: T   — pri každom stretnutí priložením so súperovou kartou s tagom T, do konca kola
+//   Furt:         — bez podmienky, kým karta leží v línii (Kapybara, Michal 2026-11-09); bez tagu
+//
+// Piktogram {Spálenie} (Krokodíl, Michal 2026-11-09) nie je akcia, ale účinok v pečati: pri
+// Konflikte či Podpore sa karta, s ktorou sa nositeľ stretol, na konci bitky spáli
+// (engine vratKartyPoBitke, partia.ts spaleniaZoSpojov).
 //
 // Skryté akcie (Michal 2026-11-08): efekty, ktoré akciu dávali slovami, majú podmienku
 // slovami pred piktogramom. Podmienku a násobok „za každé“ vyhodnotí jadro podľa karty
@@ -35,10 +40,20 @@ import { hranySlovami, textBezHran } from "./naradie.ts";
 import { akciaZTokenu, textBezPreskoleni } from "./preskolenie.ts";
 
 export type SpustacTagom = "Spoločník" | "Nepriateľ" | "Podpora" | "Konflikt";
+/** Akcie navyše bez podmienky — platia, kým karta leží (Kapybara, Michal 2026-11-09). */
+export type SpustacBezPodmienky = "Furt";
 /** Spúšťače s podmienkou slovami (skryté akcie, Michal 2026-11-08). */
 export type SpustacSlovami = "Bitka" | "Posledná Pitka kola";
-export type SpustacNavyse = SpustacTagom | SpustacSlovami;
+export type SpustacNavyse = SpustacTagom | SpustacSlovami | SpustacBezPodmienky;
 export const SPUSTACE_NAVYSE: readonly SpustacTagom[] = ["Spoločník", "Nepriateľ", "Podpora", "Konflikt"];
+/** Spúšťače, za ktorými smie byť tag a piktogramy — Furt tag nemá (hlási rozborNavyse). */
+const SPUSTACE_S_PIKTOGRAMOM: readonly (SpustacTagom | SpustacBezPodmienky)[] = [...SPUSTACE_NAVYSE, "Furt"];
+
+/** Účinok v pečati, ktorý nie je akcia (Krokodíl, Michal 2026-11-09). */
+export type UcinokNavyse = "Spálenie";
+export const UCINKY_NAVYSE: readonly UcinokNavyse[] = ["Spálenie"];
+/** Spúšťače, pri ktorých má účinok koho zasiahnuť — kartu, s ktorou sa nositeľ stretol. */
+const SPUSTACE_UCINKU: readonly SpustacNavyse[] = ["Podpora", "Konflikt"];
 export const SPUSTACE_SLOVAMI: readonly SpustacSlovami[] = ["Bitka", "Posledná Pitka kola"];
 
 export interface EfektNavyse {
@@ -46,6 +61,8 @@ export interface EfektNavyse {
   /** Tag z podmienky; null = ktorákoľvek karta (Podpora a Konflikt bez tagu) či podmienka slovami. */
   readonly tag: Tag | null;
   readonly akcie: readonly Action[];
+  /** Účinky v pečati, ktoré nie sú akcie ({Spálenie}); chýba = žiadne. */
+  readonly ucinky?: readonly UcinokNavyse[];
   /** Podmienka slovami pred piktogramom (Bitka); chýba = bez podmienky. */
   readonly podmienka?: string;
   /** Efekt Nástroja v Dedičstve (text začína „Dedičstvo:“) — v línii neplatí. */
@@ -69,7 +86,7 @@ const BEZ_SPOJA_NIC: readonly Action[] = ["Posilnenie", "Odpor", "Pakt"];
 const TOKEN = /\{([^{}]+)\}/gu;
 // Skupiny: 1 spúšťač s tagom, 2 tag, 3 spúšťač slovami, 4 podmienka slovami, 5 piktogramy.
 const EFEKT = new RegExp(
-  `(?:^|[\\s.!?])(?:(${SPUSTACE_NAVYSE.join("|")}):\\s*(?:([\\p{L}]+)\\s*)?|(${SPUSTACE_SLOVAMI.join("|")}):\\s*([^{}:.!?]*?)\\s*)((?:\\{[^{}]+\\}\\s*)+)`,
+  `(?:^|[\\s.!?])(?:(${SPUSTACE_S_PIKTOGRAMOM.join("|")}):\\s*(?:([\\p{L}]+)\\s*)?|(${SPUSTACE_SLOVAMI.join("|")}):\\s*([^{}:.!?]*?)\\s*)((?:\\{[^{}]+\\}\\s*)+)`,
   "gu",
 );
 
@@ -93,19 +110,27 @@ export function rozborNavyse(celyText: string): RozborNavyse {
     const slovo = m[2] ?? null;
     const podmienka = (m[4] ?? "").trim();
     let tag: Tag | null = null;
-    if (slovo !== null) {
+    if (slovo !== null && spustac === "Furt") chyby.push(`„Furt: ${slovo}“ — akcie navyše Furt platia bez podmienky, tag nemajú (s tagom je to Spoločník).`);
+    else if (slovo !== null) {
       if (!(ALL_TAGS as readonly string[]).includes(slovo)) chyby.push(`„${spustac}: ${slovo}“ — ${slovo} nie je tag, ktorý hra pozná (${ALL_TAGS.join(", ")}).`);
       else tag = slovo as Tag;
     }
     const akcie: Action[] = [];
+    const ucinky: UcinokNavyse[] = [];
     for (const t of (m[5] ?? "").matchAll(TOKEN)) {
       tokenovVEfektoch++;
       const a = akciaZTokenu(t[1] ?? "");
-      if (a === null) chyby.push(`{${t[1] ?? ""}} nie je akcia, ktorú hra pozná.`);
+      const ucinok = UCINKY_NAVYSE.find((u) => u.toLocaleLowerCase("sk") === (t[1] ?? "").trim().toLocaleLowerCase("sk"));
+      if (ucinok !== undefined) {
+        if (SPUSTACE_UCINKU.includes(spustac)) ucinky.push(ucinok);
+        else chyby.push(`{${ucinok}} patrí za Konflikt alebo Podporu — zasiahne kartu, s ktorou sa karta stretne.`);
+      } else if (a === null) chyby.push(`{${t[1] ?? ""}} nie je akcia, ktorú hra pozná.`);
       else if (BEZ_SPOJA_NIC.includes(a)) chyby.push(`{${t[1] ?? ""}} nemôže byť akcia navyše — bez spoja nič nerobí.`);
       else akcie.push(a);
     }
-    if (akcie.length > 0) efekty.push({ spustac, tag, akcie, ...(podmienka === "" ? {} : { podmienka }), ...(dedicstvo ? { dedicstvo: true as const } : {}) });
+    if (akcie.length + ucinky.length > 0) {
+      efekty.push({ spustac, tag, akcie, ...(ucinky.length > 0 ? { ucinky } : {}), ...(podmienka === "" ? {} : { podmienka }), ...(dedicstvo ? { dedicstvo: true as const } : {}) });
+    }
   }
   const vsetkych = [...text.matchAll(TOKEN)].length;
   if (vsetkych > tokenovVEfektoch) chyby.push("Piktogram akcie {…} je mimo efektu „Spúšťač: Tag {Akcia}“ alebo „Bitka: podmienka {Akcia}“ — hra ho nevyhodnotí.");
@@ -203,6 +228,8 @@ export function stavNavyse(
         return { ...e, krat: odkryte.some((x) => x.playedBy === pl.playedBy && splnaTag(e.tag, tagyKarty(x.card.defId))) ? 1 : 0 };
       case "Nepriateľ":
         return { ...e, krat: odkryte.some((x) => x.playedBy !== pl.playedBy && splnaTag(e.tag, tagyKarty(x.card.defId))) ? 1 : 0 };
+      case "Furt":
+        return { ...e, krat: 1 };
       case "Podpora":
       case "Konflikt": {
         const od = pl.navyseOd?.[i];

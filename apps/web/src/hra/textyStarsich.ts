@@ -12,7 +12,6 @@ export const NAZOV_ZDROJA: Readonly<Record<ZmenaMarkera["zdroj"], string>> = {
   hadka: "Hádka",
   bodovanie: "Bodovanie",
   vila: "Predsedova vila",
-  nastup: "Kapybara",
   posun: "Reči sa posunuli",
 };
 

@@ -5,10 +5,10 @@
 // z verejných vecí, takže to isté smie ukázať web aj klient agentov.
 
 import type { BattleOutcome, DamageResult } from "./battle.ts";
-import { battleOutcome, vysledokHadky } from "./battle.ts";
+import { battleOutcome } from "./battle.ts";
 import type { GameData } from "./data.ts";
 import type { VerejnyStav } from "./effects.ts";
-import { naexZaPitku } from "./effects.ts";
+import { naexZaPitku, vysledokHadkyStola } from "./effects.ts";
 import type { BitkaKrok, PitkaStav } from "./engine.ts";
 import { lineState, naexCieleVLinii, poskodenieBitky, stranyBitky, zablokovaneStrany } from "./engine.ts";
 import type { ActionSums } from "./partia.ts";
@@ -122,7 +122,7 @@ export function nerozdelenaHadka(data: GameData, stol: StolHadky, sums: readonly
   const b = stol.bitkaStav;
   if (b !== null && b.damage !== null) return { vitaz: null, zostava: 0 };
   if (b === null || b.hadka === undefined) {
-    const h = vysledokHadky(poskodenieBitky(data, stol, sums).makke);
+    const h = vysledokHadkyStola(data, stol, poskodenieBitky(data, stol, sums).makke);
     return { vitaz: h.vitaz, zostava: h.velkost };
   }
   return { vitaz: b.hadka.vitaz, zostava: b.hadka.zostava };

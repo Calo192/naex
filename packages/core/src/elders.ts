@@ -76,14 +76,14 @@ export interface ZmenaMarkera {
   readonly na: Stupen;
   /**
    * nakladacka = víťaz bitky dvíha strach, hadka = víťaz hádky dvíha reči, bodovanie = reči
-   * po bodovaní klesli, vila = Predsedova vila (fajčenie v Pitke), nastup = Kapybara, posun = súperov strach
-   * prekonal reči a blok sa posunul (v11.12).
+   * po bodovaní klesli, vila = Predsedova vila (fajčenie v Pitke), posun = súperov strach
+   * prekonal reči a blok sa posunul (v11.12). Do 2026-11-09 aj nastup = Kapybara.
    */
-  readonly zdroj: "nakladacka" | "hadka" | "bodovanie" | "vila" | "nastup" | "posun";
+  readonly zdroj: "nakladacka" | "hadka" | "bodovanie" | "vila" | "posun";
   /** Spodok bloku rečí pred a po zmene (v11.12); vrch je v z a na, môže ostať rovnaký. */
   readonly odZ?: Stupen;
   readonly odNa?: Stupen;
-  /** Hráč, ktorého ťah či efekt zmenu spôsobil (Kapybara mení súperove reči). */
+  /** Hráč, ktorého ťah či efekt zmenu spôsobil (bodovanie mení reči porazeného v hádke). */
   readonly kto: PlayerId;
 }
 
@@ -319,7 +319,7 @@ export function sMarkerom<E extends Markery>(elder: E, p: PlayerId, marker: Druh
   return { ...elder, strach, reci, reciOd };
 }
 
-/** Reči hráča p o stupeň nižšie (Kapybara, bodovanie): vrch po poklese. v11.12 zospodu, vrch ostáva. */
+/** Reči hráča p o stupeň nižšie (bodovanie): vrch po poklese. v11.12 zospodu, vrch ostáva. */
 export function reciNizsie(elder: Markery, p: PlayerId): Stupen {
   const b = blokReci(elder, p);
   return b !== null && b.od < b.vrch ? b.vrch : 0;
@@ -331,7 +331,7 @@ export function reciOdNizsie(elder: Pick<ElderState, "reci" | "reciOd">, p: Play
   return b !== null && b.od < b.vrch ? ((b.od + 1) as Stupen) : 0;
 }
 
-/** Starší s rečami hráča p o stupeň nižšie (náhľad Kapybary). */
+/** Starší s rečami hráča p o stupeň nižšie (náhľad poklesu rečí). */
 export function sReciNizsie<E extends Markery>(elder: E, p: PlayerId): E {
   const reci: [Stupen, Stupen] = [elder.reci[0], elder.reci[1]];
   reci[p] = reciNizsie(elder, p);

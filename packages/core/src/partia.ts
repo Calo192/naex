@@ -279,7 +279,12 @@ export interface LineEval {
    * súperovi; Odpor lokality sa neráta (Policajtka, Pitka: zadĺženie za každú).
    */
   readonly zruseneOdporom: readonly [number, number];
-  /** Akcie navyše Nástrojov v Dedičstve (Pasca, Výherný automat) podľa uid karty. */
+  /**
+   * Koľko akcií hráča (aj Pakt a Posilnenie) zrušil Odpor súperovej karty — Odpor lokality sa
+   * neráta (Telefón v Dedičstve, Michal 2026-11-09: za každú {Povera} navyše).
+   */
+  readonly zruseneSuperovymOdporom: readonly [number, number];
+  /** Akcie navyše Nástrojov v Dedičstve (Pasca, Výherný automat, Telefón) podľa uid karty. */
   readonly navyseDedicstva?: ReadonlyMap<number, readonly NavyseStav[]>;
 }
 
@@ -731,17 +736,10 @@ function resolveJunction(
         ? ([a, 1, b, 0, actB] as const)
         : ([b, 0, a, 1, actA] as const);
       odporElem.stav[odporSide]![k] = "aktivna";
-      // Telefón (Dedičstvo, v10): tvoje Pohoršenia nemožno zrušiť Odporom — ostávajú aktívne.
-      if (otherAct === "Pohoršenie" && !otherElem.isLokalita && maNastroj(line, otherElem.owner, "telefon")) {
-        otherElem.stav[otherSide]![k] = "aktivna";
-        otherElem.nasobok[otherSide]![k] = 1;
-        otherElem.dovody[otherSide]![k]!.push("karta:telefon");
-      } else {
-        otherElem.stav[otherSide]![k] = "zrusena";
-        otherElem.zrusil[otherSide]![k] = "Odpor";
-        otherElem.zrusilOdporom[otherSide]![k] = odporElem.isLokalita ? null : odporElem.owner;
-        odporElem.odporom.push({ elem: otherElem, side: otherSide, k });
-      }
+      otherElem.stav[otherSide]![k] = "zrusena";
+      otherElem.zrusil[otherSide]![k] = "Odpor";
+      otherElem.zrusilOdporom[otherSide]![k] = odporElem.isLokalita ? null : odporElem.owner;
+      odporElem.odporom.push({ elem: otherElem, side: otherSide, k });
       // Posilnenie + Odpor (v11.1, Michal 2026-11-02): Vzbura IBA karty s Odporom, jej aktívne akcie posilnené.
       if (otherAct === "Posilnenie") {
         markVzbura(odporElem, odporSide);
@@ -987,13 +985,11 @@ function zrusPosilnenie(elem: Elem, line: Pick<LineState, "nastroje">): void {
 
 function applyNaex(elem: Elem, line: Pick<LineState, "nastroje">): void {
   if (!maNaex(elem) || elem.naexStit === "Odpor") return;
-  // Zapaľovač, Energeťák a Telefón (Dedičstvo, Náradie 2026-10-30, v10): tvoje aktívne Cigarety,
-  // Posilnenie, resp. Pohoršenia NA EX nezruší (a nezdvojí — ostávajú, ako sú).
+  // Zapaľovač a Energeťák (Dedičstvo, Náradie 2026-10-30): tvoje aktívne Cigarety, resp.
+  // Posilnenie NA EX nezruší (a nezdvojí — ostávajú, ako sú). Telefón do 2026-11-09 Pohoršenia.
   const imunne: Action[] = [];
   if (!elem.isLokalita && maNastroj(line, elem.owner, "zapalovac")) imunne.push("Cigareta");
   if (!elem.isLokalita && maNastroj(line, elem.owner, "energetak")) imunne.push("Posilnenie");
-  // Telefón (Dedičstvo, v10): tvoje Pohoršenia nemožno zrušiť NA EX.
-  if (!elem.isLokalita && maNastroj(line, elem.owner, "telefon")) imunne.push("Pohoršenie");
   if (elem.defId === "veteran") {
     zdvojAktivne(elem, "NA EX", "NA EX");
     return;
@@ -1143,7 +1139,7 @@ function elemEval(elem: Elem): CardLineEval {
  * Mäsiar (Furt, Michal 2026-10-28): efekty Zvierat v jeho okolí neplatia — uid Zvierat
  * (ktoréhokoľvek hráča), ktoré v línii susedia s odkrytým Mäsiarom. Akcie Zvierat
  * sa rátajú normálne (do 2026-10-28 Mäsiar rušil akcie). Jeden výpočet pre líniu
- * (Pes, Kôň) aj motor (Čierna mačka, Krokodíl, Kohút, Recidivista, Kapybara).
+ * (Pes, Kôň) aj motor (Čierna mačka, Krokodíl, Kohút, Recidivista, Školitelia).
  */
 export function zvieratAUmlcane(data: GameData, line: Pick<LineState, "lokalita" | "strany">): ReadonlySet<number> {
   const out = new Set<number>();
@@ -1151,6 +1147,29 @@ export function zvieratAUmlcane(data: GameData, line: Pick<LineState, "lokalita"
   for (const pl of [...line.strany[0], ...line.strany[1]]) {
     if (!defOf(data, pl.card).tags.includes("Zviera")) continue;
     if (okolieVLinii(l, pl.card.uid).some((s) => s !== null && s.card.defId === "masiar" && s.zaverecna !== true)) out.add(pl.card.uid);
+  }
+  return out;
+}
+
+/**
+ * Karty, ktoré sa na konci bitky spália účinkom {Spálenie} (Krokodíl, Konflikt, Michal 2026-11-09):
+ * každá karta, s ktorou sa nositeľ v tomto kole stretol priložením a ktorá ešte leží v línii.
+ * Nositeľ lícom dole ani umlčaný Mäsiarom nespáli nič — rozhoduje okolie na konci bitky, ako
+ * pri ostatných efektoch Zvierat po bitke.
+ */
+export function spaleniaZoSpojov(data: GameData, line: Pick<LineState, "lokalita" | "strany">): readonly { readonly obet: PlacedCard; readonly od: PlacedCard }[] {
+  const umlcane = zvieratAUmlcane(data, line);
+  const vLinii = new Map([...line.strany[0], ...line.strany[1]].map((pl) => [pl.card.uid, pl] as const));
+  const out: { obet: PlacedCard; od: PlacedCard }[] = [];
+  for (const pl of vLinii.values()) {
+    if (pl.zaverecna === true || umlcane.has(pl.card.uid)) continue;
+    efektyNavyse(defOf(data, pl.card)).forEach((e, i) => {
+      if (!(e.ucinky ?? []).includes("Spálenie")) return;
+      for (const uid of pl.navyseOd?.[i] ?? []) {
+        const obet = vLinii.get(uid);
+        if (obet !== undefined && !out.some((x) => x.obet.card.uid === uid)) out.push({ obet, od: pl });
+      }
+    });
   }
   return out;
 }
@@ -1256,6 +1275,7 @@ export function evaluateLine(data: GameData, line: LineState): LineEval {
   const zdroje: [Partial<Record<Action, ZdrojAkcie[]>>, Partial<Record<Action, ZdrojAkcie[]>>] = [{}, {}];
   const zrusene: [Partial<Record<Action, ZdrojAkcie[]>>, Partial<Record<Action, ZdrojAkcie[]>>] = [{}, {}];
   const zruseneOdporom: [number, number] = [0, 0];
+  const zruseneSuperovymOdporom: [number, number] = [0, 0];
   const pridajZdroj = (p: PlayerId, a: Action, z: ZdrojAkcie): void => {
     (zdroje[p][a] ??= []).push(z);
   };
@@ -1264,7 +1284,7 @@ export function evaluateLine(data: GameData, line: LineState): LineEval {
       const actions = side === 0 ? elem.effLeft : elem.effRight;
       for (let k = 0; k < 4; k++) {
         const action = actions[k];
-        if (action == null || MODIFIERS.includes(action)) continue;
+        if (action == null) continue;
         const stav = elem.stav[side]![k];
         const nasobok = elem.nasobok[side]![k] as number;
         const zrusil = stav === "zrusena" ? elem.zrusil[side]![k] : null;
@@ -1276,6 +1296,10 @@ export function evaluateLine(data: GameData, line: LineState): LineEval {
         // Zrušená akcia sa zapíše tomu, komu by inak patrila.
         const kocovnik = elem.defId === "kocovnik" && elem.staryEfekt && elem.strana !== null ? (susedLokality[elem.strana] ?? elem.owner) : null;
         const target: PlayerId = elem.isLokalita ? (susedLokality[side] ?? side) : (kocovnik ?? elem.owner);
+        const odporomSupera = zrusil === "Odpor" ? (elem.zrusilOdporom[side]![k] ?? null) : null;
+        // Telefón ráta každú tvoju zrušenú akciu, aj modifikátor — Pakt, ktorý Odpor nenechal kopírovať.
+        if (odporomSupera !== null && odporomSupera !== target) zruseneSuperovymOdporom[target] += 1;
+        if (MODIFIERS.includes(action)) continue;
         // Puška: zachránená Petelica udeľuje 2 — v súčtoch sa ráta ako Pecka (2 tuhé).
         const ako: Action = elem.puska[side]![k] ? "Pecka" : akciaPoPremene(elem, action);
         if (zrusil != null) {
@@ -1360,7 +1384,7 @@ export function evaluateLine(data: GameData, line: LineState): LineEval {
       const def = defOf(data, k);
       const efekty = efektyNavyse(def);
       if (!efekty.some((e) => e.dedicstvo === true)) continue;
-      const stav = efekty.map((e): NavyseStav => ({ ...e, krat: kratVDedicstve(line, p, def.id, e) }));
+      const stav = efekty.map((e): NavyseStav => ({ ...e, krat: kratVDedicstve(line, p, def.id, e, zruseneSuperovymOdporom[p]) }));
       navyseDedicstva.set(k.uid, stav);
       pripocitaj(p, def.id, k.uid, stav);
     }
@@ -1394,7 +1418,7 @@ export function evaluateLine(data: GameData, line: LineState): LineEval {
 
   presbiter([partia0, partia1], susedLokality, elems, sums, zdroje);
 
-  return { sums, cards, aktivneStredu: [aktivne(0), aktivne(1)], zdroje, zrusene, zruseneOdporom, ...(navyseDedicstva.size > 0 ? { navyseDedicstva } : {}) };
+  return { sums, cards, aktivneStredu: [aktivne(0), aktivne(1)], zdroje, zrusene, zruseneOdporom, zruseneSuperovymOdporom, ...(navyseDedicstva.size > 0 ? { navyseDedicstva } : {}) };
 }
 
 /**
@@ -1483,19 +1507,21 @@ export function dlhyPoslednejPitky(data: GameData, line: LineState): DlhPosledne
   return out;
 }
 
-/** Koľkokrát platí efekt navyše Nástroja v Dedičstve hráča p (Pasca, Výherný automat). */
-function kratVDedicstve(line: LineState, p: PlayerId, defId: string, e: EfektNavyse): number {
+/** Koľkokrát platí efekt navyše Nástroja v Dedičstve hráča p (Pasca, Výherný automat, Telefón). */
+function kratVDedicstve(line: LineState, p: PlayerId, defId: string, e: EfektNavyse, zruseneOdporomSupera: number): number {
   const kolo = line.kolo;
   if (kolo === undefined || e.dedicstvo !== true) return 0;
   if (e.spustac === "Posledná Pitka kola") return kolo.poslednaPitka ? 1 : 0;
   if (e.spustac !== "Bitka") return 0;
   // Pasca: súper v tomto kole priložil kartu (akúkoľvek, aj lícom dole) k tvojej — za každú Pascu.
   if (defId === "pasca") return kolo.prilozeniaKu[p] > 0 ? 1 : 0;
+  // Telefón (Michal 2026-11-09): za každú tvoju akciu, ktorú v tejto línii zrušil Odpor súperovej karty.
+  if (defId === "telefon") return zruseneOdporomSupera;
   return e.podmienka === undefined ? 1 : 0;
 }
 
 /** Karty, ktorých podmienku slovami jadro pozná — na inej karte ju tvorca hlási ako chybu. */
-export const PODMIENKY_SLOVAMI: readonly string[] = ["pijan", "svokra", "vymahac", "sofer", "traktoristka", "pasca", "vyherny_automat"];
+export const PODMIENKY_SLOVAMI: readonly string[] = ["pijan", "svokra", "vymahac", "sofer", "traktoristka", "pasca", "vyherny_automat", "telefon"];
 
 /**
  * Praudovravec starej sady: Autority hráča p neuplatňujú efekt, keď v súperovej partii leží
@@ -1555,7 +1581,7 @@ export function prispevkyKariet(line: LineState, ev: LineEval): KartaVBitke[] {
 }
 
 /**
- * Susedia karty v línii — „okolie“ z textov kariet (Veterinár, Krokodíl):
+ * Susedia karty v línii — „okolie“ z textov kariet (Veterinár, Mäsiar):
  * karty na oboch stranách bez ohľadu na majiteľa, aj lokalita v strede (null
  * v zozname = lokalita).
  */

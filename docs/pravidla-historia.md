@@ -3304,3 +3304,17 @@ Staré znenie §7 NA EX na kartu s Posilnením (v4–v11.16): „… partnerova 
 Staré znenie §7 podmienky výberu (v6.1–v11.16): „NA EX sa dá len na kartu, ktorá má **aspoň jednu aktívnu a aspoň jednu neaktívnu akciu** …“ — neaktívny Odpor a Posilnenie sa rátali do neaktívnych (NA EX ich „zdvojil“ naprázdno, do súčtov nejdú), neaktívny Pakt nie. NA EX tak smelo na kartu, kde jediná neaktívna akcia bola Odpor či Posilnenie.
 
 Staré správanie jadra pri neaktívnom Odpore a Posilnení pod NA EX (do v11.16): „zdvojené“ na aktívne ×2 bez účinku; ostatné akcie karty NA EX zrušil a zdvojil ako vždy.
+
+### Kapybara, Telefón, Krokodíl a hrany Náradia (Michal 2026-11-09)
+
+Podklady: docs/napady/kapybara-telefon.html (Kapybara Školiteľ, Telefón T1 + T3) a docs/napady/naradie-len-svoje.html (hrany pod vlastné karty).
+
+Staré znenie §16 Kapybara (v11–v11.15): „| Kapybara | Nástup (v11): súperove reči pri jednom staršom (podľa voľby majiteľa) klesnú zospodu o stupeň; posledný stupeň zanikne. **Povinný** — keď má súper reči aspoň pri jednom staršom; inak nič. |“ Text karty: „Nástup: Súperove reči pri jednom staršom klesnú o stupeň.“ Voľba staršieho (príkaz `kapybara`) zanikla.
+
+Staré znenie §16 Krokodíl (v7–v11.15): „| Krokodíl | Bitka: na konci bitky sa spália všetci Občania a Zvieratá v jeho okolí (oboch hráčov); Starešinovia a Nástroje nie. Ich akcie v bitke ešte platia. |“ Text karty: „Bitka: Na konci bitky sa spália všetci Občania a Zvieratá v jeho okolí.“
+
+Staré znenie §12 Náradie, Telefón (v10–v11.15): „| Telefón | Tvoje Pohoršenia nemožno zrušiť Odporom a NA EX. | (v10) Odpor na spoji s tvojím Pohoršením ho nezruší; NA EX tvoje aktívne Pohoršenia nezruší (ani nezdvojí, ako Zapaľovač). Tvoje Pohoršenia sa vždy dostanú do hádky. |“ K tomu §2 (Pohoršenie: „Telefón ho chráni pred Odporom a NA EX“) a §6 Vzbura („Telefón ju nezachráni — chráni pred zrušením, nie pred Vzburou“).
+
+Staré znenie §16 Mäsiar (časť): „Týka sa Psa, Koňa a Čiernej mačky (Furt), Krokodíla (Bitka, aj jeho koniec bitky) a Recidivistu … Kapybara priložená k Mäsiarovi sa nespustí; Nástup, ktorý už prebehol, sa nevracia.“
+
+Staré hrany Nástrojov (v11.14–v11.15, zoznam v5): Energeťák dole {Posilnenie}→{Pečeň}, Injekcia dole {Poldeci}→{Pečeň}, Vidly dole {Rana}→{Pecka}, Valaška dole {Petelica}→{Pecka}, Pasca dole {Pecka}→{Rana}, Zapaľovač dole {Cigareta}→{Pečeň}, Noviny dole {Pohoršenie}→{Povera}, Svätý text dole {Viera}→{Povera}, Nealko hore {Pečeň}→{Viera} a dole {Poldeci}→{Viera}, Krištáľová guľa dole {Vízia}→{Povera}, Výherný automat dole {Cigareta}→{Hazard}, Výherné žreby dole {Vízia}→{Hazard}, Fúrik dole {Robota}→{Hazard}, Horoskop dole {Povera}→{Hazard}, Izolačka dole {Pecka}→{Obmedzenie}.

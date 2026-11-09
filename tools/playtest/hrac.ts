@@ -39,7 +39,6 @@ import {
   krokyZdvihu,
   opisReci,
   sMarkerom,
-  sReciNizsie,
   pohladPoRozdeleni,
   pultStarsich,
   NAZVY_ZON,
@@ -650,7 +649,7 @@ function vykresli(v: ClientState, mena: readonly string[]): string {
     `  STRACH (0 sivá, 1 žltá, 2 oranžová, 3 červená) — ako veľmi sa starší bojí hráča; neklesá. REČI — súvislý blok stupňov na SÚPEROVOM teplomere: obsadzujú sa od vrchu jeho strachu nadol, potom nad neho (zo sivej zdola nahor); keď jeho strach reči prekoná, blok sa posunie nahor a počet stupňov ostáva (spodný zanikne). Reči priazeň, strach, výhru strachom ani zajatie nemenia. ` +
       `PRIAZEŇ pre teba = súperov strach − tvoj strach (najmenej 0; reči sa nerátajú) — vyšší strach ti teda dáva body, ale súperovi priazeň. Stav staršieho podľa vyššieho strachu: ${STAV_STARSIEHO.map((x, i) => `${i} ${x}`).join(", ")}. ` +
       `PO KAŽDEJ BITKE starší bodujú (stav pred zdvihnutím): stupne majú hodnotu ${HODNOTY_STUPNOV} (spolu ${[1, 2, 3].map((st) => KONSTANTY.SPAKY_ZA_STUPEN[st]).join(" / ")}) a dostane ich ten, kto stupeň drží, reči majú prednosť — víťaz bitky za svoj strach bez stupňov, ktoré obsadil súper rečami, KAŽDÝ hráč (vyhral, prehral aj pri sekere) za stupne, ktoré obsadil rečami. Potom klesnú reči zospodu o stupeň tomu, kto prehral hádku (pri remíze v hádke nikomu). ` +
-      `DVÍHANIE: víťaz bitky rozdelí Nakladačku na svoj strach, víťaz hádky hádku na svoje reči na SÚPEROVOM teplomere, Predsedova vila za každé 2 cigarety vyfajčené v Pitke pridá tvoje reči o stupeň, Kapybara zhodí súperovým rečiam spodný stupeň. Stupeň stojí ${CENY_STUPNOV} (napr. strach zo sivej na červenú ${cenaDvihnutia(0, CERVENA)}), strach na stupeň so súperovými rečami o ${KONSTANTY.REC_PRIRAZKA} viac. ` +
+      `DVÍHANIE: víťaz bitky rozdelí Nakladačku na svoj strach, víťaz hádky hádku na svoje reči na SÚPEROVOM teplomere, Predsedova vila za každé 2 cigarety vyfajčené v Pitke pridá tvoje reči o stupeň. Stupeň stojí ${CENY_STUPNOV} (napr. strach zo sivej na červenú ${cenaDvihnutia(0, CERVENA)}), strach na stupeň so súperovými rečami o ${KONSTANTY.REC_PRIRAZKA} viac. ` +
       `ZAJATIE (v11.4, v11.6): pri rozdelení Nakladačky zajmeš za ${KONSTANTY.CENA_ZAJATIA} staršieho, pri ktorom je tvoj strach na červenej UŽ PRED touto Nakladačkou (väzeň; súper ti odovzdá toľko špakov, koľko bodov hádky má v rečiach pri ňom, najviac koľko má). PRESVEDČENIE (v11.12): pri rozdelení hádky za ${KONSTANTY.CENA_PRESVEDCENIA} ktoréhokoľvek staršieho, pri ktorom máš reči na celom súperovom teplomere (smieš ich dotiahnuť v tom istom rozdelení) — reči, strach oboch aj priazeň ostanú, jeho karta ide tebe do ruky a natrvalo do tvojho balíčka. Vo finále ani jedno.`,
   );
   out.push(
@@ -675,7 +674,6 @@ function vykresli(v: ClientState, mena: readonly string[]): string {
       zanik: "zanikli pod strachom",
       presvedcenie: "zanikli presvedčením",
       vila: "Predsedova vila",
-      nastup: "Kapybara",
     };
     const nazovStarsieho = (id: string): string => meno(v.starsi.find((x) => x.elderId === id)?.karta.defId ?? v.vazni.find((x) => x.elderId === id)?.karta.defId ?? id);
     out.push(
@@ -740,7 +738,7 @@ function popisStarsieho(e: StarsiVerejne, r: ReturnType<typeof pultStarsich>["ri
     `  ${e.elderId}: ${meno(e.karta.defId)} (scorecard ${sc.nazov}), ${STAV_STARSIEHO[r.stav]}${ohrozenie}\n` +
     `      TY strach ${stupenText(e.strach[ja])}, tvoje reči na súperovom teplomere ${opisReci(e, ja)} | SÚPER strach ${stupenText(e.strach[su])}, jeho reči na tvojom teplomere ${opisReci(e, su)} | ${priazen}\n` +
     `      po bitke: keď vyhráš ty — ty +${r.vyhra[ja]}, súper +${r.prehra[su]}; keď vyhrá súper — súper +${r.vyhra[su]}, ty +${r.prehra[ja]}` +
-    ` | tvoj ďalší stupeň: strach ${dalsi("strach")}, reči ${dalsi("reci")}${e.reci[su] > 0 ? ` | Kapybara by súperove reči znížila na ${opisReci(sReciNizsie(e, su), su)}` : ""}`
+    ` | tvoj ďalší stupeň: strach ${dalsi("strach")}, reči ${dalsi("reci")}`
   );
 }
 
@@ -817,7 +815,7 @@ function moznosti(v: ClientState): string[] {
   const su = (ja === 0 ? 1 : 0) as PlayerId;
   const nv = v.volbaNastupu;
   if (nv !== null && nv.hrac === ja) {
-    // Voľby v7: karta zo šenku (Zastávka, Predavačka, Živnostník), Kapybara; frakcie (2026-11-08): Zberný dvor, vila.
+    // Voľby v7: karta zo šenku (Zastávka, Predavačka, Živnostník); frakcie (2026-11-08): Zberný dvor, vila.
     if (nv.typ === "dvor") {
       c({ type: "spal", uid: null }, "ZBERNÝ DVOR: nič nepáliť");
       for (const k of v.ruka) if (!(DATA.cards.get(k.defId)?.tags ?? []).includes("Kliatba")) c({ type: "spal", uid: k.uid }, `ZBERNÝ DVOR: spáľ z ruky ${popisKarty(k)} — navždy z hry, tenší balíček`);
@@ -834,22 +832,9 @@ function moznosti(v: ClientState): string[] {
       }
       return out;
     }
-    if (nv.typ === "senok") {
-      // Predavačka ponúka len Občanov, Živnostník len Nástroje (Podpora, 2026-11-09).
-      const kto = nv.zdroj === "predavacka" ? "PREDAVAČKA" : nv.zdroj === "zivnostnik" ? "ŽIVNOSTNÍK" : "ZO ŠENKU";
-      for (const k of ponukaSenku(DATA, v, nv)) c({ type: "senok", uid: k.uid }, `${kto}: vezmi si zo šenku ${popisKarty(k)} zadarmo do ruky`);
-      return out;
-    }
-    // Kapybara (v11): súperove reči pri jednom staršom o stupeň nižšie — povinne, ponúka sa len tam, kde nejaké má.
-    for (const e of v.starsi) {
-      if (e.reci[su] === 0) continue;
-      const pred = spakovStarsieho(e, su);
-      const po = spakovStarsieho(sReciNizsie(e, su), su);
-      c(
-        { type: "kapybara", elderId: e.elderId },
-        `KAPYBARA: súperove reči pri ${meno(e.karta.defId)} ${opisReci(e, su)} → ${opisReci(sReciNizsie(e, su), su)} (súperove špaky od neho po bitke: pri jeho výhre ${pred.vyhra} → ${po.vyhra}, pri jeho prehre ${pred.prehra} → ${po.prehra})`,
-      );
-    }
+    // Predavačka ponúka len Občanov, Živnostník len Nástroje (Podpora, 2026-11-09).
+    const kto = nv.zdroj === "predavacka" ? "PREDAVAČKA" : nv.zdroj === "zivnostnik" ? "ŽIVNOSTNÍK" : "ZO ŠENKU";
+    for (const k of ponukaSenku(DATA, v, nv)) c({ type: "senok", uid: k.uid }, `${kto}: vezmi si zo šenku ${popisKarty(k)} zadarmo do ruky`);
     return out;
   }
   if (v.hasicVolba !== null) {

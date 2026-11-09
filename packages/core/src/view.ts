@@ -287,7 +287,7 @@ export interface ClientState {
   readonly hasicVolba: { readonly hrac: PlayerId; readonly karta: CardInstance | null } | null;
   /**
    * Voľba, ktorá čaká ako Hasič: karta zo šenku (Zastávka; Predavačka len Občana a Živnostník len
-   * Nástroj — tag a zdroj), starší pre Kapybaru, Zberný dvor, Predsedova vila. Verejné obom.
+   * Nástroj — tag a zdroj), Zberný dvor, Predsedova vila. Verejné obom.
    */
   readonly volbaNastupu: ({ readonly typ: NonNullable<HasicVolba["typ"]>; readonly hrac: PlayerId } & Pick<HasicVolba, "tag" | "zdroj">) | null;
   /**

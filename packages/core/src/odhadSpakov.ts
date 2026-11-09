@@ -3,10 +3,11 @@
 // (vyplatSpaky, bodovanie starších, exekucieBitky) a test ich porovnáva so skutočnou bitkou.
 // Krádež pri zajatí v odhade nie je: rozhodne o nej víťaz až pri delení Nakladačky (krok 4e).
 
-import { battleOutcome, spakyPriExekucii, vysledokHadky, type DamageResult, type RozhodnutieBitky } from "./battle.ts";
+import { battleOutcome, spakyPriExekucii, type DamageResult, type RozhodnutieBitky } from "./battle.ts";
 import { spakyOdStarsieho } from "./elders.ts";
 import type { GameData } from "./data.ts";
 import type { VerejnyStav } from "./effects.ts";
+import { vysledokHadkyStola } from "./effects.ts";
 import { jeFinale, kartyBitky, paleneDlhyVBitke, silaPriazne, spakyZaVyhru, verejneAbstaky, zahradkarChrani } from "./engine.ts";
 import type { LineEval } from "./partia.ts";
 import { KONSTANTY } from "./constants.ts";
@@ -46,7 +47,7 @@ function rozpisVysledku(data: GameData, s: StavOdhadu, linia: LineEval, makke: r
   const finale = jeFinale(s);
   const karty = kartyBitky(s);
   const palene = paleneDlhyVBitke(data, s, linia);
-  const hd = vysledokHadky(makke);
+  const hd = vysledokHadkyStola(data, s, makke);
   const vitazHadky = hd.vitaz;
   const vyplata = vitaz === null ? null : spakyZaVyhru(s, vitaz, karty, vitazHadky);
   const rozpis = (p: PlayerId): RozpisOdhadu => {

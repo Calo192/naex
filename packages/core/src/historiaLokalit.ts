@@ -60,7 +60,7 @@ export interface LokalitaVHistorii {
   readonly pitky: readonly PitkaVHistorii[];
   /** Rekapitulácia bitky (null, kým sa nebilo). Špaky v nej sú z okamihu výsledku — konečné nesie nástenka. */
   readonly bitka: RekapitulaciaBitky | null;
-  /** Posuny markerov počas kola (zajatie, Kšeft, Kapybara, po bitke Nakladačka; do v9 aj Pohoršenie). */
+  /** Posuny markerov počas kola (zajatie, Kšeft, do 2026-11-09 Kapybara, po bitke Nakladačka; do v9 aj Pohoršenie). */
   /** Zmeny strachu a rečí v kole (v11; do v10 posuny markerov). */
   readonly posuny: readonly PosunVHistorii[];
   /** Zdroje oboch po konci kola; null, kým kolo beží. */

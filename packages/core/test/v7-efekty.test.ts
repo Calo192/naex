@@ -237,22 +237,8 @@ describe("efekty v línii (v7)", () => {
     expect(overene).toBeGreaterThan(0);
   });
 
-  it("Kapybara (v11.12): súperove reči pri jednom staršom zospodu o stupeň nižšie — bez súperových rečí prepadne, partia sa nezasekne", () => {
-    const kapy = inst("kapybara");
-    const sk = vZhromazdeni("zastavka", [[], []], [kapy]);
-    // Vlastné reči sa neponúkajú, len súperove.
-    const starsi = sk.starsi.map((e, i) => (i === 0 ? { ...e, strach: [0, 0] as const, reci: [2, 0] as const } : e));
-    const r = apply(data, { ...sk, starsi }, { type: "place", uid: kapy.uid, target: "vlastna" }, 0);
-    expect(r.state.hasicVolby ?? []).toEqual([]);
-    expect(r.events.some((e) => e.type === "log" && e.text.startsWith("Kapybara: súper nemá pri nikom reči"))).toBe(true);
-    const p = ([0, 1] as const).find((q) => mozeHrat(r.state, q)) ?? naTahu(r.state);
-    expect(p).not.toBeNull();
-    expect(legalCommands(data, r.state, p!).length).toBeGreaterThan(0);
-    const sReciami = sk.starsi.map((e, i) => (i === 1 ? { ...e, strach: [0, 1] as const, reci: [0, 3] as const, reciOd: [0, 2] as const } : e));
-    const pk = apply(data, { ...sk, starsi: sReciami }, { type: "place", uid: kapy.uid, target: "vlastna" }, 0).state;
-    expect(legalCommands(data, pk, 0)).toEqual([{ type: "kapybara", elderId: sReciami[1]!.elderId }]);
-    expect(apply(data, pk, { type: "kapybara", elderId: sReciami[1]!.elderId }, 0).state.starsi[1]!.reciOd).toEqual([0, 3]);
-  });
+  // Kapybara (Nástup — súperove reči o stupeň nižšie) a Krokodíl (Bitka — Občania a Zvieratá v okolí)
+  // zanikli 2026-11-09; nové efekty: kapybara-telefon-krokodil.test.ts.
 
   it("Pes: aktívne akcie na spoji so súperovou kartou sa rátajú dvakrát; vedľa Mäsiara nie (2026-10-28)", () => {
     const sucet = (s: GameState, uid: number): number => {
@@ -289,22 +275,6 @@ describe("efekty v línii (v7)", () => {
     expect(sucet(priMasiarovi, 1)).toBe(pocet(priMasiarovi, 1));
   });
 
-
-  it("Krokodíl: na konci bitky idú z hry Občania a Zvieratá v jeho okolí (oboch hráčov)", () => {
-    const kroko = inst("krokodil");
-    const moj = inst("zamocnik");
-    const jeho = inst("sofer");
-    const s = vPitke("zastavka", [[lezi(moj, 0), lezi(kroko, 0), lezi(jeho, 1)], []]);
-    const po = dohrajKolo(s);
-    const vsetky = (p: PlayerId, t: GameState = po): number[] => [...t.hraci[p].ruka, ...t.hraci[p].doberaci, ...t.hraci[p].odhadzovaci].map((k) => k.uid);
-    expect(vsetky(0)).not.toContain(moj.uid);
-    expect(vsetky(1)).not.toContain(jeho.uid);
-    expect(vsetky(0)).toContain(kroko.uid);
-    // Vedľa Mäsiara (2026-10-28) Krokodíl nič nezožerie.
-    const masiar = inst("masiar");
-    const priMasiarovi = dohrajKolo(vPitke("zastavka", [[lezi(inst("zamocnik"), 0), lezi(inst("krokodil"), 0), lezi(masiar, 1)], []]));
-    expect(vsetky(1, priMasiarovi)).toContain(masiar.uid);
-  });
 });
 
 describe("Pitka (v7)", () => {

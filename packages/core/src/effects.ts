@@ -19,6 +19,8 @@ import type { PlayerState } from "./player.ts";
 import { limitVykladania } from "./player.ts";
 import { KONSTANTY } from "./constants.ts";
 import { efektyNavyse } from "./navyse.ts";
+import type { VysledokHadky } from "./battle.ts";
+import { vysledokHadky } from "./battle.ts";
 
 /**
  * Verejná časť stavu, z ktorej čítajú efekty ovplyvňujúce bitku a prahy.
@@ -90,7 +92,7 @@ export const REGISTER: Readonly<Record<string, EfektStatus>> = {
   nealko: "impl", // Dedičstvo: tvoj prah Cirhózy je o 2 vyšší (prahCirhozyBonus)
   niekoho_stryna: "impl", // Konflikt: {Pohoršenie} pri ktorejkoľvek súperovej karte (navyse.ts; 2026-11-08 bez tagu, predtým Závislý); stará Pitka — bez NA EX +1 pečeň — len stará sada (prirastkyPitky)
   noviny: "impl", // Dedičstvo: Hádka (v11.5): víťaz hádky — súper odhodí 1 náhodnú kartu z ruky (engine novinyPoHadke)
-  pasca: "impl", // Dedičstvo: Bitka (v7): súper v kole priložil kartu k tvojej → Rana navyše (bitkaMody; v zápise {Rana} evaluateLine)
+  pasca: "impl", // Dedičstvo: Bitka (v7): súper v kole priložil kartu k tvojej → Rana navyše (bitkaMody; v zápise {Rana} evaluateLine, partia.ts kratVDedicstve)
   pijan: "impl", // Bitka (v7): Rana navyše za každé vlastné NA EX v kole (bitkaMody; v zápise {Rana} evaluateLine)
   policajtka: "impl", // Nepriateľ: Kriminál {Petelica} (navyse.ts); stará Pitka — zadĺženie za akciu zrušenú Odporom (pokutaPolicajtky) — a starší Konflikt (Dlh, za Kriminála 2 cigarety) len staré sady
   postarka: "impl", // Schopnosť väzňa: 4 cigarety
@@ -116,7 +118,7 @@ export const REGISTER: Readonly<Record<string, EfektStatus>> = {
   hrable: "impl", // Dedičstvo: akcia zrušená tvojím Odporom sa ráta ako tvoja a je posilnená (partia.ts)
   zrkadlo: "impl", // Dedičstvo: tvoj Pakt kopíruje prepojenú akciu dvakrát (partia.ts)
   boxer: "impl", // Dedičstvo: tvoje Pecky o 1 poškodenie viac (nastrojeTuhe)
-  telefon: "impl", // Dedičstvo (v10): tvoje Pohoršenia nemožno zrušiť Odporom a NA EX (partia.ts)
+  telefon: "impl", // Dedičstvo (2026-11-09): Hádka — remízu (nie 0 : 0) vyhráva majiteľ (vysledokHadkyStola); Bitka — {Povera} za každú jeho akciu zrušenú súperovým Odporom (partia.ts kratVDedicstve); imunita Pohoršení do 2026-11-09 zanikla
   jogurt: "impl", // Dedičstvo: tvoje Poldeci otáčajú vypitý poldeci hneď v Pitke (vyhodnotPitku)
   energetak: "impl", // Dedičstvo: tvoje Posilnenie nemožno zrušiť NA EX (partia.ts)
   horoskop: "impl", // Dedičstvo (v10): tvoje Povery majú silu 2 — mäkké (stranyBitky)
@@ -151,8 +153,8 @@ export const REGISTER: Readonly<Record<string, EfektStatus>> = {
   // Sada v7 (revízia, Michal 2026-10-27) — schválené novinky, nové karty a lokality.
   vidly: "impl", // Dedičstvo (v7): Rany o 1 poškodenie viac (nastrojeTuhe)
   lievik: "impl", // Dedičstvo: NA EX aj na Zviera (naexCieleVLinii)
-  krokodil: "impl", // Bitka (v7): na konci bitky spáli Občanov a Zvieratá v jeho okolí (koniecBitky)
-  kapybara: "impl", // Nástup (v7): marker staršieho o 1 k stredu (voľba kapybara)
+  krokodil: "impl", // Konflikt: {Spálenie} (2026-11-09): súperova karta, s ktorou sa stretne, sa na konci bitky spáli (navyse.ts, partia.ts spaleniaZoSpojov, engine vratKartyPoBitke); starý Bitka — Občania a Zvieratá v okolí — zanikol
+  kapybara: "impl", // Školiteľ (2026-11-09): Podpora aj Konflikt Preškolenie {Viera}→{Cigareta} (preskolenie.ts) a Furt: {Cigareta} (navyse.ts); starý Nástup — súperove reči o stupeň nižšie — zanikol
   kon: "impl", // Furt (Náradie 2026-11-08): kým leží, Nástroj smie aj pod Zviera (podlozenie.ts); v11.5 jeho Roboty pália o 1 Dlh viac (engine robotyKona)
   kohut: "impl", // Pitka (v7): posledné slovo pri odpovediach na NA EX má majiteľ (odhalNaex)
   degustatorka: "impl", // Nástup: súperovi s viac plnými poldeci otočí jeden na vypitý
@@ -216,6 +218,18 @@ export function zvieraPlati(data: GameData, state: Pick<VerejnyStav, "strany" | 
 
 export function vDedicstve(state: VerejnyStav, p: PlayerId, defId: string): boolean {
   return state.hraci[p].dedicstvo.some((k) => k.defId === defId);
+}
+
+/**
+ * Hádka so stavom stola (§9.1): Telefón (Dedičstvo: Hádka, Michal 2026-11-09) — remízu, ktorá nie
+ * je 0 : 0, vyhráva hráč s Telefónom v Dedičstve, o 0. Majú ho obaja = remíza ostáva. Pri 0 : 0
+ * hádka nebola. Telefón so starým textom (imunita Pohoršení, do 2026-11-09) remízu nemení.
+ */
+export function vysledokHadkyStola(data: GameData, state: Pick<VerejnyStav, "hraci">, makke: readonly [number, number]): VysledokHadky {
+  const h = vysledokHadky(makke);
+  if (h.vitaz !== null || makke[0] === 0 || data.cards.get("telefon")?.effectText.includes("Remíz") !== true) return h;
+  const [ma0, ma1] = ([0, 1] as const).map((p) => state.hraci[p].dedicstvo.some((k) => k.defId === "telefon"));
+  return ma0 === ma1 ? h : { vitaz: ma0 ? 0 : 1, velkost: 0, telefon: true };
 }
 
 /**
@@ -604,7 +618,6 @@ const VPLYVY_BEZ_CISLA: readonly { readonly zdroj: string; readonly akcia: Actio
   { zdroj: "pistalka", akcia: "Obmedzenie", popis: "Obmedzenie uberie aj cigarety za pas" },
   { zdroj: "hrable", akcia: "Odpor", popis: "akcia zrušená Odporom je tvoja a posilnená" },
   { zdroj: "zrkadlo", akcia: "Pakt", popis: "Pakt kopíruje prepojenú akciu dvakrát" },
-  { zdroj: "telefon", akcia: "Pohoršenie", popis: "Pohoršenie nemožno zrušiť Odporom ani NA EX" },
   { zdroj: "jogurt", akcia: "Poldeci", popis: "Poldeci otočí vypitý poldeci hneď v Pitke" },
   { zdroj: "horoskop", akcia: "Povera", popis: "Povera má silu 2 (2 mäkké)" },
   { zdroj: "kristalova_gula", akcia: "Vízia", popis: "Vízia ukáže 2 vrchné karty" },

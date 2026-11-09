@@ -172,7 +172,7 @@ describe("Vzbura obráti aktivitu karty (v11.1)", () => {
     expect(ev.sums[0]).toEqual({ Pecka: 1, Rana: 2 });
   });
 
-  it("Telefón chráni Pohoršenie pred zrušením, nie pred Vzburou — spojené je neaktívne", () => {
+  it("Pohoršenie karty so Vzburou proti Odporu je zrušené, do súčtov nejde (Telefón ho do 2026-11-09 chránil len pred zrušením)", () => {
     // C · B · A: C–B Odpor + Odpor (index 0); B Pohoršenie proti Odporu A (index 1).
     const aL2: Layout4 = [null, "Odpor", null, null];
     const bL2: Layout4 = ["Odpor", null, null, null];
@@ -181,8 +181,8 @@ describe("Vzbura obráti aktivitu karty (v11.1)", () => {
     const data = syntheticData([makeDef("a", aL2, EMPTY), makeDef("b", bL2, bR2), makeDef("c", EMPTY, cR2)]);
     const b = instanceFor(data, "b", bL2, bR2);
     const strany: LineState["strany"] = [[own(instanceFor(data, "a", aL2, EMPTY)), own(b), own(instanceFor(data, "c", EMPTY, cR2))], []];
-    const ev = evaluateLine(data, { lokalita: null, lokalitaOtocena: false, strany, nastroje: [["telefon"], []] });
-    expect(ev.cards.get(b.uid)?.right[1]?.stav).toBe("neaktivna");
+    const ev = evaluateLine(data, { lokalita: null, lokalitaOtocena: false, strany, nastroje: [[], []] });
+    expect(ev.cards.get(b.uid)?.right[1]?.stav).toBe("zrusena");
     expect(ev.sums[0].Pohoršenie).toBeUndefined();
   });
 

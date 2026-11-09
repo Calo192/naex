@@ -243,9 +243,9 @@ describe("§2 Pakt je akciou, ktorú kopíruje, pre všetky efekty (v11.16)", ()
     expect(par(["Pakt", null, null, null], ["Pecka", null, null, null], []).sums[0]).toEqual({ Pecka: 2 });
   });
 
-  it("Telefón chráni pred NA EX aj Pakt, ktorý kopíruje Pohoršenie", () => {
-    expect(par(["Pakt", null, null, null], ["Pohoršenie", null, null, null], [], true).sums[0].Pohoršenie).toBe(1);
-    expect(par(["Pakt", null, null, null], ["Pohoršenie", null, null, null], ["telefon"], true).sums[0].Pohoršenie).toBe(2);
+  it("Zapaľovač chráni pred NA EX aj Pakt, ktorý kopíruje Cigaretu (do 2026-11-09 to isté Telefón s Pohoršením)", () => {
+    expect(par(["Pakt", null, null, null], ["Cigareta", null, null, null], [], true).sums[0].Cigareta).toBe(1);
+    expect(par(["Pakt", null, null, null], ["Cigareta", null, null, null], ["zapalovac"], true).sums[0].Cigareta).toBe(2);
   });
 });
 

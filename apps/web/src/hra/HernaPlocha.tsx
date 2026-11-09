@@ -49,7 +49,7 @@ import type {
   ZobrataVerejne,
   Zdvih,
 } from "@naex/core";
-import { prveFajcenieZadarmo, opisReci, sReciNizsie, sRadom, odhadSpakovKola, type StavOdhadu, riadkyCakajuceho, riadkyCakajucichPoldeci, KONSTANTY, jeCoTahat, jeFinaleNaNastenke, cigaretyZaPas, spakov, efektyPrehry, hrozbaKliatob, mozeEsteNaex, textHrozbyKliatob, textyEfektovPrehry, cenaKliatby, battleOutcome, prebytokNaRozdelenie, nahladPitky, pocet, tvar, vyhladDlhov, evaluateLine, efektyNavyse, pocitadloBitky, pitkaPredBitkou, hrozbaNaex, krokStavby, planVykladania, barterCena, limitBuduceKolo, limitZhromazdenia, lineState, nahladZajatia, prevahaStran, krajeStran, dovodZakazuFajcit, defOf, jednotaZakazuje, ponukaSenku, cenaFajceniaHraca, naexLimitMinuty as naexLimitMinutyHraca, sMojimiSkrytymiNaex, sPrilozenou, vystrahaPecene, nahladNaexNaKartu, najhorsiaOdpovedNaNaex, cenaTahu, nahladVylozenia, moznostiNaexVPohlade, zablokovaneStrany, NASTROJ_DO_LINIE, favourStarsieho, krokRozdelenia, cieleOdpovede, maxZoSenku, bodyRozdelenia, printedSides, poskodenieBitky, rozpisPoskodenia, prahyHraca, scorecardStarsieho, stavKraja, stavkaBitky, stavZavislosti, stranyLokality, vidiVolbuSupera, hraVPitke, cakaSBzdochou, opponentOf, majitelPresvedcenej, moznostiAkcie, cenaAkcieUplna, zdvihyPreAkcie, navrhRozdelenia, pohladPoRozdeleni, priazenHraca, priazenSila, pultStarsich, spakyTeraz, NAZVY_ZON, reciNizsie, vazniNaVyhru } from "@naex/core";
+import { prveFajcenieZadarmo, opisReci, sRadom, odhadSpakovKola, type StavOdhadu, riadkyCakajuceho, riadkyCakajucichPoldeci, KONSTANTY, jeCoTahat, jeFinaleNaNastenke, cigaretyZaPas, spakov, efektyPrehry, hrozbaKliatob, mozeEsteNaex, textHrozbyKliatob, textyEfektovPrehry, cenaKliatby, battleOutcome, prebytokNaRozdelenie, nahladPitky, pocet, tvar, vyhladDlhov, evaluateLine, efektyNavyse, pocitadloBitky, pitkaPredBitkou, hrozbaNaex, krokStavby, planVykladania, barterCena, limitBuduceKolo, limitZhromazdenia, lineState, nahladZajatia, prevahaStran, krajeStran, dovodZakazuFajcit, defOf, jednotaZakazuje, ponukaSenku, cenaFajceniaHraca, naexLimitMinuty as naexLimitMinutyHraca, sMojimiSkrytymiNaex, sPrilozenou, vystrahaPecene, nahladNaexNaKartu, najhorsiaOdpovedNaNaex, cenaTahu, nahladVylozenia, moznostiNaexVPohlade, zablokovaneStrany, NASTROJ_DO_LINIE, favourStarsieho, krokRozdelenia, cieleOdpovede, maxZoSenku, bodyRozdelenia, printedSides, poskodenieBitky, rozpisPoskodenia, prahyHraca, scorecardStarsieho, stavKraja, stavkaBitky, stavZavislosti, stranyLokality, vidiVolbuSupera, hraVPitke, cakaSBzdochou, opponentOf, majitelPresvedcenej, moznostiAkcie, cenaAkcieUplna, zdvihyPreAkcie, navrhRozdelenia, pohladPoRozdeleni, priazenHraca, priazenSila, pultStarsich, spakyTeraz, NAZVY_ZON, vazniNaVyhru } from "@naex/core";
 import type { Moment, ActionSums, DopadyNahladu, KliatbyNahladu, NahladNaexNaKartu, PrebytokNahladu, NahladVylozenia, PolozkaVykladania, Rod, Slot, StranaLinie, VystrahaPecene } from "@naex/core";
 import type { KtoraHrana, MoznostPodlozenia, PodlozenyNastroj } from "@naex/core";
 import { aktivnaHrana, dovodNepodlozenia, hranyNastroja, ponukaPodlozenia, ucinkyNastrojov } from "@naex/core";
@@ -3989,7 +3989,7 @@ export function HernaPlocha({
       };
     }
     if (view.volbaNastupu !== null && view.volbaNastupu.hrac === ja) {
-      // Voľby v7 čakajú ako Hasič: karta zo šenku (Zastávka, Predavačka, Živnostník), Kapybara.
+      // Voľby v7 čakajú ako Hasič: karta zo šenku (Zastávka, Predavačka, Živnostník), Zberný dvor, vila.
       const nv = view.volbaNastupu;
       if (nv.typ === "dvor") {
         // Frakcie (2026-11-08): Zberný dvor — spáliť 1 kartu z ruky, nie kliatbu.
@@ -4025,38 +4025,18 @@ export function HernaPlocha({
           ),
         };
       }
-      if (nv.typ === "senok") {
-        // Podpora Predavačky (len Občan) a Živnostníka (len Nástroj) ponúka len kartu toho druhu.
-        const ponuka = ponukaSenku(data, view, nv);
-        return {
-          nadpis: nv.zdroj === "predavacka" ? "Predavačka" : nv.zdroj === "zivnostnik" ? "Živnostník" : "Karta zo šenku",
-          text: (
-            <span className="vizia-text">
-              <span>{textVolbySenku(nv.zdroj)}</span>{" "}
-              {ponuka.map((k) => (
-                <span key={k.uid} className="vizia-karta">
-                  {karta({ karta: k, sirka: 72, onClick: () => posli({ type: "senok", uid: k.uid }) })}
-                </span>
-              ))}
-            </span>
-          ),
-        };
-      }
+      // Šenok: Podpora Predavačky (len Občan) a Živnostníka (len Nástroj) ponúka len kartu toho druhu.
+      const ponuka = ponukaSenku(data, view, nv);
       return {
-        nadpis: "Kapybara",
+        nadpis: nv.zdroj === "predavacka" ? "Predavačka" : nv.zdroj === "zivnostnik" ? "Živnostník" : "Karta zo šenku",
         text: (
-          <span>
-            Zníž súperove reči pri jednom staršom o stupeň:{" "}
-            {view.starsi
-              .filter((e) => e.reci[super_] > 0)
-              .map((e) => {
-                const na = reciNizsie(e, super_);
-                return (
-                  <button key={e.elderId} type="button" className="pecat pecat-nakup" data-vyucba={`tlacidlo:kapybara-${e.elderId}`} onClick={() => posli({ type: "kapybara", elderId: e.elderId })}>
-                    {defOf(data, e.karta).name}: {opisReci(e, super_)} → {na === 0 ? "zaniknú" : opisReci(sReciNizsie(e, super_), super_)}
-                  </button>
-                );
-              })}
+          <span className="vizia-text">
+            <span>{textVolbySenku(nv.zdroj)}</span>{" "}
+            {ponuka.map((k) => (
+              <span key={k.uid} className="vizia-karta">
+                {karta({ karta: k, sirka: 72, onClick: () => posli({ type: "senok", uid: k.uid }) })}
+              </span>
+            ))}
           </span>
         ),
       };
@@ -4857,13 +4837,6 @@ export function HernaPlocha({
     };
   };
   // Nakladačku a hádku rozdeľuje hráč klikom na stupeň v teplomeri (rozdelenieStarsieho).
-  const klikStarsi = (elder: ElderState): { readonly akcia: string; readonly klik: () => void } | undefined => {
-    // Kapybara (v11): súperove reči pri staršom o stupeň nižšie — výber aj klikom v línii.
-    if (view.volbaNastupu?.typ === "kapybara" && view.volbaNastupu.hrac === ja && elder.reci[super_] > 0) {
-      return { akcia: "Kapybara — súperove reči o stupeň nižšie", klik: () => posli({ type: "kapybara", elderId: elder.elderId }) };
-    }
-    return undefined;
-  };
 
   // ---- línia starších na mieste línie kariet (Michal 2026-10-23, #68 + #69 variant A) ----
   // Krok na staršom ukáže líniu obom hráčom; čakajúci si smie nahliadnuť na stôl.
@@ -5028,14 +5001,12 @@ export function HernaPlocha({
     }
     const e = m.elder;
     const rozdelenie = rozdelenieStarsieho(e);
-    const klik = rozdelenie === undefined ? klikStarsi(e) : undefined;
     const zmeny = view.zmenyMarkerov.filter((x) => x.elderId === e.elderId);
     const s: StarsiVLinii = {
       elder: e,
       meno: menoKarty(e.karta.defId),
       obrazok: obrazokStarsieho(e.karta.defId),
-      klik,
-      dovod: klik === undefined && rozdelenie === undefined ? zamokStarsieho(e) : undefined,
+      dovod: rozdelenie === undefined ? zamokStarsieho(e) : undefined,
       presvedcil: e.presvedcil === undefined ? null : { kto: e.presvedcil },
       vybrany: akcieDelenia.includes(e.elderId),
       akcia: akciaStarsieho(e),

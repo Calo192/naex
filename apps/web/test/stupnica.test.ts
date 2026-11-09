@@ -13,7 +13,7 @@ describe("zmeny markerov (v11)", () => {
 
   it("štítok nesie zdroje a počet", () => {
     expect(stitokZmien([z({}), z({ zdroj: "hadka", marker: "reci" }), z({ z: 1, na: 2 })])).toBe("Nakladačka ×2 · Hádka");
-    expect(stitokZmien([z({ zdroj: "nastup", kto: 1, hrac: 0, marker: "reci" })])).toBe("Kapybara");
+    expect(stitokZmien([z({ zdroj: "vila", kto: 1, hrac: 0, marker: "reci" })])).toBe("Predsedova vila");
   });
 
   it("zmena slovami z pohľadu hráča", () => {

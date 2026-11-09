@@ -347,8 +347,10 @@ export const KAPITOLY: readonly Kapitola[] = [
         </p>
         <p className="zvyraznene">
           <P k="akcia-navyse">Akcie navyše</P> sú v pečati dole v ilustrácii karty. Sú to aktívne akcie majiteľa karty mimo hrán
-          a rátajú sa ako tie isté akcie. Pri Spoločníkovi a Nepriateľovi platia raz, kým platí podmienka; pri Podpore a Konflikte
-          za každé stretnutie, do konca kola. Posilnenie, Odpor, NA EX ani podložený Nástroj ich nemenia, Nástroje v Dedičstve (napríklad Valaška) áno.
+          a rátajú sa ako tie isté akcie. Pri Spoločníkovi a Nepriateľovi platia raz, kým platí podmienka; pri Furt (bez podmienky) raz,
+          kým karta leží; pri Podpore a Konflikte za každé stretnutie, do konca kola. Posilnenie, Odpor, NA EX ani podložený Nástroj ich
+          nemenia, Nástroje v Dedičstve (napríklad Valaška) áno. Plameň <P k="spalenie">Spálenie</P> v pečati (Krokodíl) nie je akcia:
+          karta, s ktorou sa stretne, sa na konci bitky spáli.
         </p>
         <p>
           <P k="skolitel">Školiteľ</P> (Občan alebo Zviera) má efekt <P k="preskolenie">Preškolenie</P> X → Y: akcia X inej karty sa ráta ako Y —
@@ -626,7 +628,7 @@ export const KAPITOLY: readonly Kapitola[] = [
         <ol className="kroky">
           <li>
             <strong>Hádka</strong> — Viera ruší Povery, kto má viac mäkkého (Pohoršenie 2, Povera 1), vyhral hádku o rozdiel. Priazne sa nemenia, rozdelí sa až neskôr.
-            Noviny v Dedičstve víťaza: porazený v hádke odhodí náhodnú kartu z ruky.
+            Remízu (nie 0 : 0) vyhrá o 0, kto má v Dedičstve Telefón. Noviny v Dedičstve víťaza: porazený v hádke odhodí náhodnú kartu z ruky.
           </li>
           <li>
             <strong>Poškodenie</strong> — k tuhému z línie sa pripočítajú akcie navyše z efektov Bitka (Šofér, Pijan…); tuhé znižuje
@@ -660,7 +662,7 @@ export const KAPITOLY: readonly Kapitola[] = [
           </li>
           <li>
             <strong>Cigarety po bitke</strong> — porazený dostane 1 cigaretu (pri sekere a po finále nikto), Kmotor (kto má jeho priazeň, tomu prejdú 2 / 3 / 4 priznané Dlhy k súperovi), Fajčiar
-            (cigarety po bitke) a <P k="vypalne">výpalné</P> (po finále nie), potom Krokodíl.
+            (cigarety po bitke) a <P k="vypalne">výpalné</P> (po finále nie), potom sa spália karty, s ktorými sa stretol Krokodíl.
           </li>
           <li>
             <strong>Návrat kariet</strong> do odhadzovacieho balíčka hráča, ktorý ich zahral; podložený Nástroj tomu, kto ho podložil.
@@ -873,7 +875,7 @@ export const KAPITOLY: readonly Kapitola[] = [
         <H3 id="nastroje-hrany">Dve hrany</H3>
         <p>
           <P k="nastroj">Nástroj</P> nemá akcie po bokoch ako ostatné karty. Má <strong>hornú a dolnú hranu</strong>, obe vo farbe
-          karty, a v strede ilustráciu a text Dedičstva. Každá hrana robí jedno z dvoch:
+          karty, a v strede ilustráciu a text Dedičstva. Každá hrana robí jedno z troch:
         </p>
         <ul>
           <li>
@@ -882,13 +884,16 @@ export const KAPITOLY: readonly Kapitola[] = [
             Nástroj pod ňou nerobí nič.
           </li>
           <li>
+            <strong>Posilnená X</strong> — aktívne akcie X na karte sú posilnené ×2 ako pri Posilnení (Puška, Pasca, Fúrik, Horoskop, Izolačka).
+          </li>
+          <li>
             <strong>Účinok na celú kartu</strong> — <strong>Energeťák</strong> jej dá <P k="forsaz">Forsáž</P> (všetky aktívne akcie
             ×2), <strong>Vínko</strong> <P k="naex">NA EX</P> (bez poldeca — nikto nepije, pečeň ani nerest nie sú),{" "}
             <strong>Injekcia</strong> z nej urobí <P k="vytrznik">Výtržníka</P> a <strong>Vidly</strong> ju obrátia{" "}
             <P k="vzbura">Vzburou</P>. Na druhej hrane majú tieto štyri preškolenie.
           </li>
         </ul>
-        <p>Nástroj smieš podložiť len pod svoju kartu. Hrana, ktorá jej škodí, sa zahrať dá, len sa neoplatí.</p>
+        <p>Nástroj smieš podložiť len pod svoju kartu, preto hrany kartu, pod ktorou ležia, zlepšujú — alebo pomôžu podľa toho, čo leží vedľa.</p>
         <H3 id="nastroje-podlozenie">Podloženie</H3>
         <p className="zvyraznene">
           V Zhromaždení <P k="podlozenie">podložíš</P> Nástroj z ruky pod kartu s tagom <strong>Občan alebo Starešina</strong>{" "}

@@ -31,7 +31,7 @@ import type { GameData } from "./data.ts";
 import { defOf, printedSides } from "./data.ts";
 import type { RngState } from "./rng.ts";
 import { rngInt, rngNext, rngSeed, rngShuffle } from "./rng.ts";
-import { evaluateLine } from "./partia.ts";
+import { evaluateLine, spaleniaZoSpojov } from "./partia.ts";
 import { efektyNavyse, jeSlovami } from "./navyse.ts";
 import { hranyNastroja } from "./naradie.ts";
 import { hranaMaCoRobit } from "./podlozenie.ts";
@@ -301,7 +301,8 @@ const BONUS_EFEKTU: Readonly<Record<string, number>> = {
   zivnostnik: 0.5,
   velmi_smutiaca_vdova: 0.4,
   niekoho_stryna: 0.3,
-  kapybara: 0.4,
+  // Školiteľ (2026-11-09): Podpora aj Konflikt {Viera}→{Cigareta} — simulácia vyloženia (sPrilozenou); Furt {Cigareta} cyklus v hodnotaKarty.
+  kapybara: 0.3,
   stryko_z_ameriky: 0.5,
   // Podpora (2026-11-09): Občan zo šenku do ruky — vybraný, nie naslepo z balíčka.
   predavacka: 0.5,
@@ -309,6 +310,7 @@ const BONUS_EFEKTU: Readonly<Record<string, number>> = {
   polovnik: 0.4,
   // Furt (Školiteľ): Roboty susedov ako Pecky — tuhé ráta odhad bitky, Dlh, ktorý Robota nespáli, tiež.
   veducko: 0.3,
+  // Konflikt: {Spálenie} (2026-11-09) — súperova karta, s ktorou sa stretne, sa po bitke spáli (spalene pri vyložení).
   krokodil: 0.4,
   // Furt: spoj s Nástrojom a (v11.5) Roboty o 1 Dlh viac (paleneDlhyVBitke).
   kon: 0.4,
@@ -410,11 +412,11 @@ export function hodnotaKarty(data: GameData, karta: CardInstance, kolPoTejto?: n
   for (const slot of [...strany.left, ...strany.right]) if (slot === "Pakt") akcie += 0.3;
   let v = akcie * 0.5 + (BONUS_EFEKTU[def.id] ?? 0);
   // Akcie navyše (frakcie): odhad, ako často sa podmienka splní — Spoločník a Nepriateľ platia
-  // raz, Podpora a Konflikt pri každom stretnutí; v bitke ich presne vidí evaluateLine.
+  // raz, Podpora a Konflikt pri každom stretnutí, Furt vždy, keď karta leží; v bitke ich presne vidí evaluateLine.
   for (const e of efektyNavyse(def)) {
     // Podmienka slovami (Pijan, Šofér, Pasca… — skryté akcie 2026-11-08): hodnotu karty už nesie BONUS_EFEKTU.
     if (jeSlovami(e)) continue;
-    const casto = e.spustac === "Spoločník" || e.spustac === "Nepriateľ" ? 0.4 : 0.5;
+    const casto = e.spustac === "Furt" ? 1 : e.spustac === "Spoločník" || e.spustac === "Nepriateľ" ? 0.4 : 0.5;
     for (const a of e.akcie) v += casto * VAHA_AKCIE[a] * (HOSPODARSKE.has(a) ? hospodarstvo : 1);
   }
   if (def.tags.includes("Nástroj")) v += (DEDICSTVO[def.id] ?? 0) * 0.5;
@@ -1181,9 +1183,9 @@ export function tahBota(data: GameData, stav: GameState, ja: PlayerId, seed: num
   };
   const volba: Volba = { data, state, ja, legal, vzorky, k, nahoda };
 
-  // Voľby, ktoré menia stôl (Kapybara, Predsedova vila), si zahrá nanečisto.
+  // Voľbu, ktorá mení stôl (Predsedova vila), si zahrá nanečisto.
   const typ = state.hasicVolby?.[0]?.typ;
-  if (typ === "kapybara" || typ === "vila") return najlepsi(volba, legal, (po) => hodnotaStavu(k, po, 1.5)) ?? prvy;
+  if (typ === "vila") return najlepsi(volba, legal, (po) => hodnotaStavu(k, po, 1.5)) ?? prvy;
   const cmd = rozhodni(volba);
   return cmd ?? prvy;
 }
@@ -1251,7 +1253,7 @@ function schopnostBota(data: GameData, state: GameState, ja: PlayerId, legal: re
 function volbaHasica(data: GameData, state: GameState): Command | null {
   const volba = state.hasicVolby?.[0];
   if (volba === undefined) return null;
-  if (volba.typ === "kapybara" || volba.typ === "vila") return null;
+  if (volba.typ === "vila") return null;
   const ruka = [...state.hraci[volba.hrac].ruka].sort((a, b) => hodnotaKarty(data, a) - hodnotaKarty(data, b));
   if (volba.typ === "dvor") {
     // Zberný dvor: spáli najslabšiu kartu, ktorá nie je kliatba, len keď za veľa nestojí — tenší balíček.
@@ -1473,10 +1475,12 @@ function zhromazdenie(v: Volba): Command | null {
     po.strany.some((strana) => strana.some((pl) => pl.zaverecna === true && pl.playedBy === ja)) ? BONUS_ZAVERECNEJ * k.buducnost : 0;
   // Poľovník: súperova karta spálená z línie mu chýba v balíčku do konca hry — tým viac, čím je lepšia.
   // Skrytú Záverečnú Poľovník nestrieľa (a vo vzorkách má iné uid).
+  // Krokodíl (Konflikt: {Spálenie}): súperova karta, s ktorou sa stretol, sa spáli po bitke — ráta sa rovnako.
   const superove = [...state.strany[0], ...state.strany[1]].filter((pl) => pl.playedBy !== ja && pl.zaverecna !== true);
   const spalene = (po: GameState): number => {
     const ostali = new Set([...po.strany[0], ...po.strany[1]].map((pl) => pl.card.uid));
-    const zmizli = superove.filter((pl) => !ostali.has(pl.card.uid));
+    const poBitke = new Set(spaleniaZoSpojov(data, lineState(po)).filter((x) => x.od.playedBy === ja).map((x) => x.obet.card.uid));
+    const zmizli = superove.filter((pl) => !ostali.has(pl.card.uid) || poBitke.has(pl.card.uid));
     return zmizli.reduce((a, pl) => a + Math.max(0, hodnotaKarty(data, pl.card)), 0) * SPALENIE_ZA_KARTU * k.buducnost;
   };
   return najlepsi(v, moznosti, (po) => hodnotaStavu(k, dohrajZhromazdenie(k, po), 0.9) + sZaverecnou(po) + spalene(po));
