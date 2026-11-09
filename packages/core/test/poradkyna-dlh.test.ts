@@ -2,7 +2,9 @@
 // Michal 2026-11-09: „dáva komu dlhy? mne alebo súperovi?“ — Pitka ich pripísala súperovi, ale bar,
 // panel bitky, náhľad NA EX a rekapitulácia Pitky ich ukazovali pri majiteľke. Všetko teraz ráta
 // z jednej línie (sDlhmiPoradkyne). Konfigurácie sú zo skutočnej sady: susedia, preškolenie
-// Nástrojom (Horoskop {Povera}↔{Hazard}), NA EX (×2) a Odpor.
+// Nástrojom (Horoskop {Povera}↔{Hazard}), NA EX (×2) a Odpor. Horoskop má od v11.17 dole „Posilnená {Povera}“ —
+// premena na Hazard je v sade len pri Jogurte (z Pečene, tú Poradkyňa nemá), preto test dáva Horoskopu
+// hrany spred v11.17 (fixtúra, nie cards.json).
 
 import { describe, expect, it } from "vitest";
 import cardsJson from "../data/cards.json";
@@ -22,7 +24,12 @@ import {
   zadlzenieZLinie,
 } from "../src/index.ts";
 
-const data = loadGameData(cardsJson, eldersJson, scorecardsJson);
+const HOROSKOP_DO_V1116 = "Dedičstvo: Tvoje Povery majú silu 2. Hore: {Hazard}→{Povera}. Dole: {Povera}→{Hazard}.";
+const data = loadGameData(
+  { ...cardsJson, cards: cardsJson.cards.map((c) => (c.id === "horoskop" ? { ...c, effect_text: HOROSKOP_DO_V1116 } : c)) },
+  eldersJson,
+  scorecardsJson,
+);
 const s0 = setupGame(data, 5);
 
 let uidSeq = 770000;

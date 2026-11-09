@@ -1,26 +1,26 @@
 {
-  "poznamka": "Hrany 22 Nástrojov podľa docs/napady/naradie-hrany-zoznam.html v5 (Michal 2026-11-08). Admin prepíše text efektu každého Nástroja v tvorcovi Vypálenej na effect_text (rozpracovaný stav, nezverejniť) a vymaže mu sloty; Dedičstvo ostáva. Hore = horná hrana, Dole = dolná. Kontrola: node --experimental-strip-types --no-warnings tools/admin/naradie-hrany.ts",
+  "poznamka": "Hrany 22 Nástrojov podľa docs/napady/naradie-hrany-zoznam.html v5 (Michal 2026-11-08); od v11.17 nové hrany pod vlastné karty (Michal 2026-11-09, docs/napady/naradie-len-svoje.html, 15 Nástrojov). Admin prepíše text efektu každého Nástroja v tvorcovi Vypálenej na effect_text (rozpracovaný stav, nezverejniť) a vymaže mu sloty; Dedičstvo ostáva. Hore = horná hrana, Dole = dolná. Kontrola: node --experimental-strip-types --no-warnings tools/admin/naradie-hrany.ts",
   "nastroje": [
     {
       "id": "energetak",
       "nazov": "Energeťák",
       "hore": "Forsáž",
-      "dole": "{Posilnenie}→{Pečeň}",
-      "effect_text": "Dedičstvo: Tvoje Posilnenie nemožno zrušiť NA EX. Hore: Forsáž. Dole: {Posilnenie}→{Pečeň}."
+      "dole": "{Poldeci}→{Posilnenie}",
+      "effect_text": "Dedičstvo: Tvoje Posilnenie nemožno zrušiť NA EX. Hore: Forsáž. Dole: {Poldeci}→{Posilnenie}."
     },
     {
       "id": "furik",
       "nazov": "Fúrik",
       "hore": "{Hazard}→{Robota}",
-      "dole": "{Robota}→{Hazard}",
-      "effect_text": "Dedičstvo: Tvoje Roboty pália o 1 Dlh viac. Hore: {Hazard}→{Robota}. Dole: {Robota}→{Hazard}."
+      "dole": "Posilnená {Robota}",
+      "effect_text": "Dedičstvo: Tvoje Roboty pália o 1 Dlh viac. Hore: {Hazard}→{Robota}. Dole: Posilnená {Robota}."
     },
     {
       "id": "horoskop",
       "nazov": "Horoskop",
       "hore": "{Hazard}→{Povera}",
-      "dole": "{Povera}→{Hazard}",
-      "effect_text": "Dedičstvo: Tvoje Povery majú silu 2. Hore: {Hazard}→{Povera}. Dole: {Povera}→{Hazard}."
+      "dole": "Posilnená {Povera}",
+      "effect_text": "Dedičstvo: Tvoje Povery majú silu 2. Hore: {Hazard}→{Povera}. Dole: Posilnená {Povera}."
     },
     {
       "id": "hrable",
@@ -33,15 +33,15 @@
       "id": "lievik",
       "nazov": "Injekcia",
       "hore": "Výtržník",
-      "dole": "{Poldeci}→{Pečeň}",
-      "effect_text": "Dedičstvo: NA EX smieš dať aj na Zviera. Hore: Výtržník. Dole: {Poldeci}→{Pečeň}."
+      "dole": "{Pečeň}→{Robota}",
+      "effect_text": "Dedičstvo: NA EX smieš dať aj na Zviera. Hore: Výtržník. Dole: {Pečeň}→{Robota}."
     },
     {
       "id": "pistalka",
       "nazov": "Izolačka",
       "hore": "{Pečeň}→{Obmedzenie}",
-      "dole": "{Pecka}→{Obmedzenie}",
-      "effect_text": "Dedičstvo: Tvoje Obmedzenia uberajú aj cigarety, ktoré súper dostane za pas. Hore: {Pečeň}→{Obmedzenie}. Dole: {Pecka}→{Obmedzenie}."
+      "dole": "Posilnené {Obmedzenie}",
+      "effect_text": "Dedičstvo: Tvoje Obmedzenia uberajú aj cigarety, ktoré súper dostane za pas. Hore: {Pečeň}→{Obmedzenie}. Dole: Posilnené {Obmedzenie}."
     },
     {
       "id": "jogurt",
@@ -61,29 +61,29 @@
       "id": "kristalova_gula",
       "nazov": "Krištáľová guľa",
       "hore": "{Povera}→{Vízia}",
-      "dole": "{Vízia}→{Povera}",
-      "effect_text": "Dedičstvo: Tvoje Vízie ukážu 2 vrchné karty — jednu si vezmi alebo spáľ, druhú vráť navrch. Hore: {Povera}→{Vízia}. Dole: {Vízia}→{Povera}."
+      "dole": "{Pečeň}→{Vízia}",
+      "effect_text": "Dedičstvo: Tvoje Vízie ukážu 2 vrchné karty — jednu si vezmi alebo spáľ, druhú vráť navrch. Hore: {Povera}→{Vízia}. Dole: {Pečeň}→{Vízia}."
     },
     {
       "id": "nealko",
       "nazov": "Nealko",
-      "hore": "{Pečeň}→{Viera}",
-      "dole": "{Poldeci}→{Viera}",
-      "effect_text": "Dedičstvo: Tvoj prah Cirhózy je o 2 vyšší. Hore: {Pečeň}→{Viera}. Dole: {Poldeci}→{Viera}."
+      "hore": "{Pečeň}→{Povera}",
+      "dole": "{Poldeci}→{Pohoršenie}",
+      "effect_text": "Dedičstvo: Tvoj prah Cirhózy je o 2 vyšší. Hore: {Pečeň}→{Povera}. Dole: {Poldeci}→{Pohoršenie}."
     },
     {
       "id": "noviny",
       "nazov": "Noviny",
       "hore": "{Viera}→{Pohoršenie}",
-      "dole": "{Pohoršenie}→{Povera}",
-      "effect_text": "Dedičstvo: Hádka: Ak vyhráš hádku, súper odhodí 1 náhodnú kartu z ruky. Hore: {Viera}→{Pohoršenie}. Dole: {Pohoršenie}→{Povera}."
+      "dole": "{Pečeň}→{Pohoršenie}",
+      "effect_text": "Dedičstvo: Hádka: Ak vyhráš hádku, súper odhodí 1 náhodnú kartu z ruky. Hore: {Viera}→{Pohoršenie}. Dole: {Pečeň}→{Pohoršenie}."
     },
     {
       "id": "pasca",
       "nazov": "Pasca",
       "hore": "{Pečeň}→{Rana}",
-      "dole": "{Pecka}→{Rana}",
-      "effect_text": "Dedičstvo: Bitka: Ak súper v tomto kole priložil kartu k tvojej {Rana}. Hore: {Pečeň}→{Rana}. Dole: {Pecka}→{Rana}."
+      "dole": "Posilnená {Rana}",
+      "effect_text": "Dedičstvo: Bitka: Ak súper v tomto kole priložil kartu k tvojej karte {Rana}. Hore: {Pečeň}→{Rana}. Dole: Posilnená {Rana}."
     },
     {
       "id": "puska",
@@ -96,29 +96,29 @@
       "id": "svaty_text",
       "nazov": "Svätý text",
       "hore": "{Povera}→{Viera}",
-      "dole": "{Viera}→{Povera}",
-      "effect_text": "Dedičstvo: Hodnota tvojej Viery je o 1 vyššia. Hore: {Povera}→{Viera}. Dole: {Viera}→{Povera}."
+      "dole": "{Odpor}→{Viera}",
+      "effect_text": "Dedičstvo: Hodnota tvojej Viery je o 1 vyššia. Hore: {Povera}→{Viera}. Dole: {Odpor}→{Viera}."
     },
     {
       "id": "telefon",
       "nazov": "Telefón",
       "hore": "{Povera}→{Pohoršenie}",
       "dole": "{Odpor}→{Povera}",
-      "effect_text": "Dedičstvo: Tvoje Pohoršenia nemožno zrušiť Odporom a NA EX. Hore: {Povera}→{Pohoršenie}. Dole: {Odpor}→{Povera}."
+      "effect_text": "Dedičstvo: Hádka: Remíza v hádke je tvoja, ak nie je 0 : 0. Bitka: Za každú tvoju akciu zrušenú súperovým Odporom {Povera}. Hore: {Povera}→{Pohoršenie}. Dole: {Odpor}→{Povera}."
     },
     {
       "id": "boxer",
       "nazov": "Valaška",
       "hore": "{Pecka}→{Petelica}",
-      "dole": "{Petelica}→{Pecka}",
-      "effect_text": "Dedičstvo: Tvoje Pecky udeľujú o 1 poškodenie viac. Hore: {Pecka}→{Petelica}. Dole: {Petelica}→{Pecka}."
+      "dole": "{Rana}→{Petelica}",
+      "effect_text": "Dedičstvo: Tvoje Pecky udeľujú o 1 poškodenie viac. Hore: {Pecka}→{Petelica}. Dole: {Rana}→{Petelica}."
     },
     {
       "id": "vidly",
       "nazov": "Vidly",
       "hore": "Vzbura",
-      "dole": "{Rana}→{Pecka}",
-      "effect_text": "Dedičstvo: Tvoje Rany udeľujú o 1 poškodenie viac. Hore: Vzbura. Dole: {Rana}→{Pecka}."
+      "dole": "{Robota}→{Petelica}",
+      "effect_text": "Dedičstvo: Tvoje Rany udeľujú o 1 poškodenie viac. Hore: Vzbura. Dole: {Robota}→{Petelica}."
     },
     {
       "id": "vinko",
@@ -131,22 +131,22 @@
       "id": "vyherne_zreby",
       "nazov": "Výherné žreby",
       "hore": "{Hazard}→{Vízia}",
-      "dole": "{Vízia}→{Hazard}",
-      "effect_text": "Dedičstvo: Tvoje Hazardy sú aktívne, keď nie sú spojené, a neaktívne, keď sú spojené. Hore: {Hazard}→{Vízia}. Dole: {Vízia}→{Hazard}."
+      "dole": "{Cigareta}→{Vízia}",
+      "effect_text": "Dedičstvo: Tvoje Hazardy sú aktívne, keď nie sú spojené, a neaktívne, keď sú spojené. Hore: {Hazard}→{Vízia}. Dole: {Cigareta}→{Vízia}."
     },
     {
       "id": "vyherny_automat",
       "nazov": "Výherný automat",
       "hore": "{Hazard}→{Poldeci}",
-      "dole": "{Cigareta}→{Hazard}",
-      "effect_text": "Dedičstvo: Tvoj prah Dlhu je o 1 vyšší. Posledná Pitka kola: {Hazard}. Hore: {Hazard}→{Poldeci}. Dole: {Cigareta}→{Hazard}."
+      "dole": "{Hazard}→{Pecka}",
+      "effect_text": "Dedičstvo: Tvoj prah Dlhu je o 1 vyšší. Posledná Pitka kola: {Hazard}. Hore: {Hazard}→{Poldeci}. Dole: {Hazard}→{Pecka}."
     },
     {
       "id": "zapalovac",
       "nazov": "Zapaľovač",
       "hore": "{Cigareta}→{Rana}",
-      "dole": "{Cigareta}→{Pečeň}",
-      "effect_text": "Dedičstvo: Tvoje aktívne Cigarety nemožno zrušiť NA EX. Hore: {Cigareta}→{Rana}. Dole: {Cigareta}→{Pečeň}."
+      "dole": "{Poldeci}→{Petelica}",
+      "effect_text": "Dedičstvo: Tvoje aktívne Cigarety nemožno zrušiť NA EX. Hore: {Cigareta}→{Rana}. Dole: {Poldeci}→{Petelica}."
     },
     {
       "id": "zrkadlo",

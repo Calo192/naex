@@ -249,13 +249,14 @@ describe("preškolenie mení aj akcie navyše dotknutej karty; Nástroj len hran
     expect(ev.zdroje[0].Robota?.some((z) => z.uid === op.uid && z.dovody[0]?.startsWith("akcia navyše") === true)).not.toBe(true);
   });
 
-  it("Fúrik dolnou hranou ({Robota}→{Hazard}) pod Opatrovateľkou: hrany Hazard, Robota navyše od Vedúcka Pecka", () => {
+  // Do v11.16 Fúrik dole {Robota}→{Hazard}; od v11.17 premieňa Robotu Vidly dole ({Robota}→{Petelica}).
+  it("Vidly dolnou hranou ({Robota}→{Petelica}) pod Opatrovateľkou: hrany Petelica, Robota navyše od Vedúcka Pecka", () => {
     const v = inst("veducko", 1);
     const op = inst("opatrovatelka", 2);
-    const furik = inst("furik", 3);
-    const ev = evaluateLine(buduca, opatrovatelka(v, op, [{ card: furik, majitel: 1, hrana: "dolna" }]));
+    const vidly = inst("vidly", 3);
+    const ev = evaluateLine(buduca, opatrovatelka(v, op, [{ card: vidly, majitel: 0, hrana: "dolna" }]));
     expect(ev.cards.get(op.uid)?.navyse?.[0]?.ako).toEqual(["Pecka"]);
-    for (const x of sloty(ev, op.uid)) if (x.povodna === "Robota") expect(x).toMatchObject({ action: "Dlh", preskolil: furik.uid });
+    for (const x of sloty(ev, op.uid)) if (x.povodna === "Robota") expect(x).toMatchObject({ action: "Petelica", preskolil: vidly.uid });
     const zdroje = ev.cards.get(op.uid)?.preskolena ?? [];
     expect(zdroje.map((p) => p.zdroj).sort()).toEqual(["Furt", "Nástroj"]);
   });

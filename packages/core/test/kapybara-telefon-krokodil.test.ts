@@ -10,6 +10,7 @@ import cardsJson from "../data/cards.json";
 import eldersJson from "../data/elders.json";
 import scorecardsJson from "../data/scorecards.json";
 import noveJson from "./data/karty-20261109.json";
+import staraJson from "./data/cards-pred-frakciami.json";
 import type { CardInstance, Command, GameData, GameState, LineState, PlacedCard, PlayerId, VerejnyStav } from "../src/index.ts";
 import {
   apply,
@@ -57,7 +58,8 @@ function sadaSNovymiTextami(): GameData {
 }
 
 const nova = sadaSNovymiTextami();
-const dnesna = loadGameData(cardsJson, eldersJson, scorecardsJson);
+/** Sada so starým Telefónom (imunita Pohoršení, do v11.16). */
+const stara = loadGameData(staraJson, eldersJson, scorecardsJson);
 
 const VIERY: Layout4 = ["Viera", "Viera", "Viera", "Viera"];
 const POHORSENIA: Layout4 = ["Pohoršenie", "Pohoršenie", "Pohoršenie", "Pohoršenie"];
@@ -293,7 +295,7 @@ describe("Telefón (Dedičstvo): remíza v hádke a Povera za akciu zrušenú s�
     expect(vysledokHadkyStola(data, stav(1, 1), [2, 2])).toEqual({ vitaz: null, velkost: 0 });
     // Bez remízy Telefón nič nemení.
     expect(vysledokHadkyStola(data, stav(1, 0), [1, 3])).toEqual({ vitaz: 1, velkost: 2 });
-    expect(vysledokHadkyStola(dnesna, stav(0, 1), [2, 2])).toEqual({ vitaz: null, velkost: 0 });
+    expect(vysledokHadkyStola(stara, stav(0, 1), [2, 2])).toEqual({ vitaz: null, velkost: 0 });
   });
 
   it("Odpor súpera zruší aj Pohoršenie (imunita zanikla) a za každú zrušenú akciu dá Telefón 1 Poveru — za každý Telefón", () => {

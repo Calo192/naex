@@ -16,24 +16,36 @@ const data = loadGameData(cardsJson, eldersJson, scorecardsJson);
 const ja: PlayerId = 0;
 const su = opponentOf(ja);
 
-/** Prvá Pitka, v ktorej hráč 0 smie dať NA EX — partia botov. */
-function pitkaSNaex(): GameState {
-  let s = setupGame(data, 8);
+/** Prvá Pitka, v ktorej hráč 0 smie dať NA EX — partia botov zo semienka `seed`; null = taká nebola. */
+function pitkaSNaex(seed: number): GameState | null {
+  let s = setupGame(data, seed);
   for (let n = 0; n < 4000; n++) {
     if (s.faza === "pitka" && mozeHrat(s, ja) && legalCommands(data, s, ja).some((c) => c.type === "naex")) return s;
     const kto = naTahu(s);
     if (kto === null) break;
     s = apply(data, s, tahBota(data, s, kto, n * 7919, { povaha: "igor" }), kto).state;
   }
-  throw new Error("Pitka s NA EX sa nenašla");
+  return null;
+}
+
+/**
+ * Pitka po NA EX hráča 0, ktoré ostalo skryté (súper ešte hrá Pitku) — semienko sa hľadá, lebo
+ * partie botov sa menia so sadou (sada v11.17: semienko 8 už skryté NA EX nedá).
+ */
+function poSkrytomNaex(): GameState {
+  for (let seed = 8; seed < 60; seed++) {
+    const s0 = pitkaSNaex(seed);
+    const naex = s0 === null ? undefined : legalCommands(data, s0, ja).find((c) => c.type === "naex");
+    if (s0 === null || naex === undefined) continue;
+    const s = apply(data, s0, naex, ja).state;
+    if (poldeciNaStole(viewFor(data, s, ja), ja).skryte > 0) return s;
+  }
+  throw new Error("Pitka so skrytým NA EX sa nenašla");
 }
 
 describe("poldeci na stole", () => {
   it("skryté NA EX vidí na stole len jeho majiteľ; súperovi sa neprezradí", () => {
-    const s0 = pitkaSNaex();
-    const naex = legalCommands(data, s0, ja).find((c) => c.type === "naex");
-    if (naex === undefined) throw new Error("bez NA EX");
-    const s = apply(data, s0, naex, ja).state;
+    const s = poSkrytomNaex();
     const moj = viewFor(data, s, ja);
     expect(poldeciNaStole(moj, ja)).toEqual({ naStole: 1, skryte: 1 });
     // Súper o mojom skrytom NA EX nevie (bez Bzdochy) — aj pre neho mám poldeci, ako som mal.

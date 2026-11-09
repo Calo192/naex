@@ -95,7 +95,7 @@ describe("zoznam hrán pre admina (packages/core/test/data/naradie-hrany.json)",
     }
   });
 
-  it("štyri kartové účinky (P1), Puška posilňuje (2026-11-09) a každé preškolenie X → Y v sade raz", () => {
+  it("štyri kartové účinky (P1), hrany posilnenia (Puška 2026-11-09; Pasca, Fúrik, Horoskop, Izolačka v11.17) a každé preškolenie X → Y v sade raz", () => {
     const ucinky = zoznam.nastroje.flatMap((n) => {
       const h = hranyNastroja({ effectText: n.effect_text, tags: ["Nástroj"] });
       return [h?.horna, h?.dolna].flatMap((x) => (x?.druh === "karta" ? [`${n.id}:${x.ucinok}`] : []));
@@ -105,13 +105,13 @@ describe("zoznam hrán pre admina (packages/core/test/data/naradie-hrany.json)",
       const h = hranyNastroja({ effectText: n.effect_text, tags: ["Nástroj"] });
       return [h?.horna, h?.dolna].flatMap((x) => (x?.druh === "posilnenie" ? [`${n.id}:${x.akcia}`] : []));
     });
-    expect(posilnenia).toEqual(["puska:Petelica", "puska:Pecka"]);
+    expect(posilnenia.sort()).toEqual(["furik:Robota", "horoskop:Povera", "pasca:Rana", "pistalka:Obmedzenie", "puska:Pecka", "puska:Petelica"]);
     const dvojice = zoznam.nastroje.flatMap((n) => {
       const h = hranyNastroja({ effectText: n.effect_text, tags: ["Nástroj"] });
       return [h?.horna, h?.dolna].flatMap((x) => (x?.druh === "akcia" ? [`${x.z}>${x.na}`] : []));
     });
-    expect(dvojice).toHaveLength(38);
-    expect(new Set(dvojice).size).toBe(38);
+    expect(dvojice).toHaveLength(34);
+    expect(new Set(dvojice).size).toBe(34);
   });
 
   it("keď cards.json hrany už má, sedia so zoznamom (pravidlo 5: prepisuje ich admin v tvorcovi)", () => {

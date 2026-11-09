@@ -123,9 +123,10 @@ describe("zápis efektu v tvorcovi: „Spúšťač: Tag {Akcia}.“", () => {
     expect(() => parseCards({ cards: [zla] })).toThrow(/Autorta/);
   });
 
-  it("celá sada zo špecifikácie sa načíta a 21 kariet má efekt navyše (14 frakcií, 7 skrytých akcií)", () => {
+  it("celá sada zo špecifikácie sa načíta a 24 kariet má efekt navyše (14 frakcií, 7 skrytých akcií, v11.17 Kapybara, Krokodíl, Telefón)", () => {
     const s = [...data.cards.values()].filter((d) => efektyNavyse(d).length > 0).map((d) => d.id);
-    expect(s).toHaveLength(21);
+    expect(s).toHaveLength(24);
+    expect(s).toEqual(expect.arrayContaining(["kapybara", "krokodil", "telefon"]));
     expect(efektyNavyse(data.cards.get("vestica")!)).toEqual([{ spustac: "Spoločník", tag: "Pamätník", akcie: ["Povera", "Povera"] }]);
   });
 });
