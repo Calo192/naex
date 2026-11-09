@@ -131,15 +131,17 @@ export const KAPITOLY: readonly Kapitola[] = [
         <ul>
           <li>
             <strong>Akcie na hranách</strong> — najviac 4 na každej hrane, vo výškach 0 (hore) až 3 (dole). Akcia platí, len keď sa
-            stretne s akciou suseda v rovnakej výške.
+            stretne s akciou suseda v rovnakej výške. Nástroj má namiesto nich hornú a dolnú hranu (kapitola{" "}
+            <a href="#nastroje">Nástroje a Dedičstvo</a>).
           </li>
           <li>
             <strong>Tagy</strong> — druh karty (<P k="tag">Občan, Zviera, Starešina, Nástroj</P>…). Samy nič nerobia, odkazujú na
             ne efekty.
           </li>
           <li>
-            <strong>Efekt</strong> — text karty. Tučné slovo na začiatku hovorí kedy (Nástup, Pitka, Bitka, Furt…), slová kurzívou
-            čo. Presné významy sú v <a href="#slovnik">slovníku</a>.
+            <strong>Efekt</strong> — text karty. Tučné slovo na začiatku hovorí kedy (Nástup, Pitka, Bitka, Furt, Podpora,
+            Spoločník…), slová kurzívou čo. <P k="akcia-navyse">Akcie navyše</P> sú v pečati dole v ilustrácii. Presné významy sú
+            v <a href="#slovnik">slovníku</a>.
           </li>
           <li>
             <strong>Varianty</strong> — každá karta existuje vo viacerých variantoch: rovnaké akcie, iné výšky.{" "}
@@ -230,7 +232,7 @@ export const KAPITOLY: readonly Kapitola[] = [
       "Obranca vyberie lokalitu, víťaz minulej hádky ju natočí.",
       "Stavba šenku: polovica kariet do šenku, polovica naspodok balíčka.",
       "Branie striedavo: 1 karta za 1 cigaretu, 2 karty za 3.",
-      "Zajatie a presvedčenie sú po bitke — pri rozdelení Nakladačky a hádky, za 5 bodov.",
+      "Zajíma sa za 5 bodov a presviedča za 3 — po bitke, pri rozdelení Nakladačky a hádky.",
     ],
     obsah: () => (
       <>
@@ -258,7 +260,7 @@ export const KAPITOLY: readonly Kapitola[] = [
         </p>
         <H3 id="patronat">Zajatie a presvedčenie</H3>
         <p>
-          Pokus o zajatie pred šenkom zanikol (v11.4). Zajíma a presviedča sa <strong>po bitke</strong>, keď sa rozdeľuje Nakladačka
+          Zajíma a presviedča sa <strong>po bitke</strong>, keď sa rozdeľuje Nakladačka
           a hádka (kapitola <a href="#starsi">Starší a Nakladačka</a>). Vo finále ani jedno.
         </p>
         <ul>
@@ -292,6 +294,7 @@ export const KAPITOLY: readonly Kapitola[] = [
       "Akcia platí, len keď sa na spoji stretne s akciou suseda v rovnakej výške.",
       "Limit vykladania = plné poldeci + 1.",
       "Pas dá cigaretu za každú kartu, ktorú si ešte smel vyložiť a máš ju v ruke.",
+      "Konflikt a Podpora sa spustia priložením karty; akcie navyše z pečate a Preškolenie menia akcie kariet.",
     ],
     obsah: (s) => (
       <>
@@ -315,7 +318,7 @@ export const KAPITOLY: readonly Kapitola[] = [
           V Zhromaždení vykladáte striedavo, začína útočník. Za jedno Zhromaždenie vyložíš najviac{" "}
           <P k="limit">plné poldeci + 1</P> kariet — aj bez plných poldeci aspoň jednu. Limit sa ráta nanovo na začiatku každého
           Zhromaždenia. NA EX limit nemíňa (dáva sa v Pitke), ale jeho poldeci odíde zo zásoby na kartu — v ďalšom
-          Zhromaždení kola máš limit o 1 nižší a pri bitke sa vypije. Nástroje limit nemíňajú.
+          Zhromaždení kola máš limit o 1 nižší a pri bitke sa vypije. Podloženie Nástroja ani Dedičstvo limit nemíňajú.
         </p>
         <UkazkaLimitu />
         <p>
@@ -326,10 +329,30 @@ export const KAPITOLY: readonly Kapitola[] = [
         <H3 id="zhromazdenie-prevaha">Prevaha v kraji</H3>
         <p>
           Akcie hrany lokality dostane hráč s <P k="prevaha">prevahou</P> v tom <P k="kraj">kraji</P> — kto tam má viac svojich{" "}
-          <strong>Občanov, Zvierat a Starešinov</strong> (Nástroje ani Cirhóza sa nerátajú). Pri rovnosti hráč, ktorého karta
+          <strong>Občanov, Zvierat a Starešinov</strong> (podložený Nástroj sa neráta). Pri rovnosti hráč, ktorého karta
           v kraji leží hneď pri lokalite. Jedna súperova karta v kraji teda neukradne akcie hrany, ale tvorí s nimi spoj: ako prvá
           karta pri lokalite určuje, ktoré akcie hrany sa aktivujú, a tie dostane hráč s prevahou. Kraje majú mená podľa lokality, napríklad
           v Krčme „pri výčape“ a „pri dverách“.
+        </p>
+        <H3 id="zhromazdenie-efekty">Konflikt, Podpora a akcie navyše</H3>
+        <p>
+          Niektoré efekty sa spustia, keď sa karty stretnú <strong>priložením</strong> — kartu položíš na koniec línie k inej.{" "}
+          <P k="konflikt">Konflikt</P> sa spustí, keď sa karta stretne so súperovou (prikladáš ty, alebo súper k tvojej),{" "}
+          <P k="podpora">Podpora</P>, keď sa stretnú dve tvoje karty. S tagom za dvojbodkou („Podpora: Pamätník“) len pri karte
+          s tým tagom, bez tagu pri ktorejkoľvek. Podloženie Nástroja, NA EX, zrážka ani presun karty ich nespustia.{" "}
+          <P k="spolocnik">Spoločník</P> s tagom platí, kým máš v partii inú odkrytú kartu s tým tagom, <P k="nepriatel">Nepriateľ</P>,
+          kým ju má v partii súper.
+        </p>
+        <p className="zvyraznene">
+          <P k="akcia-navyse">Akcie navyše</P> sú v pečati dole v ilustrácii karty. Sú to aktívne akcie majiteľa karty mimo hrán
+          a rátajú sa ako tie isté akcie. Pri Spoločníkovi a Nepriateľovi platia raz, kým platí podmienka; pri Podpore a Konflikte
+          za každé stretnutie, do konca kola. Posilnenie, Odpor, NA EX ani podložený Nástroj ich nemenia, Nástroje v Dedičstve (napríklad Valaška) áno.
+        </p>
+        <p>
+          <P k="skolitel">Školiteľ</P> má efekt <P k="preskolenie">Preškolenie</P> X → Y: akcia X inej karty sa ráta ako Y —
+          ešte pred spojmi, na oboch hranách aj v akciách navyše. Pri spúšťači Furt preškolí oboch susedov (aj súperove karty),
+          kým s ním susedia; pri Podpore tvoju kartu a pri Konflikte súperovu, s ktorou sa stretne, do konca kola. Každá akcia sa
+          preškolí len raz a preškolenia sa nereťazia.
         </p>
       </>
     ),
@@ -376,7 +399,10 @@ export const KAPITOLY: readonly Kapitola[] = [
           </li>
           <li>Záverečné karty sa otočia lícom hore (kapitola <a href="#pokrocile">Pokročilé ťahy</a>).</li>
         </ol>
-        <p className="tlmene">Pitka sama karty nedáva — doberáš si ich fajčením a Víziou; kartu zo šenku ti dajú efekty kariet (Zastávka, Predavačka, Živnostník).</p>
+        <p className="tlmene">
+          Pitka sama karty nedáva — doberáš si ich fajčením a Víziou. Kartu zo šenku zadarmo ti dá Zastávka po prvej Pitke a Podpora
+          Predavačky (Občana) či Živnostníka (Nástroj).
+        </p>
         <H3 id="naex">NA EX</H3>
         <p>
           V Pitke, kým ju neskončíš, položíš plný poldeci na kartu v línii s tagom <strong>Občan</strong> alebo{" "}
@@ -392,7 +418,7 @@ export const KAPITOLY: readonly Kapitola[] = [
           Pred potvrdením ti hra ukáže bitku pred a po aj kliatby, ktoré z toho budú.
         </p>
         <ul>
-          <li>Nedá sa dať na kartu, na ktorej už poldeci leží.</li>
+          <li>Nedá sa dať na kartu, na ktorej už poldeci leží, ani na kartu, pod ktorou leží Vínko, Injekcia alebo Vidly.</li>
           <li>Akcia zrušená Odporom nie je ani aktívna, ani neaktívna — NA EX ju nezdvojí.</li>
           <li>Na Kostole len na kartu na konci línie (na ktoromkoľvek z dvoch koncov), najďalej od Kostola.</li>
           <li>NA EX na kartu pri lokalite mení len akcie karty — akcie hrany lokality ostávajú aktívne.</li>
@@ -582,14 +608,12 @@ export const KAPITOLY: readonly Kapitola[] = [
         <H3 id="bitka-kroky">Kroky bitky v poradí</H3>
         <ol className="kroky">
           <li>
-            <strong>Efekty na začiatku bitky</strong> — Traktorista bez prevahy v jeho kraji dá svojmu majiteľovi Dlh; Šofér bez NA EX v kole dá 1 cigaretu.
-          </li>
-          <li>
             <strong>Hádka</strong> — Viera ruší Povery, kto má viac mäkkého (Pohoršenie 2, Povera 1), vyhral hádku o rozdiel. Priazne sa nemenia, rozdelí sa až neskôr.
             Noviny v Dedičstve víťaza: porazený v hádke odhodí náhodnú kartu z ruky.
           </li>
           <li>
-            <strong>Poškodenie</strong> — tuhé znižuje zvyšná Viera a každý Absťák v tvojom balíčku (Abstinent ich odpustí).
+            <strong>Poškodenie</strong> — k tuhému z línie sa pripočítajú akcie navyše z efektov Bitka (Šofér, Pijan…); tuhé znižuje
+            zvyšná Viera a každý Absťák v tvojom balíčku (Abstinent ich odpustí).
           </li>
           <li>
             <strong>Výsledok</strong> — víťaz (pri remíze rozhodnú Absťáky, potom Dlhy), inak sekera.
@@ -618,18 +642,18 @@ export const KAPITOLY: readonly Kapitola[] = [
             Poldeci otočí vypitý späť na plný.
           </li>
           <li>
-            <strong>Veštica</strong> — porazený s Vešticou vymení kartu medzi doberacími balíčkami.
+            <strong>Cigarety po bitke</strong> — porazený dostane 1 cigaretu (pri sekere a po finále nikto), Kmotor (kto má jeho priazeň, tomu prejdú 2 / 3 / 4 priznané Dlhy k súperovi), Fajčiar
+            (cigarety po bitke) a <P k="vypalne">výpalné</P> (po finále nie), potom Krokodíl.
           </li>
           <li>
-            <strong>Cintorín</strong> — porazený v bitke o Cintorín si smie vziať do ruky 1 kartu zo svojho odhadzovacieho balíčka.
+            <strong>Návrat kariet</strong> do odhadzovacieho balíčka hráča, ktorý ich zahral; podložený Nástroj tomu, kto ho podložil.
           </li>
           <li>
-            <strong>Cigarety, Výhra a Prehra</strong> — porazený dostane 1 cigaretu (pri sekere a po finále nikto), Kmotor (kto má jeho priazeň, tomu prejdú 2 / 3 / 4 priznané Dlhy k súperovi), Fajčiar
-            (cigarety po bitke), <P k="vypalne">výpalné</P> (po finále nie) a efekty Výhra a Prehra (Recidivista, Dievčina na vydaj), potom Krokodíl.
+            <strong>Cintorín</strong> — porazený v bitke o Cintorín si smie vziať do ruky 1 kartu zo svojho odhadzovacieho balíčka, už aj
+            z práve odohranej línie.
           </li>
           <li>
-            <strong>Návrat kariet</strong> do odhadzovacieho balíčka hráča, ktorý ich zahral. Nepriznaná Cirhóza a Absťák z ruky
-            idú tiež do odhadzovacieho balíčka.
+            <strong>Kliatby z ruky</strong> — nepriznaná Cirhóza a Absťák idú do odhadzovacieho balíčka.
           </li>
           <li>
             <strong>Chuť a Absťák</strong> — menej nerestí, než je tvoja Chuť, = karta Absťák; potom Chuť klesne o 1 od väčšieho z Chuti a nerestí (po finále už nie).
@@ -821,30 +845,64 @@ export const KAPITOLY: readonly Kapitola[] = [
     nazov: "Nástroje a Dedičstvo",
     obrazok: "12-nastroje",
     vSkratke: [
-      "Nástroj v línii funguje len pri Občanovi alebo Starešinovi.",
-      "Jeho akcie dostane majiteľ karty, s ktorou tvorí spoj.",
+      "Nástroj sa do línie nevykladá — podložíš ho pod Občana alebo Starešinu v línii za 1 cigaretu.",
+      "Má hornú a dolnú hranu; platí tá, ktorá spod karty pretŕča.",
+      "Hrana preškolí akciu karty (X → Y), alebo jej dá Forsáž, NA EX, Výtržníka či Vzburu.",
+      "Po bitke sa Nástroj vráti do odhadzovacieho balíčka toho, kto ho podložil.",
       "Dedičstvo: efekt Nástroja platí len tam; cena 1, 2, 3… cigarety pre oboch spolu.",
     ],
     obsah: () => (
       <>
-        <H3 id="nastroje-linia">Nástroj v línii</H3>
+        <H3 id="nastroje-hrany">Dve hrany</H3>
         <p>
-          <P k="nastroj">Nástroj</P> nemíňa limit vykladania a NA EX naň dať nemožno. Nástroj nesmie susediť s Nástrojom a{" "}
-          <strong>vedľa lokality sa nevykladá</strong> — do prázdneho kraja, na žiadny koniec línie, ho nevyložíš (v ťahu po Vypiť
-          smie za kartu, ktorú si práve vyložil). Náradie musí mať kto používať. Spoj s ním vznikne len pri karte s tagom <strong>Občan alebo Starešina</strong>; pri
-          lokalite, karte staršieho či inej karte sa neaktivuje nič.
+          <P k="nastroj">Nástroj</P> nemá akcie po bokoch ako ostatné karty. Má <strong>hornú a dolnú hranu</strong>, obe vo farbe
+          karty, a v strede ilustráciu a text Dedičstva. Každá hrana robí jedno z dvoch:
         </p>
+        <ul>
+          <li>
+            <strong>Preškolenie X → Y</strong> — všetky akcie X na karte, pod ktorou Nástroj leží, sa rátajú ako Y (Rana → Pecka:
+            dve Rany sú dve Pecky). Platí ešte pred spojmi, takže susedia sa párujú už s preškolenou akciou. Keď karta akciu X nemá,
+            Nástroj pod ňou nerobí nič.
+          </li>
+          <li>
+            <strong>Účinok na celú kartu</strong> — <strong>Energeťák</strong> jej dá <P k="forsaz">Forsáž</P> (všetky aktívne akcie
+            ×2), <strong>Vínko</strong> <P k="naex">NA EX</P> (bez poldeca — nikto nepije, pečeň ani nerest nie sú),{" "}
+            <strong>Injekcia</strong> z nej urobí <P k="vytrznik">Výtržníka</P> a <strong>Vidly</strong> ju obrátia{" "}
+            <P k="vzbura">Vzburou</P>. Na druhej hrane majú tieto štyri preškolenie.
+          </li>
+        </ul>
+        <p>Hrany sú posila aj sabotáž — Nástroj smieš podložiť pod svoju aj pod súperovu kartu.</p>
+        <H3 id="nastroje-podlozenie">Podloženie</H3>
         <p className="zvyraznene">
-          Akcie Nástroja v línii dostane <strong>majiteľ karty, s ktorou Nástroj tvorí spoj</strong> — nie ten, kto ho vyložil.
-          Podstrčený Nástroj teda pracuje pre súpera. Leží medzi kartami dvoch hráčov? Každý dostane akcie svojho spoja. Efekt
-          Nástroja v línii neplatí.
+          V Zhromaždení <P k="podlozenie">podložíš</P> Nástroj z ruky pod kartu s tagom <strong>Občan alebo Starešina</strong>{" "}
+          v línii — svoju alebo súperovu — za <strong>1 cigaretu</strong>. Natočíš ho tak, aby spod karty pretŕčala hrana, ktorú
+          chceš; <strong>platí len táto hrana</strong>, druhá je skrytá a natočenie sa už nemení. V striedaní je to ťah, limit
+          vykladania nemíňa.
         </p>
+        <ul>
+          <li>
+            Pod jednou kartou leží najviac jeden Nástroj (pod Zámočníka ich smie byť viac). Pod Zviera len vtedy, keď v línii leží
+            Kôň. Pod kartu lícom dole nie.
+          </li>
+          <li>
+            Vínko nepodložíš pod kartu, na ktorej leží poldeci, so Vzburou ani pod Výtržníka.
+          </li>
+          <li>
+            Podložený Nástroj <strong>leží do bitky</strong> a vyhodiť sa nedá. <strong>Po bitke sa vráti do odhadzovacieho balíčka
+            toho, kto ho podložil</strong> — nie majiteľa karty. Keď karta odíde z línie skôr, Nástroj ide tam hneď.
+          </li>
+          <li>
+            Podloženie nie je priloženie: Konflikt ani Podporu nespustí. Podložený Nástroj sa neráta do prevahy v kraji ani do
+            špakov za karty v línii.
+          </li>
+          <li>Podložený Nástroj a jeho hrana sú verejné.</li>
+        </ul>
         <H3 id="nastroje-dedicstvo">Dedičstvo</H3>
         <p>
-          Namiesto do línie môžeš Nástroj vyložiť do hracej oblasti ako <P k="dedicstvo">Dedičstvo</P>. Kým tam leží, platí jeho
+          Namiesto podloženia môžeš Nástroj vyložiť do hracej oblasti ako <P k="dedicstvo">Dedičstvo</P>. Kým tam leží, platí jeho
           efekt (napríklad Nealko: prah Cirhózy o 2 vyšší). <strong>Cena rastie pre oboch hráčov spolu:</strong> prvý Nástroj
           v Dedičstve stojí 1 cigaretu, druhý 2, tretí 3 — kto je rýchlejší, platí menej. Vyloženie do Dedičstva limit nemíňa,
-          ale v striedaní je to ťah.
+          ale v striedaní je to ťah. Z Dedičstva sa Nástroj nepodkladá.
         </p>
       </>
     ),
@@ -910,8 +968,8 @@ export const KAPITOLY: readonly Kapitola[] = [
           </li>
           <li>Na kartu so Vzburou sa nedá dať NA EX.</li>
           <li>
-            Pri lokalite platí Vzbura aj Forsáž len pre jej hranu v tom kraji. <strong>Nástroj</strong> nedostane ani jednu —
-            na spoji s Občanom ju dostane len Občan.
+            Pri lokalite platí Vzbura aj Forsáž len pre jej hranu v tom kraji. Vzburu dajú karte aj Vidly a Forsáž Energeťák
+            podložené pod ňu (<a href="#nastroje">Nástroje</a>).
           </li>
           <li>
             NA EX na kartu s Posilnením zruší jej Posilnenie: partnerovi už nič nezdvojí a Forsáž zanikne obom kartám.
@@ -991,7 +1049,7 @@ export const KAPITOLY: readonly Kapitola[] = [
           </thead>
           <tbody>
             <tr><td>Vyhratá bitka</td><td>1 za každú kartu v celej línii (aj finále), aspoň 1; k tomu špaky zo sekery</td></tr>
-            <tr><td>Bitka o Kultúrny dom</td><td>víťaz aj porazený 1 za každú svoju kartu v línii</td></tr>
+            <tr><td>Bitka o Kultúrny dom</td><td>každý hráč, aj víťaz, len 1 za každú svoju kartu v línii (víťaz aspoň 1)</td></tr>
             <tr><td>Vyhraná hádka pri prehratej bitke alebo sekere</td><td>1 za každú svoju kartu v línii; na Kultúrnom dome nie druhýkrát</td></tr>
             <tr><td>Starší po bitke</td><td>stupne žltá 1, oranžová 2, červená 2 dostane, kto ich drží: víťaz za svoj strach bez stupňov, ktoré obsadil súper, obaja pri každej bitke za svoje reči; kto prehral hádku, tomu reči klesnú zospodu o stupeň</td></tr>
             <tr><td>Finále: Nakladačka a hádka</td><td>víťaz bitky 1 za bod Nakladačky, víťaz hádky 1 za bod hádky</td></tr>
@@ -1012,7 +1070,7 @@ export const KAPITOLY: readonly Kapitola[] = [
             Po poslednej bitke o lokalitu (3 / 5 / 7) je finále — posledná bitka o pinnacle lokalitu, ktorá sa hrá ako o každú
             inú: lokalita leží v strede línie, karty sa kladú k nej a platia jej hrany aj efekt.
           </li>
-          <li>Pinnacle vyberie obranca — hráč s viac špakmi, natočí ju víťaz poslednej hádky; šenok a branie platia ako v každom kole. Vo finále sa nezajíma ani nepresviedča, cigareta za prehru ani výpalné sa po ňom neplatia.</li>
+          <li>Pinnacle vyberie hráč s viac špakmi — obranca. Natočí ju víťaz poslednej hádky; šenok a branie platia ako v každom kole. Vo finále sa nezajíma ani nepresviedča, cigareta za prehru ani výpalné sa po ňom neplatia.</li>
           <li>
             <strong>Útočí zaostávajúci — kto má menej špakov</strong> (pri rovnosti ten, kto prehral poslednú bitku; po
             sekere ostáva útočník). Vykladá prvý a na NA EX odpovedá prvý.
@@ -1051,6 +1109,7 @@ export const STARE_KOTVY: Readonly<Record<string, string>> = {
   poldeci: "naex",
   vykladanie: "zhromazdenie",
   dedicstvo: "nastroje",
+  "nastroje-linia": "nastroje-podlozenie",
   dlh: "kliatby-exekutor",
   pecen: "cena-pitia",
   zavislost: "cena-abstak",

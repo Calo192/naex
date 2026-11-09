@@ -1,30 +1,31 @@
 # NA EX! — pravidlá (špecifikácia)
 
-**Pravidlá v11.13 (platné od 2026-11-06)** — Lokality (v11.13), Reči na súperovom teplomere (v11.12), Hádka platí (v11.11), Ohováračka namiesto Alkoholika (v11.10), Dobratie do troch a výpalné (v11.9), Každý Hazard je Dlh (v11.8), Kostol a koniec línie (v11.7), Zajatie od minulého kola (v11.6), Identita kariet (v11.5), Zajatie Nakladačkou a presvedčenie (v11.4), Konflikt oboma smermi a Podpora (v11.3), Schopnosť väzňa (v11.2), Vzbura obráti kartu (v11.1) a Strach a reči (Michal 2026-11-02, docs/napady/strach-reci.html,
+**Pravidlá v11.14 (platné od 2026-11-09)** — Frakcie, Občania v troch kategóriách, Náradie a karta zo šenku (v11.14), Lokality (v11.13), Reči na súperovom teplomere (v11.12), Hádka platí (v11.11), Ohováračka namiesto Alkoholika (v11.10), Dobratie do troch a výpalné (v11.9), Každý Hazard je Dlh (v11.8), Kostol a koniec línie (v11.7), Zajatie od minulého kola (v11.6), Identita kariet (v11.5), Zajatie Nakladačkou a presvedčenie (v11.4), Konflikt oboma smermi a Podpora (v11.3), Schopnosť väzňa (v11.2), Vzbura obráti kartu (v11.1) a Strach a reči (Michal 2026-11-02, docs/napady/strach-reci.html,
 verzia 2) na v10.4
 (Hádka v10 — Michal 2026-11-01, docs/napady/hadka.html, verzia 4; v9 zmrazené 2026-10-30, krok 2
 revízie starších, docs/napady/starsi-krok2-zadanie.html; dávky v9.1 Chuť, v9.2 šenok a NA EX naraz,
 v9.3 Výtržník prebíja Úplatok; v10.1 zajatie pred šenkom; v10.2 Nástroj nie vedľa lokality; v10.3
-Forsáž, Úplatok zrušený; v10.4 pojem Spáliť, Autority). Sada kariet v55 (`cards.json`). Pravidlá sa
+Forsáž, Úplatok zrušený; v10.4 pojem Spáliť, Autority). Sada kariet: zverejnená v48 (`cards.json`). Pravidlá sa
 menia len v dávkach; celá dávka dostane ďalšiu verziu (značka partií `v11`; presnú verziu ukazuje
 stránka Pravidlá — `VERZIA_PRAVIDIEL_PRESNA`).
 
-**Frakcie — pripravené pre ďalšiu dávku** (Michal 2026-11-08, Zrejúca; špecifikácia `docs/napady/frakcie-final.json`):
+**Zmeny v11.14 oproti v11.13** (vo Vypálenej od 2026-11-09, sada v48; v Zrejúcej od 2026-11-08; staré znenia v `docs/pravidla-historia.md`, sekcia v11.14). Štyri časti:
+
+**Frakcie** (Michal 2026-11-08; špecifikácia `docs/napady/frakcie-final.json`):
 
 - **Kšeft zaniká** — spúšťač, ťah aj Kšefty kariet a lokalít (§7).
 - **Akcie navyše podmienené tagom** (§6, §16): spúšťače **Spoločník: tag** a **Nepriateľ: tag** a **Podpora / Konflikt s tagom**. Na karte je podmienka v poli efektu a akcie navyše v pečati dole v ilustrácii. **Konflikt bez tagu** (Michal 2026-11-08): Praudovravec, Stryná, Podvodník a Vdova majú „Konflikt: …“ bez tagu — platí pri stretnutí s ktoroukoľvek súperovou kartou.
 - **Skryté akcie** (§6, §16, Michal 2026-11-08): Pasca, Pijan, Svokra, Vymáhač, Šofér, Traktorista a Výherný automat majú akciu navyše v pečati s podmienkou slovami („Bitka: … {Rana}“); Vidly a Valaška ich zosilnia. Školitelia (Preškolenie, nižšie) menia aj akcie navyše. Vdova odhadzuje náhodnú kartu.
 - Nové efekty 17 kariet (§16) a lokalít Zberný dvor, Sklad a Predsedova vila (§15).
 
-**Občania v troch kategóriách — pripravené pre ďalšiu dávku** (Michal 2026-11-08, Zrejúca; docs/napady/obcania-kategorie.json):
+**Občania v troch kategóriách** (Michal 2026-11-08; docs/napady/obcania-kategorie.json):
 
 - Občan má jeden z troch druhov efektu (§16): **Školiteľ** — „Spúšťač: **Preškolenie** {X}→{Y}.“ (Vedúcko, Sypač, Anonymný alkoholik, Profesionálny tipér), **efekt s vedľajšou akciou** — akcie navyše v pečati (§6), **textový efekt** — všetko ostatné slovami.
 - **Preškolenie** (§6, §16): akcia X dotknutej karty sa ráta ako Y, **pred spojmi**, na oboch hranách aj v akciách navyše. **Furt** — obaja susedia v línii (karty oboch hráčov), kým susedia; **Podpora** — tvoja karta, s ktorou sa Školiteľ stretne priložením, do konca kola; **Konflikt** — súperova karta, s ktorou sa stretne, do konca kola. Akcia sa preškolí raz — Nástroj pod kartou → Podpora a Konflikt v poradí spustenia → Furt; nereťazí sa.
 - **Podpora a Konflikt bez tagu** — tag z podmienky Podpory pri Sypačovi (Chlap) a Dievčine (Zahraničný) padol.
 - Zmenené karty: Anonymný alkoholik Podpora {Pečeň}→{Viera}; Profesionálny tipér Konflikt {Cigareta}→{Hazard}; Sypač Podpora {Rana}→{Pecka} (bez Chlapa); Vedúcko Furt {Robota}→{Pecka}; Dievčina Podpora: {Povera}; Opatrovateľka Spoločník: Pamätník {Robota}; Šofér {Pecka} {Rana} bez cigarety; Traktorista Dlh v **poslednej Pitke kola** (pečať Hazard), nie na začiatku bitky (§16).
-- Kým admin texty neprepíše, staré znenia týchto kariet sú len text bez účinku (Vedúcko, Sypač, Anonymný alkoholik, Tipér, Šoférova cigareta, Traktoristov Dlh).
 
-**Náradie — podloženie, pripravené pre ďalšiu dávku** (Michal 2026-11-08, Zrejúca; docs/napady/naradie-hrany-zoznam.html v5, voľby P1–P6):
+**Náradie — podloženie** (Michal 2026-11-08; docs/napady/naradie-hrany-zoznam.html v5, voľby P1–P6):
 
 - **Nástroj sa do línie nevykladá** (§6, §12). Má hornú a dolnú hranu: **preškolenie X → Y** alebo kartový účinok — Energeťák **Forsáž**, Vínko **NA EX**, Injekcia **Výtržník**, Vidly **Vzbura**.
 - **Podloženie** pod Občana či Starešinu v línii, svojho aj súperovho, je ťah za **1 cigaretu**, limit nemíňa; platí pretŕčajúca hrana. Leží do bitky, potom ide do odhadzovacieho balíčka toho, kto ho podložil (§12).
@@ -32,7 +33,7 @@ stránka Pravidlá — `VERZIA_PRAVIDIEL_PRESNA`).
 - **Zámočník** — pod neho ľubovoľne veľa Nástrojov; **Kôň** — kým leží, aj pod Zviera (§16). Zaniká: Nástroj vedľa lokality, Náradie je spoločné, Vzbura a Forsáž s Nástrojom.
 - Dedičstvo ostáva bez zmeny.
 
-**Predavačka a Živnostník — karta zo šenku, pripravené pre ďalšiu dávku** (Michal 2026-11-09, Zrejúca):
+**Predavačka a Živnostník — karta zo šenku** (Michal 2026-11-09):
 
 - **Predavačka** „Podpora: Vezmi si zo šenku 1 Občana.“ (predtým dober si 1 kartu) a **Živnostník** „Podpora: Vezmi si zo šenku 1 Nástroj.“ (predtým Spoločník: Autorita {Robota} a s Nástupom Nástroj z ruky hneď pod neho — zaniká). Podpora bez tagu: pri každom stretnutí s vlastnou kartou si majiteľ vyberie zo šenku kartu s tagom Občan, resp. Nástroj, a vezme si ju **zadarmo do ruky**; bez takej karty v šenku nič, šenok sa nedopĺňa (§16).
 

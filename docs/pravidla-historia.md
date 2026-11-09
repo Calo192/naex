@@ -3255,3 +3255,16 @@ Staré znenia §15:
 Staré znenie §9.4: „Na Kultúrnom dome dostane aj porazený 1 špak za každú svoju kartu v línii (§15).“
 
 Staré znenie §7: „Na Benzínke sa nefajčí (§15).“ Kšeft mali aj Obecný úrad (3 cigarety, presun 1 priznaného Dlhu k súperovi) a Sklad (1 cigareta, vrchná karta súperovho odhadzovacieho balíčka; presvedčeného staršieho preskočil).
+
+## v11.14 — Frakcie, Občania v troch kategóriách, Náradie, karta zo šenku (Michal 2026-11-08 a 2026-11-09, vo Vypálenej od 2026-11-09)
+
+Štyri časti, ktoré boli v `docs/PRAVIDLA.md` od 2026-11-08 ako „pripravené pre ďalšiu dávku“ a v Zrejúcej hrali hneď: frakcie bez Kšeftu (Spoločník a Nepriateľ s tagom, akcie navyše v pečati), Občania v troch kategóriách (Školitelia a Preškolenie), Náradie podkladané pod kartu (dve hrany, 1 cigareta) a Predavačka a Živnostník berú kartu zo šenku. Vypálením 2026-11-09 (sada v48) sa stali verziou v11.14. Nové znenie: `docs/PRAVIDLA.md`, Zmeny v11.14, §6, §12, §15 a §16; celé znenie v11.13 je v gite (`git show 6d072362:docs/PRAVIDLA.md`).
+
+Staré znenie §12 Nástroj v línii (do v11.13, skrátené):
+
+> - **Nástroj potrebuje podporu:** v línii vytvorí spoj len s kartou s tagom **Občan alebo Starešina**. Pri lokalite, karte staršieho v strede či karte bez týchto tagov (napr. Zviera bez tagu Občan) **spoj nevznikne** — neaktivuje sa nič, ani akcia Nástroja, ani akcia suseda. Náradie musí mať kto používať.
+> - **Náradie je spoločné:** akcie Nástroja na spoji dostane **majiteľ karty, s ktorou Nástroj tvorí spoj**, nie majiteľ Nástroja. Nástroj medzi kartami dvoch hráčov dá každému akcie jeho spoja; podstrčený Nástroj tak pracuje pre súpera a súperov Nástroj vedľa tvojho Občana pre teba.
+> - **Efekt Nástroja v línii neplatí** — len v Dedičstve.
+> - Nástroj nesmie susediť s Nástrojom na konci strany, kam sa vykladá (susedstvo je fyzické).
+> - **Vedľa lokality sa Nástroj nevykladá** (v10.2, Michal 2026-11-01) — do prázdneho kraja ho vyložiť nemožno, ani vo finále na pinnacle.
+> - Nástroj sa do limitu vykladania **nezapočítava vôbec**, ale jeho vyloženie (do línie aj do Dedičstva) sa v striedaní počíta ako ťah (§6).

@@ -288,15 +288,17 @@ export function vazniNaVyhru(lokalitCelkom: number): number {
 // v11.10 (Michal 2026-11-06) bez novej značky: priazeň Ohováračka namiesto Alkoholika.
 // v11.11 (Michal 2026-11-06) bez novej značky: hádka dáva špaky za svoje karty, víťaz hádky natáča
 // ďalšiu lokalitu, reči uberajú zo špakov za strach.
+// v11.14 (vo Vypálenej od 2026-11-09) bez novej značky: frakcie bez Kšeftu, Občania v troch
+// kategóriách (Preškolenie), Náradie sa podkladá pod kartu, Predavačka a Živnostník berú zo šenku.
 export const VERZIA_PRAVIDIEL = "v11";
 /**
  * Presná verzia pravidiel vrátane dávky — hráč ju vidí na stránke Pravidlá, ktorá má
  * vždy odzrkadľovať správanie nasadenej hry (Michal 2026-10-31). Značka partií
  * (VERZIA_PRAVIDIEL) sa pri dávke nemení, táto áno.
  */
-export const VERZIA_PRAVIDIEL_PRESNA = "v11.13";
+export const VERZIA_PRAVIDIEL_PRESNA = "v11.14";
 /** Odkedy platí VERZIA_PRAVIDIEL_PRESNA — hráč ho vidí na stránke Pravidlá. */
-export const PRAVIDLA_PLATNE_OD = "2026-11-06";
+export const PRAVIDLA_PLATNE_OD = "2026-11-09";
 export type DlzkaHry = keyof typeof DLZKY_HRY;
 export const ALL_DLZKY: readonly DlzkaHry[] = ["kratka", "stredna", "dlha"];
 export const PREDVOLENA_DLZKA: DlzkaHry = "stredna";
