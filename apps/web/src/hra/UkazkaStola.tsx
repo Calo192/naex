@@ -399,7 +399,9 @@ function sSkrytymiAkciami(s: GameState, p: PlayerId): GameState {
     { card: k("praudovravec"), playedBy: p, navyse: [1], navyseOd: [[svokra.uid]] },
     { card: svokra, playedBy: su },
   ];
-  strany[su] = [{ card: k("veducko"), playedBy: su }, { card: k("zivnostnik"), playedBy: su }];
+  // Vedúcko je od v11.18 Podpora — Živnostník sa s ním stretol priložením.
+  const veducko = k("veducko");
+  strany[su] = [{ card: veducko, playedBy: su }, { card: k("zivnostnik"), playedBy: su, preskolenia: [{ z: "Robota", na: "Pecka", od: veducko.uid, spustac: "Podpora" }] }];
   const h = { ...s.hraci[p], dlhy: 4, dedicstvo: [...s.hraci[p].dedicstvo, k("vidly"), k("pasca")] };
   const prilozeniaKu: [number, number] = [0, 0];
   prilozeniaKu[p] = 1;

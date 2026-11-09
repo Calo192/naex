@@ -157,7 +157,7 @@ describe("Poľovník (Nástup, v10.4)", () => {
 /** Partia hráča 0 bez lokality: [A, B] sa vyhodnotí ako B · A (B.pravá ↔ A.ľavá). */
 const linia = (...cards: PlacedCard[]): LineState => ({ lokalita: null, lokalitaOtocena: false, strany: [cards, []] });
 
-describe("Vedúcko (Furt, v10.4)", () => {
+describe("Furt Školiteľ — Vedúcko v10.4 až v11.17 (syntetické; od v11.18 Podpora, skolitelia.test.ts)", () => {
   // Súperova karta na strane hráča 0 je otočená — efektívna ľavá je jej pravá odzadu, preto rovnaké Roboty.
   const A_L: Layout4 = ["Robota", "Robota", null, null];
   const A_R: Layout4 = [null, null, "Robota", "Robota"];

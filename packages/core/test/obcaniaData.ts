@@ -17,9 +17,13 @@ interface SurovaKarta {
   readonly triggers: readonly string[];
 }
 
+// Vedúcko zmenil Michal 2026-11-09 z Furt na Podporu (v11.18) — zoznam z 2026-11-08 je história,
+// platí text z cards.json.
+const NOVSIE_V_SADE: ReadonlySet<string> = new Set(["veducko"]);
+
 /** Sada (JSON vo formáte cards.json) s novými textami a spúšťačmi 8 Občanov zo zoznamu. */
 export function sObcanmi<T extends { readonly cards: readonly SurovaKarta[] }>(sada: T): T {
-  const nove = new Map(zoznam.karty.map((k) => [k.id, k]));
+  const nove = new Map(zoznam.karty.filter((k) => !NOVSIE_V_SADE.has(k.id)).map((k) => [k.id, k]));
   return {
     ...sada,
     cards: sada.cards.map((c) => {

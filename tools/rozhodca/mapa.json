@@ -1843,7 +1843,7 @@
       "pravidlo": "Sypač (id kulturista) — Školiteľ, Podpora: Preškolenie {Rana}→{Pecka} (Michal 2026-11-08): tvoja karta (bez tagu), s ktorou sa priložením stretne, má do konca kola Rany ako Pecky, aj Rany navyše; súperova nie.",
       "stav": "pokryte",
       "testy": [
-        "packages/core/test/skolitelia.test.ts › Podpora — tvoja karta, s ktorou sa Školiteľ stretne priložením, do konca kola (Sypač, Anonymný alkoholik) › Sypač priložený k tvojej Žene: tá má Rany ako Pecky (tag Chlap padol); log to povie",
+        "packages/core/test/skolitelia.test.ts › Podpora — tvoja karta, s ktorou sa Školiteľ stretne priložením, do konca kola (Vedúcko, Sypač, Anonymný alkoholik) › Sypač priložený k tvojej Žene: tá má Rany ako Pecky (tag Chlap padol); log to povie",
         "packages/core/test/identita-kariet-v115.test.ts › Sypač (Podpora: Preškolenie {Rana}→{Pecka}, 2026-11-08 bez tagu Chlap) › priložený k tvojej karte — Chlapovi aj Žene — tá má do konca kola Rany ako Pecky; aj keď ju priložíš k nemu",
         "packages/core/test/identita-kariet-v115.test.ts › Sypač (Podpora: Preškolenie {Rana}→{Pecka}, 2026-11-08 bez tagu Chlap) › súperova karta nie (Podpora je len k tvojej); náhľad (sPrilozenou) vidí to isté ako motor",
         "packages/core/test/identita-kariet-v115.test.ts › Sypač (Podpora: Preškolenie {Rana}→{Pecka}, 2026-11-08 bez tagu Chlap) › Rany preškolenej karty sa v súčtoch rátajú ako Pecky ešte pred spojmi, partnerove Rany nie"
@@ -2322,12 +2322,13 @@
     {
       "id": "16.karta.veducko",
       "paragraf": "16. Výklad kariet",
-      "pravidlo": "Vedúcko — Školiteľ, Furt: Preškolenie {Robota}→{Pecka} (Michal 2026-11-08): Roboty oboch susedov (aj súperových) sú pred spojmi Pecky ich majiteľa; Posilnenie ich zdvojí; karta sama ani hrana lokality nie.",
+      "pravidlo": "Vedúcko — Školiteľ, Podpora: Preškolenie {Robota}→{Pecka} (v11.18, Michal 2026-11-09): tvoja karta, s ktorou sa priložením stretne, má do konca kola Roboty ako Pecky; súperova karta ani druhý sused nie. Do v11.17 Furt na oboch susedov.",
       "stav": "pokryte",
       "testy": [
-        "packages/core/test/autority-v104.test.ts › Vedúcko (Furt, v10.4) › aktívne Roboty susednej karty sú Pecky jej majiteľa (aj súperovej) — posilnená ×2; bez Vedúcka Roboty",
-        "packages/core/test/skolitelia.test.ts › Furt — obaja susedia, karty oboch hráčov, kým susedia (Vedúcko) › Roboty oboch susedov sú pred spojmi Pecky — aj súperovej karty; bez Vedúcka Roboty",
-        "packages/core/test/skolitelia.test.ts › Furt — obaja susedia, karty oboch hráčov, kým susedia (Vedúcko) › karta sama ani hrana lokality sa nepreškolí; keď sused odíde, premena skončí"
+        "packages/core/test/skolitelia.test.ts › Podpora — tvoja karta, s ktorou sa Školiteľ stretne priložením, do konca kola (Vedúcko, Sypač, Anonymný alkoholik) › Vedúcko (v11.18, sada): tvoja karta, s ktorou sa stretne, má Roboty ako Pecky; súperova nič; druhý sused nič",
+        "packages/core/test/autority-v104.test.ts › Furt Školiteľ — Vedúcko v10.4 až v11.17 (syntetické; od v11.18 Podpora, skolitelia.test.ts) › aktívne Roboty susednej karty sú Pecky jej majiteľa (aj súperovej) — posilnená ×2; bez Vedúcka Roboty",
+        "packages/core/test/skolitelia.test.ts › Furt — obaja susedia, karty oboch hráčov, kým susedia (Vedúcko do v11.17, syntetické) › Roboty oboch susedov sú pred spojmi Pecky — aj súperovej karty; bez Vedúcka Roboty",
+        "packages/core/test/skolitelia.test.ts › Furt — obaja susedia, karty oboch hráčov, kým susedia (Vedúcko do v11.17, syntetické) › karta sama ani hrana lokality sa nepreškolí; keď sused odíde, premena skončí"
       ]
     },
     {
@@ -2336,7 +2337,7 @@
       "pravidlo": "Anonymný alkoholik — Školiteľ, Podpora: Preškolenie {Pečeň}→{Viera} (2026-11-08): tvoja karta, s ktorou sa priložením stretne, má do konca kola Poškodenie pečene ako Vieru; súperova nie.",
       "stav": "pokryte",
       "testy": [
-        "packages/core/test/skolitelia.test.ts › Podpora — tvoja karta, s ktorou sa Školiteľ stretne priložením, do konca kola (Sypač, Anonymný alkoholik) › Anonymný alkoholik: tvoja karta s pečeňou má Vieru; súperova karta nič (to by bol Konflikt)",
+        "packages/core/test/skolitelia.test.ts › Podpora — tvoja karta, s ktorou sa Školiteľ stretne priložením, do konca kola (Vedúcko, Sypač, Anonymný alkoholik) › Anonymný alkoholik: tvoja karta s pečeňou má Vieru; súperova karta nič (to by bol Konflikt)",
         "packages/core/test/identita-kariet-v115.test.ts › Anonymný alkoholik (Podpora: Preškolenie {PoškodeniePečene}→{Viera}, 2026-11-08) › priložený k tvojej karte — jej Poškodenie pečene sa do konca kola ráta ako Viera; v Pitke pečeň nedá"
       ]
     },
@@ -2359,9 +2360,9 @@
         "packages/core/test/skolitelia.test.ts › jedna akcia sa preškolí raz: Nástroj pod kartou → Podpora a Konflikt v poradí spustenia → Furt › Nástroj vyhrá nad Podporou aj Furt; Podpora nad Furt; Furt, keď nič iné",
         "packages/core/test/skolitelia.test.ts › jedna akcia sa preškolí raz: Nástroj pod kartou → Podpora a Konflikt v poradí spustenia → Furt › Podpora a Konflikt v poradí spustenia — prvá vyhrá",
         "packages/core/test/skolitelia.test.ts › jedna akcia sa preškolí raz: Nástroj pod kartou → Podpora a Konflikt v poradí spustenia → Furt › nereťazí sa: Rana → Pecka a Pecka → Rana dajú z Rany Pecku a z Pecky Ranu",
-        "packages/core/test/skolitelia.test.ts › preškolenie mení aj akcie navyše dotknutej karty; Nástroj len hrany (§12) › Opatrovateľka (Spoločník: Pamätník {Robota}) vedľa Vedúcka: Robota navyše je Pecka — v súčtoch aj v pečati",
+        "packages/core/test/skolitelia.test.ts › preškolenie mení aj akcie navyše dotknutej karty; Nástroj len hrany (§12) › Opatrovateľka (Spoločník: Pamätník {Robota}) podporená Vedúckom: Robota navyše je Pecka — v súčtoch aj v pečati",
         "packages/core/test/skolitelia.test.ts › preškolenie mení aj akcie navyše dotknutej karty; Nástroj len hrany (§12) › Fúrik dolnou hranou ({Robota}→{Hazard}) pod Opatrovateľkou: hrany Hazard, Robota navyše od Vedúcka Pecka",
-        "packages/core/test/skolitelia.test.ts › Podpora — tvoja karta, s ktorou sa Školiteľ stretne priložením, do konca kola (Sypač, Anonymný alkoholik) › každé spustenie ďalšia karta; tá istá dvojica druhý raz nič nové; náhľad (sPrilozenou) vidí to isté ako motor"
+        "packages/core/test/skolitelia.test.ts › Podpora — tvoja karta, s ktorou sa Školiteľ stretne priložením, do konca kola (Vedúcko, Sypač, Anonymný alkoholik) › každé spustenie ďalšia karta; tá istá dvojica druhý raz nič nové; náhľad (sPrilozenou) vidí to isté ako motor"
       ]
     },
     {

@@ -1,4 +1,4 @@
-# Ťahák — platné pravidlá NA EX! (v11.17 NA EX × Odpor a Posilnenie, Kapybara, Telefón, Krokodíl a hrany Náradia, v11.16 Vypiť len s limitom, pas bez ohľadu na ruku, Degustátorka hneď, odpoveď na NA EX za poldeci, Nástroj len pod svoje karty, Školiteľ aj Zviera, v11.15 Benzínka o 1 lacnejšie, v11.14 frakcie, Preškolenie a podloženie Nástrojov, v11.13 Lokality, v11.12 Reči na súperovom teplomere, zajatie a presvedčenie, identita kariet, Kostol na konci línie, každý Hazard je Dlh, 2026-11-09, Zrejúca; sada = cards.json v master)
+# Ťahák — platné pravidlá NA EX! (v11.18 Vedúcko Podporou, v11.17 NA EX × Odpor a Posilnenie, Kapybara, Telefón, Krokodíl a hrany Náradia, v11.16 Vypiť len s limitom, pas bez ohľadu na ruku, Degustátorka hneď, odpoveď na NA EX za poldeci, Nástroj len pod svoje karty, Školiteľ aj Zviera, v11.15 Benzínka o 1 lacnejšie, v11.14 frakcie, Preškolenie a podloženie Nástrojov, v11.13 Lokality, v11.12 Reči na súperovom teplomere, zajatie a presvedčenie, identita kariet, Kostol na konci línie, každý Hazard je Dlh, 2026-11-09, Zrejúca; sada = cards.json v master)
 
 Spoločný ťahák AI hráčov — playtester (Zrejúca) ho číta z master, protihráč na
 Vypálenej z vetvy `vypalena` (tam platí jej verzia pravidiel). Podrobne v `docs/PRAVIDLA.md` (zmeny v jeho úvode). Pri
@@ -127,12 +127,12 @@ rozpore s `docs/PRAVIDLA.md` platí `docs/PRAVIDLA.md` a rozpor zapíš do
   nesplní ani nedostane. V texte efektu sú akcie navyše zapísané ako {Povera}. **{Spálenie}** v pečati nie je akcia:
   **Krokodíl** (Konflikt: Občan {Spálenie}, v11.17) — súperov Občan, s ktorým sa priložením stretne (prikladáš ty aj súper),
   sa **na konci bitky spáli** (navždy z hry; jej akcie v bitke ešte platia; vedľa Mäsiara nič).
-- **Školitelia — Preškolenie (2026-11-08; v11.16 aj Zviera, to vedľa Mäsiara neplatí):** „Furt/Podpora/Konflikt: **Preškolenie** {X}→{Y}.“ — akcia X **inej** karty sa
+- **Školitelia — Preškolenie (2026-11-08; v11.16 aj Zviera, to vedľa Mäsiara neplatí):** „Furt/Podpora/Konflikt: **Preškolenie** {X}→{Y}.“ (Furt dnes nemá žiadna karta) — akcia X **inej** karty sa
   ráta ako Y (pre majiteľa tej akcie), **pred spojmi**, na oboch hranách aj v akciách navyše. **Furt** = obaja susedia
   Školiteľa (karty oboch hráčov), kým susedia; **Podpora** = tvoja karta, s ktorou sa priložením stretne, do konca kola;
   **Konflikt** = súperova karta, s ktorou sa stretne, do konca kola. Každá akcia sa preškolí raz: Nástroj pod kartou →
   Podpora a Konflikt v poradí spustenia → Furt; nereťazí sa. **Kapybara** (Zviera, Podpora aj Konflikt, v11.17): karta,
-  s ktorou sa stretne (tvoja aj súperova), má **Viery ako Cigarety**; sama má 1 Cigaretu navyše. **Vedúcko** (Furt): Roboty susedov sú **Pecky**. **Sypač**
+  s ktorou sa stretne (tvoja aj súperova), má **Viery ako Cigarety**; sama má 1 Cigaretu navyše. **Vedúcko** (Podpora, v11.18): tvoja karta má **Roboty ako Pecky**. **Sypač**
   (Podpora): tvoja karta má **Rany ako Pecky**. **Anonymný alkoholik** (Podpora): tvoja karta má **Poškodenie pečene ako
   Vieru**. **Profesionálny tipér** (Konflikt): súperova karta má **Cigarety ako Hazard** (Dlh namiesto cigarety).
 - **Schopnosť väzňa (v11.2, 2026-11-02; Kšeft väzňa zanikol):** každý tvoj väzeň má schopnosť, ktorú
@@ -330,8 +330,8 @@ rozpore s `docs/PRAVIDLA.md` platí `docs/PRAVIDLA.md` a rozpor zapíš do
   s ktorým sa stretol (v11.17); Vidly (Dedičstvo) — každá tvoja Rana o 1 poškodenie viac, aj Rana navyše (Pijan, Svokra, Vymáhač, Pasca, frakcie); Puška (Dedičstvo, 2026-10-30) — tvoju prepojenú Petelicu, ktorú by zrušil Odpor či NA EX, ráta namiesto zrušenia za 2; Pasca
   (Dedičstvo) — keď súper v kole priložil kartu k tvojej, Rana navyše (v9.1); Krabička (Dedičstvo) — za každé
   2 cigarety, ktoré súper vyfajčí, karta; **Liberál (Furt, v10.3)** — keď máš v partii rovnako žien
-  a chlapov (on sa ráta za oboch, skrytá Záverečná nie), všetky jeho aktívne akcie sú posilnené ×2. **Vedúcko (Furt, Školiteľ)** — Roboty kariet, ktoré s ním susedia (aj
-  súperových; hrana lokality nie), sú pred spojmi **Pecky** (aj ich Roboty navyše) ich majiteľa: Dlh nepália, dávajú 2 tuhé (posilnená ×2).
+  a chlapov (on sa ráta za oboch, skrytá Záverečná nie), všetky jeho aktívne akcie sú posilnené ×2. **Vedúcko (Podpora, Školiteľ, v11.18)** — tvoja karta, s ktorou sa priložením stretne, má do konca kola
+  Roboty pred spojmi ako **Pecky** (aj Roboty navyše; súperova karta ani druhý sused nie): Dlh nepália, dávajú 2 tuhé (posilnená ×2).
 - **Zajatie (v11.4, 2026-11-03):** pokus o zajatie v drafte a jeho cigareta **zanikli**. Kto **rozdeľuje
   Nakladačku**, smie pri staršom, pri ktorom je **tvoj strach 3** (červená) **už pred touto Nakladačkou** (od minulého kola, v11.6 — dotiahnutý v tom istom
   rozdelení nestačí), ho **zajať za 5 bodov** Nakladačky — `{"type":"prebytok","zdvihy":[…],"zajatia":[elderId,…]}`.

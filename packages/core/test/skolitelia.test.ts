@@ -1,6 +1,7 @@
 // Občania v troch kategóriách (Michal 2026-11-08, docs/napady/obcania-kategorie.json): Školitelia
-// („Spúšťač: Preškolenie {X}→{Y}.“ — Vedúcko Furt, Sypač a Anonymný alkoholik Podpora, Tipér
+// („Spúšťač: Preškolenie {X}→{Y}.“ — Vedúcko, Sypač a Anonymný alkoholik Podpora, Tipér
 // Konflikt), Efekt s vedľajšou akciou (Šofér, Traktorista, Dievčina, Opatrovateľka) a Textový efekt.
+// Vedúcko bolo do v11.17 Furt (oba susedia, aj súperovi) — Furt Školiteľa skúšajú syntetické karty.
 // Testy stoja na budúcej sade (obcaniaData.ts) a na syntetických kartách s presnými hranami;
 // očakávané hodnoty sú z pravidla (PRAVIDLA §6, §16, §17), nie z kódu.
 
@@ -52,7 +53,9 @@ const CIGARETY: Layout4 = ["Cigareta", "Cigareta", "Cigareta", "Cigareta"];
 const PECEN: Layout4 = ["PoškodeniePečene", "PoškodeniePečene", "PoškodeniePečene", "PoškodeniePečene"];
 const RANA_PECKA: Layout4 = ["Rana", "Pecka", "Rana", "Pecka"];
 
+/** Vedúcko do v11.17 — vzor Furt Školiteľa. */
 const VEDUCKO = "Furt: Preškolenie {Robota}→{Pecka}.";
+const VEDUCKO_PODPORA = "Podpora: Preškolenie {Robota}→{Pecka}.";
 const SYPAC = "Podpora: Preškolenie {Rana}→{Pecka}.";
 const AA = "Podpora: Preškolenie {PoškodeniePečene}→{Viera}.";
 const TIPER = "Konflikt: Preškolenie {Cigareta}→{Dlh}.";
@@ -67,7 +70,7 @@ const sloty = (ev: ReturnType<typeof evaluateLine>, uid: number) => [...(ev.card
 describe("zápis „Spúšťač: Preškolenie {X}→{Y}.“", () => {
   it("štyria Školitelia budúcej sady — spúšťač, X a Y; {Hazard} je Dlh, {Pečeň} Poškodenie pečene", () => {
     const efekt = (id: string) => preskoleniaKarty(defOf(buduca, { defId: id }));
-    expect(efekt("veducko")).toEqual([{ spustac: "Furt", z: "Robota", na: "Pecka" }]);
+    expect(efekt("veducko")).toEqual([{ spustac: "Podpora", z: "Robota", na: "Pecka" }]);
     expect(efekt("kulturista")).toEqual([{ spustac: "Podpora", z: "Rana", na: "Pecka" }]);
     expect(efekt("anonymny_alkoholik")).toEqual([{ spustac: "Podpora", z: "PoškodeniePečene", na: "Viera" }]);
     expect(efekt("profesionalny_tiper")).toEqual([{ spustac: "Konflikt", z: "Cigareta", na: "Dlh" }]);
@@ -90,7 +93,7 @@ describe("zápis „Spúšťač: Preškolenie {X}→{Y}.“", () => {
   });
 
   it("nie je to akcia navyše ani tag: rozbor navyše ho preskočí, Podpora a Konflikt sú bez tagu, text karty bez piktogramov", () => {
-    for (const t of [VEDUCKO, SYPAC, AA, TIPER]) expect(rozborNavyse(t), t).toEqual({ efekty: [], chyby: [] });
+    for (const t of [VEDUCKO, VEDUCKO_PODPORA, SYPAC, AA, TIPER]) expect(rozborNavyse(t), t).toEqual({ efekty: [], chyby: [] });
     expect(podmienkySpoja({ effectText: SYPAC, tags: ["Občan"] }, "Podpora")).toEqual([null]);
     expect(podmienkySpoja({ effectText: TIPER, tags: ["Občan"] }, "Konflikt")).toEqual([null]);
     expect(textBezAkcii(SYPAC)).toBe("Podpora: Preškolenie.");
@@ -113,22 +116,24 @@ describe("budúca sada: 8 zmenených Občanov (test/data/obcania-kategorie.json 
     ]);
   });
 
-  it("sada v70 (cards.json) má texty 8 Občanov zo zoznamu a tých istých Školiteľov ako budúca sada", () => {
+  it("sada (cards.json) má texty 8 Občanov zo zoznamu a tých istých Školiteľov — Vedúcko od v11.18 Podpora", () => {
     for (const k of zoznam.karty) {
-      expect(defOf(dnesna, { defId: k.id }).effectText, k.id).toBe(k.effect_text);
+      const text = k.id === "veducko" ? VEDUCKO_PODPORA : k.effect_text;
+      expect(defOf(dnesna, { defId: k.id }).effectText, k.id).toBe(text);
       expect(jeSkolitel(defOf(dnesna, { defId: k.id })), k.id).toBe(k.kategoria === "skolitel");
     }
-    // Vedúcko v sade preškolí Roboty suseda tak ako v budúcej sade.
+    expect(zoznam.karty.find((k) => k.id === "veducko")?.effect_text).toBe(VEDUCKO);
+    expect(defOf(buduca, { defId: "veducko" }).effectText).toBe(VEDUCKO_PODPORA);
+    // Podpora bez stretnutia nič: Vedúcko v línii Roboty suseda samo nepreškolí.
     const v = { uid: 1, defId: "veducko", leftLayout: 0, rightLayout: 0 };
     const ziv = { uid: 2, defId: "zivnostnik", leftLayout: 0, rightLayout: 0 };
-    const linka = linia([lezi(v, 0), lezi(ziv, 0)]);
-    expect(evaluateLine(dnesna, linka).cards.get(ziv.uid)?.preskolena).toEqual(evaluateLine(buduca, linka).cards.get(ziv.uid)?.preskolena);
+    expect(evaluateLine(dnesna, linia([lezi(v, 0), lezi(ziv, 0)])).cards.get(ziv.uid)?.preskolena).toBeUndefined();
   });
 });
 
 // --- Furt: Vedúcko --------------------------------------------------------------
 
-describe("Furt — obaja susedia, karty oboch hráčov, kým susedia (Vedúcko)", () => {
+describe("Furt — obaja susedia, karty oboch hráčov, kým susedia (Vedúcko do v11.17, syntetické)", () => {
   const d = syntheticData([
     makeDef("veducko", RANY, RANY, { tags: ["Občan", "Autorita", "Chlap"], triggers: ["Furt"], effectText: VEDUCKO }),
     makeDef("obyc", RANY, RANY, { tags: ["Občan"] }),
@@ -237,10 +242,13 @@ describe("preškolenie mení aj akcie navyše dotknutej karty; Nástroj len hran
 
   // Živnostník akciu navyše nemá od 2026-11-09 (Podpora: Nástroj zo šenku) — akcie navyše nesie Opatrovateľka
   // (Spoločník: Pamätník {Robota}); Pamätník je Milujúca manželka na druhej strane.
-  const opatrovatelka = (v: CardInstance, o: CardInstance, podlozene: PlacedCard["podlozene"] = undefined): LineState =>
-    linia([lezi(v, 0), lezi(o, 0, podlozene === undefined ? {} : { podlozene }), lezi(inst("milujuca_manzelka", 9), 0)]);
+  // Vedúcko (Podpora, v11.18) sa s Opatrovateľkou stretlo priložením — Preškolenie zapísané na nej (engine).
+  const opatrovatelka = (v: CardInstance, o: CardInstance, podlozene: PlacedCard["podlozene"] = undefined): LineState => {
+    const preskolenia = [{ z: "Robota", na: "Pecka", od: v.uid, spustac: "Podpora" }] as const;
+    return linia([lezi(v, 0), lezi(o, 0, podlozene === undefined ? { preskolenia } : { preskolenia, podlozene }), lezi(inst("milujuca_manzelka", 9), 0)]);
+  };
 
-  it("Opatrovateľka (Spoločník: Pamätník {Robota}) vedľa Vedúcka: Robota navyše je Pecka — v súčtoch aj v pečati", () => {
+  it("Opatrovateľka (Spoločník: Pamätník {Robota}) podporená Vedúckom: Robota navyše je Pecka — v súčtoch aj v pečati", () => {
     const v = inst("veducko", 1);
     const op = inst("opatrovatelka", 2);
     const ev = evaluateLine(buduca, opatrovatelka(v, op));
@@ -258,7 +266,7 @@ describe("preškolenie mení aj akcie navyše dotknutej karty; Nástroj len hran
     expect(ev.cards.get(op.uid)?.navyse?.[0]?.ako).toEqual(["Pecka"]);
     for (const x of sloty(ev, op.uid)) if (x.povodna === "Robota") expect(x).toMatchObject({ action: "Petelica", preskolil: vidly.uid });
     const zdroje = ev.cards.get(op.uid)?.preskolena ?? [];
-    expect(zdroje.map((p) => p.zdroj).sort()).toEqual(["Furt", "Nástroj"]);
+    expect(zdroje.map((p) => p.zdroj).sort()).toEqual(["Nástroj", "Podpora"]);
   });
 });
 
@@ -272,12 +280,13 @@ const syn = [
   makeDef("s_zena", RANY, RANY, { tags: ["Občan", "Žena"] }),
   makeDef("s_cig", CIGARETY, CIGARETY, { tags: ["Občan", "Chlap"] }),
   makeDef("s_pecen", PECEN, PECEN, { tags: ["Občan", "Chlap"] }),
+  makeDef("s_rob", ROBOTY, ROBOTY, { tags: ["Občan", "Chlap"] }),
 ];
 const data: GameData = buildGameData(new Map([...zaklad.cards, ...syn.map((x) => [x.id, x] as const)]), zaklad.elders, {
   scorecards: zaklad.scorecards,
   body: parseScorecards(scorecardsJson).body,
 });
-const ROZ: Record<string, Layout4> = { kulturista: RANY, anonymny_alkoholik: RANY, profesionalny_tiper: RANY, s_zena: RANY, s_cig: CIGARETY, s_pecen: PECEN };
+const ROZ: Record<string, Layout4> = { kulturista: RANY, anonymny_alkoholik: RANY, profesionalny_tiper: RANY, s_zena: RANY, s_cig: CIGARETY, s_pecen: PECEN, s_rob: ROBOTY };
 const karta = (id: string): CardInstance => {
   const r = ROZ[id];
   return r === undefined ? { uid: ++uidSeq, defId: id, leftLayout: 0, rightLayout: 0 } : instanceFor(data, id, r, r);
@@ -306,7 +315,27 @@ function zhromazdenie(strany: GameState["strany"], ruka: CardInstance[]): GameSt
 const priloz = (s: GameState, uid: number) => apply(data, s, { type: "place", uid, target: "vlastna" }, 0);
 const naKarte = (s: Pick<GameState, "strany">, uid: number): PlacedCard => s.strany.flat().find((pl) => pl.card.uid === uid)!;
 
-describe("Podpora — tvoja karta, s ktorou sa Školiteľ stretne priložením, do konca kola (Sypač, Anonymný alkoholik)", () => {
+describe("Podpora — tvoja karta, s ktorou sa Školiteľ stretne priložením, do konca kola (Vedúcko, Sypač, Anonymný alkoholik)", () => {
+  it("Vedúcko (v11.18, sada): tvoja karta, s ktorou sa stretne, má Roboty ako Pecky; súperova nič; druhý sused nič", () => {
+    const moja = lezi(karta("s_rob"), 0);
+    const v = karta("veducko");
+    const po = priloz(zhromazdenie([[moja], []], [v]), v.uid).state;
+    expect(naKarte(po, moja.card.uid).preskolenia).toEqual([{ z: "Robota", na: "Pecka", od: v.uid, spustac: "Podpora" }]);
+    expect(sloty(evaluateLine(data, lineState(po)), moja.card.uid).every((x) => x.action === "Pecka" && x.povodna === "Robota")).toBe(true);
+    // Súperova karta — Podpora nie (Konflikt Vedúcko nemá).
+    const cudzia = lezi(karta("s_rob"), 1);
+    const v2 = karta("veducko");
+    expect(naKarte(priloz(zhromazdenie([[cudzia], []], [v2]), v2.uid).state, cudzia.card.uid).preskolenia).toBeUndefined();
+    // Ďalšia tvoja karta priložená k Vedúcku sa s ním stretne tiež; prvý sused (bez stretnutia) ostáva Robotou.
+    const druha = karta("s_rob");
+    const prvy = lezi(karta("s_rob"), 0);
+    const vLinii = lezi(karta("veducko"), 0);
+    const po2 = priloz(zhromazdenie([[prvy, vLinii], []], [druha]), druha.uid).state;
+    expect(naKarte(po2, druha.uid).preskolenia).toEqual([{ z: "Robota", na: "Pecka", od: vLinii.card.uid, spustac: "Podpora" }]);
+    expect(naKarte(po2, prvy.card.uid).preskolenia).toBeUndefined();
+    expect(sloty(evaluateLine(data, lineState(po2)), prvy.card.uid).every((x) => x.action === "Robota")).toBe(true);
+  });
+
   it("Sypač priložený k tvojej Žene: tá má Rany ako Pecky (tag Chlap padol); log to povie", () => {
     const zena = lezi(karta("s_zena"), 0);
     const syp = karta("kulturista");

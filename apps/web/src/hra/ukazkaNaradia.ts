@@ -35,12 +35,12 @@ const HRANY_NASTROJOV: Readonly<Record<string, string>> = {
 
 /** Školitelia v zápise jadra (docs/napady/obcania-kategorie.json): text efektu a jeho spúšťač. */
 const LICE_PRESKOLENIA: Readonly<Record<string, string>> = {
-  veducko: "Furt: Preškolenie {Robota}→{Pecka}.",
+  veducko: "Podpora: Preškolenie {Robota}→{Pecka}.",
   kulturista: "Podpora: Preškolenie {Rana}→{Pecka}.",
   anonymny_alkoholik: "Podpora: Preškolenie {PoškodeniePečene}→{Viera}.",
   profesionalny_tiper: "Konflikt: Preškolenie {Cigareta}→{Dlh}.",
 };
-const SPUSTAC_PRESKOLENIA: Readonly<Record<string, string>> = { veducko: "Furt", kulturista: "Podpora", anonymny_alkoholik: "Podpora", profesionalny_tiper: "Konflikt" };
+const SPUSTAC_PRESKOLENIA: Readonly<Record<string, string>> = { veducko: "Podpora", kulturista: "Podpora", anonymny_alkoholik: "Podpora", profesionalny_tiper: "Konflikt" };
 
 /** Sada s hranami Nástrojov a so zápisom Preškolenia štyroch Občanov (hra aj líce). */
 export function sadaSNaradim(sada: Sada): Sada {
@@ -76,9 +76,11 @@ export function sNaradim(s: GameState, p: PlayerId): GameState {
   const su = opponentOf(p);
   const k = (defId: string): CardInstance => ({ uid: uid++, defId, leftLayout: 0, rightLayout: 0 });
   const strany: [GameState["strany"][0], GameState["strany"][1]] = [[], []];
+  const veducko = k("veducko");
   strany[p] = [
-    { card: k("veducko"), playedBy: p },
-    { card: k("zivnostnik"), playedBy: p },
+    { card: veducko, playedBy: p },
+    // Vedúcko je od v11.18 Podpora — Živnostník sa s ním stretol priložením.
+    { card: k("zivnostnik"), playedBy: p, preskolenia: [{ z: "Robota", na: "Pecka", od: veducko.uid, spustac: "Podpora" }] },
     { card: k("hasic"), playedBy: p, podlozene: [{ card: k("vidly"), majitel: p, hrana: "dolna" }] },
     {
       card: k("zamocnik"),

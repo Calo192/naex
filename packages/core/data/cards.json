@@ -3987,9 +3987,9 @@
     "Autorita",
     "Chlap"
    ],
-   "effect_text": "Furt: Preškolenie {Robota}→{Pecka}.",
+   "effect_text": "Podpora: Preškolenie {Robota}→{Pecka}.",
    "triggers": [
-    "Furt"
+    "Podpora"
    ],
    "left": {
     "blocked": [

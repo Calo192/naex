@@ -3318,3 +3318,13 @@ Staré znenie §12 Náradie, Telefón (v10–v11.16): „| Telefón | Tvoje Poho
 Staré znenie §16 Mäsiar (časť): „Týka sa Psa, Koňa a Čiernej mačky (Furt), Krokodíla (Bitka, aj jeho koniec bitky) a Recidivistu … Kapybara priložená k Mäsiarovi sa nespustí; Nástup, ktorý už prebehol, sa nevracia.“
 
 Staré hrany Nástrojov (v11.14–v11.16, zoznam v5): Energeťák dole {Posilnenie}→{Pečeň}, Injekcia dole {Poldeci}→{Pečeň}, Vidly dole {Rana}→{Pecka}, Valaška dole {Petelica}→{Pecka}, Pasca dole {Pecka}→{Rana}, Zapaľovač dole {Cigareta}→{Pečeň}, Noviny dole {Pohoršenie}→{Povera}, Svätý text dole {Viera}→{Povera}, Nealko hore {Pečeň}→{Viera} a dole {Poldeci}→{Viera}, Krištáľová guľa dole {Vízia}→{Povera}, Výherný automat dole {Cigareta}→{Hazard}, Výherné žreby dole {Vízia}→{Hazard}, Fúrik dole {Robota}→{Hazard}, Horoskop dole {Povera}→{Hazard}, Izolačka dole {Pecka}→{Obmedzenie}.
+
+## v11.18 — Vedúcko Podporou (Michal 2026-11-09, Zrejúca)
+
+Vedúcko mení spúšťač: „Furt: Preškolenie {Robota}→{Pecka}.“ → „Podpora: Preškolenie {Robota}→{Pecka}.“ — Roboty ako Pecky má len tvoja karta, s ktorou sa stretne priložením, do konca kola (ako Sypač). Nové znenie: `docs/PRAVIDLA.md`, Zmeny v11.18, §6 a §16.
+
+Staré znenie §16 Vedúcko (v11.14–v11.17):
+
+> | Vedúcko | Školiteľ — Furt: Preškolenie {Robota}→{Pecka} (Michal 2026-11-08, §6; do 2026-11-08 to isté slovami, v10.4): **Roboty kariet, ktoré s ním susedia** (obe hrany oboch susedov, aj súperových), sú pred spojmi **Pecky** majiteľa tej akcie (komu by patrila Robota) — Dlh nepália, dávajú 2 tuhé; Posilnenie aj Forsáž ich zdvoja ako Pecku, Fúrik ani špak za Robotu bez Dlhu sa na ne neuplatnia. **Hrana lokality nie je karta** — Robota lokality ostáva Robotou. Robotu, ktorú skôr preškolil Nástroj pod kartou či Podpora a Konflikt Školiteľa, nemení. Lícom dole (Záverečná) sa ráta ako ostatné Furt efekty akcií. Mení aj Roboty navyše susedov (§6); na karte suseda sa namiesto Roboty ukáže Pecka. |
+
+Staré znenie §6 Preškolenie Školiteľa (časť, v11.14–v11.17): „**Furt** — obaja susedia Školiteľa v línii (karty oboch hráčov), kým s ním susedia; karta sama ani hrana lokality nie; lícom dole ako ostatné Furt efekty akcií. **Podpora** — tvoja karta, s ktorou sa Školiteľ stretne priložením (oboma smermi), do konca kola, aj keď sa potom rozídu. **Konflikt** — súperova karta, s ktorou sa stretne priložením, do konca kola.“

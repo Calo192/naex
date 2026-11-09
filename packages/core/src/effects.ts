@@ -165,7 +165,7 @@ export const REGISTER: Readonly<Record<string, EfektStatus>> = {
   // Autority, kolo 2 (Michal 2026-11-02) — v sade ich pridá admin.
   polovnik: "impl", // Nástup: spáli súperovo Zviera na druhej strane, najďalej od lokality (spalPolovnikom)
   predavacka: "impl", // Podpora (2026-11-09): Občan zo šenku do ruky (engine podpora, voľba senok)
-  veducko: "impl", // Furt: Preškolenie {Robota}→{Pecka} — susedia oboch hráčov (Školiteľ, 2026-11-08; partia.ts premenyVLinii)
+  veducko: "impl", // Podpora: Preškolenie {Robota}→{Pecka} — len tvoja karta, s ktorou sa stretne priložením, do konca kola (Školiteľ; 2026-11-09 namiesto Furt na oboch susedov; engine podpora)
   masiar: "impl", // Furt (Michal 2026-10-28): efekty Zvierat v jeho okolí neplatia (partia.ts zvieratAUmlcane)
   kulturista: "impl", // Sypač, Podpora: Preškolenie {Rana}→{Pecka} pri ktorejkoľvek tvojej karte (Školiteľ, 2026-11-08; engine podpora)
   traktoristka: "impl", // Bitka: s prevahou v jeho kraji {Pecka}; Posledná Pitka kola: bez nej {Dlh} (2026-11-08, engine pokracujPoPitke); stará sada bez zápisu: Pecka (bitkaMody)

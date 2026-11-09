@@ -167,7 +167,7 @@ describe("zápis: akcie navyše bez podmienky (Furt) a {Spálenie}", () => {
     expect(rozborNavyse("Furt: {Cigareta}.")).toEqual({ efekty: [{ spustac: "Furt", tag: null, akcie: ["Cigareta"] }], chyby: [] });
     expect(rozborNavyse("Furt: Pamätník {Cigareta}.").chyby[0]).toMatch(/bez podmienky/);
     expect(rozborNavyse("Furt: {Posilnenie}.").chyby[0]).toMatch(/bez spoja/);
-    // Mäsiar a Vedúcko (Furt slovami, Furt Preškolenie) akcie navyše nemajú.
+    // Mäsiar (Furt slovami) akcie navyše nemá.
     expect(efektyNavyse(defOf(data, { defId: "masiar" }))).toEqual([]);
   });
 
