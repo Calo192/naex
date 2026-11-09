@@ -76,6 +76,8 @@ export interface KartaLicoProps {
   /** Akcie zmenené Nástrojom v Dedičstve (sloty vytlačených strán, indexy zhora). */
   readonly zar?: { readonly lava: readonly (ZarNaKarte | null)[]; readonly prava: readonly (ZarNaKarte | null)[] } | undefined;
   readonly odznaky?: ReactNode;
+  /** Pečiatka cez ilustráciu (NA EX na karte v línii) — pod akciami, aby ich nezakryla. */
+  readonly peciatka?: ReactNode;
   readonly onClick?: (() => void) | undefined;
   readonly vybrana?: boolean;
   /** Karta je prepínač (výber do šenku): aria-pressed; undefined = obyčajné tlačidlo. */
@@ -462,6 +464,14 @@ export function KartaLico(props: KartaLicoProps) {
               </div>
             );
           })}
+        {props.peciatka !== undefined && (
+          <div
+            className="kl-peciatka"
+            style={{ "--t": nastroj ? vyskaHrany : 0, "--h": nastroj ? g.vyska - 2 * vyskaHrany : g.obrazok.h } as CSSProperties}
+          >
+            {props.peciatka}
+          </div>
+        )}
         {pecat()}
         {props.hranaVnutorna !== undefined && [hrana("lava"), hrana("prava")]}
         {lava.map((k, i) => slot("lava", i, k))}

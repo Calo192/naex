@@ -29,6 +29,8 @@
 //                  v11, predtým stop=hadka a stop=pohorsenie — stále fungujú)
 //   &stop=reci-super krok Reči, keď ich rozdeľuje súper (čakanie hráča ?ja; aj stop=hadka-super)
 //   &pult=1        línia starších sa otvorí v rozložení Pult (mock 5) namiesto Teplomerov
+//   &stop=koniec-pitky  ťah, ktorým skončí posledná Pitka kola (&i=k, od 0), keď v nej súper dal NA EX —
+//                  po načítaní sa dohrá: stôl zastaví s odkrytými NA EX (Ďalej / Preskočiť, Michal 2026-11-09)
 //   &stop=posledna-pitka  posledná Pitka kola, hráč ?ja má prázdnu ruku a môže dať NA EX — súper
 //                  odpovie a bitka sa vyhodnotí v jeho ťahu
 //   &stop=vizia    Vízia: hráč ?ja rozhoduje o vrchnej karte balíčka (karta na stole, voľby na hrane, Michal 2026-11-08);
@@ -107,6 +109,7 @@ import { useStolNaSirku } from "./zariadenie.ts";
 import { OtocTelefon } from "./OtocTelefon.tsx";
 import { ULOZENY_REZIM_LINIE } from "./HernaPlocha.tsx";
 import { zaciatokKola as zaciatokKolaSuhrnu } from "./krokySuhrnu.ts";
+import { poslednaPitkaVDavke } from "./zastaveniePitky.ts";
 import { sNaradim, sadaSNaradim } from "./ukazkaNaradia.ts";
 
 interface Krok {
@@ -444,7 +447,7 @@ function sPresvedcenim(s: GameState, ja: PlayerId, druhyPresvedceny: boolean): G
 
 function odohraj(data: GameData): Odohrane {
   const seed = Number(q().get("seed") ?? "8");
-  const hlada = ["zaverecna", "reci", "reci-super", "hadka", "hadka-super", "pohorsenie", "vizia", "vestica", "cintorin", "cigarety-pride", "cigarety-dopad", "poldeci-pride", "poldeci-dopad"].includes(q().get("stop") ?? "") || (q().get("stop") === "suhrn" && q().get("rucne") !== null);
+  const hlada = ["koniec-pitky", "zaverecna", "reci", "reci-super", "hadka", "hadka-super", "pohorsenie", "vizia", "vestica", "cintorin", "cigarety-pride", "cigarety-dopad", "poldeci-pride", "poldeci-dopad"].includes(q().get("stop") ?? "") || (q().get("stop") === "suhrn" && q().get("rucne") !== null);
   if (!hlada) return odohrajSeed(data, seed).odohrane;
   // Súperova Záverečná, hádka určitého víťaza, Vízia ani Veštica nepadnú v každej partii — skúša sa od zadaného seedu ďalej.
   for (let pokus = 0; pokus < 40; pokus++) {
@@ -472,6 +475,7 @@ function odohrajSeed(data: GameData, seed: number): { readonly odohrane: Odohran
   let hadokSupera = 0;
   let autopasov = 0;
   let dopadov = 0;
+  let koncovPitky = 0;
   const autopasKto = p.get("kto") === "super" ? opponentOf(ja) : ja;
   const exekucia = p.get("exekutor") === "1";
   const hasic = p.get("hasic") === "1" || p.get("hasic") === "prazdny" ? p.get("hasic") : null;
@@ -654,6 +658,8 @@ function odohrajSeed(data: GameData, seed: number): { readonly odohrane: Odohran
       return najdene({ zaciatok: zaciatokKola, dohraj, historia: historiaKola });
     }
     tahyKola.push({ stav: s, cmd: t.cmd, kto: t.kto, rychlo: true });
+    if (stop === "koniec-pitky" && poslednaPitkaVDavke(events) >= 0 && po.koniec === null && [...po.strany.flat(), ...events.flatMap((e) => (e.type === "bitkaVysledok" ? (e.strany?.flat() ?? []) : []))].some((pl) => pl.naexBy === opponentOf(ja)) && koncovPitky++ === i)
+      return najdene({ zaciatok: s, dohraj: [{ stav: s, cmd: t.cmd, kto: t.kto }] });
     if (stop === "bitka" && bitka && bitiek++ === i) return najdene({ zaciatok: s, dohraj: [{ stav: s, cmd: t.cmd, kto: t.kto }] });
     if (stop === "koniec" && po.koniec !== null) return najdene({ zaciatok: s, dohraj: [{ stav: s, cmd: t.cmd, kto: t.kto }] });
     const superova = s.strany.findIndex((strana) => strana.some((pl) => pl.zaverecna === true && pl.playedBy !== ja));
@@ -676,7 +682,7 @@ function odohrajSeed(data: GameData, seed: number): { readonly odohrane: Odohran
     historia = zapisDoHistorie(historia, s, t.cmd, t.kto, po, events);
     s = po;
   }
-  return { odohrane: { zaciatok: s, dohraj: [], historia }, najdene: !["zaverecna", "vizia", "vestica", "cintorin", "cigarety-pride", "cigarety-dopad", "poldeci-pride", "poldeci-dopad"].includes(stop) && !(stop === "suhrn" && p.get("rucne") !== null) };
+  return { odohrane: { zaciatok: s, dohraj: [], historia }, najdene: !["koniec-pitky", "zaverecna", "vizia", "vestica", "cintorin", "cigarety-pride", "cigarety-dopad", "poldeci-pride", "poldeci-dopad"].includes(stop) && !(stop === "suhrn" && p.get("rucne") !== null) };
 }
 
 /** Podpora Predavačky a Živnostníka (Michal 2026-11-09) — kým ju admin nezapíše do tvorcu, ukážka ju dá sade len v prehliadači. */

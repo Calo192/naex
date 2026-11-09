@@ -270,6 +270,17 @@
   gap: calc(2 * var(--pt));
 }
 
+/* Pečiatka cez ilustráciu (NA EX v línii): veľkosť v bodoch karty, takže rovnaká na stole aj v lupe. */
+.kl-peciatka {
+  position: absolute;
+  inset: calc(var(--t) * var(--pt)) 0 auto 0;
+  height: calc(var(--h) * var(--pt));
+  display: grid;
+  place-items: center;
+  font-size: calc(23 * var(--pt));
+  pointer-events: none;
+}
+
 /* Otáča sa plocha, nie .kl — transform na .kl patrí hoveru a ťahaniu. */
 .kl-otocena > .kl-plocha {
   transform: rotate(180deg);
@@ -278,7 +289,7 @@
 /* Otočená karta sa dá čítať (Michal 2026-10-27): akcie a pás ostávajú tam, kam ich dalo
    otočenie (hrany sa párujú ako na stole), ale ilustrácia, pás s názvom a efekt sa otočia
    každý zvlášť späť — zhora tak ide efekt, názov s tagmi, ilustrácia. */
-.kl-otocena > .kl-plocha > :is(.kl-ilustracia, .kl-pas, .kl-efekt),
+.kl-otocena > .kl-plocha > :is(.kl-ilustracia, .kl-pas, .kl-efekt, .kl-peciatka),
 .kl-otocena .kl-nasobok {
   transform: rotate(180deg);
 }

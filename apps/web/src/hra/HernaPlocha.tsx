@@ -85,6 +85,8 @@ import { Medziobrazovka } from "./Medziobrazovka.tsx";
 import { SuhrnLokality } from "./SuhrnLokality.tsx";
 import { dalsiPohladSuhrnu, type KontextSuhrnu, type SuhrnBitky, type ZaciatokKola } from "./krokySuhrnu.ts";
 import { PAUZA_CIELA_MS, pauzaPoVolbeCiela, type PauzaCiela } from "./pauzaCiela.ts";
+import { poslednaPitkaVDavke, stolZastavenia } from "./zastaveniePitky.ts";
+import { naexNaKarte, PeciatkaNaex, type NaexNaKarte } from "./PeciatkaNaex.tsx";
 import { farbaKarty, type Sada } from "@naex/tvorba";
 import { HernaKarta, ZarStolaKontext, vzhladKarty, type HernaKartaProps } from "./HernaKarta.tsx";
 import { useZarovnanieLinie } from "./zarovnanieLinie.ts";
@@ -467,8 +469,13 @@ interface UcetPitky {
   readonly cigarety: readonly [number, number];
 }
 
-/** Vrstva po vyhodnotení: rekapitulácia Pitky, alebo Počítadlo bitky s rekapituláciou. */
+/** Vrstva po vyhodnotení: zastavenie po poslednej Pitke, rekapitulácia Pitky, alebo Počítadlo bitky s rekapituláciou. */
 type VrstvaVyhodnotenia =
+  | {
+      /** Stôl po poslednej Pitke kola bez prekrytia — Ďalej a Preskočiť na hrane (zastaveniePitky.ts). */
+      readonly druh: "stol";
+      readonly pitka: number;
+    }
   | {
       readonly druh: "pitka";
       readonly r: RekapitulaciaPitky;
@@ -1156,14 +1163,10 @@ export function HernaPlocha({
     [view.pitkaStav, ja],
   );
   const vidimVolbuSupera = view.pitkaStav !== null && vidiVolbuSupera(data, view, ja);
-  const stitokSuperovhoNaex = (
-    <span
-      className="naex-nad naex-skryte"
-      title={`${menoHraca(super_)} dal NA EX skryto — vidíš ho vďaka Bzdoche, lebo vyberáš po ňom. Odkryje sa, keď skončíš Pitku.`}
-    >
-      <IkonaPoldeci /> NA EX · {menoHraca(super_)} · skryto
-    </span>
-  );
+  // Pečiatka NA EX na karte (Michal 2026-11-09): odkryté NA EX z línie a zo skrytých len tie, ktoré pohľad
+  // nesie — moje, a súperove cez Bzdochu (vyberám po ňom). Zrážka oboch je Výtržník.
+  const naexNaKarteVLinii = (naexBy: PlayerId | undefined, naexBy2: PlayerId | undefined, skryteMoje: boolean, skryteSupera: boolean): NaexNaKarte | undefined =>
+    naexNaKarte({ naexBy, naexBy2, skryteMoje, skryteSupera }, ja, menoHraca);
   // Pre mňa sú skryté NA EX dané: náhľady a výhľady rátajú s nimi tak, ako ich motor
   // zúčtuje pri odkrytí (poldeci, pečeň, Svokra, Výpalné — sMojimiSkrytymiNaex).
   const zaklad = useMemo(() => sMojimiSkrytymiNaex(data, view), [data, view]);
@@ -1793,6 +1796,13 @@ export function HernaPlocha({
       return f.slice(1);
     });
   }, []);
+  // Zastavenie po poslednej Pitke: Ďalej = koniecPocitadla (vyhodnotenie Pitky a bitky ide po rade),
+  // Preskočiť zavrie zastavenie aj vyhodnotenia, ktoré za ním čakajú — ako Preskočiť pri súhrne starších.
+  const zastavenieBezi = vrstvaVyhodnotenia?.druh === "stol";
+  const preskocVyhodnotenie = useCallback(() => {
+    pocitadloAktivne.current = false;
+    setFrontaVrstiev([]);
+  }, []);
   // Kým sa na stole otáča Záverečná, rekapitulácia Pitky čaká (ODHALENIE_MS).
   const [cakaOdhalenie, setCakaOdhalenie] = useState(false);
   const casovacOdhalenia = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -1809,6 +1819,8 @@ export function HernaPlocha({
     const nove: VrstvaVyhodnotenia[] = [];
     const events = udalosti?.events ?? [];
     let odhalenie = false;
+    // Zastavenie po poslednej Pitke (Michal 2026-11-09) — výučba má svoj scenár, prehrávač svoje tempo.
+    const zastavenie = vyucba !== true && prehravanie === undefined && zadrzBitku === null ? poslednaPitkaVDavke(events) : -1;
     for (const [i, e] of events.entries()) {
       if (e.type === "odpovedNaNaex") {
         const o: OdpovedNaNaex = { hrac: e.hrac, defId: e.defId, ciel: e.ciel };
@@ -1825,6 +1837,7 @@ export function HernaPlocha({
       // okrem Pitky s NA EX či odpoveďou (Michal 2026-10-28): medzi ňou a rekapituláciou bitky býva
       // hádka, Nakladačka aj Vízia, a hráč musí hneď vidieť, čo NA EX a odpoveď spravili.
       if (e.type === "pitkaRekap") {
+        if (i === zastavenie) nove.push({ druh: "stol", pitka: e.rekap.pitka });
         const odpovede = odpovedePitky.current;
         odpovedePitky.current = [];
         if (!pitkaPredBitkou(events, i) || e.rekap.naex.karty.length > 0 || odpovede.length > 0) {
@@ -1862,7 +1875,7 @@ export function HernaPlocha({
     // Momenty (Výprask, Zvrat…) patria k poslednému vyhodnoteniu dávky.
     const momentyDavky = events.flatMap((e) => (e.type === "moment" ? [e.moment] : []));
     const posledna = nove.at(-1);
-    if (momentyDavky.length > 0 && posledna !== undefined) nove[nove.length - 1] = { ...posledna, momenty: momentyDavky };
+    if (momentyDavky.length > 0 && posledna !== undefined && posledna.druh !== "stol") nove[nove.length - 1] = { ...posledna, momenty: momentyDavky };
     pocitadloAktivne.current = true;
     // Prehrávač pri posúvaní nehromadí vrstvy — ukáže len tú z práve zobrazeného kroku.
     if (prehravanie !== undefined) setFrontaVrstiev(nove);
@@ -1872,9 +1885,18 @@ export function HernaPlocha({
       // a stôl ďalšieho kola (Michal 2026-10-30). Keď je server už v ďalšom kole, drží sa stôl bitky.
       if (vyucba !== true) {
         const bitka = nove.find((v) => v.druh === "bitka");
-        setZadrzanyView((z) => z ?? (bitka !== undefined && bitka.stol.kolo !== viewZoServera.kolo ? bitka.stol : viewZoServera));
+        setZadrzanyView(
+          (z) =>
+            z ??
+            (zastavenie >= 0
+              ? stolZastavenia(viewZoServera, bitka?.stol ?? null)
+              : bitka !== undefined && bitka.stol.kolo !== viewZoServera.kolo
+                ? bitka.stol
+                : viewZoServera),
+        );
       }
-      if (odhalenie) {
+      // Zastavenie stôl neprekryje — Záverečná sa otočí priamo pod ním, rekapitulácia počká na Ďalej.
+      if (odhalenie && zastavenie < 0) {
         // Najprv nech hráč vidí, ako sa Záverečná na stole otočí, až potom rekapitulácia.
         setCakaOdhalenie(true);
         if (casovacOdhalenia.current !== null) clearTimeout(casovacOdhalenia.current);
@@ -2905,7 +2927,7 @@ export function HernaPlocha({
       const otocena = otoceneTeraz.has(uid);
       // Otočená súperova Záverečná je v línii „nová“ — štítok otočenia povie viac.
       const nova = noveSuperove.includes(uid) && !otocena;
-      // NA EX na karte je štítok nad kartou, výber pre NA EX nápis pod ňou (Michal 2026-10-21).
+      // NA EX na karte je pečiatka cez ilustráciu (Michal 2026-11-09), výber pre NA EX nápis pod kartou.
       const naexBy = placed.naexBy;
       // NA EX naraz (v5): moje skryté NA EX vidím len ja; zrážka oboch = Výtržník.
       const skryteMoje = mojeSkryteNaex.has(uid);
@@ -2913,8 +2935,9 @@ export function HernaPlocha({
       const vytrznik = placed.vytrznik === true;
       const vybranaNaex = mode.typ === "naexCiel" && mode.uid === uid;
       const presunieSa = presunute.has(uid);
+      const peciatkaNaex = naexNaKarteVLinii(naexBy, placed.naexBy2, skryteMoje, skryteSupera);
       const stitky =
-        nova || otocena || presunieSa || naexBy !== undefined || skryteMoje || skryteSupera || vybranaNaex || placed.zaverecna === true ? (
+        nova || otocena || presunieSa || vytrznik || vybranaNaex || placed.zaverecna === true ? (
           <>
             {presunieSa && (
               <span className="nova-stitok" title="Navrhnutá Dohadzovačka túto kartu po potvrdení presunie z druhého kraja za seba (na koniec línie).">
@@ -2926,26 +2949,13 @@ export function HernaPlocha({
                 nová
               </span>
             )}
-            {vytrznik ? (
+            {vytrznik && (
               <span
                 className="naex-nad vytrznik-stitok"
                 title={`Zrážka NA EX: obaja ste dali poldeci na túto kartu. Do konca bitky je z nej Výtržník — každá jej akcia je Rana pre ${placed.playedBy === ja ? "teba" : menoHraca(placed.playedBy)}. Po bitke vytriezvie.`}
               >
                 <IkonaPoldeci /> Výtržník · Rany pre {placed.playedBy === ja ? "teba" : menoHraca(placed.playedBy)}
               </span>
-            ) : naexBy !== undefined ? (
-              <span className="naex-nad" title={`NA EX — poldeci hráča ${menoHraca(naexBy)}`}>
-                <IkonaPoldeci /> NA EX · {naexBy === ja ? "tvoj" : menoHraca(naexBy)}
-              </span>
-            ) : (
-              <>
-                {skryteMoje && (
-                  <span className="naex-nad naex-skryte" title={`Tvoje NA EX leží skryto — ${menoHraca(super_)} ho nevidí. Odkryje sa, keď obaja skončíte Pitku.`}>
-                    <IkonaPoldeci /> NA EX · tvoj · skryto
-                  </span>
-                )}
-                {skryteSupera && stitokSuperovhoNaex}
-              </>
             )}
             {/* Nad kartou ako NA EX — pod ňou zakrýval text efektu (UI inšpekcia); za štítkom NA EX sa posunie vyššie. */}
             {placed.zaverecna === true &&
@@ -2990,6 +3000,7 @@ export function HernaPlocha({
           jamky: jamkyStola.get(uid),
           vytrznik: vytrznik || injekcia,
           podlozene: podlozeneTu,
+          naex: peciatkaNaex,
         },
         {
           ...(jeCiel(cielPodlozenia) ? { ciel: cielPodlozenia } : {}),
@@ -3177,6 +3188,7 @@ export function HernaPlocha({
     // Ako karta v línii: značka, keď NA EX dať môžeš; klik rovno, alebo po pečiatke NA EX!.
     const znacka = naexMozny && naexCiele.has(z.uid);
     const klik = znacka && (naexPriamo || mode.typ === "naexCiel") ? () => setMode(vybrana ? { typ: "ziadny" } : { typ: "naexCiel", uid: z.uid }) : undefined;
+    const naexRubu = naexNaKarteVLinii(z.naexBy ?? undefined, undefined, mojeSkryteNaex.has(z.uid), superoveSkryteNaex.has(z.uid));
     return vLinii(
       <button
         type="button"
@@ -3192,16 +3204,10 @@ export function HernaPlocha({
           {z.odpoved === true ? "Odpoveď" : "Záverečná"}
           <small>{z.odpoved === true ? "lícom dole · otočí sa s tvojou odpoveďou" : `${dalsiaZaverecna ? "nová" : "lícom dole"} · otočí sa na konci Pitky`}</small>
         </span>
-        {z.naexBy !== null ? (
-          <span className="naex-nad">
-            <IkonaPoldeci /> NA EX · {z.naexBy === ja ? "tvoj" : menoHraca(z.naexBy)}
+        {naexRubu !== undefined && (
+          <span className="rub-peciatka" style={{ fontSize: sirkaVLinii * 0.15 }}>
+            <PeciatkaNaex naex={naexRubu} />
           </span>
-        ) : mojeSkryteNaex.has(z.uid) ? (
-          <span className="naex-nad naex-skryte" title={`Tvoje NA EX leží skryto — ${menoHraca(super_)} ho nevidí. Odkryje sa, keď obaja skončíte Pitku.`}>
-            <IkonaPoldeci /> NA EX · tvoj · skryto
-          </span>
-        ) : (
-          superoveSkryteNaex.has(z.uid) && stitokSuperovhoNaex
         )}
         {vybrana && <span className="vybrana-pod">✓ vybraná</span>}
       </button>,
@@ -3548,8 +3554,8 @@ export function HernaPlocha({
   // ---- tlačidlá návrhu na stole (Michal 2026-10-20) ------------------------
   // Potvrdenie patrí k tomu, čo leží na stole — hráč nemusí pozerať dole na pás.
   const stolTlacidla = ((): HranaTahu | null => {
-    // Súhrn po bitke drží hranu pre Ďalej a Preskočiť (pokyn).
-    if (!somNaTahu || view.koniec !== null || suhrnBezi) return null;
+    // Súhrn po bitke a zastavenie po poslednej Pitke držia hranu pre Ďalej a Preskočiť (pokyn).
+    if (!somNaTahu || view.koniec !== null || zastavenieBezi || suhrnBezi) return null;
     if (view.faza === "natocenieCiela" && lokalitaNavrh !== null) {
       const otocit = (
         <button onClick={() => setNavrh({ typ: "lokalita", uid: lokalitaNavrh.karta.uid, otocena: !lokalitaNavrh.otocena })} data-vyucba="tlacidlo:otocit">
@@ -3783,6 +3789,36 @@ export function HernaPlocha({
       return {
         nadpis: `Súhrn po bitke ${suhrn.bitka.kolo}`,
         text: "čo bitka urobila so staršími, krok po kroku",
+        ...(naSirku
+          ? { stred: dalej, ...(preskocit === null ? {} : { druha: preskocit }) }
+          : {
+              stred: (
+                <>
+                  {preskocit}
+                  {dalej}
+                </>
+              ),
+            }),
+      };
+    }
+    // Zastavenie po poslednej Pitke (Michal 2026-11-09): stôl vo finálnom stave, kým hráč nedá Ďalej —
+    // tlačidlá ako pri súhrne starších. Preskočiť len vtedy, keď za zastavením ešte niečo čaká.
+    if (vrstvaVyhodnotenia?.druh === "stol") {
+      const preskocit =
+        frontaVrstiev.length > 1 ? (
+          <button type="button" className="pecat pecat-tichy" title="Preskočí vyhodnotenie Pitky a bitky — hra pokračuje." onClick={preskocVyhodnotenie}>
+            preskočiť
+          </button>
+        ) : null;
+      const dalej = pecatTahu({
+        text: "ďalej",
+        skratka: "k",
+        tip: frontaVrstiev.length > 1 ? "Vyhodnotenie Pitky a bitky." : "Hra pokračuje.",
+        akcia: koniecPocitadla,
+      });
+      return {
+        nadpis: `Pitka ${vrstvaVyhodnotenia.pitka} skončila`,
+        text: "pozri si stôl — kam padli NA EX, kým príde vyhodnotenie",
         ...(naSirku
           ? { stred: dalej, ...(preskocit === null ? {} : { druha: preskocit }) }
           : {
@@ -4829,7 +4865,8 @@ export function HernaPlocha({
     predoslaFazaStola.current = fazaStola;
     setPohladStarsich(null);
   }, [fazaStola]);
-  // Kým beží počítadlo bitky, stôl ukazuje líniu kariet (rozsvecujú sa), nie starších.
+  // Kým beží počítadlo bitky či zastavenie po poslednej Pitke, stôl ukazuje líniu kariet (rozsvecujú sa,
+  // resp. nesú NA EX), nie starších.
   // Pauza po súperovej voľbe cieľa líniu starších na chvíľu skryje — rámik pauzy by inak svietil
   // na medzeru medzi staršími a vybranú lokalitu by nebolo vidno (Michal 2026-10-26). Po pauze
   // sa línia vráti sama: stav, ktorý ju otvoril (zajatie, Starší), sa nemení.
@@ -4838,6 +4875,7 @@ export function HernaPlocha({
     !pauzaBezi &&
     tahanie === null &&
     pocitadlo === null &&
+    !zastavenieBezi &&
     (suhrnBezi || starsiNaStole({ krok: krokStarsich !== null, nahliadnutie, rucne: pohladStarsich !== null, vyucba: ukazStarsich }));
   const pohladLinie = pohladStarsich ?? ja;
   // Krčmová nástenka leží na mieste hracej plochy (Michal 2026-10-27), nie v okne nad stolom.

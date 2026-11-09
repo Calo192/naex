@@ -15,6 +15,7 @@ import { KartaLico, type NavyseNaKarte, type PreskolenieNaKarte, type RohSlotu, 
 import { preskoleniaZTextu } from "../karta/preskolenie.ts";
 import { zarSlotu } from "../karta/zar.ts";
 import { vzhladSady } from "../lib/sada.tsx";
+import { PeciatkaNaex, type NaexNaKarte } from "./PeciatkaNaex.tsx";
 
 /**
  * Stôl pre žeravé ikony: komu karta patrí (ruka, línia) a čo mu posilňuje
@@ -116,6 +117,8 @@ export interface HernaKartaProps {
   readonly podlozene?: readonly PodlozenyNastroj[] | undefined;
   /** Karta Nástroja v lupe podloženého Nástroja: pretŕčajúca hrana. */
   readonly aktivnaHrana?: KtoraHrana | undefined;
+  /** NA EX na karte v línii — pečiatka cez ilustráciu, aj v lupe. */
+  readonly naex?: NaexNaKarte | undefined;
 }
 
 /**
@@ -136,7 +139,7 @@ function stavPreskoleni(efekt: string, stol: ZarStola | null, uid: number): Pres
   });
 }
 
-export function HernaKarta({ karta, sada, data, sirka, otocena = false, eval: ev, onClick, vybrana, bezPopisov, hranaVnutorna, spoj, jamky, vytrznik = false, stlacena, zakazana, podlozene, aktivnaHrana }: HernaKartaProps) {
+export function HernaKarta({ karta, sada, data, sirka, otocena = false, eval: ev, onClick, vybrana, bezPopisov, hranaVnutorna, spoj, jamky, vytrznik = false, stlacena, zakazana, podlozene, aktivnaHrana, naex }: HernaKartaProps) {
   const vytlacene = printedSides(data, karta);
   const stol = useContext(ZarStolaKontext);
   const vzhladK = vzhladKarty(sada, data, karta.defId);
@@ -224,7 +227,6 @@ export function HernaKarta({ karta, sada, data, sirka, otocena = false, eval: ev
       return { ...z, nova: teraz - prvy < TRVANIE_ISKRY_MS };
     }),
   }));
-  // NA EX na karte ukazuje štítok nad kartou v línii (HernaPlocha), nie odznak v nej.
   const odznaky = vytrznik ? (
     <span className="odznak-vytrznik">Výtržník!</span>
   ) : ev?.vzbura === true || ev?.forsaz === true ? (
@@ -246,6 +248,7 @@ export function HernaKarta({ karta, sada, data, sirka, otocena = false, eval: ev
       sloty={l.sloty !== null && p.sloty !== null ? { lava: l.sloty, prava: p.sloty } : null}
       zar={zarL.some((z) => z !== null) || zarP.some((z) => z !== null) ? { lava: zarL, prava: zarP } : undefined}
       odznaky={odznaky}
+      peciatka={naex === undefined ? undefined : <PeciatkaNaex naex={naex} />}
       navyse={navyse}
       onClick={onClick}
       vybrana={vybrana ?? false}

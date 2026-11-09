@@ -3623,7 +3623,83 @@ button.pecat-potvrd:disabled::after {
   stroke-width: 2;
 }
 
-/* NA EX na karte v línii: štítok nad kartou; výber pre NA EX: nápis pod kartou (Michal 2026-10-21). */
+/* Pečiatka NA EX! cez ilustráciu karty v línii (Michal 2026-11-09) — vzhľad tlačidla NA EX! (aj jeho
+   farby, nezávislé od schémy), rozmery v em: na karte z bodov karty (.kl-peciatka), na rube Záverečnej
+   zo šírky v línii. Pod nápisom kto ho dal, vo farbe hráča. */
+.naex-peciatka {
+  position: relative;
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.1em;
+  padding: 0.2em 0.4em 0.18em;
+  border: 0.08em solid var(--cervena);
+  border-radius: 0.26em;
+  color: #fff4e2;
+  background: color-mix(in srgb, var(--tehla-tmava) 90%, transparent);
+  box-shadow:
+    0 0.08em 0 #5e1b0f,
+    0 0 0 0.12em rgb(208 86 63 / 0.2),
+    0 0.25em 0.6em rgba(0, 0, 0, 0.55);
+  rotate: -14deg;
+  white-space: nowrap;
+  pointer-events: none;
+}
+
+.naex-peciatka::after {
+  content: "";
+  position: absolute;
+  inset: 0.1em;
+  border: 0.035em dashed rgb(255 244 226 / 0.5);
+  border-radius: 0.18em;
+}
+
+.naex-peciatka-text {
+  font: 800 1em/1 var(--nadpis);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.naex-peciatka-kto {
+  max-width: 8.5em;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  padding: 0 0.6em;
+  border-radius: 99px;
+  font: 800 0.42em/1.35 var(--pismo);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--ja-tmava);
+  background: var(--ja);
+}
+
+.naex-peciatka-su .naex-peciatka-kto {
+  color: var(--su-tmava);
+  background: var(--su);
+}
+
+.naex-peciatka-obaja .naex-peciatka-kto {
+  color: var(--ja-tmava);
+  background: linear-gradient(90deg, var(--ja) 50%, var(--su) 50%);
+}
+
+/* Skryté NA EX (moje, súperovo cez Bzdochu): súper o ňom nevie — pečiatka len obrysom. */
+.naex-peciatka-skryto {
+  opacity: 0.72;
+  border-style: dashed;
+  background: rgb(30 20 16 / 0.55);
+  box-shadow: none;
+}
+
+.rub-peciatka {
+  position: absolute;
+  inset: auto 0 8% 0;
+  display: grid;
+  place-items: center;
+  pointer-events: none;
+}
+
+/* Výtržník v línii: štítok nad kartou; výber pre NA EX: nápis pod kartou (Michal 2026-10-21). */
 .naex-nad {
   position: absolute;
   top: -13px;
@@ -3648,12 +3724,6 @@ button.pecat-potvrd:disabled::after {
   width: 15px;
   height: 15px;
   fill: #ffd08a;
-}
-
-/* NA EX naraz (v5): moje skryté NA EX — súper ho nevidí, preto prerušovaný okraj. */
-.naex-nad.naex-skryte {
-  background: var(--tma);
-  border: 1px dashed var(--cervena-svetla);
 }
 
 /* Výtržník (zrážka NA EX): na prvý pohľad iná karta — červený okraj a pečiatka. */
