@@ -1,0 +1,319 @@
+<!doctype html>
+<html lang="sk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Náradie len pod svoje karty: prerobenie hrán — NA EX!</title>
+<style>
+:root { --pozadie:#14110e; --plocha:#1e1914; --plocha-2:#28211a; --okraj:#3d3229; --text:#f1e8d8; --tlmeny:#b6a790; --slaby:#8b7d6a;
+  --akcent:#e9ad45; --zelena:#7cbf74; --cervena:#d0563f; --modra:#5cc0cf; --oranzova:#e08a3a; color-scheme: dark; }
+@media (prefers-color-scheme: light) { :root { --pozadie:#f6f1e7; --plocha:#fffaf1; --plocha-2:#f0e7d6; --okraj:#dccdb3; --text:#2a2016;
+  --tlmeny:#6b5b45; --slaby:#7a6a52; --akcent:#a8680f; --zelena:#3f7f38; --cervena:#b0402c; --modra:#2a7f8c; --oranzova:#b0601a; color-scheme: light; } }
+* { box-sizing: border-box; }
+body { margin:0; background:var(--pozadie); color:var(--text); font:16px/1.5 system-ui, "Segoe UI", Roboto, sans-serif; }
+main { max-width: 1040px; margin: 0 auto; padding: 16px 16px 100px; }
+h1, h2, h3 { font-family: Georgia, serif; line-height: 1.2; }
+h1 { font-size: clamp(1.4rem, 6vw, 2.1rem); margin: 0 0 6px; }
+h2 { font-size: 1.2rem; margin: 30px 0 10px; padding-bottom: 4px; border-bottom: 1px solid var(--okraj); }
+p { margin: 0 0 10px; }
+code { font: .84em ui-monospace, Consolas, monospace; background: var(--plocha-2); padding: 1px 4px; border-radius: 4px; overflow-wrap: anywhere; }
+.box { background: var(--plocha); border: 1px solid var(--okraj); border-radius: 12px; padding: 12px 14px; margin: 0 0 12px; }
+.box.zv { border-color: var(--akcent); } .box.rec { border-color: var(--zelena); } .box.riz { border-color: var(--cervena); }
+.box > :last-child { margin-bottom: 0; }
+.mini { color: var(--slaby); font-size: .85rem; }
+ul, ol { padding-left: 20px; } li { margin-bottom: 5px; }
+nav { position: sticky; top: 0; z-index: 2; background: var(--pozadie); padding: 8px 0; display: flex; gap: 6px; overflow-x: auto; border-bottom: 1px solid var(--okraj); }
+nav a { flex: none; font-size: .85rem; text-decoration: none; color: var(--tlmeny); background: var(--plocha); border: 1px solid var(--okraj); border-radius: 999px; padding: 4px 11px; }
+section, h2 { scroll-margin-top: 52px; }
+.tab { overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; font-size: .86rem; }
+th, td { text-align: left; vertical-align: top; padding: 6px 7px; border-bottom: 1px solid var(--okraj); }
+thead th { color: var(--slaby); font-weight: 600; font-size: .78rem; }
+tbody th { font-family: Georgia, serif; font-weight: 600; white-space: nowrap; }
+td.c { text-align: center; white-space: nowrap; font-family: ui-monospace, Consolas, monospace; font-size: .8rem; }
+.pr { display: inline-block; font-family: ui-monospace, Consolas, monospace; font-size: .84em; background: var(--plocha-2); border: 1px solid var(--okraj); border-radius: 6px; padding: 1px 6px; margin: 1px 3px 1px 0; white-space: nowrap; }
+.pr.a { border-color: var(--zelena); } .pr.b { border-color: var(--cervena); text-decoration: line-through; opacity: .75; } .pr.c { border-color: var(--oranzova); } .pr.n { border-color: var(--zelena); font-weight: 700; } .pr.k { border-color: var(--modra); font-weight: 700; }
+.chip { display: inline-block; font-size: .7rem; padding: 0 6px; border-radius: 999px; border: 1px solid currentColor; white-space: nowrap; vertical-align: 1px; }
+.chip.a { color: var(--zelena); } .chip.b { color: var(--cervena); } .chip.c { color: var(--oranzova); }
+.pod { display: block; font-size: .76rem; color: var(--slaby); margin-top: 2px; }
+.leg { display: flex; gap: 10px; flex-wrap: wrap; font-size: .82rem; color: var(--tlmeny); margin: 6px 0 10px; }
+.zapis { font: .8rem ui-monospace, Consolas, monospace; color: var(--tlmeny); display: block; margin-top: 3px; }
+.q { font-weight: 700; color: var(--akcent); }
+</style>
+</head>
+<body>
+<main>
+
+<h1>Náradie len pod svoje karty: prerobenie hrán</h1>
+<p class="mini">Návrh 2026-11-09 · Michalovo rozhodnutie z 2026-11-09: <b>Nástroj sa podkladá len pod vlastné karty</b> · nadväzuje na
+<a href="naradie-hrany-zoznam.html">zoznam hrán v5</a> a na súčasný stav v <code>cards.json</code> (Puška: dve hrany posilnenia) ·
+Dedičstvo sa nemení · kód sa zatiaľ nemení</p>
+
+<nav>
+  <a href="#zhrnutie">Zhrnutie</a><a href="#tabulka">22 Nástrojov</a><a href="#nealko">Nealko</a><a href="#cisla">Pokrytie</a><a href="#kolizie">Kolízie</a><a href="#dopad">Dopad</a><a href="#otazky">Otázky</a>
+</nav>
+
+<section id="zhrnutie">
+<h2>Zhrnutie</h2>
+<div class="box zv">
+<ul>
+  <li><b>44 hrán:</b> 22 pomáha vlastnej karte, 9 je dvojakých (pomôžu podľa suseda), <b>13 bolo sabotáží</b>. Sabotáž pod vlastnú kartu len škodí, preto ju nahrádzam.</li>
+  <li><b>Mení sa 14 hrán:</b> 13 sabotáží a Nealko dole podľa Michala ({Poldeci}→{Pohoršenie}). K tomu 2 voliteľné zmeny kvôli kolíziám so Školiteľmi (Nealko hore, Vidly dole).</li>
+  <li>Náhrady sú tri typy: <b>zlé na dobré</b> (Pečeň, Hazard na niečo užitočné), <b>slabé na silné</b> (Rana na Petelicu) a <b>hrana posilnenia</b> ako má Puška (Posilnená {Rana}, {Robota}, {Povera}, Posilnené {Obmedzenie}).</li>
+  <li>Priemerné pokrytie <b>57 % → 63 %</b> (užitočné hrany pred zmenou: 54 %). Každá dvojica X → Y je v sade jediná, ak Michal prijme obe voliteľné zmeny.</li>
+</ul>
+</div>
+</section>
+
+<section id="tabulka">
+<h2>22 Nástrojov: pred a po</h2>
+<div class="leg">
+  <span><span class="chip a">a</span> pomáha vlastnej karte, ostáva</span>
+  <span><span class="chip c">c</span> dvojaká, ostáva</span>
+  <span><span class="chip b">b</span> škodí vlastnej karte, nahradiť</span>
+  <span><span class="pr n">nová</span> náhrada</span>
+</div>
+<p class="mini">Pokrytie = koľko zo 48 kariet do línie (Občan, Starešina) má zdrojovú akciu hrany: hore / dole / aspoň jedna. Kartová hrana = 48.
+Pod každým Nástrojom je nový zápis hrán v syntaxi karty (pred ním ostáva text Dedičstva).</p>
+<div class="tab">
+<table>
+<thead><tr><th>Nástroj</th><th>▲ Hore</th><th>▼ Dole</th><th class="c">Pokrytie</th></tr></thead>
+<tbody>
+
+<tr><th>Energeťák</th>
+<td><span class="pr k">Forsáž</span> <span class="chip a">a</span><span class="pod">vlastná karta ×2 bez dvoch Posilnení</span></td>
+<td><span class="pr b">{Posilnenie}→{Pečeň}</span> <span class="chip b">b</span><br><span class="pr n">{Poldeci}→{Posilnenie}</span><span class="pod">namiesto poldeca energeťák</span></td>
+<td class="c">48/9<br>100 %</td></tr>
+<tr><td colspan="4"><span class="zapis">Hore: Forsáž. Dole: {Poldeci}→{Posilnenie}.</span></td></tr>
+
+<tr><th>Vínko</th>
+<td><span class="pr k">NA EX</span> <span class="chip a">a</span><span class="pod">zdvojí nespojené akcie karty na konci línie, bez poldeca</span></td>
+<td><span class="pr a">{Pečeň}→{Poldeci}</span> <span class="chip a">a</span></td>
+<td class="c">48/25<br>100 %</td></tr>
+<tr><td colspan="4"><span class="zapis">bez zmeny</span></td></tr>
+
+<tr><th>Injekcia</th>
+<td><span class="pr k">Výtržník</span> <span class="chip a">a</span><span class="pod">karta plná Hazardu a Pečene sa zmení na Rany</span></td>
+<td><span class="pr b">{Poldeci}→{Pečeň}</span> <span class="chip b">b</span><br><span class="pr n">{Pečeň}→{Robota}</span><span class="pod">injekcia na pečeň a ide makať</span></td>
+<td class="c">48/25<br>100 %</td></tr>
+<tr><td colspan="4"><span class="zapis">Hore: Výtržník. Dole: {Pečeň}→{Robota}.</span></td></tr>
+
+<tr><th>Vidly</th>
+<td><span class="pr k">Vzbura</span> <span class="chip a">a</span><span class="pod">prebudí voľnú hranu karty na konci línie</span></td>
+<td><span class="pr a">{Rana}→{Pecka}</span> <span class="chip a">a</span><span class="pod">kolízia so Sypačom, otázka 2: voliteľne <span class="pr n">{Robota}→{Petelica}</span> sedliaci zahodia robotu a idú s vidlami</span></td>
+<td class="c">48/18<br>100 %</td></tr>
+<tr><td colspan="4"><span class="zapis">bez zmeny · ak otázka 2 = B: Hore: Vzbura. Dole: {Robota}→{Petelica}.</span></td></tr>
+
+<tr><th>Puška</th>
+<td><span class="pr a">Posilnená {Petelica}</span> <span class="chip a">a</span></td>
+<td><span class="pr a">Posilnená {Pecka}</span> <span class="chip a">a</span></td>
+<td class="c">7/8<br>31 %</td></tr>
+<tr><td colspan="4"><span class="zapis">bez zmeny</span></td></tr>
+
+<tr><th>Valaška</th>
+<td><span class="pr a">{Pecka}→{Petelica}</span> <span class="chip a">a</span></td>
+<td><span class="pr b">{Petelica}→{Pecka}</span> <span class="chip b">b</span><br><span class="pr n">{Rana}→{Petelica}</span><span class="pod">rana valaškou</span></td>
+<td class="c">8/18<br>40 %</td></tr>
+<tr><td colspan="4"><span class="zapis">Hore: {Pecka}→{Petelica}. Dole: {Rana}→{Petelica}.</span></td></tr>
+
+<tr><th>Pasca</th>
+<td><span class="pr a">{Pečeň}→{Rana}</span> <span class="chip a">a</span></td>
+<td><span class="pr b">{Pecka}→{Rana}</span> <span class="chip b">b</span><br><span class="pr n">Posilnená {Rana}</span><span class="pod">chytená noha bolí dvakrát</span></td>
+<td class="c">25/18<br>63 %</td></tr>
+<tr><td colspan="4"><span class="zapis">Hore: {Pečeň}→{Rana}. Dole: Posilnená {Rana}.</span></td></tr>
+
+<tr><th>Zapaľovač</th>
+<td><span class="pr c">{Cigareta}→{Rana}</span> <span class="chip c">c</span><span class="pod">cigareta za 1 poškodenie, voľba hráča</span></td>
+<td><span class="pr b">{Cigareta}→{Pečeň}</span> <span class="chip b">b</span><br><span class="pr n">{Poldeci}→{Petelica}</span><span class="pod">ohnivý dych: poldeci do plameňa</span></td>
+<td class="c">21/9<br>50 %</td></tr>
+<tr><td colspan="4"><span class="zapis">Hore: {Cigareta}→{Rana}. Dole: {Poldeci}→{Petelica}.</span></td></tr>
+
+<tr><th>Noviny</th>
+<td><span class="pr a">{Viera}→{Pohoršenie}</span> <span class="chip a">a</span><span class="pod">obranu vymeníš za 2 mäkké</span></td>
+<td><span class="pr b">{Pohoršenie}→{Povera}</span> <span class="chip b">b</span><br><span class="pr n">{Pečeň}→{Pohoršenie}</span><span class="pod">bulvár: opilec na titulke</span></td>
+<td class="c">6/25<br>58 %</td></tr>
+<tr><td colspan="4"><span class="zapis">Hore: {Viera}→{Pohoršenie}. Dole: {Pečeň}→{Pohoršenie}.</span></td></tr>
+
+<tr><th>Svätý text</th>
+<td><span class="pr c">{Povera}→{Viera}</span> <span class="chip c">c</span><span class="pod">1 mäkké vymeníš za obranu</span></td>
+<td><span class="pr b">{Viera}→{Povera}</span> <span class="chip b">b</span><br><span class="pr n">{Odpor}→{Viera}</span><span class="pod">nastav druhé líce</span></td>
+<td class="c">9/11<br>40 %</td></tr>
+<tr><td colspan="4"><span class="zapis">Hore: {Povera}→{Viera}. Dole: {Odpor}→{Viera}.</span></td></tr>
+
+<tr><th>Telefón</th>
+<td><span class="pr a">{Povera}→{Pohoršenie}</span> <span class="chip a">a</span></td>
+<td><span class="pr c">{Odpor}→{Povera}</span> <span class="chip c">c</span><span class="pod">tvoj Odpor, ktorý by zrušil tvojho suseda, sa zmení na klebetu</span></td>
+<td class="c">9/11<br>40 %</td></tr>
+<tr><td colspan="4"><span class="zapis">bez zmeny (otázka 3: prípadne Dole: {Odpor}→{Pohoršenie})</span></td></tr>
+
+<tr><th>Nealko</th>
+<td><span class="pr a">{Pečeň}→{Viera}</span> <span class="chip a">a</span><span class="pod">pracovne podľa zadania; kolízia s Anonymným alkoholikom, otázka 1: odporúčam <span class="pr n">{Pečeň}→{Povera}</span></span></td>
+<td><span class="pr c" style="text-decoration:line-through">{Poldeci}→{Viera}</span> <span class="chip c">c</span><br><span class="pr n">{Poldeci}→{Pohoršenie}</span><span class="pod">Michal: abstinent kázne drží</span></td>
+<td class="c">25/9<br>63 %</td></tr>
+<tr><td colspan="4"><span class="zapis">Hore: {Pečeň}→{Viera}. Dole: {Poldeci}→{Pohoršenie}. (Odporúčané: Hore: {Pečeň}→{Povera}.)</span></td></tr>
+
+<tr><th>Krištáľová guľa</th>
+<td><span class="pr a">{Povera}→{Vízia}</span> <span class="chip a">a</span></td>
+<td><span class="pr b">{Vízia}→{Povera}</span> <span class="chip b">b</span><br><span class="pr n">{Pečeň}→{Vízia}</span><span class="pod">na dne pohára vidí budúcnosť</span></td>
+<td class="c">9/25<br>60 %</td></tr>
+<tr><td colspan="4"><span class="zapis">Hore: {Povera}→{Vízia}. Dole: {Pečeň}→{Vízia}.</span></td></tr>
+
+<tr><th>Krabička cigariet</th>
+<td><span class="pr a">{Pečeň}→{Cigareta}</span> <span class="chip a">a</span></td>
+<td><span class="pr a">{Hazard}→{Cigareta}</span> <span class="chip a">a</span></td>
+<td class="c">25/26<br>90 %</td></tr>
+<tr><td colspan="4"><span class="zapis">bez zmeny</span></td></tr>
+
+<tr><th>Výherný automat</th>
+<td><span class="pr a">{Hazard}→{Poldeci}</span> <span class="chip a">a</span></td>
+<td><span class="pr b">{Cigareta}→{Hazard}</span> <span class="chip b">b</span><br><span class="pr n">{Hazard}→{Pecka}</span><span class="pod">prehral, kopne do automatu</span></td>
+<td class="c">26/26<br>54 %</td></tr>
+<tr><td colspan="4"><span class="zapis">Hore: {Hazard}→{Poldeci}. Dole: {Hazard}→{Pecka}.</span></td></tr>
+
+<tr><th>Výherné žreby</th>
+<td><span class="pr a">{Hazard}→{Vízia}</span> <span class="chip a">a</span></td>
+<td><span class="pr b">{Vízia}→{Hazard}</span> <span class="chip b">b</span><br><span class="pr n">{Cigareta}→{Vízia}</span><span class="pod">kúpiš žreb a stieraš</span></td>
+<td class="c">26/21<br>79 %</td></tr>
+<tr><td colspan="4"><span class="zapis">Hore: {Hazard}→{Vízia}. Dole: {Cigareta}→{Vízia}.</span></td></tr>
+
+<tr><th>Fúrik</th>
+<td><span class="pr a">{Hazard}→{Robota}</span> <span class="chip a">a</span></td>
+<td><span class="pr b">{Robota}→{Hazard}</span> <span class="chip b">b</span><br><span class="pr n">Posilnená {Robota}</span><span class="pod">naloží dvakrát toľko</span></td>
+<td class="c">26/8<br>63 %</td></tr>
+<tr><td colspan="4"><span class="zapis">Hore: {Hazard}→{Robota}. Dole: Posilnená {Robota}.</span></td></tr>
+
+<tr><th>Horoskop</th>
+<td><span class="pr a">{Hazard}→{Povera}</span> <span class="chip a">a</span></td>
+<td><span class="pr b">{Povera}→{Hazard}</span> <span class="chip b">b</span><br><span class="pr n">Posilnená {Povera}</span><span class="pod">hviezdy to potvrdia</span></td>
+<td class="c">26/9<br>60 %</td></tr>
+<tr><td colspan="4"><span class="zapis">Hore: {Hazard}→{Povera}. Dole: Posilnená {Povera}.</span></td></tr>
+
+<tr><th>Hrable</th>
+<td><span class="pr c">{Odpor}→{Posilnenie}</span> <span class="chip c">c</span></td>
+<td><span class="pr c">{Posilnenie}→{Odpor}</span> <span class="chip c">c</span><span class="pod">tvoje Posilnenie pri súperovej karte by mu zdvojilo akciu; Odpor ju zruší</span></td>
+<td class="c">11/10<br>42 %</td></tr>
+<tr><td colspan="4"><span class="zapis">bez zmeny</span></td></tr>
+
+<tr><th>Zrkadlo</th>
+<td><span class="pr c">{Odpor}→{Pakt}</span> <span class="chip c">c</span></td>
+<td><span class="pr c">{Pakt}→{Odpor}</span> <span class="chip c">c</span><span class="pod">tvoj Pakt pri súperovom Hazarde by kopíroval Hazard; Odpor ho zruší</span></td>
+<td class="c">11/6<br>35 %</td></tr>
+<tr><td colspan="4"><span class="zapis">bez zmeny</span></td></tr>
+
+<tr><th>Izolačka</th>
+<td><span class="pr a">{Pečeň}→{Obmedzenie}</span> <span class="chip a">a</span></td>
+<td><span class="pr b">{Pecka}→{Obmedzenie}</span> <span class="chip b">b</span><br><span class="pr n">Posilnené {Obmedzenie}</span><span class="pod">omotané dvakrát</span></td>
+<td class="c">25/8<br>65 %</td></tr>
+<tr><td colspan="4"><span class="zapis">Hore: {Pečeň}→{Obmedzenie}. Dole: Posilnené {Obmedzenie}.</span></td></tr>
+
+<tr><th>Jogurt</th>
+<td><span class="pr a">{Pečeň}→{Posilnenie}</span> <span class="chip a">a</span></td>
+<td><span class="pr c">{Pečeň}→{Hazard}</span> <span class="chip c">c</span><span class="pod">pri Cirhóze alebo s Robotou vymeníš pečeň za Dlh</span></td>
+<td class="c">25/25<br>52 %</td></tr>
+<tr><td colspan="4"><span class="zapis">bez zmeny</span></td></tr>
+
+</tbody>
+</table>
+</div>
+</section>
+
+<section id="nealko">
+<h2>Nealko: čo sú „reči“</h2>
+<div class="box">
+<p>Michal: Nealko „bude meniť poškodenie pečene na reči a poldeci na Pohoršenie“. Akcia <b>Reči</b> v hre nie je. Reči sú stupne na súperovom teplomere a dvíha ich výhra v <b>hádke</b> (§10 Strach a reči, <code>docs/PRAVIDLA.md:1394</code>). Do hádky idú len mäkké akcie: <b>Povera</b> (1) a <b>Pohoršenie</b> (2).</p>
+<ol>
+  <li><b>A, odporúčam: {Pečeň}→{Povera}.</b> Reči = klebety, Povera je klebeta. Odlíši sa od dolnej hrany (Pohoršenie), ako to Michal napísal. Nekoliduje s ničím.</li>
+  <li><b>B, pracovne v tabuľke: {Pečeň}→{Viera}.</b> Dnešná hrana. Rovnakú dvojicu má <b>Anonymný alkoholik</b> (Podpora: Preškolenie {PoškodeniePečene}→{Viera}), takže porušuje zásadu „každá dvojica jediná“. Viera nie je reč, je to obrana.</li>
+  <li><b>C: {Pečeň}→{Pohoršenie}.</b> Obe hrany by viedli na Pohoršenie a dvojica by kolidovala s navrhovanými Novinami dole (tie by potom dostali Posilnené {Pohoršenie}).</li>
+</ol>
+<p class="mini">Pokrytie Nealka je pri A, B aj C rovnaké, 63 % (zdroj je stále Pečeň).</p>
+</div>
+</section>
+
+<section id="cisla">
+<h2>Pokrytie</h2>
+<div class="tab">
+<table>
+<thead><tr><th>Nástroj</th><th class="c">pred (v5)</th><th class="c">po</th><th>Nástroj</th><th class="c">pred</th><th class="c">po</th></tr></thead>
+<tbody>
+<tr><th>Energeťák</th><td class="c">100</td><td class="c">100</td><th>Telefón</th><td class="c">40</td><td class="c">40</td></tr>
+<tr><th>Vínko</th><td class="c">100</td><td class="c">100</td><th>Nealko</th><td class="c">63</td><td class="c">63</td></tr>
+<tr><th>Injekcia</th><td class="c">100</td><td class="c">100</td><th>Krištáľová guľa</th><td class="c">19</td><td class="c"><b>60</b></td></tr>
+<tr><th>Vidly</th><td class="c">100</td><td class="c">100</td><th>Krabička cigariet</th><td class="c">90</td><td class="c">90</td></tr>
+<tr><th>Puška</th><td class="c">31</td><td class="c">31</td><th>Výherný automat</th><td class="c">79</td><td class="c">54</td></tr>
+<tr><th>Valaška</th><td class="c">31</td><td class="c">40</td><th>Výherné žreby</th><td class="c">54</td><td class="c"><b>79</b></td></tr>
+<tr><th>Pasca</th><td class="c">54</td><td class="c">63</td><th>Fúrik</th><td class="c">63</td><td class="c">63</td></tr>
+<tr><th>Zapaľovač</th><td class="c">44</td><td class="c">50</td><th>Horoskop</th><td class="c">60</td><td class="c">60</td></tr>
+<tr><th>Noviny</th><td class="c">23</td><td class="c"><b>58</b></td><th>Hrable</th><td class="c">42</td><td class="c">42</td></tr>
+<tr><th>Svätý text</th><td class="c">29</td><td class="c">40</td><th>Zrkadlo</th><td class="c">35</td><td class="c">35</td></tr>
+<tr><th></th><td></td><td></td><th>Izolačka</th><td class="c">54</td><td class="c">65</td></tr>
+<tr><th></th><td></td><td></td><th>Jogurt</th><td class="c">52</td><td class="c">52</td></tr>
+</tbody>
+</table>
+</div>
+<div class="box">
+<ul>
+  <li><b>Priemer 57 % → 63 %.</b> Ak sa z v5 rátajú len hrany, ktoré pod vlastnou kartou pomáhajú, bolo to 54 %.</li>
+  <li>Každá karta do línie prijme <b>7 až 21</b> Nástrojov, priemer 13,8 (v5: 12,6 aj so sabotážami). Najmenej Strýko z Ameriky (Cigareta, Poldeci): 7.</li>
+  <li>Najslabšie ostávajú Puška 31 % a Zrkadlo 35 %. Ich hrany sa nemenia, sú to špecialisti.</li>
+  <li><b>Zloženie 44 hrán po zmene:</b> 4 kartové, 6 hrán posilnenia (Rana, Pecka, Petelica, Robota, Povera, Obmedzenie), 34 preškolení. Zdroj preškolení: Pečeň 10×, Hazard 6×, Odpor 4×, Povera 3×, Poldeci 3×, Cigareta 2×, Rana 2×, Pecka, Viera, Posilnenie, Pakt po 1×.</li>
+</ul>
+</div>
+<div class="box riz">
+<p><b>Pečeň je zdrojom 10 hrán z 44.</b> Zlé akcie sú materiál, z ktorého sa stavia: na vlastnej karte sa dá zlepšiť hlavne to, čo je zlé alebo slabé. Ak to bude pôsobiť jednotvárne, Noviny dole sa dajú vymeniť za Posilnené {Pohoršenie} (pokrytie Novín klesne na 23 %).</p>
+</div>
+</section>
+
+<section id="kolizie">
+<h2>Kolízie dvojíc X → Y</h2>
+<div class="box">
+<p>Overené proti všetkým 44 hranám a štyrom Školiteľom v <code>cards.json</code>: Anonymný alkoholik {Pečeň}→{Viera}, Sypač {Rana}→{Pecka}, Profesionálny tipér {Cigareta}→{Hazard}, Vedúcko {Robota}→{Pecka}.</p>
+<ul>
+  <li><b>Zaniká:</b> Výherný automat dole {Cigareta}→{Hazard} = Tipér. Hrana je sabotáž a odchádza.</li>
+  <li><b>Ostáva, už v dnešnej sade:</b> Nealko hore {Pečeň}→{Viera} = Anonymný alkoholik (otázka 1) a Vidly dole {Rana}→{Pecka} = Sypač (otázka 2).</li>
+  <li><b>Nové hrany nekolidujú.</b> Vidly {Robota}→{Petelica} je iná dvojica ako Vedúcko {Robota}→{Pecka}.</li>
+</ul>
+</div>
+</section>
+
+<section id="dopad">
+<h2>Dopad na pravidlá a kód</h2>
+<div class="box">
+<p><b>Pravidlá §12</b> (<code>docs/PRAVIDLA.md</code>):</p>
+<ul>
+  <li><code>:1708–1709</code> „Hrany sú voľné: posila aj sabotáž, pod svoju aj pod súperovu kartu“ → „Nástroj sa podkladá len pod vlastnú kartu.“</li>
+  <li><code>:1715</code> „svoju alebo súperovu“ → „svoju“ (karta, ktorú si vyložil ty; aj podstrčená k súperovej).</li>
+  <li><code>:1707</code> počty: Puška dve hrany posilnenia, Pasca, Fúrik, Horoskop a Izolačka jednu, 13 Nástrojov dve preškolenia.</li>
+  <li><code>:1757–1758</code> „vráti sa majiteľovi, toho, kto ho podložil, nie majiteľa karty“: vždy je to ten istý hráč, veta sa dá zjednodušiť.</li>
+  <li>Ťahák AI <code>tools/playtest/tahak.md:235</code> „svojho aj súperovho“ → „svojho“.</li>
+</ul>
+<p><b>Kód</b> (implementuje developer, ja nemením):</p>
+<ul>
+  <li><code>packages/core/src/podlozenie.ts:72</code> <code>dovodNepodlozenia</code> nemá hráča. Treba parameter a podmienku <code>hostitel.playedBy === hrac</code>, a to isté v <code>ponukaPodlozenia</code> (<code>:118</code>). Volajú ich <code>engine.ts:2986</code> a <code>:6501</code>, bot cez <code>bot.ts:1490</code>.</li>
+  <li>Hrany sú dáta: nové hrany zapíše admin v tvorcovi do rozpracovanej sady (Zrejúca), potom <code>cards.json</code> cez <code>sada-do-repa.ts</code>. Parser (<code>naradie.ts:30</code>) „Posilnená/Posilnené {X}“ už berie pre každú akciu.</li>
+  <li>Testy: <code>naradie-podlozenie.test.ts</code> a <code>masiar.test.ts:52</code> podkladajú pod kartu bez rozlíšenia hráča. Pribudne test „pod súperovu kartu nie“.</li>
+</ul>
+<p class="mini">Vedľajší nález: Dedičstvo Pasce v <code>cards.json</code> znie „Bitka: Ak súper v tomto kole priložil kartu k tvojej {Rana}.“ Veta je useknutá, chýba účinok (zoznam v5: 1 Rana navyše). Je to text karty, v tvorcovi.</p>
+</div>
+<div class="box riz">
+<p><b>Riziko:</b> Náradie prestáva byť zbraňou proti súperovi. Interakcia so súperom ostáva cez Podstrčenie, NA EX, Odpor a Konflikt. Tvoja podstrčená karta je stále tvoja, takže Nástroj pod ňou (napr. Hrable alebo Zrkadlo na spoji so súperom) súperovi stále škodí. To je v poriadku, je to tvoja karta.</p>
+<p><b>Najsilnejšie nové hrany</b> sú {Poldeci}→{Petelica} (Zapaľovač) a {Hazard}→{Pecka} (Výherný automat). Za cigaretu a ťah to sedí, ale treba ich sledovať v playteste Zrejúcej.</p>
+</div>
+</section>
+
+<section id="otazky">
+<h2>Otázky pre Michala</h2>
+<div class="box zv">
+<ol>
+  <li><span class="q">Nealko hore:</span> „reči“ ako <b>A {Pečeň}→{Povera}</b> (odporúčam, klebeta, bez kolízie), B {Pečeň}→{Viera} (dnes, kolízia s Anonymným alkoholikom), alebo C {Pečeň}→{Pohoršenie}?</li>
+  <li><span class="q">Vidly dole</span> má dnes rovnakú dvojicu ako Sypač ({Rana}→{Pecka}). A nechať, alebo <b>B {Robota}→{Petelica}</b> (sedliacka vzbura, odporúčam; Vidly ostanú na 100 % vďaka Vzbure)?</li>
+  <li><span class="q">Dvojaké hrany:</span> Hrable, Zrkadlo, Jogurt dole, Telefón dole, Svätý text hore a Zapaľovač hore pomôžu podľa toho, čo leží vedľa. Odporúčam nechať. Telefón dole by sa dal zosilniť na {Odpor}→{Pohoršenie}. Chceš to?</li>
+  <li><span class="q">2 na 2:</span> je „vlastná karta“ aj karta spoluhráča? Odporúčam áno, strany línie patria tímom.</li>
+  <li><span class="q">Výherný automat</span> má obe hrany z Hazardu (na Poldeci, na Pecku). Pokrytie 54 %. Vadí ti to, alebo radšej dole {Cigareta}→{Poldeci} (hodíš mincu, vypadne pohárik)?</li>
+</ol>
+</div>
+</section>
+
+</main>
+</body>
+</html>
