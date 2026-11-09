@@ -299,6 +299,8 @@ export interface PitkaStav {
   readonly frontaReakcii?: readonly PlayerId[];
   /** Koľko odpovedí ešte hráč smie dať — jednu za každé súperovo NA EX (v9.2). */
   readonly odpovedeZostava?: readonly [number, number];
+  /** Plné poldeci vypité za odpovede v tejto Pitke (v11.16) — pečeň z nich patrí do rekapitulácie. */
+  readonly odpovedeVypite?: readonly [number, number];
   /**
    * Na koniec ktorej strany odpovedal lícom dole prvý v tomto kole odpovedí (v9.2) —
    * druhý smie len na druhý kraj línie. null = prvý neodpovedal (druhý na ktorýkoľvek).
@@ -2955,6 +2957,9 @@ function vylozDoLinie(
 /** Dôvod pre server aj klienta, keď sa Nástroj vykladá do línie (Náradie 2026-11-08). */
 export const NASTROJ_DO_LINIE = "Nástroj sa do línie nevykladá — podlož ho pod Občana či Starešinu alebo ho vylož do Dedičstva.";
 
+/** Dôvod pre server aj klienta, keď chce hráč odpovedať na NA EX bez plného poldeci (v11.16, §7). */
+export const ODPOVED_BEZ_POLDECI = "Odpoveď na NA EX stojí plný poldeci — nemáš ho.";
+
 /** Dôvod pre server aj klienta, keď hráč pije pri vyčerpanom limite vykladania (v11.16, §13). */
 export const VYPIT_BEZ_LIMITU = "Vypiť sa dá, len kým ti zostáva limit vykladania — pri limite 0 nie.";
 
@@ -2984,7 +2989,7 @@ function podlozNastroj(s: MutState, data: GameData, cmd: { nastrojId: number; ho
   need(KTORE_HRANY.includes(cmd.hrana), "Hrana je horná alebo dolná.");
   const karta = rukaMiestaMut(s, kto).find((k) => k.uid === cmd.nastrojId);
   need(karta !== undefined, "Nástroj nie je v ruke.");
-  const dovod = dovodNepodlozenia(data, lineState(s as GameState), karta as CardInstance, cmd.hostitelId, cmd.hrana);
+  const dovod = dovodNepodlozenia(data, lineState(s as GameState), karta as CardInstance, cmd.hostitelId, cmd.hrana, p);
   need(dovod === null, dovod ?? "");
   need(s.hraci[p].cigarety >= KONSTANTY.CENA_PODLOZENIA, `Podloženie stojí ${cigariet(KONSTANTY.CENA_PODLOZENIA)}.`);
   zmenCigarety(s, p, "platba", -KONSTANTY.CENA_PODLOZENIA, events);
@@ -3084,9 +3089,14 @@ export function preskoleniaPoSpoji(
 }
 
 /** Školiteľ pri Podpore či Konflikte zapíše preškolenie na druhú kartu; true = karta je Školiteľ s týmto spúšťačom. */
-function preskolPriSpoji(data: GameData, spustac: "Konflikt" | "Podpora", nositel: DeepMutable<PlacedCard>, druha: DeepMutable<PlacedCard>, events: Event[]): boolean {
+function preskolPriSpoji(s: MutState, data: GameData, spustac: "Konflikt" | "Podpora", nositel: DeepMutable<PlacedCard>, druha: DeepMutable<PlacedCard>, events: Event[]): boolean {
   const nove = preskoleniaPoSpoji(data, spustac, nositel as PlacedCard, druha as PlacedCard);
   if (nove === null) return false;
+  // Zviera-Školiteľ vedľa Mäsiara (v11.16): efekty Zvierat v jeho okolí neplatia — nič sa nezapíše.
+  if (zvieratAUmlcane(data, lineState(s as GameState)).has(nositel.card.uid as number)) {
+    events.push({ type: "log", text: `Mäsiar: Preškolenie karty ${defOf(data, nositel.card as CardInstance).name} vedľa neho neplatí.` });
+    return true;
+  }
   const pred = druha.preskolenia?.length ?? 0;
   if (nove.length === pred) return true;
   druha.preskolenia = nove.map((p) => ({ ...p }));
@@ -3253,7 +3263,7 @@ function konflikt(s: MutState, data: GameData, nositel: DeepMutable<PlacedCard>,
   const opp = opponentOf(p);
   const def = defOf(data, nositel.card as CardInstance);
   const jeho = defOf(data, druha.card as CardInstance);
-  const preskolil = preskolPriSpoji(data, "Konflikt", nositel, druha, events);
+  const preskolil = preskolPriSpoji(s, data, "Konflikt", nositel, druha, events);
   if (pridajNavyse(data, "Konflikt", nositel, druha, events) || preskolil) return;
   switch (def.id) {
     case "velmi_smutiaca_vdova": {
@@ -3328,7 +3338,7 @@ function podpora(s: MutState, data: GameData, nositel: DeepMutable<PlacedCard>, 
   const opp = opponentOf(p);
   const def = defOf(data, nositel.card as CardInstance);
   const jeho = defOf(data, druha.card as CardInstance);
-  const preskolil = preskolPriSpoji(data, "Podpora", nositel, druha, events);
+  const preskolil = preskolPriSpoji(s, data, "Podpora", nositel, druha, events);
   if (pridajNavyse(data, "Podpora", nositel, druha, events) || preskolil) return;
   switch (def.id) {
     case "snubenica":
@@ -4052,14 +4062,17 @@ export function cieleOdpovede(
   );
 }
 
-/** Hráč q má v ruke kartu, ktorú môže ako odpoveď vyložiť (mimo limitu, v9.2 aj s krajom). */
+/**
+ * Hráč q má v ruke kartu, ktorú môže ako odpoveď vyložiť (mimo limitu, v9.2 aj s krajom),
+ * a plný poldeci, ktorým odpoveď zaplatí (v11.16).
+ */
 function mozeReagovat(s: GameState, data: GameData, q: PlayerId): boolean {
-  return kartyVRukach(s.hraci[q]).some((k) => cieleOdpovede(data, s, q, k).length > 0);
+  return s.hraci[q].poldeciPlne >= KONSTANTY.CENA_ODPOVEDE_POLDECI && kartyVRukach(s.hraci[q]).some((k) => cieleOdpovede(data, s, q, k).length > 0);
 }
 
-/** Miesto má vo svojej ruke kartu, ktorou môže za tím odpovedať (2 na 2). */
+/** Miesto má vo svojej ruke kartu, ktorou môže za tím odpovedať (2 na 2); platí plným poldeci tímu. */
 function mozeOdpovedatMiesto(s: GameState, data: GameData, m: Miesto): boolean {
-  return rukaMiesta(s, m).some((k) => cieleOdpovede(data, s, timMiesta(m), k).length > 0);
+  return s.hraci[timMiesta(m)].poldeciPlne >= KONSTANTY.CENA_ODPOVEDE_POLDECI && rukaMiesta(s, m).some((k) => cieleOdpovede(data, s, timMiesta(m), k).length > 0);
 }
 
 /**
@@ -4077,7 +4090,10 @@ function cmdOdovzdatOdpoved(s: MutState, data: GameData, kto: Miesto, events: Ev
   events.push({ type: "log", text: `Kapitán tímu ${p + 1} odovzdáva odpoveď na NA EX partnerovi (hráč ${partner + 1}).` });
 }
 
-/** Odpoveď na NA EX (v9.2): karta lícom dole, zadarmo, mimo limitu; otočí sa až s odpoveďou súpera. */
+/**
+ * Odpoveď na NA EX (v9.2): karta lícom dole, mimo limitu; otočí sa až s odpoveďou súpera.
+ * Od v11.16 (Michal 2026-11-09) stojí plný poldeci, ktorý sa vypije ako pri Vypiť.
+ */
 function cmdReakcia(
   s: MutState,
   data: GameData,
@@ -4090,17 +4106,39 @@ function cmdReakcia(
   need(s.faza === "pitka" && pitka !== null && pitka.reakcia === p, "Teraz nemôžeš reagovať na NA EX.");
   const karta = rukaMiestaMut(s, kto).find((k) => k.uid === cmd.uid);
   need(karta !== undefined, "Karta nie je v ruke.");
+  need(s.hraci[p].poldeciPlne >= KONSTANTY.CENA_ODPOVEDE_POLDECI, ODPOVED_BEZ_POLDECI);
   const kraj = pitka.krajOdpovede ?? null;
   need(
     kraj === null || (cmd.target === "vlastna" ? p : opponentOf(p)) !== kraj,
     "Súper odpovedal na tento kraj línie — tvoja odpoveď smie len na druhý.",
   );
   vylozDoLinie(s, data, kto, cmd.uid, cmd.target, events, false, true);
+  vypiZaOdpoved(s, data, p, events);
   const zostava: [number, number] = [pitka.odpovedeZostava?.[0] ?? 0, pitka.odpovedeZostava?.[1] ?? 0];
   zostava[p] = Math.max(0, zostava[p] - 1);
   pitka.odpovedeZostava = zostava;
   if (kraj === null) pitka.krajOdpovede = cmd.target === "vlastna" ? p : opponentOf(p);
   ukonciReakciu(s, data, events);
+}
+
+/**
+ * Cena odpovede (v11.16): plný poldeci na vypitý ako pri Vypiť (§13) — nerest +1 a pečeň +1.
+ * Pečeň je v Pitke, preto sa prah Cirhózy skontroluje hneď (pridajPecen), ako pri NA EX;
+ * na Kare ju dostáva sám hráč — Kar presúva len pečeň z NA EX.
+ */
+function vypiZaOdpoved(s: MutState, data: GameData, p: PlayerId, events: Event[]): void {
+  const n = KONSTANTY.CENA_ODPOVEDE_POLDECI;
+  zmenPoldeci(s, p, "platba", -n, events);
+  hrac(s, p).poldeciVypite += n;
+  hrac(s, p).nerestiTotoKolo += n;
+  const pitka = s.pitkaStav;
+  if (pitka !== null) {
+    const vypite: [number, number] = [pitka.odpovedeVypite?.[0] ?? 0, pitka.odpovedeVypite?.[1] ?? 0];
+    vypite[p] += n;
+    pitka.odpovedeVypite = vypite;
+  }
+  events.push({ type: "log", text: `Hráč ${p + 1} za odpoveď vypíja plný poldeci.` });
+  pridajPecen(s, data, p, n, events);
 }
 
 function cmdBezReakcie(s: MutState, data: GameData, p: PlayerId, events: Event[]): void {
@@ -4335,6 +4373,7 @@ function vyhodnotPitku(s: MutState, data: GameData, events: Event[]): void {
     pecenNaZaciatku: [zaciatok.pecen[0], zaciatok.pecen[1]],
     // Pečeň z NA EX — na Kare (v7) ju nesie súper toho, kto NA EX dal.
     naexDal: naexPecenSuperovi(s as GameState) ? [pitka.naexPocet?.[1] ?? 0, pitka.naexPocet?.[0] ?? 0] : [pitka.naexPocet?.[0] ?? 0, pitka.naexPocet?.[1] ?? 0],
+    odpovede: [pitka.odpovedeVypite?.[0] ?? 0, pitka.odpovedeVypite?.[1] ?? 0],
     prahPecene: [prahCirhozy() + prahCirhozyBonus(s as GameState, 0), prahCirhozy() + prahCirhozyBonus(s as GameState, 1)],
     cirhozy: [s.cirhozyVKole[0] - zaciatok.cirhozy[0], s.cirhozyVKole[1] - zaciatok.cirhozy[1]],
     cigarety: ucet.cigarety,
@@ -6508,7 +6547,7 @@ export function legalCommands(data: GameData, state: GameState, kto: Miesto): Co
         const line = lineState(state);
         for (const karta of ruka) {
           if (!defOf(data, karta).tags.includes("Nástroj")) continue;
-          for (const m of ponukaPodlozenia(data, line, karta)) vylozenia.push({ type: "podloz", nastrojId: karta.uid, hostitelId: m.hostitel, hrana: m.hrana });
+          for (const m of ponukaPodlozenia(data, line, karta, p)) vylozenia.push({ type: "podloz", nastrojId: karta.uid, hostitelId: m.hostitel, hrana: m.hrana });
         }
       }
       // Sklad (Zhromaždenie, frakcie): Nástroj zo šenku rovno do Dedičstva za cenu Dedičstva.

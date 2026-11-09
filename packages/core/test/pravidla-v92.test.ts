@@ -21,6 +21,7 @@ const sada = buildGameData(
 );
 
 /** Po odkrytí NA EX oboch (útočník 0 na kartu hráča 1, obranca 1 na kartu hráča 0); každý má v ruke kartu na odpoveď. */
+// Po dva plné poldeci: jeden ide na NA EX, druhým sa platí odpoveď (v11.16).
 function poOdkryti(seed: number): { s: GameState; events: readonly Event[]; odpoved: [number, number] } {
   const s0 = setupSBalickom(sada, seed);
   const lavy0 = instanceFor(sada, "v92_lavy", EMPTY, R2);
@@ -41,8 +42,8 @@ function poOdkryti(seed: number): { s: GameState; events: readonly Event[]; odpo
       [{ card: instanceFor(sada, "v92_pol", R1, R1), playedBy: 1 }, { card: lavy1, playedBy: 1 }],
     ],
     hraci: [
-      { ...s0.hraci[0], ruka: [ruka0], cigarety: 1, poldeciPlne: 1, poldeciVypite: 0 },
-      { ...s0.hraci[1], ruka: [ruka1], cigarety: 1, poldeciPlne: 1, poldeciVypite: 0 },
+      { ...s0.hraci[0], ruka: [ruka0], cigarety: 1, poldeciPlne: 2, poldeciVypite: 0 },
+      { ...s0.hraci[1], ruka: [ruka1], cigarety: 1, poldeciPlne: 2, poldeciVypite: 0 },
     ],
     pitkaStav: { naTahu: 1, hotovy: [false, false], naexPouzity: [false, false], fajcenie: [0, 0], reakcia: null, postarka: [false, false], starosta: [false, false], naexPocet: [0, 0] },
   };

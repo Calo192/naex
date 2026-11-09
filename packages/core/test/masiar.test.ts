@@ -49,9 +49,9 @@ describe("Mäsiar (Furt, Michal 2026-10-28): efekty Zvierat v jeho okolí neplat
     const vidly = inst("vidly");
     const pes = inst("pes");
     const sKonom: LineState = { lokalita: null, lokalitaOtocena: false, strany: [[lezi(pes, 0), lezi(inst("kon"), 0)], []] };
-    expect(dovodNepodlozenia(dataH, sKonom, vidly, pes.uid, "horna")).toBeNull();
+    expect(dovodNepodlozenia(dataH, sKonom, vidly, pes.uid, "horna", 0)).toBeNull();
     const priMasiarovi: LineState = { ...sKonom, strany: [[...sKonom.strany[0], lezi(inst("masiar"), 1)], []] };
-    expect(dovodNepodlozenia(dataH, priMasiarovi, vidly, pes.uid, "horna")).toMatch(/Kôň/);
+    expect(dovodNepodlozenia(dataH, priMasiarovi, vidly, pes.uid, "horna", 0)).toMatch(/Kôň/);
   });
 
   it("Čierna mačka vedľa Mäsiara neplatí — Viera jej Povery ruší (v8.3); Čierna mačka a Krokodíl neplatia (Kohút je zo sady v51 vyradený)", () => {

@@ -303,20 +303,20 @@ function vZhromazdeni(strany: GameState["strany"], ruka: CardInstance[], cigaret
 const lezi = (card: CardInstance, playedBy: PlayerId, ine: Partial<PlacedCard> = {}): PlacedCard => ({ card, playedBy, ...ine });
 
 describe("ťah podloženia (§12)", () => {
-  it("pod súperovu kartu za 1 cigaretu: ťah v striedaní, limit nemíňa, Nástroj je verejný", () => {
+  it("pod vlastnú kartu za 1 cigaretu: ťah v striedaní, limit nemíňa, Nástroj je verejný (v11.16 len pod vlastné)", () => {
     const vidly = inst("vidly");
     const jeho = inst("pijan");
-    const s = vZhromazdeni([[], [lezi(jeho, 1)]], [vidly, inst("masiar")]);
+    const s = vZhromazdeni([[lezi(jeho, 0)], []], [vidly, inst("masiar")]);
     const cmd: Command = { type: "podloz", nastrojId: vidly.uid, hostitelId: jeho.uid, hrana: "horna" };
     expect(legalCommands(dataH, s, 0)).toContainEqual(cmd);
     const po = apply(dataH, s, cmd, 0).state;
-    expect(po.strany[1][0]?.podlozene).toEqual([{ card: vidly, majitel: 0, hrana: "horna" }]);
+    expect(po.strany[0][0]?.podlozene).toEqual([{ card: vidly, majitel: 0, hrana: "horna" }]);
     expect(po.hraci[0].cigarety).toBe(4);
     expect(po.hraci[0].ruka.map((k) => k.uid)).not.toContain(vidly.uid);
     expect(po.zhromazdenieStav?.zostavaLimit[0]).toBe(3);
     expect(po.zhromazdenieStav?.naTahu).toBe(1);
     // viewFor: obaja vidia Nástroj aj hranu; v súperovej ruke pritom nič nepribudlo.
-    for (const p of [0, 1] as const) expect(viewFor(dataH, po, p).strany[1][0]?.podlozene).toEqual([{ card: vidly, majitel: 0, hrana: "horna" }]);
+    for (const p of [0, 1] as const) expect(viewFor(dataH, po, p).strany[0][0]?.podlozene).toEqual([{ card: vidly, majitel: 0, hrana: "horna" }]);
     expect(JSON.stringify(viewFor(dataH, s, 1))).not.toContain(`"uid":${vidly.uid}`);
   });
 
@@ -334,26 +334,26 @@ describe("ťah podloženia (§12)", () => {
     const vidly = inst("vidly");
     const pes = inst("pes");
     const line = (strany: LineState["strany"]): LineState => ({ lokalita: null, lokalitaOtocena: false, strany });
-    expect(ponukaPodlozenia(dataH, line([[lezi(pes, 0)], []]), vidly)).toEqual([]);
-    expect(ponukaPodlozenia(dataH, line([[lezi(pes, 0), lezi(inst("kon"), 1)], []]), vidly).map((m) => m.hostitel)).toContain(pes.uid);
+    expect(ponukaPodlozenia(dataH, line([[lezi(pes, 0)], []]), vidly, 0)).toEqual([]);
+    expect(ponukaPodlozenia(dataH, line([[lezi(pes, 0), lezi(inst("kon"), 1)], []]), vidly, 0).map((m) => m.hostitel)).toContain(pes.uid);
     const pijan = inst("pijan");
     const obsadeny = lezi(pijan, 1, { podlozene: [{ card: inst("puska"), majitel: 1, hrana: "horna" }] });
-    expect(ponukaPodlozenia(dataH, line([[obsadeny], []]), vidly)).toEqual([]);
+    expect(ponukaPodlozenia(dataH, line([[obsadeny], []]), vidly, 1)).toEqual([]);
     const zam = inst("zamocnik");
     const zamObsadeny = lezi(zam, 1, { podlozene: [{ card: inst("puska"), majitel: 1, hrana: "horna" }] });
-    expect(ponukaPodlozenia(dataH, line([[zamObsadeny], []]), vidly).map((m) => m.hostitel)).toEqual([zam.uid, zam.uid]);
+    expect(ponukaPodlozenia(dataH, line([[zamObsadeny], []]), vidly, 1).map((m) => m.hostitel)).toEqual([zam.uid, zam.uid]);
     // Karta lícom dole: tagy nevidno, nepodkladá sa.
-    expect(ponukaPodlozenia(dataH, line([[lezi(inst("pijan"), 1, { zaverecna: true })], []]), vidly)).toEqual([]);
+    expect(ponukaPodlozenia(dataH, line([[lezi(inst("pijan"), 1, { zaverecna: true })], []]), vidly, 1)).toEqual([]);
   });
 
   it("Vínko nie pod kartu s poldecom; hrana bez zdrojovej akcie je dovolená, ale ponuka ju označí", () => {
     const vinko = inst("vinko");
     const pijan = inst("pijan");
     const line = (pl: PlacedCard): LineState => ({ lokalita: null, lokalitaOtocena: false, strany: [[pl], []] });
-    expect(ponukaPodlozenia(dataH, line(lezi(pijan, 0, { naexBy: 1 })), vinko).map((m) => m.hrana)).not.toContain("horna");
+    expect(ponukaPodlozenia(dataH, line(lezi(pijan, 0, { naexBy: 1 })), vinko, 0).map((m) => m.hrana)).not.toContain("horna");
     const puska = inst("puska");
     const masiar = inst("masiar");
-    const ponuka = ponukaPodlozenia(dataH, line(lezi(masiar, 0)), puska);
+    const ponuka = ponukaPodlozenia(dataH, line(lezi(masiar, 0)), puska, 0);
     expect(ponuka).toHaveLength(2);
     for (const m of ponuka) expect(m.maCoRobit).toBe(!m.popis.startsWith("nemá"));
     // Puška: Mäsiar nemá Petelicu, má dve Pecky.
@@ -374,7 +374,7 @@ describe("návrat Nástroja a hra s podkladaním", () => {
     expect(po.hraci[1].odhadzovaci.map((k) => k.uid)).not.toContain(puska.uid);
   });
 
-  it("boti podkladajú a po každej bitke je každý Nástroj u svojho majiteľa — aj spod súperovej karty", () => {
+  it("boti podkladajú len pod vlastné karty (v11.16) a po každej bitke je každý Nástroj u svojho majiteľa", () => {
     let podlozeni = 0;
     let podSuperovu = 0;
     for (const seed of [3, 4]) {
@@ -404,7 +404,7 @@ describe("návrat Nástroja a hra s podkladaním", () => {
       expect(s.koniec).not.toBeNull();
     }
     expect(podlozeni).toBeGreaterThan(0);
-    expect(podSuperovu).toBeGreaterThan(0);
+    expect(podSuperovu).toBe(0);
   }, 240000);
 
   it("výučba prejde aj so sadou s hranami (Nástroje bez slotov, varianty 0/0)", () => {

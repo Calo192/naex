@@ -351,7 +351,7 @@ export const KAPITOLY: readonly Kapitola[] = [
           za každé stretnutie, do konca kola. Posilnenie, Odpor, NA EX ani podložený Nástroj ich nemenia, Nástroje v Dedičstve (napríklad Valaška) áno.
         </p>
         <p>
-          <P k="skolitel">Školiteľ</P> má efekt <P k="preskolenie">Preškolenie</P> X → Y: akcia X inej karty sa ráta ako Y —
+          <P k="skolitel">Školiteľ</P> (Občan alebo Zviera) má efekt <P k="preskolenie">Preškolenie</P> X → Y: akcia X inej karty sa ráta ako Y —
           ešte pred spojmi, na oboch hranách aj v akciách navyše. Pri spúšťači Furt preškolí oboch susedov (aj súperove karty),
           kým s ním susedia; pri Podpore tvoju kartu a pri Konflikte súperovu, s ktorou sa stretne, do konca kola. Každá akcia sa
           preškolí len raz a preškolenia sa nereťazia.
@@ -449,7 +449,8 @@ export const KAPITOLY: readonly Kapitola[] = [
         <H3 id="naex-odpoved">Odpoveď na NA EX</H3>
         <p>
           Po odkrytí smieš za <strong>každé súperovo NA EX vyložiť jednu kartu</strong> z ruky na ktorýkoľvek koniec
-          línie — <strong>lícom dole, zadarmo</strong>; <P k="odpoved">odpoveď</P> limit vykladania nemíňa. Najprv odpovedá{" "}
+          línie — <strong>lícom dole, za plný poldeci</strong>: pri odpovedi ho vypiješ (pečeň +1 hneď, ráta sa ako nerest), bez
+          plného poldeci neodpovedáš. <P k="odpoved">Odpoveď</P> limit vykladania nemíňa. Najprv odpovedá{" "}
           <strong>útočník</strong>, potom <strong>obranca</strong> — len na druhý kraj línie (keď útočník neodpovedal, na
           ktorýkoľvek). Súperovu odpoveď nevidíš, kým sa obe <strong>neotočia naraz</strong>; až potom sa vyhodnotí ich Nástup
           a Pitka. Najlepšie tak, aby si spároval neaktívne akcie karty s NA EX: tie sa stanú aktívnymi a NA EX ich zruší.
@@ -526,7 +527,7 @@ export const KAPITOLY: readonly Kapitola[] = [
         </p>
         <H3 id="cena-abstak">Neresti, Chuť a Absťák</H3>
         <p>
-          <P k="nerest">Nerest</P> je len to, čo vypiješ a vyfajčíš: <strong>Vypiť</strong> v Zhromaždení 1, každé <strong>NA EX 2</strong>{" "}
+          <P k="nerest">Nerest</P> je len to, čo vypiješ a vyfajčíš: <strong>Vypiť</strong> v Zhromaždení 1, odpoveď na NA EX 1, každé <strong>NA EX 2</strong>{" "}
           (je to väčšia dávka) a každá vyfajčená cigareta 1 (druhé fajčenie v Pitke za 2 cigarety teda 2, na Benzínke za 1 cigaretu 1; fajčenie zadarmo nič).
           Doliatie, barter, šenok, Záverečná, Dedičstvo nerest nie sú.
         </p>
@@ -847,7 +848,7 @@ export const KAPITOLY: readonly Kapitola[] = [
     nazov: "Nástroje a Dedičstvo",
     obrazok: "12-nastroje",
     vSkratke: [
-      "Nástroj sa do línie nevykladá — podložíš ho pod Občana alebo Starešinu v línii za 1 cigaretu.",
+      "Nástroj sa do línie nevykladá — podložíš ho pod svojho Občana alebo Starešinu v línii za 1 cigaretu.",
       "Má hornú a dolnú hranu; platí tá, ktorá spod karty pretŕča.",
       "Hrana preškolí akciu karty (X → Y), alebo jej dá Forsáž, NA EX, Výtržníka či Vzburu.",
       "Po bitke sa Nástroj vráti do odhadzovacieho balíčka toho, kto ho podložil.",
@@ -873,11 +874,11 @@ export const KAPITOLY: readonly Kapitola[] = [
             <P k="vzbura">Vzburou</P>. Na druhej hrane majú tieto štyri preškolenie.
           </li>
         </ul>
-        <p>Hrany sú posila aj sabotáž — Nástroj smieš podložiť pod svoju aj pod súperovu kartu.</p>
+        <p>Nástroj smieš podložiť len pod svoju kartu. Hrana, ktorá jej škodí, sa zahrať dá, len sa neoplatí.</p>
         <H3 id="nastroje-podlozenie">Podloženie</H3>
         <p className="zvyraznene">
           V Zhromaždení <P k="podlozenie">podložíš</P> Nástroj z ruky pod kartu s tagom <strong>Občan alebo Starešina</strong>{" "}
-          v línii — svoju alebo súperovu — za <strong>1 cigaretu</strong>. Natočíš ho tak, aby spod karty pretŕčala hrana, ktorú
+          v línii — <strong>len pod svoju</strong>, pod súperovu nie — za <strong>1 cigaretu</strong>. Natočíš ho tak, aby spod karty pretŕčala hrana, ktorú
           chceš; <strong>platí len táto hrana</strong>, druhá je skrytá a natočenie sa už nemení. V striedaní je to ťah, limit
           vykladania nemíňa.
         </p>

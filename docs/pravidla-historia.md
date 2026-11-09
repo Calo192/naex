@@ -3288,3 +3288,9 @@ Staré znenie §13 Vypiť (do v11.15): „Piť smie **opakovane**, kým má pln�
 Staré znenie §6 Limit vykladania a §16 Degustátorka (do v11.15): „Limit sa počíta **nanovo na začiatku každého Zhromaždenia**. Výnimka: Vínko vyložené do Dedičstva v Zhromaždení zvýši zostávajúci limit hneď (§16).“ Degustátorka súperovi poldeci otočila na vypitý, no jeho zostávajúci limit sa znížil až v ďalšom Zhromaždení.
 
 Podloženie naprázdno (§12) pravidlá dovoľovali aj predtým; hra (legalCommands, klient AI hráčov) ponúkala len hrany, ktoré pod kartou niečo urobia.
+
+Staré znenie §7 Odpoveď na NA EX (v9.2–v11.15): „Po odkrytí smie hráč za **každé súperovo NA EX** vyložiť **jednu kartu z ruky** na ktorýkoľvek koniec línie — **lícom dole, štýlom Záverečnej, ale zadarmo** (v9.2, Michal 2026-10-30) … Odpoveď limit vykladania nemíňa; kto nemá kartu, ktorú smie vyložiť, neodpovedá.“ Od v11.16 stojí plný poldeci (vypije sa ako pri Vypiť: pečeň +1, nerest 1).
+
+Staré znenie §12 Podloženie (v11.14–v11.15): „Nástroj z ruky zasunieš pod kartu s tagom **Občan alebo Starešina** v línii, **svoju alebo súperovu** … Hrany sú voľné: posila aj sabotáž, pod svoju aj pod súperovu kartu.“ Od v11.16 len pod vlastné karty.
+
+Staré znenie §6 Preškolenie Školiteľa (v11.14–v11.15): „**Občan** s efektom „Spúšťač: Preškolenie {X}→{Y}.“ …“ Od v11.16 Občan alebo Zviera; Mäsiar umlčí aj Zviera-Školiteľa. Pakt ako akcia, ktorú kopíruje, pre všetky efekty (§2) je spresnenie bez zmeny hry.

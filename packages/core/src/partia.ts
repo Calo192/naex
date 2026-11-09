@@ -560,6 +560,9 @@ const BEZ_POSILNENI: ReadonlyMap<Action, string> = new Map();
 export function premenyVLinii(data: GameData, line: Pick<LineState, "lokalita" | "strany">): ReadonlyMap<number, PremenyKarty> {
   const out = new Map<number, { hrany: Map<Action, PremenaAkcie>; navyse: Map<Action, PremenaAkcie> }>();
   const vsetky = [...line.strany[0], ...line.strany[1]];
+  // Školiteľom môže byť aj Zviera (v11.16) — vedľa Mäsiara jeho Preškolenie neplatí, Furt ani
+  // zapísané z Podpory či Konfliktu (Mäsiar: efekty Zvierat v jeho okolí neplatia).
+  const umlcane = zvieratAUmlcane(data, line);
   const pridaj = (uid: number, z: Action, p: PremenaAkcie): void => {
     let m = out.get(uid);
     if (m === undefined) {
@@ -573,11 +576,11 @@ export function premenyVLinii(data: GameData, line: Pick<LineState, "lokalita" |
     if (pl.podlozene !== undefined && pl.podlozene.length > 0) {
       for (const [z, p] of preskoleniaHostitela(data, pl)) pridaj(pl.card.uid, z, { na: p.na, uid: p.uid, zdroj: "Nástroj" });
     }
-    for (const p of pl.preskolenia ?? []) pridaj(pl.card.uid, p.z, { na: p.na, uid: p.od, zdroj: p.spustac });
+    for (const p of pl.preskolenia ?? []) if (!umlcane.has(p.od)) pridaj(pl.card.uid, p.z, { na: p.na, uid: p.od, zdroj: p.spustac });
   }
   for (const pl of vsetky) {
     const furt = preskoleniaKarty(defOf(data, pl.card)).filter((e) => e.spustac === "Furt");
-    if (furt.length === 0) continue;
+    if (furt.length === 0 || umlcane.has(pl.card.uid)) continue;
     for (const s of okolieVLinii(line, pl.card.uid)) {
       if (s === null) continue;
       for (const e of furt) pridaj(s.card.uid, e.z, { na: e.na, uid: pl.card.uid, zdroj: "Furt" });

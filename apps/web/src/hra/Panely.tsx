@@ -29,7 +29,7 @@ import type { SpakyTeraz } from "@naex/core";
 
 // Ikony zdrojov a výmena „cena → zisk“ sú v ikonyZdrojov.tsx — bez ťažkých závislostí Panelov,
 // aby ich mohli použiť aj malé komponenty testované bez prehliadača (KseftPodKartou).
-export { CenaCigariet, IkonaCigareta, IkonaKarty, IkonaPoldeci, Vymena } from "./ikonyZdrojov.tsx";
+export { CenaCigariet, CenaPoldeci, IkonaCigareta, IkonaKarty, IkonaPoldeci, Vymena } from "./ikonyZdrojov.tsx";
 
 /** Absťák: prázdny pohárik v trasúcej sa ruke. */
 export function IkonaAbstak() {
@@ -111,7 +111,7 @@ function ZdrojChut({ z, ja }: { readonly z: StavZavislosti; readonly ja: boolean
               Chuť {z.chut} · dnes {z.teraz} · {vyhlad.text}
               {z.abstaky > 0 && ` · ${ja ? "máš" : "má"} ${z.abstaky} Absťák${z.abstaky === 1 ? "" : z.abstaky < 5 ? "y" : "ov"} v balíčku, v bitke −${z.ubera} tuhé`}
             </span>
-            Nerest je len to, čo vypiješ a vyfajčíš: Vypiť 1, NA EX {KONSTANTY.NEREST_NAEX}, každá vyfajčená cigareta 1 (doliatie, barter ani platby nie). Na konci kola:
+            Nerest je len to, čo vypiješ a vyfajčíš: Vypiť 1, odpoveď na NA EX 1, NA EX {KONSTANTY.NEREST_NAEX}, každá vyfajčená cigareta 1 (doliatie, barter ani platby nie). Na konci kola:
             menej nerestí než Chuť = karta Absťák do odhadzovacieho balíčka; potom Chuť = väčšie z (Chuť, neresti) − {KONSTANTY.CHUT_UBYTOK}. Absťák sa nedá
             priznať, po bitke ide z ruky späť do odhadzovacieho a každý v balíčku ti v bitke uberie 1 tuhé. Spáliť ho smie Vízia. Po finále sa nič nerieši.
           </>

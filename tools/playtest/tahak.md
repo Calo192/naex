@@ -1,4 +1,4 @@
-# Ťahák — platné pravidlá NA EX! (v11.16 Vypiť len s limitom, pas bez ohľadu na ruku, Degustátorka hneď, v11.15 Benzínka o 1 lacnejšie, v11.14 frakcie, Preškolenie a podloženie Nástrojov, v11.13 Lokality, v11.12 Reči na súperovom teplomere, zajatie a presvedčenie, identita kariet, Kostol na konci línie, každý Hazard je Dlh, 2026-11-09, Zrejúca; sada = cards.json v master)
+# Ťahák — platné pravidlá NA EX! (v11.16 Vypiť len s limitom, pas bez ohľadu na ruku, Degustátorka hneď, odpoveď na NA EX za poldeci, Nástroj len pod svoje karty, Školiteľ aj Zviera, v11.15 Benzínka o 1 lacnejšie, v11.14 frakcie, Preškolenie a podloženie Nástrojov, v11.13 Lokality, v11.12 Reči na súperovom teplomere, zajatie a presvedčenie, identita kariet, Kostol na konci línie, každý Hazard je Dlh, 2026-11-09, Zrejúca; sada = cards.json v master)
 
 Spoločný ťahák AI hráčov — playtester (Zrejúca) ho číta z master, protihráč na
 Vypálenej z vetvy `vypalena` (tam platí jej verzia pravidiel). Podrobne v `docs/PRAVIDLA.md` (zmeny v jeho úvode). Pri
@@ -124,7 +124,7 @@ rozpore s `docs/PRAVIDLA.md` platí `docs/PRAVIDLA.md` a rozpor zapíš do
   Šofér, Traktorista, Pasca) je akcia navyše v bitke, toľkokrát, koľkokrát podmienka platí; „Posledná Pitka kola: … {Hazard}“
   (Traktorista bez prevahy v jeho kraji, Výherný automat) dá na konci poslednej Pitky kola Dlh. Skrytá Záverečná podmienku
   nesplní ani nedostane. V texte efektu sú akcie navyše zapísané ako {Povera}.
-- **Školitelia — Preškolenie (2026-11-08):** „Furt/Podpora/Konflikt: **Preškolenie** {X}→{Y}.“ — akcia X **inej** karty sa
+- **Školitelia — Preškolenie (2026-11-08; v11.16 aj Zviera, to vedľa Mäsiara neplatí):** „Furt/Podpora/Konflikt: **Preškolenie** {X}→{Y}.“ — akcia X **inej** karty sa
   ráta ako Y (pre majiteľa tej akcie), **pred spojmi**, na oboch hranách aj v akciách navyše. **Furt** = obaja susedia
   Školiteľa (karty oboch hráčov), kým susedia; **Podpora** = tvoja karta, s ktorou sa priložením stretne, do konca kola;
   **Konflikt** = súperova karta, s ktorou sa stretne, do konca kola. Každá akcia sa preškolí raz: Nástroj pod kartou →
@@ -159,6 +159,7 @@ rozpore s `docs/PRAVIDLA.md` platí `docs/PRAVIDLA.md` a rozpor zapíš do
   `{"type":"senok","uid":<uid>}` len z kariet toho druhu; bez takej karty v šenku nič. **Hasič (Podpora, frakcie):** voľba ako predtým, len spúšťač je Podpora namiesto Nástupu.
 - **Pakt (v7, akcia):** na spoji sa správa ako akcia, s ktorou je v páre (aj zlá: Hazard, Pečeň).
   Pakt s Paktom nerobí nič, s Posilnením sa stane Posilnením (= Forsáž), Odpor ho zruší; neaktívny Pakt NA EX nezdvojí.
+  Pakt, ktorý akciu kopíruje, je ňou pre všetky efekty (tvoje Pecky, Vidly, Horoskop, Telefón…).
 - **Forsáž (v10.3):** Posilnenie + Posilnenie na spoji = **Forsáž** — obe karty spoja majú **všetky
   aktívne akcie posilnené ×2** (aj Hazard a Pečeň); akcia posilnená ešte Posilnením suseda **×4**.
   Lokalita len hranu pri tom kraji. NA EX
@@ -233,7 +234,7 @@ rozpore s `docs/PRAVIDLA.md` platí `docs/PRAVIDLA.md` a rozpor zapíš do
   **Profesionálny tipér** (Konflikt, Školiteľ, 2026-11-08): súperova karta, s ktorou sa priložením stretne, má do konca
   kola Cigarety ako Hazard.
 - **Podloženie Nástroja (Náradie, Michal 2026-11-08):** Nástroj sa **do línie nevykladá**. Z ruky ho
-  **podložíš pod Občana alebo Starešinu v línii — svojho aj súperovho** — za **1 cigaretu**:
+  **podložíš pod svojho Občana alebo Starešinu v línii — len pod svoje karty (v11.16), pod súperove nie** — za **1 cigaretu**:
   `{"type":"podloz","nastrojId":<uid z ruky>,"hostitelId":<uid karty v línii>,"hrana":"horna"|"dolna"}`.
   Je to **ťah** (v ťahu po Vypiť aj ďalší krok), **limit nemíňa**. Nástroj má **hornú a dolnú hranu**,
   platí len tá, ktorú zvolíš (pretŕča spod karty); natočenie sa nemení. Pod kartou leží **najviac jeden**
@@ -251,7 +252,7 @@ rozpore s `docs/PRAVIDLA.md` platí `docs/PRAVIDLA.md` a rozpor zapíš do
 - **NA EX na Občana alebo Starešinu v línii — svojho aj súperovho**, len na kartu
   s aspoň 1 aktívnou a aspoň 1 neaktívnou akciou (2026-10-23; súperova Záverečná vždy). Zruší
   karte aktívne akcie a zdvojí neaktívne; akcie sa rátajú majiteľovi karty.
-  Pečeň +1 je tvoja. Súper smie po odkrytí odpovedať jednou kartou mimo limitu, **lícom dole a zadarmo**
+  Pečeň +1 je tvoja. Súper smie po odkrytí odpovedať jednou kartou mimo limitu, **lícom dole, za plný poldeci** (v11.16: vypije ho ako pri Vypiť — pečeň +1 hneď, 1 nerest; bez plného poldeci neodpovedá)
   (`place` / `bezReakcie`) — po otočení smie zmeniť prevahu v kraji aj počet Pitiek; Nástup až pri otočení. Nie na kartu, na ktorej
   už poldeci leží, ani na kartu so Vzburou (v11.1). NA EX na kartu
   pri lokalite mení len akcie karty, akcie hrany lokality ostávajú aktívne. NA EX na kartu
@@ -278,7 +279,7 @@ rozpore s `docs/PRAVIDLA.md` platí `docs/PRAVIDLA.md` a rozpor zapíš do
   **Každá aktívna akcia Hazard v Pitke = 1 Dlh (v11.8)**, 8 Hazardov = 8 Dlhov. Milujúca manželka (v7) v línii: tvoja pečeň v Pitke −1.
   Riadok „VÝHĽAD PITKY“ v stave ukazuje, čo pripíšu karty na stole a koľko kliatob z toho bude.
 - **Chuť a Absťák (v9.1, 2026-10-30):** **Chuť** je tvoja verejná latka nerestí, na začiatku **0**. Nerest je
-  len konzumácia: **Vypiť 1, NA EX 2, vyfajčená cigareta 1** — doliatie,
+  len konzumácia: **Vypiť 1, odpoveď na NA EX 1 (v11.16), NA EX 2, vyfajčená cigareta 1** — doliatie,
   barter, šenok ani Dedičstvo nie. **Na konci kola:** keď si v kole mal
   **menej nerestí, než je tvoja Chuť**, dostaneš **kartu Absťák do odhadzovacieho balíčka**; potom
   **Chuť = väčšie z (Chuť, neresti kola) − 1** (nie pod 0). Súper latku neurčuje. Po finále nič.

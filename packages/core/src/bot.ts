@@ -1484,7 +1484,8 @@ function zhromazdenie(v: Volba): Command | null {
 
 /**
  * Kandidáti podloženia (Náradie 2026-11-08): pre každý Nástroj v ruke posila pod vlastnú kartu
- * s najviac zdrojovými slotmi a sabotáž pod súperovu s najcennejšou akciou, ktorú hrana zmení.
+ * s najviac zdrojovými slotmi. Sabotáž pod súperovu kartu od v11.16 legalCommands neponúka
+ * (len pod vlastné karty); vetva „sabotaz“ ostáva pre staršie stavy.
  * Kartový účinok ide pod kartu s najviac akciami — či pomôže, či uškodí, ukáže až výpočet.
  * Posilnenie akcie (Puška) ide ako preškolenie: pod kartu, kde X najviac pomôže či uškodí.
  */

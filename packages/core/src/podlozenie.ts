@@ -2,7 +2,7 @@
 // smie hráč Nástroj z ruky podložiť. Spoločné pre server (cmdPodloz), legalCommands, bota
 // aj klienta — pravidlá podloženia sú tak len raz.
 
-import type { CardInstance } from "./types.ts";
+import type { CardInstance, PlayerId } from "./types.ts";
 import type { GameData } from "./data.ts";
 import { defOf, printedSides } from "./data.ts";
 import type { LineState, PlacedCard } from "./partia.ts";
@@ -65,17 +65,19 @@ function pocetAkcie(data: GameData, pl: PlacedCard, a: string): number {
 }
 
 /**
- * Prečo sa Nástroj nedá podložiť pod kartu `hostitelUid` hranou `hrana`; null = smie.
+ * Prečo hráč (tím) `kto` nemôže podložiť Nástroj pod kartu `hostitelUid` hranou `hrana`; null = smie.
  * Cigaretu a ťah stráži volajúci. Hrana, ktorá pod kartou nemá čo robiť, je dovolená
  * (pravidlá v5: „podložiť ho smieš, je to tvoj ťah“) — ponuka ju len označí.
  */
-export function dovodNepodlozenia(data: GameData, line: LineState, nastroj: CardInstance, hostitelUid: number, hrana: KtoraHrana): string | null {
+export function dovodNepodlozenia(data: GameData, line: LineState, nastroj: CardInstance, hostitelUid: number, hrana: KtoraHrana, kto: PlayerId): string | null {
   const def = defOf(data, nastroj);
   if (!def.tags.includes("Nástroj")) return "Podložiť možno len Nástroj.";
   const hrany = hranyNastroja(def);
   if (hrany === null) return `${def.name} nemá v sade hrany — smie len do Dedičstva.`;
   const hostitel = najdi(line, hostitelUid);
   if (hostitel === null) return "Karta nie je v línii.";
+  // v11.16 (Michal 2026-11-09): „hráč nesmie podkladať náradie pod súperove karty, len pod svoje“.
+  if (hostitel.playedBy !== kto) return "Nástroj sa podkladá len pod vlastné karty.";
   // Karta lícom dole: súper nevie, čo to je — odmietnutie by prezradilo jej tagy.
   if (hostitel.zaverecna === true) return "Pod kartu lícom dole sa nepodkladá.";
   const tags = defOf(data, hostitel.card).tags;
@@ -114,15 +116,15 @@ export interface MoznostPodlozenia {
   readonly popis: string;
 }
 
-/** Všetky dovolené podloženia Nástroja `nastroj` (karta v línii × hrana) v poradí línie. */
-export function ponukaPodlozenia(data: GameData, line: LineState, nastroj: CardInstance): MoznostPodlozenia[] {
+/** Všetky dovolené podloženia Nástroja `nastroj` hráča (tímu) `kto` — jeho karty v línii × hrana, v poradí línie. */
+export function ponukaPodlozenia(data: GameData, line: LineState, nastroj: CardInstance, kto: PlayerId): MoznostPodlozenia[] {
   const hrany = hranyNastroja(defOf(data, nastroj));
   if (hrany === null) return [];
   const out: MoznostPodlozenia[] = [];
   for (const strana of line.strany) {
     for (const pl of strana) {
       for (const hrana of KTORE_HRANY) {
-        if (dovodNepodlozenia(data, line, nastroj, pl.card.uid, hrana) !== null) continue;
+        if (dovodNepodlozenia(data, line, nastroj, pl.card.uid, hrana, kto) !== null) continue;
         out.push({ hostitel: pl.card.uid, hrana, maCoRobit: hranaMaCoRobit(data, pl, hrany[hrana]), popis: popisHrany(data, pl, hrany[hrana]) });
       }
     }

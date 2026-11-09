@@ -6,8 +6,10 @@ import { describe, expect, it } from "vitest";
 import cardsJson from "../data/cards.json";
 import eldersJson from "../data/elders.json";
 import scorecardsJson from "../data/scorecards.json";
-import type { CardInstance, Command, GameData, GameState, PlacedCard, PlayerId } from "../src/index.ts";
-import { VYPIT_BEZ_LIMITU, apply, legalCommands, loadGameData, planVykladania, setupGame, tahBota } from "../src/index.ts";
+import type { CardInstance, Command, Event, GameData, GameState, LineState, PlacedCard, PlayerId } from "../src/index.ts";
+import { ODPOVED_BEZ_POLDECI, VYPIT_BEZ_LIMITU, apply, evaluateLine, legalCommands, lineState, loadGameData, naTahu, opponentOf, planVykladania, ponukaPodlozenia, setupGame, tahBota } from "../src/index.ts";
+import type { Layout4 } from "./helpers.ts";
+import { EMPTY, instanceFor, makeDef, syntheticData } from "./helpers.ts";
 import { dataSHranami } from "./naradieData.ts";
 
 const data = loadGameData(cardsJson, eldersJson, scorecardsJson);
@@ -141,5 +143,124 @@ describe("§12 podloženie naprázdno hra ponúka (v11.16)", () => {
       const cmd = tahBota(dataH, s, 0, seed);
       expect(cmd.type === "podloz" && cmd.hrana === "horna").toBe(false);
     }
+  });
+});
+
+describe("§7 odpoveď na NA EX stojí plný poldeci (v11.16)", () => {
+  /** Stavy partií botov, v ktorých niekto odpovedá na NA EX, s jeho odpoveďou. */
+  function odpovede(seed: number): { readonly pred: GameState; readonly cmd: Command; readonly events: readonly Event[] }[] {
+    let s = setupGame(data, seed, { lokalit: 3 });
+    const out: { pred: GameState; cmd: Command; events: readonly Event[] }[] = [];
+    for (let n = 0; n < 8000 && s.koniec === null; n++) {
+      const kto = naTahu(s);
+      if (kto === null) break;
+      const cmd = tahBota(data, s, kto, seed * 7919 + n);
+      const r = apply(data, s, cmd, kto);
+      if (s.faza === "pitka" && s.pitkaStav?.reakcia != null && s.vizia === null) out.push({ pred: s, cmd, events: r.events });
+      s = r.state;
+    }
+    return out;
+  }
+  const tahy = [3, 7, 8, 21].flatMap(odpovede);
+
+  it("odpovedá len hráč s plným poldeci; odpoveď ho vypije — poldeci, pečeň +1, nerest", () => {
+    expect(tahy.length).toBeGreaterThan(0);
+    let kariet = 0;
+    for (const t of tahy) {
+      const q = t.pred.pitkaStav!.reakcia as PlayerId;
+      expect(t.pred.hraci[q].poldeciPlne).toBeGreaterThanOrEqual(1);
+      if (t.cmd.type !== "place") continue;
+      kariet++;
+      expect(t.events).toContainEqual({ type: "log", text: `Hráč ${q + 1} za odpoveď vypíja plný poldeci.` });
+      expect(t.events).toContainEqual({ type: "pecen", hrac: q, mnozstvo: 1 });
+    }
+    expect(kariet).toBeGreaterThan(0);
+  });
+
+  it("bez plného poldeci server odpoveď odmietne; vynechať smie", () => {
+    const t = tahy.find((x) => x.cmd.type === "place")!;
+    const q = t.pred.pitkaStav!.reakcia as PlayerId;
+    const bez = { ...t.pred, hraci: t.pred.hraci.map((h, i) => (i === q ? { ...h, poldeciPlne: 0 } : h)) as unknown as GameState["hraci"] };
+    expect(() => apply(data, bez, t.cmd, q)).toThrow(ODPOVED_BEZ_POLDECI);
+    expect(() => apply(data, bez, { type: "bezReakcie" }, q)).not.toThrow();
+  });
+
+  it("odpoveď z pohľadu: vypitý poldeci a nerest sa pripíšu hneď", () => {
+    const t = tahy.find((x) => x.cmd.type === "place" && x.pred.pitkaStav?.frontaReakcii?.length)!;
+    const q = t.pred.pitkaStav!.reakcia as PlayerId;
+    const po = apply(data, t.pred, t.cmd, q).state;
+    // Druhý ešte odpovedá — Pitka sa nevyhodnotila, zmenu vidno čistú.
+    expect(po.pitkaStav?.reakcia).toBe(opponentOf(q));
+    expect(po.hraci[q].poldeciPlne).toBe(t.pred.hraci[q].poldeciPlne - 1);
+    expect(po.hraci[q].poldeciVypite).toBe(t.pred.hraci[q].poldeciVypite + 1);
+    expect(po.hraci[q].nerestiTotoKolo).toBe(t.pred.hraci[q].nerestiTotoKolo + 1);
+  });
+});
+
+describe("§6 Školiteľom aj Zviera, Mäsiar ho umlčí (v11.16)", () => {
+  const R: Layout4 = ["Rana", "Rana", null, null];
+  const sd = syntheticData([
+    makeDef("ziak", R, R, { tags: ["Občan"] }),
+    makeDef("skolitel_zviera", EMPTY, EMPTY, { tags: ["Zviera"], effectText: "Furt: Preškolenie {Rana}→{Pecka}." }),
+    makeDef("skolitel_podpora", EMPTY, EMPTY, { tags: ["Zviera"], effectText: "Podpora: Preškolenie {Rana}→{Pecka}." }),
+    makeDef("masiar", EMPTY, EMPTY, { tags: ["Občan"] }),
+  ]);
+  const akcieKarty = (line: LineState, uid: number): string[] => {
+    const k = evaluateLine(sd, line).cards.get(uid);
+    return [...(k?.left ?? []), ...(k?.right ?? [])].flatMap((x) => (x === null ? [] : [x.action]));
+  };
+  const linia = (strana: PlacedCard[]): LineState => ({ lokalita: null, lokalitaOtocena: false, strany: [strana, []] });
+
+  it("Zviera s Furt Preškolením preškolí suseda; vedľa Mäsiara nie", () => {
+    const ziak = instanceFor(sd, "ziak", R, R);
+    const zviera = instanceFor(sd, "skolitel_zviera", EMPTY, EMPTY);
+    const masiar = instanceFor(sd, "masiar", EMPTY, EMPTY);
+    expect(akcieKarty(linia([lezi(ziak, 0), lezi(zviera, 0)]), ziak.uid)).toEqual(["Pecka", "Pecka", "Pecka", "Pecka"]);
+    expect(akcieKarty(linia([lezi(ziak, 0), lezi(zviera, 0), lezi(masiar, 1)]), ziak.uid)).toEqual(["Rana", "Rana", "Rana", "Rana"]);
+  });
+
+  it("preškolenie zapísané z Podpory Zvieraťa neplatí, kým Zviera leží pri Mäsiarovi", () => {
+    const ziak = instanceFor(sd, "ziak", R, R);
+    const zviera = instanceFor(sd, "skolitel_podpora", EMPTY, EMPTY);
+    const masiar = instanceFor(sd, "masiar", EMPTY, EMPTY);
+    const zapisane: PlacedCard = { card: ziak, playedBy: 0, preskolenia: [{ z: "Rana", na: "Pecka", od: zviera.uid, spustac: "Podpora" }] };
+    expect(akcieKarty(linia([zapisane, lezi(zviera, 0)]), ziak.uid)).toContain("Pecka");
+    expect(akcieKarty(linia([zapisane, lezi(zviera, 0), lezi(masiar, 1)]), ziak.uid)).not.toContain("Pecka");
+  });
+});
+
+describe("§2 Pakt je akciou, ktorú kopíruje, pre všetky efekty (v11.16)", () => {
+  /** Hráč 0: A (ľavá hrana) proti B (pravá hrana); Nástroje hráča 0 v Dedičstve. */
+  function par(aLeft: Layout4, bRight: Layout4, nastroje: readonly string[], naexA = false) {
+    const d = syntheticData([makeDef("a", aLeft, EMPTY), makeDef("b", EMPTY, bRight)]);
+    const a = instanceFor(d, "a", aLeft, EMPTY);
+    const b = instanceFor(d, "b", EMPTY, bRight);
+    const l: LineState = { lokalita: null, lokalitaOtocena: false, strany: [[{ card: a, playedBy: 0, ...(naexA ? { naexBy: 1 as PlayerId } : {}) }, lezi(b, 0)], []], nastroje: [nastroje, []] };
+    return evaluateLine(d, l);
+  }
+
+  it("Pakt spojený s Peckou je v súčtoch Pecka — „tvoje Pecky“ (Boxer, Vidly…) ho rátajú", () => {
+    expect(par(["Pakt", null, null, null], ["Pecka", null, null, null], []).sums[0]).toEqual({ Pecka: 2 });
+  });
+
+  it("Telefón chráni pred NA EX aj Pakt, ktorý kopíruje Pohoršenie", () => {
+    expect(par(["Pakt", null, null, null], ["Pohoršenie", null, null, null], [], true).sums[0].Pohoršenie).toBe(1);
+    expect(par(["Pakt", null, null, null], ["Pohoršenie", null, null, null], ["telefon"], true).sums[0].Pohoršenie).toBe(2);
+  });
+});
+
+describe("§12 Nástroj len pod vlastné karty (v11.16)", () => {
+  it("pod súperovu kartu server odmietne a hra neponúkne; pod vlastnú áno", () => {
+    const vidly = inst("vidly");
+    const jeho = inst("pijan");
+    const moj = inst("pijan");
+    const s = vZhromazdeni(dataH, { ruka: [vidly], strany: [[lezi(moj, 0)], [lezi(jeho, 1)]] });
+    const podSupera: Command = { type: "podloz", nastrojId: vidly.uid, hostitelId: jeho.uid, hrana: "horna" };
+    expect(() => apply(dataH, s, podSupera, 0)).toThrow("Nástroj sa podkladá len pod vlastné karty.");
+    const legal = legalCommands(dataH, s, 0).filter((c) => c.type === "podloz");
+    expect(legal.length).toBeGreaterThan(0);
+    for (const c of legal) expect(c.type === "podloz" && c.hostitelId).toBe(moj.uid);
+    expect(ponukaPodlozenia(dataH, lineState(s), vidly, 0).every((m) => m.hostitel === moj.uid)).toBe(true);
+    expect(ponukaPodlozenia(dataH, lineState(s), vidly, 1).every((m) => m.hostitel === jeho.uid)).toBe(true);
   });
 });

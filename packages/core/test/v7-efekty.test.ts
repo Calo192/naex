@@ -145,8 +145,8 @@ describe("Konflikt (v7, plan.md 13.1)", () => {
     expect(premena(apply(data, cudzia, { type: "place", uid: chlap.uid, target: "vlastna" }, 0).state, sar2.uid)).toBe("sarlatan");
     const sar3 = inst("sarlatan");
     const pasca = inst("pasca");
-    const nastroj = vZhromazdeni("zastavka", [[lezi(sar3, 1)], []], [pasca]);
-    // Náradie (2026-11-08): podloženie nie je priloženie.
+    const nastroj = vZhromazdeni("zastavka", [[lezi(sar3, 0)], []], [pasca]);
+    // Náradie (2026-11-08): podloženie nie je priloženie; od v11.16 len pod vlastnú kartu.
     const podlozeny = apply(dataH, nastroj, { type: "podloz", nastrojId: pasca.uid, hostitelId: sar3.uid, hrana: "horna" }, 0).state;
     expect(podlozeny.strany[0][0]?.podlozene?.map((n) => n.card.uid)).toEqual([pasca.uid]);
     expect(premena(podlozeny, sar3.uid)).toBeUndefined();

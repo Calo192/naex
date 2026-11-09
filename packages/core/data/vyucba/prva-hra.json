@@ -1581,38 +1581,10 @@
         "uid": "ruka:cierna_macka",
         "target": "superova"
       },
-      "melichar": "Teraz odpovede: za každé súperovo NA EX smie hráč vyložiť jednu kartu z ruky, zadarmo, mimo limitu a lícom dole. Prvý odpovedá útočník – Štamgast dal kartu lícom dole za tvojho Alkoholika. Čo to je, uvidíš, až sa odpovede otočia.",
+      "melichar": "Teraz odpovede: za každé súperovo NA EX smie hráč vyložiť jednu kartu z ruky, mimo limitu a lícom dole – ale za plný [Poldeci] poldeci, ten pri tom vypije. Prvý odpovedá útočník – Štamgast dal kartu lícom dole za tvojho Alkoholika. Ty plný poldeci nemáš, ten ti leží pod NA EX, tak neodpovedáš. Čo to je, uvidíš, až sa odpovede otočia.",
       "zvyraznit": [
         "linia"
       ]
-    },
-    {
-      "id": "k-bez-odpovede",
-      "kto": "hrac",
-      "prikaz": {
-        "type": "bezReakcie"
-      },
-      "melichar": "Klikni BEZ ODPOVEDE. Ty smieš odpovedať len na druhý kraj, Štamgastov, a tam jeho NA EX neleží. Odpoveď robí toto: spojí osamotenú akciu karty s NA EX a NA EX ju potom zruší namiesto zdvojenia.",
-      "hlaskaChyby": "urazky/ty_spina",
-      "zvyraznit": [
-        "tlacidlo:bez-odpovede"
-      ],
-      "volba": {
-        "kandidati": [
-          "tlacidlo:bez-odpovede"
-        ],
-        "zle": [
-          {
-            "prikaz": {
-              "type": "place",
-              "target": "superova"
-            },
-            "text": "Na jeho kraji NA EX neleží, odpoveď tam nič nezruší. Nechaj to tak.",
-            "hlaska": "urazky/ty_spina"
-          }
-        ],
-        "inak": "Bez odpovede. Dnes mu nepomáhaj."
-      }
     },
     {
       "id": "i-odpovede",

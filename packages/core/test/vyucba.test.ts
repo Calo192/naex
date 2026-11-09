@@ -752,7 +752,7 @@ describe("výučba Prvá hra — 2. a 3. časť (pravidlá v8, exekúcia po poš
     // Priznanie Cirhózy (v11.5 bez Nástupu Alkoholika) sa učí až v 3. kole — v 2. nikto nič nepriznal.
     expect(po("k-prevaha2").hraci[0].priznane).toHaveLength(0);
     // Exekútor až po poškodení (master 3ab061b): pred bitkou sa špaky nemenia.
-    expect(body(po("k-odpoved-bot"))).toEqual([5, -1]);
+    expect(body(pri("k-odpoved-bot"))).toEqual([5, -1]);
     // NA EX hráča na Alkoholika zdvojí jeho osamotené Viery, Štamgastovo na Liberála jeho dve osamotené Povery. Odpoveď
     // Čierna mačka spojí jednu Vieru Alkoholika (NA EX ju zruší) a jej Furt chráni Štamgastove Povery pred Vierou.
     // Konflikt bez tagu (2026-11-08): Praudovravec (variant 0/1) priložený k Liberálovi má Pohoršenie navyše a jeho Dlh
@@ -1043,18 +1043,16 @@ describe("výučba — pravidlá v9.2 (šenok začína obranca, odpovede na NA E
     }
   });
 
-  it("na NA EX odpovedá prvý Štamgast (útočník) lícom dole, hráč potom; otočenie komentuje i-odpovede", () => {
-    expect(i("k-odpoved-bot")).toBeLessThan(i("k-bez-odpovede"));
-    expect(i("i-odpovede")).toBe(i("k-bez-odpovede") + 1);
-    const s = prehrajVyucbu(data, celyScenar, i("k-bez-odpovede"));
-    // v11.5: Štamgast odpovedá Čiernou mačkou — spojí osamotenú Vieru Alkoholika (i-odpovede).
-    const skryta = s.strany[0].find((pl) => pl.card.defId === "cierna_macka" && pl.odpoved === true);
-    expect(skryta?.zaverecna).toBe(true);
-    // Hráč vidí len rub — karta Štamgasta lícom dole sa mu neposiela.
-    const macky = (strana: readonly { readonly card: { readonly defId: string } }[]): number => strana.filter((pl) => pl.card.defId === "cierna_macka").length;
-    expect(macky(viewFor(data, s, 0).strany[0])).toBe(macky(s.strany[0]) - 1);
-    const po = prehrajVyucbu(data, celyScenar, i("k-bez-odpovede") + 1);
-    expect(po.strany[0].some((pl) => pl.odpoved === true && pl.zaverecna === true)).toBe(false);
+  it("na NA EX odpovedá Štamgast (útočník) lícom dole za plný poldeci; hráč bez plného neodpovedá; otočenie komentuje i-odpovede", () => {
+    // v11.16: odpoveď stojí plný poldeci — hráčov leží pod jeho NA EX, krok „bez odpovede“ odpadol.
+    expect(i("i-odpovede")).toBe(i("k-odpoved-bot") + 1);
+    const pred = prehrajVyucbu(data, celyScenar, i("k-odpoved-bot"));
+    expect(pred.hraci[0].poldeciPlne).toBe(0);
+    expect(pred.hraci[1].poldeciPlne).toBeGreaterThanOrEqual(1);
+    const po = prehrajVyucbu(data, celyScenar, i("k-odpoved-bot") + 1);
+    // v11.5: Štamgast odpovedá Čiernou mačkou — spojí osamotenú Vieru Alkoholika (i-odpovede); otočí sa hneď.
+    expect(po.strany[0].some((pl) => pl.card.defId === "cierna_macka" && pl.playedBy === 1)).toBe(true);
+    expect(po.strany[0].some((pl) => pl.odpoved === true)).toBe(false);
   });
 
   it("texty nehovoria, že šenok začína útočník, ani o poslednom slove", () => {

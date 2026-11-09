@@ -230,6 +230,10 @@ describe("klient AI hráčov: efekty Prehra (nezrovnalosť 3, Dievčina na vydaj
             if (v.strany.flat().length !== state.strany.flat().length) continue;
             // Vlastná Záverečná Dievčina sa otočí v tom istom ťahu — efektyPrehry ráta len odkryté karty.
             if (state.strany.flat().some((pl) => pl.card.defId === "dievcina_na_vydaj" && pl.zaverecna === true)) continue;
+            // Dievčina vyložená práve týmto ťahom (hra potom za oboch dohrá Pitku aj bitku) ešte v línii neleží —
+            // náhľad ju pred ťahom poznať nemôže; rovnako odpoveď na NA EX, ktorá bitku spustí.
+            if (!state.strany.flat().some((pl) => pl.card.defId === "dievcina_na_vydaj")) continue;
+            if (state.pitkaStav?.reakcia != null || state.strany.flat().some((pl) => pl.odpoved === true)) continue;
             expect(efektyPrehry(data, v).dievcina[porazeny], `seed ${seed}, hráč ${ja}`).toBe(Number(m[2]));
             porovnane++;
           }

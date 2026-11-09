@@ -24,6 +24,7 @@ import {
 } from "./engine.ts";
 import { efektPotlaceny, naexPecenSuperovi, nasobokPitky, partiaHraca, svokraRany } from "./effects.ts";
 import { opponentOf } from "./types.ts";
+import { KONSTANTY } from "./constants.ts";
 import type { LineEval } from "./partia.ts";
 import { dlhyPoslednejPitky, evaluateLine } from "./partia.ts";
 import type { BattleOutcome, DamageResult } from "./battle.ts";
@@ -401,7 +402,8 @@ export function najhorsiaOdpoved(
 ): NajhorsiaOdpoved | null {
   const ja = po.ja;
   const su = opponentOf(ja);
-  if (po.ciel === null || po.hraci[su].rukaPocet <= 0) return null;
+  // Odpoveď stojí plný poldeci (v11.16) — bez neho súper neodpovie.
+  if (po.ciel === null || po.hraci[su].rukaPocet <= 0 || po.hraci[su].poldeciPlne < KONSTANTY.CENA_ODPOVEDE_POLDECI) return null;
   const hodnotaPreMna = (v: BattleOutcome): number =>
     (v.vitaz === null ? 0 : v.vitaz === ja ? 1000 : -1000) + (v.prebytokDrzi === null ? 0 : v.prebytokDrzi === ja ? v.prebytok : -v.prebytok);
   const bitka = (s: ClientState): DamageResult => poskodenieStola(data, stolPriPoskodeni(data, s, dalsiePitky));

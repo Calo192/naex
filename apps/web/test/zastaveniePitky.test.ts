@@ -122,5 +122,6 @@ describe("pohľad hráča počas Pitky neprezradí súperove skryté NA EX (prav
         }
       }
     }
-  });
+    // Celá partia botov v teste — pri súbežných testoch trvá dlhšie než predvolených 5 s.
+  }, 30000);
 });

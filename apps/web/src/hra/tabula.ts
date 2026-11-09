@@ -244,7 +244,7 @@ export function detailZdroja(zdroj: ZdrojStlpca, c: CislaHraca, ja: boolean, pri
     case "chut":
       return {
         nadpis: "Chuť",
-        text: `Nerest je len to, čo vypiješ a vyfajčíš: Vypiť 1, NA EX ${KONSTANTY.NEREST_NAEX}, každá vyfajčená cigareta 1. Na konci kola: menej nerestí než Chuť = karta Absťák do balíčka (každá uberie v bitke 1 tuhé); potom Chuť = väčšie z (Chuť, neresti) − ${KONSTANTY.CHUT_UBYTOK}.`,
+        text: `Nerest je len to, čo vypiješ a vyfajčíš: Vypiť 1, odpoveď na NA EX 1, NA EX ${KONSTANTY.NEREST_NAEX}, každá vyfajčená cigareta 1. Na konci kola: menej nerestí než Chuť = karta Absťák do balíčka (každá uberie v bitke 1 tuhé); potom Chuť = väčšie z (Chuť, neresti) − ${KONSTANTY.CHUT_UBYTOK}.`,
         riadky: [
           ["Chuť", c.chut === null ? "–" : String(c.chut)],
           ["neresti dnes", String(c.nerestiDnes)],

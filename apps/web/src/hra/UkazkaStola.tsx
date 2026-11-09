@@ -41,6 +41,7 @@
 //                  s kartami z línie); keď partia Cintorín nemá, prvá prehratá bitka od 2. kola sa na ukážku
 //                  odohrá na Cintoríne (&vynut=0 nie)
 //   &stop=pitka    Pitka od 2. kola, hrajú obaja naraz (cena fajčenia, nákupy na hrane stola)
+//   &stop=odpoved  hráč ?ja odpovedá na súperovo NA EX (v11.16: odpoveď stojí plný poldeci — pečiatka s cenou)
 //   &stop=bzdocha  ako pitka, hráč ?ja má v línii Bzdochu a súper už skončil so skrytým NA EX —
 //                  stôl ukáže súperovu voľbu (Bzdocha, v7)
 //   &stop=bzdocha-caka  ako pitka, hráč ?ja má Bzdochu a čaká, kým súper skončí Pitku
@@ -587,6 +588,8 @@ function odohrajSeed(data: GameData, seed: number): { readonly odohrane: Odohran
     if (stop === "cigarety-pride" && s.faza === "pitka" && mozeHrat(s, ja) && s.pitkaStav?.reakcia === null && s.vizia === null && nahladPitky(data, s).every((n) => n.cigarety.zisk > 0))
       return najdene({ zaciatok: s, dohraj: [] });
     if (stop === "pitka" && s.kolo >= 2 && s.faza === "pitka" && mozeHrat(s, ja) && s.pitkaStav?.hotovy[opponentOf(ja)] === false && s.pitkaStav.reakcia === null && s.vizia === null && s.hraci[ja].cigarety >= 1)
+      return najdene({ zaciatok: s, dohraj: [] });
+    if (stop === "odpoved" && s.faza === "pitka" && s.vizia === null && s.pitkaStav?.reakcia === ja)
       return najdene({ zaciatok: s, dohraj: [] });
     if (stop === "kseft" && s.faza === "pitka" && s.ciel?.lokalita != null && mozeHrat(s, ja) && s.pitkaStav?.reakcia === null && !s.pitkaStav.hotovy[ja] && s.vizia === null) {
       const vazni = (p.get("vazni") ?? "hrobar,veterinar").split(",").filter((x) => x !== "");

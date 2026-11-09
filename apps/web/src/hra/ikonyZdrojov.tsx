@@ -53,6 +53,16 @@ export function CenaCigariet({ n, znamienko = "−" }: { readonly n: number; rea
   );
 }
 
+/** Cena v plných poldeci (odpoveď na NA EX, v11.16): „−1“ a malý poldeci, ktorý sa vypije. */
+export function CenaPoldeci({ n }: { readonly n: number }) {
+  return (
+    <span className="cena-cig cena-poldeci">
+      −{n}
+      <IkonaPoldeci />
+    </span>
+  );
+}
+
 /**
  * Výmena v jednom poradí na každom tlačidle a náhľade (Michal 2026-10-28: „zjednotiť to treba“):
  * čo dáš → čo dostaneš. Cena v cigaretách vľavo, odmena vpravo; pri zisku cigariet

@@ -80,6 +80,8 @@ export const KONSTANTY = {
   CENA_PODLOZENIA: 1,
   /** Záverečná (roadmapa #83, Michal 2026-10-23): karta lícom dole za cigaretu. */
   CENA_ZAVERECNEJ: 1,
+  /** Odpoveď na NA EX (v11.16, Michal 2026-11-09): toľko plných poldeci sa za ňu vypije. */
+  CENA_ODPOVEDE_POLDECI: 1,
   /**
    * Šenok (Michal 2026-10-19): hráč na ťahu berie 1 kartu za 1 cigaretu, alebo
    * 2 karty za 3 cigarety; poldeci sa v šenku neplatí. Index = počet kariet.
@@ -294,7 +296,8 @@ export function vazniNaVyhru(lokalitCelkom: number): number {
 // kategóriách (Preškolenie), Náradie sa podkladá pod kartu, Predavačka a Živnostník berú zo šenku.
 // v11.15 (Michal 2026-11-09, Zrejúca) bez novej značky: Benzínka — každé fajčenie o 1 cigaretu lacnejšie.
 // v11.16 (Michal 2026-11-09, Zrejúca) bez novej značky: Vypiť len so zostávajúcim limitom, cigarety za pas
-// bez ohľadu na karty v ruke, Degustátorka zníži súperov limit hneď, podloženie naprázdno sa ponúka.
+// bez ohľadu na karty v ruke, Degustátorka zníži súperov limit hneď, podloženie naprázdno sa ponúka,
+// odpoveď na NA EX stojí plný poldeci, Nástroj len pod vlastné karty, Školiteľ aj Zviera (Mäsiar ho umlčí).
 export const VERZIA_PRAVIDIEL = "v11";
 /**
  * Presná verzia pravidiel vrátane dávky — hráč ju vidí na stránke Pravidlá, ktorá má

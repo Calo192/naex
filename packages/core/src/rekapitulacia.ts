@@ -198,6 +198,8 @@ export interface RekapitulaciaPitky {
     readonly zPitia: Dvojica;
     /** Poldeci vypité za vlastné NA EX v tejto Pitke. */
     readonly zNaex: Dvojica;
+    /** Plné poldeci vypité za odpovede na NA EX (v11.16); staršie rekapitulácie ho nemajú. */
+    readonly zOdpovede?: Dvojica;
     readonly poskodenie: Dvojica;
     readonly poldeci: Dvojica;
     readonly prah: Dvojica;
@@ -381,7 +383,7 @@ export function akcieKartyVLinii(linia: LineEval, uid: number): Partial<Record<A
 
 /** Všetka pečeň hráča v Pitke (pitie, NA EX, karty na stole). */
 export function pecenPitky(r: RekapitulaciaPitky, p: PlayerId): number {
-  return r.pecen.zPitia[p] + r.pecen.zNaex[p] + r.pecen.poskodenie[p] + r.pecen.poldeci[p];
+  return r.pecen.zPitia[p] + r.pecen.zNaex[p] + (r.pecen.zOdpovede?.[p] ?? 0) + r.pecen.poskodenie[p] + r.pecen.poldeci[p];
 }
 
 /** Zadĺženie hráča v Pitke. */
@@ -412,6 +414,8 @@ export interface VstupRekapitulaciePitky {
   /** Pečeň na začiatku Pitky (vypité v Zhromaždení) a NA EX, ktoré hráč v Pitke dal. */
   readonly pecenNaZaciatku: Dvojica;
   readonly naexDal: Dvojica;
+  /** Plné poldeci vypité za odpovede na NA EX (v11.16). */
+  readonly odpovede?: Dvojica;
   readonly prahPecene: Dvojica;
   /** Cirhózy získané od začiatku Pitky (aj pri odkrytí NA EX). */
   readonly cirhozy: Dvojica;
@@ -433,6 +437,7 @@ export function rekapitulaciaPitky(data: GameData, v: VstupRekapitulaciePitky): 
     pecen: {
       zPitia: v.pecenNaZaciatku,
       zNaex: v.naexDal,
+      ...(v.odpovede !== undefined && (v.odpovede[0] > 0 || v.odpovede[1] > 0) ? { zOdpovede: v.odpovede } : {}),
       poskodenie: v.poskodeniePecene,
       poldeci: v.poldeci,
       prah: v.prahPecene,

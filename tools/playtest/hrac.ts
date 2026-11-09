@@ -929,17 +929,17 @@ function moznosti(v: ClientState): string[] {
               c({ type: "zaverecna", uid: k.uid, target: t }, `ZÁVEREČNÁ: ${meno(k.defId)} lícom dole → ${POPIS_CIELA[t]} za ${KONSTANTY.CENA_ZAVERECNEJ} cig.; súper ju nevidí do konca Pitky a za ňu nepriloží (ani odpoveď na NA EX), ty už v tomto Zhromaždení nevykladáš (bez cigariet za pas); Nástup až pri otočení`);
           }
         }
-        // Podloženie (Náradie 2026-11-08): Nástroj pod kartu v línii za cigaretu — aj hrana, ktorá nič nezmení (v11.16), s varovaním.
+        // Podloženie (Náradie 2026-11-08): Nástroj pod vlastnú kartu v línii za cigaretu (v11.16 len pod svoje) — aj hrana, ktorá nič nezmení, s varovaním.
         if (v.hraci[ja].cigarety >= KONSTANTY.CENA_PODLOZENIA && !skoncilVykladanie(z, ja)) {
           const line = lineState(v);
           const vsetky = [...v.strany[0], ...v.strany[1]];
           for (const k of v.ruka) {
-            for (const m of ponukaPodlozenia(DATA, line, k)) {
+            for (const m of ponukaPodlozenia(DATA, line, k, ja)) {
               const host = vsetky.find((pl) => pl.card.uid === m.hostitel);
               if (host === undefined) continue;
               c(
                 { type: "podloz", nastrojId: k.uid, hostitelId: m.hostitel, hrana: m.hrana },
-                `PODLOŽ ${meno(k.defId)} pod ${meno(host.card.defId)} (${host.playedBy === ja ? "tvoja" : "súperova"} karta), ${m.hrana === "horna" ? "horná" : "dolná"} hrana: ${m.popis}${m.maCoRobit ? "" : " — NAPRÁZDNO, hrana tu nič nezmení (len minieš cigaretu a ťah)"}; za ${cigariet(KONSTANTY.CENA_PODLOZENIA)}, je to ťah, limit nemíňa; leží do bitky, potom ide do tvojho odhadzovacieho balíčka`,
+                `PODLOŽ ${meno(k.defId)} pod svoju kartu ${meno(host.card.defId)}, ${m.hrana === "horna" ? "horná" : "dolná"} hrana: ${m.popis}${m.maCoRobit ? "" : " — NAPRÁZDNO, hrana tu nič nezmení (len minieš cigaretu a ťah)"}; za ${cigariet(KONSTANTY.CENA_PODLOZENIA)}, je to ťah, limit nemíňa; leží do bitky, potom ide do tvojho odhadzovacieho balíčka`,
               );
             }
           }
@@ -970,7 +970,7 @@ function moznosti(v: ClientState): string[] {
       const h = v.hraci[ja];
       const pk = v.pitkaStav;
       if (pk?.reakcia === ja) {
-        // Odpoveď na súperovo NA EX (v9.2): jedna karta lícom dole, zadarmo, mimo limitu;
+        // Odpoveď na súperovo NA EX (v9.2): jedna karta lícom dole za plný poldeci (v11.16), mimo limitu;
         // po útočníkovi obranca len na druhý kraj línie. Otočia sa naraz.
         const kraj = pk.krajOdpovede ?? null;
         out.push(
@@ -982,7 +982,7 @@ function moznosti(v: ClientState): string[] {
         for (const k of v.ruka) {
           for (const t of cieleOdpovede(DATA, v, ja, k)) {
             if (zablokovaneStrany(v)[t === "vlastna" ? ja : su]) continue;
-            c({ type: "place", uid: k.uid, target: t }, `odpoveď na NA EX LÍCOM DOLE: vylož ${meno(k.defId)} → ${POPIS_CIELA[t]} (zadarmo, limit nemíňa; Nástup až pri otočení)${popisVylozenia(v, k, t)}`);
+            c({ type: "place", uid: k.uid, target: t }, `odpoveď na NA EX LÍCOM DOLE: vylož ${meno(k.defId)} → ${POPIS_CIELA[t]} (stojí plný poldeci — vypiješ ho: pečeň +1 hneď, 1 nerest; limit nemíňa; Nástup až pri otočení)${popisVylozenia(v, k, t)}`);
           }
         }
         break;

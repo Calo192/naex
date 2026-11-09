@@ -589,6 +589,12 @@ button.zdroj-starsi[aria-pressed="true"] {
   fill: currentColor;
 }
 
+.cena-poldeci .ikona-poldeci {
+  width: 1.15em;
+  height: 1.15em;
+  fill: currentColor;
+}
+
 .pruh {
   display: flex;
   gap: 2px;

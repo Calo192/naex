@@ -102,6 +102,7 @@ import {
   AkcieStrany,
   BitkaPanel,
   CenaCigariet,
+  CenaPoldeci,
   Vymena,
   HracDoska,
   IkonaKarty,
@@ -1015,12 +1016,12 @@ export function HernaPlocha({
     return (k: CardInstance): readonly MoznostPodlozenia[] => {
       let p = pamat.get(k.uid);
       if (p === undefined) {
-        p = hranyNastroja(defOf(data, k)) === null ? [] : ponukaPodlozenia(data, linia, k);
+        p = hranyNastroja(defOf(data, k)) === null ? [] : ponukaPodlozenia(data, linia, k, ja);
         pamat.set(k.uid, p);
       }
       return p;
     };
-  }, [data, view]);
+  }, [data, view, ja]);
   /** Kam smie Nástroj z ruky — prázdne mimo vlastného ťahu v Zhromaždení. */
   const ponukaPre = (k: CardInstance): readonly MoznostPodlozenia[] => (mozemPodkladat ? ponukyPodlozenia(k) : []);
   /** Zasunutý Nástroj v návrhu: karta z ruky, hostiteľ a pretŕčajúca hrana. */
@@ -3524,7 +3525,7 @@ export function HernaPlocha({
   const nastrojKPodlozeniu = [tahanaZRuky, vybranaKarta].find((k): k is CardInstance => k !== null && ponukaPre(k).length > 0) ?? null;
   /** Prečo Nástroj pod túto kartu nejde — dôvod jadra pre hornú hranu, inak pre dolnú. */
   const dovodBezPodlozenia = (k: CardInstance, uid: number): string =>
-    dovodNepodlozenia(data, lineState(view), k, uid, "horna") ?? dovodNepodlozenia(data, lineState(view), k, uid, "dolna") ?? "Pod túto kartu sa teraz nezasúva.";
+    dovodNepodlozenia(data, lineState(view), k, uid, "horna", ja) ?? dovodNepodlozenia(data, lineState(view), k, uid, "dolna", ja) ?? "Pod túto kartu sa teraz nezasúva.";
   const druhaHranaIde =
     podlozenieNavrh !== null &&
     ponukaPre(podlozenieNavrh.nastroj).some((m) => m.hostitel === podlozenieNavrh.hostitel && m.hrana !== podlozenieNavrh.hrana);
@@ -3654,10 +3655,16 @@ export function HernaPlocha({
       };
     }
     if (reagujem && vylozene !== null) {
+      // Odpoveď na NA EX stojí plný poldeci (v11.16, Michal 2026-11-09) — vypije sa ako pri Vypiť.
       return {
         stred: pecatTahu({
-          text: "potvrdiť",
+          text: (
+            <>
+              potvrdiť <CenaPoldeci n={KONSTANTY.CENA_ODPOVEDE_POLDECI} />
+            </>
+          ),
           skratka: "k",
+          tip: "Odpoveď stojí plný poldeci: vypiješ ho — pečeň +1 a ráta sa ako nerest. Karta ide lícom dole, limit nemíňa.",
           akcia: () => posli({ type: "place", uid: vylozene.karta.uid, target: vylozene.ciel }),
           zrus: { akcia: () => setNavrh(null), popis: "Vrátiť kartu do ruky" },
         }),
@@ -4355,7 +4362,7 @@ export function HernaPlocha({
             </span>
           );
         if (reagujem) {
-          // Odpoveď na súperovo NA EX (v9.2, Michal 2026-10-30): jedna karta lícom dole, zadarmo,
+          // Odpoveď na súperovo NA EX (v9.2, Michal 2026-10-30): jedna karta lícom dole za plný poldeci (v11.16),
           // mimo limitu — najprv útočník, potom obranca na druhý kraj; otočia sa naraz.
           const poMneSuper = (pitkaSt?.frontaReakcii ?? []).includes(super_);
           const krajSupera = pitkaSt?.krajOdpovede ?? null;
@@ -4370,7 +4377,7 @@ export function HernaPlocha({
                   <>
                     NA EX sú odkryté — {menoHraca(super_)} {tvar(rodHracaP(super_), "dal", "dala", "dáva")} NA EX
                     {superoveNaex.length > 0 ? ` na ${superoveNaex.join(" a ")}` : ""}. Môžeš vyložiť <strong>jednu kartu lícom dole</strong> z ruky
-                    (zadarmo, limit nemíňa), napr. aby si jeho neaktívne akcie spároval a NA EX ich zrušil.{" "}
+                    (za plný <IkonaPoldeci /> poldeci, ktorý vypiješ — pečeň +1; limit nemíňa), napr. aby si jeho neaktívne akcie spároval a NA EX ich zrušil.{" "}
                     {poMneSuper ? (
                       <strong>Odpovedáš prvý — {menoHraca(super_)} tvoju kartu neuvidí a smie odpovedať len na druhý kraj línie.</strong>
                     ) : krajSupera !== null ? (

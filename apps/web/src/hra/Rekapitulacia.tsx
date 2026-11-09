@@ -1223,7 +1223,9 @@ export function RekapitulaciaPitkyVrstva({ r, ja, mena, nadpis, menoKarty, pikto
   };
   const pecen = (s: Strana, kto: PlayerId): ReactNode => {
     const p = r.pecen;
-    const zPitia = p.zPitia[kto] + p.zNaex[kto];
+    // Odpovede na NA EX (v11.16) sa pijú ako Vypiť — patria k vypitému.
+    const zOdpovede = p.zOdpovede?.[kto] ?? 0;
+    const zPitia = p.zPitia[kto] + p.zNaex[kto] + zOdpovede;
     const bunky = [...Array<string>(zPitia).fill("z-pitia"), ...Array<string>(p.poskodenie[kto]).fill(""), ...Array<string>(p.poldeci[kto]).fill("z-poldeci")];
     const n = pecenPitky(r, kto);
     const cir = p.cirhozy[kto];
@@ -1234,7 +1236,7 @@ export function RekapitulaciaPitkyVrstva({ r, ja, mena, nadpis, menoKarty, pikto
       r.akcie === undefined ? null : (
         <>
           {zPitia > 0 && (
-            <span className="rk-ik-ucet" title={`vypité do dna ${p.zPitia[kto]} · NA EX ${p.zNaex[kto]}`}>
+            <span className="rk-ik-ucet" title={`vypité do dna ${p.zPitia[kto]} · NA EX ${p.zNaex[kto]}${zOdpovede > 0 ? ` · odpoveď ${zOdpovede}` : ""}`}>
               {Array.from({ length: zPitia }, (_, i) => (
                 <span key={i} className="rk-bk z-pitia" />
               ))}
@@ -1247,7 +1249,7 @@ export function RekapitulaciaPitkyVrstva({ r, ja, mena, nadpis, menoKarty, pikto
       <Cip trieda={cir > 0 ? "zisk" : "nic"} title={cir > 0 ? `${cir} Cirhóza do odhadzovacieho balíčka` : `${n} z ${p.prah[kto]} — prepadne`}>
         +{cir} <KartaKliatby ikona={ikona("PoškodeniePečene")} />
       </Cip>,
-      `vypité do dna ${p.zPitia[kto]} · NA EX ${p.zNaex[kto]} · ${nazov("PoškodeniePečene")} ${p.poskodenie[kto]} · ${nazov("Poldeci")} ${p.poldeci[kto]}`,
+      `vypité do dna ${p.zPitia[kto]} · NA EX ${p.zNaex[kto]}${zOdpovede > 0 ? ` · odpoveď ${zOdpovede}` : ""} · ${nazov("PoškodeniePečene")} ${p.poskodenie[kto]} · ${nazov("Poldeci")} ${p.poldeci[kto]}`,
     );
   };
   const cigarety = (s: Strana, kto: PlayerId): ReactNode => {
