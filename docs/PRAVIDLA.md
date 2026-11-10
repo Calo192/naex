@@ -13,7 +13,7 @@ stránka Pravidlá — `VERZIA_PRAVIDIEL_PRESNA`).
 
 - **Hodnota stupňa 1 / 2 / 3** (§10, krok 4b; Michal: „Zmeniť na 1 / 2 / 3“): stupne strachu aj rečí majú hodnotu **žltá 1, oranžová 2, červená 3** (`KONSTANTY.HODNOTA_STUPNA`), plný teplomer **6** (strach 1 / 3 / 6). Predtým žltá 1, oranžová 2, červená 2 (plný 5). Súper má červený strach, ty reči na červenej a oranžovej: on 1, ty 5. Ceny stupňov (1 / 2 / 3, o 1 viac za obsadený) sa nemenia, krádež pri zajatí tiež nie (ráta cenu).
 - **Premeny sa reťazia** (§6, §12; Michal: „Reťazia sa“): premena Školiteľa a podloženého Nástroja na tej istej karte platia obe — **najprv Školiteľ, potom Nástroj** na jeho výstupe. Sypač {Rana}→{Pecka} a pod kartou Valaška {Pecka}→{Petelica}: z Rany je Petelica. Nástroj s opačnou premenou ({Pecka}→{Rana}) Ranu vráti. Nástroj, ktorého X Školiteľ už zmenil, ho nenájde (Sypač {Rana}→{Pecka} a Valaška dole {Rana}→{Petelica}: Pecka). Predtým platila len jedna premena a Nástroj mal prednosť. Dvaja Školitelia ani dva Nástroje pod Zámočníkom sa nereťazia.
-- **Potvrdené výklady** (Michal 2026-11-10: „Potvrdzujem všetko“): NA EX × Odpor a Posilnenie v miernejšej podobe P2, Kapybara, Telefón, Krokodíl a hrany Náradia (v11.17), výklady lokalít v11.13 (Kultúrny dom, Benzínka, Obecný úrad, Sklad), Predsedova vila pri rečiach (v11.12) a Preškolenie (§6). Pravidlá sa obsahom nemenia; výklad ku Kapybare z v11.12 zanikol s jej Nástupom vo v11.17.
+- **Potvrdené výklady** (Michal 2026-11-10: „Potvrdzujem všetko“): NA EX × Odpor a Posilnenie v miernejšej podobe P2, Kapybara, Telefón, Krokodíl a hrany Náradia (v11.17), výklady lokalít v11.13 (Kultúrny dom, Benzínka, Obecný úrad, Sklad), Predsedova vila pri rečiach (v11.12) a Preškolenie (§6). Pravidlá sa obsahom nemenia; výklad ku Kapybare z v11.12 zanikol s jej Nástupom vo v11.17. Michal 2026-11-10 („Potvrdiť aj tieto.“) potvrdil aj zvyšné výklady: balíček, ktorý pri stavbe ponuky nestačí (§5), viac NA EX naraz (§7), výpalné (§10), Nezničiteľný a výklady Developera k zajatiu a presvedčeniu (§10), skrytá Záverečná ako cieľ NA EX pri Kostole (§15) a výklady v11.5 (§16).
 - **Pojem šenok sa volá Ponuka** (Michal 2026-11-10: „Šenok nahradiť za ponuku.“): ponuka kariet, z ktorej sa kupuje (§5), má meno Ponuka — z ponuky, do ponuky, v ponuke; fáza na stole je **Ponuka** (predtým „Draft — šenok“), „Voľba cieľa“ je na stole **O čo sa bijeme** a „Zhromaždenie“ **Zhromaždenie — kladenie kariet**. Len premenovanie, pravidlá sa nemenia; identifikátory v kóde (`senok`) ostávajú.
 
 **Zmeny v11.19 oproti v11.18** (Michal 2026-11-09, Zrejúca, z vlastnej partie; staré znenie v `docs/pravidla-historia.md`, sekcia v11.19):
@@ -473,7 +473,7 @@ Rozhodnuté; značka `VERZIA_PRAVIDIEL` ostáva „v8“):
   starého ponuky idú naspodok svojho balíčka.
 - **Doplnenie ponuky** (§5): na 8 v rovnakom pomere — najprv z Náradia, kým v ponuke nie sú
   aspoň 2 Nástroje, zvyšok z Občanov.
-- **Výklad Leadera (2026-10-30, Michal neurčil):** keď jeden balíček nestačí, chýbajúce
+- **Výklad Leadera (2026-10-30, Michal potvrdil 2026-11-10):** keď jeden balíček nestačí, chýbajúce
   karty dá druhý; keď sa minú oba, stavba sa zmenšuje ako doteraz, bez trestu.
 
 Špecifikácia pravidiel kartovej hry NA EX! (Michal Calík) pre implementáciu
@@ -678,7 +678,7 @@ vyberú obaja, karty do ponuky sa odhalia. Balíčky si hráči nepodávajú. Po
 8 kariet, polovicu od každého.
 
 
-**Keď balíček nestačí** (výklad Leadera 2026-10-30, Michal to neurčil): chýbajúce
+**Keď balíček nestačí** (výklad Leadera 2026-10-30, Michal potvrdil 2026-11-10): chýbajúce
 karty sa vezmú z druhého balíčka (obranca berie prvý). Keď nestačia ani oba
 spolu, každý dostane najviac polovicu toho, čo v nich ostalo, zaokrúhlené nadol
 na párne číslo — stavba sa zmenšuje až na nulu a hra beží ďalej bez trestu.
@@ -1102,7 +1102,7 @@ z nej nevidí nič a odhad bitky ju nezarátava (ako Záverečnú, §13). Keď N
 (aj pri zrážke), odpovedajú obaja. Odpoveď limit vykladania nemíňa; kto nemá kartu,
 ktorú smie vyložiť, **alebo nemá plný poldeci**, neodpovedá.
 
-**Výklad (Developer 2026-10-30, na potvrdenie Michalom):** viac súperových NA EX v Pitke
+**Výklad (Developer 2026-10-30, Michal potvrdil 2026-11-10):** viac súperových NA EX v Pitke
 (Vínna pivnica) = viac **kôl odpovedí** — v každom kole najviac jedna odpoveď každého
 v poradí útočník, obranca na druhý kraj; kolo sa otočí, potom ďalšie (za kartou lícom dole
 sa priložiť nedá). Kto odpoveď vynechá, v tejto Pitke už neodpovedá. Bzdocha skrytú
@@ -1542,7 +1542,7 @@ Michal 2026-11-06: **hneď po vyhodnotení bitky** ti súper dá **1 cigaretu** 
 staršieho, pri ktorom máš **červený strach**. Väzeň sa ráta ako červená držiteľa, reči nie. Platí sa po každej bitke
 okrem finále, aj keď si ju prehral a aj pri sekere, a počíta sa so strachom po Nakladačke tejto bitky. Súper dá, koľko
 má; čo nemá, nedlhuje. Platia obaja naraz zo stavu po cigarete porazenému a Fajčiarovi, takže prijaté výpalné sa v tom
-istom kroku neodovzdá ďalej (výklad, Michal to neurčil). Obmedzenie výpalné neuberá a nie je to nerest.
+istom kroku neodovzdá ďalej (výklad, Michal potvrdil 2026-11-10). Obmedzenie výpalné neuberá a nie je to nerest.
 
 ### Bodovanie po bitke (krok 4b)
 
@@ -1669,14 +1669,14 @@ LEN ak má súper vyššiu hodnotu strachu ako ja. … markery strachu ostanú n
 - **Zajatie presvedčeného:** zajať ho smú **obaja**, každý za podmienok zajatia. Jeho karta zmizne odkiaľkoľvek
   (ruka, doberací či odhadzovací balíček; z línie sa po bitke nevráti) a ide do pivnice zajímajúceho;
   presvedčenie zanikne.
-- **Nezničiteľný** (výklad Leadera, na potvrdenie Michalom): efekt, ktorý by kartu presvedčeného spálil (Vízia,
+- **Nezničiteľný** (výklad Leadera, Michal potvrdil 2026-11-10): efekt, ktorý by kartu presvedčeného spálil (Vízia,
   Krištáľová guľa, Spálenie Krokodíla; Dievčina ani Poľovník ju podľa tagov nezasiahnu), ju pošle do odhadzovacieho
   balíčka majiteľa; efekty, ktoré menia majiteľa karty — Hrobár, Veštica,
   Snúbenica zo starých sád —, ju preskočia.
 - **Skryté informácie:** kto koho presvedčil, je verejné (značka pri staršom). Kde karta práve je (ruka,
   doberací balíček), je skryté ako pri každej karte; odhadzovací balíček je verejný ako vždy.
 
-**Výklady Developera (2026-10-30, 2026-11-02 a 2026-11-03, zadanie ich neurčilo — na potvrdenie Michalom):**
+**Výklady Developera (2026-10-30, 2026-11-02 a 2026-11-03, zadanie ich neurčilo — Michal potvrdil 2026-11-10):**
 
 - Priazeň **Robota** sú akcie Robota, takže na ne platí aj Fúrik (o 1 Dlh viac za kus).
 - **Zajatie a presvedčenie v jednom rozdelení:** najprv sa vyhodnotia zdvihy, potom akcie. Starší, ktorého
@@ -2118,8 +2118,8 @@ nikto ju neovláda.
   v tej chvíli cieľ nemá.
 - **Skrytá Záverečná** je posledná karta na svojom konci línie, kým sa neotočí (za ňu sa nedá priložiť, §13). Súper na
   ňu NA EX smie a prejde vždy; majiteľ na ňu nesmie, takže na tom konci cieľ nemá. **Karta pred ňou cieľom
-  nie je pre nikoho.** Po otočení je to bežná posledná karta. Výklad Developera 2026-11-06, na potvrdenie
-  Michalom.
+  nie je pre nikoho.** Po otočení je to bežná posledná karta. Výklad Developera 2026-11-06, Michal potvrdil
+  2026-11-10.
 - **Zrážka:** obaja môžu vybrať ten istý koniec — je z neho Výtržník ako vždy. Súperovo skryté NA EX koniec
   neobsadí. Kto hrá po súperovi s **Bzdochou** a vidí jeho NA EX, má na výber ten istý aj druhý koniec.
 - **NA EX dané legálne ostáva:** odpoveď na NA EX alebo iná karta, ktorá potom koniec línie zmení, NA EX nezruší —
@@ -2180,7 +2180,7 @@ Spoločníkovi a Nepriateľovi.
 
 **Úplatok** (v7) zanikol vo v10.3 (Michal 2026-11-02) — mal ho len Kulturista, ten je teraz Sypač.
 
-**Výklad na potvrdenie (v11.5, identita kariet):** kde znenie nových efektov nechalo otázku, platí
+**Výklad (v11.5, identita kariet; Michal potvrdil 2026-11-10):** kde znenie nových efektov nechalo otázku, platí
 najjednoduchší výklad — každá karta (aj každé Noviny v Dedičstve) platí zvlášť; „tvoji“ = karty natočené
 k tebe; „okolie“ = susedia v línii (§16 vyššie); posilnené = ×2. Noviny hneď po rozhodnutí hádky,
 Kôň v kroku Exekútora. Michal ich potvrdí.
