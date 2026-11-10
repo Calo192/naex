@@ -3,7 +3,7 @@
 import { VolbaZrejucej } from "../VolbaZrejucej.tsx";
 import { useCallback, useEffect, useRef, useState } from "react";
 import type { DlzkaHry, NaladaMomentu } from "@naex/core";
-import { ALL_DLZKY, DLZKY_HRY, NAZOV_DLZKY, PREDVOLENA_DLZKA, opponentOf } from "@naex/core";
+import { ALL_DLZKY, DLZKY_HRY, PREDVOLENA_DLZKA, opponentOf } from "@naex/core";
 import { api, mediaUrl } from "../lib/api.ts";
 import { vzhladKarty } from "./HernaKarta.tsx";
 import { useSada } from "../lib/sada.tsx";
@@ -21,7 +21,8 @@ import { NapovedaMelichara } from "./Napovedy.tsx";
 import { Soundboard } from "./Soundboard.tsx";
 import { useHra } from "./useHra.ts";
 import { OznamZiskov } from "../achievementy/VPartii.tsx";
-import { tvar } from "../lib/jazyk.ts";
+import { t, tr } from "../i18n/jazyk.tsx";
+import { TitulokMelichara } from "./TitulokMelichara.tsx";
 import { bezPrvejCasti, rozpracovana, ukazStarsichVoVyucbe, useVyucbaUctu, VyucbaStol, type VyucbaUctu } from "./Vyucba.tsx";
 import { PonukaVyucby, VyucbaVLobby } from "./VstupyVyucby.tsx";
 import { smieTelefon, useNepodporovaneZariadenie, useStolNaSirku, type DovodNepodporovania } from "./zariadenie.ts";
@@ -43,7 +44,7 @@ interface OtvorenaHra {
 }
 
 /** „3 lokality“, „5 lokalít“ — Tretia liga má od 2026-10-24 len 3. */
-const lokalit = (n: number): string => `${n} ${tvar(n, "lokalita", "lokality", "lokalít")}`;
+const lokalit = (n: number): string => t("lobby.lokalit", { n });
 
 /** Zámok zamknutej ligy (Michal 2026-10-28). */
 function IkonaZamku() {
@@ -55,9 +56,12 @@ function IkonaZamku() {
   );
 }
 
+/** Názov ligy v jazyku hráča (NAZOV_DLZKY jadra ostáva pre hlášky motora). */
+export const nazovLigy = (d: DlzkaHry): string => t(`liga.${d}`);
+
 /** Popis ligy: „Druhá liga · 5 lokalít“. */
 export function popisDlzky(d: DlzkaHry): string {
-  return `${NAZOV_DLZKY[d]} · ${lokalit(DLZKY_HRY[d])}`;
+  return t("lobby.popisLigy", { liga: nazovLigy(d), lokality: lokalit(DLZKY_HRY[d]) });
 }
 
 function Lobby({
@@ -137,19 +141,19 @@ function Lobby({
 
   return (
     <>
-      <HlavaStranky nadpis="Hrať" uvod="Založ hru a pošli kamarátovi kód, alebo sa pridaj k niekomu, kto čaká na súpera." />
+      <HlavaStranky nadpis={t("lobby.nadpis")} uvod={t("lobby.uvod")} />
       <VolbaZrejucej tvar="panel" />
       {uzavierka !== null && <Hlaska druh="info">{uzavierka}</Hlaska>}
       {chyba !== null && chyba !== uzavierka && <Hlaska>{chyba}</Hlaska>}
       {vyucba !== null && vyucba.dostupna && !zavrete && !vyucbaNaPocitaci && <VyucbaVLobby vyucba={vyucba} zacni={zacniVyucbu} />}
       {vyucba !== null && vyucba.dostupna && vyucbaNaPocitaci && (
-        <Hlaska druh="info">Výučbu Prvá hra si zahraj na počítači — na telefóne zatiaľ nie je odladená.</Hlaska>
+        <Hlaska druh="info">{t("lobby.vyucbaNaPocitaci")}</Hlaska>
       )}
       <div className="lobby">
         <section className="panel">
-          <h2>Nová hra</h2>
-          <p className="tlmene">Súkromná hra je len pre toho, komu pošleš kód. Verejná sa ukáže v zozname vpravo.</p>
-          <div className="dlzka-hry" role="radiogroup" aria-label="Liga">
+          <h2>{t("lobby.novaHra")}</h2>
+          <p className="tlmene">{t("lobby.novaHraPopis")}</p>
+          <div className="dlzka-hry" role="radiogroup" aria-label={t("lobby.liga")}>
             {ALL_DLZKY.map((d) => {
               const ide = dostupne.includes(d);
               const zamok = popisZamku(ligy, d);
@@ -165,11 +169,11 @@ function Lobby({
                     ligaOdHraca.current = true;
                     setDlzka(d);
                   }}
-                  title={zamok ?? (ide ? undefined : `Sada zatiaľ nemá ${lokalit(DLZKY_HRY[d])} — pribudnú v tvorbe kariet.`)}
+                  title={zamok ?? (ide ? undefined : t("lobby.ligaBezLokalit", { lokality: lokalit(DLZKY_HRY[d]) }))}
                 >
                   <strong>
                     {zamok !== null && <IkonaZamku />}
-                    {NAZOV_DLZKY[d]}
+                    {nazovLigy(d)}
                   </strong>
                   <span>{lokalit(DLZKY_HRY[d])}</span>
                   {zamok !== null && <span className="liga-podmienka">{zamok}</span>}
@@ -186,20 +190,18 @@ function Lobby({
                   disabled={zavrete || zamokZvolenej !== null}
                   title={preco ?? zamokZvolenej ?? undefined}
                 >
-                  Súkromná hra s kódom
+                  {t("lobby.sukromna")}
                 </button>
               )}
               <button onClick={() => zaloz(true, dlzka)} disabled={zavrete || zamokZvolenej !== null} title={preco ?? zamokZvolenej ?? undefined}>
-                Verejná hra
+                {t("lobby.verejna")}
               </button>
             </div>
           ) : (
-            <p className="tlmene">Hrať proti ľuďom tvoj rank zatiaľ nesmie.</p>
+            <p className="tlmene">{t("lobby.bezLudi")}</p>
           )}
-          <h2 style={{ marginTop: 28 }}>Proti počítaču</h2>
-          <p className="tlmene">
-            Počítačoví súperi hrajú podľa pravidiel, vidia len to, čo by videl hráč pri stole, a nevzdávajú sa. Partia sa do Frajeriny neráta.
-          </p>
+          <h2 style={{ marginTop: 28 }}>{t("lobby.protiPocitacu")}</h2>
+          <p className="tlmene">{t("lobby.protiPocitacuPopis")}</p>
           <div className="riadok-tlacidiel">
             {/* Bez zoznamu (starší server) sa niet na čo pýtať: rovno náhodný súper. */}
             <button
@@ -208,7 +210,7 @@ function Lobby({
               title={preco}
               data-hrat-bot=""
             >
-              Hrať proti počítaču
+              {t("lobby.hratProtiPocitacu")}
             </button>
           </div>
           {vyberBotaOtvoreny && (
@@ -222,7 +224,7 @@ function Lobby({
               zavri={() => setVyberBotaOtvoreny(false)}
             />
           )}
-          <h2 style={{ marginTop: 28 }}>Mám kód</h2>
+          <h2 style={{ marginTop: 28 }}>{t("lobby.mamKod")}</h2>
           <form
             className="lobby-kod"
             onSubmit={(e) => {
@@ -230,18 +232,18 @@ function Lobby({
               if (kod.length === 4) pripoj(kod);
             }}
           >
-            <input value={kod} onChange={(e) => setKod(e.target.value.toUpperCase().slice(0, 4))} placeholder="KÓD" aria-label="Kód miestnosti" />
+            <input value={kod} onChange={(e) => setKod(e.target.value.toUpperCase().slice(0, 4))} placeholder={t("lobby.kodPlaceholder")} aria-label={t("lobby.kodMiestnosti")} />
             <button type="submit" disabled={kod.length !== 4}>
-              Pripojiť sa
+              {t("lobby.pripojitSa")}
             </button>
           </form>
         </section>
         <section className="panel">
-          <h2>Čakajú na súpera</h2>
+          <h2>{t("lobby.cakaju")}</h2>
           {hry === null ? (
             <Nacitavanie />
           ) : hry.length === 0 ? (
-            <p className="tlmene">{zavrete ? "Práve nikto nečaká." : "Práve nikto nečaká. Založ verejnú hru — zobrazí sa tu ostatným."}</p>
+            <p className="tlmene">{zavrete ? t("lobby.nikto") : t("lobby.niktoZaloz")}</p>
           ) : (
             <ul className="otvorene-hry">
               {hry.map((h) => {
@@ -252,9 +254,9 @@ function Lobby({
                     <Avatar meno={h.hostitel.meno} avatar={h.hostitel.avatar} velkost={36} />
                     <div>
                       <strong>{h.hostitel.meno}</strong>
-                      {h.hostitel.frajerina !== null && <span className="frajerina-cislo" title="Frajerina"> {h.hostitel.frajerina}</span>}
+                      {h.hostitel.frajerina !== null && <span className="frajerina-cislo" title={t("lobby.frajerina")}> {h.hostitel.frajerina}</span>}
                       <div className="tlmene">
-                        {popisDlzky(h.dlzka)} · čaká {Math.max(1, Math.round((Date.now() - h.vytvorena) / 60000))} min
+                        {t("lobby.caka", { liga: popisDlzky(h.dlzka), n: Math.max(1, Math.round((Date.now() - h.vytvorena) / 60000)) })}
                       </div>
                       {zamok !== null && (
                         <div className="liga-podmienka">
@@ -268,7 +270,7 @@ function Lobby({
                       disabled={zavrete || !smieLigu(ligy, h.dlzka)}
                       title={preco ?? zamok ?? undefined}
                     >
-                      Hrať
+                      {t("lobby.hrat")}
                     </button>
                   </li>
                 );
@@ -282,11 +284,11 @@ function Lobby({
 }
 
 const NADPIS_NEPODPOROVANEHO: Readonly<Record<DovodNepodporovania, string>> = {
-  otoc: "Otoč telefón na šírku",
-  iphone: "Na iPhone sa hra zatiaľ nedá hrať",
-  rank: "Na telefóne hrajú hráči od ranku Poldeci",
-  dotyk: "Tu sa NA EX! zatiaľ hrať nedá",
-  uzke: "Tu sa NA EX! zatiaľ hrať nedá",
+  otoc: "zariadenie.otoc",
+  iphone: "zariadenie.iphone",
+  rank: "zariadenie.rank",
+  dotyk: "zariadenie.nedaSa",
+  uzke: "zariadenie.nedaSa",
 };
 
 /** Späť, odkiaľ hráč prišiel; keď prišiel rovno na /hra (odkaz, záložka), na úvod. */
@@ -299,50 +301,47 @@ function spat(): void {
 function NepodporovaneZariadenie({ dovod }: { readonly dovod: DovodNepodporovania }) {
   return (
     <>
-    <HlavaStranky nadpis={NADPIS_NEPODPOROVANEHO[dovod]} />
+    <HlavaStranky nadpis={t(NADPIS_NEPODPOROVANEHO[dovod])} />
     <div className="formular-stred panel">
       {dovod === "iphone" ? (
         // Michal 2026-10-31: na mobile zatiaľ len Android — na iPhone ani správca, partia sa ani nezaloží.
-        <p>Zahraj si na počítači, tablete alebo telefóne s Androidom — rozohraná partia ťa tam počká.</p>
+        <p>{t("zariadenie.iphoneText")}</p>
       ) : dovod === "rank" ? (
         // Michal 2026-11-01: na Androide od ranku Poldeci; výučba je na telefóne neodladená, preto na počítači.
         <>
-          <p>Na telefóne môžu hrať hráči od ranku Poldeci. Najprv prejdi výučbu Prvá hra na počítači.</p>
-          <p className="tlmene">Poldeci budeš po výučbe alebo po prvej dohratej partii. Potom si zahráš aj na telefóne s Androidom.</p>
+          <p>{t("zariadenie.rankText")}</p>
+          <p className="tlmene">{t("zariadenie.rankText2")}</p>
         </>
       ) : dovod === "otoc" ? (
-        <p>Stôl pre telefón sa hrá len na šírku. Otoč telefón — rozohraná partia ťa počká.</p>
+        <p>{t("zariadenie.otocText")}</p>
       ) : dovod === "dotyk" ? (
-        <p>
-          Herný stôl potrebuje širokú obrazovku a myš. Otvor NA EX! na počítači alebo na tablete na šírku — rozohraná partia ťa tam
-          počká.
-        </p>
+        <p>{t("zariadenie.dotykText")}</p>
       ) : (
-        <p>Okno je na herný stôl príliš úzke. Roztiahni ho aspoň na 900 px a hra sa ukáže — rozohraná partia ťa počká.</p>
+        <p>{t("zariadenie.uzkeText")}</p>
       )}
-      <p className="tlmene">{dovod === "rank" ? "Dovtedy si tu môžeš čítať:" : "Kým sa hra dostane aj na mobil, môžeš si tu čítať:"}</p>
+      <p className="tlmene">{dovod === "rank" ? t("zariadenie.dovtedy") : t("zariadenie.kymMobil")}</p>
       <div className="riadok-tlacidiel">
         {dovod === "iphone" && (
           <Odkaz href="/" className="tlacidlo tlacidlo-hlavne">
-            Späť na úvod
+            {t("zariadenie.spatNaUvod")}
           </Odkaz>
         )}
         {dovod === "rank" && (
           <button type="button" className="tlacidlo tlacidlo-hlavne" onClick={spat}>
-            Späť
+            {t("zariadenie.spat")}
           </button>
         )}
         <Odkaz href="/pravidla" className={dovod === "iphone" || dovod === "rank" ? "tlacidlo" : "tlacidlo tlacidlo-hlavne"}>
-          Pravidlá
+          {t("nav.pravidla")}
         </Odkaz>
         <Odkaz href="/karty" className="tlacidlo">
-          Karty
+          {t("nav.karty")}
         </Odkaz>
         <Odkaz href="/novinky" className="tlacidlo">
-          Novinky
+          {t("nav.novinky")}
         </Odkaz>
         <Odkaz href="/profil" className="tlacidlo">
-          Profil
+          {t("zariadenie.profil")}
         </Odkaz>
       </div>
     </div>
@@ -354,15 +353,15 @@ function NepodporovaneZariadenie({ dovod }: { readonly dovod: DovodNepodporovani
 function VyucbaNaTelefone({ prerus }: { readonly prerus: () => void }) {
   return (
     <>
-      <HlavaStranky nadpis="Výučbu dohraj na počítači" />
+      <HlavaStranky nadpis={t("zariadenie.vyucbaNadpis")} />
       <div className="formular-stred panel">
-        <p>Výučba Prvá hra zatiaľ nie je odladená pre telefón. Majster Melichar ťa počká na počítači — rozohraná časť ostane, kde si skončil.</p>
+        <p>{t("zariadenie.vyucbaText")}</p>
         <div className="riadok-tlacidiel">
           <button type="button" className="tlacidlo tlacidlo-hlavne" onClick={prerus}>
-            Prerušiť výučbu
+            {t("zariadenie.prerusitVyucbu")}
           </button>
           <Odkaz href="/pravidla" className="tlacidlo">
-            Pravidlá
+            {t("nav.pravidla")}
           </Odkaz>
         </div>
       </div>
@@ -380,7 +379,7 @@ function useTriedaRezimu(trieda: string | null): void {
 }
 
 export function Hra() {
-  useTitulok("Hrať");
+  useTitulok(t("nav.hrat"));
   const { ja, nacitane, nastav: nastavUcet, instancia } = useUcet();
   // Telefón na šírku smie hráč od ranku Poldeci (Michal 2026-11-01; predtým len správca) — ostatným oznam.
   const spravca = ja !== null && jeSpravca(ja.rola);
@@ -502,22 +501,22 @@ export function Hra() {
     const pozvanka = new URLSearchParams(location.search).get("kod") !== null;
     return (
       <HlavaStranky
-        nadpis="Hrať môžu prihlásení"
-        uvod="Súper ťa uvidí pod tvojím herným menom a s fotkou z profilu."
+        nadpis={t("lobby.prihlaseni")}
+        uvod={t("lobby.prihlaseniUvod")}
         akcia={
           <>
             <Odkaz href={pozvanka ? sNavratom("/registracia", cesta) : "/registracia"} className="tlacidlo">
-              Vytvoriť účet
+              {t("lobby.vytvoritUcet")}
             </Odkaz>
             <Odkaz href={sNavratom("/prihlasenie", cesta)} className="tlacidlo tlacidlo-hlavne">
-              Prihlásiť sa
+              {t("lobby.prihlasitSa")}
             </Odkaz>
           </>
         }
       />
     );
   }
-  if (!hra.pripojene && hra.miestnost === null) return <Nacitavanie text="Pripájam sa na server…" />;
+  if (!hra.pripojene && hra.miestnost === null) return <Nacitavanie text={t("lobby.pripajam")} />;
 
   const m = hra.miestnost;
   if (m === null) {
@@ -528,14 +527,14 @@ export function Hra() {
           <>
             <Lobby2na2 zaloz={hra.zalozStol2na2} nahodne={hra.nahodne2na2} pripoj={hra.pripojStol2na2} />
             <section className="panel">
-              <h2>Päta, Lakeť, Otočka</h2>
-              <p className="tlmene">Draft štyroch starších s pečeňou. Vyhrá, kto podrazí všetkých súperových. Zatiaľ sa nepočíta do Frajeriny.</p>
+              <h2>{t("lobby.pata")}</h2>
+              <p className="tlmene">{t("lobby.pataPopis")}</p>
               <div className="riadok-tlacidiel">
                 <button type="button" className="tlacidlo tlacidlo-hlavne pt-bot" onClick={() => hra.zalozPata(true)}>
-                  Proti počítaču
+                  {t("lobby.pataBot")}
                 </button>
                 <button type="button" className="tlacidlo" onClick={() => hra.zalozPata(false)}>
-                  Založiť stôl s kódom
+                  {t("lobby.pataKod")}
                 </button>
               </div>
             </section>
@@ -556,8 +555,8 @@ export function Hra() {
     return (
       <>
       <HlavaStranky
-        nadpis="Čaká sa na súpera"
-        uvod={m.verejna ? "Hra je verejná — ktokoľvek sa môže pridať zo zoznamu. Alebo pošli kód." : "Pošli súperovi tento kód. Hra začne, keď sa pripojí."}
+        nadpis={t("cakaren.nadpis")}
+        uvod={m.verejna ? t("cakaren.verejna") : t("cakaren.sukromna")}
       />
       <div className="cakaren panel">
         <div className="cakaren-kod">{m.code}</div>
@@ -566,23 +565,21 @@ export function Hra() {
           className="tlacidlo-male"
           onClick={() => void navigator.clipboard?.writeText(`${location.origin}/hra?kod=${m.code}`)}
         >
-          Skopírovať odkaz
+          {t("cakaren.kopirovat")}
         </button>
         <div className="cakaren-hraci">
           {[h0, h1].map((h, i) =>
             h === null ? (
               <div key={i} className="cakaren-hrac">
                 <span className="cakaren-prazdny">?</span>
-                <span className="tlmene">čaká sa…</span>
+                <span className="tlmene">{t("cakaren.caka")}</span>
               </div>
             ) : (
               <div key={i} className="cakaren-hrac">
                 <Avatar meno={h.meno} avatar={h.avatar} velkost={72} />
                 <strong>{h.meno}</strong>
                 {h.frajerina !== undefined && (
-                  <span className="tlmene">
-                    Frajerina <span className="frajerina-cislo">{h.frajerina}</span> · {h.titul}
-                  </span>
+                  <span className="tlmene">{tr("cakaren.frajerina", { cislo: <span className="frajerina-cislo">{h.frajerina}</span>, titul: h.titul })}</span>
                 )}
               </div>
             ),
@@ -590,7 +587,7 @@ export function Hra() {
         </div>
         {hra.chyba !== null && <Hlaska>{hra.chyba}</Hlaska>}
         <button className="tlacidlo-jemne" onClick={hra.odid}>
-          Zrušiť
+          {t("cakaren.zrusit")}
         </button>
       </div>
       </>
@@ -629,7 +626,7 @@ export function Hra() {
       <Momenty
         udalosti={hra.udalosti}
         ja={hra.view.ja}
-        mena={hra.hraci.map((h, i) => h?.meno ?? `Hráč ${i + 1}`)}
+        mena={hra.hraci.map((h, i) => h?.meno ?? t("stol.hrac", { n: i + 1 }))}
         hovor={hovorPriMomente}
         pocitadloBezi={pocitadloBezi}
         portret={(elderId) => {
@@ -649,17 +646,18 @@ export function Hra() {
         trieda="mel-hlaska"
         vpravo={
           <button type="button" className="tlacidlo-jemne" onClick={umlcBublinu}>
-            zavrieť
+            {t("melichar.zavriet")}
           </button>
         }
       >
-        <p className="mel-zvuk" aria-label="Majster Melichar hovorí">
+        <p className="mel-zvuk" aria-label={t("melichar.hovori")}>
           <span />
           <span />
           <span />
           <span />
           <span />
         </p>
+        <TitulokMelichara />
       </MelicharVBare>
     )}
     {hra.stol2na2 !== null && (
@@ -731,7 +729,7 @@ export function Hra() {
         hra.stol2na2 === null && hra.view.koniec === null && maPravo(ja, "melichar_soundboard") && (
           <Soundboard
             ja={m.seat}
-            menoSupera={hra.hraci[opponentOf(m.seat)]?.meno ?? "Súper"}
+            menoSupera={hra.hraci[opponentOf(m.seat)]?.meno ?? t("stol.super")}
             udalost={hra.melichar}
             pusti={hra.pustiMelichara}
           />

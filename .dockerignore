@@ -6,4 +6,6 @@ node_modules
 data
 docs
 !docs/playtesty
+!docs/preklady/karty
+!docs/preklady/vzhlad
 .git

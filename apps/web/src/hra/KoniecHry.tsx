@@ -4,7 +4,8 @@
 
 import { useEffect, useRef } from "react";
 import type { ClientState, GameData, Rod, Vykupne } from "@naex/core";
-import { KONSTANTY, VERZIA_PRAVIDIEL, pocet, rozpisSpakov, tvar, opponentOf } from "@naex/core";
+import { KONSTANTY, VERZIA_PRAVIDIEL, rozpisSpakov, opponentOf } from "@naex/core";
+import { t, tr, tRod } from "../i18n/jazyk.tsx";
 import { Odkaz } from "../lib/router.tsx";
 import { UcetSpakov } from "./UcetSpakov.tsx";
 import { RadyNaKonci } from "./Pata.tsx";
@@ -37,8 +38,8 @@ export interface KoniecHryProps {
 
 /** „2 plné poldeci a 7 cigariet = +3“ — čo sa hráčovi na konci vykúpilo. */
 function vykupneText(v: Vykupne | undefined): string {
-  if (v === undefined) return "nič";
-  return `${pocet(v.poldeci, "plný poldeci", "plné poldeci", "plných poldeci")} a ${pocet(v.cigarety, "cigareta", "cigarety", "cigariet")} = +${v.spaky}`;
+  if (v === undefined) return t("koniec.nic");
+  return t("koniec.vykupne", { poldeci: t("koniec.plnychPoldeci", { n: v.poldeci }), cigarety: t("koniec.cigariet", { n: v.cigarety }), n: v.spaky });
 }
 
 export function KoniecHry({ view, mena, menoKarty, frajerina, achievementy = null, onZavri, opustit, rodJa = null, rody = [null, null], avatary = [null, null], starsi }: KoniecHryProps) {
@@ -51,11 +52,7 @@ export function KoniecHry({ view, mena, menoKarty, frajerina, achievementy = nul
   const ja = view.ja;
   const su = opponentOf(ja);
   const nadpis =
-    koniec.vitaz === null
-      ? "Remíza"
-      : koniec.vitaz === ja
-        ? tvar(rodJa, "Vyhral si!", "Vyhrala si!", "Výhra!")
-        : tvar(rodJa, "Prehral si", "Prehrala si", "Prehra");
+    koniec.vitaz === null ? t("koniec.remiza") : koniec.vitaz === ja ? tRod("koniec.vyhra", rodJa) : tRod("koniec.prehra", rodJa);
   const dovod = textHlasky(koniec.dovod, mena, rody);
   // Účet špakov z nástenky a konca hry (v6) — sčíta sa na koniec.body.
   // Pri vzdaní či vydesení sa nebodovalo — rozpis by mýlil.
@@ -71,7 +68,7 @@ export function KoniecHry({ view, mena, menoKarty, frajerina, achievementy = nul
         {view.pata !== undefined && starsi !== undefined && <RadyNaKonci view={view} data={starsi.data} mena={mena} obrazok={starsi.obrazok} />}
         {view.pata === undefined && <p className="koniec-skore koniec-spaky">
           <span className="moje">
-            ty
+            {t("koniec.ty")}
             <PocetSpakov n={koniec.body?.[ja] ?? view.spaky[ja]} kto="moj" velky />
           </span>
           <span className="dvojbodka">:</span>
@@ -98,50 +95,42 @@ export function KoniecHry({ view, mena, menoKarty, frajerina, achievementy = nul
         {view.pata === undefined && starsi !== undefined && <PasStarsich view={view} data={starsi.data} mena={mena} menoKarty={menoKarty} obrazok={starsi.obrazok} />}
         {view.pata === undefined && view.nastenka.length > 0 && rozpis !== null && (
           // Súčet čísel pri lokalitách nie je celkové skóre — playtest 20261031-191322 v tom hľadal chybu.
-          <p className="koniec-cirhozy koniec-pozn-lokalit">
-            Pri lokalite sú špaky jej víťaza za ňu (bitka, Robota, starší, Nakladačka, Exekútor). Spolu nižšie ráta aj porazeného v každej bitke, výkupné a
-            Cirhózu.
-          </p>
+          <p className="koniec-cirhozy koniec-pozn-lokalit">{t("koniec.poznLokalit")}</p>
         )}
         {rozpis !== null && (
           <div className="koniec-rozpis">
             <UcetSpakov rozpis={rozpis} ja={ja} mena={mena} />
             {(koniec.vykupne?.[0]?.spaky ?? 0) + (koniec.vykupne?.[1]?.spaky ?? 0) > 0 && (
               <p className="koniec-cirhozy">
-                Výkupné: plný poldeci {KONSTANTY.SPAKY_ZA_POLDECI} špak, každých {KONSTANTY.CIGARIET_ZA_SPAK} cigariet 1 špak — ty{" "}
-                {vykupneText(koniec.vykupne?.[ja])}, {mena[su]} {vykupneText(koniec.vykupne?.[su])}.
+                {t("koniec.vykupneRiadok", { zaPoldeci: KONSTANTY.SPAKY_ZA_POLDECI, zaCigarety: KONSTANTY.CIGARIET_ZA_SPAK, ja: vykupneText(koniec.vykupne?.[ja]), meno: mena[su], su: vykupneText(koniec.vykupne?.[su]) })}
               </p>
             )}
             {(koniec.vazni?.[0] ?? 0) + (koniec.vazni?.[1] ?? 0) > 0 && (
-              <p className="koniec-cirhozy">
-                Väzni po finále (archívna partia do v10): ty +{koniec.vazni?.[ja] ?? 0}, {mena[su]} +{koniec.vazni?.[su] ?? 0}.
-              </p>
+              <p className="koniec-cirhozy">{t("koniec.vazni", { ja: koniec.vazni?.[ja] ?? 0, meno: mena[su], su: koniec.vazni?.[su] ?? 0 })}</p>
             )}
             {(koniec.cirhozy?.[0] ?? 0) + (koniec.cirhozy?.[1] ?? 0) > 0 && (
               <p className="koniec-cirhozy">
-                Nepriznaná Cirhóza na konci: {pocet(KONSTANTY.SPAKY_ZA_CIRHOZU, "špak", "špaky", "špakov")} za kus (ruka aj oba balíčky) — ty ×{koniec.cirhozy?.[ja] ?? 0},{" "}
-                {mena[su]} ×{koniec.cirhozy?.[su] ?? 0}.
+                {t("koniec.cirhozy", { spaky: t("koniec.spakov", { n: KONSTANTY.SPAKY_ZA_CIRHOZU }), ja: koniec.cirhozy?.[ja] ?? 0, meno: mena[su], su: koniec.cirhozy?.[su] ?? 0 })}
               </p>
             )}
           </div>
         )}
         {zmena !== undefined && (
           <p className="koniec-frajerina">
-            Frajerina {zmena.pred} → <strong>{zmena.po}</strong> ({zmena.po - zmena.pred > 0 ? "+" : zmena.po - zmena.pred < 0 ? "−" : "±"}
-            {Math.abs(zmena.po - zmena.pred)})
+            {tr("koniec.frajerina", { pred: zmena.pred, po: zmena.po, zmena: `${zmena.po - zmena.pred > 0 ? "+" : zmena.po - zmena.pred < 0 ? "−" : "±"}${Math.abs(zmena.po - zmena.pred)}` })}
           </p>
         )}
         {achievementy !== null && <SuhrnPoPartii suhrn={achievementy} />}
         <div className="koniec-tlacidla">
           {/* Na akých pravidlách sa hralo — v riadku tlačidiel, aby okno na notebooku nenarástlo. */}
-          <span className="koniec-verzia">pravidlá {VERZIA_PRAVIDIEL}</span>
-          <button onClick={onZavri}>pozrieť stôl</button>
+          <span className="koniec-verzia">{t("koniec.pravidla", { verzia: VERZIA_PRAVIDIEL })}</span>
+          <button onClick={onZavri}>{t("koniec.pozrietStol")}</button>
           {/* Hodnotenie hry tými istými kritériami ako AI playtesteri (Michal 2026-10-21). */}
           <Odkaz href="/spatna-vazba#hodnotenie" className="tlacidlo">
-            ohodnotiť hru
+            {t("koniec.ohodnotit")}
           </Odkaz>
           <button ref={lobbyRef} className="tlacidlo-hlavne" onClick={opustit}>
-            späť do lobby
+            {t("koniec.spatDoLobby")}
           </button>
         </div>
       </div>

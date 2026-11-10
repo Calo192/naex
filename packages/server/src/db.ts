@@ -443,6 +443,8 @@ function migruj(db: Db): void {
     // Oprávnenie hrať Zrejúcu (Michal 2026-11-02): výnimka, ktorú dá admin konkrétnemu účtu —
     // 1 = udelené, 0 = odobraté, NULL = podľa ranku (matica práv, hrat_zrejucu).
     ["zrejuca", "INTEGER"],
+    // Jazyk rozhrania (lokalizácia, Michal 2026-11-10): sk / en / pl / cs / hu; NULL = podľa prehliadača.
+    ["jazyk", "TEXT"],
   ]);
   // Obnova hesla musí nájsť jediný účet — ten istý e-mail, ani s inými veľkými písmenami, nesmú mať dva účty.
   db.exec("CREATE UNIQUE INDEX IF NOT EXISTS pouzivatelia_email ON pouzivatelia(email COLLATE NOCASE) WHERE email IS NOT NULL");

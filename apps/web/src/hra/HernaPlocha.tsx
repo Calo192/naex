@@ -143,6 +143,7 @@ import "./mobil-sirka.css";
 // Až po hra.css — jednotný bar upravuje aj jej pravidlá (os kola, nástroje, rezerva stola).
 import "./jbar.css";
 import { IkonaSpaku, Nastenka, sMinusom, spakyPredBitkou, textSpakovBitky } from "./Spaky.tsx";
+import { nazovKarty, prekladKariet, t, tr, tRod } from "../i18n/jazyk.tsx";
 
 /** Kľúč v localStorage: rozloženie línie starších (Teplomery alebo Pult). */
 export const ULOZENY_REZIM_LINIE = "naex-linia-starsich";
@@ -358,16 +359,16 @@ function polohaChybyTahania(bod: { readonly x: number; readonly y: number }, w: 
 }
 
 function kariet(n: number): string {
-  return n === 1 ? "1 kartu" : n >= 2 && n <= 4 ? `${n} karty` : `${n} kariet`;
+  return t("stol.kariet", { n });
 }
 
 /** Podmet so slovesom — „zvyšné 4 karty pôjdu“, „zvyšných 5 kariet pôjde“. */
 function zvysnePojdu(n: number): string {
-  return n === 1 ? "zvyšná 1 karta pôjde" : n >= 2 && n <= 4 ? `zvyšné ${n} karty pôjdu` : `zvyšných ${n} kariet pôjde`;
+  return t("stol.zvysnePojdu", { n });
 }
 
 function cigariet(n: number): string {
-  return n === 1 ? "1 cigaretu" : n >= 2 && n <= 4 ? `${n} cigarety` : `${n} cigariet`;
+  return t("stol.cigariet", { n });
 }
 
 type Mode =
@@ -378,11 +379,22 @@ type Mode =
   // Veštica: po jednej karte z oboch doberacích balíčkov.
   | { typ: "vestica"; moja: number | null; jeho: number | null };
 
+/**
+ * Kraje lokality v jazyku hráča: preklad podľa id karty (ľavý, pravý), otočená lokalita ich
+ * vymení ako krajeStran. Bez prekladu ostávajú slovenské z jadra.
+ */
+function prelozKraje(sk: [string | null, string | null], defId: string | null, otocena: boolean): [string | null, string | null] {
+  const p = defId === null || sk[0] === null || sk[1] === null ? undefined : prekladKariet().kraje.get(defId);
+  if (p === undefined) return sk;
+  return otocena ? [p[1], p[0]] : [p[0], p[1]];
+}
+
 // Hra beží na sade svojej miestnosti; pomocné funkcie nižšie ju čítajú odtiaľto.
 let DATA: GameData;
 
+/** Meno karty na zobrazenie — v jazyku hráča, ak ho preklad kariet má. */
 function menoKarty(defId: string): string {
-  return DATA.cards.get(defId)?.name ?? defId;
+  return nazovKarty(DATA.cards.get(defId)?.name ?? defId);
 }
 
 export interface HernaPlochaProps {
@@ -454,14 +466,14 @@ export interface HernaPlochaProps {
   readonly naSirku?: boolean;
 }
 
-/** Názvy fáz pre titulok karty prehliadača. */
+/** Názvy fáz pre titulok karty prehliadača (kľúče slovníka faza.*). */
 const NAZOV_FAZY: Readonly<Record<string, string>> = {
-  volbaCiela: "O čo sa bijeme",
-  natocenieCiela: "Natočenie lokality",
-  draft: "Ponuka",
-  zhromazdenie: "Zhromaždenie",
-  pitka: "Pitka",
-  bitka: "Bitka",
+  volbaCiela: "faza.volbaCiela",
+  natocenieCiela: "faza.natocenieCiela",
+  draft: "faza.draft",
+  zhromazdenie: "faza.zhromazdenie",
+  pitka: "faza.pitka",
+  bitka: "faza.bitka",
 };
 
 /** Účet Pitky — čo vyhodnotenie pripísalo (udalosť pitkaVysledok). */
@@ -2008,10 +2020,10 @@ export function HernaPlocha({
   useEffect(() => {
     document.title =
       view.koniec !== null
-        ? "Koniec partie · NA EX!"
+        ? t("stol.titulKoniec")
         : somNaTahu
-          ? `● Tvoj ťah — ${NAZOV_FAZY[view.faza] ?? ""} · NA EX!`
-          : `Na ťahu je ${menoSupera} · NA EX!`;
+          ? t("stol.titulMojTah", { faza: t(NAZOV_FAZY[view.faza] ?? "") })
+          : t("stol.titulTahSupera", { meno: menoSupera });
   }, [somNaTahu, view.faza, view.koniec, menoSupera]);
 
   // Posun k miestu ťahu pri zmene fázy alebo kroku (UX N1, U3): aktívna plocha
@@ -3294,13 +3306,12 @@ export function HernaPlocha({
   // (Krčma: pri výčape / pri dverách) — „tvoja/súperova strana“ mätie, lebo
   // obaja vykladajú na obe. Vytlačená ľavá hrana leží pri strane hráča 0,
   // kým lokalita nie je otočená.
-  const kraje = krajeStran(data, stredKarta, lokalitaNavrh?.otocena ?? view.lokalitaOtocena);
+  const kraje = prelozKraje(krajeStran(data, stredKarta, lokalitaNavrh?.otocena ?? view.lokalitaOtocena), stredKarta?.defId ?? null, lokalitaNavrh?.otocena ?? view.lokalitaOtocena);
   const krajStrany = (p: PlayerId): string | null => kraje[p];
   // Prevaha: akcie hrany dostane, kto má v kraji viac svojich Občanov, Zvierat a Starešinov.
   const prevaha = prevahaStran(data, stol.strany);
-  const kto = (p: PlayerId | null): string => (p === null ? "nikto" : p === ja ? "ty" : menoHraca(p));
-  const tipKraja = (p: PlayerId): string =>
-    `Prevaha: akcie tejto hrany dostane, kto má v tomto kraji viac svojich Občanov, Zvierat a Starešinov (Nástroje a Cirhóza sa nerátajú); pri rovnosti majiteľ karty pri lokalite. Teraz: ${kto(prevaha[p])}.`;
+  const kto = (p: PlayerId | null): string => (p === null ? t("stol.nikto") : p === ja ? t("stol.ty") : menoHraca(p));
+  const tipKraja = (p: PlayerId): string => t("stol.tipKraja", { kto: kto(prevaha[p]) });
   // Rovnosť a prebitie (návrh 5 A): hráči čítali „majiteľ karty pri lokalite“
   // ako majiteľa lokality a nevedeli, koľko kariet treba na prebratie hrany.
   // Ako reťazec aj pre nápovedu kraja — na nízkom okne riadok skryje hra.css (UI inšpekcia).
@@ -3311,17 +3322,20 @@ export function HernaPlocha({
     const zs = view.faza === "zhromazdenie" ? view.zhromazdenieStav : null;
     const rovnost = !s.rovnost
       ? ""
-      : `rovnosť ${s.pocet[ja]} : ${s.pocet[super_]} → ${s.prevaha === ja ? "hranu máš ty (tvoja karta leží pri lokalite)" : `hranu má ${menoHraca(s.prevaha)} (súperova karta leží pri lokalite)`} · `;
+      : s.prevaha === ja
+        ? t("stol.rovnostTy", { a: s.pocet[ja], b: s.pocet[super_] })
+        : t("stol.rovnostSuper", { a: s.pocet[ja], b: s.pocet[super_], meno: menoHraca(s.prevaha) });
     const limit =
-      zs === null ? "" : ` · vyloží ešte: ty ${zs.pasoval[ja] ? 0 : zs.zostavaLimit[ja]}, ${menoHraca(super_)} ${zs.pasoval[super_] ? 0 : zs.zostavaLimit[super_]}`;
-    return `${rovnost}na prebitie ${druhy === ja ? "potrebuješ" : `${menoHraca(druhy)} potrebuje`} ${kariet(s.naPrebitie)}${limit}`;
+      zs === null ? "" : t("stol.vylozieEste", { ja: zs.pasoval[ja] ? 0 : zs.zostavaLimit[ja], meno: menoHraca(super_), su: zs.pasoval[super_] ? 0 : zs.zostavaLimit[super_] });
+    const karty = t("stol.kariet", { n: s.naPrebitie });
+    return druhy === ja ? t("stol.naPrebitieTy", { rovnost, karty, limit }) : t("stol.naPrebitieSuper", { rovnost, meno: menoHraca(druhy), karty, limit });
   };
   const rovnostKraja = (p: PlayerId): ReactNode => {
     const t = textRovnostiKraja(p);
     return t === null ? null : <span className="kraj-rovnost">{t}</span>;
   };
   const popisKraja = (p: PlayerId, smer: "vlavo" | "vpravo") => {
-    const nazov = krajStrany(p) ?? (p === ja ? "vľavo" : "vpravo");
+    const nazov = krajStrany(p) ?? (p === ja ? t("stol.vlavo") : t("stol.vpravo"));
     return (
       <span className="partia-popis" title={[tipKraja(p), textRovnostiKraja(p)].filter((x) => x !== null).join(" ")}>
         {smer === "vlavo" ? "← " : ""}
@@ -3330,7 +3344,7 @@ export function HernaPlocha({
           <span className={`kraj-prevaha ${prevaha[p] === ja ? "moja" : prevaha[p] === null ? "" : "superova"}`} data-vyucba="prevaha">
             {" "}
             {/* Telefón: krátko, celé meno by hlavičku kraja orezalo (playtest 20261031-191322). */}
-            · prevaha: {naSirku ? (prevaha[p] === null ? "nikto" : prevaha[p] === ja ? "ty" : "súper") : kto(prevaha[p])}
+            {t("stol.prevaha", { kto: naSirku ? (prevaha[p] === null ? t("stol.nikto") : prevaha[p] === ja ? t("stol.ty") : t("stol.superKratko")) : kto(prevaha[p]) })}
           </span>
         )}
         {smer === "vpravo" ? " →" : ""}
@@ -3342,8 +3356,8 @@ export function HernaPlocha({
   const popisStranStredu =
     stranyStredu === null ? null : (
       <span className="strany-stredu">
-        <span title={tipKraja(ja)}>◀ {krajStrany(ja) ?? "vľavo"}</span>
-        <span title={tipKraja(super_)}>{krajStrany(super_) ?? "vpravo"} ▶</span>
+        <span title={tipKraja(ja)}>◀ {krajStrany(ja) ?? t("stol.vlavo")}</span>
+        <span title={tipKraja(super_)}>{krajStrany(super_) ?? t("stol.vpravo")} ▶</span>
       </span>
     );
   const ikonyStranStredu =
@@ -3784,7 +3798,7 @@ export function HernaPlocha({
   const pokyn: Pokyn | null = (() => {
     if (view.koniec !== null) {
       return {
-        nadpis: view.koniec.vitaz === null ? "Remíza" : view.koniec.vitaz === ja ? tvar(rodHracaP(ja), "Vyhral si!", "Vyhrala si!", "Výhra!") : tvar(rodHracaP(ja), "Prehral si", "Prehrala si", "Prehra"),
+        nadpis: view.koniec.vitaz === null ? t("koniec.remiza") : view.koniec.vitaz === ja ? tRod("koniec.vyhra", rodHracaP(ja)) : tRod("koniec.prehra", rodHracaP(ja)),
         text: (
           <>
             {textHlasky(view.koniec.dovod, [menoHraca(0), menoHraca(1)], [rodHracaP(0), rodHracaP(1)])}
@@ -4206,7 +4220,7 @@ export function HernaPlocha({
           const pokynNaradia =
             !nastrojVRuke ? null : (
               <>
-                Nástroj zasuň pod kartu v línii za {cigariet(KONSTANTY.CENA_PODLOZENIA)} alebo vylož do Dedičstva.{" "}
+                {t("zhrom.nastroj", { cigarety: cigariet(KONSTANTY.CENA_PODLOZENIA) })}{" "}
               </>
             );
           // Pas je nevratný: potvrdenie len keď ešte niečo vyložiť môžem (UX N1, U10).
@@ -4216,9 +4230,7 @@ export function HernaPlocha({
               nadpis,
               text: (
                 <>
-                  <strong>
-                    Pasuješ do Pitky — dostaneš {cigariet(zaPas)}, {menoHraca(super_)} potom vykladá sám. Vrátiť to môžeš ešte {odlozenyPas.zostavaS} s.
-                  </strong>
+                  <strong>{t("zhrom.pasujesOdlozene", { cigarety: cigariet(zaPas), meno: menoHraca(super_), s: odlozenyPas.zostavaS })}</strong>
                   {stavka !== null && (
                     <>
                       <br />
@@ -4230,7 +4242,7 @@ export function HernaPlocha({
               vpravo: (
                 <>
                   <button className="pecat pecat-tichy" onClick={odlozenyPas.vrat} autoFocus>
-                    vrátiť · ešte vykladám
+                    {t("zhrom.vratit")}
                   </button>
                 </>
               ),
@@ -4241,16 +4253,16 @@ export function HernaPlocha({
             text: textNahladuTahania ?? textVolbyMiesta ?? (![...moznostiMiesta.values()].some((m) => m.karty.size > 0) ? (
               // Pri vyčerpanom limite pokyn „potiahni kartu“ zavádzal (playtest výučby 20261025, K11).
               <>
-                <strong>Na stôl už nič nevyložíš.</strong> Pasuj do Pitky{zaPas > 0 ? ` — dostaneš ${cigariet(zaPas)}` : ""}.{" "}
+                {zaPas > 0 ? tr("zhrom.nicNevylozisZaPas", { cigarety: cigariet(zaPas) }) : tr("zhrom.nicNevylozis")}{" "}
                 {pokynNaradia}
                 <span className="tlmene">{[...moznostiMiesta.values()].find((m) => m.dovod !== null)?.dovod ?? ""}</span>
               </>
             ) : (
               <>
                 {/* Pokyn sa zmestí do jedného riadku aj pri 1366 px (UI inšpekcia 20261110-pojmy) — ďalšia karta v ťahu len pri plnom poldeci. */}
-                Potiahni kartu na stôl alebo klikni na <strong>+</strong> na konci línie, alebo pasuj do Pitky (cigareta za nevyloženú kartu).{" "}
+                {tr("zhrom.pokyn")}{" "}
                 {pokynNaradia}
-                {plne > 0 && <span className="tlmene">Ďalšia karta v ťahu stojí plný poldeci.</span>}
+                {plne > 0 && <span className="tlmene">{t("zhrom.dalsiaKarta")}</span>}
               </>
             )),
             ...(() => {
@@ -4259,10 +4271,10 @@ export function HernaPlocha({
                   className="pecat pecat-koncim"
                   data-skratka="p"
                   data-vyucba="tlacidlo:pas"
-                  title="Do Pitky už nevykladáš, súper vykladá sám. Za každú kartu, ktorú si ešte smel vyložiť, dostaneš cigaretu."
+                  title={t("zhrom.pasTip")}
                   onClick={() => (mozemVylozit && vyucba !== true ? odlozenyPas.spusti({ type: "pass" }) : posli({ type: "pass" }))}
                 >
-                  <Vymena das="pasovať" dostanes={<CenaCigariet n={zaPas} znamienko="+" />} />
+                  <Vymena das={t("zhrom.pasovat")} dostanes={<CenaCigariet n={zaPas} znamienko="+" />} />
                 </button>
               );
               // Na telefóne je pas hlavná akcia pruhu pokynu, záverečná a odkaz idú do ▾.
@@ -6375,10 +6387,10 @@ export function HernaPlocha({
                   title={
                     stranyStredu === null || krajStrany(ja) === null || krajStrany(super_) === null
                       ? undefined
-                      : `Vľavo: ${krajStrany(ja)} · vpravo: ${krajStrany(super_)}`
+                      : t("stol.krajeTip", { lavy: krajStrany(ja) ?? "", pravy: krajStrany(super_) ?? "" })
                   }
                 >
-                  {jeFinaleStola && lokalita !== null ? (naSirku ? "finále" : "finále · lokalita") : lokalita !== null || lokalitaNavrh !== null ? "lokalita" : "cieľ kola"}
+                  {jeFinaleStola && lokalita !== null ? (naSirku ? t("stol.finale") : t("stol.finaleLokalita")) : lokalita !== null || lokalitaNavrh !== null ? t("stol.lokalita") : t("stol.cielKola")}
                 </span>
                 <div className="partia-rad harmonika">{stredLinie}</div>
                 {popisStranStredu}

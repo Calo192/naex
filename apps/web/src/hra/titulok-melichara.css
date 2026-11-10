@@ -1,0 +1,9 @@
+/* Titulok hlášky Melichara v bare vedľa zvukových pruhov — len mimo slovenčiny (lokalizácia). */
+.mel-titulok {
+  margin: 0 0 0 10px;
+  max-width: 46ch;
+  font-size: 0.92rem;
+  font-style: italic;
+  line-height: 1.3;
+  color: var(--text);
+}

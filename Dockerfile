@@ -30,6 +30,9 @@ COPY packages/server/src packages/server/src
 COPY packages/server/seed packages/server/seed
 # Reporty playtestov — v administrácii (Tvorba → Playtesty) pre admina a subadminov.
 COPY docs/playtesty docs/playtesty
+# Preklady kariet na zobrazenie (lokalizácia) — /api/preklady/<jazyk>.
+COPY docs/preklady/karty docs/preklady/karty
+COPY docs/preklady/vzhlad docs/preklady/vzhlad
 # Nasadená verzia (zapíše ju deploy/nahraj.sh); vzor [n], aby build prešiel aj bez nej.
 COPY tsconfig.json VERZIA.jso[n] ./
 COPY --from=build /app/apps/web/dist apps/web/dist

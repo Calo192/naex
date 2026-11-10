@@ -1,6 +1,7 @@
 // Výber súpera proti počítaču (Michal 2026-11-06): ponúkne sa až po voľbe hry proti počítaču.
 import { useEffect, useRef, useState } from "react";
 import { Avatar } from "../komponenty.tsx";
+import { t, tZoServera } from "../i18n/jazyk.tsx";
 import { platnaVolbaBota, prepniVolbuBota, type BotNaVyber } from "./boti.ts";
 
 /** Na výber sú len boti; kto nikoho neoznačí, hrá proti náhodnému. Okno sa otvára vždy bez označenia. */
@@ -34,8 +35,8 @@ export function VyberBota({
       }}
     >
       <div className="vyber-bota-okno panel">
-        <h2 id="vyber-bota-nadpis">S kým si sadneš?</h2>
-        <div className="vyber-bota" role="group" aria-label="Súper proti počítaču">
+        <h2 id="vyber-bota-nadpis">{t("bot.nadpis")}</h2>
+        <div className="vyber-bota" role="group" aria-label={t("bot.skupina")}>
           {boti.map((b) => (
             <button
               key={b.id}
@@ -47,18 +48,18 @@ export function VyberBota({
               <Avatar meno={b.meno} avatar={b.avatar} velkost={40} />
               <span className="bot-volba-text">
                 <strong>{b.meno}</strong>
-                {b.popis !== null && <span>{b.popis}</span>}
+                {b.popis !== null && <span>{tZoServera(`bot.${b.id}`, b.popis)}</span>}
               </span>
             </button>
           ))}
         </div>
-        <p className="tlmene vyber-bota-pozn">Ak nikoho neoznačíš, dostaneš náhodného súpera.</p>
+        <p className="tlmene vyber-bota-pozn">{t("bot.nahodny")}</p>
         <div className="riadok-tlacidiel">
           <button ref={hlavne} type="button" className="tlacidlo-hlavne" disabled={vypnute} onClick={() => hraj(zvoleny)} data-hrat-bot-start="">
-            Hrať
+            {t("bot.hrat")}
           </button>
           <button type="button" onClick={zavri}>
-            Späť
+            {t("bot.spat")}
           </button>
         </div>
       </div>

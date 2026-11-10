@@ -10,6 +10,8 @@ import { farbaKarty, formatujEfekt, geometriaKarty } from "@naex/tvorba";
 import type { Action, HranaNastroja, KtoraHrana } from "@naex/core";
 import { menoAkcie, popisPodmienky, posilnenaSlovami, rozborNavyse, textBezAkcii, textBezHran } from "@naex/core";
 import { mediaUrl } from "../lib/api.ts";
+import { t, usePrekladKariet } from "../i18n/jazyk.tsx";
+import { efektNaZobrazenie, prelozVzhlad } from "../i18n/karty.ts";
 import { IkonaAkcie } from "./IkonaAkcie.tsx";
 import { useTip, type TipObsah } from "./Tip.tsx";
 import type { ZarSlotu } from "./zar.ts";
@@ -18,8 +20,8 @@ import "./karta.css";
 
 /** Stav slotu v hre (živé vyhodnotenie línie). */
 /** Piktogramy v pečati, ktoré nie sú akcie tvorcu (Krokodíl {Spálenie}, Michal 2026-11-09). */
-const POPIS_PIKTOGRAMU: Readonly<Record<string, string>> = {
-  Spálenie: "Karta ide navždy z hry — nevracia sa do žiadneho balíčka.",
+const POPIS_PIKTOGRAMU: Readonly<Record<string, () => string>> = {
+  Spálenie: () => t("karta.spaleniePopis"),
 };
 
 export interface SlotStav {
@@ -126,7 +128,13 @@ export interface KartaLicoProps {
 }
 
 export function KartaLico(props: KartaLicoProps) {
-  const { karta, lava, prava, vzhlad, sirka = 240, sloty, onClick, vybrana, presahMm = 0 } = props;
+  const { karta, lava, prava, vzhlad: vzhladSady, sirka = 240, sloty, onClick, vybrana, presahMm = 0 } = props;
+  // Preklad je len na zobrazenie (lokalizácia): pečate, hrany a stav slotov sa ďalej čítajú zo
+  // slovenského textu; preložený je názov, tagy, text efektu a mená akcií v nápovedách.
+  const preklad = usePrekladKariet();
+  const vzhlad = useMemo(() => prelozVzhlad(vzhladSady, preklad), [vzhladSady, preklad]);
+  const nazovKarty = preklad.nazvy.get(karta.nazov) ?? karta.nazov;
+  const efektPreklad = preklad.efekty.get(karta.efekt);
   const tlac = typeof sirka === "string";
   const bezPopisov = props.bezPopisov === true || tlac;
   const sirkaPx = typeof sirka === "number" ? sirka : 1024;
@@ -143,6 +151,9 @@ export function KartaLico(props: KartaLicoProps) {
     () => geometriaKarty({ ...karta, maTagy: karta.tagy.length > 0 }),
     [karta.sirkaMm, karta.vyskaMm, karta.mierkaTextu, karta.mierkaIkon, karta.tagy.length],
   );
+
+  /** Meno akcie v jazyku hráča (preklad vzhľadu), inak slovenské meno z jadra. */
+  const menoVJazyku = (kluc: string): string => preklad.akcie.get(kluc)?.nazov ?? menoAkcie(kluc as Action);
 
   /** Výška hrany Nástroja v bodoch — to, čo spod hostiteľa pretŕča (mock 2, M2). */
   const vyskaHrany = g.vyska * PODIEL_HRANY;
@@ -195,12 +206,12 @@ export function KartaLico(props: KartaLicoProps) {
   const ikona = (key: string, r: { readonly x: number; readonly y: number; readonly w: number }, kluc: string, st: SlotStav | null, zar: ZarNaKarte | null, trieda: string, navyse?: string, odznak?: number, roh: RohSlotu | null = null) => {
     const akcia = vzhlad.akcie.find((a) => a.kluc === kluc);
     const nazov = akcia?.nazov ?? kluc;
-    const popis = akcia?.popis ?? POPIS_PIKTOGRAMU[kluc];
+    const popis = akcia?.popis ?? POPIS_PIKTOGRAMU[kluc]?.();
     const povodna = roh === null ? undefined : vzhlad.akcie.find((a) => a.kluc === roh.akcia);
     const stavText =
       navyse !== undefined
         ? navyse
-        : st === null ? null : st.stav === "aktivna" ? `Aktívna${st.nasobok > 1 ? ` ×${st.nasobok}` : ""}` : st.stav === "zrusena" ? "Zrušená Odporom" : "Neaktívna — na spoji nemá pár";
+        : st === null ? null : st.stav === "aktivna" ? (st.nasobok > 1 ? t("karta.aktivnaKrat", { n: st.nasobok }) : t("karta.aktivna")) : st.stav === "zrusena" ? t("karta.zrusena") : t("karta.neaktivna");
     return (
       <span
         key={key}
@@ -208,7 +219,7 @@ export function KartaLico(props: KartaLicoProps) {
         data-akcia={kluc}
         style={{ "--x": r.x, "--y": r.y, "--s": r.w, "--r": g.polomerSlotu } as CSSProperties}
         tabIndex={bezPopisov ? undefined : props.slotyBezFokusu === true ? -1 : 0}
-        aria-label={`${nazov}: ${popis ?? ""}${roh === null ? "" : ` Bola ${povodna?.nazov ?? roh.akcia}.`}${zar === null ? "" : ` ${zar.popis}`}`}
+        aria-label={`${nazov}: ${popis ?? ""}${roh === null ? "" : ` ${t("karta.bola", { akcia: povodna?.nazov ?? roh.akcia })}`}${zar === null ? "" : ` ${zar.popis}`}`}
         {...hover({
           nadpis: nazov,
           ikona: (
@@ -218,8 +229,8 @@ export function KartaLico(props: KartaLicoProps) {
           ),
           text: (
             <>
-              {popis ?? "Akcia bez popisu."}
-              {roh !== null && <span className="tip-stav">{`Bola ${povodna?.nazov ?? roh.akcia} — ${roh.preco}.`}</span>}
+              {popis ?? t("karta.bezPopisu")}
+              {roh !== null && <span className="tip-stav">{t("karta.bolaPreco", { akcia: povodna?.nazov ?? roh.akcia, preco: roh.preco })}</span>}
               {zar !== null && <span className={`tip-zar tip-zar-${zar.smer}`}>{zar.popis}</span>}
               {stavText !== null && <span className="tip-stav">{stavText}</span>}
             </>
@@ -296,13 +307,15 @@ export function KartaLico(props: KartaLicoProps) {
         x += w + (gi < vsetky.length - 1 || !sSipkami ? medzera : medzera * 0.5);
         // Stavy ako na hrane: splnená = aktívna (žiar), nesplnená = neaktívna a sivá; mimo hry ako vytlačená.
         const st: SlotStav | null = stav === undefined ? null : { stav: stav.krat === 0 ? "neaktivna" : "aktivna", nasobok: 1 };
-        const co = prva < 0 ? `${a} karty, s ktorou sa stretne, na konci bitky` : "Akcia navyše";
+        const co = prva < 0 ? t("karta.ucinokSoSuperom", { akcia: a }) : t("karta.akciaNavyse");
         const text =
           stav === undefined
-            ? `${co} — ${podmienka}.`
+            ? t("karta.navyseVzdy", { co, podmienka })
             : stav.krat === 0
-              ? `${co} — ${podmienka}: podmienka nesplnená.`
-              : `${co} — ${podmienka}: platí${stav.krat > 1 ? ` ${stav.krat}×` : ""}.`;
+              ? t("karta.navyseNesplnena", { co, podmienka })
+              : stav.krat > 1
+                ? t("karta.navysePlatiKrat", { co, podmienka, n: stav.krat })
+                : t("karta.navysePlati", { co, podmienka });
         const zar = stav?.zar?.[prva] ?? null;
         return ikona(`navyse${ei}-${a}`, r, a, st, zar, ` kl-navyse${stav !== undefined && stav.krat === 0 ? " kl-navyse-spi" : ""}${zar !== null ? " kl-zar-prava" : ""}`, text, kusov * Math.max(1, stav?.krat ?? 1));
       });
@@ -324,11 +337,11 @@ export function KartaLico(props: KartaLicoProps) {
       };
       const lava = sSipkami ? [sipka("lava")] : [];
       const tip: TipObsah = {
-        nadpis: "Preškolenie",
+        nadpis: t("karta.preskolenie"),
         text: (
           <>
-            {`${menoAkcie(p.z)} sa ráta ako ${menoAkcie(p.na)}.`}
-            {stav !== undefined && <span className="tip-stav">{stav.krat === 0 ? "Teraz nemá čo preškoliť." : `Teraz preškoľuje ${stav.krat}×.`}</span>}
+            {t("karta.preskolenieRata", { z: menoVJazyku(p.z), na: menoVJazyku(p.na) })}
+            {stav !== undefined && <span className="tip-stav">{stav.krat === 0 ? t("karta.preskolenieNic") : t("karta.preskolenieKrat", { n: stav.krat })}</span>}
           </>
         ),
       };
@@ -419,7 +432,7 @@ export function KartaLico(props: KartaLicoProps) {
               onError={() => setBezObrazka(true)}
             />
           ) : (
-            <div className="kl-bez-obrazka">{karta.nazov.charAt(0)}</div>
+            <div className="kl-bez-obrazka">{nazovKarty.charAt(0)}</div>
           )}
         </div>
 
@@ -427,19 +440,25 @@ export function KartaLico(props: KartaLicoProps) {
           const pas = (
             <div className="kl-pas" style={{ "--y": g.pas.y, "--h": g.pas.h } as CSSProperties}>
               <div className="kl-nazov" style={{ "--f": g.velkostNazvu } as CSSProperties}>
-                {karta.nazov}
+                {nazovKarty}
               </div>
               {karta.tagy.length > 0 && (
                 <div className="kl-tagy" style={{ "--f": g.velkostTagov } as CSSProperties}>
-                  {karta.tagy.join(" • ")}
+                  {karta.tagy.map((x) => preklad.tagy.get(x) ?? x).join(" • ")}
                 </div>
               )}
             </div>
           );
           const efekt = (
             <Efekt
-              text={efektyNavyse.length > 0 ? textBezAkcii(zakladEfektu) : zakladEfektu}
-              vzhlad={vzhlad}
+              text={
+                efektPreklad !== undefined
+                  ? efektNaZobrazenie(efektPreklad, { hore: preklad.hore, dole: preklad.dole, nastroj, sNavyse: efektyNavyse.length > 0, menoAkcie: menoVJazyku })
+                  : efektyNavyse.length > 0
+                    ? textBezAkcii(zakladEfektu)
+                    : zakladEfektu
+              }
+              vzhlad={efektPreklad !== undefined ? vzhlad : vzhladSady}
               y={g.efekt.y}
               h={g.efekt.h}
               okraj={g.okrajTextu}
@@ -469,7 +488,7 @@ export function KartaLico(props: KartaLicoProps) {
                 key={kde}
                 className={`kl-hrana-n kl-hrana-n-${kde}${stav}`}
                 style={{ "--h": vyskaHrany } as CSSProperties}
-                {...hover({ nadpis: kde === "horna" ? "Horná hrana" : "Dolná hrana", text: popisHranyNastroja(h) })}
+                {...hover({ nadpis: kde === "horna" ? t("karta.hornaHrana") : t("karta.dolnaHrana"), text: popisHranyNastroja(h) })}
               >
                 <ObsahHrany hrana={h} vzhlad={vzhlad} pil={`calc(${vyskaHrany * 0.62} * var(--pt))`} />
               </div>

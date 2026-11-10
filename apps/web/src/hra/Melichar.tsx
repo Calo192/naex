@@ -12,6 +12,7 @@ import { api } from "../lib/api.ts";
 import { MELICHAR_PREDVOLENY, useUcet } from "../lib/ucet.tsx";
 import { hlasitostZvuku, zamiesaj, type Skladba } from "./Hudba.tsx";
 import { hlaskaNaPrehratie } from "./hlaskyVyucby.ts";
+import { skryTitulok, ukazTitulok } from "./titulky.ts";
 
 /** Hláška má rovnaký tvar ako skladba — nazov je jej text; trvanieMs pre soundboard, skupina = priečinok pri importe, meno = súbor bez prípony (výučba). */
 export type HlaskaMelichara = Skladba & { readonly trvanieMs?: number; readonly skupina?: string; readonly meno?: string };
@@ -103,6 +104,7 @@ export function useMelichar(aktivny: boolean): { readonly ozviMoment: (nalada: N
       caka: undefined,
       skoncil: () => {
         setHovori(false);
+        skryTitulok();
         if (!h.hovori) return;
         h.hovori = false;
         h.tichoDo = Date.now() + TICHO_MS;
@@ -121,6 +123,7 @@ export function useMelichar(aktivny: boolean): { readonly ozviMoment: (nalada: N
       h.audio.load();
       hlas.current = null;
       setHovori(false);
+      skryTitulok();
     };
   }, [zapnuty]);
 
@@ -140,12 +143,18 @@ export function useMelichar(aktivny: boolean): { readonly ozviMoment: (nalada: N
         h.posledna = hlaska.id;
         h.audio.src = urlHlasky(hlaska);
         h.audio.volume = hlasitostZvuku(nastavenie.current.hlasitost);
-        h.audio.play().then(() => setHovori(true), h.skoncil);
+        h.audio.play().then(() => {
+          setHovori(true);
+          ukazTitulok(hlaska);
+        }, h.skoncil);
       });
     }, ONESKORENIE_MS);
   }, []);
 
-  const umlcBublinu = useCallback(() => setHovori(false), []);
+  const umlcBublinu = useCallback(() => {
+    setHovori(false);
+    skryTitulok();
+  }, []);
   return { ozviMoment, hovori, umlcBublinu };
 }
 

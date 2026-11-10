@@ -11,6 +11,7 @@ import { useTip, type TipObsah } from "../karta/Tip.tsx";
 import type { RezimMelichara, RezimStran } from "./bar.ts";
 import { ID_MIESTA_MELICHARA } from "./MelicharBar.tsx";
 import { rozmiestniAkcie } from "./ustupkyBaru.ts";
+import { t } from "../i18n/jazyk.tsx";
 
 export interface StranaBaru {
   /** „ty“ alebo meno súpera. */
@@ -48,9 +49,9 @@ export interface JednotnyBarProps {
 function Strana({ s, kto, rezim }: { readonly s: StranaBaru; readonly kto: "ja" | "su"; readonly rezim: RezimStran }) {
   return (
     <div className={`jbar-strana ${kto}${s.naTahu ? " na-tahu" : ""}`}>
-      <span className="jbar-kto" title={s.stav?.tip ?? (s.naTahu ? `${s.meno} — na ťahu` : s.meno)}>
+      <span className="jbar-kto" title={s.stav?.tip ?? (s.naTahu ? t("bar.menoNaTahu", { meno: s.meno }) : s.meno)}>
         {s.meno}
-        {s.stav != null ? <small className="jbar-na-tahu">{s.stav.text}</small> : s.naTahu && <small className="jbar-na-tahu">na ťahu</small>}
+        {s.stav != null ? <small className="jbar-na-tahu">{s.stav.text}</small> : s.naTahu && <small className="jbar-na-tahu">{t("bar.naTahu")}</small>}
       </span>
       {rezim === "akcie" ? (
         <span className="jbar-obsah efekty jbar-akcie">

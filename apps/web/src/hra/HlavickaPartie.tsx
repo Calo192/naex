@@ -11,6 +11,7 @@ import { chod } from "../lib/router.tsx";
 import { MIMO_PULTU, prepniPultMelichara } from "./Soundboard.tsx";
 import { ID_TLACIDLA_PARTIE, krokPartie, minSek, stavKontumacie } from "./stitokPartie.ts";
 import "./hlavicka.css";
+import { t, tr } from "../i18n/jazyk.tsx";
 
 /** Hodiny pre odpočet kontumácie — bežia len počas čakania. */
 function useTeraz(bezi: boolean): number {
@@ -152,25 +153,25 @@ export function HlavickaPartie({
           className={dotyk === undefined ? "partia-menu-tlacidlo" : "partia-menu-tlacidlo partia-menu-ikona"}
           aria-haspopup="menu"
           aria-expanded={otvorene}
-          aria-label={dotyk === undefined ? undefined : "Partia — menu"}
+          aria-label={dotyk === undefined ? undefined : t("partia.menuAria")}
           onClick={() => (otvorene ? zavri(false) : setOtvorene(true))}
         >
-          {dotyk === undefined ? "Partia" : "☰"}
+          {dotyk === undefined ? t("partia.menu") : "☰"}
           {/* Kód miestnosti (len hra s človekom) — kopírovanie je v menu. */}
           {!vyucba && !superBot && (
-            <span className="partia-kod" title="Kód miestnosti — pošli ho súperovi, alebo sa ním vrátiš">
+            <span className="partia-kod" title={t("partia.kodTitle")}>
               {kod}
             </span>
           )}
           <span className="sipka" aria-hidden="true">▾</span>
-          {ponukaKontumaciu && kontum.druh === "mozna" && <span className="bodka-pozor" title="Môžeš si vyžiadať kontumačnú výhru" />}
-          {ponukaKontumaciu && kontum.druh === "mozna" && <span className="hp-citacka">(kontumačná výhra je k dispozícii)</span>}
+          {ponukaKontumaciu && kontum.druh === "mozna" && <span className="bodka-pozor" title={t("partia.kontumMozna")} />}
+          {ponukaKontumaciu && kontum.druh === "mozna" && <span className="hp-citacka">{t("partia.kontumMoznaCitacka")}</span>}
         </button>
         {otvorene && obalMenu(
           <div
             className={dotyk === undefined ? "partia-menu" : "partia-menu partia-menu-okno"}
             role="menu"
-            aria-label={`Partia ${kod}`}
+            aria-label={t("partia.partiaKod", { kod })}
             ref={menu}
             onKeyDown={sipky}
             onClick={(e) => {
@@ -179,13 +180,13 @@ export function HlavickaPartie({
             }}
           >
             <div className="partia-menu-hlava">
-              <strong>{vyucba ? "Prvá hra s Melicharom" : `Partia ${kod}`}</strong>
+              <strong>{vyucba ? t("partia.prvaHra") : t("partia.partiaKod", { kod })}</strong>
               <span>
-                s {menoSupera} · {krok.text}
-                {!superBot && !pripojeny && " · súper je odpojený"}
+                {t("partia.sSuperom", { meno: menoSupera, krok: krok.text })}
+                {!superBot && !pripojeny && t("partia.superOdpojeny")}
               </span>
               {dotyk !== undefined && (
-                <button type="button" className="partia-menu-zavri" aria-label="Zavrieť menu" onClick={() => zavri(false)}>
+                <button type="button" className="partia-menu-zavri" aria-label={t("partia.zavrietMenu")} onClick={() => zavri(false)}>
                   ✕
                 </button>
               )}
@@ -202,7 +203,7 @@ export function HlavickaPartie({
                     .catch(() => undefined);
                 }}
               >
-                {skopirovane ? "Kód skopírovaný — pošli ho súperovi" : "Kopírovať kód miestnosti"} <kbd>{kod}</kbd>
+                {skopirovane ? t("partia.kodSkopirovany") : t("partia.kopirovatKod")} <kbd>{kod}</kbd>
               </button>
             )}
             {melichar !== undefined && melichar !== null && melichar !== false && (
@@ -214,19 +215,19 @@ export function HlavickaPartie({
                   prepniPultMelichara();
                 }}
               >
-                Hlášky Melichara <kbd>M</kbd>
+                {t("partia.hlaskyMelichara")} <kbd>M</kbd>
               </button>
             )}
             <hr />
             {bezi ? (
               <button type="button" role="menuitem" className="dvoj" onClick={() => chod("/")}>
-                <b>Odísť od stola</b>
-                <small>{vyucba ? "Výučba počká" : "Partia beží ďalej"} — vrátiš sa cez „Späť ku stolu“ v hlavičke.</small>
+                <b>{t("partia.odistOdStola")}</b>
+                <small>{vyucba ? t("partia.vyucbaPocka") : t("partia.partiaBezi")}</small>
               </button>
             ) : (
               <button type="button" role="menuitem" className="dvoj" onClick={opustit}>
-                <b>Opustiť hru</b>
-                <small>Partia je dohraná — stôl sa zavrie.</small>
+                <b>{t("partia.opustit")}</b>
+                <small>{t("partia.dohrana")}</small>
               </button>
             )}
             {ponukaKontumaciu && (
@@ -240,13 +241,13 @@ export function HlavickaPartie({
                   kontumacia?.();
                 }}
               >
-                <b>Kontumačná výhra{kontum.druh === "caka" ? ` · o ${minSek(kontum.zostavaMs)}` : ""}</b>
+                <b>{kontum.druh === "caka" ? t("partia.kontumacnaO", { cas: minSek(kontum.zostavaMs) }) : t("partia.kontumacna")}</b>
                 <small>
                   {kontum.druh === "pripojeny"
-                    ? "Len keď je súper odpojený aspoň 3 minúty."
+                    ? t("partia.kontumPripojeny")
                     : kontum.druh === "caka"
-                      ? `${menoSupera} je odpojený. Sprístupní sa po 3 minútach.`
-                      : `${menoSupera} je odpojený 3 minúty — môžeš si ju vyžiadať.`}
+                      ? t("partia.kontumCaka", { meno: menoSupera })
+                      : t("partia.kontumMoznaText", { meno: menoSupera })}
                 </small>
               </button>
             )}
@@ -255,12 +256,10 @@ export function HlavickaPartie({
                 <hr />
                 {potvrd ? (
                   <div className="partia-potvrd" role="alert">
-                    <p>
-                      <b>Vzdať sa?</b> Partia sa skončí tvojou prehrou.
-                    </p>
+                    <p>{tr("partia.vzdatSaOtazka")}</p>
                     <div>
                       <button type="button" className="tlacidlo-male" autoFocus onClick={() => setPotvrd(false)}>
-                        Hrať ďalej
+                        {t("partia.hratDalej")}
                       </button>
                       <button
                         type="button"
@@ -270,13 +269,13 @@ export function HlavickaPartie({
                           vzdat();
                         }}
                       >
-                        Vzdať sa
+                        {t("partia.vzdatSa")}
                       </button>
                     </div>
                   </div>
                 ) : (
                   <button type="button" role="menuitem" className="nebezpecne" onClick={() => setPotvrd(true)}>
-                    Vzdať sa…
+                    {t("partia.vzdatSaMenu")}
                   </button>
                 )}
               </>

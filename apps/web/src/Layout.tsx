@@ -13,8 +13,10 @@ import { hlavneMenu, jeAktivna, menuUctu, spravaWebu, type PolozkaNavigacie } fr
 import { prepniInstanciu } from "./lib/instancia.ts";
 import { KLUC_MIESTNOSTI, ZAVES_ODCHODU, useJeStolVHlavicke, useStrazenaPartia, type StrazenaPartia } from "./lib/odchod.ts";
 import { Odkaz, chod, useCesta } from "./lib/router.tsx";
-import { NAZOV_UROVNE, jeSpravca, jeZrejuca, useUcet } from "./lib/ucet.tsx";
+import { NAZOV_UROVNE, jeSpravca, jeZrejuca, nazovUrovne, useUcet } from "./lib/ucet.tsx";
 import { Avatar } from "./komponenty.tsx";
+import { t, tr } from "./i18n/jazyk.tsx";
+import { PrepinacJazyka } from "./i18n/PrepinacJazyka.tsx";
 
 /**
  * Koľko noviniek pribudlo od posledného „Mám prečítané“ na stránke Novinky (roadmapa #20;
@@ -204,18 +206,13 @@ function OdchodZPartie({
         aria-describedby="odchod-text"
         onClick={(e) => e.stopPropagation()}
       >
-        <h2 id="odchod-nadpis">Odísť z partie?</h2>
+        <h2 id="odchod-nadpis">{t("odchod.nadpis")}</h2>
         {partia.vyucba ? (
-          <p id="odchod-text">
-            Výučba počká — vrátiš sa do nej cez <b>Späť ku stolu</b> v hlavičke, na tom istom mieste.
-          </p>
+          <p id="odchod-text">{tr("odchod.vyucba")}</p>
         ) : (
           <>
-            <p id="odchod-text">
-              Partia beží ďalej — nie je to vzdanie sa. Vrátiš sa do nej na jeden klik cez <b>Späť ku stolu</b> v hlavičke (kód miestnosti{" "}
-              <span className="odchod-kod">{partia.kod}</span>).
-            </p>
-            <p>Súper medzitým čaká; po 3 minútach bez teba si môže vyžiadať kontumačnú výhru.</p>
+            <p id="odchod-text">{tr("odchod.partia", { kod: <span className="odchod-kod">{partia.kod}</span> })}</p>
+            <p>{t("odchod.cakanie")}</p>
           </>
         )}
         <div className="odchod-tlacidla">
@@ -223,7 +220,7 @@ function OdchodZPartie({
             {nazov}
           </button>
           <button type="button" className="tlacidlo-hlavne" ref={zostatRef} onClick={onZostat}>
-            Zostať v partii
+            {t("odchod.zostat")}
           </button>
         </div>
       </div>
@@ -252,24 +249,24 @@ function OdkazMenu({ doVypalenej = false, ...props }: AnchorHTMLAttributes<HTMLA
 function PasZrejucej() {
   return (
     <div className="zrejuca-pas" role="note">
-      <strong>Zrejúca – pokusná verzia</strong>
-      <span className="skryt-mobil"> · pravidlá a karty sa tu skúšajú, partie sa nerátajú do Vypálenej.</span>{" "}
+      <strong>{t("hlavicka.zrejucaPokusna")}</strong>
+      <span className="skryt-mobil">{t("hlavicka.zrejucaPopis")}</span>{" "}
       <button type="button" className="zrejuca-spat" onClick={() => void prepniInstanciu("vypalena")}>
-        Späť do Vypálenej
+        {t("hlavicka.spatDoVypalenej")}
       </button>
     </div>
   );
 }
 
-const pocetNovych = (n: number): string => `${n} ${n === 1 ? "nová" : n < 5 ? "nové" : "nových"}`;
+const pocetNovych = (n: number): string => t("hlavicka.noveNovinky", { n });
 
 /** Pilulka „● Partia HZ3T beží · Späť ku stolu“ — na mobile len jej tlačidlo. */
 function PilulkaPartie({ partia }: { readonly partia: { readonly kod: string; readonly vyucba: boolean } }) {
   return (
-    <Odkaz href="/hra" className="partia-pilulka" aria-label={`${partia.vyucba ? "Prvá hra" : `Partia ${partia.kod}`} beží — späť ku stolu`}>
+    <Odkaz href="/hra" className="partia-pilulka" aria-label={partia.vyucba ? t("hlavicka.prvaHraBeziAria") : t("hlavicka.partiaBeziAria", { kod: partia.kod })}>
       <span className="pilulka-bodka" aria-hidden="true" />
-      <span className="pilulka-text skryt-mobil">{partia.vyucba ? <>Prvá hra beží</> : <>Partia <b>{partia.kod}</b> beží</>}</span>
-      <span className="pilulka-spat">Späť ku stolu</span>
+      <span className="pilulka-text skryt-mobil">{partia.vyucba ? t("hlavicka.prvaHraBezi") : tr("hlavicka.partiaBezi", { kod: partia.kod })}</span>
+      <span className="pilulka-spat">{t("hlavicka.spatKuStolu")}</span>
     </Odkaz>
   );
 }
@@ -326,7 +323,7 @@ export function Layout({
     e.stopPropagation();
     setOtvoreneMenu(null);
     setMobilne(false);
-    const nazov = ciel.dataset.odchod ?? `Odísť na ${ciel.dataset.nazov ?? ciel.firstChild?.textContent?.trim() ?? "inú stránku"}`;
+    const nazov = ciel.dataset.odchod ?? t("hlavicka.odistNa", { ciel: ciel.dataset.nazov ?? ciel.firstChild?.textContent?.trim() ?? t("hlavicka.inuStranku") });
     setOdchod({ href, nazov });
   };
 
@@ -360,7 +357,7 @@ export function Layout({
         {noveNovinky > 9 ? "9+" : noveNovinky}
       </span>
     ) : href === "/karty" && dielna > 0 ? (
-      <span className="nav-znacka" title="Nové rozhodnutie o tvojom návrhu v Dielni" aria-label="nové rozhodnutie v Dielni">
+      <span className="nav-znacka" title={t("hlavicka.dielnaZnacka")} aria-label={t("hlavicka.dielnaZnackaKratko")}>
         {dielna > 9 ? "9+" : dielna}
       </span>
     ) : null;
@@ -397,18 +394,18 @@ export function Layout({
       {zrejuca && !celaSirka && <PasZrejucej />}
       <header className="hlavicka" onClickCapture={strazOdchodu}>
         <div className={`hlavicka-vnutro${priStole ? " pri-stole" : ""}${kostra}`}>
-          <Odkaz href="/" className="logo" aria-label="NA EX! — domov" data-nazov="úvodnú stránku">
+          <Odkaz href="/" className="logo" aria-label={t("hlavicka.domov")} data-nazov={t("hlavicka.domovCiel")}>
             <span className="logo-pohar" aria-hidden="true" />
             <span className="logo-text">NA EX!</span>
             {zrejuca && (
-              <span className="zrejuca-znacka" title="Zrejúca – pokusná verzia">
-                Zrejúca
+              <span className="zrejuca-znacka" title={t("hlavicka.zrejucaPokusna")}>
+                {t("hlavicka.zrejuca")}
               </span>
             )}
           </Odkaz>
           {!priStole && (
             <>
-              <nav className="navigacia" ref={navRef} aria-label="Hlavné menu">
+              <nav className="navigacia" ref={navRef} aria-label={t("hlavicka.hlavneMenu")}>
                 {hra.map((n) => odkaz(n, "", true))}
                 {komunita.length > 0 && <span className="nav-oddelovac" aria-hidden="true" />}
                 {komunita.map((n) => odkaz(n, "", true))}
@@ -423,8 +420,8 @@ export function Layout({
                   hidden={skryte.length === 0}
                   onClick={() => prepni("viac")}
                 >
-                  Viac
-                  {skrytePolozky.some((p) => znacka(p.href) !== null) && <span className="nav-bodka" aria-label="nové" />}
+                  {t("hlavicka.viac")}
+                  {skrytePolozky.some((p) => znacka(p.href) !== null) && <span className="nav-bodka" aria-label={t("hlavicka.nove")} />}
                   <span className="sipka" aria-hidden="true">▾</span>
                 </button>
                 {otvoreneMenu === "viac" && skrytePolozky.length > 0 && (
@@ -441,7 +438,7 @@ export function Layout({
             {!priStole && rozohrana !== null && <PilulkaPartie partia={rozohrana} />}
             {!priStole && rozohrana === null && prihlaseny && (
               <Odkaz href="/hra" className="tlacidlo tlacidlo-hlavne tlacidlo-male len-mobil hrat-mobil">
-                Hrať
+                {t("nav.hrat")}
               </Odkaz>
             )}
             {!priStole && sprava.length > 0 && (
@@ -481,21 +478,22 @@ export function Layout({
               </div>
             )}
           </div>
+          {!priStole && <PrepinacJazyka />}
           <div className="ucet" ref={menuRef}>
             {!nacitane ? null : ja === null ? (
               <>
                 <Odkaz href="/prihlasenie" className="tlacidlo tlacidlo-jemne">
-                  Prihlásiť
+                  {t("hlavicka.prihlasit")}
                 </Odkaz>
                 {!zrejuca && (
                   <Odkaz href="/registracia" className="tlacidlo tlacidlo-hlavne skryt-mobil">
-                    Registrovať
+                    {t("hlavicka.registrovat")}
                   </Odkaz>
                 )}
               </>
             ) : (
               <>
-                <button className="ucet-tlacidlo" onClick={() => prepni("ucet")} aria-haspopup="menu" aria-expanded={otvoreneMenu === "ucet"} aria-label={`Účet ${ja.meno}`}>
+                <button className="ucet-tlacidlo" onClick={() => prepni("ucet")} aria-haspopup="menu" aria-expanded={otvoreneMenu === "ucet"} aria-label={t("hlavicka.ucet", { meno: ja.meno })}>
                   <Avatar meno={ja.meno} avatar={ja.avatar} velkost={34} />
                   <span className="ucet-meno">{ja.meno}</span>
                 </button>
@@ -503,7 +501,7 @@ export function Layout({
                   <div className="ucet-menu" role="menu">
                     <div className="ucet-menu-hlava">
                       <strong>{ja.meno}</strong>
-                      <span>@{ja.login} · {NAZOV_UROVNE[ja.rola]}</span>
+                      <span>@{ja.login} · {nazovUrovne(ja.rola)}</span>
                     </div>
                     {menuUctu(ja).map((m) => (
                       <Odkaz key={m.href} href={m.href} role="menuitem">
@@ -512,12 +510,12 @@ export function Layout({
                     ))}
                     <button
                       role="menuitem"
-                      data-odchod="Odhlásiť sa"
+                      data-odchod={t("hlavicka.odhlasit")}
                       onClick={() => {
                         void odhlas().then(() => chod("/"));
                       }}
                     >
-                      Odhlásiť sa
+                      {t("hlavicka.odhlasit")}
                     </button>
                   </div>
                 )}
@@ -527,7 +525,7 @@ export function Layout({
           {!priStole && (
             <button
               className={znackaMenu ? "hamburger ma-novinky" : "hamburger"}
-              aria-label={noveNovinky > 0 ? "Menu (nové novinky)" : dielna > 0 ? "Menu (nové rozhodnutie v Dielni)" : navrhy > 0 ? "Menu (návrhy na rozhodnutie)" : "Menu"}
+              aria-label={t(noveNovinky > 0 ? "hlavicka.menuNovinky" : dielna > 0 ? "hlavicka.menuDielna" : navrhy > 0 ? "hlavicka.menuNavrhy" : "hlavicka.menu")}
               aria-expanded={mobilne}
               onClick={() => setMobilne(!mobilne)}
             >
@@ -539,10 +537,10 @@ export function Layout({
         </div>
         {/* Mobil: tie isté skupiny s nadpismi. */}
         {mobilne && !priStole && (
-          <nav className="navigacia-mobil" aria-label="Menu">
-            <div className="nav-skupina">Hra</div>
+          <nav className="navigacia-mobil" aria-label={t("hlavicka.menu")}>
+            <div className="nav-skupina">{t("hlavicka.skupinaHra")}</div>
             {hra.map((n) => odkaz(n, "", false))}
-            {komunita.length > 0 && <div className="nav-skupina">Vývoj a komunita</div>}
+            {komunita.length > 0 && <div className="nav-skupina">{t("hlavicka.skupinaKomunita")}</div>}
             {komunita.map((n) => odkaz(n, "", false))}
             {sprava.length > 0 && <div className="nav-skupina">Správa</div>}
             {sprava.map((s) => (
@@ -575,8 +573,8 @@ export function Layout({
       <main className={plna ? "obsah obsah-plna" : `obsah${kostra}`}>{children}</main>
       <footer className={plna ? "paticka paticka-skryta" : "paticka"}>
         <div className={`paticka-vnutro${kostra}`}>
-          <span>NA EX! — kartová hra pre dvoch · © Michal Calík</span>
-          <span>Hra je fikcia a karikatúra. Alkohol, fajčenie a hazard škodia zdraviu.</span>
+          <span>{t("paticka.autor")}</span>
+          <span>{t("paticka.varovanie")}</span>
         </div>
       </footer>
     </div>

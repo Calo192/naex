@@ -25,6 +25,8 @@ import { hlasitostZvuku, nacitajSkladby, urlSkladby } from "../hra/Hudba.tsx";
 import { nacitajHlasky, urlHlasky } from "../hra/Melichar.tsx";
 import { SCHEMY, aktualnaSchema, pouziSchemu } from "../lib/schemy.ts";
 import { VyberParu } from "./VyberParu.tsx";
+import { JAZYKY, NAZVY_JAZYKOV, t, tr, useJazyk } from "../i18n/jazyk.tsx";
+import { zvolJazyk } from "../i18n/PrepinacJazyka.tsx";
 
 /** Pohlavie v profile (Michal 2026-10-22) — súper ho vidí len v tvare hlášok. */
 const VOLBY_POHLAVIA: readonly { readonly id: Pohlavie | null; readonly nazov: string; readonly popis: string }[] = [
@@ -39,7 +41,7 @@ const VOLBY_POHLAVIA: readonly { readonly id: Pohlavie | null; readonly nazov: s
  * bezPrava = prihlásený vo Vypálenej, ale Zrejúcu hrať nesmie — formulár netreba.
  */
 export function Prihlasenie({ zrejuca = null }: { readonly zrejuca?: { readonly bezPrava: boolean } | null } = {}) {
-  useTitulok(zrejuca === null ? "Prihlásenie" : "Zrejúca");
+  useTitulok(zrejuca === null ? t("ucet.prihlasenie") : t("ucet.zrejuca"));
   const { nastav } = useUcet();
   const [login, setLogin] = useState("");
   const [heslo, setHeslo] = useState("");
@@ -68,11 +70,11 @@ export function Prihlasenie({ zrejuca = null }: { readonly zrejuca?: { readonly 
   if (zrejuca?.bezPrava === true) {
     return (
       <HlavaStranky
-        nadpis="Zrejúca nie je pre tvoj účet"
-        uvod="Pokusnú verziu hry hrajú hráči s oprávnením — dáva ho admin (predvolene Sedmička, správcovia a AI playtesteri)."
+        nadpis={t("ucet.zrejucaBezPrava")}
+        uvod={t("ucet.zrejucaBezPravaUvod")}
         akcia={
           <button type="button" className="tlacidlo tlacidlo-hlavne" onClick={() => doVypalenej()}>
-            Späť do Vypálenej
+            {t("ucet.spatDoVypalenej")}
           </button>
         }
       />
@@ -82,46 +84,45 @@ export function Prihlasenie({ zrejuca = null }: { readonly zrejuca?: { readonly 
   return (
     <>
     {zrejuca === null ? (
-      <HlavaStranky nadpis="Vitaj späť" uvod="Prihlás sa a pokračuj tam, kde si prestal." />
+      <HlavaStranky nadpis={t("ucet.vitajSpat")} uvod={t("ucet.vitajSpatUvod")} />
     ) : (
-      <HlavaStranky
-        nadpis="Zrejúca — pokusná verzia"
-        uvod="Pravidlá a karty, ktoré sa ešte skúšajú. Hrajú ju hráči s oprávnením; prihlasuješ sa tým istým účtom ako vo Vypálenej."
-      />
+      <HlavaStranky nadpis={t("ucet.zrejucaNadpis")} uvod={t("ucet.zrejucaUvod")} />
     )}
     <div className="formular-stred">
       <form className="panel" onSubmit={(e) => void odosli(e)}>
         {chyba !== null && <Hlaska>{chyba}</Hlaska>}
-        <Pole label="Prihlasovacie meno">
+        <Pole label={t("ucet.login")}>
           <input autoComplete="username" value={login} onChange={(e) => setLogin(e.target.value)} required autoFocus />
         </Pole>
-        <Pole label="Heslo">
+        <Pole label={t("ucet.heslo")}>
           <input type="password" autoComplete="current-password" value={heslo} onChange={(e) => setHeslo(e.target.value)} required />
         </Pole>
         <button type="submit" className="tlacidlo-hlavne" disabled={caka}>
-          {caka ? "Prihlasujem…" : "Prihlásiť sa"}
+          {caka ? t("ucet.prihlasujem") : t("ucet.prihlasitSa")}
         </button>
         <p className="prihlasenie-zabudol">
           {zrejuca === null ? (
-            <Odkaz href="/zabudnute-heslo">Zabudol som heslo</Odkaz>
+            <Odkaz href="/zabudnute-heslo">{t("ucet.zabudolHeslo")}</Odkaz>
           ) : (
             <a href="/zabudnute-heslo" onClick={(e) => (e.preventDefault(), doVypalenej("/zabudnute-heslo"))}>
-              Zabudol som heslo
+              {t("ucet.zabudolHeslo")}
             </a>
           )}
         </p>
       </form>
       {zrejuca === null ? (
         <p className="formular-paticka">
-          Ešte nemáš účet? <Odkaz href={`/registracia${location.search}`}>Zaregistruj sa</Odkaz>
+          {tr("ucet.nemasUcet", { odkaz: <Odkaz href={`/registracia${location.search}`}>{t("ucet.zaregistrujSa")}</Odkaz> })}
         </p>
       ) : (
         <p className="formular-paticka">
-          Chceš si zahrať oficiálnu hru?{" "}
-          <a href="/" onClick={(e) => (e.preventDefault(), doVypalenej())}>
-            Späť do Vypálenej
-          </a>
-          .
+          {tr("ucet.oficialna", {
+            odkaz: (
+              <a href="/" onClick={(e) => (e.preventDefault(), doVypalenej())}>
+                {t("ucet.spatDoVypalenej")}
+              </a>
+            ),
+          })}
         </p>
       )}
     </div>
@@ -130,7 +131,7 @@ export function Prihlasenie({ zrejuca = null }: { readonly zrejuca?: { readonly 
 }
 
 export function Registracia() {
-  useTitulok("Registrácia");
+  useTitulok(t("ucet.registracia"));
   const { nastav } = useUcet();
   const [login, setLogin] = useState("");
   const [meno, setMeno] = useState("");
@@ -142,7 +143,7 @@ export function Registracia() {
   const odosli = async (e: FormEvent) => {
     e.preventDefault();
     if (heslo !== heslo2) {
-      setChyba("Heslá sa nezhodujú.");
+      setChyba(t("ucet.hesloNezhoda"));
       return;
     }
     setCaka(true);
@@ -161,11 +162,11 @@ export function Registracia() {
 
   return (
     <>
-    <HlavaStranky nadpis="Nový účet" uvod="Účet potrebuješ na hranie. Pravidlá a karty sú voľne prístupné." />
+    <HlavaStranky nadpis={t("ucet.novyUcet")} uvod={t("ucet.novyUcetUvod")} />
     <div className="formular-stred">
       <form className="panel" onSubmit={(e) => void odosli(e)}>
         {chyba !== null && <Hlaska>{chyba}</Hlaska>}
-        <Pole label="Prihlasovacie meno" pomoc="3 – 32 znakov bez diakritiky. Slúži len na prihlásenie.">
+        <Pole label={t("ucet.login")} pomoc={t("ucet.loginPomoc")}>
           <input
             autoComplete="username"
             value={login}
@@ -175,21 +176,21 @@ export function Registracia() {
             autoFocus
           />
         </Pole>
-        <Pole label="Herné meno" pomoc="Toto uvidí súper. Môžeš ho kedykoľvek zmeniť.">
-          <input value={meno} onChange={(e) => setMeno(e.target.value)} maxLength={24} placeholder={login || "napr. Fero z dolného konca"} />
+        <Pole label={t("ucet.hernemeno")} pomoc={t("ucet.hernemenoPomoc")}>
+          <input value={meno} onChange={(e) => setMeno(e.target.value)} maxLength={24} placeholder={login || t("ucet.hernemenoPriklad")} />
         </Pole>
-        <Pole label="Heslo" pomoc="Aspoň 8 znakov.">
+        <Pole label={t("ucet.heslo")} pomoc={t("ucet.hesloPomoc")}>
           <input type="password" autoComplete="new-password" value={heslo} onChange={(e) => setHeslo(e.target.value)} minLength={8} required />
         </Pole>
-        <Pole label="Heslo znova">
+        <Pole label={t("ucet.hesloZnova")}>
           <input type="password" autoComplete="new-password" value={heslo2} onChange={(e) => setHeslo2(e.target.value)} minLength={8} required />
         </Pole>
         <button type="submit" className="tlacidlo-hlavne" disabled={caka}>
-          {caka ? "Vytváram…" : "Vytvoriť účet"}
+          {caka ? t("ucet.vytvaram") : t("ucet.vytvoritUcet")}
         </button>
       </form>
       <p className="formular-paticka">
-        Už máš účet? <Odkaz href={`/prihlasenie${location.search}`}>Prihlás sa</Odkaz>
+        {tr("ucet.uzMasUcet", { odkaz: <Odkaz href={`/prihlasenie${location.search}`}>{t("ucet.prihlasSa")}</Odkaz> })}
       </p>
     </div>
     </>
@@ -197,8 +198,9 @@ export function Registracia() {
 }
 
 export function Profil() {
-  useTitulok("Môj profil");
+  useTitulok(t("profil.mojProfil"));
   const { ja, nastav } = useUcet();
+  const jazyk = useJazyk();
   const [meno, setMeno] = useState(ja?.meno ?? "");
   const [sprava, setSprava] = useState<{ druh: "ok" | "chyba"; text: string } | null>(null);
   const [nahrava, setNahrava] = useState(false);
@@ -590,6 +592,16 @@ export function Profil() {
       </section>
       <section className="panel preferencie" aria-labelledby="preferencie-nadpis">
         <h3 id="preferencie-nadpis">Preferencie</h3>
+        <fieldset className="skore-volby">
+          <legend>{t("profil.jazyk")}</legend>
+          <p className="tlmene">{t("profil.jazykPomoc")}</p>
+          {JAZYKY.map((j) => (
+            <label key={j} lang={j} className={j === jazyk ? "skore-volba zvolena" : "skore-volba"}>
+              <input type="radio" name="jazyk" checked={j === jazyk} onChange={() => zvolJazyk(j, ja, nastav)} />
+              <span className="skore-nazov">{NAZVY_JAZYKOV[j]}</span>
+            </label>
+          ))}
+        </fieldset>
         <label className="skratky-volba">
           <input type="checkbox" checked={skratky} onChange={(e) => prepniSkratky(e.target.checked)} />
           <span>
