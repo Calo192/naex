@@ -1,0 +1,200 @@
+<!doctype html>
+<html lang="sk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ekonomická lavína — knižnica mechaník NA EX!</title>
+<style>
+:root { --pozadie:#15120f; --plocha:#1f1a15; --plocha-2:#2a231c; --okraj:#43372c; --text:#f1e8d8; --tlmeny:#b8a993;
+  --akcent:#e9ad45; --dobre:#7fbf7a; --zle:#d8705f; --stred:#d9c04a;
+  --serif:Georgia,"Times New Roman",serif; --sans:system-ui,"Segoe UI",Roboto,sans-serif; --mono:ui-monospace,Consolas,monospace; color-scheme:dark; }
+@media (prefers-color-scheme: light) { :root:not([data-theme="dark"]) { --pozadie:#f6f1e7; --plocha:#fffaf1; --plocha-2:#f0e7d6; --okraj:#d8c8ad;
+  --text:#2a2016; --tlmeny:#5e4f3b; --akcent:#95590a; --dobre:#2f7a2b; --zle:#a8402f; --stred:#8a7410; color-scheme:light; } }
+* { box-sizing:border-box; }
+body { margin:0; background:var(--pozadie); color:var(--text); font:16px/1.55 var(--sans); }
+main { max-width:980px; margin:0 auto; padding:28px max(16px, env(safe-area-inset-right,0px)) 56px max(16px, env(safe-area-inset-left,0px)); }
+h1,h2,h3 { font-family:var(--serif); line-height:1.2; text-wrap:balance; }
+h1 { font-size:clamp(1.7rem,4.6vw,2.5rem); margin:0 0 8px; }
+h2 { font-size:1.4rem; margin:40px 0 14px; padding-bottom:6px; border-bottom:1px solid var(--okraj); }
+h3 { font-size:1.08rem; margin:18px 0 6px; }
+p, ul, ol { max-width:74ch; } p { margin:0 0 10px; } li { margin-bottom:5px; }
+a { color:var(--akcent); } :focus-visible { outline:2px solid var(--akcent); outline-offset:2px; }
+.uvod, .pozn { color:var(--tlmeny); } .pozn { font-size:.9rem; }
+.skratka { background:var(--plocha); border:1px solid var(--akcent); border-radius:12px; padding:14px 16px; margin:18px 0; }
+.skratka h2 { margin:0 0 6px; border:0; padding:0; font-size:1.2rem; }
+.tab-obal { overflow-x:auto; }
+table { width:100%; border-collapse:collapse; font-size:.92rem; }
+th, td { padding:7px 6px; text-align:left; vertical-align:top; border-bottom:1px solid var(--okraj); }
+thead th { border-bottom:2px solid var(--okraj); font-size:.85rem; color:var(--tlmeny); font-weight:600; }
+.znamka { display:inline-block; font-size:.78rem; border-radius:999px; padding:0 8px; border:1px solid currentColor; white-space:nowrap; }
+.n { color:var(--dobre); } .s { color:var(--stred); } .v { color:var(--zle); }
+.filtre { display:flex; flex-wrap:wrap; gap:6px; margin:0 0 12px; }
+button { appearance:none; font:inherit; font-size:.88rem; padding:6px 11px; border-radius:8px; border:1px solid var(--okraj); background:var(--plocha-2); color:var(--text); cursor:pointer; }
+button[aria-pressed="true"] { border-color:var(--akcent); color:var(--akcent); font-weight:600; }
+tr[hidden] { display:none; }
+details.mech { background:var(--plocha); border:1px solid var(--okraj); border-radius:12px; padding:12px 16px; margin:12px 0; }
+details.mech[open] { border-color:var(--akcent); }
+details.mech summary { cursor:pointer; font-family:var(--serif); font-size:1.12rem; }
+details.mech summary small { font-family:var(--sans); color:var(--tlmeny); font-size:.82rem; }
+.hra { border-left:3px solid var(--okraj); padding:2px 0 2px 12px; margin:8px 0; }
+.hra b { display:block; }
+.mriezka { display:grid; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); gap:4px 22px; }
+code { font-family:var(--mono); font-size:.86em; background:var(--plocha-2); padding:1px 4px; border-radius:4px; overflow-wrap:anywhere; }
+footer { margin-top:40px; padding-top:12px; border-top:1px solid var(--okraj); color:var(--tlmeny); font-size:.88rem; }
+:root[data-theme="light"] { --pozadie:#f6f1e7; --plocha:#fffaf1; --plocha-2:#f0e7d6; --okraj:#d8c8ad; --text:#2a2016; --tlmeny:#5e4f3b; --akcent:#95590a; --dobre:#2f7a2b; --zle:#a8402f; --stred:#8a7410; color-scheme:light; }
+.slucka { display:grid; grid-template-columns:repeat(auto-fit,minmax(230px,1fr)); gap:10px; margin:12px 0; }
+.slucka div { background:var(--plocha); border:1px solid var(--okraj); border-radius:10px; padding:10px 12px; font-size:.93rem; }
+.slucka b { display:block; font-family:var(--serif); }
+</style>
+</head>
+<body>
+<main>
+<p class="pozn"><a href="index.html">Knižnica mechaník</a> · Študent · 10. 11. 2026 · téma z playtestov 20261108-165501 a 20261109-115955 (návrh 3 „Ekonomika cigariet“)</p>
+<h1>Ekonomická lavína: kto vyhrá bitku, vyberie aj šenok</h1>
+<p class="uvod">Téma je problém, nie mechanika: <b>ako zabrániť, aby prevaha v cigaretách po jednej bitke znamenala prevahu v šenku a tým v ďalších bitkách</b> — bez stropov na zdroje (Michal 2026-10-27) a bez toho, aby výhra prestala byť výhodou. Študent zbiera, ako to riešia iné hry; návrhy pre Michala robia Vymyselník a Navrhár.</p>
+
+<section class="skratka">
+<h2>V skratke</h2>
+<ul>
+<li><b>8 hier</b> (Power Grid, 7 Wonders Duel, Puerto Rico, Century: Spice Road, Small World, Modern Art, Splendor Duel, Through the Ages ako odstrašujúci príklad) a <b>5 mechaník</b>.</li>
+<li>Lavína v NA EX! má dve slučky naraz: víťaz bitky <b>berie zo šenku prvý</b> (§4, §5) a zároveň dostáva <b>cigarety</b> (výpalné za červený strach, §10). Najlacnejšie je rozpojiť prvú slučku: <a href="#chudobnejsi-berie-prvy">prvý berie ten, kto má menej cigariet</a> (Power Grid).</li>
+<li>Druhá slučka (cigarety odchádzajú do banky) sa dá zavrieť bez stropu: <a href="#platba-tomu-kto-priniesol">platíš tomu, kto kartu dal do šenku</a> (Modern Art) alebo <a href="#cena-za-preskocenie">preskočené karty nesú tvoju platbu</a> (Century, Small World).</li>
+<li>Najbližšie k existujúcim pravidlám je <a href="#chamtivy-tah-da-superovi">rastúca cena v jednom braní</a> — rovnaká logika ako fajčenie (§7), Fero ju navrhol v playteste.</li>
+<li>Čo nebrať: kazenie zásob nad limit (Through the Ages) — je to strop, Michal ich zakázal.</li>
+</ul>
+</section>
+
+<h2>1. Problém v NA EX!</h2>
+<p>Cigareta je jediná mena šenku: 1 karta za 1 cigaretu alebo 2 za 3, nič zadarmo, kto nemá cigaretu, nehrá (PRAVIDLA §5 Branie zo šenku). Prvý berie <b>obranca = víťaz poslednej bitky</b> (§4, v9.2). Po bitke cigarety tečú víťazovi: <b>výpalné</b> 1 cigareta za každého staršieho s červeným strachom (§10, v11.9), priazeň Fajčiara (§10); porazený dostane len 1 cigaretu (§9.4 krok 6c). Viac kariet zo šenku = silnejšia ďalšia bitka = viac strachu = viac výpalného. Barter 5 cigariet na poldeci natrvalo (§7) premení prebytok aj na vyšší limit vykladania.</p>
+<p>Playtesty to potvrdzujú zhodne. <b>20261109-115955</b> (3 partie, v11.14): kritérium <i>Rovnováha a férovosť</i> priemer <b>4,5</b>, najnižšie zo všetkých 12; Hela 4 drafty bez cigarety, Šimon 0–2 cigarety celú partiu, Jano 8–9 cigariet z výpalného; Eva „vyberám z 8 kariet“, Fero 5 : 2 a 6 : 2 kariet; <i>Napätie</i> 5,0 („po K4 bolo rozhodnuté“). <b>20261108-165501</b> (v11.13): Rovnováha 4,5, Napätie 4,0; Fero v K3 6 kariet za 7 cigariet proti 2, výsledok 92 : 8. Hráči navrhli: výpalné len od porazeného (Hela), barter 5, 7, 9 (Vilo), tretia karta v braní drahšia (Fero) — report <code>docs/playtesty/20261109-115955.html</code>, návrh 3.</p>
+<div class="slucka">
+<div><b>Slučka 1: poradie</b>Výhra v bitke → obranca → prvý výber v šenku → lepšie karty → výhra v bitke.</div>
+<div><b>Slučka 2: peniaze</b>Výhra → červený strach → výpalné od porazeného → viac kariet za 3 cigarety → výhra. Minuté cigarety zmiznú v banke.</div>
+<div><b>Existujúce brzdy</b>Útočník vykladá a odpovedá prvý (§4), cigareta porazenému, prvý ťah v šenku len 1 karta (§5), pas = cigarety za nevyužitý limit (§6). Playtesty hovoria, že na lavínu nestačia.</div>
+</div>
+<p class="pozn">Súvisí s mechanikou <a href="2026-11-01-pata-laket-otocka.html#brzda-v-strukture">Dobiehanie zo štruktúry hry</a> (téma Päta, Lakeť, Otočka): tam je všeobecná zásada „brzda zo štruktúry, nie darček“, tu konkrétne páky pre šenok.</p>
+
+<h2>2. Hry, ktoré to riešia rôzne</h2>
+<div class="tab-obal"><table>
+<thead><tr><th>Hra</th><th>Hráči</th><th>Ako bráni lavíne</th><th>Mechanika</th></tr></thead>
+<tbody>
+<tr><td>Power Grid</td><td>2–6</td><td>vedúci kupuje suroviny posledný a draho</td><td><a href="#chudobnejsi-berie-prvy">kto je pozadu, vyberá prvý</a></td></tr>
+<tr><td>7 Wonders Duel</td><td>2</td><td>slabší vo vojsku určí, kto začne vek</td><td><a href="#chudobnejsi-berie-prvy">kto je pozadu, vyberá prvý</a></td></tr>
+<tr><td>Puerto Rico</td><td>2–5 (2 variant)</td><td>nevybraté roly naberajú doblóny</td><td><a href="#premia-na-nevzate">prémia na nevzaté</a></td></tr>
+<tr><td>Century: Spice Road</td><td>2–5</td><td>za preskočenú kartu necháš korenie na nej</td><td><a href="#cena-za-preskocenie">cena za preskočenie</a></td></tr>
+<tr><td>Small World</td><td>2–5</td><td>za preskočenú kombináciu necháš mincu</td><td><a href="#cena-za-preskocenie">cena za preskočenie</a></td></tr>
+<tr><td>Modern Art</td><td>3–5</td><td>platíš dražiteľovi, nie banke</td><td><a href="#platba-tomu-kto-priniesol">uzavretá ekonomika</a></td></tr>
+<tr><td>Splendor Duel</td><td>2</td><td>chamtivé branie dá súperovi privilégium</td><td><a href="#chamtivy-tah-da-superovi">chamtivý ťah dá súperovi výsadu</a></td></tr>
+<tr><td>Through the Ages</td><td>2–4</td><td>zásoby nad kapacitou prepadnú (korupcia)</td><td><a href="#co-nebrat">čo nebrať</a></td></tr>
+</tbody></table></div>
+<p class="pozn">Počty hráčov sú z vlastných vedomostí, neoverené.</p>
+
+<h2>3. Porovnanie mechaník</h2>
+<div class="filtre" role="group" aria-label="Ktorú slučku rieši">
+<button type="button" data-f="vsetko" aria-pressed="true">Všetky</button>
+<button type="button" data-f="poradie" aria-pressed="false">Slučka 1: poradie</button>
+<button type="button" data-f="peniaze" aria-pressed="false">Slučka 2: peniaze</button>
+</div>
+<div class="tab-obal"><table id="porov">
+<thead><tr><th>Mechanika</th><th>Rozhodnutie hráča</th><th>Zložitosť</th><th>Zásah do pravidiel</th><th>Hlavné riziko</th></tr></thead>
+<tbody>
+<tr data-riesi="poradie"><td><a href="#chudobnejsi-berie-prvy">Kto je pozadu, vyberá prvý</a></td><td>oplatí sa byť vpredu v cigaretách?</td><td><span class="znamka n">nízka</span></td><td><span class="znamka n">jedna veta v §5</span></td><td>ruší v9.2, zámerná prehra kvôli šenku</td></tr>
+<tr data-riesi="peniaze"><td><a href="#premia-na-nevzate">Prémia na nevzaté</a></td><td>počkať, kým karta naberie, alebo ju vziať teraz</td><td><span class="znamka s">stredná</span></td><td><span class="znamka s">stavba šenku</span></td><td>inflácia cigariet z banky</td></tr>
+<tr data-riesi="peniaze poradie"><td><a href="#cena-za-preskocenie">Cena za preskočenie</a></td><td>čo dám na lacné miesto radu, koľko zaplatím súperovi do budúcna</td><td><span class="znamka v">vyššia</span></td><td><span class="znamka v">nový cenník šenku</span></td><td>zložitosť, prepis bota a výučby</td></tr>
+<tr data-riesi="peniaze"><td><a href="#platba-tomu-kto-priniesol">Platíš tomu, kto priniesol</a></td><td>dať do šenku silnú kartu (zarobím) alebo slabú (nič mu nedám)</td><td><span class="znamka n">nízka</span></td><td><span class="znamka n">adresát platby v §5</span></td><td>mierna brzda, šenok s odpadom</td></tr>
+<tr data-riesi="peniaze"><td><a href="#chamtivy-tah-da-superovi">Chamtivý ťah dá súperovi výsadu / rastúca cena</a></td><td>brať veľa teraz, alebo ušetriť</td><td><span class="znamka n">nízka</span></td><td><span class="znamka n">cenník §5 ako fajčenie</span></td><td>brzdí míňanie, nie príjem</td></tr>
+</tbody></table></div>
+
+<h2>4. Mechaniky podrobne</h2>
+<details class="mech" id="chudobnejsi-berie-prvy">
+<summary>Kto je pozadu, vyberá prvý (poradie nákupu proti vedúcemu) <small><code>chudobnejsi-berie-prvy</code></small></summary>
+<h3>Problém v NA EX!</h3><p>V šenku berie prvý obranca, teda víťaz poslednej bitky (PRAVIDLA §4, §5 Branie zo šenku), a ten má po výpalnom spravidla aj viac cigariet. Výhra v bitke tak dá naraz prvý výber aj peniaze naň — dve spätné väzby v jednom smere (playtest 20261109-115955, kritérium Rovnováha 4,5; Eva: „útočník vždy obsadil kľúčovú hranu prvý“, Fero 5 : 2 a 6 : 2 kariet).</p>
+<h3>Ako funguje</h3><p>1. Poradie nákupu sa neurčuje podľa toho, kto vyhral, ale podľa toho, kto zaostáva (menej miest, slabšia armáda, menej peňazí). 2. Vedúci nakupuje posledný — z toho, čo ostalo, a za vyššiu cenu, keď cena s každým nákupom rastie. 3. Vedúci si zato inde nechá výhodu (prvý ťah na mape, prvý vo dražbe), takže vedenie ostáva výhodou, len nie vo všetkom.</p>
+<h3>Hry a prečo tam funguje</h3>
+<div class="hra"><b>Power Grid (Friedemann Friese, 2004)</b>Poradie sa po každom kole určí podľa počtu miest; suroviny sa kupujú v opačnom poradí a s každým nákupom zdražejú, takže hráč s najmenej mestami kupuje najlacnejšie a vedúci stavia aj kupuje posledný. Vedúci zato dražbu elektrární začína prvý. Hráč rozhoduje, či sa mu oplatí byť v tomto kole vpredu. <a href="https://en.wikipedia.org/wiki/Power_Grid">zdroj</a></div><div class="hra"><b>Power Grid — ako to učiť</b>Návod BGG k výučbe vysvetľuje obrátené poradie nákupu ako zámerné dobiehanie, ktoré bráni, aby jeden hráč ušiel. <a href="https://boardgamegeek.com/wiki/page/How_To_Teach:_Power_Grid">zdroj</a></div><div class="hra"><b>7 Wonders Duel (Bauza, Cathala, 2015, 2 hráči)</b>Na začiatku ďalšieho veku vyberá, kto začne, hráč so slabšou armádou (žetón konfliktu je na jeho strane). Prehra na jednej osi dá rozhodnutie o tempe, nie zdroj. Pri žetóne v strede a pri rovnosti sa zdroje rozchádzajú. <a href="https://officialgamerules.org/game-rules/7-wonders-duel-rules/">zdroj</a></div><div class="hra"><b>7 Wonders Duel — rozpor v pravidlách</b>Fórum BGA cituje pravidlá: pri žetóne v strede začína posledný aktívny hráč; ukazuje, že aj jednoduché „slabší vyberá“ potrebuje presné znenie pre remízu. <a href="https://forum.boardgamearena.com/viewtopic.php?p=89676">zdroj</a></div>
+<h3>Kritika a kde zlyháva</h3><p>Power Grid: hráči sa naučia zámerne zaostávať o jedno mesto, aby kupovali lacno („sandbagging“) — z vlastných vedomostí, neoverené. Recenzia d20radio upozorňuje, že v poslednom kole sa zaostávajúci už nedobehne, lebo vedúci stavia naraz (<a href="https://www.d20radio.com/main/rogue-review-powergrid/">zdroj</a>). Pre víťaza to môže vyzerať ako trest za dobrú hru (League of Gamemakers, pozri brzda-v-strukture).</p>
+<h3>Prevod do NA EX!</h3><p>Dnes: obranca (víťaz bitky) berie zo šenku prvý, na prvom ťahu len 1 kartu (§5). Prevod A (najmenší zásah): zo šenku berie prvý ten, kto má **menej cigariet** po kroku 6c (výpalné, cigareta porazenému, Fajčiar); pri rovnosti útočník. Obranca si nechá voľbu cieľa (§5) — výhra ostane výhodou, len nedá aj prvý výber. Prevod B: berie prvý útočník (porazený) vždy — jednoduchšie, ale ignoruje cigarety. Prevod C (7 Wonders Duel): porazený v bitke rozhodne, kto berie prvý — niekedy chce, aby súper minul cigarety skôr. Výučba: jedna veta v kroku Šenok. Karty netreba meniť; Autobusár (väzeň, §10) mení branie a treba ho prečítať nanovo.</p>
+<h3>Riziká</h3><p>Ruší rozhodnutie Michala v9.2 (obranca berie prvý, 2026-10-30). Útočník už vykladá prvý (§4) — spolu s prvým výberom zo šenku môže byť prehra výhodnejšia než výhra pri tesnej bitke (zámerná prehra kvôli šenku). Prvý ťah len 1 karta (§5) treba ponechať, inak chudobnejší s 1 cigaretou nevykradne nič a bohatý aj tak vezme zvyšok — prevod sám nestačí, ak šenok míňa len bohatý.</p>
+<h3>Čo zmerať</h3><p>Turnaj botov na Zrejúcej s rovnakými semienkami: podiel kariet zo šenku, ktoré vezme porazený z poslednej bitky (dnes vs. prevod A); pravdepodobnosť, že víťaz K1 vyhrá partiu; rozdiel cigariet po K3; počet kôl, v ktorých jeden hráč nevezme zo šenku nič.</p>
+</details>
+<details class="mech" id="premia-na-nevzate">
+<summary>Prémia na nevzaté: čo nikto nechcel, naberá hodnotu <small><code>premia-na-nevzate</code></small></summary>
+<h3>Problém v NA EX!</h3><p>Bohatší hráč berie zo šenku najlepšie karty a chudobnejší nemá cigaretu ani na tie, čo ostanú (PRAVIDLA §5: kto nemá cigaretu, brať nemôže; nevzaté karty idú pri ďalšej stavbe naspodok). Šenok nemá spôsob, ako chudobnému vrátiť cigarety do hry.</p>
+<h3>Ako funguje</h3><p>1. Na konci kola dostane každá ponuka, ktorú si nikto nevybral, žetón (peniaz) z banky. 2. Ponuka ostáva na stole aj do ďalšieho kola a žetóny sa na nej hromadia. 3. Kto ju vezme, berie aj všetky žetóny. Nepopulárna voľba je tak za pár kôl najvýhodnejšia a hráč rozhoduje, či počká, kým naberie, alebo mu ju súper vezme.</p>
+<h3>Hry a prečo tam funguje</h3>
+<div class="hra"><b>Puerto Rico (Andreas Seyfarth, 2002)</b>Na konci kola sa na každú nevybratú rolu položí doblón a ďalší, kto rolu vyberie, si ho vezme; podľa Wikipédie to hráčov ťahá ku všetkým rolám. Hra pre dvoch má vlastný variant (každý vyberá tri roly, doblón na siedmu). <a href="https://en.wikipedia.org/wiki/Puerto_Rico_(board_game)">zdroj</a></div><div class="hra"><b>Puerto Rico — pravidlá</b>Pravidlá: po kole jeden doblón na každú z nevybratých rolí. <a href="https://rulespal.com/puerto-rico/rulebook">zdroj</a></div>
+<h3>Kritika a kde zlyháva</h3><p>Doblóny na rolách sú v Puerto Ricu malý príjem; ak je prémia veľká, hráči čakajú a hra sa spomalí. Že sa prémia v Puerto Ricu niekedy ignoruje, lebo rola je dôležitejšia než doblón, je z vlastných vedomostí, neoverené.</p>
+<h3>Prevod do NA EX!</h3><p>Po braní (§5) dostane každá nevzatá karta šenku 1 cigaretu z banky položenú na ňu a pri ďalšej stavbe **neide naspodok**, ale ostane v šenku aj s cigaretami; stavba doplní šenok len do 8 (každý dá do šenku o toľko menej, koľko nevzatých ostalo, zaokrúhlené tak, aby šenok mal 8). Kto kartu vezme, berie aj cigarety — za 1 cigaretu môže dostať kartu aj 2 cigarety späť. Chudobnejší si vyberá „zhnité ovocie“ šenku a vracia sa do ekonomiky. Krčmová téma: tovar, ktorý nikto nechce, krčmár predáva so zľavou — „k tomu ešte jednu na účet podniku“. Karty sa nemenia; Zastávka, Sklad, Predavačka a Živnostník (§15, §16) by brali aj cigarety — treba rozhodnúť.</p>
+<h3>Riziká</h3><p>Do hry pribudnú cigarety z banky (inflácia), čo zväčší barter a výkupné na konci (§14). Stavba šenku sa skomplikuje (koľko kariet dá každý). Bohatý môže kartu s cigaretami vziať tiež — dobieha len vtedy, keď chudobnejší berie prvý (kombinovať s chudobnejsi-berie-prvy). Nevzaté karty bývajú slabé; prémia 1 cigareta nemusí stačiť a 2 už môže zahltiť.</p>
+<h3>Čo zmerať</h3><p>Koľko cigariet z banky pribudne za partiu; koľko nevzatých kariet vezme hráč s menej cigaretami; či klesne počet drafov s 0 kúpenými kartami (Hela 4 drafty v 20261109-115955).</p>
+</details>
+<details class="mech" id="cena-za-preskocenie">
+<summary>Cena za preskočenie: prvá ponuka zadarmo, za každú preskočenú zaplatíš na ňu <small><code>cena-za-preskocenie</code></small></summary>
+<h3>Problém v NA EX!</h3><p>Kto nemá cigaretu, šenok nehrá vôbec (PRAVIDLA §5: „nič zo šenku nie je zadarmo“), a cigarety, ktoré bohatý minie, odchádzajú z hry. Lavína sa preto nedá zastaviť zo šenku: bohatý vyberá aj platí, chudobný sa pozerá (playtest 20261109-115955: Hela 0 cigariet v štyroch draftoch, Šimon 0–2 celú partiu).</p>
+<h3>Ako funguje</h3><p>1. Ponuka leží v rade. 2. Prvá karta radu je zadarmo. 3. Kto chce kartu ďalej v rade, položí na každú preskočenú kartu jeden žetón. 4. Kto neskôr vezme kartu so žetónmi, vezme aj ich. Bohatý si vyberá, čo chce, ale jeho platba ostáva na stole pre toho, kto berie lacné karty. Rad sa posúva doľava a dopĺňa sprava.</p>
+<h3>Hry a prečo tam funguje</h3>
+<div class="hra"><b>Century: Spice Road (Emerson Matsuuchi, 2017)</b>Rad šiestich obchodných kariet: najľavejšia je zadarmo, za vzatie ďalšej položíš na každú kartu vľavo od nej jednu kocku korenia; kto vezme kartu s kockami, berie ich. Hráč rozhoduje, či sa mu oplatí platiť súperovi do budúcna. <a href="https://cs.uwaterloo.ca/~dtompkin/archive/dtlib/base/Century%20-%20Spice%20Road.pdf">zdroj</a></div><div class="hra"><b>Century: Spice Road — recenzia</b>Recenzia Opinionated Gamers rozoberá výber z radu kariet ako jadro rozhodovania v hre. <a href="https://opinionatedgamers.com/2017/04/24/century-spice-road-game-review-by-chris-wray/">zdroj</a></div><div class="hra"><b>Small World (Philippe Keyaerts, 2009)</b>Rad kombinácií rasa + schopnosť: prvá je zadarmo, za každú preskočenú položíš na ňu víťaznú mincu a kto ju neskôr vezme, berie mince. Slabá kombinácia s mincami sa stane výhodnou. <a href="https://www.orderofgamers.com/downloads/SmallWorld_v3.pdf">zdroj</a></div><div class="hra"><b>Small World — rozbor (Uppsala, herný dizajn)</b>Študentský rozbor hry opisuje, že mince na preskočených kombináciách berie ten, kto ich vyberie, a že Underground cenu odvodzuje od pozície. <a href="https://babel.speldesign.uu.se/?p=6254">zdroj</a></div>
+<h3>Kritika a kde zlyháva</h3><p>Ak je prvá karta zadarmo, chudobný hráč berie stále zvyšky a nemusí sa dostať k dobrým kartám — dobieha len pomaly. V Century sa podľa hráčov opakuje „vezmi ľavú kartu a zober kocky“ — z vlastných vedomostí, neoverené. Poradie radu vnáša náhodu (čo príde na lacné miesto).</p>
+<h3>Prevod do NA EX!</h3><p>Šenok ako rad 8 kariet (odkrytie po stavbe, §5 — poradie určí, kto kartu dal: najprv 4 karty útočníka, potom 4 obrancu, každý si svoje 4 zoradí sám, čím rozhodne, čo dá na lacné miesta). Branie: karta na 1. mieste stojí 0 cigariet, na n-tom mieste n−1 cigariet položených po jednej na preskočené karty. Kto vezme kartu s cigaretami, berie ich. Nahrádza „1 za 1 / 2 za 3“. Výučba: obrázok radu s cigaretami. Zastávka a Sklad (§15) berú z radu — rozhodnúť, či platia cenu pozície.</p>
+<h3>Riziká</h3><p>Mení Michalovo „nič zo šenku nie je zadarmo“ a celý cenník šenku; bot (bot.ts) a ťahák AI hráčov sa prepíšu. Stavba radu pridá rozhodnutie navyše (zložitosť pre nováčika, kritérium Hĺbka vs. zložitosť už 6,0). Bohatý môže zobrať všetko drahé a nechať chudobnému len „1. miesto“ — dobiehanie pomalé. Dĺžka brania sa predĺži.</p>
+<h3>Čo zmerať</h3><p>Tok cigariet medzi hráčmi v šenku (koľko cigariet bohatšieho skončí u chudobnejšieho); počet kôl s 0 kartami zo šenku; či víťaz K1 vyhráva partiu menej často; dĺžka draftu v ťahoch.</p>
+</details>
+<details class="mech" id="platba-tomu-kto-priniesol">
+<summary>Uzavretá ekonomika: platíš tomu, kto tovar priniesol, nie banke <small><code>platba-tomu-kto-priniesol</code></small></summary>
+<h3>Problém v NA EX!</h3><p>Cigarety minuté v šenku zmiznú v banke (PRAVIDLA §5), takže čím viac bohatý míňa, tým väčší je náskok v kartách, a chudobnému sa nevráti nič. Polovicu šenku pritom pripravil súper (stavba 4 + 4, §5).</p>
+<h3>Ako funguje</h3><p>1. Ponuku na trh dáva hráč (dražiteľ, predajca). 2. Kto ju kúpi, platí jemu, nie banke. 3. Ak kúpi vlastnú ponuku, platí banke. Peniaze sa tak neničia, ale presúvajú: kto veľa kupuje, živí toho, kto predáva. Hráč pri tvorbe ponuky rozhoduje, či dá súperovi dobrú kartu za peniaze, alebo slabú, ktorú nikto nekúpi.</p>
+<h3>Hry a prečo tam funguje</h3>
+<div class="hra"><b>Modern Art (Reiner Knizia, 1992)</b>Keď obraz vydražíš od iného hráča, peniaze dostane dražiteľ; keď vydražíš vlastný, platíš banke. Peniaze sú body, takže každý nákup posilní súpera — kupujúci zvažuje cenu aj to, komu ju dá. <a href="https://rolltoreview.com/modern-art-review-auction-strategy-game/">zdroj</a></div><div class="hra"><b>Modern Art — strategická príručka</b>Ak nie si dražiteľ, svoju ponuku platíš dražiteľovi, čo sú pre neho víťazné body — preto sa predraženie trestá dvakrát. <a href="https://www.myboardgameguides.com/game-strategy/game-specific-strategy/modern-art-game-strategy-guide">zdroj</a></div>
+<h3>Kritika a kde zlyháva</h3><p>Pre dvoch hráčov je Modern Art slabý (hrá sa od 3) — z vlastných vedomostí, neoverené; v hre pre dvoch je každá platba súperovi priamy pohyb skóre o dvojnásobok, čo môže byť príliš ostré. Hráči môžu dávať na trh len odpad, ak predaj neprináša dosť.</p>
+<h3>Prevod do NA EX!</h3><p>Kto vezme zo šenku kartu, ktorú doň dal **súper** (odkryté, §5), zaplatí cigarety **súperovi**; za vlastnú kartu platí banke ako dnes. Bohatý, ktorý berie veľa súperových kariet, tak vracia cigarety chudobnému, a stavba šenku dostane nové rozhodnutie: dať do šenku silnú kartu (súper ju kúpi a ja zarobím), alebo slabú (nič nezarobím, ale nič mu nedám). Krčma: „platíš tomu, kto to doniesol na pult“. Karty a výučba: jedna veta pri šenku, šenok musí ukazovať, kto kartu dal (dnes sa odkrýva naraz).</p>
+<h3>Riziká</h3><p>Ak súper berie len vlastné karty, nezmení sa nič; ak hráči dajú do šenku samý odpad, šenok sa zhorší pre oboch (tempo). Prevod mení §5 len v adresátovi platby, kód aj UI malé. Pre víťaza bitky môže byť stále výhodné brať, takže brzda je mierna — skôr ventil než oprava.</p>
+<h3>Čo zmerať</h3><p>Koľko cigariet sa za partiu presunie od bohatšieho k chudobnejšiemu; zmena kvality kariet v šenku (priemerná sila podľa power-level-efekty); podiel kariet zo šenku pre porazeného.</p>
+</details>
+<details class="mech" id="chamtivy-tah-da-superovi">
+<summary>Chamtivý ťah dá súperovi výsadu <small><code>chamtivy-tah-da-superovi</code></small></summary>
+<h3>Problém v NA EX!</h3><p>Najväčší ťah v šenku (2 karty za 3 cigarety, opakovane) robí z peňazí karty bez protiváhy: 20261108-165501 K3 Fero 6 kariet za 7 cigariet proti 2 Janovým. Fero sám navrhol drahšiu tretiu kartu v jednom braní; fajčenie v Pitke už má rastúcu cenu (PRAVIDLA §7).</p>
+<h3>Ako funguje</h3><p>1. Pravidlá označia ťah, ktorý je najsilnejší pre toho, kto má zdroje (vziať tri rovnaké žetóny, dve perly, doplniť trh). 2. Kto ho urobí, dá súperovi výsadu (žetón, ktorý súper neskôr minie na mimoriadny ťah). 3. Hráč si vyberá: rýchlo zbohatnúť a dať súperovi nástroj, alebo ísť pomalšie.</p>
+<h3>Hry a prečo tam funguje</h3>
+<div class="hra"><b>Splendor Duel (Marc André, Bruno Cathala, 2022, 2 hráči)</b>Kto v povinnej akcii vezme tri žetóny rovnakej farby alebo dve perly, súper dostane zvitok privilégia; ak už žiadny nie je, vezme ho od hráča. Žetóny vzaté zvitkom to nespúšťajú. <a href="https://rulespal.com/splendor-duel/faq">zdroj</a></div><div class="hra"><b>Splendor Duel — doplnenie dosky</b>Kto doplní dosku žetónov, dá súperovi zvitok privilégia; doplnenie je dobrovoľné, takže hráč rozhoduje, či sa mu nový výber oplatí za výsadu pre súpera. <a href="https://officialgamerules.org/game-rules/splendor-duel/">zdroj</a></div><div class="hra"><b>Splendor Duel — zvitky (Dized)</b>Zvitok sa minie pred povinnou akciou na jeden žetón podľa výberu; je to drobná, ale presná pomoc tomu, komu súper nechal výsadu. <a href="https://rules.dized.com/game/W-CkaRFlR36L6fiDQiWcHQ/qxDtZdX0RTmW32ukW7JTqQ/privilege-scrolls">zdroj</a></div>
+<h3>Kritika a kde zlyháva</h3><p>Výsada je malá — silný hráč ju niekedy rád zaplatí; recenzie Splendor Duel ju chvália ako interakciu, nie ako dobiehanie (z vlastných vedomostí, neoverené). Keď je výsada príliš silná, hráči sa veľkým ťahom vyhýbajú a hra sa spomalí.</p>
+<h3>Prevod do NA EX!</h3><p>Kto v jednom ťahu vezme zo šenku **2 karty za 3 cigarety**, súper dostane „rundu“: cigaretu z banky (alebo od berúceho, ak chceme presun bez inflácie). Variant bližší NA EX! a Ferovmu návrhu: cena v jednom braní rastie ako fajčenie (prvá karta 1, druhá 2, tretia 3… za kolo a hráča, počítadlo verejné) — „nie je to strop, len drahšie“ (Michal 2026-10-27, žiadne stropy). Výučba: rovnaká logika ako fajčenie, nováčik ju už pozná. Karty sa nemenia; Autobusár (väzeň) treba prečítať.</p>
+<h3>Riziká</h3><p>Rastúca cena zdraží šenok aj chudobnému (prvá karta ostáva 1, takže jeho sa netýka). Runda súperovi z banky pridá cigarety (inflácia, výkupné §14). Ak hráči prestanú brať po dvoch, draft sa predĺži o ťahy. Brzdí míňanie, nie príjem — výpalné a Fajčiar ostávajú.</p>
+<h3>Čo zmerať</h3><p>Rozdiel v počte kariet zo šenku medzi hráčmi za kolo (dnes 5 : 2, 6 : 2); cigarety nevyužité na konci partie (výkupné); korelácia cigariet po K2 s výsledkom.</p>
+</details>
+
+<h2 id="co-nebrat">5. Čo nebrať</h2>
+<p><b>Korupcia v Through the Ages.</b> Jedlo a suroviny nad kapacitu skladu prepadnú; v pokročilej hre hromadenie (málo žetónov v modrej banke) spôsobí korupciu (<a href="https://d.cge.as/tta_manual/through-the-ages-new-story-handbook-en.pdf">príručka CGE</a>, <a href="https://statelyplay.com/2017/09/26/strategy-101-through-the-ages-corruption-edition/">Stately Play</a>). Je to strop na zdroj — presne to, čo Michal 2026-10-27 vylúčil („žiadne umelé stropy, prebytok treba dať minúť“). Rovnako „najviac N cigariet“ či „nad X prepadne“.</p>
+<p><b>Darček zaostávajúcemu bez rozhodnutia</b> (napr. 3 cigarety každému, kto prehral) — League of Gamemakers a Portal Games varujú, že také dobiehanie vyzerá ako ukradnutá výhra (zdroje v <a href="index.html">knižnici</a> pri <code>brzda-v-strukture</code>). Kritik Colony (Burt Yaroch) dodáva, že vedenie má byť odmenou (<a href="https://brandonthegamedev.com/colony-letting-leaders-lead/">brandonthegamedev.com</a>).</p>
+
+<h2>6. Pre Vymyselníka, Navrhára a stratéga</h2>
+<ul>
+<li><b>Najlacnejší prvý pokus:</b> <a href="#chudobnejsi-berie-prvy">chudobnejší berie prvý</a> + <a href="#chamtivy-tah-da-superovi">rastúca cena v jednom braní</a>. Oboje je jedna veta v §5, obe sú „brzda zo štruktúry“, nie darček, a druhá kopíruje už známe fajčenie.</li>
+<li><b>Ak to nestačí:</b> <a href="#platba-tomu-kto-priniesol">platba tomu, kto priniesol</a> zavrie únik cigariet do banky a pridá rozhodnutie do stavby šenku (dnes tajná voľba 4 z 8).</li>
+<li><b>Väčšia prestavba:</b> <a href="#cena-za-preskocenie">rad s cenou za preskočenie</a> rieši aj „bez cigarety nehráš“, ale mení celý šenok.</li>
+<li><b>Stratég najprv zmeria</b> na botoch s rovnakými semienkami: podiel kariet zo šenku pre porazeného, P(víťaz K1 vyhrá partiu), rozdiel cigariet po K3, počet draftov s 0 kartami. Bez týchto čísel nevieme, či lavínu ženie šenok, alebo výpalné (to druhé knižnica nerieši — je to hodnota v pravidlách, nie mechanika z iných hier).</li>
+</ul>
+
+<footer>NA EX! · Študent · vetva <code>student/2026-11-10</code> · <code>docs/kniznica/2026-11-10-ekonomicka-lavina.html</code> · tvrdenia bez odkazu sú označené „z vlastných vedomostí, neoverené“ · čísla o NA EX! sú z reportov playtestov AI hráčov (signál, nie štatistika).</footer>
+</main>
+<script>
+(function () {
+  "use strict";
+  // Filtrovanie porovnávacej tabuľky podľa slučky, ktorú mechanika rieši.
+  var tlacidla = document.querySelectorAll(".filtre button");
+  tlacidla.forEach(function (b) {
+    b.addEventListener("click", function () {
+      tlacidla.forEach(function (x) { x.setAttribute("aria-pressed", String(x === b)); });
+      var f = b.getAttribute("data-f");
+      document.querySelectorAll("#porov tbody tr").forEach(function (tr) {
+        tr.hidden = f !== "vsetko" && tr.getAttribute("data-riesi").split(" ").indexOf(f) < 0;
+      });
+    });
+  });
+  // Odkaz na mechaniku ju otvorí.
+  function otvor() { var el = location.hash && document.getElementById(location.hash.slice(1)); if (el && el.tagName === "DETAILS") el.open = true; }
+  window.addEventListener("hashchange", otvor); otvor();
+  document.querySelectorAll('a[href^="#"]').forEach(function (a) { a.addEventListener("click", function () { setTimeout(otvor, 0); }); });
+})();
+</script>
+</body>
+</html>

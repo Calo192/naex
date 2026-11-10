@@ -710,13 +710,18 @@
         "nazov": "Colony — obhajoba vedúceho (Burt Yaroch)",
         "preco": "„Runaway leader“ je podľa autora často nadávka pre veľmi meritokratické hry. Vedenie má byť odmenou, nie chybou.",
         "zdroj": "https://brandonthegamedev.com/colony-letting-leaders-lead/"
+      },
+      {
+        "nazov": "Power Grid — overenie (Študent 2026-11-10)",
+        "preco": "Wikipédia potvrdzuje, že suroviny sa kupujú v opačnom poradí a hráč s najmenej mestami kupuje najlacnejšie; vedúci stavia posledný. Podrobnosť z prvého zápisu je tým overená.",
+        "zdroj": "https://en.wikipedia.org/wiki/Power_Grid"
       }
     ],
     "kritika": "Priveľa bŕzd vedie k patu a dlhej partii, keď nikto nevie odskočiť. Dar zaostávajúcemu vyzerá ako almužna a víťaz má pocit, že mu výhru vzali (League of Gamemakers).",
     "prevod": "Režim už má tri vstavané brzdy: (1) súperove Povery slabnú s počtom tvojich padlých (4 → 3 → 2), (2) padnutý ostáva ako spojka, takže zmiznú len jeho vlastné akcie, (3) útočník (porazený v bitke) vykladá prvý a odpovedá prvý (PRAVIDLA §4). Štvrtou je Má dosť, ak sedí rozpočet. Čísla z mocku: rad stratí 23 % tuhého po prvom páde a ďalších 37 % po druhom, takže po druhom páde snowball zosilnie. Návrh: nepridávať darčeky. Ak meranie ukáže snowball, posilniť štruktúru: víťaz bitky nedostane okrem roly obrancu nič navyše a Fajront zasiahne len stojacich (vedúci so 4 stojacimi stratí viac).",
     "rizika": "Priveľa bŕzd vedie k patu, primálo k tomu, že partiu rozhodne prvý pád. Brzdy sa navzájom násobia, takže ich treba merať spolu, nie po jednej.",
     "merat": "Úspešnosť hráča, ktorý prvý podrazil staršieho (cieľ najviac 65 %). Úspešnosť pri stave 4 : 2 stojacich. Počet zmien vedenia v súčte pečene za partiu.",
-    "temy": ["pata-laket-otocka"],
+    "temy": ["pata-laket-otocka", "ekonomicka-lavina"],
     "pridane": "2026-11-01"
   },
   {
@@ -922,5 +927,150 @@
     "merat": "Ako často sa špión hrá v kole, ktoré jeho majiteľ prehral. Rozdiel v počte kariet v ruke pred finále. Úspešnosť hráča so špiónom v balíčku.",
     "temy": ["deckbuilding"],
     "pridane": "2026-11-08"
+  },
+  {
+    "id": "chudobnejsi-berie-prvy",
+    "nazov": "Kto je pozadu, vyberá prvý (poradie nákupu proti vedúcemu)",
+    "problem": "V šenku berie prvý obranca, teda víťaz poslednej bitky (PRAVIDLA §4, §5 Branie zo šenku), a ten má po výpalnom spravidla aj viac cigariet. Výhra v bitke tak dá naraz prvý výber aj peniaze naň — dve spätné väzby v jednom smere (playtest 20261109-115955, kritérium Rovnováha 4,5; Eva: „útočník vždy obsadil kľúčovú hranu prvý“, Fero 5 : 2 a 6 : 2 kariet).",
+    "ako": "1. Poradie nákupu sa neurčuje podľa toho, kto vyhral, ale podľa toho, kto zaostáva (menej miest, slabšia armáda, menej peňazí). 2. Vedúci nakupuje posledný — z toho, čo ostalo, a za vyššiu cenu, keď cena s každým nákupom rastie. 3. Vedúci si zato inde nechá výhodu (prvý ťah na mape, prvý vo dražbe), takže vedenie ostáva výhodou, len nie vo všetkom.",
+    "hry": [
+      {
+        "nazov": "Power Grid (Friedemann Friese, 2004)",
+        "preco": "Poradie sa po každom kole určí podľa počtu miest; suroviny sa kupujú v opačnom poradí a s každým nákupom zdražejú, takže hráč s najmenej mestami kupuje najlacnejšie a vedúci stavia aj kupuje posledný. Vedúci zato dražbu elektrární začína prvý. Hráč rozhoduje, či sa mu oplatí byť v tomto kole vpredu.",
+        "zdroj": "https://en.wikipedia.org/wiki/Power_Grid"
+      },
+      {
+        "nazov": "Power Grid — ako to učiť",
+        "preco": "Návod BGG k výučbe vysvetľuje obrátené poradie nákupu ako zámerné dobiehanie, ktoré bráni, aby jeden hráč ušiel.",
+        "zdroj": "https://boardgamegeek.com/wiki/page/How_To_Teach:_Power_Grid"
+      },
+      {
+        "nazov": "7 Wonders Duel (Bauza, Cathala, 2015, 2 hráči)",
+        "preco": "Na začiatku ďalšieho veku vyberá, kto začne, hráč so slabšou armádou (žetón konfliktu je na jeho strane). Prehra na jednej osi dá rozhodnutie o tempe, nie zdroj. Pri žetóne v strede a pri rovnosti sa zdroje rozchádzajú.",
+        "zdroj": "https://officialgamerules.org/game-rules/7-wonders-duel-rules/"
+      },
+      {
+        "nazov": "7 Wonders Duel — rozpor v pravidlách",
+        "preco": "Fórum BGA cituje pravidlá: pri žetóne v strede začína posledný aktívny hráč; ukazuje, že aj jednoduché „slabší vyberá“ potrebuje presné znenie pre remízu.",
+        "zdroj": "https://forum.boardgamearena.com/viewtopic.php?p=89676"
+      }
+    ],
+    "kritika": "Power Grid: hráči sa naučia zámerne zaostávať o jedno mesto, aby kupovali lacno („sandbagging“) — z vlastných vedomostí, neoverené. Recenzia d20radio upozorňuje, že v poslednom kole sa zaostávajúci už nedobehne, lebo vedúci stavia naraz (https://www.d20radio.com/main/rogue-review-powergrid/). Pre víťaza to môže vyzerať ako trest za dobrú hru (League of Gamemakers, pozri brzda-v-strukture).",
+    "prevod": "Dnes: obranca (víťaz bitky) berie zo šenku prvý, na prvom ťahu len 1 kartu (§5). Prevod A (najmenší zásah): zo šenku berie prvý ten, kto má **menej cigariet** po kroku 6c (výpalné, cigareta porazenému, Fajčiar); pri rovnosti útočník. Obranca si nechá voľbu cieľa (§5) — výhra ostane výhodou, len nedá aj prvý výber. Prevod B: berie prvý útočník (porazený) vždy — jednoduchšie, ale ignoruje cigarety. Prevod C (7 Wonders Duel): porazený v bitke rozhodne, kto berie prvý — niekedy chce, aby súper minul cigarety skôr. Výučba: jedna veta v kroku Šenok. Karty netreba meniť; Autobusár (väzeň, §10) mení branie a treba ho prečítať nanovo.",
+    "rizika": "Ruší rozhodnutie Michala v9.2 (obranca berie prvý, 2026-10-30). Útočník už vykladá prvý (§4) — spolu s prvým výberom zo šenku môže byť prehra výhodnejšia než výhra pri tesnej bitke (zámerná prehra kvôli šenku). Prvý ťah len 1 karta (§5) treba ponechať, inak chudobnejší s 1 cigaretou nevykradne nič a bohatý aj tak vezme zvyšok — prevod sám nestačí, ak šenok míňa len bohatý.",
+    "merat": "Turnaj botov na Zrejúcej s rovnakými semienkami: podiel kariet zo šenku, ktoré vezme porazený z poslednej bitky (dnes vs. prevod A); pravdepodobnosť, že víťaz K1 vyhrá partiu; rozdiel cigariet po K3; počet kôl, v ktorých jeden hráč nevezme zo šenku nič.",
+    "temy": ["ekonomicka-lavina"],
+    "pridane": "2026-11-10"
+  },
+  {
+    "id": "premia-na-nevzate",
+    "nazov": "Prémia na nevzaté: čo nikto nechcel, naberá hodnotu",
+    "problem": "Bohatší hráč berie zo šenku najlepšie karty a chudobnejší nemá cigaretu ani na tie, čo ostanú (PRAVIDLA §5: kto nemá cigaretu, brať nemôže; nevzaté karty idú pri ďalšej stavbe naspodok). Šenok nemá spôsob, ako chudobnému vrátiť cigarety do hry.",
+    "ako": "1. Na konci kola dostane každá ponuka, ktorú si nikto nevybral, žetón (peniaz) z banky. 2. Ponuka ostáva na stole aj do ďalšieho kola a žetóny sa na nej hromadia. 3. Kto ju vezme, berie aj všetky žetóny. Nepopulárna voľba je tak za pár kôl najvýhodnejšia a hráč rozhoduje, či počká, kým naberie, alebo mu ju súper vezme.",
+    "hry": [
+      {
+        "nazov": "Puerto Rico (Andreas Seyfarth, 2002)",
+        "preco": "Na konci kola sa na každú nevybratú rolu položí doblón a ďalší, kto rolu vyberie, si ho vezme; podľa Wikipédie to hráčov ťahá ku všetkým rolám. Hra pre dvoch má vlastný variant (každý vyberá tri roly, doblón na siedmu).",
+        "zdroj": "https://en.wikipedia.org/wiki/Puerto_Rico_(board_game)"
+      },
+      {
+        "nazov": "Puerto Rico — pravidlá",
+        "preco": "Pravidlá: po kole jeden doblón na každú z nevybratých rolí.",
+        "zdroj": "https://rulespal.com/puerto-rico/rulebook"
+      }
+    ],
+    "kritika": "Doblóny na rolách sú v Puerto Ricu malý príjem; ak je prémia veľká, hráči čakajú a hra sa spomalí. Že sa prémia v Puerto Ricu niekedy ignoruje, lebo rola je dôležitejšia než doblón, je z vlastných vedomostí, neoverené.",
+    "prevod": "Po braní (§5) dostane každá nevzatá karta šenku 1 cigaretu z banky položenú na ňu a pri ďalšej stavbe **neide naspodok**, ale ostane v šenku aj s cigaretami; stavba doplní šenok len do 8 (každý dá do šenku o toľko menej, koľko nevzatých ostalo, zaokrúhlené tak, aby šenok mal 8). Kto kartu vezme, berie aj cigarety — za 1 cigaretu môže dostať kartu aj 2 cigarety späť. Chudobnejší si vyberá „zhnité ovocie“ šenku a vracia sa do ekonomiky. Krčmová téma: tovar, ktorý nikto nechce, krčmár predáva so zľavou — „k tomu ešte jednu na účet podniku“. Karty sa nemenia; Zastávka, Sklad, Predavačka a Živnostník (§15, §16) by brali aj cigarety — treba rozhodnúť.",
+    "rizika": "Do hry pribudnú cigarety z banky (inflácia), čo zväčší barter a výkupné na konci (§14). Stavba šenku sa skomplikuje (koľko kariet dá každý). Bohatý môže kartu s cigaretami vziať tiež — dobieha len vtedy, keď chudobnejší berie prvý (kombinovať s chudobnejsi-berie-prvy). Nevzaté karty bývajú slabé; prémia 1 cigareta nemusí stačiť a 2 už môže zahltiť.",
+    "merat": "Koľko cigariet z banky pribudne za partiu; koľko nevzatých kariet vezme hráč s menej cigaretami; či klesne počet drafov s 0 kúpenými kartami (Hela 4 drafty v 20261109-115955).",
+    "temy": ["ekonomicka-lavina"],
+    "pridane": "2026-11-10"
+  },
+  {
+    "id": "cena-za-preskocenie",
+    "nazov": "Cena za preskočenie: prvá ponuka zadarmo, za každú preskočenú zaplatíš na ňu",
+    "problem": "Kto nemá cigaretu, šenok nehrá vôbec (PRAVIDLA §5: „nič zo šenku nie je zadarmo“), a cigarety, ktoré bohatý minie, odchádzajú z hry. Lavína sa preto nedá zastaviť zo šenku: bohatý vyberá aj platí, chudobný sa pozerá (playtest 20261109-115955: Hela 0 cigariet v štyroch draftoch, Šimon 0–2 celú partiu).",
+    "ako": "1. Ponuka leží v rade. 2. Prvá karta radu je zadarmo. 3. Kto chce kartu ďalej v rade, položí na každú preskočenú kartu jeden žetón. 4. Kto neskôr vezme kartu so žetónmi, vezme aj ich. Bohatý si vyberá, čo chce, ale jeho platba ostáva na stole pre toho, kto berie lacné karty. Rad sa posúva doľava a dopĺňa sprava.",
+    "hry": [
+      {
+        "nazov": "Century: Spice Road (Emerson Matsuuchi, 2017)",
+        "preco": "Rad šiestich obchodných kariet: najľavejšia je zadarmo, za vzatie ďalšej položíš na každú kartu vľavo od nej jednu kocku korenia; kto vezme kartu s kockami, berie ich. Hráč rozhoduje, či sa mu oplatí platiť súperovi do budúcna.",
+        "zdroj": "https://cs.uwaterloo.ca/~dtompkin/archive/dtlib/base/Century%20-%20Spice%20Road.pdf"
+      },
+      {
+        "nazov": "Century: Spice Road — recenzia",
+        "preco": "Recenzia Opinionated Gamers rozoberá výber z radu kariet ako jadro rozhodovania v hre.",
+        "zdroj": "https://opinionatedgamers.com/2017/04/24/century-spice-road-game-review-by-chris-wray/"
+      },
+      {
+        "nazov": "Small World (Philippe Keyaerts, 2009)",
+        "preco": "Rad kombinácií rasa + schopnosť: prvá je zadarmo, za každú preskočenú položíš na ňu víťaznú mincu a kto ju neskôr vezme, berie mince. Slabá kombinácia s mincami sa stane výhodnou.",
+        "zdroj": "https://www.orderofgamers.com/downloads/SmallWorld_v3.pdf"
+      },
+      {
+        "nazov": "Small World — rozbor (Uppsala, herný dizajn)",
+        "preco": "Študentský rozbor hry opisuje, že mince na preskočených kombináciách berie ten, kto ich vyberie, a že Underground cenu odvodzuje od pozície.",
+        "zdroj": "https://babel.speldesign.uu.se/?p=6254"
+      }
+    ],
+    "kritika": "Ak je prvá karta zadarmo, chudobný hráč berie stále zvyšky a nemusí sa dostať k dobrým kartám — dobieha len pomaly. V Century sa podľa hráčov opakuje „vezmi ľavú kartu a zober kocky“ — z vlastných vedomostí, neoverené. Poradie radu vnáša náhodu (čo príde na lacné miesto).",
+    "prevod": "Šenok ako rad 8 kariet (odkrytie po stavbe, §5 — poradie určí, kto kartu dal: najprv 4 karty útočníka, potom 4 obrancu, každý si svoje 4 zoradí sám, čím rozhodne, čo dá na lacné miesta). Branie: karta na 1. mieste stojí 0 cigariet, na n-tom mieste n−1 cigariet položených po jednej na preskočené karty. Kto vezme kartu s cigaretami, berie ich. Nahrádza „1 za 1 / 2 za 3“. Výučba: obrázok radu s cigaretami. Zastávka a Sklad (§15) berú z radu — rozhodnúť, či platia cenu pozície.",
+    "rizika": "Mení Michalovo „nič zo šenku nie je zadarmo“ a celý cenník šenku; bot (bot.ts) a ťahák AI hráčov sa prepíšu. Stavba radu pridá rozhodnutie navyše (zložitosť pre nováčika, kritérium Hĺbka vs. zložitosť už 6,0). Bohatý môže zobrať všetko drahé a nechať chudobnému len „1. miesto“ — dobiehanie pomalé. Dĺžka brania sa predĺži.",
+    "merat": "Tok cigariet medzi hráčmi v šenku (koľko cigariet bohatšieho skončí u chudobnejšieho); počet kôl s 0 kartami zo šenku; či víťaz K1 vyhráva partiu menej často; dĺžka draftu v ťahoch.",
+    "temy": ["ekonomicka-lavina"],
+    "pridane": "2026-11-10"
+  },
+  {
+    "id": "platba-tomu-kto-priniesol",
+    "nazov": "Uzavretá ekonomika: platíš tomu, kto tovar priniesol, nie banke",
+    "problem": "Cigarety minuté v šenku zmiznú v banke (PRAVIDLA §5), takže čím viac bohatý míňa, tým väčší je náskok v kartách, a chudobnému sa nevráti nič. Polovicu šenku pritom pripravil súper (stavba 4 + 4, §5).",
+    "ako": "1. Ponuku na trh dáva hráč (dražiteľ, predajca). 2. Kto ju kúpi, platí jemu, nie banke. 3. Ak kúpi vlastnú ponuku, platí banke. Peniaze sa tak neničia, ale presúvajú: kto veľa kupuje, živí toho, kto predáva. Hráč pri tvorbe ponuky rozhoduje, či dá súperovi dobrú kartu za peniaze, alebo slabú, ktorú nikto nekúpi.",
+    "hry": [
+      {
+        "nazov": "Modern Art (Reiner Knizia, 1992)",
+        "preco": "Keď obraz vydražíš od iného hráča, peniaze dostane dražiteľ; keď vydražíš vlastný, platíš banke. Peniaze sú body, takže každý nákup posilní súpera — kupujúci zvažuje cenu aj to, komu ju dá.",
+        "zdroj": "https://rolltoreview.com/modern-art-review-auction-strategy-game/"
+      },
+      {
+        "nazov": "Modern Art — strategická príručka",
+        "preco": "Ak nie si dražiteľ, svoju ponuku platíš dražiteľovi, čo sú pre neho víťazné body — preto sa predraženie trestá dvakrát.",
+        "zdroj": "https://www.myboardgameguides.com/game-strategy/game-specific-strategy/modern-art-game-strategy-guide"
+      }
+    ],
+    "kritika": "Pre dvoch hráčov je Modern Art slabý (hrá sa od 3) — z vlastných vedomostí, neoverené; v hre pre dvoch je každá platba súperovi priamy pohyb skóre o dvojnásobok, čo môže byť príliš ostré. Hráči môžu dávať na trh len odpad, ak predaj neprináša dosť.",
+    "prevod": "Kto vezme zo šenku kartu, ktorú doň dal **súper** (odkryté, §5), zaplatí cigarety **súperovi**; za vlastnú kartu platí banke ako dnes. Bohatý, ktorý berie veľa súperových kariet, tak vracia cigarety chudobnému, a stavba šenku dostane nové rozhodnutie: dať do šenku silnú kartu (súper ju kúpi a ja zarobím), alebo slabú (nič nezarobím, ale nič mu nedám). Krčma: „platíš tomu, kto to doniesol na pult“. Karty a výučba: jedna veta pri šenku, šenok musí ukazovať, kto kartu dal (dnes sa odkrýva naraz).",
+    "rizika": "Ak súper berie len vlastné karty, nezmení sa nič; ak hráči dajú do šenku samý odpad, šenok sa zhorší pre oboch (tempo). Prevod mení §5 len v adresátovi platby, kód aj UI malé. Pre víťaza bitky môže byť stále výhodné brať, takže brzda je mierna — skôr ventil než oprava.",
+    "merat": "Koľko cigariet sa za partiu presunie od bohatšieho k chudobnejšiemu; zmena kvality kariet v šenku (priemerná sila podľa power-level-efekty); podiel kariet zo šenku pre porazeného.",
+    "temy": ["ekonomicka-lavina"],
+    "pridane": "2026-11-10"
+  },
+  {
+    "id": "chamtivy-tah-da-superovi",
+    "nazov": "Chamtivý ťah dá súperovi výsadu",
+    "problem": "Najväčší ťah v šenku (2 karty za 3 cigarety, opakovane) robí z peňazí karty bez protiváhy: 20261108-165501 K3 Fero 6 kariet za 7 cigariet proti 2 Janovým. Fero sám navrhol drahšiu tretiu kartu v jednom braní; fajčenie v Pitke už má rastúcu cenu (PRAVIDLA §7).",
+    "ako": "1. Pravidlá označia ťah, ktorý je najsilnejší pre toho, kto má zdroje (vziať tri rovnaké žetóny, dve perly, doplniť trh). 2. Kto ho urobí, dá súperovi výsadu (žetón, ktorý súper neskôr minie na mimoriadny ťah). 3. Hráč si vyberá: rýchlo zbohatnúť a dať súperovi nástroj, alebo ísť pomalšie.",
+    "hry": [
+      {
+        "nazov": "Splendor Duel (Marc André, Bruno Cathala, 2022, 2 hráči)",
+        "preco": "Kto v povinnej akcii vezme tri žetóny rovnakej farby alebo dve perly, súper dostane zvitok privilégia; ak už žiadny nie je, vezme ho od hráča. Žetóny vzaté zvitkom to nespúšťajú.",
+        "zdroj": "https://rulespal.com/splendor-duel/faq"
+      },
+      {
+        "nazov": "Splendor Duel — doplnenie dosky",
+        "preco": "Kto doplní dosku žetónov, dá súperovi zvitok privilégia; doplnenie je dobrovoľné, takže hráč rozhoduje, či sa mu nový výber oplatí za výsadu pre súpera.",
+        "zdroj": "https://officialgamerules.org/game-rules/splendor-duel/"
+      },
+      {
+        "nazov": "Splendor Duel — zvitky (Dized)",
+        "preco": "Zvitok sa minie pred povinnou akciou na jeden žetón podľa výberu; je to drobná, ale presná pomoc tomu, komu súper nechal výsadu.",
+        "zdroj": "https://rules.dized.com/game/W-CkaRFlR36L6fiDQiWcHQ/qxDtZdX0RTmW32ukW7JTqQ/privilege-scrolls"
+      }
+    ],
+    "kritika": "Výsada je malá — silný hráč ju niekedy rád zaplatí; recenzie Splendor Duel ju chvália ako interakciu, nie ako dobiehanie (z vlastných vedomostí, neoverené). Keď je výsada príliš silná, hráči sa veľkým ťahom vyhýbajú a hra sa spomalí.",
+    "prevod": "Kto v jednom ťahu vezme zo šenku **2 karty za 3 cigarety**, súper dostane „rundu“: cigaretu z banky (alebo od berúceho, ak chceme presun bez inflácie). Variant bližší NA EX! a Ferovmu návrhu: cena v jednom braní rastie ako fajčenie (prvá karta 1, druhá 2, tretia 3… za kolo a hráča, počítadlo verejné) — „nie je to strop, len drahšie“ (Michal 2026-10-27, žiadne stropy). Výučba: rovnaká logika ako fajčenie, nováčik ju už pozná. Karty sa nemenia; Autobusár (väzeň) treba prečítať.",
+    "rizika": "Rastúca cena zdraží šenok aj chudobnému (prvá karta ostáva 1, takže jeho sa netýka). Runda súperovi z banky pridá cigarety (inflácia, výkupné §14). Ak hráči prestanú brať po dvoch, draft sa predĺži o ťahy. Brzdí míňanie, nie príjem — výpalné a Fajčiar ostávajú.",
+    "merat": "Rozdiel v počte kariet zo šenku medzi hráčmi za kolo (dnes 5 : 2, 6 : 2); cigarety nevyužité na konci partie (výkupné); korelácia cigariet po K2 s výsledkom.",
+    "temy": ["ekonomicka-lavina"],
+    "pridane": "2026-11-10"
   }
 ]
