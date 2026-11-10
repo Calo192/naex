@@ -63,3 +63,13 @@ describe("slová, ktoré hráč nevidí", () => {
     }
   });
 });
+
+describe("titulka sľubuje dĺžku výučby zo scenára", () => {
+  it("počet častí a súčet minút z prva-hra.json (casti[].minuty)", async () => {
+    const { dlzkaVyucby } = await import("../src/stranky/dlzkaVyucby.ts");
+    const scenar = (await import("@naex/core/data/vyucba/prva-hra.json")).default as { casti: { minuty: number }[] };
+    const spolu = scenar.casti.reduce((s, c) => s + c.minuty, 0);
+    expect(dlzkaVyucby(scenar.casti)).toMatch(new RegExp(`časti?, spolu asi ${spolu} minút$`));
+    expect(dlzkaVyucby([{ minuty: 7 }, { minuty: 15 }, { minuty: 12 }])).toBe("tri časti, spolu asi 34 minút");
+  });
+});
