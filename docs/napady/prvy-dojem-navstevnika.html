@@ -1,0 +1,383 @@
+<!doctype html>
+<html lang="sk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Prvý dojem návštevníka — návrh úprav</title>
+<style>
+  :root { --pozadie:#15120f; --papier:#1f1a16; --text:#ece4d8; --tlm:#a89e90; --jantar:#e2a73a; --ok:#6fbf73; --zle:#e06c5c; --ciara:#3a322b; }
+  * { box-sizing:border-box }
+  body { margin:0; background:var(--pozadie); color:var(--text); font:16px/1.55 system-ui, "Segoe UI", Roboto, sans-serif }
+  main { max-width:1000px; margin:0 auto; padding:32px 20px 80px }
+  h1 { font-size:2rem; margin:0 0 4px; color:var(--jantar) }
+  h2 { font-size:1.4rem; margin:48px 0 12px; padding-top:16px; border-top:1px solid var(--ciara) }
+  h3 { font-size:1.1rem; margin:28px 0 8px }
+  p, li { max-width:76ch }
+  .tlm { color:var(--tlm) }
+  .citat { border-left:4px solid var(--jantar); background:var(--papier); padding:12px 16px; margin:16px 0; font-style:italic; max-width:none }
+  table { border-collapse:collapse; width:100%; margin:12px 0; font-size:.95rem }
+  th, td { text-align:left; vertical-align:top; padding:8px 10px; border-bottom:1px solid var(--ciara) }
+  th { color:var(--tlm); font-weight:600 }
+  .znacka { display:inline-block; font-size:.75rem; padding:2px 8px; border-radius:99px; background:#2c251f; color:var(--tlm); margin-right:6px; vertical-align:middle }
+  .znacka.zle { color:var(--zle) } .znacka.jantar { color:var(--jantar) } .znacka.ok { color:var(--ok) }
+  .navrh { background:var(--papier); border:1px solid var(--ciara); border-left:4px solid var(--jantar); border-radius:10px; padding:16px 20px; margin:18px 0 }
+  .navrh h3 { margin-top:0 }
+  .navrh dl { display:grid; grid-template-columns:max-content 1fr; gap:4px 14px; margin:10px 0 0; font-size:.95rem }
+  .navrh dt { color:var(--tlm) }
+  .navrh dd { margin:0; max-width:76ch }
+  code { background:#2c251f; padding:1px 5px; border-radius:4px; font-size:.9em }
+  details { margin:8px 0 } summary { cursor:pointer; color:var(--jantar) }
+  .mock { background:#0f0d0b; border:1px dashed #5a4d3f; border-radius:12px; padding:20px; margin:16px 0 }
+  .mock .pas { display:grid; grid-template-columns:repeat(4,1fr); gap:10px; margin-top:14px }
+  .mock .krok { background:#1b1612; border:1px solid var(--ciara); border-radius:8px; padding:12px }
+  .mock .krok b { display:block; color:var(--jantar); font-size:1.4rem; line-height:1 }
+  .mock .krok strong { display:block; margin:6px 0 4px }
+  .mock .krok span { font-size:.9rem; color:var(--tlm) }
+  .mock .pitch { font-size:1.15rem; margin:0; max-width:none }
+  .mock .pozn { font-size:.85rem; color:var(--tlm); margin:12px 0 0; max-width:none }
+  .desiatka { display:grid; grid-template-columns:repeat(auto-fit, minmax(200px,1fr)); gap:8px }
+  .desiatka div { background:var(--papier); border:1px solid var(--ciara); border-radius:8px; padding:8px 10px; font-size:.92rem }
+  .desiatka b { color:var(--jantar) }
+  .rozhodni li { margin:6px 0 }
+  .rozhodni input { margin-right:8px; transform:scale(1.2) }
+  .legenda { font-size:.88rem; color:var(--tlm) }
+  figure { margin:16px 0; background:var(--papier); border:1px solid var(--ciara); border-radius:10px; padding:10px }
+  figure img { width:100%; height:auto; display:block; border-radius:6px }
+  figcaption { font-size:.88rem; color:var(--tlm); padding:8px 4px 0 }
+  .snimky { display:grid; grid-template-columns:1fr 1fr; gap:12px }
+  .zoznam-chyb li { margin:4px 0 }
+  @media (max-width:760px) { .mock .pas, .snimky { grid-template-columns:1fr } .navrh dl { grid-template-columns:1fr } }
+</style>
+</head>
+<body>
+<main>
+<h1>Prvý dojem návštevníka — návrh úprav</h1>
+<p class="tlm">10. 11. 2026 · podklad pre Michala · zdroj: reakcia jedného skutočného návštevníka + fakty z kódu, výučby, reportov a snímok živého webu (cesta pri každom čísle)</p>
+
+<div class="citat">
+„Mrkol som na tvoju stránku. Vyzerá naozaj prepracovane, ale hru som pochopil len okrajovo a aj keď som skúsil zahrať s Meliškom, tak som to nepobral. Strašne veľa pojmov a dokopy proste guláš. Schválne som tomu venoval asi toľko pozornosti, koľko by venoval návštevník stránky, a bol som zahltený. Téma sa mi páči. Grafika je silno AI s obvyklými chybami.“
+</div>
+
+<div class="citat">
+„Tak potom je to na kartovku extrémne komplexná hra, pretože behom toho úvodného tutoriálu, kde som si v podstate len vyberal 4 karty, som bol zahltený 40 pojmami, pričom význam väčšiny mi buď nebol vysvetlený, alebo sa v tom vysvetlení stratil. Nemal som absolútne tušenie, čo robím, okrem toho, čo som si domyslel z kontextu.“ <span class="tlm">(druhá správa, 10. 11.)</span>
+</div>
+<p>Druhá správa sa dá overiť na scenári doslova: v <b>prvých 14 krokoch</b> výučby hráč klikne trikrát (lokalita, Hasič, „neťahám“) a Melichar mu medzitým povie <b>400 slov a asi 28 herných pojmov</b> — krok 2 má 60 slov a 8 pojmov (špak, finále, bar, bitka, lokalita, starší, strach, zajatie), krok 3 ďalších 9 (kolo, hrana, akcia, Rana, Pecka, Petelica, tuhé, víťaz vyberá lokalitu), krok 5 vymenuje päť fáz a k nim hádku, Poveru, Pohoršenie a Poškodenie, ktoré prídu až o 37 krokov. „Stratil sa v tom vysvetlení“ sedí tiež: zajatie z kroku 2 sa vysvetlí až v 3. časti (krok 109), hádka v kroku 42. Nováčik si teda naozaj vyberal karty a počúval zhrnutie celej hry.</p>
+
+<p>Je to <b>prvý ľudský hlas</b>: všetkých 33 názorov na živej Spätnej väzbe je od AI účtov (<code>admin.ts nazory --zivy</code>, 10. 11. 2026). Hovorí tri veci a každá má v kóde merateľnú príčinu:</p>
+<ol>
+  <li><b>„Pochopil som len okrajovo“</b> — web nemá miesto, kde sa za 30 sekúnd dozvieš, <em>čo v ťahu robíš a ako vyhráš</em>. Úvod je len tematický a stránka Hrať je pre návštevníka prázdna.</li>
+  <li><b>„S Meliškom som to nepobral, veľa pojmov, guláš“</b> — výučba aj Rýchly štart pravidiel sypú desiatky pojmov hneď na začiatku, často skôr, než ich hráč potrebuje. Výučbu navyše dostane až po registrácii.</li>
+  <li><b>„Grafika silno AI s obvyklými chybami“</b> — vidí to na prvej obrazovke (tri karty vo vejári) a na ilustráciách kapitol pravidiel. Konkrétne nálezy sú v časti 4.</li>
+</ol>
+<p>Téma sa mu páči a tón Melichara nekritizoval — to nemeniť.</p>
+
+<h2>1. Čo návštevník vidí</h2>
+<p class="tlm">Snímky živého webu bez prihlásenia, 1600 × 1000 (10. 11. 2026).</p>
+<div class="snimky">
+  <figure><img src="prvy-dojem-navstevnika/anon-uvod.png" alt="Úvodná stránka bez prihlásenia"><figcaption><b>Úvod.</b> Nadpis, tematický slogan, tlačidlo „Nauč sa hrať s Majstrom Melicharom — tri časti, ~35 min“, vejár troch kariet. Ani veta o tom, čo hráč robí a ako vyhrá. Na kartách vo vejári je ~10 piktogramov bez legendy a pojmy Starešina, Chlap, Občan, Závislák, Lokalita, Väzeň.</figcaption></figure>
+  <figure><img src="prvy-dojem-navstevnika/anon-hra.png" alt="Stránka Hrať bez prihlásenia"><figcaption><b>Hrať</b> — prvá a zvýraznená položka menu. Pre návštevníka prázdna strana „Hrať môžu prihlásení“ s dvoma tlačidlami. Nič o hre, výučba bez účtu nejde (tlačidlo na úvode vedie na prihlásenie, <code>Vyucba.tsx:91</code>).</figcaption></figure>
+  <figure><img src="prvy-dojem-navstevnika/anon-pravidla.png" alt="Pravidlá bez prihlásenia"><figcaption><b>Pravidlá.</b> 44 obrazoviek v jednom scrolle, obsah vľavo s 15 kapitolami. Už v obsahu sú pojmy, ktoré stránka nevysvetlila: Zhromaždenie, spoje, Pitka, Cena pitia, Nakladačka, Kliatby, Dedičstvo, špaky, šenok. Prvá kapitola hovorí len „Dvaja hráči, dedina a krčma“ — mechanika začína až v druhej.</figcaption></figure>
+  <figure><img src="prvy-dojem-navstevnika/anon-karty.png" alt="Karty bez prihlásenia"><figcaption><b>Karty</b> (druhá dlaždica úvodu, „Glosár kariet“). Katalóg 97 kariet so 4–8 piktogramami na každej, štyri záložky (Dielňa, Heatmapa, Power level) a vysvetlenie schované pod „Ako to funguje? ▸“. Pre návštevníka bez kontextu.</figcaption></figure>
+</div>
+
+<h2>2. Diagnóza s číslami</h2>
+<table>
+<tr><th>Čo</th><th>Stav</th><th>Dôkaz</th></tr>
+<tr><td>Čas návštevníka</td><td>pár minút; sám hovorí „toľko pozornosti, koľko by venoval návštevník“</td><td>reakcia</td></tr>
+<tr><td>Čo mu web ponúka</td><td>výučba <b>35 minút v troch častiach</b> (až po registrácii) alebo pravidlá v <b>15 kapitolách</b> (špecifikácia 1 867 riadkov, slovník <b>61 pojmov</b>)</td><td><code>Domov.tsx:46</code>, <code>kapitoly.tsx</code>, <code>PRAVIDLA.md §17</code></td></tr>
+<tr><td>Úvodná stránka</td><td>„Bitka o dedinu. Na ex!“ a „Vystavaj nezastaviteľnú partiu odhodlaných dedinských stvorení…“ — <b>nič o tom, čo hráč robí a ako vyhrá</b>; stránka nemá meta description, takže ani náhľad odkazu nič nepovie</td><td><code>Domov.tsx:30–40</code>, <code>index.html</code></td></tr>
+<tr><td>Menu</td><td>7 položiek pre každého (Hrať, Pravidlá, Karty, Rebríček, Novinky, Vývoj, Spätná väzba) + Prihlásiť, Registrovať; Rebríček, Vývoj a Spätná väzba sú pre návštevníka šum</td><td>snímky</td></tr>
+<tr><td>Rýchly štart pravidiel</td><td>prvé 3 kapitoly zavedú <b>19 rôznych slovníkových pojmov</b> (6 + 6 + 7); „Ako sa vyhráva“ hneď hovorí o lige, finále, pinnacle lokalite, výkupnom, väzňovi, exekúcii a Cirhóze</td><td><code>kapitoly.tsx:51–168</code></td></tr>
+<tr><td>Výučba „Prvá hra“</td><td><b>176 krokov</b>, 4 276 slov Melichara; 1. časť: 53 krokov, 12 minút, <b>~40 pojmov</b>; krok 2 zavedie 7 pojmov, krok 5 asi 8 (vymenuje päť fáz a k tomu hádku, Poveru a Pohoršenie, ktoré sa vysvetlia až o 37 krokov neskôr); najdlhší krok 1. časti má 69 slov (Hazard, zadĺženie, Dlh, pečeň, Cirhóza, kliatba naraz)</td><td><code>prva-hra.json</code>: i-lokalita, i-fazy, i-zadlzenie</td></tr>
+<tr><td>Posledný playtest výučby</td><td>30. 10. (staršia verzia, 212 krokov): tempo a dĺžka <b>4,7/10</b>, „Viem, čo klikať, ale nie prečo“, nováčik navrhuje 25–30 min; terajších 176 krokov <b>nikto neoveril</b></td><td><code>docs/playtesty/vyucba-20261030-184959.html</code></td></tr>
+<tr><td>UX návrh z 23. 10.</td><td>N1 „jeden pojem na krok, podčiarknuté pojmy s definíciou pod myšou vo výučbe“ je <b>jediný nezrealizovaný</b> z piatich</td><td><code>dizajn-vyucba-20261023-1843-ux.html</code>; <code>Vyucba.tsx</code> slovník nepoužíva</td></tr>
+<tr><td>Nápovedy v prvej partii</td><td>21 hotových nápoved Melichara pre prvú skutočnú partiu je <b>nezverejnených</b> (<code>zverejnena: false</code>)</td><td><code>packages/core/data/vyucba/napovedy.json</code></td></tr>
+<tr><td>Ukážka hry bez servera</td><td>už existuje: dva boti odohrajú partiu v prehliadači a stôl ukáže ľubovoľný okamih — ale len pre správcu na <code>/hra/ukazka-stola</code></td><td><code>apps/web/src/hra/UkazkaStola.tsx</code></td></tr>
+<tr><td>Grafika</td><td>z 19 kontrolovaných obrázkov (vejár, 15 kapitol, Melichar) <b>ani jeden bez AI chyby</b>; 3 výrazné (Krčma vo vejári, kapitoly 02 a 07); všetky kapitoly majú rovnaký štýl, svetlo a „tie isté tváre“ — to je silnejší signál „AI“ než jednotlivé chyby</td><td>časť 4</td></tr>
+</table>
+
+<p><b>Záver diagnózy:</b> návštevník nemá ani jednu cestu, ktorá by zodpovedala jeho rozpočtu času. Web má len dve dvere — „čítaj 15 kapitol“ a „zaregistruj sa a hraj 35 minút“ — a obe začínajú slovníkom. Chýbajú dvere „pozri sa 30 sekúnd“, „pozri si jedno kolo za minútu“ a „zahraj si prvé kolo za 5 minút“.</p>
+
+<h2>3. Zásada: Prvá desiatka slov</h2>
+<p>Hra má 61 pojmov a návštevník ich nemá ako vstrebať naraz. Navrhujem určiť <b>desať slov, ktoré stačia na prvé kolo</b>, a všetko ostatné považovať za „druhý jazyk“, ktorý sa nesmie objaviť na úvodnej stránke, v Rýchlom štarte pravidiel ani v 1. časti výučby. Nie je to premenovanie — pojmy ostávajú, mení sa len to, kedy ich človek stretne.</p>
+<div class="desiatka">
+  <div><b>karta</b> — dedinčan s ikonami na hranách (akciami)</div>
+  <div><b>línia</b> — jeden spoločný rad kariet na stole</div>
+  <div><b>spoj</b> — ikony susedov v rovnakej výške; vtedy akcia platí</div>
+  <div><b>šenok</b> — ponuka kariet; berieš z nej za cigarety</div>
+  <div><b>cigareta</b> — drobné, za ktoré kupuješ a doberáš</div>
+  <div><b>poldeci</b> — koľko kariet v ťahu vyložíš (plné + 1); vylievaš ho pri NA EX</div>
+  <div><b>NA EX</b> — poldeci tajne vyliaty na jednu kartu v línii; vypne ju</div>
+  <div><b>bitka</b> — sčítanie úderov, kto má viac, vyhral kolo</div>
+  <div><b>špak</b> — bod; na konci vyhrá, kto má viac</div>
+  <div><b>starší</b> — autority dediny; keď sa ťa boja, sypú špaky</div>
+</div>
+<p class="legenda">Druhý jazyk (až po prvom kole): strach, stupeň, priazeň, reči, Nakladačka, hádka, Povera, Pohoršenie, Viera, tuhé a mäkké, kraj, strana, prevaha, limit, pas, útočník a obranca, Hazard, zadĺženie, Dlh, pečeň, Cirhóza, kliatba, priznanie, nerest, Chuť, Absťák, Nástroj, Dedičstvo, Kšeft, Konflikt, Podpora, Vypiť, Záverečná, Výtržník, odpoveď na NA EX, liga, finále, výkupné, väzeň, exekútor, Sekera, nástenka… Práve tieto dnes stoja v kapitole „Ako sa vyhráva“ a v 5. kroku výučby.</p>
+
+<h2>3b. Triáž pojmov: čo von, čo vysvetliť a ako</h2>
+<p class="tlm">Michal 10. 11.: „Pojmy, ktoré nie sú nevyhnutné pre hráča, ako napríklad bar a podobne, treba odstrániť. Pojmy ako Pitka, bitka a podobne treba domyselne vysvetliť.“</p>
+
+<h3>Ako sa „domyselne“ vysvetľuje — šesť pravidiel pre scenár</h3>
+<ol>
+  <li><b>Slovo príde až vtedy, keď je vec na stole a svieti.</b> Nikdy v zozname vopred (dnešný krok 5 vymenuje päť fáz a hádku, ktorá príde o 37 krokov). Šedý stôl to už umožňuje.</li>
+  <li><b>Jedna veta čo to je, jedna veta prečo ťa to zaujíma.</b> Najviac 25 slov na bublinu. Čísla, vzorce a výnimky do 1. časti nepatria („máš dva plné, teda tri karty“ áno; „limit = plné + 1“ nie).</li>
+  <li><b>Meno je obraz a vysvetlenie ho použije.</b> Pitka = pije sa; NA EX = vyliať pohárik na kartu na ex; špak = ohorok = bod; šenok = výčap, kde sa kupuje; starší = dedinské autority. Definíciu zo slovníka nikdy.</li>
+  <li><b>Hneď po vete ide ťah hráča, ktorý slovo použije.</b> Kvíz až po použití, nie pred ním.</li>
+  <li><b>Každé slovo zaznie trikrát:</b> pri predstavení, pri prvom použití hráčom, v zhrnutí „Toto už vieš“ na konci časti. Vo výučbe podčiarknuté, definícia pod myšou.</li>
+  <li><b>Text karty v 1. časti ignorujeme.</b> Melichar: „Čo je na karte napísané, dnes nechaj tak — hráme len ikony. Texty prídu v 3. časti.“ Rozdanie 1. časti sa vyberie tak, aby žiadny efekt v prvom kole nevystrelil (Hazard, pečeň, Povera von).</li>
+</ol>
+
+<h3>Verdikt pre každý pojem, ktorý dnes 1. časť vysype</h3>
+<p class="legenda">Von = nahradiť bežným slovom vo výučbe, nápovedách aj v nápisoch stola. Vysvetliť = ostáva v 1. časti, text návrhu nižšie. Neskôr = príde v 2.–4. časti alebo v nápovede prvej partie, keď nastane. Stĺpec „Kde“ hovorí, či slovo hráč vidí aj mimo výučby — tie sa nedajú len vynechať.</p>
+<table>
+<tr><th>Pojem</th><th>Kde ho hráč vidí</th><th>Verdikt</th><th>Náhrada / kedy</th></tr>
+<tr><td>bar</td><td>len výučba (51×) a nápovedy (10×); stôl ho nikde nepíše</td><td><span class="znacka zle">von</span></td><td>„dole pri sebe“, „tvoje špaky dole“</td></tr>
+<tr><td>Draft</td><td>nadpis fázy na stole „Draft — šenok a pokus o zajatie“, výučba 21×</td><td><span class="znacka zle">von</span></td><td>nadpis fázy „Šenok“ (zajatie dopísať, len keď je možné); vo výučbe „kupovanie zo šenku“</td></tr>
+<tr><td>Voľba cieľa</td><td>nadpis fázy</td><td><span class="znacka zle">von</span></td><td>„vyber, o ktoré miesto sa pobijete“; nadpis fázy „O čo sa bijeme“ (slovo cieľ si nováčik pletie s cieľom hry)</td></tr>
+<tr><td>tuhé poškodenie, Poškodenie</td><td>stôl „tuhé 7 : 5“, karty (Bitkár +1 tuhé)</td><td><span class="znacka">neskôr</span></td><td>v 1. časti „údery“; slovo tuhé príde v 2. časti spolu s mäkkým, keď prvýkrát na niečom záleží rozdiel</td></tr>
+<tr><td>hrana</td><td>stôl (ľavá / pravá hrana lokality)</td><td><span class="znacka">neskôr</span></td><td>v 1. časti „ikony na okraji karty“; hrana príde s prevahou v 2. časti</td></tr>
+<tr><td>limit (vykladania)</td><td>stôl (čísla)</td><td><span class="znacka">neskôr</span></td><td>„máš dva plné poldeci, teda vyložíš tri karty“; slovo limit v 2. časti</td></tr>
+<tr><td>finále, liga, 3 / 5 / 7 bitiek</td><td>stôl (rozpis kôl)</td><td><span class="znacka">neskôr</span></td><td>„dnes sa pobijeme raz“; finále v 3. časti</td></tr>
+<tr><td>zajatie („pozatvára“), väzeň</td><td>stôl, karty</td><td><span class="znacka">neskôr</span></td><td>3. časť, ako dnes (krok 109)</td></tr>
+<tr><td>hádka, Povera, Pohoršenie, Viera, mäkké, reči</td><td>stôl, karty</td><td><span class="znacka">neskôr</span></td><td>2. časť; rozdanie 1. časti bez Povery, prvý spoj ukázať na úderoch</td></tr>
+<tr><td>Hazard, zadĺženie, Dlh, pečeň, Cirhóza, kliatba, exekútor</td><td>stôl, karty</td><td><span class="znacka">neskôr</span></td><td>2.–3. časť; rozdanie 1. časti bez týchto akcií (dnešný krok 25 má 69 slov)</td></tr>
+<tr><td>počet Pitiek (vzorec), akcia Cigareta, Posilnenie, kúpa poldeci za 5 cigariet, doliatie</td><td>stôl</td><td><span class="znacka">neskôr</span></td><td>2. časť alebo nápoveda, keď nastane</td></tr>
+<tr><td>stupne a farby strachu, cena posunu, priazeň, Advokát, Nakladačka</td><td>stôl (teplomery)</td><td><span class="znacka">neskôr</span></td><td>2. časť; v 1. časti len „Farár sa ťa bojí“ (pozri strach nižšie)</td></tr>
+<tr><td>naspodok balíčka, stavba šenku, Recidivista</td><td>stôl pri stavbe</td><td><span class="znacka">neskôr</span></td><td>2. časť, keď šenok stavia hráč (dnes ho stavia Melichar a aj tak to vysvetľuje)</td></tr>
+<tr><td>strana „pri tebe“</td><td>stôl</td><td><span class="znacka">neskôr</span></td><td>pri voľbe lokality stačí náhľad; strana a kraj v 2. časti</td></tr>
+<tr><td>scorecard, Partia (tvoje karty), Náradie a Občania (balíčky)</td><td>výučba 1×, stôl len počty</td><td><span class="znacka zle">von</span></td><td>pre hráča nikdy; „tvoje karty“, „balíček nástrojov / dedinčanov“</td></tr>
+<tr><td>špak</td><td>všade</td><td><span class="znacka ok">vysvetliť</span></td><td>krok 2</td></tr>
+<tr><td>bitka</td><td>názov fázy, karty</td><td><span class="znacka ok">vysvetliť</span></td><td>krok 2 krátko, naplno pri prvej bitke s číslami</td></tr>
+<tr><td>lokalita</td><td>stôl, karty</td><td><span class="znacka ok">vysvetliť</span></td><td>krok 3, keď tri lokality svietia</td></tr>
+<tr><td>akcie, údery (Rana, Pecka, Petelica)</td><td>karty</td><td><span class="znacka ok">vysvetliť</span></td><td>krok 3, keď ikony svietia</td></tr>
+<tr><td>šenok</td><td>názov fázy, stôl (59 nápisov), 4 karty, pravidlá (50 + 18), výučba 8, nápovedy 9, ťahák AI 14</td><td><span class="znacka jantar">premenovať</span></td><td>Michal 10. 11.: na slovo „šenok“ sú negatívne ohlasy. Je to nárečové slovo pre krčmu (zo Schenke), nováčik ho nepozná a pletie si ho s Krčmou, ktorá je v hre lokalita. Vec sama je nevyhnutná (ponuka kariet, z ktorej sa kupuje), meno nie. Zvažované: Ponuka, Jarmok, Verbovačka. <b>Michal 10. 11. rozhodol: Ponuka.</b> Premenovanie je len text (kód ostáva <code>senok</code>), zasiahne 4 karty, nápisy stola, pravidlá, výučbu, nápovedy a ťahák — urobí Korektor + Programátor + Admin za pol dňa.</td></tr>
+<tr><td>cigareta</td><td>stôl, karty</td><td><span class="znacka ok">vysvetliť</span></td><td>pri prvej kúpe</td></tr>
+<tr><td>Zhromaždenie, línia, poldeci</td><td>názov fázy, stôl</td><td><span class="znacka ok">vysvetliť</span></td><td>keď fáza začne; nadpis fázy doplniť „Zhromaždenie — kladenie kariet“</td></tr>
+<tr><td>spoj</td><td>stôl (svieti), karty</td><td><span class="znacka ok">vysvetliť</span></td><td>pri prvom dotyku dvoch úderov</td></tr>
+<tr><td>„už neťahám“ (pas)</td><td>tlačidlo</td><td><span class="znacka ok">vysvetliť</span></td><td>slovo pas netreba, stačí tlačidlo a prečo</td></tr>
+<tr><td>Pitka, NA EX</td><td>názov fázy, stôl, karty, názov hry</td><td><span class="znacka ok">vysvetliť</span></td><td>keď fáza začne; <b>jeden NA EX hráča už v 1. časti</b> (dnes až v 2.) — je to ťah, podľa ktorého sa hra volá; odpoveď na NA EX a zdvojenie osamelej ikony až v 2. časti (bot v 1. časti NA EX nedáva — overí Vymyselník)</td></tr>
+<tr><td>starší, strach</td><td>stôl (teplomery), všade</td><td><span class="znacka ok">vysvetliť</span></td><td>až po prvej bitke, keď hráč rozdeľuje strach — nie v kroku 2</td></tr>
+</table>
+<p>Spolu v 1. časti <b>13 slov</b> (špak, bitka, lokalita, akcia a údery, šenok, cigareta, Zhromaždenie, línia, poldeci, spoj, Pitka, NA EX, starší a strach), každé v momente, keď je na stole. Dnes ich je ~40, z toho 28 skôr, než hráč položí prvú kartu.</p>
+
+<h3>Návrh vysvetlení (Melicharov hlas, tvoje znenie má prednosť)</h3>
+<table>
+<tr><th>Slovo</th><th>Čo (keď je to na stole)</th><th>Prečo ťa to zaujíma / čo hneď urobíš</th></tr>
+<tr><td>špak</td><td>„Tu sa body rátajú v ohorkoch — špakoch. Na konci vyhrá, kto ich má viac. Dole pri sebe máš nula.“</td><td>„Špaky dáva vyhratá bitka. Poď si po ne.“</td></tr>
+<tr><td>bitka</td><td>„Bitka je koniec kola: sčítajú sa údery z kariet na stole. Kto má viac, vyhral.“</td><td>„Víťaz berie špak za každú kartu, čo na stole leží — aj za súperove.“ Pri prvej bitke znova s číslami: „Ty 7, on 5. Vyhral si o 2 a berieš 6 špakov, lebo na stole leží šesť kariet.“</td></tr>
+<tr><td>lokalita</td><td>„Tri miesta v dedine — lokality. O jedno sa dnes pobijete, leží v strede stola.“</td><td>„Vyber, o ktoré. Klikni na Lesnú cestu.“</td></tr>
+<tr><td>akcie, údery</td><td>„Ikony na okraji karty sú akcie. Rana, Pecka, Petelica sú údery za 1, 2, 3.“</td><td>„Hasič má Ranu a Petelicu — jeden a tri. Ber ho.“</td></tr>
+<tr><td>ponuka (dnes šenok)</td><td>„Toto je ponuka — tu sa kupujú karty. Jedna za cigaretu. Striedate sa, kým obaja neprestanete.“</td><td>„Začínaš ty. Kúp Hasiča.“</td></tr>
+<tr><td>cigareta</td><td>„Cigarety sú tu drobné. Platíš nimi v šenku a za dobratie karty. Máš tri.“</td><td>„Jedna za Hasiča, dve ti ostanú na horšie časy.“</td></tr>
+<tr><td>Zhromaždenie, línia</td><td>„Zhromaždenie: striedavo kladiete karty k lokalite do jedného radu — línie. Tu sa hra rozhoduje, zvyšok sú detaily.“</td><td>„Štamgast začína. Pozeraj.“</td></tr>
+<tr><td>poldeci</td><td>„Poldeci je pohárik pálenky. Koľko máš plných, toľko kariet vyložíš, a ešte jednu. Máš dva, teda tri.“ (dnešný text, je dobrý)</td><td>„Prilož Hasiča k jeho Zámočníkovi.“</td></tr>
+<tr><td>spoj</td><td>„Pozri: Petelica tvojho Hasiča sa dotkla Rany jeho Zámočníka v rovnakej výške. To je spoj. Platia len ikony v spoji, osamelá ikona je mŕtva.“</td><td>„Preto karty prikladáš tak, aby tvoje údery našli pár. Tvoje tri v spoji, jeho jedna.“</td></tr>
+<tr><td>už neťahám</td><td>„Keď už nechceš vykladať, klikni „už neťahám“.“</td><td>„Za karty, čo si nechal v ruke, dostaneš cigarety. Niekedy sa oplatí nehrať.“</td></tr>
+<tr><td>Pitka, NA EX</td><td>„Vyložené je, teraz sa pije — Pitka. Vyber jednu súperovu kartu v línii a vylej na ňu poldeci na ex. NA EX! Karta ostane ležať, ale jej spoje zhasnú.“</td><td>„Daj NA EX Zámočníkovi — jeho Rana v spoji zhasne a tvoj Hasič ostane sám so svojimi tromi. Kto NA EX dostane, nevie to, kým sa poldeci neotočia.“ (tajnosť a odpoveď súpera až v 2. časti)</td></tr>
+<tr><td>starší, strach</td><td>„Vyhral si o 3. Starší — dedinské autority, Farár, Starosta a spol. — to videli. Tie 3 sú strach, rozdeľ ich medzi nich.“</td><td>„Klikni trikrát na Farára. Starší, ktorý sa ťa bojí, ti bude každé kolo sypať špaky — čím viac sa bojí, tým viac.“</td></tr>
+</table>
+<p class="legenda">Pri každej vete je na stole práve to, o čom hovorí; nič sa nevymenúva dopredu. Čísla v príkladoch (7 : 5, o 3) doplní Vymyselník podľa rozdania.</p>
+
+<h3>Čo sa musí zmeniť mimo scenára</h3>
+<ul>
+  <li><b>Nápisy fáz na stole</b> (<code>prechodFazy.ts</code>): „Draft — šenok a pokus o zajatie“ → „Šenok“, „Voľba cieľa“ → „O čo sa bijeme“, „Zhromaždenie“ → „Zhromaždenie — kladenie kariet“. Inak sa slová, ktoré výučba vynechá, objavia na stole bez vysvetlenia.</li>
+  <li><b>Nápovedy prvej partie</b> (<code>napovedy.json</code>): „bar“ 10× prepísať v tom istom prechode; nápovedy sú miesto, kde sa druhý jazyk učí, keď nastane.</li>
+  <li><b>Slovník na stránke Pravidlá</b> (<code>slovnik.ts</code>): nechať len slová, ktoré hráč musí vedieť; čisto špecifikačné (Partia, scorecard, Dobratie po bitke, Čiarky na účte, Zaplatený a držaný stupeň, Stav staršieho, Boss, Karta zadarmo, Preskúmanie) ostanú len v <code>PRAVIDLA.md</code> pre vývoj a rozhodcu.</li>
+</ul>
+
+<h2>4. Grafika — čo Oko našlo</h2>
+<p>Kontrola pri plnej veľkosti: tri karty vo vejári úvodu, 15 ilustrácií kapitol pravidiel a avatar Melichara. Škála 0 čisté · 1 drobnosť · 2 výrazná chyba, ktorú si všimne bežný návštevník. <b>Čisté nebolo nič.</b></p>
+<table>
+<tr><th>Obrázok</th><th>Stupeň</th><th>Chyba</th></tr>
+<tr><td>Krčma (vejár na úvode)</td><td><span class="znacka zle">2</span></td><td>dva dymové pramene od stropu a zo steny bez zdroja; hrnčeky na polici splynuté s fľašami; pípy ako tri zlaté stĺpiky</td></tr>
+<tr><td>07 Pitka a NA EX</td><td><span class="znacka zle">2</span></td><td>klonovaný dav s rovnakými kričiacimi tvárami; ruka v popredí väčšia ako hlava, prsteň na zlom mieste</td></tr>
+<tr><td>02 Ako sa vyhráva</td><td><span class="znacka zle">2</span></td><td>dvaja bradatí muži zrkadlovo identickí, rovnaký kabát; kufrík splýva s kabátom</td></tr>
+<tr><td>01 Čo je NA EX!</td><td><span class="znacka">1</span></td><td>prvá ilustrácia na Pravidlách: dvaja muži s rovnakými šatami, telami a pózou, zrkadlovo</td></tr>
+<tr><td>Melichar (avatar)</td><td><span class="znacka">1</span></td><td>červené kybernetické oko, drôty a trubice na hlave — pôsobí ako typický AI cyberpunk a je všade (úvod, pravidlá, výučba); textúra plastová</td></tr>
+<tr><td>Pijan, Farár (vejár)</td><td><span class="znacka">1</span></td><td>AI lesk (ružovo-fialová pleť, trblietavý kríž); Kristus z vitráže „vyrastá“ Farárovi z hlavy</td></tr>
+<tr><td>03, 08, 15</td><td><span class="znacka">1</span></td><td>pseudopísmo na účtenkách, bankovkách a tabuli</td></tr>
+<tr><td>04, 06, 10</td><td><span class="znacka">1</span></td><td>podobné alebo šablónové tváre a pózy viacerých postáv</td></tr>
+<tr><td>05, 09, 11, 13, 14</td><td><span class="znacka">1</span></td><td>plastová lesklá látka, splývajúce predmety, most z ničoho, cibuľová kupola na slovenskej dedine</td></tr>
+<tr><td>12 Nástroje</td><td><span class="znacka">1</span></td><td>najčistejšia (bez postáv); remeň pušky nevisí na ničom</td></tr>
+</table>
+<p>Dym z cigariet a ruky s kartami sú väčšinou v poriadku — pravidlá zo <code>styl.md</code> fungujú. Čo neprešlo: <b>klonované tváre a pózy</b> (styl.md to pri kartách zakazuje, pri kapitolách sa to nestrážilo), <b>pseudopísmo</b> a <b>AI lesk</b>. A hlavne: všetky kapitoly majú rovnaký štýl, rovnaké svetlo lampy a „tie isté tváre“, čo návštevník prečíta ako „AI“ aj bez jedinej chyby.</p>
+
+<h2>5. Návrhy</h2>
+<p class="tlm">Zoradené podľa pomeru účinok / námaha. Pri každom: čo, prečo, čo to stojí, kto, ako overíme.</p>
+
+<div class="navrh">
+<h3><span class="znacka jantar">N1</span> Úvodná stránka: „Hra za 30 sekúnd“</h3>
+<p>Pod dnešný tematický text pridať pás so štyrmi krokmi jedného kola a jednou vetou o výhre — len slová z Prvej desiatky. Zároveň <b>povedať pravdu o čase</b>: tlačidlo výučby dnes sľubuje „35 minút v troch častiach“, čo návštevníka s piatimi minútami odradí; po N2 bude znieť „Prvé kolo — 5 minút“. Doplniť meta description. Ten istý pás ukázať aj na stránke Hrať návštevníkovi bez účtu (dnes prázdna) a dlaždicu „Glosár kariet“ na úvode nahradiť ukážkou kola (N5), glosár posunúť nižšie. Menu pre neprihláseného zúžiť na Hrať · Pravidlá · Karty.</p>
+<div class="mock">
+  <p class="pitch">Dvaja hráči. Každé kolo sa bijete o jedno miesto v dedine — krčmu, kostol, benzínku.</p>
+  <div class="pas">
+    <div class="krok"><b>1</b><strong>Šenok</strong><span>Z ponuky kariet si za cigarety striedavo berieš dedinčanov do ruky.</span></div>
+    <div class="krok"><b>2</b><strong>Línia</strong><span>Karty kladieš do jedného radu vedľa súperových. Keď sa ikony na hranách susedov stretnú v rovnakej výške, akcia platí.</span></div>
+    <div class="krok"><b>3</b><strong>NA EX!</strong><span>Každý tajne vyleje poldeci na jednu kartu v línii — a tú vypne.</span></div>
+    <div class="krok"><b>4</b><strong>Bitka</strong><span>Sčítajú sa údery. Kto má viac, vyhral kolo a berie špak za každú kartu v línii.</span></div>
+  </div>
+  <p class="pozn">Po poslednom kole vyhrá, kto má viac špakov. Starší, ktorí sa ťa boja, ti sypú ďalšie. — Ilustračný mock jedného rozloženia, nie finálny dizajn; ak chceš vyberať z viacerých rozložení, pošlem úvodnú stránku do /naex-dizajn.</p>
+</div>
+<dl>
+  <dt>Prečo</dt><dd>jediné miesto, kde návštevník s dvoma minútami zistí, čo sa v hre robí; dnes odíde s „téma pekná, hru som nepochopil“.</dd>
+  <dt>Stojí</dt><dd>malé — texty + jeden komponent v <code>Domov.tsx</code> a na stránke Hrať; bez zmeny hry.</dd>
+  <dt>Kto</dt><dd>texty schváliš ty (návrh vyššie), kód Programátor.</dd>
+  <dt>Overenie</dt><dd>ukázať stránku dvom-trom ľuďom mimo hry a po 30 sekundách sa spýtať „čo v hre robíš a ako vyhráš?“.</dd>
+</dl>
+</div>
+
+<div class="navrh">
+<h3><span class="znacka jantar">N2</span> Výučba: 1. časť = „Prvé kolo za 5 minút“</h3>
+<p>Dnešná 1. časť (53 krokov, 12 minút, ~40 pojmov) sa zmení na jedno kolo, v ktorom <b>každý krok zavedie najviac jeden nový pojem</b> a dokopy ich bude najviac 12 (Prvá desiatka + údery + pas). Konkrétne presunúť do ďalších častí:</p>
+<ul>
+  <li><b>i-fazy</b> (krok 5): vymenovanie piatich fáz s hádkou, Poverou a Pohoršením → nahradiť vetou „Kolo má päť krokov, naučíš sa ich hraním.“</li>
+  <li><b>i-zadlzenie</b> (krok 25, 69 slov): Hazard, zadĺženie, Dlh, pečeň, Cirhóza, kliatba → celé do 2. časti; rozdanie 1. časti zvoliť tak, aby na kartách Hazard nebol.</li>
+  <li><b>i-pitky</b> (krok 21): vzorec počtu Pitiek → 2. časť.</li>
+  <li><b>i-hadka1, i-body (exekútor), i-priazen (Advokát), reči, cena posunu</b> (kroky 42–49) → 2. a 3. časť. V 1. časti po bitke stačí: „Vyhral si o 3 — Farár sa ťa začal báť. Starší, ktorí sa ťa boja, ti dávajú špaky.“ (jeden pojem: starší).</li>
+  <li><b>i-lokalita</b> (krok 2): zo ~8 pojmov nechať dva — špak a bitka; starší prídu až po prvej bitke, keď sa jeden naozaj zľakne.</li>
+</ul>
+<p><b>Ako by zneli prvé kroky</b> (návrh na tvoje schválenie, tvoj tón zachovaný):</p>
+<table>
+<tr><th>Krok</th><th>Dnes</th><th>Návrh</th></tr>
+<tr><td>2 i-lokalita</td><td>60 slov, 8 pojmov: špak, finále, bar, bitka, lokality, starší, strach, zajatie, ligy</td><td>„O čo ide: na konci vyhrá, kto má viac špakov. Špak je ohorok, máš ich dole v bare. Špaky dáva vyhratá bitka. Dnes sa pobijeme raz.“ (2 pojmy)</td></tr>
+<tr><td>3 i-lokality</td><td>63 slov, 9 pojmov</td><td>„Ikony na hranách kariet sú akcie. Rana, Pecka, Petelica sú údery: 1, 2, 3. Kto má v bitke viac úderov, vyhrá. Zvyšok ti ukážem, keď príde.“ (akcia, údery)</td></tr>
+<tr><td>4 k-ciel</td><td>Lesná cesta, hrana pri tebe, Štamgast</td><td>ostáva, bez vety o hranách — tú povie až Zhromaždenie, keď bude na stole vidieť</td></tr>
+<tr><td>5 i-fazy</td><td>58 slov: päť fáz + hádka, Povera, Pohoršenie, Poškodenie</td><td>vypustiť; nahradí ho veta v kroku 6: „Kolo má päť krokov, toto je prvý: šenok.“</td></tr>
+<tr><td>9 i-preco-senok</td><td>Hasič, Recidivista, naspodok, Petelica — stratégia stavby šenku</td><td>presunúť do 2. časti (hráč dnes šenok nestavia, stavia ho Melichar)</td></tr>
+<tr><td>11 k-kup-hasic</td><td>striedavo, prvý len jednu, cigareta platidlo, tuhé 1 a 3</td><td>„Kúp Hasiča za cigaretu — cigarety sú tu platidlo. Má údery 1 a 3.“</td></tr>
+</table>
+<p class="legenda">Výsledok: do konca šenku 5 pojmov (špak, bitka, akcia, údery, cigareta) namiesto 28. Zhromaždenie potom pridá líniu, spoj a poldeci, Pitka NA EX, bitka nič nové, po bitke starší. Spolu 10–12.</p>
+<p>K tomu tri veci, ktoré nováčikovia pýtali a stále chýbajú: <b>záverečné „Toto už vieš“</b> (zhrnutie 10 slov na konci časti), <b>podčiarknuté pojmy s definíciou pod myšou v bubline Melichara</b> (UX N1 z 23. 10.; komponent <code>Pojem.tsx</code> a <code>slovnik.ts</code> z pravidiel sa dajú použiť rovno) a pri každom pokyne <b>jednu vetu prečo</b> („Vysvetlenie prečo“ malo 5,0/10). Zvyšok dnešnej výučby sa rozloží do častí 2–4; celkový čas ostane podobný, ale prvých 5 minút bude stráviteľných. Tón Melichara a šedý stôl nemeniť.</p>
+<dl>
+  <dt>Prečo</dt><dd>návštevník skúsil presne toto a „nepobral to“; playtest 30. 10. mal tempo 4,7/10 a „viem, čo klikať, nie prečo“.</dd>
+  <dt>Stojí</dt><dd>stredné — nový scenár 1. časti (JSON + rozdanie) a hover pojmov v bubline; texty sú tvoje, takže schvaľuješ znenie.</dd>
+  <dt>Kto</dt><dd>scenár a texty Vymyselník (na schválenie), hover Programátor; potom playtest výučby nováčikmi (len s tvojím súhlasom).</dd>
+  <dt>Overenie</dt><dd><code>/naex-playtest vyucba</code>: cieľ tempo ≥ 7/10 a cieľ hry pochopený v kroku 2.</dd>
+</dl>
+</div>
+
+<div class="navrh">
+<h3><span class="znacka jantar">N3</span> Zverejniť nápovedy prvej partie</h3>
+<p>21 nápoved Melichara pre prvú skutočnú partiu (karta zadarmo, rola, odpoveď na NA EX, Dlh, priazeň, prevaha…) je napísaných a nasadených, ale vypnutých. Keď sa zapnú, <b>výučba nemusí učiť všetko</b> — druhý jazyk sa hráč naučí pri prvej partii, keď ten pojem naozaj príde. Je to podmienka, aby sa N2 dalo zoštíhliť bez straty.</p>
+<dl>
+  <dt>Stojí</dt><dd>najmenšie zo všetkého — prepnúť <code>zverejnena</code> a prejsť texty, či sedia s v11.18.</dd>
+  <dt>Kto</dt><dd>Korektor texty, Programátor prepnutie; pri najbližšom nasadení.</dd>
+</dl>
+</div>
+
+<div class="navrh">
+<h3><span class="znacka jantar">N4</span> Rýchly štart pravidiel len z Prvej desiatky</h3>
+<p>Prepísať tri kapitoly časti A tak, aby používali len Prvú desiatku. „Ako sa vyhráva“ dnes hovorí o lige, finále, pinnacle lokalite, výkupnom, väzňovi, exekúcii a Cirhóze — presunúť do kapitol Špaky a finále, Kliatby a Cena pitia; v Rýchlom štarte ostane: „Vyhráš, keď máš po poslednom kole viac špakov. Špaky dáva vyhratá bitka a starší, ktorí sa ťa boja.“ „Čo máš pred sebou“ dnes vysvetľuje pečeň, neresti, Chuť a tagy — ide do Cena pitia. Ku každej kapitole doplniť riadok <b>„Nové slová v tejto kapitole: …“</b>, nech čitateľ vidí, koľko ich prichádza, a nech to vidí aj Korektor pri kontrole. Názvy kapitol v obsahu doplniť o bežné slovo („Zhromaždenie — kladenie kariet“, „Pitka — pitie a NA EX“), lebo obsah je prvé, čo návštevník na Pravidlách číta.</p>
+<dl>
+  <dt>Prečo</dt><dd>návštevník, ktorý klikne „Nauč sa hrať“, dnes dostane 19 pojmov na prvej obrazovke a ďalších ~12 v obsahu.</dd>
+  <dt>Stojí</dt><dd>stredné — texty troch kapitol; štruktúra stránky (obsah, hľadanie, pojmy pod myšou) ostáva.</dd>
+  <dt>Kto</dt><dd>Vymyselník text, ty schvaľuješ, Programátor zapracuje; Korektor stráži, že sa druhý jazyk do časti A nevrátil.</dd>
+</dl>
+</div>
+
+<div class="navrh">
+<h3><span class="znacka jantar">N5</span> „Pozri si jedno kolo“ — ukážka na úvodnej stránke</h3>
+<p>Stôl, na ktorom dva boti odohrajú partiu v prehliadači bez servera, <b>už existuje</b> (<code>UkazkaStola.tsx</code>, dnes len pre správcu). Sprístupniť z neho jedno kolo návštevníkovi: prehrávanie s titulkami Melichara („teraz berie zo šenku“, „toto je spoj“, „NA EX!“, „bitka 7 : 5“), asi 60 sekúnd, tlačidlá „Ešte raz“ a „Skús to sám“ (→ N2). Tretie dvere medzi „čítaj“ a „hraj“.</p>
+<dl>
+  <dt>Prečo</dt><dd>hra sa najľahšie pochopí videním; ukážka nevyžaduje účet ani slovník.</dd>
+  <dt>Stojí</dt><dd>stredné až väčšie — riadenie tempa, titulky, verejná cesta bez prihlásenia; stavia na hotovom stole.</dd>
+  <dt>Kto</dt><dd>najprv mock (tvoje pravidlo: väčšie UI najprv ako mock), potom Programátor.</dd>
+</dl>
+</div>
+
+<div class="navrh">
+<h3><span class="znacka jantar">N6</span> Grafika: najprv to, čo vidí každý</h3>
+<ol>
+  <li><b>Vejár na úvode</b> — vymeniť Krčmu (dym z ničoho, splynuté hrnčeky) a ideálne všetky tri za najčistejšie karty z tvojich vzorových (Kočovník, Švagriná, Stryná, Podvodník, Zámočník, Krčmárka, Poštárka, Veterinár, Farár). Ilustrátor ich prejde pri plnej veľkosti a vyberie tri bez nálezu. Hotové za hodinu.</li>
+  <li><b>Prerobiť 07, 02 a 01</b> (klonované tváre, obrovská ruka). Pri 01 ide o prvý obrázok na Pravidlách. Pri generovaní výslovne: každá postava iná tvár, vek a postava — rovnaké pravidlo, aké platí pre karty.</li>
+  <li><b>Pseudopísmo</b> na 03, 08, 15 — orezať alebo pregenerovať bez textu (prompt „no text, no letters“), lacné.</li>
+  <li><b>Melichar</b> — otázka na teba: kybernetické oko a drôty sú zámer? Ak nie, nový avatar ako obyčajný dedinský chlap (Ladislav Melisko s dlhmi); je na úvode, v pravidlách aj vo výučbe, takže nesie najviac „AI“ dojmu.</li>
+  <li><b>Jednotný „AI“ štýl kapitol</b> — rovnaké svetlo, zrnitosť a tváre prezradia AI aj bez chyby. Dve cesty na tvoje rozhodnutie: (a) kapitoly pregenerovať s väčšou pestrosťou kompozície a postáv v dnešnom štýle, (b) skúsiť pre kapitoly odlišný, menej fotorealistický štýl, ktorý chyby skrýva a pôsobí ako zámer — noir (Podvodník sa ti páči) alebo linoryt / plochá farba. Nový štýl zapínaš len ty.</li>
+  <li><b>Plošná kontrola</b> — <code>/naex-kontrola-stylu</code> prejde všetkých 198 kariet, avatary a výučbu tak, ako Oko prešlo týchto 19; výstup je koláž s odporúčaním nechať / prerobiť.</li>
+  <li><b>Voliteľné:</b> jedna veta v pätičke „Ilustrácie vznikli s pomocou AI pod vedením autora“. Časť ľudí reaguje na nepriznané AI horšie než na priznané; je to tvoja voľba, nie nutnosť.</li>
+</ol>
+<dl>
+  <dt>Stojí</dt><dd>body 1–3 malé (Leonardo kredit na pár obrázkov), 4–5 podľa rozsahu; 6 len čas agenta.</dd>
+  <dt>Kto</dt><dd>Ilustrátor generuje a skladá koláž, ty vyberáš, Admin priraďuje.</dd>
+</dl>
+</div>
+
+<div class="navrh">
+<h3><span class="znacka jantar">N7</span> Prvé kolo výučby bez účtu</h3>
+<p>Tlačidlo „Nauč sa hrať“ dnes vedie na prihlásenie a stránka Hrať je pre návštevníka prázdna. Navrhujem pustiť <b>1. časť výučby (po N2 päť minút) aj bez účtu</b>; postup sa neukladá a na konci časti Melichar povie: „Chceš pokračovať? Zaregistruj sa, nech si pamätám, čo už vieš.“ Účet ostáva podmienkou pre partie, ranky a časti 2–4.</p>
+<dl>
+  <dt>Prečo</dt><dd>registrácia pred prvým dotykom s hrou je bariéra, ktorú náš návštevník prekonal len preto, že ťa pozná; cudzí odíde.</dd>
+  <dt>Stojí</dt><dd>stredné — výučba beží proti botovi na serveri a stav sa viaže na účet; treba hosťovskú partiu bez uloženia (alebo 1. časť nad stolom bez servera ako v N5).</dd>
+  <dt>Kto</dt><dd>Programátor; rozhodnutie o hosťoch je tvoje (súvisí s rankmi a štatistikami).</dd>
+</dl>
+</div>
+
+<div class="navrh">
+<h3><span class="znacka jantar">N8</span> Merať, nie hádať</h3>
+<ul>
+  <li><b>Lievik</b>: koľko ľudí výučbu začne, koľko dokončí 1. časť a kde odídu — <code>/naex-analytika</code> (beží lokálne, len číta). Dnes sa to nevie.</li>
+  <li><b>Otázka pri odchode z výučby</b>: keď hráč výučbu opustí pred koncom časti, jedno kliknutie „Prečo? Nerozumiem · Dlhé · Iné“. Lacné a mieri presne na „nepobral som to“.</li>
+  <li><b>Nový playtest výučby</b> po N2 (terajších 176 krokov nikto neoveril) — len na tvoj pokyn.</li>
+</ul>
+</div>
+
+<h2>6. Odporúčané poradie</h2>
+<ol>
+  <li><b>Tento týždeň, malé:</b> N1 (pás „Hra za 30 sekúnd“, pravdivý čas, description, stránka Hrať pre návštevníka), N3 (zapnúť nápovedy), N6 body 1–3 (vejár, tri najhoršie kapitoly, pseudopísmo).</li>
+  <li><b>Najväčší účinok:</b> N2 (Prvé kolo za 5 minút) — tu návštevník stroskotal. Potom playtest nováčikmi.</li>
+  <li><b>Potom:</b> N4 (Rýchly štart z Prvej desiatky), N7 (výučba bez účtu), N6 body 4–6.</li>
+  <li><b>Keď bude čas:</b> N5 (ukážka jedného kola), priebežne N8.</li>
+</ol>
+
+<h2>7. Čo nenavrhujem</h2>
+<ul>
+  <li><b>Premenovať pojmy</b> (poldeci, špak, Pitka, NA EX) — nesú tému, ktorá sa návštevníkovi páčila. Problém je poradie a množstvo, nie slová.</li>
+  <li><b>Zjemniť Melichara</b> — tón mal v playteste najlepšiu známku (7,3/10) a návštevník sa naň nesťažoval.</li>
+  <li><b>Zrušiť šedý stôl vo výučbe</b> — je zámer (fokus na to, o čom Melichar hovorí).</li>
+  <li><b>Zjednodušiť samotné pravidlá</b> — toto je o vstupe do hry, nie o hre; hĺbka je pre hráčov, ktorí ostanú.</li>
+</ul>
+
+<h2>8. Rozhodni</h2>
+<ul class="rozhodni">
+  <li><label><input type="checkbox"> N1 — pás „Hra za 30 sekúnd“ na úvode a na stránke Hrať (texty vyššie: schvaľuješ / upravíš)</label></li>
+  <li><label><input type="checkbox"> N1b — chceš z /naex-dizajn viac rozložení úvodnej stránky, alebo stačí tento pás?</label></li>
+  <li><label><input type="checkbox"> N2 — prestavať 1. časť výučby na „Prvé kolo za 5 minút“ (Vymyselník pripraví scenár na schválenie)</label></li>
+  <li><label><input type="checkbox"> N3 — zapnúť nápovedy prvej partie pri najbližšom nasadení</label></li>
+  <li><label><input type="checkbox"> N4 — Rýchly štart pravidiel len z Prvej desiatky</label></li>
+  <li><label><input type="checkbox"> N5 — mock ukážky jedného kola na úvode</label></li>
+  <li><label><input type="checkbox"> N6 — grafika: body 1–3 hneď; Melichar zámer áno / nie; štýl kapitol (a) alebo (b); plošná kontrola; veta o AI áno / nie</label></li>
+  <li><label><input type="checkbox"> N7 — 1. časť výučby bez účtu</label></li>
+  <li><label><input type="checkbox"> N8 — spustiť /naex-analytika (lievik výučby) a pridať otázku pri odchode</label></li>
+  <li><label><input type="checkbox"> Triáž pojmov (3b) — súhlasíš s verdiktmi von / vysvetliť / neskôr, so 13 slovami 1. časti a s tým, že prvý NA EX príde už v 1. časti?</label></li>
+  <li><label><input type="checkbox"> Vysvetlenia (3b) — schvaľuješ texty ako podklad pre Vymyselníka, alebo ich prepíšeš svojím znením?</label></li>
+  <li><label><input type="checkbox" checked> Šenok premenovať — <b>rozhodnuté: Ponuka</b> (10. 11.)</label></li>
+  <li><label><input type="checkbox"> Nápisy fáz na stole — „Ponuka“ (vyplýva z premenovania), „O čo sa bijeme“, „Zhromaždenie — kladenie kariet“ áno / nie?</label></li>
+</ul>
+<p class="tlm">Zaškrtnutia sa neukladajú — slúžia len na čítanie. Odpoveď stačí v chate, napr. „N1, N3, N6 áno; N2 upraviť: …“.</p>
+
+<h2>9. Rozhodnuté 10. 11. a zadanie pre Leadera</h2>
+<div class="citat">Michal: „Pojmy, ktoré nie sú nevyhnutné pre hráča, ako napríklad bar a podobne, treba odstrániť. Pojmy ako Pitka, bitka a podobne treba domyselne vysvetliť.“ · „Taktiež som počul negatívne vyjadrenia na pojem šenok.“ · „Šenok nahradiť za ponuku. Skonsolidovať nevyhnutné pojmy, ďalej to daj Leaderovi, nech to implementuje a nasadí.“</div>
+
+<h3>Skonsolidované pojmy</h3>
+<table>
+<tr><th>Vrstva</th><th>Pojmy</th><th>Kde sa učia</th></tr>
+<tr><td><b>Jadro</b> (13)</td><td>špak · bitka · lokalita · akcia a údery (Rana 1, Pecka 2, Petelica 3) · <b>ponuka</b> (kariet) · cigareta · Zhromaždenie · línia · poldeci · spoj · Pitka · NA EX · starší a strach</td><td>1. časť výučby, každé v momente, keď je na stole; úvodná stránka a Rýchly štart pravidiel smú používať len tieto</td></tr>
+<tr><td><b>Druhá vrstva</b></td><td>útočník a obranca · strana a kraj · hrana lokality a prevaha · limit · tuhé a mäkké · hádka, Povera, Pohoršenie, Viera · reči · odpoveď na NA EX a zdvojenie osamelej ikony · Vypiť (ďalšia karta za plný poldeci) · Záverečná · stavba ponuky · Hazard, zadĺženie, Dlh · pečeň, Cirhóza · kliatba, priznanie · priazeň · stupne strachu · Nakladačka</td><td>2. časť výučby a nápovedy prvej partie</td></tr>
+<tr><td><b>Tretia vrstva</b></td><td>zajatie a väzeň · Nástroj a Dedičstvo · spúšťače na kartách (Nástup, Furt, Kšeft, Konflikt, Podpora, Pitka, Bitka, Výhra, Prehra) · efekty lokalít · finále a liga · exekútor · Výtržník · doliatie a barter · nerest, Chuť, Absťák · výkupné · Sekera</td><td>3.–4. časť výučby a nápovedy, keď nastanú</td></tr>
+<tr><td><b>Von</b> (pre hráča nikdy)</td><td>bar („dole pri sebe“) · Draft (→ Ponuka) · šenok (→ ponuka) · scorecard · Partia („tvoje karty“) · Náradie a Občania ako názvy balíčkov („balíček nástrojov / dedinčanov“) · „tuhé poškodenie“ v 1. časti (→ údery)</td><td>výučba, nápovedy, nápisy stola, stránka Pravidlá a jej slovník; v <code>PRAVIDLA.md</code> pre vývoj smú ostať</td></tr>
+</table>
+
+<h3>Rozsah zadania</h3>
+<ol>
+  <li><b>Šenok → Ponuka</b> všade, kde to číta hráč: nápisy stola (59 reťazcov, nadpis fázy „Draft — šenok a pokus o zajatie“ → „Ponuka“), stránka Pravidlá a slovník (18), výučba (8), nápovedy (9), ťahák AI (14), <code>PRAVIDLA.md</code> (50), 4 texty kariet (Väzeň Starostu, Cintorín, Živnostník a spol. — v tvorcovi cez Admina; <b>zverejnenie sady = samostatný súhlas Michala</b>). Identifikátory v kóde (<code>senok</code>) ostávajú.</li>
+  <li><b>1. časť výučby „Prvé kolo“</b> podľa triáže v 3b: 13 slov jadra, jeden pojem na krok, šesť pravidiel vysvetľovania, texty z tabuľky 3b ako podklad (Melicharov tón, bez nových vulgarizmov od agentov), jeden NA EX hráča už v 1. časti, rozdanie bez Hazardu, pečene a Povery, zhrnutie „Toto už vieš“ na konci, podčiarknuté pojmy s definíciou pod myšou v bubline (<code>Pojem.tsx</code>, <code>slovnik.ts</code>). Presunuté kroky idú do častí 2–4, nič sa nestráca.</li>
+  <li><b>Nápisy fáz na stole</b> (<code>prechodFazy.ts</code>): „Ponuka“ (z bodu 1); „Voľba cieľa“ → „O čo sa bijeme“ a „Zhromaždenie — kladenie kariet“ sú odporúčané, Michal ich jednotlivo neschválil.</li>
+  <li><b>Nápovedy prvej partie</b> (<code>napovedy.json</code>): „bar“ 10× prepísať, šenok → ponuka; či ich zapnúť (<code>zverejnena</code>), Michal nerozhodol (N3).</li>
+  <li><b>Slovník na stránke Pravidlá</b> (<code>slovnik.ts</code>) a Rýchly štart: slová „von“ odstrániť, jadro vysvetliť; úplný prepis Rýchleho štartu (N4) Michal nerozhodol — minimálne však premenovanie a odstránenie slov „von“.</li>
+  <li><b>Titulka</b>: po skrátení 1. časti opraviť sľub času (dnes „tri časti, spolu asi 35 minút“).</li>
+  <li><b>Nasadiť</b> na Vypálenú (týka sa oficiálnej hry; vetvu a poradie s master rozhodne Leader), po nasadení Novinka pre hráčov („Šenok sa volá Ponuka, prvá časť výučby je kratšia“).</li>
+</ol>
+<p class="legenda">Nerozhodnuté (Leader sa spýta Michala, keď na to príde): N1 pás „Hra za 30 sekúnd“, N3 zapnutie nápoved, N4 úplný prepis Rýchleho štartu, N5 ukážka kola, N6 grafika, N7 výučba bez účtu, N8 meranie, playtest výučby po prestavbe (len so súhlasom).</p>
+</main>
+</body>
+</html>
