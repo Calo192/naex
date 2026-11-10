@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="sk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Výučba: Prvé kolo bez záplavy pojmov — pred a po</title>
+<style>
+  :root { --pozadie:#15120f; --papier:#1f1a16; --text:#ece4d8; --tlm:#a89e90; --jantar:#e2a73a; --ok:#6fbf73; --zle:#e06c5c; --ciara:#3a322b; }
+  * { box-sizing:border-box }
+  body { margin:0; background:var(--pozadie); color:var(--text); font:16px/1.55 system-ui, "Segoe UI", Roboto, sans-serif }
+  main { max-width:960px; margin:0 auto; padding:28px 18px 70px }
+  h1 { font-size:1.8rem; margin:0 0 4px; color:var(--jantar) }
+  h2 { font-size:1.3rem; margin:40px 0 10px; padding-top:14px; border-top:1px solid var(--ciara) }
+  p, li { max-width:76ch }
+  .tlm { color:var(--tlm) }
+  table { border-collapse:collapse; width:100%; margin:10px 0; font-size:.95rem }
+  th, td { text-align:left; vertical-align:top; padding:7px 9px; border-bottom:1px solid var(--ciara) }
+  th { color:var(--tlm); font-weight:600 }
+  td.ok { color:var(--ok) } td.zle { color:var(--zle) }
+  code { background:#2c251f; padding:1px 5px; border-radius:4px; font-size:.9em }
+  .citat { border-left:4px solid var(--jantar); background:var(--papier); padding:10px 14px; margin:14px 0; font-style:italic }
+  .kroky li { margin:3px 0 }
+  .kroky b { color:var(--jantar) }
+  .otazky li { margin:6px 0 }
+  .legenda { font-size:.88rem; color:var(--tlm) }
+</style>
+</head>
+<body>
+<main>
+<h1>Výučba: Prvé kolo bez záplavy pojmov</h1>
+<p class="tlm">10. 11. 2026 · Vymyselník · scenár <code>packages/core/data/vyucba/prva-hra.json</code> (verzia <code>v11-20-prve-kolo-2026-11-10</code>) · podklad <code>docs/napady/prvy-dojem-navstevnika.html</code>, časti 3b a 9</p>
+
+<div class="citat">„Pojmy, ktoré nie sú nevyhnutné pre hráča, ako napríklad bar a podobne, treba odstrániť. Pojmy ako Pitka, bitka a podobne treba domyselne vysvetliť.“ · „Šenok nahradiť za ponuku.“ — Michal, 10. 11.</div>
+
+<h2>1. Čísla 1. časti: pred a po</h2>
+<table>
+<tr><th></th><th>Pred</th><th>Po</th></tr>
+<tr><td>Krokov</td><td>53</td><td class="ok">40</td></tr>
+<tr><td>Slov Melichara spolu</td><td>1 441</td><td class="ok">610</td></tr>
+<tr><td>Najdlhšia bublina</td><td>65 slov</td><td class="ok">25 slov</td></tr>
+<tr><td>Prvých 14 krokov: slová / kliky hráča</td><td>400 / 3</td><td class="ok">205 / 3</td></tr>
+<tr><td>Herné pojmy v texte</td><td>~40 (47 slovných koreňov)</td><td class="ok">13 slov jadra</td></tr>
+<tr><td>Ťahy hráča / kvízy</td><td>12 / 12</td><td>9 / 5</td></tr>
+<tr><td>Zhromaždenia a Pitky</td><td>2 a 2</td><td>1 a 1</td></tr>
+<tr><td>NA EX hráča</td><td>žiadne (až 2. časť)</td><td class="ok">jedno, na Štamgastovu Traktoristku</td></tr>
+<tr><td>Hazard, pečeň, Povera, hádka, reči, exekútor v 1. kole</td><td>áno</td><td class="ok">nie</td></tr>
+<tr><td>Šenok, bar, Draft, tuhé</td><td>8× / 51× / áno / áno</td><td class="ok">0</td></tr>
+</table>
+<p class="legenda">Slová = slová bubliny bez piktogramov. Pojmy rátané podľa koreňov slov v textoch krokov a kvízov.</p>
+
+<h2>2. Ako ide nová 1. časť „Prvé kolo“</h2>
+<p>Každé slovo jadra príde až vtedy, keď je na stole, jedno na krok; po ňom ťah hráča, kvíz až po použití.</p>
+<ol class="kroky">
+  <li><b>špak</b> — „Hrá sa o ohorky – špaky… Dole pri sebe máš zatiaľ nula.“</li>
+  <li><b>bitka</b> — „Bitka je koniec kola: sčíta sa, kto koľko naložil…“</li>
+  <li><b>lokalita</b> — tri miesta v dedine, súper Štamgast.</li>
+  <li><b>akcia a údery</b> — Rana, Pecka, Petelica = 1, 2, 3. Hráč vyberie Lesnú cestu Peckou k sebe.</li>
+  <li><b>ponuka</b> — Melichar ju postaví (nanečisto), potom „Toto je ponuka – tu sa kupujú karty.“</li>
+  <li><b>cigareta</b> — „Platí sa cigaretami… deväť.“ Hráč kúpi Vymáhača, klikne už neťahám.</li>
+  <li><b>Zhromaždenie</b>, <b>línia</b>, <b>poldeci</b> (každé vo svojom kroku): „Máš dva, teda tri.“</li>
+  <li><b>spoj</b> — Pecka Mäsiara na Pecku cesty, 4 : 0; kvíz q-spoj (Michalova veta). Ďalej 4 : 4 → 8 : 4 → 8 : 7 → 10 : 7, kvíz q-zhromazdenie (Michalova veta).</li>
+  <li><b>Pitka</b>, <b>NA EX</b> — „vyber Traktoristku a stlač NA EX. Vyleješ na ňu poldeci a jej údery zhasnú.“ 10 : 5.</li>
+  <li>Bitka s číslami: štyri Pecky a dve Rany = 10, Štamgast 5; šesť kariet, šesť špakov.</li>
+  <li><b>starší a strach</b> — „Tých 5, o ktoré si vyhral, je strach“; Farár dvakrát, Krčmárka a Autobusár raz.</li>
+  <li>„Toto už vieš“ — zhrnutie všetkých 13 slov, potom rozlúčka.</li>
+</ol>
+<p>Rozdanie: hráč Mäsiar, Vymáhač, Záhradkár; Štamgast Polovník, Traktoristka, Degustátorka. V spojoch 1. kola sú len údery, žiadne Zviera (Lesná cesta), žiadny text karty nevystrelí; Štamgast NA EX nedá ani neodpovedá. Koniec 1. časti je ten istý stav ako doteraz (2. kolo, 8 : 8 cigariet, Farár oranžová, Krčmárka a Autobusár žltá, rovnaké ruky) — preto 2. a 3. časť ostali skoro nezmenené.</p>
+
+<h2>3. Kam sa presunulo, čo z 1. časti vypadlo</h2>
+<table>
+<tr><th>Krok (stará 1. časť)</th><th>Teraz</th></tr>
+<tr><td>i-fazy (päť fáz, Michalovo znenie)</td><td>2. časť po výbere Ihriska; „Draft“ → „Ponuka“, „k Lesnej ceste“ → „k Ihrisku“</td></tr>
+<tr><td>i-preco-senok, q-senok</td><td>2. časť po stavbe ponuky (Recidivista naspodok)</td></tr>
+<tr><td>i-pitky, q-pitky (počet Pitiek)</td><td>2. časť, Ihrisko má 2 Pitky (trávnik 2, tribúna 1)</td></tr>
+<tr><td>i-pitka (Michalove vety „pridajú Dlhy a pečeň“, „Preto ide Pitka až po Zhromaždení.“), q-fazy</td><td>2. časť, prvá Pitka (id <code>i-pitka-ucet</code>)</td></tr>
+<tr><td>fajčenie z k-hotovo (schválené znenie)</td><td>2. časť, k-fajcit2</td></tr>
+<tr><td>nový poldeci za 5 cigariet (k-hotovo2)</td><td>2. časť, k-hotovo3</td></tr>
+<tr><td>pas platí cigaretu (k-pas, k-zh-bot3)</td><td>2. časť, k-pas2-bot</td></tr>
+<tr><td>i-zadlzenie, q-dlh, q-dlh-karta (Hazard, Dlh, pečeň, Cirhóza)</td><td>2. časť pri prvom Dlhu Štamgasta a Cirhóze hráča</td></tr>
+<tr><td>i-hadka1, q-povera (hádka, Povera)</td><td>2. časť, bitka o Ihrisko (i-exekutor2 prepísaný na úvod hádky)</td></tr>
+<tr><td>i-starsi (stupne a farby, výplata 1 / 3 / 6)</td><td>2. časť pred k-nakladacka2 (id <code>i-stupne</code>)</td></tr>
+<tr><td>i-cena-posunu, q-prebytok, slovo Nakladačka</td><td>2. časť po k-nakladacka2</td></tr>
+<tr><td>i-body (exekútor, „polovicu Dlhov“)</td><td>2. časť po i-bodovanie2</td></tr>
+<tr><td>i-priazen (priazeň, Advokát, Fajčiar)</td><td>2. časť po i-body</td></tr>
+<tr><td>k-reci1 (reči)</td><td>2. časť: reči vysvetlí k-reci-bot, hráč ich míňa v 3. časti (k-reci3)</td></tr>
+<tr><td>q-povera, tuhé, hrana, limit</td><td>2. časť (tuhé zavedené pri výbere Ihriska)</td></tr>
+</table>
+
+<h2>4. Čo sa zmenilo v 2. a 3. časti</h2>
+<ul>
+  <li>Šenok → ponuka vo všetkých textoch výučby (identifikátory <code>senok</code> ostali).</li>
+  <li>Čísla podľa nového 1. kola a v11.20: 2. kolo 21 : 6 (bez rečí pri Veterinárovi, Štamgast bez Dlhu z 1. kola), 3. kolo 27 : 11, Farár Štamgastovi za reči na červenej 3.</li>
+  <li><b>Finále</b>: z odhadzovacieho balíčka prídu Mäsiar a Záhradkár z 1. kola (nie Pijan a Mačka). Nová línia: Pijan pri vile, Mäsiar, Policajtka; Záhradkár ostane v ruke (pas za cigarety) a hráč neodpovedá, aby mu ostal plný poldeci. Výtržník ostal: 21 : 5, Nakladačka 16, <b>koniec 49 : 17</b> (doteraz 57 : 16).</li>
+  <li>Krokov spolu 172 → 176; 1. časť 40, 2. časť 67, 3. časť 69.</li>
+</ul>
+
+<h2>5. Dĺžka častí (odhad)</h2>
+<table>
+<tr><th>Časť</th><th>Krokov</th><th>Slov</th><th>Ťahy / kvízy</th><th>Minúty</th></tr>
+<tr><td>1. Prvé kolo</td><td>40</td><td>610</td><td>9 / 5</td><td>asi 7</td></tr>
+<tr><td>2. NA EX a podlosti</td><td>67</td><td>1 824</td><td>12 / 17</td><td>asi 15</td></tr>
+<tr><td>3. Celá hra</td><td>69</td><td>1 505</td><td>25 / 8</td><td>asi 12</td></tr>
+</table>
+<p>Spolu asi 34 minút, ako doteraz — zmenilo sa rozloženie: prvá časť je o polovicu kratšia, druhá dlhšia. Titulka by mohla sľúbiť „prvé kolo za 7 minút“. Minúty sú v <code>casti[].minuty</code> scenára.</p>
+
+<h2>6. Rýchly štart pravidiel</h2>
+<p>Časť A stránky Pravidlá (<code>apps/web/src/stranky/pravidla/kapitoly.tsx</code>) používa už len 13 slov jadra. Podrobnosti ostali pod tými istými kotvami: príprava, útočník a celé kolo krok za krokom sú v kapitole „Kolo, cieľ a šenok“, karta a zoznam akcií v kapitole Zhromaždenie, okamžitá výhra a straty špakov v kapitole Špaky a finále.</p>
+
+<h2>7. Na rozhodnutie</h2>
+<ol class="otazky">
+  <li>Pri NA EX na Traktoristku hra potichu zdvojí jej osamelú Cigaretu a pečeň (Štamgast +2 cigarety, pečeň 2 bez Cirhózy). Melichar to nevysvetľuje („čo ukáže tabuľka Pitky, dnes nechaj tak“). Iné rozdanie bez tohto som v sade nenašiel. Stačí to tak?</li>
+  <li>Hráč začína s 10 cigaretami (doteraz 7), aby mal po 1. časti 8 ako doteraz. Môže to tak byť?</li>
+  <li>Slovník pod myšou má pri slove ponuka zatiaľ heslo „Šenok“, kým programátor premenovanie nedokončí.</li>
+</ol>
+</main>
+</body>
+</html>

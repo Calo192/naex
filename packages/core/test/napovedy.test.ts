@@ -133,7 +133,7 @@ describe("nápovedy — rozpoznanie z pohľadu hráča", () => {
 });
 
 describe("nápovedy — prvé NA EX (kým výučba nemá 2. časť, 2026-10-25)", () => {
-  // Pitka z 1. časti výučby: hráč začína, má 2 plné poldeci a Pijana (Občan) v línii.
+  // Pitka z 1. časti výučby: hráč začína, má 2 plné poldeci a Občanov v línii (od 2026-11-10 v nej dá NA EX).
   const scenar = scenarJson as unknown as ScenarVyucby;
   const pri = (id: string): GameState => prehrajVyucbu(data, scenar, scenar.kroky.findIndex((k) => k.id === id));
 
@@ -147,7 +147,7 @@ describe("nápovedy — prvé NA EX (kým výučba nemá 2. časť, 2026-10-25)"
     const s = pri("i-pitka");
     const bez: GameState = { ...s, hraci: [{ ...s.hraci[0], poldeciPlne: 0 }, s.hraci[1]] };
     expect(ids(bez, 0)).not.toContain("prve-naex");
-    expect(ids(pri("k-pas"), 0)).not.toContain("prve-naex");
+    expect(ids(pri("k-zahradkar"), 0)).not.toContain("prve-naex");
   });
 });
 
