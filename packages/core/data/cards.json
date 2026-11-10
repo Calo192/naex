@@ -1,5 +1,5 @@
 {
- "source": "tvorca kariet 2026-11-08T07:51:31.461Z — rozpracovaný stav (Zrejúca) nad zverejnenou sadou v47 živého webu, bez karty Dlh; mäkké akcie 9 kariet, Kostol v11.7, Cigareta na útočných kartách, Liberál a lokality v11.13 (Michal 2026-11-06); Silná, nezávislá žena len Občania a Starešinovia (Michal 2026-11-08)",
+ "source": "zverejnená sada v52 živého webu (tvorca kariet 2026-11-10T14:13:58.221Z), bez karty Dlh; šenok → Ponuka v textoch 5 kariet (Michal 2026-11-10)",
  "actions": [
   "Cigareta",
   "Dlh",
@@ -103,7 +103,7 @@
     "Starešina",
     "Chlap"
    ],
-   "effect_text": "Väzeň — raz za hru: Zo šenku berieš kariet, koľko chceš, každú za jednu cigaretu; keď skončíš, môže pokračovať súper.",
+   "effect_text": "Väzeň — raz za hru: Z ponuky berieš kariet, koľko chceš, každú za jednu cigaretu; keď skončíš, môže pokračovať súper.",
    "triggers": [
     "Väzeň"
    ],
@@ -1470,7 +1470,7 @@
     "Pracujúci",
     "Chlap"
    ],
-   "effect_text": "Podpora: Vezmi si zo šenku 1 Nástroj.",
+   "effect_text": "Podpora: Vezmi si z ponuky 1 Nástroj.",
    "triggers": [
     "Podpora"
    ],
@@ -1677,7 +1677,7 @@
    "tags": [
     "Lokalita"
    ],
-   "effect_text": "Pitka: Po prvej Pitke kola si každý hráč vezme zadarmo 1 kartu zo šenku — najprv útočník, potom obranca. Z prázdneho šenku sa neberie nič.",
+   "effect_text": "Pitka: Po prvej Pitke kola si každý hráč vezme zadarmo 1 kartu z ponuky — najprv útočník, potom obranca. Z prázdnej ponuky sa neberie nič.",
    "triggers": [
     "Pitka"
    ],
@@ -1774,8 +1774,43 @@
    }
   },
   {
-   "id": "cierna_macka",
+   "id": "abstak",
    "index": 41,
+   "name": "Absťák",
+   "tags": [
+    "Kliatba"
+   ],
+   "effect_text": "Bitka: Každý Absťák v tvojom balíčku (ruka, doberací aj odhadzovací) ti uberie 1 tuhé; pri remíze v tuhom prehráva, kto ich má viac. Nedá sa priznať; po bitke ide z ruky do odhadzovacieho balíčka. Spáliť ju smie len Vízia alebo efekt, ktorý to výslovne povie.",
+   "triggers": [
+    "Bitka"
+   ],
+   "left": {
+    "blocked": [
+     0,
+     1,
+     2,
+     3
+    ],
+    "actions": {}
+   },
+   "right": {
+    "blocked": [
+     0,
+     1,
+     2,
+     3
+    ],
+    "actions": {}
+   },
+   "permutations": {
+    "total": 1,
+    "left": 1,
+    "right": 1
+   }
+  },
+  {
+   "id": "cierna_macka",
+   "index": 42,
    "name": "Čierna mačka",
    "tags": [
     "Zviera"
@@ -1811,7 +1846,7 @@
   },
   {
    "id": "kocovnik",
-   "index": 42,
+   "index": 43,
    "name": "Kočovník",
    "tags": [
     "Občan",
@@ -1854,7 +1889,7 @@
   },
   {
    "id": "pes",
-   "index": 43,
+   "index": 44,
    "name": "Pes",
    "tags": [
     "Zviera"
@@ -1889,7 +1924,7 @@
   },
   {
    "id": "kostol",
-   "index": 44,
+   "index": 45,
    "name": "Kostol",
    "tags": [
     "Lokalita"
@@ -1950,7 +1985,7 @@
   },
   {
    "id": "svokra",
-   "index": 45,
+   "index": 46,
    "name": "Svokra",
    "tags": [
     "Občan",
@@ -1989,7 +2024,7 @@
   },
   {
    "id": "sarlatan",
-   "index": 46,
+   "index": 47,
    "name": "Šarlatán",
    "tags": [
     "Občan",
@@ -2027,7 +2062,7 @@
   },
   {
    "id": "podvodnik",
-   "index": 47,
+   "index": 48,
    "name": "Podvodník",
    "tags": [
     "Občan",
@@ -2065,7 +2100,7 @@
   },
   {
    "id": "zahradkar",
-   "index": 48,
+   "index": 49,
    "name": "Záhradkár",
    "tags": [
     "Občan",
@@ -2103,7 +2138,7 @@
   },
   {
    "id": "anonymny_alkoholik",
-   "index": 49,
+   "index": 50,
    "name": "Anonymný alkoholik",
    "tags": [
     "Občan",
@@ -2141,7 +2176,7 @@
   },
   {
    "id": "most",
-   "index": 50,
+   "index": 51,
    "name": "Most",
    "tags": [
     "Lokalita"
@@ -2190,7 +2225,7 @@
   },
   {
    "id": "obecny_urad",
-   "index": 51,
+   "index": 52,
    "name": "Obecný úrad",
    "tags": [
     "Lokalita"
@@ -2250,7 +2285,7 @@
   },
   {
    "id": "jednota",
-   "index": 52,
+   "index": 53,
    "name": "Jednota",
    "tags": [
     "Lokalita"
@@ -2299,7 +2334,7 @@
   },
   {
    "id": "kulturny_dom",
-   "index": 53,
+   "index": 54,
    "name": "Kultúrny dom",
    "tags": [
     "Lokalita"
@@ -2359,7 +2394,7 @@
   },
   {
    "id": "vinna_pivnica",
-   "index": 54,
+   "index": 55,
    "name": "Vínna pivnica",
    "tags": [
     "Lokalita"
@@ -2419,7 +2454,7 @@
   },
   {
    "id": "druzstvo",
-   "index": 55,
+   "index": 56,
    "name": "Družstvo",
    "tags": [
     "Lokalita"
@@ -2479,7 +2514,7 @@
   },
   {
    "id": "cintorin",
-   "index": 56,
+   "index": 57,
    "name": "Cintorín",
    "tags": [
     "Lokalita"
@@ -3231,7 +3266,7 @@
    "tags": [
     "Lokalita"
    ],
-   "effect_text": "Zhromaždenie: Nástroj zo šenku smieš vyložiť rovno do Dedičstva za cenu Dedičstva. Do šenku sa dotiahne nový Nástroj.",
+   "effect_text": "Zhromaždenie: Nástroj z ponuky smieš vyložiť rovno do Dedičstva za cenu Dedičstva. Do ponuky sa dotiahne nový Nástroj.",
    "triggers": [
     "Zhromaždenie"
    ],
@@ -3814,43 +3849,8 @@
    }
   },
   {
-   "id": "abstak",
-   "index": 93,
-   "name": "Absťák",
-   "tags": [
-    "Kliatba"
-   ],
-   "effect_text": "Bitka: Každý Absťák v tvojom balíčku (ruka, doberací aj odhadzovací) ti uberie 1 tuhé; pri remíze v tuhom prehráva, kto ich má viac. Nedá sa priznať; po bitke ide z ruky do odhadzovacieho balíčka. Spáliť ju smie len Vízia alebo efekt, ktorý to výslovne povie.",
-   "triggers": [
-    "Bitka"
-   ],
-   "left": {
-    "blocked": [
-     0,
-     1,
-     2,
-     3
-    ],
-    "actions": {}
-   },
-   "right": {
-    "blocked": [
-     0,
-     1,
-     2,
-     3
-    ],
-    "actions": {}
-   },
-   "permutations": {
-    "total": 1,
-    "left": 1,
-    "right": 1
-   }
-  },
-  {
    "id": "opatrovatelka",
-   "index": 94,
+   "index": 93,
    "name": "Opatrovateľka",
    "tags": [
     "Občan",
@@ -3889,7 +3889,7 @@
   },
   {
    "id": "polovnik",
-   "index": 95,
+   "index": 94,
    "name": "Poľovník",
    "tags": [
     "Občan",
@@ -3939,7 +3939,7 @@
   },
   {
    "id": "predavacka",
-   "index": 96,
+   "index": 95,
    "name": "Predavačka",
    "tags": [
     "Občan",
@@ -3947,7 +3947,7 @@
     "Žena",
     "Pracujúci"
    ],
-   "effect_text": "Podpora: Vezmi si zo šenku 1 Občana.",
+   "effect_text": "Podpora: Vezmi si z ponuky 1 Občana.",
    "triggers": [
     "Podpora"
    ],
@@ -3978,7 +3978,7 @@
   },
   {
    "id": "veducko",
-   "index": 97,
+   "index": 96,
    "name": "Vedúcko",
    "tags": [
     "Občan",

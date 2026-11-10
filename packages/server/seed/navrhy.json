@@ -26,7 +26,7 @@
   "vyskaMm": 80,
   "mierkaTextu": 1.1,
   "mierkaIkon": 1.3,
-  "kopie": 1,
+  "kopie": 4,
   "obrazok": "noviny.jpg"
  },
  {
@@ -36,7 +36,7 @@
   "vyskaMm": 80,
   "mierkaTextu": 1.1,
   "mierkaIkon": 1.3,
-  "kopie": 1,
+  "kopie": 2,
   "obrazok": "cigorky.jpg"
  },
  {
@@ -46,7 +46,7 @@
   "vyskaMm": 80,
   "mierkaTextu": 1.1,
   "mierkaIkon": 1.3,
-  "kopie": 1,
+  "kopie": 2,
   "obrazok": "vinko.jpg"
  },
  {
@@ -56,7 +56,7 @@
   "vyskaMm": 80,
   "mierkaTextu": 1.1,
   "mierkaIkon": 1.3,
-  "kopie": 1,
+  "kopie": 4,
   "obrazok": "pasca.jpg"
  },
  {
@@ -66,7 +66,7 @@
   "vyskaMm": 80,
   "mierkaTextu": 1.1,
   "mierkaIkon": 1.3,
-  "kopie": 1,
+  "kopie": 4,
   "obrazok": "puska.jpg"
  },
  {
@@ -76,7 +76,7 @@
   "vyskaMm": 80,
   "mierkaTextu": 1.1,
   "mierkaIkon": 1.3,
-  "kopie": 1,
+  "kopie": 2,
   "obrazok": "svaty_text.jpg"
  },
  {
@@ -86,7 +86,7 @@
   "vyskaMm": 80,
   "mierkaTextu": 1.1,
   "mierkaIkon": 1.3,
-  "kopie": 1,
+  "kopie": 4,
   "obrazok": "nealko.jpg"
  },
  {
@@ -96,7 +96,7 @@
   "vyskaMm": 80,
   "mierkaTextu": 1.1,
   "mierkaIkon": 1.3,
-  "kopie": 1,
+  "kopie": 2,
   "obrazok": "vyherny_automat.jpg"
  },
  {
@@ -636,7 +636,7 @@
   "vyskaMm": 80,
   "mierkaTextu": 1.1,
   "mierkaIkon": 1.3,
-  "kopie": 1,
+  "kopie": 2,
   "obrazok": "vidly.jpg"
  },
  {
@@ -646,7 +646,7 @@
   "vyskaMm": 80,
   "mierkaTextu": 1.1,
   "mierkaIkon": 1.3,
-  "kopie": 1,
+  "kopie": 2,
   "obrazok": "lievik.jpg"
  },
  {
@@ -816,7 +816,7 @@
   "vyskaMm": 80,
   "mierkaTextu": 1.1,
   "mierkaIkon": 1.3,
-  "kopie": 1,
+  "kopie": 4,
   "obrazok": "boxer.jpg"
  },
  {
@@ -826,7 +826,7 @@
   "vyskaMm": 80,
   "mierkaTextu": 1.1,
   "mierkaIkon": 1.3,
-  "kopie": 1,
+  "kopie": 2,
   "obrazok": "energetak.jpg"
  },
  {
@@ -836,7 +836,7 @@
   "vyskaMm": 80,
   "mierkaTextu": 1.1,
   "mierkaIkon": 1.3,
-  "kopie": 1,
+  "kopie": 2,
   "obrazok": "furik.jpg"
  },
  {
@@ -846,7 +846,7 @@
   "vyskaMm": 80,
   "mierkaTextu": 1.1,
   "mierkaIkon": 1.3,
-  "kopie": 1,
+  "kopie": 2,
   "obrazok": "horoskop.jpg"
  },
  {
@@ -856,7 +856,7 @@
   "vyskaMm": 80,
   "mierkaTextu": 1.1,
   "mierkaIkon": 1.3,
-  "kopie": 1,
+  "kopie": 2,
   "obrazok": "hrable.jpg"
  },
  {
@@ -866,7 +866,7 @@
   "vyskaMm": 80,
   "mierkaTextu": 1.1,
   "mierkaIkon": 1.3,
-  "kopie": 1,
+  "kopie": 4,
   "obrazok": "jogurt.jpg"
  },
  {
@@ -876,7 +876,7 @@
   "vyskaMm": 80,
   "mierkaTextu": 1.1,
   "mierkaIkon": 1.3,
-  "kopie": 1,
+  "kopie": 2,
   "obrazok": "kristalova_gula.jpg"
  },
  {
@@ -886,7 +886,7 @@
   "vyskaMm": 80,
   "mierkaTextu": 1.1,
   "mierkaIkon": 1.3,
-  "kopie": 1,
+  "kopie": 2,
   "obrazok": "pistalka.jpg"
  },
  {
@@ -906,7 +906,7 @@
   "vyskaMm": 80,
   "mierkaTextu": 1.1,
   "mierkaIkon": 1.3,
-  "kopie": 1,
+  "kopie": 4,
   "obrazok": "telefon.jpg"
  },
  {
@@ -916,7 +916,7 @@
   "vyskaMm": 80,
   "mierkaTextu": 1.1,
   "mierkaIkon": 1.3,
-  "kopie": 1,
+  "kopie": 2,
   "obrazok": "vyherne_zreby.jpg"
  },
  {
@@ -926,7 +926,7 @@
   "vyskaMm": 80,
   "mierkaTextu": 1.1,
   "mierkaIkon": 1.3,
-  "kopie": 1,
+  "kopie": 2,
   "obrazok": "zapalovac.jpg"
  },
  {
@@ -936,7 +936,7 @@
   "vyskaMm": 80,
   "mierkaTextu": 1.1,
   "mierkaIkon": 1.3,
-  "kopie": 1,
+  "kopie": 2,
   "obrazok": "zrkadlo.jpg"
  },
  {
