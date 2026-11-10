@@ -1,0 +1,4282 @@
+{
+ "_meta": {
+  "nazov": "Glosár prekladov NA EX!",
+  "datum": "2026-11-10",
+  "zdroj": "docs/PRAVIDLA.md v11.20 (§17 Slovník a celé pravidlá), apps/web/src (slovnik.ts, nápisy stola, ranky), packages/core/data (elders.json, scorecards.json, cards.json), vzhľad tvorcu na živom webe",
+  "pravidla": [
+   "Doménové pojmy = miestne ekvivalenty (Michal 2026-11-10); názov hry NA EX! ostáva.",
+   "V textoch len slovo z glosára, všade rovnako, vrátane skloňovania.",
+   "Šenok je premenovaný na Ponuku (Michal 2026-11-10); glosár ho vedie ako Ponuku.",
+   "Hlášky Melichara ostávajú zvukom po slovensky, prekladajú sa len titulky.",
+   "Angličtina je britská (pub, landlady, last orders, favour).",
+   "Pole „stol“ = kratší nápis na stole, keď sa líši od pojmu v pravidlách.",
+   "Jadro hry číta slovenský text efektov — preklad je len na zobrazenie; {Akcia} sa nemení."
+  ]
+ },
+ "jazyky": {
+  "en": "English (britská)",
+  "pl": "Polski",
+  "cs": "Čeština",
+  "hu": "Magyar"
+ },
+ "pojmy": [
+  {
+   "id": "naex-hra",
+   "skupina": "hra",
+   "sk": "NA EX!",
+   "vyznam": "Názov hry.",
+   "prichut": "„Na ex“ = vypiť naraz do dna; výkrik pri pripíjaní.",
+   "preklady": {
+    "en": {
+     "pojem": "NA EX!",
+     "tvary": "nemení sa",
+     "preco": "Michal: názov hry ostáva.",
+     "zamietnute": "Bottoms Up! — stratí značku"
+    },
+    "pl": {
+     "pojem": "NA EX!",
+     "tvary": "nieodm.",
+     "preco": "Názov ostáva; Poliak pozná „do dna“, výkrik pochopí z obrázka.",
+     "zamietnute": "Do dna! — stratí značku"
+    },
+    "cs": {
+     "pojem": "NA EX!",
+     "tvary": "nesklonné",
+     "preco": "Názov ostáva; Česi hovoria „na ex“ úplne rovnako.",
+     "zamietnute": "—"
+    },
+    "hu": {
+     "pojem": "NA EX!",
+     "tvary": "nem ragozzuk a címben",
+     "preco": "Názov ostáva; Maďari poznajú „ex!“ pri pití.",
+     "zamietnute": "Fenékig! — stratí značku"
+    }
+   }
+  },
+  {
+   "id": "naex",
+   "skupina": "akcia hráča",
+   "sk": "NA EX",
+   "stolSk": "NA EX",
+   "vyznam": "Plný poldeci, ktorý hráč v Pitke skryto položí na Občana či Starešinu v línii: zruší jeho aktívne akcie a zdvojí neaktívne.",
+   "prichut": "Vyliať pohárik na kartu „na ex“ — opitosť ako zbraň; podľa ťahu sa volá hra.",
+   "preklady": {
+    "en": {
+     "pojem": "NA EX",
+     "tvary": "nesklonné; sloveso „pour a NA EX on a card“ (pour NA EX)",
+     "preco": "Ťah nesie meno hry, preklad by ho od nej odtrhol; „pour“ dáva obraz vyliateho pohárika.",
+     "zamietnute": "Bottoms up — dlhé a bez značky; Shot — koliduje s poldecom"
+    },
+    "pl": {
+     "pojem": "NA EX",
+     "tvary": "nieodm. (r. n.); „dać NA EX na kartę“",
+     "preco": "Ako v slovenčine „dať NA EX“; sloveso dać je prirodzené.",
+     "zamietnute": "Do dna — sloveso by sa bilo s Wypić"
+    },
+    "cs": {
+     "pojem": "NA EX",
+     "tvary": "nesklonné (s. r.); „dát NA EX na kartu“",
+     "preco": "Totožné so slovenčinou.",
+     "zamietnute": "—"
+    },
+    "hu": {
+     "pojem": "NA EX",
+     "tvary": "ragozva kötőjellel: NA EX-et, NA EX-szel; „NA EX-et ad egy lapra“",
+     "preco": "Značka ostáva, prípony s pomlčkou podľa maďarského pravopisu skratiek.",
+     "zamietnute": "Ex — príliš krátke, splynie s textom"
+    }
+   }
+  },
+  {
+   "id": "poldeci",
+   "skupina": "zdroj",
+   "sk": "poldeci (plný / vypitý)",
+   "stolSk": "poldeci",
+   "vyznam": "Pohárik pálenky (0,05 l). Plné zvyšujú limit vykladania (plné + 1), platí sa nimi NA EX, Vypiť a odpoveď na NA EX; vypitý sa dá doliať. Aj meno akcie Poldeci.",
+   "prichut": "Dedinská jednotka pitia, dávka pálenky; „dať si poldeci“.",
+   "preklady": {
+    "en": {
+     "pojem": "shot (full / empty)",
+     "tvary": "pl. shots; akcia {Poldeci} = Shot",
+     "preco": "Najbežnejšie slovo pre dávku tvrdého; krátke na stôl.",
+     "zamietnute": "measure — úradné; dram — škótske, len whisky"
+    },
+    "pl": {
+     "pojem": "kieliszek (pełny / wypity)",
+     "tvary": "r. m.: kieliszka, kieliszki, kieliszków; akcia {Poldeci} = Kieliszek",
+     "preco": "Na stole sa hovorí o pohári, ktorý sa plní a vypíja; „pięćdziesiątka“ (presne 50 ml) je rank.",
+     "zamietnute": "pięćdziesiątka — dlhé na stôl, ostáva pre rank; setka — 100 ml, iná dávka"
+    },
+    "cs": {
+     "pojem": "panák (plný / vypitý)",
+     "tvary": "r. m.: panáka, panáky, panáků; akcia {Poldeci} = Panák",
+     "preco": "„Dát si panáka“ je presne slovenské „dať si poldeci“.",
+     "zamietnute": "půldecák — presné, ale knižnejšie a dlhé; štamprle — nárečové"
+    },
+    "hu": {
+     "pojem": "feles (teli / üres)",
+     "tvary": "felest, felesek; „megiszik egy felest“",
+     "preco": "Feles = pol deci pálenky, doslovný aj kultúrny ekvivalent.",
+     "zamietnute": "kupica — staršie, menej známe; pohár — všeobecné"
+    }
+   }
+  },
+  {
+   "id": "vypit",
+   "skupina": "ťah",
+   "sk": "Vypiť",
+   "stolSk": "Vypiť",
+   "vyznam": "Otočiť plný poldeci na vypitý, aby si v tom istom ťahu vyložil ďalšiu kartu: limit −1, pečeň +1, nerest 1.",
+   "prichut": "Hodiť do seba ďalší, aby sa dalo pokračovať.",
+   "preklady": {
+    "en": {
+     "pojem": "Down one",
+     "tvary": "sloveso „down a shot“; tlačidlo „Down one“",
+     "preco": "„Down it“ je pub výraz pre vypitie naraz.",
+     "zamietnute": "Drink — príliš všeobecné; Chug — americké"
+    },
+    "pl": {
+     "pojem": "Wypić",
+     "tvary": "dok.; tlačidlo „Wypij“",
+     "preco": "Doslovne a prirodzene.",
+     "zamietnute": "Łyknąć — zdrobnené, slabšie"
+    },
+    "cs": {
+     "pojem": "Vypít",
+     "tvary": "dok.; tlačidlo „Vypít“",
+     "preco": "Totožné.",
+     "zamietnute": "Kopnout do sebe — dlhé"
+    },
+    "hu": {
+     "pojem": "Felhajtani",
+     "tvary": "tlačidlo „Felhajt“; főnév: felhajtás",
+     "preco": "„Felhajt egy felest“ = hodí do seba poldeci.",
+     "zamietnute": "Megiszik — neutrálne, bez šmrncu"
+    }
+   }
+  },
+  {
+   "id": "doliatie",
+   "skupina": "ťah",
+   "sk": "doliatie",
+   "stolSk": "Doliať",
+   "vyznam": "Počas Pitky za 2 cigarety otočíš vypitý poldeci na plný.",
+   "prichut": "Krčmárka dolieva — bežný úkon za peniaze.",
+   "preklady": {
+    "en": {
+     "pojem": "refill",
+     "tvary": "tlačidlo „Refill“",
+     "preco": "Krátke, jasné.",
+     "zamietnute": "Top up — menej známe mimo UK"
+    },
+    "pl": {
+     "pojem": "dolewka",
+     "tvary": "r. ž.; tlačidlo „Dolej“",
+     "preco": "Hovorové „dolewka“ = presne dolievanie v krčme.",
+     "zamietnute": "uzupełnienie — úradné"
+    },
+    "cs": {
+     "pojem": "dolití",
+     "tvary": "s. r.; tlačidlo „Dolít“",
+     "preco": "Totožné.",
+     "zamietnute": "—"
+    },
+    "hu": {
+     "pojem": "újratöltés",
+     "tvary": "tlačidlo „Tölts!“",
+     "preco": "„Tölts még!“ je bežná krčmová veta.",
+     "zamietnute": "utántöltés — technické"
+    }
+   }
+  },
+  {
+   "id": "barter",
+   "skupina": "ťah",
+   "sk": "Stokársky barter",
+   "stolSk": "Barter",
+   "vyznam": "Počas Pitky za 5 cigariet nový plný poldeci navyše (natrvalo).",
+   "prichut": "Stokár = človek zo stoky, spodina; výmenný obchod najnižšej sorty.",
+   "preklady": {
+    "en": {
+     "pojem": "Gutter barter",
+     "preco": "Gutter = stoka, nesie spodinu aj aliteráciu.",
+     "zamietnute": "Lowlife trade — bez barteru; Street swap — slabé"
+    },
+    "pl": {
+     "pojem": "Menelski barter",
+     "tvary": "r. m.",
+     "preco": "Menel = poľský zapitý povaľač, presný sociálny typ.",
+     "zamietnute": "Bimbrowy handel — posúva k pálenke"
+    },
+    "cs": {
+     "pojem": "Socký barter",
+     "tvary": "r. m.",
+     "preco": "Socka = česká hovorová spodina, rovnaká príchuť.",
+     "zamietnute": "Stokařský — v češtine neznámé"
+    },
+    "hu": {
+     "pojem": "Csöves cserebere",
+     "preco": "Csöves = bezdomovec zo slangu, cserebere = ľudový výmenný obchod.",
+     "zamietnute": "Proli barter — slabšie"
+    }
+   }
+  },
+  {
+   "id": "spak",
+   "skupina": "zdroj",
+   "sk": "špak",
+   "stolSk": "špaky",
+   "vyznam": "Víťazný bod (ohorok cigarety); kto má po finále viac, vyhrá. Na stole v popolníku.",
+   "prichut": "Body sa rátajú v ohorkoch — vulgárna lacnota dediny.",
+   "preklady": {
+    "en": {
+     "pojem": "butt",
+     "tvary": "pl. butts; „12 butts“",
+     "preco": "Cigarette butt je presný predmet; dvojzmysel butt = zadok sedí k hrubému tónu, nič sa nepridáva navyše.",
+     "zamietnute": "stub — slušné, stratí šmrnc; fag end — v USA urážka"
+    },
+    "pl": {
+     "pojem": "pet",
+     "tvary": "r. m.: peta, pety, petów",
+     "preco": "„Pet“ je hovorový ohorok, krátky na stôl.",
+     "zamietnute": "niedopałek — spisovné a dlhé; kiep — regionálne"
+    },
+    "cs": {
+     "pojem": "vajgl",
+     "tvary": "r. m.: vajglu, vajgly, vajglů",
+     "preco": "Hovorový český ohorok, krčmový register.",
+     "zamietnute": "nedopalek — spisovné"
+    },
+    "hu": {
+     "pojem": "csikk",
+     "tvary": "csikket, csikkek; számnév után egyes szám: 12 csikk",
+     "preco": "Hovorový ohorok, krátky.",
+     "zamietnute": "cigarettavég — opisné"
+    }
+   }
+  },
+  {
+   "id": "popolnik",
+   "skupina": "stôl",
+   "sk": "popolník",
+   "stolSk": "popolník",
+   "vyznam": "Miesto pri mene hráča, kde ležia jeho špaky.",
+   "preklady": {
+    "en": {
+     "pojem": "ashtray"
+    },
+    "pl": {
+     "pojem": "popielniczka",
+     "tvary": "r. ž."
+    },
+    "cs": {
+     "pojem": "popelník",
+     "tvary": "r. m."
+    },
+    "hu": {
+     "pojem": "hamutartó"
+    }
+   }
+  },
+  {
+   "id": "cigareta",
+   "skupina": "zdroj",
+   "sk": "cigareta",
+   "stolSk": "cigarety",
+   "vyznam": "Mena hry: platí sa ňou ponuka, Dedičstvo, podloženie, doliatie, barter a Záverečná; fajčením v Pitke dostaneš kartu. Aj akcia Cigareta (+1 v Pitke).",
+   "prichut": "Cigarety ako dedinská mena — drobné, za ktoré sa všetko kupuje.",
+   "preklady": {
+    "en": {
+     "pojem": "cigarette",
+     "tvary": "pl. cigarettes; na stole aj „cigs“",
+     "preco": "Neutrálne ako v origináli; „fag“ by v USA urážalo.",
+     "zamietnute": "fag — urážlivé v USA; smoke — splynie s fajčením"
+    },
+    "pl": {
+     "pojem": "papieros",
+     "tvary": "r. m.: papierosa, papierosy, papierosów",
+     "preco": "Neutrálne ako slovenská cigareta.",
+     "zamietnute": "fajka — znamená aj fajku, mätie"
+    },
+    "cs": {
+     "pojem": "cigareta",
+     "tvary": "r. ž.: cigarety, cigaret",
+     "preco": "Totožné.",
+     "zamietnute": "cigárko — zdrobnené"
+    },
+    "hu": {
+     "pojem": "cigaretta",
+     "tvary": "cigarettát, cigaretták",
+     "preco": "Neutrálne; hovorové „cigi“ smie byť len v Melicharovi.",
+     "zamietnute": "cigi — príliš hovorové na pravidlá"
+    }
+   }
+  },
+  {
+   "id": "fajcenie",
+   "skupina": "ťah",
+   "sk": "fajčenie",
+   "stolSk": "Fajčiť",
+   "vyznam": "V Pitke: za rastúcu cenu (1, 2, 3… cigarety) hneď dobereš kartu.",
+   "prichut": "Pri cigarete sa rodia nápady.",
+   "preklady": {
+    "en": {
+     "pojem": "smoking; „smoke“",
+     "tvary": "tlačidlo „Smoke“",
+     "preco": "Jasné, krátke.",
+     "zamietnute": "Light up — dlhšie"
+    },
+    "pl": {
+     "pojem": "palenie; „zapalić“",
+     "tvary": "tlačidlo „Zapal“",
+     "preco": "„Zapalić“ je prirodzená výzva.",
+     "zamietnute": "Kurzyć — pejoratívne"
+    },
+    "cs": {
+     "pojem": "kouření; „zapálit si“",
+     "tvary": "tlačidlo „Zapálit si“",
+     "preco": "Prirodzené.",
+     "zamietnute": "Hulit — vulgárnejšie než originál"
+    },
+    "hu": {
+     "pojem": "rágyújtás",
+     "tvary": "tlačidlo „Rágyújt“",
+     "preco": "„Rágyújt“ = zapáli si, krčmový obraz.",
+     "zamietnute": "dohányzás — úradné"
+    }
+   }
+  },
+  {
+   "id": "kolo",
+   "skupina": "priebeh",
+   "sk": "kolo",
+   "stolSk": "kolo",
+   "vyznam": "Jedna bitka o lokalitu: cieľ, ponuka, 1–5 × (Zhromaždenie + Pitka), bitka.",
+   "preklady": {
+    "en": {
+     "pojem": "round",
+     "preco": "Herný štandard.",
+     "zamietnute": "turn — to je ťah"
+    },
+    "pl": {
+     "pojem": "runda",
+     "tvary": "r. ž.: rundy, rund",
+     "preco": "Herný štandard.",
+     "zamietnute": "kolejka — to je kolo pitia"
+    },
+    "cs": {
+     "pojem": "kolo",
+     "tvary": "s. r.",
+     "preco": "Totožné.",
+     "zamietnute": "—"
+    },
+    "hu": {
+     "pojem": "kör",
+     "tvary": "kört, körök",
+     "preco": "Herný štandard.",
+     "zamietnute": "forduló — športové, dlhšie"
+    }
+   }
+  },
+  {
+   "id": "tah",
+   "skupina": "priebeh",
+   "sk": "ťah",
+   "stolSk": "Tvoj ťah",
+   "vyznam": "Jedno vyloženie (alebo podloženie, Dedičstvo) v striedaní hráčov.",
+   "preklady": {
+    "en": {
+     "pojem": "turn"
+    },
+    "pl": {
+     "pojem": "ruch / kolej",
+     "tvary": "„twój ruch“",
+     "preco": "„Twoja kolej“ na stole."
+    },
+    "cs": {
+     "pojem": "tah",
+     "tvary": "r. m."
+    },
+    "hu": {
+     "pojem": "lépés",
+     "tvary": "„Te jössz“ na stole"
+    }
+   }
+  },
+  {
+   "id": "partia-zapas",
+   "skupina": "hra",
+   "sk": "partia (zápas)",
+   "stolSk": "partia",
+   "vyznam": "Celá hra od prvého kola po finále; „rozohraná partia“.",
+   "prichut": "Slovo „partia“ má v pravidlách dva významy — pozor na „Partiu“ (tvoje karty).",
+   "preklady": {
+    "en": {
+     "pojem": "game",
+     "preco": "„Match“ by bol športový.",
+     "zamietnute": "match"
+    },
+    "pl": {
+     "pojem": "partia",
+     "tvary": "r. ž.",
+     "preco": "Poľská „partia“ = partia hry.",
+     "zamietnute": "mecz"
+    },
+    "cs": {
+     "pojem": "partie",
+     "tvary": "r. ž.",
+     "preco": "Totožné."
+    },
+    "hu": {
+     "pojem": "játszma",
+     "preco": "Šachový a kartový výraz.",
+     "zamietnute": "meccs"
+    }
+   }
+  },
+  {
+   "id": "partia",
+   "skupina": "stôl",
+   "sk": "Partia (tvoje karty)",
+   "stolSk": "tvoja partia",
+   "vyznam": "Všetky karty natočené k hráčovi, kdekoľvek v línii; „v tvojej partii“ = medzi tvojimi kartami.",
+   "prichut": "Partia = parta, banda kamarátov; tvoja banda na stole.",
+   "preklady": {
+    "en": {
+     "pojem": "crew",
+     "tvary": "„in your crew“",
+     "preco": "Nesie „tvoja banda“ a nemieša sa s game.",
+     "zamietnute": "party — politika; side — koliduje so stranou karty"
+    },
+    "pl": {
+     "pojem": "ekipa",
+     "tvary": "r. ž.: ekipy; „w twojej ekipie“",
+     "preco": "Ekipa = partia kamarátov, hovorové.",
+     "zamietnute": "paczka — aj balík; drużyna — šport, 2 na 2"
+    },
+    "cs": {
+     "pojem": "parta",
+     "tvary": "r. ž.; „ve tvé partě“",
+     "preco": "Česká parta = presne slovenská partia ľudí.",
+     "zamietnute": "tým — vyhradené pre 2 na 2"
+    },
+    "hu": {
+     "pojem": "banda",
+     "tvary": "bandát; „a bandádban“",
+     "preco": "Banda = partia, hovorové, s ľahkou drzosťou.",
+     "zamietnute": "csapat — vyhradené pre tím 2 na 2"
+    }
+   }
+  },
+  {
+   "id": "utocnik",
+   "skupina": "priebeh",
+   "sk": "útočník / obranca",
+   "stolSk": "útočník / obranca",
+   "vyznam": "Útočník prehral minulú bitku: vykladá prvý a na NA EX odpovedá prvý. Obranca vyberá cieľ a berie z ponuky prvý.",
+   "preklady": {
+    "en": {
+     "pojem": "attacker / defender"
+    },
+    "pl": {
+     "pojem": "atakujący / obrońca",
+     "zamietnute": "napastnik — futbal"
+    },
+    "cs": {
+     "pojem": "útočník / obránce"
+    },
+    "hu": {
+     "pojem": "támadó / védő"
+    }
+   }
+  },
+  {
+   "id": "liga",
+   "skupina": "hra",
+   "sk": "liga: Tretia / Druhá / Prvá",
+   "stolSk": "Tretia liga",
+   "vyznam": "Dĺžka hry: 3 / 5 / 7 lokalít, potom finále.",
+   "prichut": "Dedinský futbal — okresné ligy; hráč postupuje ako klub.",
+   "preklady": {
+    "en": {
+     "pojem": "Third / Second / First Division",
+     "preco": "Klasické anglické delenie líg (pred premenovaním) je zrozumiteľné všade.",
+     "zamietnute": "League Two / League One — príliš súčasné a britské"
+    },
+    "pl": {
+     "pojem": "III liga / II liga / I liga",
+     "tvary": "„Trzecia liga“",
+     "preco": "Poľská futbalová pyramída má presne tieto mená.",
+     "zamietnute": "klasa okręgowa — príliš lokálne"
+    },
+    "cs": {
+     "pojem": "Třetí / Druhá / První liga",
+     "preco": "Totožné.",
+     "zamietnute": "okresní přebor — dlhé"
+    },
+    "hu": {
+     "pojem": "Harmadosztály / Másodosztály / Első osztály",
+     "preco": "Maďarské NB III / NB II / NB I sa hovorovo volajú osztály.",
+     "zamietnute": "megyei — krajská liga, nie trojstupňová"
+    }
+   }
+  },
+  {
+   "id": "finale",
+   "skupina": "hra",
+   "sk": "finále",
+   "stolSk": "Finále",
+   "vyznam": "Posledná bitka o pinnacle lokalitu; útočí zaostávajúci.",
+   "preklady": {
+    "en": {
+     "pojem": "Finale",
+     "preco": "„Final“ by bol športový zápas; finale = veľký záver.",
+     "zamietnute": "Final"
+    },
+    "pl": {
+     "pojem": "finał",
+     "tvary": "r. m."
+    },
+    "cs": {
+     "pojem": "finále",
+     "tvary": "s. r."
+    },
+    "hu": {
+     "pojem": "döntő",
+     "tvary": "döntőt",
+     "preco": "Športový výraz, prirodzený.",
+     "zamietnute": "finálé — knižné"
+    }
+   }
+  },
+  {
+   "id": "pinnacle",
+   "skupina": "lokalita",
+   "sk": "pinnacle (vrcholová lokalita)",
+   "stolSk": "pinnacle",
+   "vyznam": "Lokalita úrovne 4 (Poľovnícka chata, Predsedova vila, Herňa); hrá sa o ňu len vo finále.",
+   "prichut": "Pravidlá používajú anglické slovo — vrchol korupcie dediny.",
+   "preklady": {
+    "en": {
+     "pojem": "pinnacle",
+     "preco": "Originál je anglický."
+    },
+    "pl": {
+     "pojem": "lokacja szczytowa",
+     "preco": "Polák slovu pinnacle nerozumie; szczyt nesie vrchol.",
+     "zamietnute": "pinnacle"
+    },
+    "cs": {
+     "pojem": "vrcholová lokalita",
+     "preco": "Pravidlá aj tak píšu „vrcholová (pinnacle)“.",
+     "zamietnute": "pinnacle — anglicizmus"
+    },
+    "hu": {
+     "pojem": "csúcshelyszín",
+     "preco": "Zrozumiteľný zložený výraz.",
+     "zamietnute": "pinnacle"
+    }
+   }
+  },
+  {
+   "id": "kalamita",
+   "skupina": "režim",
+   "sk": "Kalamita",
+   "stolSk": "Kalamita",
+   "vyznam": "Základný režim hry (bitky o lokality, starší, špaky).",
+   "prichut": "Kalamita = katastrofa, chaos (snehová kalamita); hra ako prírodná pohroma.",
+   "preklady": {
+    "en": {
+     "pojem": "Calamity",
+     "preco": "Priamy ekvivalent, rovnako mierne nadnesený.",
+     "zamietnute": "Disaster — banálne"
+    },
+    "pl": {
+     "pojem": "Klęska",
+     "tvary": "r. ž.",
+     "preco": "„Klęska żywiołowa“ = kalamita; „kalamita“ po poľsky nejestvuje.",
+     "zamietnute": "Kataklizm — príliš veľké"
+    },
+    "cs": {
+     "pojem": "Kalamita",
+     "tvary": "r. ž.",
+     "preco": "Totožné."
+    },
+    "hu": {
+     "pojem": "Kalamajka",
+     "preco": "Kalamajka = mela, zmätok; hovorové a vtipné, nadnesenie sedí.",
+     "zamietnute": "Kalamitás — správne, ale knižné"
+    }
+   }
+  },
+  {
+   "id": "pata",
+   "skupina": "režim",
+   "sk": "Päta, Lakeť, Otočka",
+   "stolSk": "Päta, Lakeť, Otočka",
+   "vyznam": "Druhý režim: podraziť všetkých štyroch starších súpera (pečeň starších, jed, štít).",
+   "prichut": "Znie ako krčmová bitkárska kombinácia (päta, lakeť, otočka) — narážka nie je istá, otázka v otazky.md.",
+   "preklady": {
+    "en": {
+     "pojem": "Heel, Elbow, Spin",
+     "preco": "Zachová rytmus troch úderov.",
+     "zamietnute": "Trip and Twist — vymyslené"
+    },
+    "pl": {
+     "pojem": "Pięta, łokieć, obrót",
+     "preco": "Doslovne, rytmus ostáva."
+    },
+    "cs": {
+     "pojem": "Pata, loket, otočka",
+     "preco": "Takmer totožné."
+    },
+    "hu": {
+     "pojem": "Sarok, könyök, fordulás",
+     "preco": "Doslovne, rytmus ostáva."
+    }
+   }
+  },
+  {
+   "id": "2na2",
+   "skupina": "režim",
+   "sk": "2 na 2 (tím, kapitán)",
+   "stolSk": "2 na 2",
+   "vyznam": "Dva tímy po dvoch; tím je hráč s dvoma rukami, kapitán robí tímové voľby a strieda sa každé kolo.",
+   "preklady": {
+    "en": {
+     "pojem": "2 vs 2 (team, captain)",
+     "zamietnute": "doubles — tenis"
+    },
+    "pl": {
+     "pojem": "2 na 2 (drużyna, kapitan)"
+    },
+    "cs": {
+     "pojem": "2 na 2 (tým, kapitán)"
+    },
+    "hu": {
+     "pojem": "2 a 2 ellen (csapat, kapitány)"
+    }
+   }
+  },
+  {
+   "id": "vyucba",
+   "skupina": "web",
+   "sk": "výučba „Prvá hra“",
+   "stolSk": "Výučba",
+   "vyznam": "Tri časti učenia hry s Majstrom Melicharom.",
+   "preklady": {
+    "en": {
+     "pojem": "tutorial „First Game“"
+    },
+    "pl": {
+     "pojem": "samouczek „Pierwsza gra“"
+    },
+    "cs": {
+     "pojem": "výuka „První hra“"
+    },
+    "hu": {
+     "pojem": "oktatás „Első játék“"
+    }
+   }
+  },
+  {
+   "id": "vypalena",
+   "skupina": "web",
+   "sk": "Vypálená / Zrejúca",
+   "stolSk": "Vypálená",
+   "vyznam": "Vypálená = oficiálna verzia hry; Zrejúca = ďalšia verzia v testovaní.",
+   "prichut": "Pálenka: ovocie zreje, potom sa vypáli — hra dozrieva ako destilát.",
+   "preklady": {
+    "en": {
+     "pojem": "Distilled / Maturing",
+     "preco": "Drží obraz destilátu.",
+     "zamietnute": "Stable / Beta — mŕtve"
+    },
+    "pl": {
+     "pojem": "Wypędzona / Dojrzewająca",
+     "tvary": "„pędzić bimber“ = páliť",
+     "preco": "Pędzenie bimbru je poľské pálenie; wypalona by znamenala vyhorená.",
+     "zamietnute": "Wypalona — vyhorená"
+    },
+    "cs": {
+     "pojem": "Vypálená / Zrající",
+     "preco": "Čeština pálenku tiež „vypaluje“."
+    },
+    "hu": {
+     "pojem": "Lefőzött / Érlelődő",
+     "preco": "Pálinku Maďar „főz“ (varí) — lefőzött = vypálená.",
+     "zamietnute": "Kiégett — vyhorený"
+    }
+   }
+  },
+  {
+   "id": "frajerina",
+   "skupina": "web",
+   "sk": "Frajerina (hodnotenie)",
+   "stolSk": "Frajerina",
+   "vyznam": "Hodnotenie hráča podľa vzoru Elo; tituly Abstinent → Kráľ krčmy.",
+   "prichut": "Frajerina = vytŕčanie, machrovanie.",
+   "preklady": {
+    "en": {
+     "pojem": "Swagger",
+     "preco": "Machrovanie, krčmové sebavedomie.",
+     "zamietnute": "Rating — mŕtve"
+    },
+    "pl": {
+     "pojem": "Szpan",
+     "tvary": "r. m.",
+     "preco": "Szpan = machrovanie.",
+     "zamietnute": "Ranking — mŕtve"
+    },
+    "cs": {
+     "pojem": "Frajeřina",
+     "tvary": "r. ž.",
+     "preco": "Totožné."
+    },
+    "hu": {
+     "pojem": "Vagányság",
+     "preco": "Vagány = frajer.",
+     "zamietnute": "Menőség — detské"
+    }
+   }
+  },
+  {
+   "id": "tituly",
+   "skupina": "web",
+   "sk": "Tituly Frajeriny: Abstinent, Zelenáč, Návštevník, Štamgast, Frajer, Veľký frajer, Postrach dediny, Kráľ krčmy",
+   "vyznam": "Hodnosti podľa Frajeriny.",
+   "prichut": "Rebríček krčmového postavenia od abstinenta po kráľa.",
+   "preklady": {
+    "en": {
+     "pojem": "Teetotaller, Greenhorn, Visitor, Regular, Hotshot, Big Hotshot, Terror of the Village, King of the Pub",
+     "preco": "Každý stupeň krčmový typ.",
+     "zamietnute": "Novice/Expert — mŕtve"
+    },
+    "pl": {
+     "pojem": "Abstynent, Żółtodziób, Gość, Stały bywalec, Kozak, Wielki kozak, Postrach wsi, Król knajpy",
+     "preco": "Kozak = frajer, tvrďas.",
+     "zamietnute": "Szpaner — slabšie"
+    },
+    "cs": {
+     "pojem": "Abstinent, Zelenáč, Návštěvník, Štamgast, Frajer, Velký frajer, Postrach vesnice, Král hospody",
+     "preco": "Takmer totožné."
+    },
+    "hu": {
+     "pojem": "Absztinens, Zöldfülű, Látogató, Törzsvendég, Vagány, Nagy vagány, A falu réme, A kocsma királya",
+     "preco": "Zöldfülű = zelenáč; a falu réme = postrach dediny."
+    }
+   }
+  },
+  {
+   "id": "ranky",
+   "skupina": "web",
+   "sk": "Ranky: Nealko, Poldeci, Deci, Sedmička",
+   "vyznam": "Hráčske ranky účtu (návštevník → Poldeci → Deci → Sedmička) podľa hviezd achievementov.",
+   "prichut": "Rebríček dávok: nealko, poldeci, deci (vína), sedmička (0,7 l fľaša).",
+   "preklady": {
+    "en": {
+     "pojem": "Alcohol-free, Shot, Double, Bottle",
+     "preco": "Rastúca dávka: double = dvojitý panák (50 ml), bottle = fľaša.",
+     "zamietnute": "Fifth — americké a zastarané; Pint — pivo, iná os"
+    },
+    "pl": {
+     "pojem": "Zerówka, Pięćdziesiątka, Setka, Flaszka",
+     "preco": "Zerówka = nealko pivo, pięćdziesiątka = 50 ml, setka = 100 ml, flaszka = fľaša.",
+     "zamietnute": "Siódemka — nehovorí sa"
+    },
+    "cs": {
+     "pojem": "Nealko, Panák, Deci, Sedmička",
+     "preco": "Sedmička (0,7 l) aj deci sú české hovorové miery.",
+     "zamietnute": "Půldecák — pre rank dlhé"
+    },
+    "hu": {
+     "pojem": "Alkoholmentes, Feles, Deci, Hétdecis",
+     "preco": "Hétdecis = 7-decová fľaša, bežný výraz pre pálinku.",
+     "zamietnute": "Üveg — bez miery"
+    }
+   }
+  },
+  {
+   "id": "melichar",
+   "skupina": "postava",
+   "sk": "Majster Melichar",
+   "stolSk": "Melichar",
+   "vyznam": "Sprievodca výučby a komentátor partie proti botovi; hlášky ostávajú po slovensky so zvukom, preklad len v titulkoch.",
+   "prichut": "Hrubý majster, dedinský „učiteľ“ — titul majster ako remeselník.",
+   "preklady": {
+    "en": {
+     "pojem": "Master Melichar",
+     "preco": "Meno ostáva, titul ako remeselný majster.",
+     "zamietnute": "Mr. Melichar — stratí autoritu"
+    },
+    "pl": {
+     "pojem": "Mistrz Melichar",
+     "tvary": "Mistrza Melichara",
+     "preco": "Mistrz = remeselný majster aj učiteľ."
+    },
+    "cs": {
+     "pojem": "Mistr Melichar",
+     "tvary": "Mistra Melichara",
+     "preco": "Totožné."
+    },
+    "hu": {
+     "pojem": "Melichar mester",
+     "tvary": "Melichar mestert",
+     "preco": "Maďarský titul za menom.",
+     "zamietnute": "Mester Melichar — nesprávny slovosled"
+    }
+   }
+  },
+  {
+   "id": "volba-ciela",
+   "skupina": "fáza",
+   "sk": "voľba cieľa",
+   "stolSk": "O čo sa bijeme",
+   "vyznam": "Obranca vyberie lokalitu kola; natočí ju víťaz minulej hádky.",
+   "prichut": "Nadpis fázy sa mení na „O čo sa bijeme“ (prvý dojem návštevníka).",
+   "preklady": {
+    "en": {
+     "pojem": "choosing the target",
+     "stol": "What are we fighting over?"
+    },
+    "pl": {
+     "pojem": "wybór celu",
+     "stol": "O co się bijemy?"
+    },
+    "cs": {
+     "pojem": "volba cíle",
+     "stol": "O co se porveme"
+    },
+    "hu": {
+     "pojem": "célválasztás",
+     "stol": "Miért verekszünk?"
+    }
+   }
+  },
+  {
+   "id": "ponuka",
+   "skupina": "fáza",
+   "sk": "Ponuka (predtým šenok)",
+   "stolSk": "Ponuka",
+   "vyznam": "8 kariet lícom nahor, z ktorých sa berie za cigarety (1 za 1, 2 za 3); stavba ponuky a branie z ponuky. Michal 2026-11-10 premenoval šenok na Ponuku.",
+   "prichut": "Neutrálne slovo bez nárečia — šenok si nováčik plietol s Krčmou.",
+   "preklady": {
+    "en": {
+     "pojem": "Market",
+     "stol": "Market",
+     "tvary": "„from the Market“; stavba = setting up the Market",
+     "preco": "Herný štandard, okamžite jasné, kde sa kupuje.",
+     "zamietnute": "Offer — ako podstatné meno neprirodzené; Supply — žargón Dominionu"
+    },
+    "pl": {
+     "pojem": "Oferta",
+     "tvary": "r. ž.: oferty; „z oferty“",
+     "preco": "Prirodzené „weź kartę z oferty“, neutrálne ako Ponuka.",
+     "zamietnute": "Targ — jarmok, Michal ho zamietol; Lada — pult v obchode"
+    },
+    "cs": {
+     "pojem": "Nabídka",
+     "tvary": "r. ž.: nabídky; „z nabídky“",
+     "preco": "Doslovný a prirodzený ekvivalent.",
+     "zamietnute": "Trh — jarmok, zamietnutý"
+    },
+    "hu": {
+     "pojem": "Kínálat",
+     "tvary": "kínálatot; „a kínálatból“",
+     "preco": "Kínálat = ponuka tovaru, neutrálne.",
+     "zamietnute": "Piac — jarmok, zamietnutý"
+    }
+   }
+  },
+  {
+   "id": "zhromazdenie",
+   "skupina": "fáza",
+   "sk": "Zhromaždenie",
+   "stolSk": "Zhromaždenie",
+   "vyznam": "Fáza, v ktorej hráči striedavo vykladajú karty do línie; začína útočník.",
+   "prichut": "Dedinské zhromaždenie, schôdza — občania sa zídu a stavajú sa vedľa seba.",
+   "preklady": {
+    "en": {
+     "pojem": "Assembly",
+     "tvary": "„in this Assembly“",
+     "preco": "Nesie občianske a obecné zhromaždenie.",
+     "zamietnute": "Gathering — splýva s bežnou rečou; Meeting — kancelária"
+    },
+    "pl": {
+     "pojem": "Zebranie",
+     "tvary": "r. n.: zebrania, zebrań",
+     "preco": "Zebranie wiejskie = dedinská schôdza, presná príchuť.",
+     "zamietnute": "Zgromadzenie — príliš slávnostné"
+    },
+    "cs": {
+     "pojem": "Shromáždění",
+     "tvary": "s. r.",
+     "preco": "Doslovné; schůze by pridala socializmus navyše.",
+     "zamietnute": "Schůze — pridáva komunistickú príchuť"
+    },
+    "hu": {
+     "pojem": "Gyűlés",
+     "tvary": "gyűlést, gyűlések",
+     "preco": "Falugyűlés = dedinské zhromaždenie.",
+     "zamietnute": "Összejövetel — večierok"
+    }
+   }
+  },
+  {
+   "id": "pitka",
+   "skupina": "fáza",
+   "sk": "Pitka",
+   "stolSk": "Pitka",
+   "vyznam": "Fáza po Zhromaždení: NA EX skryto, fajčenie, doliatie, barter; potom vyhodnotenie (Dlhy, pečeň, cigarety, Vízia). 1–5 Pitiek v kole.",
+   "prichut": "Hovorové pitie, posedenie pri pálenke.",
+   "preklady": {
+    "en": {
+     "pojem": "Booze-up",
+     "tvary": "pl. booze-ups; „in this booze-up“",
+     "preco": "Hovorová pitka, britský krčmový register, v množnom čísle sa nepletie s nápojmi.",
+     "zamietnute": "Drinks — „2 Drinks“ = dva nápoje; Round — to je kolo hry; Bender — viacdňový flám"
+    },
+    "pl": {
+     "pojem": "Popijawa",
+     "tvary": "r. ž.: popijawy, popijaw",
+     "preco": "Priamy hovorový ekvivalent.",
+     "zamietnute": "Libacja — policajný žargón, ironický navyše"
+    },
+    "cs": {
+     "pojem": "Pitka",
+     "tvary": "r. ž.: pitky, pitek",
+     "preco": "Čeština má rovnaké slovo."
+    },
+    "hu": {
+     "pojem": "Ivászat",
+     "tvary": "ivászatot, ivászatok",
+     "preco": "Presne pitka, zrozumiteľné v pravidlách.",
+     "zamietnute": "Piálás — vulgárnejšie než originál"
+    }
+   }
+  },
+  {
+   "id": "bitka",
+   "skupina": "fáza",
+   "sk": "bitka",
+   "stolSk": "Bitka",
+   "vyznam": "Koniec kola: viac tuhého poškodenia vyhráva, dostane špaky a Nakladačku.",
+   "prichut": "Krčmová bitka, nie vojnová.",
+   "preklady": {
+    "en": {
+     "pojem": "brawl",
+     "preco": "Krčmová bitka; battle by bola vojna.",
+     "zamietnute": "battle — vojnové; fight — plochejšie"
+    },
+    "pl": {
+     "pojem": "bójka",
+     "tvary": "r. ž.: bójki, bójek",
+     "preco": "Krčmová bitka.",
+     "zamietnute": "bitwa — vojnová"
+    },
+    "cs": {
+     "pojem": "rvačka",
+     "tvary": "r. ž.",
+     "preco": "Česká bitka = bitva (vojenská); rvačka je krčmová.",
+     "zamietnute": "bitka — v češtine vojna"
+    },
+    "hu": {
+     "pojem": "verekedés",
+     "tvary": "verekedést",
+     "preco": "Krčmová bitka.",
+     "zamietnute": "csata — vojnová"
+    }
+   }
+  },
+  {
+   "id": "hadka",
+   "skupina": "fáza",
+   "sk": "hádka",
+   "stolSk": "Hádka",
+   "vyznam": "Krok bitky na mäkké poškodenie (Povery, Pohoršenia, Viera); víťaz hádky rozdelí jej veľkosť na svoje reči.",
+   "prichut": "Slovná prestrelka — kto viac pohorší.",
+   "preklady": {
+    "en": {
+     "pojem": "argument",
+     "tvary": "„won the argument by 3“",
+     "preco": "Jasné.",
+     "zamietnute": "row — koliduje s radom kariet; quarrel — knižné"
+    },
+    "pl": {
+     "pojem": "kłótnia",
+     "tvary": "r. ž.",
+     "zamietnute": "sprzeczka — slabé"
+    },
+    "cs": {
+     "pojem": "hádka",
+     "tvary": "r. ž.",
+     "preco": "Totožné."
+    },
+    "hu": {
+     "pojem": "veszekedés",
+     "tvary": "veszekedést",
+     "preco": "Hovorové.",
+     "zamietnute": "vita — príliš kultivované"
+    }
+   }
+  },
+  {
+   "id": "pas",
+   "skupina": "ťah",
+   "sk": "pas",
+   "stolSk": "Pas",
+   "vyznam": "Koniec vykladania v Zhromaždení; za každú kartu, ktorú si ešte smel vyložiť, 1 cigareta.",
+   "preklady": {
+    "en": {
+     "pojem": "pass"
+    },
+    "pl": {
+     "pojem": "pas",
+     "tvary": "„pasuję“"
+    },
+    "cs": {
+     "pojem": "pas",
+     "tvary": "„pasuji“"
+    },
+    "hu": {
+     "pojem": "passz"
+    }
+   }
+  },
+  {
+   "id": "zaverecna",
+   "skupina": "ťah",
+   "sk": "Záverečná",
+   "stolSk": "Záverečná",
+   "vyznam": "Karta lícom dole za 1 cigaretu; ukončí tvoje vykladanie v Zhromaždení, otočí sa na konci Pitky.",
+   "prichut": "Záverečná = zatváracia hodina v krčme — posledná, potom domov.",
+   "preklady": {
+    "en": {
+     "pojem": "Last Orders",
+     "preco": "Britský krčmový zvon pred zatvorením — presná narážka.",
+     "zamietnute": "Closing Time — dlhšie; Last Call — americké"
+    },
+    "pl": {
+     "pojem": "Ostatnia kolejka",
+     "tvary": "r. ž.",
+     "preco": "Posledné kolo pitia pred zatvorením.",
+     "zamietnute": "Fajrant — koniec práce, nie krčmy"
+    },
+    "cs": {
+     "pojem": "Zavíračka",
+     "tvary": "r. ž.",
+     "preco": "Hovorová zatváracia hodina v hospode.",
+     "zamietnute": "Závěrečná — v češtine neznie krčmovo"
+    },
+    "hu": {
+     "pojem": "Záróra",
+     "tvary": "zárórát",
+     "preco": "Presne zatváracia hodina."
+    }
+   }
+  },
+  {
+   "id": "odpoved",
+   "skupina": "ťah",
+   "sk": "odpoveď na NA EX",
+   "stolSk": "Odpoveď",
+   "vyznam": "Po odkrytí NA EX jedna karta lícom dole za každé súperovo NA EX, za plný poldeci a mimo limitu.",
+   "preklady": {
+    "en": {
+     "pojem": "answer to NA EX",
+     "zamietnute": "comeback — žargón"
+    },
+    "pl": {
+     "pojem": "odpowiedź na NA EX"
+    },
+    "cs": {
+     "pojem": "odpověď na NA EX"
+    },
+    "hu": {
+     "pojem": "válasz a NA EX-re"
+    }
+   }
+  },
+  {
+   "id": "vytrznik",
+   "skupina": "stav",
+   "sk": "Výtržník",
+   "stolSk": "Výtržník",
+   "vyznam": "Karta, na ktorú obaja dali NA EX v tej istej Pitke (zrážka) alebo s Injekciou: všetky jej akcie sú Rany pre majiteľa.",
+   "prichut": "Policajný termín pre opitého výtržníka.",
+   "preklady": {
+    "en": {
+     "pojem": "Hooligan",
+     "preco": "Rovnaká verejná výtržnosť.",
+     "zamietnute": "Troublemaker — slabé; Rowdy — prídavné meno"
+    },
+    "pl": {
+     "pojem": "Awanturnik",
+     "tvary": "r. m.",
+     "preco": "Krčmový výtržník.",
+     "zamietnute": "Chuligan — štadión"
+    },
+    "cs": {
+     "pojem": "Výtržník",
+     "tvary": "r. m.",
+     "preco": "Totožné."
+    },
+    "hu": {
+     "pojem": "Garázda",
+     "tvary": "garázdát",
+     "preco": "Policajné „garázdaság“ = výtržníctvo — presne.",
+     "zamietnute": "Huligán — štadión"
+    }
+   }
+  },
+  {
+   "id": "zrazka",
+   "skupina": "stav",
+   "sk": "zrážka",
+   "stolSk": "zrážka",
+   "vyznam": "Obaja hráči dali NA EX na tú istú kartu.",
+   "preklady": {
+    "en": {
+     "pojem": "collision"
+    },
+    "pl": {
+     "pojem": "zderzenie"
+    },
+    "cs": {
+     "pojem": "srážka"
+    },
+    "hu": {
+     "pojem": "ütközés"
+    }
+   }
+  },
+  {
+   "id": "linia",
+   "skupina": "stôl",
+   "sk": "línia",
+   "stolSk": "línia",
+   "vyznam": "Jediný súvislý rad kariet v kole; lokalita v strede.",
+   "prichut": "Ako frontová línia.",
+   "preklady": {
+    "en": {
+     "pojem": "line",
+     "preco": "Krátke, pozná aj „end of the line“.",
+     "zamietnute": "row — koliduje s radom starších"
+    },
+    "pl": {
+     "pojem": "linia",
+     "tvary": "r. ž.: linii, linie",
+     "preco": "„Linia frontu“ nesie bojovosť.",
+     "zamietnute": "rząd — rad starších"
+    },
+    "cs": {
+     "pojem": "linie",
+     "tvary": "r. ž.",
+     "preco": "Totožné.",
+     "zamietnute": "řada — rad starších"
+    },
+    "hu": {
+     "pojem": "sor",
+     "tvary": "sort, sorok",
+     "preco": "Prirodzené pre rad kariet.",
+     "zamietnute": "vonal — geometrická čiara"
+    }
+   }
+  },
+  {
+   "id": "kraj",
+   "skupina": "stôl",
+   "sk": "kraj",
+   "stolSk": "kraj",
+   "vyznam": "Polovica línie podľa hrany lokality, s vlastným menom (Krčma: pri výčape / pri dverách); nepatrí nikomu.",
+   "prichut": "Kraj = okraj aj kus územia.",
+   "preklady": {
+    "en": {
+     "pojem": "wing",
+     "tvary": "pl. wings",
+     "preco": "Ľavé a pravé krídlo — nemieša sa so stranou karty.",
+     "zamietnute": "side — strana karty; flank — vojenské"
+    },
+    "pl": {
+     "pojem": "skrzydło",
+     "tvary": "r. n.: skrzydła, skrzydeł",
+     "preco": "Krídlo línie.",
+     "zamietnute": "strona — strana karty"
+    },
+    "cs": {
+     "pojem": "kraj",
+     "tvary": "r. m.",
+     "preco": "Česky „kraj“ = okraj aj oblasť, totožné.",
+     "zamietnute": "strana — strana karty"
+    },
+    "hu": {
+     "pojem": "szárny",
+     "tvary": "szárnyat, szárnyak",
+     "preco": "Krídlo.",
+     "zamietnute": "oldal — strana karty"
+    }
+   }
+  },
+  {
+   "id": "koniec-linie",
+   "skupina": "stôl",
+   "sk": "koniec línie",
+   "stolSk": "koniec línie",
+   "vyznam": "Jeden z dvoch koncov línie, kam sa vykladá; nepatrí nikomu.",
+   "preklady": {
+    "en": {
+     "pojem": "end of the line",
+     "preco": "Bonusový dvojzmysel „koniec trate“."
+    },
+    "pl": {
+     "pojem": "koniec linii"
+    },
+    "cs": {
+     "pojem": "konec linie"
+    },
+    "hu": {
+     "pojem": "a sor vége"
+    }
+   }
+  },
+  {
+   "id": "spoj",
+   "skupina": "stôl",
+   "sk": "spoj",
+   "stolSk": "spoj",
+   "vyznam": "Miesto, kde sa dotknú hrany dvoch kariet; akcie na rovnakej výške sa aktivujú.",
+   "preklady": {
+    "en": {
+     "pojem": "link",
+     "tvary": "„linked action“",
+     "preco": "Jasné.",
+     "zamietnute": "joint — dvojzmysel s jointom pridáva drogy"
+    },
+    "pl": {
+     "pojem": "styk",
+     "tvary": "r. m.: styku, styki",
+     "preco": "Krátke technické.",
+     "zamietnute": "połączenie — dlhé"
+    },
+    "cs": {
+     "pojem": "spoj",
+     "tvary": "r. m.",
+     "preco": "Totožné."
+    },
+    "hu": {
+     "pojem": "kötés",
+     "tvary": "kötést",
+     "preco": "Spojenie dvoch hrán.",
+     "zamietnute": "kapcsolat — vzťah"
+    }
+   }
+  },
+  {
+   "id": "hrana-strana",
+   "skupina": "stôl",
+   "sk": "hrana, strana karty",
+   "stolSk": "ľavá / pravá",
+   "vyznam": "Strana = 4 sloty akcií vľavo či vpravo; hrana = okraj karty pri spoji.",
+   "preklady": {
+    "en": {
+     "pojem": "edge, side"
+    },
+    "pl": {
+     "pojem": "krawędź, strona"
+    },
+    "cs": {
+     "pojem": "hrana, strana"
+    },
+    "hu": {
+     "pojem": "él, oldal"
+    }
+   }
+  },
+  {
+   "id": "lokalita",
+   "skupina": "stôl",
+   "sk": "lokalita",
+   "stolSk": "lokalita",
+   "vyznam": "Karta v strede línie, o ktorú sa v kole bije; jej efekt platí v kole.",
+   "prichut": "Miesta dediny od zastávky po predsedovu vilu.",
+   "preklady": {
+    "en": {
+     "pojem": "location",
+     "zamietnute": "spot — hovorové, mätie"
+    },
+    "pl": {
+     "pojem": "lokacja",
+     "tvary": "r. ž.",
+     "preco": "Herný výraz.",
+     "zamietnute": "miejscówka — príliš slangové"
+    },
+    "cs": {
+     "pojem": "lokalita",
+     "tvary": "r. ž."
+    },
+    "hu": {
+     "pojem": "helyszín",
+     "tvary": "helyszínt",
+     "zamietnute": "hely — príliš všeobecné"
+    }
+   }
+  },
+  {
+   "id": "natocenie",
+   "skupina": "stôl",
+   "sk": "natočenie",
+   "stolSk": "Natočenie lokality",
+   "vyznam": "Ktorá hrana lokality leží pri ktorom kraji.",
+   "preklady": {
+    "en": {
+     "pojem": "facing"
+    },
+    "pl": {
+     "pojem": "ustawienie",
+     "zamietnute": "obrót — to je otočenie o 180°"
+    },
+    "cs": {
+     "pojem": "natočení"
+    },
+    "hu": {
+     "pojem": "elforgatás"
+    }
+   }
+  },
+  {
+   "id": "prevaha",
+   "skupina": "stôl",
+   "sk": "prevaha",
+   "stolSk": "prevaha",
+   "vyznam": "V kraji ju má, kto tam má viac svojich Občanov, Zvierat a Starešinov; dostane akcie hrany lokality.",
+   "preklady": {
+    "en": {
+     "pojem": "upper hand",
+     "tvary": "„the upper hand in a wing“",
+     "preco": "Hovorové a presné.",
+     "zamietnute": "majority — matematické"
+    },
+    "pl": {
+     "pojem": "przewaga",
+     "tvary": "r. ž."
+    },
+    "cs": {
+     "pojem": "převaha",
+     "tvary": "r. ž."
+    },
+    "hu": {
+     "pojem": "fölény",
+     "tvary": "fölényt",
+     "zamietnute": "többség — matematické"
+    }
+   }
+  },
+  {
+   "id": "limit",
+   "skupina": "stôl",
+   "sk": "limit vykladania",
+   "stolSk": "limit",
+   "vyznam": "Koľko kariet vyložíš v Zhromaždení: plné poldeci + 1.",
+   "preklady": {
+    "en": {
+     "pojem": "play limit"
+    },
+    "pl": {
+     "pojem": "limit wykładania"
+    },
+    "cs": {
+     "pojem": "limit vykládání"
+    },
+    "hu": {
+     "pojem": "kijátszási korlát"
+    }
+   }
+  },
+  {
+   "id": "balicky",
+   "skupina": "stôl",
+   "sk": "ruka, doberací balíček, odhadzovací balíček",
+   "vyznam": "Karty hráča; odhadzovací sa po minutí doberacieho zamieša.",
+   "preklady": {
+    "en": {
+     "pojem": "hand, draw pile, discard pile"
+    },
+    "pl": {
+     "pojem": "ręka, talia dobierania, stos kart odrzuconych"
+    },
+    "cs": {
+     "pojem": "ruka, dobírací balíček, odhazovací balíček"
+    },
+    "hu": {
+     "pojem": "kéz, húzópakli, dobópakli"
+    }
+   }
+  },
+  {
+   "id": "odhodit",
+   "skupina": "kľúčové slovo",
+   "sk": "odhodiť",
+   "vyznam": "Karta ide do odhadzovacieho balíčka; vráti sa do hry. Opak spálenia.",
+   "preklady": {
+    "en": {
+     "pojem": "discard"
+    },
+    "pl": {
+     "pojem": "odrzucić"
+    },
+    "cs": {
+     "pojem": "odhodit"
+    },
+    "hu": {
+     "pojem": "eldobni",
+     "tvary": "eldob, eldobja"
+    }
+   }
+  },
+  {
+   "id": "spalit",
+   "skupina": "kľúčové slovo",
+   "sk": "spáliť",
+   "vyznam": "Karta ide navždy z hry; spálený Dlh zmizne z počítadla.",
+   "preklady": {
+    "en": {
+     "pojem": "burn",
+     "zamietnute": "exile — žargón"
+    },
+    "pl": {
+     "pojem": "spalić"
+    },
+    "cs": {
+     "pojem": "spálit"
+    },
+    "hu": {
+     "pojem": "elégetni",
+     "tvary": "eléget, elégeti"
+    }
+   }
+  },
+  {
+   "id": "priznanie",
+   "skupina": "ťah",
+   "sk": "priznanie",
+   "stolSk": "Priznať",
+   "vyznam": "Kliatbu (Cirhózu) vyložíš mimo línie natrvalo; Dlh je priznaný hneď.",
+   "prichut": "Priznať sa ako na spovedi — ale z hriechu, ktorý ti škodí.",
+   "preklady": {
+    "en": {
+     "pojem": "confession; „confess“",
+     "tvary": "„confessed Debts“",
+     "preco": "Nesie spoveď aj priznanie viny.",
+     "zamietnute": "admit — slabé, bez príchute"
+    },
+    "pl": {
+     "pojem": "przyznanie; „przyznać się“",
+     "tvary": "„przyznane Długi“",
+     "preco": "Priznanie sa.",
+     "zamietnute": "spowiedź — príliš náboženské"
+    },
+    "cs": {
+     "pojem": "přiznání",
+     "tvary": "„přiznané Dluhy“"
+    },
+    "hu": {
+     "pojem": "bevallás",
+     "tvary": "„bevallott adósságok“",
+     "preco": "Priznanie viny.",
+     "zamietnute": "beismerés — súdne"
+    }
+   }
+  },
+  {
+   "id": "kliatba",
+   "skupina": "tag",
+   "sk": "kliatba",
+   "stolSk": "Kliatba",
+   "vyznam": "Čo škodí majiteľovi: Cirhóza, Absťák a počítadlo Dlh.",
+   "preklady": {
+    "en": {
+     "pojem": "curse"
+    },
+    "pl": {
+     "pojem": "klątwa"
+    },
+    "cs": {
+     "pojem": "kletba"
+    },
+    "hu": {
+     "pojem": "átok",
+     "tvary": "átkot"
+    }
+   }
+  },
+  {
+   "id": "nastenka",
+   "skupina": "stôl",
+   "sk": "krčmová nástenka",
+   "stolSk": "Krčmová nástenka",
+   "vyznam": "Odohrané bitky s víťazom a špakmi.",
+   "prichut": "Socialistická nástenka v krčme.",
+   "preklady": {
+    "en": {
+     "pojem": "pub noticeboard"
+    },
+    "pl": {
+     "pojem": "tablica w knajpie"
+    },
+    "cs": {
+     "pojem": "hospodská nástěnka"
+    },
+    "hu": {
+     "pojem": "kocsmai faliújság",
+     "preco": "Faliújság = socialistická nástenka."
+    }
+   }
+  },
+  {
+   "id": "sekera",
+   "skupina": "stav",
+   "sk": "sekera (na sekeru)",
+   "stolSk": "Sekera",
+   "vyznam": "Bitka bez víťaza; jej špaky berie víťaz najbližšej bitky.",
+   "prichut": "„Piť na sekeru“ = na dlh, na pätku.",
+   "preklady": {
+    "en": {
+     "pojem": "the Tab",
+     "tvary": "„goes on the Tab“",
+     "preco": "„On the tab“ = na dlh v krčme.",
+     "zamietnute": "Axe — doslovné, nezmysel"
+    },
+    "pl": {
+     "pojem": "krecha",
+     "tvary": "„na krechę“",
+     "preco": "„Na krechę“ = na dlh.",
+     "zamietnute": "siekiera — nezmysel"
+    },
+    "cs": {
+     "pojem": "sekyra",
+     "tvary": "„na sekyru“",
+     "preco": "Česky rovnaký idióm."
+    },
+    "hu": {
+     "pojem": "kréta",
+     "tvary": "„krétára megy“",
+     "preco": "„Krétára iszik“ = pije na dlh (krieda na tabuli).",
+     "zamietnute": "fejsze — nezmysel"
+    }
+   }
+  },
+  {
+   "id": "vykupne",
+   "skupina": "stav",
+   "sk": "výkupné",
+   "stolSk": "Výkupné",
+   "vyznam": "Po finále 1 špak za plný poldeci a za každých 5 cigariet.",
+   "prichut": "Výkup ako v zberni — aj dvojzmysel s výkupným za zajatca.",
+   "preklady": {
+    "en": {
+     "pojem": "cash-in",
+     "preco": "Premena zvyškov na body.",
+     "zamietnute": "ransom — len únos"
+    },
+    "pl": {
+     "pojem": "wykup",
+     "tvary": "r. m.",
+     "zamietnute": "okup — len únos"
+    },
+    "cs": {
+     "pojem": "výkupné",
+     "tvary": "s. r.",
+     "preco": "Rovnaký dvojzmysel ako v slovenčine."
+    },
+    "hu": {
+     "pojem": "beváltás",
+     "zamietnute": "váltságdíj — len únos"
+    }
+   }
+  },
+  {
+   "id": "odhad",
+   "skupina": "stôl",
+   "sk": "odhad bitky",
+   "stolSk": "Odhad bitky",
+   "vyznam": "Výpočet, ako by bitka dopadla s tým, čo hráč vidí.",
+   "preklady": {
+    "en": {
+     "pojem": "brawl forecast"
+    },
+    "pl": {
+     "pojem": "prognoza bójki"
+    },
+    "cs": {
+     "pojem": "odhad rvačky"
+    },
+    "hu": {
+     "pojem": "verekedés-előrejelzés"
+    }
+   }
+  },
+  {
+   "id": "akcia",
+   "skupina": "karta",
+   "sk": "akcia (aktívna / neaktívna)",
+   "stolSk": "akcia",
+   "vyznam": "Symbol na strane karty; aktívna, keď sa na spoji stretne s akciou suseda na rovnakej výške.",
+   "preklady": {
+    "en": {
+     "pojem": "action (active / inactive)"
+    },
+    "pl": {
+     "pojem": "akcja (aktywna / nieaktywna)"
+    },
+    "cs": {
+     "pojem": "akce (aktivní / neaktivní)"
+    },
+    "hu": {
+     "pojem": "akció (aktív / inaktív)"
+    }
+   }
+  },
+  {
+   "id": "akcia-navyse",
+   "skupina": "karta",
+   "sk": "akcia navyše, pečať",
+   "stolSk": "pečať",
+   "vyznam": "Aktívna akcia majiteľa mimo hrán, z pečate v ilustrácii.",
+   "preklady": {
+    "en": {
+     "pojem": "bonus action, seal"
+    },
+    "pl": {
+     "pojem": "akcja dodatkowa, pieczęć"
+    },
+    "cs": {
+     "pojem": "akce navíc, pečeť"
+    },
+    "hu": {
+     "pojem": "extra akció, pecsét"
+    }
+   }
+  },
+  {
+   "id": "efekt",
+   "skupina": "karta",
+   "sk": "efekt, tag",
+   "vyznam": "Text karty; tag je druh karty, na ktorý sa efekty odvolávajú.",
+   "preklady": {
+    "en": {
+     "pojem": "effect, tag"
+    },
+    "pl": {
+     "pojem": "efekt, tag"
+    },
+    "cs": {
+     "pojem": "efekt, tag"
+    },
+    "hu": {
+     "pojem": "hatás, címke"
+    }
+   }
+  },
+  {
+   "id": "rana",
+   "skupina": "akcia",
+   "sk": "Rana",
+   "stolSk": "Rana",
+   "vyznam": "1 tuhé poškodenie.",
+   "prichut": "Rad úderov Rana – Pecka – Petelica stúpa od obyčajnej rany po poriadnu petelicu (hovorové, nárečové).",
+   "preklady": {
+    "en": {
+     "pojem": "Punch",
+     "tvary": "pl. Punches",
+     "preco": "Stupnica Punch – Wallop – Haymaker: od bežného po krčmový zúfalý švih.",
+     "zamietnute": "Hit — to sú údery všeobecne; Jab — boxerské"
+    },
+    "pl": {
+     "pojem": "Strzał",
+     "tvary": "r. m.: strzału, strzały, strzałów",
+     "preco": "Hovorový úder; stupnica Strzał – Bomba – Sierpowy.",
+     "zamietnute": "Cios — vyhradené pre údery všeobecne"
+    },
+    "cs": {
+     "pojem": "Rána",
+     "tvary": "r. ž.",
+     "preco": "Totožné."
+    },
+    "hu": {
+     "pojem": "Pofon",
+     "tvary": "pofont, pofonok",
+     "preco": "Stupnica Pofon – Gyomros – Fejes: facka, rana do brucha, hlavička.",
+     "zamietnute": "Ütés — vyhradené pre údery všeobecne"
+    }
+   }
+  },
+  {
+   "id": "pecka",
+   "skupina": "akcia",
+   "sk": "Pecka",
+   "stolSk": "Pecka",
+   "vyznam": "2 tuhé poškodenia.",
+   "prichut": "„Dať pecku“ = poriadne vraziť.",
+   "preklady": {
+    "en": {
+     "pojem": "Wallop",
+     "tvary": "pl. Wallops",
+     "preco": "Hovorové poriadne vrazenie.",
+     "zamietnute": "Smack — slabšie"
+    },
+    "pl": {
+     "pojem": "Bomba",
+     "tvary": "r. ž.",
+     "preco": "Hovorový silný úder.",
+     "zamietnute": "Pecka — po poľsky kôstka"
+    },
+    "cs": {
+     "pojem": "Pecka",
+     "tvary": "r. ž.",
+     "preco": "Česky „pecka“ aj silná rana."
+    },
+    "hu": {
+     "pojem": "Gyomros",
+     "tvary": "gyomrost",
+     "preco": "Rana do žalúdka.",
+     "zamietnute": "Bomba — futbalová strela"
+    }
+   }
+  },
+  {
+   "id": "petelica",
+   "skupina": "akcia",
+   "sk": "Petelica",
+   "stolSk": "Petelica",
+   "vyznam": "3 tuhé poškodenia.",
+   "prichut": "Nárečová „petelica“ = poriadna šupa, vrchol stupnice.",
+   "preklady": {
+    "en": {
+     "pojem": "Haymaker",
+     "tvary": "pl. Haymakers",
+     "preco": "Obrovský švih z celej sily, hovorové.",
+     "zamietnute": "Knockout — znamená koniec"
+    },
+    "pl": {
+     "pojem": "Sierpowy",
+     "tvary": "r. m. (príd. m.): sierpowego, sierpowe",
+     "preco": "Sierpový hák — krčmový úder z celej sily.",
+     "zamietnute": "Nokaut — koniec"
+    },
+    "cs": {
+     "pojem": "Herda",
+     "tvary": "r. ž.",
+     "preco": "Česká „herda“ = mohutná rana.",
+     "zamietnute": "Petelice — česky nejestvuje"
+    },
+    "hu": {
+     "pojem": "Fejes",
+     "tvary": "fejest",
+     "preco": "Hlavička — krčmový vrchol.",
+     "zamietnute": "Kiütés — aj vyrážka"
+    }
+   }
+  },
+  {
+   "id": "udery",
+   "skupina": "akcia",
+   "sk": "údery (Rana, Pecka, Petelica všeobecne)",
+   "stolSk": "údery",
+   "vyznam": "Výraz výučby pre tuhé akcie.",
+   "preklady": {
+    "en": {
+     "pojem": "hits"
+    },
+    "pl": {
+     "pojem": "ciosy"
+    },
+    "cs": {
+     "pojem": "údery"
+    },
+    "hu": {
+     "pojem": "ütések"
+    }
+   }
+  },
+  {
+   "id": "tuhe",
+   "skupina": "akcia",
+   "sk": "tuhé poškodenie",
+   "stolSk": "tuhé",
+   "vyznam": "Poškodenie z Rán, Peciek a Petelíc; rozhoduje bitku.",
+   "prichut": "Tuhé = tvrdé, skutočné rany.",
+   "preklady": {
+    "en": {
+     "pojem": "hard damage",
+     "tvary": "na stole „hard“",
+     "zamietnute": "physical — mätie"
+    },
+    "pl": {
+     "pojem": "twarde obrażenia"
+    },
+    "cs": {
+     "pojem": "tvrdé poškození"
+    },
+    "hu": {
+     "pojem": "kemény sebzés"
+    }
+   }
+  },
+  {
+   "id": "makke",
+   "skupina": "akcia",
+   "sk": "mäkké poškodenie",
+   "stolSk": "mäkké",
+   "vyznam": "Pohoršenie × 2 + nezrušené Povery; rozhoduje len hádku.",
+   "preklady": {
+    "en": {
+     "pojem": "soft damage"
+    },
+    "pl": {
+     "pojem": "miękkie obrażenia"
+    },
+    "cs": {
+     "pojem": "měkké poškození"
+    },
+    "hu": {
+     "pojem": "puha sebzés"
+    }
+   }
+  },
+  {
+   "id": "povera",
+   "skupina": "akcia",
+   "sk": "Povera",
+   "stolSk": "Povera",
+   "vyznam": "1 mäkké poškodenie do hádky; ruší sa so súperovou Vierou 1 : 1.",
+   "prichut": "Dedinské povery a reči.",
+   "preklady": {
+    "en": {
+     "pojem": "Superstition",
+     "zamietnute": "Omen — užšie"
+    },
+    "pl": {
+     "pojem": "Zabobon",
+     "tvary": "r. m.",
+     "zamietnute": "Przesąd — knižnejšie"
+    },
+    "cs": {
+     "pojem": "Pověra",
+     "tvary": "r. ž."
+    },
+    "hu": {
+     "pojem": "Babona",
+     "tvary": "babonát"
+    }
+   }
+  },
+  {
+   "id": "pohorsenie",
+   "skupina": "akcia",
+   "sk": "Pohoršenie",
+   "stolSk": "Pohoršenie",
+   "vyznam": "2 mäkké poškodenie do hádky; Viera ho nezruší.",
+   "prichut": "Pohoršiť dedinu — škandál, na ktorý sa nedá veriť preč.",
+   "preklady": {
+    "en": {
+     "pojem": "Scandal",
+     "preco": "Krátke, vec, ktorá pohoršuje.",
+     "zamietnute": "Outrage — opisuje reakciu, nie čin"
+    },
+    "pl": {
+     "pojem": "Zgorszenie",
+     "tvary": "r. n.",
+     "preco": "Presné.",
+     "zamietnute": "Skandal — slabšie náboženské"
+    },
+    "cs": {
+     "pojem": "Pohoršení",
+     "tvary": "s. r."
+    },
+    "hu": {
+     "pojem": "Botrány",
+     "tvary": "botrányt",
+     "preco": "Krátke.",
+     "zamietnute": "Megbotránkozás — 14 znakov"
+    }
+   }
+  },
+  {
+   "id": "viera",
+   "skupina": "akcia",
+   "sk": "Viera",
+   "stolSk": "Viera",
+   "vyznam": "Ruší súperove Povery 1 : 1, zvyšná tlmí jeho tuhé poškodenie.",
+   "preklady": {
+    "en": {
+     "pojem": "Faith",
+     "zamietnute": "Belief"
+    },
+    "pl": {
+     "pojem": "Wiara"
+    },
+    "cs": {
+     "pojem": "Víra"
+    },
+    "hu": {
+     "pojem": "Hit",
+     "tvary": "hitet"
+    }
+   }
+  },
+  {
+   "id": "posilnenie",
+   "skupina": "akcia",
+   "sk": "Posilnenie",
+   "stolSk": "Posilnenie",
+   "vyznam": "Zdvojí prepojenú akciu.",
+   "prichut": "„Posilniť sa“ = dať si na kuráž.",
+   "preklady": {
+    "en": {
+     "pojem": "Boost",
+     "tvary": "„Boosted {X}“",
+     "preco": "Krátke.",
+     "zamietnute": "Reinforcement — dlhé"
+    },
+    "pl": {
+     "pojem": "Wzmocnienie",
+     "tvary": "r. n.; „Wzmocniony/a/e {X}“ podľa rodu akcie",
+     "zamietnute": "Doping — drogy navyše"
+    },
+    "cs": {
+     "pojem": "Posílení",
+     "tvary": "s. r.; „Posílená/é {X}“"
+    },
+    "hu": {
+     "pojem": "Erősítés",
+     "tvary": "„Erősített {X}“"
+    }
+   }
+  },
+  {
+   "id": "odpor",
+   "skupina": "akcia",
+   "sk": "Odpor",
+   "stolSk": "Odpor",
+   "vyznam": "Zruší prepojenú akciu; Odpor + Odpor = Vzbura.",
+   "preklady": {
+    "en": {
+     "pojem": "Resistance",
+     "zamietnute": "Block — technické"
+    },
+    "pl": {
+     "pojem": "Opór",
+     "tvary": "r. m.: oporu"
+    },
+    "cs": {
+     "pojem": "Odpor",
+     "tvary": "r. m."
+    },
+    "hu": {
+     "pojem": "Ellenállás"
+    }
+   }
+  },
+  {
+   "id": "forsaz",
+   "skupina": "akcia",
+   "sk": "Forsáž",
+   "stolSk": "Forsáž",
+   "vyznam": "Posilnenie + Posilnenie: obe karty majú všetky aktívne akcie ×2.",
+   "prichut": "Forsáž = prídavné spaľovanie, „ísť na forsáž“ — technický slang.",
+   "preklady": {
+    "en": {
+     "pojem": "Overdrive",
+     "preco": "Technický slang ako forsáž.",
+     "zamietnute": "Afterburner — dlhé"
+    },
+    "pl": {
+     "pojem": "Turbo",
+     "tvary": "r. n., nieodm.",
+     "preco": "Hovorové.",
+     "zamietnute": "Dopalacz — aj drogy"
+    },
+    "cs": {
+     "pojem": "Forsáž",
+     "tvary": "r. ž.",
+     "preco": "Česky rovnaké."
+    },
+    "hu": {
+     "pojem": "Padlógáz",
+     "tvary": "padlógázt",
+     "preco": "„Plyn do podlahy“ — hovorové.",
+     "zamietnute": "Turbó — plochejšie"
+    }
+   }
+  },
+  {
+   "id": "vzbura",
+   "skupina": "akcia",
+   "sk": "Vzbura",
+   "stolSk": "Vzbura",
+   "vyznam": "Odpor + Odpor: obe karty sa obrátia (nespojené akcie aktívne, spojené neaktívne).",
+   "preklady": {
+    "en": {
+     "pojem": "Revolt",
+     "zamietnute": "Riot — výtržnosť"
+    },
+    "pl": {
+     "pojem": "Bunt",
+     "tvary": "r. m."
+    },
+    "cs": {
+     "pojem": "Vzpoura",
+     "tvary": "r. ž."
+    },
+    "hu": {
+     "pojem": "Lázadás"
+    }
+   }
+  },
+  {
+   "id": "robota",
+   "skupina": "akcia",
+   "sk": "Robota",
+   "stolSk": "Robota",
+   "vyznam": "V bitke spáli 1 priznaný Dlh; za Dlh, ktorý nemá čo spáliť, 1 špak. Aj meno priazne.",
+   "prichut": "Hovorová robota — oddrieť dlhy.",
+   "preklady": {
+    "en": {
+     "pojem": "Work",
+     "preco": "Neutrálne; Graft by v USA znamenal úplatok.",
+     "zamietnute": "Graft — v USA korupcia; Labour — politická strana"
+    },
+    "pl": {
+     "pojem": "Robota",
+     "tvary": "r. ž.",
+     "preco": "Poľská „robota“ je rovnako hovorová."
+    },
+    "cs": {
+     "pojem": "Robota",
+     "tvary": "r. ž.",
+     "preco": "Česky rovnaké."
+    },
+    "hu": {
+     "pojem": "Meló",
+     "tvary": "melót",
+     "preco": "Hovorová robota.",
+     "zamietnute": "Munka — spisovné"
+    }
+   }
+  },
+  {
+   "id": "vizia",
+   "skupina": "akcia",
+   "sk": "Vízia",
+   "stolSk": "Vízia",
+   "vyznam": "Na konci Pitky pozrieš vrchnú kartu balíčka: do ruky, alebo spáliť.",
+   "preklady": {
+    "en": {
+     "pojem": "Vision"
+    },
+    "pl": {
+     "pojem": "Wizja"
+    },
+    "cs": {
+     "pojem": "Vize"
+    },
+    "hu": {
+     "pojem": "Látomás",
+     "tvary": "látomást",
+     "preco": "Videnie do budúcna.",
+     "zamietnute": "Vízió — knižné"
+    }
+   }
+  },
+  {
+   "id": "pakt",
+   "skupina": "akcia",
+   "sk": "Pakt",
+   "stolSk": "Pakt",
+   "vyznam": "Na spoji sa správa ako akcia, s ktorou je v páre.",
+   "preklady": {
+    "en": {
+     "pojem": "Pact"
+    },
+    "pl": {
+     "pojem": "Pakt"
+    },
+    "cs": {
+     "pojem": "Pakt"
+    },
+    "hu": {
+     "pojem": "Paktum"
+    }
+   }
+  },
+  {
+   "id": "hazard",
+   "skupina": "akcia",
+   "sk": "Hazard",
+   "stolSk": "Hazard",
+   "vyznam": "Akcia (kľúč Dlh): v Pitke dá 1 Dlh.",
+   "preklady": {
+    "en": {
+     "pojem": "Gamble",
+     "tvary": "pl. Gambles",
+     "zamietnute": "Hazard — po anglicky „nebezpečenstvo“"
+    },
+    "pl": {
+     "pojem": "Hazard",
+     "tvary": "r. m.",
+     "preco": "Poľsky hazard = hazardné hry, presne."
+    },
+    "cs": {
+     "pojem": "Hazard",
+     "tvary": "r. m."
+    },
+    "hu": {
+     "pojem": "Hazárd",
+     "tvary": "hazárdot",
+     "preco": "„Hazárdjáték“ = hazard.",
+     "zamietnute": "Szerencsejáték — dlhé"
+    }
+   }
+  },
+  {
+   "id": "dlh",
+   "skupina": "zdroj",
+   "sk": "Dlh, zadĺženie",
+   "stolSk": "Dlhy",
+   "vyznam": "Počítadlo priznaných Dlhov; za ne chodí Exekútor, rozhodujú remízu.",
+   "preklady": {
+    "en": {
+     "pojem": "Debt, indebtedness",
+     "tvary": "pl. Debts"
+    },
+    "pl": {
+     "pojem": "Dług, zadłużenie",
+     "tvary": "r. m.: długu, długi, długów"
+    },
+    "cs": {
+     "pojem": "Dluh, zadlužení",
+     "tvary": "r. m.: dluhu, dluhy, dluhů"
+    },
+    "hu": {
+     "pojem": "Adósság, eladósodás",
+     "tvary": "adósságot"
+    }
+   }
+  },
+  {
+   "id": "pecen",
+   "skupina": "zdroj",
+   "sk": "pečeň, Poškodenie pečene",
+   "stolSk": "pečeň",
+   "vyznam": "Počítadlo v Pitke; za každý celý prah Cirhóza.",
+   "preklady": {
+    "en": {
+     "pojem": "liver, Liver Damage"
+    },
+    "pl": {
+     "pojem": "wątroba, Uszkodzenie wątroby"
+    },
+    "cs": {
+     "pojem": "játra, Poškození jater",
+     "tvary": "s. r. pomn.: jater"
+    },
+    "hu": {
+     "pojem": "máj, Májkárosodás"
+    }
+   }
+  },
+  {
+   "id": "cirhoza",
+   "skupina": "kliatba",
+   "sk": "Cirhóza",
+   "stolSk": "Cirhóza",
+   "vyznam": "Kliatba z pečene; nepriznaná stojí na konci hry 3 špaky, priznaná dáva súperovi +1 tuhé.",
+   "preklady": {
+    "en": {
+     "pojem": "Cirrhosis",
+     "tvary": "pl. Cirrhoses"
+    },
+    "pl": {
+     "pojem": "Marskość",
+     "tvary": "r. ž.: marskości",
+     "preco": "„Marskość wątroby“, ľudovo stačí marskość.",
+     "zamietnute": "Cyroza — nepoužíva sa"
+    },
+    "cs": {
+     "pojem": "Cirhóza",
+     "tvary": "r. ž."
+    },
+    "hu": {
+     "pojem": "Májzsugor",
+     "tvary": "májzsugort",
+     "preco": "Ľudové meno cirhózy, krátke.",
+     "zamietnute": "Cirrózis — lekárske"
+    }
+   }
+  },
+  {
+   "id": "abstak",
+   "skupina": "kliatba",
+   "sk": "Absťák",
+   "stolSk": "Absťák",
+   "vyznam": "Karta za menej nerestí v kole, než je tvoja Chuť: −1 tuhé za každú v balíčku, nedá sa priznať.",
+   "prichut": "Slang z „abstinenčný syndróm“ — trasú sa ruky.",
+   "preklady": {
+    "en": {
+     "pojem": "The Shakes",
+     "tvary": "nemenné: „a Shakes card“, „2 Shakes“",
+     "preco": "Hovorové meno abstinenčného trasu.",
+     "zamietnute": "Withdrawal — lekárske; Cold Turkey — idióm, nie karta"
+    },
+    "pl": {
+     "pojem": "Głód",
+     "tvary": "r. m.: głodu, głody",
+     "preco": "„Być na głodzie“ = mať absťák.",
+     "zamietnute": "Trzęsiawka — nie je isté, či je bežné (otázka)"
+    },
+    "cs": {
+     "pojem": "Absťák",
+     "tvary": "r. m.: absťáku, absťáky",
+     "preco": "Česky rovnaký slang."
+    },
+    "hu": {
+     "pojem": "Remegés",
+     "tvary": "remegést",
+     "preco": "Trasavka — viditeľný absťák.",
+     "zamietnute": "Elvonási tünet — lekárske"
+    }
+   }
+  },
+  {
+   "id": "chut",
+   "skupina": "zdroj",
+   "sk": "Chuť",
+   "stolSk": "Chuť",
+   "vyznam": "Verejná latka nerestí; pod ňou príde Absťák.",
+   "prichut": "Chuť na pálenku, na ktorú si si zvykol.",
+   "preklady": {
+    "en": {
+     "pojem": "Thirst",
+     "preco": "Smäd po pití — latka, ktorú treba hasiť.",
+     "zamietnute": "Craving — lekárske; Appetite — jedlo"
+    },
+    "pl": {
+     "pojem": "Pragnienie",
+     "tvary": "r. n.",
+     "preco": "Smäd aj túžba.",
+     "zamietnute": "Apetyt — jedlo"
+    },
+    "cs": {
+     "pojem": "Chuť",
+     "tvary": "r. ž.",
+     "preco": "Totožné."
+    },
+    "hu": {
+     "pojem": "Szomj",
+     "tvary": "szomjat",
+     "preco": "Smäd.",
+     "zamietnute": "Étvágy — jedlo"
+    }
+   }
+  },
+  {
+   "id": "nerest",
+   "skupina": "zdroj",
+   "sk": "nerest",
+   "stolSk": "neresti",
+   "vyznam": "Len konzumácia: Vypiť 1, NA EX 2, vyfajčená cigareta 1; porovnáva sa s Chuťou.",
+   "prichut": "Morálna neresť, hriešik.",
+   "preklady": {
+    "en": {
+     "pojem": "vice",
+     "tvary": "pl. vices",
+     "zamietnute": "sin — príliš náboženské"
+    },
+    "pl": {
+     "pojem": "grzech",
+     "tvary": "r. m.: grzechu, grzechy",
+     "preco": "„Każdy papieros to grzech“ — kus po kuse.",
+     "zamietnute": "nałóg — znamená závislosť, nie čin"
+    },
+    "cs": {
+     "pojem": "neřest",
+     "tvary": "r. ž.",
+     "preco": "Totožné."
+    },
+    "hu": {
+     "pojem": "bűn",
+     "tvary": "bűnt, bűnök",
+     "preco": "Krátke, kus po kuse.",
+     "zamietnute": "káros szenvedély — presné, ale dlhé"
+    }
+   }
+  },
+  {
+   "id": "obmedzenie",
+   "skupina": "akcia",
+   "sk": "Obmedzenie",
+   "stolSk": "Obmedzenie",
+   "vyznam": "Súper dostane v Pitke o 1 cigaretu menej.",
+   "preklady": {
+    "en": {
+     "pojem": "Restriction",
+     "zamietnute": "Rationing — pridáva socializmus"
+    },
+    "pl": {
+     "pojem": "Ograniczenie",
+     "tvary": "r. n."
+    },
+    "cs": {
+     "pojem": "Omezení",
+     "tvary": "s. r."
+    },
+    "hu": {
+     "pojem": "Korlátozás"
+    }
+   }
+  },
+  {
+   "id": "kseft",
+   "skupina": "zaniknutý",
+   "sk": "Kšeft (zaniknutý)",
+   "vyznam": "Starý spúšťač; dnes len v popise akcie Cigareta (otázka).",
+   "preklady": {
+    "en": {
+     "pojem": "Deal"
+    },
+    "pl": {
+     "pojem": "Interes"
+    },
+    "cs": {
+     "pojem": "Kšeft"
+    },
+    "hu": {
+     "pojem": "Biznisz"
+    }
+   }
+  },
+  {
+   "id": "starsi",
+   "skupina": "starší",
+   "sk": "starší",
+   "stolSk": "Starší",
+   "vyznam": "8 vážených osôb dediny v rade pri stole; každý hráč má pri každom strach a na súperovom teplomere reči.",
+   "prichut": "Dedinské autority — farár, starosta, krčmárka.",
+   "preklady": {
+    "en": {
+     "pojem": "elders",
+     "tvary": "sg. elder",
+     "preco": "Dedinská autorita.",
+     "zamietnute": "notables — knižné"
+    },
+    "pl": {
+     "pojem": "starsi",
+     "tvary": "sg. starszy (príd. m.): starszego; hromadne starszyzna",
+     "preco": "Starszyzna wiejska = dedinské autority.",
+     "zamietnute": "notable — neznáme"
+    },
+    "cs": {
+     "pojem": "starší",
+     "tvary": "príd. m.",
+     "preco": "Totožné."
+    },
+    "hu": {
+     "pojem": "elöljárók",
+     "tvary": "sg. elöljáró",
+     "preco": "Falu elöljárói = dedinské autority.",
+     "zamietnute": "vének — iba starci"
+    }
+   }
+  },
+  {
+   "id": "starsina",
+   "skupina": "tag",
+   "sk": "Starešina (tag)",
+   "stolSk": "Starešina",
+   "vyznam": "Tag kariet starších; Občan alebo Starešina môže dostať NA EX.",
+   "prichut": "Slávnostnejšie meno tej istej osoby.",
+   "preklady": {
+    "en": {
+     "pojem": "Elder",
+     "preco": "Tá istá osoba ako elders, s veľkým písmenom ako tag.",
+     "zamietnute": "Chief — kmeňové"
+    },
+    "pl": {
+     "pojem": "Starszy",
+     "preco": "Ako elders."
+    },
+    "cs": {
+     "pojem": "Stařešina",
+     "tvary": "r. m.",
+     "preco": "Česky existuje rovnaké slovo."
+    },
+    "hu": {
+     "pojem": "Elöljáró"
+    }
+   }
+  },
+  {
+   "id": "strach",
+   "skupina": "starší",
+   "sk": "strach",
+   "stolSk": "strach",
+   "vyznam": "Marker hráča pri staršom 0–3; dvíha ho Nakladačka, neklesá.",
+   "preklady": {
+    "en": {
+     "pojem": "fear"
+    },
+    "pl": {
+     "pojem": "strach",
+     "tvary": "r. m."
+    },
+    "cs": {
+     "pojem": "strach",
+     "tvary": "r. m."
+    },
+    "hu": {
+     "pojem": "félelem",
+     "tvary": "félelmet"
+    }
+   }
+  },
+  {
+   "id": "reci",
+   "skupina": "starší",
+   "sk": "reči",
+   "stolSk": "reči",
+   "vyznam": "Blok stupňov na súperovom teplomere; dvíha ich hádka, bodujú ti pri každej bitke.",
+   "prichut": "„Ľudia majú reči“ — ohováranie.",
+   "preklady": {
+    "en": {
+     "pojem": "rumours",
+     "tvary": "pl.; „your rumours on his thermometer“",
+     "preco": "Šíriť reči = spread rumours; gossip ostáva pre Ohováračku.",
+     "zamietnute": "gossip — meno priazne; talk — nepočítateľné"
+    },
+    "pl": {
+     "pojem": "plotki",
+     "tvary": "pl. od plotka (r. ž.)",
+     "preco": "Reči = plotki.",
+     "zamietnute": "gadanie — slabé"
+    },
+    "cs": {
+     "pojem": "řeči",
+     "tvary": "pomn.",
+     "preco": "„Lidi mají řeči“ — totožné."
+    },
+    "hu": {
+     "pojem": "pletyka",
+     "tvary": "pletykát, pletykák",
+     "zamietnute": "szóbeszéd — knižné"
+    }
+   }
+  },
+  {
+   "id": "teplomer",
+   "skupina": "starší",
+   "sk": "teplomer, stupeň",
+   "stolSk": "teplomer",
+   "vyznam": "Stupnica pri staršom; stupne 0 sivá, 1 žltá, 2 oranžová, 3 červená; vstup 1 / 2 / 3, hodnota 1 / 2 / 3.",
+   "preklady": {
+    "en": {
+     "pojem": "thermometer, notch",
+     "preco": "Notch = zárez na teplomere.",
+     "zamietnute": "level — prázdne"
+    },
+    "pl": {
+     "pojem": "termometr, stopień"
+    },
+    "cs": {
+     "pojem": "teploměr, stupeň"
+    },
+    "hu": {
+     "pojem": "hőmérő, fok"
+    }
+   }
+  },
+  {
+   "id": "stav-starsieho",
+   "skupina": "starší",
+   "sk": "pokojný, znepokojený, vystrašený, vydesený",
+   "vyznam": "Stupeň staršieho pre hráča podľa jeho strachu (0–3).",
+   "preklady": {
+    "en": {
+     "pojem": "calm, uneasy, scared, terrified"
+    },
+    "pl": {
+     "pojem": "spokojny, zaniepokojony, przestraszony, przerażony"
+    },
+    "cs": {
+     "pojem": "klidný, znepokojený, vystrašený, vyděšený"
+    },
+    "hu": {
+     "pojem": "nyugodt, nyugtalan, ijedt, rémült"
+    }
+   }
+  },
+  {
+   "id": "priazen",
+   "skupina": "starší",
+   "sk": "priazeň",
+   "stolSk": "priazeň",
+   "vyznam": "Výhoda od staršieho, ktorý sa súpera bojí viac než teba: sila 1 / 2 / 3.",
+   "preklady": {
+    "en": {
+     "pojem": "favour",
+     "tvary": "britský pravopis",
+     "zamietnute": "favor — americký pravopis (hra je britská)"
+    },
+    "pl": {
+     "pojem": "przychylność",
+     "tvary": "r. ž.",
+     "preco": "Presné.",
+     "zamietnute": "łaska — náboženské a ironické"
+    },
+    "cs": {
+     "pojem": "přízeň",
+     "tvary": "r. ž."
+    },
+    "hu": {
+     "pojem": "kegy",
+     "tvary": "kegyet",
+     "preco": "„Kegyeibe férkőzik“."
+    }
+   }
+  },
+  {
+   "id": "presvedcenie",
+   "skupina": "starší",
+   "sk": "presvedčenie",
+   "stolSk": "PRESVEDČIŤ",
+   "vyznam": "Za 3 body hádky, keď máš reči na celom teplomere: karta staršieho natrvalo do tvojho balíčka.",
+   "preklady": {
+    "en": {
+     "pojem": "persuasion; „persuade“",
+     "tvary": "pečiatka PERSUADE / PERSUADED",
+     "zamietnute": "convert — náboženské"
+    },
+    "pl": {
+     "pojem": "przekonanie; „przekonać“",
+     "tvary": "pečiatka PRZEKONAJ / PRZEKONANY"
+    },
+    "cs": {
+     "pojem": "přesvědčení; „přesvědčit“",
+     "tvary": "pečiatka PŘESVĚDČIT / PŘESVĚDČEN"
+    },
+    "hu": {
+     "pojem": "meggyőzés; „meggyőzni“",
+     "tvary": "pečiatka MEGGYŐZNI / MEGGYŐZVE"
+    }
+   }
+  },
+  {
+   "id": "zajatie",
+   "skupina": "starší",
+   "sk": "zajatie, väzeň, Pivnica",
+   "stolSk": "ZAJAŤ −5",
+   "vyznam": "Za 5 bodov Nakladačky staršieho na tvojom červenom strachu od minulého kola: väzeň „v pivnici“, krádež špakov, schopnosť raz za hru.",
+   "prichut": "Starší zavretý v pivnici — dedinský únos.",
+   "preklady": {
+    "en": {
+     "pojem": "capture, prisoner, the Cellar",
+     "tvary": "pečiatka CAPTURE −5 / CAPTURED",
+     "zamietnute": "kidnap — pridáva zločin navyše"
+    },
+    "pl": {
+     "pojem": "pojmanie, jeniec, Piwnica",
+     "tvary": "jeniec: jeńca, jeńcy, jeńców; pečiatka POJMIJ −5 / POJMANY",
+     "preco": "Jeniec ladí so zajatím vo vojne.",
+     "zamietnute": "więzień — väznica"
+    },
+    "cs": {
+     "pojem": "zajetí, zajatec, Sklep",
+     "tvary": "pečiatka ZAJMOUT −5 / ZAJAT",
+     "preco": "Česky pivnica = sklep."
+    },
+    "hu": {
+     "pojem": "elfogás, fogoly, a Pince",
+     "tvary": "pečiatka ELFOG −5 / ELFOGVA"
+    }
+   }
+  },
+  {
+   "id": "schopnost-vazna",
+   "skupina": "starší",
+   "sk": "schopnosť väzňa (raz za hru)",
+   "vyznam": "Schopnosť zajatého staršieho; držiteľ ju použije raz za hru vo svojom ťahu.",
+   "preklady": {
+    "en": {
+     "pojem": "prisoner's ability (once per game)"
+    },
+    "pl": {
+     "pojem": "zdolność jeńca (raz na grę)"
+    },
+    "cs": {
+     "pojem": "schopnost zajatce (jednou za hru)"
+    },
+    "hu": {
+     "pojem": "a fogoly képessége (játékonként egyszer)"
+    }
+   }
+  },
+  {
+   "id": "nakladacka",
+   "skupina": "starší",
+   "sk": "Nakladačka",
+   "stolSk": "Nakladačka",
+   "vyznam": "Rozdiel tuhého poškodenia v bitke; víťaz ju rozdelí na svoj strach (a zajíma).",
+   "prichut": "Slang „dostať nakladačku“ = dostať poriadne nabité.",
+   "preklady": {
+    "en": {
+     "pojem": "Thrashing",
+     "preco": "„Give someone a thrashing“.",
+     "zamietnute": "Surplus — stará verzia „prebytok“; Beating — plochejšie"
+    },
+    "pl": {
+     "pojem": "Łomot",
+     "tvary": "r. m.: łomotu",
+     "preco": "„Spuścić łomot“ = nabiť.",
+     "zamietnute": "Lanie — detské"
+    },
+    "cs": {
+     "pojem": "Nakládačka",
+     "tvary": "r. ž.",
+     "preco": "Česky rovnaký slang."
+    },
+    "hu": {
+     "pojem": "Elpáholás",
+     "tvary": "elpáholást",
+     "preco": "„Elpáhol“ = zmlátiť, hovorovo-žartovné.",
+     "zamietnute": "Verés — plochejšie"
+    }
+   }
+  },
+  {
+   "id": "vypalne",
+   "skupina": "starší",
+   "sk": "výpalné",
+   "stolSk": "Výpalné",
+   "vyznam": "Po bitke ti súper dá 1 cigaretu za každého staršieho s tvojím červeným strachom.",
+   "prichut": "Mafiánske výpalné — dedina platí za pokoj.",
+   "preklady": {
+    "en": {
+     "pojem": "protection money",
+     "tvary": "na stole „Protection“",
+     "preco": "Mafiánsky termín.",
+     "zamietnute": "tribute — knižné"
+    },
+    "pl": {
+     "pojem": "haracz",
+     "tvary": "r. m.",
+     "preco": "Presný mafiánsky termín."
+    },
+    "cs": {
+     "pojem": "výpalné",
+     "tvary": "s. r."
+    },
+    "hu": {
+     "pojem": "sarc",
+     "tvary": "sarcot",
+     "preco": "Krátke, vymáhané platenie.",
+     "zamietnute": "védelmi pénz — dlhé"
+    }
+   }
+  },
+  {
+   "id": "exekutor",
+   "skupina": "starší",
+   "sk": "Exekútor, exekúcia",
+   "stolSk": "Exekútor",
+   "vyznam": "V každej bitke, kým máš priznané Dlhy, zhorí polovica Dlhov a rovnako špakov. Exekúcia je aj spúšťač (Záhradkár).",
+   "prichut": "Exekútor je strašiak zadĺžených domácností.",
+   "preklady": {
+    "en": {
+     "pojem": "Bailiff, the bailiff's visit",
+     "tvary": "spúšťač „Bailiff:“",
+     "preco": "Britský exekútor; spúšťač nesie, kto prichádza.",
+     "zamietnute": "Enforcer — mafia; Seizure — aj záchvat"
+    },
+    "pl": {
+     "pojem": "Komornik, egzekucja (komornicza)",
+     "tvary": "spúšťač „Egzekucja:“",
+     "preco": "Komornik je presný a rovnako obávaný."
+    },
+    "cs": {
+     "pojem": "Exekutor, exekuce",
+     "tvary": "spúšťač „Exekuce:“"
+    },
+    "hu": {
+     "pojem": "Végrehajtó, végrehajtás",
+     "tvary": "spúšťač „Végrehajtás:“"
+    }
+   }
+  },
+  {
+   "id": "boss",
+   "skupina": "starší",
+   "sk": "Boss (karta staršieho)",
+   "vyznam": "Karta staršieho: 6 akcií, 2 blokované sloty; do balíčka ju dá presvedčenie.",
+   "preklady": {
+    "en": {
+     "pojem": "Boss"
+    },
+    "pl": {
+     "pojem": "Boss"
+    },
+    "cs": {
+     "pojem": "Boss"
+    },
+    "hu": {
+     "pojem": "Boss"
+    }
+   }
+  },
+  {
+   "id": "vyhra-strachom",
+   "skupina": "hra",
+   "sk": "výhra strachom, výhra väzňami",
+   "vyznam": "Okamžitá výhra: 4 červené strachy po vyhratej bitke, alebo väzni podľa ligy (2 / 3 / 4).",
+   "preklady": {
+    "en": {
+     "pojem": "victory by fear, victory by prisoners"
+    },
+    "pl": {
+     "pojem": "zwycięstwo strachem, zwycięstwo jeńcami"
+    },
+    "cs": {
+     "pojem": "výhra strachem, výhra zajatci"
+    },
+    "hu": {
+     "pojem": "győzelem félelemmel, győzelem foglyokkal"
+    }
+   }
+  },
+  {
+   "id": "naradie",
+   "skupina": "karta",
+   "sk": "Náradie (balíček), Nástroj (tag)",
+   "stolSk": "Nástroj",
+   "vyznam": "Nástroj sa do línie nevykladá: podloží sa pod tvoju kartu (platí pretŕčajúca hrana) alebo ide do Dedičstva.",
+   "preklady": {
+    "en": {
+     "pojem": "Tools (deck), Tool (tag)",
+     "zamietnute": "Gear — vybavenie"
+    },
+    "pl": {
+     "pojem": "Narzędzia (talia), Narzędzie (tag)"
+    },
+    "cs": {
+     "pojem": "Nářadí (balíček), Nástroj (tag)"
+    },
+    "hu": {
+     "pojem": "Szerszámok (pakli), Szerszám (címke)"
+    }
+   }
+  },
+  {
+   "id": "dedicstvo",
+   "skupina": "karta",
+   "sk": "Dedičstvo",
+   "stolSk": "Dedičstvo",
+   "vyznam": "Nástroj vyložený mimo línie za rastúcu spoločnú cenu (1, 2, 3… cigarety); platí jeho pasívny efekt. Aj spúšťač „Dedičstvo:“.",
+   "prichut": "Náradie po starom otcovi v kôlni — dedičstvo, ktoré stále slúži.",
+   "preklady": {
+    "en": {
+     "pojem": "Heirloom",
+     "tvary": "„as an Heirloom“, „your Heirlooms“; spúšťač „Heirloom:“",
+     "preco": "Rodinná vec po predkoch, krátke na spúšťač.",
+     "zamietnute": "Legacy — žargón; Inheritance — dlhé a právnické"
+    },
+    "pl": {
+     "pojem": "Dziedzictwo",
+     "tvary": "r. n.",
+     "zamietnute": "Spadek — aj „pokles“, na spúšťači mätie"
+    },
+    "cs": {
+     "pojem": "Dědictví",
+     "tvary": "s. r."
+    },
+    "hu": {
+     "pojem": "Örökség",
+     "tvary": "örökséget",
+     "zamietnute": "Hagyaték — právnické"
+    }
+   }
+  },
+  {
+   "id": "podlozenie",
+   "skupina": "ťah",
+   "sk": "podloženie",
+   "stolSk": "Podložiť",
+   "vyznam": "Nástroj z ruky pod svojho Občana či Starešinu v línii za 1 cigaretu; platí hrana, ktorá pretŕča.",
+   "preklady": {
+    "en": {
+     "pojem": "tuck; „tuck a Tool under a card“",
+     "preco": "Krátke, obrazné.",
+     "zamietnute": "slip — mätie so Záverečnou"
+    },
+    "pl": {
+     "pojem": "podłożenie; „podłożyć“"
+    },
+    "cs": {
+     "pojem": "podložení; „podložit“"
+    },
+    "hu": {
+     "pojem": "alárakás; „alá rakni“",
+     "zamietnute": "alácsúsztatás — dlhé"
+    }
+   }
+  },
+  {
+   "id": "podstrcenie",
+   "skupina": "ťah",
+   "sk": "podstrčenie",
+   "vyznam": "Priložiť svoju kartu k súperovej (sabotér).",
+   "prichut": "Podstrčiť niečo ako podvrh.",
+   "preklady": {
+    "en": {
+     "pojem": "planting; „plant a card“",
+     "preco": "Plant = podstrčiť (aj dôkaz).",
+     "zamietnute": "sabotage — bez obrazu"
+    },
+    "pl": {
+     "pojem": "podrzucenie; „podrzucić“",
+     "preco": "„Podrzucić dowód“ — presné."
+    },
+    "cs": {
+     "pojem": "podstrčení"
+    },
+    "hu": {
+     "pojem": "becsempészés",
+     "preco": "Prepašovať k súperovi."
+    }
+   }
+  },
+  {
+   "id": "obcan",
+   "skupina": "tag",
+   "sk": "Občan, Občania (balíček)",
+   "stolSk": "Občan",
+   "vyznam": "Tag bežných kariet ľudí; balíček Občania = všetky ostatné karty ponuky.",
+   "prichut": "Úradné „občan“ — socialistický príhovor.",
+   "preklady": {
+    "en": {
+     "pojem": "Citizen, Citizens",
+     "preco": "Nesie úradný tón.",
+     "zamietnute": "Villager — bez úradnosti"
+    },
+    "pl": {
+     "pojem": "Obywatel, Obywatele",
+     "tvary": "obywatela, obywateli",
+     "preco": "Úradný tón.",
+     "zamietnute": "Mieszkaniec — plochejšie"
+    },
+    "cs": {
+     "pojem": "Občan, Občané"
+    },
+    "hu": {
+     "pojem": "Polgár, Polgárok",
+     "tvary": "polgárt",
+     "zamietnute": "Lakos — štatistické"
+    }
+   }
+  },
+  {
+   "id": "zviera",
+   "skupina": "tag",
+   "sk": "Zviera",
+   "stolSk": "Zviera",
+   "vyznam": "Tag zvierat (Pes, Kôň, Krokodíl…).",
+   "preklady": {
+    "en": {
+     "pojem": "Animal"
+    },
+    "pl": {
+     "pojem": "Zwierzę",
+     "tvary": "r. n.: zwierzęcia, zwierzęta, zwierząt"
+    },
+    "cs": {
+     "pojem": "Zvíře",
+     "tvary": "s. r."
+    },
+    "hu": {
+     "pojem": "Állat",
+     "tvary": "állatot"
+    }
+   }
+  },
+  {
+   "id": "skolitel",
+   "skupina": "karta",
+   "sk": "Školiteľ, Preškolenie {X}→{Y}",
+   "stolSk": "Preškolenie",
+   "vyznam": "Občan alebo Zviera, ktorý preškolí akciu X inej karty na Y; aj akciová hrana Nástroja.",
+   "prichut": "Socialistické školenia a preškolenia.",
+   "preklady": {
+    "en": {
+     "pojem": "Trainer, Retraining",
+     "preco": "Retraining nesie úradný kurz.",
+     "zamietnute": "Coach — šport; Conversion — technické"
+    },
+    "pl": {
+     "pojem": "Szkoleniowiec, Przeszkolenie",
+     "preco": "Przeszkolenie = úradný kurz."
+    },
+    "cs": {
+     "pojem": "Školitel, Přeškolení"
+    },
+    "hu": {
+     "pojem": "Oktató, Átképzés",
+     "preco": "Átképzés = rekvalifikácia."
+    }
+   }
+  },
+  {
+   "id": "posilnena",
+   "skupina": "karta",
+   "sk": "hrana posilnenia „Posilnená {X}“",
+   "vyznam": "Hrana Nástroja, ktorá posilní akciu X karty.",
+   "preklady": {
+    "en": {
+     "pojem": "„Boosted {X}“"
+    },
+    "pl": {
+     "pojem": "„Wzmocniony {Rana} / Wzmocniona {Pecka} / Wzmocniony {Petelica} / Wzmocniona {Robota} / Wzmocniony {Povera} / Wzmocnione {Obmedzenie}“",
+     "tvary": "rod podľa poľského mena akcie"
+    },
+    "cs": {
+     "pojem": "„Posílená {Rana} / {Pecka} / {Petelica} / {Robota} / {Povera}; Posílené {Obmedzenie}“"
+    },
+    "hu": {
+     "pojem": "„Erősített {X}“"
+    }
+   }
+  },
+  {
+   "id": "nastup",
+   "skupina": "spúšťač",
+   "sk": "Nástup:",
+   "vyznam": "Vyhodnotí sa pri zahraní karty.",
+   "prichut": "Nástup = nastúpenie do autobusu aj „nástup!“ na apeli.",
+   "preklady": {
+    "en": {
+     "pojem": "Arrival:",
+     "preco": "Karta prichádza na scénu.",
+     "zamietnute": "When played: — dlhé"
+    },
+    "pl": {
+     "pojem": "Wejście:",
+     "zamietnute": "Zbiórka — vojenský apel, mätie"
+    },
+    "cs": {
+     "pojem": "Nástup:"
+    },
+    "hu": {
+     "pojem": "Belépő:",
+     "preco": "Belépő = vstup aj efektný príchod."
+    }
+   }
+  },
+  {
+   "id": "furt",
+   "skupina": "spúšťač",
+   "sk": "Furt:",
+   "vyznam": "Platí, kým je karta odhalená v hracom priestore.",
+   "prichut": "Hovorové „furt“ = stále.",
+   "preklady": {
+    "en": {
+     "pojem": "Always:",
+     "zamietnute": "Constant — technické"
+    },
+    "pl": {
+     "pojem": "Ciągle:",
+     "preco": "Hovorové „stále“.",
+     "zamietnute": "Zawsze — plochejšie"
+    },
+    "cs": {
+     "pojem": "Furt:",
+     "preco": "Česky rovnaký hovorový výraz."
+    },
+    "hu": {
+     "pojem": "Folyton:",
+     "preco": "Hovorové „stále“.",
+     "zamietnute": "Mindig — plochejšie"
+    }
+   }
+  },
+  {
+   "id": "spustace-faz",
+   "skupina": "spúšťač",
+   "sk": "Bitka:, Pitka:, Zhromaždenie:, Dedičstvo:, Výhra:, Prehra:, Hádka:, Exekúcia:",
+   "vyznam": "Spúšťače podľa fázy alebo udalosti.",
+   "preklady": {
+    "en": {
+     "pojem": "Brawl:, Booze-up:, Assembly:, Heirloom:, Win:, Loss:, Argument:, Bailiff:"
+    },
+    "pl": {
+     "pojem": "Bójka:, Popijawa:, Zebranie:, Dziedzictwo:, Wygrana:, Przegrana:, Kłótnia:, Egzekucja:"
+    },
+    "cs": {
+     "pojem": "Rvačka:, Pitka:, Shromáždění:, Dědictví:, Výhra:, Prohra:, Hádka:, Exekuce:"
+    },
+    "hu": {
+     "pojem": "Verekedés:, Ivászat:, Gyűlés:, Örökség:, Győzelem:, Vereség:, Veszekedés:, Végrehajtás:"
+    }
+   }
+  },
+  {
+   "id": "spolocnik",
+   "skupina": "spúšťač",
+   "sk": "Spoločník: / Nepriateľ:",
+   "vyznam": "Akcie navyše, kým je v tvojej / súperovej partii odkrytá karta s tagom.",
+   "prichut": "Frakcie: s kým sa kamaráti, koho neznáša.",
+   "preklady": {
+    "en": {
+     "pojem": "Ally: / Enemy:",
+     "zamietnute": "Friend — príliš mäkké"
+    },
+    "pl": {
+     "pojem": "Kompan: / Wróg:",
+     "preco": "Kompan = kamoš od pohára.",
+     "zamietnute": "Sojusznik — vojenské"
+    },
+    "cs": {
+     "pojem": "Společník: / Nepřítel:"
+    },
+    "hu": {
+     "pojem": "Cimbora: / Ellenség:",
+     "preco": "Cimbora = kamoš.",
+     "zamietnute": "Szövetséges — politické"
+    }
+   }
+  },
+  {
+   "id": "podpora",
+   "skupina": "spúšťač",
+   "sk": "Podpora: / Konflikt:",
+   "vyznam": "Efekt, keď sa karta priložením stretne s tvojou (Podpora) / súperovou (Konflikt) kartou.",
+   "preklady": {
+    "en": {
+     "pojem": "Support: / Clash:",
+     "tvary": "„trigger a Clash“ = vyvolať Konflikt",
+     "preco": "Clash je krátke a priložením sa karty zrazia.",
+     "zamietnute": "Conflict — dlhšie, abstraktné"
+    },
+    "pl": {
+     "pojem": "Wsparcie: / Starcie:",
+     "tvary": "„wywołać Starcie“",
+     "preco": "Starcie = zrážka.",
+     "zamietnute": "Konflikt — abstraktné"
+    },
+    "cs": {
+     "pojem": "Podpora: / Konflikt:",
+     "tvary": "„vyvolat Konflikt“"
+    },
+    "hu": {
+     "pojem": "Támogatás: / Összetűzés:",
+     "tvary": "„összetűzést kiváltani“",
+     "zamietnute": "Konfliktus — abstraktné"
+    }
+   }
+  },
+  {
+   "id": "vazen-spustac",
+   "skupina": "spúšťač",
+   "sk": "Väzeň — raz za hru:",
+   "vyznam": "Úvod efektu kariet starších (schopnosť väzňa).",
+   "preklady": {
+    "en": {
+     "pojem": "Prisoner — once per game:"
+    },
+    "pl": {
+     "pojem": "Jeniec — raz na grę:"
+    },
+    "cs": {
+     "pojem": "Zajatec — jednou za hru:"
+    },
+    "hu": {
+     "pojem": "Fogoly — játékonként egyszer:"
+    }
+   }
+  },
+  {
+   "id": "posledna-pitka",
+   "skupina": "spúšťač",
+   "sk": "Posledná Pitka kola:",
+   "vyznam": "Na konci poslednej Pitky kola (Traktorista, Výherný automat).",
+   "preklady": {
+    "en": {
+     "pojem": "Last booze-up of the round:"
+    },
+    "pl": {
+     "pojem": "Ostatnia popijawa rundy:"
+    },
+    "cs": {
+     "pojem": "Poslední pitka kola:"
+    },
+    "hu": {
+     "pojem": "A kör utolsó ivászata:"
+    }
+   }
+  },
+  {
+   "id": "tag-chlap",
+   "skupina": "tag",
+   "sk": "Chlap / Žena",
+   "stolSk": "Chlap",
+   "vyznam": "Pohlavie karty (Liberál má oba).",
+   "prichut": "Chlap je hovorový, žena spisovná — rozdiel registra je v origináli.",
+   "preklady": {
+    "en": {
+     "pojem": "Bloke / Woman",
+     "preco": "Zachová rozdiel registra.",
+     "zamietnute": "Man / Woman — stratí hovorovosť; Guy — americké"
+    },
+    "pl": {
+     "pojem": "Chłop / Kobieta",
+     "tvary": "chłopa, chłopi",
+     "preco": "Hovorový chłop = chlap.",
+     "zamietnute": "Mężczyzna — spisovné"
+    },
+    "cs": {
+     "pojem": "Chlap / Žena",
+     "preco": "Totožné."
+    },
+    "hu": {
+     "pojem": "Pasas / Nő",
+     "preco": "Pasas = hovorový chlap.",
+     "zamietnute": "Férfi — spisovné"
+    }
+   }
+  },
+  {
+   "id": "tag-pracujuci",
+   "skupina": "tag",
+   "sk": "Pracujúci",
+   "stolSk": "Pracujúci",
+   "vyznam": "Robotníci a živnosť (Zámočník, Šofér, Mäsiar…).",
+   "prichut": "Socialistické „pracujúci“ ako trieda.",
+   "preklady": {
+    "en": {
+     "pojem": "Worker",
+     "preco": "„Workers of the world“.",
+     "zamietnute": "Labourer — úzke"
+    },
+    "pl": {
+     "pojem": "Pracujący",
+     "preco": "„Ludzie pracy“.",
+     "zamietnute": "Robotnik — užšie"
+    },
+    "cs": {
+     "pojem": "Pracující",
+     "preco": "Totožné so socialistickou príchuťou."
+    },
+    "hu": {
+     "pojem": "Dolgozó",
+     "preco": "Socialistické „dolgozók“.",
+     "zamietnute": "Munkás — užšie"
+    }
+   }
+  },
+  {
+   "id": "tag-kriminal",
+   "skupina": "tag",
+   "sk": "Kriminál",
+   "stolSk": "Kriminál",
+   "vyznam": "Podvodníci, recidivisti, vymáhači.",
+   "prichut": "Hovorovo „kriminál“ = basa; ako tag kriminálnik.",
+   "preklady": {
+    "en": {
+     "pojem": "Crook",
+     "preco": "Krátke, hovorové.",
+     "zamietnute": "Criminal — úradné; Jailbird — len kto sedel"
+    },
+    "pl": {
+     "pojem": "Kryminalista",
+     "zamietnute": "Bandyta — príliš tvrdé"
+    },
+    "cs": {
+     "pojem": "Kriminálník",
+     "preco": "Hovorové české."
+    },
+    "hu": {
+     "pojem": "Bűnöző",
+     "zamietnute": "Sittes — len kto sedel"
+    }
+   }
+  },
+  {
+   "id": "tag-zavisly",
+   "skupina": "tag",
+   "sk": "Závislý",
+   "stolSk": "Závislý",
+   "vyznam": "Pijani a hráči (Pijan, Tipér, Dvojčatá…).",
+   "preklady": {
+    "en": {
+     "pojem": "Addict"
+    },
+    "pl": {
+     "pojem": "Nałogowiec",
+     "zamietnute": "Uzależniony — dlhé"
+    },
+    "cs": {
+     "pojem": "Závislý",
+     "zamietnute": "Závislák — slangovejšie než originál"
+    },
+    "hu": {
+     "pojem": "Függő"
+    }
+   }
+  },
+  {
+   "id": "tag-zahranicny",
+   "skupina": "tag",
+   "sk": "Zahraničný",
+   "stolSk": "Zahraničný",
+   "vyznam": "Prišelci zvonka (Veštica, Opatrovateľka, Strýko z Ameriky…). Nikdy nie etnická narážka.",
+   "preklady": {
+    "en": {
+     "pojem": "Foreigner",
+     "zamietnute": "Foreign — prídavné meno ako tag krivé"
+    },
+    "pl": {
+     "pojem": "Zagraniczny",
+     "preco": "Prídavné meno ako v origináli.",
+     "zamietnute": "Obcokrajowiec — dlhé"
+    },
+    "cs": {
+     "pojem": "Zahraniční",
+     "zamietnute": "Cizinec — užšie"
+    },
+    "hu": {
+     "pojem": "Külföldi"
+    }
+   }
+  },
+  {
+   "id": "tag-autorita",
+   "skupina": "tag",
+   "sk": "Autorita",
+   "stolSk": "Autorita",
+   "vyznam": "Ľudia s mocou (Policajtka, Hasič, Svokra, Vedúcko…).",
+   "prichut": "Ironicky — aj svokra je autorita.",
+   "preklady": {
+    "en": {
+     "pojem": "Authority"
+    },
+    "pl": {
+     "pojem": "Autorytet",
+     "preco": "Nesie aj iróniu pri teściowej.",
+     "zamietnute": "Władza — úrady, nie osoba"
+    },
+    "cs": {
+     "pojem": "Autorita"
+    },
+    "hu": {
+     "pojem": "Tekintély",
+     "zamietnute": "Hatóság — úrad"
+    }
+   }
+  },
+  {
+   "id": "tag-influencer",
+   "skupina": "tag",
+   "sk": "Influencer",
+   "stolSk": "Influencer",
+   "vyznam": "Hlásne trúby dediny (Šarlatán, Praudovravec…).",
+   "preklady": {
+    "en": {
+     "pojem": "Influencer"
+    },
+    "pl": {
+     "pojem": "Influencer"
+    },
+    "cs": {
+     "pojem": "Influencer"
+    },
+    "hu": {
+     "pojem": "Influenszer"
+    }
+   }
+  },
+  {
+   "id": "tag-pamatnik",
+   "skupina": "tag",
+   "sk": "Pamätník",
+   "stolSk": "Pamätník",
+   "vyznam": "Ľudia, ktorí pamätajú staré časy (Veterán, Stryná, Manželka…).",
+   "prichut": "Pamätník = človek, ktorý „to zažil“.",
+   "preklady": {
+    "en": {
+     "pojem": "Old-timer",
+     "zamietnute": "Witness — súd"
+    },
+    "pl": {
+     "pojem": "Świadek epoki",
+     "preco": "Pamätník dejín.",
+     "zamietnute": "Weteran — karta Veterán"
+    },
+    "cs": {
+     "pojem": "Pamětník",
+     "preco": "Totožné."
+    },
+    "hu": {
+     "pojem": "Régi motoros",
+     "preco": "Hovorovo starý harcovník.",
+     "zamietnute": "Szemtanú — súd"
+    }
+   }
+  },
+  {
+   "id": "pr-bitkar",
+   "skupina": "priazeň",
+   "sk": "Bitkár",
+   "stolSk": "Bitkár",
+   "vyznam": "Priazeň: tuhé poškodenie navyše +1 / +2 / +3.",
+   "preklady": {
+    "en": {
+     "pojem": "Brawler"
+    },
+    "pl": {
+     "pojem": "Zabijaka",
+     "preco": "Hovorový bitkár.",
+     "zamietnute": "Awanturnik — Výtržník"
+    },
+    "cs": {
+     "pojem": "Rváč"
+    },
+    "hu": {
+     "pojem": "Bunyós",
+     "preco": "Hovorový bitkár.",
+     "zamietnute": "Verekedő — plochejšie"
+    }
+   }
+  },
+  {
+   "id": "pr-veriaci",
+   "skupina": "priazeň",
+   "sk": "Veriaci",
+   "stolSk": "Veriaci",
+   "vyznam": "Priazeň: Viera navyše.",
+   "preklady": {
+    "en": {
+     "pojem": "Believer"
+    },
+    "pl": {
+     "pojem": "Wierzący"
+    },
+    "cs": {
+     "pojem": "Věřící"
+    },
+    "hu": {
+     "pojem": "Hívő"
+    }
+   }
+  },
+  {
+   "id": "pr-ohovaracka",
+   "skupina": "priazeň",
+   "sk": "Ohováračka",
+   "stolSk": "Ohováračka",
+   "vyznam": "Priazeň: Povery navyše v hádke.",
+   "prichut": "Dedinská ohováračka pri plote.",
+   "preklady": {
+    "en": {
+     "pojem": "Gossip",
+     "preco": "Gossip = klebetníčka (osoba).",
+     "zamietnute": "Slanderer — súdne"
+    },
+    "pl": {
+     "pojem": "Plotkara"
+    },
+    "cs": {
+     "pojem": "Drbna",
+     "preco": "Česká klebetnica."
+    },
+    "hu": {
+     "pojem": "Pletykafészek",
+     "preco": "Hniezdo klebiet — ľudovo o klebetníčke.",
+     "zamietnute": "Rágalmazó — súdne"
+    }
+   }
+  },
+  {
+   "id": "pr-fajciar",
+   "skupina": "priazeň",
+   "sk": "Fajčiar",
+   "stolSk": "Fajčiar",
+   "vyznam": "Priazeň: cigarety navyše po bitke.",
+   "preklady": {
+    "en": {
+     "pojem": "Smoker"
+    },
+    "pl": {
+     "pojem": "Palacz"
+    },
+    "cs": {
+     "pojem": "Kuřák"
+    },
+    "hu": {
+     "pojem": "Dohányos"
+    }
+   }
+  },
+  {
+   "id": "pr-abstinent",
+   "skupina": "priazeň",
+   "sk": "Abstinent",
+   "stolSk": "Abstinent",
+   "vyznam": "Priazeň: v bitke sa ti neráta 1 / 2 / 3 Absťákov.",
+   "prichut": "Ironické — abstinent pomáha pijanom.",
+   "preklady": {
+    "en": {
+     "pojem": "Teetotaller"
+    },
+    "pl": {
+     "pojem": "Abstynent"
+    },
+    "cs": {
+     "pojem": "Abstinent"
+    },
+    "hu": {
+     "pojem": "Absztinens"
+    }
+   }
+  },
+  {
+   "id": "pr-robota",
+   "skupina": "priazeň",
+   "sk": "Robota",
+   "stolSk": "Robota",
+   "vyznam": "Priazeň: akcie Robota navyše.",
+   "preklady": {
+    "en": {
+     "pojem": "Work"
+    },
+    "pl": {
+     "pojem": "Robota"
+    },
+    "cs": {
+     "pojem": "Robota"
+    },
+    "hu": {
+     "pojem": "Meló"
+    }
+   }
+  },
+  {
+   "id": "pr-advokat",
+   "skupina": "priazeň",
+   "sk": "Advokát",
+   "stolSk": "Advokát",
+   "vyznam": "Priazeň: exekúcia ti odpočíta o 1 / 2 / 3 špaky menej.",
+   "preklady": {
+    "en": {
+     "pojem": "Lawyer",
+     "zamietnute": "Solicitor — úzke"
+    },
+    "pl": {
+     "pojem": "Adwokat",
+     "zamietnute": "Papuga — slang, ale pridáva"
+    },
+    "cs": {
+     "pojem": "Advokát"
+    },
+    "hu": {
+     "pojem": "Ügyvéd"
+    }
+   }
+  },
+  {
+   "id": "pr-kmotor",
+   "skupina": "priazeň",
+   "sk": "Kmotor",
+   "stolSk": "Kmotor",
+   "vyznam": "Priazeň: tvoje priznané Dlhy prejdú k súperovi.",
+   "prichut": "Krstný otec aj mafiánsky kmotor.",
+   "preklady": {
+    "en": {
+     "pojem": "Godfather",
+     "preco": "Oba významy."
+    },
+    "pl": {
+     "pojem": "Chrzestny",
+     "preco": "Hovorovo krstný; filmový „Ojciec chrzestny“.",
+     "zamietnute": "Ojciec chrzestny — dlhé"
+    },
+    "cs": {
+     "pojem": "Kmotr",
+     "preco": "Totožné, aj mafia."
+    },
+    "hu": {
+     "pojem": "Keresztapa",
+     "preco": "Oba významy."
+    }
+   }
+  },
+  {
+   "id": "st-farar",
+   "skupina": "osoba",
+   "sk": "Farár",
+   "stolSk": "Farár",
+   "vyznam": "Starší; schopnosť: odstráni súperovo NA EX.",
+   "preklady": {
+    "en": {
+     "pojem": "Priest",
+     "preco": "Katolícky dedinský farár.",
+     "zamietnute": "Vicar — anglikánsky"
+    },
+    "pl": {
+     "pojem": "Proboszcz",
+     "preco": "Dedinský farár.",
+     "zamietnute": "Ksiądz — všeobecné"
+    },
+    "cs": {
+     "pojem": "Farář"
+    },
+    "hu": {
+     "pojem": "Plébános",
+     "zamietnute": "Pap — všeobecné"
+    }
+   }
+  },
+  {
+   "id": "st-krcmarka",
+   "skupina": "osoba",
+   "sk": "Krčmárka",
+   "stolSk": "Krčmárka",
+   "vyznam": "Starší; schopnosť: nový plný poldeci.",
+   "preklady": {
+    "en": {
+     "pojem": "Landlady",
+     "preco": "Britská majiteľka krčmy.",
+     "zamietnute": "Barmaid — len čašníčka"
+    },
+    "pl": {
+     "pojem": "Bufetowa",
+     "preco": "Kultová pani za pultom.",
+     "zamietnute": "Barmanka — mestské"
+    },
+    "cs": {
+     "pojem": "Hospodská"
+    },
+    "hu": {
+     "pojem": "Kocsmárosné",
+     "preco": "Ľudové.",
+     "zamietnute": "Csaposnő — len čapuje"
+    }
+   }
+  },
+  {
+   "id": "st-starosta",
+   "skupina": "osoba",
+   "sk": "Starosta",
+   "stolSk": "Starosta",
+   "vyznam": "Starší; schopnosť: aktívne akcie lokality posilnené do konca kola.",
+   "preklady": {
+    "en": {
+     "pojem": "Mayor"
+    },
+    "pl": {
+     "pojem": "Wójt",
+     "preco": "Volená hlava obce — a kultový wójt z „Rancza“.",
+     "zamietnute": "Sołtys — menšia moc; Starosta — po poľsky okres"
+    },
+    "cs": {
+     "pojem": "Starosta"
+    },
+    "hu": {
+     "pojem": "Polgármester",
+     "zamietnute": "Bíró — archaické"
+    }
+   }
+  },
+  {
+   "id": "st-postarka",
+   "skupina": "osoba",
+   "sk": "Poštárka",
+   "stolSk": "Poštárka",
+   "vyznam": "Starší; schopnosť: 4 cigarety.",
+   "preklady": {
+    "en": {
+     "pojem": "Postwoman"
+    },
+    "pl": {
+     "pojem": "Listonoszka"
+    },
+    "cs": {
+     "pojem": "Pošťačka"
+    },
+    "hu": {
+     "pojem": "Postásnő"
+    }
+   }
+  },
+  {
+   "id": "st-hrobar",
+   "skupina": "osoba",
+   "sk": "Hrobár",
+   "stolSk": "Hrobár",
+   "vyznam": "Starší; schopnosť: karta zo súperovho odhadzovacieho balíčka.",
+   "preklady": {
+    "en": {
+     "pojem": "Gravedigger"
+    },
+    "pl": {
+     "pojem": "Grabarz"
+    },
+    "cs": {
+     "pojem": "Hrobník"
+    },
+    "hu": {
+     "pojem": "Sírásó"
+    }
+   }
+  },
+  {
+   "id": "st-autobusar",
+   "skupina": "osoba",
+   "sk": "Autobusár",
+   "stolSk": "Autobusár",
+   "vyznam": "Starší; schopnosť: z ponuky koľko chceš po cigarete.",
+   "prichut": "Hovorové „autobusár“.",
+   "preklady": {
+    "en": {
+     "pojem": "Bus Driver"
+    },
+    "pl": {
+     "pojem": "Autobusiarz",
+     "preco": "Hovorové ako originál.",
+     "zamietnute": "Kierowca autobusu — dlhé"
+    },
+    "cs": {
+     "pojem": "Autobusák",
+     "preco": "Hovorové (otázka pre rodeného hovoriaceho).",
+     "zamietnute": "Řidič autobusu — dlhé"
+    },
+    "hu": {
+     "pojem": "Buszsofőr"
+    }
+   }
+  },
+  {
+   "id": "st-veterinar",
+   "skupina": "osoba",
+   "sk": "Veterinár",
+   "stolSk": "Veterinár",
+   "vyznam": "Starší; schopnosť: odhodí Cirhózy.",
+   "preklady": {
+    "en": {
+     "pojem": "Vet"
+    },
+    "pl": {
+     "pojem": "Weterynarz"
+    },
+    "cs": {
+     "pojem": "Veterinář"
+    },
+    "hu": {
+     "pojem": "Állatorvos"
+    }
+   }
+  },
+  {
+   "id": "st-vychovavatelka",
+   "skupina": "osoba",
+   "sk": "Vychovávateľka",
+   "stolSk": "Vychovávateľka",
+   "vyznam": "Starší; schopnosť: súper hneď pasuje bez cigariet.",
+   "prichut": "Prísna vychovávateľka z družiny či internátu.",
+   "preklady": {
+    "en": {
+     "pojem": "Matron",
+     "preco": "Prísna dozorkyňa internátu.",
+     "zamietnute": "Governess — panské; Nanny — domáce"
+    },
+    "pl": {
+     "pojem": "Wychowawczyni"
+    },
+    "cs": {
+     "pojem": "Vychovatelka"
+    },
+    "hu": {
+     "pojem": "Nevelőnő"
+    }
+   }
+  },
+  {
+   "id": "lok-krcma",
+   "skupina": "lokalita",
+   "sk": "Krčma",
+   "stolSk": "Krčma",
+   "vyznam": "Dedinská krčma; kraje pri výčape a pri dverách.",
+   "prichut": "kraje: pri výčape / pri dverách",
+   "preklady": {
+    "en": {
+     "pojem": "Pub",
+     "tvary": "kraje: by the tap / by the door",
+     "preco": "Pub je britská dedinská krčma."
+    },
+    "pl": {
+     "pojem": "Knajpa",
+     "tvary": "kraje: przy barze / przy drzwiach",
+     "preco": "Knajpa = obyčajná krčma; karczma je dnes rustikálna reštaurácia."
+    },
+    "cs": {
+     "pojem": "Hospoda",
+     "tvary": "kraje: u výčepu / u dveří",
+     "preco": "Česká krčma je pejoratívna putika; hospoda je bežná."
+    },
+    "hu": {
+     "pojem": "Kocsma",
+     "tvary": "kraje: a csapnál / az ajtónál",
+     "preco": "Kocsma presne."
+    }
+   }
+  },
+  {
+   "id": "lok-kostol",
+   "skupina": "lokalita",
+   "sk": "Kostol",
+   "stolSk": "Kostol",
+   "vyznam": "Lokalita Kostol; kraje pri oltári / pri vchode.",
+   "prichut": "kraje: pri oltári / pri vchode",
+   "preklady": {
+    "en": {
+     "pojem": "Church",
+     "tvary": "kraje: by the altar / by the entrance"
+    },
+    "pl": {
+     "pojem": "Kościół",
+     "tvary": "kraje: przy ołtarzu / przy wejściu"
+    },
+    "cs": {
+     "pojem": "Kostel",
+     "tvary": "kraje: u oltáře / u vchodu"
+    },
+    "hu": {
+     "pojem": "Templom",
+     "tvary": "kraje: az oltárnál / a bejáratnál"
+    }
+   }
+  },
+  {
+   "id": "lok-benzinka",
+   "skupina": "lokalita",
+   "sk": "Benzínka",
+   "stolSk": "Benzínka",
+   "vyznam": "Lokalita Benzínka; kraje pri pokladni / za budovou.",
+   "prichut": "kraje: pri pokladni / za budovou",
+   "preklady": {
+    "en": {
+     "pojem": "Petrol Station",
+     "tvary": "kraje: at the till / behind the building"
+    },
+    "pl": {
+     "pojem": "Stacja benzynowa",
+     "tvary": "kraje: przy kasie / za budynkiem"
+    },
+    "cs": {
+     "pojem": "Benzínka",
+     "tvary": "kraje: u pokladny / za budovou"
+    },
+    "hu": {
+     "pojem": "Benzinkút",
+     "tvary": "kraje: a kasszánál / az épület mögött"
+    }
+   }
+  },
+  {
+   "id": "lok-zastavka",
+   "skupina": "lokalita",
+   "sk": "Zastávka",
+   "stolSk": "Zastávka",
+   "vyznam": "Lokalita Zastávka; kraje pod strieškou / pri ceste.",
+   "prichut": "kraje: pod strieškou / pri ceste",
+   "preklady": {
+    "en": {
+     "pojem": "Bus Stop",
+     "tvary": "kraje: under the shelter / by the road"
+    },
+    "pl": {
+     "pojem": "Przystanek",
+     "tvary": "kraje: pod daszkiem / przy drodze"
+    },
+    "cs": {
+     "pojem": "Zastávka",
+     "tvary": "kraje: pod stříškou / u silnice"
+    },
+    "hu": {
+     "pojem": "Megálló",
+     "tvary": "kraje: a tető alatt / az út mellett"
+    }
+   }
+  },
+  {
+   "id": "lok-lesna_cesta",
+   "skupina": "lokalita",
+   "sk": "Lesná cesta",
+   "stolSk": "Lesná cesta",
+   "vyznam": "Lokalita Lesná cesta; kraje v húštine / pri kríži.",
+   "prichut": "kraje: v húštine / pri kríži",
+   "preklady": {
+    "en": {
+     "pojem": "Forest Track",
+     "tvary": "kraje: in the thicket / by the wayside cross"
+    },
+    "pl": {
+     "pojem": "Leśna droga",
+     "tvary": "kraje: w gąszczu / przy krzyżu"
+    },
+    "cs": {
+     "pojem": "Lesní cesta",
+     "tvary": "kraje: v houští / u křížku"
+    },
+    "hu": {
+     "pojem": "Erdei út",
+     "tvary": "kraje: a sűrűben / a keresztnél"
+    }
+   }
+  },
+  {
+   "id": "lok-ihrisko",
+   "skupina": "lokalita",
+   "sk": "Ihrisko",
+   "stolSk": "Ihrisko",
+   "vyznam": "Lokalita Ihrisko; kraje na trávniku / na tribúne.",
+   "prichut": "kraje: na trávniku / na tribúne",
+   "preklady": {
+    "en": {
+     "pojem": "Football Pitch",
+     "tvary": "kraje: on the grass / in the stands"
+    },
+    "pl": {
+     "pojem": "Boisko",
+     "tvary": "kraje: na murawie / na trybunie"
+    },
+    "cs": {
+     "pojem": "Hřiště",
+     "tvary": "kraje: na trávníku / na tribuně"
+    },
+    "hu": {
+     "pojem": "Focipálya",
+     "tvary": "kraje: a gyepen / a lelátón"
+    }
+   }
+  },
+  {
+   "id": "lok-zberny_dvor",
+   "skupina": "lokalita",
+   "sk": "Zberný dvor",
+   "stolSk": "Zberný dvor",
+   "vyznam": "Obecný zberný dvor; váha ako pri výkupe.",
+   "prichut": "kraje: pri váhe / za plotom",
+   "preklady": {
+    "en": {
+     "pojem": "Scrapyard",
+     "tvary": "kraje: by the scales / behind the fence",
+     "preco": "Scrapyard."
+    },
+    "pl": {
+     "pojem": "Skup złomu",
+     "tvary": "kraje: przy wadze / za płotem",
+     "preco": "Skup złomu — váha a výkup."
+    },
+    "cs": {
+     "pojem": "Sběrný dvůr",
+     "tvary": "kraje: u váhy / za plotem",
+     "preco": "Sběrný dvůr presne."
+    },
+    "hu": {
+     "pojem": "Hulladékudvar",
+     "tvary": "kraje: a mérlegnél / a kerítés mögött",
+     "preco": "Hulladékudvar presne."
+    }
+   }
+  },
+  {
+   "id": "lok-most",
+   "skupina": "lokalita",
+   "sk": "Most",
+   "stolSk": "Most",
+   "vyznam": "Lokalita Most; kraje pri kaplnke / pod mostom.",
+   "prichut": "kraje: pri kaplnke / pod mostom",
+   "preklady": {
+    "en": {
+     "pojem": "Bridge",
+     "tvary": "kraje: by the chapel / under the bridge"
+    },
+    "pl": {
+     "pojem": "Most",
+     "tvary": "kraje: przy kapliczce / pod mostem"
+    },
+    "cs": {
+     "pojem": "Most",
+     "tvary": "kraje: u kapličky / pod mostem"
+    },
+    "hu": {
+     "pojem": "Híd",
+     "tvary": "kraje: a kápolnánál / a híd alatt"
+    }
+   }
+  },
+  {
+   "id": "lok-cintorin",
+   "skupina": "lokalita",
+   "sk": "Cintorín",
+   "stolSk": "Cintorín",
+   "vyznam": "Lokalita Cintorín; kraje pri hroboch / pri márnici.",
+   "prichut": "kraje: pri hroboch / pri márnici",
+   "preklady": {
+    "en": {
+     "pojem": "Graveyard",
+     "tvary": "kraje: by the graves / by the mortuary"
+    },
+    "pl": {
+     "pojem": "Cmentarz",
+     "tvary": "kraje: przy grobach / przy kostnicy"
+    },
+    "cs": {
+     "pojem": "Hřbitov",
+     "tvary": "kraje: u hrobů / u márnice"
+    },
+    "hu": {
+     "pojem": "Temető",
+     "tvary": "kraje: a síroknál / a ravatalozónál"
+    }
+   }
+  },
+  {
+   "id": "lok-kar",
+   "skupina": "lokalita",
+   "sk": "Kar",
+   "stolSk": "Kar",
+   "vyznam": "Kar = smútočná hostina po pohrebe.",
+   "prichut": "kraje: pri vdove / pri koláčoch",
+   "preklady": {
+    "en": {
+     "pojem": "Wake",
+     "tvary": "kraje: by the widow / by the cakes",
+     "preco": "Wake."
+    },
+    "pl": {
+     "pojem": "Stypa",
+     "tvary": "kraje: przy wdowie / przy ciastach",
+     "preco": "Stypa presne."
+    },
+    "cs": {
+     "pojem": "Funus",
+     "tvary": "kraje: u vdovy / u koláčů",
+     "preco": "Funus = hovorový pohreb s hostinou; kar je v češtine archaický."
+    },
+    "hu": {
+     "pojem": "Tor",
+     "tvary": "kraje: az özvegynél / a süteményeknél",
+     "preco": "Tor = halotti tor."
+    }
+   }
+  },
+  {
+   "id": "lok-obecny_urad",
+   "skupina": "lokalita",
+   "sk": "Obecný úrad",
+   "stolSk": "Obecný úrad",
+   "vyznam": "Lokalita Obecný úrad; kraje v kancelárii / na chodbe.",
+   "prichut": "kraje: v kancelárii / na chodbe",
+   "preklady": {
+    "en": {
+     "pojem": "Council Office",
+     "tvary": "kraje: in the office / in the corridor"
+    },
+    "pl": {
+     "pojem": "Urząd gminy",
+     "tvary": "kraje: w biurze / na korytarzu"
+    },
+    "cs": {
+     "pojem": "Obecní úřad",
+     "tvary": "kraje: v kanceláři / na chodbě"
+    },
+    "hu": {
+     "pojem": "Községháza",
+     "tvary": "kraje: az irodában / a folyosón"
+    }
+   }
+  },
+  {
+   "id": "lok-jednota",
+   "skupina": "lokalita",
+   "sk": "Jednota",
+   "stolSk": "Jednota",
+   "vyznam": "COOP Jednota — dedinský potravinový obchod; pred ním sa pije pivo.",
+   "prichut": "kraje: pri pulte / pred obchodom",
+   "preklady": {
+    "en": {
+     "pojem": "Co-op",
+     "tvary": "kraje: at the counter / outside the shop",
+     "preco": "UK „the Co-op“ je tiež družstevný obchod."
+    },
+    "pl": {
+     "pojem": "Spożywczak",
+     "tvary": "kraje: przy ladzie / pod sklepem",
+     "preco": "„Pod sklepem“ = poľské pitie pred obchodom; Spożywczak je hovorový obchod (Społem by bola značka)."
+    },
+    "cs": {
+     "pojem": "Jednota",
+     "tvary": "kraje: u pultu / před krámem",
+     "preco": "Jednota existuje aj v Česku."
+    },
+    "hu": {
+     "pojem": "Vegyesbolt",
+     "tvary": "kraje: a pultnál / a bolt előtt",
+     "preco": "Vegyesbolt = dedinský zmiešaný tovar."
+    }
+   }
+  },
+  {
+   "id": "lok-kulturny_dom",
+   "skupina": "lokalita",
+   "sk": "Kultúrny dom",
+   "stolSk": "Kultúrny dom",
+   "vyznam": "Socialistický kultúrny dom.",
+   "prichut": "kraje: na parkete / pred vchodom",
+   "preklady": {
+    "en": {
+     "pojem": "House of Culture",
+     "tvary": "kraje: on the dance floor / outside the entrance",
+     "preco": "House of Culture drží socialistický pôvod."
+    },
+    "pl": {
+     "pojem": "Dom kultury",
+     "tvary": "kraje: na parkiecie / przed wejściem",
+     "preco": "Dom kultury presne."
+    },
+    "cs": {
+     "pojem": "Kulturák",
+     "tvary": "kraje: na parketu / před vchodem",
+     "preco": "Kulturák = hovorové."
+    },
+    "hu": {
+     "pojem": "Kultúrház",
+     "tvary": "kraje: a táncparketten / a bejárat előtt",
+     "preco": "Kultúrház presne."
+    }
+   }
+  },
+  {
+   "id": "lok-vinna_pivnica",
+   "skupina": "lokalita",
+   "sk": "Vínna pivnica",
+   "stolSk": "Vínna pivnica",
+   "vyznam": "Lokalita Vínna pivnica; kraje pri sudoch / na schodoch.",
+   "prichut": "kraje: pri sudoch / na schodoch",
+   "preklady": {
+    "en": {
+     "pojem": "Wine Cellar",
+     "tvary": "kraje: by the barrels / on the stairs"
+    },
+    "pl": {
+     "pojem": "Winna piwniczka",
+     "tvary": "kraje: przy beczkach / na schodach"
+    },
+    "cs": {
+     "pojem": "Vinný sklípek",
+     "tvary": "kraje: u sudů / na schodech"
+    },
+    "hu": {
+     "pojem": "Borpince",
+     "tvary": "kraje: a hordóknál / a lépcsőn"
+    }
+   }
+  },
+  {
+   "id": "lok-druzstvo",
+   "skupina": "lokalita",
+   "sk": "Družstvo",
+   "stolSk": "Družstvo",
+   "vyznam": "JRD — socialistické poľnohospodárske družstvo; „na schôdzi“.",
+   "prichut": "kraje: na poli / na schôdzi",
+   "preklady": {
+    "en": {
+     "pojem": "Collective Farm",
+     "tvary": "kraje: in the field / at the meeting",
+     "preco": "Collective farm nesie socializmus."
+    },
+    "pl": {
+     "pojem": "Spółdzielnia",
+     "tvary": "kraje: na polu / na naradzie",
+     "preco": "Spółdzielnia; „na naradzie“, lebo zebranie je meno fázy."
+    },
+    "cs": {
+     "pojem": "Družstvo",
+     "tvary": "kraje: na poli / na schůzi",
+     "preco": "Družstvo (JZD)."
+    },
+    "hu": {
+     "pojem": "Téesz",
+     "tvary": "kraje: a földeken / az értekezleten",
+     "preco": "Téesz = TSZ, ikonické socialistické družstvo; „értekezlet“, lebo gyűlés je fáza."
+    }
+   }
+  },
+  {
+   "id": "lok-sklad",
+   "skupina": "lokalita",
+   "sk": "Sklad",
+   "stolSk": "Sklad",
+   "vyznam": "Lokalita Sklad; kraje pri vreciach / pri sklade.",
+   "prichut": "kraje: pri vreciach / pri sklade",
+   "preklady": {
+    "en": {
+     "pojem": "Warehouse",
+     "tvary": "kraje: by the sacks / by the storeroom"
+    },
+    "pl": {
+     "pojem": "Magazyn",
+     "tvary": "kraje: przy workach / przy magazynie"
+    },
+    "cs": {
+     "pojem": "Sklad",
+     "tvary": "kraje: u pytlů / u skladu"
+    },
+    "hu": {
+     "pojem": "Raktár",
+     "tvary": "kraje: a zsákoknál / a raktárnál"
+    }
+   }
+  },
+  {
+   "id": "lok-polovnicka_chata",
+   "skupina": "lokalita",
+   "sk": "Poľovnícka chata",
+   "stolSk": "Poľovnícka chata",
+   "vyznam": "Lokalita Poľovnícka chata; kraje pri trofejach / na posede.",
+   "prichut": "kraje: pri trofejach / na posede",
+   "preklady": {
+    "en": {
+     "pojem": "Hunting Lodge",
+     "tvary": "kraje: by the trophies / up the high seat"
+    },
+    "pl": {
+     "pojem": "Domek myśliwski",
+     "tvary": "kraje: przy trofeach / na ambonie"
+    },
+    "cs": {
+     "pojem": "Myslivna",
+     "tvary": "kraje: u trofejí / na posedu"
+    },
+    "hu": {
+     "pojem": "Vadászház",
+     "tvary": "kraje: a trófeáknál / a magaslesen"
+    }
+   }
+  },
+  {
+   "id": "lok-predsedova_vila",
+   "skupina": "lokalita",
+   "sk": "Predsedova vila",
+   "stolSk": "Predsedova vila",
+   "vyznam": "Vila predsedu (družstva, strany).",
+   "prichut": "kraje: pri bazéne / v pracovni",
+   "preklady": {
+    "en": {
+     "pojem": "Chairman's Villa",
+     "tvary": "kraje: by the pool / in the study",
+     "preco": "Chairman's Villa."
+    },
+    "pl": {
+     "pojem": "Willa przewodniczącego",
+     "tvary": "kraje: przy basenie / w gabinecie",
+     "preco": "Przewodniczący — „prezes“ by v Poľsku mieril na skutočnú osobu."
+    },
+    "cs": {
+     "pojem": "Předsedova vila",
+     "tvary": "kraje: u bazénu / v pracovně",
+     "preco": "Předsedova vila presne."
+    },
+    "hu": {
+     "pojem": "Elnöki villa",
+     "tvary": "kraje: a medencénél / a dolgozószobában",
+     "preco": "Elnöki villa."
+    }
+   }
+  },
+  {
+   "id": "lok-herna",
+   "skupina": "lokalita",
+   "sk": "Herňa",
+   "stolSk": "Herňa",
+   "vyznam": "Herňa s automatmi a zadnou miestnosťou.",
+   "prichut": "kraje: pri automatoch / v zadnej miestnosti",
+   "preklady": {
+    "en": {
+     "pojem": "Gambling Den",
+     "tvary": "kraje: by the machines / in the back room",
+     "preco": "Gambling Den — zadná miestnosť."
+    },
+    "pl": {
+     "pojem": "Salon gier",
+     "tvary": "kraje: przy automatach / na zapleczu",
+     "preco": "Salon gier; zaplecze = zadná miestnosť."
+    },
+    "cs": {
+     "pojem": "Herna",
+     "tvary": "kraje: u automatů / v zadní místnosti",
+     "preco": "Herna presne."
+    },
+    "hu": {
+     "pojem": "Játékterem",
+     "tvary": "kraje: a gépeknél / a hátsó szobában",
+     "preco": "Játékterem."
+    }
+   }
+  },
+  {
+   "id": "povahy",
+   "skupina": "bot",
+   "sk": "Povahy botov: Igor, Rudo, Božena, Darina",
+   "vyznam": "Igor útočník (tuhé), Rudo zberač (cigarety, Vízie, finále), Božena veriaca (Viera, Povery, reči), Darina škodkyňa (Dlhy a pečeň súperovi).",
+   "prichut": "Mená dedinčanov ostávajú — dedina je slovenská, prekladá sa len popis.",
+   "preklady": {
+    "en": {
+     "pojem": "Igor (Attacker), Rudo (Hoarder), Božena (Believer), Darina (Spoiler)",
+     "preco": "Mená ostávajú.",
+     "zamietnute": "Mike, Rob… — stratí dedinu"
+    },
+    "pl": {
+     "pojem": "Igor (Napastnik), Rudo (Zbieracz), Božena (Wierząca), Darina (Szkodniczka)",
+     "preco": "Mená ostávajú."
+    },
+    "cs": {
+     "pojem": "Igor (Útočník), Rudo (Sběrač), Božena (Věřící), Darina (Škodnice)"
+    },
+    "hu": {
+     "pojem": "Igor (Támadó), Rudo (Gyűjtögető), Božena (Hívő), Darina (Kártevő)"
+    }
+   }
+  },
+  {
+   "id": "povahy-stare",
+   "skupina": "bot",
+   "sk": "Vyradené povahy: Štamgast, Rapavý Fero, Teta Gizka",
+   "vyznam": "Staré povahy (už sa nelosujú, ostávajú v archíve partií).",
+   "prichut": "Rapavý = s jazvami po kiahňach.",
+   "preklady": {
+    "en": {
+     "pojem": "the Regular, Pockmarked Fero, Auntie Gizka"
+    },
+    "pl": {
+     "pojem": "Stały bywalec, Dziobaty Fero, Ciocia Gizka",
+     "preco": "Dziobaty = rapavý."
+    },
+    "cs": {
+     "pojem": "Štamgast, Dolíčkovaný Fero, Teta Gizka",
+     "preco": "Rapavý sa v češtine nehovorí (otázka)."
+    },
+    "hu": {
+     "pojem": "Törzsvendég, Himlőhelyes Fero, Gizi néni",
+     "preco": "Gizi néni = Gizka, prirodzené maďarské meno tety."
+    }
+   }
+  }
+ ]
+}
