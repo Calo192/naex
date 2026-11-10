@@ -31,3 +31,26 @@ Kde si prekladateľ nie je istý významom alebo voľbou. Formát: cesta · orig
 - 10. **Bzdocha** = hmyz s odpočúvaním (Earwig / Pluskwa / Štěnice / Poloska) — schválené.
 - 11. **Angličtina britská** — ostáva.
 - 5. Popisy akcií vo vzhľade opravuje Admin v tvorcovi (rozpracovaný stav); po oprave preložiť znova.
+
+## Rozhranie (vlna 3b, 2026-11-10) — voľby na potvrdenie
+
+12. **Päta, Lakeť, Otočka** (`lobby.pata`, glosár `pata`) podľa odpovede 1: *Knee, Elbow, Trip* / *Z bańki, z łokcia, z kopa* / *Facka, loket, podraz* / *Térd, könyök, gáncs*. Všetky tri pohyby, posledný (okrem PL) = podraz, cieľ režimu. Ak chceš bližšie k päte a otočke, alternatíva EN *Heel, Elbow, Leg It*.
+13. **Praudovravec** podľa odpovede 3 (`docs/preklady/karty/*.json`): *Troof Teller* / *Prafdomówca* (w→f) / *Šiřitel pravdi* (chyba i/y) / *Igasságharcos* (vyslovované „igasság“). Čeština chybu „prau“ nemá — i/y je najznámejšia česká chyba.
+14. **Príklad herného mena** (`ucet.hernemenoPriklad`, „Fero z dolného konca“) nahradený miestnym typom: *Dave from the far end of the village* / *Franek z dolnego końca* / *Franta z dolního konce* / *Alvégi Feri*. Povahy botov (Igor, Rudo, Božena, Darina) ostávajú podľa glosára.
+
+## Melichar (titulky `apps/web/src/i18n/melichar/*.json`, prepis `docs/preklady/melichar-sk.json`)
+
+Prepis je zrekonštruovaný z mien súborov. Pri týchto hláškach si nie som istý významom — titulok je prázdny vo všetkých jazykoch, kým nepovieš, čo znamenajú (stačí presné slovenské znenie):
+
+M1. `nervy/11_cil_isla_ked_najviac_jebe` — „Čil išla, keď najviac jebe“? Je „čil“ = teraz/práve? Kto „išla“ a čo znamená „keď najviac jebe“ (keď najviac leje, keď najviac besní, keď je najhoršie)?
+M2. `nervy/ked_jebe` — „Keď jebe“: to isté ako M1 (leje / besní / štve)?
+M3. `nervy/do_papuce_ma_jebala` — „Do papuče ma jebala“: udrela ho papučou, kopla, alebo „jebala do mňa“ = nadávala mi?
+M4. `pohoda/jaaaja` — citoslovce spokojnosti („Jaaaj, ja!“), alebo niečo iné?
+M5. `pohoda/no_nic_ja_zajebem` — „No nič, ja zajebem“: pôjdem spať, idem robiť, zahodím to, prehrám to?
+M6. `vyhrazky/kurva_lebo_zajebem_plyn` — „Kurva, lebo zajebem plyn!“: pustí plyn (výbuch), alebo zatvorí/odpojí plyn susedom?
+
+Vyplnené, ale over, či sedí:
+M7. `urazky/ze_ten_kokot_umrou` — prečítané ako „Že ten kokot umreu“ (= umrel, nárečové u ako v „nevideu“). Titulok: *That the prick's dead.*
+M8. `nervy/ale_sa_jebu` — „Ale sa jebú“: preložené tak, aby ostal dvojzmysel (sex / babrú sa): *they're at it* / *się pierdolą* / *se jebou* / *baszakodnak*. Ak je to jednoznačne jedno z toho, upravím.
+M9. `reci/ja_budem_po_nej_maluvat_furt` — vypovedané ako sťažnosť (nie otázka): „Ja budem po nej maľovať furt.“
+M10. `bieda/vcera_isiel_televizor` — „išiel“ = pokazil sa alebo išiel do záložne/predal sa; preklady nechávajú obe (*the telly went* / *poszedł telewizor* / *šla televize* / *ment a tévé*).

@@ -615,24 +615,27 @@
    "sk": "Päta, Lakeť, Otočka",
    "stolSk": "Päta, Lakeť, Otočka",
    "vyznam": "Druhý režim: podraziť všetkých štyroch starších súpera (pečeň starších, jed, štít).",
-   "prichut": "Znie ako krčmová bitkárska kombinácia (päta, lakeť, otočka) — narážka nie je istá, otázka v otazky.md.",
+   "prichut": "Krčmová bitkárska kombinácia, tri pohyby (Michal 2026-11-10: nahradiť miestnou bitkárskou frazeológiou s rovnakým rytmom, nie doslovne). Cieľ režimu je podraziť starších — preklady preto končia podrazom.",
    "preklady": {
     "en": {
-     "pojem": "Heel, Elbow, Spin",
-     "preco": "Zachová rytmus troch úderov.",
-     "zamietnute": "Trip and Twist — vymyslené"
+     "pojem": "Knee, Elbow, Trip",
+     "preco": "Tri krátke bitkárske pohyby, posledný = podraziť (trip up), čo je cieľ režimu.",
+     "zamietnute": "Heel, Elbow, Spin — doslovné, nič nehovorí; Glasgow kiss — regionálny stereotyp"
     },
     "pl": {
-     "pojem": "Pięta, łokieć, obrót",
-     "preco": "Doslovne, rytmus ostáva."
+     "pojem": "Z bańki, z łokcia, z kopa",
+     "preco": "Hovorová poľská bitkárska frazeológia: dać z bańki (hlavičkou), z łokcia, z kopa (kopnúť); rytmus troch úderov.",
+     "zamietnute": "Pięta, łokieć, obrót — doslovné, mŕtve"
     },
     "cs": {
-     "pojem": "Pata, loket, otočka",
-     "preco": "Takmer totožné."
+     "pojem": "Facka, loket, podraz",
+     "preco": "Tri údery, „podraz“ = podrazenie aj zrada — presne cieľ režimu (podrazit starší).",
+     "zamietnute": "Pata, loket, otočka — doslovné, bez bitkárskeho zvuku"
     },
     "hu": {
-     "pojem": "Sarok, könyök, fordulás",
-     "preco": "Doslovne, rytmus ostáva."
+     "pojem": "Térd, könyök, gáncs",
+     "preco": "„Gáncsot vet“ = podraziť; tri pohyby krčmovej bitky.",
+     "zamietnute": "Sarok, könyök, fordulás — doslovné; Pofon/Fejes — sú to už akcie Rana/Petelica"
     }
    }
   },
@@ -4275,6 +4278,33 @@
     "hu": {
      "pojem": "Törzsvendég, Himlőhelyes Fero, Gizi néni",
      "preco": "Gizi néni = Gizka, prirodzené maďarské meno tety."
+    }
+   }
+  },
+  {
+   "id": "kontumacia",
+   "skupina": "web",
+   "sk": "kontumačná výhra",
+   "vyznam": "Výhra, keď je súper odpojený aspoň 3 minúty a hráč si ju vyžiada.",
+   "prichut": "Športový úradný výraz (kontumácia).",
+   "preklady": {
+    "en": {
+     "pojem": "win by forfeit",
+     "preco": "Športový výraz.",
+     "zamietnute": "walkover — skôr pri nenastúpení"
+    },
+    "pl": {
+     "pojem": "wygrana walkowerem",
+     "preco": "Walkower je poľský športový výraz pre kontumáciu."
+    },
+    "cs": {
+     "pojem": "kontumační výhra",
+     "preco": "Totožné."
+    },
+    "hu": {
+     "pojem": "győzelem zöld asztalnál",
+     "preco": "„Zöld asztalnál“ = rozhodnuté úradne, bez hry (futbal).",
+     "zamietnute": "játék nélküli győzelem — opisné"
     }
    }
   }

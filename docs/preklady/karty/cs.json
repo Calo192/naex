@@ -198,12 +198,13 @@
   }
  },
  "praudovravec": {
-  "nazov": "Pravdomluvec",
+  "nazov": "Šiřitel pravdi",
   "efekt": "Konflikt: {Pohoršenie}.",
   "sk": {
    "nazov": "Praudovravec",
    "efekt": "Konflikt: {Pohoršenie}."
-  }
+  },
+  "pozn": "Chyba i/y (pravdi) — typická česká negramotná chyba, ako slovenské „praud“; výsmech samozvaného hlásateľa pravdy (Michal 2026-11-10)."
  },
  "zamocnik": {
   "nazov": "Zámečník",

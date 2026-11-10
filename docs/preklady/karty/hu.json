@@ -198,9 +198,9 @@
   }
  },
  "praudovravec": {
-  "nazov": "Igazmondó",
+  "nazov": "Igasságharcos",
   "efekt": "Összetűzés: {Pohoršenie}.",
-  "pozn": "Narážka na ľudovú rozprávku Az igazmondó juhász — ironicky.",
+  "pozn": "Fonetická chyba igazság → „igasság“ (tak sa vyslovuje), ako slovenské „praud“; igazságharcos = samozvaný bojovník za pravdu (Michal 2026-11-10).",
   "sk": {
    "nazov": "Praudovravec",
    "efekt": "Konflikt: {Pohoršenie}."
