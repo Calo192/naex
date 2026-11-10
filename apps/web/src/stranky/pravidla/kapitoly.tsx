@@ -213,7 +213,7 @@ export const KAPITOLY: readonly Kapitola[] = [
           <li>
             <strong>Po bitke.</strong> Porazený dostane 1 cigaretu. Súper ti dá 1 cigaretu za každého staršieho s tvojím červeným strachom, aj
             za väzňa, koľko má (<P k="vypalne">výpalné</P>). Po finále ani jedno. Karty z línie idú do odhadzovacích balíčkov. Na začiatku ďalšieho
-            kola sa každému doleje jeden vypitý poldeci a každý si <P k="dobratie">dobere</P> do 3 kariet v ruke.
+            kola sa každému doleje jeden vypitý poldeci a každý si <P k="dobratie">dobere</P> 2 karty.
           </li>
         </ol>
         <H3 id="kolo-priprava">Príprava</H3>
@@ -715,7 +715,7 @@ export const KAPITOLY: readonly Kapitola[] = [
             <strong>Chuť a Absťák</strong> — menej nerestí, než je tvoja Chuť, = karta Absťák; potom Chuť klesne o 1 od väčšieho z Chuti a nerestí (po finále už nie).
           </li>
           <li>
-            <strong>Nové kolo</strong> — každému sa doleje jeden vypitý poldeci a každý si dobere do 3 kariet v ruke. Kto ich má viac, nedoberá nič a nič neodhadzuje; kliatby v ruke sa rátajú.
+            <strong>Nové kolo</strong> — každému sa doleje jeden vypitý poldeci a každý si dobere 2 karty, nech má v ruke koľkokoľvek. Limit ruky nie je a nič sa neodhadzuje.
           </li>
         </ol>
       </>

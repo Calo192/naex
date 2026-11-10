@@ -1603,7 +1603,7 @@ export function PriebehKola({
           Víťaz dostane 1 špak za každú kartu v línii (aspoň 1) a lokalita ide na krčmovú nástenku. Starší bodujú hneď po bitke: stupeň {HODNOTA_POLA} dostane, kto ho drží — reči obaja, strach len víťaz.
           Rozdiel tuhého je Nakladačka: víťaz ju rozdelí na svoj strach (vo finále za ňu dostane špaky 1 : 1).
           <span className="tip-riadok">
-            Najprv hádka (mäkké), potom poškodenie, starší, Exekútor a rozdelenie Nakladačky a hádky. Potom porazený dostane {KONSTANTY.CIGARETY_PORAZENEMU} cigaretu a súper ti zaplatí výpalné za tvoj červený strach. Na začiatku kola si každý dobere do {KONSTANTY.DOBRATIE_DO_RUKY} kariet v ruke. Porazený je v ďalšom kole
+            Najprv hádka (mäkké), potom poškodenie, starší, Exekútor a rozdelenie Nakladačky a hádky. Potom porazený dostane {KONSTANTY.CIGARETY_PORAZENEMU} cigaretu a súper ti zaplatí výpalné za tvoj červený strach. Na začiatku kola si každý dobere {KONSTANTY.DOBRATIE_PO_BITKE} karty. Porazený je v ďalšom kole
             útočník.
           </span>
         </>

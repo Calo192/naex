@@ -19,7 +19,7 @@ export const SLOVNIK: readonly PojemSlovnika[] = [
   { id: "cirhoza", pojem: "Cirhóza", popis: "Kliatba z pečene; ide do tvojho odhadzovacieho balíčka, priznaná dá súperovi v bitke +1 tuhé, nepriznaná ide po bitke do tvojho odhadzovacieho balíčka a na konci hry stojí 3 špaky." },
   { id: "dedicstvo", pojem: "Dedičstvo", popis: "Nástroj vyložený mimo línie; platí jeho efekt a cena rastie pre oboch: 1., 2., 3. Nástroj stojí 1, 2, 3 cigarety." },
   { id: "dlh", pojem: "Dlh", popis: "Kliatba z Hazardu — počítadlo, nie karta: každá akcia Hazard v Pitke = 1 Dlh, hneď priznaný; za priznané Dlhy príde v každej bitke Exekútor a pri remíze v bitke prehrá, kto ich má viac." },
-  { id: "dobratie", pojem: "Dobratie", popis: "Od druhého kola si na začiatku kola doberieš do 3 kariet v ruke. Kto ich má viac, nedoberá a nič neodhadzuje; kliatby v ruke sa rátajú." },
+  { id: "dobratie", pojem: "Dobratie", popis: "Od druhého kola si na začiatku kola doberieš 2 karty, nech máš v ruke koľkokoľvek. Limit ruky nie je a nič sa neodhadzuje." },
   { id: "dlzka-hry", pojem: "Liga", popis: "Dĺžka hry — počet lokalít, o ktoré sa hrá: Tretia liga 3, Druhá liga 5, Prvá liga 7; po nich príde finále." },
   { id: "doliatie", pojem: "Doliatie", popis: "Počas Pitky za 2 cigarety otočíš vypitý poldeci späť na plný." },
   { id: "efekt", pojem: "Efekt", popis: "Text karty: čo karta robí a kedy; kedy hovorí tučné slovo na jeho začiatku." },

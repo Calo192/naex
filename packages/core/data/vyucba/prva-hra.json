@@ -88,10 +88,10 @@
         "ruka": [
           "masiar/1/0",
           "pijan/1/0",
-          "ministrant/2/1",
           "zahradkar/0/1"
         ],
         "doberaci": [
+          "ministrant/2/1",
           "pijan/1/2",
           "praudovravec/0/1",
           "ministrant/2/1"
@@ -103,11 +103,11 @@
           "polovnik/1/0",
           "degustatorka/0/1",
           "cierna_macka/0/0",
-          "pijan/1/1",
-          "anonymny_alkoholik/1/0",
-          "anonymny_alkoholik/0/0"
+          "pijan/1/1"
         ],
         "doberaci": [
+          "anonymny_alkoholik/1/0",
+          "anonymny_alkoholik/0/0",
           "dievcina_na_vydaj/1/0",
           "ministrant/2/0"
         ],

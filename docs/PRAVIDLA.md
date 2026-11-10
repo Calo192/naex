@@ -1,6 +1,6 @@
 # NA EX! — pravidlá (špecifikácia)
 
-**Pravidlá v11.20 (platné od 2026-11-10)** — Hodnota stupňa 1 / 2 / 3 a reťaz premien (v11.20), Dohadzovačka len z konca kraja (v11.19), Vedúcko Podporou, Snúbenica, Traktorista a Miňištrant (v11.18), NA EX × Odpor a Posilnenie, Kapybara, Telefón, Krokodíl a hrany Náradia (v11.17), Vypiť, pas, Degustátorka, odpoveď na NA EX za poldeci, Nástroj len pod vlastné karty, Školiteľ aj Zviera (v11.16), Benzínka o cigaretu lacnejšie (v11.15), Frakcie, Občania v troch kategóriách, Náradie a karta z ponuky (v11.14), Lokality (v11.13), Reči na súperovom teplomere (v11.12), Hádka platí (v11.11), Ohováračka namiesto Alkoholika (v11.10), Dobratie do troch a výpalné (v11.9), Každý Hazard je Dlh (v11.8), Kostol a koniec línie (v11.7), Zajatie od minulého kola (v11.6), Identita kariet (v11.5), Zajatie Nakladačkou a presvedčenie (v11.4), Konflikt oboma smermi a Podpora (v11.3), Schopnosť väzňa (v11.2), Vzbura obráti kartu (v11.1) a Strach a reči (Michal 2026-11-02, docs/napady/strach-reci.html,
+**Pravidlá v11.21 (platné od 2026-11-10)** — Dobratie 2 karty po bitke (v11.21), Hodnota stupňa 1 / 2 / 3 a reťaz premien (v11.20), Dohadzovačka len z konca kraja (v11.19), Vedúcko Podporou, Snúbenica, Traktorista a Miňištrant (v11.18), NA EX × Odpor a Posilnenie, Kapybara, Telefón, Krokodíl a hrany Náradia (v11.17), Vypiť, pas, Degustátorka, odpoveď na NA EX za poldeci, Nástroj len pod vlastné karty, Školiteľ aj Zviera (v11.16), Benzínka o cigaretu lacnejšie (v11.15), Frakcie, Občania v troch kategóriách, Náradie a karta z ponuky (v11.14), Lokality (v11.13), Reči na súperovom teplomere (v11.12), Hádka platí (v11.11), Ohováračka namiesto Alkoholika (v11.10), Dobratie do troch a výpalné (v11.9), Každý Hazard je Dlh (v11.8), Kostol a koniec línie (v11.7), Zajatie od minulého kola (v11.6), Identita kariet (v11.5), Zajatie Nakladačkou a presvedčenie (v11.4), Konflikt oboma smermi a Podpora (v11.3), Schopnosť väzňa (v11.2), Vzbura obráti kartu (v11.1) a Strach a reči (Michal 2026-11-02, docs/napady/strach-reci.html,
 verzia 2) na v10.4
 (Hádka v10 — Michal 2026-11-01, docs/napady/hadka.html, verzia 4; v9 zmrazené 2026-10-30, krok 2
 revízie starších, docs/napady/starsi-krok2-zadanie.html; dávky v9.1 Chuť, v9.2 ponuka a NA EX naraz,
@@ -8,6 +8,11 @@ v9.3 Výtržník prebíja Úplatok; v10.1 zajatie pred ponukou; v10.2 Nástroj n
 Forsáž, Úplatok zrušený; v10.4 pojem Spáliť, Autority). Sada kariet: Vypálená hrá zverejnenú sadu v51 (v11.18), Zrejúca rozpracovaný stav tvorcu nad ňou (`cards.json` v master). Pravidlá sa
 menia len v dávkach; celá dávka dostane ďalšiu verziu (značka partií `v11`; presnú verziu ukazuje
 stránka Pravidlá — `VERZIA_PRAVIDIEL_PRESNA`).
+
+**Zmeny v11.21 oproti v11.20** (Michal 2026-11-10, Zrejúca; staré znenie v `docs/pravidla-historia.md`, sekcia v11.21):
+
+- **Dobratie 2 karty po bitke** (§4; Michal: „Chcem zrušiť doberanie do troch kariet. Hráč si na konci každého kola doberie 2 karty — nie DO 2, ale 2 karty.“): od druhého kola si na začiatku kola každý hráč dobere **presne 2 karty** (`KONSTANTY.DOBRATIE_PO_BITKE`), bez ohľadu na to, koľko ich má v ruke. Limit ruky nie je a nič sa neodhadzuje; prázdny doberací balíček sa doplní zamiešaním odhadzovacieho ako pri každom ťahaní. Predtým (v11.9–v11.20) sa doberalo do 3 kariet v ruke a kto ich mal 3 a viac, nedostal nič. Výpalné, fajčenie, Vízia a efekty kariet sa nemenia.
+- **Výklad Leadera, Michal zatiaľ nepotvrdil:** v 2 na 2 (§18) si 2 karty dobere **každý člen** do svojej ruky z balíčka tímu, v doterajšom poradí U1, O1, U2, O2; v Päte, Lakti, Otočke (§19) platí dobratie rovnako ako v 1 na 1.
 
 **Zmeny v11.20 oproti v11.19** (Michal 2026-11-10, Zrejúca, interview; staré znenia v `docs/pravidla-historia.md`, sekcia v11.20):
 
@@ -633,9 +638,9 @@ druhý kraj línie. Pitku hrajú obaja naraz (§7).
 **Začiatok kola:**
 
 - Každému hráčovi sa otočí **jeden vypitý poldeci na plný** (§6, limit).
-- Od druhého kola si každý hráč dobere zo svojho doberacieho balíčka **do 3 kariet
-  v ruke** (dobratie po bitke, v11.9, `KONSTANTY.DOBRATIE_DO_RUKY`); kto ich má 3 a viac,
-  nedoberá. Kliatby v ruke sa rátajú. Ďalšie karty sa kupujú cigaretami v ponuke a
+- Od druhého kola si každý hráč dobere zo svojho doberacieho balíčka **2 karty**
+  (dobratie po bitke, v11.21, `KONSTANTY.DOBRATIE_PO_BITKE`), bez ohľadu na to, koľko ich
+  má v ruke; nič sa neodhadzuje. Ďalšie karty sa kupujú cigaretami v ponuke a
   fajčením. **Keď sa doberací balíček minie,
   odhadzovací sa zamieša a stane sa z neho nový doberací balíček** — pri
   každom ťahaní, aj uprostred neho. Na začiatku hry je doberací balíček
@@ -2270,7 +2275,7 @@ Kôň v kroku Exekútora. Michal ich potvrdí.
 | Školiteľ | Občan alebo Zviera (v11.16) s efektom Preškolenie (Vedúcko, Sypač, Anonymný alkoholik, Profesionálny tipér; §6, §16); Zviera-Školiteľa umlčí Mäsiar |
 | Efekt s vedľajšou akciou | efekt Občana s akciami navyše v pečati (§6, §16) |
 | Textový efekt | efekt Občana slovami — nepreškoľuje ani nepridáva akcie (§16) |
-| Dobratie po bitke | na začiatku každého ďalšieho kola do 3 kariet v ruke; kto ich má viac, nedoberá; limit ruky nie je (§4) |
+| Dobratie po bitke | na začiatku každého ďalšieho kola 2 karty bez ohľadu na ruku (v11.21); limit ruky nie je, nič sa neodhadzuje (§4) |
 | Výpalné | hneď po bitke 1 cigareta od súpera za každého staršieho s tvojím červeným strachom, koľko má (v11.9, §10) |
 | Konflikt | spúšťač (v11.3): efekt karty, keď sa priložením ocitne vedľa súperovej karty — prikladáš ty alebo súper; podloženie Nástroja, NA EX, zrážka ani presun ho nespúšťajú (§6, §16) |
 | Podpora | spúšťač (v11.3): zrkadlo Konfliktu — efekt karty, keď sa priložením stretne s inou kartou toho istého hráča (§6, §16) |
@@ -2378,8 +2383,8 @@ platí pre tím. Osobná je len **ruka** a **ťah**.
 - **Poradie ťahov** je vždy **U1 → O1 → U2 → O2** (vykladanie) a **O1 → U1 → O2 → U2**
   (branie z ponuky, Michal 2026-10-31).
 - **Začiatok kola:** tímu sa otočí **jeden** vypitý poldeci na plný.
-  Od druhého kola si **každý hráč** dobere do 3 kariet vo svojej ruke z balíčka tímu, v poradí
-  U1, O1, U2, O2 (Michal 2026-11-06, k v11.9).
+  Od druhého kola si **každý hráč** dobere 2 karty do svojej ruky z balíčka tímu, v poradí
+  U1, O1, U2, O2 (Michal 2026-11-06, k v11.9; počet 2 bez ohľadu na ruku od v11.21 — výklad Leadera, Michal nepotvrdil).
 - Karta z fajčenia, Vízie, Zastávky či efektu „dober / vezmi do ruky“ ide do
   ruky **hráča, ktorý to spustil** (zahral kartu, fajčil).
 - **Koniec kola:** neresti oboch členov sa sčítajú a porovnajú s **Chuťou tímu**;
@@ -2471,6 +2476,7 @@ Druhý režim vedľa Kalamity (Michal 2026-10-31, 2026-11-01, 2026-11-06), len 1
 Podraziť všetkých štyroch starších súpera. Hra nemá ligu, finále, špaky, výkup ani remízu.
 Nie sú ani strach, reči, hádka, priazeň, väzni, zajatie a schopnosti starších.
 Kolo ostáva z Kalamity: lokalita, ponuka, Zhromaždenie, Pitky s NA EX, bitka.
+Aj dobratie po bitke je ako v §4: 2 karty bez ohľadu na ruku (v11.21, výklad Leadera, Michal nepotvrdil).
 Zdroje hráča ostávajú: poldeci, cigarety, Dlhy, Cirhózy, Absťáky, Chuť, Dedičstvo.
 
 ### Príprava

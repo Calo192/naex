@@ -6361,14 +6361,14 @@ function dolejNaZaciatkuKola(s: MutState, events: Event[]): void {
 }
 
 /**
- * Na začiatku ďalšieho kola sa dobere do DOBRATIE_DO_RUKY kariet v ruke (v11.9). Kto ich má
- * viac, nedoberá a nič neodhadzuje — limit ruky nie je. Kliatby v ruke sa rátajú: zanášajú ju.
+ * Na začiatku ďalšieho kola si každý dobere DOBRATIE_PO_BITKE kariet bez ohľadu na ruku (v11.21) —
+ * limit ruky nie je a nič sa neodhadzuje. Prázdny balíček sa doplní ako pri každom ťahaní.
  */
 function doberPoBitke(s: MutState, events: Event[]): void {
   // 2 na 2: každý hráč z balíčka tímu, v poradí U1 → O1 → U2 → O2 (Michal 2026-10-28).
   for (const m of s.format === "2na2" ? poradieVykladania(s as GameState) : ([0, 1] as const)) {
     const p = timMiesta(m);
-    const tahane = tahaj(s, m, Math.max(0, KONSTANTY.DOBRATIE_DO_RUKY - rukaMiesta(s as GameState, m).length), events);
+    const tahane = tahaj(s, m, KONSTANTY.DOBRATIE_PO_BITKE, events);
     if (tahane.length > 0) {
       events.push({ type: "log", text: `Hráč ${p + 1} si po bitke doberá ${kariet(tahane.length)}.` });
     }

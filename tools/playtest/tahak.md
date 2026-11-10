@@ -1,4 +1,4 @@
-# Ťahák — platné pravidlá NA EX! (v11.20 hodnota stupňa 1 / 2 / 3 a reťaz premien (Školitelia, potom Nástroje), pojem Ponuka (predtým šenok), v11.19 Dohadzovačka len z konca kraja, v11.18 Vedúcko Podporou, Snúbenica, Traktorista a Miňištrant, v11.17 NA EX × Odpor a Posilnenie, Kapybara, Telefón, Krokodíl a hrany Náradia, v11.16 Vypiť len s limitom, pas bez ohľadu na ruku, Degustátorka hneď, odpoveď na NA EX za poldeci, Nástroj len pod svoje karty, Školiteľ aj Zviera, v11.15 Benzínka o 1 lacnejšie, v11.14 frakcie, Preškolenie a podloženie Nástrojov, v11.13 Lokality, v11.12 Reči na súperovom teplomere, zajatie a presvedčenie, identita kariet, Kostol na konci línie, každý Hazard je Dlh, 2026-11-10, Zrejúca; sada = cards.json v master)
+# Ťahák — platné pravidlá NA EX! (v11.21 po bitke 2 karty bez ohľadu na ruku, v11.20 hodnota stupňa 1 / 2 / 3 a reťaz premien (Školitelia, potom Nástroje), pojem Ponuka (predtým šenok), v11.19 Dohadzovačka len z konca kraja, v11.18 Vedúcko Podporou, Snúbenica, Traktorista a Miňištrant, v11.17 NA EX × Odpor a Posilnenie, Kapybara, Telefón, Krokodíl a hrany Náradia, v11.16 Vypiť len s limitom, pas bez ohľadu na ruku, Degustátorka hneď, odpoveď na NA EX za poldeci, Nástroj len pod svoje karty, Školiteľ aj Zviera, v11.15 Benzínka o 1 lacnejšie, v11.14 frakcie, Preškolenie a podloženie Nástrojov, v11.13 Lokality, v11.12 Reči na súperovom teplomere, zajatie a presvedčenie, identita kariet, Kostol na konci línie, každý Hazard je Dlh, 2026-11-10, Zrejúca; sada = cards.json v master)
 
 Spoločný ťahák AI hráčov — playtester (Zrejúca) ho číta z master, protihráč na
 Vypálenej z vetvy `vypalena` (tam platí jej verzia pravidiel). Podrobne v `docs/PRAVIDLA.md` (zmeny v jeho úvode). Pri
@@ -186,7 +186,7 @@ rozpore s `docs/PRAVIDLA.md` platí `docs/PRAVIDLA.md` a rozpor zapíš do
   na 8: najprv z Náradia, kým v ňom nie sú 2 Nástroje, zvyšok z Občanov. Branie striedavo, **začína obranca (v9.2)**: **1 karta za 1 cigaretu,
   2 karty za 3 cigarety** (`{"type":"draftBer","uids":[…]}`); **kto berie prvý, na svojom prvom ťahu vezme len 1 kartu**; poldeci sa
   v ponuke neplatí; `draftStop` ukončí branie.
-- **Ruka bez limitu:** na začiatku každého ďalšieho kola dobereš do **3 kariet v ruke** (v11.9); kto ich má viac, nedoberá a nič neodhadzuje.
+- **Ruka bez limitu:** na začiatku každého ďalšieho kola si dobereš **2 karty** bez ohľadu na to, koľko ich máš v ruke (v11.21); nič sa neodhadzuje.
 - **Výpalné (v11.9):** súper ti hneď po bitke dá **1 cigaretu za každého staršieho** s tvojím červeným strachom (väzeň sa ráta), koľko má; po finále nie. Máš ho teda na ponuku.
   Karty navyše: ponuka, fajčenie (`smoke`: karta hneď, **len v Pitke** (v5), v Zhromaždení
   nie; **prvé fajčenie v Pitke 1 cigareta, druhé 2, tretie 3…**, každá Pitka znova od 1

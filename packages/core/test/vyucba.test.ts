@@ -174,8 +174,10 @@ describe("výučba — pevné rozdanie", () => {
 
 describe("výučba — porovnanie príkazov", () => {
   it("odkaz zóna:defId#n nájde n-tú rovnakú kartu", () => {
-    const s = zacniVyucbu(data, scenar);
-    // Prvé kolo (2026-11-10): dvaja rovnakí sú v ruke Štamgasta (Anonymní alkoholici).
+    const s0 = zacniVyucbu(data, scenar);
+    // Dvaja rovnakí sú v balíčku Štamgasta (Anonymní alkoholici, prídu dobratím v 2. kole, v11.21) — tu ich dáme do ruky.
+    const bot = s0.hraci[1];
+    const s: GameState = { ...s0, hraci: [s0.hraci[0], { ...bot, ruka: [...bot.ruka, ...bot.doberaci] }] };
     const alkoholici = s.hraci[1].ruka.filter((k) => k.defId === "anonymny_alkoholik");
     expect(uidZOdkazu(s, 1, "ruka:anonymny_alkoholik")).toBe(alkoholici[0]?.uid);
     expect(uidZOdkazu(s, 1, "ruka:anonymny_alkoholik#2")).toBe(alkoholici[1]?.uid);
