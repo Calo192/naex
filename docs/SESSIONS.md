@@ -30,6 +30,7 @@ viac kôl dizajnu). Vtedy pre ňu platí časť „Ďalšia session“ nižšie.
 | `naex-analytik` | Sonnet | správanie ľudí: lievik výučby, partie, retencia, známky — len číta, lokálne (heslo admina), týždenne |
 | `naex-korektor` | Sonnet | jazyk a pojmy vo všetkých textoch — zoznam opráv podľa príjemcu, nič nemení |
 | `naex-hrac-stylu`, `naex-sudca-stylov` | podľa definície | playtest herných štýlov (skill `/naex-styly`) |
+| `naex-prekladatel` | Opus | lokalizácia en/pl/cs/hu: glosár pojmov (miestne ekvivalenty), preklady rozhrania, kariet, výučby, Pravidiel a titulkov Melichara, kontrola spätným prekladom (Michal 2026-11-10) |
 | `Explore` (vstavaný) | — | kde je čo v kóde |
 | playtest, stratég, rozhodca, bot-tréner, developer | podľa definície | cez svoje skilly (`/naex-playtest`, `/naex-strategia`, …) |
 | kontrola štýlu ilustrácií | — | skill `/naex-kontrola-stylu` (agent `naex-ilustrator` v režime kontroly) |
