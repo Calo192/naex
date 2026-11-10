@@ -23,7 +23,7 @@ import { KartaHraca } from "./KartaHraca.tsx";
 import type { HracInfo } from "./useHra.ts";
 import { PocetSpakov } from "./Spaky.tsx";
 import { IkonaSpaku } from "./IkonaSpaku.tsx";
-import { CENA_POLA } from "./textyStarsich.ts";
+import { CENA_POLA, HODNOTA_POLA } from "./textyStarsich.ts";
 import { NA_STOLE_VYSVETLENIE, poldeciNaStole, ukazZadlzenie, zadlzenieHrozi } from "./tabula.ts";
 import type { SpakyTeraz } from "@naex/core";
 
@@ -1600,7 +1600,7 @@ export function PriebehKola({
         <>
           Rozhoduje tuhé poškodenie (Rana 1, Pecka 2, Petelica 3; mínus súperova Viera a vlastné Absťáky). Pri rovnakom tuhom vyhrá, kto
           má menej Absťákov, potom menej priznaných Dlhov; inak sekera — špaky kola čakajú na víťaza ďalšej bitky (vo finále prepadnú).
-          Víťaz dostane 1 špak za každú kartu v línii (aspoň 1) a lokalita ide na krčmovú nástenku. Starší bodujú hneď po bitke: stupeň 1 / 2 / 2 dostane, kto ho drží — reči obaja, strach len víťaz.
+          Víťaz dostane 1 špak za každú kartu v línii (aspoň 1) a lokalita ide na krčmovú nástenku. Starší bodujú hneď po bitke: stupeň {HODNOTA_POLA} dostane, kto ho drží — reči obaja, strach len víťaz.
           Rozdiel tuhého je Nakladačka: víťaz ju rozdelí na svoj strach (vo finále za ňu dostane špaky 1 : 1).
           <span className="tip-riadok">
             Najprv hádka (mäkké), potom poškodenie, starší, Exekútor a rozdelenie Nakladačky a hádky. Potom porazený dostane {KONSTANTY.CIGARETY_PORAZENEMU} cigaretu a súper ti zaplatí výpalné za tvoj červený strach. Na začiatku kola si každý dobere do {KONSTANTY.DOBRATIE_DO_RUKY} kariet v ruke. Porazený je v ďalšom kole

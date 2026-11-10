@@ -169,7 +169,10 @@ export function HernaKarta({ karta, sada, data, sirka, otocena = false, eval: ev
         // Nástroj pod kartou, inak Školiteľ v línii (jadro: SlotEval.preskolil).
         const skolitel = se.preskolil === undefined ? undefined : stol?.view.strany.flat().find((x) => x.card.uid === se.preskolil);
         const meno = menoNastroja(se.povodna) ?? (skolitel === undefined ? null : (data.cards.get(skolitel.card.defId)?.name ?? null));
-        rohy[k] = { akcia: se.povodna, preco: meno === null ? "Preškolenie" : `Preškolenie: ${meno}` };
+        // Reťaz (v11.20): výstup Školiteľa preškolil ďalej Nástroj pod kartou — v nápovede oba.
+        const potom = se.preskolilPotom === undefined ? undefined : podlozene?.find((x) => x.card.uid === se.preskolilPotom);
+        const mena = [meno, potom === undefined ? null : (data.cards.get(potom.card.defId)?.name ?? null)].filter((x): x is string => x !== null);
+        rohy[k] = { akcia: se.povodna, preco: mena.length === 0 ? "Preškolenie" : `Preškolenie: ${mena.join(" → ")}` };
         return se.action;
       }
       if (se?.naKarte === true && se.ako !== undefined) {

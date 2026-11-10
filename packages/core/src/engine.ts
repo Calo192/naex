@@ -5778,7 +5778,7 @@ export function prebytokNaRozdelenie(s: VerejnyStav, outcome: BattleOutcome): nu
 
 /**
  * Bodovanie starších po bitke (v11, krok 4b, stav pred zdvihnutím; v11.12): obaja dostanú špaky
- * za stupne, ktoré držia rečami (1 / 2 / 2), víťaz navyše za svoj strach bez stupňov, ktoré drží
+ * za stupne, ktoré držia rečami (1 / 2 / 3, v11.20), víťaz navyše za svoj strach bez stupňov, ktoré drží
  * súper. Reči potom klesnú zospodu tomu, kto prehral hádku; pri remíze nikomu.
  */
 function bodujStarsich(s: MutState, data: GameData, vitaz: PlayerId | null, events: Event[]): void {

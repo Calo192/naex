@@ -85,7 +85,7 @@ export const KAPITOLY: readonly Kapitola[] = [
           <div className="karticka">
             <strong>Špaky.</strong> Hrá sa 3, 5 alebo 7 bitiek o lokality podľa <P k="dlzka-hry">ligy</P> a potom{" "}
             <P k="finale">finále</P> — posledná bitka o pinnacle lokalitu, ktorú vyberie hráč s viac špakmi — útočí zaostávajúci. Víťaz bitky (aj finále) dostane 1 <P k="spak">špak</P> za každú
-            kartu, ktorá pri bitke leží v línii (tvoje aj súperove). Po každej bitke dajú špaky aj <P k="starsi">starší</P>: stupeň 1 / 2 / 2 tomu, kto ho
+            kartu, ktorá pri bitke leží v línii (tvoje aj súperove). Po každej bitke dajú špaky aj <P k="starsi">starší</P>: stupeň 1 / 2 / 3 tomu, kto ho
             drží — víťazovi za strach a obom za <P k="reci">reči</P>.
             Po finále sa ešte <P k="vykupne">vykúpi</P>, čo ti ostalo: každý plný poldeci 1 špak, každých 5 cigariet 1 špak. Potom vyhrá, kto má
             viac špakov.
@@ -355,8 +355,9 @@ export const KAPITOLY: readonly Kapitola[] = [
         <p>
           <P k="skolitel">Školiteľ</P> (Občan alebo Zviera) má efekt <P k="preskolenie">Preškolenie</P> X → Y: akcia X inej karty sa ráta ako Y —
           ešte pred spojmi, na oboch hranách aj v akciách navyše. Pri spúšťači Furt preškolí oboch susedov (aj súperove karty),
-          kým s ním susedia; pri Podpore tvoju kartu a pri Konflikte súperovu, s ktorou sa stretne, do konca kola. Každá akcia sa
-          preškolí len raz a preškolenia sa nereťazia.
+          kým s ním susedia; pri Podpore tvoju kartu a pri Konflikte súperovu, s ktorou sa stretne, do konca kola. Medzi Školiteľmi sa
+          akcia preškolí len raz; podložený Nástroj potom preškolí, čo z nej Školiteľ urobil — Sypač Rana → Pecka a pod kartou
+          Valaška Pecka → Petelica dajú Petelicu.
         </p>
       </>
     ),
@@ -641,7 +642,7 @@ export const KAPITOLY: readonly Kapitola[] = [
             <strong>Špaky za bitku</strong> — víťaz dostane špak za každú kartu v línii (na Kultúrnom dome každý hráč len za svoje, aj víťaz); kto vyhral hádku a prehral bitku, dostane špak za každú svoju kartu; vo finále aj špak za každý bod Nakladačky a víťaz hádky za každý bod hádky; lokalita ide na nástenku.
           </li>
           <li>
-            <strong>Starší bodujú</strong> podľa stavu pred zdvihnutím — stupne majú hodnotu 1 / 2 / 2 a dostane ich ten, kto ich drží: obaja za svoje reči, víťaz navyše za svoj strach bez stupňov, ktoré obsadil súper.
+            <strong>Starší bodujú</strong> podľa stavu pred zdvihnutím — stupne majú hodnotu 1 / 2 / 3 a dostane ich ten, kto ich drží: obaja za svoje reči, víťaz navyše za svoj strach bez stupňov, ktoré obsadil súper.
             Kto prehral hádku, tomu reči klesnú zospodu o stupeň.
           </li>
           <li>
@@ -692,7 +693,7 @@ export const KAPITOLY: readonly Kapitola[] = [
     vSkratke: [
       "Každý hráč má pri staršom svoj teplomer 0–3: plná časť je jeho strach, šrafa sú súperove reči.",
       "Priazeň má ten, koho sa starší bojí menej; sila je rozdiel strachov, reči sa nerátajú.",
-      "Stupne majú hodnotu 1 / 2 / 2: víťaz bitky dostane strach bez obsadených stupňov, obaja vždy to, čo obsadili rečami.",
+      "Stupne majú hodnotu 1 / 2 / 3: víťaz bitky dostane strach bez obsadených stupňov, obaja vždy to, čo obsadili rečami.",
       "Strach dvíha víťaz bitky Nakladačkou, reči víťaz hádky. Stupeň stojí 1 / 2 / 3, strach na obsadený o 1 viac.",
       "Za každý tvoj červený strach ti súper po bitke dá cigaretu (výpalné). Staršieho na červenej smieš zajať.",
     ],
@@ -716,7 +717,7 @@ export const KAPITOLY: readonly Kapitola[] = [
         </ul>
         <p className="zvyraznene">
           <P k="priazen">Priazeň</P> má ten, koho sa starší bojí menej: <strong>sila = strach súpera − tvoj strach</strong>. Pri rovnakom strachu ju nemá
-          nikto. Keď si dvíhaš strach, zarábaš špaky, ale súperovi dávaš priazeň. <strong>Po bitke</strong> má každý stupeň hodnotu žltá 1, oranžová 2, červená 2 a dostane ho ten, kto ho drží: víťaz bitky za svoj strach bez obsadených stupňov,
+          nikto. Keď si dvíhaš strach, zarábaš špaky, ale súperovi dávaš priazeň. <strong>Po bitke</strong> má každý stupeň hodnotu žltá 1, oranžová 2, červená 3 a dostane ho ten, kto ho drží: víťaz bitky za svoj strach bez obsadených stupňov,
           obaja pri každej bitke za stupne, ktoré obsadili rečami. Boduje sa podľa stavu pred zdvihnutím, nový strach boduje až v ďalšej bitke.
         </p>
         <UkazkaStupnice />
@@ -1057,7 +1058,7 @@ export const KAPITOLY: readonly Kapitola[] = [
     vSkratke: [
       "Po finále vyhrá, kto má viac špakov; rovnosť je remíza.",
       "Vyhratá bitka: 1 špak za každú kartu v línii (aspoň 1).",
-      "Po každej bitke starší: stupne 1 / 2 / 2 dostane, kto ich drží — víťaz strach bez obsadených stupňov, obaja svoje reči.",
+      "Po každej bitke starší: stupne 1 / 2 / 3 dostane, kto ich drží — víťaz strach bez obsadených stupňov, obaja svoje reči.",
       "Finále: bitka o pinnacle lokalitu ako o každú inú; vyberá ju vedúci, útočí zaostávajúci.",
     ],
     obsah: () => (
@@ -1079,7 +1080,7 @@ export const KAPITOLY: readonly Kapitola[] = [
             <tr><td>Vyhratá bitka</td><td>1 za každú kartu v celej línii (aj finále), aspoň 1; k tomu špaky zo sekery</td></tr>
             <tr><td>Bitka o Kultúrny dom</td><td>každý hráč, aj víťaz, len 1 za každú svoju kartu v línii (víťaz aspoň 1)</td></tr>
             <tr><td>Vyhraná hádka pri prehratej bitke alebo sekere</td><td>1 za každú svoju kartu v línii; na Kultúrnom dome nie druhýkrát</td></tr>
-            <tr><td>Starší po bitke</td><td>stupne žltá 1, oranžová 2, červená 2 dostane, kto ich drží: víťaz za svoj strach bez stupňov, ktoré obsadil súper, obaja pri každej bitke za svoje reči; kto prehral hádku, tomu reči klesnú zospodu o stupeň</td></tr>
+            <tr><td>Starší po bitke</td><td>stupne žltá 1, oranžová 2, červená 3 dostane, kto ich drží: víťaz za svoj strach bez stupňov, ktoré obsadil súper, obaja pri každej bitke za svoje reči; kto prehral hádku, tomu reči klesnú zospodu o stupeň</td></tr>
             <tr><td>Finále: Nakladačka a hádka</td><td>víťaz bitky 1 za bod Nakladačky, víťaz hádky 1 za bod hádky</td></tr>
             <tr><td>Krádež pri zajatí</td><td>zlodej dostane a okradnutý stratí toľko špakov, koľko bodov hádky má okradnutý v rečiach pri zajatom staršom (cena stupňov 1 / 2 / 3), najviac koľko má</td></tr>
             <tr><td>Exekútor</td><td>v každej bitke mínus polovica priznaných Dlhov nahor (s priazňou Advokáta o 1 / 2 / 3 menej)</td></tr>

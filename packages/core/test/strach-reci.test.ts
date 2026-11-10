@@ -129,24 +129,24 @@ describe("§10 strach, reči a priazeň (v11)", () => {
 
 describe("§9 bodovanie, sekera, finále a cigareta (v11)", () => {
   it("sekera: obaja bodujú len reči, cigaretu porazenému nedostane nikto, výpalné sa platí (v11.9)", () => {
-    // Boris drží rečami Aninu červenú, Ana Borisovu oranžovú — po 2 špaky (1 / 2 / 2).
+    // Boris drží rečami Aninu červenú (3), Ana Borisovu oranžovú (2) — hodnota stupňa 1 / 2 / 3 (v11.20).
     const s = pred({ markery: { 0: [[3, 0], [0, 3]], 3: [[1, 2], [2, 0]] }, sums: [{ Rana: 1 }, { Rana: 1 }] });
     const t = dohraj(spustBitku(data, s).state);
     const z = t.nastenka.at(-1)!;
     expect(z.vitaz).toBeNull();
     expect(z.zaStarsich).toEqual([spakyOdStarsieho(s.starsi[3]!, 0, false), spakyOdStarsieho(s.starsi[0]!, 1, false)]);
-    expect(z.zaStarsich).toEqual([2, 2]);
+    expect(z.zaStarsich).toEqual([2, 3]);
     // Hráč 0 má jednu červenú (starší 0), preto mu hráč 1 platí 1 cigaretu výpalného.
     expect([t.hraci[0].cigarety, t.hraci[1].cigarety]).toEqual([s.hraci[0].cigarety + 1, s.hraci[1].cigarety - 1]);
   });
 
   it("log bodovania rozpíše špaky víťaza za strach a za reči, nulové časti vynechá (playtest 20261108-165501)", () => {
-    // Ana vyhrá: pri staršom 0 má červený strach (5), pri staršom 3 žltý strach (1) a reči na Borisovej oranžovej (2).
+    // Ana vyhrá: pri staršom 0 má červený strach (6), pri staršom 3 žltý strach (1) a reči na Borisovej oranžovej (2).
     const s = pred({ markery: { 0: [[3, 0], [0, 0]], 3: [[1, 2], [2, 0]] }, sums: [{ Rana: 2 }, {}] });
     const { events } = spustBitku(data, s);
     const log = events.flatMap((e) => (e.type === "log" && e.text.startsWith("Starší po bitke") ? [e.text] : []));
     const meno = (i: number): string => data.cards.get(s.starsi[i]!.karta.defId)!.name;
-    expect(log).toEqual([`Starší po bitke: hráč 1 (víťaz) dostáva 8 špakov — ${meno(0)} 5 za strach; ${meno(3)} 1 za strach, 2 za reči.`]);
+    expect(log).toEqual([`Starší po bitke: hráč 1 (víťaz) dostáva 9 špakov — ${meno(0)} 6 za strach; ${meno(3)} 1 za strach, 2 za reči.`]);
   });
 
   it("víťaz hádky rozdelí hádku na svoje reči až po bodovaní; strach dvíha víťaz bitky", () => {
@@ -186,13 +186,13 @@ describe("§9 bodovanie, sekera, finále a cigareta (v11)", () => {
 
 describe("§10 zajatie v11: krádež, väzni podľa ligy, Predsedova vila", () => {
   it("krádež najviac toľko, koľko súper má; väzni na výhru v Tretej lige 2 — hneď po rozdelení Nakladačky", () => {
-    const s0 = pred({ markery: { 0: [[3, 0], [3, 3]], 4: "vazen-boris" }, sums: [{ Rana: 5 }, {}], spaky: [0, 0] });
+    const s0 = pred({ markery: { 0: [[3, 0], [3, 3]], 4: "vazen-boris" }, sums: [{ Rana: 5 }, {}], spaky: [0, -1] });
     // Väzeň Borisa prejde Ane — v Tretej lige stačia na výhru dvaja.
     const s: GameState = { ...s0, lokalitCelkom: 3, vazni: s0.vazni.map((v) => ({ ...v, hrac: 0 })) };
     const t = dohraj(spustBitku(data, s).state, (x, p) => (p === 0 && x.bitkaStav?.krok === "prebytok" ? apply(data, x, { type: "prebytok", zdvihy: [], zajatia: [id(0)] }, 0).state : null));
     expect(t.koniec).toMatchObject({ vitaz: 0, body: null });
     expect(t.koniec?.dovod).toMatch(/výhra väzňami/);
-    // Borisove reči pri ňom sú na červenej (3 investované); má len 2 z ich bodovania — ukradnú sa 2.
+    // Borisove reči pri ňom sú na červenej (3 investované); má len 2 (−1 a 3 z ich bodovania) — ukradnú sa 2.
     expect(t.nastenka.at(-1)?.kradez).toEqual([2, -2]);
     expect(t.spaky[1]).toBe(0);
   });

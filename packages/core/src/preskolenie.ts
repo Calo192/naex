@@ -75,8 +75,9 @@ export function preskolenieSlovami(p: PreskolenieAkcie): string {
 //   Podpora  — tvoja karta, s ktorou sa stretne priložením, do konca kola
 //   Konflikt — súperova karta, s ktorou sa stretne priložením, do konca kola
 //
-// Preškolenie platí pred spojmi ako hrana Nástroja. Akcia sa preškolí raz — prvou premenou
-// v poradí Nástroj pod kartou → Podpora a Konflikt v poradí spustenia → Furt; nereťazí sa.
+// Preškolenie platí pred spojmi ako hrana Nástroja. Medzi Školiteľmi sa akcia preškolí raz —
+// prvou premenou v poradí Podpora a Konflikt v poradí spustenia → Furt; jej výstup potom preškolí
+// Nástroj pod kartou (reťaz, v11.20, Michal 2026-11-10).
 // Text sa tu len prečíta; dosah počíta partia.ts (premenyVLinii), spustenie engine.ts.
 
 export type SpustacPreskolenia = "Furt" | "Podpora" | "Konflikt";

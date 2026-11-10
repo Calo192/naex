@@ -23,7 +23,8 @@
 //  - Vzbura obráti aktivitu karty (v11.1, Michal 2026-11-02): nespojené akcie sú aktívne,
 //    spojené neaktívne; na lokalite len strana patriaca danej partii.
 //  - Preškolenie (Michal 2026-11-08, preskolenie.ts): akcie karty premení ešte pred spojmi prvá
-//    premena v poradí podložený Nástroj → Podpora a Konflikt Školiteľa → Furt Školiteľa (premenyVLinii).
+//    premena Školiteľa v poradí Podpora a Konflikt → Furt a jej výstup potom podložený Nástroj
+//    (reťaz, v11.20, Michal 2026-11-10; premenyVLinii).
 //  - Podložený Nástroj (Náradie, Michal 2026-11-08, naradie.ts): akciová hrana premení akcie
 //    hostiteľa ešte pred spojmi, kartová mu dá Vzburu, Forsáž, NA EX či Výtržníka tou istou
 //    cestou, akou ich karta dostane inak — v poradí spoje → Vzbura → Výherné žreby → Forsáž →
@@ -194,6 +195,8 @@ export interface PremenaAkcie {
   /** uid Nástroja či Školiteľa. */
   readonly uid: number;
   readonly zdroj: ZdrojPreskolenia;
+  /** uid Nástroja, ktorý výstup Školiteľa preškolil ďalej (reťaz, v11.20). */
+  readonly potom?: number;
 }
 
 export type SlotStav = "neaktivna" | "aktivna" | "zrusena";
@@ -214,6 +217,8 @@ export interface SlotEval {
   readonly povodna?: Action;
   /** uid Nástroja či Školiteľa, ktorý slot preškolil (pri `povodna`). */
   readonly preskolil?: number;
+  /** uid Nástroja, ktorý výstup Školiteľa `preskolil` preškolil ďalej (reťaz, v11.20). */
+  readonly preskolilPotom?: number;
 }
 
 /** Vyhodnotenie jednej karty — sloty vo VYTLAČENOM ráme karty. */
@@ -341,6 +346,8 @@ interface Elem {
   readonly povodne: (Action | null)[][];
   /** preskolil[side][k]: uid Nástroja či Školiteľa pri povodne. */
   readonly preskolil: (number | null)[][];
+  /** preskolilPotom[side][k]: uid Nástroja, ktorý v reťazi preškolil výstup Školiteľa (v11.20). */
+  readonly preskolilPotom: (number | null)[][];
   /** Preškolenia karty (premenyVLinii). */
   readonly premeny: PremenyKarty;
   /** Šarlatán v okolí: Viera tejto karty sa ráta ako Vízia (do v6; v7 nepoužíva). */
@@ -509,6 +516,7 @@ function makeElem(
   const akcie = (s: NonNullable<typeof strany>["left"]): Slot[] => s.map((x) => x?.akcia ?? null);
   const povodne = (s: NonNullable<typeof strany>["left"]): (Action | null)[] => s.map((x) => x?.povodna ?? null);
   const kto = (s: NonNullable<typeof strany>["left"]): (number | null)[] => s.map((x) => x?.nastroj ?? null);
+  const potom = (s: NonNullable<typeof strany>["left"]): (number | null)[] => s.map((x) => x?.potom ?? null);
   const ucinky: ReadonlySet<string> = sNastrojom ? ucinkyNastrojov(data, pl) : new Set();
   return {
     uid: card.uid,
@@ -534,6 +542,12 @@ function makeElem(
         : rotated
           ? [kto(strany.right).reverse(), kto(strany.left).reverse()]
           : [kto(strany.left), kto(strany.right)],
+    preskolilPotom:
+      strany === null
+        ? [[null, null, null, null], [null, null, null, null]]
+        : rotated
+          ? [potom(strany.right).reverse(), potom(strany.left).reverse()]
+          : [potom(strany.left), potom(strany.right)],
     premeny,
     stav: [freshStav(), freshStav()],
     nasobok: [freshNasobok(), freshNasobok()],
@@ -559,41 +573,63 @@ function makeElem(
 
 /** Preškolenia jednej karty: akcia → na čo a kto. */
 export interface PremenyKarty {
-  /** Akcie na hranách — Nástroj pod kartou aj Školitelia. */
+  /** Akcie na hranách: vytlačená akcia → výsledok reťaze Školiteľ → Nástroj (v11.20). */
   readonly hrany: ReadonlyMap<Action, PremenaAkcie>;
-  /** Akcie navyše — len Školitelia (Nástroj preškoľuje hrany, PRAVIDLA §12). */
+  /** Školitelia — hrany aj akcie navyše; vytlačená akcia → premena. */
   readonly navyse: ReadonlyMap<Action, PremenaAkcie>;
+  /** Nástroje pod kartou: akcia po Školiteľovi → premena (Nástroj mení len hrany, PRAVIDLA §12). */
+  readonly nastroj: ReadonlyMap<Action, PremenaAkcie>;
 }
 
-const BEZ_PREMIEN: PremenyKarty = { hrany: new Map(), navyse: new Map() };
+const BEZ_PREMIEN: PremenyKarty = { hrany: new Map(), navyse: new Map(), nastroj: new Map() };
 const BEZ_POSILNENI: ReadonlyMap<Action, string> = new Map();
 
 /**
- * Preškolenia kariet v línii (Michal 2026-11-08) podľa uid, každé v poradí prednosti: akcia sa
- * preškolí raz, prvou premenou v poradí podložený Nástroj (v poradí podloženia) → Podpora
- * a Konflikt Školiteľa (v poradí spustenia, PlacedCard.preskolenia) → Furt Školiteľa, s ktorým
- * karta susedí (karty oboch hráčov; aj lícom dole, ako Furt efekty akcií). Premeny sa nereťazia —
- * výstup jednej nie je vstupom inej. Lokalita ani karta v strede nič nedostane. Akcie navyše
- * preškolí len Školiteľ — Nástroj mení hrany.
+ * Reťaz premien hrany (v11.20, Michal 2026-11-10: „Reťazia sa“): najprv Školiteľ, potom Nástroj
+ * na jeho výstupe — Sypač {Rana}→{Pecka} a pod kartou {Pecka}→{Petelica} dajú z Rany Petelicu.
+ * Nástroj s vytlačenou akciou, ktorú Školiteľ zmenil, ju už nenájde. Kľúč = vytlačená akcia;
+ * reťaz, ktorá sa vráti na vytlačenú akciu, nič nemení.
+ */
+function retazHran(skol: ReadonlyMap<Action, PremenaAkcie>, nastroj: ReadonlyMap<Action, PremenaAkcie>): ReadonlyMap<Action, PremenaAkcie> {
+  if (nastroj.size === 0) return skol;
+  const out = new Map<Action, PremenaAkcie>();
+  for (const [z, s] of skol) {
+    const n = nastroj.get(s.na);
+    const na = n?.na ?? s.na;
+    if (na !== z) out.set(z, n === undefined ? s : { ...s, na, potom: n.uid });
+  }
+  for (const [z, n] of nastroj) if (!skol.has(z)) out.set(z, n);
+  return out;
+}
+
+/**
+ * Preškolenia kariet v línii (Michal 2026-11-08) podľa uid. Medzi Školiteľmi sa akcia preškolí
+ * raz, prvou premenou v poradí Podpora a Konflikt (v poradí spustenia, PlacedCard.preskolenia)
+ * → Furt Školiteľa, s ktorým karta susedí (karty oboch hráčov; aj lícom dole, ako Furt efekty
+ * akcií); medzi Nástrojmi platí prvý v poradí podloženia. Výstup Školiteľa potom preškolí Nástroj
+ * pod kartou (reťaz, v11.20). Lokalita ani karta v strede nič nedostane. Akcie navyše preškolí
+ * len Školiteľ — Nástroj mení hrany.
  */
 export function premenyVLinii(data: GameData, line: Pick<LineState, "lokalita" | "strany">): ReadonlyMap<number, PremenyKarty> {
-  const out = new Map<number, { hrany: Map<Action, PremenaAkcie>; navyse: Map<Action, PremenaAkcie> }>();
+  const skol = new Map<number, Map<Action, PremenaAkcie>>();
+  const nastroje = new Map<number, ReadonlyMap<Action, PremenaAkcie>>();
   const vsetky = [...line.strany[0], ...line.strany[1]];
   // Školiteľom môže byť aj Zviera (v11.16) — vedľa Mäsiara jeho Preškolenie neplatí, Furt ani
   // zapísané z Podpory či Konfliktu (Mäsiar: efekty Zvierat v jeho okolí neplatia).
   const umlcane = zvieratAUmlcane(data, line);
   const pridaj = (uid: number, z: Action, p: PremenaAkcie): void => {
-    let m = out.get(uid);
+    let m = skol.get(uid);
     if (m === undefined) {
-      m = { hrany: new Map(), navyse: new Map() };
-      out.set(uid, m);
+      m = new Map();
+      skol.set(uid, m);
     }
-    if (!m.hrany.has(z)) m.hrany.set(z, p);
-    if (p.zdroj !== "Nástroj" && !m.navyse.has(z)) m.navyse.set(z, p);
+    if (!m.has(z)) m.set(z, p);
   };
   for (const pl of vsetky) {
     if (pl.podlozene !== undefined && pl.podlozene.length > 0) {
-      for (const [z, p] of preskoleniaHostitela(data, pl)) pridaj(pl.card.uid, z, { na: p.na, uid: p.uid, zdroj: "Nástroj" });
+      const m = new Map<Action, PremenaAkcie>();
+      for (const [z, p] of preskoleniaHostitela(data, pl)) m.set(z, { na: p.na, uid: p.uid, zdroj: "Nástroj" });
+      if (m.size > 0) nastroje.set(pl.card.uid, m);
     }
     for (const p of pl.preskolenia ?? []) if (!umlcane.has(p.od)) pridaj(pl.card.uid, p.z, { na: p.na, uid: p.od, zdroj: p.spustac });
   }
@@ -605,12 +641,19 @@ export function premenyVLinii(data: GameData, line: Pick<LineState, "lokalita" |
       for (const e of furt) pridaj(s.card.uid, e.z, { na: e.na, uid: pl.card.uid, zdroj: "Furt" });
     }
   }
+  const out = new Map<number, PremenyKarty>();
+  for (const uid of new Set([...skol.keys(), ...nastroje.keys()])) {
+    const s = skol.get(uid) ?? BEZ_PREMIEN.navyse;
+    const n = nastroje.get(uid) ?? BEZ_PREMIEN.nastroj;
+    out.set(uid, { hrany: retazHran(s, n), navyse: s, nastroj: n });
+  }
   return out;
 }
 
 /** Preškolenia, ktoré platia na karte, s počtom premenených akcií (vytlačené na oboch hranách a akcie navyše). */
 function preskolenaKarta(data: GameData, card: CardInstance, premeny: PremenyKarty): PremenaNaKarte[] {
   const p = printedSides(data, card);
+  const hrany = [...p.left, ...p.right].filter((a): a is Action => a !== null);
   const navyse = efektyNavyse(defOf(data, card)).flatMap((e) => e.akcie);
   const out = new Map<string, PremenaNaKarte>();
   const pridaj = (z: Action, x: PremenaAkcie, n: number): void => {
@@ -618,12 +661,10 @@ function preskolenaKarta(data: GameData, card: CardInstance, premeny: PremenyKar
     const bolo = out.get(k);
     out.set(k, { z, na: x.na, od: x.uid, zdroj: x.zdroj, akcii: (bolo?.akcii ?? 0) + n });
   };
-  for (const [z, x] of premeny.hrany) pridaj(z, x, [...p.left, ...p.right].filter((a) => a === z).length);
-  // Školiteľ, ktorého na hranách predbehol Nástroj, ostáva len pri akciách navyše, ktoré karta má.
-  for (const [z, x] of premeny.navyse) {
-    const n = navyse.filter((a) => a === z).length;
-    if (n > 0 || out.has(`${x.uid}:${x.zdroj}:${z}`)) pridaj(z, x, n);
-  }
+  for (const [z, x] of premeny.navyse) pridaj(z, x, [...hrany, ...navyse].filter((a) => a === z).length);
+  // Nástroj prichádza v reťazi po Školiteľovi — ráta hrany, ktoré sú jeho X až po Školiteľovi.
+  const poSkolitelovi = hrany.map((a) => premeny.navyse.get(a)?.na ?? a);
+  for (const [z, x] of premeny.nastroj) pridaj(z, x, poSkolitelovi.filter((a) => a === z).length);
   return [...out.values()];
 }
 
@@ -1117,9 +1158,10 @@ function elemEval(elem: Elem): CardLineEval {
     // `povodna` vytlačená (Nástroj aj Školiteľ). Šarlatán a Výtržník nie (zatiaľ).
     const povodna = elem.povodne[side]![idx] ?? null;
     const preskolil = elem.preskolil[side]![idx] ?? null;
+    const preskolilPotom = elem.preskolilPotom[side]![idx] ?? null;
     return {
       action,
-      ...(povodna !== null ? { povodna, ...(preskolil !== null ? { preskolil } : {}) } : {}),
+      ...(povodna !== null ? { povodna, ...(preskolil !== null ? { preskolil } : {}), ...(preskolilPotom !== null ? { preskolilPotom } : {}) } : {}),
       stav: elem.stav[side]![idx] as SlotStav,
       nasobok: elem.nasobok[side]![idx] as number,
       ...(elem.vieraAkoVizia && action === "Viera" ? { ako: "Vízia" as const } : {}),

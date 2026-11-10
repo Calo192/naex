@@ -206,9 +206,9 @@ describe("v6: špaky sú verejné", () => {
     const starsi: ElderState[] = s0.starsi.map((e, i) => (i === 0 ? { ...e, strach: [3, 0], reci: [0, 3], reciOd: [0, 2] } : e));
     const s: GameState = { ...s0, starsi };
     const v0 = spakyTeraz(viewFor(data, s, 0));
-    // Príklad Michala: červený strach, súperove reči na červenej a oranžovej: on 1, súper 4.
-    expect(v0.zaStarsichVyhra).toEqual([1, 4]);
-    expect(v0.zaStarsichPrehra).toEqual([0, 4]);
+    // Príklad Michala: červený strach, súperove reči na červenej a oranžovej: on 1, súper 5 (v11.20).
+    expect(v0.zaStarsichVyhra).toEqual([1, 5]);
+    expect(v0.zaStarsichPrehra).toEqual([0, 5]);
     expect(spakyTeraz(viewFor(data, s, 1))).toEqual(v0);
   });
 });

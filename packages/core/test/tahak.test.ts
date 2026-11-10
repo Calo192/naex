@@ -20,7 +20,7 @@ describe("ťahák AI hráčov sedí s constants.ts", () => {
     ],
     ["štart", `${KONSTANTY.START_POLDECI} plné poldeci, ${KONSTANTY.START_CIGARETY} cigarety`],
     ["špaky za bitku (v8)", "1 špak za každú kartu v línii"],
-    ["starší po bitke (v11.12)", `**žltá ${KONSTANTY.HODNOTA_STUPNA[1]}, oranžová ${KONSTANTY.HODNOTA_STUPNA[2]}, červená ${KONSTANTY.HODNOTA_STUPNA[3]}**`],
+    ["starší po bitke (v11.12, v11.20)", `**žltá ${KONSTANTY.HODNOTA_STUPNA[1]}, oranžová ${KONSTANTY.HODNOTA_STUPNA[2]}, červená ${KONSTANTY.HODNOTA_STUPNA[3]}** (spolu ${[1, 2, 3].map((st) => KONSTANTY.SPAKY_ZA_STUPEN[st]).join(" / ")})`],
     [
       "finále bez dvíhania (v11)",
       `víťaz bitky dostane za každý bod Nakladačky ${pocet(KONSTANTY.SPAKY_ZA_NAKLADACKU_VO_FINALE, "špak", "špaky", "špakov")}, víťaz hádky za každý bod hádky ${pocet(KONSTANTY.SPAKY_ZA_HADKU_VO_FINALE, "špak", "špaky", "špakov")}`,
@@ -46,7 +46,8 @@ describe("ťahák AI hráčov sedí s constants.ts", () => {
     ["Vdova (frakcie)", "súper odhodí **1 náhodnú kartu z ruky**"],
     ["Predsedova vila (frakcie)", "vyfajčíš, tvoje reči pri jednom staršom o ďalší stupeň**"],
     ["Sypač (Školiteľ, 2026-11-08)", "**Sypač** (Podpora, Školiteľ): keď sa priložením stretne s tvojou kartou, tá má do konca kola **Rany ako Pecky**"],
-    ["Preškolenie (Školitelia, 2026-11-08)", "Každá akcia sa preškolí raz: Nástroj pod kartou → Podpora a Konflikt v poradí spustenia → Furt; nereťazí sa"],
+    ["Preškolenie (Školitelia, 2026-11-08)", "Medzi Školiteľmi sa akcia preškolí raz: Podpora"],
+    ["reťaz Školiteľ → Nástroj (v11.20)", "**Potom Nástroj pod kartou preškolí výstup Školiteľa — reťazí sa (v11.20)**"],
     ["Zastávka (v9.1)", "Zastávka (v9.1: po **prvej Pitke kola** si každý vezme **zadarmo 1 kartu zo šenku**, najprv útočník, potom obranca"],
     ["pojmy stupnice (v8.3)", "**pokojný (0), znepokojený (1), vystrašený (2), vydesený (3)**"],
     ["mäkké poškodenie (v10)", `**mäkké = Pohoršenie × ${KONSTANTY.HADKA.POHORSENIE_MAKKE} + zvyšné Povery × ${KONSTANTY.HADKA.POVERA_MAKKE}**`],

@@ -11,7 +11,7 @@
 // Presvedčený (v11.4): ostáva na stupnici, jeho karta patrí presvedčovateľovi.
 //
 // v11.12 Reči na súperovom teplomere (Michal 2026-11-06): reči hráča p sú BLOK stupňov na teplomere
-// SÚPERA (reciOd..reci). Stupeň má hodnotu 1 / 2 / 2 a špaky za neho dostane ten, kto ho drží: reči
+// SÚPERA (reciOd..reci). Stupeň má hodnotu 1 / 2 / 3 (v11.20) a špaky za neho dostane ten, kto ho drží: reči
 // majú prednosť pred strachom. Obsadzuje sa od vrchu súperovho strachu nadol, potom nad ním; súper
 // za obsadený stupeň platí o 1 viac a keď reči prekoná, blok sa posunie s jeho strachom. Klesajú
 // zospodu a len tomu, kto prehral hádku.
@@ -149,7 +149,7 @@ export function plnyTeplomer(e: Pick<ElderState, "reci" | "reciOd">, p: PlayerId
   return b !== null && b.od === 1 && b.vrch === CERVENA;
 }
 
-/** Súčet hodnôt stupňov od..vrch (1 / 2 / 2). */
+/** Súčet hodnôt stupňov od..vrch (1 / 2 / 3, v11.20). */
 function hodnotaStupnov(od: number, vrch: number): number {
   let n = 0;
   for (let st = od; st <= vrch; st++) n += KONSTANTY.HODNOTA_STUPNA[st] ?? 0;
@@ -234,7 +234,7 @@ export function stupenNaBodovanie(elder: Markery, p: PlayerId, vyhral: boolean):
   return elder.reci[p] > 0 ? elder.reci[p] : vyhral ? elder.strach[p] : 0;
 }
 
-/** Špaky za marker na stupni (žltá 1, oranžová 3, červená 5). */
+/** Špaky za marker na stupni (žltá 1, oranžová 3, červená 6 — v11.20). */
 export function spakyZaStupen(stupen: number): number {
   return KONSTANTY.SPAKY_ZA_STUPEN[stupen] ?? 0;
 }

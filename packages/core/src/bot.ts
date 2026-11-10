@@ -992,8 +992,12 @@ function cenaBoduHadky(s: GameState): number {
   return kolPoTomto(s) > 0 ? ZA_BOD_HADKY : 0;
 }
 
-/** Bod Nakladačky na jednu ďalšiu bitku (stupeň 1 / 3 / 5 špakov za 1 / 2 / 3 body, polovičná šanca na výhru). */
-const ZA_BOD_NAKLADACKY = 0.4;
+/**
+ * Bod Nakladačky na jednu ďalšiu bitku: plný strach (SPAKY_ZA_STUPEN, 1 / 3 / 6 od v11.20) za súčet cien
+ * stupňov (1 + 2 + 3 bodov), polovičná šanca na výhru — 0,5 (do v11.19 natvrdo 0,4 pri 1 / 3 / 5).
+ */
+const ZA_BOD_NAKLADACKY =
+  (0.5 * (KONSTANTY.SPAKY_ZA_STUPEN[3] ?? 0)) / KONSTANTY.CENA_STUPNA.reduce((a, b) => a + b, 0);
 
 /**
  * Cirhóza, ktorá z Pitky ešte len príde (v špakoch). Nepriznaná stojí na konci
@@ -1007,7 +1011,7 @@ function cenaNovejCirhozy(k: Kontext, s: GameState): number {
 }
 
 /**
- * Bod hádky (v11): reči 1 / 3 / 5 za 1 / 3 / 6 bodov bodujú hneď v ďalšej bitke a potom klesajú
+ * Bod hádky (v11): reči 1 / 3 / 6 (v11.20) za 1 / 3 / 6 bodov bodujú hneď v ďalšej bitke a potom klesajú
  * (spolu ≈ 1–1,5 špaku za bod). Jemné ladenie patrí naex-bot-trener.
  */
 const ZA_BOD_HADKY = 1;
@@ -1506,7 +1510,7 @@ function kandidatiPodlozenia(v: Volba): Command[] {
     const hrany = karta === undefined ? null : hranyNastroja(defOf(data, karta));
     if (karta === undefined || hostitel === undefined || hrany === null) continue;
     // Podloženie naprázdno legalCommands ponúka (v11.16) — botovi by len minulo cigaretu.
-    if (!hranaMaCoRobit(data, hostitel, hrany[cmd.hrana])) continue;
+    if (!hranaMaCoRobit(data, hostitel, hrany[cmd.hrana], lineState(state))) continue;
     const strany = printedSides(data, hostitel.card);
     const akcie = [...strany.left, ...strany.right].filter((a): a is Action => a !== null);
     const hrana = hrany[cmd.hrana];

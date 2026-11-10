@@ -9,6 +9,7 @@ import type { ClientState, PlayerId } from "@naex/core";
 import { KONSTANTY, pocet } from "@naex/core";
 import { spakyPodlaZdroja } from "./spakyAStarsi.ts";
 import type { SpakyTeraz } from "@naex/core";
+import { HODNOTA_POLA } from "./textyStarsich.ts";
 
 export interface BarSpakovProps {
   readonly view: ClientState;
@@ -43,7 +44,7 @@ export function BarSpakov({ view, p, body, menoKarty }: BarSpakovProps) {
       hodnota: zn(rozpis.zaStarsich),
       trieda: rozpis.zaStarsich > 0 ? "plus" : "",
       pod: `po bitke +${body.zaStarsichVyhra[p]} · prehra +${body.zaStarsichPrehra[p]}`,
-      popis: `Doteraz od starších ${zn(rozpis.zaStarsich)}. Po najbližšej bitke ${ja ? "ti" : "mu"} dajú ${body.zaStarsichVyhra[p]}, keď ju ${ja ? "vyhráš" : "vyhrá"} (strach a reči), a ${body.zaStarsichPrehra[p]}, keď ju ${ja ? "prehráš" : "prehrá"} (len reči). Stupeň dá 1 / 2 / 2 tomu, kto ho drží.`,
+      popis: `Doteraz od starších ${zn(rozpis.zaStarsich)}. Po najbližšej bitke ${ja ? "ti" : "mu"} dajú ${body.zaStarsichVyhra[p]}, keď ju ${ja ? "vyhráš" : "vyhrá"} (strach a reči), a ${body.zaStarsichPrehra[p]}, keď ju ${ja ? "prehráš" : "prehrá"} (len reči). Stupeň dá ${HODNOTA_POLA} tomu, kto ho drží.`,
     },
     {
       kluc: "finale",
