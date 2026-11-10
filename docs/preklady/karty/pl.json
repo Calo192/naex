@@ -328,7 +328,7 @@
   }
  },
  "benzinka": {
-  "nazov": "Stacja benzynowa",
+  "nazov": "Stacja paliw",
   "efekt": "Popijawa: Każde palenie w tej popijawie kosztuje o 1 papierosa mniej.",
   "kraje": [
    "przy kasie",
