@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="sk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Spoje v hre</title>
+<style>
+:root{--bg:#1c1e1b;--panel:#262924;--ciara:#3a3e37;--txt:#ebe6da;--mut:#a9a394;--zlato:#f0bf4c;--zelena:#5fd47c;--cervena:#e4594d}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--txt);font:15px/1.55 "Segoe UI",system-ui,sans-serif}
+main{max-width:1500px;margin:0 auto;padding:24px 16px 80px}
+h1{font-size:28px;margin:0 0 4px}
+h2{font-size:19px;margin:26px 0 10px}
+.mut{color:var(--mut)}
+.prepinac{position:sticky;top:0;z-index:5;background:var(--bg);padding:12px 0;display:flex;gap:8px;flex-wrap:wrap;border-bottom:1px solid var(--ciara)}
+.prepinac button{font:600 15px "Segoe UI",sans-serif;color:var(--txt);background:var(--panel);border:1px solid var(--ciara);border-radius:999px;padding:7px 16px;cursor:pointer}
+.prepinac button[aria-pressed="true"]{background:var(--zlato);color:#2a2112;border-color:var(--zlato)}
+.prepinac .klav{margin-left:auto;align-self:center;font-size:13px;color:var(--mut)}
+.popis{background:var(--panel);border:1px solid var(--ciara);border-radius:12px;padding:12px 16px;margin-top:14px;min-height:96px}
+.popis b{color:var(--zlato)}
+.popis ul{margin:6px 0 0;padding-left:20px}
+.vyrez{position:relative;overflow:hidden;border-radius:12px;border:1px solid var(--ciara);background:#000}
+.vyrez img{position:absolute;display:block;max-width:none}
+/* línia: x 240–1680, y 335–735 zo snímky 1920×1080 */
+.vyrez.linia{aspect-ratio:1440/400}
+.vyrez.linia img{width:calc(100% * 1920 / 1440);left:calc(-100% * 240 / 1440);top:calc(-100% * 335 / 400)}
+/* ruka: x 680–1230, y 935–1080 */
+.vyrez.ruka{aspect-ratio:550/145;max-width:900px}
+.vyrez.ruka img{width:calc(100% * 1920 / 550);left:calc(-100% * 680 / 550);top:calc(-100% * 935 / 145)}
+.cela img{width:100%;display:block;border-radius:12px;border:1px solid var(--ciara)}
+.zhrnutie{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:30px}
+@media (max-width:900px){.zhrnutie{grid-template-columns:1fr}}
+.zhrnutie div{background:var(--panel);border:1px solid var(--ciara);border-radius:12px;padding:12px 16px}
+.zhrnutie h3{margin:0 0 6px;font-size:16px}
+.zhrnutie ul{margin:0;padding-left:18px}
+code{background:#11130f;padding:1px 5px;border-radius:4px;font-size:13px}
+</style>
+</head>
+<body>
+<main>
+<h1>Spoje v hre</h1>
+<p class="mut">Jamky, koľajnice a profil hrany nakreslené priamo v klientovi (nie v obrázku) · stôl z ukážky stola, seed 8, Pitka 1 z 2, 1920 × 1080 · 2026-11-08</p>
+
+<div class="prepinac" role="group" aria-label="Variant">
+  <button data-v="dnes">Dnes</button>
+  <button data-v="jamky" aria-pressed="true">A · Jamky</button>
+  <button data-v="kolajnice">B · Koľajnice</button>
+  <button data-v="profil">E · Profil hrany</button>
+  <span class="klav">šípky ← → prepínajú</span>
+</div>
+
+<div class="popis" id="popis"></div>
+
+<h2>Línia</h2>
+<div class="vyrez linia"><img alt="Línia" class="obr"></div>
+
+<h2>Ruka</h2>
+<div class="vyrez ruka"><img alt="Ruka" class="obr"></div>
+
+<h2>Celý stôl</h2>
+<div class="cela"><img alt="Celý stôl" class="obr"></div>
+
+<div class="zhrnutie">
+  <div><h3>A · Jamky</h3><ul><li>Najtichšie: karta ostane kartou, len prázdny index má tmavú jamku s prerušovaným okrajom.</li><li>Spoj = zlatý most cez šev (aktívne akcie sa natiahnu k hrane).</li><li>Funguje aj na malých kartách v ruke.</li></ul></div>
+  <div><h3>B · Koľajnice</h3><ul><li>Štyri koľajnice cez každú kartu, pri hranách silnejšie; prázdny index = krúžok na koľajnici.</li><li>Index sa číta naprieč celou líniou — aj medzi kartami posunutými nakrivo.</li><li>Čiary idú cez ilustrácie; v strede karty sú zámerne slabé.</li></ul></div>
+  <div><h3>E · Profil hrany</h3><ul><li>Akcia má výčnelok za hranou karty, prázdny index je zárez, cez ktorý vidno stôl.</li><li>Karty v línii potrebujú medzeru 9 px, aby sa výčnelky susedov stretli.</li><li>Zárezy sú malé (polomer 0,42 slotu) — dajú sa zväčšiť.</li></ul></div>
+</div>
+
+<p class="mut" style="margin-top:24px">Prototyp je vo worktree <code>F:\Projects\naex-mock-spoje</code> (necommitnutý): <code>apps/web/src/karta/KartaLico.tsx</code> a <code>spoje-mock.css</code>, prepínač <code>?spoje=jamky|kolajnice|profil</code>. Platí len v hre, tlač a tvorca sa nemenia.</p>
+</main>
+<script>
+"use strict";
+const POPIS = {
+  dnes: "<b>Dnes.</b> Prázdny index sa nekreslí vôbec — vidno len ikony akcií a medzery si hráč domýšľa, najmä na otočených súperových kartách.",
+  jamky: "<b>A · Jamky.</b> Každý prázdny index má na karte vyhĺbenú jamku (tmavá výplň, prerušovaný biely okraj, vnútorný tieň). Aktívne akcie sa cez šev spoja zlatým mostom. V ruke vidno profil karty hneď.",
+  kolajnice: "<b>B · Koľajnice.</b> Štyri indexy sú štyri vodorovné koľajnice cez každú kartu — pri hranách výrazné, cez ilustráciu slabé. Prázdny index je krúžok na koľajnici, spoj je zlatý úsek medzi akciami.",
+  profil: "<b>E · Profil hrany.</b> Akcia vystrčí za hranu karty výčnelok vo farbe karty, prázdny index je zárez do okraja, cez ktorý vidno stôl. Dva výčnelky na tom istom indexe sa dotknú — pri aktívnom spoji zlato. Karty v línii majú medzi sebou 9 px.",
+};
+const poradie = Object.keys(POPIS);
+let akt = "jamky";
+function ukaz(v) {
+  akt = v;
+  document.querySelectorAll(".obr").forEach((i) => { i.src = `spoje-v-hre/${v}.png`; });
+  document.getElementById("popis").innerHTML = POPIS[v];
+  document.querySelectorAll(".prepinac button").forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.v === v)));
+}
+document.querySelectorAll(".prepinac button").forEach((b) => b.addEventListener("click", () => ukaz(b.dataset.v)));
+document.addEventListener("keydown", (e) => {
+  if (e.key !== "ArrowLeft" && e.key !== "ArrowRight") return;
+  const i = poradie.indexOf(akt) + (e.key === "ArrowRight" ? 1 : -1);
+  ukaz(poradie[(i + poradie.length) % poradie.length]);
+});
+ukaz("jamky");
+</script>
+</body>
+</html>
