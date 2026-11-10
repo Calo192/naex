@@ -1,0 +1,418 @@
+{
+ "_meta": {
+  "jazyk": "cs",
+  "datum": "2026-11-10",
+  "zdroj": "vzhľad tvorcu na živom webe 2026-11-10 (akcie, kľúčové slová, kategórie, bodovacie karty)",
+  "pravidla": "Len na zobrazenie; kľúče (kluc akcie, slovo) ostávajú slovenské. Pole sk = zdroj v čase prekladu. Nezhody zdroja s pravidlami: docs/preklady/otazky.md."
+ },
+ "akcie": {
+  "Rana": {
+   "nazov": "Rána",
+   "popis": "1 tvrdé poškození.",
+   "sk": {
+    "nazov": "Rana",
+    "popis": "1 tuhé poškodenie."
+   }
+  },
+  "Pecka": {
+   "nazov": "Pecka",
+   "popis": "2 tvrdá poškození.",
+   "sk": {
+    "nazov": "Pecka",
+    "popis": "2 tuhé poškodenia."
+   }
+  },
+  "Petelica": {
+   "nazov": "Herda",
+   "popis": "3 tvrdá poškození.",
+   "sk": {
+    "nazov": "Petelica",
+    "popis": "3 tuhé poškodenia."
+   }
+  },
+  "Povera": {
+   "nazov": "Pověra",
+   "popis": "1 měkké poškození do hádky (s Horoskopem 2). Se soupeřovou Vírou se ruší 1 : 1. Kdo má ve rvačce víc měkkého poškození, vyhrál hádku o rozdíl a po rvačce ho rozdělí na své řeči u starších (ve finále 1 vajgl za bod).",
+   "sk": {
+    "nazov": "Povera",
+    "popis": "1 mäkké poškodenie do hádky (s Horoskopom 2). So súperovou Vierou sa ruší 1 : 1. Kto má v bitke viac mäkkého, vyhral hádku o rozdiel a po bitke ho rozdelí na svoje reči pri starších (vo finále 1 špak za bod)."
+   }
+  },
+  "Viera": {
+   "nazov": "Víra",
+   "popis": "Nejdřív zruší soupeřovy Pověry 1 : 1 (i vylepšenou Horoskopem), zbylá snižuje soupeřovo tvrdé poškození o 1 za kus; Věřící přidá Víru navíc +1 / +2 / +3. Proti Pohoršení nepomáhá.",
+   "sk": {
+    "nazov": "Viera",
+    "popis": "Najprv zruší súperove Povery 1 : 1 (aj vylepšenú Horoskopom), zvyšná znižuje súperovo tuhé poškodenie o 1 za kus; Veriaci pridá Vieru navyše +1 / +2 / +3. Proti Pohoršeniu nepomáha."
+   }
+  },
+  "Pohoršenie": {
+   "nazov": "Pohoršení",
+   "popis": "2 měkká poškození do hádky; Víra ho nezruší. Kdo má ve rvačce víc měkkého poškození, vyhrál hádku o rozdíl a po rvačce ho rozdělí na své řeči u starších (ve finále 1 vajgl za bod).",
+   "sk": {
+    "nazov": "Pohoršenie",
+    "popis": "2 mäkké poškodenie do hádky; Viera ho nezruší. Kto má v bitke viac mäkkého, vyhral hádku o rozdiel a po bitke ho rozdelí na svoje reči pri starších (vo finále 1 špak za bod)."
+   }
+  },
+  "Dlh": {
+   "nazov": "Hazard",
+   "popis": "V pitce získáš 1 Dluh — hned přiznaný (počítadlo, ne karta). Za přiznané Dluhy přijde v každé rvačce exekutor: spálí ti polovinu přiznaných Dluhů (zaokrouhleno nahoru) a stejně vajglů (tvá přízeň Advokáta vajgly ubere). Při remíze v tvrdém i v Absťácích prohrává, kdo má víc přiznaných Dluhů.",
+   "sk": {
+    "nazov": "Hazard",
+    "popis": "V Pitke získaš 1 Dlh — je hneď priznaný (počítadlo, nie karta). Za priznané Dlhy príde v každej bitke Exekútor: spáli ti polovicu priznaných Dlhov (zaokrúhlene nahor) a rovnako veľa špakov (tvoja priazeň Advokáta špaky uberie). Pri remíze v tuhom aj v Absťákoch prehráva, kto má viac priznaných Dlhov."
+   }
+  },
+  "PoškodeniePečene": {
+   "nazov": "Poškození jater",
+   "popis": "Přidá 1 poškození jater. V pitce za každý celý práh získáš Cirhózu — jde do tvého odhazovacího balíčku.",
+   "sk": {
+    "nazov": "Poškodenie pečene",
+    "popis": "Pridá 1 poškodenie pečene. V Pitke za každý celý prah získaš Cirhózu — ide do tvojho odhadzovacieho balíčka."
+   }
+  },
+  "Poldeci": {
+   "nazov": "Panák",
+   "popis": "Při rvačce otočí jeden tvůj vypitý panák zpět na plný. Poškození jater z něj se počítá už v pitce.",
+   "sk": {
+    "nazov": "Poldeci",
+    "popis": "Pri bitke otočí jeden tvoj vypitý poldeci späť na plný. Poškodenie pečene z neho sa počíta už v Pitke."
+   }
+  },
+  "Cigareta": {
+   "nazov": "Cigareta",
+   "popis": "V pitce dostaneš 1 cigaretu (mínus soupeřova Omezení). Cigarety se přenášejí — platíš jimi karty z nabídky, Dědictví, dolití panáků, Kšefty i kouření: v pitce si dobereš kartu, první kouření v pitce stojí 1 cigaretu, druhé 2, třetí 3…",
+   "sk": {
+    "nazov": "Cigareta",
+    "popis": "V Pitke dostaneš 1 cigaretu (mínus súperove Obmedzenia). Cigarety sa prenášajú — platíš nimi karty z ponuky, Dedičstvo, doliatie poldeci, Kšefty aj fajčenie: v Pitke dobereš kartu, prvé fajčenie v Pitke stojí 1 cigaretu, druhé 2, tretie 3…"
+   }
+  },
+  "Obmedzenie": {
+   "nazov": "Omezení",
+   "popis": "Soupeř dostane v pitce o 1 cigaretu méně.",
+   "sk": {
+    "nazov": "Obmedzenie",
+    "popis": "Súper dostane v Pitke o 1 cigaretu menej."
+   }
+  },
+  "Vízia": {
+   "nazov": "Vize",
+   "popis": "Na konci pitky se za každou Vizi podíváš na vrchní kartu svého dobíracího balíčku: vezmeš si ji do ruky, nebo ji spálíš (navždy ze hry).",
+   "sk": {
+    "nazov": "Vízia",
+    "popis": "Na konci Pitky sa za každú Víziu pozrieš na vrchnú kartu svojho doberacieho balíčka: vezmeš si ju do ruky, alebo ju zahodíš (navždy z hry)."
+   }
+  },
+  "Posilnenie": {
+   "nazov": "Posílení",
+   "popis": "Zdvojnásobí spojenou akci — příznivou i nepříznivou. Posílení proti Posílení = Forsáž: obě karty mají všechny aktivní akce posílené.",
+   "sk": {
+    "nazov": "Posilnenie",
+    "popis": "Zdvojnásobí prepojenú akciu — priaznivú aj nepriaznivú. Posilnenie proti Posilneniu = Forsáž: obe karty majú všetky aktívne akcie posilnené."
+   }
+  },
+  "Odpor": {
+   "nazov": "Odpor",
+   "popis": "Zruší spojenou akci. Odpor proti Odporu = Vzpoura: obě karty aktivují všechny jinak neaktivní akce.",
+   "sk": {
+    "nazov": "Odpor",
+    "popis": "Zruší prepojenú akciu. Odpor proti Odporu = Vzbura: obe karty aktivujú všetky inak neaktívne akcie."
+   }
+  },
+  "Robota": {
+   "nazov": "Robota",
+   "popis": "Ve rvačce v kroku exekuce, před exekutorem, spálí 1 tvůj přiznaný Dluh (ze hry). Za Dluh, který nemá co spálit, ti dá 1 vajgl.",
+   "sk": {
+    "nazov": "Robota",
+    "popis": "V bitke v kroku exekúcie, pred Exekútorom, spáli 1 tvoj priznaný Dlh (z hry). Za Dlh, ktorý nemá čo spáliť, ti dá 1 špak."
+   }
+  },
+  "Pakt": {
+   "nazov": "Pakt",
+   "popis": "Na spoji se chová jako akce, se kterou je v páru. Pakt s Paktem nedělá nic; Odpor ho zruší.",
+   "sk": {
+    "nazov": "Pakt",
+    "popis": "Na spoji sa správa ako akcia, s ktorou je v páre. Pakt s Paktom nerobí nič; Odpor ho zruší."
+   }
+  }
+ },
+ "klucoveSlova": {
+  "Nástup": {
+   "slovo": "Nástup",
+   "tvary": [
+    "Nástup:"
+   ],
+   "popis": "Vyhodnotí se při zahrání karty.",
+   "sk": {
+    "slovo": "Nástup",
+    "tvary": [
+     "Nástup:"
+    ],
+    "popis": "Vyhodnotí sa pri zahraní karty."
+   }
+  },
+  "Furt": {
+   "slovo": "Furt",
+   "tvary": [
+    "Furt:"
+   ],
+   "popis": "Platí, dokud je karta odhalená kdekoli v herním prostoru.",
+   "sk": {
+    "slovo": "Furt",
+    "tvary": [
+     "Furt:"
+    ],
+    "popis": "Platí, kým je karta odhalená kdekoľvek v hracom priestore."
+   }
+  },
+  "Bitka": {
+   "slovo": "Rvačka",
+   "tvary": [
+    "Rvačka:"
+   ],
+   "popis": "Uplatní se při vyhodnocení rvačky.",
+   "sk": {
+    "slovo": "Bitka",
+    "tvary": [
+     "Bitka:"
+    ],
+    "popis": "Uplatní sa pri vyhodnotení bitky."
+   }
+  },
+  "Pitka": {
+   "slovo": "Pitka",
+   "tvary": [
+    "Pitka:"
+   ],
+   "popis": "Uplatní se během pitky — když hráči dávají NA EX, kouří a vyhodnocují karty na stole. Pitka sama karty nedává.",
+   "sk": {
+    "slovo": "Pitka",
+    "tvary": [
+     "Pitka:"
+    ],
+    "popis": "Uplatní sa počas Pitky — keď hráči dávajú NA EX, fajčia a vyhodnocujú karty na stole. Pitka sama karty nedáva."
+   }
+  },
+  "Zhromaždenie": {
+   "slovo": "Shromáždění",
+   "tvary": [
+    "Shromáždění:"
+   ],
+   "popis": "Uplatní se během Shromáždění — když hráči vykládají karty.",
+   "sk": {
+    "slovo": "Zhromaždenie",
+    "tvary": [
+     "Zhromaždenie:"
+    ],
+    "popis": "Uplatní sa počas Zhromaždenia — keď hráči vykladajú karty."
+   }
+  },
+  "Dedičstvo": {
+   "slovo": "Dědictví",
+   "tvary": [
+    "Dědictví:"
+   ],
+   "popis": "Pasivní bonus Nástroje, dokud leží v tvém herním prostoru. Vyložení do Dědictví stojí cigarety — cena roste společně pro oba: první Nástroj ve hře 1 cigaretu, druhý 2, třetí 3…",
+   "sk": {
+    "slovo": "Dedičstvo",
+    "tvary": [
+     "Dedičstvo:"
+    ],
+    "popis": "Pasívny bonus Nástroja, kým leží v tvojej hracej oblasti. Vyloženie do Dedičstva stojí cigarety — cena rastie spoločne pre oboch: prvý Nástroj v hre 1 cigaretu, druhý 2, tretí 3…"
+   }
+  },
+  "Výhra": {
+   "slovo": "Výhra",
+   "tvary": [
+    "Výhra:"
+   ],
+   "popis": "Uplatní se, když vyhraješ rvačku o lokalitu: máš vyšší tvrdé poškození, při stejném tvrdém méně Absťáků a při jejich rovnosti méně přiznaných Dluhů. Když nerozhodne ani to, nevyhraje nikdo — vajgly kola jdou na sekyru.",
+   "sk": {
+    "slovo": "Výhra",
+    "tvary": [
+     "Výhra:"
+    ],
+    "popis": "Uplatní sa, keď vyhráš bitku o lokalitu: máš vyššie tuhé poškodenie, pri rovnakom tuhom menej Absťákov a pri ich rovnosti menej priznaných Dlhov. Keď nerozhodne ani to, nevyhrá nikto — špaky kola idú na sekeru."
+   }
+  },
+  "Prehra": {
+   "slovo": "Prohra",
+   "tvary": [
+    "Prohra:"
+   ],
+   "popis": "Uplatní se, když prohraješ rvačku o lokalitu: máš nižší tvrdé poškození, při stejném tvrdém víc Absťáků a při jejich rovnosti víc přiznaných Dluhů. Když nerozhodne ani to, neprohraje nikdo — vajgly kola jdou na sekyru.",
+   "sk": {
+    "slovo": "Prehra",
+    "tvary": [
+     "Prehra:"
+    ],
+    "popis": "Uplatní sa, keď prehráš bitku o lokalitu: máš nižšie tuhé poškodenie, pri rovnakom tuhom viac Absťákov a pri ich rovnosti viac priznaných Dlhov. Keď nerozhodne ani to, neprehrá nikto — špaky kola idú na sekeru."
+   }
+  },
+  "Exekúcia": {
+   "slovo": "Exekuce",
+   "tvary": [
+    "Exekuce:"
+   ],
+   "popis": "Uplatní se ve rvačce v kroku exekuce (po poškození a vajglech za rvačku), když exekutor přichází ke každému hráči s přiznaným Dluhem.",
+   "sk": {
+    "slovo": "Exekúcia",
+    "tvary": [
+     "Exekúcia:"
+    ],
+    "popis": "Uplatní sa v bitke v kroku exekúcie (po poškodení a špakoch za bitku), keď Exekútor prichádza ku každému hráčovi s priznaným Dlhom."
+   }
+  },
+  "odhoď": {
+   "slovo": "odhoď",
+   "tvary": [
+    "odhodit",
+    "odhodí",
+    "odhodí",
+    "odhoď"
+   ],
+   "popis": "Odhození — karta jde do odhazovacího balíčku hráče, který ji zahrál.",
+   "sk": {
+    "slovo": "odhoď",
+    "tvary": [
+     "odhodiť",
+     "odhodí",
+     "odhodia"
+    ],
+    "popis": "Odhodenie — karta ide do odhadzovacieho balíčka hráča, ktorý ju zahral."
+   }
+  },
+  "Prevaha": {
+   "slovo": "převaha",
+   "tvary": [
+    "převaha",
+    "převahu",
+    "převahy",
+    "převaze",
+    "převahou"
+   ],
+   "popis": "Převahu v kraji (polovině linie u jedné hrany lokality) má hráč, který tam má víc svých Občanů, Zvířat a Stařešinů (Dvojčata za dva) — podložené Nástroje ani jiné karty se nepočítají. Při rovnosti rozhoduje majitel karty u lokality. Hráč s převahou dostane akce hrany lokality v tom kraji.",
+   "sk": {
+    "slovo": "Prevaha",
+    "tvary": [
+     "prevaha",
+     "prevahu",
+     "prevahy",
+     "prevahe",
+     "prevahou"
+    ],
+    "popis": "Prevahu v kraji (polovici línie pri jednej hrane lokality) má hráč, ktorý tam má viac svojich Občanov, Zvierat a Starešinov (Dvojčatá za dvoch) — podložené Nástroje ani iné karty sa nerátajú. Pri rovnosti rozhoduje majiteľ karty pri lokalite. Hráč s prevahou dostane akcie hrany lokality v tom kraji."
+   }
+  },
+  "Konflikt": {
+   "slovo": "Konflikt",
+   "tvary": [
+    "Konflikt:"
+   ],
+   "popis": "Spustí se, když se tato karta přiložením ocitne vedle soupeřovy karty — ať ji přikládáš ty k soupeřově, nebo soupeř svou k ní. Podložení Nástroje, NA EX, srážka ani přesun karty ho nespouštějí.",
+   "sk": {
+    "slovo": "Konflikt",
+    "tvary": [
+     "Konflikt:"
+    ],
+    "popis": "Spustí sa, keď sa táto karta priložením ocitne vedľa súperovej karty — či ju prikladáš ty k súperovej, alebo súper svoju k nej. Podloženie Nástroja, NA EX, zrážka ani presun karty ho nespúšťajú."
+   }
+  },
+  "Podpora": {
+   "slovo": "Podpora",
+   "tvary": [
+    "Podpora:"
+   ],
+   "popis": "Spustí se, když se tato karta přiložením setká s jinou tvou kartou — ať přikládáš ji, nebo jinou svou k ní. Podložení Nástroje, NA EX, srážka ani přesun karty ji nespouštějí.",
+   "sk": {
+    "slovo": "Podpora",
+    "tvary": [
+     "Podpora:"
+    ],
+    "popis": "Spustí sa, keď sa táto karta priložením stretne s inou tvojou kartou — či prikladáš ju, alebo inú svoju k nej. Podloženie Nástroja, NA EX, zrážka ani presun karty ju nespúšťajú."
+   }
+  },
+  "Hádka": {
+   "slovo": "Hádka",
+   "tvary": [
+    "Hádka:"
+   ],
+   "popis": "Uplatní se ve rvačce, když se rozhodne hádka — kdo má víc měkkého poškození (Pohoršení, Pověra), hádku vyhrál.",
+   "sk": {
+    "slovo": "Hádka",
+    "tvary": [
+     "Hádka:"
+    ],
+    "popis": "Uplatní sa v bitke, keď sa rozhodne hádka — kto má viac mäkkého poškodenia (Pohoršenie, Povera), hádku vyhral."
+   }
+  },
+  "Spoločník": {
+   "slovo": "Společník",
+   "tvary": [
+    "Společník:"
+   ],
+   "popis": "Akce navíc z pečeti v obrázku karty platí, dokud máš v partě jinou odkrytou kartu s tagem za dvojtečkou — jednou, i při více takových kartách.",
+   "sk": {
+    "slovo": "Spoločník",
+    "tvary": [
+     "Spoločník:"
+    ],
+    "popis": "Akcie navyše z pečate v obrázku karty platia, kým máš v partii inú odkrytú kartu s tagom za dvojbodkou — raz, aj pri viacerých takých kartách."
+   }
+  },
+  "Nepriateľ": {
+   "slovo": "Nepřítel",
+   "tvary": [
+    "Nepřítel:"
+   ],
+   "popis": "Akce navíc z pečeti v obrázku karty platí, dokud má soupeř v partě odkrytou kartu s tagem za dvojtečkou — jednou, i při více takových kartách.",
+   "sk": {
+    "slovo": "Nepriateľ",
+    "tvary": [
+     "Nepriateľ:"
+    ],
+    "popis": "Akcie navyše z pečate v obrázku karty platia, kým má súper v partii odkrytú kartu s tagom za dvojbodkou — raz, aj pri viacerých takých kartách."
+   }
+  },
+  "Preškolenie": {
+   "slovo": "Přeškolení",
+   "tvary": [
+    "Přeškolení"
+   ],
+   "popis": "Přeškolení X → Y: akce X jiné karty se počítá jako Y, ještě před spoji, na obou hranách i v pečeti. U Furt platí pro oba sousedy, dokud sousedí; u Podpory pro tvou a u Konfliktu pro soupeřovu kartu, se kterou se setká přiložením, do konce kola. Každá akce se přeškolí jen jednou.",
+   "sk": {
+    "slovo": "Preškolenie",
+    "tvary": [
+     "Preškolenie"
+    ],
+    "popis": "Preškolenie X → Y: akcia X inej karty sa ráta ako Y, ešte pred spojmi, na oboch hranách aj v pečati. Pri Furt platí pre oboch susedov, kým susedia; pri Podpore pre tvoju a pri Konflikte pre súperovu kartu, s ktorou sa stretne priložením, do konca kola. Každá akcia sa preškolí len raz."
+   }
+  }
+ },
+ "kategorie": {
+  "Starešina": "Stařešina",
+  "Lokalita": "Lokalita",
+  "Nástroj": "Nástroj",
+  "Kliatba": "Kletba",
+  "Zviera": "Zvíře",
+  "Pracujúci": "Pracující",
+  "Pamätník": "Pamětník",
+  "Zahraničný": "Zahraniční",
+  "Kriminál": "Kriminálník",
+  "Autorita": "Autorita",
+  "Závislý": "Závislý",
+  "Influencer": "Influencer",
+  "Občan": "Občan",
+  "Chlap": "Chlap",
+  "Žena": "Žena"
+ },
+ "bodovacie": {
+  "Kmotor": "Kmotr",
+  "Veriaci": "Věřící",
+  "Ohováračka": "Drbna",
+  "Bitkár": "Rváč",
+  "Fajčiar": "Kuřák",
+  "Abstinent": "Abstinent",
+  "Robota": "Robota",
+  "Advokát": "Advokát"
+ }
+}
