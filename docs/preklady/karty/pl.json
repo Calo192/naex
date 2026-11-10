@@ -1,0 +1,873 @@
+{
+ "_meta": {
+  "jazyk": "pl",
+  "datum": "2026-11-10",
+  "zdroj": "rozpracovaný stav tvorcu na živom webe 2026-11-10 (Zrejúca; šenok → Ponuka u Autobusára, Živnostníka, Predavačky, Zastávky, Skladu); cards.json master + karta Dlh",
+  "pravidla": "Text efektu je len na zobrazenie — jadro číta slovenský efekt; {Akcia} ostáva bez zmeny. Pojmy podľa docs/preklady/glosar.json. Príbeh a účel tvorca zatiaľ nemá pri žiadnej karte. Pole sk = zdroj v čase prekladu (pri zmene treba preložiť znova)."
+ },
+ "veterinar": {
+  "nazov": "Weterynarz",
+  "efekt": "Jeniec — raz na grę: Odrzuć wszystkie przyznane Marskości i Marskości z ręki.",
+  "sk": {
+   "nazov": "Veterinár",
+   "efekt": "Väzeň — raz za hru: Odhoď všetky priznané Cirhózy a Cirhózy na ruke."
+  }
+ },
+ "autobusar": {
+  "nazov": "Autobusiarz",
+  "efekt": "Jeniec — raz na grę: Bierzesz z oferty tyle kart, ile chcesz, każdą za jednego papierosa; kiedy skończysz, przeciwnik może kontynuować.",
+  "sk": {
+   "nazov": "Autobusár",
+   "efekt": "Väzeň — raz za hru: Z ponuky berieš kariet, koľko chceš, každú za jednu cigaretu; keď skončíš, môže pokračovať súper."
+  }
+ },
+ "noviny": {
+  "nazov": "Gazeta",
+  "efekt": "Dziedzictwo: Kłótnia: Jeśli wygrasz kłótnię, przeciwnik odrzuca 1 losową kartę z ręki. Góra: {Viera}→{Pohoršenie}. Dół: {Pečeň}→{Pohoršenie}.",
+  "sk": {
+   "nazov": "Noviny",
+   "efekt": "Dedičstvo: Hádka: Ak vyhráš hádku, súper odhodí 1 náhodnú kartu z ruky. Hore: {Viera}→{Pohoršenie}. Dole: {Pečeň}→{Pohoršenie}."
+  }
+ },
+ "cigorky": {
+  "nazov": "Paczka papierosów",
+  "efekt": "Dziedzictwo: Popijawa: Za każde 2 papierosy, które wypali przeciwnik, dobierz 1 kartę. To nie jest grzech. Góra: {Pečeň}→{Cigareta}. Dół: {Hazard}→{Cigareta}.",
+  "sk": {
+   "nazov": "Krabička cigariet",
+   "efekt": "Dedičstvo: Pitka: Za každé 2 cigarety, ktoré súper vyfajčí, si dober 1 kartu. Nie je to nerest. Hore: {Pečeň}→{Cigareta}. Dole: {Hazard}→{Cigareta}."
+  }
+ },
+ "vinko": {
+  "nazov": "Winko",
+  "efekt": "Dziedzictwo: Liczy się, jakbyś miał dodatkowy pełny kieliszek. Nie możesz dolewać kieliszków za papierosy. Góra: NA EX. Dół: {Pečeň}→{Poldeci}.",
+  "sk": {
+   "nazov": "Vínko",
+   "efekt": "Dedičstvo: Počíta sa, akoby si mal plný poldeci navyše. Nemôžeš dolievať poldeci za cigarety. Hore: NA EX. Dole: {Pečeň}→{Poldeci}."
+  }
+ },
+ "pasca": {
+  "nazov": "Pułapka",
+  "efekt": "Dziedzictwo: Bójka: Jeśli przeciwnik w tej rundzie dołożył kartę do twojej karty {Rana}. Góra: {Pečeň}→{Rana}. Dół: Wzmocniony {Rana}.",
+  "sk": {
+   "nazov": "Pasca",
+   "efekt": "Dedičstvo: Bitka: Ak súper v tomto kole priložil kartu k tvojej karte {Rana}. Hore: {Pečeň}→{Rana}. Dole: Posilnená {Rana}."
+  }
+ },
+ "puska": {
+  "nazov": "Strzelba",
+  "efekt": "Dziedzictwo: Gdy twój połączony Sierpowy miałby zostać anulowany innym efektem (Opór, NA EX…), zamiast anulowania zadaje o 1 obrażenie mniej. Góra: Wzmocniony {Petelica}. Dół: Wzmocniona {Pecka}.",
+  "sk": {
+   "nazov": "Puška",
+   "efekt": "Dedičstvo: Keď by tvoju prepojenú Petelicu zrušil iný efekt (Odpor, NA EX…), namiesto zrušenia udeľuje o 1 poškodenie menej. Hore: Posilnená {Petelica}. Dole: Posilnená {Pecka}."
+  }
+ },
+ "svaty_text": {
+  "nazov": "Święty tekst",
+  "efekt": "Dziedzictwo: Wartość twojej Wiary jest o 1 wyższa. Góra: {Povera}→{Viera}. Dół: {Odpor}→{Viera}.",
+  "sk": {
+   "nazov": "Svätý text",
+   "efekt": "Dedičstvo: Hodnota tvojej Viery je o 1 vyššia. Hore: {Povera}→{Viera}. Dole: {Odpor}→{Viera}."
+  }
+ },
+ "nealko": {
+  "nazov": "Zerówka",
+  "efekt": "Dziedzictwo: Twój próg Marskości jest o 2 wyższy. Góra: {Pečeň}→{Povera}. Dół: {Poldeci}→{Pohoršenie}.",
+  "pozn": "Zerówka = nealko pivo.",
+  "sk": {
+   "nazov": "Nealko",
+   "efekt": "Dedičstvo: Tvoj prah Cirhózy je o 2 vyšší. Hore: {Pečeň}→{Povera}. Dole: {Poldeci}→{Pohoršenie}."
+  }
+ },
+ "vyherny_automat": {
+  "nazov": "Jednoręki bandyta",
+  "efekt": "Dziedzictwo: Twój próg Długu jest o 1 wyższy. Ostatnia popijawa rundy: {Hazard}. Góra: {Hazard}→{Poldeci}. Dół: {Hazard}→{Pecka}.",
+  "sk": {
+   "nazov": "Výherný automat",
+   "efekt": "Dedičstvo: Tvoj prah Dlhu je o 1 vyšší. Posledná Pitka kola: {Hazard}. Hore: {Hazard}→{Poldeci}. Dole: {Hazard}→{Pecka}."
+  }
+ },
+ "dlh": {
+  "nazov": "Dług",
+  "efekt": "Bójka: Sprawdź, czy pod drzwiami nie stoi komornik. Przy remisie w twardych i w Głodach przegrywa, kto ma więcej przyznanych Długów.",
+  "sk": {
+   "nazov": "Dlh",
+   "efekt": "Bitka: Skontroluj, či pred dverami nestojí Exekútor. Pri remíze v tuhom aj v Absťákoch prehrá, kto má viac priznaných Dlhov."
+  }
+ },
+ "cirhoza": {
+  "nazov": "Marskość",
+  "efekt": "Bójka: Jeśli jest przyznana, przeciwnik ma +1 twarde obrażenie. Nieprzyznana po bójce idzie na twój stos kart odrzuconych; na koniec gry zabiera ci 3 pety.",
+  "sk": {
+   "nazov": "Cirhóza",
+   "efekt": "Bitka: Ak je priznaná, súper má +1 tuhé poškodenie. Nepriznaná ide po bitke do tvojho odhadzovacieho balíčka; na konci hry ti zoberie 3 špaky."
+  }
+ },
+ "lesna_cesta": {
+  "nazov": "Leśna droga",
+  "efekt": "Bójka: Za każde swoje Zwierzę w linii masz 2 dodatkowe twarde obrażenia.",
+  "kraje": [
+   "w gąszczu",
+   "przy krzyżu"
+  ],
+  "sk": {
+   "nazov": "Lesná cesta",
+   "efekt": "Bitka: Za každé svoje Zviera v línii máš 2 tuhé poškodenia navyše."
+  }
+ },
+ "ihrisko": {
+  "nazov": "Boisko",
+  "efekt": "Bójka: W każdym skrzydle, gdzie masz więcej swoich Obywateli, Zwierząt i Starszych niż przeciwnik, masz 2 dodatkowe twarde obrażenia.",
+  "kraje": [
+   "na murawie",
+   "na trybunie"
+  ],
+  "sk": {
+   "nazov": "Ihrisko",
+   "efekt": "Bitka: V každom kraji, kde máš viac svojich Občanov, Zvierat a Starešinov než súper, máš 2 tuhé poškodenia navyše."
+  }
+ },
+ "pijan": {
+  "nazov": "Pijak",
+  "efekt": "Bójka: Za każde NA EX, które dałeś w tej rundzie {Rana}.",
+  "sk": {
+   "nazov": "Pijan",
+   "efekt": "Bitka: Za každé NA EX, ktoré si v tomto kole dal {Rana}."
+  }
+ },
+ "milujuca_manzelka": {
+  "nazov": "Kochająca żona",
+  "efekt": "Popijawa: Twoje uszkodzenie wątroby w tej popijawie jest o 1 mniejsze.",
+  "sk": {
+   "nazov": "Milujúca manželka",
+   "efekt": "Pitka: Tvoje poškodenie pečene v tejto Pitke je o 1 menšie."
+  }
+ },
+ "ministrant": {
+  "nazov": "Ministrant",
+  "efekt": "Wróg: Starszy {Pecka}.",
+  "sk": {
+   "nazov": "Miňištrant",
+   "efekt": "Nepriateľ: Starešina {Pecka}."
+  }
+ },
+ "financna_poradkyna": {
+  "nazov": "Doradczyni finansowa",
+  "efekt": "Popijawa: Długi, które wygeneruje ta karta, dostaje przeciwnik.",
+  "sk": {
+   "nazov": "Finančná poradkyňa",
+   "efekt": "Pitka: Dlhy, ktoré vygeneruje táto karta, dostáva súper."
+  }
+ },
+ "velmi_smutiaca_vdova": {
+  "nazov": "Niepocieszona wdowa",
+  "efekt": "Starcie: Przeciwnik odrzuca 1 losową kartę z ręki.",
+  "pozn": "„Niepocieszona“ nesie iróniu „veľmi smútiacej“ pri tagu Kryminalista.",
+  "sk": {
+   "nazov": "Veľmi smútiaca vdova",
+   "efekt": "Konflikt: Súper odhodí 1 náhodnú kartu z ruky."
+  }
+ },
+ "vestica": {
+  "nazov": "Wróżka",
+  "efekt": "Kompan: Świadek epoki {Povera} {Povera}.",
+  "sk": {
+   "nazov": "Veštica",
+   "efekt": "Spoločník: Pamätník {Povera} {Povera}."
+  }
+ },
+ "silna_nezavisla_zena": {
+  "nazov": "Silna, niezależna kobieta",
+  "efekt": "Ciągle: Aktywne akcje twoich Obywateli i Starszych, którzy z nią sąsiadują, liczą się podwójnie.",
+  "sk": {
+   "nazov": "Silná, nezávislá žena",
+   "efekt": "Furt: Aktívne akcie tvojich Občanov a Starešinov, ktorí s ňou susedia, sa rátajú dvakrát."
+  }
+ },
+ "policajtka": {
+  "nazov": "Policjantka",
+  "efekt": "Wróg: Kryminalista {Petelica}.",
+  "sk": {
+   "nazov": "Policajtka",
+   "efekt": "Nepriateľ: Kriminál {Petelica}."
+  }
+ },
+ "hasic": {
+  "nazov": "Strażak",
+  "efekt": "Wsparcie: Wyciągnij losową kartę ze swojego stosu kart odrzuconych (także klątwę) i zdecyduj, czy ją zatrzymasz, czy odrzucisz.",
+  "pozn": "Dedinský dobrovoľný hasič = poľské OSP.",
+  "sk": {
+   "nazov": "Hasič",
+   "efekt": "Podpora: Vytiahni náhodnú kartu zo svojho odhadzovacieho balíčka (aj kliatbu) a rozhodni sa, či si ju necháš, alebo ju odhodíš."
+  }
+ },
+ "praudovravec": {
+  "nazov": "Foliarz",
+  "efekt": "Starcie: {Pohoršenie}.",
+  "pozn": "Foliarz = „alobalová čiapka“, konšpirátor.",
+  "sk": {
+   "nazov": "Praudovravec",
+   "efekt": "Konflikt: {Pohoršenie}."
+  }
+ },
+ "zamocnik": {
+  "nazov": "Ślusarz",
+  "efekt": "Ciągle: Pod niego możesz podłożyć dowolnie wiele Narzędzi.",
+  "sk": {
+   "nazov": "Zámočník",
+   "efekt": "Furt: Pod neho smieš podložiť ľubovoľne veľa Nástrojov."
+  }
+ },
+ "niekoho_stryna": {
+  "nazov": "Stryjenka",
+  "efekt": "Starcie: {Pohoršenie}.",
+  "pozn": "Stryjenka = staropoľsky manželka strýka, presne stryná.",
+  "sk": {
+   "nazov": "Stryná",
+   "efekt": "Konflikt: {Pohoršenie}."
+  }
+ },
+ "veteran": {
+  "nazov": "Weteran",
+  "efekt": "Ciągle: NA EX na nim nie anuluje jego aktywnych akcji, tylko je podwaja. Nieaktywnych nie podwaja.",
+  "sk": {
+   "nazov": "Veterán",
+   "efekt": "Furt: NA EX na neho jeho aktívne akcie nezruší, ale zdvojí. Neaktívne nezdvojí."
+  }
+ },
+ "recidivista": {
+  "nazov": "Recydywista",
+  "efekt": "Wróg: Zagraniczny {Pecka}.",
+  "sk": {
+   "nazov": "Recidivista",
+   "efekt": "Nepriateľ: Zahraničný {Pecka}."
+  }
+ },
+ "starosta": {
+  "nazov": "Wójt",
+  "efekt": "Jeniec — raz na grę: Do końca rundy wszystkie aktywne akcje lokacji są wzmocnione.",
+  "sk": {
+   "nazov": "Starosta",
+   "efekt": "Väzeň — raz za hru: Do konca kola sú všetky aktívne akcie lokality posilnené."
+  }
+ },
+ "farar": {
+  "nazov": "Proboszcz",
+  "efekt": "Jeniec — raz na grę: Usuń z karty jedno NA EX przeciwnika. Jego kieliszek zostaje wypity.",
+  "sk": {
+   "nazov": "Farár",
+   "efekt": "Väzeň — raz za hru: Odstráň jedno súperovo NA EX z karty. Jeho poldeci ostáva vypitý."
+  }
+ },
+ "postarka": {
+  "nazov": "Listonoszka",
+  "efekt": "Jeniec — raz na grę: Dostajesz 4 papierosy.",
+  "sk": {
+   "nazov": "Poštárka",
+   "efekt": "Väzeň — raz za hru: Dostaneš 4 cigarety."
+  }
+ },
+ "hrobar": {
+  "nazov": "Grabarz",
+  "efekt": "Jeniec — raz na grę: Weź do ręki 1 kartę ze stosu kart odrzuconych przeciwnika.",
+  "sk": {
+   "nazov": "Hrobár",
+   "efekt": "Väzeň — raz za hru: Vezmi si do ruky 1 kartu zo súperovho odhadzovacieho balíčka."
+  }
+ },
+ "vychovavatelka": {
+  "nazov": "Wychowawczyni",
+  "efekt": "Jeniec — raz na grę: Przeciwnik na tym Zebraniu od razu pasuje i nie dostaje papierosów za pas.",
+  "sk": {
+   "nazov": "Vychovávateľka",
+   "efekt": "Väzeň — raz za hru: Súper v tomto Zhromaždení hneď pasuje a za pas nedostane cigarety."
+  }
+ },
+ "liberal": {
+  "nazov": "Liberał",
+  "efekt": "Ciągle: Jeśli masz w ekipie tyle samo kobiet, co chłopów, wszystkie jego aktywne akcje są wzmocnione.",
+  "sk": {
+   "nazov": "Liberál",
+   "efekt": "Furt: Ak máš v partii rovnako žien a chlapov, všetky jeho aktívne akcie sú posilnené."
+  }
+ },
+ "dievcina_na_vydaj": {
+  "nazov": "Panna na wydaniu",
+  "efekt": "Wsparcie: {Povera}.",
+  "sk": {
+   "nazov": "Dievčina na vydaj",
+   "efekt": "Podpora: {Povera}."
+  }
+ },
+ "zivnostnik": {
+  "nazov": "Prywaciarz",
+  "efekt": "Wsparcie: Weź z oferty 1 Narzędzie.",
+  "pozn": "Prywaciarz = posmešne súkromník z čias PRL.",
+  "sk": {
+   "nazov": "Živnostník",
+   "efekt": "Podpora: Vezmi si z ponuky 1 Nástroj."
+  }
+ },
+ "krcmarka": {
+  "nazov": "Bufetowa",
+  "efekt": "Jeniec — raz na grę: Nowy pełny kieliszek.",
+  "sk": {
+   "nazov": "Krčmárka",
+   "efekt": "Väzeň — raz za hru: Nový plný poldeci."
+  }
+ },
+ "zberny_dvor": {
+  "nazov": "Skup złomu",
+  "efekt": "Popijawa: Na koniec popijawy możesz spalić 1 kartę z ręki, ale nie klątwę.",
+  "kraje": [
+   "przy wadze",
+   "za płotem"
+  ],
+  "sk": {
+   "nazov": "Zberný dvor",
+   "efekt": "Pitka: Na konci Pitky smieš spáliť 1 kartu z ruky, nie kliatbu."
+  }
+ },
+ "benzinka": {
+  "nazov": "Stacja paliw",
+  "efekt": "Popijawa: Każde palenie w tej popijawie kosztuje o 1 papierosa mniej.",
+  "kraje": [
+   "przy kasie",
+   "za budynkiem"
+  ],
+  "sk": {
+   "nazov": "Benzínka",
+   "efekt": "Pitka: Každé fajčenie v tejto Pitke stojí o 1 cigaretu menej."
+  }
+ },
+ "zastavka": {
+  "nazov": "Przystanek",
+  "efekt": "Popijawa: Po pierwszej popijawie rundy każdy gracz bierze za darmo 1 kartę z oferty — najpierw atakujący, potem obrońca. Z pustej oferty nie bierze się nic.",
+  "kraje": [
+   "pod daszkiem",
+   "przy drodze"
+  ],
+  "sk": {
+   "nazov": "Zastávka",
+   "efekt": "Pitka: Po prvej Pitke kola si každý hráč vezme zadarmo 1 kartu z ponuky — najprv útočník, potom obranca. Z prázdnej ponuky sa neberie nič."
+  }
+ },
+ "krcma": {
+  "nazov": "Knajpa",
+  "efekt": "Popijawa: Jeśli masz pełny kieliszek i masz go gdzie dać, musisz dać NA EX. Próg Marskości jest tu o 2 wyższy.",
+  "kraje": [
+   "przy barze",
+   "przy drzwiach"
+  ],
+  "sk": {
+   "nazov": "Krčma",
+   "efekt": "Pitka: Ak máš plný poldeci a máš ho kam dať, musíš dať NA EX. Prah Cirhózy je tu o 2 vyšší."
+  }
+ },
+ "abstak": {
+  "nazov": "Głód",
+  "efekt": "Bójka: Każdy Głód w twojej talii (ręka, talia dobierania i stos odrzuconych) zabiera ci 1 twarde obrażenie; przy remisie w twardych przegrywa, kto ma ich więcej. Nie można go przyznać; po bójce idzie z ręki na stos odrzuconych. Spalić go może tylko Wizja albo efekt, który mówi to wprost.",
+  "sk": {
+   "nazov": "Absťák",
+   "efekt": "Bitka: Každý Absťák v tvojom balíčku (ruka, doberací aj odhadzovací) ti uberie 1 tuhé; pri remíze v tuhom prehráva, kto ich má viac. Nedá sa priznať; po bitke ide z ruky do odhadzovacieho balíčka. Spáliť ju smie len Vízia alebo efekt, ktorý to výslovne povie."
+  }
+ },
+ "cierna_macka": {
+  "nazov": "Czarny kot",
+  "efekt": "Ciągle: Wiara nie anuluje twoich Zabobonów.",
+  "sk": {
+   "nazov": "Čierna mačka",
+   "efekt": "Furt: Tvoje Povery sa Vierou nerušia."
+  }
+ },
+ "kocovnik": {
+  "nazov": "Wędrowiec",
+  "efekt": "Kompan: Świadek epoki {Pecka}.",
+  "sk": {
+   "nazov": "Kočovník",
+   "efekt": "Spoločník: Pamätník {Pecka}."
+  }
+ },
+ "pes": {
+  "nazov": "Pies",
+  "efekt": "Ciągle: Jego aktywne akcje na styku z kartą przeciwnika liczą się podwójnie.",
+  "sk": {
+   "nazov": "Pes",
+   "efekt": "Furt: Jeho aktívne akcie na spoji so súperovou kartou sa rátajú dvakrát."
+  }
+ },
+ "kostol": {
+  "nazov": "Kościół",
+  "efekt": "Zebranie: Nikt nie może wypić. Popijawa: NA EX można dać tylko na kartę na końcu linii (na którymkolwiek z dwóch końców).",
+  "kraje": [
+   "przy ołtarzu",
+   "przy wejściu"
+  ],
+  "sk": {
+   "nazov": "Kostol",
+   "efekt": "Zhromaždenie: Nikto nesmie vypiť. Pitka: NA EX sa smie dať len na kartu na konci línie (na ktoromkoľvek z dvoch koncov)."
+  }
+ },
+ "svokra": {
+  "nazov": "Teściowa",
+  "efekt": "Bójka: Za każdą twoją kartę z NA EX przeciwnika {Rana}.",
+  "sk": {
+   "nazov": "Svokra",
+   "efekt": "Bitka: Za každú tvoju kartu so súperovým NA EX {Rana}."
+  }
+ },
+ "sarlatan": {
+  "nazov": "Szarlatan",
+  "efekt": "Kompan: Autorytet {Povera} {Povera}.",
+  "sk": {
+   "nazov": "Šarlatán",
+   "efekt": "Spoločník: Autorita {Povera} {Povera}."
+  }
+ },
+ "podvodnik": {
+  "nazov": "Kanciarz",
+  "efekt": "Starcie: {Obmedzenie}.",
+  "sk": {
+   "nazov": "Podvodník",
+   "efekt": "Konflikt: {Obmedzenie}."
+  }
+ },
+ "zahradkar": {
+  "nazov": "Działkowiec",
+  "efekt": "Egzekucja: Egzekucja w tej rundzie cię nie dotyczy.",
+  "sk": {
+   "nazov": "Záhradkár",
+   "efekt": "Exekúcia: Exekúcia v tomto kole pre teba neplatí."
+  }
+ },
+ "anonymny_alkoholik": {
+  "nazov": "Anonimowy alkoholik",
+  "efekt": "Wsparcie: Przeszkolenie {PoškodeniePečene}→{Viera}.",
+  "sk": {
+   "nazov": "Anonymný alkoholik",
+   "efekt": "Podpora: Preškolenie {PoškodeniePečene}→{Viera}."
+  }
+ },
+ "most": {
+  "nazov": "Most",
+  "efekt": "Zebranie: Każdy wykłada tylko na koniec linii po swojej lewej stronie (także odpowiedź na NA EX).",
+  "kraje": [
+   "przy kapliczce",
+   "pod mostem"
+  ],
+  "sk": {
+   "nazov": "Most",
+   "efekt": "Zhromaždenie: Každý vykladá len na koniec línie po svojej ľavici (aj odpoveď na NA EX)."
+  }
+ },
+ "obecny_urad": {
+  "nazov": "Urząd gminy",
+  "efekt": "Popijawa: Papierosy i Długi zdobyte w popijawie liczą się podwójnie.",
+  "kraje": [
+   "w biurze",
+   "na korytarzu"
+  ],
+  "sk": {
+   "nazov": "Obecný úrad",
+   "efekt": "Pitka: Cigarety a Dlhy získané v Pitke sa rátajú dvakrát."
+  }
+ },
+ "jednota": {
+  "nazov": "Spożywczak",
+  "efekt": "Popijawa: Kto ma więcej przyznanych Długów, nie może w tej popijawie palić ani dolewać.",
+  "kraje": [
+   "przy ladzie",
+   "pod sklepem"
+  ],
+  "sk": {
+   "nazov": "Jednota",
+   "efekt": "Pitka: Kto má viac priznaných Dlhov, nesmie v tejto Pitke fajčiť ani dolievať."
+  }
+ },
+ "kulturny_dom": {
+  "nazov": "Dom kultury",
+  "efekt": "Bójka: Każdy gracz dostaje pety tylko za swoje karty w linii, także zwycięzca.",
+  "kraje": [
+   "na parkiecie",
+   "przed wejściem"
+  ],
+  "sk": {
+   "nazov": "Kultúrny dom",
+   "efekt": "Bitka: Každý hráč dostane špaky len za svoje karty v línii, aj víťaz."
+  }
+ },
+ "vinna_pivnica": {
+  "nazov": "Winna piwniczka",
+  "efekt": "Popijawa: Każdy gracz może dać NA EX nawet dwa razy.",
+  "kraje": [
+   "przy beczkach",
+   "na schodach"
+  ],
+  "sk": {
+   "nazov": "Vínna pivnica",
+   "efekt": "Pitka: Každý hráč smie dať NA EX až dvakrát."
+  }
+ },
+ "druzstvo": {
+  "nazov": "Spółdzielnia",
+  "efekt": "Zebranie: Karty z akcją Robota nie zużywają limitu wykładania.",
+  "kraje": [
+   "na polu",
+   "na naradzie"
+  ],
+  "sk": {
+   "nazov": "Družstvo",
+   "efekt": "Zhromaždenie: Karty s akciou Robota nemíňajú limit vykladania."
+  }
+ },
+ "cintorin": {
+  "nazov": "Cmentarz",
+  "efekt": "Przegrana: Weź do ręki 1 kartę ze swojego stosu kart odrzuconych.",
+  "kraje": [
+   "przy grobach",
+   "przy kostnicy"
+  ],
+  "sk": {
+   "nazov": "Cintorín",
+   "efekt": "Prehra: Vezmi si do ruky 1 kartu zo svojho odhadzovacieho balíčka."
+  }
+ },
+ "dvojcata": {
+  "nazov": "Bliźniaki",
+  "efekt": "Ciągle: Do przewagi liczą się za dwóch.",
+  "sk": {
+   "nazov": "Dvojčatá",
+   "efekt": "Furt: Do prevahy sa rátajú za dvoch."
+  }
+ },
+ "sofer": {
+  "nazov": "Kierowca",
+  "efekt": "Bójka: Jeśli nie dałeś w tej rundzie NA EX {Pecka} {Rana}.",
+  "sk": {
+   "nazov": "Šofér",
+   "efekt": "Bitka: Ak si v tomto kole nedal NA EX {Pecka} {Rana}."
+  }
+ },
+ "kar": {
+  "nazov": "Stypa",
+  "efekt": "Popijawa: Uszkodzenie wątroby za NA EX dostaje przeciwnik gracza, który je dał.",
+  "kraje": [
+   "przy wdowie",
+   "przy ciastach"
+  ],
+  "sk": {
+   "nazov": "Kar",
+   "efekt": "Pitka: Poškodenie pečene za NA EX dostane súper hráča, ktorý ho dal."
+  }
+ },
+ "snubenica": {
+  "nazov": "Narzeczona",
+  "efekt": "Wsparcie: Chłop {Cigareta}.",
+  "sk": {
+   "nazov": "Snúbenica",
+   "efekt": "Podpora: Chlap {Cigareta}."
+  }
+ },
+ "vidly": {
+  "nazov": "Widły",
+  "efekt": "Dziedzictwo: Twoje Strzały zadają o 1 obrażenie więcej. Góra: Bunt. Dół: {Robota}→{Petelica}.",
+  "sk": {
+   "nazov": "Vidly",
+   "efekt": "Dedičstvo: Tvoje Rany udeľujú o 1 poškodenie viac. Hore: Vzbura. Dole: {Robota}→{Petelica}."
+  }
+ },
+ "lievik": {
+  "nazov": "Zastrzyk",
+  "efekt": "Dziedzictwo: NA EX możesz dać także na Zwierzę. Góra: Awanturnik. Dół: {Pečeň}→{Robota}.",
+  "sk": {
+   "nazov": "Injekcia",
+   "efekt": "Dedičstvo: NA EX smieš dať aj na Zviera. Hore: Výtržník. Dole: {Pečeň}→{Robota}."
+  }
+ },
+ "krokodil": {
+  "nazov": "Krokodyl",
+  "efekt": "Starcie: Obywatel {Spálenie}.",
+  "sk": {
+   "nazov": "Krokodíl",
+   "efekt": "Konflikt: Občan {Spálenie}."
+  }
+ },
+ "kapybara": {
+  "nazov": "Kapibara",
+  "efekt": "Wsparcie: Przeszkolenie {Viera}→{Cigareta}. Starcie: Przeszkolenie {Viera}→{Cigareta}. Ciągle: {Cigareta}.",
+  "sk": {
+   "nazov": "Kapybara",
+   "efekt": "Podpora: Preškolenie {Viera}→{Cigareta}. Konflikt: Preškolenie {Viera}→{Cigareta}. Furt: {Cigareta}."
+  }
+ },
+ "kon": {
+  "nazov": "Koń",
+  "efekt": "Ciągle: Dopóki leży w linii, Narzędzie możesz podłożyć także pod Zwierzę. Roboty Konia palą o 1 Dług więcej.",
+  "sk": {
+   "nazov": "Kôň",
+   "efekt": "Furt: Kým leží v línii, Nástroj smieš podložiť aj pod Zviera. Roboty Koňa pália o 1 Dlh viac."
+  }
+ },
+ "degustatorka": {
+  "nazov": "Degustatorka",
+  "efekt": "Wejście: Jeśli przeciwnik ma więcej pełnych kieliszków niż ty, jeden mu wychla.",
+  "pozn": "Wychlać = hrubé „vyžrať“.",
+  "sk": {
+   "nazov": "Degustátorka",
+   "efekt": "Nástup: Ak má súper viac plných poldeci ako ty, jeden mu vyžerie."
+  }
+ },
+ "klebetnica": {
+  "nazov": "Pluskwa",
+  "efekt": "Popijawa: Przeciwnik gra popijawę przed tobą; widzisz jego NA EX.",
+  "pozn": "Pluskwa = ploštica aj odpočúvacie zariadenie.",
+  "sk": {
+   "nazov": "Bzdocha",
+   "efekt": "Pitka: Súper hrá Pitku pred tebou; vidíš jeho NA EX."
+  }
+ },
+ "dohadzovacka": {
+  "nazov": "Swatka",
+  "efekt": "Wejście: Jeśli sąsiadujesz z Obywatelem albo Starszym, za ciebie przesunie się karta z końca drugiego skrzydła, jeśli to Obywatel albo Starszy płci przeciwnej niż twój sąsiad.",
+  "sk": {
+   "nazov": "Dohadzovačka",
+   "efekt": "Nástup: Ak susedíš s Občanom alebo Starešinom, za teba sa presunie karta z konca druhého kraja, ak je to Občan alebo Starešina opačného pohlavia ako tvoj sused."
+  }
+ },
+ "vandal": {
+  "nazov": "Wandal",
+  "efekt": "Wejście: Obróć lokację o 180°.",
+  "sk": {
+   "nazov": "Vandal",
+   "efekt": "Nástup: Otoč lokalitu o 180°."
+  }
+ },
+ "stryko_z_ameriky": {
+  "nazov": "Wujek z Ameryki",
+  "efekt": "Wróg: Autorytet {Rana} {Rana}.",
+  "sk": {
+   "nazov": "Strýko z Ameriky",
+   "efekt": "Nepriateľ: Autorita {Rana} {Rana}."
+  }
+ },
+ "masiar": {
+  "nazov": "Rzeźnik",
+  "efekt": "Ciągle: Efekty Zwierząt w jego otoczeniu nie działają.",
+  "sk": {
+   "nazov": "Mäsiar",
+   "efekt": "Furt: Efekty Zvierat v jeho okolí neplatia."
+  }
+ },
+ "kulturista": {
+  "nazov": "Koksu",
+  "efekt": "Wsparcie: Przeszkolenie {Rana}→{Pecka}.",
+  "pozn": "Koksu = svalnatý chlap z posilňovne; význam Sypača — otázka.",
+  "sk": {
+   "nazov": "Sypač",
+   "efekt": "Podpora: Preškolenie {Rana}→{Pecka}."
+  }
+ },
+ "traktoristka": {
+  "nazov": "Traktorzysta",
+  "efekt": "Ostatnia popijawa rundy: Bez przewagi w jego skrzydle {Dlh}.",
+  "sk": {
+   "nazov": "Traktorista",
+   "efekt": "Posledná Pitka kola: Bez prevahy v jeho kraji {Dlh}."
+  }
+ },
+ "vymahac": {
+  "nazov": "Windykator",
+  "efekt": "Bójka: Za każde 2 twoje przyznane Długi {Rana}.",
+  "sk": {
+   "nazov": "Vymáhač",
+   "efekt": "Bitka: Za každé 2 tvoje priznané Dlhy {Rana}."
+  }
+ },
+ "sklad": {
+  "nazov": "Magazyn",
+  "efekt": "Zebranie: Narzędzie z oferty możesz wyłożyć prosto do Dziedzictwa za cenę Dziedzictwa. Do oferty dochodzi nowe Narzędzie.",
+  "kraje": [
+   "przy workach",
+   "przy magazynie"
+  ],
+  "sk": {
+   "nazov": "Sklad",
+   "efekt": "Zhromaždenie: Nástroj z ponuky smieš vyložiť rovno do Dedičstva za cenu Dedičstva. Do ponuky sa dotiahne nový Nástroj."
+  }
+ },
+ "polovnicka_chata": {
+  "nazov": "Domek myśliwski",
+  "efekt": "Ciągle: Aktywne Strzały, Bomby i Sierpowe z krawędzi lokacji liczą się podwójnie.",
+  "kraje": [
+   "przy trofeach",
+   "na ambonie"
+  ],
+  "sk": {
+   "nazov": "Poľovnícka chata",
+   "efekt": "Furt: Aktívne Rany, Pecky a Petelice z hrán lokality sa rátajú dvakrát."
+  }
+ },
+ "predsedova_vila": {
+  "nazov": "Willa przewodniczącego",
+  "efekt": "Popijawa: Za każde 2 papierosy, które wypalisz w tej popijawie, podnieś swoje plotki przy jednym starszym o stopień.",
+  "kraje": [
+   "przy basenie",
+   "w gabinecie"
+  ],
+  "sk": {
+   "nazov": "Predsedova vila",
+   "efekt": "Pitka: Za každé 2 cigarety, ktoré v tejto Pitke vyfajčíš, zdvihni svoje reči pri jednom staršom o stupeň."
+  }
+ },
+ "herna": {
+  "nazov": "Salon gier",
+  "efekt": "Bójka: Zwycięzca dostaje dodatkowo tyle petów, ile przegrany ma przyznanych Długów.",
+  "kraje": [
+   "przy automatach",
+   "na zapleczu"
+  ],
+  "sk": {
+   "nazov": "Herňa",
+   "efekt": "Bitka: Víťaz dostane navyše toľko špakov, koľko má porazený priznaných Dlhov."
+  }
+ },
+ "boxer": {
+  "nazov": "Ciupaga",
+  "efekt": "Dziedzictwo: Twoje Bomby zadają o 1 obrażenie więcej. Góra: {Pecka}→{Petelica}. Dół: {Rana}→{Petelica}.",
+  "pozn": "Ciupaga = góralská obdoba valašky.",
+  "sk": {
+   "nazov": "Valaška",
+   "efekt": "Dedičstvo: Tvoje Pecky udeľujú o 1 poškodenie viac. Hore: {Pecka}→{Petelica}. Dole: {Rana}→{Petelica}."
+  }
+ },
+ "energetak": {
+  "nazov": "Energetyk",
+  "efekt": "Dziedzictwo: Twojego Wzmocnienia nie można anulować NA EX. Góra: Turbo. Dół: {Poldeci}→{Posilnenie}.",
+  "sk": {
+   "nazov": "Energeťák",
+   "efekt": "Dedičstvo: Tvoje Posilnenie nemožno zrušiť NA EX. Hore: Forsáž. Dole: {Poldeci}→{Posilnenie}."
+  }
+ },
+ "furik": {
+  "nazov": "Taczka",
+  "efekt": "Dziedzictwo: Twoje Roboty palą o 1 Dług więcej. Góra: {Hazard}→{Robota}. Dół: Wzmocniona {Robota}.",
+  "sk": {
+   "nazov": "Fúrik",
+   "efekt": "Dedičstvo: Tvoje Roboty pália o 1 Dlh viac. Hore: {Hazard}→{Robota}. Dole: Posilnená {Robota}."
+  }
+ },
+ "horoskop": {
+  "nazov": "Horoskop",
+  "efekt": "Dziedzictwo: Twoje Zabobony mają siłę 2. Góra: {Hazard}→{Povera}. Dół: Wzmocniony {Povera}.",
+  "sk": {
+   "nazov": "Horoskop",
+   "efekt": "Dedičstvo: Tvoje Povery majú silu 2. Hore: {Hazard}→{Povera}. Dole: Posilnená {Povera}."
+  }
+ },
+ "hrable": {
+  "nazov": "Grabie",
+  "efekt": "Dziedzictwo: Akcja anulowana twoim Oporem liczy się jako twoja i jest wzmocniona. Góra: {Odpor}→{Posilnenie}. Dół: {Posilnenie}→{Odpor}.",
+  "sk": {
+   "nazov": "Hrable",
+   "efekt": "Dedičstvo: Akcia zrušená tvojím Odporom sa ráta ako tvoja a je posilnená. Hore: {Odpor}→{Posilnenie}. Dole: {Posilnenie}→{Odpor}."
+  }
+ },
+ "jogurt": {
+  "nazov": "Jogurt",
+  "efekt": "Dziedzictwo: Twoje Kieliszki odwracają wypity kieliszek od razu w popijawie, nie dopiero w bójce. Góra: {Pečeň}→{Posilnenie}. Dół: {Pečeň}→{Hazard}.",
+  "sk": {
+   "nazov": "Jogurt",
+   "efekt": "Dedičstvo: Tvoje Poldeci otáčajú vypitý poldeci hneď v Pitke, nie až v bitke. Hore: {Pečeň}→{Posilnenie}. Dole: {Pečeň}→{Hazard}."
+  }
+ },
+ "kristalova_gula": {
+  "nazov": "Kryształowa kula",
+  "efekt": "Dziedzictwo: Twoje Wizje pokazują 2 wierzchnie karty — jedną weź albo spal, drugą odłóż na wierzch. Góra: {Povera}→{Vízia}. Dół: {Pečeň}→{Vízia}.",
+  "sk": {
+   "nazov": "Krištáľová guľa",
+   "efekt": "Dedičstvo: Tvoje Vízie ukážu 2 vrchné karty — jednu si vezmi alebo spáľ, druhú vráť navrch. Hore: {Povera}→{Vízia}. Dole: {Pečeň}→{Vízia}."
+  }
+ },
+ "pistalka": {
+  "nazov": "Izolka",
+  "efekt": "Dziedzictwo: Twoje Ograniczenia zabierają też papierosy, które przeciwnik dostaje za pas. Góra: {Pečeň}→{Obmedzenie}. Dół: Wzmocnione {Obmedzenie}.",
+  "pozn": "Izolka = hovorovo izolačná páska.",
+  "sk": {
+   "nazov": "Izolačka",
+   "efekt": "Dedičstvo: Tvoje Obmedzenia uberajú aj cigarety, ktoré súper dostane za pas. Hore: {Pečeň}→{Obmedzenie}. Dole: Posilnené {Obmedzenie}."
+  }
+ },
+ "profesionalny_tiper": {
+  "nazov": "Zawodowy typer",
+  "efekt": "Starcie: Przeszkolenie {Cigareta}→{Dlh}.",
+  "sk": {
+   "nazov": "Profesionálny tipér",
+   "efekt": "Konflikt: Preškolenie {Cigareta}→{Dlh}."
+  }
+ },
+ "telefon": {
+  "nazov": "Telefon",
+  "efekt": "Dziedzictwo: Kłótnia: Remis w kłótni jest twój, jeśli nie jest 0 : 0. Bójka: Za każdą twoją akcję anulowaną Oporem przeciwnika {Povera}. Góra: {Povera}→{Pohoršenie}. Dół: {Odpor}→{Povera}.",
+  "sk": {
+   "nazov": "Telefón",
+   "efekt": "Dedičstvo: Hádka: Remíza v hádke je tvoja, ak nie je 0 : 0. Bitka: Za každú tvoju akciu zrušenú súperovým Odporom {Povera}. Hore: {Povera}→{Pohoršenie}. Dole: {Odpor}→{Povera}."
+  }
+ },
+ "vyherne_zreby": {
+  "nazov": "Zdrapki",
+  "efekt": "Dziedzictwo: Twoje Hazardy są aktywne, kiedy nie są połączone, i nieaktywne, kiedy są połączone. Góra: {Hazard}→{Vízia}. Dół: {Cigareta}→{Vízia}.",
+  "sk": {
+   "nazov": "Výherné žreby",
+   "efekt": "Dedičstvo: Tvoje Hazardy sú aktívne, keď nie sú spojené, a neaktívne, keď sú spojené. Hore: {Hazard}→{Vízia}. Dole: {Cigareta}→{Vízia}."
+  }
+ },
+ "zapalovac": {
+  "nazov": "Zapalniczka",
+  "efekt": "Dziedzictwo: Twoich aktywnych Papierosów nie można anulować NA EX. Góra: {Cigareta}→{Rana}. Dół: {Poldeci}→{Petelica}.",
+  "sk": {
+   "nazov": "Zapaľovač",
+   "efekt": "Dedičstvo: Tvoje aktívne Cigarety nemožno zrušiť NA EX. Hore: {Cigareta}→{Rana}. Dole: {Poldeci}→{Petelica}."
+  }
+ },
+ "zrkadlo": {
+  "nazov": "Lustro",
+  "efekt": "Dziedzictwo: Twój Pakt kopiuje połączoną akcję dwukrotnie. Góra: {Odpor}→{Pakt}. Dół: {Pakt}→{Odpor}.",
+  "sk": {
+   "nazov": "Zrkadlo",
+   "efekt": "Dedičstvo: Tvoj Pakt kopíruje prepojenú akciu dvakrát. Hore: {Odpor}→{Pakt}. Dole: {Pakt}→{Odpor}."
+  }
+ },
+ "opatrovatelka": {
+  "nazov": "Opiekunka",
+  "efekt": "Kompan: Świadek epoki {Robota}.",
+  "pozn": "Poľské opatrovateľky v Nemecku — rovnaký fenomén.",
+  "sk": {
+   "nazov": "Opatrovateľka",
+   "efekt": "Spoločník: Pamätník {Robota}."
+  }
+ },
+ "polovnik": {
+  "nazov": "Myśliwy",
+  "efekt": "Wejście: Spal Zwierzę przeciwnika w drugim skrzydle, które jest najdalej od lokacji.",
+  "sk": {
+   "nazov": "Poľovník",
+   "efekt": "Nástup: Spáľ súperovo Zviera v druhom kraji, ktoré je od lokality najďalej."
+  }
+ },
+ "predavacka": {
+  "nazov": "Ekspedientka",
+  "efekt": "Wsparcie: Weź z oferty 1 Obywatela.",
+  "sk": {
+   "nazov": "Predavačka",
+   "efekt": "Podpora: Vezmi si z ponuky 1 Občana."
+  }
+ },
+ "veducko": {
+  "nazov": "Kierowniczek",
+  "efekt": "Wsparcie: Przeszkolenie {Robota}→{Pecka}.",
+  "pozn": "Zdrobnenina nesie posmech „Vedúcka“.",
+  "sk": {
+   "nazov": "Vedúcko",
+   "efekt": "Podpora: Preškolenie {Robota}→{Pecka}."
+  }
+ }
+}

@@ -1,0 +1,875 @@
+{
+ "_meta": {
+  "jazyk": "en",
+  "datum": "2026-11-10",
+  "zdroj": "rozpracovaný stav tvorcu na živom webe 2026-11-10 (Zrejúca; šenok → Ponuka u Autobusára, Živnostníka, Predavačky, Zastávky, Skladu); cards.json master + karta Dlh",
+  "pravidla": "Text efektu je len na zobrazenie — jadro číta slovenský efekt; {Akcia} ostáva bez zmeny. Pojmy podľa docs/preklady/glosar.json. Príbeh a účel tvorca zatiaľ nemá pri žiadnej karte. Pole sk = zdroj v čase prekladu (pri zmene treba preložiť znova)."
+ },
+ "veterinar": {
+  "nazov": "Vet",
+  "efekt": "Prisoner — once per game: Discard all confessed Cirrhoses and Cirrhoses in your hand.",
+  "sk": {
+   "nazov": "Veterinár",
+   "efekt": "Väzeň — raz za hru: Odhoď všetky priznané Cirhózy a Cirhózy na ruke."
+  }
+ },
+ "autobusar": {
+  "nazov": "Bus Driver",
+  "efekt": "Prisoner — once per game: Take as many cards from the Market as you like, 1 cigarette each; when you stop, your opponent may carry on.",
+  "sk": {
+   "nazov": "Autobusár",
+   "efekt": "Väzeň — raz za hru: Z ponuky berieš kariet, koľko chceš, každú za jednu cigaretu; keď skončíš, môže pokračovať súper."
+  }
+ },
+ "noviny": {
+  "nazov": "Newspaper",
+  "efekt": "Heirloom: Argument: If you win the argument, your opponent discards 1 random card from their hand. Top: {Viera}→{Pohoršenie}. Bottom: {Pečeň}→{Pohoršenie}.",
+  "sk": {
+   "nazov": "Noviny",
+   "efekt": "Dedičstvo: Hádka: Ak vyhráš hádku, súper odhodí 1 náhodnú kartu z ruky. Hore: {Viera}→{Pohoršenie}. Dole: {Pečeň}→{Pohoršenie}."
+  }
+ },
+ "cigorky": {
+  "nazov": "Pack of Cigarettes",
+  "efekt": "Heirloom: Booze-up: For every 2 cigarettes your opponent smokes, draw 1 card. It is not a vice. Top: {Pečeň}→{Cigareta}. Bottom: {Hazard}→{Cigareta}.",
+  "sk": {
+   "nazov": "Krabička cigariet",
+   "efekt": "Dedičstvo: Pitka: Za každé 2 cigarety, ktoré súper vyfajčí, si dober 1 kartu. Nie je to nerest. Hore: {Pečeň}→{Cigareta}. Dole: {Hazard}→{Cigareta}."
+  }
+ },
+ "vinko": {
+  "nazov": "Plonk",
+  "efekt": "Heirloom: Counts as if you had an extra full shot. You can't refill shots for cigarettes. Top: NA EX. Bottom: {Pečeň}→{Poldeci}.",
+  "pozn": "Vínko je láskavá zdrobnenina; plonk = lacné víno, britský hovorový výraz.",
+  "sk": {
+   "nazov": "Vínko",
+   "efekt": "Dedičstvo: Počíta sa, akoby si mal plný poldeci navyše. Nemôžeš dolievať poldeci za cigarety. Hore: NA EX. Dole: {Pečeň}→{Poldeci}."
+  }
+ },
+ "pasca": {
+  "nazov": "Trap",
+  "efekt": "Heirloom: Brawl: If your opponent played a card next to your card this round {Rana}. Top: {Pečeň}→{Rana}. Bottom: Boosted {Rana}.",
+  "sk": {
+   "nazov": "Pasca",
+   "efekt": "Dedičstvo: Bitka: Ak súper v tomto kole priložil kartu k tvojej karte {Rana}. Hore: {Pečeň}→{Rana}. Dole: Posilnená {Rana}."
+  }
+ },
+ "puska": {
+  "nazov": "Rifle",
+  "efekt": "Heirloom: When another effect (Resistance, NA EX…) would cancel your linked Haymaker, it deals 1 less damage instead. Top: Boosted {Petelica}. Bottom: Boosted {Pecka}.",
+  "sk": {
+   "nazov": "Puška",
+   "efekt": "Dedičstvo: Keď by tvoju prepojenú Petelicu zrušil iný efekt (Odpor, NA EX…), namiesto zrušenia udeľuje o 1 poškodenie menej. Hore: Posilnená {Petelica}. Dole: Posilnená {Pecka}."
+  }
+ },
+ "svaty_text": {
+  "nazov": "Holy Writ",
+  "efekt": "Heirloom: Your Faith is worth 1 more. Top: {Povera}→{Viera}. Bottom: {Odpor}→{Viera}.",
+  "sk": {
+   "nazov": "Svätý text",
+   "efekt": "Dedičstvo: Hodnota tvojej Viery je o 1 vyššia. Hore: {Povera}→{Viera}. Dole: {Odpor}→{Viera}."
+  }
+ },
+ "nealko": {
+  "nazov": "Alcohol-free",
+  "efekt": "Heirloom: Your Cirrhosis threshold is 2 higher. Top: {Pečeň}→{Povera}. Bottom: {Poldeci}→{Pohoršenie}.",
+  "sk": {
+   "nazov": "Nealko",
+   "efekt": "Dedičstvo: Tvoj prah Cirhózy je o 2 vyšší. Hore: {Pečeň}→{Povera}. Dole: {Poldeci}→{Pohoršenie}."
+  }
+ },
+ "vyherny_automat": {
+  "nazov": "Fruit Machine",
+  "efekt": "Heirloom: Your Debt threshold is 1 higher. Last booze-up of the round: {Hazard}. Top: {Hazard}→{Poldeci}. Bottom: {Hazard}→{Pecka}.",
+  "pozn": "Fruit machine = britský krčmový automat.",
+  "sk": {
+   "nazov": "Výherný automat",
+   "efekt": "Dedičstvo: Tvoj prah Dlhu je o 1 vyšší. Posledná Pitka kola: {Hazard}. Hore: {Hazard}→{Poldeci}. Dole: {Hazard}→{Pecka}."
+  }
+ },
+ "dlh": {
+  "nazov": "Debt",
+  "efekt": "Brawl: Check that the bailiff isn't standing at the door. On a tie in hard damage and in Shakes, whoever has more confessed Debts loses.",
+  "sk": {
+   "nazov": "Dlh",
+   "efekt": "Bitka: Skontroluj, či pred dverami nestojí Exekútor. Pri remíze v tuhom aj v Absťákoch prehrá, kto má viac priznaných Dlhov."
+  }
+ },
+ "cirhoza": {
+  "nazov": "Cirrhosis",
+  "efekt": "Brawl: If confessed, your opponent gets +1 hard damage. Unconfessed, it goes to your discard pile after the brawl; at the end of the game it costs you 3 butts.",
+  "sk": {
+   "nazov": "Cirhóza",
+   "efekt": "Bitka: Ak je priznaná, súper má +1 tuhé poškodenie. Nepriznaná ide po bitke do tvojho odhadzovacieho balíčka; na konci hry ti zoberie 3 špaky."
+  }
+ },
+ "lesna_cesta": {
+  "nazov": "Forest Track",
+  "efekt": "Brawl: For each of your Animals in the line you get 2 extra hard damage.",
+  "kraje": [
+   "in the thicket",
+   "by the wayside cross"
+  ],
+  "sk": {
+   "nazov": "Lesná cesta",
+   "efekt": "Bitka: Za každé svoje Zviera v línii máš 2 tuhé poškodenia navyše."
+  }
+ },
+ "ihrisko": {
+  "nazov": "Football Pitch",
+  "efekt": "Brawl: In each wing where you have more of your Citizens, Animals and Elders than your opponent, you get 2 extra hard damage.",
+  "kraje": [
+   "on the grass",
+   "in the stands"
+  ],
+  "sk": {
+   "nazov": "Ihrisko",
+   "efekt": "Bitka: V každom kraji, kde máš viac svojich Občanov, Zvierat a Starešinov než súper, máš 2 tuhé poškodenia navyše."
+  }
+ },
+ "pijan": {
+  "nazov": "Drunk",
+  "efekt": "Brawl: For each NA EX you poured this round {Rana}.",
+  "sk": {
+   "nazov": "Pijan",
+   "efekt": "Bitka: Za každé NA EX, ktoré si v tomto kole dal {Rana}."
+  }
+ },
+ "milujuca_manzelka": {
+  "nazov": "Loving Wife",
+  "efekt": "Booze-up: Your liver damage in this booze-up is 1 lower.",
+  "sk": {
+   "nazov": "Milujúca manželka",
+   "efekt": "Pitka: Tvoje poškodenie pečene v tejto Pitke je o 1 menšie."
+  }
+ },
+ "ministrant": {
+  "nazov": "Altar Boy",
+  "efekt": "Enemy: Elder {Pecka}.",
+  "pozn": "Nárečové Ň v „Miňištrant“ sa nedá preniesť; ostáva postava.",
+  "sk": {
+   "nazov": "Miňištrant",
+   "efekt": "Nepriateľ: Starešina {Pecka}."
+  }
+ },
+ "financna_poradkyna": {
+  "nazov": "Financial Adviser",
+  "efekt": "Booze-up: Debts generated by this card go to your opponent.",
+  "sk": {
+   "nazov": "Finančná poradkyňa",
+   "efekt": "Pitka: Dlhy, ktoré vygeneruje táto karta, dostáva súper."
+  }
+ },
+ "velmi_smutiaca_vdova": {
+  "nazov": "Deeply Grieving Widow",
+  "efekt": "Clash: Your opponent discards 1 random card from their hand.",
+  "pozn": "Irónia: tag Kriminál.",
+  "sk": {
+   "nazov": "Veľmi smútiaca vdova",
+   "efekt": "Konflikt: Súper odhodí 1 náhodnú kartu z ruky."
+  }
+ },
+ "vestica": {
+  "nazov": "Fortune Teller",
+  "efekt": "Ally: Old-timer {Povera} {Povera}.",
+  "sk": {
+   "nazov": "Veštica",
+   "efekt": "Spoločník: Pamätník {Povera} {Povera}."
+  }
+ },
+ "silna_nezavisla_zena": {
+  "nazov": "Strong, Independent Woman",
+  "efekt": "Always: Active actions of your Citizens and Elders next to her count twice.",
+  "sk": {
+   "nazov": "Silná, nezávislá žena",
+   "efekt": "Furt: Aktívne akcie tvojich Občanov a Starešinov, ktorí s ňou susedia, sa rátajú dvakrát."
+  }
+ },
+ "policajtka": {
+  "nazov": "Policewoman",
+  "efekt": "Enemy: Crook {Petelica}.",
+  "sk": {
+   "nazov": "Policajtka",
+   "efekt": "Nepriateľ: Kriminál {Petelica}."
+  }
+ },
+ "hasic": {
+  "nazov": "Fireman",
+  "efekt": "Support: Pull a random card from your discard pile (curses too) and decide whether to keep it or discard it.",
+  "sk": {
+   "nazov": "Hasič",
+   "efekt": "Podpora: Vytiahni náhodnú kartu zo svojho odhadzovacieho balíčka (aj kliatbu) a rozhodni sa, či si ju necháš, alebo ju odhodíš."
+  }
+ },
+ "praudovravec": {
+  "nazov": "Truther",
+  "efekt": "Clash: {Pohoršenie}.",
+  "pozn": "Samozvaný hlásateľ „pravdy“ (kedysi Dezinformátor); truther = konšpirátor.",
+  "sk": {
+   "nazov": "Praudovravec",
+   "efekt": "Konflikt: {Pohoršenie}."
+  }
+ },
+ "zamocnik": {
+  "nazov": "Locksmith",
+  "efekt": "Always: You may tuck any number of Tools under him.",
+  "sk": {
+   "nazov": "Zámočník",
+   "efekt": "Furt: Pod neho smieš podložiť ľubovoľne veľa Nástrojov."
+  }
+ },
+ "niekoho_stryna": {
+  "nazov": "Auntie",
+  "efekt": "Clash: {Pohoršenie}.",
+  "pozn": "Stryná = teta, ktorú má každý (id „niekoho stryná“).",
+  "sk": {
+   "nazov": "Stryná",
+   "efekt": "Konflikt: {Pohoršenie}."
+  }
+ },
+ "veteran": {
+  "nazov": "Veteran",
+  "efekt": "Always: NA EX on him doesn't cancel his active actions but doubles them. It doesn't double his inactive ones.",
+  "sk": {
+   "nazov": "Veterán",
+   "efekt": "Furt: NA EX na neho jeho aktívne akcie nezruší, ale zdvojí. Neaktívne nezdvojí."
+  }
+ },
+ "recidivista": {
+  "nazov": "Repeat Offender",
+  "efekt": "Enemy: Foreigner {Pecka}.",
+  "sk": {
+   "nazov": "Recidivista",
+   "efekt": "Nepriateľ: Zahraničný {Pecka}."
+  }
+ },
+ "starosta": {
+  "nazov": "Mayor",
+  "efekt": "Prisoner — once per game: Until the end of the round, all active actions of the location are boosted.",
+  "sk": {
+   "nazov": "Starosta",
+   "efekt": "Väzeň — raz za hru: Do konca kola sú všetky aktívne akcie lokality posilnené."
+  }
+ },
+ "farar": {
+  "nazov": "Priest",
+  "efekt": "Prisoner — once per game: Remove one of your opponent's NA EX from a card. Their shot stays empty.",
+  "sk": {
+   "nazov": "Farár",
+   "efekt": "Väzeň — raz za hru: Odstráň jedno súperovo NA EX z karty. Jeho poldeci ostáva vypitý."
+  }
+ },
+ "postarka": {
+  "nazov": "Postwoman",
+  "efekt": "Prisoner — once per game: You get 4 cigarettes.",
+  "sk": {
+   "nazov": "Poštárka",
+   "efekt": "Väzeň — raz za hru: Dostaneš 4 cigarety."
+  }
+ },
+ "hrobar": {
+  "nazov": "Gravedigger",
+  "efekt": "Prisoner — once per game: Take 1 card from your opponent's discard pile into your hand.",
+  "sk": {
+   "nazov": "Hrobár",
+   "efekt": "Väzeň — raz za hru: Vezmi si do ruky 1 kartu zo súperovho odhadzovacieho balíčka."
+  }
+ },
+ "vychovavatelka": {
+  "nazov": "Matron",
+  "efekt": "Prisoner — once per game: Your opponent passes in this Assembly at once and gets no cigarettes for passing.",
+  "sk": {
+   "nazov": "Vychovávateľka",
+   "efekt": "Väzeň — raz za hru: Súper v tomto Zhromaždení hneď pasuje a za pas nedostane cigarety."
+  }
+ },
+ "liberal": {
+  "nazov": "Liberal",
+  "efekt": "Always: If your crew has as many women as blokes, all his active actions are boosted.",
+  "sk": {
+   "nazov": "Liberál",
+   "efekt": "Furt: Ak máš v partii rovnako žien a chlapov, všetky jeho aktívne akcie sú posilnené."
+  }
+ },
+ "dievcina_na_vydaj": {
+  "nazov": "Eligible Lass",
+  "efekt": "Support: {Povera}.",
+  "sk": {
+   "nazov": "Dievčina na vydaj",
+   "efekt": "Podpora: {Povera}."
+  }
+ },
+ "zivnostnik": {
+  "nazov": "Tradesman",
+  "efekt": "Support: Take 1 Tool from the Market.",
+  "sk": {
+   "nazov": "Živnostník",
+   "efekt": "Podpora: Vezmi si z ponuky 1 Nástroj."
+  }
+ },
+ "krcmarka": {
+  "nazov": "Landlady",
+  "efekt": "Prisoner — once per game: A new full shot.",
+  "sk": {
+   "nazov": "Krčmárka",
+   "efekt": "Väzeň — raz za hru: Nový plný poldeci."
+  }
+ },
+ "zberny_dvor": {
+  "nazov": "Scrapyard",
+  "efekt": "Booze-up: At the end of the booze-up you may burn 1 card from your hand, but not a curse.",
+  "kraje": [
+   "by the scales",
+   "behind the fence"
+  ],
+  "sk": {
+   "nazov": "Zberný dvor",
+   "efekt": "Pitka: Na konci Pitky smieš spáliť 1 kartu z ruky, nie kliatbu."
+  }
+ },
+ "benzinka": {
+  "nazov": "Petrol Station",
+  "efekt": "Booze-up: Every smoke in this booze-up costs 1 cigarette less.",
+  "kraje": [
+   "at the till",
+   "behind the building"
+  ],
+  "sk": {
+   "nazov": "Benzínka",
+   "efekt": "Pitka: Každé fajčenie v tejto Pitke stojí o 1 cigaretu menej."
+  }
+ },
+ "zastavka": {
+  "nazov": "Bus Stop",
+  "efekt": "Booze-up: After the first booze-up of the round, each player takes 1 card from the Market for free — attacker first, then defender. Nothing is taken from an empty Market.",
+  "kraje": [
+   "under the shelter",
+   "by the road"
+  ],
+  "sk": {
+   "nazov": "Zastávka",
+   "efekt": "Pitka: Po prvej Pitke kola si každý hráč vezme zadarmo 1 kartu z ponuky — najprv útočník, potom obranca. Z prázdnej ponuky sa neberie nič."
+  }
+ },
+ "krcma": {
+  "nazov": "Pub",
+  "efekt": "Booze-up: If you have a full shot and somewhere to put it, you must pour NA EX. The Cirrhosis threshold is 2 higher here.",
+  "kraje": [
+   "by the tap",
+   "by the door"
+  ],
+  "sk": {
+   "nazov": "Krčma",
+   "efekt": "Pitka: Ak máš plný poldeci a máš ho kam dať, musíš dať NA EX. Prah Cirhózy je tu o 2 vyšší."
+  }
+ },
+ "abstak": {
+  "nazov": "The Shakes",
+  "efekt": "Brawl: Each Shakes in your deck (hand, draw and discard piles) takes 1 hard damage off you; on a tie in hard damage, whoever has more of them loses. It can't be confessed; after the brawl it goes from your hand to the discard pile. Only a Vision or an effect that explicitly says so may burn it.",
+  "sk": {
+   "nazov": "Absťák",
+   "efekt": "Bitka: Každý Absťák v tvojom balíčku (ruka, doberací aj odhadzovací) ti uberie 1 tuhé; pri remíze v tuhom prehráva, kto ich má viac. Nedá sa priznať; po bitke ide z ruky do odhadzovacieho balíčka. Spáliť ju smie len Vízia alebo efekt, ktorý to výslovne povie."
+  }
+ },
+ "cierna_macka": {
+  "nazov": "Black Cat",
+  "efekt": "Always: Your Superstitions aren't cancelled by Faith.",
+  "sk": {
+   "nazov": "Čierna mačka",
+   "efekt": "Furt: Tvoje Povery sa Vierou nerušia."
+  }
+ },
+ "kocovnik": {
+  "nazov": "Drifter",
+  "efekt": "Ally: Old-timer {Pecka}.",
+  "pozn": "Neutrálne, bez etnickej narážky.",
+  "sk": {
+   "nazov": "Kočovník",
+   "efekt": "Spoločník: Pamätník {Pecka}."
+  }
+ },
+ "pes": {
+  "nazov": "Dog",
+  "efekt": "Always: Its active actions on a link with an opponent's card count twice.",
+  "sk": {
+   "nazov": "Pes",
+   "efekt": "Furt: Jeho aktívne akcie na spoji so súperovou kartou sa rátajú dvakrát."
+  }
+ },
+ "kostol": {
+  "nazov": "Church",
+  "efekt": "Assembly: Nobody may down a shot. Booze-up: NA EX may only be poured on a card at an end of the line (either of the two ends).",
+  "kraje": [
+   "by the altar",
+   "by the entrance"
+  ],
+  "sk": {
+   "nazov": "Kostol",
+   "efekt": "Zhromaždenie: Nikto nesmie vypiť. Pitka: NA EX sa smie dať len na kartu na konci línie (na ktoromkoľvek z dvoch koncov)."
+  }
+ },
+ "svokra": {
+  "nazov": "Mother-in-Law",
+  "efekt": "Brawl: For each of your cards with your opponent's NA EX {Rana}.",
+  "sk": {
+   "nazov": "Svokra",
+   "efekt": "Bitka: Za každú tvoju kartu so súperovým NA EX {Rana}."
+  }
+ },
+ "sarlatan": {
+  "nazov": "Quack",
+  "efekt": "Ally: Authority {Povera} {Povera}.",
+  "sk": {
+   "nazov": "Šarlatán",
+   "efekt": "Spoločník: Autorita {Povera} {Povera}."
+  }
+ },
+ "podvodnik": {
+  "nazov": "Con Man",
+  "efekt": "Clash: {Obmedzenie}.",
+  "sk": {
+   "nazov": "Podvodník",
+   "efekt": "Konflikt: {Obmedzenie}."
+  }
+ },
+ "zahradkar": {
+  "nazov": "Allotment Man",
+  "efekt": "Bailiff: The bailiff skips you this round.",
+  "pozn": "Záhradkár = socialistický chatár-záhradkár; allotment = britská záhradka v kolónii.",
+  "sk": {
+   "nazov": "Záhradkár",
+   "efekt": "Exekúcia: Exekúcia v tomto kole pre teba neplatí."
+  }
+ },
+ "anonymny_alkoholik": {
+  "nazov": "Anonymous Alcoholic",
+  "efekt": "Support: Retraining {PoškodeniePečene}→{Viera}.",
+  "sk": {
+   "nazov": "Anonymný alkoholik",
+   "efekt": "Podpora: Preškolenie {PoškodeniePečene}→{Viera}."
+  }
+ },
+ "most": {
+  "nazov": "Bridge",
+  "efekt": "Assembly: Everyone plays only to the end of the line on their left (the answer to NA EX too).",
+  "kraje": [
+   "by the chapel",
+   "under the bridge"
+  ],
+  "sk": {
+   "nazov": "Most",
+   "efekt": "Zhromaždenie: Každý vykladá len na koniec línie po svojej ľavici (aj odpoveď na NA EX)."
+  }
+ },
+ "obecny_urad": {
+  "nazov": "Council Office",
+  "efekt": "Booze-up: Cigarettes and Debts gained in a booze-up count twice.",
+  "kraje": [
+   "in the office",
+   "in the corridor"
+  ],
+  "sk": {
+   "nazov": "Obecný úrad",
+   "efekt": "Pitka: Cigarety a Dlhy získané v Pitke sa rátajú dvakrát."
+  }
+ },
+ "jednota": {
+  "nazov": "Co-op",
+  "efekt": "Booze-up: Whoever has more confessed Debts may not smoke or refill in this booze-up.",
+  "kraje": [
+   "at the counter",
+   "outside the shop"
+  ],
+  "sk": {
+   "nazov": "Jednota",
+   "efekt": "Pitka: Kto má viac priznaných Dlhov, nesmie v tejto Pitke fajčiť ani dolievať."
+  }
+ },
+ "kulturny_dom": {
+  "nazov": "House of Culture",
+  "efekt": "Brawl: Every player gets butts only for their own cards in the line, the winner too.",
+  "kraje": [
+   "on the dance floor",
+   "outside the entrance"
+  ],
+  "sk": {
+   "nazov": "Kultúrny dom",
+   "efekt": "Bitka: Každý hráč dostane špaky len za svoje karty v línii, aj víťaz."
+  }
+ },
+ "vinna_pivnica": {
+  "nazov": "Wine Cellar",
+  "efekt": "Booze-up: Each player may pour NA EX up to twice.",
+  "kraje": [
+   "by the barrels",
+   "on the stairs"
+  ],
+  "sk": {
+   "nazov": "Vínna pivnica",
+   "efekt": "Pitka: Každý hráč smie dať NA EX až dvakrát."
+  }
+ },
+ "druzstvo": {
+  "nazov": "Collective Farm",
+  "efekt": "Assembly: Cards with a Work action don't use up the play limit.",
+  "kraje": [
+   "in the field",
+   "at the meeting"
+  ],
+  "sk": {
+   "nazov": "Družstvo",
+   "efekt": "Zhromaždenie: Karty s akciou Robota nemíňajú limit vykladania."
+  }
+ },
+ "cintorin": {
+  "nazov": "Graveyard",
+  "efekt": "Loss: Take 1 card from your discard pile into your hand.",
+  "kraje": [
+   "by the graves",
+   "by the mortuary"
+  ],
+  "sk": {
+   "nazov": "Cintorín",
+   "efekt": "Prehra: Vezmi si do ruky 1 kartu zo svojho odhadzovacieho balíčka."
+  }
+ },
+ "dvojcata": {
+  "nazov": "Twins",
+  "efekt": "Always: They count as two for the upper hand.",
+  "sk": {
+   "nazov": "Dvojčatá",
+   "efekt": "Furt: Do prevahy sa rátajú za dvoch."
+  }
+ },
+ "sofer": {
+  "nazov": "Driver",
+  "efekt": "Brawl: If you didn't pour NA EX this round {Pecka} {Rana}.",
+  "sk": {
+   "nazov": "Šofér",
+   "efekt": "Bitka: Ak si v tomto kole nedal NA EX {Pecka} {Rana}."
+  }
+ },
+ "kar": {
+  "nazov": "Wake",
+  "efekt": "Booze-up: Liver damage from NA EX goes to the opponent of the player who poured it.",
+  "kraje": [
+   "by the widow",
+   "by the cakes"
+  ],
+  "sk": {
+   "nazov": "Kar",
+   "efekt": "Pitka: Poškodenie pečene za NA EX dostane súper hráča, ktorý ho dal."
+  }
+ },
+ "snubenica": {
+  "nazov": "Fiancée",
+  "efekt": "Support: Bloke {Cigareta}.",
+  "sk": {
+   "nazov": "Snúbenica",
+   "efekt": "Podpora: Chlap {Cigareta}."
+  }
+ },
+ "vidly": {
+  "nazov": "Pitchfork",
+  "efekt": "Heirloom: Your Punches deal 1 more damage. Top: Revolt. Bottom: {Robota}→{Petelica}.",
+  "sk": {
+   "nazov": "Vidly",
+   "efekt": "Dedičstvo: Tvoje Rany udeľujú o 1 poškodenie viac. Hore: Vzbura. Dole: {Robota}→{Petelica}."
+  }
+ },
+ "lievik": {
+  "nazov": "Injection",
+  "efekt": "Heirloom: You may pour NA EX on an Animal too. Top: Hooligan. Bottom: {Pečeň}→{Robota}.",
+  "sk": {
+   "nazov": "Injekcia",
+   "efekt": "Dedičstvo: NA EX smieš dať aj na Zviera. Hore: Výtržník. Dole: {Pečeň}→{Robota}."
+  }
+ },
+ "krokodil": {
+  "nazov": "Crocodile",
+  "efekt": "Clash: Citizen {Spálenie}.",
+  "sk": {
+   "nazov": "Krokodíl",
+   "efekt": "Konflikt: Občan {Spálenie}."
+  }
+ },
+ "kapybara": {
+  "nazov": "Capybara",
+  "efekt": "Support: Retraining {Viera}→{Cigareta}. Clash: Retraining {Viera}→{Cigareta}. Always: {Cigareta}.",
+  "sk": {
+   "nazov": "Kapybara",
+   "efekt": "Podpora: Preškolenie {Viera}→{Cigareta}. Konflikt: Preškolenie {Viera}→{Cigareta}. Furt: {Cigareta}."
+  }
+ },
+ "kon": {
+  "nazov": "Horse",
+  "efekt": "Always: While it lies in the line, you may tuck Tools under Animals too. The Horse's Work burns 1 more Debt.",
+  "sk": {
+   "nazov": "Kôň",
+   "efekt": "Furt: Kým leží v línii, Nástroj smieš podložiť aj pod Zviera. Roboty Koňa pália o 1 Dlh viac."
+  }
+ },
+ "degustatorka": {
+  "nazov": "Wine Taster",
+  "efekt": "Arrival: If your opponent has more full shots than you, she guzzles one of theirs.",
+  "pozn": "Degustátorka = eufemizmus pre pijanku; „vyžerie“ = hrubé, preto guzzle (hltať ako zviera).",
+  "sk": {
+   "nazov": "Degustátorka",
+   "efekt": "Nástup: Ak má súper viac plných poldeci ako ty, jeden mu vyžerie."
+  }
+ },
+ "klebetnica": {
+  "nazov": "Earwig",
+  "efekt": "Booze-up: Your opponent plays the booze-up before you; you see their NA EX.",
+  "pozn": "Bzdocha = hmyz a nadávka pre zvedavú babu; earwig = škvor aj „earwigging“ (načúvať).",
+  "sk": {
+   "nazov": "Bzdocha",
+   "efekt": "Pitka: Súper hrá Pitku pred tebou; vidíš jeho NA EX."
+  }
+ },
+ "dohadzovacka": {
+  "nazov": "Matchmaker",
+  "efekt": "Arrival: If you're next to a Citizen or Elder, the card at the end of the other wing moves in behind you, if it's a Citizen or Elder of the opposite sex to your neighbour.",
+  "sk": {
+   "nazov": "Dohadzovačka",
+   "efekt": "Nástup: Ak susedíš s Občanom alebo Starešinom, za teba sa presunie karta z konca druhého kraja, ak je to Občan alebo Starešina opačného pohlavia ako tvoj sused."
+  }
+ },
+ "vandal": {
+  "nazov": "Vandal",
+  "efekt": "Arrival: Turn the location 180°.",
+  "sk": {
+   "nazov": "Vandal",
+   "efekt": "Nástup: Otoč lokalitu o 180°."
+  }
+ },
+ "stryko_z_ameriky": {
+  "nazov": "Uncle from America",
+  "efekt": "Enemy: Authority {Rana} {Rana}.",
+  "sk": {
+   "nazov": "Strýko z Ameriky",
+   "efekt": "Nepriateľ: Autorita {Rana} {Rana}."
+  }
+ },
+ "masiar": {
+  "nazov": "Butcher",
+  "efekt": "Always: Animal effects around him don't apply.",
+  "sk": {
+   "nazov": "Mäsiar",
+   "efekt": "Furt: Efekty Zvierat v jeho okolí neplatia."
+  }
+ },
+ "kulturista": {
+  "nazov": "Gym Bro",
+  "efekt": "Support: Retraining {Rana}→{Pecka}.",
+  "pozn": "Význam „Sypač“ — otázka v otazky.md.",
+  "sk": {
+   "nazov": "Sypač",
+   "efekt": "Podpora: Preškolenie {Rana}→{Pecka}."
+  }
+ },
+ "traktoristka": {
+  "nazov": "Tractor Driver",
+  "efekt": "Last booze-up of the round: Without the upper hand in his wing {Dlh}.",
+  "sk": {
+   "nazov": "Traktorista",
+   "efekt": "Posledná Pitka kola: Bez prevahy v jeho kraji {Dlh}."
+  }
+ },
+ "vymahac": {
+  "nazov": "Debt Collector",
+  "efekt": "Brawl: For every 2 of your confessed Debts {Rana}.",
+  "sk": {
+   "nazov": "Vymáhač",
+   "efekt": "Bitka: Za každé 2 tvoje priznané Dlhy {Rana}."
+  }
+ },
+ "sklad": {
+  "nazov": "Warehouse",
+  "efekt": "Assembly: You may lay a Tool from the Market straight out as an Heirloom, for the Heirloom price. A new Tool is drawn into the Market.",
+  "kraje": [
+   "by the sacks",
+   "by the storeroom"
+  ],
+  "sk": {
+   "nazov": "Sklad",
+   "efekt": "Zhromaždenie: Nástroj z ponuky smieš vyložiť rovno do Dedičstva za cenu Dedičstva. Do ponuky sa dotiahne nový Nástroj."
+  }
+ },
+ "polovnicka_chata": {
+  "nazov": "Hunting Lodge",
+  "efekt": "Always: Active Punches, Wallops and Haymakers from the location's edges count twice.",
+  "kraje": [
+   "by the trophies",
+   "up the high seat"
+  ],
+  "sk": {
+   "nazov": "Poľovnícka chata",
+   "efekt": "Furt: Aktívne Rany, Pecky a Petelice z hrán lokality sa rátajú dvakrát."
+  }
+ },
+ "predsedova_vila": {
+  "nazov": "Chairman's Villa",
+  "efekt": "Booze-up: For every 2 cigarettes you smoke in this booze-up, raise your rumours at one elder by one notch.",
+  "kraje": [
+   "by the pool",
+   "in the study"
+  ],
+  "sk": {
+   "nazov": "Predsedova vila",
+   "efekt": "Pitka: Za každé 2 cigarety, ktoré v tejto Pitke vyfajčíš, zdvihni svoje reči pri jednom staršom o stupeň."
+  }
+ },
+ "herna": {
+  "nazov": "Gambling Den",
+  "efekt": "Brawl: The winner gets extra butts equal to the loser's confessed Debts.",
+  "kraje": [
+   "by the machines",
+   "in the back room"
+  ],
+  "sk": {
+   "nazov": "Herňa",
+   "efekt": "Bitka: Víťaz dostane navyše toľko špakov, koľko má porazený priznaných Dlhov."
+  }
+ },
+ "boxer": {
+  "nazov": "Shepherd's Axe",
+  "efekt": "Heirloom: Your Wallops deal 1 more damage. Top: {Pecka}→{Petelica}. Bottom: {Rana}→{Petelica}.",
+  "pozn": "Valaška = slovenská pastierska sekerka (Jánošík).",
+  "sk": {
+   "nazov": "Valaška",
+   "efekt": "Dedičstvo: Tvoje Pecky udeľujú o 1 poškodenie viac. Hore: {Pecka}→{Petelica}. Dole: {Rana}→{Petelica}."
+  }
+ },
+ "energetak": {
+  "nazov": "Energy Drink",
+  "efekt": "Heirloom: Your Boost can't be cancelled by NA EX. Top: Overdrive. Bottom: {Poldeci}→{Posilnenie}.",
+  "sk": {
+   "nazov": "Energeťák",
+   "efekt": "Dedičstvo: Tvoje Posilnenie nemožno zrušiť NA EX. Hore: Forsáž. Dole: {Poldeci}→{Posilnenie}."
+  }
+ },
+ "furik": {
+  "nazov": "Wheelbarrow",
+  "efekt": "Heirloom: Your Work burns 1 more Debt. Top: {Hazard}→{Robota}. Bottom: Boosted {Robota}.",
+  "sk": {
+   "nazov": "Fúrik",
+   "efekt": "Dedičstvo: Tvoje Roboty pália o 1 Dlh viac. Hore: {Hazard}→{Robota}. Dole: Posilnená {Robota}."
+  }
+ },
+ "horoskop": {
+  "nazov": "Horoscope",
+  "efekt": "Heirloom: Your Superstitions have strength 2. Top: {Hazard}→{Povera}. Bottom: Boosted {Povera}.",
+  "sk": {
+   "nazov": "Horoskop",
+   "efekt": "Dedičstvo: Tvoje Povery majú silu 2. Hore: {Hazard}→{Povera}. Dole: Posilnená {Povera}."
+  }
+ },
+ "hrable": {
+  "nazov": "Rake",
+  "efekt": "Heirloom: An action cancelled by your Resistance counts as yours and is boosted. Top: {Odpor}→{Posilnenie}. Bottom: {Posilnenie}→{Odpor}.",
+  "sk": {
+   "nazov": "Hrable",
+   "efekt": "Dedičstvo: Akcia zrušená tvojím Odporom sa ráta ako tvoja a je posilnená. Hore: {Odpor}→{Posilnenie}. Dole: {Posilnenie}→{Odpor}."
+  }
+ },
+ "jogurt": {
+  "nazov": "Yoghurt",
+  "efekt": "Heirloom: Your Shot actions refill an empty shot right in the booze-up, not only in the brawl. Top: {Pečeň}→{Posilnenie}. Bottom: {Pečeň}→{Hazard}.",
+  "sk": {
+   "nazov": "Jogurt",
+   "efekt": "Dedičstvo: Tvoje Poldeci otáčajú vypitý poldeci hneď v Pitke, nie až v bitke. Hore: {Pečeň}→{Posilnenie}. Dole: {Pečeň}→{Hazard}."
+  }
+ },
+ "kristalova_gula": {
+  "nazov": "Crystal Ball",
+  "efekt": "Heirloom: Your Visions show the top 2 cards — take or burn one, put the other back on top. Top: {Povera}→{Vízia}. Bottom: {Pečeň}→{Vízia}.",
+  "sk": {
+   "nazov": "Krištáľová guľa",
+   "efekt": "Dedičstvo: Tvoje Vízie ukážu 2 vrchné karty — jednu si vezmi alebo spáľ, druhú vráť navrch. Hore: {Povera}→{Vízia}. Dole: {Pečeň}→{Vízia}."
+  }
+ },
+ "pistalka": {
+  "nazov": "Duct Tape",
+  "efekt": "Heirloom: Your Restrictions also take away the cigarettes your opponent gets for passing. Top: {Pečeň}→{Obmedzenie}. Bottom: Boosted {Obmedzenie}.",
+  "pozn": "Izolačka = univerzálna dedinská oprava; v angličtine to robí duct tape.",
+  "sk": {
+   "nazov": "Izolačka",
+   "efekt": "Dedičstvo: Tvoje Obmedzenia uberajú aj cigarety, ktoré súper dostane za pas. Hore: {Pečeň}→{Obmedzenie}. Dole: Posilnené {Obmedzenie}."
+  }
+ },
+ "profesionalny_tiper": {
+  "nazov": "Professional Punter",
+  "efekt": "Clash: Retraining {Cigareta}→{Dlh}.",
+  "sk": {
+   "nazov": "Profesionálny tipér",
+   "efekt": "Konflikt: Preškolenie {Cigareta}→{Dlh}."
+  }
+ },
+ "telefon": {
+  "nazov": "Phone",
+  "efekt": "Heirloom: Argument: A tied argument is yours unless it's 0 : 0. Brawl: For each of your actions cancelled by your opponent's Resistance {Povera}. Top: {Povera}→{Pohoršenie}. Bottom: {Odpor}→{Povera}.",
+  "sk": {
+   "nazov": "Telefón",
+   "efekt": "Dedičstvo: Hádka: Remíza v hádke je tvoja, ak nie je 0 : 0. Bitka: Za každú tvoju akciu zrušenú súperovým Odporom {Povera}. Hore: {Povera}→{Pohoršenie}. Dole: {Odpor}→{Povera}."
+  }
+ },
+ "vyherne_zreby": {
+  "nazov": "Scratch Cards",
+  "efekt": "Heirloom: Your Gambles are active when unlinked and inactive when linked. Top: {Hazard}→{Vízia}. Bottom: {Cigareta}→{Vízia}.",
+  "sk": {
+   "nazov": "Výherné žreby",
+   "efekt": "Dedičstvo: Tvoje Hazardy sú aktívne, keď nie sú spojené, a neaktívne, keď sú spojené. Hore: {Hazard}→{Vízia}. Dole: {Cigareta}→{Vízia}."
+  }
+ },
+ "zapalovac": {
+  "nazov": "Lighter",
+  "efekt": "Heirloom: Your active Cigarettes can't be cancelled by NA EX. Top: {Cigareta}→{Rana}. Bottom: {Poldeci}→{Petelica}.",
+  "sk": {
+   "nazov": "Zapaľovač",
+   "efekt": "Dedičstvo: Tvoje aktívne Cigarety nemožno zrušiť NA EX. Hore: {Cigareta}→{Rana}. Dole: {Poldeci}→{Petelica}."
+  }
+ },
+ "zrkadlo": {
+  "nazov": "Mirror",
+  "efekt": "Heirloom: Your Pact copies the linked action twice. Top: {Odpor}→{Pakt}. Bottom: {Pakt}→{Odpor}.",
+  "sk": {
+   "nazov": "Zrkadlo",
+   "efekt": "Dedičstvo: Tvoj Pakt kopíruje prepojenú akciu dvakrát. Hore: {Odpor}→{Pakt}. Dole: {Pakt}→{Odpor}."
+  }
+ },
+ "opatrovatelka": {
+  "nazov": "Carer",
+  "efekt": "Ally: Old-timer {Robota}.",
+  "pozn": "Slovenské opatrovateľky v Rakúsku — tag Zahraničný.",
+  "sk": {
+   "nazov": "Opatrovateľka",
+   "efekt": "Spoločník: Pamätník {Robota}."
+  }
+ },
+ "polovnik": {
+  "nazov": "Hunter",
+  "efekt": "Arrival: Burn your opponent's Animal in the other wing that is farthest from the location.",
+  "sk": {
+   "nazov": "Poľovník",
+   "efekt": "Nástup: Spáľ súperovo Zviera v druhom kraji, ktoré je od lokality najďalej."
+  }
+ },
+ "predavacka": {
+  "nazov": "Shop Assistant",
+  "efekt": "Support: Take 1 Citizen from the Market.",
+  "sk": {
+   "nazov": "Predavačka",
+   "efekt": "Podpora: Vezmi si z ponuky 1 Občana."
+  }
+ },
+ "veducko": {
+  "nazov": "Gaffer",
+  "efekt": "Support: Retraining {Robota}→{Pecka}.",
+  "pozn": "Vedúcko = posmešne o vedúcom; gaffer = britský hovorový šéf.",
+  "sk": {
+   "nazov": "Vedúcko",
+   "efekt": "Podpora: Preškolenie {Robota}→{Pecka}."
+  }
+ }
+}
