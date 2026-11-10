@@ -73,7 +73,7 @@ export const PECIATKA_SCHOPNOSTI: Readonly<Record<string, string>> = {
   starosta: "lokalita posilnená",
   veterinar: "Cirhózy preč",
   vychovavatelka: "súper pasuje",
-  autobusar: "karty zo šenku",
+  autobusar: "karty z ponuky",
   hrobar: "karta zo šrotu",
 };
 

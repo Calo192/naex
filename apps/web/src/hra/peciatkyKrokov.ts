@@ -15,7 +15,7 @@ export interface PeciatkaKroku {
 }
 
 const PAS = /^Hráč ([12]) pasuje do Pitky/;
-const DOST = /^Hráč ([12]) už neberie zo šenku/;
+const DOST = /^Hráč ([12]) už neberie z ponuky/;
 const HASIC_NAPRAZDNO = /^Hasič: hráč ([12]) má prázdny odhadzovací balíček/;
 
 /** Pečiatky, ktoré udalosti jedného ťahu vyvolali (pas v Zhromaždení, koniec brania zo šenku, Hasič naprázdno). */
@@ -50,5 +50,5 @@ export function textPeciatkyKroku(p: PeciatkaKroku, ja: PlayerId, meno: string):
   if (p.auto === true) return { nazov: "PAS", popis: ty ? "Nemáš čo vyložiť — pasuješ do Pitky." : `${meno} nemá čo vyložiť — pasuje do Pitky.` };
   return p.druh === "pas"
     ? { nazov: "PAS", popis: ty ? "Pasuješ do Pitky." : `${meno} pasuje do Pitky.` }
-    : { nazov: "DOSŤ", popis: ty ? "Už neberieš zo šenku." : `${meno} už neberie zo šenku.` };
+    : { nazov: "DOSŤ", popis: ty ? "Už neberieš z ponuky." : `${meno} už neberie z ponuky.` };
 }

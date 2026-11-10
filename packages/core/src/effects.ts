@@ -70,7 +70,7 @@ export const REGISTER: Readonly<Record<string, EfektStatus>> = {
   // karty v tvorcovi → skontroluj, či implementácia ešte sedí.
   // Starší (v9, krok 2 revízie): v línii len akcie; od v11.2 schopnosť väzňa raz za hru
   // (elders.json, engine.ts cmdSchopnostVazna) — text karty v cards.json je z čias Kšeftu väzňa.
-  autobusar: "impl", // Schopnosť väzňa: karty zo šenku po cigarete, potom koniec brania
+  autobusar: "impl", // Schopnosť väzňa: karty z ponuky po cigarete, potom koniec brania
   benzinka: "impl", // Pitka (v11.15): každé fajčenie o 1 cigaretu lacnejšie, prvé zadarmo (engine cenaFajcenia)
   cigorky: "impl", // Dedičstvo: Pitka (v7): za každé 2 cigarety, ktoré súper vyfajčí, karta (cmdSmoke)
   kocovnik: "native", // Spoločník: Pamätník {Pecka} (navyse.ts); starý Furt — akcie hráčovi s prevahou v kraji — len stará sada (evaluateLine)
@@ -110,7 +110,7 @@ export const REGISTER: Readonly<Record<string, EfektStatus>> = {
   vychovavatelka: "impl", // Schopnosť väzňa: súper v tomto Zhromaždení hneď pasuje bez cigariet
   vinko: "impl", // Dedičstvo: poldeci navyše; nedolieva poldeci za cigarety (Michal 2026-10-19)
   vyherny_automat: "impl", // Dedičstvo (v7): prah Dlhu +1, v poslednej Pitke kola 1 Dlh
-  zastavka: "impl", // Pitka (v9.1): po prvej Pitke kola každý 1 karta zo šenku zadarmo, najprv útočník (engine dokonciPitku)
+  zastavka: "impl", // Pitka (v9.1): po prvej Pitke kola každý 1 karta z ponuky zadarmo, najprv útočník (engine dokonciPitku)
   // Náradie (Michal 2026-10-30, docs/napady/naradie-akcie.html): Nástroje do Dedičstva a Tipér.
   zapalovac: "impl", // Dedičstvo: tvoje aktívne Cigarety nemožno zrušiť NA EX (partia.ts applyNaex)
   vyherne_zreby: "impl", // Dedičstvo: Hazardy aktívne nespojené, spojené neaktívne; NA EX potom ako vždy (partia.ts)
@@ -129,7 +129,7 @@ export const REGISTER: Readonly<Record<string, EfektStatus>> = {
   // {Akcia}“ vyhodnocuje jadro z textu (navyse.ts); staré efekty 14 kariet platia len pre staré sady.
   zberny_dvor: "impl", // Pitka (frakcie): na konci Pitky smie každý spáliť 1 kartu z ruky, nie kliatbu (zbernyDvor)
   zamocnik: "impl", // Furt (Náradie 2026-11-08): pod neho smie ľubovoľne veľa Nástrojov (podlozenie.ts)
-  zivnostnik: "impl", // Podpora (2026-11-09): Nástroj zo šenku do ruky (engine podpora, voľba senok)
+  zivnostnik: "impl", // Podpora (2026-11-09): Nástroj z ponuky do ruky (engine podpora, voľba senok)
   pes: "impl", // Furt (v7): aktívne akcie na spoji so súperovou kartou ×2 (partia.ts)
   kostol: "impl", // Zhromaždenie: nikto nevypije; Pitka (v11.7): NA EX len na kartu na konci línie
   zahradkar: "impl", // Exekúcia (Michal 2026-10-28): v línii v tvojej partii ťa exekúcia v tomto kole obíde (zahradkarChrani)
@@ -164,13 +164,13 @@ export const REGISTER: Readonly<Record<string, EfektStatus>> = {
   stryko_z_ameriky: "native", // Nepriateľ: Autorita — 2 Rany navyše (navyse.ts)
   // Autority, kolo 2 (Michal 2026-11-02) — v sade ich pridá admin.
   polovnik: "impl", // Nástup: spáli súperovo Zviera na druhej strane, najďalej od lokality (spalPolovnikom)
-  predavacka: "impl", // Podpora (2026-11-09): Občan zo šenku do ruky (engine podpora, voľba senok)
+  predavacka: "impl", // Podpora (2026-11-09): Občan z ponuky do ruky (engine podpora, voľba senok)
   veducko: "impl", // Podpora: Preškolenie {Robota}→{Pecka} — len tvoja karta, s ktorou sa stretne priložením, do konca kola (Školiteľ; 2026-11-09 namiesto Furt na oboch susedov; engine podpora)
   masiar: "impl", // Furt (Michal 2026-10-28): efekty Zvierat v jeho okolí neplatia (partia.ts zvieratAUmlcane)
   kulturista: "impl", // Sypač, Podpora: Preškolenie {Rana}→{Pecka} pri ktorejkoľvek tvojej karte (Školiteľ, 2026-11-08; engine podpora)
   traktoristka: "impl", // Posledná Pitka kola: bez prevahy v jeho kraji {Dlh} (2026-11-08, engine pokracujPoPitke); Pecka s prevahou zanikla 2026-11-09 — v starých sadách so spúšťačom Bitka (navyše alebo bez zápisu v bitkaMody)
   vymahac: "impl", // Bitka: za každé 2 priznané Dlhy Rana navyše
-  sklad: "impl", // Zhromaždenie (frakcie): Nástroj zo šenku rovno do Dedičstva za cenu Dedičstva (zoSkladu)
+  sklad: "impl", // Zhromaždenie (frakcie): Nástroj z ponuky rovno do Dedičstva za cenu Dedičstva (zoSkladu)
   polovnicka_chata: "impl", // Furt: tuhé z hrán ×2 (partia.ts)
   predsedova_vila: "impl", // Pitka (frakcie): za každé 2 vyfajčené cigarety reči o stupeň (predsedovaVila)
   herna: "impl", // Bitka: víťaz + špaky za priznané Dlhy porazeného (vyplatSpaky)

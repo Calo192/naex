@@ -2,8 +2,8 @@
   "id": "prva-partia",
   "nazov": "Nápovedy Melichara v prvej partii",
   "verzia": 2,
-  "zverejnena": false,
-  "popis": "Výučba po častiach (prva-hra.json, 1. časť: lokalita, šenok, Zhromaždenie, Pitka, bitka a starší; NA EX príde v 2. časti, dovtedy ho predstaví nápoveda prve-naex). Zvyšok povie Melichar v partii proti botovi, keď sa vec objaví prvýkrát. Každá nápoveda raz za účet, dá sa vypnúť. Špecifikácia: docs/napady/napovedy-prva-partia.html. Spúšťač sa počíta z pohľadu hráča (viewFor), nikdy zo skrytých vecí súpera.",
+  "zverejnena": true,
+  "popis": "Výučba po častiach (prva-hra.json, 1. časť: lokalita, ponuka, Zhromaždenie, Pitka, bitka a starší; NA EX príde v 2. časti, dovtedy ho predstaví nápoveda prve-naex). Zvyšok povie Melichar v partii proti botovi, keď sa vec objaví prvýkrát. Každá nápoveda raz za účet, dá sa vypnúť. Špecifikácia: docs/napady/napovedy-prva-partia.html. Spúšťač sa počíta z pohľadu hráča (viewFor), nikdy zo skrytých vecí súpera.",
   "nastavenia": {
     "kde": "každá partia, proti botovi aj proti ľuďom, každému hráčovi (aj kto výučbu neprešiel); nie vo výučbe (Michal 2026-10-24)",
     "dokedy": "kým nie je každá nápoveda ukázaná alebo kým ich hráč nevypne; v profile sa dajú vypnúť aj ukázať znova (Michal 2026-10-24)",
@@ -21,11 +21,11 @@
       "poradie": 1,
       "uroven": "A",
       "spustac": {
-        "kedy": "prvá stavba šenku v partii, hráč ešte nevybral",
+        "kedy": "prvá stavba ponuky v partii, hráč ešte nevybral",
         "podmienka": "view.faza === \"draft\" && view.draftStav.krok === \"stavba\" && môj balíček stavby nie je prázdny",
-        "jadro": ["packages/core/src/engine.ts:129 DraftStav.krok", "docs/PRAVIDLA.md §5 Stavba šenku"]
+        "jadro": ["packages/core/src/engine.ts:129 DraftStav.krok", "docs/PRAVIDLA.md §5 Stavba ponuky"]
       },
-      "melichar": "Šenok staviate ty a súper naraz: klikni na štyri karty, ktoré pôjdu do šenku (vybraná sa zdvihne), zvyšné štyri pôjdu naspodok balíčka. Naspodok patria tie, ktoré súperovi nedopraješ, neuvidí ich. Nedopriať niečo druhým ti ide, to viem.",
+      "melichar": "Ponuku staviate ty a súper naraz: klikni na štyri karty, ktoré pôjdu do ponuky (vybraná sa zdvihne), zvyšné štyri pôjdu naspodok balíčka. Naspodok patria tie, ktoré súperovi nedopraješ, neuvidí ich. Nedopriať niečo druhým ti ide, to viem.",
       "zvyraznit": ["stavba"]
     },
     {
@@ -89,7 +89,7 @@
         "podmienka": "nahladPitky(view)[ja]: zadlzenie + zadlzenieZoStola > 0",
         "jadro": ["packages/core/src/engine.ts:700 nahladPitky", "packages/core/src/engine.ts:873 prahyHraca (dlh)", "docs/PRAVIDLA.md §8 Hazard a Dlh"]
       },
-      "melichar": "Akcia [Dlh] Hazard ti v Pitke dá Dlh, za každú akciu jeden. Koľko ich prinesie stôl, vidíš vopred v bare. O dlžobách niečo vieš, však? Napríklad o jednej cigarete.",
+      "melichar": "Akcia [Dlh] Hazard ti v Pitke dá Dlh, za každú akciu jeden. Koľko ich prinesie stôl, vidíš vopred dole pri sebe. O dlžobách niečo vieš, však? Napríklad o jednej cigarete.",
       "zvyraznit": ["bar:dlhy"]
     },
     {
@@ -101,7 +101,7 @@
         "podmienka": "view.hraci[ja].dlhy > 0 (počítadlo Dlhov, v8.2)",
         "jadro": ["packages/core/src/engine.ts:412 Event pitkaVysledok", "docs/PRAVIDLA.md §11 Kliatby"]
       },
-      "melichar": "Prvý Dlh! Úprimne, nečudujem sa. Nie je to karta, počíta sa v bare a je hneď priznaný. V každej bitke po neho príde Exekútor aj s tvojimi špakmi, a pri remíze v bitke rozhodujú aj Dlhy: kto ich má viac, prehrá.",
+      "melichar": "Prvý Dlh! Úprimne, nečudujem sa. Nie je to karta, počíta sa dole pri tebe a je hneď priznaný. V každej bitke po neho príde Exekútor aj s tvojimi špakmi, a pri remíze v bitke rozhodujú aj Dlhy: kto ich má viac, prehrá.",
       "zvyraznit": ["bar:dlhy"]
     },
     {
@@ -139,7 +139,7 @@
         "podmienka": "pred.kolo === 1 && po.kolo === 2, alebo prvý koniec bitky",
         "jadro": ["packages/core/src/view.ts:413 spakyTeraz", "docs/PRAVIDLA.md §14 Špaky"]
       },
-      "melichar": "Špaky v bare rozhodnú, kto vyhrá. Klikni na ne a uvidíš nástenku: za čo si ich dostal. Koľko ti ktorý starší zaplatí po vyhratej a po prehratej bitke, ukáže dlaždica Starší. Keď sa ti tie čísla nebudú páčiť, mne sa nesťažuj.",
+      "melichar": "Špaky dole pri tebe rozhodnú, kto vyhrá. Klikni na ne a uvidíš nástenku: za čo si ich dostal. Koľko ti ktorý starší zaplatí po vyhratej a po prehratej bitke, ukáže dlaždica Starší. Keď sa ti tie čísla nebudú páčiť, mne sa nesťažuj.",
       "zvyraznit": ["bar:body", "bar:starsi"]
     },
     {

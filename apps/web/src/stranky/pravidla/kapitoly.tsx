@@ -179,13 +179,13 @@ export const KAPITOLY: readonly Kapitola[] = [
   {
     id: "ciel-a-senok",
     cast: "B",
-    nazov: "Kolo, cieľ a šenok",
+    nazov: "Kolo, cieľ a ponuka",
     obrazok: "05-ciel-a-senok",
     vSkratke: [
-      "Kolo: cieľ → šenok → Zhromaždenie a Pitka (1–5×) → bitka → po bitke; útočník prehral poslednú bitku, obranca ju vyhral.",
+      "Kolo: cieľ → ponuka → Zhromaždenie a Pitka (1–5×) → bitka → po bitke; útočník prehral poslednú bitku, obranca ju vyhral.",
       "Štart: 4 karty v ruke, prázdny balíček, 2 plné poldeci, 3 cigarety; lokality po úrovniach (Druhá liga 1 · 2 · 2 · 3 · 3), potom finále.",
       "Obranca vyberie lokalitu, víťaz minulej hádky ju natočí.",
-      "Stavba šenku: polovica kariet do šenku, polovica naspodok balíčka.",
+      "Stavba ponuky: polovica kariet do ponuky, polovica naspodok balíčka.",
       "Branie striedavo: 1 karta za 1 cigaretu, 2 karty za 3.",
       "Zajíma sa za 5 bodov a presviedča za 3 — po bitke, pri rozdelení Nakladačky a hádky.",
     ],
@@ -193,14 +193,14 @@ export const KAPITOLY: readonly Kapitola[] = [
       <>
         <H3 id="kolo-kroky">Kolo v piatich krokoch</H3>
         <div className="priebeh">
-          <span>1 Cieľ</span>→<span>2 Šenok</span>→<span>3 Zhromaždenie a Pitka 1–5×</span>→<span>4 Bitka</span>→<span>5 Po bitke</span>
+          <span>1 Cieľ</span>→<span>2 Ponuka</span>→<span>3 Zhromaždenie a Pitka 1–5×</span>→<span>4 Bitka</span>→<span>5 Po bitke</span>
         </div>
         <ol className="kroky">
           <li>
             <strong>Cieľ.</strong> <P k="utocnik">Obranca</P> (víťaz poslednej bitky) vyberie lokalitu, natočí ju víťaz minulej hádky.
           </li>
           <li>
-            <strong>Šenok.</strong> Spolu postavíte ponuku kariet a beriete z nej za cigarety.
+            <strong>Ponuka.</strong> Spolu postavíte ponuku kariet a beriete z nej za cigarety.
           </li>
           <li>
             <strong>Zhromaždenie a Pitka.</strong> Striedavo vykladáte karty do línie, potom sa pije a vyhodnocuje. Opakuje sa
@@ -227,7 +227,7 @@ export const KAPITOLY: readonly Kapitola[] = [
         <H3 id="kolo-utocnik">Útočník a obranca</H3>
         <p>
           <strong>Útočník</strong> je ten, kto prehral poslednú bitku: v Zhromaždení vykladá prvý a na odkryté NA EX odpovedá prvý.{" "}
-          <strong>Obranca</strong> vyberá cieľ kola (natáča ho víťaz minulej hádky) a zo šenku berie prvý. Pitku hráte obaja naraz; odpovede na NA EX idú lícom dole a otočia sa naraz. Vo finále
+          <strong>Obranca</strong> vyberá cieľ kola (natáča ho víťaz minulej hádky) a z ponuky berie prvý. Pitku hráte obaja naraz; odpovede na NA EX idú lícom dole a otočia sa naraz. Vo finále
           útočí zaostávajúci — kto má menej špakov.
         </p>
         <H3 id="ciel">Cieľ kola</H3>
@@ -237,19 +237,19 @@ export const KAPITOLY: readonly Kapitola[] = [
           hrany dostane, kto v tom kraji má <a href="#zhromazdenie-prevaha">prevahu</a>. Efekt lokality platí len v kole, keď sa
           o ňu bije (<a href="#lokality">tabuľka lokalít</a>). Vo finále vyberá obranca — kto vedie — z troch pinnacle lokalít a hrá sa o ňu ako o každú inú.
         </p>
-        <H3 id="senok-stavba">Stavba šenku</H3>
+        <H3 id="senok-stavba">Stavba ponuky</H3>
         <p>
-          Karty šenku ležia v dvoch balíčkoch lícom dole: <P k="naradie">Náradie</P> (Nástroje) a <P k="obcania">Občania</P>{" "}
-          (všetky ostatné). Nevzaté karty zo starého šenku idú naspodok svojho balíčka. Potom si každý vezme{" "}
-          <strong>2 karty z Náradia a 6 z Občanov</strong>. Obaja naraz a tajne dáte <strong>4 do šenku</strong> v ľubovoľnom mixe
-          a zvyšné 4 <strong>naspodok ich balíčka</strong> (súper ich nevidí). Nič si nepodávate; šenok má 8 kariet. Keď niektorý
+          Karty ponuky ležia v dvoch balíčkoch lícom dole: <P k="naradie">balíček nástrojov</P> a <P k="obcania">balíček dedinčanov</P>{" "}
+          (všetky ostatné karty). Nevzaté karty zo starej ponuky idú naspodok svojho balíčka. Potom si každý vezme{" "}
+          <strong>2 karty z balíčka nástrojov a 6 z balíčka dedinčanov</strong>. Obaja naraz a tajne dáte <strong>4 do ponuky</strong> v ľubovoľnom mixe
+          a zvyšné 4 <strong>naspodok ich balíčka</strong> (súper ich nevidí). Nič si nepodávate; ponuka má 8 kariet. Keď niektorý
           balíček nestačí, chýbajúce karty dá druhý.
         </p>
-        <H3 id="senok-branie">Branie zo šenku</H3>
+        <H3 id="senok-branie">Branie z ponuky</H3>
         <p>
-          Beriete striedavo, začína <strong>obranca</strong> — na svojom prvom ťahu len <strong>1 kartu</strong>, aby nevykradol šenok. Inak na ťahu vezmeš <strong>1 kartu za 1 cigaretu</strong> alebo{" "}
-          <strong>2 karty za 3 cigarety</strong>. Šenok sa poldeci neplatí. Kto prestane, druhému ostáva už len jeden ťah; kto
-          nemá cigaretu, prestane sám. Potom sa šenok doplní na 8 kariet — najprv z Náradia, kým v ňom nie sú aspoň 2 Nástroje, zvyšok z Občanov. Väzni počet kariet
+          Beriete striedavo, začína <strong>obranca</strong> — na svojom prvom ťahu len <strong>1 kartu</strong>, aby nevykradol ponuku. Inak na ťahu vezmeš <strong>1 kartu za 1 cigaretu</strong> alebo{" "}
+          <strong>2 karty za 3 cigarety</strong>. Za ponuku sa poldeci neplatí. Kto prestane, druhému ostáva už len jeden ťah; kto
+          nemá cigaretu, prestane sám. Potom sa ponuka doplní na 8 kariet — najprv z balíčka nástrojov, kým v nej nie sú aspoň 2 Nástroje, zvyšok z balíčka dedinčanov. Väzni počet kariet
           stavby nemenia.
         </p>
         <H3 id="patronat">Zajatie a presvedčenie</H3>
@@ -297,7 +297,7 @@ export const KAPITOLY: readonly Kapitola[] = [
         <p>
           Karty tvoria <strong>jednu súvislú <P k="linia">líniu</P></strong> bez vetvenia. Lokalita v strede ju delí na dva{" "}
           <P k="kraj">kraje</P>. Na ťahu položíš kartu na <strong>ktorýkoľvek z dvoch <P k="koniec-linie">koncov línie</P></strong> — žiaden nie je tvoj.
-          Karta je vždy natočená k tebe a ostáva tvoja — je v tvojej <P k="partia">partii</P> a jej akcie aj efekty sa rátajú
+          Karta je vždy natočená k tebe a ostáva tvoja — jej akcie aj efekty sa rátajú
           tebe, nech leží kdekoľvek. Aj vo finále leží v strede lokalita — pinnacle — a karty sa kladú k nej ako v každom kole.
         </p>
         <H3 id="zhromazdenie-spoj">Spoj akcií</H3>
@@ -441,7 +441,7 @@ export const KAPITOLY: readonly Kapitola[] = [
           <li>Záverečné karty sa otočia lícom hore (kapitola <a href="#pokrocile">Pokročilé ťahy</a>).</li>
         </ol>
         <p className="tlmene">
-          Pitka sama karty nedáva — doberáš si ich fajčením a Víziou. Kartu zo šenku zadarmo ti dá Zastávka po prvej Pitke a Podpora
+          Pitka sama karty nedáva — doberáš si ich fajčením a Víziou. Kartu z ponuky zadarmo ti dá Zastávka po prvej Pitke a Podpora
           Predavačky (Občana) či Živnostníka (Nástroj).
         </p>
         <H3 id="naex">NA EX</H3>
@@ -529,7 +529,7 @@ export const KAPITOLY: readonly Kapitola[] = [
         <H3 id="schopnost-vazna">Schopnosť väzňa</H3>
         <p>
           Kto má <P k="vazen">väzňa</P>, smie jeho <strong>schopnosť</strong> použiť <strong>raz za hru, kedy chce</strong> — vo
-          svojom ťahu pri braní zo šenku, v Zhromaždení alebo v Pitke (aj vo finále). Nič nestojí. Potom je minutá a väzeň ostáva
+          svojom ťahu pri braní z ponuky, v Zhromaždení alebo v Pitke (aj vo finále). Nič nestojí. Potom je minutá a väzeň ostáva
           v pivnici (ráta sa ďalej ako vydesený). Karta staršieho v ruke či v línii schopnosť nemá. Schopnosť, ktorá by nič
           neurobila, hra neponúkne.
         </p>
@@ -540,7 +540,7 @@ export const KAPITOLY: readonly Kapitola[] = [
           <li><strong>Starosta</strong> — Do konca kola sú všetky aktívne akcie lokality posilnené (obom, aj akcie Pitky).</li>
           <li><strong>Veterinár</strong> — Odhoď všetky priznané Cirhózy a Cirhózy na ruke.</li>
           <li><strong>Vychovávateľka</strong> — Súper v tomto Zhromaždení hneď pasuje a za pas nedostane cigarety.</li>
-          <li><strong>Autobusár</strong> — Zo šenku berieš kariet, koľko chceš, každú za jednu cigaretu; keď skončíš, môže pokračovať súper.</li>
+          <li><strong>Autobusár</strong> — Z ponuky berieš kariet, koľko chceš, každú za jednu cigaretu; keď skončíš, môže pokračovať súper.</li>
           <li><strong>Hrobár</strong> — Vezmi si do ruky 1 kartu zo súperovho odhadzovacieho balíčka.</li>
         </ul>
       </>
@@ -582,7 +582,7 @@ export const KAPITOLY: readonly Kapitola[] = [
         <p>
           <P k="nerest">Nerest</P> je len to, čo vypiješ a vyfajčíš: <strong>Vypiť</strong> v Zhromaždení 1, odpoveď na NA EX 1, každé <strong>NA EX 2</strong>{" "}
           (je to väčšia dávka) a každá vyfajčená cigareta 1 (druhé fajčenie v Pitke za 2 cigarety teda 2, na Benzínke za 1 cigaretu 1; fajčenie zadarmo nič).
-          Doliatie, barter, šenok, Záverečná, Dedičstvo nerest nie sú.
+          Doliatie, barter, ponuka, Záverečná, Dedičstvo nerest nie sú.
         </p>
         <p>
           <P k="chut">Chuť</P> je tvoje verejné číslo, na začiatku 0 — kto si zvykne, musí pokračovať. Na konci kola:
@@ -786,7 +786,7 @@ export const KAPITOLY: readonly Kapitola[] = [
         <p>
           Hneď po bitke ti súper dá <strong>1 cigaretu za každého staršieho s tvojím červeným strachom</strong> — aj keď si bitku prehral a aj pri sekere.{" "}
           <P k="vazen">Väzeň</P> sa ráta ako červená, reči nie. Ráta sa strach po Nakladačke tejto bitky a súper dá, koľko má; čo nemá, nedlhuje. Platíte obaja naraz, takže
-          prijaté výpalné v tom istom kroku neodovzdáš ďalej. Cigarety máš tak pripravené na šenok. Obmedzenie výpalné neuberá, nie je to nerest a po finále sa neplatí.
+          prijaté výpalné v tom istom kroku neodovzdáš ďalej. Cigarety máš tak pripravené na ponuku. Obmedzenie výpalné neuberá, nie je to nerest a po finále sa neplatí.
         </p>
         <H3 id="starsi-priazne">Priazne</H3>
         <p>
@@ -1066,7 +1066,7 @@ export const KAPITOLY: readonly Kapitola[] = [
           <tr><td>Krčma</td><td>Pitka</td><td>Kto má plný poldeci a kam ho dať, musí dať NA EX. Prah Cirhózy je obom o 2 vyšší.</td></tr>
           <tr><td>Kostol</td><td>Zhromaždenie, Pitka</td><td>Nikto nesmie vypiť (v ťahu len jedna karta). NA EX len na kartu na konci línie (na ktoromkoľvek z dvoch koncov), najďalej od Kostola.</td></tr>
           <tr><td>Benzínka</td><td>Pitka</td><td>Každé fajčenie stojí o 1 cigaretu menej: prvé v Pitke zadarmo, druhé 1, tretie 2…</td></tr>
-          <tr><td>Zastávka</td><td>Pitka</td><td>Po prvej Pitke kola si každý vezme zadarmo 1 kartu zo šenku — najprv útočník, potom obranca (z prázdneho šenku nič).</td></tr>
+          <tr><td>Zastávka</td><td>Pitka</td><td>Po prvej Pitke kola si každý vezme zadarmo 1 kartu z ponuky — najprv útočník, potom obranca (z prázdnej ponuky nič).</td></tr>
           <tr><td>Lesná cesta</td><td>Bitka</td><td>Za každé tvoje Zviera v línii, v ktoromkoľvek kraji, 2 tuhé navyše.</td></tr>
           <tr><td>Ihrisko</td><td>Bitka</td><td>V každom kraji +2 tuhé tomu, kto tam má viac svojich Občanov, Zvierat a Starešinov (Dvojčatá za dve) — spolu až +4.</td></tr>
           <tr><td>Zberný dvor</td><td>Pitka</td><td>Na konci Pitky smie každý spáliť 1 kartu z ruky, nie kliatbu.</td></tr>
@@ -1075,7 +1075,7 @@ export const KAPITOLY: readonly Kapitola[] = [
           <tr><td>Cintorín</td><td>Prehra</td><td>Porazený si smie vziať do ruky 1 kartu zo svojho odhadzovacieho balíčka (pri sekere nikto).</td></tr>
           <tr><td>Obecný úrad</td><td>Pitka</td><td>Cigarety a Dlhy získané v Pitke sa obom rátajú dvakrát: (akcie − Obmedzenie) × 2. Platby a cigarety za pas nie.</td></tr>
           <tr><td>Jednota</td><td>Pitka</td><td>Kto má viac priznaných Dlhov, nesmie v tejto Pitke fajčiť ani dolievať.</td></tr>
-          <tr><td>Sklad</td><td>Zhromaždenie</td><td>Nástroj zo šenku smieš vyložiť rovno do Dedičstva za cenu Dedičstva; do šenku príde z Náradia nový Nástroj.</td></tr>
+          <tr><td>Sklad</td><td>Zhromaždenie</td><td>Nástroj z ponuky smieš vyložiť rovno do Dedičstva za cenu Dedičstva; do ponuky príde z balíčka nástrojov nový Nástroj.</td></tr>
           <tr><td>Poľovnícka chata</td><td>Furt</td><td>Aktívne Rany, Pecky a Petelice z hrán sa rátajú dvakrát (len finále).</td></tr>
           <tr><td>Predsedova vila</td><td>Pitka</td><td>Za každé 2 cigarety, ktoré v Pitke vyfajčíš, zdvihni svoje reči pri jednom staršom o stupeň.</td></tr>
           <tr><td>Herňa</td><td>Bitka</td><td>Víťaz dostane navyše toľko špakov, koľko má porazený priznaných Dlhov (len finále).</td></tr>
@@ -1135,7 +1135,7 @@ export const KAPITOLY: readonly Kapitola[] = [
             Po poslednej bitke o lokalitu (3 / 5 / 7) je finále — posledná bitka o pinnacle lokalitu, ktorá sa hrá ako o každú
             inú: lokalita leží v strede línie, karty sa kladú k nej a platia jej hrany aj efekt.
           </li>
-          <li>Pinnacle vyberie hráč s viac špakmi — obranca. Natočí ju víťaz poslednej hádky; šenok a branie platia ako v každom kole. Vo finále sa nezajíma ani nepresviedča, cigareta za prehru ani výpalné sa po ňom neplatia.</li>
+          <li>Pinnacle vyberie hráč s viac špakmi — obranca. Natočí ju víťaz poslednej hádky; ponuka a branie platia ako v každom kole. Vo finále sa nezajíma ani nepresviedča, cigareta za prehru ani výpalné sa po ňom neplatia.</li>
           <li>
             <strong>Útočí zaostávajúci — kto má menej špakov</strong> (pri rovnosti ten, kto prehral poslednú bitku; po
             sekere ostáva útočník). Vykladá prvý a na NA EX odpovedá prvý.

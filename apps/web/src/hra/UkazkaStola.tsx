@@ -29,6 +29,7 @@
 //                  v11, predtým stop=hadka a stop=pohorsenie — stále fungujú)
 //   &stop=reci-super krok Reči, keď ich rozdeľuje súper (čakanie hráča ?ja; aj stop=hadka-super)
 //   &pult=1        línia starších sa otvorí v rozložení Pult (mock 5) namiesto Teplomerov
+//   &ukazka-napovedy=<id>  nápoveda Melichara z napovedy.json nad stolom (podčiarknuté pojmy jadra)
 //   &stop=koniec-pitky  ťah, ktorým skončí posledná Pitka kola (&i=k, od 0), keď v nej súper dal NA EX —
 //                  po načítaní sa dohrá: stôl zastaví s odkrytými NA EX (Ďalej / Preskočiť, Michal 2026-11-09)
 //   &stop=posledna-pitka  posledná Pitka kola, hráč ?ja má prázdnu ruku a môže dať NA EX — súper
@@ -114,6 +115,7 @@ import { ULOZENY_REZIM_LINIE } from "./HernaPlocha.tsx";
 import { zaciatokKola as zaciatokKolaSuhrnu } from "./krokySuhrnu.ts";
 import { poslednaPitkaVDavke } from "./zastaveniePitky.ts";
 import { sNaradim, sadaSNaradim } from "./ukazkaNaradia.ts";
+import { NapovedaMelichara } from "./Napovedy.tsx";
 
 interface Krok {
   readonly stav: GameState;
@@ -712,8 +714,8 @@ function odohrajSeed(data: GameData, seed: number): { readonly odohrane: Odohran
 
 /** Podpora Predavačky a Živnostníka (Michal 2026-11-09) — kým ju admin nezapíše do tvorcu, ukážka ju dá sade len v prehliadači. */
 const TEXTY_PODPORY_SENKU: Readonly<Record<string, string>> = {
-  predavacka: "Podpora: Vezmi si zo šenku 1 Občana.",
-  zivnostnik: "Podpora: Vezmi si zo šenku 1 Nástroj.",
+  predavacka: "Podpora: Vezmi si z ponuky 1 Občana.",
+  zivnostnik: "Podpora: Vezmi si z ponuky 1 Nástroj.",
 };
 
 function sadaSPodporouSenku(sada: Sada): Sada {
@@ -858,6 +860,7 @@ function Ukazka({ sada }: { readonly sada: NonNullable<ReturnType<typeof useSada
       opustit={() => undefined}
       onPocitadlo={setSuhrn}
     />
+    {q().has("ukazka-napovedy") && <NapovedaMelichara data={data} view={view} udalosti={udalosti} pocitadloBezi={suhrn} sada={sada} jednaNaFazu={naSirku} />}
     <Momenty
       udalosti={udalosti}
       ja={ja}

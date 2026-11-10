@@ -8,7 +8,7 @@ import { useEffect, useRef, useState } from "react";
 
 export const SKRATKY_V_PARTII: readonly { readonly klaves: string; readonly popis: string }[] = [
   { klaves: "K", popis: "končím · hotovo · potvrdiť ťah" },
-  { klaves: "P", popis: "pasovať (v šenku „už neťahám“)" },
+  { klaves: "P", popis: "pasovať (v ponuke „už neťahám“)" },
   { klaves: "N", popis: "NA EX! na vybranú kartu" },
   { klaves: "O", popis: "tvoje karty: balíček, odhodené, priznané, Dedičstvo" },
   { klaves: "Esc", popis: "zrušiť výber · zavrieť · nakoniec vrátiť návrh ťahu do ruky" },

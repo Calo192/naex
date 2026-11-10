@@ -45,6 +45,7 @@ export function Domov() {
                 <img src="/melichar.jpg" alt="" width={40} height={40} />
                 <span>
                   {napisVyucby(vyucba)}
+                  {/* TODO: dĺžka po prestavbe 1. časti (vyucba/prve-kolo-pojmy) — číslo pošle Leader. */}
                   <small>tri časti, spolu asi 35 minút pri stole proti Štamgastovi</small>
                 </span>
               </Odkaz>

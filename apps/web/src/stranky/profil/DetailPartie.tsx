@@ -166,7 +166,7 @@ export function DetailPartie({ id }: { readonly id: number }) {
                   <th>Nakladačka</th>
                   <th>NA EX</th>
                   <th>Pas</th>
-                  <th>Šenok</th>
+                  <th>Ponuka</th>
                   <th>Kliatby</th>
                   <th>{v6 ? "Špaky" : "Body"}</th>
                 </tr>

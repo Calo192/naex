@@ -274,7 +274,7 @@ export function detailZdroja(zdroj: ZdrojStlpca, c: CislaHraca, ja: boolean, pri
     case "cigarety":
       return {
         nadpis: "Cigarety",
-        text: `Platíš nimi šenok (1 karta = ${KONSTANTY.CENA_SENKU[1] ?? 1}, 2 karty = ${KONSTANTY.CENA_SENKU[2] ?? 3}) a Dedičstvo; v Pitke fajčíš: karta za 1, ďalšia v tej istej Pitke za 2, potom 3… Na konci hry každých ${KONSTANTY.CIGARIET_ZA_SPAK} cigariet = 1 špak.`,
+        text: `Platíš nimi karty z ponuky (1 karta = ${KONSTANTY.CENA_SENKU[1] ?? 1}, 2 karty = ${KONSTANTY.CENA_SENKU[2] ?? 3}) a Dedičstvo; v Pitke fajčíš: karta za 1, ďalšia v tej istej Pitke za 2, potom 3… Na konci hry každých ${KONSTANTY.CIGARIET_ZA_SPAK} cigariet = 1 špak.`,
         riadky: [
           ["cigarety", String(c.cigarety)],
           ...riadkyPrisunu(prisun),

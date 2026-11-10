@@ -566,7 +566,7 @@ export function popisKroku(data: GameData, state: GameState, c: Command): PopisK
       case "draftStop":
         return "klikni Už neťahám";
       case "draftBer":
-        return `vezmi zo šenku ${c.uids.map((u) => `„${menoKarty(data, state, u)}“`).join(", ")}`;
+        return `vezmi z ponuky ${c.uids.map((u) => `„${menoKarty(data, state, u)}“`).join(", ")}`;
       case "chooseLocation":
         return `vyber ${nazov}`;
       case "prebytok":

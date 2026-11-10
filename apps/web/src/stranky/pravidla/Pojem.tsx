@@ -2,9 +2,9 @@
 // slovníka sa ukáže pod myšou alebo pri fokuse z klávesnice; na dotykovom
 // zariadení ťuknutie otvorí spodný panel. Klik myšou skočí do slovníka.
 
-import { createContext, useCallback, useContext, useEffect, useState, type ReactNode } from "react";
+import { createContext, useCallback, useContext, useEffect, useRef, useState, type ReactNode } from "react";
 import { useTip } from "../../karta/Tip.tsx";
-import { pojemSlovnika, type PojemSlovnika } from "./slovnik.ts";
+import { pojemJadra, pojemSlovnika, type PojemSlovnika } from "./slovnik.ts";
 
 interface PojemKontext {
   ukaz(el: Element, id: string): void;
@@ -99,5 +99,57 @@ export function Pojem({ k, children }: { readonly k: string; readonly children: 
     >
       {children}
     </button>
+  );
+}
+
+/**
+ * Pojem jadra v bubline Melichara a v nápovedách (Michal 2026-11-10): podčiarknutý, pod myšou
+ * alebo pri fokuse krátka veta pre nováčika (JADRO_POJMOV), na dotyku ju ukáže a skryje ťuk.
+ * Nie je to tlačidlo — bublina leží aj v tlačidlách možností a tlačidlo v tlačidle nejde.
+ */
+export function PojemVBubline({ k, children }: { readonly k: string; readonly children: ReactNode }) {
+  const { tip, ukaz, skry } = useTip();
+  const otvoreny = useRef(false);
+  const dotyk = useRef(false);
+  const p = pojemSlovnika(k);
+  const j = pojemJadra(k);
+  if (p === null || j === null) return <>{children}</>;
+  const otvor = (el: Element): void => {
+    otvoreny.current = true;
+    ukaz(el, { nadpis: p.pojem, text: j.kratko });
+  };
+  const zavri = (): void => {
+    otvoreny.current = false;
+    skry();
+  };
+  return (
+    <>
+      <span
+        className="pojem pojem-bublina"
+        role="button"
+        tabIndex={0}
+        aria-label={`${p.pojem}: ${j.kratko}`}
+        onMouseEnter={(e) => otvor(e.currentTarget)}
+        onMouseLeave={zavri}
+        onFocus={(e) => otvor(e.currentTarget)}
+        onBlur={zavri}
+        onPointerUp={(e) => {
+          dotyk.current = e.pointerType !== "mouse";
+          if (!dotyk.current) return;
+          if (otvoreny.current) zavri();
+          else otvor(e.currentTarget);
+        }}
+        onClick={(e) => {
+          // Ťuk na slovo len ukáže vysvetlenie — neprejde na bar pod ním (ďalšia strana, „rozumiem“).
+          if (dotyk.current) e.stopPropagation();
+        }}
+        onKeyDown={(e) => {
+          if (e.key === "Escape") zavri();
+        }}
+      >
+        {children}
+      </span>
+      {tip}
+    </>
   );
 }

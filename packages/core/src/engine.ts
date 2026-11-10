@@ -2150,7 +2150,7 @@ function nevyhnutnyTah(data: GameData, s: MutState, kto: Miesto, events: Event[]
     } else if (jedina?.type === "bezReakcie") {
       cmdBezReakcie(s, data, p, events);
     } else if (jedina?.type === "draftStop") {
-      if (s.senok.length > 0) events.push({ type: "log", text: `Hráč ${p + 1} nemá cigaretu na kartu zo šenku.` });
+      if (s.senok.length > 0) events.push({ type: "log", text: `Hráč ${p + 1} nemá cigaretu na kartu z ponuky.` });
       cmdDraftStop(s, data, kto, events);
     } else {
       return false;
@@ -2267,7 +2267,7 @@ function zacniStavbu(s: MutState, data: GameData, events: Event[]): void {
   // Nevzaté karty zo starého šenku idú naspodok svojho balíčka (Náradie / Občania).
   if (s.senok.length > 0) {
     naspodok(s, data, s.senok);
-    events.push({ type: "log", text: `Zo šenku ide naspodok Náradia a Občanov ${s.senok.length} nevzatých kariet.` });
+    events.push({ type: "log", text: `Z ponuky ide naspodok balíčkov ${s.senok.length} nevzatých kariet.` });
     s.senok = [];
   }
   const n = velkostStavby(s as GameState);
@@ -2293,7 +2293,7 @@ function zacniStavbu(s: MutState, data: GameData, events: Event[]): void {
   };
   events.push({
     type: "log",
-    text: n > 0 ? `Stavba šenku: každý hráč dostáva ${naMiesto} kariet z Náradia a Občanov.` : "Náradie aj Občania sú prázdni — šenok sa nestavia.",
+    text: n > 0 ? `Stavba ponuky: každý hráč dostáva ${naMiesto} kariet z balíčkov nástrojov a dedinčanov.` : "Balíčky nástrojov aj dedinčanov sú prázdne — ponuka sa nestavia.",
   });
 }
 
@@ -2317,11 +2317,11 @@ function cmdStavbaSenku(
 ): void {
   const p = timMiesta(kto);
   const d = s.draftStav;
-  need(s.faza === "draft" && d !== null && d.krok === "stavba", "Teraz sa šenok nestavia.");
+  need(s.faza === "draft" && d !== null && d.krok === "stavba", "Teraz sa ponuka nestavia.");
   need(vyberMiesta(d, kto) === null, "V tomto kroku si už vybral.");
   const moj = balicekMiesta(d, kto);
   const krok = krokStavby(moj.length);
-  need(cmd.doSenku.length === krok.doSenku, `Do šenku daj ${kariet(krok.doSenku)}.`);
+  need(cmd.doSenku.length === krok.doSenku, `Do ponuky daj ${kariet(krok.doSenku)}.`);
   need(cmd.odhod.length === krok.odhod, `Naspodok daj ${kariet(krok.odhod)}.`);
   const vybrane = [...cmd.doSenku, ...cmd.odhod];
   need(new Set(vybrane).size === vybrane.length, "Každú kartu vyber len raz.");
@@ -2332,7 +2332,7 @@ function cmdStavbaSenku(
   const vyberKroku: VyberStavby = { doSenku: [...cmd.doSenku], odhod: [...cmd.odhod] };
   if (clenMiesta(kto) === 0) d.vyber[p] = vyberKroku as DeepMutable<VyberStavby>;
   else if (d.vyber2 !== undefined) d.vyber2[p] = vyberKroku as DeepMutable<VyberStavby>;
-  events.push({ type: "log", text: `Hráč ${p + 1} ${rodovo(p, "vybral", "vybrala", "vyberá")} karty do šenku.` });
+  events.push({ type: "log", text: `Hráč ${p + 1} ${rodovo(p, "vybral", "vybrala", "vyberá")} karty do ponuky.` });
   const poradie = poradieSenku(s as GameState);
   if (poradie.some((m) => vyberMiesta(d, m) === null)) return;
 
@@ -2351,7 +2351,7 @@ function cmdStavbaSenku(
     }
     naspodok(s, data, vyber.odhod.map(vezmi));
   }
-  events.push({ type: "log", text: `Do šenku: ${doSenku.join(", ")}.` });
+  events.push({ type: "log", text: `Do ponuky: ${doSenku.join(", ")}.` });
   d.vyber = [null, null];
   if (d.vyber2 !== undefined) d.vyber2 = [null, null];
   if (poradie.every((m) => balicekMiesta(d, m).length === 0)) {
@@ -2359,7 +2359,7 @@ function cmdStavbaSenku(
     d.naTahu = kapitan(s, obranca(s));
     events.push({
       type: "log",
-      text: `Šenok je postavený (${s.senok.length} ${s.senok.length === 1 ? "karta" : s.senok.length >= 2 && s.senok.length <= 4 ? "karty" : "kariet"}). Berie sa striedavo, začína obranca: 1 karta za ${KONSTANTY.CENA_SENKU[1]} cigaretu, 2 karty za ${KONSTANTY.CENA_SENKU[2]} cigarety; obranca na prvom ťahu len 1 kartu.`,
+      text: `Ponuka je postavená (${s.senok.length} ${s.senok.length === 1 ? "karta" : s.senok.length >= 2 && s.senok.length <= 4 ? "karty" : "kariet"}). Berie sa striedavo, začína obranca: 1 karta za ${KONSTANTY.CENA_SENKU[1]} cigaretu, 2 karty za ${KONSTANTY.CENA_SENKU[2]} cigarety; obranca na prvom ťahu len 1 kartu.`,
     });
   }
 }
@@ -2410,13 +2410,13 @@ function cmdDraftBer(
 ): void {
   const p = timMiesta(kto);
   const d = s.draftStav;
-  need(s.faza === "draft" && d !== null && d.krok === "beranie", "Teraz sa zo šenku neberie.");
+  need(s.faza === "draft" && d !== null && d.krok === "beranie", "Teraz sa z ponuky neberie.");
   need(!hotovoMiesta(d, kto), "Už nič neberieš.");
   const pocet = cmd.uids.length;
-  need(pocet >= 1 && pocet < KONSTANTY.CENA_SENKU.length, "Zo šenku ber 1 alebo 2 karty.");
-  need(pocet <= maxZoSenku(s as GameState, kto), "Kto berie zo šenku prvý, na prvom ťahu vezme len 1 kartu.");
+  need(pocet >= 1 && pocet < KONSTANTY.CENA_SENKU.length, "Z ponuky ber 1 alebo 2 karty.");
+  need(pocet <= maxZoSenku(s as GameState, kto), "Kto berie z ponuky prvý, na prvom ťahu vezme len 1 kartu.");
   need(new Set(cmd.uids).size === pocet, "Každú kartu vyber len raz.");
-  need(cmd.uids.every((uid) => s.senok.some((k) => k.uid === uid)), "Karta nie je v šenku.");
+  need(cmd.uids.every((uid) => s.senok.some((k) => k.uid === uid)), "Karta nie je v ponuke.");
   const cena = KONSTANTY.CENA_SENKU[pocet] as number;
   need(s.hraci[p].cigarety >= cena, `Na ${pocet === 1 ? "kartu" : kariet(pocet)} treba ${cigariet(cena)}.`);
   zmenCigarety(s, p, "platba", -cena, events);
@@ -2432,7 +2432,7 @@ function cmdDraftBer(
   });
   d.zobrate = zobrate;
   d.noveKarty[p] += pocet;
-  events.push({ type: "log", text: `Hráč ${p + 1} berie zo šenku ${mena.join(" a ")} za ${cena} ${cena === 1 ? "cigaretu" : "cigarety"}.` });
+  events.push({ type: "log", text: `Hráč ${p + 1} berie z ponuky ${mena.join(" a ")} za ${cena} ${cena === 1 ? "cigaretu" : "cigarety"}.` });
   // Prázdny šenok končí branie obom.
   if (s.senok.length === 0) {
     d.hotovo = [true, true];
@@ -2459,10 +2459,10 @@ export function miestoVSenku(index: number, zobrate: readonly Pick<ZobrataZoSenk
 function cmdDraftStop(s: MutState, data: GameData, kto: Miesto, events: Event[]): void {
   const p = timMiesta(kto);
   const d = s.draftStav;
-  need(s.faza === "draft" && d !== null && d.krok === "beranie", "Teraz sa zo šenku neberie.");
+  need(s.faza === "draft" && d !== null && d.krok === "beranie", "Teraz sa z ponuky neberie.");
   need(!hotovoMiesta(d, kto), "Už nič neberieš.");
   nastavHotovo(d, kto);
-  events.push({ type: "log", text: `Hráč ${p + 1} už neberie zo šenku (spolu ${d.noveKarty[p]}).` });
+  events.push({ type: "log", text: `Hráč ${p + 1} už neberie z ponuky (spolu ${d.noveKarty[p]}).` });
   dalsiVBerani(s, data, events);
 }
 
@@ -2492,7 +2492,7 @@ function dalsiVBerani(s: MutState, data: GameData, events: Event[]): void {
   const doplnene = zVrchuBalickov(s, chyba, Math.max(0, naradiaVSenku - nastrojov));
   if (doplnene.length > 0) {
     s.senok.push(...doplnene);
-    events.push({ type: "log", text: `Šenok sa dopĺňa z vrchu Náradia a Občanov na ${s.senok.length} kariet (+${doplnene.length}).` });
+    events.push({ type: "log", text: `Ponuka sa dopĺňa z vrchu balíčkov nástrojov a dedinčanov na ${s.senok.length} kariet (+${doplnene.length}).` });
   }
   // Fajčiar dáva cigarety od v9 po bitke (koniecBitky), nie po šenku.
   s.draftStav = null;
@@ -2757,7 +2757,7 @@ function zoSkladu(s: MutState, data: GameData, p: PlayerId, uid: number, events:
   const z = s.zhromazdenieStav;
   const i = s.senok.findIndex((k) => k.uid === uid);
   const karta = s.senok[i];
-  need(z !== null && karta !== undefined && jeNaradie(data, karta as CardInstance), "Zo šenku smie do Dedičstva len Nástroj.");
+  need(z !== null && karta !== undefined && jeNaradie(data, karta as CardInstance), "Z ponuky smie do Dedičstva len Nástroj.");
   const cena = cenaDedicstva(s as GameState);
   need(s.hraci[p].cigarety >= cena, `Do Dedičstva treba ${cigariet(cena)}.`);
   zmenCigarety(s, p, "platba", -cena, events);
@@ -2766,12 +2766,12 @@ function zoSkladu(s: MutState, data: GameData, p: PlayerId, uid: number, events:
   const bonusPred = limitBonusDedicstva(s.hraci[p].dedicstvo);
   hrac(s, p).dedicstvo.push(karta);
   pridajLimit(z, p, limitBonusDedicstva(s.hraci[p].dedicstvo) - bonusPred);
-  events.push({ type: "log", text: `Sklad: hráč ${p + 1} vykladá ${defOf(data, karta as CardInstance).name} zo šenku do Dedičstva za ${cigariet(cena)}.` });
+  events.push({ type: "log", text: `Sklad: hráč ${p + 1} vykladá ${defOf(data, karta as CardInstance).name} z ponuky do Dedičstva za ${cigariet(cena)}.` });
   manualEfekty(s, data, "Dedičstvo", events);
   const nova = s.naradie.shift();
   if (nova !== undefined) {
     s.senok.push(nova);
-    events.push({ type: "log", text: `Sklad: z Náradia prichádza do šenku ${defOf(data, nova as CardInstance).name}.` });
+    events.push({ type: "log", text: `Sklad: z balíčka nástrojov prichádza do ponuky ${defOf(data, nova as CardInstance).name}.` });
   }
 }
 
@@ -3351,18 +3351,18 @@ function podpora(s: MutState, data: GameData, nositel: DeepMutable<PlacedCard>, 
     case "zivnostnik": {
       // Michal 2026-11-09: Podpora bez tagu — majiteľ si vezme zo šenku zadarmo 1 Občana (Predavačka),
       // resp. 1 Nástroj (Živnostník). Text zo sady frakcií („Dober si 1 kartu“) ťahá ako predtým.
-      if (def.id === "predavacka" && !def.effectText.includes("šenk")) {
+      if (def.id === "predavacka" && !def.effectText.includes("šenk") && !def.effectText.includes("ponuk")) {
         if (tahaj(s, nositel.miesto ?? kapitan(s, p), 1, events).length > 0) events.push({ type: "log", text: `Podpora — Predavačka hráča ${p + 1}: dober si 1 kartu.` });
         break;
       }
       const tag = TAG_ZO_SENKU[def.id] as Tag;
       if (!s.senok.some((k) => defOf(data, k as CardInstance).tags.includes(tag))) {
-        events.push({ type: "log", text: `Podpora — ${def.name} hráča ${p + 1}: v šenku nie je ${tag} — nič si neberie.` });
+        events.push({ type: "log", text: `Podpora — ${def.name} hráča ${p + 1}: v ponuke nie je ${tag} — nič si neberie.` });
         break;
       }
       const miesto = nositel.miesto === undefined ? {} : { miesto: nositel.miesto };
       s.hasicVolby = [...(s.hasicVolby ?? []), { hrac: p, typ: "senok", uid: nositel.card.uid as number, potom: null, tag, zdroj: def.id, ...miesto }];
-      events.push({ type: "log", text: `Podpora — ${def.name} hráča ${p + 1}: berie si zo šenku zadarmo 1 ${tag === "Občan" ? "Občana" : tag}.` });
+      events.push({ type: "log", text: `Podpora — ${def.name} hráča ${p + 1}: berie si z ponuky zadarmo 1 ${tag === "Občan" ? "Občana" : tag}.` });
       break;
     }
     case "hasic": {
@@ -4484,7 +4484,7 @@ function najprvVolba(state: Pick<GameState, "hasicVolby">, p: PlayerId): string 
   const volba = state.hasicVolby?.[0];
   if (volba === undefined) return "";
   const co =
-    volba.typ === "senok" ? `o karte zo šenku (${volba.zdroj === "predavacka" ? "Predavačka" : volba.zdroj === "zivnostnik" ? "Živnostník" : "Zastávka"})`
+    volba.typ === "senok" ? `o karte z ponuky (${volba.zdroj === "predavacka" ? "Predavačka" : volba.zdroj === "zivnostnik" ? "Živnostník" : "Zastávka"})`
     : volba.typ === "dvor" ? "o karte na spálenie (Zberný dvor)"
     : volba.typ === "vila" ? "o staršom, pri ktorom Predsedova vila zdvihne reči"
     : "o karte, ktorú vytiahol Hasič";
@@ -4654,8 +4654,8 @@ export function schopnostBezUcinku(state: StavSchopnostiVazna, p: PlayerId, defI
       if (state.faza !== "zhromazdenie") return "Len v Zhromaždení.";
       return state.zhromazdenieStav?.pasoval[opponentOf(p)] === true ? "Súper už pasoval." : null;
     case "autobusar":
-      if (state.faza !== "draft") return "Len pri braní zo šenku.";
-      if (state.senok.length === 0) return "Šenok je prázdny.";
+      if (state.faza !== "draft") return "Len pri braní z ponuky.";
+      if (state.senok.length === 0) return "Ponuka je prázdna.";
       return state.cigarety >= KONSTANTY.AUTOBUSAR_CENA ? null : "Nemáš cigaretu.";
     case "hrobar":
       return state.superovOdhadzovaci.length > 0 ? null : "Súperov odhadzovací balíček je prázdny.";
@@ -4693,7 +4693,7 @@ export function schopnostiVazna(state: GameState, p: PlayerId): Command[] {
 function cmdSchopnostVazna(s: MutState, data: GameData, cmd: { elderId: string; uid?: number; uids?: readonly number[] }, miesto: Miesto, events: Event[]): void {
   const p = timMiesta(miesto);
   const stav = stavSchopnostiVazna(s as GameState, p);
-  need(tahSchopnosti(stav, p), "Schopnosť väzňa použiješ vo svojom ťahu — pri braní zo šenku, v Zhromaždení alebo v Pitke.");
+  need(tahSchopnosti(stav, p), "Schopnosť väzňa použiješ vo svojom ťahu — pri braní z ponuky, v Zhromaždení alebo v Pitke.");
   const vazen = s.vazni.find((v) => v.elderId === cmd.elderId && v.hrac === p);
   need(vazen !== undefined, "Tohto staršieho nemáš v pivnici.");
   need(vazen.pouzita !== true, "Schopnosť tohto väzňa si už použil.");
@@ -4748,9 +4748,9 @@ function cmdSchopnostVazna(s: MutState, data: GameData, cmd: { elderId: string; 
     case "autobusar": {
       const uids = cmd.uids ?? [];
       const d = s.draftStav as DeepMutable<DraftStav>;
-      need(uids.length > 0, "Vyber aspoň jednu kartu zo šenku.");
+      need(uids.length > 0, "Vyber aspoň jednu kartu z ponuky.");
       need(new Set(uids).size === uids.length, "Každú kartu vyber len raz.");
-      need(uids.every((uid) => s.senok.some((k) => k.uid === uid)), "Karta nie je v šenku.");
+      need(uids.every((uid) => s.senok.some((k) => k.uid === uid)), "Karta nie je v ponuke.");
       const cena = uids.length * KONSTANTY.AUTOBUSAR_CENA;
       need(h.cigarety >= cena, `Na ${kariet(uids.length)} treba ${cigariet(cena)}.`);
       zmenCigarety(s, p, "platba", -cena, events);
@@ -4766,7 +4766,7 @@ function cmdSchopnostVazna(s: MutState, data: GameData, cmd: { elderId: string; 
       });
       d.zobrate = zobrate;
       d.noveKarty[p] += uids.length;
-      events.push({ type: "log", text: `${kto} berie zo šenku ${mena.join(", ")} za ${cigariet(cena)} a s braním končí.` });
+      events.push({ type: "log", text: `${kto} berie z ponuky ${mena.join(", ")} za ${cigariet(cena)} a s braním končí.` });
       // Keď skončí, pokračuje súper (ak ešte berie) — ďalej ako po „už neberiem“.
       d.hotovo[p] = true;
       if (s.senok.length === 0) d.hotovo = [true, true];
@@ -4798,13 +4798,13 @@ export function ponukaSenku(data: GameData, state: Pick<GameState, "senok">, vol
 function cmdSenok(s: MutState, data: GameData, cmd: { uid: number }, kto: Miesto, events: Event[]): void {
   const p = timMiesta(kto);
   const [volba, ...dalsie] = s.hasicVolby ?? [];
-  need(volba !== undefined && volba.hrac === p && volba.typ === "senok", "Teraz neberieš kartu zo šenku.");
+  need(volba !== undefined && volba.hrac === p && volba.typ === "senok", "Teraz neberieš kartu z ponuky.");
   const idx = s.senok.findIndex((k) => k.uid === cmd.uid);
-  need(idx !== -1, "Karta nie je v šenku.");
-  need(ponukaSenku(data, s as GameState, volba).some((k) => k.uid === cmd.uid), `Zo šenku si teraz smieš vziať len kartu s tagom ${volba.tag ?? ""}.`);
+  need(idx !== -1, "Karta nie je v ponuke.");
+  need(ponukaSenku(data, s as GameState, volba).some((k) => k.uid === cmd.uid), `Z ponuky si teraz smieš vziať len kartu s tagom ${volba.tag ?? ""}.`);
   s.hasicVolby = dalsie;
   const karta = s.senok.splice(idx, 1)[0] as DeepMutable<CardInstance>;
-  events.push({ type: "log", text: `Hráč ${p + 1} si berie zo šenku ${defOf(data, karta as CardInstance).name}.` });
+  events.push({ type: "log", text: `Hráč ${p + 1} si berie z ponuky ${defOf(data, karta as CardInstance).name}.` });
   doRuky(s, kto, karta);
   dokonciPoVolbe(s, data, volba, events);
   preskocPrazdneVolbySenku(s, data, events);
@@ -4821,7 +4821,7 @@ function preskocPrazdneVolbySenku(s: MutState, data: GameData, events: Event[]):
     if (ponukaSenku(data, s as GameState, volba).length > 0) return;
     s.hasicVolby = dalsie;
     const meno = volba.zdroj === undefined ? "karta" : defOf(data, { defId: volba.zdroj }).name;
-    events.push({ type: "log", text: `Podpora — ${meno} hráča ${volba.hrac + 1}: v šenku už nie je ${volba.tag} — nič si neberie.` });
+    events.push({ type: "log", text: `Podpora — ${meno} hráča ${volba.hrac + 1}: v ponuke už nie je ${volba.tag} — nič si neberie.` });
     dokonciPoVolbe(s, data, volba as HasicVolba, events);
   }
 }
@@ -4951,11 +4951,11 @@ function dokonciPitku(s: MutState, data: GameData, events: Event[]): void {
 function zastavkaVolba(s: MutState, p: PlayerId, events: Event[]): boolean {
   if (!jeCielLokalita(s as GameState, "zastavka")) return false;
   if (s.senok.length === 0) {
-    events.push({ type: "log", text: `Zastávka: šenok je prázdny — hráč ${p + 1} si nič neberie.` });
+    events.push({ type: "log", text: `Zastávka: ponuka je prázdna — hráč ${p + 1} si nič neberie.` });
     return false;
   }
   s.hasicVolby = [...(s.hasicVolby ?? []), { hrac: p, typ: "senok", uid: 0, potom: "zastavka" }];
-  events.push({ type: "log", text: `Zastávka: hráč ${p + 1} si po prvej Pitke berie zadarmo 1 kartu zo šenku.` });
+  events.push({ type: "log", text: `Zastávka: hráč ${p + 1} si po prvej Pitke berie zadarmo 1 kartu z ponuky.` });
   return true;
 }
 

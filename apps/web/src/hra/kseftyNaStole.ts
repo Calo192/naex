@@ -95,12 +95,12 @@ function efektyLokality(data: GameData, view: ClientState): KseftNaStole[] {
       nazov: meno(lok.defId),
       cena: { cigarety: cena },
       zisk: "Nástroj do Dedičstva",
-      tip: `Sklad: Nástroj zo šenku vyložíš rovno do Dedičstva za cenu Dedičstva (teraz ${cigariet(cena)}). Do šenku sa dotiahne nový Nástroj.`,
-      dovod: nastroje.length === 0 ? "V šenku nie je Nástroj." : h.cigarety < cena ? `Dedičstvo stojí ${cigariet(cena)}, máš ${h.cigarety}.` : null,
+      tip: `Sklad: Nástroj z ponuky vyložíš rovno do Dedičstva za cenu Dedičstva (teraz ${cigariet(cena)}). Do ponuky sa dotiahne nový Nástroj.`,
+      dovod: nastroje.length === 0 ? "V ponuke nie je Nástroj." : h.cigarety < cena ? `Dedičstvo stojí ${cigariet(cena)}, máš ${h.cigarety}.` : null,
       pouzity: false,
       akcia: {
         typ: "volba",
-        nadpis: "Sklad · Nástroj zo šenku do Dedičstva",
+        nadpis: "Sklad · Nástroj z ponuky do Dedičstva",
         riadky: nastroje.map((k) => ({ kluc: String(k.uid), meno: meno(k.defId), vpravo: { text: "do Dedičstva", prikaz: { type: "place", uid: k.uid, target: "dedicstvo" } } })),
       },
     },
@@ -115,7 +115,7 @@ const ZISK_SCHOPNOSTI: Readonly<Record<string, string>> = {
   starosta: "lokalita posilnená",
   veterinar: "Cirhózy preč",
   vychovavatelka: "súper pasuje",
-  autobusar: "karty zo šenku",
+  autobusar: "karty z ponuky",
   hrobar: "karta zo šrotu súpera",
 };
 
@@ -138,7 +138,7 @@ export function schopnostiVaznov(data: GameData, view: ClientState): KseftNaStol
     const dovod = pouzity
       ? "Schopnosť je minutá — väzeň ostáva v pivnici."
       : !tahSchopnosti(stav, ja)
-        ? "Schopnosť použiješ vo svojom ťahu — pri braní zo šenku, v Zhromaždení alebo v Pitke."
+        ? "Schopnosť použiješ vo svojom ťahu — pri braní z ponuky, v Zhromaždení alebo v Pitke."
         : schopnostBezUcinku(stav, ja, defId);
     const moje = ponuka.filter((c): c is Extract<Command, { type: "schopnostVazna" }> => c.type === "schopnostVazna" && c.elderId === elderId);
     const nadpis = `Schopnosť väzňa ${meno(defId)}`;
@@ -162,7 +162,7 @@ export function schopnostiVaznov(data: GameData, view: ClientState): KseftNaStol
           : defId === "autobusar"
             ? {
                 typ: "karty",
-                nadpis: `${nadpis} · koľko kariet zo šenku`,
+                nadpis: `${nadpis} · koľko kariet z ponuky`,
                 karty: view.senok.map((k) => ({ uid: k.uid, meno: meno(k.defId) })),
                 cenaZaKus: KONSTANTY.AUTOBUSAR_CENA,
                 najviac: Math.floor(view.hraci[ja].cigarety / KONSTANTY.AUTOBUSAR_CENA),

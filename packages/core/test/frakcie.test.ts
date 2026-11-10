@@ -505,11 +505,11 @@ describe("Predavačka a Živnostník: Podpora — karta zo šenku zadarmo do ruk
     const po = poloz(vylozenie(pr, [inst("vidly"), inst("veterinar")]), pr.uid);
     expect(po.state.hasicVolby ?? []).toEqual([]);
     expect(po.state.hraci[0].ruka).toEqual([]);
-    expect(log(po.events, "v šenku nie je Občan")).toBe(true);
+    expect(log(po.events, "v ponuke nie je Občan")).toBe(true);
     const ziv = inst("zivnostnik");
     const pz = poloz(vylozenie(ziv, []), ziv.uid);
     expect(pz.state.hasicVolby ?? []).toEqual([]);
-    expect(log(pz.events, "v šenku nie je Nástroj")).toBe(true);
+    expect(log(pz.events, "v ponuke nie je Nástroj")).toBe(true);
   });
 
   it("2× Podpora: Predavačka k vlastnej Predavačke — dve voľby; keď prvá vezme posledného Občana, druhá prepadne", () => {
@@ -530,7 +530,7 @@ describe("Predavačka a Živnostník: Podpora — karta zo šenku zadarmo do ruk
     expect(p1.hasicVolby).toHaveLength(2);
     const r = apply(sada, p1, { type: "senok", uid: vandal.uid }, 0);
     expect(r.state.hasicVolby ?? []).toEqual([]);
-    expect(log(r.events, "v šenku už nie je Občan")).toBe(true);
+    expect(log(r.events, "v ponuke už nie je Občan")).toBe(true);
 
     // Ležiaca Predavačka spustí Podporu znova, keď sa k nej priloží ďalšia vlastná karta.
     const pijan = inst("pijan");
