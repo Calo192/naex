@@ -385,7 +385,7 @@ describe("offline protihráč — celá partia vrátane finále (Michal 2026-11-
       expect(tahBota(data, s, 0, 5, { povaha: povaha.id }).type, povaha.id).toBe("smoke");
     }
   });
-  it("v11.9: po poslednom vykladaní kola nefajčí kartu, ktorú mu dá dobratie; rezervu nad hranicou si z prebytku dokúpi", () => {
+  it("v11.21: po poslednom vykladaní kola si kartu dofajčí — dobratie 2 kariet ju nenahradí; z prebytku si dokúpi rezervu", () => {
     for (const povaha of POVAHY) {
       const v = (cigarety: number, ruka: number): GameState => {
         const s0 = vPitkeFinale({ cigarety, poldeciPlne: 2, poldeciVypite: 0, nerestiTotoKolo: 5, ruka: Array.from({ length: ruka }, (_, i) => karta(990400 + i, "pijan")) });
@@ -393,7 +393,8 @@ describe("offline protihráč — celá partia vrátane finále (Michal 2026-11-
       };
       const tenka = v(2, 1);
       expect(legalCommands(data, tenka, 0).some((c) => c.type === "smoke")).toBe(true);
-      expect(tahBota(data, tenka, 0, 5, { povaha: povaha.id }).type, povaha.id).not.toBe("smoke");
+      // Do v11.20 by kartu nahradilo dobratie do 3, teraz ruka v ďalšom kole narastie o ňu.
+      expect(tahBota(data, tenka, 0, 5, { povaha: povaha.id }).type, povaha.id).toBe("smoke");
       // Rudo z prebytku najprv nalieva — to je jeho štýl; ostatní si dokúpia kartu.
       expect(tahBota(data, v(14, 3), 0, 5, { povaha: povaha.id }).type, povaha.id).toBe(povaha.poldeci === undefined ? "smoke" : "barter");
     }

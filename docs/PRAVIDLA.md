@@ -1,6 +1,6 @@
 # NA EX! — pravidlá (špecifikácia)
 
-**Pravidlá v11.20 (platné od 2026-11-10)** — Hodnota stupňa 1 / 2 / 3 a reťaz premien (v11.20), Dohadzovačka len z konca kraja (v11.19), Vedúcko Podporou, Snúbenica, Traktorista a Miňištrant (v11.18), NA EX × Odpor a Posilnenie, Kapybara, Telefón, Krokodíl a hrany Náradia (v11.17), Vypiť, pas, Degustátorka, odpoveď na NA EX za poldeci, Nástroj len pod vlastné karty, Školiteľ aj Zviera (v11.16), Benzínka o cigaretu lacnejšie (v11.15), Frakcie, Občania v troch kategóriách, Náradie a karta z ponuky (v11.14), Lokality (v11.13), Reči na súperovom teplomere (v11.12), Hádka platí (v11.11), Ohováračka namiesto Alkoholika (v11.10), Dobratie do troch a výpalné (v11.9), Každý Hazard je Dlh (v11.8), Kostol a koniec línie (v11.7), Zajatie od minulého kola (v11.6), Identita kariet (v11.5), Zajatie Nakladačkou a presvedčenie (v11.4), Konflikt oboma smermi a Podpora (v11.3), Schopnosť väzňa (v11.2), Vzbura obráti kartu (v11.1) a Strach a reči (Michal 2026-11-02, docs/napady/strach-reci.html,
+**Pravidlá v11.21 (platné od 2026-11-10)** — Dobratie 2 karty po bitke a posilnenie Nástrojom po NA EX (v11.21), Hodnota stupňa 1 / 2 / 3 a reťaz premien (v11.20), Dohadzovačka len z konca kraja (v11.19), Vedúcko Podporou, Snúbenica, Traktorista a Miňištrant (v11.18), NA EX × Odpor a Posilnenie, Kapybara, Telefón, Krokodíl a hrany Náradia (v11.17), Vypiť, pas, Degustátorka, odpoveď na NA EX za poldeci, Nástroj len pod vlastné karty, Školiteľ aj Zviera (v11.16), Benzínka o cigaretu lacnejšie (v11.15), Frakcie, Občania v troch kategóriách, Náradie a karta z ponuky (v11.14), Lokality (v11.13), Reči na súperovom teplomere (v11.12), Hádka platí (v11.11), Ohováračka namiesto Alkoholika (v11.10), Dobratie do troch a výpalné (v11.9), Každý Hazard je Dlh (v11.8), Kostol a koniec línie (v11.7), Zajatie od minulého kola (v11.6), Identita kariet (v11.5), Zajatie Nakladačkou a presvedčenie (v11.4), Konflikt oboma smermi a Podpora (v11.3), Schopnosť väzňa (v11.2), Vzbura obráti kartu (v11.1) a Strach a reči (Michal 2026-11-02, docs/napady/strach-reci.html,
 verzia 2) na v10.4
 (Hádka v10 — Michal 2026-11-01, docs/napady/hadka.html, verzia 4; v9 zmrazené 2026-10-30, krok 2
 revízie starších, docs/napady/starsi-krok2-zadanie.html; dávky v9.1 Chuť, v9.2 ponuka a NA EX naraz,
@@ -8,6 +8,12 @@ v9.3 Výtržník prebíja Úplatok; v10.1 zajatie pred ponukou; v10.2 Nástroj n
 Forsáž, Úplatok zrušený; v10.4 pojem Spáliť, Autority). Sada kariet: Vypálená hrá zverejnenú sadu v51 (v11.18), Zrejúca rozpracovaný stav tvorcu nad ňou (`cards.json` v master). Pravidlá sa
 menia len v dávkach; celá dávka dostane ďalšiu verziu (značka partií `v11`; presnú verziu ukazuje
 stránka Pravidlá — `VERZIA_PRAVIDIEL_PRESNA`).
+
+**Zmeny v11.21 oproti v11.20** (Michal 2026-11-10, Zrejúca; staré znenie v `docs/pravidla-historia.md`, sekcia v11.21):
+
+- **Dobratie 2 karty po bitke** (§4; Michal: „Chcem zrušiť doberanie do troch kariet. Hráč si na konci každého kola doberie 2 karty — nie DO 2, ale 2 karty.“): od druhého kola si na začiatku kola každý hráč dobere **presne 2 karty** (`KONSTANTY.DOBRATIE_PO_BITKE`), bez ohľadu na to, koľko ich má v ruke. Limit ruky nie je a nič sa neodhadzuje; prázdny doberací balíček sa doplní zamiešaním odhadzovacieho ako pri každom ťahaní. Predtým (v11.9–v11.20) sa doberalo do 3 kariet v ruke a kto ich mal 3 a viac, nedostal nič. Výpalné, fajčenie, Vízia a efekty kariet sa nemenia.
+- **Výklad Leadera, Michal zatiaľ nepotvrdil:** v 2 na 2 (§18) si 2 karty dobere **každý člen** do svojej ruky z balíčka tímu, v doterajšom poradí U1, O1, U2, O2; v Päte, Lakti, Otočke (§19) platí dobratie rovnako ako v 1 na 1.
+- **Posilnenie Nástrojom až po NA EX** (§6, §12; Michal: „Mám v línii Sypača, Šoféra a pod Šoféra zasuniem Pušku s posilnenou Peckou. … budú mať 4× efekt alebo len 2×? Podľa mojich predstáv by mali mať 4×.“ — „Áno, ×4 — aj Energeťák.“ — „No lenže keď sa dá NA EX, tak tie neaktívne zrazu aktívne budú.“): **hrana posilnenia** podloženého Nástroja („Posilnená {X}“, Puška…) a **Forsáž Energeťáka** sa uplatnia na akcie, ktoré sú aktívne **po NA EX** (aj NA EX z Vínka). NA EX obráti stav akcií karty — aktívne zruší, neaktívne aktivuje ×2 — a až potom Puška posilní X a Energeťák všetky aktívne akcie: bývalé neaktívne X majú **×4**, bývalé aktívne sú zrušené ako doteraz. Sypač Podporou zmení Šoférovi Rany na Pecky (preškolenie ide pred všetkým), Puška dole pod Šoférom, NA EX na Šoféra: neaktívne Pecky ×4, aktívne zrušené. Predtým sa Nástroj uplatnil pred NA EX a neaktívne X zdvojilo NA EX len ×2. Forsáž zo spoja, posilnenie Vzbury, Posilnenie suseda, Dedičstvo Pušky a Výtržník sa nemenia; akcie navyše Nástroj naďalej nemení.
 
 **Zmeny v11.20 oproti v11.19** (Michal 2026-11-10, Zrejúca, interview; staré znenia v `docs/pravidla-historia.md`, sekcia v11.20):
 
@@ -633,9 +639,9 @@ druhý kraj línie. Pitku hrajú obaja naraz (§7).
 **Začiatok kola:**
 
 - Každému hráčovi sa otočí **jeden vypitý poldeci na plný** (§6, limit).
-- Od druhého kola si každý hráč dobere zo svojho doberacieho balíčka **do 3 kariet
-  v ruke** (dobratie po bitke, v11.9, `KONSTANTY.DOBRATIE_DO_RUKY`); kto ich má 3 a viac,
-  nedoberá. Kliatby v ruke sa rátajú. Ďalšie karty sa kupujú cigaretami v ponuke a
+- Od druhého kola si každý hráč dobere zo svojho doberacieho balíčka **2 karty**
+  (dobratie po bitke, v11.21, `KONSTANTY.DOBRATIE_PO_BITKE`), bez ohľadu na to, koľko ich
+  má v ruke; nič sa neodhadzuje. Ďalšie karty sa kupujú cigaretami v ponuke a
   fajčením. **Keď sa doberací balíček minie,
   odhadzovací sa zamieša a stane sa z neho nový doberací balíček** — pri
   každom ťahaní, aj uprostred neho. Na začiatku hry je doberací balíček
@@ -863,8 +869,9 @@ podrobne:
   zdvojenie (ako ×2 partnerovi, §7); obrátenie ostáva.
 - **NA EX nemožno dať na kartu so Vzburou** (oboch druhov, §7).
 - **Poradie:** preškolenie (podložený Nástroj, Školiteľ) → spoje → Vzbura (obrátenie, aj z Vidiel) →
-  Výherné žreby → **Forsáž** (aj z Energeťáka) a posilnenie Vzbury (zdvojí akcie aktívne po
-  obrátení, teda nespojené) → NA EX (aj z Vínka) → efekty kariet (Silná žena, Liberál, Pes…)
+  Výherné žreby → **Forsáž zo spoja** a posilnenie Vzbury (zdvojí akcie aktívne po
+  obrátení, teda nespojené) → NA EX (aj z Vínka) → **Forsáž Energeťáka a hrana posilnenia
+  Nástroja** (na akcie aktívne po NA EX, v11.21) → Dedičstvo Pušky → efekty kariet (Silná žena, Liberál, Pes…)
   → Výtržník (zrážka aj Injekcia). NA EX na karte so Vzburou leží len vtedy, keď Vzbura vznikla až po výbere
   (rozhoduje stav v okamihu výberu, §7) — potom pôsobí ako vždy: aktívne po obrátení zruší,
   neaktívne zdvojí.
@@ -887,9 +894,10 @@ podrobne:
   ako dnes, rovnako neaktívne Posilnenie či Odpor tej karty (v11.17, §7). Ostatné akcie karty
   NA EX ruší a zdvojuje ako vždy.
 - Posilnenie a Odpor **Výtržníka** sú Rany (§7), Forsáž teda nevytvoria.
-- **Forsáž z Energeťáka** (podložený Nástroj, §12) sa neviaže na Posilnenie: NA EX ju nezruší
-  (zruší a zdvojí akcie karty ako vždy, ×2 ostane len tým, ktoré ostali aktívne). So spojovou
-  Forsážou či Vzburou z Odporu proti Posilneniu sa násobí (×4).
+- **Forsáž z Energeťáka** (podložený Nástroj, §12) sa neviaže na Posilnenie: NA EX ju nezruší.
+  Uplatní sa **až po NA EX** (v11.21) na akcie, ktoré sú aktívne potom: aktívne NA EX zruší,
+  neaktívne aktivuje ×2 a Forsáž ich zdvojí na ×4. So spojovou Forsážou či Vzburou z Odporu
+  proti Posilneniu sa násobí (×4).
 
 ### Prevaha a akcie lokality
 
@@ -1864,20 +1872,25 @@ Vedúcko, Kapybara).
   {Pecka}→{Petelica} dajú z Rany Petelicu; Valaška dole {Rana}→{Petelica} pod kartou, ktorej
   Sypač Rany zmenil na Pecky, nerobí nič. Ponuka podloženia ukáže celú reťaz („Rana → Pecka → Petelica“).
 - **Hrana posilnenia X** (zápis „Posilnená {X}“, tvar podľa rodu: Posilnený {Hazard},
-  Posilnené {Obmedzenie}) posilní **všetky aktívne X** na oboch hranách karty (×2) ako
+  Posilnené {Obmedzenie}) posilní **všetky X aktívne po NA EX** na oboch hranách karty (×2) ako
   Posilnenie (§6). Platí na akciu, ktorá je X **po preškolení** (Nástroj, Školiteľ): Rana
   preškolená na Petelicu sa posilní, Petelica preškolená na Pecku pod „Posilnená
-  {Petelica}“ nie. Uplatní sa v kroku **Forsáže** (poradie nižšie) a násobí sa s ostatnými
-  násobkami (Forsáž ×4, Posilnenie suseda, Silná žena…). NA EX karty posilnené X zruší
-  (sú aktívne) a neaktívne X zdvojí len ×2; Výtržník z nich urobí Rany ×1. Akcie navyše
+  {Petelica}“ nie. Uplatní sa **po NA EX** (v11.21, poradie nižšie) a násobí sa s ostatnými
+  násobkami (Forsáž ×4, Posilnenie suseda, Silná žena…). NA EX (aj z Vínka) najprv obráti
+  stav akcií karty: aktívne X zruší, neaktívne X aktivuje ×2 — a tie potom hrana posilní na
+  **×4** (Michal 2026-11-10: „No lenže keď sa dá NA EX, tak tie neaktívne zrazu aktívne
+  budú.“). Sypač Podporou zmení Šoférovi Rany na Pecky, Puška dole pod Šoférom a NA EX na
+  Šoféra: neaktívne Pecky ×4, aktívne zrušené. Výtržník z nich urobí Rany ×1. Akcie navyše
   nemení (ako preškolenie Nástrojom). Pod Zámočníkom dva Nástroje s tou istou akciou
   posilnia raz. Ak karta X nemá, Nástroj pod ňou nerobí nič.
 - **Kartová hrana** dá karte účinok z §6 alebo §7 a uplatní sa tam, kde ten účinok stojí
-  dnes: preškolenie → spoje → **Vzbura** → Výherné žreby → **Forsáž** → **NA EX** →
-  efekty kariet → **Výtržník**. Karta sa správa presne tak, ako keby jej ten stav vznikol
+  dnes: preškolenie → spoje → **Vzbura** → Výherné žreby → Forsáž zo spoja → **NA EX** →
+  **Forsáž Energeťáka** a hrana posilnenia (v11.21) → Dedičstvo Pušky → efekty kariet →
+  **Výtržník**. Karta sa správa presne tak, ako keby jej ten stav vznikol
   dnešnou cestou, bez vedľajších nákladov tej cesty (poldeci, nerest, pečeň):
-  - **Energeťák — Forsáž:** všetky aktívne akcie karty ×2 (§6). Neviaže sa na
-    Posilnenie, NA EX ju preto nezruší; so spojovou Forsážou či Vzburou z Odporu proti
+  - **Energeťák — Forsáž:** všetky akcie karty aktívne po NA EX ×2 (§6). Neviaže sa na
+    Posilnenie, NA EX ju preto nezruší; neaktívne akcie, ktoré NA EX aktivovalo, majú ×4
+    (v11.21, Michal: „Áno, ×4 — aj Energeťák.“). So spojovou Forsážou či Vzburou z Odporu proti
     Posilneniu sa násobí (×4).
   - **Vínko — NA EX:** aktívne akcie karty zrušené, neaktívne ×2 (§7). Bez poldeca: nie je
     to nerest, nepridá pečeň, nikto nič nepije; podloženie je viditeľné. Skutočné NA EX
@@ -2270,7 +2283,7 @@ Kôň v kroku Exekútora. Michal ich potvrdí.
 | Školiteľ | Občan alebo Zviera (v11.16) s efektom Preškolenie (Vedúcko, Sypač, Anonymný alkoholik, Profesionálny tipér; §6, §16); Zviera-Školiteľa umlčí Mäsiar |
 | Efekt s vedľajšou akciou | efekt Občana s akciami navyše v pečati (§6, §16) |
 | Textový efekt | efekt Občana slovami — nepreškoľuje ani nepridáva akcie (§16) |
-| Dobratie po bitke | na začiatku každého ďalšieho kola do 3 kariet v ruke; kto ich má viac, nedoberá; limit ruky nie je (§4) |
+| Dobratie po bitke | na začiatku každého ďalšieho kola 2 karty bez ohľadu na ruku (v11.21); limit ruky nie je, nič sa neodhadzuje (§4) |
 | Výpalné | hneď po bitke 1 cigareta od súpera za každého staršieho s tvojím červeným strachom, koľko má (v11.9, §10) |
 | Konflikt | spúšťač (v11.3): efekt karty, keď sa priložením ocitne vedľa súperovej karty — prikladáš ty alebo súper; podloženie Nástroja, NA EX, zrážka ani presun ho nespúšťajú (§6, §16) |
 | Podpora | spúšťač (v11.3): zrkadlo Konfliktu — efekt karty, keď sa priložením stretne s inou kartou toho istého hráča (§6, §16) |
@@ -2278,7 +2291,7 @@ Kôň v kroku Exekútora. Michal ich potvrdí.
 | Spoločník / Nepriateľ | spúšťač (frakcie): akcie navyše, kým je v tvojej / súperovej partii odkrytá karta s tagom (§6, §16) |
 | Akcia navyše | aktívna akcia majiteľa karty mimo jej hrán, z pečate v ilustrácii; ráta sa ako tá istá akcia (§6). „Furt: {A}“ platí bez podmienky, kým karta leží (v11.17); {Spálenie} v pečati nie je akcia — karta, s ktorou sa nositeľ stretne, sa na konci bitky spáli (§6) |
 | Bitka (akcia navyše) | podmienka slovami pred piktogramom („Bitka: Ak si v tomto kole nedal NA EX {Pecka}“): akcia navyše toľkokrát, koľkokrát podmienka platí v bitke (§6, §16) |
-| Forsáž | Posilnenie + Posilnenie na spoji (v10.3): obe karty majú všetky aktívne akcie posilnené (×2); lokalita len hranu; NA EX na jedno z Posilnení ju zruší (§6). Aj z Energeťáka pod kartou — tú NA EX nezruší (§12) |
+| Forsáž | Posilnenie + Posilnenie na spoji (v10.3): obe karty majú všetky aktívne akcie posilnené (×2); lokalita len hranu; NA EX na jedno z Posilnení ju zruší (§6). Aj z Energeťáka pod kartou — tú NA EX nezruší a platí na akcie aktívne po NA EX, neaktívne aktivované NA EX ×4 (v11.21, §12) |
 | Vzbura | Odpor + Odpor na spoji (v11.1): obe karty sa obrátia — nespojené akcie aktívne, spojené neaktívne; Odpor + Posilnenie: len karta s Odporom, navyše posilnená; NA EX na ňu nejde; lokalita len hranu (§6, §7). Aj z Vidiel pod kartou (§12) |
 | Pakt | akcia (v7): na spoji sa správa ako akcia, s ktorou je v páre (§2) |
 | Čiarky na účte | zadĺženie pod prahom Dlhu (len s Výherným automatom); neprepadá ani po Pitke, ani po kole (D6, §8) |
@@ -2378,8 +2391,8 @@ platí pre tím. Osobná je len **ruka** a **ťah**.
 - **Poradie ťahov** je vždy **U1 → O1 → U2 → O2** (vykladanie) a **O1 → U1 → O2 → U2**
   (branie z ponuky, Michal 2026-10-31).
 - **Začiatok kola:** tímu sa otočí **jeden** vypitý poldeci na plný.
-  Od druhého kola si **každý hráč** dobere do 3 kariet vo svojej ruke z balíčka tímu, v poradí
-  U1, O1, U2, O2 (Michal 2026-11-06, k v11.9).
+  Od druhého kola si **každý hráč** dobere 2 karty do svojej ruky z balíčka tímu, v poradí
+  U1, O1, U2, O2 (Michal 2026-11-06, k v11.9; počet 2 bez ohľadu na ruku od v11.21 — výklad Leadera, Michal nepotvrdil).
 - Karta z fajčenia, Vízie, Zastávky či efektu „dober / vezmi do ruky“ ide do
   ruky **hráča, ktorý to spustil** (zahral kartu, fajčil).
 - **Koniec kola:** neresti oboch členov sa sčítajú a porovnajú s **Chuťou tímu**;
@@ -2471,6 +2484,7 @@ Druhý režim vedľa Kalamity (Michal 2026-10-31, 2026-11-01, 2026-11-06), len 1
 Podraziť všetkých štyroch starších súpera. Hra nemá ligu, finále, špaky, výkup ani remízu.
 Nie sú ani strach, reči, hádka, priazeň, väzni, zajatie a schopnosti starších.
 Kolo ostáva z Kalamity: lokalita, ponuka, Zhromaždenie, Pitky s NA EX, bitka.
+Aj dobratie po bitke je ako v §4: 2 karty bez ohľadu na ruku (v11.21, výklad Leadera, Michal nepotvrdil).
 Zdroje hráča ostávajú: poldeci, cigarety, Dlhy, Cirhózy, Absťáky, Chuť, Dedičstvo.
 
 ### Príprava

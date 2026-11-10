@@ -154,8 +154,9 @@ describe("M6 — smoke test", () => {
         for (const p of [0, 1] as const) {
           const h = state.hraci[p];
           const dostupne = h.doberaci.length + h.odhadzovaci.length;
-          // Po bitke sa dorovná do 3 kariet, ak bolo z čoho ťahať (v11.9); limit ruky nie je.
-          if (dostupne > 0) expect(h.ruka.length).toBeGreaterThanOrEqual(KONSTANTY.DOBRATIE_DO_RUKY);
+          // Po bitke 2 karty bez ohľadu na ruku (v11.21); ak niečo ostalo, ťahanie sa neskončilo skôr.
+          const tahal = events.reduce((n, e) => n + (e.type === "kartyTahane" && e.hrac === p ? e.karty.length : 0), 0);
+          if (dostupne > 0) expect(tahal).toBeGreaterThanOrEqual(KONSTANTY.DOBRATIE_PO_BITKE);
         }
         expect(events.some((e) => e.type === "kartyTahane" || e.type === "log")).toBe(true);
         overenych++;

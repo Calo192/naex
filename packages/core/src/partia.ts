@@ -27,8 +27,8 @@
 //    (reťaz, v11.20, Michal 2026-11-10; premenyVLinii).
 //  - Podložený Nástroj (Náradie, Michal 2026-11-08, naradie.ts): akciová hrana premení akcie
 //    hostiteľa ešte pred spojmi, kartová mu dá Vzburu, Forsáž, NA EX či Výtržníka tou istou
-//    cestou, akou ich karta dostane inak — v poradí spoje → Vzbura → Výherné žreby → Forsáž →
-//    NA EX → Výtržník. Hrana posilnenia (Puška) zdvojí aktívne X hostiteľa v kroku Forsáže.
+//    cestou, akou ich karta dostane inak — v poradí spoje → Vzbura → Výherné žreby → Forsáž spoja →
+//    NA EX → Forsáž Energeťáka a hrana posilnenia (Puška) na akcie aktívne po NA EX (v11.21) → Výtržník.
 //    Odpor proti Posilneniu je Vzbura len karty s Odporom a jej aktívne akcie sú posilnené.
 //  - Vzbura neoživuje akcie zrušené Odporom.
 //  - NA EX mení akcie cieľovej karty a cez jej modifikátory aj partnerov na spojoch: zrušené
@@ -970,8 +970,7 @@ function zrusOdpor(elem: Elem): void {
  * po obrátení všetky aktívne akcie posilnené (×2, s Forsážou ×4); NA EX, ktorý Posilnenie
  * partnera zruší, ruší aj toto zdvojenie (§7), obrátenie ostáva.
  *
- * Hrana posilnenia „Posilnená {X}“ (Puška, Michal 2026-11-09) zdvojí v tom istom kroku aktívne X
- * hostiteľa — ako Forsáž z Energeťáka, len jednej akcii; NA EX hostiteľa ich potom zruší.
+ * Forsáž z Energeťáka a hrana posilnenia Nástroja sa uplatnia až po NA EX (posilneniaNastrojov).
  */
 function applyForsaz(
   forsaze: readonly SpojForsaze[],
@@ -996,7 +995,6 @@ function applyForsaz(
       for (const [zapnute, dovod] of [
         [elem.forsaz[side], "Forsáž"],
         [elem.vzburaPosilnena[side], "Posilnenie"],
-        [elem.forsazNastroj && !elem.isLokalita, "Forsáž"],
       ] as const) {
         if (!zapnute) continue;
         for (let k = 0; k < 4; k++) {
@@ -1006,16 +1004,29 @@ function applyForsaz(
           elem.dovody[side]![k]!.push(dovod);
         }
       }
-      // Hrana posilnenia (Puška, Michal 2026-11-09): len akcia X — po preškolení, preto effLeft/effRight.
-      if (elem.posilneniaNastrojom.size === 0 || elem.isLokalita) continue;
-      const actions = side === 0 ? elem.effLeft : elem.effRight;
-      for (let k = 0; k < 4; k++) {
-        const a = actions[k];
-        const nastroj = a == null ? undefined : elem.posilneniaNastrojom.get(a);
-        const nasobok = elem.nasobok[side]![k] as number;
-        if (nastroj === undefined || elem.stav[side]![k] !== "aktivna" || nasobok === 0) continue;
-        elem.nasobok[side]![k] = nasobok * 2;
-        elem.dovody[side]![k]!.push(`karta:${nastroj}`);
+    }
+  }
+}
+
+/**
+ * Forsáž z Energeťáka a hrana posilnenia „Posilnená {X}“ (Puška, Michal 2026-11-09) posilnia akcie
+ * aktívne **po NA EX** (v11.21, Michal 2026-11-10: „No lenže keď sa dá NA EX, tak tie neaktívne zrazu
+ * aktívne budú.“): neaktívne, ktoré NA EX zdvojilo, majú ×4, aktívne NA EX zrušilo. Beží pred
+ * Dedičstvom Pušky, aby Petelicu, ktorú vráti za 1 menej, nezdvojila.
+ */
+function posilneniaNastrojov(elem: Elem): void {
+  if (elem.isLokalita) return;
+  for (const side of [0, 1] as const) {
+    const actions = side === 0 ? elem.effLeft : elem.effRight;
+    for (let k = 0; k < 4; k++) {
+      if (elem.stav[side]![k] !== "aktivna" || elem.nasobok[side]![k] === 0) continue;
+      const a = actions[k];
+      // Hrana posilnenia len akcii X — po preškolení, preto effLeft/effRight.
+      const nastroj = a == null ? undefined : elem.posilneniaNastrojom.get(a);
+      for (const dovod of [elem.forsazNastroj ? "Forsáž" : null, nastroj === undefined ? null : `karta:${nastroj}`]) {
+        if (dovod === null) continue;
+        elem.nasobok[side]![k] = (elem.nasobok[side]![k] as number) * 2;
+        elem.dovody[side]![k]!.push(dovod);
       }
     }
   }
@@ -1338,6 +1349,7 @@ export function evaluateLine(data: GameData, line: LineState): LineEval {
   applyForsaz(forsaze, vzburyPosilnene, elems, line);
   for (const elem of elems) zrusPosilnenie(elem, line);
   for (const elem of elems) applyNaex(elem, line);
+  for (const elem of elems) posilneniaNastrojov(elem);
   for (const elem of elems) puskaChrani(elem, line);
   kartoveEfekty(segments, umlcane, [rovnovahaPohlavi(data, line.strany, 0), rovnovahaPohlavi(data, line.strany, 1)]);
   // Výtržník (zrážka NA EX naraz, v5): každá akcia karty je aktívna Rana pre

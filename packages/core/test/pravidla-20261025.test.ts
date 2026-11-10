@@ -163,7 +163,7 @@ describe("keď sa doberací balíček minie, odhadzovací sa zamieša a stane sa
     expect(po.hraci[0].odhadzovaci).toEqual([]);
   });
 
-  it("dobratie po bitke (DOBRATIE_DO_RUKY = do 3 kariet v ruke na ďalšie kolo, v11.9)", () => {
+  it("dobratie po bitke (DOBRATIE_PO_BITKE = 2 karty na ďalšie kolo, v11.21)", () => {
     const s0 = setupGame(data, 77);
     const odhodene = kusy(3, "ministrant");
     const s = sHracom(
@@ -195,9 +195,10 @@ describe("keď sa doberací balíček minie, odhadzovací sa zamieša a stane sa
     );
     const po = apply(data, s, { type: "cintorin", uid: null }, 0).state;
     expect(po.koniec).toBeNull();
-    expect(KONSTANTY.DOBRATIE_DO_RUKY).toBe(3);
-    expect(po.hraci[0].ruka.filter((k) => odhodene.some((o) => o.uid === k.uid))).toHaveLength(3);
-    expect(po.hraci[0].doberaci).toHaveLength(0);
+    expect(KONSTANTY.DOBRATIE_PO_BITKE).toBe(2);
+    expect(po.hraci[0].ruka.filter((k) => odhodene.some((o) => o.uid === k.uid))).toHaveLength(2);
+    // Odhadzovací sa zamiešal na nový doberací; tretí Miňištrant v ňom ostal.
+    expect(po.hraci[0].doberaci).toHaveLength(1);
     expect(po.hraci[0].odhadzovaci).toEqual([]);
   });
 

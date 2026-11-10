@@ -17,10 +17,10 @@ export const KONSTANTY = {
    * Po každej bitke si hráč dobere toľkoto kariet (Michal 2026-10-19) —
    * namiesto doplnenia ruky na 5. Limit ruky nie je. Od 2026-10-27 len 1
    * (predtým 2): ďalšie karty sa majú kupovať cigaretami (šenok, fajčenie).
-   * Od v11.9 (Michal 2026-11-06, docs/napady/agresivna-hra.html, návrh A) sa doberá do tohto
-   * počtu kariet v ruke: kto vykladal, dostane karty; kto šetrí, nedostane nič.
+   * V11.9–v11.20 sa doberalo do 3 kariet v ruke (kto šetril, nedostal nič). Od v11.21
+   * (Michal 2026-11-10: „nie DO 2, ale 2 karty“) dostane každý presne toľkoto bez ohľadu na ruku.
    */
-  DOBRATIE_DO_RUKY: 3,
+  DOBRATIE_PO_BITKE: 2,
   START_CIGARETY: 3,
 
   /**
@@ -311,13 +311,15 @@ export function vazniNaVyhru(lokalitCelkom: number): number {
 // v11.19 (Michal 2026-11-09, Zrejúca) bez novej značky: Dohadzovačka presúva len kartu z konca druhého kraja.
 // v11.20 (Michal 2026-11-10, Zrejúca) bez novej značky: hodnota stupňa 1 / 2 / 3 (plný teplomer 6),
 // premeny sa reťazia všetky (Školitelia, potom Nástroje, každá na výsledku predošlej).
+// v11.21 (Michal 2026-11-10, Zrejúca) bez novej značky: po bitke si každý dobere presne 2 karty, nie do 3;
+// hrana posilnenia Nástroja a Forsáž Energeťáka posilnia akcie aktívne po NA EX (neaktívne ×4).
 export const VERZIA_PRAVIDIEL = "v11";
 /**
  * Presná verzia pravidiel vrátane dávky — hráč ju vidí na stránke Pravidlá, ktorá má
  * vždy odzrkadľovať správanie nasadenej hry (Michal 2026-10-31). Značka partií
  * (VERZIA_PRAVIDIEL) sa pri dávke nemení, táto áno.
  */
-export const VERZIA_PRAVIDIEL_PRESNA = "v11.20";
+export const VERZIA_PRAVIDIEL_PRESNA = "v11.21";
 /** Odkedy platí VERZIA_PRAVIDIEL_PRESNA — hráč ho vidí na stránke Pravidlá. */
 export const PRAVIDLA_PLATNE_OD = "2026-11-10";
 export type DlzkaHry = keyof typeof DLZKY_HRY;

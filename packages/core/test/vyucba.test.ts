@@ -174,8 +174,10 @@ describe("výučba — pevné rozdanie", () => {
 
 describe("výučba — porovnanie príkazov", () => {
   it("odkaz zóna:defId#n nájde n-tú rovnakú kartu", () => {
-    const s = zacniVyucbu(data, scenar);
-    // Prvé kolo (2026-11-10): dvaja rovnakí sú v ruke Štamgasta (Anonymní alkoholici).
+    const s0 = zacniVyucbu(data, scenar);
+    // Dvaja rovnakí sú v balíčku Štamgasta (Anonymní alkoholici, prídu dobratím v 2. kole, v11.21) — tu ich dáme do ruky.
+    const bot = s0.hraci[1];
+    const s: GameState = { ...s0, hraci: [s0.hraci[0], { ...bot, ruka: [...bot.ruka, ...bot.doberaci] }] };
     const alkoholici = s.hraci[1].ruka.filter((k) => k.defId === "anonymny_alkoholik");
     expect(uidZOdkazu(s, 1, "ruka:anonymny_alkoholik")).toBe(alkoholici[0]?.uid);
     expect(uidZOdkazu(s, 1, "ruka:anonymny_alkoholik#2")).toBe(alkoholici[1]?.uid);
@@ -857,8 +859,13 @@ describe("výučba Prvá hra — 2. a 3. časť (pravidlá v8, exekúcia po poš
     expect(odhad(po("k-zh-finale-bot"))).toEqual([0, 5]);
     expect(odhad(po("k-pijan-finale"))).toEqual([6, 5]);
     expect(po("k-pijan-finale").pitkyCelkom).toBe(3);
-    // Dobratie do troch z prázdnej ruky (v11.9, i-po-bitke3) prinesie Mäsiara a Záhradkára z 1. kola a Pijana.
-    expect(pri("k-kup-finale").hraci[0].ruka.map((k) => k.defId)).toEqual(["masiar", "pijan", "zahradkar"]);
+    // Dobratie po bitke (v11.21, i-po-bitke3): 2 karty, Mäsiar z 1. kola a Pijan. Záhradkára z 1. kola si hráč
+    // dofajčí v druhej Pitke finále s prázdnou rukou — nechá si ho na pas a ako možnú odpoveď.
+    expect(pri("k-kup-finale").hraci[0].ruka.map((k) => k.defId)).toEqual(["masiar", "pijan"]);
+    expect(pri("k-fajcit-finale").hraci[0].ruka).toEqual([]);
+    expect(po("k-fajcit-finale").hraci[0].ruka.map((k) => k.defId)).toEqual(["zahradkar"]);
+    expect(po("k-fajcit-finale").hraci[0].cigarety).toBe(pri("k-fajcit-finale").hraci[0].cigarety - 1);
+    expect(cela.kroky[i("k-fajcit-finale")]?.kto).toBe("hrac");
     expect(cela.kroky.some((k) => k.id === "k-kseft")).toBe(false);
     expect(pri("k-finale-p1").starsi.find((e) => e.elderId === "veterinar")).toMatchObject({ strach: [0, 0], reci: [2, 0], reciOd: [1, 0] });
     // Mäsiar za Pijanom, Policajtka za Mäsiarom; Nepriateľ (frakcie 2026-11-08): Štamgastov Kriminál Recidivista jej dá Petelicu.

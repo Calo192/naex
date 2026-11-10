@@ -203,7 +203,7 @@ describe("hrana posilnenia (Puška, Michal 2026-11-09)", () => {
     expect(dole.cards.get(strelec.uid)?.right[0]).toMatchObject({ action: "Pecka", stav: "neaktivna", nasobok: 0 });
   });
 
-  it("násobí sa s Forsážou (×4); NA EX hostiteľa posilnené zruší a neaktívne zdvojí len ×2", () => {
+  it("násobí sa s Forsážou (×4); NA EX hostiteľa aktívne zruší a neaktívne aktivuje ×2, posilnené potom ×4 (v11.21)", () => {
     const lavy = instanceFor(sd, "lavy_posil", [null, null, "Posilnenie", null], EMPTY);
     const sForsazou = (podlozene: readonly PodlozenyNastroj[], naexBy?: PlayerId): LineState => ({
       lokalita: null,
@@ -217,7 +217,7 @@ describe("hrana posilnenia (Puška, Michal 2026-11-09)", () => {
     // Posilnenie strelca na spoji s ľavým (bez neho by neaktívne Posilnenie NA EX podržalo, v11.17).
     const naex = evaluateLine(sd, sForsazou(pod("puska_posil", "dolna"), 1));
     expect(naex.cards.get(strelec.uid)?.left[1]).toMatchObject({ action: "Pecka", stav: "zrusena" });
-    expect(naex.cards.get(strelec.uid)?.right[0]).toMatchObject({ action: "Pecka", stav: "aktivna", nasobok: 2 });
+    expect(naex.cards.get(strelec.uid)?.right[0]).toMatchObject({ action: "Pecka", stav: "aktivna", nasobok: 4 });
   });
 
   it("posilní akciu po preškolení: Rana → Petelica áno, Petelica → Pecka už nie", () => {
@@ -243,7 +243,7 @@ describe("kartové účinky — presne ako dnešnou cestou", () => {
     expect(oboje.cards.get(host.uid)).toEqual(zoSpoja.cards.get(host.uid));
   });
 
-  it("Forsáž z Energeťáka: aktívne ×2, so spojovou Forsážou ×4; NA EX ju nezruší, zdvojí len neaktívne", () => {
+  it("Forsáž z Energeťáka: aktívne ×2, so spojovou Forsážou ×4; NA EX ju nezruší, akcie aktívne po NA EX ×4 (v11.21)", () => {
     const sused = kartaS("sused_rana", ["Rana", "Pecka", null, "Viera"]);
     // Obe aktívne Rany hostiteľa ×2; akcie suseda nie.
     expect(evaluateLine(sd, linia({ card: host, playedBy: 0, podlozene: pod("energetak") }, sused)).sums[0]).toEqual({ Rana: 4, Pecka: 1, Viera: 1 });
@@ -255,7 +255,7 @@ describe("kartové účinky — presne ako dnešnou cestou", () => {
     // Posilnenie hostiteľa na spoji s ľavým — neaktívne by NA EX podržalo (v11.17).
     const sNaex = evaluateLine(sd, { ...sForsazou(pod("energetak")), strany: [[{ card: lavy, playedBy: 0 }, { card: host, playedBy: 0, naexBy: 1, podlozene: pod("energetak") }, { card: sused, playedBy: 0 }], []] });
     expect(sNaex.cards.get(host.uid)?.left[1]).toMatchObject({ stav: "zrusena" });
-    expect(sNaex.cards.get(host.uid)?.right[0]).toMatchObject({ action: "Viera", stav: "aktivna", nasobok: 2 });
+    expect(sNaex.cards.get(host.uid)?.right[0]).toMatchObject({ action: "Viera", stav: "aktivna", nasobok: 4 });
     expect(sNaex.cards.get(host.uid)?.forsaz).toBe(true);
   });
 

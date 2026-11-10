@@ -147,8 +147,8 @@ describe("Pitky = 1 + menší počet aktivovaných akcií lokality (Michal 2026-
 
 // --- Ruka ----------------------------------------------------------------------
 
-describe("ruka: dobratie do 3, žiadny limit ruky (v11.9)", () => {
-  it("prázdna ruka sa dorovná na 3 karty, veľkú ruku nikto neodhadzuje ani nedopĺňa", () => {
+describe("ruka: po bitke 2 karty, žiadny limit ruky (v11.21)", () => {
+  it("po bitke si každý dobere 2 karty, veľkú ruku nikto neodhadzuje", () => {
     const ruka = Array.from({ length: 9 }, () => inst("pijan"));
     // 7 štartoviek (Michal 2026-10-22): doberací doplnený na 5, aby balíček neklesol pod 5.
     const s = predKoncomBitky(40, (st) =>
@@ -156,8 +156,8 @@ describe("ruka: dobratie do 3, žiadny limit ruky (v11.9)", () => {
     );
     const po = apply(data, s, { type: "cintorin", uid: null }, 0).state;
     expect(po.faza).toBe("volbaCiela");
-    expect(po.hraci[0].ruka).toHaveLength(9);
-    expect(po.hraci[1].ruka).toHaveLength(KONSTANTY.DOBRATIE_DO_RUKY);
+    expect(po.hraci[0].ruka).toHaveLength(9 + KONSTANTY.DOBRATIE_PO_BITKE);
+    expect(po.hraci[1].ruka).toHaveLength(KONSTANTY.DOBRATIE_PO_BITKE);
   });
 
   it("štart: 2 poldeci (Michal 2026-10-20), 3 cigarety, 4 karty v ruke (v6)", () => {
@@ -183,7 +183,7 @@ describe("Úžerník (Michal 2026-10-20): prah Dlhu bez sily, Zberateľ zanikol"
     const ruka = s.hraci[0].ruka.length;
     const po = apply(data, s, { type: "cintorin", uid: null }, 0).state;
     expect(po.faza).toBe("volbaCiela");
-    expect(po.hraci[0].ruka).toHaveLength(Math.max(ruka, KONSTANTY.DOBRATIE_DO_RUKY));
+    expect(po.hraci[0].ruka).toHaveLength(ruka + KONSTANTY.DOBRATIE_PO_BITKE);
   });
 
   it("stará sada so Zberateľom alebo Očumovateľom sa načíta ako Úžerník", () => {
@@ -230,7 +230,7 @@ describe("Milujúca manželka v7 (M2): latku Absťáku už neposúva", () => {
     expect(abstaky(apply(data, zaklad(0), { type: "cintorin", uid: null }, 0).state)).toBe(0);
     const s1 = apply(data, zaklad(1), { type: "cintorin", uid: null }, 0).state;
     expect(abstaky(s1)).toBe(0);
-    expect(s1.hraci[0].ruka).toHaveLength(Math.max(zaklad(1).hraci[0].ruka.length, KONSTANTY.DOBRATIE_DO_RUKY));
+    expect(s1.hraci[0].ruka).toHaveLength(zaklad(1).hraci[0].ruka.length + KONSTANTY.DOBRATIE_PO_BITKE);
   });
 
   it("ani v línii: dve Manželky pri o 1 viac nerestiach Absťák nedajú", () => {

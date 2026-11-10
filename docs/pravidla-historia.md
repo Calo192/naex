@@ -3385,3 +3385,29 @@ Staré znenie §12 Akciová hrana (časť, v11.14–v11.19): „Pod Zámočníko
 Staré znenie Zmien v11.12 (výklad, ktorý Michal nepotvrdil): „**Kapybara a Predsedova vila** (výklad, Michal zatiaľ nepotvrdil): Kapybara zhodí súperovým rečiam spodný stupeň, vila pridá ďalší stupeň v bežnom poradí.“ Časť o Kapybare zanikla s jej Nástupom vo v11.17, vilu Michal potvrdil.
 
 Staré označenia potvrdených výkladov: v11.17 „v miernejšej podobe, ktorú zvolil Leader na Michalovo „použi svoj najlepší odhad““; v11.13 „**Výklad programátora, na potvrdenie Michalom:**“.
+
+## v11.21 — Dobratie 2 karty po bitke (Michal 2026-11-10, Zrejúca)
+
+Michal 2026-11-10: „Chcem zrušiť doberanie do troch kariet. Hráč si na konci každého kola doberie 2 karty — nie DO 2, ale 2 karty.“ Nové znenie: `docs/PRAVIDLA.md`, Zmeny v11.21, §4, §17 (Dobratie po bitke), §18.4, §19.
+
+Staré znenie §4 Začiatok kola (v11.9–v11.20; `KONSTANTY.DOBRATIE_DO_RUKY` 3):
+
+> - Od druhého kola si každý hráč dobere zo svojho doberacieho balíčka **do 3 kariet
+>   v ruke** (dobratie po bitke, v11.9, `KONSTANTY.DOBRATIE_DO_RUKY`); kto ich má 3 a viac,
+>   nedoberá. Kliatby v ruke sa rátajú.
+
+Staré znenie §17: „| Dobratie po bitke | na začiatku každého ďalšieho kola do 3 kariet v ruke; kto ich má viac, nedoberá; limit ruky nie je (§4) |“
+
+Staré znenie §18.4: „Od druhého kola si **každý hráč** dobere do 3 kariet vo svojej ruke z balíčka tímu, v poradí U1, O1, U2, O2 (Michal 2026-11-06, k v11.9).“
+
+## v11.21 — Posilnenie Nástrojom až po NA EX (Michal 2026-11-10, Zrejúca)
+
+Michal 2026-11-10: „Mám v línii Sypača, Šoféra a pod Šoféra zasuniem Pušku s posilnenou Peckou. Sypač by mal Šoférovi zmeniť Rany na Pecky a Puška by mala tie Pecky posilniť. Ak však nie sú aktívne a aktivujem ich napríklad NA EX, budú mať 4× efekt alebo len 2×? Podľa mojich predstáv by mali mať 4×.“ — „Áno, ×4 — aj Energeťák.“ — „No lenže keď sa dá NA EX, tak tie neaktívne zrazu aktívne budú.“ Nové znenie: `docs/PRAVIDLA.md`, Zmeny v11.21, §6 (Poradie, Forsáž z Energeťáka), §12 (Hrana posilnenia X, Kartová hrana), §17 Forsáž.
+
+Staré znenie §12 Hrana posilnenia X (časť, v11.14–v11.20): „posilní **všetky aktívne X** na oboch hranách karty (×2) ako Posilnenie (§6). … Uplatní sa v kroku **Forsáže** (poradie nižšie) a násobí sa s ostatnými násobkami (Forsáž ×4, Posilnenie suseda, Silná žena…). NA EX karty posilnené X zruší (sú aktívne) a neaktívne X zdvojí len ×2; Výtržník z nich urobí Rany ×1.“
+
+Staré znenie §12 Kartová hrana (časť): „preškolenie → spoje → **Vzbura** → Výherné žreby → **Forsáž** → **NA EX** → efekty kariet → **Výtržník**“; Energeťák: „všetky aktívne akcie karty ×2 (§6). Neviaže sa na Posilnenie, NA EX ju preto nezruší; so spojovou Forsážou či Vzburou z Odporu proti Posilneniu sa násobí (×4).“
+
+Staré znenie §6 Poradie (časť): „Výherné žreby → **Forsáž** (aj z Energeťáka) a posilnenie Vzbury (zdvojí akcie aktívne po obrátení, teda nespojené) → NA EX (aj z Vínka) → efekty kariet“; Forsáž z Energeťáka: „NA EX ju nezruší (zruší a zdvojí akcie karty ako vždy, ×2 ostane len tým, ktoré ostali aktívne).“
+
+Staré znenie §17 Forsáž (koniec): „Aj z Energeťáka pod kartou — tú NA EX nezruší (§12)“.

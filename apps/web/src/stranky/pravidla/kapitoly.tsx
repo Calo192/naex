@@ -213,7 +213,7 @@ export const KAPITOLY: readonly Kapitola[] = [
           <li>
             <strong>Po bitke.</strong> Porazený dostane 1 cigaretu. Súper ti dá 1 cigaretu za každého staršieho s tvojím červeným strachom, aj
             za väzňa, koľko má (<P k="vypalne">výpalné</P>). Po finále ani jedno. Karty z línie idú do odhadzovacích balíčkov. Na začiatku ďalšieho
-            kola sa každému doleje jeden vypitý poldeci a každý si <P k="dobratie">dobere</P> do 3 kariet v ruke.
+            kola sa každému doleje jeden vypitý poldeci a každý si <P k="dobratie">dobere</P> 2 karty.
           </li>
         </ol>
         <H3 id="kolo-priprava">Príprava</H3>
@@ -715,7 +715,7 @@ export const KAPITOLY: readonly Kapitola[] = [
             <strong>Chuť a Absťák</strong> — menej nerestí, než je tvoja Chuť, = karta Absťák; potom Chuť klesne o 1 od väčšieho z Chuti a nerestí (po finále už nie).
           </li>
           <li>
-            <strong>Nové kolo</strong> — každému sa doleje jeden vypitý poldeci a každý si dobere do 3 kariet v ruke. Kto ich má viac, nedoberá nič a nič neodhadzuje; kliatby v ruke sa rátajú.
+            <strong>Nové kolo</strong> — každému sa doleje jeden vypitý poldeci a každý si dobere 2 karty, nech má v ruke koľkokoľvek. Limit ruky nie je a nič sa neodhadzuje.
           </li>
         </ol>
       </>
@@ -921,10 +921,10 @@ export const KAPITOLY: readonly Kapitola[] = [
             Nástroj pod ňou nerobí nič.
           </li>
           <li>
-            <strong>Posilnená X</strong> — aktívne akcie X na karte sú posilnené ×2 ako pri Posilnení (Puška, Pasca, Fúrik, Horoskop, Izolačka).
+            <strong>Posilnená X</strong> — akcie X na karte sú posilnené ×2 ako pri Posilnení (Puška, Pasca, Fúrik, Horoskop, Izolačka). Rátajú sa tie aktívne po NA EX: neaktívne X, ktoré NA EX aktivovalo, majú ×4.
           </li>
           <li>
-            <strong>Účinok na celú kartu</strong> — <strong>Energeťák</strong> jej dá <P k="forsaz">Forsáž</P> (všetky aktívne akcie
+            <strong>Účinok na celú kartu</strong> — <strong>Energeťák</strong> jej dá <P k="forsaz">Forsáž</P> (všetky akcie aktívne po NA EX
             ×2), <strong>Vínko</strong> <P k="naex">NA EX</P> (bez poldeca — nikto nepije, pečeň ani nerest nie sú),{" "}
             <strong>Injekcia</strong> z nej urobí <P k="vytrznik">Výtržníka</P> a <strong>Vidly</strong> ju obrátia{" "}
             <P k="vzbura">Vzburou</P>. Na druhej hrane majú tieto štyri preškolenie.

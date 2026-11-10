@@ -1,12 +1,12 @@
-// v11.9 (Michal 2026-11-06, docs/napady/agresivna-hra.html): dobratie do 3 kariet v ruke
-// a výpalné hneď po bitke, aby cigarety boli pripravené na šenok.
+// v11.9 (Michal 2026-11-06, docs/napady/agresivna-hra.html): výpalné hneď po bitke, aby cigarety
+// boli pripravené na šenok. Dobratie do 3 kariet z v11.9 nahradili od v11.21 presne 2 karty po bitke.
 
 import { describe, expect, it } from "vitest";
 import cardsJson from "../data/cards.json";
 import eldersJson from "../data/elders.json";
 import scorecardsJson from "../data/scorecards.json";
-import type { GameState, PlayerId } from "../src/index.ts";
-import { KONSTANTY, apply, cervenychHraca, loadGameData, setupGame } from "../src/index.ts";
+import type { GameState, Miesto, PlayerId } from "../src/index.ts";
+import { KONSTANTY, apply, cervenychHraca, loadGameData, miestaHry, miestoNaTahu, mozeHrat, poradieVykladania, rukaMiesta, setupGame, tahBotaPata, timMiesta } from "../src/index.ts";
 
 const data = loadGameData(cardsJson, eldersJson, scorecardsJson);
 
@@ -71,23 +71,76 @@ function sRukou(s: GameState, p: PlayerId, ruka: number): GameState {
   return { ...s, hraci: p === 0 ? [novy, s.hraci[1]] : [s.hraci[0], novy] };
 }
 
-describe("dobratie do troch (v11.9, §4)", () => {
+/** Ľubovoľná príprava (2 na 2, Päta) v rovnakom konci bitky ako predKoncomBitky. */
+function doKoncaBitky(s0: GameState): GameState {
+  const z = predKoncomBitky((s) => s);
+  return { ...s0, faza: z.faza, kolo: z.kolo, strany: [[], []], ciel: { typ: "lokalita", lokalita: s0.lokalityVHre[0]! }, lokalityVHre: s0.lokalityVHre.slice(1), bitkaStav: z.bitkaStav };
+}
+
+describe("dobratie 2 karty po bitke (v11.21, §4)", () => {
   it.each([
-    [0, 3],
+    [0, 2],
     [1, 3],
-    [2, 3],
-    [3, 3],
-    [7, 7],
+    [2, 4],
+    [3, 5],
+    [5, 7],
+    [7, 9],
   ])("s %i kartami v ruke začne ďalšie kolo s %i", (ruka, cakana) => {
     const po = poBitke(predKoncomBitky((s) => sRukou(s, 0, ruka)));
     expect(po.faza).toBe("volbaCiela");
     expect(po.hraci[0].ruka).toHaveLength(cakana);
   });
 
-  it("z prázdnych balíčkov sa nedoberá a hra beží ďalej", () => {
-    const po = poBitke(predKoncomBitky((s) => ({ ...s, hraci: [{ ...s.hraci[0], ruka: [], doberaci: [], odhadzovaci: [] }, s.hraci[1]] })));
+  it("s 1 kartou v balíčkoch dostane len ju; z prázdnych sa nedoberá a hra beží ďalej", () => {
+    const jedna = sRukou(predKoncomBitky((s) => s), 0, 0).hraci[0].doberaci[0]!;
+    const po1 = poBitke(predKoncomBitky((s) => ({ ...s, hraci: [{ ...s.hraci[0], ruka: [], doberaci: [], odhadzovaci: [jedna] }, s.hraci[1]] })));
+    expect(po1.hraci[0].ruka.map((k) => k.uid)).toEqual([jedna.uid]);
+    const po0 = poBitke(predKoncomBitky((s) => ({ ...s, hraci: [{ ...s.hraci[0], ruka: [], doberaci: [], odhadzovaci: [] }, s.hraci[1]] })));
+    expect(po0.faza).toBe("volbaCiela");
+    expect(po0.hraci[0].ruka).toHaveLength(0);
+  });
+
+  it("2 na 2: každý člen 2 karty do svojej ruky z balíčka tímu, v poradí U1 → O1 → U2 → O2", () => {
+    const s1 = doKoncaBitky(setupGame(data, 77, { format: "2na2" }));
+    // Tím 0 má v balíčku len 3 karty: jeho prvý člen v poradí dostane 2, druhý 1.
+    const tri = sRukou(s1, 0, 0).hraci[0].doberaci.slice(0, 3);
+    const s: GameState = {
+      ...s1,
+      hraci: [
+        { ...s1.hraci[0], doberaci: tri, odhadzovaci: [] },
+        { ...s1.hraci[1], doberaci: sRukou(s1, 1, 0).hraci[1].doberaci, odhadzovaci: [] },
+      ],
+    };
+    const pred = miestaHry(s).map((m) => rukaMiesta(s, m).length);
+    const po = apply(data, s, { type: "cintorin", uid: null }, miestoNaTahu(s)!).state;
     expect(po.faza).toBe("volbaCiela");
-    expect(po.hraci[0].ruka).toHaveLength(0);
+    const pribudlo = (m: Miesto): number => rukaMiesta(po, m).length - pred[m]!;
+    expect(poradieVykladania(po).filter((m) => timMiesta(m) === 0).map(pribudlo)).toEqual([2, 1]);
+    for (const m of miestaHry(po).filter((q) => timMiesta(q) === 1)) expect(pribudlo(m)).toBe(KONSTANTY.DOBRATIE_PO_BITKE);
+  });
+
+  it("Päta, Lakeť, Otočka: rovnako 2 karty bez ohľadu na ruku", () => {
+    let s = setupGame(data, 3, { rezim: "pata" });
+    let x = 3;
+    let overenych = 0;
+    let plnaRuka = false;
+    for (let k = 0; s.koniec === null && k < 12000; k++) {
+      const p = ([0, 1] as const).find((q) => mozeHrat(s, q))!;
+      x = (x * 1103515245 + 12345) % 2147483648;
+      const pred = s;
+      const { state, events } = apply(data, s, tahBotaPata(data, s, p, x, { vzorky: 1 }), p);
+      s = state;
+      if (s.kolo === pred.kolo || s.koniec !== null) continue;
+      for (const q of [0, 1] as const) {
+        const h = s.hraci[q];
+        if (h.doberaci.length + h.odhadzovaci.length === 0) continue;
+        if (pred.hraci[q].ruka.length >= 3) plnaRuka = true;
+        expect(events.some((e) => e.type === "log" && e.text === `Hráč ${q + 1} si po bitke doberá ${KONSTANTY.DOBRATIE_PO_BITKE} karty.`)).toBe(true);
+        overenych++;
+      }
+    }
+    expect(overenych).toBeGreaterThan(0);
+    expect(plnaRuka).toBe(true);
   });
 });
 

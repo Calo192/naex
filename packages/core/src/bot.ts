@@ -587,9 +587,6 @@ function cenaCigariet(k: Kontext, s: GameState, p: PlayerId, n: number): number 
 
 /** Čo prinesie karta navyše zahraná vo finále: jej tuhé a špak za kartu v línii. */
 const KARTA_VO_FINALE = 4;
-/** Cena karty pod hranicou dobratia oproti rezerve: kým sa v kole ešte vykladá a po poslednom vykladaní. */
-const KARTA_POD_DOBRATIM = 0.75;
-const KARTA_POD_DOBRATIM_NA_KONCI = 0.25;
 /** Koľko kariet si hráč za kolo najviac dotiahne z balíčka (dobratie a fajčenie), hrubý odhad. */
 const KARIET_ZA_KOLO = 3;
 /** Plný poldeci navyše, keď ruka presahuje limit vykladania: karta by inak ostala ležať. */
@@ -619,21 +616,19 @@ function vykladaniPotom(s: GameState): number {
 
 /**
  * Úžitok ruky v špakoch. Kariet, ktoré sa dajú vyložiť, je vo finále (vykladania × limit), nad to
- * karta veľa nepridá — ale nie je to strop, len klesajúci úžitok. Pred finále sa ruka na začiatku kola
- * sama doberie (DOBRATIE_DO_RUKY), takže karta pod touto hranicou má menšiu cenu než rezerva nad ňou.
+ * karta veľa nepridá — ale nie je to strop, len klesajúci úžitok. Pred finále príde na začiatku kola
+ * DOBRATIE_PO_BITKE kariet bez ohľadu na ruku (v11.21): ušetrená karta sa nenahradí zadarmo, ale ruka
+ * v ďalšom kole je o ne väčšia, takže klesajúci úžitok nastúpi skôr.
  */
 function uzitokRuky(s: GameState, p: PlayerId, karty: number): number {
   const finale = kolPoTomto(s) === 0;
   const vykladani = finale ? vykladaniPotom(s) : ODHAD_VYKLADANI;
   if (vykladani === 0) return 0;
   const kapacita = Math.max(2, vykladani * (s.hraci[p].poldeciPlne + 1));
-  const plna = Math.min(karty, kapacita);
-  const navyse = Math.max(0, karty - kapacita);
-  const rezerva = plna + 0.25 * navyse;
-  if (finale) return KARTA_VO_FINALE * rezerva;
-  const zadarmo = Math.min(plna, KONSTANTY.DOBRATIE_DO_RUKY);
-  const pod = vykladaniPotom(s) > 0 ? KARTA_POD_DOBRATIM : KARTA_POD_DOBRATIM_NA_KONCI;
-  return vahaRezervy(s) * KARTA_VO_FINALE * (rezerva - zadarmo + zadarmo * pod);
+  const rezerva = (n: number): number => Math.min(n, kapacita) + 0.25 * Math.max(0, n - kapacita);
+  if (finale) return KARTA_VO_FINALE * rezerva(karty);
+  const dobratie = KONSTANTY.DOBRATIE_PO_BITKE;
+  return vahaRezervy(s) * KARTA_VO_FINALE * (rezerva(karty + dobratie) - rezerva(dobratie));
 }
 
 /**

@@ -76,7 +76,7 @@ describe("ťahák AI hráčov sedí s constants.ts", () => {
     ["rozpis úrovní (v7)", "stredná 1 · 2 · 2 · 3 · 3 · P"],
     ["Cirhóza na konci", `−${pocet(KONSTANTY.SPAKY_ZA_CIRHOZU, "špak", "špaky", "špakov")} za kus`],
     ["výkupné (2026-10-27)", `plný poldeci ${KONSTANTY.SPAKY_ZA_POLDECI} špak, každých celých ${KONSTANTY.CIGARIET_ZA_SPAK} cigariet 1 špak`],
-    ["dobratie do ruky (v11.9)", `dobereš do **${KONSTANTY.DOBRATIE_DO_RUKY} kariet v ruke**`],
+    ["dobratie po bitke (v11.21)", `dobereš **${pocet(KONSTANTY.DOBRATIE_PO_BITKE, "kartu", "karty", "kariet")}** bez ohľadu na to, koľko ich máš v ruke`],
     ["výpalné (v11.9)", `súper ti hneď po bitke dá **${pocet(KONSTANTY.VYPALNE_ZA_CERVENU, "cigaretu", "cigarety", "cigariet")} za každého staršieho**`],
     ["podloženie Nástroja (Náradie 2026-11-08)", `svojho Občana alebo Starešinu v línii — len pod svoje karty (v11.16), pod súperove nie** — za **${pocet(KONSTANTY.CENA_PODLOZENIA, "cigaretu", "cigarety", "cigariet")}**`],
     ["cena šenku", `1 karta za ${KONSTANTY.CENA_SENKU[1]} cigaretu, 2 karty za ${KONSTANTY.CENA_SENKU[2]} cigarety`],
