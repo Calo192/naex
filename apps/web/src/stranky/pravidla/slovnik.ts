@@ -69,7 +69,7 @@ export const SLOVNIK: readonly PojemSlovnika[] = [
   { id: "pohorsenie", pojem: "Pohoršenie", popis: "Akcia: 2 mäkké poškodenie do hádky (v10); súperova Viera ho nezruší." },
   { id: "poldeci", pojem: "Poldeci", popis: "Pohárik pálenky; plný zvyšuje limit o 1 a platí ním NA EX aj ďalšiu kartu v ťahu. Plný na konci hry je 1 špak." },
   { id: "povera", pojem: "Povera", popis: "Akcia: 1 mäkké poškodenie do hádky (v10; s Horoskopom 2); súperova Viera ju zruší 1 : 1." },
-  { id: "preskolenie", pojem: "Preškolenie", popis: "Akcia X karty sa ráta ako Y, ešte pred spojmi, na oboch hranách aj v akciách navyše. Robí ho hrana podloženého Nástroja a Školiteľ; každá akcia sa preškolí len raz." },
+  { id: "preskolenie", pojem: "Preškolenie", popis: "Akcia X karty sa ráta ako Y, ešte pred spojmi, na oboch hranách aj v akciách navyše. Robí ho Školiteľ a hrana podloženého Nástroja; premeny sa reťazia — najprv Školitelia, potom Nástroje, každá na výsledku predošlej." },
   { id: "boss", pojem: "Boss", popis: "Karta staršieho: 6 akcií a jedna neresť; v línii má len akcie; jeho schopnosť má len ten, kto ho drží ako väzňa." },
   { id: "prebytok", pojem: "Nakladačka", popis: "O koľko vyhrávaš v tuhom poškodení (drží ju víťaz); po bodovaní ju rozdelíš na svoj strach pri starších — stupeň stojí 1 / 2 / 3, zvyšok prepadne. Vo finále ide na špaky." },
   { id: "prevaha", pojem: "Prevaha", popis: "V kraji ju má, kto tam má viac svojich Občanov, Zvierat a Starešinov; dostane akcie hrany lokality." },

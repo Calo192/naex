@@ -12,7 +12,7 @@ stránka Pravidlá — `VERZIA_PRAVIDIEL_PRESNA`).
 **Zmeny v11.20 oproti v11.19** (Michal 2026-11-10, Zrejúca, interview; staré znenia v `docs/pravidla-historia.md`, sekcia v11.20):
 
 - **Hodnota stupňa 1 / 2 / 3** (§10, krok 4b; Michal: „Zmeniť na 1 / 2 / 3“): stupne strachu aj rečí majú hodnotu **žltá 1, oranžová 2, červená 3** (`KONSTANTY.HODNOTA_STUPNA`), plný teplomer **6** (strach 1 / 3 / 6). Predtým žltá 1, oranžová 2, červená 2 (plný 5). Súper má červený strach, ty reči na červenej a oranžovej: on 1, ty 5. Ceny stupňov (1 / 2 / 3, o 1 viac za obsadený) sa nemenia, krádež pri zajatí tiež nie (ráta cenu).
-- **Premeny sa reťazia** (§6, §12; Michal: „Reťazia sa“): premena Školiteľa a podloženého Nástroja na tej istej karte platia obe — **najprv Školiteľ, potom Nástroj** na jeho výstupe. Sypač {Rana}→{Pecka} a pod kartou Valaška {Pecka}→{Petelica}: z Rany je Petelica. Nástroj s opačnou premenou ({Pecka}→{Rana}) Ranu vráti. Nástroj, ktorého X Školiteľ už zmenil, ho nenájde (Sypač {Rana}→{Pecka} a Valaška dole {Rana}→{Petelica}: Pecka). Predtým platila len jedna premena a Nástroj mal prednosť. Dvaja Školitelia ani dva Nástroje pod Zámočníkom sa nereťazia.
+- **Premeny sa reťazia** (§6, §12; Michal: „Reťazia sa“, „Áno, reťazí sa všetko.“): všetky premeny na tej istej karte platia — **najprv Školitelia** (Podpora a Konflikt v poradí spustenia, potom Furt, skôr sused bližšie k lokalite), **potom Nástroje** v poradí podloženia; každá pracuje na výsledku predošlej. Dvaja Školitelia: Podpora {Rana}→{Pecka} a po nej Konflikt {Pecka}→{Petelica} — Petelica. Dva Nástroje pod Zámočníkom: {Pečeň}→{Rana} a po ňom {Rana}→{Pecka} — z Pečene Pecka. Sypač {Rana}→{Pecka} a pod kartou Valaška {Pecka}→{Petelica}: z Rany je Petelica. Nástroj s opačnou premenou ({Pecka}→{Rana}) Ranu vráti. Nástroj, ktorého X Školiteľ už zmenil, ho nenájde (Sypač {Rana}→{Pecka} a Valaška dole {Rana}→{Petelica}: Pecka). Predtým platila len jedna premena a Nástroj mal prednosť; dvaja Školitelia ani dva Nástroje sa nereťazili (prvá podoba v11.20, Michal 2026-11-10 doplnil: „Áno, reťazí sa všetko.“).
 - **Potvrdené výklady** (Michal 2026-11-10: „Potvrdzujem všetko“): NA EX × Odpor a Posilnenie v miernejšej podobe P2, Kapybara, Telefón, Krokodíl a hrany Náradia (v11.17), výklady lokalít v11.13 (Kultúrny dom, Benzínka, Obecný úrad, Sklad), Predsedova vila pri rečiach (v11.12) a Preškolenie (§6). Pravidlá sa obsahom nemenia; výklad ku Kapybare z v11.12 zanikol s jej Nástupom vo v11.17. Michal 2026-11-10 („Potvrdiť aj tieto.“) potvrdil aj zvyšné výklady: balíček, ktorý pri stavbe ponuky nestačí (§5), viac NA EX naraz (§7), výpalné (§10), Nezničiteľný a výklady Developera k zajatiu a presvedčeniu (§10), skrytá Záverečná ako cieľ NA EX pri Kostole (§15) a výklady v11.5 (§16).
 - **Pojem šenok sa volá Ponuka** (Michal 2026-11-10: „Šenok nahradiť za ponuku.“): ponuka kariet, z ktorej sa kupuje (§5), má meno Ponuka — z ponuky, do ponuky, v ponuke; fáza na stole je **Ponuka** (predtým „Draft — šenok“), „Voľba cieľa“ je na stole **O čo sa bijeme** a „Zhromaždenie“ **Zhromaždenie — kladenie kariet**. Len premenovanie, pravidlá sa nemenia; identifikátory v kóde (`senok`) ostávajú.
 
@@ -787,13 +787,16 @@ počíta ako ťah, priznanie nie.
   smermi), do konca kola, aj keď sa potom rozídu (Vedúcko, Sypač, Anonymný alkoholik, Kapybara).
   **Konflikt** — súperova karta, s ktorou sa stretne priložením, do konca kola (Profesionálny tipér,
   Kapybara). Pri každom spustení
-  ďalšia karta; tá istá karta druhý raz nič nové. **Medzi Školiteľmi sa akcia preškolí raz**, prvou
-  premenou v poradí Podpora a Konflikt v poradí spustenia → Furt; výstup jedného Školiteľa nie je
-  vstupom iného. **Potom Nástroj pod kartou** (len hrany, §12) preškolí výstup Školiteľa — premeny
-  sa reťazia (v11.20, Michal 2026-11-10: „Reťazia sa“): Sypač {Rana}→{Pecka} a pod kartou Valaška
-  {Pecka}→{Petelica} dajú z Rany Petelicu, Nástroj {Pecka}→{Rana} Ranu vráti. Nástroj, ktorého X
-  Školiteľ už zmenil, ho nenájde. X ani Y nie je Posilnenie, Odpor ani Pakt. Pravidlá Preškolenia
-  Michal potvrdil 2026-11-10.
+  ďalšia karta; tá istá karta druhý raz nič nové. **Premeny sa reťazia** (v11.20, Michal 2026-11-10:
+  „Reťazia sa“, „Áno, reťazí sa všetko.“): na tej istej karte platia všetky, v poradí **najprv Školitelia**
+  — Podpora a Konflikt v poradí spustenia, potom Furt (z dvoch susedov skôr ten bližšie k lokalite:
+  karty sa prikladajú na koniec línie, takže ležal skôr) — **potom Nástroje pod kartou** (len hrany,
+  §12) v poradí podloženia. Každá premena pracuje na výsledku predošlej: Podpora {Rana}→{Pecka}
+  a po nej Konflikt {Pecka}→{Petelica} dajú z Rany Petelicu, v opačnom poradí ostane Pecka; Sypač
+  {Rana}→{Pecka} a pod kartou Valaška {Pecka}→{Petelica} dajú z Rany Petelicu, Nástroj {Pecka}→{Rana}
+  Ranu vráti. Premena, ktorej X predošlé už zmenili, ho nenájde; reťaz, ktorá sa vráti na pôvodnú
+  akciu, nič nemení. X ani Y nie je Posilnenie, Odpor ani Pakt. Pravidlá Preškolenia Michal potvrdil
+  2026-11-10.
 - Po bitke sa karta vracia do odhadzovacieho balíčka svojho majiteľa (§9.7).
 
 ### Spoj a aktivácia akcií
@@ -1854,11 +1857,12 @@ Vedúcko, Kapybara).
   s preškolenou akciou. Ak karta X nemá, Nástroj pod ňou nerobí nič (podložiť ho smieš,
   je to tvoj ťah; hra také podloženie ponúka tlmene s upozornením „hrana tu nič nezmení“,
   v11.16). To isté platí pre hranu posilnenia bez X a pre kartovú hranu, ktorej stav
-  karta už má. Pod Zámočníkom sa každá akcia preškolí raz, prvým podloženým
-  Nástrojom s touto akciou — dva Nástroje sa nereťazia. **So Školiteľom sa reťazí**
-  (v11.20, Michal 2026-11-10): X je akcia **po Školiteľovi** (§6) — Sypač {Rana}→{Pecka}
-  a Valaška hore {Pecka}→{Petelica} dajú z Rany Petelicu; Valaška dole {Rana}→{Petelica}
-  pod kartou, ktorej Sypač Rany zmenil na Pecky, nerobí nič.
+  karta už má. **Premeny sa reťazia** (v11.20, Michal 2026-11-10: „Áno, reťazí sa všetko.“):
+  pod Zámočníkom pracuje každý Nástroj v poradí podloženia na výsledku predošlého — {Pečeň}→{Rana}
+  a po ňom {Rana}→{Pecka} dajú z Pečene Pecku, v opačnom poradí z Pečene Ranu. Nástroje idú
+  **po Školiteľoch** (§6): X je akcia po nich — Sypač {Rana}→{Pecka} a Valaška hore
+  {Pecka}→{Petelica} dajú z Rany Petelicu; Valaška dole {Rana}→{Petelica} pod kartou, ktorej
+  Sypač Rany zmenil na Pecky, nerobí nič. Ponuka podloženia ukáže celú reťaz („Rana → Pecka → Petelica“).
 - **Hrana posilnenia X** (zápis „Posilnená {X}“, tvar podľa rodu: Posilnený {Hazard},
   Posilnené {Obmedzenie}) posilní **všetky aktívne X** na oboch hranách karty (×2) ako
   Posilnenie (§6). Platí na akciu, ktorá je X **po preškolení** (Nástroj, Školiteľ): Rana
@@ -2225,7 +2229,7 @@ Kôň v kroku Exekútora. Michal ich potvrdí.
 | Kočovník | Spoločník: Pamätník (frakcie): 1 Pecka navyše. Jeho akcie patria majiteľovi ako pri každej karte |
 | Dvojčatá | Furt: do prevahy sa rátajú za dvoch — aj pre bonus Ihriska (v8). Lesná cesta ráta len Zvieratá. |
 | Silná nezávislá žena | Furt (Michal 2026-11-08): aktívne akcie tvojich **Občanov a Starešinov**, ktorí s ňou susedia, sa rátajú dvakrát. Zviera ani Nástroj nie, ani keď je zároveň Občan (Recidivista); lokalitu a súperove karty nie. Predtým zdvojovala všetky tvoje susedné karty. |
-| Zámočník | Furt (Náradie, Michal 2026-11-08): pod neho smieš podložiť **ľubovoľne veľa Nástrojov** (§12) — každý ťahom za cigaretu; každá jeho akcia sa preškolí raz, prvým podloženým Nástrojom s ňou. Predtým: aktívne akcie Nástrojov v jeho okolí ×2. |
+| Zámočník | Furt (Náradie, Michal 2026-11-08): pod neho smieš podložiť **ľubovoľne veľa Nástrojov** (§12) — každý ťahom za cigaretu; Nástroje pod ním sa reťazia v poradí podloženia (v11.20, §12). Predtým: aktívne akcie Nástrojov v jeho okolí ×2. |
 | Veterán | Furt: NA EX na Veterána jeho aktívne akcie nezruší, ale zdvojí; neaktívne ostanú neaktívne. |
 | Veštica | Spoločník: Pamätník (frakcie): 2 Povery navyše. Starý efekt (Prehra: výmena kariet balíčkov, §9.5b) má len stará sada. |
 | Degustátorka | Nástup: ak má súper viac plných poldeci ako ty, jeden sa mu otočí na vypitý (nie nerest ani pečeň). V Zhromaždení mu tým **hneď klesne zostávajúci limit vykladania o 1** (v11.16, Michal 2026-11-09; predtým až v ďalšom Zhromaždení), najmenej na 0. |
@@ -2262,7 +2266,7 @@ Kôň v kroku Exekútora. Michal ich potvrdí.
 | Finále | posledná bitka o pinnacle lokalitu, hrá sa ako o každú inú; útočí zaostávajúci (menej špakov) (§14b) |
 | Dedičstvo | Nástroj vyložený mimo línie za rastúcu cenu v cigaretách; platí jeho efekt Dedičstvo (§12) |
 | Podloženie | Nástroj z ruky pod svojho Občana či Starešinu v línii (len pod vlastné karty, v11.16) za 1 cigaretu; platí pretŕčajúca hrana, leží do bitky, potom ide tomu, kto ho podložil (§12) |
-| Preškolenie | akcia X sa ráta ako Y — zápis {X}→{Y}; akciová hrana Nástroja preškolí všetky X karty pred spojmi (§12); Školiteľ „Furt/Podpora/Konflikt: Preškolenie {X}→{Y}.“ susedov či karty, s ktorými sa stretne (§6). Každá akcia raz, nereťazí sa |
+| Preškolenie | akcia X sa ráta ako Y — zápis {X}→{Y}; akciová hrana Nástroja preškolí všetky X karty pred spojmi (§12); Školiteľ „Furt/Podpora/Konflikt: Preškolenie {X}→{Y}.“ susedov či karty, s ktorými sa stretne (§6). Premeny sa reťazia: Školitelia, potom Nástroje, každá na výsledku predošlej (v11.20) |
 | Školiteľ | Občan alebo Zviera (v11.16) s efektom Preškolenie (Vedúcko, Sypač, Anonymný alkoholik, Profesionálny tipér; §6, §16); Zviera-Školiteľa umlčí Mäsiar |
 | Efekt s vedľajšou akciou | efekt Občana s akciami navyše v pečati (§6, §16) |
 | Textový efekt | efekt Občana slovami — nepreškoľuje ani nepridáva akcie (§16) |

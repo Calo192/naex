@@ -174,7 +174,8 @@ describe("preškolenie akciovou hranou", () => {
     expect(evaluateLine(sd, linia({ card: host, playedBy: 0, podlozene: pod("hrable") }, sused)).sums[0].Rana).toBe(4);
   });
 
-  it("pod Zámočníkom sa uplatní prvý Nástroj s tou akciou — preškolenia sa nereťazia", () => {
+  // v11.20 reťaz (Michal 2026-11-10): Vidly idú po Puške a Ranu, z ktorej je už Petelica, nenájdu.
+  it("pod Zámočníkom pracuje druhý Nástroj na výstupe prvého — Vidly Ranu po Puške nenájdu", () => {
     const zam = instanceFor(sd, "zamocnik", H_L, H_R);
     const sused = kartaS("sused_rana", ["Rana", "Pecka", null, "Viera"]);
     const dva: PlacedCard = { card: zam, playedBy: 0, podlozene: [...pod("puska"), ...pod("vidly", "dolna")] };

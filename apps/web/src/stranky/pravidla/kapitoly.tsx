@@ -349,9 +349,9 @@ export const KAPITOLY: readonly Kapitola[] = [
         <p>
           <P k="skolitel">Školiteľ</P> (Občan alebo Zviera) má efekt <P k="preskolenie">Preškolenie</P> X → Y: akcia X inej karty sa ráta ako Y —
           ešte pred spojmi, na oboch hranách aj v akciách navyše. Pri spúšťači Furt preškolí oboch susedov (aj súperove karty),
-          kým s ním susedia; pri Podpore tvoju kartu a pri Konflikte súperovu, s ktorou sa stretne, do konca kola. Medzi Školiteľmi sa
-          akcia preškolí len raz; podložený Nástroj potom preškolí, čo z nej Školiteľ urobil — Sypač Rana → Pecka a pod kartou
-          Valaška Pecka → Petelica dajú Petelicu.
+          kým s ním susedia; pri Podpore tvoju kartu a pri Konflikte súperovu, s ktorou sa stretne, do konca kola. Premeny sa
+          reťazia: najprv Školitelia v poradí, ako sa spustili, potom podložené Nástroje v poradí podloženia — každá premení, čo
+          urobila predošlá. Sypač Rana → Pecka a pod kartou Valaška Pecka → Petelica dajú Petelicu.
         </p>
         <H3 id="ruka-a-balicky">Ruka a balíčky</H3>
         <p>

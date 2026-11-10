@@ -184,16 +184,37 @@ export interface KartaSNastrojmi {
   readonly podlozene?: readonly PodlozenyNastroj[];
 }
 
+/** Premena akcie Nástrojmi pod kartou: na čo, prvý Nástroj a pri viacerých celá reťaz. */
+export interface PremenaNastrojmi {
+  readonly na: Action;
+  readonly uid: number;
+  readonly retaz?: readonly { readonly uid: number; readonly na: Action }[];
+}
+
 /**
- * Preškolenie akcií hostiteľa: akcia → na čo ju zmenil prvý podložený Nástroj (v poradí podloženia)
- * s touto akciou na pretŕčajúcej hrane. Dva Nástroje sa nereťazia (pod Zámočníkom Pečeň → Rana
- * a Rana → Pecka nedajú z Pečene Pecku); reťaz Školiteľ → Nástroj (v11.20) skladá partia.ts.
+ * Preškolenie akcií hostiteľa podloženými Nástrojmi: akcia → výsledok. Reťazí sa (v11.20, Michal
+ * 2026-11-10: „Áno, reťazí sa všetko.“) — v poradí podloženia pracuje každý Nástroj na výsledku
+ * predošlého: pod Zámočníkom Pečeň → Rana a Rana → Pecka dajú z Pečene Pecku. Reťaz, ktorá sa
+ * vráti na pôvodnú akciu, nič nemení. Školiteľov pred Nástrojmi pridá partia.ts (premenyVLinii).
  */
-export function preskoleniaHostitela(data: DataNaradia, pl: KartaSNastrojmi): ReadonlyMap<Action, { readonly na: Action; readonly uid: number }> {
-  const out = new Map<Action, { na: Action; uid: number }>();
+export function preskoleniaHostitela(data: DataNaradia, pl: KartaSNastrojmi): ReadonlyMap<Action, PremenaNastrojmi> {
+  const kroky: { z: Action; na: Action; uid: number }[] = [];
   for (const n of pl.podlozene ?? []) {
     const h = aktivnaHrana(data, n);
-    if (h?.druh === "akcia" && !out.has(h.z)) out.set(h.z, { na: h.na, uid: n.card.uid });
+    if (h?.druh === "akcia") kroky.push({ z: h.z, na: h.na, uid: n.card.uid });
+  }
+  const out = new Map<Action, PremenaNastrojmi>();
+  for (const a of new Set(kroky.map((k) => k.z))) {
+    let teraz = a;
+    const cesta: { uid: number; na: Action }[] = [];
+    for (const k of kroky) {
+      if (k.z !== teraz) continue;
+      teraz = k.na;
+      cesta.push({ uid: k.uid, na: k.na });
+    }
+    const prvy = cesta[0];
+    if (prvy === undefined || teraz === a) continue;
+    out.set(a, { na: teraz, uid: prvy.uid, ...(cesta.length > 1 ? { retaz: cesta } : {}) });
   }
   return out;
 }
@@ -231,16 +252,19 @@ export interface SlotPoPreskoleni {
   readonly povodna?: Action;
   /** uid Nástroja (v línii aj Školiteľa), ktorý slot zmenil. */
   readonly nastroj?: number;
-  /** uid Nástroja, ktorý v reťazi (v11.20) preškolil výstup Školiteľa `nastroj`. */
-  readonly potom?: number;
+  /** Celá reťaz premien (v11.20), keď ich bolo viac; prvá je `nastroj`. */
+  readonly retaz?: readonly { readonly uid: number; readonly na: Action }[];
 }
 
 /** Strana karty po preškolení (Nástroje, v línii aj Školitelia) — v tom istom ráme ako `strana`. */
-export function preskolStranu(premeny: ReadonlyMap<Action, { readonly na: Action; readonly uid: number; readonly potom?: number }>, strana: readonly Slot[]): (SlotPoPreskoleni | null)[] {
+export function preskolStranu(
+  premeny: ReadonlyMap<Action, { readonly na: Action; readonly uid: number; readonly retaz?: readonly { readonly uid: number; readonly na: Action }[] }>,
+  strana: readonly Slot[],
+): (SlotPoPreskoleni | null)[] {
   return strana.map((a) => {
     if (a === null) return null;
     const p = premeny.get(a);
-    return p === undefined ? { akcia: a } : { akcia: p.na, povodna: a, nastroj: p.uid, ...(p.potom !== undefined ? { potom: p.potom } : {}) };
+    return p === undefined ? { akcia: a } : { akcia: p.na, povodna: a, nastroj: p.uid, ...(p.retaz !== undefined ? { retaz: p.retaz } : {}) };
   });
 }
 

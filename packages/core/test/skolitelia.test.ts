@@ -218,9 +218,11 @@ describe("poradie premien: Podpora a Konflikt v poradí spustenia → Furt, výs
     const puska = instanceFor(d, "puska", EMPTY, EMPTY);
     const sNastrojom = akcie(lezi(x, 0, { preskolenia: [podpora], podlozene: [{ card: puska, majitel: 1, hrana: "horna" }] }), "skol_viera");
     expect(sNastrojom.slot).toMatchObject({ action: "Pecka", povodna: "Rana", preskolil: sypac });
-    expect(sNastrojom.slot?.preskolilPotom).toBeUndefined();
+    expect(sNastrojom.slot?.retaz).toBeUndefined();
+    // Furt (Viera) aj Nástroj prídu v reťazi po Podpore — Ranu, z ktorej je Pecka, nenájdu (sivé pečate).
     expect(sNastrojom.ev.cards.get(x.uid)?.preskolena?.map((p) => [p.zdroj, p.akcii])).toEqual([
       ["Podpora", 4],
+      ["Furt", 0],
       ["Nástroj", 0],
     ]);
     // Bez Podpory preškolí Ranu Furt (Viera) a Nástroj Ranu nenájde ani tak.
@@ -236,11 +238,12 @@ describe("poradie premien: Podpora a Konflikt v poradí spustenia → Furt, výs
     expect(akcie(lezi(x, 0, { preskolenia: [podpora, konflikt] }), "partner").slot).toMatchObject({ action: "Pecka", preskolil: sypac });
   });
 
-  it("dvaja Školitelia sa nereťazia: Rana → Pecka a Pecka → Rana dajú z Rany Pecku a z Pecky Ranu", () => {
+  // v11.20 (Michal 2026-11-10: „Áno, reťazí sa všetko.“): do v11.19 sa Školitelia nereťazili (z Rany Pecka).
+  it("dvaja Školitelia sa reťazia: Rana → Pecka a Pecka → Rana vrátia Rane Ranu, z Pecky je Rana", () => {
     const { ev } = akcie(lezi(x, 0, { preskolenia: [podpora] }), "skol_spat");
-    expect(sloty(ev, x.uid).map((s) => [s.povodna, s.action])).toEqual(
+    expect(sloty(ev, x.uid).map((s) => [s.povodna ?? null, s.action])).toEqual(
       Array.from({ length: 4 }, () => [
-        ["Rana", "Pecka"],
+        [null, "Rana"],
         ["Pecka", "Rana"],
       ]).flat(),
     );
@@ -259,7 +262,7 @@ describe("poradie premien: Podpora a Konflikt v poradí spustenia → Furt, výs
     const valaska = instanceFor(dv, "valaska", EMPTY, EMPTY);
     const partner = instanceFor(dv, "partner", RANY, RANY);
     const ev = evaluateLine(dv, linia([lezi(pijan, 0, { preskolenia: [podpora], podlozene: [{ card: valaska, majitel: 0, hrana: "horna" }] }), lezi(partner, 0)]));
-    expect(sloty(ev, pijan.uid).every((s) => s.action === "Petelica" && s.povodna === "Rana" && s.preskolil === sypac && s.preskolilPotom === valaska.uid)).toBe(true);
+    expect(sloty(ev, pijan.uid).every((s) => s.action === "Petelica" && s.povodna === "Rana" && s.preskolil === sypac && s.retaz?.map((k) => k.uid).join() === `${sypac},${valaska.uid}`)).toBe(true);
     expect(ev.cards.get(pijan.uid)?.preskolena?.map((p) => [p.zdroj, p.z, p.na, p.akcii])).toEqual([
       ["Podpora", "Rana", "Pecka", 8],
       ["Nástroj", "Pecka", "Petelica", 8],
@@ -270,7 +273,7 @@ describe("poradie premien: Podpora a Konflikt v poradí spustenia → Furt, výs
     const bez = linia([lezi(pijan, 0, { preskolenia: [podpora] }), lezi(partner, 0)]);
     const ponuka = ponukaPodlozenia(dv, bez, valaska, 0).filter((m) => m.hostitel === pijan.uid);
     expect(ponuka.map((m) => [m.hrana, m.maCoRobit, m.popis])).toEqual([
-      ["horna", true, "Pecka ×8 → Petelica ×8"],
+      ["horna", true, "Rana ×8 → Pecka ×8 → Petelica ×8"],
       ["dolna", false, "nemá Petelica"],
     ]);
   });

@@ -50,7 +50,7 @@ import { defOf, printedSides } from "./data.ts";
 import type { EfektNavyse, NavyseStav } from "./navyse.ts";
 import { efektyNavyse, jeSlovami, popisPodmienky, stavNavyse } from "./navyse.ts";
 import type { PodlozenyNastroj } from "./naradie.ts";
-import { posilneniaHostitela, preskolStranu, preskoleniaHostitela, ucinkyNastrojov } from "./naradie.ts";
+import { aktivnaHrana, posilneniaHostitela, preskolStranu, ucinkyNastrojov } from "./naradie.ts";
 import type { SpustacPreskolenia } from "./preskolenie.ts";
 import { preskoleniaKarty } from "./preskolenie.ts";
 
@@ -195,8 +195,14 @@ export interface PremenaAkcie {
   /** uid Nástroja či Školiteľa. */
   readonly uid: number;
   readonly zdroj: ZdrojPreskolenia;
-  /** uid Nástroja, ktorý výstup Školiteľa preškolil ďalej (reťaz, v11.20). */
-  readonly potom?: number;
+  /** Celá reťaz (v11.20), keď akciu zmenila viac ako jedna premena: kto a na čo, v poradí. */
+  readonly retaz?: readonly KrokRetaze[];
+}
+
+/** Krok reťaze premien akcie, ako ho ukazuje klient: „Rana → Pecka (Sypač) → Petelica (Valaška)“. */
+export interface KrokRetaze {
+  readonly uid: number;
+  readonly na: Action;
 }
 
 export type SlotStav = "neaktivna" | "aktivna" | "zrusena";
@@ -217,8 +223,8 @@ export interface SlotEval {
   readonly povodna?: Action;
   /** uid Nástroja či Školiteľa, ktorý slot preškolil (pri `povodna`). */
   readonly preskolil?: number;
-  /** uid Nástroja, ktorý výstup Školiteľa `preskolil` preškolil ďalej (reťaz, v11.20). */
-  readonly preskolilPotom?: number;
+  /** Celá reťaz premien slotu (v11.20), keď ich bolo viac — prvá je `preskolil`. */
+  readonly retaz?: readonly KrokRetaze[];
 }
 
 /** Vyhodnotenie jednej karty — sloty vo VYTLAČENOM ráme karty. */
@@ -346,8 +352,8 @@ interface Elem {
   readonly povodne: (Action | null)[][];
   /** preskolil[side][k]: uid Nástroja či Školiteľa pri povodne. */
   readonly preskolil: (number | null)[][];
-  /** preskolilPotom[side][k]: uid Nástroja, ktorý v reťazi preškolil výstup Školiteľa (v11.20). */
-  readonly preskolilPotom: (number | null)[][];
+  /** retaz[side][k]: celá reťaz premien slotu, keď ich bolo viac (v11.20). */
+  readonly retaz: (readonly KrokRetaze[] | null)[][];
   /** Preškolenia karty (premenyVLinii). */
   readonly premeny: PremenyKarty;
   /** Šarlatán v okolí: Viera tejto karty sa ráta ako Vízia (do v6; v7 nepoužíva). */
@@ -516,7 +522,7 @@ function makeElem(
   const akcie = (s: NonNullable<typeof strany>["left"]): Slot[] => s.map((x) => x?.akcia ?? null);
   const povodne = (s: NonNullable<typeof strany>["left"]): (Action | null)[] => s.map((x) => x?.povodna ?? null);
   const kto = (s: NonNullable<typeof strany>["left"]): (number | null)[] => s.map((x) => x?.nastroj ?? null);
-  const potom = (s: NonNullable<typeof strany>["left"]): (number | null)[] => s.map((x) => x?.potom ?? null);
+  const retaz = (s: NonNullable<typeof strany>["left"]): (readonly KrokRetaze[] | null)[] => s.map((x) => x?.retaz ?? null);
   const ucinky: ReadonlySet<string> = sNastrojom ? ucinkyNastrojov(data, pl) : new Set();
   return {
     uid: card.uid,
@@ -542,12 +548,12 @@ function makeElem(
         : rotated
           ? [kto(strany.right).reverse(), kto(strany.left).reverse()]
           : [kto(strany.left), kto(strany.right)],
-    preskolilPotom:
+    retaz:
       strany === null
         ? [[null, null, null, null], [null, null, null, null]]
         : rotated
-          ? [potom(strany.right).reverse(), potom(strany.left).reverse()]
-          : [potom(strany.left), potom(strany.right)],
+          ? [retaz(strany.right).reverse(), retaz(strany.left).reverse()]
+          : [retaz(strany.left), retaz(strany.right)],
     premeny,
     stav: [freshStav(), freshStav()],
     nasobok: [freshNasobok(), freshNasobok()],
@@ -571,100 +577,143 @@ function makeElem(
   };
 }
 
+/** Jedna premena v poradí reťaze: akcia `z` sa ráta ako `na` — Školiteľ alebo Nástroj pod kartou. */
+export interface KrokPremeny {
+  readonly z: Action;
+  readonly na: Action;
+  /** uid Školiteľa či Nástroja. */
+  readonly uid: number;
+  readonly zdroj: ZdrojPreskolenia;
+}
+
 /** Preškolenia jednej karty: akcia → na čo a kto. */
 export interface PremenyKarty {
-  /** Akcie na hranách: vytlačená akcia → výsledok reťaze Školiteľ → Nástroj (v11.20). */
+  /** Akcie na hranách: vytlačená akcia → výsledok celej reťaze (Školitelia, potom Nástroje). */
   readonly hrany: ReadonlyMap<Action, PremenaAkcie>;
   /** Školitelia — hrany aj akcie navyše; vytlačená akcia → premena. */
   readonly navyse: ReadonlyMap<Action, PremenaAkcie>;
-  /** Nástroje pod kartou: akcia po Školiteľovi → premena (Nástroj mení len hrany, PRAVIDLA §12). */
+  /** Nástroje pod kartou: akcia po Školiteľoch → premena (Nástroj mení len hrany, PRAVIDLA §12). */
   readonly nastroj: ReadonlyMap<Action, PremenaAkcie>;
+  /** Všetky premeny karty v poradí reťaze: Školitelia, potom Nástroje. */
+  readonly kroky: readonly KrokPremeny[];
+  /** Koľko z `kroky` sú Školitelia (tie menia aj akcie navyše). */
+  readonly krokovSkolitelov: number;
 }
 
-const BEZ_PREMIEN: PremenyKarty = { hrany: new Map(), navyse: new Map(), nastroj: new Map() };
+const BEZ_PREMIEN: PremenyKarty = { hrany: new Map(), navyse: new Map(), nastroj: new Map(), kroky: [], krokovSkolitelov: 0 };
 const BEZ_POSILNENI: ReadonlyMap<Action, string> = new Map();
 
 /**
- * Reťaz premien hrany (v11.20, Michal 2026-11-10: „Reťazia sa“): najprv Školiteľ, potom Nástroj
- * na jeho výstupe — Sypač {Rana}→{Pecka} a pod kartou {Pecka}→{Petelica} dajú z Rany Petelicu.
- * Nástroj s vytlačenou akciou, ktorú Školiteľ zmenil, ju už nenájde. Kľúč = vytlačená akcia;
- * reťaz, ktorá sa vráti na vytlačenú akciu, nič nemení.
+ * Cesta akcie `a` reťazou (v11.20, Michal 2026-11-10: „Áno, reťazí sa všetko.“): každá premena
+ * v poradí pracuje na výsledku predošlej. Vráti premeny, ktoré akciu naozaj zmenili.
  */
-function retazHran(skol: ReadonlyMap<Action, PremenaAkcie>, nastroj: ReadonlyMap<Action, PremenaAkcie>): ReadonlyMap<Action, PremenaAkcie> {
-  if (nastroj.size === 0) return skol;
-  const out = new Map<Action, PremenaAkcie>();
-  for (const [z, s] of skol) {
-    const n = nastroj.get(s.na);
-    const na = n?.na ?? s.na;
-    if (na !== z) out.set(z, n === undefined ? s : { ...s, na, potom: n.uid });
+export function cestaAkcie(kroky: readonly KrokPremeny[], a: Action): readonly KrokPremeny[] {
+  let teraz = a;
+  const out: KrokPremeny[] = [];
+  for (const k of kroky) {
+    if (k.z !== teraz) continue;
+    teraz = k.na;
+    out.push(k);
   }
-  for (const [z, n] of nastroj) if (!skol.has(z)) out.set(z, n);
   return out;
 }
 
+/** Reťaz ako mapa: akcia → výsledok; reťaz, ktorá sa vráti na pôvodnú akciu, nič nemení. */
+function mapaRetaze(kroky: readonly KrokPremeny[]): ReadonlyMap<Action, PremenaAkcie> {
+  const out = new Map<Action, PremenaAkcie>();
+  if (kroky.length === 0) return out;
+  for (const a of new Set(kroky.map((k) => k.z))) {
+    const cesta = cestaAkcie(kroky, a);
+    const prvy = cesta[0];
+    const posledny = cesta[cesta.length - 1];
+    if (prvy === undefined || posledny === undefined || posledny.na === a) continue;
+    out.set(a, { na: posledny.na, uid: prvy.uid, zdroj: prvy.zdroj, ...(cesta.length > 1 ? { retaz: cesta.map((k) => ({ uid: k.uid, na: k.na })) } : {}) });
+  }
+  return out;
+}
+
+/** Premeny Nástrojov pod kartou v poradí podloženia (len pretŕčajúce akciové hrany). */
+export function krokyNastrojov(data: GameData, pl: Pick<PlacedCard, "podlozene">): KrokPremeny[] {
+  const out: KrokPremeny[] = [];
+  for (const n of pl.podlozene ?? []) {
+    const h = aktivnaHrana(data, n);
+    if (h?.druh === "akcia") out.push({ z: h.z, na: h.na, uid: n.card.uid, zdroj: "Nástroj" });
+  }
+  return out;
+}
+
+/** Premeny karty zo zoznamu krokov (Školitelia, potom Nástroje). */
+function premenyZKrokov(skol: readonly KrokPremeny[], nastroj: readonly KrokPremeny[]): PremenyKarty {
+  const kroky = [...skol, ...nastroj];
+  return { hrany: mapaRetaze(kroky), navyse: mapaRetaze(skol), nastroj: mapaRetaze(nastroj), kroky, krokovSkolitelov: skol.length };
+}
+
+/** Premeny karty len z Nástrojov pod ňou — keď línia nie je po ruke (ponuka podloženia bez línie). */
+export function premenyNastrojov(data: GameData, pl: Pick<PlacedCard, "podlozene">): PremenyKarty {
+  const n = krokyNastrojov(data, pl);
+  return n.length === 0 ? BEZ_PREMIEN : premenyZKrokov([], n);
+}
+
 /**
- * Preškolenia kariet v línii (Michal 2026-11-08) podľa uid. Medzi Školiteľmi sa akcia preškolí
- * raz, prvou premenou v poradí Podpora a Konflikt (v poradí spustenia, PlacedCard.preskolenia)
- * → Furt Školiteľa, s ktorým karta susedí (karty oboch hráčov; aj lícom dole, ako Furt efekty
- * akcií); medzi Nástrojmi platí prvý v poradí podloženia. Výstup Školiteľa potom preškolí Nástroj
- * pod kartou (reťaz, v11.20). Lokalita ani karta v strede nič nedostane. Akcie navyše preškolí
- * len Školiteľ — Nástroj mení hrany.
+ * Preškolenia kariet v línii (Michal 2026-11-08) podľa uid. Reťazí sa všetko (v11.20, Michal
+ * 2026-11-10): najprv Školitelia — Podpora a Konflikt v poradí spustenia (PlacedCard.preskolenia),
+ * potom Furt susedov, skôr ten, ktorý leží bližšie k lokalite (ležal skôr; karty oboch hráčov, aj
+ * lícom dole ako Furt efekty akcií) — potom Nástroje pod kartou v poradí podloženia. Každá premena
+ * pracuje na výsledku predošlej. Lokalita ani karta v strede nič nedostane. Akcie navyše menia len
+ * Školitelia — Nástroj mení hrany.
  */
 export function premenyVLinii(data: GameData, line: Pick<LineState, "lokalita" | "strany">): ReadonlyMap<number, PremenyKarty> {
-  const skol = new Map<number, Map<Action, PremenaAkcie>>();
-  const nastroje = new Map<number, ReadonlyMap<Action, PremenaAkcie>>();
+  const skol = new Map<number, KrokPremeny[]>();
   const vsetky = [...line.strany[0], ...line.strany[1]];
   // Školiteľom môže byť aj Zviera (v11.16) — vedľa Mäsiara jeho Preškolenie neplatí, Furt ani
   // zapísané z Podpory či Konfliktu (Mäsiar: efekty Zvierat v jeho okolí neplatia).
   const umlcane = zvieratAUmlcane(data, line);
-  const pridaj = (uid: number, z: Action, p: PremenaAkcie): void => {
-    let m = skol.get(uid);
-    if (m === undefined) {
-      m = new Map();
-      skol.set(uid, m);
-    }
-    if (!m.has(z)) m.set(z, p);
+  const pridaj = (uid: number, k: KrokPremeny): void => {
+    const m = skol.get(uid);
+    if (m === undefined) skol.set(uid, [k]);
+    else m.push(k);
   };
-  for (const pl of vsetky) {
-    if (pl.podlozene !== undefined && pl.podlozene.length > 0) {
-      const m = new Map<Action, PremenaAkcie>();
-      for (const [z, p] of preskoleniaHostitela(data, pl)) m.set(z, { na: p.na, uid: p.uid, zdroj: "Nástroj" });
-      if (m.size > 0) nastroje.set(pl.card.uid, m);
-    }
-    for (const p of pl.preskolenia ?? []) if (!umlcane.has(p.od)) pridaj(pl.card.uid, p.z, { na: p.na, uid: p.od, zdroj: p.spustac });
-  }
-  for (const pl of vsetky) {
+  for (const pl of vsetky) for (const p of pl.preskolenia ?? []) if (!umlcane.has(p.od)) pridaj(pl.card.uid, { z: p.z, na: p.na, uid: p.od, zdroj: p.spustac });
+  // Furt podľa vzdialenosti od lokality: karty sa prikladajú na koniec línie, bližšia ležala skôr.
+  const odStredu = Array.from({ length: Math.max(line.strany[0].length, line.strany[1].length) }, (_, i) => [line.strany[0][i], line.strany[1][i]]).flat();
+  for (const pl of odStredu) {
+    if (pl === undefined) continue;
     const furt = preskoleniaKarty(defOf(data, pl.card)).filter((e) => e.spustac === "Furt");
     if (furt.length === 0 || umlcane.has(pl.card.uid)) continue;
     for (const s of okolieVLinii(line, pl.card.uid)) {
       if (s === null) continue;
-      for (const e of furt) pridaj(s.card.uid, e.z, { na: e.na, uid: pl.card.uid, zdroj: "Furt" });
+      for (const e of furt) pridaj(s.card.uid, { z: e.z, na: e.na, uid: pl.card.uid, zdroj: "Furt" });
     }
   }
   const out = new Map<number, PremenyKarty>();
-  for (const uid of new Set([...skol.keys(), ...nastroje.keys()])) {
-    const s = skol.get(uid) ?? BEZ_PREMIEN.navyse;
-    const n = nastroje.get(uid) ?? BEZ_PREMIEN.nastroj;
-    out.set(uid, { hrany: retazHran(s, n), navyse: s, nastroj: n });
+  for (const pl of vsetky) {
+    const s = skol.get(pl.card.uid) ?? [];
+    const n = krokyNastrojov(data, pl);
+    if (s.length > 0 || n.length > 0) out.set(pl.card.uid, premenyZKrokov(s, n));
   }
   return out;
 }
 
-/** Preškolenia, ktoré platia na karte, s počtom premenených akcií (vytlačené na oboch hranách a akcie navyše). */
+/**
+ * Preškolenia, ktoré platia na karte, s počtom premenených akcií (vytlačené na oboch hranách
+ * a akcie navyše) — každá premena v reťazi zvlášť, aj keď na karte nič nezmenila (sivá pečať).
+ */
 function preskolenaKarta(data: GameData, card: CardInstance, premeny: PremenyKarty): PremenaNaKarte[] {
   const p = printedSides(data, card);
   const hrany = [...p.left, ...p.right].filter((a): a is Action => a !== null);
   const navyse = efektyNavyse(defOf(data, card)).flatMap((e) => e.akcie);
   const out = new Map<string, PremenaNaKarte>();
-  const pridaj = (z: Action, x: PremenaAkcie, n: number): void => {
-    const k = `${x.uid}:${x.zdroj}:${z}`;
-    const bolo = out.get(k);
-    out.set(k, { z, na: x.na, od: x.uid, zdroj: x.zdroj, akcii: (bolo?.akcii ?? 0) + n });
+  const kluc = (k: KrokPremeny): string => `${k.uid}:${k.zdroj}:${k.z}`;
+  for (const k of premeny.kroky) if (!out.has(kluc(k))) out.set(kluc(k), { z: k.z, na: k.na, od: k.uid, zdroj: k.zdroj, akcii: 0 });
+  const zapocitaj = (kroky: readonly KrokPremeny[], a: Action): void => {
+    for (const k of cestaAkcie(kroky, a)) {
+      const bolo = out.get(kluc(k));
+      if (bolo !== undefined) out.set(kluc(k), { ...bolo, akcii: bolo.akcii + 1 });
+    }
   };
-  for (const [z, x] of premeny.navyse) pridaj(z, x, [...hrany, ...navyse].filter((a) => a === z).length);
-  // Nástroj prichádza v reťazi po Školiteľovi — ráta hrany, ktoré sú jeho X až po Školiteľovi.
-  const poSkolitelovi = hrany.map((a) => premeny.navyse.get(a)?.na ?? a);
-  for (const [z, x] of premeny.nastroj) pridaj(z, x, poSkolitelovi.filter((a) => a === z).length);
+  for (const a of hrany) zapocitaj(premeny.kroky, a);
+  const skol = premeny.kroky.slice(0, premeny.krokovSkolitelov);
+  for (const a of navyse) zapocitaj(skol, a);
   return [...out.values()];
 }
 
@@ -1158,10 +1207,10 @@ function elemEval(elem: Elem): CardLineEval {
     // `povodna` vytlačená (Nástroj aj Školiteľ). Šarlatán a Výtržník nie (zatiaľ).
     const povodna = elem.povodne[side]![idx] ?? null;
     const preskolil = elem.preskolil[side]![idx] ?? null;
-    const preskolilPotom = elem.preskolilPotom[side]![idx] ?? null;
+    const retaz = elem.retaz[side]![idx] ?? null;
     return {
       action,
-      ...(povodna !== null ? { povodna, ...(preskolil !== null ? { preskolil } : {}), ...(preskolilPotom !== null ? { preskolilPotom } : {}) } : {}),
+      ...(povodna !== null ? { povodna, ...(preskolil !== null ? { preskolil } : {}), ...(retaz !== null ? { retaz } : {}) } : {}),
       stav: elem.stav[side]![idx] as SlotStav,
       nasobok: elem.nasobok[side]![idx] as number,
       ...(elem.vieraAkoVizia && action === "Viera" ? { ako: "Vízia" as const } : {}),

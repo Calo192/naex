@@ -310,7 +310,7 @@ export function vazniNaVyhru(lokalitCelkom: number): number {
 // v11.18 (Michal 2026-11-09, Zrejúca) bez novej značky: Vedúcko Podporou — Roboty ako Pecky len tvojej karte, s ktorou sa stretne.
 // v11.19 (Michal 2026-11-09, Zrejúca) bez novej značky: Dohadzovačka presúva len kartu z konca druhého kraja.
 // v11.20 (Michal 2026-11-10, Zrejúca) bez novej značky: hodnota stupňa 1 / 2 / 3 (plný teplomer 6),
-// premeny Školiteľa a Nástroja sa reťazia (najprv Školiteľ, potom Nástroj).
+// premeny sa reťazia všetky (Školitelia, potom Nástroje, každá na výsledku predošlej).
 export const VERZIA_PRAVIDIEL = "v11";
 /**
  * Presná verzia pravidiel vrátane dávky — hráč ju vidí na stránke Pravidlá, ktorá má
