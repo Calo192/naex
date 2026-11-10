@@ -921,10 +921,10 @@ export const KAPITOLY: readonly Kapitola[] = [
             Nástroj pod ňou nerobí nič.
           </li>
           <li>
-            <strong>Posilnená X</strong> — aktívne akcie X na karte sú posilnené ×2 ako pri Posilnení (Puška, Pasca, Fúrik, Horoskop, Izolačka).
+            <strong>Posilnená X</strong> — akcie X na karte sú posilnené ×2 ako pri Posilnení (Puška, Pasca, Fúrik, Horoskop, Izolačka). Rátajú sa tie aktívne po NA EX: neaktívne X, ktoré NA EX aktivovalo, majú ×4.
           </li>
           <li>
-            <strong>Účinok na celú kartu</strong> — <strong>Energeťák</strong> jej dá <P k="forsaz">Forsáž</P> (všetky aktívne akcie
+            <strong>Účinok na celú kartu</strong> — <strong>Energeťák</strong> jej dá <P k="forsaz">Forsáž</P> (všetky akcie aktívne po NA EX
             ×2), <strong>Vínko</strong> <P k="naex">NA EX</P> (bez poldeca — nikto nepije, pečeň ani nerest nie sú),{" "}
             <strong>Injekcia</strong> z nej urobí <P k="vytrznik">Výtržníka</P> a <strong>Vidly</strong> ju obrátia{" "}
             <P k="vzbura">Vzburou</P>. Na druhej hrane majú tieto štyri preškolenie.

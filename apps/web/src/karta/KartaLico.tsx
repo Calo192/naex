@@ -676,7 +676,7 @@ export function ObsahHrany({ hrana, vzhlad, pil }: { readonly hrana: HranaNastro
 /** Nápoveda hrany Nástroja: čo pretŕčajúca hrana robí hostiteľovi. */
 export function popisHranyNastroja(hrana: HranaNastroja): string {
   if (hrana.druh === "posilnenie") {
-    return `${posilnenaSlovami(hrana.akcia)}: aktívna akcia ${menoAkcie(hrana.akcia)} hostiteľa sa ráta dvakrát (×2), ako pri Posilnení.`;
+    return `${posilnenaSlovami(hrana.akcia)}: ${menoAkcie(hrana.akcia)} hostiteľa aktívna po NA EX sa ráta dvakrát (×2), ako pri Posilnení; neaktívnu, ktorú NA EX aktivovalo, štyrikrát (×4).`;
   }
   return hrana.druh === "akcia"
     ? `Preškolenie ${menoAkcie(hrana.z)} → ${menoAkcie(hrana.na)}: všetky ${menoAkcie(hrana.z)} hostiteľa sa rátajú ako ${menoAkcie(hrana.na)}.`

@@ -49,7 +49,7 @@ export function hranyZTextu(efekt: string, tagy: readonly string[]): HranyNastro
 
 /** Vety pravidiel ku kartovým účinkom hrany — nápoveda pod myšou (PRAVIDLA §12). */
 export const POPIS_UCINKU: Readonly<Record<string, string>> = {
-  Forsáž: "Hostiteľ má Forsáž: jeho aktívne akcie sú posilnené ×2.",
+  Forsáž: "Hostiteľ má Forsáž: jeho akcie aktívne po NA EX sú posilnené ×2 (neaktívne, ktoré NA EX aktivovalo, ×4).",
   "NA EX": "Hostiteľ má NA EX bez poldeca: aktívne akcie zrušené, neaktívne ×2.",
   Výtržník: "Hostiteľ je Výtržník: každá jeho akcia je Rana pre jeho majiteľa.",
   Vzbura: "Hostiteľ má Vzburu: jeho akcie sa obrátia.",

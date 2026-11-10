@@ -206,10 +206,12 @@
       "testy": [
         "packages/core/test/naradie-podlozenie.test.ts › mení všetky výskyty na oboch hranách hostiteľa ešte pred spojmi; slot nesie vytlačenú akciu",
         "packages/core/test/naradie-podlozenie.test.ts › Vzbura z Vidiel = Vzbura zo spoja (Odpor proti Odporu); so spojovou sa karta obráti raz",
-        "packages/core/test/naradie-podlozenie.test.ts › Forsáž z Energeťáka: aktívne ×2, so spojovou Forsážou ×4; NA EX ju nezruší, zdvojí len neaktívne",
+        "packages/core/test/naradie-podlozenie.test.ts › Forsáž z Energeťáka: aktívne ×2, so spojovou Forsážou ×4; NA EX ju nezruší, akcie aktívne po NA EX ×4 (v11.21)",
         "packages/core/test/naradie-podlozenie.test.ts › NA EX z Vínka = NA EX s poldecom; skutočné NA EX ani na kartu so Vzburou či Výtržníkom nejde",
         "packages/core/test/naradie-podlozenie.test.ts › Výtržník z Injekcie = Výtržník zo zrážky NA EX",
-        "packages/core/test/naradie-podlozenie.test.ts › Vínko nie pod kartu s poldecom; hrana bez zdrojovej akcie je dovolená, ale ponuka ju označí"
+        "packages/core/test/naradie-podlozenie.test.ts › Vínko nie pod kartu s poldecom; hrana bez zdrojovej akcie je dovolená, ale ponuka ju označí",
+        "packages/core/test/posilnenie-po-naex-v1121.test.ts › Sypač + Šofér, pod Šoférom Puška dole (Posilnená {Pecka}), NA EX na Šoféra: neaktívne Pecky ×4, aktívne zrušené",
+        "packages/core/test/posilnenie-po-naex-v1121.test.ts › Energeťák (Forsáž) + NA EX: akcie aktívne po NA EX ×4, aktívne pred ním zrušené"
       ],
       "poznamka": "Náradie — podloženie (Michal 2026-11-08): nové znenie §12; rozhodca prejde znova."
     },

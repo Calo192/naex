@@ -311,7 +311,8 @@ export function vazniNaVyhru(lokalitCelkom: number): number {
 // v11.19 (Michal 2026-11-09, Zrejúca) bez novej značky: Dohadzovačka presúva len kartu z konca druhého kraja.
 // v11.20 (Michal 2026-11-10, Zrejúca) bez novej značky: hodnota stupňa 1 / 2 / 3 (plný teplomer 6),
 // premeny sa reťazia všetky (Školitelia, potom Nástroje, každá na výsledku predošlej).
-// v11.21 (Michal 2026-11-10, Zrejúca) bez novej značky: po bitke si každý dobere presne 2 karty, nie do 3.
+// v11.21 (Michal 2026-11-10, Zrejúca) bez novej značky: po bitke si každý dobere presne 2 karty, nie do 3;
+// hrana posilnenia Nástroja a Forsáž Energeťáka posilnia akcie aktívne po NA EX (neaktívne ×4).
 export const VERZIA_PRAVIDIEL = "v11";
 /**
  * Presná verzia pravidiel vrátane dávky — hráč ju vidí na stránke Pravidlá, ktorá má
