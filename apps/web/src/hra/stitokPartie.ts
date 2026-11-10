@@ -2,6 +2,7 @@
 // Rozhodnutia sú tu bez Reactu, nech sa dajú otestovať.
 
 import type { ClientState } from "@naex/core";
+import { t } from "../i18n/jazyk.tsx";
 
 /** Po koľkých ms odpojenia súpera smie hráč žiadať kontumáciu — rovnako stráži server (KONTUMACIA_PO_MS). */
 export const KONTUMACIA_PO_MS = 3 * 60 * 1000;
@@ -18,14 +19,14 @@ export function krokPartie(view: Pick<ClientState, "nastenka" | "lokalitCelkom" 
   readonly kratko: string;
   readonly finale: boolean;
 } {
-  if (view.koniec !== null) return { text: "Koniec partie", kratko: "Koniec", finale: false };
+  if (view.koniec !== null) return { text: t("stitok.koniecPartie"), kratko: t("stitok.koniec"), finale: false };
   // Päta, Lakeť, Otočka: lokality sa neminú, kôl je, koľko treba.
-  if (view.pata !== undefined) return { text: `Kolo ${view.kolo}`, kratko: `Kolo ${view.kolo}`, finale: false };
+  if (view.pata !== undefined) return { text: t("faza.kolo", { n: view.kolo }), kratko: t("faza.kolo", { n: view.kolo }), finale: false };
   const celkom = view.lokalitCelkom + 1;
   // Kým sa vyberá cieľ, ciel je null — ráta sa najbližšia bitka.
   const cislo = Math.min(celkom, view.nastenka.length + 1);
-  if (view.ciel?.typ === "finale" || cislo >= celkom) return { text: "Finále", kratko: "Finále", finale: true };
-  return { text: `Bitka ${cislo} z ${celkom}`, kratko: `Bitka ${cislo}/${celkom}`, finale: false };
+  if (view.ciel?.typ === "finale" || cislo >= celkom) return { text: t("faza.finale"), kratko: t("faza.finale"), finale: true };
+  return { text: t("stitok.bitkaZ", { i: cislo, n: celkom }), kratko: t("stitok.bitkaKratko", { i: cislo, n: celkom }), finale: false };
 }
 
 export type StavKontumacie =

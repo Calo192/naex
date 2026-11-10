@@ -64,6 +64,19 @@ export interface Pouzivatel {
   readonly skrytySuhrn: boolean;
   /** Výnimka admina pre Zrejúcu (prava.ts hrat_zrejucu): true/false, null = podľa ranku. */
   readonly zrejuca: boolean | null;
+  /** Jazyk rozhrania (lokalizácia, Michal 2026-11-10); null = podľa prehliadača. */
+  readonly jazyk: JazykRozhrania | null;
+}
+
+/** Jazyky rozhrania — ten istý zoznam má klient (apps/web/src/i18n/preklad.ts, stráži test). */
+export const JAZYKY_ROZHRANIA = ["sk", "en", "pl", "cs", "hu"] as const;
+export type JazykRozhrania = (typeof JAZYKY_ROZHRANIA)[number];
+
+/** Jazyk z requestu — jeden zo zoznamu, alebo null (podľa prehliadača). */
+export function overJazyk(v: unknown): JazykRozhrania | null {
+  if (v === null) return null;
+  if (!(JAZYKY_ROZHRANIA as readonly unknown[]).includes(v)) throw new ChybaVstupu(`Jazyk je ${JAZYKY_ROZHRANIA.join(", ")} alebo podľa prehliadača.`);
+  return v as JazykRozhrania;
 }
 
 export const LUPA_OD = 150;
@@ -391,12 +404,13 @@ export class Ucty {
       pohlavie: POHLAVIA.includes(r.pohlavie as Pohlavie) ? (r.pohlavie as Pohlavie) : null,
       skrytySuhrn: Number(r.skryty_suhrn) === 1,
       zrejuca: r.zrejuca === null || r.zrejuca === undefined ? null : Number(r.zrejuca) === 1,
+      jazyk: (JAZYKY_ROZHRANIA as readonly unknown[]).includes(r.jazyk) ? (r.jazyk as JazykRozhrania) : null,
     };
   }
 
   podlaId(id: number): Pouzivatel | null {
     return this.riadok(
-      this.db.prepare("SELECT id, login, meno, avatar, rola, lupa, hudba, melichar, ai, schema, par, skratky, medziobrazovky, napovedy, pohlavie, skryty_suhrn, zrejuca FROM pouzivatelia WHERE id = ?").get(id) as
+      this.db.prepare("SELECT id, login, meno, avatar, rola, lupa, hudba, melichar, ai, schema, par, skratky, medziobrazovky, napovedy, pohlavie, skryty_suhrn, zrejuca, jazyk FROM pouzivatelia WHERE id = ?").get(id) as
         | Record<string, unknown>
         | undefined,
     );
@@ -549,6 +563,7 @@ export class Ucty {
       napovedy?: boolean;
       pohlavie?: Pohlavie | null;
       skrytySuhrn?: boolean;
+      jazyk?: JazykRozhrania | null;
     },
   ): Pouzivatel | null {
     if (zmeny.meno !== undefined) this.db.prepare("UPDATE pouzivatelia SET meno = ? WHERE id = ?").run(zmeny.meno, id);
@@ -563,6 +578,7 @@ export class Ucty {
     if (zmeny.pohlavie !== undefined) this.db.prepare("UPDATE pouzivatelia SET pohlavie = ? WHERE id = ?").run(zmeny.pohlavie, id);
     if (zmeny.skrytySuhrn !== undefined) this.db.prepare("UPDATE pouzivatelia SET skryty_suhrn = ? WHERE id = ?").run(zmeny.skrytySuhrn ? 1 : 0, id);
     if (zmeny.avatar !== undefined) this.db.prepare("UPDATE pouzivatelia SET avatar = ? WHERE id = ?").run(zmeny.avatar, id);
+    if (zmeny.jazyk !== undefined) this.db.prepare("UPDATE pouzivatelia SET jazyk = ? WHERE id = ?").run(zmeny.jazyk, id);
     return this.podlaId(id);
   }
 

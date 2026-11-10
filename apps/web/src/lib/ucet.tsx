@@ -5,6 +5,7 @@ import { api } from "./api.ts";
 import { aktualnyPar, pouziPar, volbaDoUctu, volbaZUctu } from "./paryHraca.ts";
 import { aktualnaSchema, pouziSchemu } from "./schemy.ts";
 import type { Pohlavie } from "@naex/core";
+import { aktualnyJazyk, nastavJazyk, t, type Jazyk } from "../i18n/jazyk.tsx";
 
 /**
  * Úroveň účtu — práva overuje server, tu len podľa nej kreslíme. Hráčske ranky
@@ -20,6 +21,9 @@ export const NAZOV_UROVNE: Readonly<Record<Rola, string>> = {
   hrac: "Poldeci",
   navstevnik: "Nealko",
 };
+
+/** Názov ranku v jazyku hráča (NAZOV_UROVNE ostáva pre správu webu, tá je po slovensky). */
+export const nazovUrovne = (r: Rola): string => t(`rank.${r}`);
 
 /** Hráčske ranky od najnižšieho — tým sa prideľujú práva. */
 export const RANKY_HRACOV: readonly Rola[] = ["navstevnik", "hrac", "deci", "sedmicka"];
@@ -81,6 +85,8 @@ export interface Pouzivatel {
   readonly email?: string | null;
   /** Výnimka admina pre Zrejúcu: true udelená, false odobratá, null/chýba = podľa ranku. */
   readonly zrejuca?: boolean | null;
+  /** Jazyk rozhrania (lokalizácia, Michal 2026-11-10); null/chýba = podľa prehliadača. */
+  readonly jazyk?: Jazyk | null;
 }
 
 export const LUPA_OD = 150;
@@ -137,9 +143,10 @@ export function UcetProvider({ children }: { children: ReactNode }) {
   const [pravaNavstevnika, setPravaNavstevnika] = useState<readonly Pravo[] | null>(null);
   const [instancia, setInstancia] = useState<Instancia>(VYPALENA);
 
-  // Schéma a pár farieb uložené v účte majú prednosť pred prehliadačom — platia na každom zariadení.
+  // Schéma, pár farieb a jazyk uložené v účte majú prednosť pred prehliadačom — platia na každom zariadení.
   const setJa = useCallback((p: Pouzivatel | null): void => {
     if (p?.schema != null && p.schema !== aktualnaSchema()) pouziSchemu(p.schema);
+    if (p?.jazyk != null && p.jazyk !== aktualnyJazyk()) void nastavJazyk(p.jazyk, true);
     if (p?.par != null && p.par !== volbaDoUctu(aktualnyPar())) pouziPar(volbaZUctu(p.par));
     setJaStav(p);
   }, []);

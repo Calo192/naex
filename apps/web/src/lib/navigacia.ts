@@ -3,6 +3,7 @@
 // účtu bez položiek, ktoré sú inde. Kto čo vidí, rozhoduje tu — Layout len kreslí.
 // Práva stráži server; skrytý odkaz len šetrí hráča od stránky, ktorá ho odmietne.
 
+import { t } from "../i18n/jazyk.tsx";
 import { jeSpravca, maPravo, type Instancia, type Pouzivatel, type Pravo } from "./ucet.tsx";
 
 export interface PolozkaNavigacie {
@@ -17,7 +18,9 @@ export interface PolozkaNavigacie {
   readonly doVypalenej?: true;
 }
 
-interface Definicia extends PolozkaNavigacie {
+interface Definicia extends Omit<PolozkaNavigacie, "text"> {
+  /** Kľúč textu v slovníku (i18n/sk.json) — text sa prekladá až pri kreslení menu. */
+  readonly kluc: string;
   readonly pravo?: Pravo;
 }
 
@@ -31,13 +34,13 @@ const doVypalenej = <T extends { readonly href: string }>(polozky: readonly T[],
   polozky.map((p) => (instancia?.nazov === "zrejuca" && VO_VYPALENEJ.has(p.href) ? { ...p, doVypalenej: true } : p));
 
 const NAVIGACIA: readonly Definicia[] = [
-  { href: "/hra", text: "Hrať", skupina: "hra", priorita: 99, hlavna: true },
-  { href: "/pravidla", text: "Pravidlá", skupina: "hra", priorita: 6 },
-  { href: "/karty", text: "Karty", skupina: "hra", priorita: 5 },
-  { href: "/rebricek", text: "Rebríček", skupina: "hra", priorita: 4, pravo: "profily_inych" },
-  { href: "/novinky", text: "Novinky", skupina: "komunita", priorita: 3 },
-  { href: "/vyvoj", text: "Vývoj", skupina: "komunita", priorita: 2, pravo: "vidiet_vyvoj" },
-  { href: "/spatna-vazba", text: "Spätná väzba", skupina: "komunita", priorita: 1 },
+  { href: "/hra", kluc: "nav.hrat", skupina: "hra", priorita: 99, hlavna: true },
+  { href: "/pravidla", kluc: "nav.pravidla", skupina: "hra", priorita: 6 },
+  { href: "/karty", kluc: "nav.karty", skupina: "hra", priorita: 5 },
+  { href: "/rebricek", kluc: "nav.rebricek", skupina: "hra", priorita: 4, pravo: "profily_inych" },
+  { href: "/novinky", kluc: "nav.novinky", skupina: "komunita", priorita: 3 },
+  { href: "/vyvoj", kluc: "nav.vyvoj", skupina: "komunita", priorita: 2, pravo: "vidiet_vyvoj" },
+  { href: "/spatna-vazba", kluc: "nav.spatnaVazba", skupina: "komunita", priorita: 1 },
 ];
 
 /**
@@ -46,7 +49,10 @@ const NAVIGACIA: readonly Definicia[] = [
  */
 export function hlavneMenu(ja: Pouzivatel | null, pravaNavstevnika: readonly Pravo[] | null, instancia?: Instancia): PolozkaNavigacie[] {
   const smie = (p: Pravo): boolean => (ja !== null ? maPravo(ja, p) : pravaNavstevnika === null || pravaNavstevnika.includes(p));
-  return doVypalenej(NAVIGACIA.filter((n) => n.pravo === undefined || smie(n.pravo)), instancia);
+  return doVypalenej(
+    NAVIGACIA.filter((n) => n.pravo === undefined || smie(n.pravo)).map(({ kluc, pravo: _, ...n }) => ({ ...n, text: t(kluc) })),
+    instancia,
+  );
 }
 
 export interface PolozkaSpravy {
@@ -76,10 +82,10 @@ export function spravaWebu(ja: Pouzivatel | null, instancia?: Instancia): Polozk
  */
 export function menuUctu(ja: Pouzivatel): { readonly href: string; readonly text: string }[] {
   const polozky = [
-    { href: "/profil", text: "Môj profil" },
-    { href: `/hrac/${ja.id}`, text: "Moje štatistiky" },
+    { href: "/profil", text: t("nav.mojProfil") },
+    { href: `/hrac/${ja.id}`, text: t("nav.mojeStatistiky") },
   ];
-  if (!jeSpravca(ja.rola) && maPravo(ja, "reporty_playtestov")) polozky.push({ href: "/playtest", text: "Reporty playtestov" });
+  if (!jeSpravca(ja.rola) && maPravo(ja, "reporty_playtestov")) polozky.push({ href: "/playtest", text: t("nav.reportyPlaytestov") });
   return polozky;
 }
 

@@ -14,7 +14,7 @@ import type { KartaNavrh, Pozicia, StranaNavrhu, AkciaDef, KlucoveSlovo, Kategor
 import { MAX_TEXTU_KARTY, exportTxt, importTxt, sTextamiZImportu, slug, textyKarty, PREDVOLENE_NASTAVENIA } from "@naex/tvorba";
 import type { Pouzivatel, Rola, Ucty } from "./auth.ts";
 import type { Achievementy } from "./achievementy.ts";
-import { ChybaVstupu, cookieOdhlasenia, cookieRelacie, overHesloVstup, overLogin, overHlasitost, overLupu, overMeno, overSchemu, overPar, overPrepinac, overPohlavie, overIdNapovedy, overEmail, bezpecneDekoduj, citajCookie, jeSpravca } from "./auth.ts";
+import { ChybaVstupu, cookieOdhlasenia, cookieRelacie, overHesloVstup, overLogin, overHlasitost, overLupu, overMeno, overSchemu, overPar, overPrepinac, overPohlavie, overJazyk, overIdNapovedy, overEmail, bezpecneDekoduj, citajCookie, jeSpravca } from "./auth.ts";
 import type { ObnovaHesla } from "./obnovaHesla.ts";
 import { ODPOVED_ZIADOSTI, textEmailuObnovy } from "./obnovaHesla.ts";
 import type { PosliEmail } from "./email.ts";
@@ -31,6 +31,7 @@ import type { Prehravac } from "./prehravac.ts";
 import { POPIS_PRAVA, PRAVA, RANKY_HRACOV, dalsiRank, jeRankHraca, prahyRankov } from "./prava.ts";
 import type { KategoriaNazoru, Nazory, Triedenie } from "./nazory.ts";
 import type { Playtesty } from "./playtesty.ts";
+import { jeJazykPrekladu, type Preklady } from "./preklady.ts";
 import type { Navrhy } from "./navrhy.ts";
 import type { Roadmapa } from "./roadmapa.ts";
 import type { Novinky } from "./novinky.ts";
@@ -124,6 +125,8 @@ export interface ApiKontext {
   readonly prehravac: Prehravac;
   readonly nazory: Nazory;
   readonly playtesty: Playtesty;
+  /** Preklady kariet na zobrazenie (docs/preklady). */
+  readonly preklady: Preklady;
   /** Návrhy zlepšení z playtestov a rozhodnutia o nich (sekcia Playtest). */
   readonly navrhy: Navrhy;
   /** Roadmapa hry — verejná, upravuje správca. */
@@ -599,6 +602,7 @@ export async function spracujApi(ctx: ApiKontext, req: IncomingMessage, res: Ser
           ...(b.napovedy !== undefined ? { napovedy: overPrepinac(b.napovedy, "Nápovedy Melichara") } : {}),
           ...(b.pohlavie !== undefined ? { pohlavie: overPohlavie(b.pohlavie) } : {}),
           ...(b.skrytySuhrn !== undefined ? { skrytySuhrn: overPrepinac(b.skrytySuhrn, "Skryť môj súhrn") } : {}),
+          ...(b.jazyk !== undefined ? { jazyk: overJazyk(b.jazyk) } : {}),
         })),
       });
     }
@@ -710,6 +714,12 @@ export async function spracujApi(ctx: ApiKontext, req: IncomingMessage, res: Ser
 
     // ----- verejné -------------------------------------------------------
     if (r === "GET /sada") return ok(ctx.obsah.aktualnaSada().sada);
+    // Preklady kariet na zobrazenie (lokalizácia, Michal 2026-11-10) — verejné ako sada.
+    if (metoda === "GET" && casti[1] === "preklady" && casti.length === 3) {
+      const jazyk = casti[2];
+      if (!jeJazykPrekladu(jazyk)) throw new ChybaVstupu("Neznámy jazyk prekladu.", 404);
+      return ok(ctx.preklady.jazyk(jazyk));
+    }
     // Power level kariet (Michal 2026-11-08): vidí každý, aj návštevník; zápis je v /admin/power-level.
     if (r === "GET /power-level") return ok(ctx.powerLevely.stav());
     if (r === "GET /rebricek-2na2") {

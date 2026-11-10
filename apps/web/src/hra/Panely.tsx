@@ -26,6 +26,7 @@ import { IkonaSpaku } from "./IkonaSpaku.tsx";
 import { CENA_POLA, HODNOTA_POLA } from "./textyStarsich.ts";
 import { NA_STOLE_VYSVETLENIE, poldeciNaStole, ukazZadlzenie, zadlzenieHrozi } from "./tabula.ts";
 import type { SpakyTeraz } from "@naex/core";
+import { t } from "../i18n/jazyk.tsx";
 
 // Ikony zdrojov a výmena „cena → zisk“ sú v ikonyZdrojov.tsx — bez ťažkých závislostí Panelov,
 // aby ich mohli použiť aj malé komponenty testované bez prehliadača (KseftPodKartou).
@@ -84,7 +85,7 @@ function ZdrojChut({ z, ja }: { readonly z: StavZavislosti; readonly ja: boolean
   const vyhlad = vyhladChuti(z);
   return (
     <Zdroj
-      nazov="Chuť"
+      nazov={t("pult.chut")}
       trieda={`zdroj-abstak ${z.vyhlad === "ziska" ? "varovanie" : ""} ${z.abstaky > 0 ? "ma-abstak" : ""}`}
       ikona={<IkonaAbstak />}
       hodnota={
@@ -601,7 +602,7 @@ export function HracDoska({
         {rezim === "spaky" && <BarSpakov view={view} p={p} body={body} menoKarty={menoKarty} />}
         {rezim === "starsi" && <BarStarsich view={view} data={data} p={p} menoKarty={menoKarty} menoSupera={menoSupera} mena={mena} />}
         <Zdroj
-          nazov="Poldeci"
+          nazov={t("pult.poldeci")}
           trieda="zdroj-poldeci"
           roh={prisunPoldeci !== undefined && <PeciatkaZdroja prisun={prisunPoldeci} />}
           hodnota={
@@ -640,7 +641,7 @@ export function HracDoska({
           }}
         />
         <Zdroj
-          nazov="Cigarety"
+          nazov={t("pult.cigarety")}
           trieda="zdroj-cigarety"
           ikona={<IkonaCigareta />}
           hodnota={<span className="velke-cislo">{hrac.cigarety}</span>}
@@ -662,7 +663,7 @@ export function HracDoska({
         />
         {view.bezChuti !== true && <ZdrojChut z={zavislost} ja={ja} />}
         <Zdroj
-          nazov="Pečeň"
+          nazov={t("pult.pecen")}
           trieda={`zdroj-pecen ${(v?.cirhozy ?? 0) > 0 ? "hrozi" : pecenPo >= prahy.cirhoza - 1 ? "varovanie" : ""}`}
           hodnota={
             <span className="velke-cislo">
@@ -695,7 +696,7 @@ export function HracDoska({
         {/* Dlhy a Zadĺženie v jednej dlaždici (Michal 2026-10-27): číslo = priznané Dlhy k Exekútorovi, pod ním
             koľko Dlhov prinesie stôl; riadok zadĺženia len s Výherným automatom (prah 2, v11.8). Vyučba zvýrazňuje časti zvlášť (bar:dlhy, bar:zadlzenie). */}
         <Zdroj
-          nazov="Dlhy"
+          nazov={t("pult.dlhy")}
           trieda={`zdroj-dlhy ${
             (v?.dlhy ?? 0) > 0 || prahy.exekucia > 0 ? "hrozi" : zadlzenieHrozi(zadlzeniePo, prahy.dlh) ? "varovanie" : ""
           }`}
@@ -762,7 +763,7 @@ export function HracDoska({
           }
           onClick={spakyKlik.prepni}
         >
-          <span className="zdroj-nazov">Špaky {spakyKlik.stlacene ? "▴" : "▾"}</span>
+          <span className="zdroj-nazov">{t("pult.spaky")} {spakyKlik.stlacene ? "▴" : "▾"}</span>
           <span className="zdroj-hodnota">
             {/* Michal 2026-10-26: len piktogram, nadpis a číslo — rozpis je na nástenke za ▾. */}
             <PocetSpakov n={spakyVidno.zobrazene} kto={ja ? "moj" : "superov"} titul="" />
@@ -1509,8 +1510,8 @@ export function PriebehKola({
       : [
           {
             id: "volbaCiela",
-            nazov: "O čo sa bijeme",
-            stredne: "O čo",
+            nazov: t("faza.volbaCiela"),
+            stredne: t("faza.volbaCielaStredne"),
             tip: {
               nadpis: "O čo sa bijeme",
               text: (
@@ -1524,7 +1525,7 @@ export function PriebehKola({
         ]),
     {
       id: "draft",
-      nazov: "Ponuka",
+      nazov: t("faza.draft"),
       tip: {
         nadpis: "Ponuka",
         text: (
@@ -1550,9 +1551,9 @@ export function PriebehKola({
     kroky.push(
       {
         id: `zhromazdenie-${i}`,
-        nazov: `Zhromaždenie${cislo}`,
-        stredne: `Zhrom.${cislo}`,
-        kratke: viac ? `Z${i}` : "Z",
+        nazov: `${t("faza.zhromazdenie")}${cislo}`,
+        stredne: `${t("faza.zhromazdenieStredne")}${cislo}`,
+        kratke: viac ? `${t("faza.zhromazdenieSkratka")}${i}` : t("faza.zhromazdenieSkratka"),
         tip: {
           nadpis: `Zhromaždenie — kladenie kariet${viac ? ` (${i} z ${pitiek})` : ""}`,
           text: (
@@ -1571,8 +1572,8 @@ export function PriebehKola({
       },
       {
         id: `pitka-${i}`,
-        nazov: `Pitka${cislo}`,
-        kratke: viac ? `P${i}` : "P",
+        nazov: `${t("faza.pitka")}${cislo}`,
+        kratke: viac ? `${t("faza.pitkaSkratka")}${i}` : t("faza.pitkaSkratka"),
         tip: {
           nadpis: `Pitka${viac ? ` ${i} z ${pitiek}` : ""}`,
           text: (
@@ -1593,7 +1594,7 @@ export function PriebehKola({
   }
   kroky.push({
     id: "bitka",
-    nazov: "Bitka",
+    nazov: t("faza.bitka"),
     tip: {
       nadpis: view.ciel?.typ === "finale" ? "Finále" : "Bitka o lokalitu",
       text: (
@@ -1641,7 +1642,7 @@ export function PriebehKola({
     polozky.push(
       <KrokOsi
         key="koniec"
-        krok={{ id: "koniec", nazov: "Koniec hry", tip: { nadpis: "Koniec hry", text: view.koniec.dovod } }}
+        krok={{ id: "koniec", nazov: t("faza.koniecHry"), tip: { nadpis: t("faza.koniecHry"), text: view.koniec.dovod } }}
         trieda="aktualny"
         refEl={aktualnyRef}
       />,
@@ -1657,7 +1658,7 @@ export function PriebehKola({
       polozky.push(
         <KrokOsi
           key={`par-${cislo}`}
-          krok={{ id: `par-${cislo}`, nazov: `Z${cislo} P${cislo} ✓`, tip: { nadpis: `Zhromaždenie a Pitka ${cislo} z ${pitiek} — hotové`, text: dalsi.tip.text } }}
+          krok={{ id: `par-${cislo}`, nazov: `${t("faza.zhromazdenieSkratka")}${cislo} ${t("faza.pitkaSkratka")}${cislo} ✓`, tip: { nadpis: t("faza.parHotovy", { i: cislo, n: pitiek }), text: dalsi.tip.text } }}
           trieda="hotovy zbalene"
         />,
       );
@@ -1670,9 +1671,9 @@ export function PriebehKola({
         key={k.id}
         krok={
           i === aktualny && viac && k.id.startsWith("pitka-")
-            ? { ...k, nazov: `Pitka ${k.id.slice(6)} z ${pitiek}` }
+            ? { ...k, nazov: t("faza.pitkaZ", { i: k.id.slice(6), n: pitiek }) }
             : i === aktualny && viac && k.id.startsWith("zhromazdenie-")
-              ? { ...k, nazov: `Zhromaždenie ${k.id.slice(13)} z ${pitiek}` }
+              ? { ...k, nazov: t("faza.zhromazdenieZ", { i: k.id.slice(13), n: pitiek }) }
               : k
         }
         trieda={i === aktualny ? "aktualny" : i < aktualny ? "hotovy" : ""}
@@ -1682,7 +1683,7 @@ export function PriebehKola({
     );
   }
   return (
-    <ol className="priebeh-kola" aria-label={`Kolo ${view.kolo}`} data-vyucba="os-kola">
+    <ol className="priebeh-kola" aria-label={t("faza.kolo", { n: view.kolo })} data-vyucba="os-kola">
       <KrokOsi
         krok={{
           id: "hlava",
@@ -1696,7 +1697,7 @@ export function PriebehKola({
               },
         }}
         trieda={`priebeh-kolo${finale ? " finale" : ""}`}
-        pridavok={view.spakyNaSekere > 0 ? <span className="priebeh-sekera"> · na sekere {view.spakyNaSekere} š.</span> : undefined}
+        pridavok={view.spakyNaSekere > 0 ? <span className="priebeh-sekera">{t("faza.naSekere", { n: view.spakyNaSekere })}</span> : undefined}
       />
       {polozky}
     </ol>

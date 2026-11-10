@@ -29,15 +29,16 @@ import { UkazkaAchievementov } from "./achievementy/Ukazka.tsx";
 import { Admin } from "./admin/Admin.tsx";
 import { Hraci } from "./stranky/Hraci.tsx";
 import { Playtest } from "./playtest/Playtest.tsx";
+import { t, useJazyk } from "./i18n/jazyk.tsx";
 
 function Neprihlaseny() {
   return (
     <HlavaStranky
-      nadpis="Najprv sa prihlás"
-      uvod="Táto stránka je len pre prihlásených hráčov."
+      nadpis={t("app.najprvPrihlas")}
+      uvod={t("app.najprvPrihlasUvod")}
       akcia={
         <Odkaz href={`/prihlasenie?spat=${encodeURIComponent(location.pathname)}`} className="tlacidlo tlacidlo-hlavne">
-          Prihlásiť sa
+          {t("app.prihlasitSa")}
         </Odkaz>
       }
     />
@@ -51,11 +52,11 @@ const UkazkaStola = lazy(() => import("./hra/UkazkaStola.tsx").then((m) => ({ de
 function Nenajdene() {
   return (
     <HlavaStranky
-      nadpis="Tu nič nie je"
-      uvod="Táto stránka v dedine neexistuje."
+      nadpis={t("app.nenajdene")}
+      uvod={t("app.nenajdeneUvod")}
       akcia={
         <Odkaz href="/" className="tlacidlo">
-          Domov
+          {t("app.domov")}
         </Odkaz>
       }
     />
@@ -63,6 +64,8 @@ function Nenajdene() {
 }
 
 export function App() {
+  // Prepnutie jazyka prekreslí celú aplikáciu odtiaľto (žiadny komponent nie je memo).
+  useJazyk();
   const cesta = useCesta();
   const { ja, nacitane, instancia } = useUcet();
 

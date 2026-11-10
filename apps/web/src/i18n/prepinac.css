@@ -1,0 +1,38 @@
+/* Prepínač jazyka v hlavičke — tichý ako menu Správa, nech neberie pozornosť od Hrať. */
+.jazyk-obal {
+  position: relative;
+  flex: none;
+}
+
+button.jazyk-tlacidlo {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 6px 8px;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--tlmeny);
+  font-size: 0.85rem;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+}
+
+button.jazyk-tlacidlo[aria-expanded="true"],
+button.jazyk-tlacidlo:hover:not(:disabled) {
+  background: var(--plocha-3);
+  color: var(--text);
+}
+
+.jazyk-menu {
+  min-width: 170px;
+}
+
+.jazyk-menu .jazyk-kod {
+  display: inline-block;
+  width: 2.2em;
+  color: var(--slaby-text);
+  font-size: 0.8rem;
+  letter-spacing: 0.04em;
+}

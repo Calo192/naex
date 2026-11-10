@@ -94,6 +94,7 @@ import { Stoly2na2, pripravTabulky2na2, rebricek2na2 } from "./stol2na2.ts";
 import { hashJadra } from "./verziaJadra.ts";
 import { Nazory } from "./nazory.ts";
 import { Playtesty } from "./playtesty.ts";
+import { Preklady } from "./preklady.ts";
 import { Navrhy } from "./navrhy.ts";
 import { Roadmapa } from "./roadmapa.ts";
 import { Novinky } from "./novinky.ts";
@@ -329,6 +330,8 @@ export interface ServerOpts {
   readonly bezpecneCookie?: boolean;
   /** Priečinok s reportmi playtestov (predvolene <repo>/docs/playtesty). */
   readonly playtestyDir?: string;
+  /** Priečinok s prekladmi kariet (predvolene <repo>/docs/preklady). */
+  readonly prekladyDir?: string;
   /** Pauza pred ťahom offline protihráča, aby ho človek stihol sledovať (predvolene 700 ms). */
   readonly botPauzaMs?: number;
   /** Výučba pre všetkých bez ohľadu na vypínač v scenári (testy). */
@@ -449,6 +452,7 @@ export function createGameServer(opts: ServerOpts): Promise<GameServer> {
   const nazory = new Nazory(db, prava);
   const playtesty = new Playtesty(opts.playtestyDir ?? fileURLToPath(new URL("../../../docs/playtesty", import.meta.url)), join(dataDir, "playtesty"), db);
   const navrhy = new Navrhy(db);
+  const preklady = new Preklady(opts.prekladyDir ?? fileURLToPath(new URL("../../../docs/preklady", import.meta.url)));
   const roadmapa = new Roadmapa(db);
   roadmapa.naplnAkTreba(fileURLToPath(new URL("../seed/roadmapa.json", import.meta.url)), teraz());
   const novinky = new Novinky(db);
@@ -631,6 +635,7 @@ export function createGameServer(opts: ServerOpts): Promise<GameServer> {
           prehravac,
           nazory,
           playtesty,
+          preklady,
           navrhy,
           roadmapa,
           novinky,

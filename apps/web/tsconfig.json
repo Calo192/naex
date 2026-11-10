@@ -10,6 +10,6 @@
     "allowImportingTsExtensions": true,
     "emitDeclarationOnly": true
   },
-  "include": ["src/**/*.ts", "src/**/*.tsx"],
+  "include": ["src/**/*.ts", "src/**/*.tsx", "src/i18n/**/*.json"],
   "references": [{ "path": "../../packages/core" }, { "path": "../../packages/tvorba" }]
 }
