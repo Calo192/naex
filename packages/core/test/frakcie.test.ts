@@ -459,8 +459,9 @@ describe("Predavačka a Živnostník: Podpora — karta zo šenku zadarmo do ruk
   const log = (events: readonly { type: string; text?: string }[], co: string) => events.some((e) => e.type === "log" && e.text?.includes(co) === true);
 
   it("texty zo sady: Podpora bez tagu, Živnostník už nemá Spoločníka ani Robotu navyše", () => {
-    expect(defOf(sada, { defId: "predavacka" })).toMatchObject({ effectText: "Podpora: Vezmi si zo šenku 1 Občana.", triggers: ["Podpora"] });
-    expect(defOf(sada, { defId: "zivnostnik" })).toMatchObject({ effectText: "Podpora: Vezmi si zo šenku 1 Nástroj.", triggers: ["Podpora"] });
+    // Šenok → Ponuka (Michal 2026-11-10): cards.json dostane nové texty z tvorcu až pri vypálení — platí starý aj nový.
+    expect(defOf(sada, { defId: "predavacka" })).toMatchObject({ effectText: expect.stringMatching(/^Podpora: Vezmi si (zo šenku|z ponuky) 1 Občana\.$/), triggers: ["Podpora"] });
+    expect(defOf(sada, { defId: "zivnostnik" })).toMatchObject({ effectText: expect.stringMatching(/^Podpora: Vezmi si (zo šenku|z ponuky) 1 Nástroj\.$/), triggers: ["Podpora"] });
     expect(efektyNavyse(defOf(sada, { defId: "zivnostnik" }))).toEqual([]);
   });
 
