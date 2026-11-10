@@ -14,6 +14,7 @@ import { favourPodlaId } from "./priazenKola.ts";
 import { SuhrnPoPartii } from "../achievementy/VPartii.tsx";
 import type { SuhrnAchievementov, ZmenyFrajeriny } from "./useHra.ts";
 import { textHlasky } from "./useHra.ts";
+import { vyhraStrachomBitky } from "./vyhraStrachom.ts";
 
 export interface KoniecHryProps {
   readonly view: ClientState;
@@ -91,6 +92,7 @@ export function KoniecHry({ view, mena, menoKarty, frajerina, achievementy = nul
             favour={starsi === undefined ? undefined : (id) => favourPodlaId(starsi.data, view, id)}
             kompaktna
             koniec
+            vyhraStrachom={(b) => vyhraStrachomBitky(view, b.kolo)}
           />
         )}
         {view.pata === undefined && starsi !== undefined && <PasStarsich view={view} data={starsi.data} mena={mena} menoKarty={menoKarty} obrazok={starsi.obrazok} />}

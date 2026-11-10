@@ -25,6 +25,7 @@ import { PocetSpakov } from "./Spaky.tsx";
 import { IkonaSpaku } from "./IkonaSpaku.tsx";
 import { CENA_POLA, HODNOTA_POLA } from "./textyStarsich.ts";
 import { NA_STOLE_VYSVETLENIE, poldeciNaStole, ukazZadlzenie, zadlzenieHrozi } from "./tabula.ts";
+import { TITUL_BEZ_EXEKUCIE, hroziVyhraStrachom } from "./vyhraStrachom.ts";
 import type { SpakyTeraz } from "@naex/core";
 
 // Ikony zdrojov a výmena „cena → zisk“ sú v ikonyZdrojov.tsx — bez ťažkých závislostí Panelov,
@@ -504,6 +505,8 @@ export function HracDoska({
   const cenaNovehoPoldeci = barterCena(data, view, p);
   const doNovehoPoldeci = hrac.cigarety >= cenaNovehoPoldeci ? "stačí na nový poldeci" : `${cenaNovehoPoldeci - hrac.cigarety} do nového poldeci`;
   const utoci = view.utocnik === p;
+  // Výhra strachom (krok 4c) ukončí hru pred exekúciou (4d) — zaujíma to toho, kto má Dlhy.
+  const bezExekucie = prahy.exekucia > 0 && view.pata === undefined && hroziVyhraStrachom(view.vyhry);
   const v = vyhlad?.nahlad ?? null;
   const pecenPo = v === null ? hrac.pecen : v.pecen + v.pecenZoStola;
   const zadlzeniePo = v === null ? hrac.zadlzenie : v.zadlzenie + v.zadlzenieZoStola;
@@ -716,7 +719,9 @@ export function HracDoska({
               {vyhladZadlzenia !== null ? (
                 <TextVyhladu x={vyhladZadlzenia} />
               ) : prahy.exekucia > 0 ? (
-                <span>exekúcia v bitke: {view.pata === undefined ? `−${spakov(prahy.exekucia)}` : `každému staršiemu −${prahy.exekucia}`}</span>
+                <span title={bezExekucie ? TITUL_BEZ_EXEKUCIE : undefined}>
+                  {bezExekucie ? `exekúcia −${prahy.exekucia} š., nie pri výhre strachom` : `exekúcia v bitke: ${view.pata === undefined ? `−${spakov(prahy.exekucia)}` : `každému staršiemu −${prahy.exekucia}`}`}
+                </span>
               ) : prahy.priznaneDlhy > 0 ? (
                 <span>Záhradkár: exekúcia ťa obíde</span>
               ) : (
@@ -730,7 +735,7 @@ export function HracDoska({
               <>
                 <span className="tip-stav">
                   {prahy.priznaneDlhy} {prahy.priznaneDlhy === 1 ? "priznaný Dlh" : "priznané Dlhy"}
-                  {prahy.exekucia > 0 ? ` · exekúcia v tejto bitke: ${view.pata === undefined ? `−${spakov(prahy.exekucia)}` : `každému staršiemu −${prahy.exekucia} pečene`}` : prahy.priznaneDlhy > 0 ? " · Záhradkár: exekúcia ťa obíde" : ""}
+                  {prahy.exekucia > 0 ? ` · exekúcia v tejto bitke: ${view.pata === undefined ? `−${spakov(prahy.exekucia)}${bezExekucie ? `. ${TITUL_BEZ_EXEKUCIE}` : ""}` : `každému staršiemu −${prahy.exekucia} pečene`}` : prahy.priznaneDlhy > 0 ? " · Záhradkár: exekúcia ťa obíde" : ""}
                   {ukazZadlzenie(hrac.zadlzenie, prahy.dlh) && ` · zadĺženie ${hrac.zadlzenie}${v !== null && v.zadlzenieZoStola > 0 ? ` ▸ ${zadlzeniePo}` : ""} z ${prahy.dlh}`}
                   {vyhladZadlzenia !== null && ` · ${vyhladPitky(vyhladZadlzenia).cele.join(" · ")}`}
                 </span>

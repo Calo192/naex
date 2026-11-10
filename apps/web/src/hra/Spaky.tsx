@@ -12,6 +12,7 @@ import { IkonaSpaku } from "./IkonaSpaku.tsx";
 import { ZnackaStrachu } from "./IkonaStrachu.tsx";
 import { FavourStarsich, PilulkaPriazne } from "./KruzokPriazne.tsx";
 import { POMER, type ListokNaVyber } from "./rozlozenieNastenky.ts";
+import { TITUL_BEZ_EXEKUCIE, textVyhryStrachom, type VyhraStrachom } from "./vyhraStrachom.ts";
 import "./spaky.css";
 import type { SpakyTeraz } from "@naex/core";
 
@@ -136,6 +137,8 @@ export interface NastenkaProps {
   readonly poStarom?: boolean;
   /** Priazeň staršieho podľa id — krúžok v rozpise za starších (Michal 2026-10-31). */
   readonly favour?: ((elderId: string) => Favour | null) | undefined;
+  /** Skončila bitka hru výhrou strachom (vyhraStrachomBitky)? Rozpis na myš povie, že exekúcia nebola. */
+  readonly vyhraStrachom?: ((b: BitkaNaNastenke) => VyhraStrachom | null) | undefined;
 }
 
 interface Listok {
@@ -156,7 +159,7 @@ export function Nastenka(props: NastenkaProps) {
   return props.favour === undefined ? obsah : <FavourStarsich.Provider value={props.favour}>{obsah}</FavourStarsich.Provider>;
 }
 
-function NastenkaObsah({ nastenka, zostava, ciel, ja, mena, avatary, karta, menoKarty, sirkaKarty = 90, kompaktna = false, koniec = false, bezFinale = false, ucet, vyber, mierka = 1, sirkaVyberu = sirkaKarty, listokVyberu = null, suhrn, poStarom = false }: NastenkaProps) {
+function NastenkaObsah({ nastenka, zostava, ciel, ja, mena, avatary, karta, menoKarty, sirkaKarty = 90, kompaktna = false, koniec = false, bezFinale = false, ucet, vyber, mierka = 1, sirkaVyberu = sirkaKarty, listokVyberu = null, suhrn, poStarom = false, vyhraStrachom }: NastenkaProps) {
   const kto = (p: PlayerId): string => (p === ja ? "ty" : mena[p]);
   // Rozpis na myš aj na fokus klávesnicou: ktorý lístok a jeho prvok (poloha okienka).
   const [naMys, setNaMys] = useState<{ readonly i: number; readonly el: HTMLElement } | null>(null);
@@ -339,7 +342,7 @@ function NastenkaObsah({ nastenka, zostava, ciel, ja, mena, avatary, karta, meno
   const okienko =
     naMys !== null && bitkaNaMys !== undefined && typeof document !== "undefined"
       ? createPortal(
-          <RozpisNaMys id={idRozpisu} b={bitkaNaMys} el={naMys.el} ja={ja} mena={mena} menoKarty={menoKarty} klik={suhrn?.(bitkaNaMys) != null} />,
+          <RozpisNaMys id={idRozpisu} b={bitkaNaMys} el={naMys.el} ja={ja} mena={mena} menoKarty={menoKarty} klik={suhrn?.(bitkaNaMys) != null} vyhraStrachom={vyhraStrachom?.(bitkaNaMys) ?? null} />,
           document.body,
         )
       : null;
@@ -517,6 +520,7 @@ export function SpakyBitky({
   mena,
   pred,
   menoKarty,
+  vyhraStrachom = null,
 }: {
   readonly b: BitkaNaNastenke;
   readonly ja: PlayerId;
@@ -524,6 +528,8 @@ export function SpakyBitky({
   readonly pred?: readonly [number, number] | undefined;
   /** S menami kariet ukáže pri špakoch za starších, ktorý starší koľko dal. */
   readonly menoKarty?: ((defId: string) => string) | undefined;
+  /** Bitka skončila výhrou strachom (vyhraStrachomBitky) — exekúcia po nej nebola. */
+  readonly vyhraStrachom?: VyhraStrachom | null | undefined;
 }) {
   const su = opponentOf(ja);
   const zn = (n: number): string => (n > 0 ? `+${n}` : n < 0 ? `−${-n}` : "—");
@@ -586,6 +592,11 @@ export function SpakyBitky({
           {b.prepadlo > 0
             ? `Sekera vo finále: ${spakov(b.prepadlo)} prepadlo.`
             : `Sekera: ${spakov(zakladBitky(b))} za bitku čaká na víťaza ďalšej bitky.`}
+        </span>
+      )}
+      {vyhraStrachom !== null && (
+        <span className="sb-sekera" title={TITUL_BEZ_EXEKUCIE}>
+          {textVyhryStrachom(vyhraStrachom)}
         </span>
       )}
     </div>
@@ -711,6 +722,7 @@ function RozpisNaMys({
   mena,
   menoKarty,
   klik,
+  vyhraStrachom,
 }: {
   readonly id: string;
   readonly b: BitkaNaNastenke;
@@ -719,6 +731,7 @@ function RozpisNaMys({
   readonly mena: readonly [string, string];
   readonly menoKarty: (defId: string) => string;
   readonly klik: boolean;
+  readonly vyhraStrachom: VyhraStrachom | null;
 }) {
   const ref = useRef<HTMLDivElement>(null);
   const [poloha, setPoloha] = useState<{ readonly left: number; readonly top: number } | null>(null);
@@ -790,6 +803,7 @@ function RozpisNaMys({
         </tfoot>
       </table>
       {b.vitaz === null && <small className="nrm-pozn">{b.prepadlo > 0 ? `Sekera vo finále: ${spakov(b.prepadlo)} prepadlo.` : `Sekera: ${spakov(zakladBitky(b))} za bitku išlo víťazovi ďalšej bitky.`}</small>}
+      {vyhraStrachom !== null && <small className="nrm-pozn">{textVyhryStrachom(vyhraStrachom)}</small>}
       <small className="nrm-pozn">
         v popolníku po kole: ty {sMinusom(b.spakyPo[ja])} · {mena[su]} {sMinusom(b.spakyPo[su])}
       </small>

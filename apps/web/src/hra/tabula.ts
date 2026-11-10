@@ -4,6 +4,7 @@ import type { ClientState, PlayerId, RiadokPrisunu, StavZavislosti } from "@naex
 import { KONSTANTY, NAZVY_ZDROJOV_PRISUNU, cenaFajceniaHraca, limitZhromazdenia, spakov, sumaPrisunu } from "@naex/core";
 import type { PrisunDlazdice } from "./PeciatkaZdroja.tsx";
 import type { SpakyTeraz } from "@naex/core";
+import { TITUL_BEZ_EXEKUCIE, hroziVyhraStrachom, textCervenych } from "./vyhraStrachom.ts";
 
 /** Prahy hráča (prahyHraca) — to, čo z nich pult a tabuľa ukazujú. */
 export interface PrahyPultu {
@@ -30,6 +31,8 @@ export interface CislaHraca {
   readonly abstaky: number;
   readonly dlhy: number;
   readonly exekucia: number;
+  /** Niekto má dosť červených — pri výhre strachom sa exekúcia nekoná (krok 4c pred 4d). */
+  readonly bezExekucie: boolean;
   readonly zadlzenie: number;
   readonly prahDlhu: number;
   readonly cigarety: number;
@@ -107,6 +110,7 @@ export function cislaHraca(
     abstaky: z.abstaky,
     dlhy: prahy.priznaneDlhy,
     exekucia: prahy.exekucia,
+    bezExekucie: prahy.exekucia > 0 && view.pata === undefined && hroziVyhraStrachom(view.vyhry),
     zadlzenie: h.zadlzenie,
     prahDlhu: prahy.dlh,
     cigarety: h.cigarety,
@@ -183,7 +187,7 @@ export function riadkyTabule(ja: CislaHraca, su: CislaHraca): RiadokTabule[] {
     r("balicek", "Balíček · odhodené", (c) => `${c.balicek} · ${c.odhodene}`),
     r("priznane", "Priznané kliatby", (c) => String(c.priznane)),
     r("dedicstvo", "Dedičstvo (náradie)", (c) => String(c.dedicstvo)),
-    r("cervene", "Červené", (c) => `${c.cervene}/${c.cervenychNaVyhru}`),
+    r("cervene", "Červené", (c) => textCervenych(c.cervene, c.vazni, c.cervenychNaVyhru).odznak),
     r("vazni", "Väzni", (c) => `${c.vazni}/${c.vazniNaVyhru}`),
   );
   return riadky;
@@ -264,11 +268,11 @@ export function detailZdroja(zdroj: ZdrojStlpca, c: CislaHraca, ja: boolean, pri
     case "dlhy":
       return {
         nadpis: "Dlhy",
-        text: `${c.prahDlhu > 1 ? `Každé ${c.prahDlhu} zadĺženia v Pitke = Dlh, hneď priznaný; zvyšok zadĺženia ostáva na ďalší.` : "Každá akcia Hazard v Pitke = Dlh, hneď priznaný."} Za priznané Dlhy príde v každej bitke Exekútor: zhorí polovica Dlhov (nahor) a toľko špakov.`,
+        text: `${c.prahDlhu > 1 ? `Každé ${c.prahDlhu} zadĺženia v Pitke = Dlh, hneď priznaný; zvyšok zadĺženia ostáva na ďalší.` : "Každá akcia Hazard v Pitke = Dlh, hneď priznaný."} Za priznané Dlhy príde v každej bitke Exekútor: zhorí polovica Dlhov (nahor) a toľko špakov.${c.bezExekucie ? ` ${TITUL_BEZ_EXEKUCIE}` : ""}`,
         riadky: [
           ["priznané Dlhy", String(c.dlhy)],
           ...(ukazZadlzenie(c.zadlzenie, c.prahDlhu) ? [["zadĺženie", `${c.zadlzenie} z ${c.prahDlhu}`] as const] : []),
-          ["exekúcia v bitke", c.exekucia > 0 ? `−${spakov(c.exekucia)}` : "nie"],
+          ["exekúcia v bitke", c.exekucia > 0 ? `−${spakov(c.exekucia)}${c.bezExekucie ? ", nie pri výhre strachom" : ""}` : "nie"],
         ],
       };
     case "cigarety":
@@ -293,7 +297,7 @@ export function detailZdroja(zdroj: ZdrojStlpca, c: CislaHraca, ja: boolean, pri
           ["za starších po výhre", `+${c.zaStarsich}`],
           ["za starších po prehre", `+${c.zaStarsichPrehra}`],
           ["priazeň starších", String(c.priazen)],
-          ["červené", `${c.cervene} z ${c.cervenychNaVyhru}`],
+          ["červené", textCervenych(c.cervene, c.vazni, c.cervenychNaVyhru).kratko],
           ["väzni", `${c.vazni} z ${c.vazniNaVyhru}`],
         ],
       };

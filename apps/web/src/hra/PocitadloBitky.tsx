@@ -15,6 +15,7 @@ import { stavPocitadla, vlnyKariet, opponentOf } from "@naex/core";
 import { IkonaPoldeci } from "./Panely.tsx";
 import { PilulkaPriazne } from "./KruzokPriazne.tsx";
 import type { PriazneBitky } from "./priazenKola.ts";
+import type { VyhraStrachom } from "./vyhraStrachom.ts";
 import { RekapBitky, StitkyMomentov, VysledokBitky, riadkovRekapitulacieBitky, type OdpovedNaNaex, type PiktogramyRekapitulacie } from "./Rekapitulacia.tsx";
 
 /** Zdroje bonusov a zrážok, ktoré nie sú kartou. */
@@ -55,9 +56,11 @@ export interface PocitadloBitkyProps {
   readonly momenty?: readonly Moment[];
   /** Hádka po starších a mená starších podľa priazne (krúžok priazne v rekapitulácii). */
   readonly priazne?: PriazneBitky | undefined;
+  /** Bitka skončila hru výhrou strachom (vyhraStrachomBitky). */
+  readonly vyhraStrachom?: VyhraStrachom | null | undefined;
 }
 
-export function PocitadloBitky({ p, ja, mena, menoKarty, rad, onKoniec, vysledokHned = false, rekap = null, vlnyKariet, piktogramy, odpovede = [], naSirku = false, momenty = [], priazne }: PocitadloBitkyProps) {
+export function PocitadloBitky({ p, ja, mena, menoKarty, rad, onKoniec, vysledokHned = false, rekap = null, vlnyKariet, piktogramy, odpovede = [], naSirku = false, momenty = [], priazne, vyhraStrachom = null }: PocitadloBitkyProps) {
   const su = opponentOf(ja);
   const posledna = p.vln - 1;
   const tlmene = typeof matchMedia === "function" && matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -133,7 +136,7 @@ export function PocitadloBitky({ p, ja, mena, menoKarty, rad, onKoniec, vysledok
             {hotovo ? "Ďalej" : "Hneď výsledok"}
           </button>
         </div>
-        {hotovo && rekap !== null && <VysledokBitky r={rekap} ja={ja} mena={mena} />}
+        {hotovo && rekap !== null && <VysledokBitky r={rekap} ja={ja} mena={mena} vyhraStrachom={vyhraStrachom} />}
         {rekap !== null && piktogramy !== undefined && (
           <RekapBitky
             r={rekap}
@@ -149,6 +152,7 @@ export function PocitadloBitky({ p, ja, mena, menoKarty, rad, onKoniec, vysledok
             mena={mena}
             odpovede={odpovede}
             priazne={priazne}
+            vyhraStrachom={vyhraStrachom}
             telefon
           />
         )}
@@ -212,6 +216,7 @@ export function PocitadloBitky({ p, ja, mena, menoKarty, rad, onKoniec, vysledok
             mena={mena}
             odpovede={odpovede}
             priazne={priazne}
+            vyhraStrachom={vyhraStrachom}
           />
         )}
         <div className="pocitadlo-pata">
@@ -279,6 +284,7 @@ export interface PocitadloSLiniouProps {
   readonly vysledokHned?: boolean;
   readonly naSirku?: boolean;
   readonly priazne?: PriazneBitky | undefined;
+  readonly vyhraStrachom?: VyhraStrachom | null | undefined;
 }
 
 /**
@@ -291,7 +297,7 @@ function rozmeryVrstvy(vyska: number, sirka: number): { readonly pevne: number; 
 }
 
 /** Počítadlo s líniou z okamihu bitky: tvoja strana od lokality doľava, súperova doprava. */
-export function PocitadloSLiniou({ vrstva, ja, mena, karta, menoKarty, piktogramy, onKoniec, vysledokHned = false, naSirku = false, priazne }: PocitadloSLiniouProps) {
+export function PocitadloSLiniou({ vrstva, ja, mena, karta, menoKarty, piktogramy, onKoniec, vysledokHned = false, naSirku = false, priazne, vyhraStrachom = null }: PocitadloSLiniouProps) {
   const { stol, linia, rekap } = vrstva;
   const su = opponentOf(ja);
   const lok = stol.ciel?.lokalita ?? null;
@@ -302,7 +308,7 @@ export function PocitadloSLiniou({ vrstva, ja, mena, karta, menoKarty, piktogram
   ];
   // Karty sa zmestia na šírku aj s rekapituláciou na výšku — notebook 1366×650 bez scrollovania.
   const { pevne, riadok, spakyVedla } = rozmeryVrstvy(window.innerHeight, window.innerWidth);
-  const vyskaKariet = window.innerHeight - pevne - (rekap === null ? 0 : riadok * riadkovRekapitulacieBitky(rekap, spakyVedla));
+  const vyskaKariet = window.innerHeight - pevne - (rekap === null ? 0 : riadok * riadkovRekapitulacieBitky(rekap, spakyVedla, vyhraStrachom !== null));
   const sirka = Math.max(36, Math.min(110, Math.floor((window.innerWidth - 120) / Math.max(1, poradie.length)), Math.floor(vyskaKariet / 1.4)));
   const rad = poradie.map((pl) => ({
     uid: pl.card.uid,
@@ -339,6 +345,7 @@ export function PocitadloSLiniou({ vrstva, ja, mena, karta, menoKarty, piktogram
       naSirku={naSirku}
       momenty={vrstva.momenty ?? []}
       priazne={priazne}
+      vyhraStrachom={vyhraStrachom}
     />
   );
 }
