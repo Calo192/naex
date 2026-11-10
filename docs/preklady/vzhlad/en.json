@@ -1,0 +1,412 @@
+{
+ "_meta": {
+  "jazyk": "en",
+  "datum": "2026-11-10",
+  "zdroj": "vzhľad tvorcu na živom webe 2026-11-10 (akcie, kľúčové slová, kategórie, bodovacie karty)",
+  "pravidla": "Len na zobrazenie; kľúče (kluc akcie, slovo) ostávajú slovenské. Pole sk = zdroj v čase prekladu. Nezhody zdroja s pravidlami: docs/preklady/otazky.md."
+ },
+ "akcie": {
+  "Rana": {
+   "nazov": "Punch",
+   "popis": "1 hard damage.",
+   "sk": {
+    "nazov": "Rana",
+    "popis": "1 tuhé poškodenie."
+   }
+  },
+  "Pecka": {
+   "nazov": "Wallop",
+   "popis": "2 hard damage.",
+   "sk": {
+    "nazov": "Pecka",
+    "popis": "2 tuhé poškodenia."
+   }
+  },
+  "Petelica": {
+   "nazov": "Haymaker",
+   "popis": "3 hard damage.",
+   "sk": {
+    "nazov": "Petelica",
+    "popis": "3 tuhé poškodenia."
+   }
+  },
+  "Povera": {
+   "nazov": "Superstition",
+   "popis": "1 soft damage to the argument (2 with Horoscope). Cancels 1 : 1 with your opponent's Faith. Whoever has more soft damage in the brawl won the argument by the difference and after the brawl spreads it as rumours at the elders (in the finale 1 butt per point).",
+   "sk": {
+    "nazov": "Povera",
+    "popis": "1 mäkké poškodenie do hádky (s Horoskopom 2). So súperovou Vierou sa ruší 1 : 1. Kto má v bitke viac mäkkého, vyhral hádku o rozdiel a po bitke ho rozdelí na svoje reči pri starších (vo finále 1 špak za bod)."
+   }
+  },
+  "Viera": {
+   "nazov": "Faith",
+   "popis": "First cancels your opponent's Superstitions 1 : 1 (even ones boosted by Horoscope); each remaining Faith lowers your opponent's hard damage by 1; the Believer adds extra Faith +1 / +2 / +3. Useless against Scandal.",
+   "sk": {
+    "nazov": "Viera",
+    "popis": "Najprv zruší súperove Povery 1 : 1 (aj vylepšenú Horoskopom), zvyšná znižuje súperovo tuhé poškodenie o 1 za kus; Veriaci pridá Vieru navyše +1 / +2 / +3. Proti Pohoršeniu nepomáha."
+   }
+  },
+  "Pohoršenie": {
+   "nazov": "Scandal",
+   "popis": "2 soft damage to the argument; Faith doesn't cancel it. Whoever has more soft damage in the brawl won the argument by the difference and after the brawl spreads it as rumours at the elders (in the finale 1 butt per point).",
+   "sk": {
+    "nazov": "Pohoršenie",
+    "popis": "2 mäkké poškodenie do hádky; Viera ho nezruší. Kto má v bitke viac mäkkého, vyhral hádku o rozdiel a po bitke ho rozdelí na svoje reči pri starších (vo finále 1 špak za bod)."
+   }
+  },
+  "Dlh": {
+   "nazov": "Gamble",
+   "popis": "In a booze-up you get 1 Debt — confessed at once (a counter, not a card). For confessed Debts the bailiff comes in every brawl: he burns half of your confessed Debts (rounded up) and as many butts (your Lawyer favour takes some butts off). On a tie in hard damage and in Shakes, whoever has more confessed Debts loses.",
+   "sk": {
+    "nazov": "Hazard",
+    "popis": "V Pitke získaš 1 Dlh — je hneď priznaný (počítadlo, nie karta). Za priznané Dlhy príde v každej bitke Exekútor: spáli ti polovicu priznaných Dlhov (zaokrúhlene nahor) a rovnako veľa špakov (tvoja priazeň Advokáta špaky uberie). Pri remíze v tuhom aj v Absťákoch prehráva, kto má viac priznaných Dlhov."
+   }
+  },
+  "PoškodeniePečene": {
+   "nazov": "Liver Damage",
+   "popis": "Adds 1 liver damage. In a booze-up, for every full threshold you get a Cirrhosis — it goes to your discard pile.",
+   "sk": {
+    "nazov": "Poškodenie pečene",
+    "popis": "Pridá 1 poškodenie pečene. V Pitke za každý celý prah získaš Cirhózu — ide do tvojho odhadzovacieho balíčka."
+   }
+  },
+  "Poldeci": {
+   "nazov": "Shot",
+   "popis": "In the brawl it turns one of your empty shots back to full. Its liver damage already counts in the booze-up.",
+   "sk": {
+    "nazov": "Poldeci",
+    "popis": "Pri bitke otočí jeden tvoj vypitý poldeci späť na plný. Poškodenie pečene z neho sa počíta už v Pitke."
+   }
+  },
+  "Cigareta": {
+   "nazov": "Cigarette",
+   "popis": "In a booze-up you get 1 cigarette (minus your opponent's Restrictions). Cigarettes carry over — you pay with them for cards from the Market, Heirlooms, refills, Deals and smoking: in a booze-up you draw a card; the first smoke in a booze-up costs 1 cigarette, the second 2, the third 3…",
+   "sk": {
+    "nazov": "Cigareta",
+    "popis": "V Pitke dostaneš 1 cigaretu (mínus súperove Obmedzenia). Cigarety sa prenášajú — platíš nimi karty z ponuky, Dedičstvo, doliatie poldeci, Kšefty aj fajčenie: v Pitke dobereš kartu, prvé fajčenie v Pitke stojí 1 cigaretu, druhé 2, tretie 3…"
+   }
+  },
+  "Obmedzenie": {
+   "nazov": "Restriction",
+   "popis": "Your opponent gets 1 cigarette less in a booze-up.",
+   "sk": {
+    "nazov": "Obmedzenie",
+    "popis": "Súper dostane v Pitke o 1 cigaretu menej."
+   }
+  },
+  "Vízia": {
+   "nazov": "Vision",
+   "popis": "At the end of a booze-up, for each Vision you look at the top card of your draw pile: take it into your hand, or burn it (out of the game for good).",
+   "sk": {
+    "nazov": "Vízia",
+    "popis": "Na konci Pitky sa za každú Víziu pozrieš na vrchnú kartu svojho doberacieho balíčka: vezmeš si ju do ruky, alebo ju zahodíš (navždy z hry)."
+   }
+  },
+  "Posilnenie": {
+   "nazov": "Boost",
+   "popis": "Doubles the linked action — good or bad. Boost against Boost = Overdrive: both cards have all their active actions boosted.",
+   "sk": {
+    "nazov": "Posilnenie",
+    "popis": "Zdvojnásobí prepojenú akciu — priaznivú aj nepriaznivú. Posilnenie proti Posilneniu = Forsáž: obe karty majú všetky aktívne akcie posilnené."
+   }
+  },
+  "Odpor": {
+   "nazov": "Resistance",
+   "popis": "Cancels the linked action. Resistance against Resistance = Revolt: both cards activate all their otherwise inactive actions.",
+   "sk": {
+    "nazov": "Odpor",
+    "popis": "Zruší prepojenú akciu. Odpor proti Odporu = Vzbura: obe karty aktivujú všetky inak neaktívne akcie."
+   }
+  },
+  "Robota": {
+   "nazov": "Work",
+   "popis": "In the brawl, in the bailiff step, before the bailiff, burns 1 of your confessed Debts (out of the game). For each Debt it has nothing to burn, it gives you 1 butt.",
+   "sk": {
+    "nazov": "Robota",
+    "popis": "V bitke v kroku exekúcie, pred Exekútorom, spáli 1 tvoj priznaný Dlh (z hry). Za Dlh, ktorý nemá čo spáliť, ti dá 1 špak."
+   }
+  },
+  "Pakt": {
+   "nazov": "Pact",
+   "popis": "On a link it behaves like the action it is paired with. Pact with Pact does nothing; Resistance cancels it.",
+   "sk": {
+    "nazov": "Pakt",
+    "popis": "Na spoji sa správa ako akcia, s ktorou je v páre. Pakt s Paktom nerobí nič; Odpor ho zruší."
+   }
+  }
+ },
+ "klucoveSlova": {
+  "Nástup": {
+   "slovo": "Arrival",
+   "tvary": [
+    "Arrival:"
+   ],
+   "popis": "Resolves when the card is played.",
+   "sk": {
+    "slovo": "Nástup",
+    "tvary": [
+     "Nástup:"
+    ],
+    "popis": "Vyhodnotí sa pri zahraní karty."
+   }
+  },
+  "Furt": {
+   "slovo": "Always",
+   "tvary": [
+    "Always:"
+   ],
+   "popis": "Applies while the card is face up anywhere in the play area.",
+   "sk": {
+    "slovo": "Furt",
+    "tvary": [
+     "Furt:"
+    ],
+    "popis": "Platí, kým je karta odhalená kdekoľvek v hracom priestore."
+   }
+  },
+  "Bitka": {
+   "slovo": "Brawl",
+   "tvary": [
+    "Brawl:"
+   ],
+   "popis": "Applies when the brawl is resolved.",
+   "sk": {
+    "slovo": "Bitka",
+    "tvary": [
+     "Bitka:"
+    ],
+    "popis": "Uplatní sa pri vyhodnotení bitky."
+   }
+  },
+  "Pitka": {
+   "slovo": "Booze-up",
+   "tvary": [
+    "Booze-up:"
+   ],
+   "popis": "Applies during the booze-up — when players pour NA EX, smoke and resolve the cards on the table. The booze-up itself gives no cards.",
+   "sk": {
+    "slovo": "Pitka",
+    "tvary": [
+     "Pitka:"
+    ],
+    "popis": "Uplatní sa počas Pitky — keď hráči dávajú NA EX, fajčia a vyhodnocujú karty na stole. Pitka sama karty nedáva."
+   }
+  },
+  "Zhromaždenie": {
+   "slovo": "Assembly",
+   "tvary": [
+    "Assembly:"
+   ],
+   "popis": "Applies during the Assembly — when players lay out cards.",
+   "sk": {
+    "slovo": "Zhromaždenie",
+    "tvary": [
+     "Zhromaždenie:"
+    ],
+    "popis": "Uplatní sa počas Zhromaždenia — keď hráči vykladajú karty."
+   }
+  },
+  "Dedičstvo": {
+   "slovo": "Heirloom",
+   "tvary": [
+    "Heirloom:"
+   ],
+   "popis": "A Tool's passive bonus while it lies in your play area. Laying out an Heirloom costs cigarettes — the price rises for both players together: the first Tool in the game 1 cigarette, the second 2, the third 3…",
+   "sk": {
+    "slovo": "Dedičstvo",
+    "tvary": [
+     "Dedičstvo:"
+    ],
+    "popis": "Pasívny bonus Nástroja, kým leží v tvojej hracej oblasti. Vyloženie do Dedičstva stojí cigarety — cena rastie spoločne pre oboch: prvý Nástroj v hre 1 cigaretu, druhý 2, tretí 3…"
+   }
+  },
+  "Výhra": {
+   "slovo": "Win",
+   "tvary": [
+    "Win:"
+   ],
+   "popis": "Applies when you win the brawl for a location: you have more hard damage; on equal hard damage fewer Shakes, and if those are equal too, fewer confessed Debts. If even that doesn't decide it, nobody wins — the round's butts go on the Tab.",
+   "sk": {
+    "slovo": "Výhra",
+    "tvary": [
+     "Výhra:"
+    ],
+    "popis": "Uplatní sa, keď vyhráš bitku o lokalitu: máš vyššie tuhé poškodenie, pri rovnakom tuhom menej Absťákov a pri ich rovnosti menej priznaných Dlhov. Keď nerozhodne ani to, nevyhrá nikto — špaky kola idú na sekeru."
+   }
+  },
+  "Prehra": {
+   "slovo": "Loss",
+   "tvary": [
+    "Loss:"
+   ],
+   "popis": "Applies when you lose the brawl for a location: you have less hard damage; on equal hard damage more Shakes, and if those are equal too, more confessed Debts. If even that doesn't decide it, nobody loses — the round's butts go on the Tab.",
+   "sk": {
+    "slovo": "Prehra",
+    "tvary": [
+     "Prehra:"
+    ],
+    "popis": "Uplatní sa, keď prehráš bitku o lokalitu: máš nižšie tuhé poškodenie, pri rovnakom tuhom viac Absťákov a pri ich rovnosti viac priznaných Dlhov. Keď nerozhodne ani to, neprehrá nikto — špaky kola idú na sekeru."
+   }
+  },
+  "Exekúcia": {
+   "slovo": "Bailiff",
+   "tvary": [
+    "Bailiff:"
+   ],
+   "popis": "Applies in the brawl's bailiff step (after damage and the butts for the brawl), when the bailiff comes to every player with a confessed Debt.",
+   "sk": {
+    "slovo": "Exekúcia",
+    "tvary": [
+     "Exekúcia:"
+    ],
+    "popis": "Uplatní sa v bitke v kroku exekúcie (po poškodení a špakoch za bitku), keď Exekútor prichádza ku každému hráčovi s priznaným Dlhom."
+   }
+  },
+  "odhoď": {
+   "slovo": "discard",
+   "tvary": [
+    "discard",
+    "discards"
+   ],
+   "popis": "Discarding — the card goes to the discard pile of the player who played it.",
+   "sk": {
+    "slovo": "odhoď",
+    "tvary": [
+     "odhodiť",
+     "odhodí",
+     "odhodia"
+    ],
+    "popis": "Odhodenie — karta ide do odhadzovacieho balíčka hráča, ktorý ju zahral."
+   }
+  },
+  "Prevaha": {
+   "slovo": "upper hand",
+   "tvary": [
+    "upper hand"
+   ],
+   "popis": "The upper hand in a wing (the half of the line at one edge of the location) goes to the player with more of their Citizens, Animals and Elders there (Twins count as two) — tucked Tools and other cards don't count. On a tie, the owner of the card next to the location has it. The player with the upper hand gets the actions of the location's edge in that wing.",
+   "sk": {
+    "slovo": "Prevaha",
+    "tvary": [
+     "prevaha",
+     "prevahu",
+     "prevahy",
+     "prevahe",
+     "prevahou"
+    ],
+    "popis": "Prevahu v kraji (polovici línie pri jednej hrane lokality) má hráč, ktorý tam má viac svojich Občanov, Zvierat a Starešinov (Dvojčatá za dvoch) — podložené Nástroje ani iné karty sa nerátajú. Pri rovnosti rozhoduje majiteľ karty pri lokalite. Hráč s prevahou dostane akcie hrany lokality v tom kraji."
+   }
+  },
+  "Konflikt": {
+   "slovo": "Clash",
+   "tvary": [
+    "Clash:"
+   ],
+   "popis": "Triggers when this card, by being laid next to it, ends up beside an opponent's card — whether you lay it against the opponent's card or the opponent lays theirs against it. Tucking a Tool, NA EX, a collision or moving a card don't trigger it.",
+   "sk": {
+    "slovo": "Konflikt",
+    "tvary": [
+     "Konflikt:"
+    ],
+    "popis": "Spustí sa, keď sa táto karta priložením ocitne vedľa súperovej karty — či ju prikladáš ty k súperovej, alebo súper svoju k nej. Podloženie Nástroja, NA EX, zrážka ani presun karty ho nespúšťajú."
+   }
+  },
+  "Podpora": {
+   "slovo": "Support",
+   "tvary": [
+    "Support:"
+   ],
+   "popis": "Triggers when this card, by being laid next to it, meets another of your cards — whether you lay this one or your other card against it. Tucking a Tool, NA EX, a collision or moving a card don't trigger it.",
+   "sk": {
+    "slovo": "Podpora",
+    "tvary": [
+     "Podpora:"
+    ],
+    "popis": "Spustí sa, keď sa táto karta priložením stretne s inou tvojou kartou — či prikladáš ju, alebo inú svoju k nej. Podloženie Nástroja, NA EX, zrážka ani presun karty ju nespúšťajú."
+   }
+  },
+  "Hádka": {
+   "slovo": "Argument",
+   "tvary": [
+    "Argument:"
+   ],
+   "popis": "Applies in the brawl when the argument is decided — whoever has more soft damage (Scandal, Superstition) won the argument.",
+   "sk": {
+    "slovo": "Hádka",
+    "tvary": [
+     "Hádka:"
+    ],
+    "popis": "Uplatní sa v bitke, keď sa rozhodne hádka — kto má viac mäkkého poškodenia (Pohoršenie, Povera), hádku vyhral."
+   }
+  },
+  "Spoločník": {
+   "slovo": "Ally",
+   "tvary": [
+    "Ally:"
+   ],
+   "popis": "Bonus actions from the seal in the card's picture apply while your crew has another face-up card with the tag after the colon — once, even with several such cards.",
+   "sk": {
+    "slovo": "Spoločník",
+    "tvary": [
+     "Spoločník:"
+    ],
+    "popis": "Akcie navyše z pečate v obrázku karty platia, kým máš v partii inú odkrytú kartu s tagom za dvojbodkou — raz, aj pri viacerých takých kartách."
+   }
+  },
+  "Nepriateľ": {
+   "slovo": "Enemy",
+   "tvary": [
+    "Enemy:"
+   ],
+   "popis": "Bonus actions from the seal in the card's picture apply while your opponent's crew has a face-up card with the tag after the colon — once, even with several such cards.",
+   "sk": {
+    "slovo": "Nepriateľ",
+    "tvary": [
+     "Nepriateľ:"
+    ],
+    "popis": "Akcie navyše z pečate v obrázku karty platia, kým má súper v partii odkrytú kartu s tagom za dvojbodkou — raz, aj pri viacerých takých kartách."
+   }
+  },
+  "Preškolenie": {
+   "slovo": "Retraining",
+   "tvary": [
+    "Retraining"
+   ],
+   "popis": "Retraining X → Y: action X of another card counts as Y, before links, on both edges and in the seal. With Always it applies to both neighbours while they are adjacent; with Support to your card and with Clash to the opponent's card it meets by being laid next to it, until the end of the round. Each action is retrained only once.",
+   "sk": {
+    "slovo": "Preškolenie",
+    "tvary": [
+     "Preškolenie"
+    ],
+    "popis": "Preškolenie X → Y: akcia X inej karty sa ráta ako Y, ešte pred spojmi, na oboch hranách aj v pečati. Pri Furt platí pre oboch susedov, kým susedia; pri Podpore pre tvoju a pri Konflikte pre súperovu kartu, s ktorou sa stretne priložením, do konca kola. Každá akcia sa preškolí len raz."
+   }
+  }
+ },
+ "kategorie": {
+  "Starešina": "Elder",
+  "Lokalita": "Location",
+  "Nástroj": "Tool",
+  "Kliatba": "Curse",
+  "Zviera": "Animal",
+  "Pracujúci": "Worker",
+  "Pamätník": "Old-timer",
+  "Zahraničný": "Foreigner",
+  "Kriminál": "Crook",
+  "Autorita": "Authority",
+  "Závislý": "Addict",
+  "Influencer": "Influencer",
+  "Občan": "Citizen",
+  "Chlap": "Bloke",
+  "Žena": "Woman"
+ },
+ "bodovacie": {
+  "Kmotor": "Godfather",
+  "Veriaci": "Believer",
+  "Ohováračka": "Gossip",
+  "Bitkár": "Brawler",
+  "Fajčiar": "Smoker",
+  "Abstinent": "Teetotaller",
+  "Robota": "Work",
+  "Advokát": "Lawyer"
+ }
+}
