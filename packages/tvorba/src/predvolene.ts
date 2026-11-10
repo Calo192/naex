@@ -35,7 +35,7 @@ export const AKCIE_20261019: readonly { readonly kluc: string; readonly nazov: s
     kluc: "Cigareta",
     nazov: "Cigareta",
     popis:
-      "V Pitke dostaneš 1 cigaretu (mínus súperove Obmedzenia). Cigarety sa prenášajú — platíš nimi karty z ponuky, Dedičstvo, doliatie poldeci aj fajčenie: " +
+      "V Pitke dostaneš 1 cigaretu (mínus súperove Obmedzenia). Cigarety sa prenášajú — platíš nimi karty z ponuky, Dedičstvo, podloženie Nástroja, doliatie poldeci, barter, Záverečnú aj fajčenie: " +
       `v Pitke dobereš kartu, prvé fajčenie v Pitke stojí ${KONSTANTY.CENA_FAJCENIA_ZAKLAD} cigaretu, druhé ${KONSTANTY.CENA_FAJCENIA_ZAKLAD + KONSTANTY.CENA_FAJCENIA_PRIRASTOK}, ` +
       `tretie ${KONSTANTY.CENA_FAJCENIA_ZAKLAD + 2 * KONSTANTY.CENA_FAJCENIA_PRIRASTOK}…`,
   },
@@ -43,7 +43,7 @@ export const AKCIE_20261019: readonly { readonly kluc: string; readonly nazov: s
   {
     kluc: "Vízia",
     nazov: "Vízia",
-    popis: "Na konci Pitky sa za každú Víziu pozrieš na vrchnú kartu svojho doberacieho balíčka: vezmeš si ju do ruky, alebo ju zahodíš (navždy z hry).",
+    popis: "Na konci Pitky sa za každú Víziu pozrieš na vrchnú kartu svojho doberacieho balíčka: vezmeš si ju do ruky, alebo ju spáliš (navždy z hry).",
   },
 ];
 
@@ -63,7 +63,7 @@ export const PREDVOLENE_AKCIE: readonly AkciaDef[] = [
   A("Pohoršenie", "Pohoršenie", `${KONSTANTY.HADKA.POHORSENIE_MAKKE} mäkké poškodenie do hádky; Viera ho nezruší. Kto má v bitke viac mäkkého, vyhral hádku o rozdiel a po bitke ho rozdelí na svoje reči pri starších (vo finále 1 špak za bod).`),
   ...AKCIE_20261019.map((a) => A(a.kluc, a.nazov, a.popis)),
   A("Posilnenie", "Posilnenie", "Zdvojnásobí prepojenú akciu — priaznivú aj nepriaznivú. Posilnenie proti Posilneniu = Forsáž: obe karty majú všetky aktívne akcie posilnené."),
-  A("Odpor", "Odpor", "Zruší prepojenú akciu. Odpor proti Odporu = Vzbura: obe karty aktivujú všetky inak neaktívne akcie."),
+  A("Odpor", "Odpor", "Zruší prepojenú akciu. Odpor proti Odporu = Vzbura: obe karty sa obrátia — nespojené akcie sú aktívne, spojené neaktívne. Odpor proti Posilneniu = Vzbura len karty s Odporom, jej aktívne akcie sú posilnené."),
   A("Robota", "Robota", "V bitke v kroku exekúcie, pred Exekútorom, spáli 1 tvoj priznaný Dlh (z hry). Za Dlh, ktorý nemá čo spáliť, ti dá 1 špak."),
   A("Pakt", "Pakt", "Na spoji sa správa ako akcia, s ktorou je v páre. Pakt s Paktom nerobí nič; Odpor ho zruší."),
 ].map((a, poradie) => ({ ...a, poradie }));
