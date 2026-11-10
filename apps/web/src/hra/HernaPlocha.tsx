@@ -68,6 +68,7 @@ import { NAZOV_PRIAZNE, favourPodlaId, kratkeMeno, pocetPriazniKola, priazenKola
 import { LetiacaKarta, type Obdlznik, type Prelet } from "./LetiacaKarta.tsx";
 import { radSenku } from "./tieneSenku.ts";
 import { PocitadloSLiniou } from "./PocitadloBitky.tsx";
+import { vyhraStrachomBitky } from "./vyhraStrachom.ts";
 import { RekapitulaciaPitkyVrstva, type OdpovedNaNaex, type PiktogramyRekapitulacie } from "./Rekapitulacia.tsx";
 import { mediaUrl } from "../lib/api.ts";
 import { useStolVHlavicke, useStrazOdchodu } from "../lib/odchod.ts";
@@ -2737,6 +2738,7 @@ export function HernaPlocha({
       sirkaKarty={Math.round(sirkaKarty)}
       kompaktna={kompaktna}
       koniec={view.koniec !== null}
+      vyhraStrachom={(b) => vyhraStrachomBitky(view, b.kolo)}
       ucet={ucet && view.pata === undefined ? { body, zvyraznit: nastenkaPre } : undefined}
       vyber={vyber}
       mierka={mierka}
@@ -6828,6 +6830,7 @@ export function HernaPlocha({
             piktogramy={piktogramyRekapitulacie}
             favour={favourPodlaIdStola}
             onZavri={() => setSuhrnLokality(null)}
+            vyhraStrachom={vyhraStrachomBitky(view, b.kolo)}
           />
         );
       })()}
@@ -6897,6 +6900,7 @@ export function HernaPlocha({
           vysledokHned={vyucba === true}
           naSirku={naSirku}
           priazne={priazneBitky(pocitadlo.stol.kolo)}
+          vyhraStrachom={vyhraStrachomBitky(view, pocitadlo.stol.kolo)}
         />
       )}
 

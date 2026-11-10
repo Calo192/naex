@@ -132,7 +132,8 @@ describe("línia starších", () => {
     expect(html).toMatch(/r3-riadok ja"><b class="kto">Jano<\/b>.*?znepokojen.*? — reči/);
     expect(html).not.toMatch(/class="(kto|r3-meno)">ty</);
     expect(html).toContain("✦ presvedčil Fero");
-    expect(html).toContain("2/4");
+    // Väzeň sa ráta ako červená, na stupnici nie je — odznak ho píše zvlášť (Michal 2026-11-10).
+    expect(html).toContain("<b>1+1/4</b>");
     expect(html).toContain("⛓ 1/3");
   });
 
@@ -196,7 +197,7 @@ describe("línia starších", () => {
     expect(html).toMatch(/tp-bd ja"><b>4<\/b> · 3/);
     expect(html).toMatch(/tp-bd su"><b>3<\/b> · 0/);
     expect(html).toContain("⛓ v pivnici u Fero");
-    expect(html).toContain("červené 2/4");
+    expect(html).toContain("červené 1 + 1 väzeň = 2/4");
   });
 
   it("rozdeľovanie: stupne sú tlačidlá s cenou a kľúčom výučby", () => {

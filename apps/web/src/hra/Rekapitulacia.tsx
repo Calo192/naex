@@ -12,6 +12,7 @@ import { SpakyBitky, riadkovRozpisuStarsich } from "./Spaky.tsx";
 import { PriazenStarsiehoVRiadku } from "./KruzokPriazne.tsx";
 import { popisReciZHadky, type PriazneBitky } from "./priazenKola.ts";
 import { nazovStupna } from "./textyStarsich.ts";
+import { textVyhryStrachom, type VyhraStrachom } from "./vyhraStrachom.ts";
 
 /** Piktogram akcie a jej názov zo sady (HernaPlocha). */
 export interface PiktogramyRekapitulacie {
@@ -582,6 +583,8 @@ export interface RekapBitkyProps {
   readonly telefon?: boolean;
   /** Hádka po starších (krúžok a meno namiesto „priazeň ±1“, Michal 2026-10-31). */
   readonly priazne?: PriazneBitky | undefined;
+  /** Bitka skončila hru výhrou strachom — pod špakmi riadok, že exekúcia nebola. */
+  readonly vyhraStrachom?: VyhraStrachom | null | undefined;
 }
 
 /**
@@ -637,15 +640,15 @@ function ZaverecneRiadky({
 }
 
 /** Riadky bloku pod tabuľkou bitky: súčet tuhého a špaky. */
-export function riadkovSpakovBitky(r: RekapitulaciaBitky): number {
-  return 1 + (r.spaky === undefined ? 0 : 3 + riadkovRozpisuStarsich(r.spaky));
+export function riadkovSpakovBitky(r: RekapitulaciaBitky, vyhraStrachom = false): number {
+  return 1 + (r.spaky === undefined ? 0 : 3 + riadkovRozpisuStarsich(r.spaky)) + (vyhraStrachom ? 1 : 0);
 }
 
 /**
  * Koľko riadkov rekapitulácia bitky na konci má (tabuľka aj blok súčtu a špakov) — PocitadloSLiniou
  * podľa toho zmenší karty línie. Na nízkom širokom okne je blok vedľa tabuľky, vtedy bezSpakov.
  */
-export function riadkovRekapitulacieBitky(r: RekapitulaciaBitky, bezSpakov = false): number {
+export function riadkovRekapitulacieBitky(r: RekapitulaciaBitky, bezSpakov = false, vyhraStrachom = false): number {
   let n = 1; // hlavička
   for (const a of AKCIE_TUHE) if (r.tuhe[a].length > 0) n++;
   if (r.viera.length + r.povera.length > 0) n += 2.6;
@@ -653,10 +656,10 @@ export function riadkovRekapitulacieBitky(r: RekapitulaciaBitky, bezSpakov = fal
   if (r.hadka !== undefined && r.hadka.makke[0] + r.hadka.makke[1] > 0) n++;
   if (r.naex.karty.length > 0) n += 2;
   if (r.pitkyKola !== null) n += 2.5 + 1.4 * (r.pitkyKola.zaverecne?.length ?? 0);
-  return bezSpakov ? n : n + riadkovSpakovBitky(r);
+  return bezSpakov ? n : n + riadkovSpakovBitky(r, vyhraStrachom);
 }
 
-export function RekapBitky({ r, ja, menoSupera, menoKarty, piktogramy, vlna, hotovo, vlnaKarty, vlnaRusenia, vlnaUcinku, mena, odpovede = [], telefon = false, priazne }: RekapBitkyProps) {
+export function RekapBitky({ r, ja, menoSupera, menoKarty, piktogramy, vlna, hotovo, vlnaKarty, vlnaRusenia, vlnaUcinku, mena, odpovede = [], telefon = false, priazne, vyhraStrachom = null }: RekapBitkyProps) {
   const su = opponentOf(ja);
   const { ikona, nazov } = piktogramy;
   const [rezim, setRezim] = useRezim(telefon);
@@ -768,12 +771,12 @@ export function RekapBitky({ r, ja, menoSupera, menoKarty, piktogramy, vlna, hot
       </div>
   );
   const spakyEl = (
-      <div className="rk-spaky-blok" style={{ "--rk-riadkov": riadkovSpakovBitky(r) } as CSSProperties}>
+      <div className="rk-spaky-blok" style={{ "--rk-riadkov": riadkovSpakovBitky(r, vyhraStrachom !== null) } as CSSProperties}>
         {hotovo && <SucetBitky r={r} ja={ja} menoSupera={menoSupera} />}
         {/* Špaky bitky (v6): za bitku, za starších, Exekútor; prebytok vo finále dopíše až nástenka. */}
         {hotovo && r.spaky !== undefined && (
           <div className="rk-spaky">
-            <SpakyBitky b={r.spaky} ja={ja} mena={ja === 0 ? ["ty", menoSupera] : [menoSupera, "ty"]} menoKarty={menoKarty} />
+            <SpakyBitky b={r.spaky} ja={ja} mena={ja === 0 ? ["ty", menoSupera] : [menoSupera, "ty"]} menoKarty={menoKarty} vyhraStrachom={vyhraStrachom} />
           </div>
         )}
         {telefon && !hotovo && <div className="rk-text-caka">počíta sa…</div>}
@@ -823,7 +826,7 @@ export function StitkyMomentov({ momenty, ja }: { readonly momenty: readonly Mom
  * Kto čo z bitky má (telefón, Michal 2026-10-31): špaky každého so zložením a komu ide Nakladačka
  * (z nej priazeň starších) — na prvý pohľad, bez čítania tabuliek.
  */
-export function VysledokBitky({ r, ja, mena }: { readonly r: RekapitulaciaBitky; readonly ja: PlayerId; readonly mena: readonly [string, string] }) {
+export function VysledokBitky({ r, ja, mena, vyhraStrachom = null }: { readonly r: RekapitulaciaBitky; readonly ja: PlayerId; readonly mena: readonly [string, string]; readonly vyhraStrachom?: VyhraStrachom | null | undefined }) {
   const su = opponentOf(ja);
   const b = r.spaky;
   const zn = (n: number): string => (n > 0 ? `+${n}` : n < 0 ? `−${-n}` : "0");
@@ -868,6 +871,7 @@ export function VysledokBitky({ r, ja, mena }: { readonly r: RekapitulaciaBitky;
           </>
         )}
       </span>
+      {vyhraStrachom !== null && <span className="rk-vys nakl">{textVyhryStrachom(vyhraStrachom)}</span>}
     </div>
   );
 }

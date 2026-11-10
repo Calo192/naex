@@ -13,6 +13,7 @@ import { RekapBitky, RekapitulaciaPitkyVrstva, type PiktogramyRekapitulacie } fr
 import { SpakyBitky, spakyPredBitkou, rozpisLokality } from "./Spaky.tsx";
 import { odpovedeKola, riadkySuhrnuLokality } from "./obsahSuhrnuLokality.ts";
 import { NAZOV_ZDROJA, textZmeny } from "./textyStarsich.ts";
+import type { VyhraStrachom } from "./vyhraStrachom.ts";
 import "./suhrn-lokality.css";
 
 export interface SuhrnLokalityProps {
@@ -28,6 +29,8 @@ export interface SuhrnLokalityProps {
   readonly onZavri: () => void;
   /** Priazeň staršieho podľa id — krúžok pri posunoch a v rozpise za starších (Michal 2026-10-31). */
   readonly favour?: ((elderId: string) => Favour | null) | undefined;
+  /** Bitka tohto kola skončila hru výhrou strachom (vyhraStrachomBitky). */
+  readonly vyhraStrachom?: VyhraStrachom | null | undefined;
 }
 
 export function SuhrnLokality(props: SuhrnLokalityProps) {
@@ -35,7 +38,7 @@ export function SuhrnLokality(props: SuhrnLokalityProps) {
   return props.favour === undefined ? obsah : <FavourStarsich.Provider value={props.favour}>{obsah}</FavourStarsich.Provider>;
 }
 
-function SuhrnLokalityObsah({ b, zaznam, ja, mena, avatary, menoKarty, piktogramy, onZavri, favour = () => null }: SuhrnLokalityProps) {
+function SuhrnLokalityObsah({ b, zaznam, ja, mena, avatary, menoKarty, piktogramy, onZavri, favour = () => null, vyhraStrachom = null }: SuhrnLokalityProps) {
   const su = opponentOf(ja);
   const idNadpisu = useId();
   const [detail, setDetail] = useState<PitkaVHistorii | null>(null);
@@ -198,10 +201,11 @@ function SuhrnLokalityObsah({ b, zaznam, ja, mena, avatary, menoKarty, piktogram
                   vlnaUcinku={0}
                   mena={mena}
                   odpovede={zaznam === null ? [] : odpovedeKola(zaznam)}
+                  vyhraStrachom={vyhraStrachom}
                 />
               ) : (
                 <div className="rk-spaky-blok">
-                  <SpakyBitky b={b} ja={ja} mena={ja === 0 ? ["ty", mena[su]] : [mena[su], "ty"]} pred={spakyPredBitkou(b)} menoKarty={menoKarty} />
+                  <SpakyBitky b={b} ja={ja} mena={ja === 0 ? ["ty", mena[su]] : [mena[su], "ty"]} pred={spakyPredBitkou(b)} menoKarty={menoKarty} vyhraStrachom={vyhraStrachom} />
                 </div>
               )}
             </section>

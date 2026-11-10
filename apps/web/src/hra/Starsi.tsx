@@ -15,6 +15,7 @@ import { IkonaPriazne } from "./IkonaPriazne.tsx";
 import { IkonaSpaku } from "./Spaky.tsx";
 import { smerStarsieho, stupienkyStarsich } from "./spakyAStarsi.ts";
 import { NAZOV_ZDROJA, riadokDlazdice } from "./textyStarsich.ts";
+import { textCervenych } from "./vyhraStrachom.ts";
 
 export interface DlazdicaStarsichProps {
   readonly view: ClientState;
@@ -43,8 +44,9 @@ export function DlazdicaStarsich({ view, p, zaStarsich, zaStarsichPrehra, starsi
   const cervene = v.cervene[p];
   const vazni = v.vazni[p];
   const hrozi = cervene >= v.cervenychNaVyhru - 1 || vazni >= v.vazniNaVyhru - 1;
+  const tc = textCervenych(cervene, vazni, v.cervenychNaVyhru);
   const titulVyhier =
-    `Červené ${cervene} z ${v.cervenychNaVyhru}, väzni ${vazni} z ${v.vazniNaVyhru}. ` +
+    `${tc.titul} Väzni ${vazni} z ${v.vazniNaVyhru}. ` +
     `Kto vyhrá bitku a má ${v.cervenychNaVyhru} červené strachy (väzni sa rátajú) alebo ${v.vazniNaVyhru} väzňov, vyhráva hneď.`;
   return (
     <button
@@ -67,7 +69,7 @@ export function DlazdicaStarsich({ view, p, zaStarsich, zaStarsichPrehra, starsi
         {!starsi.stlacene && posuny > 0 && <span className="zdroj-posuny">⇄ {posuny}</span>}
         {/* Na nízkom okne nie je riadok pod číslom — stav výhier je odznakom pri nadpise (hra.css). */}
         <span className={`starsi-desi${hrozi ? " hrozi" : ""}`} title={titulVyhier}>
-          {cervene}/{v.cervenychNaVyhru}
+          {tc.odznak}
         </span>
       </span>
       <span className="zdroj-hodnota">
@@ -99,7 +101,7 @@ export function DlazdicaStarsich({ view, p, zaStarsich, zaStarsichPrehra, starsi
           )}
         </span>
         <span className={`starsi-desi-riadok${hrozi ? " hrozi" : ""}`} title={titulVyhier}>
-          červené {cervene}/{v.cervenychNaVyhru} · väzni {vazni}/{v.vazniNaVyhru}
+          červené {tc.kratko} · {vazni > 0 ? "⛓" : "väzni"} {vazni}/{v.vazniNaVyhru}
         </span>
       </span>
     </button>

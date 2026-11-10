@@ -97,6 +97,8 @@
 //   &markery=i:s0.s1.r0.r1,… strach a reči i-teho staršieho (od 0): strach hráča 1 a 2, reči hráča 1 a 2
 //                  (0–3; reči len nad strachom, inak 0) — snímky teplomerov a Pultu
 //   &vazen=i:p,…   i-teho staršieho (od 0) zajme hráč p (0 / 1) — snímka väzňa s pečiatkou (R3)
+//   &dlhy=n        hráč ?ja má na začiatku ukážky n priznaných Dlhov (s &markery a &vazen: dlaždica Dlhy
+//                  pri hroziacej výhre strachom, súhrn bitky, v ktorej exekúcia nebola)
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import type { CardInstance, Command, Event, GameData, GameState, HistoriaLokalit, LokalitaVHistorii, PlacedCard, PlayerId, StavMomentov, Stupen, TypMomentu, Vazen } from "@naex/core";
@@ -761,7 +763,11 @@ function Ukazka({ sada }: { readonly sada: NonNullable<ReturnType<typeof useSada
     const mk = q().get("markery");
     const sM0 = mk === null ? o : { ...o, zaciatok: sMarkermi(o.zaciatok, mk) };
     const vz = q().get("vazen");
-    const sM = vz === null ? sM0 : { ...sM0, zaciatok: sVaznami(sM0.zaciatok, vz) };
+    const sV = vz === null ? sM0 : { ...sM0, zaciatok: sVaznami(sM0.zaciatok, vz) };
+    const dl = Number(q().get("dlhy") ?? "");
+    const [h0, h1] = sV.zaciatok.hraci;
+    const hraci: GameState["hraci"] = ja === 0 ? [{ ...h0, dlhy: dl }, h1] : [h0, { ...h1, dlhy: dl }];
+    const sM = !(dl > 0) ? sV : { ...sV, zaciatok: { ...sV.zaciatok, hraci } };
     // Rozloženie línie starších sa pamätá v prehliadači — &pult=1 ho prepne pred prvým kreslením.
     if (q().get("pult") !== null) localStorage.setItem(ULOZENY_REZIM_LINIE, q().get("pult") === "1" ? "pult" : "teplomery");
     return q().get("zerava") === "1" ? { ...sM, zaciatok: sZeravou(sM.zaciatok, ja) } : sM;

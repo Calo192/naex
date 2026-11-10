@@ -35,6 +35,7 @@ import { kradezPriZajati, kratkeMeno, ktoPriazen, obsahNapovedy, obsahNapovedyVa
 import { NAZOV_ZDROJA, PRAVIDLO_STRACHU, rodStarsieho, slovoStupna, type Rod } from "./textyStarsich.ts";
 import type { StupenRozdelenia } from "./teplomery.ts";
 import { NAZOV_KROKU, dotknuty, fazaKroku, opisKroku, riadkyKroku, stitkyKroku, type KontextSuhrnu, type KrokSuhrnu, type Markery, type StitokSuhrnu, type SuhrnBitky } from "./krokySuhrnu.ts";
+import { textCervenych } from "./vyhraStrachom.ts";
 import "./teplomery.css";
 
 export { IKONA_PRIAZNE } from "./KruzokPriazne.tsx";
@@ -299,7 +300,7 @@ function StavVyhierLinie({ vyhry, ja, mena }: { readonly vyhry: StavVyhier; read
     const v = vyhry.vazni[p];
     const hrozi = c >= vyhry.cervenychNaVyhru - 1 || v >= vyhry.vazniNaVyhru - 1;
     const kto = p === ja ? "ty" : kratkeMeno(mena[p]);
-    const popis = `${p === ja ? "Ty" : mena[p]}: červené ${c} z ${vyhry.cervenychNaVyhru}, väzni ${v} z ${vyhry.vazniNaVyhru} — kto vyhrá bitku a má dosť, vyhráva hneď`;
+    const popis = `${p === ja ? "Ty" : mena[p]}: ${textCervenych(c, v, vyhry.cervenychNaVyhru).titul} Väzni ${v} z ${vyhry.vazniNaVyhru} — kto vyhrá bitku a má dosť, vyhráva hneď.`;
     return (
       <span className={`tp-vyhry ${p === ja ? "ja" : "su"}${hrozi ? " hrozi" : ""}`} role="img" aria-label={popis} title={popis}>
         <span className="tp-vyhry-kto">{kto}</span>
@@ -308,9 +309,7 @@ function StavVyhierLinie({ vyhry, ja, mena }: { readonly vyhry: StavVyhier; read
             <i key={i} className={i < c ? "on" : ""} />
           ))}
         </span>
-        <b>
-          {c}/{vyhry.cervenychNaVyhru}
-        </b>
+        <b>{textCervenych(c, v, vyhry.cervenychNaVyhru).odznak}</b>
         <span className="tp-vazni">
           ⛓ {v}/{vyhry.vazniNaVyhru}
         </span>
@@ -957,12 +956,12 @@ function PultLinie({
         <tfoot>
           <tr>
             <td className="vlavo">Spolu{zmenene ? " po návrhu" : ""}</td>
-            <td colSpan={2} className="ja">
-              červené {vyhry.cervene[ja]}/{vyhry.cervenychNaVyhru} · ⛓ {vyhry.vazni[ja]}/{vyhry.vazniNaVyhru}
+            <td colSpan={2} className="ja" title={textCervenych(vyhry.cervene[ja], vyhry.vazni[ja], vyhry.cervenychNaVyhru).titul}>
+              červené {textCervenych(vyhry.cervene[ja], vyhry.vazni[ja], vyhry.cervenychNaVyhru).kratko} · ⛓ {vyhry.vazni[ja]}/{vyhry.vazniNaVyhru}
             </td>
             <td />
-            <td colSpan={2} className="su">
-              červené {vyhry.cervene[su]}/{vyhry.cervenychNaVyhru} · ⛓ {vyhry.vazni[su]}/{vyhry.vazniNaVyhru}
+            <td colSpan={2} className="su" title={textCervenych(vyhry.cervene[su], vyhry.vazni[su], vyhry.cervenychNaVyhru).titul}>
+              červené {textCervenych(vyhry.cervene[su], vyhry.vazni[su], vyhry.cervenychNaVyhru).kratko} · ⛓ {vyhry.vazni[su]}/{vyhry.vazniNaVyhru}
             </td>
             <td className="tp-bd ja">
               <b>{sucet((x) => x.vyhra[ja])}</b> · {sucet((x) => x.prehra[ja])}
