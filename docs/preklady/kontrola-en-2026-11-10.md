@@ -24,3 +24,30 @@ Spätný preklad 15 kariet s najviac satirou (`docs/preklady/karty/en.json`) do 
 
 - Nezhody s glosárom: žiadne (overené generátorom: piktogramy `{…}` v každej karte sedia so zdrojom).
 - Dlhšie než originál o > 40 %: Alcohol-free, Football Pitch, Fortune Teller, Mother-in-Law, Collective Farm, Debt Collector, Gambling Den, Shepherd's Axe (najviac 15 znakov). Najdlhšie meno je Strong, Independent Woman (25 znakov proti 21 v origináli) — pás karty to unesie, ak unesie slovenské 21; overí UI.
+
+## Rozhranie a titulky Melichara (vlna 3b, `apps/web/src/i18n/en.json`, `melichar/en.json`)
+
+Spätný preklad kľúčov herného stola (stol.*, faza.*, pult.*, zhrom.*, stitok.*, karta.*, koniec.*, bar.*):
+
+| Kľúč | EN | Spätný preklad | Verdikt |
+|---|---|---|---|
+| stol.tipKraja | Upper hand: the actions of this edge go to whoever has more of their own Citizens… on this wing… | Prevaha: akcie hrany dostane, kto má v kraji viac svojich Občanov… | OK, pravidlo presné |
+| stol.naPrebitieTy | {rovnost}to take it you need {karty}{limit} | na prebratie potrebuješ N kariet | OK |
+| zhrom.pasTip | You stop playing cards until the Booze-up; your opponent plays alone… | Do Pitky už nevykladáš, súper vykladá sám… | OK |
+| zhrom.dalsiaKarta | Another card this turn costs a full shot. | Ďalšia karta v ťahu stojí plný poldeci. | OK |
+| faza.naSekere | · on the Tab {n} b. | na sekere n š. | OK (b. = butts) |
+| koniec.cirhozy | Unconfessed Cirrhosis at the end: {spaky} each… | Nepriznaná Cirhóza… za kus | OK |
+| bar.naTahu | to play | na ťahu | Opravené z „on turn“ (nie je po anglicky) |
+| faza.volbaCiela | What's at stake | O čo ide | Opravené z „What are we fighting over?“ (pás, +86 %); bitku nesie názov fázy Brawl |
+
+Opravené v návrhu programátora:
+- `zariadenie.rankText2` „You'll be Shot“ = „budeš zastrelený“ → „You'll make Shot“.
+- `zariadenie.rank` nezrozumiteľný slovosled → „Phones are for players ranked Shot and up“.
+- `lobby.pata` prázdne → **Knee, Elbow, Trip** (glosár `pata`); `lobby.pataPopis` „with livers“ → „each with a liver“, „all of the opponent's“ → „all the opponent's elders“.
+- `karta.spaleniePopis` „goes back to no pile“ → „never goes back to any pile“.
+- `koniec.vyhra.n` / `prehra.n` (bez rodu) → Victory! / Defeat, ako slovenské „Výhra! / Prehra“.
+- `ucet.hernemenoPriklad` Fero → **Dave from the far end of the village** (miestny typ, nie slovenské meno).
+- Skrátené tlačidlá nad 40 %: Vs the computer, view the table, Start tutorial, Got a code, Back to start.
+- Ponechané dlhšie (nadpisy, nie tlačidlá): Development, Second/First Division, Against the computer.
+
+Titulky: kľúče mali neplatnú skupinu `posmech/…` (zvuky sú v `urazky/`) a chýbal `urazky/to_sa_deju_veci_tuto_s_primitivma` — opravené vo všetkých jazykoch. 118 zo 124 titulkov vyplnených, 6 čaká (otazky.md, Melichar). „Marha“ = **muppet** (britská krčmová nadávka, rovnaká váha), „špina“ = scum, „kurva“ ako citoslovce = Fuck!, ako oslovenie = whore. Nezhody s glosárom: žiadne (Bzdocha = Earwig).
