@@ -777,7 +777,7 @@
     {
       "id": "i-vitaj2",
       "kto": "info",
-      "melichar": "Si späť? Myslel som, že ťa Štamgast odradil. Dnes NA EX naplno a zopár podlostí. Nové kolo: každému sa dolial jeden vypitý [Poldeci] poldeci, tebe ten z NA EX, a kto má v ruke menej ako tri karty, dobral si do troch: ty Pijana.",
+      "melichar": "Si späť? Myslel som, že ťa Štamgast odradil. Dnes NA EX naplno a zopár podlostí. Nové kolo: každému sa dolial jeden vypitý [Poldeci] poldeci, tebe ten z NA EX. A po bitke si doberieš 2 karty: prišiel Miňištrant a Pijan.",
       "cast": 2,
       "zvyraznit": [
         "ruka"
@@ -1780,7 +1780,7 @@
     {
       "id": "i-vitaj3",
       "kto": "info",
-      "melichar": "Posledná lekcia. Cigaretu si nechaj, budeš potrebovať každú – to nie je láskavosť, to je investícia. Tretie kolo, dobratie do troch: prišiel Miňištrant, potom sa doberací balíček minul, odhadzovací sa zamiešal na nový a prišla Cirhóza – jedna z tých dvoch z druhého kola.",
+      "melichar": "Posledná lekcia. Cigaretu si nechaj, budeš potrebovať každú – to nie je láskavosť, to je investícia. Tretie kolo, po bitke 2 karty: prišiel Miňištrant, potom sa doberací balíček minul, odhadzovací sa zamiešal na nový a prišla Cirhóza – jedna z tých dvoch z druhého kola.",
       "cast": 3,
       "zvyraznit": [
         "ruka"
@@ -2316,7 +2316,7 @@
     {
       "id": "i-po-bitke3",
       "kto": "info",
-      "melichar": "Za prehru dostal Štamgast cigaretu, od Autobusára ďalšiu, a tebe dal výpalné: väzeň sa ráta ako červený strach. Priazeň mu teraz dáva Krčmárka v sile 2, Autobusár a Vychovávateľka v sile 1 – to je cena tvojho strachu. A z prázdnej ruky si si dobral tri karty: Mäsiara, Pijana a Záhradkára.",
+      "melichar": "Za prehru dostal Štamgast cigaretu, od Autobusára ďalšiu, a tebe dal výpalné: väzeň sa ráta ako červený strach. Priazeň mu teraz dáva Krčmárka v sile 2, Autobusár a Vychovávateľka v sile 1 – to je cena tvojho strachu. A po bitke si si dobral 2 karty: Mäsiara a Pijana.",
       "zvyraznit": [
         "linia-starsich",
         "bar-supera:cigarety"
@@ -2611,12 +2611,25 @@
       "melichar": ""
     },
     {
+      "id": "k-fajcit-finale",
+      "kto": "hrac",
+      "prikaz": {
+        "type": "smoke",
+        "pocet": 1
+      },
+      "melichar": "Ruku máš prázdnu, a prázdna ruka je ako prázdny pohár. Fajči: klikni na fajčiť, za [Cigareta] cigaretu si doberieš kartu.",
+      "hlaskaChyby": "udiv/03_No_toto_je_marha",
+      "zvyraznit": [
+        "tlacidlo:fajcit"
+      ]
+    },
+    {
       "id": "k-finale-p2",
       "kto": "hrac",
       "prikaz": {
         "type": "skipNaex"
       },
-      "melichar": "Končím (K).",
+      "melichar": "Prišiel Záhradkár, toho si nechaj. Končím (K).",
       "hlaskaChyby": "nervy/bud_ticho",
       "zvyraznit": [
         "tlacidlo:hotovo"
