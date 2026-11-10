@@ -4245,12 +4245,10 @@ export function HernaPlocha({
               </>
             ) : (
               <>
-                Potiahni kartu z ruky na stôl, alebo klikni na <strong>+</strong> na konci línie — vysunú sa karty, ktoré sa tam spoja. Alebo
-                pasuj do Pitky (cigareta za každú nevyloženú kartu).{" "}
+                {/* Pokyn sa zmestí do jedného riadku aj pri 1366 px (UI inšpekcia 20261110-pojmy) — ďalšia karta v ťahu len pri plnom poldeci. */}
+                Potiahni kartu na stôl alebo klikni na <strong>+</strong> na konci línie, alebo pasuj do Pitky (cigareta za nevyloženú kartu).{" "}
                 {pokynNaradia}
-                <span className="tlmene">
-                  Ďalšie karty v tom istom ťahu smieš pridať, každá ťa stojí plný poldeci (limit −1, pečeň +1){plne === 0 ? " — teraz žiadny nemáš" : ""}.
-                </span>
+                {plne > 0 && <span className="tlmene">Ďalšia karta v ťahu stojí plný poldeci.</span>}
               </>
             )),
             ...(() => {

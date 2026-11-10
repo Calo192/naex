@@ -686,6 +686,14 @@ button.cip.aktivny {
   text-decoration-style: solid;
 }
 
+/* Pojem v bubline Melichara: väčšia plocha pre myš a prst (UI inšpekcia 20261110-pojmy), text
+   ani riadok sa nehnú — vnútorný okraj inline prvku výšku riadku nemení, záporný ho vráti do boku. */
+.pojem-bublina {
+  padding: 6px 3px;
+  margin-inline: -3px;
+  border-radius: 4px;
+}
+
 .pojem-panel {
   position: fixed;
   left: 0;
