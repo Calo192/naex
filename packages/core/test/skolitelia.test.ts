@@ -565,12 +565,12 @@ describe("Traktorista: Posledná Pitka kola: Bez prevahy v jeho kraji {Dlh} — 
 // --- Výučba a boti na budúcej sade ---------------------------------------------------------
 
 describe("budúca sada v hre", () => {
-  it("výučba Prvá hra prejde aj na budúcej sade — koniec 57 : 16 ako na dnešnej (v11.20; do v11.19 57 : 15)", () => {
+  it("výučba Prvá hra prejde aj na budúcej sade — koniec 49 : 17 ako na dnešnej (prvé kolo bez Hazardu 2026-11-10; v11.20 57 : 16)", () => {
     const scenar = scenarJson as unknown as ScenarVyucby;
     expect(overScenar(buduca, scenar)).toBeNull();
     const koniec = prehrajVyucbu(buduca, scenar, scenar.kroky.length).koniec;
     expect(koniec?.vitaz).toBe(0);
-    expect(koniec?.body).toEqual([57, 16]);
+    expect(koniec?.body).toEqual([49, 17]);
   });
 
   it("partia dvoch botov na budúcej sade dobehne do konca", () => {

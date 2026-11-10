@@ -45,22 +45,27 @@ function H3({ id, children }: { readonly id: string; readonly children: ReactNod
 
 export const KAPITOLY: readonly Kapitola[] = [
   // ---------------------------------------------------------------- A
+  // Rýchly štart len zo 13 slov jadra (Michal 2026-11-10, docs/napady/prvy-dojem-navstevnika.html, časť 9):
+  // špak, bitka, lokalita, akcia a údery, ponuka, cigareta, Zhromaždenie, línia, poldeci, spoj, Pitka, NA EX,
+  // starší a strach. Podrobnosti, ktoré tu boli (príprava, útočník, liga, väzni, exekútor, karta, akcie),
+  // sú v častiach B a C pod tými istými kotvami.
   {
     id: "co-je-naex",
     cast: "A",
     nazov: "Čo je NA EX!",
     obrazok: "01-co-je-naex",
-    vSkratke: ["Dvaja hráči, dedina a krčma.", "Bijú sa o lokality a desia starších.", "Hra je zámerne prehnaná karikatúra."],
+    vSkratke: ["Dvaja hráči, jedna dedina.", "Každé kolo bitka o jednu lokalitu.", "Hra je zámerne prehnaná karikatúra."],
     obsah: () => (
       <>
         <p>
           <strong>NA EX!</strong> je kartová hra pre dvoch hráčov zasadená do drsnej dediny. Každé kolo sa bijete o jednu{" "}
-          <P k="lokalita">lokalitu</P> — krčmu, kostol, benzínku — a cestou desíte <P k="starsi">starších</P>, vážené osoby
-          dediny. Kto vyhráva bitky, ten zbiera <P k="spak">špaky</P> a k nim ďalšie od starších, ktorí sa ho boja.
+          <P k="lokalita">lokalitu</P> — krčmu, kostol, benzínku. Kto vyhrá <P k="bitka">bitku</P>, zbiera <P k="spak">špaky</P>,
+          ohorky, ktorými sa tu ráta. A <P k="starsi">starší</P>, dedinské autority, ktorí bitku videli, sa ho začnú báť.
         </p>
         <p>
-          Karty kladiete do spoločnej <P k="linia">línie</P>, pijete <P k="poldeci">poldeci</P>, fajčíte{" "}
-          <P k="cigareta">cigarety</P> a robíte dlhy. Všetko má svoju cenu — pečeň, Dlhy a abstinenčné príznaky ťa dobehnú.
+          Karty hráte do spoločnej <P k="linia">línie</P>, kupujete ich za <P k="cigareta">cigarety</P> a pijete pri tom{" "}
+          <P k="poldeci">poldeci</P>. Podľa jedného ťahu sa hra volá: <P k="naex">NA EX</P> — vyleješ poldeci na súperovu kartu,
+          na ex.
         </p>
         <p className="tlmene upozornenie">
           Hra je fikcia a zámerne zveličená karikatúra. Alkohol, fajčenie, hazard ani dlhy v skutočnom živote nikomu
@@ -75,35 +80,25 @@ export const KAPITOLY: readonly Kapitola[] = [
     nazov: "Ako sa vyhráva",
     obrazok: "02-ako-sa-vyhrava",
     vSkratke: [
-      "Víťazné body sú špaky: za vyhratú bitku a k nej za starších, ktorí sa ťa boja.",
-      "Po finále vyhrá, kto má viac špakov; rovnosť je remíza.",
-      "Okamžitá výhra po vyhratej bitke: dosť väzňov podľa ligy (2 / 3 / 4) alebo štyria starší s tvojím červeným strachom.",
+      "Vyhrá, kto má na konci viac špakov.",
+      "Vyhratá bitka: špak za každú kartu v línii, aj za súperove.",
+      "Starší, ktorý sa ťa bojí, ti po každej vyhratej bitke platí špaky.",
     ],
     obsah: () => (
       <>
         <div className="karticky">
           <div className="karticka">
-            <strong>Špaky.</strong> Hrá sa 3, 5 alebo 7 bitiek o lokality podľa <P k="dlzka-hry">ligy</P> a potom{" "}
-            <P k="finale">finále</P> — posledná bitka o pinnacle lokalitu, ktorú vyberie hráč s viac špakmi — útočí zaostávajúci. Víťaz bitky (aj finále) dostane 1 <P k="spak">špak</P> za každú
-            kartu, ktorá pri bitke leží v línii (tvoje aj súperove). Po každej bitke dajú špaky aj <P k="starsi">starší</P>: stupeň 1 / 2 / 3 tomu, kto ho
-            drží — víťazovi za strach a obom za <P k="reci">reči</P>.
-            Po finále sa ešte <P k="vykupne">vykúpi</P>, čo ti ostalo: každý plný poldeci 1 špak, každých 5 cigariet 1 špak. Potom vyhrá, kto má
-            viac špakov.
+            <strong>Špaky za bitku.</strong> Víťaz <P k="bitka">bitky</P> dostane 1 <P k="spak">špak</P> za každú kartu, ktorá pri
+            bitke leží v <P k="linia">línii</P> — tvoje aj súperove.
           </div>
           <div className="karticka karticka-ok">
-            <strong>Vyhráš hneď</strong>, keď po vyhratej bitke máš dosť <P k="vazen">väzňov</P> — Tretia liga 2, Druhá 3, Prvá 4 (zajíma
-            sa Nakladačkou, <a href="#patronat">Zajatie a presvedčenie</a>) — alebo červený strach u štyroch starších (väzni sa rátajú).
-            Po finále väzni špaky nedávajú.
-          </div>
-          <div className="karticka karticka-zle">
-            <strong>O špaky prídeš</strong> pri <P k="exekutor">exekúcii</P> (v každej bitke, keď máš priznané Dlhy: zhorí polovica tvojich Dlhov nahor a rovnako veľa
-            špakov) a za každú nepriznanú Cirhózu na konci hry (3 špaky). Okamžitá prehra nie je — ani exekúcia, ani malý
-            balíček ťa o hru nepripravia.
+            <strong>Špaky za strach.</strong> O koľko úderov si bitku vyhral, toľko <P k="strach">strachu</P> rozdelíš medzi{" "}
+            <P k="starsi">starších</P>. Kto sa ťa bojí, platí ti po každej ďalšej vyhratej bitke — čím viac sa bojí, tým viac.
           </div>
         </div>
         <p>
-          Všetky zdroje špakov sú v kapitole <a href="#bodovanie">Špaky a finále</a>. Na začiatok stačí vedieť: vyhratá bitka
-          dáva špak za každú kartu v línii a starší, ktorého si vystrašil, ti dá špaky po každej ďalšej vyhratej bitke — a súperovi medzitým prejavuje priazeň.
+          Na konci vyhrá, kto má viac špakov. Ako dlho hra trvá, kedy sa dá vyhrať skôr a o čo môžeš špaky prísť, je v kapitole{" "}
+          <a href="#bodovanie">Špaky a finále</a>.
         </p>
       </>
     ),
@@ -114,72 +109,89 @@ export const KAPITOLY: readonly Kapitola[] = [
     nazov: "Čo máš pred sebou",
     obrazok: "03-co-mas-pred-sebou",
     vSkratke: [
-      "Ruka, doberací a odhadzovací balíček.",
-      "Bar: poldeci, cigarety, pečeň, Dlhy, neresti kola, Chuť a špaky.",
-      "Karta má akcie po hranách, tagy a efekt.",
+      "Karty v ruke; dole pri sebe poldeci, cigarety a špaky.",
+      "Ikony na okraji karty sú akcie; Rana, Pecka a Petelica sú údery za 1, 2 a 3.",
+      "Akcia platí len v spoji: keď sa stretne s akciou susednej karty v rovnakej výške.",
     ],
-    obsah: (s) => (
+    obsah: () => (
       <>
-        <H3 id="co-mas-pred-sebou-bar">Ruka, balíček a bar</H3>
+        <H3 id="co-mas-pred-sebou-bar">Ruka a čo máš pri sebe</H3>
         <p>
-          Máš <strong>ruku</strong> (bez limitu), <strong>doberací balíček</strong> a <strong>odhadzovací balíček</strong>. Keď sa
-          doberací balíček minie, odhadzovací sa zamieša a stane sa z neho nový doberací balíček. Na bare vidíš svoje <P k="poldeci">poldeci</P> (plné a vypité),{" "}
-          <P k="cigareta">cigarety</P>, <P k="pecen">pečeň</P>, <P k="dlh">Dlhy</P>, <P k="nerest">neresti</P> kola, <P k="chut">Chuť</P> a svoje{" "}
-          <P k="spak">špaky</P>.
+          Máš karty v ruke. Dole pri sebe vidíš svoje <P k="poldeci">poldeci</P> (plné a vypité), <P k="cigareta">cigarety</P>{" "}
+          a <P k="spak">špaky</P>.
         </p>
-        <H3 id="co-mas-pred-sebou-karta">Karta</H3>
-        <ul>
-          <li>
-            <strong>Akcie na hranách</strong> — najviac 4 na každej hrane, vo výškach 0 (hore) až 3 (dole). Akcia platí, len keď sa
-            stretne s akciou suseda v rovnakej výške. Nástroj má namiesto nich hornú a dolnú hranu (kapitola{" "}
-            <a href="#nastroje">Nástroje a Dedičstvo</a>).
-          </li>
-          <li>
-            <strong>Tagy</strong> — druh karty (<P k="tag">Občan, Zviera, Starešina, Nástroj</P>…). Samy nič nerobia, odkazujú na
-            ne efekty.
-          </li>
-          <li>
-            <strong>Efekt</strong> — text karty. Tučné slovo na začiatku hovorí kedy (Nástup, Pitka, Bitka, Furt, Podpora,
-            Spoločník…), slová kurzívou čo. <P k="akcia-navyse">Akcie navyše</P> sú v pečati dole v ilustrácii. Presné významy sú
-            v <a href="#slovnik">slovníku</a>.
-          </li>
-          <li>
-            <strong>Varianty</strong> — každá karta existuje vo viacerých variantoch: rovnaké akcie, iné výšky.{" "}
-            <Odkaz href="/karty">Prezri si karty</Odkaz>.
-          </li>
-        </ul>
-        <H3 id="co-mas-pred-sebou-akcie">Akcie</H3>
-        <ul className="legenda legenda-pravidla">
-          {s.akcie.map((a) => (
-            <li key={a.kluc}>
-              <span className="legenda-ikona">
-                <IkonaAkcie kluc={a.kluc} akcia={a} />
-              </span>
-              <div>
-                <strong>{a.nazov}</strong>
-                <span>{a.popis}</span>
-              </div>
-            </li>
-          ))}
-        </ul>
+        <H3 id="co-mas-pred-sebou-spoj">Akcie a spoj</H3>
+        <p>
+          Ikony na okraji karty sú <P k="akcia">akcie</P>. Rana, Pecka a Petelica sú údery za 1, 2 a 3 — kto má v bitke viac úderov,
+          vyhrá. Akcia platí, len keď je v <P k="spoj">spoji</P>: dotkne sa akcie susednej karty v rovnakej výške. Osamelá akcia
+          nerobí nič. Čo je na karte napísané, je v kapitole <a href="#zhromazdenie">Zhromaždenie</a>.
+        </p>
       </>
     ),
   },
   {
     id: "kolo",
     cast: "A",
-    nazov: "Kolo v piatich krokoch a príprava",
-    kratky: "Kolo a príprava",
+    nazov: "Kolo v piatich krokoch",
+    kratky: "Kolo",
     obrazok: "04-kolo",
     vSkratke: [
-      "Cieľ → šenok → Zhromaždenie a Pitka (1–5×) → bitka → po bitke.",
-      "Štart: 4 karty v ruke, prázdny balíček, 2 plné poldeci, 3 cigarety.",
-      "Útočník prehral poslednú bitku, obranca ju vyhral.",
-      "Lokality idú po úrovniach (Druhá liga 1 · 2 · 2 · 3 · 3), obranca vyberá z lokalít úrovne kola.",
-      "Po poslednej lokalite finále na pinnacle lokalite (Poľovnícka chata, Predsedova vila, Herňa).",
+      "Lokalita → ponuka → Zhromaždenie → Pitka → bitka.",
+      "Zahráš toľko kariet, koľko máš plných poldeci, a ešte jednu.",
+      "V Pitke smieš dať NA EX; v bitke vyhrá viac úderov.",
     ],
     obsah: () => (
       <>
+        <div className="priebeh">
+          <span>1 Lokalita</span>→<span>2 Ponuka</span>→<span>3 Zhromaždenie</span>→<span>4 Pitka</span>→<span>5 Bitka</span>
+        </div>
+        <ol className="kroky">
+          <li>
+            <strong>Lokalita.</strong> Vyberie sa <P k="lokalita">lokalita</P>, o ktorú sa v kole bijete. Leží v strede{" "}
+            <P k="linia">línie</P>.
+          </li>
+          <li>
+            <strong>Ponuka.</strong> Z <P k="senok">ponuky</P> kariet si striedavo kupujete karty, jednu za{" "}
+            <P k="cigareta">cigaretu</P>.
+          </li>
+          <li>
+            <strong>Zhromaždenie.</strong> Striedavo hráte karty k lokalite do línie (<P k="zhromazdenie">Zhromaždenie</P>). Koľko
+            máš plných <P k="poldeci">poldeci</P>, toľko kariet zahráš, a ešte jednu. Hráš tak, aby tvoje akcie našli{" "}
+            <P k="spoj">spoj</P>.
+          </li>
+          <li>
+            <strong>Pitka.</strong> Pije sa (<P k="pitka">Pitka</P>). Smieš dať <P k="naex">NA EX</P>: vyleješ plný poldeci na
+            kartu v línii a jej akcie v spoji zhasnú. Zhromaždenie a Pitka sa za kolo môžu zopakovať.
+          </li>
+          <li>
+            <strong>Bitka.</strong> Sčítajú sa údery a kto má viac, vyhral. Víťaz dostane špak za každú kartu v línii a o koľko
+            vyhral, toľko <P k="strach">strachu</P> rozdelí medzi <P k="starsi">starších</P>.
+          </li>
+        </ol>
+        <p>
+          Podrobne, so všetkým, čo k tomu patrí, ide kolo v časti <a href="#ciel-a-senok">Kolo krok za krokom</a>.
+        </p>
+      </>
+    ),
+  },
+
+  // ---------------------------------------------------------------- B
+  {
+    id: "ciel-a-senok",
+    cast: "B",
+    nazov: "Kolo, cieľ a šenok",
+    obrazok: "05-ciel-a-senok",
+    vSkratke: [
+      "Kolo: cieľ → šenok → Zhromaždenie a Pitka (1–5×) → bitka → po bitke; útočník prehral poslednú bitku, obranca ju vyhral.",
+      "Štart: 4 karty v ruke, prázdny balíček, 2 plné poldeci, 3 cigarety; lokality po úrovniach (Druhá liga 1 · 2 · 2 · 3 · 3), potom finále.",
+      "Obranca vyberie lokalitu, víťaz minulej hádky ju natočí.",
+      "Stavba šenku: polovica kariet do šenku, polovica naspodok balíčka.",
+      "Branie striedavo: 1 karta za 1 cigaretu, 2 karty za 3.",
+      "Zajíma sa za 5 bodov a presviedča za 3 — po bitke, pri rozdelení Nakladačky a hádky.",
+    ],
+    obsah: () => (
+      <>
+        <H3 id="kolo-kroky">Kolo v piatich krokoch</H3>
         <div className="priebeh">
           <span>1 Cieľ</span>→<span>2 Šenok</span>→<span>3 Zhromaždenie a Pitka 1–5×</span>→<span>4 Bitka</span>→<span>5 Po bitke</span>
         </div>
@@ -218,24 +230,6 @@ export const KAPITOLY: readonly Kapitola[] = [
           <strong>Obranca</strong> vyberá cieľ kola (natáča ho víťaz minulej hádky) a zo šenku berie prvý. Pitku hráte obaja naraz; odpovede na NA EX idú lícom dole a otočia sa naraz. Vo finále
           útočí zaostávajúci — kto má menej špakov.
         </p>
-      </>
-    ),
-  },
-
-  // ---------------------------------------------------------------- B
-  {
-    id: "ciel-a-senok",
-    cast: "B",
-    nazov: "Cieľ a šenok",
-    obrazok: "05-ciel-a-senok",
-    vSkratke: [
-      "Obranca vyberie lokalitu, víťaz minulej hádky ju natočí.",
-      "Stavba šenku: polovica kariet do šenku, polovica naspodok balíčka.",
-      "Branie striedavo: 1 karta za 1 cigaretu, 2 karty za 3.",
-      "Zajíma sa za 5 bodov a presviedča za 3 — po bitke, pri rozdelení Nakladačky a hádky.",
-    ],
-    obsah: () => (
-      <>
         <H3 id="ciel">Cieľ kola</H3>
         <p>
           Obranca vyberie lokalitu, o ktorú sa bude biť, a víťaz hádky z minulého kola ju <P k="natocenie">natočí</P> (v prvom kole a po remíze v hádke ten, kto vyberá). Lokalita leží v strede línie a delí ju
@@ -359,6 +353,48 @@ export const KAPITOLY: readonly Kapitola[] = [
           akcia preškolí len raz; podložený Nástroj potom preškolí, čo z nej Školiteľ urobil — Sypač Rana → Pecka a pod kartou
           Valaška Pecka → Petelica dajú Petelicu.
         </p>
+        <H3 id="ruka-a-balicky">Ruka a balíčky</H3>
+        <p>
+          Máš <strong>ruku</strong> (bez limitu), <strong>doberací balíček</strong> a <strong>odhadzovací balíček</strong>. Keď sa
+          doberací balíček minie, odhadzovací sa zamieša a stane sa z neho nový doberací balíček. Dole pri sebe vidíš svoje <P k="poldeci">poldeci</P> (plné a vypité),{" "}
+          <P k="cigareta">cigarety</P>, <P k="pecen">pečeň</P>, <P k="dlh">Dlhy</P>, <P k="nerest">neresti</P> kola, <P k="chut">Chuť</P> a svoje{" "}
+          <P k="spak">špaky</P>.
+        </p>
+        <H3 id="co-mas-pred-sebou-karta">Karta</H3>
+        <ul>
+          <li>
+            <strong>Akcie na hranách</strong> — najviac 4 na každej hrane, vo výškach 0 (hore) až 3 (dole). Akcia platí, len keď sa
+            stretne s akciou suseda v rovnakej výške. Nástroj má namiesto nich hornú a dolnú hranu (kapitola{" "}
+            <a href="#nastroje">Nástroje a Dedičstvo</a>).
+          </li>
+          <li>
+            <strong>Tagy</strong> — druh karty (<P k="tag">Občan, Zviera, Starešina, Nástroj</P>…). Samy nič nerobia, odkazujú na
+            ne efekty.
+          </li>
+          <li>
+            <strong>Efekt</strong> — text karty. Tučné slovo na začiatku hovorí kedy (Nástup, Pitka, Bitka, Furt, Podpora,
+            Spoločník…), slová kurzívou čo. <P k="akcia-navyse">Akcie navyše</P> sú v pečati dole v ilustrácii. Presné významy sú
+            v <a href="#slovnik">slovníku</a>.
+          </li>
+          <li>
+            <strong>Varianty</strong> — každá karta existuje vo viacerých variantoch: rovnaké akcie, iné výšky.{" "}
+            <Odkaz href="/karty">Prezri si karty</Odkaz>.
+          </li>
+        </ul>
+        <H3 id="co-mas-pred-sebou-akcie">Akcie</H3>
+        <ul className="legenda legenda-pravidla">
+          {s.akcie.map((a) => (
+            <li key={a.kluc}>
+              <span className="legenda-ikona">
+                <IkonaAkcie kluc={a.kluc} akcia={a} />
+              </span>
+              <div>
+                <strong>{a.nazov}</strong>
+                <span>{a.popis}</span>
+              </div>
+            </li>
+          ))}
+        </ul>
       </>
     ),
   },
@@ -1114,6 +1150,27 @@ export const KAPITOLY: readonly Kapitola[] = [
             nepriznaná Cirhóza a vyhrá hráč s viac špakmi.
           </li>
         </ul>
+        <H3 id="ako-sa-vyhrava-podrobne">Kedy sa vyhrá skôr a kedy prídeš o špaky</H3>
+        <div className="karticky">
+          <div className="karticka">
+            <strong>Špaky.</strong> Hrá sa 3, 5 alebo 7 bitiek o lokality podľa <P k="dlzka-hry">ligy</P> a potom{" "}
+            <P k="finale">finále</P> — posledná bitka o pinnacle lokalitu, ktorú vyberie hráč s viac špakmi — útočí zaostávajúci. Víťaz bitky (aj finále) dostane 1 <P k="spak">špak</P> za každú
+            kartu, ktorá pri bitke leží v línii (tvoje aj súperove). Po každej bitke dajú špaky aj <P k="starsi">starší</P>: stupeň 1 / 2 / 3 tomu, kto ho
+            drží — víťazovi za strach a obom za <P k="reci">reči</P>.
+            Po finále sa ešte <P k="vykupne">vykúpi</P>, čo ti ostalo: každý plný poldeci 1 špak, každých 5 cigariet 1 špak. Potom vyhrá, kto má
+            viac špakov.
+          </div>
+          <div className="karticka karticka-ok">
+            <strong>Vyhráš hneď</strong>, keď po vyhratej bitke máš dosť <P k="vazen">väzňov</P> — Tretia liga 2, Druhá 3, Prvá 4 (zajíma
+            sa Nakladačkou, <a href="#patronat">Zajatie a presvedčenie</a>) — alebo červený strach u štyroch starších (väzni sa rátajú).
+            Po finále väzni špaky nedávajú.
+          </div>
+          <div className="karticka karticka-zle">
+            <strong>O špaky prídeš</strong> pri <P k="exekutor">exekúcii</P> (v každej bitke, keď máš priznané Dlhy: zhorí polovica tvojich Dlhov nahor a rovnako veľa
+            špakov) a za každú nepriznanú Cirhózu na konci hry (3 špaky). Okamžitá prehra nie je — ani exekúcia, ani malý
+            balíček ťa o hru nepripravia.
+          </div>
+        </div>
         <div className="riadok-tlacidiel">
           <Odkaz href="/hra" className="tlacidlo tlacidlo-hlavne">
             Si pripravený? Hraj!

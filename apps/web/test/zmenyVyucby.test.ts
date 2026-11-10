@@ -38,16 +38,16 @@ const tah = (id: string) => {
 describe("zmeny na stole po ťahu bota či hry vo výučbe", () => {
   it("karta, ktorú Štamgast priložil, svieti na stole", () => {
     const { po, kluce } = tah("k-zh-bot1");
-    const kocovnik = po.strany[1].find((pl) => pl.card.defId === "kocovnik");
-    expect(kocovnik).toBeDefined();
-    expect(kluce).toContain(`uid:${kocovnik?.card.uid}`);
+    const polovnik = po.strany[1].find((pl) => pl.card.defId === "polovnik");
+    expect(polovnik).toBeDefined();
+    expect(kluce).toContain(`uid:${polovnik?.card.uid}`);
   });
 
   it("cigarety za kúpu Štamgasta svietia na jeho bare, za tvoju na tvojom", () => {
     expect(tah("k-kupa-bot").kluce).toContain("bar-supera:cigarety");
-    expect(tah("k-kup-hasic").kluce).toContain("bar:cigarety");
-    // Pas s nevyloženou kartou dal Štamgastovi cigaretu (1. časť, Michal 2026-10-25).
-    expect(tah("k-pas-bot").kluce).toContain("bar-supera:cigarety");
+    expect(tah("k-kup-vymahac").kluce).toContain("bar:cigarety");
+    // Pas s nevyloženou kartou dal Štamgastovi cigaretu (2. časť; prvé kolo je od 2026-11-10 bez pasu).
+    expect(tah("k-pas2-bot").kluce).toContain("bar-supera:cigarety");
   });
 
   it("kúpu Štamgasta zo šenku ukáže jeho dlaždica Karty — karta v jeho ruke je skrytá", () => {
@@ -61,10 +61,10 @@ describe("zmeny na stole po ťahu bota či hry vo výučbe", () => {
   });
 
   it("karta, ktorú hráč priložil, svieti na stole", () => {
-    const { po, kluce } = tah("k-hasic");
-    const hasic = po.strany[0].find((pl) => pl.card.defId === "hasic");
-    expect(hasic).toBeDefined();
-    expect(kluce).toContain(`uid:${hasic?.card.uid}`);
+    const { po, kluce } = tah("k-masiar");
+    const masiar = po.strany[0].find((pl) => pl.card.defId === "masiar");
+    expect(masiar).toBeDefined();
+    expect(kluce).toContain(`uid:${masiar?.card.uid}`);
   });
 
   it("každá karta v kľúčoch je v pohľade hráča — zvýraznenie neprezradí skrytú kartu", () => {
