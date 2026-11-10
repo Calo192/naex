@@ -598,6 +598,33 @@
         "ministrant\\w*[^.!?]{0,80}(?:spolocnik|zahranicn)"
       ],
       "pozn": "v11.18: Miňištrant — „Nepriateľ: Starešina {Pecka}.“ (vo Vypálenej od vypálenia v11.18 2026-11-09)"
+    },
+    {
+      "pojem": "Dohadzovačka hľadá v celom kraji",
+      "vzory": [
+        "dohadzovack\\w*[^.!?]{0,80}(?:najvzdialenejs|zo stredu|hlbsie|cel\\w* kraj)"
+      ],
+      "pozn": "v11.19: Dohadzovačka presúva len kartu z konca druhého kraja (vo Vypálenej od vypálenia v11.20 2026-11-10)"
+    },
+    {
+      "pojem": "premeny sa nereťazia, Nástroj má prednosť",
+      "vzory": [
+        "neretaz",
+        "preskol\\w* (?:\\w+ ){0,1}(?:len|iba) raz",
+        "preskol\\w* raz(?! za)",
+        "nastroj\\w* (?:\\w+ ){0,2}ma prednost",
+        "(?:len|iba) jedn\\w* premen"
+      ],
+      "pozn": "v11.20: premeny sa reťazia — najprv Školitelia, potom Nástroje pod kartou, každá na výsledku predošlej (vo Vypálenej od vypálenia v11.20 2026-11-10)"
+    },
+    {
+      "pojem": "hodnota stupňa 1 / 2 / 2, plný teplomer 5",
+      "vzory": [
+        "1\\s*/\\s*2\\s*/\\s*2(?![0-9])",
+        "1\\s*/\\s*3\\s*/\\s*5(?![0-9])",
+        "pln\\w* teplomer\\w*[^.!?]{0,30}(?<![0-9])5(?![0-9])"
+      ],
+      "pozn": "v11.20: stupne majú hodnotu 1 / 2 / 3, plný teplomer 6 (strach 1 / 3 / 6) (vo Vypálenej od vypálenia v11.20 2026-11-10)"
     }
   ],
   "karty": [
