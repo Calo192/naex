@@ -1058,7 +1058,7 @@ function moznosti(v: ClientState): string[] {
         const coje = marker === "strach" ? "STRACH" : "REČI";
         const odkial =
           marker === "reci"
-            ? "Reči ležia na SÚPEROVOM teplomere: obsadzuješ od vrchu jeho strachu nadol, potom nad neho (zo sivej zdola nahor); `na` = stupeň, po ktorý v tomto poradí obsadzuješ. Každý stupeň má hodnotu 1 / 2 / 2 a špaky za neho dostaneš ty, nie súper; bodujú pri každej bitke, vyhratej aj prehratej, klesajú zospodu len po prehratej hádke. Obsadená červená sa súperovi ráta do výhry strachom a dá sa zajať; súper za obsadený stupeň platí o 1 viac."
+            ? "Reči ležia na SÚPEROVOM teplomere: obsadzuješ od vrchu jeho strachu nadol, potom nad neho (zo sivej zdola nahor); `na` = stupeň, po ktorý v tomto poradí obsadzuješ. Každý stupeň má hodnotu " + HODNOTY_STUPNOV + " a špaky za neho dostaneš ty, nie súper; bodujú pri každej bitke, vyhratej aj prehratej, klesajú zospodu len po prehratej hádke. Obsadená červená sa súperovi ráta do výhry strachom a dá sa zajať; súper za obsadený stupeň platí o 1 viac."
             : "Strach neklesá. Vyšší strach ti po bitkách dáva špaky a červený strach vedie k výhre strachom a k zajatiu, ale súperovi dáva priazeň (súperov strach − tvoj).";
         const akciaText =
           krok === "prebytok"

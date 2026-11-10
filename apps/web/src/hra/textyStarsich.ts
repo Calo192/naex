@@ -83,6 +83,9 @@ export const slovoStupna = (s: number, rod: Rod): string => SLOVA_STUPNOV[rod][s
  */
 export const NAZOV_DELENIA = { hadka: "Hádka", reci: "Hádka", prebytok: "Nakladačka" } as const;
 
+/** Hodnota stupňa po bitke slovami: „1 / 2 / 3“ (v11.20; do v11.19 1 / 2 / 2). */
+export const HODNOTA_POLA = `${KONSTANTY.HODNOTA_STUPNA[1]} / ${KONSTANTY.HODNOTA_STUPNA[2]} / ${KONSTANTY.HODNOTA_STUPNA[3]}`;
+
 /** Cena stupňa (v11): do žltej 1, do oranžovej 2, do červenej 3 — Nakladačka aj hádka. */
 export const CENA_POLA = `stupeň stojí ${KONSTANTY.CENA_STUPNA[1]} / ${KONSTANTY.CENA_STUPNA[2]} / ${KONSTANTY.CENA_STUPNA[3]} (žltá / oranžová / červená)`;
 

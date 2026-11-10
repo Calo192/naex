@@ -4,11 +4,12 @@
 
 import type { StavkaBitky as Stavka } from "@naex/core";
 import { pocet } from "@naex/core";
+import { HODNOTA_POLA } from "./textyStarsich.ts";
 import { IkonaSpaku } from "./Spaky.tsx";
 
 const VYSVETLENIE =
   "Víťaz bitky dostane 1 špak za každú kartu v línii (v celej línii, v čase bitky), aspoň 1, " +
-  "a k tomu špaky zo sekery. Starší bodujú hneď po bitke: stupeň 1 / 2 / 2 dostane, kto ho drží — reči obaja, strach len víťaz. " +
+  `a k tomu špaky zo sekery. Starší bodujú hneď po bitke: stupeň ${HODNOTA_POLA} dostane, kto ho drží — reči obaja, strach len víťaz. ` +
   "Každá ďalšia karta v línii zvýši stávku o 1.";
 
 export function StavkaBitky({ stavka, kratko = false }: { readonly stavka: Stavka; readonly kratko?: boolean }) {

@@ -3356,3 +3356,32 @@ Michal z vlastnej partie: bot priložil Dohadzovačku za Dvojčatá (Chlap) a z 
 Staré znenie §16 (2026-10-28 – v11.18):
 
 > | Dohadzovačka | Nástup (Michal 2026-10-28): keď ju hráč priloží k Občanovi alebo Starešinovi O2 (jej vnútorný sused, karta ktoréhokoľvek hráča), z **druhého kraja** sa **najvzdialenejší** (od lokality) Občan alebo Starešina opačného pohlavia ako O2 (Žena ↔ Chlap; karta ktoréhokoľvek hráča) presunie za Dohadzovačku — na koniec línie za ňou. Príklad: „O1 … … O2“, Dohadzovačka za O2 → „… … O2 · Dohadzovačka · O1“. Presun je **povinný**, bez voľby. Karta ostáva svojho majiteľa a natočená k nemu, medzera v druhom kraji sa uzavrie a spoje sa prepočítajú. Karta s oboma tagmi (Liberál) sa ráta ako oboje — ako O2 hľadá Ženu aj Chlapa, ako O1 sa hodí k obom. Presun **nie je priloženie**: Konflikt presunutej ani susednej karty sa nespustí a Pasca ho neráta. Skrytá Záverečná sa nepresúva (a ako O2 nerozhoduje); ako Záverečná sa Dohadzovačka vyhodnotí pri otočení. Ak O2 nemá Ženu ani Chlapa, nie je Občan ani Starešina, alebo v druhom kraji nie je vhodný O1, nič sa nestane. Do 2026-10-28 Bitka: karta zo šenku za zmiešané spoje. |
+
+## v11.20 — Hodnota stupňa 1 / 2 / 3, reťaz premien, potvrdené výklady (Michal 2026-11-10, Zrejúca)
+
+Michal v interview 2026-11-10: hodnota stupňa „Zmeniť na 1 / 2 / 3“, premeny Školiteľa a Nástroja „Reťazia sa“, výklady v11.12–v11.17 „Potvrdzujem všetko“. Nové znenie: `docs/PRAVIDLA.md`, Zmeny v11.20, §6, §10, §12.
+
+Staré znenie §10 Bodovanie po bitke (v11.12–v11.19; `KONSTANTY.HODNOTA_STUPNA` [0, 1, 2, 2], `SPAKY_ZA_STUPEN` [0, 1, 3, 5]):
+
+> Stupne strachu majú hodnotu **žltá 1, oranžová 2, červená 2** (`KONSTANTY.HODNOTA_STUPNA`,
+> spolu 1 / 3 / 5) a špaky za stupeň dostane **ten, kto ho drží**, reči majú prednosť:
+>
+> - **Víťaz bitky** dostane za svoj strach bez stupňov, ktoré obsadil súper rečami. Červený strach 5, súperove reči na
+>   červenej a oranžovej: víťaz 1, súper 4.
+> - **Každý hráč pri každej bitke** (vyhratej, prehratej aj pri sekere) dostane hodnotu stupňov, ktoré obsadil rečami,
+>   aj nad súperovým strachom: plný teplomer 5, žltá a oranžová 3, žltá 1; po klesnutí oranžová a červená 4, samotná červená 2.
+
+Krádež pri zajatí (§10) ráta cenu stupňov rečí 1 / 2 / 3 ako predtým; staré znenie dodávalo „nie ich hodnota 1 / 2 / 2 pri bodovaní“. Tabuľka krokov bitky (4b) a slovník (Reči, Stupeň) mali 1 / 2 / 2 a špaky po bitke 1 / 3 / 5.
+
+Staré znenie §6 Preškolenie Školiteľa (časť, v11.14–v11.19):
+
+> **Každá akcia sa preškolí raz**, prvou premenou
+> v poradí: Nástroj pod kartou (len hrany, §12) → Podpora a Konflikt v poradí spustenia → Furt.
+> Preškolenia sa nereťazia — výstup jednej nie je vstupom inej. X ani Y nie je Posilnenie,
+> Odpor ani Pakt.
+
+Staré znenie §12 Akciová hrana (časť, v11.14–v11.19): „Pod Zámočníkom sa každá akcia preškolí raz, prvým podloženým Nástrojom s touto akciou — preškolenia sa nereťazia.“ Hlásenie zo Zrejúcej 2026-11-09 (Sypač preškolil Pijanovi Rany na Pecky, Valaška pod ním {Pecka}→{Petelica} — ostali Pecky) bolo podľa tohto znenia správne; od v11.20 sú to Petelice.
+
+Staré znenie Zmien v11.12 (výklad, ktorý Michal nepotvrdil): „**Kapybara a Predsedova vila** (výklad, Michal zatiaľ nepotvrdil): Kapybara zhodí súperovým rečiam spodný stupeň, vila pridá ďalší stupeň v bežnom poradí.“ Časť o Kapybare zanikla s jej Nástupom vo v11.17, vilu Michal potvrdil.
+
+Staré označenia potvrdených výkladov: v11.17 „v miernejšej podobe, ktorú zvolil Leader na Michalovo „použi svoj najlepší odhad““; v11.13 „**Výklad programátora, na potvrdenie Michalom:**“.

@@ -1,4 +1,4 @@
-# Ťahák — platné pravidlá NA EX! (v11.19 Dohadzovačka len z konca kraja, v11.18 Vedúcko Podporou, Snúbenica, Traktorista a Miňištrant, v11.17 NA EX × Odpor a Posilnenie, Kapybara, Telefón, Krokodíl a hrany Náradia, v11.16 Vypiť len s limitom, pas bez ohľadu na ruku, Degustátorka hneď, odpoveď na NA EX za poldeci, Nástroj len pod svoje karty, Školiteľ aj Zviera, v11.15 Benzínka o 1 lacnejšie, v11.14 frakcie, Preškolenie a podloženie Nástrojov, v11.13 Lokality, v11.12 Reči na súperovom teplomere, zajatie a presvedčenie, identita kariet, Kostol na konci línie, každý Hazard je Dlh, 2026-11-09, Zrejúca; sada = cards.json v master)
+# Ťahák — platné pravidlá NA EX! (v11.20 hodnota stupňa 1 / 2 / 3 a reťaz Školiteľ → Nástroj, v11.19 Dohadzovačka len z konca kraja, v11.18 Vedúcko Podporou, Snúbenica, Traktorista a Miňištrant, v11.17 NA EX × Odpor a Posilnenie, Kapybara, Telefón, Krokodíl a hrany Náradia, v11.16 Vypiť len s limitom, pas bez ohľadu na ruku, Degustátorka hneď, odpoveď na NA EX za poldeci, Nástroj len pod svoje karty, Školiteľ aj Zviera, v11.15 Benzínka o 1 lacnejšie, v11.14 frakcie, Preškolenie a podloženie Nástrojov, v11.13 Lokality, v11.12 Reči na súperovom teplomere, zajatie a presvedčenie, identita kariet, Kostol na konci línie, každý Hazard je Dlh, 2026-11-10, Zrejúca; sada = cards.json v master)
 
 Spoločný ťahák AI hráčov — playtester (Zrejúca) ho číta z master, protihráč na
 Vypálenej z vetvy `vypalena` (tam platí jej verzia pravidiel). Podrobne v `docs/PRAVIDLA.md` (zmeny v jeho úvode). Pri
@@ -15,10 +15,10 @@ rozpore s `docs/PRAVIDLA.md` platí `docs/PRAVIDLA.md` a rozpor zapíš do
   2026-10-28; aj odkrytá Záverečná, nie priznané karty ani Dedičstvo, nie karty, ktoré z línie počas
   kola zmizli), aspoň 1 — Absťáky ich neuberajú; lokalitu si
   **neberie** (ide na nástenku).
-  **Starší po bitke (v11.12):** stupne strachu majú hodnotu **žltá 1, oranžová 2, červená 2** (spolu 1 / 3 / 5) a špaky
+  **Starší po bitke (v11.12, v11.20):** stupne strachu majú hodnotu **žltá 1, oranžová 2, červená 3** (spolu 1 / 3 / 6) a špaky
   za stupeň dostane ten, kto ho drží. **Víťaz bitky** dostane za svoj strach bez stupňov, ktoré obsadil súper rečami,
   **každý hráč pri každej bitke** (vyhratej, prehratej aj pri sekere) za stupne, ktoré obsadil rečami (červený strach
-  a tvoje reči na červenej a oranžovej: on 1, ty 4; plné reči na prázdnom teplomere: ty 5). Stav pred zdvihnutím
+  a tvoje reči na červenej a oranžovej: on 1, ty 5; plné reči na prázdnom teplomere: ty 6). Stav pred zdvihnutím
   Nakladačkou a hádkou. Výhra strachom a zajatie rátajú strach celý. **Reči potom klesnú zospodu o stupeň len tomu, kto
   prehral hádku**; pri remíze v hádke nikomu.
   **Víťaz hádky, ktorý prehral bitku (v11.11),** dostane 1 špak za každú svoju kartu v línii; pri sekere tiež, hneď,
@@ -131,8 +131,9 @@ rozpore s `docs/PRAVIDLA.md` platí `docs/PRAVIDLA.md` a rozpor zapíš do
 - **Školitelia — Preškolenie (2026-11-08; v11.16 aj Zviera, to vedľa Mäsiara neplatí):** „Furt/Podpora/Konflikt: **Preškolenie** {X}→{Y}.“ (Furt dnes nemá žiadna karta) — akcia X **inej** karty sa
   ráta ako Y (pre majiteľa tej akcie), **pred spojmi**, na oboch hranách aj v akciách navyše. **Furt** = obaja susedia
   Školiteľa (karty oboch hráčov), kým susedia; **Podpora** = tvoja karta, s ktorou sa priložením stretne, do konca kola;
-  **Konflikt** = súperova karta, s ktorou sa stretne, do konca kola. Každá akcia sa preškolí raz: Nástroj pod kartou →
-  Podpora a Konflikt v poradí spustenia → Furt; nereťazí sa. **Kapybara** (Zviera, Podpora aj Konflikt, v11.17): karta,
+  **Konflikt** = súperova karta, s ktorou sa stretne, do konca kola. Medzi Školiteľmi sa akcia preškolí raz: Podpora
+  a Konflikt v poradí spustenia → Furt. **Potom Nástroj pod kartou preškolí výstup Školiteľa — reťazí sa (v11.20)**: Sypač
+  Rana → Pecka a Valaška hore Pecka → Petelica = Petelica; Nástroj, ktorého X Školiteľ už zmenil, nerobí nič. **Kapybara** (Zviera, Podpora aj Konflikt, v11.17): karta,
   s ktorou sa stretne (tvoja aj súperova), má **Viery ako Cigarety**; sama má 1 Cigaretu navyše. **Vedúcko** (Podpora, v11.18): tvoja karta má **Roboty ako Pecky**. **Sypač**
   (Podpora): tvoja karta má **Rany ako Pecky**. **Anonymný alkoholik** (Podpora): tvoja karta má **Poškodenie pečene ako
   Vieru**. **Profesionálny tipér** (Konflikt): súperova karta má **Cigarety ako Hazard** (Dlh namiesto cigarety).
@@ -246,7 +247,7 @@ rozpore s `docs/PRAVIDLA.md` platí `docs/PRAVIDLA.md` a rozpor zapíš do
   platí len tá, ktorú zvolíš (pretŕča spod karty); natočenie sa nemení. Pod kartou leží **najviac jeden**
   Nástroj (pod **Zámočníka** ľubovoľne veľa), pod **Zviera** len kým v línii leží **Kôň**; pod kartu lícom
   dole nie. **Akciová hrana X → Y** zmení **všetky** X na oboch hranách karty na Y ešte **pred spojmi**
-  (susedia sa párujú už s Y); bez X nerobí nič (podložiť smieš aj tak — ponuka ho označí NAPRÁZDNO, len minieš cigaretu a ťah). **Hrana posilnenia X** (Puška: Posilnená Petelica / Posilnená
+  (susedia sa párujú už s Y; X je akcia až po Školiteľovi, v11.20); bez X nerobí nič (podložiť smieš aj tak — ponuka ho označí NAPRÁZDNO, len minieš cigaretu a ťah). **Hrana posilnenia X** (Puška: Posilnená Petelica / Posilnená
   Pecka, 2026-11-09) posilní všetky **aktívne** X karty ×2 ako Posilnenie (X po preškolení; s Forsážou ×4, NA EX
   ich zruší). **Kartová hrana** dá karte stav ako inou cestou:
   **Energeťák — Forsáž** (aktívne ×2; NA EX ju nezruší), **Vínko — NA EX** (aktívne zrušené, neaktívne ×2;

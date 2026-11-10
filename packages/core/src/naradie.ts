@@ -186,8 +186,8 @@ export interface KartaSNastrojmi {
 
 /**
  * Preškolenie akcií hostiteľa: akcia → na čo ju zmenil prvý podložený Nástroj (v poradí podloženia)
- * s touto akciou na pretŕčajúcej hrane. Každý slot sa mení raz — preškolenia sa nereťazia
- * (pod Zámočníkom Pečeň → Rana a Rana → Pecka nedajú z Pečene Pecku).
+ * s touto akciou na pretŕčajúcej hrane. Dva Nástroje sa nereťazia (pod Zámočníkom Pečeň → Rana
+ * a Rana → Pecka nedajú z Pečene Pecku); reťaz Školiteľ → Nástroj (v11.20) skladá partia.ts.
  */
 export function preskoleniaHostitela(data: DataNaradia, pl: KartaSNastrojmi): ReadonlyMap<Action, { readonly na: Action; readonly uid: number }> {
   const out = new Map<Action, { na: Action; uid: number }>();
@@ -229,16 +229,18 @@ export interface SlotPoPreskoleni {
   readonly akcia: Action;
   /** Vytlačená akcia — chýba, keď ju Nástroj nezmenil (klient ju kreslí prečiarknutú v rožku). */
   readonly povodna?: Action;
-  /** uid Nástroja, ktorý slot zmenil. */
+  /** uid Nástroja (v línii aj Školiteľa), ktorý slot zmenil. */
   readonly nastroj?: number;
+  /** uid Nástroja, ktorý v reťazi (v11.20) preškolil výstup Školiteľa `nastroj`. */
+  readonly potom?: number;
 }
 
-/** Strana karty po preškolení Nástrojmi — v tom istom ráme ako `strana`. */
-export function preskolStranu(premeny: ReadonlyMap<Action, { readonly na: Action; readonly uid: number }>, strana: readonly Slot[]): (SlotPoPreskoleni | null)[] {
+/** Strana karty po preškolení (Nástroje, v línii aj Školitelia) — v tom istom ráme ako `strana`. */
+export function preskolStranu(premeny: ReadonlyMap<Action, { readonly na: Action; readonly uid: number; readonly potom?: number }>, strana: readonly Slot[]): (SlotPoPreskoleni | null)[] {
   return strana.map((a) => {
     if (a === null) return null;
     const p = premeny.get(a);
-    return p === undefined ? { akcia: a } : { akcia: p.na, povodna: a, nastroj: p.uid };
+    return p === undefined ? { akcia: a } : { akcia: p.na, povodna: a, nastroj: p.uid, ...(p.potom !== undefined ? { potom: p.potom } : {}) };
   });
 }
 

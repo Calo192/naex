@@ -1,6 +1,12 @@
 // Herné konštanty. Menia sa TU, kód sa meniť nemusí. Hodnoty, ktoré pravidlá
 // v11 neudávali, potvrdil Michal 2026-10-22 (roadmapa #11).
 
+/**
+ * Hodnota stupňa teplomera (žltá, oranžová, červená) — strach aj reči (v11.12; v11.20, Michal
+ * 2026-11-10: „Zmeniť na 1 / 2 / 3“, do v11.19 1 / 2 / 2). Plný teplomer = súčet.
+ */
+const HODNOTA_STUPNA: readonly number[] = [0, 1, 2, 3];
+
 export const KONSTANTY = {
   /**
    * Štartovacie vybavenie hráča (PRAVIDLA §3). Michal 2026-10-20 znížil
@@ -176,16 +182,17 @@ export const KONSTANTY = {
   /**
    * Strach a reči (v11, Michal 2026-11-02, docs/napady/strach-reci.html): vstup na stupeň
    * 1 / 2 / 3 (žltá, oranžová, červená) stojí pri dvíhaní toľko bodov Nakladačky či hádky,
-   * koľko je číslo stupňa; po bitke marker na ňom dá SPAKY_ZA_STUPEN špakov. Kto vyhrá bitku
-   * a má červený strach u CERVENYCH_NA_VYHRU starších (väzni sa rátajú), vyhráva hneď.
+   * koľko je číslo stupňa; po bitke marker na ňom dá SPAKY_ZA_STUPEN špakov — súčet hodnôt
+   * stupňov po neho (1 / 3 / 6). Kto vyhrá bitku a má červený strach u CERVENYCH_NA_VYHRU
+   * starších (väzni sa rátajú), vyhráva hneď.
    */
   CENA_STUPNA: [0, 1, 2, 3] as readonly number[],
-  SPAKY_ZA_STUPEN: [0, 1, 3, 5] as readonly number[],
+  SPAKY_ZA_STUPEN: HODNOTA_STUPNA.map((_, st) => HODNOTA_STUPNA.slice(1, st + 1).reduce((a, b) => a + b, 0)) as readonly number[],
   /**
-   * Reči na súperovom teplomere (v11.12, Michal 2026-11-06): stupeň je špakmi za strach rozdelený
-   * na 1 / 2 / 2, dostane ho ten, kto ho drží. Súper platí za stupeň s rečami o REC_PRIRAZKA viac.
+   * Reči na súperovom teplomere (v11.12, Michal 2026-11-06): špaky za stupeň dostane ten, kto ho
+   * drží (1 / 2 / 3, v11.20). Súper platí za stupeň s rečami o REC_PRIRAZKA viac.
    */
-  HODNOTA_STUPNA: [0, 1, 2, 2] as readonly number[],
+  HODNOTA_STUPNA,
   REC_PRIRAZKA: 1,
   CERVENYCH_NA_VYHRU: 4,
   /** Porazený bitky dostane toľkoto cigariet (v11 — do v10 cigaretu za každého posunutého staršieho). */
@@ -302,15 +309,17 @@ export function vazniNaVyhru(lokalitCelkom: number): number {
 // partnera, neaktívny Odpor NA EX zahasí, neaktívne Posilnenie nedá NA EX zrušiť aktívne akcie.
 // v11.18 (Michal 2026-11-09, Zrejúca) bez novej značky: Vedúcko Podporou — Roboty ako Pecky len tvojej karte, s ktorou sa stretne.
 // v11.19 (Michal 2026-11-09, Zrejúca) bez novej značky: Dohadzovačka presúva len kartu z konca druhého kraja.
+// v11.20 (Michal 2026-11-10, Zrejúca) bez novej značky: hodnota stupňa 1 / 2 / 3 (plný teplomer 6),
+// premeny Školiteľa a Nástroja sa reťazia (najprv Školiteľ, potom Nástroj).
 export const VERZIA_PRAVIDIEL = "v11";
 /**
  * Presná verzia pravidiel vrátane dávky — hráč ju vidí na stránke Pravidlá, ktorá má
  * vždy odzrkadľovať správanie nasadenej hry (Michal 2026-10-31). Značka partií
  * (VERZIA_PRAVIDIEL) sa pri dávke nemení, táto áno.
  */
-export const VERZIA_PRAVIDIEL_PRESNA = "v11.19";
+export const VERZIA_PRAVIDIEL_PRESNA = "v11.20";
 /** Odkedy platí VERZIA_PRAVIDIEL_PRESNA — hráč ho vidí na stránke Pravidlá. */
-export const PRAVIDLA_PLATNE_OD = "2026-11-09";
+export const PRAVIDLA_PLATNE_OD = "2026-11-10";
 export type DlzkaHry = keyof typeof DLZKY_HRY;
 export const ALL_DLZKY: readonly DlzkaHry[] = ["kratka", "stredna", "dlha"];
 export const PREDVOLENA_DLZKA: DlzkaHry = "stredna";

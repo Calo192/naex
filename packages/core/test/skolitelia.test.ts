@@ -27,6 +27,7 @@ import {
   naTahu,
   overScenar,
   parseScorecards,
+  ponukaPodlozenia,
   podmienkySpoja,
   preskoleniaKarty,
   preskoleniaPoSpoji,
@@ -191,7 +192,7 @@ describe("Furt — obaja susedia, karty oboch hráčov, kým susedia (Vedúcko d
 
 // --- Poradie a nereťazenie ---------------------------------------------------------
 
-describe("jedna akcia sa preškolí raz: Nástroj pod kartou → Podpora a Konflikt v poradí spustenia → Furt", () => {
+describe("poradie premien: Podpora a Konflikt v poradí spustenia → Furt, výstup potom Nástroj pod kartou (reťaz, v11.20)", () => {
   const d = syntheticData([
     makeDef("x", RANA_PECKA, RANA_PECKA, { tags: ["Občan"] }),
     makeDef("partner", RANY, RANY, { tags: ["Občan"] }),
@@ -211,11 +212,21 @@ describe("jedna akcia sa preškolí raz: Nástroj pod kartou → Podpora a Konfl
     return { ev, slot: sloty(ev, x.uid)[0] };
   };
 
-  it("Nástroj vyhrá nad Podporou aj Furt; Podpora nad Furt; Furt, keď nič iné", () => {
+  // v11.20 (Michal 2026-11-10): Školiteľ ide prvý — Nástroj {Rana}→{Petelica} vytlačenú Ranu, ktorú
+  // Sypač zmenil na Pecku, už nenájde. Do v11.19 vyhral Nástroj (Petelica).
+  it("Školiteľ pred Nástrojom: Nástroj s vytlačenou akciou, ktorú Školiteľ zmenil, ju nenájde; Podpora nad Furt; Furt, keď nič iné", () => {
     const puska = instanceFor(d, "puska", EMPTY, EMPTY);
     const sNastrojom = akcie(lezi(x, 0, { preskolenia: [podpora], podlozene: [{ card: puska, majitel: 1, hrana: "horna" }] }), "skol_viera");
-    expect(sNastrojom.slot).toMatchObject({ action: "Petelica", povodna: "Rana", preskolil: puska.uid });
-    expect(sNastrojom.ev.cards.get(x.uid)?.preskolena?.map((p) => p.zdroj)).toEqual(["Nástroj"]);
+    expect(sNastrojom.slot).toMatchObject({ action: "Pecka", povodna: "Rana", preskolil: sypac });
+    expect(sNastrojom.slot?.preskolilPotom).toBeUndefined();
+    expect(sNastrojom.ev.cards.get(x.uid)?.preskolena?.map((p) => [p.zdroj, p.akcii])).toEqual([
+      ["Podpora", 4],
+      ["Nástroj", 0],
+    ]);
+    // Bez Podpory preškolí Ranu Furt (Viera) a Nástroj Ranu nenájde ani tak.
+    expect(akcie(lezi(x, 0, { podlozene: [{ card: puska, majitel: 1, hrana: "horna" }] }), "skol_viera").slot).toMatchObject({ action: "Viera", povodna: "Rana" });
+    // Bez Školiteľa platí Nástroj sám.
+    expect(akcie(lezi(x, 0, { podlozene: [{ card: puska, majitel: 1, hrana: "horna" }] }), "partner").slot).toMatchObject({ action: "Petelica", povodna: "Rana", preskolil: puska.uid });
     expect(akcie(lezi(x, 0, { preskolenia: [podpora] }), "skol_viera").slot).toMatchObject({ action: "Pecka", povodna: "Rana", preskolil: sypac });
     expect(akcie(lezi(x, 0), "skol_viera").slot).toMatchObject({ action: "Viera", povodna: "Rana" });
   });
@@ -225,11 +236,57 @@ describe("jedna akcia sa preškolí raz: Nástroj pod kartou → Podpora a Konfl
     expect(akcie(lezi(x, 0, { preskolenia: [podpora, konflikt] }), "partner").slot).toMatchObject({ action: "Pecka", preskolil: sypac });
   });
 
-  it("nereťazí sa: Rana → Pecka a Pecka → Rana dajú z Rany Pecku a z Pecky Ranu", () => {
+  it("dvaja Školitelia sa nereťazia: Rana → Pecka a Pecka → Rana dajú z Rany Pecku a z Pecky Ranu", () => {
     const { ev } = akcie(lezi(x, 0, { preskolenia: [podpora] }), "skol_spat");
     expect(sloty(ev, x.uid).map((s) => [s.povodna, s.action])).toEqual(
       Array.from({ length: 4 }, () => [
         ["Rana", "Pecka"],
+        ["Pecka", "Rana"],
+      ]).flat(),
+    );
+  });
+
+  // Hlásenie zo Zrejúcej (2026-11-09): Sypač preškolil Pijanovi Rany na Pecky, pod Pijanom Valaška
+  // hornou hranou {Pecka}→{Petelica}. Do v11.19 ostali Pecky (nereťazilo sa, test 3456699d);
+  // v11.20 (Michal 2026-11-10: „Reťazia sa“) — najprv Školiteľ, potom Nástroj: Petelice.
+  it("reťazí sa Školiteľ → Nástroj: Sypač Rana → Pecka a Valaška Pecka → Petelica pod Pijanom dajú Petelice", () => {
+    const dv = syntheticData([
+      makeDef("pijan", RANY, RANY, { tags: ["Občan"] }),
+      makeDef("partner", RANY, RANY, { tags: ["Občan"] }),
+      makeDef("valaska", EMPTY, EMPTY, { tags: ["Nástroj"], effectText: "Hore: {Pecka}→{Petelica}. Dole: {Petelica}→{Pecka}." }),
+    ]);
+    const pijan = instanceFor(dv, "pijan", RANY, RANY);
+    const valaska = instanceFor(dv, "valaska", EMPTY, EMPTY);
+    const partner = instanceFor(dv, "partner", RANY, RANY);
+    const ev = evaluateLine(dv, linia([lezi(pijan, 0, { preskolenia: [podpora], podlozene: [{ card: valaska, majitel: 0, hrana: "horna" }] }), lezi(partner, 0)]));
+    expect(sloty(ev, pijan.uid).every((s) => s.action === "Petelica" && s.povodna === "Rana" && s.preskolil === sypac && s.preskolilPotom === valaska.uid)).toBe(true);
+    expect(ev.cards.get(pijan.uid)?.preskolena?.map((p) => [p.zdroj, p.z, p.na, p.akcii])).toEqual([
+      ["Podpora", "Rana", "Pecka", 8],
+      ["Nástroj", "Pecka", "Petelica", 8],
+    ]);
+    // Pijan s Petelicami proti Ranám partnera — spoje sa párujú už s Petelicami.
+    expect(ev.sums[0]?.Petelica).toBe(4);
+    // Ponuka podloženia ráta s reťazou: Valaška hore má pod Pijanom čo robiť (Pecky od Sypača), dole nie.
+    const bez = linia([lezi(pijan, 0, { preskolenia: [podpora] }), lezi(partner, 0)]);
+    const ponuka = ponukaPodlozenia(dv, bez, valaska, 0).filter((m) => m.hostitel === pijan.uid);
+    expect(ponuka.map((m) => [m.hrana, m.maCoRobit, m.popis])).toEqual([
+      ["horna", true, "Pecka ×8 → Petelica ×8"],
+      ["dolna", false, "nemá Petelica"],
+    ]);
+  });
+
+  it("reťaz opačným smerom: Rana → Pecka a Nástroj Pecka → Rana vráti Ranu, vytlačenú Pecku Nástroj zmení", () => {
+    const dSpat = syntheticData([
+      makeDef("x", RANA_PECKA, RANA_PECKA, { tags: ["Občan"] }),
+      makeDef("partner", RANY, RANY, { tags: ["Občan"] }),
+      makeDef("spat", EMPTY, EMPTY, { tags: ["Nástroj"], effectText: "Hore: {Pecka}→{Rana}. Dole: {Rana}→{Pecka}." }),
+    ]);
+    const n = instanceFor(dSpat, "spat", EMPTY, EMPTY);
+    const xs = instanceFor(dSpat, "x", RANA_PECKA, RANA_PECKA);
+    const ev = evaluateLine(dSpat, linia([lezi(xs, 0, { preskolenia: [podpora], podlozene: [{ card: n, majitel: 0, hrana: "horna" }] }), lezi(instanceFor(dSpat, "partner", RANY, RANY), 0)]));
+    expect(sloty(ev, xs.uid).map((s) => [s.povodna ?? null, s.action])).toEqual(
+      Array.from({ length: 4 }, () => [
+        [null, "Rana"],
         ["Pecka", "Rana"],
       ]).flat(),
     );
@@ -259,15 +316,19 @@ describe("preškolenie mení aj akcie navyše dotknutej karty; Nástroj len hran
   });
 
   // Do v11.16 Fúrik dole {Robota}→{Hazard}; od v11.17 premieňa Robotu Vidly dole ({Robota}→{Petelica}).
-  it("Vidly dolnou hranou ({Robota}→{Petelica}) pod Opatrovateľkou: hrany Petelica, Robota navyše od Vedúcka Pecka", () => {
+  // v11.20 (reťaz): Vedúcko ide prvé a Vidly Robotu, z ktorej je už Pecka, nenájdu — do v11.19 Petelica.
+  it("Vidly dolnou hranou ({Robota}→{Petelica}) pod Opatrovateľkou podporenou Vedúckom: hrany aj Robota navyše Pecka, Vidly nič", () => {
     const v = inst("veducko", 1);
     const op = inst("opatrovatelka", 2);
     const vidly = inst("vidly", 3);
     const ev = evaluateLine(buduca, opatrovatelka(v, op, [{ card: vidly, majitel: 0, hrana: "dolna" }]));
     expect(ev.cards.get(op.uid)?.navyse?.[0]?.ako).toEqual(["Pecka"]);
-    for (const x of sloty(ev, op.uid)) if (x.povodna === "Robota") expect(x).toMatchObject({ action: "Petelica", preskolil: vidly.uid });
+    for (const x of sloty(ev, op.uid)) if (x.povodna === "Robota") expect(x).toMatchObject({ action: "Pecka", preskolil: v.uid });
     const zdroje = ev.cards.get(op.uid)?.preskolena ?? [];
-    expect(zdroje.map((p) => p.zdroj).sort()).toEqual(["Nástroj", "Podpora"]);
+    expect(zdroje.map((p) => [p.zdroj, p.akcii > 0])).toEqual([
+      ["Podpora", true],
+      ["Nástroj", false],
+    ]);
   });
 });
 
@@ -504,12 +565,12 @@ describe("Traktorista: Posledná Pitka kola: Bez prevahy v jeho kraji {Dlh} — 
 // --- Výučba a boti na budúcej sade ---------------------------------------------------------
 
 describe("budúca sada v hre", () => {
-  it("výučba Prvá hra prejde aj na budúcej sade — koniec 57 : 15 ako na dnešnej", () => {
+  it("výučba Prvá hra prejde aj na budúcej sade — koniec 57 : 16 ako na dnešnej (v11.20; do v11.19 57 : 15)", () => {
     const scenar = scenarJson as unknown as ScenarVyucby;
     expect(overScenar(buduca, scenar)).toBeNull();
     const koniec = prehrajVyucbu(buduca, scenar, scenar.kroky.length).koniec;
     expect(koniec?.vitaz).toBe(0);
-    expect(koniec?.body).toEqual([57, 15]);
+    expect(koniec?.body).toEqual([57, 16]);
   });
 
   it("partia dvoch botov na budúcej sade dobehne do konca", () => {

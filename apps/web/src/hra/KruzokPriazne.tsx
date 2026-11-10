@@ -12,7 +12,7 @@ import { pocet } from "@naex/core";
 import { FARBY_STUPNICE } from "@naex/tvorba";
 import { IKONY } from "../karta/ikony.ts";
 import { riadkyKruzkov, vetaPriazne, vetaSpakov, vetaZajatia, type KomuPriazen, type ObsahNapovedy, type ObsahNapovedyVazna, type PriazenKola } from "./priazenKola.ts";
-import { slovoStupna, type Rod } from "./textyStarsich.ts";
+import { HODNOTA_POLA, slovoStupna, type Rod } from "./textyStarsich.ts";
 
 /** Ikona akcie, ktorú priazeň staršieho posilňuje — v krúžku priazne (mock C · Pečať). */
 export const IKONA_PRIAZNE: Readonly<Record<Favour, Action>> = {
@@ -194,7 +194,7 @@ export function ObsahNapovedyStarsieho({ o, obrazok = null }: { readonly o: Obsa
             </li>
           ))}
         </ul>
-        <span className="np-pozn">Stupeň dá 1 / 2 / 2 tomu, kto ho drží: reči obom pri každej bitke, strach len víťazovi. Pri sekere obaja len za reči.</span>
+        <span className="np-pozn">Stupeň dá {HODNOTA_POLA} tomu, kto ho drží: reči obom pri každej bitke, strach len víťazovi. Pri sekere obaja len za reči.</span>
       </div>
       <div className="np-b">
         <span className="np-h4">
