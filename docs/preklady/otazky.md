@@ -21,3 +21,13 @@ Kde si prekladateľ nie je istý významom alebo voľbou. Formát: cesta · orig
 9. **CS Autobusár = *Autobusák*** — hovorové (ako tramvaják); ak sa nehovorí, *Řidič autobusu*. **CS Rapavý Fero** (vyradená povaha) = *Dolíčkovaný Fero* — neisté.
 10. **Bzdocha** (`klebetnica`, vidí súperovo NA EX) — vo všetkých jazykoch hmyz, ktorý je zároveň „ploštica“ na odpočúvanie: *Earwig* (EN aj „earwigging“ = načúvať), *Pluskwa*, *Štěnice*, *Poloska*. Slovenská bzdocha takú dvojzmyselnosť nemá — pridáva sa vtip, ktorý sedí k efektu. Ak nechceš, *Nosy Parker* / *Wścibska* / *Slídilka* / *Kíváncsi néni*.
 11. **Angličtina britská** (pub, landlady, last orders, favour, butts). Ak má byť americká, zmení sa ~15 pojmov.
+
+## Odpovede Michala (2026-11-10)
+
+- 1. **Päta, Lakeť, Otočka** = bitkárska kombinácia → nahradiť miestnou bitkárskou frazeológiou s rovnakým rytmom (tri údery/pohyby), nie doslovne.
+- 2. **Sypač** = posilňovňový frajer — voľba ostáva (Gym Bro / Koksu / Svalovec / Gyúrós).
+- 3. **Praudovravec** = výsmech samozvaných hlásateľov pravdy, chybné „prau“ je úmysel — kde sa dá, pridať miestnu chybu pravopisu s rovnakým účinkom (napr. EN „Troof Teller“).
+- 4. **Kočovník** = neutrálny tulák — schválené.
+- 10. **Bzdocha** = hmyz s odpočúvaním (Earwig / Pluskwa / Štěnice / Poloska) — schválené.
+- 11. **Angličtina britská** — ostáva.
+- 5. Popisy akcií vo vzhľade opravuje Admin v tvorcovi (rozpracovaný stav); po oprave preložiť znova.
