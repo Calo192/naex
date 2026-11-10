@@ -43,7 +43,7 @@ describe("pečiatky krokov", () => {
   it("text hovorí, kto pasoval či prestal brať", () => {
     const ja: PlayerId = 0;
     expect(textPeciatkyKroku({ hrac: 1, druh: "pas" }, ja, "Fero")).toEqual({ nazov: "PAS", popis: "Fero pasuje do Pitky." });
-    expect(textPeciatkyKroku({ hrac: 0, druh: "dost" }, ja, "Jano")).toEqual({ nazov: "DOSŤ", popis: "Už neberieš zo šenku." });
+    expect(textPeciatkyKroku({ hrac: 0, druh: "dost" }, ja, "Jano")).toEqual({ nazov: "DOSŤ", popis: "Už neberieš z ponuky." });
   });
 
   it("pas, ktorý urobila hra, povie súperovi aj hráčovi, že nemal čo vyložiť (Michal 2026-11-02)", () => {

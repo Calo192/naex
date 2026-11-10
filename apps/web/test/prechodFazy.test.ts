@@ -50,7 +50,7 @@ const bitka = (krok: "hadka" | "prebytok", drzi: 0 | 1 | null = null, caka: 0 | 
 describe("medziobrazovka — prechody fáz (výber lokality, šenok, Zhromaždenie, Pitka, bitka, Nakladačka, nové kolo, finále)", () => {
   it("výber lokality v novom kole: obranca vyberá a natáča, útočník sa dozvie, kto vyberá", () => {
     const obranca = medziobrazovka(p({}), 0, "Eva", null);
-    expect(obranca).toMatchObject({ kluc: "2|lokalita", nadnadpis: "Kolo 2", nadpis: "Výber lokality" });
+    expect(obranca).toMatchObject({ kluc: "2|lokalita", nadnadpis: "Kolo 2", nadpis: "O čo sa bijeme" });
     expect(obranca?.text).toMatch(/^Vyber lokalitu/);
     expect(medziobrazovka(p({}), 1, "Eva", null)?.text).toMatch(/^Eva ako obranca vyberá/);
   });
@@ -75,7 +75,7 @@ describe("medziobrazovka — prechody fáz (výber lokality, šenok, Zhromažden
 
   it("Zhromaždenie: každé zvlášť; útočník vykladá prvý, pas dá cigarety", () => {
     const prve = medziobrazovka(p({ faza: "zhromazdenie", pitkaCislo: 0 }), 1, "Eva", null);
-    expect(prve).toMatchObject({ kluc: "2|zhromazdenie|1", nadpis: "Zhromaždenie", nadnadpis: "Kolo 2 · 1 z 2" });
+    expect(prve).toMatchObject({ kluc: "2|zhromazdenie|1", nadpis: "Zhromaždenie — kladenie kariet", nadnadpis: "Kolo 2 · 1 z 2" });
     expect(medziobrazovka(p({ kolo: 4, faza: "zhromazdenie", pitkaCislo: 0 }), 1, "Eva", null)?.nadnadpis).toBe("Finále · 1 z 2");
     expect(prve?.text).toMatch(/^Vykladáš prvý/);
     expect(prve?.text).toMatch(/dostaneš cigaretu/);
@@ -84,7 +84,7 @@ describe("medziobrazovka — prechody fáz (výber lokality, šenok, Zhromažden
 
   it("šenok (stavba aj branie) má jednu medziobrazovku s cenami šenku", () => {
     const m = medziobrazovka(p({ faza: "draft" }), 0, "Eva", null);
-    expect(m).toMatchObject({ kluc: "2|senok", nadpis: "Šenok" });
+    expect(m).toMatchObject({ kluc: "2|senok", nadpis: "Ponuka" });
     expect(m?.text).toMatch(/1 karta za 1 cigaretu, 2 karty za 3 cigarety/);
   });
 

@@ -21,8 +21,8 @@
       "kluc": "fero",
       "pohlavie": "muz",
       "meno": "Fero Šenkár",
-      "styl": "Ekonóm. Hrá na šenok, cigarety a poldeci — hromadí zdroje, rád berie Úžerníka a Dlh, keď sa mu to vráti, a kupuje si výhodu neskôr v partii. Bitku zoberie, len keď ju má lacno.",
-      "zameranie": "Ekonomika: či sa oplatí šetriť a investovať, či sú zdroje (poldeci, cigarety, dlh) vyvážené a či šenok nie je pasca alebo samovýhra.",
+      "styl": "Ekonóm. Hrá na ponuku, cigarety a poldeci — hromadí zdroje, rád berie Úžerníka a Dlh, keď sa mu to vráti, a kupuje si výhodu neskôr v partii. Bitku zoberie, len keď ju má lacno.",
+      "zameranie": "Ekonomika: či sa oplatí šetriť a investovať, či sú zdroje (poldeci, cigarety, dlh) vyvážené a či ponuka nie je pasca alebo samovýhra.",
       "avatar": "a sly pot-bellied village bartender with a greasy comb-over and a thin mustache, a mechanical abacus built into his chest, tobacco-stained robotic fingers counting coins and cigarettes behind a battered bar counter with bottles of borovička, one glowing amber cyber eye"
     },
     {
@@ -45,7 +45,7 @@
       "kluc": "vilo",
       "pohlavie": "muz",
       "meno": "Paragrafista Vilo",
-      "styl": "Hľadač dier v pravidlách. Hrá naplno na výhru, ale vyberá ťahy, ktoré preveria hraničné prípady — nezvyčajné kombinácie efektov, prázdny šenok, nulové zdroje, súbehy pravidiel. Každú nezrovnalosť si zapíše.",
+      "styl": "Hľadač dier v pravidlách. Hrá naplno na výhru, ale vyberá ťahy, ktoré preveria hraničné prípady — nezvyčajné kombinácie efektov, prázdnu ponuku, nulové zdroje, súbehy pravidiel. Každú nezrovnalosť si zapíše.",
       "zameranie": "Pravidlá a hra: nezrovnalosti medzi PRAVIDLA.md, textami kariet a správaním hry, nejasné formulácie a medzery, ktoré sa dajú zneužiť.",
       "avatar": "a thin bespectacled village clerk with a bald head and a pencil behind his ear, a magnifying lens built into his robotic eye socket, a stack of rulebooks and a rubber stamp, wires coming out of his collar, inspecting a card suspiciously at a pub table"
     }

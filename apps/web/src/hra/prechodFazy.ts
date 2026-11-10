@@ -96,12 +96,12 @@ export function medziobrazovka(
       return {
         kluc: `${view.kolo}|lokalita`,
         nadnadpis: kolo,
-        nadpis: "Výber lokality",
+        nadpis: "O čo sa bijeme",
         text: obranca
             ? natacaUtocnik
               ? `Vyber lokalitu, o ktorú sa v tomto kole bije.${ktoNataca}`
               : "Vyber lokalitu, o ktorú sa v tomto kole bije, a natoč ju — natočenie určí, ktorá jej hrana pripadne ktorému kraju línie."
-            : `${S} ako obranca ${vybera} lokalitu.${ktoNataca} Ty útočíš: zo šenku berieš druhý, vykladáš prvý a na NA EX odpovedáš prvý.`,
+            : `${S} ako obranca ${vybera} lokalitu.${ktoNataca} Ty útočíš: z ponuky berieš druhý, vykladáš prvý a na NA EX odpovedáš prvý.`,
       };
     }
     case "natocenieCiela":
@@ -128,17 +128,17 @@ export function medziobrazovka(
       return {
         kluc: `${view.kolo}|senok`,
         nadnadpis: kolo,
-        nadpis: "Šenok",
+        nadpis: "Ponuka",
         text:
-          `Každý dostane ${KONSTANTY.STAVBA_NARADIE} karty z Náradia a ${KONSTANTY.STAVBA_OBCANIA} z Občanov a tajne ich rozdelí: polovica pôjde do šenku, polovica naspodok. ` +
-          `Potom beriete zo šenku striedavo, začína obranca (na prvom ťahu len 1 kartu) — 1 karta za ${cigariet(KONSTANTY.CENA_SENKU[1] ?? 1)}, 2 karty za ${cigariet(KONSTANTY.CENA_SENKU[2] ?? 3)}.`,
+          `Každý dostane ${KONSTANTY.STAVBA_NARADIE} karty z balíčka nástrojov a ${KONSTANTY.STAVBA_OBCANIA} z balíčka dedinčanov a tajne ich rozdelí: polovica pôjde do ponuky, polovica naspodok. ` +
+          `Potom beriete z ponuky striedavo, začína obranca (na prvom ťahu len 1 kartu) — 1 karta za ${cigariet(KONSTANTY.CENA_SENKU[1] ?? 1)}, 2 karty za ${cigariet(KONSTANTY.CENA_SENKU[2] ?? 3)}.`,
       };
     case "zhromazdenie": {
       const n = view.pitkaCislo + 1;
       return {
         kluc: `${view.kolo}|zhromazdenie|${n}`,
         nadnadpis: poradie(n),
-        nadpis: "Zhromaždenie",
+        nadpis: "Zhromaždenie — kladenie kariet",
         text:
           (obranca ? `${S} vykladá prvý, potom sa striedate.` : "Vykladáš prvý, potom sa so súperom striedate.") +
           " Kladieš karty z ruky k lokalite tak, aby sa ich akcie spojili; keď už nechceš, pasuj — za každú kartu, ktorú si ešte smel vyložiť, dostaneš cigaretu.",

@@ -8,7 +8,7 @@
 
 import { createContext, useContext } from "react";
 import type { CardInstance, CardLineEval, ClientState, GameData, KtoraHrana, NavyseStav, PlayerId, PodlozenyNastroj } from "@naex/core";
-import { akciaVytrznika, defOf, efektyNavyse, preskoleniaHostitela, printedSides, stavNavyseVRuke } from "@naex/core";
+import { akciaVytrznika, defOf, efektyNavyse, menoAkcie, printedSides, stavNavyseVRuke } from "@naex/core";
 import type { KartaNavrh, RozlozenieStrany, Sada } from "@naex/tvorba";
 import { PREDVOLENE_NASTAVENIA } from "@naex/tvorba";
 import { KartaLico, type NavyseNaKarte, type PreskolenieNaKarte, type RohSlotu, type SlotStav, type ZarNaKarte } from "../karta/KartaLico.tsx";
@@ -143,12 +143,11 @@ export function HernaKarta({ karta, sada, data, sirka, otocena = false, eval: ev
   const vytlacene = printedSides(data, karta);
   const stol = useContext(ZarStolaKontext);
   const vzhladK = vzhladKarty(sada, data, karta.defId);
-  // Ktorý Nástroj premenil ktorú akciu — do nápovedy rohu (D2).
-  const premeny = podlozene === undefined || podlozene.length === 0 ? null : preskoleniaHostitela(data, { podlozene });
-  const menoNastroja = (a: string): string | null => {
-    const p = premeny?.get(a as Parameters<NonNullable<typeof premeny>["get"]>[0]);
-    const n = p === undefined ? undefined : podlozene?.find((x) => x.card.uid === p.uid);
-    return n === undefined ? null : (data.cards.get(n.card.defId)?.name ?? null);
+  // Kto premenil akciu — Nástroj pod kartou alebo Školiteľ v línii — do nápovedy rohu (D2).
+  const menoPremeny = (uid: number | undefined): string | null => {
+    if (uid === undefined) return null;
+    const k = podlozene?.find((x) => x.card.uid === uid)?.card ?? stol?.view.strany.flat().find((x) => x.card.uid === uid)?.card;
+    return k === undefined ? null : (data.cards.get(k.defId)?.name ?? null);
   };
   // Lupa a karta na stole majú rovnaký kľúč — lupa otvorená po iskre ju už nezopakuje.
   const teraz = Date.now();
@@ -166,13 +165,17 @@ export function HernaKarta({ karta, sada, data, sirka, otocena = false, eval: ev
         return r;
       }
       if (se?.povodna !== undefined) {
-        // Nástroj pod kartou, inak Školiteľ v línii (jadro: SlotEval.preskolil).
-        const skolitel = se.preskolil === undefined ? undefined : stol?.view.strany.flat().find((x) => x.card.uid === se.preskolil);
-        const meno = menoNastroja(se.povodna) ?? (skolitel === undefined ? null : (data.cards.get(skolitel.card.defId)?.name ?? null));
-        // Reťaz (v11.20): výstup Školiteľa preškolil ďalej Nástroj pod kartou — v nápovede oba.
-        const potom = se.preskolilPotom === undefined ? undefined : podlozene?.find((x) => x.card.uid === se.preskolilPotom);
-        const mena = [meno, potom === undefined ? null : (data.cards.get(potom.card.defId)?.name ?? null)].filter((x): x is string => x !== null);
-        rohy[k] = { akcia: se.povodna, preco: mena.length === 0 ? "Preškolenie" : `Preškolenie: ${mena.join(" → ")}` };
+        // Reťaz (v11.20): celá cesta akcie s menami tých, čo ju menili — „Rana → Pecka (Sypač) → Petelica (Valaška)“.
+        const meno = menoPremeny(se.preskolil);
+        rohy[k] = {
+          akcia: se.povodna,
+          preco:
+            se.retaz !== undefined
+              ? `Preškolenie: ${[menoAkcie(se.povodna), ...se.retaz.map((x) => `${menoAkcie(x.na)}${((m) => (m === null ? "" : ` (${m})`))(menoPremeny(x.uid))}`)].join(" → ")}`
+              : meno === null
+                ? "Preškolenie"
+                : `Preškolenie: ${meno}`,
+        };
         return se.action;
       }
       if (se?.naKarte === true && se.ako !== undefined) {

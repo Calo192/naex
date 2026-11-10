@@ -156,7 +156,7 @@ function SuhrnLokalityObsah({ b, zaznam, ja, mena, avatary, menoKarty, piktogram
                   })}
                 </div>
               )}
-              {zaznam !== null && <p className="sl-pozn">Pitka 1 ráta aj stavbu šenku a prvé Zhromaždenie, každá ďalšia aj svoje Zhromaždenie.</p>}
+              {zaznam !== null && <p className="sl-pozn">Pitka 1 ráta aj stavbu ponuky a prvé Zhromaždenie, každá ďalšia aj svoje Zhromaždenie.</p>}
               {zaznam !== null && zaznam.posuny.length > 0 && (
                 <>
                   <h3 className="sl-nadpis">Strach a reči starších</h3>

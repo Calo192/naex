@@ -13,6 +13,8 @@ import { IkonaAkcie } from "../karta/IkonaAkcie.tsx";
 import { IKONY } from "../karta/ikony.ts";
 import { castiVety, rozdelNaStrany, usekyVety, vetyTextu, type RezimMelichara } from "./bar.ts";
 import { MELICHAR_PRIBEH } from "./melicharPribeh.ts";
+import { PojemVBubline } from "../stranky/pravidla/Pojem.tsx";
+import { castiSPojmami, prvePojmy } from "../stranky/pravidla/slovnik.ts";
 
 /** Miesto v bare (JednotnyBar), kam sa bublina vkladá. */
 export const ID_MIESTA_MELICHARA = "jbar-melichar";
@@ -46,8 +48,13 @@ export function useMelicharHovoriVBare(miesto: HTMLElement | null): boolean {
   return hovori;
 }
 
-/** Veta Melichara s piktogramami akcií namiesto značiek [Rana] (bar.ts, castiVety). */
-export function VetaMelichara({ text, sada }: { readonly text: string; readonly sada: Sada | null }) {
+const ZIADNE_POJMY: ReadonlySet<string> = new Set();
+
+/**
+ * Veta Melichara s piktogramami akcií namiesto značiek [Rana] (bar.ts, castiVety). Pojmy jadra
+ * z `pojmy` sú podčiarknuté s krátkym vysvetlením (PojemVBubline), každý raz.
+ */
+export function VetaMelichara({ text, sada, pojmy = ZIADNE_POJMY }: { readonly text: string; readonly sada: Sada | null; readonly pojmy?: ReadonlySet<string> }) {
   const akcia = (k: string) => sada?.akcie.find((a) => a.kluc === k);
   const jeAkcia = (k: string): boolean => Object.hasOwn(IKONY, k) || akcia(k) !== undefined;
   return (
@@ -57,8 +64,20 @@ export function VetaMelichara({ text, sada }: { readonly text: string; readonly 
           <span key={i} className="mel-ikona" title={akcia(c.akcia)?.nazov ?? c.akcia}>
             <IkonaAkcie kluc={c.akcia} akcia={akcia(c.akcia)} />
           </span>
-        ) : (
+        ) : pojmy.size === 0 ? (
           <Fragment key={i}>{c.text}</Fragment>
+        ) : (
+          <Fragment key={i}>
+            {castiSPojmami(c.text, pojmy).map((k, j) =>
+              k.pojem === undefined ? (
+                <Fragment key={j}>{k.text}</Fragment>
+              ) : (
+                <PojemVBubline key={j} k={k.pojem}>
+                  {k.text}
+                </PojemVBubline>
+              ),
+            )}
+          </Fragment>
         ),
       )}
     </>
@@ -105,14 +124,26 @@ export interface KusVety {
   readonly jemne?: readonly KusVety[];
 }
 
-/** Text Melichara ako kusy po vetách — s piktogramami akcií ako vo VetaMelichara. */
+/**
+ * Text Melichara ako kusy po vetách — s piktogramami akcií ako vo VetaMelichara. Pojem jadra
+ * sa podčiarkne pri prvom výskyte v texte.
+ */
 export function kusyVety(kluc: string, text: string, sada: Sada | null): KusVety[] {
-  return vetyTextu(text).map((veta, i) => {
+  const vety = vetyTextu(text);
+  const prve = prvePojmy(vety);
+  let predVetou: ReadonlySet<string> = ZIADNE_POJMY;
+  return vety.map((veta, i) => {
     const useky = usekyVety(veta);
+    const tu = prve[i] ?? ZIADNE_POJMY;
+    // Rozbitá veta: pojem sa podčiarkne v tom úseku, kde je prvýkrát, nie v každom.
+    const vUsekoch = tu.size === 0 ? useky.map(() => ZIADNE_POJMY) : prvePojmy(useky, predVetou);
+    predVetou = new Set([...predVetou, ...tu]);
     return {
       kluc: `${kluc}-${i}`,
-      obsah: <VetaMelichara text={veta} sada={sada} />,
-      ...(useky.length > 1 ? { jemne: useky.map((u, j) => ({ kluc: `${kluc}-${i}-${j}`, obsah: <VetaMelichara text={u} sada={sada} /> })) } : {}),
+      obsah: <VetaMelichara text={veta} sada={sada} pojmy={tu} />,
+      ...(useky.length > 1
+        ? { jemne: useky.map((u, j) => ({ kluc: `${kluc}-${i}-${j}`, obsah: <VetaMelichara text={u} sada={sada} pojmy={vUsekoch[j] ?? ZIADNE_POJMY} /> })) }
+        : {}),
     };
   });
 }

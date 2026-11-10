@@ -15,7 +15,7 @@ export const SLOVNIK: readonly PojemSlovnika[] = [
   { id: "akcia", pojem: "Akcia", popis: "Symbol na hrane karty; platí, len keď sa na spoji stretne s akciou suseda v rovnakej výške." },
   { id: "barter", pojem: "Stokársky barter", popis: "Počas Pitky za 5 cigariet nový plný poldeci." },
   { id: "bitka", pojem: "Bitka", popis: "Koniec kola: viac tuhého poškodenia vyhráva a dostane špaky, starší bodujú, víťaz rozdelí Nakladačku na svoj strach a víťaz hádky hádku na svoje reči na teplomeroch súpera." },
-  { id: "cigareta", pojem: "Cigareta", popis: "Mena hry: platí šenok, Dedičstvo, podloženie Nástroja, doliatie, barter a Záverečnú; fajčením v Pitke hneď karta navyše (1, 2, 3… cigarety; na Benzínke prvá zadarmo). Po bitke dostane porazený 1 a súper platí výpalné. Na konci hry každých 5 cigariet 1 špak." },
+  { id: "cigareta", pojem: "Cigareta", popis: "Mena hry: platí karty z ponuky, Dedičstvo, podloženie Nástroja, doliatie, barter a Záverečnú; fajčením v Pitke hneď karta navyše (1, 2, 3… cigarety; na Benzínke prvá zadarmo). Po bitke dostane porazený 1 a súper platí výpalné. Na konci hry každých 5 cigariet 1 špak." },
   { id: "cirhoza", pojem: "Cirhóza", popis: "Kliatba z pečene; ide do tvojho odhadzovacieho balíčka, priznaná dá súperovi v bitke +1 tuhé, nepriznaná ide po bitke do tvojho odhadzovacieho balíčka a na konci hry stojí 3 špaky." },
   { id: "dedicstvo", pojem: "Dedičstvo", popis: "Nástroj vyložený mimo línie; platí jeho efekt a cena rastie pre oboch: 1., 2., 3. Nástroj stojí 1, 2, 3 cigarety." },
   { id: "dlh", pojem: "Dlh", popis: "Kliatba z Hazardu — počítadlo, nie karta: každá akcia Hazard v Pitke = 1 Dlh, hneď priznaný; za priznané Dlhy príde v každej bitke Exekútor a pri remíze v bitke prehrá, kto ich má viac." },
@@ -37,7 +37,7 @@ export const SLOVNIK: readonly PojemSlovnika[] = [
   { id: "akcia-navyse", pojem: "Akcia navyše", popis: "Akcia z pečate v obrázku karty: aktívna akcia majiteľa karty mimo hrán, ráta sa ako tá istá akcia. „Furt: {Akcia}“ platí bez podmienky, kým karta leží. Posilnenie, Odpor, Forsáž, NA EX ani podložený Nástroj ju nemenia; Nástroje v Dedičstve a Preškolenie Školiteľa áno." },
   { id: "fajcenie", pojem: "Fajčenie", popis: "Karta z balíčka hneď; smieš len v Pitke, kým ju neskončíš. Prvé fajčenie v Pitke stojí 1 cigaretu, druhé 2, tretie 3… a každá Pitka začína od 1. Na Benzínke je každé o 1 lacnejšie, prvé zadarmo." },
   { id: "kliatba", pojem: "Kliatba", popis: "Čo škodí majiteľovi: karty Cirhóza a Absťák a počítadlo Dlh (hneď priznaný). Priznať sa dá len Cirhóza." },
-  { id: "kolo", pojem: "Kolo", popis: "Cieľ, šenok, potom Zhromaždenie s Pitkou 1- až 4-krát (na pinnacle vo finále až 5-krát) a nakoniec bitka o lokalitu." },
+  { id: "kolo", pojem: "Kolo", popis: "Cieľ, ponuka, potom Zhromaždenie s Pitkou 1- až 4-krát (na pinnacle vo finále až 5-krát) a nakoniec bitka o lokalitu." },
   { id: "koniec-linie", pojem: "Koniec línie", popis: "Jeden z dvoch koncov línie, kam sa vykladá; nepatrí nikomu — kartu kladieš na ktorýkoľvek." },
   { id: "kraj", pojem: "Kraj", popis: "Polovica línie podľa hrany lokality; každá lokalita má vlastné mená krajov (Krčma: pri výčape a pri dverách). Nepatrí nikomu." },
   { id: "limit", pojem: "Limit vykladania", popis: "Koľko kariet vyložíš v jednom Zhromaždení: plné poldeci + 1." },
@@ -47,12 +47,12 @@ export const SLOVNIK: readonly PojemSlovnika[] = [
   { id: "hadka", pojem: "Hádka", popis: "Krok bitky: kto má viac mäkkého poškodenia, vyhral hádku o rozdiel („Ana vyhrala hádku o 3“) a po bodovaní ho rozdelí na svoje reči na teplomeroch súpera — stupeň stojí 1 / 2 / 3, zvyšok prepadne. Pri rovnosti nikto; vo finále ide hádka na špaky." },
   { id: "makke", pojem: "Mäkké poškodenie", popis: "Pohoršenie × 2 + Povery, ktoré nezrušila súperova Viera (s Horoskopom × 2). Tuhé nerobí — rozhoduje len hádku." },
   { id: "naex", pojem: "NA EX!", popis: "Plný poldeci na kartu v línii, vybraný v Pitke skryto: zruší jej aktívne akcie a zdvojí neaktívne. Zrušený Odpor pustí akciu, ktorú rušil; nespárovaný Odpor NA EX zahasí, nespárované Posilnenie podrží aktívne akcie." },
-  { id: "naradie", pojem: "Náradie", popis: "Balíček Nástrojov lícom dole; pri stavbe šenku z neho dostaneš 2 karty, nevzaté Nástroje zo šenku sa vracajú naspodok." },
+  { id: "naradie", pojem: "Balíček nástrojov", popis: "Karty s tagom Nástroj lícom dole; pri stavbe ponuky z neho dostaneš 2 karty, nevzaté Nástroje z ponuky sa vracajú naspodok." },
   { id: "nastenka", pojem: "Krčmová nástenka", popis: "Odohrané bitky: lokalita, víťaz a koľko špakov za ňu v kole získal (bitka, Robota, starší…); lokalitu si víťaz neberie. Klik na lokalitu ukáže súhrn Pitiek a bitky." },
   { id: "nastroj", pojem: "Nástroj", popis: "Karta s tagom Nástroj; do línie sa nevykladá — za 1 cigaretu ho podložíš pod Občana či Starešinu v línii (platí hrana, ktorá pretŕča), alebo ho za cigarety vyložíš do Dedičstva." },
   { id: "natocenie", pojem: "Natočenie", popis: "Ako víťaz minulej hádky otočí lokalitu (v prvom kole a po remíze v hádke ten, kto ju vyberá) — určuje, ktorá jej hrana patrí ktorému kraju." },
   { id: "nerest", pojem: "Nerest", popis: "Len konzumácia: Vypiť 1, NA EX 2, vyfajčená cigareta 1. Na konci kola sa porovnáva s tvojou Chuťou." },
-  { id: "obcania", pojem: "Občania", popis: "Balíček všetkých ostatných kariet šenku (Občania, Zvieratá…) lícom dole; pri stavbe šenku z neho dostaneš 6 kariet." },
+  { id: "obcania", pojem: "Balíček dedinčanov", popis: "Všetky ostatné karty ponuky (Občania, Zvieratá, Starešinovia…) lícom dole; pri stavbe ponuky z neho dostaneš 6 kariet." },
   { id: "odhodenie", pojem: "Odhodiť", popis: "Karta ide do odhadzovacieho balíčka svojho majiteľa — keď sa doberací minie, zamieša sa a vráti do hry. Opak spálenia." },
   { id: "odpoved", pojem: "Odpoveď na NA EX", popis: "Po odkrytí jedna karta za každé súperovo NA EX, lícom dole, za plný poldeci (vypiješ ho: pečeň +1) a mimo limitu; najprv odpovedá útočník, potom obranca na druhý kraj línie; obe sa otočia naraz." },
   { id: "partia", pojem: "Partia", popis: "Všetky tvoje karty v línii, nech ležia kdekoľvek; ich akcie sa rátajú tebe." },
@@ -61,7 +61,7 @@ export const SLOVNIK: readonly PojemSlovnika[] = [
   { id: "pokus", pojem: "Zajatie", popis: "Pri rozdelení Nakladačky (vyhral si bitku) zajmeš za 5 bodov staršieho, pri ktorom je tvoj strach 3 už pred touto Nakladačkou (od minulého kola, dotiahnutý v tom istom rozdelení nestačí; reči sa nerátajú). Je tvoj väzeň a súper ti odovzdá toľko špakov, koľko bodov hádky má v rečiach pri ňom. Vo finále nie." },
   { id: "presvedcenie", pojem: "Presvedčenie", popis: "Pri rozdelení hádky presvedčíš za 3 body ktoréhokoľvek staršieho, keď máš pri ňom reči na celom teplomere. Reči, strach aj priazeň ostanú; jeho karta ide tebe do ruky a natrvalo patrí do tvojho balíčka. Kto prvý presvedčí, toho je; zajať ho smú obaja. Vo finále nie." },
   { id: "vazen", pojem: "Väzeň", popis: "Zajatý starší medzi tvojimi priznanými kartami („v pivnici“): nedáva priazeň, ráta sa ako tvoj červený strach, máš jeho schopnosť (raz za hru). Pri zajatí ti súper odovzdá toľko špakov, koľko bodov hádky má pri ňom v rečiach; väzni na výhru podľa ligy (2 / 3 / 4)." },
-  { id: "schopnost-vazna", pojem: "Schopnosť väzňa", popis: "Každý zajatý starší má schopnosť (napr. Poštárka: dostaneš 4 cigarety). Jeho držiteľ ju použije raz za hru, kedy chce — vo svojom ťahu pri braní zo šenku, v Zhromaždení alebo v Pitke. Potom je minutá, väzeň ostáva v pivnici." },
+  { id: "schopnost-vazna", pojem: "Schopnosť väzňa", popis: "Každý zajatý starší má schopnosť (napr. Poštárka: dostaneš 4 cigarety). Jeho držiteľ ju použije raz za hru, kedy chce — vo svojom ťahu pri braní z ponuky, v Zhromaždení alebo v Pitke. Potom je minutá, väzeň ostáva v pivnici." },
   { id: "skolitel", pojem: "Školiteľ", popis: "Občan alebo Zviera s efektom Preškolenie X → Y (Zviera umlčí Mäsiar): pri Furt preškolí oboch susedov, kým susedia; pri Podpore tvoju a pri Konflikte súperovu kartu, s ktorou sa stretne, do konca kola." },
   { id: "pecen", pojem: "Pečeň", popis: "Počítadlo v Pitke z akcií Poškodenie pečene, Poldeci a z NA EX; za každý celý prah Cirhóza." },
   { id: "pitka", pojem: "Pitka", popis: "Vyhodnotenie po Zhromaždení: NA EX, Dlhy, pečeň, cigarety; v jednom kole je 1 až 4 Pitiek (vo finále na pinnacle 1 až 5)." },
@@ -69,14 +69,14 @@ export const SLOVNIK: readonly PojemSlovnika[] = [
   { id: "pohorsenie", pojem: "Pohoršenie", popis: "Akcia: 2 mäkké poškodenie do hádky (v10); súperova Viera ho nezruší." },
   { id: "poldeci", pojem: "Poldeci", popis: "Pohárik pálenky; plný zvyšuje limit o 1 a platí ním NA EX aj ďalšiu kartu v ťahu. Plný na konci hry je 1 špak." },
   { id: "povera", pojem: "Povera", popis: "Akcia: 1 mäkké poškodenie do hádky (v10; s Horoskopom 2); súperova Viera ju zruší 1 : 1." },
-  { id: "preskolenie", pojem: "Preškolenie", popis: "Akcia X karty sa ráta ako Y, ešte pred spojmi, na oboch hranách aj v akciách navyše. Robí ho hrana podloženého Nástroja a Školiteľ; každá akcia sa preškolí len raz." },
+  { id: "preskolenie", pojem: "Preškolenie", popis: "Akcia X karty sa ráta ako Y, ešte pred spojmi, na oboch hranách aj v akciách navyše. Robí ho Školiteľ a hrana podloženého Nástroja; premeny sa reťazia — najprv Školitelia, potom Nástroje, každá na výsledku predošlej." },
   { id: "boss", pojem: "Boss", popis: "Karta staršieho: 6 akcií a jedna neresť; v línii má len akcie; jeho schopnosť má len ten, kto ho drží ako väzňa." },
   { id: "prebytok", pojem: "Nakladačka", popis: "O koľko vyhrávaš v tuhom poškodení (drží ju víťaz); po bodovaní ju rozdelíš na svoj strach pri starších — stupeň stojí 1 / 2 / 3, zvyšok prepadne. Vo finále ide na špaky." },
   { id: "prevaha", pojem: "Prevaha", popis: "V kraji ju má, kto tam má viac svojich Občanov, Zvierat a Starešinov; dostane akcie hrany lokality." },
   { id: "priazen", pojem: "Priazeň", popis: "Výhoda od staršieho, ktorý sa súpera bojí viac než teba: sila = strach súpera − tvoj strach (1, 2 alebo 3). Reči sa nerátajú; pri rovnakom strachu ju nemá nikto." },
   { id: "priznanie", pojem: "Priznanie", popis: "Kliatbu vyložíš mimo línie do svojej hracej oblasti — natrvalo z balíčka." },
   { id: "sekera", pojem: "Na sekeru", popis: "Bitka bez víťaza (remíza v tuhom, Absťákoch aj Dlhoch): jej špaky vezme víťaz najbližšej bitky, vo finále prepadnú." },
-  { id: "senok", pojem: "Šenok", popis: "Ponuka kariet lícom nahor; beriete z nej 1 kartu za 1 cigaretu alebo 2 za 3." },
+  { id: "senok", pojem: "Ponuka", popis: "Karty na kúpu lícom nahor; beriete z nej 1 kartu za 1 cigaretu alebo 2 za 3." },
   { id: "spalenie", pojem: "Spáliť", popis: "Karta ide navždy z hry — nevracia sa do žiadneho balíčka (napr. Vízia). Spálený Dlh zmizne z počítadla. Plameň v pečati (Krokodíl): karta, s ktorou sa stretne (súperov Občan), sa na konci bitky spáli." },
   { id: "spoj", pojem: "Spoj", popis: "Miesto, kde sa dotknú hrany dvoch kariet alebo karty a lokality." },
   { id: "starsi", pojem: "Starší", popis: "Vážená osoba dediny; každý hráč má pri ňom svoj teplomer 0–3 — svoj strach a na ňom súperove reči. Po bitke dáva špaky a priazeň tomu, koho sa bojí menej." },
@@ -84,8 +84,9 @@ export const SLOVNIK: readonly PojemSlovnika[] = [
   { id: "strach", pojem: "Strach", popis: "Marker hráča pri staršom 0–3 (plná časť teplomera) — ako veľmi sa ťa bojí; dvíha ho Nakladačka a neklesá. Len strach sa ráta do priazne, výhry strachom a zajatia." },
   { id: "spak", pojem: "Špak", popis: "Víťazný bod: za vyhratú bitku (1 za každú kartu v línii), od starších po každej bitke (víťaz za strach bez obsadených stupňov, obaja za reči); na konci aj za zvyšné plné poldeci a cigarety (výkupné); po finále vyhrá, kto má viac." },
   { id: "tag", pojem: "Tag", popis: "Druh karty (Občan, Zviera, Starešina, Nástroj…); odkazujú na neho efekty — aj Spoločník, Nepriateľ, Podpora či Konflikt s tagom za dvojbodkou." },
+  { id: "udery", pojem: "Údery", popis: "Akcie Rana (1), Pecka (2) a Petelica (3); v pravidlách tuhé poškodenie. V bitke sa sčítajú tie v spojoch — kto má viac, vyhrá." },
   { id: "tuhe", pojem: "Tuhé poškodenie", popis: "Poškodenie z Rany (1), Pecky (2) a Petelice (3); kto má viac, vyhrá bitku." },
-  { id: "utocnik", pojem: "Útočník a obranca", popis: "Útočník prehral poslednú bitku: vykladá prvý a na NA EX odpovedá prvý; obranca vyberá cieľ a berie zo šenku prvý (na prvom ťahu 1 kartu); Pitku hrajú obaja naraz; vo finále útočí, kto má menej špakov, a pinnacle vyberá vedúci." },
+  { id: "utocnik", pojem: "Útočník a obranca", popis: "Útočník prehral poslednú bitku: vykladá prvý a na NA EX odpovedá prvý; obranca vyberá cieľ a berie z ponuky prvý (na prvom ťahu 1 kartu); Pitku hrajú obaja naraz; vo finále útočí, kto má menej špakov, a pinnacle vyberá vedúci." },
   { id: "viera", pojem: "Viera", popis: "Akcia, ktorá ruší súperove Povery 1 : 1 (aj vylepšené Horoskopom) a zvyšná znižuje jeho tuhé poškodenie; proti Pohoršeniu nepomáha." },
   { id: "vizia", pojem: "Vízia", popis: "Akcia: na konci Pitky za každú aktívnu Víziu pozrieš vrchnú kartu svojho doberacieho balíčka a vezmeš si ju do ruky, alebo ju navždy spáliš." },
   { id: "vydesenie", pojem: "Vydesený", popis: "Stupeň 3 staršieho pre hráča. Vydesený strach ťa pustí k zajatiu a ráta sa do výhry strachom." },
@@ -102,4 +103,83 @@ const PODLA_ID: ReadonlyMap<string, PojemSlovnika> = new Map(SLOVNIK.map((p) => 
 
 export function pojemSlovnika(id: string): PojemSlovnika | null {
   return PODLA_ID.get(id) ?? null;
+}
+
+/**
+ * Jadro pojmov (docs/napady/prvy-dojem-navstevnika.html, časť 9; Michal 2026-11-10: „Pojmy
+ * ako Pitka, bitka a podobne treba domyselne vysvetliť.“): v bubline Melichara a v nápovedách
+ * je ich prvý výskyt podčiarknutý a pod myšou (na telefóne ťukom) ukáže krátku vetu pre nováčika.
+ * Slovník vyššie ostáva presný pre stránku Pravidlá; tvary sú slová, ako ich píše Melichar.
+ */
+export interface PojemJadra {
+  /** Id v SLOVNIK — nadpis bubliny a odkaz na celé vysvetlenie. */
+  readonly id: string;
+  readonly kratko: string;
+  readonly tvary: readonly string[];
+}
+
+export const JADRO_POJMOV: readonly PojemJadra[] = [
+  { id: "spak", kratko: "Ohorok, a zároveň bod. Na konci vyhrá, kto má viac špakov. Dáva ich vyhratá bitka a starší, ktorí sa ťa boja.", tvary: ["špak", "špaky", "špakov", "špaku", "špakom", "špakmi", "špakoch"] },
+  { id: "bitka", kratko: "Koniec kola: sčítajú sa údery z kariet pri lokalite. Kto má viac, vyhral a berie špak za každú kartu v línii.", tvary: ["bitka", "bitky", "bitke", "bitku", "bitkou", "bitiek", "bitkách"] },
+  { id: "lokalita", kratko: "Miesto v dedine, o ktoré sa v kole bijete. Leží v strede stola a karty sa kladú k nej.", tvary: ["lokalita", "lokality", "lokalite", "lokalitu", "lokalitou", "lokalít"] },
+  { id: "akcia", kratko: "Ikona na okraji karty. Platí, len keď sa v spoji dotkne rovnako vysokej ikony susednej karty.", tvary: ["akcia", "akcie", "akcii", "akciu", "akciou", "akcií", "akciám", "akciami"] },
+  { id: "udery", kratko: "Akcie Rana, Pecka a Petelica — za 1, 2 a 3. V bitke vyhrá, kto má v spojoch viac úderov.", tvary: ["úder", "údery", "úderov", "úderom", "údermi", "úderoch"] },
+  { id: "senok", kratko: "Karty na kúpu, lícom hore. Jedna stojí cigaretu, dve tri cigarety. Beriete striedavo, kým obaja neprestanete.", tvary: ["ponuka", "ponuky", "ponuke", "ponuku", "ponukou"] },
+  { id: "cigareta", kratko: "Drobné tejto hry. Platíš nimi karty z ponuky a fajčenie v Pitke; za karty, ktoré nevyložíš, ich dostaneš.", tvary: ["cigareta", "cigarety", "cigarete", "cigaretu", "cigaretou", "cigariet", "cigaretám", "cigaretami"] },
+  { id: "zhromazdenie", kratko: "Fáza, v ktorej striedavo kladiete karty z ruky k lokalite do jedného radu — línie.", tvary: ["Zhromaždenie", "Zhromaždenia", "Zhromaždení", "Zhromaždením"] },
+  { id: "linia", kratko: "Rad kariet pri lokalite. Kartu dáš na ktorýkoľvek koniec; susedné karty sa dotýkajú v spojoch.", tvary: ["línia", "línie", "línii", "líniu", "líniou"] },
+  { id: "poldeci", kratko: "Pohárik pálenky. Koľko máš plných, toľko kariet vyložíš, a ešte jednu. Za plný poldeci dáš aj NA EX.", tvary: ["poldeci"] },
+  { id: "spoj", kratko: "Miesto, kde sa dotknú dve karty. Platia len ikony, ktoré tam majú pár v rovnakej výške; osamelá ikona je mŕtva.", tvary: ["spoj", "spoja", "spoje", "spoji", "spojom", "spojov", "spojmi", "spojoch"] },
+  { id: "pitka", kratko: "Po Zhromaždení sa pije: fajčíš, dolievaš a skryto dáš NA EX na kartu v línii.", tvary: ["Pitka", "Pitky", "Pitke", "Pitku", "Pitkou", "Pitiek"] },
+  { id: "naex", kratko: "Vylej plný poldeci na ex na kartu v línii. Jej akcie v spoji zhasnú, osamelé sa zdvoja.", tvary: ["NA EX"] },
+  { id: "starsi", kratko: "Dedinské autority — Farár, Starosta a spol. Kto sa ťa bojí, platí ti špaky, keď vyhráš bitku; čím viac sa bojí, tým viac.", tvary: ["starší", "staršieho", "staršiemu", "starším", "starších", "staršími"] },
+  { id: "strach", kratko: "Ako veľmi sa ťa starší bojí — teplomer pri ňom. Dvíha ho vyhratá bitka; vyšší strach, viac špakov.", tvary: ["strach", "strachu", "strachom"] },
+];
+
+const VZOR_POJMU: ReadonlyMap<string, RegExp> = new Map(
+  JADRO_POJMOV.map((p) => [p.id, new RegExp(`(?<!\\p{L})(?:${p.tvary.join("|")})(?!\\p{L})`, "iu")]),
+);
+
+/** Ktoré pojmy jadra majú v ktorom texte prvý výskyt — každý pojem sa podčiarkne raz za bublinu. */
+export function prvePojmy(texty: readonly string[], uzVidene: ReadonlySet<string> = new Set()): ReadonlySet<string>[] {
+  const videne = new Set(uzVidene);
+  return texty.map((t) => {
+    const tu = new Set<string>();
+    for (const [id, vzor] of VZOR_POJMU) {
+      if (videne.has(id) || !vzor.test(t)) continue;
+      tu.add(id);
+      videne.add(id);
+    }
+    return tu;
+  });
+}
+
+export interface KusSPojmom {
+  readonly text: string;
+  /** Id pojmu jadra, keď je kus jeho slovom v texte. */
+  readonly pojem?: string;
+}
+
+/** Text na kúsky, v ktorých je prvý výskyt každého pojmu z `pojmy` samostatným kusom. */
+export function castiSPojmami(text: string, pojmy: ReadonlySet<string>): KusSPojmom[] {
+  const nalezy: { readonly od: number; readonly do: number; readonly id: string }[] = [];
+  for (const id of pojmy) {
+    const m = VZOR_POJMU.get(id)?.exec(text);
+    if (m !== null && m !== undefined) nalezy.push({ od: m.index, do: m.index + m[0].length, id });
+  }
+  nalezy.sort((a, b) => a.od - b.od);
+  const out: KusSPojmom[] = [];
+  let i = 0;
+  for (const n of nalezy) {
+    if (n.od < i) continue;
+    if (n.od > i) out.push({ text: text.slice(i, n.od) });
+    out.push({ text: text.slice(n.od, n.do), pojem: n.id });
+    i = n.do;
+  }
+  if (i < text.length) out.push({ text: text.slice(i) });
+  return out;
+}
+
+export function pojemJadra(id: string): PojemJadra | null {
+  return JADRO_POJMOV.find((p) => p.id === id) ?? null;
 }

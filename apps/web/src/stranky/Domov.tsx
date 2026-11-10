@@ -10,6 +10,9 @@ import { useUcet } from "../lib/ucet.tsx";
 import { VolbaZrejucej } from "../VolbaZrejucej.tsx";
 import { HlavaStranky } from "../HlavaStranky.tsx";
 import { adresaVyucby, bezPrvejCasti, napisVyucby, rozpracovana, useVyucbaUctu } from "../hra/Vyucba.tsx";
+// Len časti scenára (Vite JSON: pomenovaný import, kroky do balíka titulky nejdú).
+import { casti as CASTI_VYUCBY } from "@naex/core/data/vyucba/prva-hra.json";
+import { dlzkaVyucby } from "./dlzkaVyucby.ts";
 
 const VEJAR = ["pijan", "farar", "krcma"];
 
@@ -45,7 +48,7 @@ export function Domov() {
                 <img src="/melichar.jpg" alt="" width={40} height={40} />
                 <span>
                   {napisVyucby(vyucba)}
-                  <small>tri časti, spolu asi 35 minút pri stole proti Štamgastovi</small>
+                  <small>{dlzkaVyucby(CASTI_VYUCBY)} pri stole proti Štamgastovi</small>
                 </span>
               </Odkaz>
               <Odkaz href="/hra" className="tlacidlo">

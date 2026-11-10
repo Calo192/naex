@@ -35,7 +35,7 @@ export function popisVyucbyVLobby(vyucba: VyucbaUctu): string {
   }
   if (vyucba.pripravujeme !== null) return `${vyucba.pripravujeme.cast - 1}. časť máš za sebou. ${vyucba.pripravujeme.cast}. časť (${vyucba.pripravujeme.nazov}) pripravujeme.`;
   if (vyucba.stav === "hotova" || vyucba.castiHotove > 0) return "Výučbu máš za sebou. Ak si chceš pravidlá zopakovať, zahraj si ju znova.";
-  return "1. časť: majster Melichar ťa prevedie prvým kolom proti Štamgastovi — Voľba cieľa, Draft, Zhromaždenie, Pitka, Bitka a starší. NA EX! príde v 2. časti. Do štatistík sa neráta.";
+  return "1. časť: majster Melichar ťa prevedie prvým kolom proti Štamgastovi — lokalita, ponuka, Zhromaždenie, Pitka s tvojím prvým NA EX!, bitka a starší. Odpoveď na NA EX a ďalšie podlosti prídu v 2. časti. Do štatistík sa neráta.";
 }
 
 /**

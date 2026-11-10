@@ -48,7 +48,7 @@ export const MA_DOST: Readonly<Record<StarsiId, { readonly nazov: string; readon
   veterinar: { nazov: "Liečim už len kravy", text: "Zahoď všetky svoje Cirhózy.", hned: true },
   vychovavatelka: { nazov: "Do radu!", text: "Po odhalení radov vymeníš v súperovom rade dvoch susedných starších.", hned: false },
   farar: { nazov: "Rozhrešenie", text: "Jed na tvojich starších klesá o 2.", hned: false },
-  autobusar: { nazov: "Ty nastupuješ prvý", text: "Zo šenku berieš vždy prvý a hneď 2 karty.", hned: false },
+  autobusar: { nazov: "Ty nastupuješ prvý", text: "Z ponuky berieš vždy prvý a hneď 2 karty.", hned: false },
   starosta: { nazov: "Kde sa pije, poviem ja", text: "Lokalitu vyberáš a natáčaš ty.", hned: false },
   hrobar: { nazov: "Aspoň mám robotu", text: "+1 tuhé za každého podrazeného staršieho.", hned: false },
   krcmarka: { nazov: "Už ti nenalejem", text: "Súperovi sa na začiatku kola neotočí vypitý poldeci.", hned: false },

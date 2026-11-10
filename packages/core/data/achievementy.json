@@ -847,9 +847,9 @@
     },
     {
       "id": "stamgast-senku",
-      "nazov": "Štamgast šenku",
+      "nazov": "Štamgast ponuky",
       "kategoria": "ekonomika",
-      "popis": "Vezmi v jednej partii zo šenku aspoň {prah} kariet.",
+      "popis": "Vezmi v jednej partii z ponuky aspoň {prah} kariet.",
       "metrika": "stat.senokKarty",
       "rozsah": "partia",
       "prahy": [

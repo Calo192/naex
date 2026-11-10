@@ -106,7 +106,7 @@ describe("stavba šenku", () => {
     const bu = s.draftStav!.balicky[u];
     const id = (i: number): number => bu[i]!.uid;
     // Do šenku aj naspodok presne polovicu (z 8 po 4), každú kartu len raz.
-    expect(() => apply(data, s, { type: "stavbaSenku", doSenku: [id(0), id(1)], odhod: [id(2), id(3), id(4), id(5)] }, u)).toThrow(/Do šenku daj 4/);
+    expect(() => apply(data, s, { type: "stavbaSenku", doSenku: [id(0), id(1)], odhod: [id(2), id(3), id(4), id(5)] }, u)).toThrow(/Do ponuky daj 4/);
     expect(() => apply(data, s, { type: "stavbaSenku", doSenku: [id(0), id(1), id(2), id(3)], odhod: [id(3), id(4), id(5), id(6)] }, u)).toThrow(/len raz/);
     s = apply(data, s, vyber(bu), u).state;
     expect(mozeHrat(s, u)).toBe(false);

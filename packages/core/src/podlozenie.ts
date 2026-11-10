@@ -6,7 +6,8 @@ import type { Action, CardInstance, PlayerId } from "./types.ts";
 import type { GameData } from "./data.ts";
 import { defOf, printedSides } from "./data.ts";
 import type { LineState, PlacedCard } from "./partia.ts";
-import { evaluateLine, premenyVLinii, zvieratAUmlcane } from "./partia.ts";
+import { cestaAkcie, evaluateLine, krokyNastrojov, premenyVLinii, zvieratAUmlcane } from "./partia.ts";
+import type { KrokPremeny } from "./partia.ts";
 import type { HranaNastroja, KtoraHrana } from "./naradie.ts";
 import { KTORE_HRANY, aktivnaHrana, hranaSlovami, hranyNastroja, posilnenaSlovami, posilneniaHostitela, preskolStranu, preskoleniaHostitela, ucinkyNastrojov } from "./naradie.ts";
 import { menoAkcie } from "./preskolenie.ts";
@@ -47,13 +48,12 @@ function konPusta(data: GameData, line: LineState): boolean {
 
 /**
  * Má karta na tejto hrane čo robiť pod hostiteľom (preškolenie či posilnenie nájde svoju akciu, účinok ešte nemá)?
- * S líniou ráta aj Školiteľov — Nástroj preškolí ich výstup (reťaz, v11.20).
+ * Nový Nástroj ide na koniec reťaze (v11.20) — preškolí výstup Školiteľov v línii aj Nástrojov pod kartou.
  */
 export function hranaMaCoRobit(data: GameData, hostitel: PlacedCard, hrana: HranaNastroja, line?: Pick<LineState, "lokalita" | "strany">): boolean {
   if (hrana.druh === "karta") return !ucinkyNastrojov(data, hostitel).has(hrana.ucinok);
   if (hrana.druh === "posilnenie") return !posilneniaHostitela(data, hostitel).has(hrana.akcia) && pocetPoPreskoleni(data, hostitel, hrana.akcia, line) > 0;
-  if (preskoleniaHostitela(data, hostitel).has(hrana.z)) return false;
-  return pocetPoSkolitelovi(data, hostitel, hrana.z, line) > 0;
+  return pocetPoPreskoleni(data, hostitel, hrana.z, line) > 0;
 }
 
 /** Koľko akcií `a` má karta na oboch hranách po preškolení (Školitelia v línii, Nástroje pod ňou) — tie posilnenie posilní. */
@@ -63,11 +63,9 @@ function pocetPoPreskoleni(data: GameData, pl: PlacedCard, a: string, line?: Pic
   return [...preskolStranu(premeny, p.left), ...preskolStranu(premeny, p.right)].filter((x) => x?.akcia === a).length;
 }
 
-/** Koľko akcií `a` má karta na oboch hranách po Školiteľoch v línii (bez línie vytlačených) — tie Nástroj preškolí. */
-function pocetPoSkolitelovi(data: GameData, pl: PlacedCard, a: string, line?: Pick<LineState, "lokalita" | "strany">): number {
-  const p = printedSides(data, pl.card);
-  const skol = line === undefined ? undefined : premenyVLinii(data, line).get(pl.card.uid)?.navyse;
-  return [...p.left, ...p.right].filter((x) => x !== null && (skol?.get(x)?.na ?? x) === a).length;
+/** Premeny karty v poradí reťaze — s líniou aj Školitelia, inak len Nástroje pod ňou. */
+function krokyKarty(data: GameData, pl: PlacedCard, line?: Pick<LineState, "lokalita" | "strany">): readonly KrokPremeny[] {
+  return line === undefined ? krokyNastrojov(data, pl) : (premenyVLinii(data, line).get(pl.card.uid)?.kroky ?? []);
 }
 
 /**
@@ -145,10 +143,24 @@ export function popisHrany(data: GameData, hostitel: PlacedCard, hrana: HranaNas
     const n = pocetPoPreskoleni(data, hostitel, hrana.akcia, line);
     return n === 0 ? `nemá ${menoAkcie(hrana.akcia)}` : `${posilnenaSlovami(hrana.akcia)}${n > 1 ? ` (${n}×)` : ""}`;
   }
-  const n = pocetPoSkolitelovi(data, hostitel, hrana.z, line);
-  if (n === 0) return `nemá ${menoAkcie(hrana.z)}`;
-  const krat = n > 1 ? ` ×${n}` : "";
-  return `${menoAkcie(hrana.z)}${krat} → ${menoAkcie(hrana.na)}${krat}`;
+  // Celá reťaz (v11.20): z vytlačenej akcie cez Školiteľov a Nástroje pod kartou až po túto hranu.
+  const kroky = krokyKarty(data, hostitel, line);
+  const p = printedSides(data, hostitel.card);
+  const cesty = new Map<string, number>();
+  for (const a of [...p.left, ...p.right]) {
+    if (a === null) continue;
+    const cesta = cestaAkcie(kroky, a);
+    if ((cesta[cesta.length - 1]?.na ?? a) !== hrana.z) continue;
+    const k = [a, ...cesta.map((x) => x.na), hrana.na].join("|");
+    cesty.set(k, (cesty.get(k) ?? 0) + 1);
+  }
+  if (cesty.size === 0) return `nemá ${menoAkcie(hrana.z)}`;
+  return [...cesty]
+    .map(([k, n]) => {
+      const krat = n > 1 ? ` ×${n}` : "";
+      return k.split("|").map((a) => `${menoAkcie(a as Action)}${krat}`).join(" → ");
+    })
+    .join(", ");
 }
 
 /** Pretŕčajúce hrany Nástrojov pod kartou, ako ich ukazuje log a klient: „Vidly (Rana → Pecka)“. */

@@ -568,8 +568,8 @@ export function HracDoska({
                   ? { nadpis: "Útočník finále", text: "Má menej špakov — dobieha (pri rovnosti prehral poslednú bitku). Vykladá prvý, na NA EX odpovedá prvý." }
                   : { nadpis: "Obranca finále", text: "Vedie v špakoch: vybral vrcholovú lokalitu. V Pitke začína." }
                 : utoci
-                ? { nadpis: "Útočník", text: "Prehral poslednú bitku: vykladá prvý, zo šenku berie druhý. Na NA EX odpovedá prvý — lícom dole." }
-                : { nadpis: "Obranca", text: "Vyhral poslednú bitku: vyberá cieľ kola, zo šenku berie prvý (na prvom ťahu 1 kartu), na NA EX odpovedá druhý na druhý kraj. Remízu v tuhom vyhrá, kto má menej Absťákov, potom Dlhov; inak idú špaky na sekeru." }
+                ? { nadpis: "Útočník", text: "Prehral poslednú bitku: vykladá prvý, z ponuky berie druhý. Na NA EX odpovedá prvý — lícom dole." }
+                : { nadpis: "Obranca", text: "Vyhral poslednú bitku: vyberá cieľ kola, z ponuky berie prvý (na prvom ťahu 1 kartu), na NA EX odpovedá druhý na druhý kraj. Remízu v tuhom vyhrá, kto má menej Absťákov, potom Dlhov; inak idú špaky na sekeru." }
             }
             frajerina={info?.frajerina}
           />
@@ -653,7 +653,7 @@ export function HracDoska({
                 <span className="tip-stav">
                   {kto} {hrac.cigarety} · {doNovehoPoldeci}
                 </span>
-                Platíš nimi šenok a Dedičstvo; v Pitke na svojom ťahu fajčíš: karta za 1 cigaretu, ďalšia v tej istej Pitke za 2, potom 3…
+                Platíš nimi karty z ponuky a Dedičstvo; v Pitke na svojom ťahu fajčíš: karta za 1 cigaretu, ďalšia v tej istej Pitke za 2, potom 3…
                 {jeCielLokalita(view, "benzinka") && " (Benzínka: každé o 1 lacnejšie — 0, 1, 2…)"}
                 {view.faza === "pitka" && ` (${ja ? "tvoje" : "jeho"} ďalšie teraz ${cenaFajceniaHraca(view, p) === 0 ? "zadarmo" : `za ${cenaFajceniaHraca(view, p)}`})`}. Doliatie poldeci stojí {KONSTANTY.REFILL_CENA}, nový poldeci {cenaNovehoPoldeci}{ja && " — v Pitke ich máš na hrane stola"}. Na konci hry každých {KONSTANTY.CIGARIET_ZA_SPAK} cigariet = 1 špak (výkupné).
               </>
@@ -1509,10 +1509,10 @@ export function PriebehKola({
       : [
           {
             id: "volbaCiela",
-            nazov: "Voľba cieľa",
-            stredne: "Voľba",
+            nazov: "O čo sa bijeme",
+            stredne: "O čo",
             tip: {
-              nadpis: "Voľba cieľa",
+              nadpis: "O čo sa bijeme",
               text: (
                 <>
                   Obranca (víťaz poslednej bitky) vyberie lokalitu, natočí ju víťaz minulej hádky (po remíze obranca).
@@ -1524,13 +1524,13 @@ export function PriebehKola({
         ]),
     {
       id: "draft",
-      nazov: "Draft",
+      nazov: "Ponuka",
       tip: {
-        nadpis: "Draft — šenok",
+        nadpis: "Ponuka",
         text: (
           <>
-            <b>Stavba šenku:</b> každý dostane {KONSTANTY.STAVBA_NARADIE} karty z Náradia a {KONSTANTY.STAVBA_OBCANIA} z Občanov; obaja
-            naraz dajú polovicu do šenku a polovicu naspodok ich balíčka — bez podávania.
+            <b>Stavba ponuky:</b> každý dostane {KONSTANTY.STAVBA_NARADIE} karty z balíčka nástrojov a {KONSTANTY.STAVBA_OBCANIA} z balíčka dedinčanov; obaja
+            naraz dajú polovicu do ponuky a polovicu naspodok ich balíčka — bez podávania.
             <span className="tip-riadok">
               <b>Branie:</b> striedavo, začína obranca (na prvom ťahu len 1 kartu) — 1 karta za {KONSTANTY.CENA_SENKU[1]} cigaretu, 2 karty za {KONSTANTY.CENA_SENKU[2]}{" "}
               cigarety. Bez cigariet sa nedá brať. Kto prestane, súperovi nechá už len jeden posledný ťah.
@@ -1539,7 +1539,7 @@ export function PriebehKola({
               <b>Zajatie a presvedčenie</b> sú po bitke pri rozdelení: za {KONSTANTY.CENA_ZAJATIA} z Nakladačky zajmeš staršieho na svojom červenom strachu,
               za {KONSTANTY.CENA_PRESVEDCENIA} z hádky presvedčíš staršieho, ktorý sa súpera bojí viac než teba.
             </span>
-            {view.faza !== "draft" && <span className="tip-stav">Klik ukáže, čo ostalo v šenku ({view.senok.length}).</span>}
+            {view.faza !== "draft" && <span className="tip-stav">Klik ukáže, čo ostalo v ponuke ({view.senok.length}).</span>}
           </>
         ),
       },
@@ -1554,7 +1554,7 @@ export function PriebehKola({
         stredne: `Zhrom.${cislo}`,
         kratke: viac ? `Z${i}` : "Z",
         tip: {
-          nadpis: `Zhromaždenie${viac ? ` ${i} z ${pitiek}` : ""}`,
+          nadpis: `Zhromaždenie — kladenie kariet${viac ? ` (${i} z ${pitiek})` : ""}`,
           text: (
             <>
               Striedavo vykladáte karty z ruky na hociktorý koniec línie, začína útočník. Limit vykladania = plné poldeci + poldeci na
