@@ -629,8 +629,8 @@
     {
       "pojem": "dobratie do 3 kariet",
       "vzory": [
-        "doberw* do (?:troch|3)",
-        "dobratw* do (?:troch|3)",
+        "dober\\w* do (?:troch|3)",
+        "dobrat\\w* do (?:troch|3)",
         "do (?:troch|3) kariet v ruke"
       ],
       "pozn": "v11.21: po bitke presne 2 karty (Michal 2026-11-10)"
