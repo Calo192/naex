@@ -318,7 +318,7 @@
     "tvary": "NA EX",
     "sk": {
       "pojem": "NA EX!",
-      "popis": "Plný poldeci na kartu v línii, vybraný v Pitke skryto: zruší jej aktívne akcie a zdvojí neaktívne. Zrušený Odpor pustí akciu, ktorú rušil; nespárovaný Odpor NA EX zahasí, nespárované Posilnenie podrží aktívne akcie.",
+      "popis": "Plný poldeci na kartu v línii, vybraný v Pitke skryto: zruší jej aktívne akcie a zdvojí neaktívne. Odpor na spoji nechá tak; na kartu s aktívnym (nespárovaným) Odporom nejde — skryté či z Vínka zahasí; nespárované Posilnenie podrží aktívne akcie.",
       "kratko": "Vylej plný poldeci na ex na kartu v línii. Jej akcie v spoji zhasnú, osamelé sa zdvoja.",
       "tvary": "NA EX"
     }
@@ -736,7 +736,7 @@
     "popis": "",
     "sk": {
       "pojem": "Vzbura",
-      "popis": "Odpor proti Odporu: obe karty sa obrátia — nespojené akcie sú aktívne, spojené neaktívne. Odpor proti Posilneniu: len karta s Odporom, navyše posilnená. Vidly podložené pod kartu ju obrátia tiež. NA EX na ňu nejde."
+      "popis": "Odpor proti Odporu: obe karty sa obrátia — nespojené akcie sú aktívne, spojené neaktívne; Odpory spoja zhasnú. Odpor proti Posilneniu: len karta s Odporom, navyše posilnená. Vidly podložené pod kartu ju obrátia tiež. NA EX na ňu nejde."
     }
   },
   "zaverecna": {
