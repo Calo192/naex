@@ -39,19 +39,19 @@
  },
  "vinko": {
   "nazov": "Plonk",
-  "efekt": "Heirloom: Counts as if you had an extra full shot. You can't refill shots for cigarettes. Top: NA EX. Bottom: {Pečeň}→{Poldeci}.",
+  "efekt": "Heirloom: Your shot maximum is 1 higher. Top: NA EX. Bottom: {Pečeň}→{Poldeci}.",
   "pozn": "Vínko je láskavá zdrobnenina; plonk = lacné víno, britský hovorový výraz.",
   "sk": {
    "nazov": "Vínko",
-   "efekt": "Dedičstvo: Počíta sa, akoby si mal plný poldeci navyše. Nemôžeš dolievať poldeci za cigarety. Hore: NA EX. Dole: {Pečeň}→{Poldeci}."
+   "efekt": "Dedičstvo: Tvoje maximum poldeci je o 1 vyššie. Hore: NA EX. Dole: {Pečeň}→{Poldeci}."
   }
  },
  "pasca": {
   "nazov": "Trap",
-  "efekt": "Heirloom: Brawl: If your opponent played a card next to your card this round {Rana}. Top: {Pečeň}→{Rana}. Bottom: Boosted {Rana}.",
+  "efekt": "Heirloom: Brawl: For each card your opponent played next to your card this round {Rana}. Top: {Pečeň}→{Rana}. Bottom: Boosted {Rana}.",
   "sk": {
    "nazov": "Pasca",
-   "efekt": "Dedičstvo: Bitka: Ak súper v tomto kole priložil kartu k tvojej karte {Rana}. Hore: {Pečeň}→{Rana}. Dole: Posilnená {Rana}."
+   "efekt": "Dedičstvo: Bitka: Za každú kartu, ktorú súper v tomto kole priložil k tvojej karte {Rana}. Hore: {Pečeň}→{Rana}. Dole: Posilnená {Rana}."
   }
  },
  "puska": {
@@ -80,11 +80,11 @@
  },
  "vyherny_automat": {
   "nazov": "Fruit Machine",
-  "efekt": "Heirloom: Your Debt threshold is 1 higher. Last booze-up of the round: {Hazard}. Top: {Hazard}→{Poldeci}. Bottom: {Hazard}→{Pecka}.",
+  "efekt": "Heirloom: Your Debt threshold is 1 higher. Booze-up: {Dlh}. Top: {Hazard}→{Poldeci}. Bottom: {Hazard}→{Pecka}.",
   "pozn": "Fruit machine = britský krčmový automat.",
   "sk": {
    "nazov": "Výherný automat",
-   "efekt": "Dedičstvo: Tvoj prah Dlhu je o 1 vyšší. Posledná Pitka kola: {Hazard}. Hore: {Hazard}→{Poldeci}. Dole: {Hazard}→{Pecka}."
+   "efekt": "Dedičstvo: Tvoj prah Dlhu je o 1 vyšší. Pitka: {Dlh}. Hore: {Hazard}→{Poldeci}. Dole: {Hazard}→{Pecka}."
   }
  },
  "dlh": {
@@ -277,10 +277,10 @@
  },
  "vychovavatelka": {
   "nazov": "Matron",
-  "efekt": "Prisoner — once per game: Your opponent passes in this Assembly at once and gets no cigarettes for passing.",
+  "efekt": "Prisoner — once per game: Your opponent passes in this Assembly at once.",
   "sk": {
    "nazov": "Vychovávateľka",
-   "efekt": "Väzeň — raz za hru: Súper v tomto Zhromaždení hneď pasuje a za pas nedostane cigarety."
+   "efekt": "Väzeň — raz za hru: Súper v tomto Zhromaždení hneď pasuje."
   }
  },
  "liberal": {
@@ -398,14 +398,14 @@
  },
  "kostol": {
   "nazov": "Church",
-  "efekt": "Assembly: Nobody may down a shot. Booze-up: NA EX may only be poured on a card at an end of the line (either of the two ends).",
+  "efekt": "Assembly: Only 1 card may be played per turn. Booze-up: NA EX may only be poured on a card at an end of the line (either of the two ends).",
   "kraje": [
    "by the altar",
    "by the entrance"
   ],
   "sk": {
    "nazov": "Kostol",
-   "efekt": "Zhromaždenie: Nikto nesmie vypiť. Pitka: NA EX sa smie dať len na kartu na konci línie (na ktoromkoľvek z dvoch koncov)."
+   "efekt": "Zhromaždenie: V ťahu sa smie vyložiť len 1 karta. Pitka: NA EX sa smie dať len na kartu na konci línie (na ktoromkoľvek z dvoch koncov)."
   }
  },
  "svokra": {
@@ -475,14 +475,14 @@
  },
  "jednota": {
   "nazov": "Co-op",
-  "efekt": "Booze-up: Whoever has more confessed Debts may not smoke or refill in this booze-up.",
+  "efekt": "Booze-up: Whoever has more confessed Debts may not smoke or barter in this booze-up.",
   "kraje": [
    "at the counter",
    "outside the shop"
   ],
   "sk": {
    "nazov": "Jednota",
-   "efekt": "Pitka: Kto má viac priznaných Dlhov, nesmie v tejto Pitke fajčiť ani dolievať."
+   "efekt": "Pitka: Kto má viac priznaných Dlhov, nesmie v tejto Pitke fajčiť ani barterovať."
   }
  },
  "kulturny_dom": {
@@ -511,14 +511,14 @@
  },
  "druzstvo": {
   "nazov": "Collective Farm",
-  "efekt": "Assembly: Cards with a Work action don't use up the play limit.",
+  "efekt": "Assembly: Cards with a Work action cost no shots.",
   "kraje": [
    "in the field",
    "at the meeting"
   ],
   "sk": {
    "nazov": "Družstvo",
-   "efekt": "Zhromaždenie: Karty s akciou Robota nemíňajú limit vykladania."
+   "efekt": "Zhromaždenie: Karty s akciou Robota nestoja poldeci."
   }
  },
  "cintorin": {
@@ -595,10 +595,10 @@
  },
  "kapybara": {
   "nazov": "Capybara",
-  "efekt": "Support: Retraining {Viera}→{Cigareta}. Clash: Retraining {Viera}→{Cigareta}. Always: {Cigareta}.",
+  "efekt": "Always: Retraining {Viera}→{Cigareta}.",
   "sk": {
    "nazov": "Kapybara",
-   "efekt": "Podpora: Preškolenie {Viera}→{Cigareta}. Konflikt: Preškolenie {Viera}→{Cigareta}. Furt: {Cigareta}."
+   "efekt": "Furt: Preškolenie {Viera}→{Cigareta}."
   }
  },
  "kon": {
@@ -670,10 +670,10 @@
  },
  "traktoristka": {
   "nazov": "Tractor Driver",
-  "efekt": "Last booze-up of the round: Without the upper hand in his wing {Dlh}.",
+  "efekt": "Brawl: With the upper hand in his wing {Pecka}.",
   "sk": {
    "nazov": "Traktorista",
-   "efekt": "Posledná Pitka kola: Bez prevahy v jeho kraji {Dlh}."
+   "efekt": "Bitka: S prevahou v jeho kraji {Pecka}."
   }
  },
  "vymahac": {
@@ -767,18 +767,18 @@
  },
  "hrable": {
   "nazov": "Rake",
-  "efekt": "Heirloom: An action cancelled by your Resistance counts as yours and is boosted. Top: {Odpor}→{Posilnenie}. Bottom: {Posilnenie}→{Odpor}.",
+  "efekt": "Heirloom: Your active Resistance deals damage in the brawl like a Wallop. Top: {Odpor}→{Posilnenie}. Bottom: {Posilnenie}→{Odpor}.",
   "sk": {
    "nazov": "Hrable",
-   "efekt": "Dedičstvo: Akcia zrušená tvojím Odporom sa ráta ako tvoja a je posilnená. Hore: {Odpor}→{Posilnenie}. Dole: {Posilnenie}→{Odpor}."
+   "efekt": "Dedičstvo: Tvoj aktívny Odpor dáva v bitke poškodenie ako Pecka. Hore: {Odpor}→{Posilnenie}. Dole: {Posilnenie}→{Odpor}."
   }
  },
  "jogurt": {
   "nazov": "Yoghurt",
-  "efekt": "Heirloom: Your Shot actions refill an empty shot right in the booze-up, not only in the brawl. Top: {Pečeň}→{Posilnenie}. Bottom: {Pečeň}→{Hazard}.",
+  "efekt": "Heirloom: After every booze-up you get 1 more shot refilled. Top: {Pečeň}→{Posilnenie}. Bottom: {Pečeň}→{Hazard}.",
   "sk": {
    "nazov": "Jogurt",
-   "efekt": "Dedičstvo: Tvoje Poldeci otáčajú vypitý poldeci hneď v Pitke, nie až v bitke. Hore: {Pečeň}→{Posilnenie}. Dole: {Pečeň}→{Hazard}."
+   "efekt": "Dedičstvo: Po každej Pitke sa ti doleje o 1 poldeci viac. Hore: {Pečeň}→{Posilnenie}. Dole: {Pečeň}→{Hazard}."
   }
  },
  "kristalova_gula": {
@@ -791,11 +791,11 @@
  },
  "pistalka": {
   "nazov": "Duct Tape",
-  "efekt": "Heirloom: Your Restrictions also take away the cigarettes your opponent gets for passing. Top: {Pečeň}→{Obmedzenie}. Bottom: Boosted {Obmedzenie}.",
+  "efekt": "Heirloom: For each of your active Restrictions, your opponent gets 1 shot fewer refilled after the booze-up. Top: {Pečeň}→{Obmedzenie}. Bottom: Boosted {Obmedzenie}.",
   "pozn": "Izolačka = univerzálna dedinská oprava; v angličtine to robí duct tape.",
   "sk": {
    "nazov": "Izolačka",
-   "efekt": "Dedičstvo: Tvoje Obmedzenia uberajú aj cigarety, ktoré súper dostane za pas. Hore: {Pečeň}→{Obmedzenie}. Dole: Posilnené {Obmedzenie}."
+   "efekt": "Dedičstvo: Za každé tvoje aktívne Obmedzenie sa súperovi po Pitke doleje o 1 poldeci menej. Hore: {Pečeň}→{Obmedzenie}. Dole: Posilnené {Obmedzenie}."
   }
  },
  "profesionalny_tiper": {
@@ -857,10 +857,10 @@
  },
  "predavacka": {
   "nazov": "Shop Assistant",
-  "efekt": "Support: Take 1 Citizen from the Market.",
+  "efekt": "Support: Take 1 card from the Market onto the top of your draw pile.",
   "sk": {
    "nazov": "Predavačka",
-   "efekt": "Podpora: Vezmi si z ponuky 1 Občana."
+   "efekt": "Podpora: Vezmi si z ponuky 1 kartu navrch svojho doberacieho balíčka."
   }
  },
  "veducko": {
