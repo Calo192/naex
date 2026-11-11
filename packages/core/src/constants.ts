@@ -316,8 +316,9 @@ export function vazniNaVyhru(lokalitCelkom: number): number {
 // v12 (Michal 2026-11-11: „Keď to budeš vypaľovať, označ to ako verzia 12“) nová značka: akcie navyše mení celý podložený Nástroj aj Forsáž
 // Energeťáka; Traktorista Pecka s prevahou, Pasca Rana za každú priloženú kartu, Výherný automat Dlh v každej
 // Pitke, Kapybara Furt Preškolenie susedov, Predavačka karta z ponuky navrch balíčka.
-// v12.1 (Michal 2026-11-11: „Zrušiť obe obmedzenia.“) bez novej značky: NA EX aj na kartu s neaktívnym
-// Odporom (štít v11.17 ho zahasí) a neaktívny Pakt sa ráta do neaktívnych akcií.
+// v12.1 (Michal 2026-11-11) bez novej značky: Odpor je aktívny len bez spoja (dáva NA EX štít, karta nie je
+// cieľom NA EX), na spoji zruší partnera a deaktivuje sa; NA EX ho nechá tak. Do podmienky NA EX sa Odpor
+// neráta, neaktívny Pakt aj Posilnenie áno. Hrable: tvoj aktívny Odpor dáva v bitke poškodenie ako Pecka.
 export const VERZIA_PRAVIDIEL = "v12";
 /**
  * Presná verzia pravidiel vrátane dávky — hráč ju vidí na stránke Pravidlá, ktorá má

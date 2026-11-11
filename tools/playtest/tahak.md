@@ -1,4 +1,4 @@
-# Ťahák — platné pravidlá NA EX! (v12.1 NA EX aj na kartu s nespárovaným Odporom (zahasí ho) a s neaktívnym Paktom, v12 akcie navyše mení celý Nástroj aj Forsáž (zo spoja aj z Energeťáka), Traktorista Pecka s prevahou, Pasca Rana za každú priloženú kartu, Výherný automat Dlh v každej Pitke, Kapybara Furt, Predavačka navrch balíčka, v11.21 po bitke 2 karty bez ohľadu na ruku, Puška a Energeťák posilnia akcie aktívne po NA EX (×4), v11.20 hodnota stupňa 1 / 2 / 3 a reťaz premien (Školitelia, potom Nástroje), pojem Ponuka (predtým šenok), v11.19 Dohadzovačka len z konca kraja, v11.18 Vedúcko Podporou, Snúbenica, Traktorista a Miňištrant, v11.17 NA EX × Odpor a Posilnenie, Kapybara, Telefón, Krokodíl a hrany Náradia, v11.16 Vypiť len s limitom, pas bez ohľadu na ruku, Degustátorka hneď, odpoveď na NA EX za poldeci, Nástroj len pod svoje karty, Školiteľ aj Zviera, v11.15 Benzínka o 1 lacnejšie, v11.14 frakcie, Preškolenie a podloženie Nástrojov, v11.13 Lokality, v11.12 Reči na súperovom teplomere, zajatie a presvedčenie, identita kariet, Kostol na konci línie, každý Hazard je Dlh, 2026-11-10, Zrejúca; sada = cards.json v master)
+# Ťahák — platné pravidlá NA EX! (v12.1 Odpor aktívny len bez spoja (štít proti NA EX), NA EX Odpor nechá tak, Hrable: aktívny Odpor = Pecka, v12 akcie navyše mení celý Nástroj aj Forsáž (zo spoja aj z Energeťáka), Traktorista Pecka s prevahou, Pasca Rana za každú priloženú kartu, Výherný automat Dlh v každej Pitke, Kapybara Furt, Predavačka navrch balíčka, v11.21 po bitke 2 karty bez ohľadu na ruku, Puška a Energeťák posilnia akcie aktívne po NA EX (×4), v11.20 hodnota stupňa 1 / 2 / 3 a reťaz premien (Školitelia, potom Nástroje), pojem Ponuka (predtým šenok), v11.19 Dohadzovačka len z konca kraja, v11.18 Vedúcko Podporou, Snúbenica, Traktorista a Miňištrant, v11.17 NA EX × Odpor a Posilnenie, Kapybara, Telefón, Krokodíl a hrany Náradia, v11.16 Vypiť len s limitom, pas bez ohľadu na ruku, Degustátorka hneď, odpoveď na NA EX za poldeci, Nástroj len pod svoje karty, Školiteľ aj Zviera, v11.15 Benzínka o 1 lacnejšie, v11.14 frakcie, Preškolenie a podloženie Nástrojov, v11.13 Lokality, v11.12 Reči na súperovom teplomere, zajatie a presvedčenie, identita kariet, Kostol na konci línie, každý Hazard je Dlh, 2026-11-10, Zrejúca; sada = cards.json v master)
 
 Spoločný ťahák AI hráčov — playtester (Zrejúca) ho číta z master, protihráč na
 Vypálenej z vetvy `vypalena` (tam platí jej verzia pravidiel). Podrobne v `docs/PRAVIDLA.md` (zmeny v jeho úvode). Pri
@@ -53,7 +53,8 @@ rozpore s `docs/PRAVIDLA.md` platí `docs/PRAVIDLA.md` a rozpor zapíš do
 - **Každú kartu** môžeš vyložiť na **ktorýkoľvek z dvoch koncov línie**
   (`target` `vlastna` = koniec vľavo od lokality, `superova` = vpravo; názvy sú len technické). Karta **patrí tomu, kto ju zahral** — akcie
   aj efekty sa rátajú majiteľovi, nech leží kdekoľvek. Nástroj sa do línie nevykladá — podkladá sa (nižšie). Tvoja karta priložená k súperovej
-  („podstrčená“, sabotér) s Odporom zruší súperovi akciu na spoji. Každá vyložená karta míňa limit
+  („podstrčená“, sabotér) s Odporom zruší súperovi akciu na spoji. **Odpor (v12.1):** aktívny je len **bez spoja** —
+  vtedy kartu chráni pred NA EX (štít); na spoji zruší partnera a **zhasne** (neaktívny). Odpor + Odpor = Vzbura. Každá vyložená karta míňa limit
   vykladania. **Limit = plné poldeci + 1** — NA EX limit nemíňa, ale
   jeho poldeci na karte sa neráta (v4), takže v ďalšom Zhromaždení kola máš limit o 1 nižší.
   Súperova **Degustátorka**, ktorá ti v Zhromaždení vyžerie plný poldeci, ti zostávajúci limit zníži o 1 **hneď** (v11.16).
@@ -235,8 +236,8 @@ rozpore s `docs/PRAVIDLA.md` platí `docs/PRAVIDLA.md` a rozpor zapíš do
   limit **hneď** o 1 (2026-10-28).
 - **Náradie (v8.4, 2026-10-30) — Nástroje do Dedičstva, menia len tvoje akcie:** Zapaľovač (tvoje aktívne
   Cigarety nemožno zrušiť NA EX), Výherné žreby (tvoje Hazardy aktívne, keď nie sú spojené, spojené neaktívne;
-  NA EX potom zdvojí spojené), Izolačka (tvoje Obmedzenia uberajú aj súperove cigarety za pas), Hrable (akcia
-  zrušená tvojím Odporom je tvoja ×2), Zrkadlo (tvoj Pakt kopíruje ×2), Valaška (Pecka +1 poškodenie), **Telefón (v11.17): remízu v hádke (nie 0 : 0) vyhrávaš ty, o 0 — súperovi klesnú reči;
+  NA EX potom zdvojí spojené), Izolačka (tvoje Obmedzenia uberajú aj súperove cigarety za pas), Hrable (v12.1: tvoj
+  aktívny Odpor dáva v bitke poškodenie ako Pecka), Zrkadlo (tvoj Pakt kopíruje ×2), Valaška (Pecka +1 poškodenie), **Telefón (v11.17): remízu v hádke (nie 0 : 0) vyhrávaš ty, o 0 — súperovi klesnú reči;
   v bitke 1 Povera navyše za každú tvoju akciu, ktorú zrušil Odpor súperovej karty** (Pohoršenia už nechráni), Jogurt (Poldeci otočia
   vypitý poldeci hneď v Pitke), Energeťák (tvoje Posilnenie nemožno zrušiť NA EX), Horoskop: tvoje Povery majú silu 2
   (v10; každá dá 2 mäkké), Svätý text: hodnota tvojej Viery je o 1 vyššia (len v tlmení tuhého; Povery ruší 1 : 1), Fúrik (Robota páli o 1 Dlh viac), Krištáľová guľa (Vízia ukáže 2 vrchné
@@ -262,19 +263,17 @@ rozpore s `docs/PRAVIDLA.md` platí `docs/PRAVIDLA.md` a rozpor zapíš do
   napr. Nealko hore Pečeň → Povera, dole Poldeci → Pohoršenie; Vidly dole Robota → Petelica; Pasca, Fúrik, Horoskop
   a Izolačka dole Posilnená Rana / Robota / Povera / Posilnené Obmedzenie. Presné hrany vidíš v popise karty.
 - **NA EX na Občana alebo Starešinu v línii — svojho aj súperovho**, len na kartu
-  s aspoň 1 aktívnou a aspoň 1 neaktívnou akciou (2026-10-23; súperova Záverečná vždy; neaktívne Posilnenie
-  sa neráta, neaktívny Pakt áno — v12.1). Na kartu s **nespárovaným Odporom** smieš, ale Odpor NA EX zahasí:
-  karta sa ráta ako bez neho, poldeci sa aj tak vypije (v12.1). Zruší
+  s aspoň 1 aktívnou a aspoň 1 neaktívnou akciou (2026-10-23; súperova Záverečná vždy; **Odpor sa neráta**,
+  neaktívny Pakt aj Posilnenie áno — v12.1) a **nie na kartu s aktívnym (nespárovaným) Odporom** — ten ju chráni. Zruší
   karte aktívne akcie a zdvojí neaktívne; akcie sa rátajú majiteľovi karty.
   Pečeň +1 je tvoja. Súper smie po odkrytí odpovedať jednou kartou mimo limitu, **lícom dole, za plný poldeci** (v11.16: vypije ho ako pri Vypiť — pečeň +1 hneď, 1 nerest; bez plného poldeci neodpovedá)
   (`place` / `bezReakcie`) — po otočení smie zmeniť prevahu v kraji aj počet Pitiek; Nástup až pri otočení. Nie na kartu, na ktorej
   už poldeci leží, ani na kartu so Vzburou (v11.1). NA EX na kartu
   pri lokalite mení len akcie karty, akcie hrany lokality ostávajú aktívne. NA EX na kartu
   s Posilnením zruší Posilnenie aj ×2 partnera na spoji (2026-10-24; partner ostáva ×1,
-  aj hrana lokality). **NA EX na kartu s Odporom zruší Odpor a akcia, ktorú rušil, ožije ×1**
-  (v11.17; aj hrana lokality — môže pridať Pitku; súperove Hrable o ňu prídu; Veteránovi Odpor nezruší).
+  aj hrana lokality). **NA EX Odpor nechá tak** (v12.1): Odpor na spoji ďalej ruší partnera, nič neožije.
   Akcia zrušená Odporom nie je ani aktívna, ani neaktívna — NA EX na jej karte ju nezdvojí (v6.1).
-  **Poldeci ako partner (v11.17):** nespárovaný Odpor na karte s NA EX ho **zahasí** (karta ako bez
+  **Poldeci ako partner (v11.17):** aktívny (nespárovaný) Odpor na karte s NA EX ho **zahasí** (karta ako bez
   NA EX, poldeci sa aj tak vypije — nastane len na súperovej Záverečnej či z Vínka, kým sa Odpor
   nespáruje); nespárované Posilnenie NA EX **podrží**: aktívne akcie karty nezruší (ani Posilnenie
   na spoji), neaktívne zdvojí ×2. Oboje na karte = vyhrá Odpor.

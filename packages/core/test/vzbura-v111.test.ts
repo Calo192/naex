@@ -38,8 +38,9 @@ describe("Vzbura obráti aktivitu karty (v11.1)", () => {
     const eb = ev.cards.get(b.uid)!;
     expect(ea.vzbura).toBe(true);
     expect(eb.vzbura).toBe(true);
-    expect(ea.left.map((s) => s?.stav ?? null)).toEqual(["aktivna", "neaktivna", "aktivna", null]);
-    expect(eb.right.map((s) => s?.stav ?? null)).toEqual(["aktivna", "neaktivna", null, "aktivna"]);
+    // Odpory spoja Vzbury sa použili — od v12.1 zhasnú ako zrušené (Michal 2026-11-11).
+    expect(ea.left.map((s) => s?.stav ?? null)).toEqual(["zrusena", "neaktivna", "aktivna", null]);
+    expect(eb.right.map((s) => s?.stav ?? null)).toEqual(["zrusena", "neaktivna", null, "aktivna"]);
     expect(ea.right[1]?.stav).toBe("aktivna");
     expect(ev.zdroje[0].Viera?.[0]?.dovody).toEqual(["Vzbura"]);
   });
@@ -217,10 +218,10 @@ describe("Vzbura s rozložením zo snímky Zrejúcej (Michal 2026-11-02; akcie k
     expect(em.vzbura).toBe(true);
     // Policajtka: spojená Rana pri Povere neaktívna (Odpor spoja ostáva); nespojené Obmedzenie, Rana
     // a celá pravá hrana bez suseda (Obmedzenie, Hazard, Robota) aktívne.
-    expect(ep.left.map((s) => s?.stav ?? null)).toEqual(["aktivna", "aktivna", "aktivna", "neaktivna"]);
+    expect(ep.left.map((s) => s?.stav ?? null)).toEqual(["aktivna", "zrusena", "aktivna", "neaktivna"]);
     expect(ep.right.filter((s) => s !== null).map((s) => s.stav)).toEqual(["aktivna", "aktivna", "aktivna"]);
     // Manželka: Povera stojí proti Rane Policajtky — je spojená, teda neaktívna; ľavá hrana bez suseda aktívna.
-    expect(em.right.map((s) => s?.stav ?? null)).toEqual([null, "aktivna", null, "neaktivna"]);
+    expect(em.right.map((s) => s?.stav ?? null)).toEqual([null, "zrusena", null, "neaktivna"]);
     expect(em.left.filter((s) => s !== null).every((s) => s.stav === "aktivna")).toBe(true);
     expect(ev.sums[0]).toMatchObject({ Rana: 1, Robota: 1 });
     expect(ev.sums[0].Povera).toBeUndefined();

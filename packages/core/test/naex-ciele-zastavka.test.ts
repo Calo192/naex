@@ -1,14 +1,15 @@
 // Živý playtest 2026-11-11 (Vypálená, Pitka na Zastávke): NA EX šlo len na Živnostníka
-// a Miňištranta, hoci všetky karty v línii sú Občania. Recidivistu a Milujúcu manželku
-// vyraďoval neaktívny Odpor (v11.17), Dievčinu to, že jej jediná neaktívna akcia je Pakt (v7).
-// Michal 2026-11-11: „Zrušiť obe obmedzenia.“ (v12.1) — teraz sú cieľom všetci piati.
+// a Miňištranta, hoci všetky karty v línii sú Občania. Michal 2026-11-11 (v12.1): „Odpor bude
+// aktívny LEN vtedy, keď nie je spojený s inou akciou, a bude dávať ‚NA EX‘ štít“ — Recidivistu
+// a Milujúcu manželku s nespárovaným Odporom NA EX ďalej obíde; neaktívny Pakt sa do podmienky
+// ráta, Dievčina na vydaj je cieľom.
 
 import { describe, expect, it } from "vitest";
 import cardsJson from "../data/cards.json";
 import eldersJson from "../data/elders.json";
 import scorecardsJson from "../data/scorecards.json";
 import type { LineState, PlacedCard, PlayerId, SlotEval } from "../src/index.ts";
-import { evaluateLine, loadGameData, naexCieleVLinii } from "../src/index.ts";
+import { dovodyBezNaex, evaluateLine, loadGameData, naexCieleVLinii } from "../src/index.ts";
 
 const data = loadGameData(cardsJson, eldersJson, scorecardsJson);
 const lezi = (uid: number, defId: string, leftLayout: number, rightLayout: number, playedBy: PlayerId, naexBy?: PlayerId): PlacedCard => ({
@@ -45,18 +46,23 @@ const sloty = (line: LineState, uid: number): SlotEval[] => {
 };
 
 describe("NA EX v Pitke na Zastávke (živý playtest 2026-11-11, v12.1)", () => {
-  it("cieľom sú všetci piati Občania — pre oboch hráčov", () => {
-    const vsetci = [MANZELKA, ZIVNOSTNIK, RECIDIVISTA, DIEVCINA, MINISTRANT];
-    expect(naexCieleVLinii(data, linia(), 0)).toEqual(vsetci);
-    expect(naexCieleVLinii(data, linia(), 1)).toEqual(vsetci);
+  it("cieľom sú Živnostník, Dievčina a Miňištrant — pre oboch hráčov", () => {
+    expect(naexCieleVLinii(data, linia(), 0)).toEqual([ZIVNOSTNIK, DIEVCINA, MINISTRANT]);
+    expect(naexCieleVLinii(data, linia(), 1)).toEqual([ZIVNOSTNIK, DIEVCINA, MINISTRANT]);
   });
 
-  it("Recidivista a Milujúca manželka majú neaktívny Odpor — NA EX naň ide, štít ho zahasí", () => {
+  it("Recidivistu a Milujúcu manželku chráni aktívny (nespárovaný) Odpor", () => {
+    const dovody = dovodyBezNaex(data, linia());
     for (const uid of [RECIDIVISTA, MANZELKA]) {
-      expect(sloty(linia(), uid).some((x) => x.stav === "neaktivna" && x.action === "Odpor")).toBe(true);
-      expect(evaluateLine(data, linia(uid)).cards.get(uid)?.naexStit).toBe("Odpor");
-      expect(sloty(linia(uid), uid)).toEqual(sloty(linia(), uid));
+      expect(dovody.get(uid)).toBe("odpor");
+      expect(sloty(linia(), uid).find((x) => x.action === "Odpor")?.stav).toBe("aktivna");
     }
+  });
+
+  it("Odpor Živnostníka na spoji zruší Petelicu Recidivistu a zhasne; do podmienky sa neráta", () => {
+    expect(sloty(linia(), ZIVNOSTNIK).find((x) => x.action === "Odpor")?.stav).toBe("zrusena");
+    expect(sloty(linia(), RECIDIVISTA).find((x) => x.action === "Petelica")?.stav).toBe("zrusena");
+    expect(dovodyBezNaex(data, linia()).get(ZIVNOSTNIK)).toBeNull();
   });
 
   it("Dievčina, ktorej jediná neaktívna akcia je Pakt: NA EX zruší aktívne, Pakt nezdvojí", () => {

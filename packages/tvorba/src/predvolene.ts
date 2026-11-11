@@ -63,7 +63,7 @@ export const PREDVOLENE_AKCIE: readonly AkciaDef[] = [
   A("Pohoršenie", "Pohoršenie", `${KONSTANTY.HADKA.POHORSENIE_MAKKE} mäkké poškodenie do hádky; Viera ho nezruší. Kto má v bitke viac mäkkého, vyhral hádku o rozdiel a po bitke ho rozdelí na svoje reči pri starších (vo finále 1 špak za bod).`),
   ...AKCIE_20261019.map((a) => A(a.kluc, a.nazov, a.popis)),
   A("Posilnenie", "Posilnenie", "Zdvojnásobí prepojenú akciu — priaznivú aj nepriaznivú. Posilnenie proti Posilneniu = Forsáž: obe karty majú všetky aktívne akcie posilnené."),
-  A("Odpor", "Odpor", "Zruší prepojenú akciu. Odpor proti Odporu = Vzbura: obe karty sa obrátia — nespojené akcie sú aktívne, spojené neaktívne. Odpor proti Posilneniu = Vzbura len karty s Odporom, jej aktívne akcie sú posilnené."),
+  A("Odpor", "Odpor", "Odpor je aktívny len bez spoja a dáva karte štít proti NA EX. Na spoji zruší akciu, s ktorou sa spojí, aj seba. Odpor s Odporom = Vzbura."),
   A("Robota", "Robota", "V bitke v kroku exekúcie, pred Exekútorom, spáli 1 tvoj priznaný Dlh (z hry). Za Dlh, ktorý nemá čo spáliť, ti dá 1 špak."),
   A("Pakt", "Pakt", "Na spoji sa správa ako akcia, s ktorou je v páre. Pakt s Paktom nerobí nič; Odpor ho zruší."),
 ].map((a, poradie) => ({ ...a, poradie }));

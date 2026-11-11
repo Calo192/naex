@@ -313,7 +313,7 @@
   },
   "naex": {
     "pojem": "NA EX!",
-    "popis": "Plný panák na kartu v linii, vybraný v Pitce skrytě: zruší její aktivní akce a zdvojí neaktivní. Zrušený Odpor pustí akci, kterou rušil; nespárovaný Odpor NA EX uhasí, nespárované Posílení podrží aktivní akce.",
+    "popis": "",
     "kratko": "Vylij plného panáka na ex na kartu v linii. Její akce ve spoji zhasnou, osamělé se zdvojí.",
     "tvary": "NA EX",
     "sk": {
@@ -733,7 +733,7 @@
   },
   "vzbura": {
     "pojem": "Vzpoura",
-    "popis": "Odpor proti Odporu: obě karty se obrátí — nespojené akce jsou aktivní, spojené neaktivní. Odpor proti Posílení: jen karta s Odporem, navíc posílená. Vidle podložené pod kartu ji obrátí také. NA EX na ni nejde.",
+    "popis": "",
     "sk": {
       "pojem": "Vzbura",
       "popis": "Odpor proti Odporu: obe karty sa obrátia — nespojené akcie sú aktívne, spojené neaktívne. Odpor proti Posilneniu: len karta s Odporom, navyše posilnená. Vidly podložené pod kartu ju obrátia tiež. NA EX na ňu nejde."

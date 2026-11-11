@@ -54,6 +54,7 @@ import type { Moment, ActionSums, DopadyNahladu, KliatbyNahladu, NahladNaexNaKar
 import type { KtoraHrana, MoznostPodlozenia, PodlozenyNastroj } from "@naex/core";
 import { aktivnaHrana, dovodNepodlozenia, hranyNastroja, ponukaPodlozenia, ucinkyNastrojov } from "@naex/core";
 import { sDlhmiPoradkyne } from "@naex/core";
+import { dovodyBezNaex } from "@naex/core";
 import { IkonaAkcie } from "../karta/IkonaAkcie.tsx";
 import { PodlozeneNastroje, smerPretrcania, vyskaHranyPod } from "./PodlozeneNastroje.tsx";
 import { vzhladSady } from "../lib/sada.tsx";
@@ -1342,13 +1343,20 @@ export function HernaPlocha({
           dlhyBitka: dlhyBitka[p],
         };
 
-  // Prečo na kartu NA EX nejde — hráč to vidí pri karte (dizajn hra-20261021-1240, UX N4).
+  // Prečo na kartu NA EX nejde — hráč to vidí pri karte (dizajn hra-20261021-1240, UX N4); dôvod
+  // podmienky počíta jadro tak ako motor (v12.1: Odpor kartu chráni, nič na zrušenie či zdvojenie).
+  const dovodyNaex = useMemo(() => dovodyBezNaex(data, lineState(view)), [data, view]);
   const dovodBezNaexNaKartu = (pl: PlacedCard): string => {
     const def = data.cards.get(pl.card.defId);
     if (pl.naexBy !== undefined) return t("plocha.uzLezi");
     if (def !== undefined && !def.tags.includes("Občan") && !def.tags.includes("Starešina"))
       return def.tags.includes("Nástroj") ? t("plocha.naexLenNastroj") : t("plocha.naexLen");
     if (naexLimitMinuty) return t("plocha.naexLimit");
+    const dovod = dovodyNaex.get(pl.card.uid) ?? null;
+    if (dovod === "odpor") return t("plocha.naexOdporChrani");
+    if (dovod === "vzbura") return t("plocha.naexVzbura");
+    if (dovod === "bezAktivnej") return t("plocha.naexNicNaZrusenie");
+    if (dovod === "bezNeaktivnej") return t("plocha.naexNicNaZdvojenie");
     return t("plocha.naexAktivna");
   };
   /**

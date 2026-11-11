@@ -313,7 +313,7 @@
   },
   "naex": {
     "pojem": "NA EX!",
-    "popis": "Teli feles egy kártyára a sorban, az Ivászaton titokban kiválasztva: kioltja az aktív akcióit, és megduplázza az inaktívakat. A kioltott Ellenállás elengedi az akciót, amelyet kioltott; a pár nélküli Ellenállást a NA EX eloltja, a pár nélküli Erősítés megtartja az aktív akciókat.",
+    "popis": "",
     "kratko": "Egy teli felest fenékig egy kártyára öntesz a sorban. A kötésben lévő akciói kialszanak, a magányosak megduplázódnak.",
     "tvary": "NA EX",
     "sk": {
@@ -733,7 +733,7 @@
   },
   "vzbura": {
     "pojem": "Lázadás",
-    "popis": "Ellenállás az Ellenállás ellen: mindkét kártya megfordul — a kötetlen akciók aktívak, a kötöttek inaktívak. Ellenállás az Erősítés ellen: csak az Ellenállásos kártya, ráadásul erősítve. A kártya alá rakott Vasvilla is megfordítja. NA EX nem mehet rá.",
+    "popis": "",
     "sk": {
       "pojem": "Vzbura",
       "popis": "Odpor proti Odporu: obe karty sa obrátia — nespojené akcie sú aktívne, spojené neaktívne. Odpor proti Posilneniu: len karta s Odporom, navyše posilnená. Vidly podložené pod kartu ju obrátia tiež. NA EX na ňu nejde."

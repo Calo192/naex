@@ -675,13 +675,34 @@
       "pozn": "v12: akcie navyše mení celý podložený Nástroj (preškolenie, hrana posilnenia) aj Forsáž Energeťáka (vo Vypálenej od vypálenia v12)"
     },
     {
-      "pojem": "NA EX nie na kartu s nespárovaným Odporom či s jediným neaktívnym Paktom",
+      "pojem": "NA EX zruší Odpor a partner ožije",
       "vzory": [
-        "(?:nesparovan|neaktivn)\\w* odpor\\w*[^.!?]{0,60}(?:na ex|naex)[^.!?]{0,30}(?:nemoz|neda|nejd|nesmi)",
-        "(?:nemoz|neda|nejd|nesmi|nie)\\w*[^.!?]{0,60}kart\\w* s (?:nesparovan|neaktivn)\\w* odpor",
-        "neaktivn\\w* pakt\\w*[^.!?]{0,60}nerat"
+        "zrus\\w* odpor\\w*[^.!?]{0,60}(?:pust|ozi)",
+        "odpor\\w*[^.!?]{0,30}(?:pusti|ozije)\\w*[^.!?]{0,30}partner"
       ],
-      "pozn": "v12.1: NA EX smie aj na kartu s nespárovaným Odporom (štít ho zahasí) a neaktívny Pakt sa ráta do neaktívnych akcií (Michal 2026-11-11: „Zrušiť obe obmedzenia.“)"
+      "pozn": "v12.1: NA EX Odpor na spoji nechá tak — akcia, ktorú Odpor ruší, ostáva zrušená (Michal 2026-11-11)"
+    },
+    {
+      "pojem": "neaktívny Odpor ako štít (starý pojem)",
+      "vzory": [
+        "neaktivn\\w* odpor\\w*[^.!?]{0,60}(?:zahas|stit|na ex|naex)"
+      ],
+      "pozn": "v12.1: Odpor je aktívny len bez spoja — štít dáva aktívny (nespárovaný) Odpor; na spoji je neaktívny (Michal 2026-11-11)"
+    },
+    {
+      "pojem": "neaktívny Pakt či Posilnenie sa do podmienky NA EX neráta",
+      "vzory": [
+        "neaktivn\\w* (?:pakt|posilnen)\\w*[^.!?]{0,60}nerat"
+      ],
+      "pozn": "v12.1: do „aspoň 1 aktívna a 1 neaktívna“ sa neaktívny Pakt aj Posilnenie rátajú, Odpor nie (Michal 2026-11-11: „Áno, aj Posilnenie“)"
+    },
+    {
+      "pojem": "Hrable: akcia zrušená tvojím Odporom je tvoja",
+      "vzory": [
+        "hrabl\\w*[^.!?]{0,80}(?:zrusen|ukradn|kradn)",
+        "akci\\w* zrusen\\w* tvojim odpor"
+      ],
+      "pozn": "v12.1: Hrable — „Dedičstvo: Tvoj aktívny Odpor dáva v bitke poškodenie ako Pecka.“ (Michal 2026-11-11)"
     }
   ],
   "karty": [

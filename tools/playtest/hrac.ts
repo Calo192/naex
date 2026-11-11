@@ -987,18 +987,17 @@ function moznosti(v: ClientState): string[] {
       const ciele = new Set(moznostiNaexVPohlade(DATA, v));
       const naexEste = ciele.size > 0;
       if (mojeSkryte.length > 0) out.push(`(Skryto si dal ${mojeSkryte.length === 1 ? "NA EX" : `${mojeSkryte.length} NA EX`} — odkryje sa, keď obaja skončíte Pitku; súper potom smie odpovedať jednou kartou lícom dole za každé.)`);
-      // Čo NA EX na karte urobí (v11.17): nespárovaný Odpor ho zahasí (od v12.1 je taká karta cieľom),
-      // nespárované Posilnenie ho podrží, zrušený Odpor pustí partnera.
+      // Čo NA EX na karte urobí (v11.17): nespárované Posilnenie ho podrží. Odpor na spoji NA EX nechá
+      // tak (v12.1) — partner ostáva zrušený; karta s aktívnym (nespárovaným) Odporom cieľom nie je.
       const evNaex = naexEste ? evaluateLine(DATA, lineState(v)) : null;
       const ucinokNaexText = (uid: number, defId: string): string => {
         const k = evNaex?.cards.get(uid);
         const sloty = [...(k?.left ?? []), ...(k?.right ?? [])];
-        if (sloty.some((x) => x?.action === "Odpor" && x.stav === "neaktivna")) return "nespárovaný Odpor NA EX ZAHASÍ: karta sa ráta ako bez NA EX, poldeci sa aj tak vypije";
         if (defId === "veteran") return "Veterán: zdvojí jeho aktívne akcie a nezruší ich, neaktívne nechá";
         const posil = sloty.some((x) => x?.action === "Posilnenie" && x.stav === "neaktivna");
-        const odpor = sloty.some((x) => x?.action === "Odpor" && x.stav === "aktivna");
+        const odpor = sloty.some((x) => x?.action === "Odpor");
         if (posil) return "nespárované Posilnenie NA EX podrží: aktívne akcie karty nezruší, neaktívne zdvojí";
-        return `zruší jej aktívne akcie, zdvojí neaktívne${odpor ? "; zrušený Odpor pustí akciu, ktorú rušil (ožije ×1)" : ""}`;
+        return `zruší jej aktívne akcie, zdvojí neaktívne${odpor ? "; jej Odpor na spoji nechá tak (partner ostáva zrušený)" : ""}`;
       };
       if (naexEste) {
         for (const p of [0, 1] as const) {

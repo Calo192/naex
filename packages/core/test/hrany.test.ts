@@ -78,7 +78,10 @@ describe("náhľad vyloženia sedí s vyhodnotením línie", () => {
       for (let k = 0; k < 4; k++) {
         const slot = ev[n.vnutornaVytlacena][k];
         if (slot === null || slot === undefined) continue;
-        if (!obratena) {
+        // Odpor (v12.1): aktívny len bez spoja, na spoji sa použije a zhasne ako zrušený.
+        if (slot.action === "Odpor") {
+          expect(slot.stav, `${karta.defId} Odpor index ${k}`).toBe(sparovane.has(k) ? "zrusena" : "aktivna");
+        } else if (!obratena) {
           expect(slot.stav !== "neaktivna", `${karta.defId} index ${k}`).toBe(sparovane.has(k));
         } else if (slot.stav !== "zrusena" && !["Odpor", "Posilnenie", "Pakt"].includes(slot.action)) {
           expect(slot.stav === "aktivna", `${karta.defId} index ${k} (obrátená)`).toBe(!sparovane.has(k));

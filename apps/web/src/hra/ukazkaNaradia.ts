@@ -12,7 +12,7 @@ const HRANY_NASTROJOV: Readonly<Record<string, string>> = {
   energetak: "Dedičstvo: Tvoje Posilnenie nemožno zrušiť NA EX. Hore: Forsáž. Dole: {Posilnenie}→{Pečeň}.",
   furik: "Dedičstvo: Tvoje Roboty pália o 1 Dlh viac. Hore: {Hazard}→{Robota}. Dole: {Robota}→{Hazard}.",
   horoskop: "Dedičstvo: Tvoje Povery majú silu 2. Hore: {Hazard}→{Povera}. Dole: {Povera}→{Hazard}.",
-  hrable: "Dedičstvo: Akcia zrušená tvojím Odporom sa ráta ako tvoja a je posilnená. Hore: {Odpor}→{Posilnenie}. Dole: {Posilnenie}→{Odpor}.",
+  hrable: "Dedičstvo: Tvoj aktívny Odpor dáva v bitke poškodenie ako Pecka. Hore: {Odpor}→{Posilnenie}. Dole: {Posilnenie}→{Odpor}.",
   lievik: "Dedičstvo: NA EX smieš dať aj na Zviera. Hore: Výtržník. Dole: {Poldeci}→{Pečeň}.",
   pistalka: "Dedičstvo: Tvoje Obmedzenia uberajú aj cigarety, ktoré súper dostane za pas. Hore: {Pečeň}→{Obmedzenie}. Dole: {Pecka}→{Obmedzenie}.",
   jogurt: "Dedičstvo: Tvoje Poldeci otáčajú vypitý poldeci hneď v Pitke, nie až v bitke. Hore: {Pečeň}→{Posilnenie}. Dole: {Pečeň}→{Hazard}.",

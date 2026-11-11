@@ -313,7 +313,7 @@
   },
   "naex": {
     "pojem": "NA EX!",
-    "popis": "A full shot onto a card in the line, chosen in secret in the Booze-up: it cancels the card's active actions and doubles its inactive ones. A cancelled Resistance lets go of the action it was cancelling; an unpaired Resistance snuffs out the NA EX, an unpaired Boost keeps its active actions.",
+    "popis": "",
     "kratko": "Pour a full shot onto a card in the line, all in one go. Its actions in a link go dark; the lonely ones double.",
     "tvary": "NA EX",
     "sk": {
@@ -733,7 +733,7 @@
   },
   "vzbura": {
     "pojem": "Revolt",
-    "popis": "Resistance against Resistance: both cards flip — unlinked actions are active, linked ones inactive. Resistance against Boost: only the card with the Resistance, boosted on top. A Pitchfork tucked under a card flips it too. NA EX can't go on it.",
+    "popis": "",
     "sk": {
       "pojem": "Vzbura",
       "popis": "Odpor proti Odporu: obe karty sa obrátia — nespojené akcie sú aktívne, spojené neaktívne. Odpor proti Posilneniu: len karta s Odporom, navyše posilnená. Vidly podložené pod kartu ju obrátia tiež. NA EX na ňu nejde."

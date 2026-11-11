@@ -63,17 +63,21 @@ describe("Náradie v línii (§12)", () => {
     expect(evaluateLine(n.data, n.l).sums[0]).toEqual({ Dlh: 2, Rana: 1 });
   });
 
-  it("Hrable: akcia zrušená tvojím Odporom sa ráta ako tvoja a posilnená", () => {
-    // Súperova Petelica (karta hráča 1 vedľa môjho Odporu) — bez Hrablí zrušená, s nimi moja ×2.
+  it("Hrable (v12.1): tvoj aktívny Odpor dáva v bitke poškodenie ako Pecka; Odpor na spoji nie", () => {
     const data = syntheticData([makeDef("a", [null, "Odpor", null, null], EMPTY), makeDef("c", [null, null, "Petelica", null], EMPTY)]);
     const a = instanceFor(data, "a", [null, "Odpor", null, null], EMPTY);
+    const sam = [[own(a)], []] as const;
+    expect(evaluateLine(data, { lokalita: null, lokalitaOtocena: false, strany: sam, nastroje: [[], []] }).sums).toEqual([{}, {}]);
+    const s = evaluateLine(data, { lokalita: null, lokalitaOtocena: false, strany: sam, nastroje: [["hrable"], []] });
+    expect(s.sums).toEqual([{ Pecka: 1 }, {}]);
+    expect(s.zdroje[0].Pecka?.[0]).toMatchObject({ defId: "a", dovody: ["Odpor", "karta:hrable"] });
+    // Súperove Hrable môj Odpor nevidia.
+    expect(evaluateLine(data, { lokalita: null, lokalitaOtocena: false, strany: sam, nastroje: [[], ["hrable"]] }).sums).toEqual([{}, {}]);
+    // Súperova Petelica (karta hráča 1 vedľa môjho Odporu): Odpor ju zruší a zhasne — Pecka nie je, nič sa neukradne.
     // Karta hráča 1 v partii hráča 0 je otočená: jej vytlačená ľavá (index 2) je efektívna pravá (index 1).
     const c = instanceFor(data, "c", [null, null, "Petelica", null], EMPTY);
     const strany = [[own(a), { card: c, playedBy: 1 as PlayerId }], []] as const;
-    const bez = evaluateLine(data, { lokalita: null, lokalitaOtocena: false, strany, nastroje: [[], []] });
-    expect(bez.sums).toEqual([{}, {}]);
-    const s = evaluateLine(data, { lokalita: null, lokalitaOtocena: false, strany, nastroje: [["hrable"], []] });
-    expect(s.sums).toEqual([{ Petelica: 2 }, {}]);
+    expect(evaluateLine(data, { lokalita: null, lokalitaOtocena: false, strany, nastroje: [["hrable"], []] }).sums).toEqual([{}, {}]);
   });
 
   it("Puška: prepojenú Petelicu Odpor ani NA EX nezruší — udelí o 1 menej (3 → 2); súperove Hrable nemajú čo ukradnúť", () => {
@@ -82,12 +86,12 @@ describe("Náradie v línii (§12)", () => {
     expect(evaluateLine(bez.data, bez.l).sums[0]).toEqual({ Rana: 1 });
     const s = par([null, null, "Petelica", null], [null, null, "Rana", null], ["puska"], { naexA: true });
     expect(evaluateLine(s.data, s.l).sums[0]).toEqual({ Pecka: 1, Rana: 1 });
-    // Odpor súpera proti mojej Petelici; súper má Hrable — Puška zrušenie nedovolí, Hrable nič.
+    // Odpor súpera proti mojej Petelici; súper má Hrable — Odpor na spoji mu Pecku nedá (v12.1), Puška zrušenie nedovolí.
     const data = syntheticData([makeDef("a", [null, "Petelica", null, null], EMPTY), makeDef("c", [null, null, "Odpor", null], EMPTY)]);
     const a = instanceFor(data, "a", [null, "Petelica", null, null], EMPTY);
     const c = instanceFor(data, "c", [null, null, "Odpor", null], EMPTY);
     const strany = [[own(a), { card: c, playedBy: 1 as PlayerId }], []] as const;
-    expect(evaluateLine(data, { lokalita: null, lokalitaOtocena: false, strany, nastroje: [[], ["hrable"]] }).sums).toEqual([{}, { Petelica: 2 }]);
+    expect(evaluateLine(data, { lokalita: null, lokalitaOtocena: false, strany, nastroje: [[], ["hrable"]] }).sums).toEqual([{}, {}]);
     expect(evaluateLine(data, { lokalita: null, lokalitaOtocena: false, strany, nastroje: [["puska"], ["hrable"]] }).sums).toEqual([{ Pecka: 1 }, {}]);
     // Neprepojená Petelica (NA EX ju len zdvojí ako neaktívnu) — Puška sa neuplatní.
     const n = par([null, null, "Petelica", null], EMPTY, ["puska"], { naexA: true });
