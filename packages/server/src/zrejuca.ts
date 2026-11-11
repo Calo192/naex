@@ -154,6 +154,12 @@ export class Vypalena {
  */
 export const REZIMY_LEN_V_ZREJUCEJ: readonly string[] = ["2 na 2", "Päta, Lakeť, Otočka"];
 
+/**
+ * Prepínač jazykov (lokalizácia) je len v Zrejúcej (Michal 2026-11-11): Vypálená je len po slovensky,
+ * kým Michal lokalizáciu neuvoľní. Uvoľnenie = false tu; klient dostane príznak v /api/ja.
+ */
+export const JAZYKY_LEN_V_ZREJUCEJ = true;
+
 /** Čo povie server tomu, kto chce taký režim tam, kde nie je. */
 export const REZIM_LEN_V_ZREJUCEJ = "Tento režim je len v Zrejúcej.";
 

@@ -83,7 +83,7 @@
       "nazov": "Pasca",
       "hore": "{Pečeň}→{Rana}",
       "dole": "Posilnená {Rana}",
-      "effect_text": "Dedičstvo: Bitka: Ak súper v tomto kole priložil kartu k tvojej karte {Rana}. Hore: {Pečeň}→{Rana}. Dole: Posilnená {Rana}."
+      "effect_text": "Dedičstvo: Bitka: Za každú kartu, ktorú súper v tomto kole priložil k tvojej karte {Rana}. Hore: {Pečeň}→{Rana}. Dole: Posilnená {Rana}."
     },
     {
       "id": "puska",
@@ -139,7 +139,7 @@
       "nazov": "Výherný automat",
       "hore": "{Hazard}→{Poldeci}",
       "dole": "{Hazard}→{Pecka}",
-      "effect_text": "Dedičstvo: Tvoj prah Dlhu je o 1 vyšší. Posledná Pitka kola: {Hazard}. Hore: {Hazard}→{Poldeci}. Dole: {Hazard}→{Pecka}."
+      "effect_text": "Dedičstvo: Tvoj prah Dlhu je o 1 vyšší. Pitka: {Dlh}. Hore: {Hazard}→{Poldeci}. Dole: {Hazard}→{Pecka}."
     },
     {
       "id": "zapalovac",

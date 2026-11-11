@@ -438,7 +438,7 @@ describe("Bitka a po bitke (v7)", () => {
     expect(poN.noviny).toBeUndefined();
   });
 
-  it("Výherný automat: prah Dlhu +1 a v poslednej Pitke kola Dlh", () => {
+  it("Výherný automat (text sady v7, bez zápisu): prah Dlhu +1 a v poslednej Pitke kola Dlh", () => {
     const s = sHracom(vPitke("most", [[], []]), 0, { dedicstvo: [inst("vyherny_automat")] });
     const t = skonciPitku(s);
     expect(dlhyAjZhorene(t, 0)).toBe(dlhy(s, 0) + 1);

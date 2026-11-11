@@ -441,8 +441,8 @@
     {
       "pojem": "Predavačka dobratie",
       "vzory": [
-        "predavack\\w*[^.!?]{0,80}dober",
-        "dober\\w*[^.!?]{0,40}predavack"
+        "predavack\\w*[^.!?]{0,80}dober(?!ac)",
+        "dober(?!ac)\\w*[^.!?]{0,40}predavack"
       ],
       "pozn": "Predavačka: „Podpora: Vezmi si zo šenku 1 Občana.“ (vo Vypálenej od vypálenia v11.14 2026-11-09)"
     },
@@ -575,7 +575,7 @@
         "veduck\\w*[^.!?]{0,80}(?:superov|obom sused|oboch sused|obaja sused|oba sused|furt)",
         "furt\\W{0,3}preskolen"
       ],
-      "pozn": "v11.18: Vedúcko — „Podpora: Preškolenie {Robota}→{Pecka}.“ — len tvoja karta, s ktorou sa stretne priložením, do konca kola (vo Vypálenej od vypálenia v11.18 2026-11-09)"
+      "pozn": "v11.18: Vedúcko — „Podpora: Preškolenie {Robota}→{Pecka}.“ — len tvoja karta, s ktorou sa stretne priložením, do konca kola (vo Vypálenej od vypálenia v11.18 2026-11-09); „Furt: Preškolenie“ je od v11.22 platné (Kapybara)"
     },
     {
       "pojem": "Snúbenica Nepriateľ: Autorita {Pohoršenie}",
@@ -583,14 +583,6 @@
         "snubenic\\w*[^.!?]{0,80}(?:autorit|pohorsen|nepriatel)"
       ],
       "pozn": "v11.18: Snúbenica — „Podpora: Chlap {Cigareta}.“ (vo Vypálenej od vypálenia v11.18 2026-11-09)"
-    },
-    {
-      "pojem": "Traktorista Pecka za prevahu",
-      "vzory": [
-        "traktorist\\w*[^.!?]{0,80}peck",
-        "peck\\w*[^.!?]{0,40}(?:za |s |pri )prevah"
-      ],
-      "pozn": "v11.18: Traktorista — „Posledná Pitka kola: Bez prevahy v jeho kraji {Dlh}.“; Pecka za prevahu zanikla, na ľavej strane Rana namiesto Pecky (vo Vypálenej od vypálenia v11.18 2026-11-09)"
     },
     {
       "pojem": "Miňištrant Spoločník: Zahraničný",
@@ -634,6 +626,46 @@
         "do (?:troch|3) kariet v ruke"
       ],
       "pozn": "v11.21: po bitke presne 2 karty (Michal 2026-11-10)"
+    },
+    {
+      "pojem": "Kapybara Podporou a Konfliktom, Cigareta navyše",
+      "vzory": [
+        "kapybar\\w*[^.!?]{0,80}(?:podpor|konflikt|stretn)",
+        "kapybar\\w*[^.!?]{0,80}cigaret\\w* navyse"
+      ],
+      "pozn": "v11.22: Kapybara — „Furt: Preškolenie {Viera}→{Cigareta}.“ — obaja priami susedia, kým susedia; Podpora, Konflikt a Furt {Cigareta} zanikli (vo Vypálenej od vypálenia v11.22)"
+    },
+    {
+      "pojem": "Traktoristov Dlh bez prevahy",
+      "vzory": [
+        "traktoristw*[^.!?]{0,80}(?:bez prevah|poslednw* pitk)",
+        "bez prevahw*[^.!?]{0,40}dlh"
+      ],
+      "pozn": "v11.22: Traktorista — „Bitka: S prevahou v jeho kraji {Pecka}.“; Dlhy nedáva (vo Vypálenej od vypálenia v11.22)"
+    },
+    {
+      "pojem": "Výherný automat: Hazard v poslednej Pitke kola",
+      "vzory": [
+        "automat\\w*[^.!?]{0,80}posledn\\w* pitk",
+        "posledn\\w* pitk\\w* kola[^.!?]{0,40}(?:automat|hazard)"
+      ],
+      "pozn": "v11.22: Výherný automat — „Tvoj prah Dlhu je o 1 vyšší. Pitka: {Dlh}.“ — Dlh v každej Pitke (vo Vypálenej od vypálenia v11.22)"
+    },
+    {
+      "pojem": "Predavačka: Občan do ruky",
+      "vzory": [
+        "predavack\\w*[^.!?]{0,80}obcan",
+        "predavack\\w*[^.!?]{0,80}do ruky"
+      ],
+      "pozn": "v11.22: Predavačka — „Podpora: Vezmi si z ponuky 1 kartu navrch svojho doberacieho balíčka.“ (vo Vypálenej od vypálenia v11.22)"
+    },
+    {
+      "pojem": "akcie navyše Nástroj nemení",
+      "vzory": [
+        "akci\\w* navyse[^.!?]{0,60}(?:nastroj|forsaz)[^.!?]{0,30}nemen",
+        "(?:podlozen\\w* nastroj|forsaz)[^.!?]{0,40}(?:ju|ich) nemen"
+      ],
+      "pozn": "v11.22: akcie navyše mení celý podložený Nástroj (preškolenie, hrana posilnenia) aj Forsáž Energeťáka (vo Vypálenej od vypálenia v11.22)"
     }
   ],
   "karty": [

@@ -221,6 +221,7 @@ export function HernaKarta({ karta, sada, data, sirka, otocena = false, eval: ev
   const navyse: NavyseNaKarte[] | undefined = stavy?.map((e, ei) => ({
     krat: e.krat,
     ...(e.ako === undefined ? {} : { ako: e.ako }),
+    ...(e.nasobok === undefined ? {} : { nasobok: e.nasobok }),
     ...(e.od !== undefined && stol !== null && kde?.miesto === "linia" ? { sipky: sipkyKSusedom(stol.view, karta.uid, e.od) } : {}),
     zar: e.akcie.map((a0, ai) => {
       if (stol === null || kde === null) return null;

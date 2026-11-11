@@ -68,7 +68,9 @@ export function sadaSNaradim(sada: Sada): Sada {
  * Stôl s podloženými Nástrojmi: moje Vedúcko so Živnostníkom (Preškolenie Robota → Pecka),
  * môj Hasič s mojimi Vidlami (Rana → Pecka, trčí dole), Zámočník s dvoma Nástrojmi (môj Krabička
  * cigariet, súperov Zapaľovač), súperova Dievčina na vydaj s mojím Automatom (Cigareta → Hazard,
- * trčí hore), jeho Vandal s jeho Puškou (Posilnená Petelica) a Veštica s jeho Vínkom (NA EX).
+ * trčí hore), jeho Vandal s jeho Puškou (Posilnená Petelica) a Veštica s jeho Vínkom (NA EX); môj Sypač
+ * a za ním Šofér so súperovým NA EX a mojou Puškou dole — Rany ako Pecky, posilnené, Valaška v Dedičstve: na jednej
+ * akcii pôvodná akcia, iskra aj ×N naraz (Michal 2026-11-11), v pečati Pecka navyše ×2 (v11.22).
  * V ruke Puška, Energeťák a Pasca na zasunutie.
  */
 export function sNaradim(s: GameState, p: PlayerId): GameState {
@@ -77,6 +79,7 @@ export function sNaradim(s: GameState, p: PlayerId): GameState {
   const k = (defId: string): CardInstance => ({ uid: uid++, defId, leftLayout: 0, rightLayout: 0 });
   const strany: [GameState["strany"][0], GameState["strany"][1]] = [[], []];
   const veducko = k("veducko");
+  const sypac = k("kulturista");
   strany[p] = [
     { card: veducko, playedBy: p },
     // Vedúcko je od v11.18 Podpora — Živnostník sa s ním stretol priložením.
@@ -90,12 +93,14 @@ export function sNaradim(s: GameState, p: PlayerId): GameState {
         { card: k("zapalovac"), majitel: su, hrana: "horna" },
       ],
     },
+    { card: sypac, playedBy: p },
+    { card: k("sofer"), playedBy: p, naexBy: su, podlozene: [{ card: k("puska"), majitel: p, hrana: "dolna" }], preskolenia: [{ z: "Rana", na: "Pecka", od: sypac.uid, spustac: "Podpora" }] },
   ];
   strany[su] = [
     { card: k("dievcina_na_vydaj"), playedBy: su, podlozene: [{ card: k("vyherny_automat"), majitel: p, hrana: "dolna" }] },
     { card: k("vandal"), playedBy: su, podlozene: [{ card: k("puska"), majitel: su, hrana: "horna" }] },
     { card: k("vestica"), playedBy: su, podlozene: [{ card: k("vinko"), majitel: su, hrana: "horna" }] },
   ];
-  const h = { ...s.hraci[p], ruka: [k("puska"), k("energetak"), k("pasca"), ...s.hraci[p].ruka.slice(0, 2)], cigarety: Math.max(3, s.hraci[p].cigarety) };
+  const h = { ...s.hraci[p], ruka: [k("puska"), k("energetak"), k("pasca"), ...s.hraci[p].ruka.slice(0, 2)], cigarety: Math.max(3, s.hraci[p].cigarety), dedicstvo: [...s.hraci[p].dedicstvo, k("boxer")] };
   return { ...s, nextUid: uid, strany, hraci: p === 0 ? [h, s.hraci[su]] : [s.hraci[su], h] };
 }

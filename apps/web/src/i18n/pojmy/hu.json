@@ -132,7 +132,7 @@
     "popis": "Amit a Hazárd és a kártyahatások adnak: 1 eladósodás rögtön 1 Adósság. Csak a Félkarú rablóval az Örökségben jön Adósság minden 2 után, a maradék a számlán marad.",
     "sk": {
       "pojem": "Zadĺženie",
-      "popis": "Čo dáva Hazard a efekty kariet: 1 zadĺženie je hneď 1 Dlh. Len s Výherným automatom v Dedičstve je Dlh až za každé 2 a zvyšok ostáva na účte."
+      "popis": "Čo dáva Hazard a efekty kariet: 1 zadĺženie je hneď 1 Dlh. Len s Výherným automatom v Dedičstve je Dlh až za každé 2 a zvyšok ostáva na účte; automat sám dá v každej Pitke 1 Dlh."
     }
   },
   "exekutor": {
@@ -212,7 +212,7 @@
     "popis": "Akció a kártyakép pecsétjéből: a kártya gazdájának aktív akciója az éleken kívül, ugyanannak az akciónak számít. A „Folyton: {Akcia}” feltétel nélkül érvényes, amíg a kártya fekszik. Az Erősítés, az Ellenállás, a Padlógáz, a NA EX és az alárakott Szerszám nem változtat rajta; az Örökségben lévő Szerszámok és az Oktató Átképzése igen.",
     "sk": {
       "pojem": "Akcia navyše",
-      "popis": "Akcia z pečate v obrázku karty: aktívna akcia majiteľa karty mimo hrán, ráta sa ako tá istá akcia. „Furt: {Akcia}“ platí bez podmienky, kým karta leží. Posilnenie, Odpor, Forsáž, NA EX ani podložený Nástroj ju nemenia; Nástroje v Dedičstve a Preškolenie Školiteľa áno."
+      "popis": "Akcia z pečate v obrázku karty: aktívna akcia majiteľa karty mimo hrán, ráta sa ako tá istá akcia. „Furt: {Akcia}“ platí bez podmienky, kým karta leží. Posilnenie suseda, Odpor ani NA EX ju nemenia; Nástroje v Dedičstve, Preškolenie Školiteľa, celý podložený Nástroj (preškolenie, posilnenie) a Forsáž karty (zo spoja aj z Energeťáka) áno."
     }
   },
   "fajcenie": {

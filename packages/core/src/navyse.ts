@@ -20,17 +20,19 @@
 // (partia.ts kratSlovami), text ju len opisuje:
 //
 //   Bitka: podmienka            — Pijan, Svokra, Vymáhač, Šofér, Traktorista, Pasca
-//   Posledná Pitka kola:        — Výherný automat; Dlh dáva motor na konci poslednej Pitky,
-//                                 do súčtov akcia nejde, pečať len ukazuje, kedy platí
+//   Pitka:                      — Výherný automat (v11.22); Dlh dáva motor v každej Pitke,
+//                                 do súčtov akcia nejde (prah Dlhu by ju delil), pečať len ukazuje, kedy platí
+//   Posledná Pitka kola:        — to isté len v poslednej Pitke kola (staré sady: Výherný automat, Traktorista)
 //
 // Efekt v texte, ktorý začína „Dedičstvo:“ (Pasca, Výherný automat), platí, len keď karta
 // leží v Dedičstve.
 //
 // Akcia navyše je aktívna akcia majiteľa karty mimo jej hrán: do súčtov ide ako tá
-// istá akcia a vyhodnotí sa v jej kroku. Nie je na spoji, preto ju nemení Posilnenie,
-// Odpor, Forsáž, NA EX ani Silná žena; mení ju Náradie v Dedičstve, efekty, ktoré
-// menia všetky akcie hráča (rátajú zo súčtov), a preškolenie karty — podložený Nástroj
-// a Školitelia (preskolenie.ts, Michal 2026-11-08).
+// istá akcia a vyhodnotí sa v jej kroku. Nie je na spoji, preto ju nemení Posilnenie suseda,
+// Odpor, NA EX ani Silná žena; mení ju Náradie v Dedičstve, efekty, ktoré menia všetky akcie
+// hráča (rátajú zo súčtov), preškolenie karty (Školitelia, preskolenie.ts), celý podložený
+// Nástroj — preškolenie, hrana posilnenia — a Forsáž karty, zo spoja aj z Energeťáka (v11.22,
+// Michal 2026-11-11; Forsáž zo spoja výklad Leadera; partia.ts premenNavyse).
 //
 // „Spúšťač: Preškolenie {X}→{Y}.“ (Školitelia) akcia navyše nie je — číta ho preskolenie.ts.
 
@@ -43,7 +45,7 @@ export type SpustacTagom = "Spoločník" | "Nepriateľ" | "Podpora" | "Konflikt"
 /** Akcie navyše bez podmienky — platia, kým karta leží (Kapybara, Michal 2026-11-09). */
 export type SpustacBezPodmienky = "Furt";
 /** Spúšťače s podmienkou slovami (skryté akcie, Michal 2026-11-08). */
-export type SpustacSlovami = "Bitka" | "Posledná Pitka kola";
+export type SpustacSlovami = "Bitka" | "Pitka" | "Posledná Pitka kola";
 export type SpustacNavyse = SpustacTagom | SpustacSlovami | SpustacBezPodmienky;
 export const SPUSTACE_NAVYSE: readonly SpustacTagom[] = ["Spoločník", "Nepriateľ", "Podpora", "Konflikt"];
 /** Spúšťače, za ktorými smie byť tag a piktogramy — Furt tag nemá (hlási rozborNavyse). */
@@ -54,7 +56,12 @@ export type UcinokNavyse = "Spálenie";
 export const UCINKY_NAVYSE: readonly UcinokNavyse[] = ["Spálenie"];
 /** Spúšťače, pri ktorých má účinok koho zasiahnuť — kartu, s ktorou sa nositeľ stretol. */
 const SPUSTACE_UCINKU: readonly SpustacNavyse[] = ["Podpora", "Konflikt"];
-export const SPUSTACE_SLOVAMI: readonly SpustacSlovami[] = ["Bitka", "Posledná Pitka kola"];
+export const SPUSTACE_SLOVAMI: readonly SpustacSlovami[] = ["Bitka", "Pitka", "Posledná Pitka kola"];
+
+/** Efekt, ktorého Dlh dáva motor rovno (Výherný automat), nie súčet akcií cez prah Dlhu. */
+export function dlhOdMotora(e: Pick<EfektNavyse, "spustac">): boolean {
+  return e.spustac === "Pitka" || e.spustac === "Posledná Pitka kola";
+}
 
 export interface EfektNavyse {
   readonly spustac: SpustacNavyse;
@@ -69,7 +76,7 @@ export interface EfektNavyse {
   readonly dedicstvo?: true;
 }
 
-/** Efekt s podmienkou slovami (Bitka, Posledná Pitka kola) — tú vyhodnocuje jadro podľa karty. */
+/** Efekt s podmienkou slovami (Bitka, Pitka, Posledná Pitka kola) — tú vyhodnocuje jadro podľa karty. */
 export function jeSlovami(e: Pick<EfektNavyse, "spustac">): boolean {
   return (SPUSTACE_SLOVAMI as readonly string[]).includes(e.spustac);
 }
@@ -108,7 +115,8 @@ export function rozborNavyse(celyText: string): RozborNavyse {
   for (const m of text.matchAll(EFEKT)) {
     const spustac = (m[1] ?? m[3]) as SpustacNavyse;
     const slovo = m[2] ?? null;
-    const podmienka = (m[4] ?? "").trim();
+    // „Bitka: Za každú kartu, ktorú …, {Rana}.“ — čiarka pred piktogramom do podmienky nepatrí.
+    const podmienka = (m[4] ?? "").trim().replace(/,$/u, "").trim();
     let tag: Tag | null = null;
     if (slovo !== null && spustac === "Furt") chyby.push(`„Furt: ${slovo}“ — akcie navyše Furt platia bez podmienky, tag nemajú (s tagom je to Spoločník).`);
     else if (slovo !== null) {
@@ -202,6 +210,10 @@ export interface NavyseStav extends EfektNavyse {
   readonly ako?: readonly Action[];
   /** uid karty, ktorá akciu [j] preškolila (Nástroj či Školiteľ); null = nepreškolená. */
   readonly akoOd?: readonly (number | null)[];
+  /** Násobok akcie [j] — Forsáž (zo spoja, z Energeťáka) a hrana posilnenia Nástroja pod kartou (v11.22); chýba = ×1. */
+  readonly nasobok?: readonly number[];
+  /** Dôvody násobku akcie [j] pre rozpis („Forsáž“, „karta:puska“). */
+  readonly posilnilo?: readonly (readonly string[])[];
   /** Podpora a Konflikt: uid kariet, s ktorými sa efekt spustil. */
   readonly od?: readonly number[];
 }

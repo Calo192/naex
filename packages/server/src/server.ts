@@ -106,7 +106,7 @@ import { emailDoLogu, type PosliEmail } from "./email.ts";
 import { titul } from "./frajerina.ts";
 import { Achievementy, nacitajKatalog, type AchievementyMiestnosti } from "./achievementy.ts";
 import type { Vypalena } from "./zrejuca.ts";
-import { REZIMY_LEN_V_ZREJUCEJ, REZIM_LEN_V_ZREJUCEJ } from "./zrejuca.ts";
+import { JAZYKY_LEN_V_ZREJUCEJ, REZIMY_LEN_V_ZREJUCEJ, REZIM_LEN_V_ZREJUCEJ } from "./zrejuca.ts";
 
 // ---------------------------------------------------------------------------
 // Dáta z repozitára (testy jadra a nástroje ich používajú priamo)
@@ -374,6 +374,8 @@ export interface ServerOpts {
   readonly zrejucaUrl?: string | (() => string);
   /** Smie sa tu hrať 2 na 2 a Päta, Lakeť, Otočka; predvolene len v Zrejúcej. */
   readonly rezimyZrejucej?: boolean;
+  /** Smie hráč prepnúť jazyk; predvolene v Zrejúcej, vo Vypálenej až po uvoľnení (JAZYKY_LEN_V_ZREJUCEJ). */
+  readonly jazyky?: boolean;
   /** Režimy, ktoré má Zrejúca navyše oproti Vypálenej, namiesto REZIMY_LEN_V_ZREJUCEJ (testy). */
   readonly rezimyLenVZrejucej?: readonly string[];
   /** Nasadená verzia namiesto VERZIA.json (testy). */
@@ -483,6 +485,7 @@ export function createGameServer(opts: ServerOpts): Promise<GameServer> {
   // Vypálená (Michal 2026-11-06) hrá len Kalamitu 1 na 1; 2 na 2 a Päta, Lakeť, Otočka sú v Zrejúcej.
   const rezimyZrejucej = opts.rezimyZrejucej ?? zrejuca !== null;
   const rezimyLenVZrejucej = opts.rezimyLenVZrejucej ?? REZIMY_LEN_V_ZREJUCEJ;
+  const jazyky = opts.jazyky ?? (zrejuca !== null || !JAZYKY_LEN_V_ZREJUCEJ);
   const prevezmiSadu = async (): Promise<{ verzia: number; zmena: boolean }> => {
     if (zrejuca === null) throw new Error("Rozpracovanú sadu preberá len Zrejúca.");
     const r = obsah.prevezmiRozpracovanu(await zrejuca.vypalena.tvorca(), teraz());
@@ -621,6 +624,7 @@ export function createGameServer(opts: ServerOpts): Promise<GameServer> {
           obsah,
           rebricek2na2: () => rebricek2na2(db),
           rezimyZrejucej,
+          jazyky,
           media,
           predvoleneAvatary: avatary.hracov,
           botiNaVyber: avatary.botiNaVyber(POVAHY),

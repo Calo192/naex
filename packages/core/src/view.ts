@@ -286,10 +286,10 @@ export interface ClientState {
    */
   readonly hasicVolba: { readonly hrac: PlayerId; readonly karta: CardInstance | null } | null;
   /**
-   * Voľba, ktorá čaká ako Hasič: karta zo šenku (Zastávka; Predavačka len Občana a Živnostník len
-   * Nástroj — tag a zdroj), Zberný dvor, Predsedova vila. Verejné obom.
+   * Voľba, ktorá čaká ako Hasič: karta zo šenku (Zastávka; Živnostník len Nástroj — tag a zdroj;
+   * Predavačka navrch balíčka — kam), Zberný dvor, Predsedova vila. Verejné obom.
    */
-  readonly volbaNastupu: ({ readonly typ: NonNullable<HasicVolba["typ"]>; readonly hrac: PlayerId } & Pick<HasicVolba, "tag" | "zdroj">) | null;
+  readonly volbaNastupu: ({ readonly typ: NonNullable<HasicVolba["typ"]>; readonly hrac: PlayerId } & Pick<HasicVolba, "tag" | "zdroj" | "kam">) | null;
   /**
    * Nepriznané kliatby v MOJOM doberacom balíčku (len počty, poradie nie).
    * Vlastné karty hráč pozná, len nevie, v akom poradí ich dobere. Od v8.2 len
@@ -516,7 +516,7 @@ export function viewFor(data: GameData, state: GameState, miesto: Miesto): Clien
     volbaNastupu:
       hasic?.typ === undefined
         ? null
-        : { typ: hasic.typ, hrac: hasic.hrac, ...(hasic.tag === undefined ? {} : { tag: hasic.tag }), ...(hasic.zdroj === undefined ? {} : { zdroj: hasic.zdroj }) },
+        : { typ: hasic.typ, hrac: hasic.hrac, ...(hasic.tag === undefined ? {} : { tag: hasic.tag }), ...(hasic.zdroj === undefined ? {} : { zdroj: hasic.zdroj }), ...(hasic.kam === undefined ? {} : { kam: hasic.kam }) },
     mojeKliatbyVBalicku: { cirhoza: state.hraci[ja].doberaci.filter((k) => k.defId === "cirhoza").length },
     mojBalicekZlozenie: zlozenie(state.hraci[ja].doberaci),
     nepriznaneKliatby: [nepriznaneKliatbyHraca(state.hraci[0]), nepriznaneKliatbyHraca(state.hraci[1])],

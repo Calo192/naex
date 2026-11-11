@@ -26,7 +26,7 @@ import { efektPotlaceny, naexPecenSuperovi, nasobokPitky, partiaHraca, svokraRan
 import { opponentOf } from "./types.ts";
 import { KONSTANTY } from "./constants.ts";
 import type { LineEval } from "./partia.ts";
-import { dlhyPoslednejPitky, evaluateLine } from "./partia.ts";
+import { dlhyPoslednejPitky, dlhyZDedicstva, evaluateLine } from "./partia.ts";
 import type { BattleOutcome, DamageResult } from "./battle.ts";
 import { battleOutcome, zhoriPriExekucii } from "./battle.ts";
 import { zahradkarChrani } from "./engine.ts";
@@ -60,11 +60,14 @@ export interface DlhyDoBitky {
 export function vyhladDlhov(data: GameData, stol: StolNahladu, dalsiePitky: number): readonly [DlhyDoBitky, DlhyDoBitky] {
   const nahlad = nahladPitky(data, stol);
   // D6 (v7): zvyšok zadĺženia sa medzi Pitkami nemaže — sčíta sa za všetky Pitky.
-  // Výherný automat (Dedičstvo, v7) a Hazard navyše „Posledná Pitka kola“ z línie (Traktorista bez
-  // prevahy v jeho kraji, 2026-11-08): v poslednej Pitke kola Dlh za kus (engine pokracujPoPitke).
+  // Výherný automat (Dedičstvo, v11.22): Dlh v tejto aj každej ďalšej Pitke (engine vyhodnotPitku);
+  // „Posledná Pitka kola“ starých sád (automat, Traktorista bez prevahy) raz (engine pokracujPoPitke).
   const zLinie = dlhyPoslednejPitky(data, lineState(stol));
   const automat = (p: PlayerId): number =>
-    (stol.hraci[p].dedicstvo.filter((k) => k.defId === "vyherny_automat").length + zLinie.reduce((n, d) => n + (d.hrac === p ? d.dlhy : 0), 0)) * nasobokPitky(stol);
+    (dlhyZDedicstva(data, stol.hraci[p].dedicstvo, "Pitka") * (1 + dalsiePitky) +
+      dlhyZDedicstva(data, stol.hraci[p].dedicstvo, "Posledná Pitka kola") +
+      zLinie.reduce((n, d) => n + (d.hrac === p ? d.dlhy : 0), 0)) *
+    nasobokPitky(stol);
   const noveDlhy = ([0, 1] as const).map((p) => Math.floor((nahlad[p].zadlzenie + nahlad[p].zadlzenieZoStola * (1 + dalsiePitky)) / nahlad[p].prahDlhu) + automat(p)) as [number, number];
   const kapacita = paleneDlhyVBitke(data, stol);
   const pre = (p: PlayerId): DlhyDoBitky => {

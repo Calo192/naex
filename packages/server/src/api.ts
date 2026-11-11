@@ -94,6 +94,8 @@ export interface ApiKontext {
   readonly rebricek2na2: () => readonly RiadokRebricka2na2[];
   /** Hrá sa tu 2 na 2 a Päta, Lakeť, Otočka (len Zrejúca, zrejuca.ts). */
   readonly rezimyZrejucej: boolean;
+  /** Smie hráč prepnúť jazyk (lokalizácia len v Zrejúcej, zrejuca.ts JAZYKY_LEN_V_ZREJUCEJ). */
+  readonly jazyky: boolean;
   /** Obnova zabudnutého hesla cez e-mail z profilu (Michal 2026-11-01). */
   readonly obnovaHesla: ObnovaHesla;
   /** Odosielanie e-mailov — zatiaľ len do logu (email.ts, NAEX_EMAIL_REZIM). */
@@ -457,10 +459,12 @@ export async function spracujApi(ctx: ApiKontext, req: IncomingMessage, res: Ser
   const r = `${metoda} /${casti.slice(1).join("/")}`;
 
   // Klient podľa inštancie kreslí pás „Zrejúca – pokusná verzia“ alebo ponúkne prepnutie do nej.
+  // Bez príznaku jazyky je rozhranie len po slovensky (Michal 2026-11-11).
+  const navyse = { ...(ctx.rezimyZrejucej ? { rezimyNavyse: true } : {}), ...(ctx.jazyky ? { jazyky: true } : {}) };
   const instancia =
     ctx.zrejuca === null
-      ? { nazov: "vypalena", vypalena: null, zrejuca: ctx.zrejucaAdresa, ...(ctx.rezimyZrejucej ? { rezimyNavyse: true } : {}) }
-      : { nazov: "zrejuca", vypalena: ctx.zrejuca.vypalena.adresa, zrejuca: null, bezPrava, ...(ctx.rezimyZrejucej ? { rezimyNavyse: true } : {}) };
+      ? { nazov: "vypalena", vypalena: null, zrejuca: ctx.zrejucaAdresa, ...navyse }
+      : { nazov: "zrejuca", vypalena: ctx.zrejuca.vypalena.adresa, zrejuca: null, bezPrava, ...navyse };
 
   try {
     // Prepnutie inštancie (Michal 2026-11-02): jedna adresa, Caddy posiela prehliadač s cookie

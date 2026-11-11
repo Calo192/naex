@@ -61,10 +61,27 @@ function uloz(j: Jazyk): void {
 }
 
 /**
+ * Smie hráč iný jazyk ako slovenčinu (Michal 2026-11-11: prepínač len v Zrejúcej, Vypálená po
+ * slovensky, kým lokalizáciu neuvoľní)? Rozhodne server (/api/ja, instancia.jazyky) — dovtedy a bez
+ * príznaku platí slovenčina a ?jazyk, uložená voľba, prehliadač ani profil sa neuplatnia.
+ */
+let povolene = false;
+
+export const jazykyPovolene = (): boolean => povolene;
+
+/** Príznak servera: zapne voľbu jazyka (a uplatní počiatočný), alebo vráti slovenčinu. */
+export function povolJazyky(ano: boolean): void {
+  if (ano === povolene) return;
+  povolene = ano;
+  void nastavJazyk(ano ? pociatocnyJazyk() : ZDROJOVY_JAZYK);
+}
+
+/**
  * Jazyk pri štarte: ?jazyk=en v adrese (odkaz pre hráča v inom jazyku, snímky), voľba
- * v prehliadači, inak jazyk prehliadača (prvá návšteva).
+ * v prehliadači, inak jazyk prehliadača (prvá návšteva). Bez povolenia slovenčina.
  */
 export function pociatocnyJazyk(): Jazyk {
+  if (!povolene) return ZDROJOVY_JAZYK;
   const zAdresy = new URLSearchParams(location.search).get("jazyk");
   if (jeJazyk(zAdresy)) {
     uloz(zAdresy);
@@ -81,8 +98,9 @@ const nacitajKarty = (j: Jazyk): Promise<SuborPrekladu | null> =>
  * slovensky). Preklady kariet idú zo servera a dokreslia sa, keď prídu — pomalé API nesmie
  * zdržať prvé vykreslenie. ulozit = voľba hráča (prepínač), nie z prehliadača či profilu.
  */
-export async function nastavJazyk(j: Jazyk, ulozit = false): Promise<void> {
-  if (ulozit) uloz(j);
+export async function nastavJazyk(volba: Jazyk, ulozit = false): Promise<void> {
+  const j = povolene ? volba : ZDROJOVY_JAZYK;
+  if (ulozit && povolene) uloz(j);
   if (j === stav.jazyk && (j === ZDROJOVY_JAZYK || stav.slovnik !== null)) return;
   const n = ++poradie;
   const karty = nacitajKarty(j);

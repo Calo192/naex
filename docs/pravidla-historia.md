@@ -3411,3 +3411,55 @@ Staré znenie §12 Kartová hrana (časť): „preškolenie → spoje → **Vzbu
 Staré znenie §6 Poradie (časť): „Výherné žreby → **Forsáž** (aj z Energeťáka) a posilnenie Vzbury (zdvojí akcie aktívne po obrátení, teda nespojené) → NA EX (aj z Vínka) → efekty kariet“; Forsáž z Energeťáka: „NA EX ju nezruší (zruší a zdvojí akcie karty ako vždy, ×2 ostane len tým, ktoré ostali aktívne).“
 
 Staré znenie §17 Forsáž (koniec): „Aj z Energeťáka pod kartou — tú NA EX nezruší (§12)“.
+## v11.22 — Akcie navyše mení celý Nástroj; Traktorista, Pasca, Výherný automat, Kapybara, Predavačka (Michal 2026-11-11, Zrejúca)
+
+Michal 2026-11-11: „Treba upraviť Traktoristu. Jeho efekt dáva len Dlhy, chcem, aby dával Pecku, keď má prevahu v kraji, žiadne Dlhy v efekte. Pascu chcem upraviť — za KAŽDÚ priloženú kartu od súpera k mojej karte mu dám Ranu navyše v bitke. Výherný automat — prah o 1 vyšší, ale každú Pitku 1 Dlh. … Kapybara bude premieňať Vieru na Cigarety, bez ohľadu na to, či je to súperova alebo moja karta, proste Preškolenie Viera → Cigarety. Predavačka — vezmi si jednu kartu z ponuky do dobieracieho balíčka. Chcem, aby aj akcia v efekte, ako napríklad pri Opatrovateľke, sa dala zmeniť preškolením alebo Nástrojom. V prípade, ak postava dostane Forsáž, akcia v efekte sa posilní tiež.“ K hrane posilnenia: „Áno, celý Nástroj.“ Nové znenie: `docs/PRAVIDLA.md`, Zmeny v11.22, §6, §8, §9, §12, §15, §16, §17.
+
+Staré texty kariet (sada do v11.21): Traktorista „Posledná Pitka kola: Bez prevahy v jeho kraji {Dlh}.“; Pasca „Dedičstvo: Bitka: Ak súper v tomto kole priložil kartu k tvojej karte {Rana}.“; Výherný automat „Dedičstvo: Tvoj prah Dlhu je o 1 vyšší. Posledná Pitka kola: {Hazard}.“; Kapybara „Podpora: Preškolenie {Viera}→{Cigareta}. Konflikt: Preškolenie {Viera}→{Cigareta}. Furt: {Cigareta}.“; Predavačka „Podpora: Vezmi si z ponuky 1 Občana.“
+
+Staré znenie §6 Akcia navyše (časť):
+
+>   s podmienkou slovami (Pijan, Svokra, Vymáhač, Šofér, Pasca v Dedičstve)
+>   toľkokrát, koľkokrát podmienka v bitke platí; pri spúšťači **Posledná Pitka kola** (Traktorista,
+>   Výherný automat v Dedičstve) Hazard navyše dá na konci poslednej Pitky kola Dlh; pri spúšťači
+>   **Furt** bez podmienky („Furt: {Cigareta}“, Kapybara, v11.17) raz, kým karta leží odkrytá v línii. Mení ju Náradie
+>   v Dedičstve a čo mení všetky tvoje akcie toho druhu (Vidly, Valaška, Svätý text, Horoskop,
+>   Obecný úrad…) a **Preškolenie Školiteľa** (nižšie); podložený Nástroj ani Posilnenie, Odpor,
+>   Forsáž, NA EX či Silná žena ju nemenia. Keď Preškolenie mení akciu, karta, ktorej sa týka,
+>   ukáže preškolenú akciu na hrane aj v pečati (Michal 2026-11-08). Skrytá Záverečná podmienku
+>   nesplní ani akcie navyše nedostane.
+
+Staré znenie §6 Preškolenie Školiteľa (dosah):
+
+>   **Furt** — obaja susedia Školiteľa v línii (karty oboch hráčov), kým s ním susedia; karta sama
+>   ani hrana lokality nie; lícom dole ako ostatné Furt efekty akcií (v sade ho dnes nemá žiadna karta;
+>   Vedúcko do v11.17). **Podpora** — tvoja karta, s ktorou sa Školiteľ stretne priložením (oboma
+>   smermi), do konca kola, aj keď sa potom rozídu (Vedúcko, Sypač, Anonymný alkoholik, Kapybara).
+>   **Konflikt** — súperova karta, s ktorou sa stretne priložením, do konca kola (Profesionálny tipér,
+>   Kapybara). Pri každom spustení
+
+Staré znenie §8 Hazard a Dlh: „**Výherný automat** v Dedičstve je jediná výnimka: tvoj prah Dlhu je 2, takže Hazard a efekty kariet plnia **zadĺženie** a Dlh dostaneš za každé 2. Zvyšok ostáva na účte do ďalšej Pitky aj kola (v7, D6)“ — Dlh automatu v poslednej Pitke kola (§16).
+
+Staré znenie §9.0:
+
+> Od Občanov v troch kategóriách (Michal 2026-11-08) žiadne: Traktoristov Dlh bez prevahy prichádza na
+> konci poslednej Pitky kola ako Dlh Výherného automatu (§16), Šoférova cigareta zanikla — Šofér dáva
+> Pecku a Ranu navyše (§6). Do 2026-11-08: Traktorista bez prevahy Dlh a Šofér bez NA EX 1 cigaretu tu.
+
+Staré znenie §12 Hrana posilnenia (koniec): „Výtržník z nich urobí Rany ×1. Akcie navyše nemení (ako preškolenie Nástrojom). Pod Zámočníkom dva Nástroje s tou istou akciou posilnia raz. Ak karta X nemá, Nástroj pod ňou nerobí nič.“; Akciová hrana: „preškolí **všetky výskyty** akcie X na oboch hranách karty na Y“; Energeťák: „všetky akcie karty aktívne po NA EX ×2 (§6).“
+
+Staré znenie §15 Obecný úrad (časť): „Výherný automat: zdvojnásobí sa zadĺženie, prah ostáva 2; aj jeho Dlh v poslednej Pitke sa ráta dvakrát.“
+
+Staré znenie §16:
+
+> | Kapybara | Školiteľ (v11.17, Michal 2026-11-09): Podpora aj Konflikt — Preškolenie {Viera}→{Cigareta}: karta, s ktorou sa priložením stretne (tvoja aj súperova, oboma smermi), má do konca kola **Viery ako Cigarety** (§6); a **Furt: {Cigareta}** — 1 Cigareta navyše, kým leží odkrytá v línii. Strany: Viera, Cigareta + Posilnenie (v11.17). Je Zviera: vedľa Mäsiara neplatí ani jedno. Do v11.16 Nástup: súperove reči pri jednom staršom klesli zospodu o stupeň. |
+>
+> | Predavačka | Podpora (bez tagu, Michal 2026-11-09): pri každom stretnutí s vlastnou kartou si majiteľ vyberie z ponuky 1 kartu s tagom **Občan** (nie Starešinu bez tagu Občan, nie Nástroj ani Zviera) a vezme si ju zadarmo do ruky (v 2 na 2 člen, ktorý Predavačku vyložil). Kým nevyberie, hra čaká ako pri Zastávke; ponuka sa nedopĺňa; bez Občana v ponuke nič. Do 2026-11-09 dober si 1 kartu. |
+>
+> | Traktorista | Posledná Pitka kola (id `traktoristka`, Michal 2026-11-08): bez prevahy v jeho kraji **Hazard navyše** — na konci poslednej Pitky kola dostaneš Dlh (ako Výherný automat; Obecný úrad ho zdvojí). Prevaha sa ráta v tej chvíli, po otočení Záverečných; vo finále (bez krajov) prevahu nemá nikto. Do v11.17 aj Bitka: s prevahou v jeho kraji Pecka navyše (v11.18, Michal 2026-11-09: zanikla, Pecka na ľavej strane karty je Rana); do 2026-11-08 Dlh na začiatku bitky. |
+>
+> | Pasca | Dedičstvo: Bitka: ak súper v tomto kole priložil kartu (akúkoľvek, aj lícom dole) k tvojej karte, máš **1 Ranu navyše** (akcia navyše, §6; Vidly ju zosilnia; za každú Pascu v Dedičstve) (v9.1 podľa textu karty od sady v36; predtým Pecku). |
+>
+> | Výherný automat | Dedičstvo: tvoj prah Dlhu je o 1 vyšší (§8); posledná Pitka kola: **Hazard** v pečati — po poslednej Pitke kola (pred bitkou) získaš 1 Dlh, Obecný úrad ho zdvojí. |
+
+Staré znenie §17: „| Akcia navyše | aktívna akcia majiteľa karty mimo jej hrán, z pečate v ilustrácii; ráta sa ako tá istá akcia (§6). „Furt: {A}“ platí bez podmienky, kým karta leží (v11.17); {Spálenie} v pečati nie je akcia — karta, s ktorou sa nositeľ stretne, sa na konci bitky spáli (§6) |“

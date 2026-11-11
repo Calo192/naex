@@ -623,12 +623,13 @@ body:not(.tahanie-aktivne) .ruka-rad > .tahatelna:is(:hover, :focus-visible) .kl
   font-size: max(5px, calc(5.4 * var(--pt)));
 }
 
+/* Štítok až za rohom s pôvodnou akciou a za iskrou (presahujú 18 % a 4,5 pt) — nič neprekryje. */
 .kl-zar-lava .kl-zar-stitok {
-  left: calc(100% + 2.5 * var(--pt));
+  left: calc(118% + 2 * var(--pt));
 }
 
 .kl-zar-prava .kl-zar-stitok {
-  right: calc(100% + 2.5 * var(--pt));
+  right: calc(118% + 2 * var(--pt));
 }
 
 .kl-zar-minus .kl-zar-stitok {
@@ -807,11 +808,14 @@ body:not(.tahanie-aktivne) .ruka-rad > .tahatelna:is(:hover, :focus-visible) .kl
   transform: rotate(180deg);
 }
 
-/* D2: premenený slot ukáže novú akciu a pôvodnú malú v rohu (Nástroj, efekt karty, Výtržník). */
+/* D2: premenený slot ukáže novú akciu a pôvodnú malú v rohu (Nástroj, efekt karty, Výtržník).
+   Každý odznak má vlastný roh slotu (Michal 2026-11-11: „Konfliktné ikony vylepšenia (hviezdičky)
+   a preškolenia (bývalej akcie) v rohu akcie.“): iskra posilnenia hore pri vnútornej hrane slotu,
+   pôvodná akcia dole pri vnútornej hrane, ×N hore pri vonkajšej, štítok zdroja vedľa za rohmi. */
 .kl-roh {
   position: absolute;
   left: -18%;
-  top: -18%;
+  bottom: -18%;
   width: 52%;
   height: 52%;
   padding: 6%;
@@ -837,10 +841,16 @@ body:not(.tahanie-aktivne) .ruka-rad > .tahatelna:is(:hover, :focus-visible) .kl
   right: -18%;
 }
 
-/* Pri rohu vpravo hore by ×N zakryl (Michal 2026-11-09) — násobiteľ ide do pravého dolného rohu. */
-.kl-roh-lava .kl-nasobok {
-  top: auto;
-  bottom: calc(-4 * var(--pt));
+/* Na otočenej karte (otočená je plocha) ide iskra dole, aby bola na pohľad hore — roh preto hore. */
+.kl-otocena .kl-roh {
+  bottom: auto;
+  top: -18%;
+}
+
+/* ×N na ľavej hrane karty ide k vonkajšej hrane slotu — vnútorný horný roh patrí iskre. */
+.kl-strana-lava > .kl-nasobok {
+  right: auto;
+  left: calc(-1 * var(--pt));
 }
 
 /* Hrany Nástroja (Náradie 2026-11-08, rám V1 z naradie-mock-stol.html): horná a dolná hrana

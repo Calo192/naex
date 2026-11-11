@@ -40,7 +40,7 @@ import { defOf, printedSides } from "./data.ts";
 import type { ChachaStav, RngState, Semienko } from "./rng.ts";
 import { rngInt, rngSeed, rngShuffle } from "./rng.ts";
 import type { ActionSums, KartaVBitke, LineEval, LineState, PlacedCard, PreskolenieOdSkolitela } from "./partia.ts";
-import { dlhyPoslednejPitky, evaluateLine, okolieVLinii, prevahaStran, prispevkyKariet, spaleniaZoSpojov, zvieratAUmlcane } from "./partia.ts";
+import { dlhyPoslednejPitky, dlhyZDedicstva, evaluateLine, okolieVLinii, prevahaStran, prispevkyKariet, spaleniaZoSpojov, zvieratAUmlcane } from "./partia.ts";
 import { efektyNavyse, podmienkySpoja, splnaTag } from "./navyse.ts";
 import type { KtoraHrana } from "./naradie.ts";
 import { KTORE_HRANY, hranyNastroja, ucinkyNastrojov } from "./naradie.ts";
@@ -617,6 +617,8 @@ export interface HasicVolba {
   readonly tag?: Tag;
   /** Karta zo šenku: defId karty, ktorej Podpora voľbu dala; chýba = Zastávka. */
   readonly zdroj?: string;
+  /** Karta zo šenku ide navrch doberacieho balíčka (Predavačka, v11.22); chýba = do ruky. */
+  readonly kam?: "balicek";
   /** 2 na 2: rozhoduje člen, ktorý kartu vyložil, a karta ide do jeho ruky; chýba = kapitán. */
   readonly miesto?: Miesto;
 }
@@ -3355,12 +3357,23 @@ function podpora(s: MutState, data: GameData, nositel: DeepMutable<PlacedCard>, 
         if (tahaj(s, nositel.miesto ?? kapitan(s, p), 1, events).length > 0) events.push({ type: "log", text: `Podpora — Predavačka hráča ${p + 1}: dober si 1 kartu.` });
         break;
       }
+      const miesto = nositel.miesto === undefined ? {} : { miesto: nositel.miesto };
+      // Predavačka v11.22 (Michal 2026-11-11: „vezmi si jednu kartu z ponuky do dobieracieho balíčka“):
+      // hocijaká karta z ponuky navrch vlastného doberacieho balíčka; ponuka sa nedopĺňa.
+      if (def.id === "predavacka" && def.effectText.includes("navrch")) {
+        if (s.senok.length === 0) {
+          events.push({ type: "log", text: `Podpora — ${def.name} hráča ${p + 1}: ponuka je prázdna — nič si neberie.` });
+          break;
+        }
+        s.hasicVolby = [...(s.hasicVolby ?? []), { hrac: p, typ: "senok", uid: nositel.card.uid as number, potom: null, zdroj: def.id, kam: "balicek", ...miesto }];
+        events.push({ type: "log", text: `Podpora — ${def.name} hráča ${p + 1}: berie si z ponuky 1 kartu navrch svojho doberacieho balíčka.` });
+        break;
+      }
       const tag = TAG_ZO_SENKU[def.id] as Tag;
       if (!s.senok.some((k) => defOf(data, k as CardInstance).tags.includes(tag))) {
         events.push({ type: "log", text: `Podpora — ${def.name} hráča ${p + 1}: v ponuke nie je ${tag} — nič si neberie.` });
         break;
       }
-      const miesto = nositel.miesto === undefined ? {} : { miesto: nositel.miesto };
       s.hasicVolby = [...(s.hasicVolby ?? []), { hrac: p, typ: "senok", uid: nositel.card.uid as number, potom: null, tag, zdroj: def.id, ...miesto }];
       events.push({ type: "log", text: `Podpora — ${def.name} hráča ${p + 1}: berie si z ponuky zadarmo 1 ${tag === "Občan" ? "Občana" : tag}.` });
       break;
@@ -4297,6 +4310,14 @@ function vyhodnotPitku(s: MutState, data: GameData, events: Event[]): void {
     if (pokuta[p] > 0) events.push({ type: "log", text: `Policajtka hráča ${opponentOf(p) + 1} píše pokutový blok: hráč ${p + 1} získava ${pocet(pokutaSpolu, "zadĺženie", "zadĺženia", "zadĺžení")} za akcie zrušené Odporom.` });
   }
   for (const p of [0, 1] as const) pridajZadlzenie(s, p, prirastky.zadlzenie[p], events);
+  // Výherný automat (Dedičstvo, v11.22, Michal 2026-11-11: „každú Pitku 1 Dlh“): Dlh rovno, nie
+  // zadĺženie cez prah — je to Dlh z Pitky, Obecný úrad ho ráta dvakrát.
+  for (const p of [0, 1] as const) {
+    const n = dlhyZDedicstva(data, s.hraci[p].dedicstvo, "Pitka");
+    if (n === 0) continue;
+    events.push({ type: "log", text: `Výherný automat: hráč ${p + 1} v Pitke prehráva — ${pocet(n * nasobokPitky(s as GameState), "Dlh", "Dlhy", "Dlhov")}.` });
+    for (let i = n * nasobokPitky(s as GameState); i > 0; i--) pridajDlh(s, p, events);
+  }
 
   // 3. Poškodenie pečene: akcie Poškodenie pečene a Poldeci [R6b]; NA EX už pripísané,
   //    pitie do dna zo Zhromaždenia čaká na prah práve tu.
@@ -4804,24 +4825,31 @@ function cmdSenok(s: MutState, data: GameData, cmd: { uid: number }, kto: Miesto
   need(ponukaSenku(data, s as GameState, volba).some((k) => k.uid === cmd.uid), `Z ponuky si teraz smieš vziať len kartu s tagom ${volba.tag ?? ""}.`);
   s.hasicVolby = dalsie;
   const karta = s.senok.splice(idx, 1)[0] as DeepMutable<CardInstance>;
-  events.push({ type: "log", text: `Hráč ${p + 1} si berie z ponuky ${defOf(data, karta as CardInstance).name}.` });
-  doRuky(s, kto, karta);
+  if (volba.kam === "balicek") {
+    // Karta z ponuky je verejná — obaja vedia, čo leží navrchu balíčka.
+    hrac(s, p).doberaci.unshift(karta);
+    events.push({ type: "log", text: `Hráč ${p + 1} si berie z ponuky ${defOf(data, karta as CardInstance).name} navrch svojho doberacieho balíčka.` });
+  } else {
+    events.push({ type: "log", text: `Hráč ${p + 1} si berie z ponuky ${defOf(data, karta as CardInstance).name}.` });
+    doRuky(s, kto, karta);
+  }
   dokonciPoVolbe(s, data, volba, events);
   preskocPrazdneVolbySenku(s, data, events);
 }
 
 /**
  * Druhá Podpora tej istej karty (či ďalšej Predavačky) čaká vo fronte, kým prvá vezme kartu —
- * keď medzitým zo šenku zmizol posledný Občan či Nástroj, voľba bez možnosti by partiu zasekla.
+ * keď medzitým z ponuky zmizol posledný Nástroj či posledná karta, voľba bez možnosti by partiu zasekla.
  */
 function preskocPrazdneVolbySenku(s: MutState, data: GameData, events: Event[]): void {
   for (;;) {
     const [volba, ...dalsie] = s.hasicVolby ?? [];
-    if (volba === undefined || volba.typ !== "senok" || volba.tag === undefined) return;
+    if (volba === undefined || volba.typ !== "senok") return;
     if (ponukaSenku(data, s as GameState, volba).length > 0) return;
     s.hasicVolby = dalsie;
     const meno = volba.zdroj === undefined ? "karta" : defOf(data, { defId: volba.zdroj }).name;
-    events.push({ type: "log", text: `Podpora — ${meno} hráča ${volba.hrac + 1}: v ponuke už nie je ${volba.tag} — nič si neberie.` });
+    const coChyba = volba.tag === undefined ? "už nič nie je" : `už nie je ${volba.tag}`;
+    events.push({ type: "log", text: `Podpora — ${meno} hráča ${volba.hrac + 1}: v ponuke ${coChyba} — nič si neberie.` });
     dokonciPoVolbe(s, data, volba as HasicVolba, events);
   }
 }
@@ -4968,13 +4996,13 @@ function pokracujPoPitke(s: MutState, data: GameData, events: Event[]): void {
     zacniZhromazdenie(s, data, events);
     return;
   }
-  // Výherný automat (Dedičstvo, v7): v poslednej Pitke kola 1 Dlh za kus; je to Dlh z Pitky,
-  // takže ho Obecný úrad (v11.13) ráta dvakrát.
+  // Výherný automat zo sady v11.18–v11.21 („Posledná Pitka kola: {Hazard}“): Dlh len v poslednej
+  // Pitke kola; je to Dlh z Pitky, takže ho Obecný úrad (v11.13) ráta dvakrát.
   for (const p of [0, 1] as const) {
-    for (const _ of s.hraci[p].dedicstvo.filter((k) => k.defId === "vyherny_automat")) {
-      events.push({ type: "log", text: `Výherný automat: hráč ${p + 1} v poslednej Pitke kola prehráva — Dlh.` });
-      for (let i = nasobokTeraz(s); i > 0; i--) pridajDlh(s, p, events);
-    }
+    const n = dlhyZDedicstva(data, s.hraci[p].dedicstvo, "Posledná Pitka kola");
+    if (n === 0) continue;
+    events.push({ type: "log", text: `Výherný automat: hráč ${p + 1} v poslednej Pitke kola prehráva — Dlh.` });
+    for (let i = n * nasobokTeraz(s); i > 0; i--) pridajDlh(s, p, events);
   }
   // Hazard navyše „Posledná Pitka kola“ kariet v línii (Traktorista bez prevahy v jeho kraji, Michal
   // 2026-11-08): Dlh z Pitky ako Výherný automat. Prevaha sa ráta teraz — po otočení Záverečných.

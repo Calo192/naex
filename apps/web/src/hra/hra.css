@@ -10372,12 +10372,18 @@ button.pecat.kseft-pod-tlacidlo.ne:hover {
   outline-offset: 1px;
 }
 
+/* Otočenie zasunutého Nástroja (Michal 2026-11-11: „Chcem, aby táto ikona bola pod kartou, nie na nej,
+   keďže ju aj tak nevidno.“): tlačidlo stojí mimo pásu, za jeho voľnou hranou — pri nízkom páse by
+   ho inak prekryla karta nad ním. */
 .pas-nastroja-otoc {
-  flex: none;
+  position: absolute;
+  left: 50%;
+  z-index: 3;
+  transform: translateX(-50%);
   display: grid;
   place-items: center;
-  width: 24px;
-  height: 24px;
+  width: 26px;
+  height: 26px;
   padding: 0;
   border-radius: 50%;
   border: 2px solid var(--akcent);
@@ -10386,6 +10392,14 @@ button.pecat.kseft-pod-tlacidlo.ne:hover {
   font-size: 0.95rem;
   line-height: 1;
   cursor: pointer;
+}
+
+.s-nastrojmi-dole > .pas-nastroja > .pas-nastroja-otoc {
+  top: calc(100% + 3px);
+}
+
+.s-nastrojmi-hore > .pas-nastroja > .pas-nastroja-otoc {
+  bottom: calc(100% + 3px);
 }
 
 .pas-nastroja-otoc:disabled {

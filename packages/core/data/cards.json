@@ -1,5 +1,5 @@
 {
- "source": "zverejnená sada v52 živého webu (tvorca kariet 2026-11-10T14:13:58.221Z), bez karty Dlh; šenok → Ponuka v textoch 5 kariet (Michal 2026-11-10)",
+ "source": "rozpracovaný stav tvorcu Vypálenej nad sadou v52 (záloha 2026-11-11T09:45Z), bez karty Dlh; pravidlá v11.22: Traktorista, Pasca, Výherný automat, Kapybara, Predavačka (Michal 2026-11-11)",
  "actions": [
   "Cigareta",
   "Dlh",
@@ -239,7 +239,7 @@
    "tags": [
     "Nástroj"
    ],
-   "effect_text": "Dedičstvo: Bitka: Ak súper v tomto kole priložil kartu k tvojej karte {Rana}. Hore: {Pečeň}→{Rana}. Dole: Posilnená {Rana}.",
+   "effect_text": "Dedičstvo: Bitka: Za každú kartu, ktorú súper v tomto kole priložil k tvojej karte {Rana}. Hore: {Pečeň}→{Rana}. Dole: Posilnená {Rana}.",
    "triggers": [
     "Dedičstvo",
     "Bitka"
@@ -340,9 +340,10 @@
    "tags": [
     "Nástroj"
    ],
-   "effect_text": "Dedičstvo: Tvoj prah Dlhu je o 1 vyšší. Posledná Pitka kola: {Hazard}. Hore: {Hazard}→{Poldeci}. Dole: {Hazard}→{Pecka}.",
+   "effect_text": "Dedičstvo: Tvoj prah Dlhu je o 1 vyšší. Pitka: {Dlh}. Hore: {Hazard}→{Poldeci}. Dole: {Hazard}→{Pecka}.",
    "triggers": [
-    "Dedičstvo"
+    "Dedičstvo",
+    "Pitka"
    ],
    "left": {
     "blocked": [],
@@ -2827,10 +2828,8 @@
    "tags": [
     "Zviera"
    ],
-   "effect_text": "Podpora: Preškolenie {Viera}→{Cigareta}. Konflikt: Preškolenie {Viera}→{Cigareta}. Furt: {Cigareta}.",
+   "effect_text": "Furt: Preškolenie {Viera}→{Cigareta}.",
    "triggers": [
-    "Podpora",
-    "Konflikt",
     "Furt"
    ],
    "left": {
@@ -3193,8 +3192,10 @@
     "Autorita",
     "Chlap"
    ],
-   "effect_text": "Posledná Pitka kola: Bez prevahy v jeho kraji {Dlh}.",
-   "triggers": [],
+   "effect_text": "Bitka: S prevahou v jeho kraji {Pecka}.",
+   "triggers": [
+    "Bitka"
+   ],
    "left": {
     "blocked": [
      0,
@@ -3947,7 +3948,7 @@
     "Žena",
     "Pracujúci"
    ],
-   "effect_text": "Podpora: Vezmi si z ponuky 1 Občana.",
+   "effect_text": "Podpora: Vezmi si z ponuky 1 kartu navrch svojho doberacieho balíčka.",
    "triggers": [
     "Podpora"
    ],

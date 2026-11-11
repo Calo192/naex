@@ -59,7 +59,7 @@ describe("Zrejúca — oprávnenie hrat_zrejucu", () => {
   it("neprihlásený vidí len, kde je; dáta nie", async () => {
     const odpoved = await ja(zrejuca, "");
     expect(odpoved.pouzivatel).toBeNull();
-    expect(odpoved.instancia).toEqual({ nazov: "zrejuca", vypalena: null, zrejuca: null, bezPrava: false, rezimyNavyse: true });
+    expect(odpoved.instancia).toEqual({ nazov: "zrejuca", vypalena: null, zrejuca: null, bezPrava: false, rezimyNavyse: true, jazyky: true });
     expect((await volaj(zrejuca, "GET", "/sada")).status).toBe(401);
     expect((await volaj(zrejuca, "GET", "/hry/otvorene")).status).toBe(401);
     // Vypálená je verejná a ponúka prepnutie (adresa "/" = Caddy smeruje podľa cookie).

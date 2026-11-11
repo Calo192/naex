@@ -11,6 +11,7 @@ import type { KrokPremeny } from "./partia.ts";
 import type { HranaNastroja, KtoraHrana } from "./naradie.ts";
 import { KTORE_HRANY, aktivnaHrana, hranaSlovami, hranyNastroja, posilnenaSlovami, posilneniaHostitela, preskolStranu, preskoleniaHostitela, ucinkyNastrojov } from "./naradie.ts";
 import { menoAkcie } from "./preskolenie.ts";
+import { efektyNavyse } from "./navyse.ts";
 
 
 const BEZ_PREMIEN: ReadonlyMap<Action, { readonly na: Action; readonly uid: number }> = new Map();
@@ -56,11 +57,20 @@ export function hranaMaCoRobit(data: GameData, hostitel: PlacedCard, hrana: Hran
   return pocetPoPreskoleni(data, hostitel, hrana.z, line) > 0;
 }
 
-/** Koľko akcií `a` má karta na oboch hranách po preškolení (Školitelia v línii, Nástroje pod ňou) — tie posilnenie posilní. */
+/** Akcie navyše karty (pečať) — Nástroj ich mení ako hrany (v11.22). */
+function akcieNavyse(data: GameData, pl: PlacedCard): Action[] {
+  return efektyNavyse(defOf(data, pl.card)).flatMap((e) => e.akcie);
+}
+
+/**
+ * Koľko akcií `a` má karta na oboch hranách a v pečati po preškolení (Školitelia v línii, Nástroje
+ * pod ňou) — tie posilnenie posilní.
+ */
 function pocetPoPreskoleni(data: GameData, pl: PlacedCard, a: string, line?: Pick<LineState, "lokalita" | "strany">): number {
   const p = printedSides(data, pl.card);
   const premeny = line === undefined ? preskoleniaHostitela(data, pl) : (premenyVLinii(data, line).get(pl.card.uid)?.hrany ?? BEZ_PREMIEN);
-  return [...preskolStranu(premeny, p.left), ...preskolStranu(premeny, p.right)].filter((x) => x?.akcia === a).length;
+  const naHranach = [...preskolStranu(premeny, p.left), ...preskolStranu(premeny, p.right)].filter((x) => x?.akcia === a).length;
+  return naHranach + akcieNavyse(data, pl).filter((x) => (premeny.get(x)?.na ?? x) === a).length;
 }
 
 /** Premeny karty v poradí reťaze — s líniou aj Školitelia, inak len Nástroje pod ňou. */
@@ -147,7 +157,7 @@ export function popisHrany(data: GameData, hostitel: PlacedCard, hrana: HranaNas
   const kroky = krokyKarty(data, hostitel, line);
   const p = printedSides(data, hostitel.card);
   const cesty = new Map<string, number>();
-  for (const a of [...p.left, ...p.right]) {
+  for (const a of [...p.left, ...p.right, ...akcieNavyse(data, hostitel)]) {
     if (a === null) continue;
     const cesta = cestaAkcie(kroky, a);
     if ((cesta[cesta.length - 1]?.na ?? a) !== hrana.z) continue;
