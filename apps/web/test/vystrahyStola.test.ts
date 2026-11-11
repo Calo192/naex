@@ -6,7 +6,7 @@ import eldersJson from "../../../packages/core/data/elders.json";
 import scorecardsJson from "../../../packages/core/data/scorecards.json";
 import type { CardInstance, GameState, PlacedCard, PlayerId, VystrahaPecene } from "@naex/core";
 import { apply, lineState, loadGameData, naexCieleVLinii, setupGame, viewFor } from "@naex/core";
-import { cieleSuperovhoNaex, vystrahaCela, vystrahaKratko } from "../src/hra/vystrahyStola.ts";
+import { cieleSuperovhoNaex, vystrahaCela, vystrahaKratko, vystrahaVRuke } from "../src/hra/vystrahyStola.ts";
 
 const data = loadGameData(cardsJson, eldersJson, scorecardsJson);
 const menoKarty = (defId: string): string => data.cards.get(defId)?.name ?? defId;
@@ -88,6 +88,13 @@ describe("texty výstrahy pečene", () => {
     expect(kratko({ naex })).toBe("NA EX: Cirhóza +3");
     expect(kratko({ cirhozy: [1, 0], spaky: [-3, 0], naex })).toBe("Cirhóza +1 · NA EX +3");
     expect(kratko({ cirhozy: [0, 1], spaky: [0, -3] })).toBe("súper Cirhóza +1");
+  });
+
+  it("štítok v ruke bez súperovho NA EX (Michal 2026-11-11); bez vlastnej Cirhózy žiadny", () => {
+    const vRuke = (x: Partial<VystrahaPecene>): string | null => vystrahaVRuke(v(x), 0)?.replace(/ /g, " ") ?? null;
+    expect(vRuke({ naex })).toBeNull();
+    expect(vRuke({ cirhozy: [1, 0], spaky: [-3, 0], naex })).toBe("Cirhóza +1");
+    expect(vRuke({ cirhozy: [0, 1], spaky: [0, -3], naex })).toBe("súper Cirhóza +1");
   });
 
   it("celá veta v jazyku HROZBY KLIATOB; moje podľa toho, kto sa pýta", () => {

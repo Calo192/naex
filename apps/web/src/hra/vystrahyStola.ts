@@ -18,6 +18,16 @@ export function vystrahaKratko(v: VystrahaPecene, ja: PlayerId): string {
     .join(" · ");
 }
 
+/**
+ * Štítok na karte v ruke: len Cirhózy z vyloženia samotného. Súperovo NA EX tam nie je
+ * (Michal 2026-11-11: „Tento hint sa mi vôbec nepáči, odstráň ho.“) — ukáže ho miesto na stole
+ * a pokyn. null = štítok sa nekreslí.
+ */
+export function vystrahaVRuke(v: VystrahaPecene, ja: PlayerId): string | null {
+  const text = vystrahaKratko({ ...v, naex: null }, ja);
+  return text === "" ? null : text;
+}
+
 /** Celá veta do pokynu; `kartaNaex` je meno karty, na ktorú by súper NA EX dal. */
 export function vystrahaCela(v: VystrahaPecene, ja: PlayerId, menoSupera: string, kartaNaex: string): string {
   const su = opponentOf(ja);

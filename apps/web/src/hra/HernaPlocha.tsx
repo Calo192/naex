@@ -122,7 +122,7 @@ import { KseftPodKartou } from "./KseftPodKartou.tsx";
 import { IkonaMrezi } from "./ikonyZdrojov.tsx";
 import { kseftyNaStole } from "./kseftyNaStole.ts";
 import { moznostiVily } from "./volbaVily.ts";
-import { cieleSuperovhoNaex, vystrahaCela, vystrahaKratko } from "./vystrahyStola.ts";
+import { cieleSuperovhoNaex, vystrahaCela, vystrahaKratko, vystrahaVRuke } from "./vystrahyStola.ts";
 import { StavkaBitky } from "./StavkaBitky.tsx";
 import { UCINOK_KRATKO, UCINOK_PRIAZNE } from "./Scorecard.tsx";
 import type { HracInfo, SuhrnAchievementov, ZmenyFrajeriny } from "./useHra.ts";
@@ -6770,6 +6770,7 @@ export function HernaPlocha({
               const pary = naMiesto?.pary ?? [];
               const strana = naMiesto?.vnutornaVytlacena;
               const vystraha = naMiesto !== undefined && miestoVolby !== null ? vystrahaVylozenia(k, miestoVolby) : null;
+              const stitokPecene = vystraha === null ? null : vystrahaVRuke(vystraha, ja);
               const spoj =
                 strana === undefined || pary.length === 0
                   ? undefined
@@ -6785,7 +6786,7 @@ export function HernaPlocha({
                   {dobrata && <span className="nova-stitok">{t("plocha.dobrana")}</span>}
                   {majitelPresvedcenej(view, k.uid) !== null && <span className="nova-stitok">{t("plocha.presvedcenyStarsi")}</span>}
                   {pary.length > 0 && <span className="spoj-stitok">{pary.length === 1 ? "1 spoj" : `${pary.length} spoje`}</span>}
-                  {vystraha !== null && <span className="pecen-stitok">{vystrahaKratko(vystraha, ja)}</span>}
+                  {stitokPecene !== null && <span className="pecen-stitok">{stitokPecene}</span>}
                 </>
               );
               const triedy = [nova || dobrata ? "nova-zo-senku" : ""];
