@@ -15,6 +15,9 @@ import {
   type Command,
   type GameData,
 } from "@naex/core";
+import { nazovKarty, prelozHlasku, t, tZoServera } from "../i18n/jazyk.tsx";
+
+const prelozBezUcinku = (s: string | null): string | null => (s === null ? null : prelozHlasku(s));
 
 /** Čím sa Kšeft platí: cigarety (karty, lokality); schopnosť väzňa nestojí nič, je raz za hru (v11.2). */
 export type CenaKseftu = { readonly cigarety: number } | { readonly raz: true };
@@ -69,7 +72,7 @@ export interface KseftNaStole {
   readonly akcia: AkciaKseftu;
 }
 
-const cigariet = (n: number): string => (n === 1 ? "1 cigaretu" : n >= 2 && n <= 4 ? `${n} cigarety` : `${n} cigariet`);
+const cigariet = (n: number): string => t("pocet.cigariet", { n });
 
 /**
  * Efekty pod kartou, ktoré hráč teraz smie použiť — Sklad pod lokalitou (Zhromaždenie, frakcie
@@ -83,7 +86,7 @@ export function kseftyNaStole(data: GameData, view: ClientState): KseftNaStole[]
 function efektyLokality(data: GameData, view: ClientState): KseftNaStole[] {
   const lok = view.ciel?.lokalita ?? null;
   if (lok === null || !skladPonuka(data, view) || view.faza !== "zhromazdenie" || !view.mozemHrat) return [];
-  const meno = (defId: string): string => data.cards.get(defId)?.name ?? defId;
+  const meno = (defId: string): string => nazovKarty(data.cards.get(defId)?.name ?? defId);
   const cena = view.cenaDedicstva;
   const nastroje = view.senok.filter((k) => data.cards.get(k.defId)?.tags.includes("Nástroj") === true);
   const h = view.hraci[view.ja];
@@ -94,30 +97,22 @@ function efektyLokality(data: GameData, view: ClientState): KseftNaStole[] {
       defId: lok.defId,
       nazov: meno(lok.defId),
       cena: { cigarety: cena },
-      zisk: "Nástroj do Dedičstva",
-      tip: `Sklad: Nástroj z ponuky vyložíš rovno do Dedičstva za cenu Dedičstva (teraz ${cigariet(cena)}). Do ponuky sa dotiahne nový Nástroj.`,
-      dovod: nastroje.length === 0 ? "V ponuke nie je Nástroj." : h.cigarety < cena ? `Dedičstvo stojí ${cigariet(cena)}, máš ${h.cigarety}.` : null,
+      zisk: t("kseft.sklad.zisk"),
+      tip: t("kseft.sklad.tip", { cena: cigariet(cena) }),
+      dovod: nastroje.length === 0 ? t("kseft.sklad.bezNastroja") : h.cigarety < cena ? t("kseft.sklad.drahe", { cena: cigariet(cena), mas: h.cigarety }) : null,
       pouzity: false,
       akcia: {
         typ: "volba",
-        nadpis: "Sklad · Nástroj z ponuky do Dedičstva",
-        riadky: nastroje.map((k) => ({ kluc: String(k.uid), meno: meno(k.defId), vpravo: { text: "do Dedičstva", prikaz: { type: "place", uid: k.uid, target: "dedicstvo" } } })),
+        nadpis: t("kseft.sklad.nadpis"),
+        riadky: nastroje.map((k) => ({ kluc: String(k.uid), meno: meno(k.defId), vpravo: { text: t("kseft.sklad.doDedicstva"), prikaz: { type: "place", uid: k.uid, target: "dedicstvo" } } })),
       },
     },
   ];
 }
 
 /** Krátky zisk schopnosti väzňa na tlačidle — celé znenie (elders.json) je v nápovede. */
-const ZISK_SCHOPNOSTI: Readonly<Record<string, string>> = {
-  postarka: `+${KONSTANTY.POSTARKA_CIGARETY} cigarety`,
-  krcmarka: "nový poldeci",
-  farar: "preč súperovo NA EX",
-  starosta: "lokalita posilnená",
-  veterinar: "Cirhózy preč",
-  vychovavatelka: "súper pasuje",
-  autobusar: "karty z ponuky",
-  hrobar: "karta zo šrotu súpera",
-};
+const ZISK_SCHOPNOSTI: ReadonlySet<string> = new Set(["postarka", "krcmarka", "farar", "starosta", "veterinar", "vychovavatelka", "autobusar", "hrobar"]);
+const ziskSchopnosti = (defId: string): string => (ZISK_SCHOPNOSTI.has(defId) ? t(`kseft.zisk.${defId}`, { n: KONSTANTY.POSTARKA_CIGARETY }) : t("kseft.zisk.schopnost"));
 
 /**
  * Schopnosti mojich väzňov (v11.2, Michal 2026-11-02) — v okne Pivnica pod kartou väzňa a pri
@@ -129,40 +124,40 @@ export function schopnostiVaznov(data: GameData, view: ClientState): KseftNaStol
   const su = opponentOf(ja);
   const stav = stavSchopnostiVaznaZPohladu(view);
   const ponuka = ponukaSchopnostiVazna(stav, ja);
-  const meno = (defId: string): string => data.cards.get(defId)?.name ?? defId;
+  const meno = (defId: string): string => nazovKarty(data.cards.get(defId)?.name ?? defId);
   const out: KseftNaStole[] = [];
   for (const v of view.vazni.filter((x) => x.hrac === ja)) {
     const defId = v.karta.defId;
     const elderId = v.elderId;
     const pouzity = v.pouzita === true;
     const dovod = pouzity
-      ? "Schopnosť je minutá — väzeň ostáva v pivnici."
+      ? t("kseft.minuta")
       : !tahSchopnosti(stav, ja)
-        ? "Schopnosť použiješ vo svojom ťahu — pri braní z ponuky, v Zhromaždení alebo v Pitke."
-        : schopnostBezUcinku(stav, ja, defId);
+        ? t("kseft.voSvojomTahu")
+        : prelozBezUcinku(schopnostBezUcinku(stav, ja, defId));
     const moje = ponuka.filter((c): c is Extract<Command, { type: "schopnostVazna" }> => c.type === "schopnostVazna" && c.elderId === elderId);
-    const nadpis = `Schopnosť väzňa ${meno(defId)}`;
+    const nadpis = t("kseft.schopnostVazna", { meno: meno(defId) });
     const akcia: AkciaKseftu =
       defId === "farar"
         ? {
             typ: "volba",
-            nadpis: `${nadpis} · ktoré NA EX`,
+            nadpis: t("kseft.ktoreNaex", { nadpis }),
             riadky: moje.map((c) => {
               const pl = [...view.strany[0], ...view.strany[1]].find((x) => x.card.uid === c.uid);
-              const kde = pl === undefined ? "" : pl.playedBy === ja ? " (tvoja)" : " (jeho)";
-              return { kluc: String(c.uid), meno: `${meno(pl?.card.defId ?? "")}${kde}`, vpravo: { text: "zrušiť NA EX", prikaz: c } };
+              const kde = pl === undefined ? "" : pl.playedBy === ja ? t("kseft.tvoja") : t("kseft.jeho");
+              return { kluc: String(c.uid), meno: `${meno(pl?.card.defId ?? "")}${kde}`, vpravo: { text: t("kseft.zrusitNaex"), prikaz: c } };
             }),
           }
         : defId === "hrobar"
           ? {
               typ: "volba",
-              nadpis: `${nadpis} · karta zo súperovho šrotu`,
-              riadky: moje.map((c) => ({ kluc: String(c.uid), meno: meno(view.hraci[su].odhadzovaci.find((k) => k.uid === c.uid)?.defId ?? ""), vpravo: { text: "vziať", prikaz: c } })),
+              nadpis: t("kseft.zoSrotu", { nadpis }),
+              riadky: moje.map((c) => ({ kluc: String(c.uid), meno: meno(view.hraci[su].odhadzovaci.find((k) => k.uid === c.uid)?.defId ?? ""), vpravo: { text: t("kseft.vziat"), prikaz: c } })),
             }
           : defId === "autobusar"
             ? {
                 typ: "karty",
-                nadpis: `${nadpis} · koľko kariet z ponuky`,
+                nadpis: t("kseft.kolkoKariet", { nadpis }),
                 karty: view.senok.map((k) => ({ uid: k.uid, meno: meno(k.defId) })),
                 cenaZaKus: KONSTANTY.AUTOBUSAR_CENA,
                 najviac: Math.floor(view.hraci[ja].cigarety / KONSTANTY.AUTOBUSAR_CENA),
@@ -175,8 +170,8 @@ export function schopnostiVaznov(data: GameData, view: ClientState): KseftNaStol
       defId,
       nazov: meno(defId),
       cena: { raz: true },
-      zisk: ZISK_SCHOPNOSTI[defId] ?? "schopnosť",
-      tip: `Schopnosť väzňa — raz za hru, kedy chceš (vo svojom ťahu): ${data.elders.get(elderId)?.schopnost ?? ""}`,
+      zisk: ziskSchopnosti(defId),
+      tip: t("kseft.tipVazna", { schopnost: tZoServera(`schopnost.${elderId}`, data.elders.get(elderId)?.schopnost ?? "") }),
       dovod,
       pouzity,
       akcia,

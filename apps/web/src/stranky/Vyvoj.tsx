@@ -15,18 +15,21 @@ import { kratkyDen } from "../lib/datum.ts";
 import { GrafZnamok, MiniGraf, TabulkaVyvoja, cislo, hodnota, terajsiaHodnota, type BodVyvoja, type Vyvoj } from "./GrafZnamok.tsx";
 import { Roadmapa, type PoctyRoadmapy } from "./Roadmapa.tsx";
 import "./vyvoj.css";
+import { aktualnyJazyk, t, tr, tZoServera } from "../i18n/jazyk.tsx";
 
-/** Zásady na ďalšie obdobie (návrh roadmapy, Michal 2026-10-21) — nadpis a jeden riadok (dizajn 2026-10-26). */
-const ZASADY: readonly { readonly nazov: string; readonly text: string }[] = [
-  { nazov: "Najprv čitateľnosť, potom čísla", text: "Každá mechanika musí mať svoju cenu na stole ešte pred rozhodnutím." },
-  { nazov: "Zmraziť pravidlá a meniť ich po dávkach", text: "Zmenu najprv zmeria stratég, overí playtest a až potom sa rozhodne; v jednej téme jedna zmena naraz." },
-  { nazov: "Ľudia pred formátom 2 na 2", text: "Najprv hodnotenia ľudí tými istými kritériami a porovnanie s AI playtestermi." },
-  { nazov: "2 na 2 ako ďalší formát, nie náhrada", text: "Hlavná ostáva hra 1 na 1; čo sa z 2 na 2 neosvedčí, vypne sa prepínačom." },
-  { nazov: "Nový obsah až po zmrazení", text: "Doladiť existujúce karty áno, nové karty a rozšírenia až nad stabilnými pravidlami." },
-];
+/** Zásady na ďalšie obdobie (návrh roadmapy, Michal 2026-10-21) — nadpis a jeden riadok (dizajn 2026-10-26); texty vyvoj.zasada.N. */
+const ZASADY: readonly { readonly nazov: string; readonly text: string }[] = [1, 2, 3, 4, 5].map((n) => ({
+  get nazov() {
+    return t(`vyvoj.zasada.${n}.nazov`);
+  },
+  get text() {
+    return t(`vyvoj.zasada.${n}.text`);
+  },
+}));
 
 interface Ciel {
-  readonly metrika: string;
+  /** Kľúč textov cieľa (vyvoj.ciel.<id>). */
+  readonly id: string;
   /** Kritérium známok, z ktorého sa „dnes“ počíta naživo („#ludia“ = počet ľudí); inak pevná hodnota. */
   readonly kriterium?: string;
   readonly dnes?: number;
@@ -35,20 +38,25 @@ interface Ciel {
   readonly ciel: number;
   /** Koniec stupnice odrážkového grafu. */
   readonly max: number;
-  readonly horizont: string;
-  readonly meria: string;
+  /** Horizont roadmapy (vyvoj.horizont.<…>) a čo hodnotu meria (vyvoj.meria.<…>). */
+  readonly horizont: "teraz" | "dalej";
+  readonly meria: "znamky" | "turnaj" | "strateg" | "duplikat" | "log" | "statistiky";
 }
 
 const CIELE: readonly Ciel[] = [
-  { metrika: "Rovnováha a férovosť", kriterium: "rovnovaha", smer: "≥", ciel: 6.5, max: 10, horizont: "Teraz", meria: "známky na tejto stránke" },
-  { metrika: "Zrozumiteľnosť pravidiel", kriterium: "zrozumitelnost", smer: "≥", ciel: 6.5, max: 10, horizont: "Teraz", meria: "známky na tejto stránke" },
-  { metrika: "Víťaz poslednej bitky vyhrá partiu", dnes: 85, jednotka: " %", smer: "≤", ciel: 65, max: 100, horizont: "Teraz", meria: "stratég (turnaj botov)" },
-  { metrika: "Lepší bot porazí slabšieho (rebrík)", dnes: 67, jednotka: " %", smer: "≥", ciel: 72, max: 100, horizont: "Teraz", meria: "stratég" },
-  { metrika: "Predurčenosť partie rozdaním", dnes: 0.37, smer: "≤", ciel: 0.2, max: 1, horizont: "Teraz", meria: "stratég (duplikát)" },
-  { metrika: "Dĺžka strednej partie", dnes: 83, jednotka: " min", smer: "≤", ciel: 60, max: 120, horizont: "Teraz", meria: "log partie" },
-  { metrika: "Karty, ktoré nikto nezahrá", dnes: 3, smer: "=", ciel: 0, max: 10, horizont: "Ďalej", meria: "štatistiky kariet" },
-  { metrika: "Ľudia s hodnotením hry", kriterium: "#ludia", smer: "≥", ciel: 10, max: 10, horizont: "Ďalej", meria: "známky na tejto stránke" },
+  { id: "rovnovaha", kriterium: "rovnovaha", smer: "≥", ciel: 6.5, max: 10, horizont: "teraz", meria: "znamky" },
+  { id: "zrozumitelnost", kriterium: "zrozumitelnost", smer: "≥", ciel: 6.5, max: 10, horizont: "teraz", meria: "znamky" },
+  { id: "poslednaBitka", dnes: 85, jednotka: " %", smer: "≤", ciel: 65, max: 100, horizont: "teraz", meria: "turnaj" },
+  { id: "rebrik", dnes: 67, jednotka: " %", smer: "≥", ciel: 72, max: 100, horizont: "teraz", meria: "strateg" },
+  { id: "predurcenost", dnes: 0.37, smer: "≤", ciel: 0.2, max: 1, horizont: "teraz", meria: "duplikat" },
+  { id: "dlzka", dnes: 83, jednotka: " min", smer: "≤", ciel: 60, max: 120, horizont: "teraz", meria: "log" },
+  { id: "nezahrate", dnes: 3, smer: "=", ciel: 0, max: 10, horizont: "dalej", meria: "statistiky" },
+  { id: "ludia", kriterium: "#ludia", smer: "≥", ciel: 10, max: 10, horizont: "dalej", meria: "znamky" },
 ];
+
+/** Názov a otázka kritéria známok zo servera v jazyku hráča (kriterium.<kľúč>.*). */
+const nazovKriteria = (k: { readonly kluc: string; readonly nazov: string }): string => tZoServera(`kriterium.${k.kluc}.nazov`, k.nazov);
+const otazkaKriteria = (k: { readonly kluc: string; readonly otazka: string }): string => tZoServera(`kriterium.${k.kluc}.otazka`, k.otazka);
 
 /** Časti stránky v poradí — pás nad nimi ich ukazuje a skáče na ne. */
 const SEKCIE = ["znamky", "roadmapa", "hotove", "zasady"] as const;
@@ -60,7 +68,7 @@ function terajsia(body: readonly BodVyvoja[], kriterium: string): number | null 
   return b === undefined ? null : terajsiaHodnota(b, kriterium);
 }
 
-const formatCisla = (v: number): string => v.toLocaleString("sk-SK", { maximumFractionDigits: 2 });
+const formatCisla = (v: number): string => v.toLocaleString(aktualnyJazyk(), { maximumFractionDigits: 2 });
 
 /** Kde je čitateľ: posledná časť, ktorej začiatok je nad spodkom lepkavého pásu. */
 function useAktivnaSekcia(pripravene: boolean): Sekcia {
@@ -110,7 +118,7 @@ function KdeHraJe({ vyvoj }: { readonly vyvoj: Vyvoj }) {
   if (posledny === undefined) {
     return (
       <p className="panel tlmene">
-        Hru zatiaľ nikto neohodnotil. Ohodnoť ju na stránke <Odkaz href="/spatna-vazba#hodnotenie">Spätná väzba</Odkaz>.
+        {tr("vyvoj.nikto", { odkaz: <Odkaz href="/spatna-vazba#hodnotenie">{t("nav.spatnaVazba")}</Odkaz> })}
       </p>
     );
   }
@@ -129,41 +137,48 @@ function KdeHraJe({ vyvoj }: { readonly vyvoj: Vyvoj }) {
   const predtymCelkom = tyzden === undefined ? null : terajsiaHodnota(tyzden, "celkom");
   const posun = terazCelkom !== null && predtymCelkom !== null ? terazCelkom - predtymCelkom : null;
   const lenAi = ludi < vyvoj.minLudi;
-  const nazovKriteria = kriterium === "celkom" ? "priemer všetkých kritérií" : (vyvoj.kriteria.find((k) => k.kluc === kriterium)?.nazov ?? kriterium);
-  const riadky = [{ kluc: "celkom", nazov: "Priemer všetkých kritérií", otazka: "Priemer známok všetkých 12 kritérií" }, ...vyvoj.kriteria];
+  const vybrane = vyvoj.kriteria.find((k) => k.kluc === kriterium);
+  const nazovVybraneho = kriterium === "celkom" ? t("vyvoj.priemerVsetkychMale") : vybrane === undefined ? kriterium : nazovKriteria(vybrane);
+  const riadky = [
+    { kluc: "celkom", nazov: t("vyvoj.priemerVsetkych"), otazka: t("vyvoj.priemerOtazka", { n: vyvoj.kriteria.length }) },
+    ...vyvoj.kriteria.map((k) => ({ ...k, nazov: nazovKriteria(k), otazka: otazkaKriteria(k) })),
+  ];
 
   return (
     <>
       <div className="vyvoj-dlazdice">
         <div className="vyvoj-dlazdica">
-          <span className="vyvoj-cap">Priemerná známka</span>
+          <span className="vyvoj-cap">{t("vyvoj.priemernaZnamka")}</span>
           <b className="vyvoj-velke">
             {terazCelkom === null ? "—" : cislo(terazCelkom)}
             {posun !== null && (
               <em className={posun >= 0 ? "hore" : "dole"}>
-                {posun >= 0 ? "▲" : "▼"} {cislo(Math.abs(posun))} za týždeň
+                {posun >= 0 ? "▲" : "▼"} {t("vyvoj.zaTyzden", { n: cislo(Math.abs(posun)) })}
               </em>
             )}
           </b>
-          <span className="vyvoj-pop">zo všetkých {vyvoj.kriteria.length} kritérií{lenAi ? " (AI playtesteri)" : ""}</span>
+          <span className="vyvoj-pop">
+            {t("vyvoj.zoVsetkych", { n: vyvoj.kriteria.length })}
+            {lenAi ? t("vyvoj.aiPlaytesteriZatvorka") : ""}
+          </span>
         </div>
         <div className="vyvoj-dlazdica">
-          <span className="vyvoj-cap">Hodnotitelia</span>
+          <span className="vyvoj-cap">{t("vyvoj.hodnotitelia")}</span>
           <dl className="vyvoj-dvojice">
-            <dt>Ľudia</dt>
+            <dt>{t("vyvoj.ludia")}</dt>
             <dd>{lenAi ? `${ludi} / ${vyvoj.minLudi}` : ludi}</dd>
-            <dt>AI playtesteri</dt>
+            <dt>{t("vyvoj.aiPlaytesteri")}</dt>
             <dd>{ai}</dd>
           </dl>
-          {lenAi && <span className="vyvoj-pop">ľudia sa rátajú od {vyvoj.minLudi}</span>}
+          {lenAi && <span className="vyvoj-pop">{t("vyvoj.ludiaOd", { n: vyvoj.minLudi })}</span>}
         </div>
         {silne.length > 0 && (
           <div className="vyvoj-dlazdica">
-            <span className="vyvoj-cap silne">Najsilnejšie</span>
+            <span className="vyvoj-cap silne">{t("vyvoj.najsilnejsie")}</span>
             <dl className="vyvoj-dvojice">
               {silne.map((k) => (
                 <div key={k.kluc}>
-                  <dt>{k.nazov}</dt>
+                  <dt>{nazovKriteria(k)}</dt>
                   <dd>{cislo(k.v)}</dd>
                 </div>
               ))}
@@ -172,11 +187,11 @@ function KdeHraJe({ vyvoj }: { readonly vyvoj: Vyvoj }) {
         )}
         {slabe.length > 0 && (
           <div className="vyvoj-dlazdica">
-            <span className="vyvoj-cap slabe">Najslabšie</span>
+            <span className="vyvoj-cap slabe">{t("vyvoj.najslabsie")}</span>
             <dl className="vyvoj-dvojice">
               {slabe.map((k) => (
                 <div key={k.kluc}>
-                  <dt>{k.nazov}</dt>
+                  <dt>{nazovKriteria(k)}</dt>
                   <dd>{cislo(k.v)}</dd>
                 </div>
               ))}
@@ -188,20 +203,20 @@ function KdeHraJe({ vyvoj }: { readonly vyvoj: Vyvoj }) {
       <div className="vyvoj-dvoj">
         <div className="vyvoj-graf">
           <h3>
-            Známky v čase: <span>{nazovKriteria}</span>
+            {t("vyvoj.znamkyVCase")} <span>{nazovVybraneho}</span>
           </h3>
           <GrafZnamok vyvoj={vyvoj} kriterium={kriterium} />
           <TabulkaVyvoja vyvoj={vyvoj} kriterium={kriterium} />
         </div>
         <div className="vyvoj-krit">
           <div className="vyvoj-krit-hlava" aria-hidden="true">
-            <span>Kritérium</span>
-            <span title={body[0] === undefined ? undefined : `${kratkyDen(body[0].den)}–${kratkyDen(posledny.den)}`}>v čase</span>
-            <span className="cislo">Ľudia</span>
-            <span className="cislo">AI</span>
-            <span className="cislo">Spolu</span>
+            <span>{t("vyvoj.kriterium")}</span>
+            <span title={body[0] === undefined ? undefined : `${kratkyDen(body[0].den)}–${kratkyDen(posledny.den)}`}>{t("vyvoj.vCase")}</span>
+            <span className="cislo">{t("vyvoj.ludia")}</span>
+            <span className="cislo">{t("vyvoj.ai")}</span>
+            <span className="cislo">{t("vyvoj.spolu")}</span>
           </div>
-          <ul aria-label={`Kritériá k ${kratkyDen(posledny.den)} — výber prekreslí graf`}>
+          <ul aria-label={t("vyvoj.kriteriaK", { den: kratkyDen(posledny.den) })}>
             {riadky.map((k) => {
               const stitok = silne.some((s) => s.kluc === k.kluc) ? "silne" : slabe.some((s) => s.kluc === k.kluc) ? "slabe" : null;
               return (
@@ -209,14 +224,14 @@ function KdeHraJe({ vyvoj }: { readonly vyvoj: Vyvoj }) {
                   <button type="button" className={`vyvoj-krit-riadok ${k.kluc === "celkom" ? "celkom" : ""}`} aria-pressed={kriterium === k.kluc} title={k.otazka} onClick={() => setKriterium(k.kluc)}>
                     <span className="krit-nazov">
                       {k.nazov}
-                      {stitok !== null && <small className={`krit-stitok ${stitok}`}>{stitok === "silne" ? "najsilnejšie" : "najslabšie"}</small>}
+                      {stitok !== null && <small className={`krit-stitok ${stitok}`}>{stitok === "silne" ? t("vyvoj.najsilnejsieMale") : t("vyvoj.najslabsieMale")}</small>}
                     </span>
                     <MiniGraf body={body} kriterium={k.kluc} />
                     {(["ludia", "ai", "spolu"] as const).map((s) => {
                       const h = hodnota(posledny, s, k.kluc);
                       return (
                         <span key={s} className="cislo">
-                          <span className="vyvoj-skryte">{s === "ludia" ? "ľudia " : s === "ai" ? "AI " : "spolu "}</span>
+                          <span className="vyvoj-skryte">{s === "ludia" ? t("vyvoj.skryteLudia") : s === "ai" ? t("vyvoj.skryteAi") : t("vyvoj.skryteSpolu")}</span>
                           {h.priemer === null ? <span className="tlmene">—</span> : <span className="vyvoj-znamka" style={{ "--z": h.priemer } as CSSProperties}>{cislo(h.priemer)}</span>}
                         </span>
                       );
@@ -251,7 +266,7 @@ function ZasadyACiele({ vyvoj }: { readonly vyvoj: Vyvoj | null }) {
         ))}
       </ol>
       <div className="vyvoj-ciele">
-        <h3>Ciele: kedy je horizont splnený</h3>
+        <h3>{t("vyvoj.cieleNadpis")}</h3>
         <ul>
           {CIELE.map((c) => {
             const v = dnes(c);
@@ -259,11 +274,11 @@ function ZasadyACiele({ vyvoj }: { readonly vyvoj: Vyvoj | null }) {
             const text = (x: number): string => (znamka ? cislo(x) : formatCisla(x)) + (c.jednotka ?? "");
             const splnene = v !== null && (c.smer === "≥" ? v >= c.ciel : c.smer === "≤" ? v <= c.ciel : v === c.ciel);
             return (
-              <li key={c.metrika} className="vyvoj-ciel">
+              <li key={c.id} className="vyvoj-ciel">
                 <span className="vyvoj-ciel-nazov">
-                  {c.metrika}
+                  {t(`vyvoj.ciel.${c.id}`)}
                   <small>
-                    {c.horizont} · {c.meria}
+                    {t(`vyvoj.horizont.${c.horizont}`)} · {t(`vyvoj.meria.${c.meria}`)}
                   </small>
                 </span>
                 <span className="odrazkovy-graf" aria-hidden="true">
@@ -273,20 +288,20 @@ function ZasadyACiele({ vyvoj }: { readonly vyvoj: Vyvoj | null }) {
                 <span className="vyvoj-ciel-hodnoty">
                   <b>{v === null ? "—" : text(v)}</b> → {c.smer === "=" ? "" : `${c.smer} `}
                   {text(c.ciel)}
-                  {splnene && <span className="vyvoj-splnene"> ✓ splnené</span>}
+                  {splnene && <span className="vyvoj-splnene">{t("vyvoj.splnene")}</span>}
                 </span>
               </li>
             );
           })}
         </ul>
-        <p className="tlmene vyvoj-pozn">Hodnoty stratéga sú z turnajov botov k 21. 10. 2026; známky a počet ľudí sa počítajú naživo.</p>
+        <p className="tlmene vyvoj-pozn">{t("vyvoj.hodnotyStratega")}</p>
       </div>
     </div>
   );
 }
 
 export function Vyvoj({ cesta }: { readonly cesta: string }) {
-  useTitulok("Vývoj hry");
+  useTitulok(t("vyvoj.titul"));
   const { ja } = useUcet();
   const [vyvoj, setVyvoj] = useState<Vyvoj | null>(null);
   const [chyba, setChyba] = useState<{ readonly text: string; readonly status: number } | null>(null);
@@ -328,17 +343,17 @@ export function Vyvoj({ cesta }: { readonly cesta: string }) {
   if (zamknute) {
     return (
       <div className="vyvoj-stranka">
-        <HlavaStranky nadpis="Kam hra smeruje" />
+        <HlavaStranky nadpis={t("vyvoj.nadpis")} />
         <div className="panel vyvoj-zamknute">
           {ja === null ? (
             <>
-              <p>Stránku Vývoj vidia len prihlásení hráči.</p>
+              <p>{t("vyvoj.lenPrihlaseni")}</p>
               <Odkaz href={`/prihlasenie?spat=${encodeURIComponent("/vyvoj")}`} className="tlacidlo tlacidlo-hlavne">
-                Prihlásiť sa
+                {t("vyvoj.prihlasitSa")}
               </Odkaz>
             </>
           ) : (
-            <p>Stránku Vývoj tvoj rank zatiaľ nevidí. Čo sa v hre zmenilo, nájdeš v <Odkaz href="/novinky">Novinkách</Odkaz>.</p>
+            <p>{tr("vyvoj.rankNevidi", { odkaz: <Odkaz href="/novinky">{t("vyvoj.novinkach")}</Odkaz> })}</p>
           )}
         </div>
       </div>
@@ -348,18 +363,18 @@ export function Vyvoj({ cesta }: { readonly cesta: string }) {
   return (
     <div className="vyvoj-stranka">
       <HlavaStranky
-        nadpis="Kam hra smeruje"
-        uvod="NA EX! sa ešte ladí. Tu vidno, ako hru hodnotia hráči a AI playtesteri v čase, čo sa na nej robí, čo je hotové a podľa čoho sa rozhoduje."
+        nadpis={t("vyvoj.nadpis")}
+        uvod={t("vyvoj.uvod")}
       />
 
-      <nav className="sekcny-pas" aria-label="Časti stránky Vývoj">
+      <nav className="sekcny-pas" aria-label={t("vyvoj.casti")}>
         <div className="sekcny-pas-odkazy">
           {(
             [
-              ["znamky", "Známky", priemer === null ? null : cislo(priemer)],
-              ["roadmapa", "Roadmapa", pocty === null ? null : String(pocty.aktivne)],
-              ["hotove", "Hotové", pocty === null ? null : String(pocty.hotove)],
-              ["zasady", "Zásady a ciele", null],
+              ["znamky", t("vyvoj.sekcia.znamky"), priemer === null ? null : cislo(priemer)],
+              ["roadmapa", t("vyvoj.sekcia.roadmapa"), pocty === null ? null : String(pocty.aktivne)],
+              ["hotove", t("vyvoj.sekcia.hotove"), pocty === null ? null : String(pocty.hotove)],
+              ["zasady", t("vyvoj.sekcia.zasady"), null],
             ] as const
           ).map(([id, nazov, pocet]) => (
             <a key={id} href={`#${id}`} className={aktivna === id ? "aktivna" : undefined} aria-current={aktivna === id ? "location" : undefined} onClick={klik(id)}>
@@ -370,19 +385,18 @@ export function Vyvoj({ cesta }: { readonly cesta: string }) {
         </div>
         {smieHodnotit && (
           <Odkaz href="/spatna-vazba#hodnotenie" className="tlacidlo tlacidlo-hlavne sekcny-pas-akcia">
-            Ohodnotiť hru
+            {t("vyvoj.ohodnotit")}
           </Odkaz>
         )}
       </nav>
 
       <section id="znamky" className="vyvoj-sekcia" aria-labelledby="znamky-nadpis">
         <div className="vyvoj-sekcia-hlava">
-          <h2 id="znamky-nadpis">Kde hra je</h2>
+          <h2 id="znamky-nadpis">{t("vyvoj.kdeHraJe")}</h2>
           {vyvoj !== null && vyvoj.body.length > 0 && (
             <span className="tlmene">
-              k {kratkyDen(vyvoj.body.at(-1)!.den)}
-              {(vyvoj.body.at(-1)?.ludia.celkom.n ?? 0) < vyvoj.minLudi &&
-                ` · zatiaľ len AI playtesteri — priemer ľudí ukážeme od ${vyvoj.minLudi} hodnotiteľov, inak by z neho bolo vidno známky konkrétneho hráča`}
+              {t("vyvoj.kDnu", { den: kratkyDen(vyvoj.body.at(-1)!.den) })}
+              {(vyvoj.body.at(-1)?.ludia.celkom.n ?? 0) < vyvoj.minLudi && t("vyvoj.zatialLenAi", { n: vyvoj.minLudi })}
             </span>
           )}
         </div>
@@ -393,8 +407,8 @@ export function Vyvoj({ cesta }: { readonly cesta: string }) {
 
       <section id="zasady" className="vyvoj-sekcia" aria-labelledby="zasady-nadpis">
         <div className="vyvoj-sekcia-hlava">
-          <h2 id="zasady-nadpis">Zásady a ciele</h2>
-          <span className="tlmene">podľa čoho sa rozhoduje a kedy je horizont splnený</span>
+          <h2 id="zasady-nadpis">{t("vyvoj.sekcia.zasady")}</h2>
+          <span className="tlmene">{t("vyvoj.zasadyPopis")}</span>
         </div>
         <ZasadyACiele vyvoj={vyvoj} />
       </section>

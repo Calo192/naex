@@ -4,6 +4,7 @@
 
 import { createContext, useCallback, useContext, useEffect, useRef, useState, type ReactNode } from "react";
 import { useTip } from "../../karta/Tip.tsx";
+import { t } from "../../i18n/jazyk.tsx";
 import { pojemJadra, pojemSlovnika, type PojemSlovnika } from "./slovnik.ts";
 
 interface PojemKontext {
@@ -50,7 +51,7 @@ export function PojmyPravidiel({ children }: { readonly children: ReactNode }) {
       {tip}
       {panel !== null && (
         <div className="pojem-panel" role="dialog" aria-label={panel.pojem}>
-          <button type="button" className="pojem-panel-zavriet" aria-label="Zavrieť" onClick={() => setPanel(null)}>
+          <button type="button" className="pojem-panel-zavriet" aria-label={t("pravidla.zavriet")} onClick={() => setPanel(null)}>
             ✕
           </button>
           <strong>{panel.pojem}</strong>
@@ -63,7 +64,7 @@ export function PojmyPravidiel({ children }: { readonly children: ReactNode }) {
               chodNaPojem(panel.id);
             }}
           >
-            V slovníku →
+            {t("pravidla.vSlovniku")}
           </a>
         </div>
       )}

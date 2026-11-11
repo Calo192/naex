@@ -121,3 +121,25 @@ export function useky(text: string, znacky: readonly string[]): Usek[] {
   if (od < text.length) out.push({ text: text.slice(od), znacka: null });
   return out;
 }
+
+/** Uzol textu so značkami: čistý text, alebo značka s atribútom (<p k="lokalita">, <a href="#x">) a obsahom. */
+export type Uzol = string | { readonly znacka: string; readonly atribut: string | null; readonly deti: readonly Uzol[] };
+
+/**
+ * Text na strom značiek <meno>…</meno> alebo <meno atr="hodnota">…</meno> — značka smie byť v inej
+ * značke (<strong>jednu <p k="linia">líniu</p></strong>), nie v rovnakej. Neznáma značka ostane textom.
+ */
+export function rozober(text: string, znacky: readonly string[]): Uzol[] {
+  const out: Uzol[] = [];
+  const re = /<([a-z]+)(?:\s+[a-z]+="([^"]*)")?>([\s\S]*?)<\/\1>/gu;
+  let od = 0;
+  for (const m of text.matchAll(re)) {
+    const meno = m[1] ?? "";
+    if (!znacky.includes(meno)) continue;
+    if (m.index > od) out.push(text.slice(od, m.index));
+    out.push({ znacka: meno, atribut: m[2] ?? null, deti: rozober(m[3] ?? "", znacky) });
+    od = m.index + m[0].length;
+  }
+  if (od < text.length) out.push(text.slice(od));
+  return out;
+}

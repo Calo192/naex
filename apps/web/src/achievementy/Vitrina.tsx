@@ -5,6 +5,7 @@ import { useMemo, useState } from "react";
 import { datum } from "../lib/datum.ts";
 import { HVIEZDY_RANKU, NAZOV_RANKU, Podtacok, type RankPodtacka } from "./Podtacok.tsx";
 import "./podtacok.css";
+import { nazovKategorie } from "./data.ts";
 
 export interface PolozkaVitriny {
   readonly id: string;
@@ -76,7 +77,7 @@ export function Vitrina({
         </button>
         {kategorie.map((k) => (
           <button key={k.id} type="button" role="radio" aria-checked={filter === k.id} className={filter === k.id ? "aktivna" : ""} onClick={() => setFilter(k.id)}>
-            {k.nazov}
+            {nazovKategorie(k)}
           </button>
         ))}
       </div>

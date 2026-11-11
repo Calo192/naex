@@ -7,12 +7,12 @@
 // (overflow) a harmonika ju posúva transformom.
 
 import { useEffect, useLayoutEffect, useRef, useState, type ReactNode } from "react";
-import { cigariet } from "@naex/core";
 import { createPortal } from "react-dom";
 import type { Command } from "@naex/core";
 import type { KseftNaStole, TlacidloVolby } from "./kseftyNaStole.ts";
 import { useTip, type TipObsah } from "../karta/Tip.tsx";
 import { CenaCigariet, Vymena } from "./ikonyZdrojov.tsx";
+import { t } from "../i18n/jazyk.tsx";
 
 export interface KseftPodKartouProps {
   readonly kseft: KseftNaStole;
@@ -45,7 +45,7 @@ function Detail({ k }: { readonly k: KseftNaStole }) {
 
 /** Pri väzňovi „Schopnosť“ (v11.2), pod lokalitou jej meno (Sklad). */
 function druhNazov(k: Pick<KseftNaStole, "druh" | "nazov">): string {
-  return k.druh === "vazen" ? "Schopnosť" : k.nazov;
+  return k.druh === "vazen" ? t("kseft.schopnost") : k.nazov;
 }
 
 export function obsahNapovedy(k: KseftNaStole): TipObsah {
@@ -56,8 +56,8 @@ function Cena({ k }: { readonly k: KseftNaStole }) {
   return "cigarety" in k.cena ? (
     <CenaCigariet n={k.cena.cigarety} />
   ) : (
-    <span className="cena-raz" title="raz za hru, zadarmo">
-      1× za hru
+    <span className="cena-raz" title={t("kseft.razZaHruTitul")}>
+      {t("kseft.razZaHru")}
     </span>
   );
 }
@@ -141,20 +141,20 @@ export function KseftPodKartou({ kseft: k, cmd, naDotyk = false, onNedostupny, o
                 type="button"
                 aria-pressed={ano}
                 disabled={plne}
-                title={plne ? "Na ďalšiu kartu nemáš cigaretu." : undefined}
+                title={plne ? t("kseft.nemasCigaretu") : undefined}
                 onClick={() => setVybrane((v) => (ano ? v.filter((u) => u !== karta.uid) : [...v, karta.uid]))}
               >
-                {ano ? "✓ beriem" : "vziať"}
+                {ano ? t("kseft.beriem") : t("kseft.vziat")}
               </button>
             </span>
           );
         })}
         <span className="kseft-ponuka-riadok potvrdenie">
           <button type="button" className="kseft-ponuka-hlavne" disabled={vybrane.length === 0} onClick={() => k.akcia.typ === "karty" && posli(k.akcia.prikaz(vybrane))}>
-            {vybrane.length === 0 ? "vyber karty" : `vziať ${vybrane.length} za ${cigariet(vybrane.length * k.akcia.cenaZaKus)}`}
+            {vybrane.length === 0 ? t("kseft.vyberKarty") : t("kseft.vziatZa", { n: vybrane.length, cena: t("pocet.cigariet", { n: vybrane.length * k.akcia.cenaZaKus }) })}
           </button>
           <button type="button" onClick={() => setOtvorena(false)}>
-            zrušiť
+            {t("kseft.zrusit")}
           </button>
         </span>
       </>
@@ -187,7 +187,7 @@ export function KseftPodKartou({ kseft: k, cmd, naDotyk = false, onNedostupny, o
             </button>
           )}
           <button type="button" onClick={() => setOtvorena(false)}>
-            {ne ? "zavrieť" : "zrušiť"}
+            {ne ? t("kseft.zavriet") : t("kseft.zrusit")}
           </button>
         </span>
       </>
@@ -233,7 +233,7 @@ export function KseftPodKartou({ kseft: k, cmd, naDotyk = false, onNedostupny, o
         }}
       >
         {/* Schopnosť väzňa po použití nesie značku „použitá“ (raz za hru); Kšeft len ✓ do konca Pitky. */}
-        <span className="kseft-pod-nazov">{k.druh === "vazen" && k.pouzity ? "použitá" : `${druhNazov(k)}${k.pouzity ? " ✓" : ""}`}</span>
+        <span className="kseft-pod-nazov">{k.druh === "vazen" && k.pouzity ? t("kseft.pouzita") : `${druhNazov(k)}${k.pouzity ? " ✓" : ""}`}</span>
         {!k.pouzity && k.druh !== "vazen" && <Cena k={k} />}
         {ponukaVolby && <span aria-hidden="true">{otvorena ? "▾" : "▴"}</span>}
       </button>

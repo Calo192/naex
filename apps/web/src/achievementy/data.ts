@@ -7,6 +7,22 @@ import type { AchievementPreKlienta } from "../hra/useHra.ts";
 import type { RankPodtacka } from "./Podtacok.tsx";
 import { piktogramPodtacka } from "./piktogram.ts";
 import type { KategoriaVitriny, PolozkaVitriny } from "./Vitrina.tsx";
+import { textOblasti } from "../i18n/jazyk.tsx";
+
+/**
+ * Názov a popis achievementu v jazyku hráča (i18n/achievementy, podľa id); popis prichádza zo
+ * servera s dosadeným prahom, preklad ho dosadí do svojho vzoru. „???“ tajného ostáva.
+ */
+export function prelozAchievement<T extends { readonly id: string; readonly nazov: string; readonly popis: string }>(a: T): T {
+  return {
+    ...a,
+    nazov: a.nazov === "???" ? a.nazov : textOblasti("achievementy", a.id, "nazov", a.nazov),
+    popis: a.popis === "???" ? a.popis : textOblasti("achievementy", a.id, "popis", a.popis),
+  };
+}
+
+/** Názov kategórie vitríny v jazyku hráča. */
+export const nazovKategorie = (k: KategoriaVitriny): string => textOblasti("achievementy", `kategoria.${k.id}`, "nazov", k.nazov);
 
 const RANKY: readonly RankPodtacka[] = ["bronz", "striebro", "zlato"];
 
@@ -32,7 +48,8 @@ export interface VitrinaApi {
   readonly achievementy: readonly PolozkaVitrinyApi[];
 }
 
-export function polozkaVitriny(a: PolozkaVitrinyApi, ikony: readonly IkonaBodovania[]): PolozkaVitriny {
+export function polozkaVitriny(api: PolozkaVitrinyApi, ikony: readonly IkonaBodovania[]): PolozkaVitriny {
+  const a = prelozAchievement(api);
   const ziskany = a.rank > 0;
   // Ďalší rank, na ktorý sa dá ísť (pri plnom zlate už žiadny).
   const dalsi = a.rank < a.rankov ? a.rank + 1 : null;

@@ -15,6 +15,7 @@ import { odpovedeKola, riadkySuhrnuLokality } from "./obsahSuhrnuLokality.ts";
 import { NAZOV_ZDROJA, textZmeny } from "./textyStarsich.ts";
 import type { VyhraStrachom } from "./vyhraStrachom.ts";
 import "./suhrn-lokality.css";
+import { t } from "../i18n/jazyk.tsx";
 
 export interface SuhrnLokalityProps {
   /** Záznam nástenky — špaky po celom kole (aj starší a Robota). */
@@ -72,12 +73,12 @@ function SuhrnLokalityObsah({ b, zaznam, ja, mena, avatary, menoKarty, piktogram
   }, []);
 
   const finale = jeFinaleNaNastenke(b);
-  const nazov = b.lokalita === null ? (finale ? "Finále" : "lokalita") : menoKarty(b.lokalita.defId);
-  const kto = (p: PlayerId): string => (p === ja ? "ty" : mena[p]);
+  const nazov = b.lokalita === null ? (finale ? t("suhrnLokality.finale") : t("suhrnLokality.lokalita")) : menoKarty(b.lokalita.defId);
+  const kto = (p: PlayerId): string => (p === ja ? t("suhrnLokality.ty") : mena[p]);
   const { spolu } = rozpisLokality(b, menoKarty);
   const bitka = zaznam?.bitka ?? null;
-  const vysledok = b.vitaz === null ? "sekera — remíza" : b.vitaz === ja ? "tvoja výhra" : `výhra – ${mena[b.vitaz]}`;
-  const rozhodlo = b.rozhodlo === "abstak" ? " (remíza v tuhom → menej Absťákov)" : b.rozhodlo === "dlhy" ? " (remíza v tuhom → menej Dlhov)" : "";
+  const vysledok = b.vitaz === null ? t("suhrnLokality.sekera") : b.vitaz === ja ? t("suhrnLokality.tvojaVyhra") : t("suhrnLokality.vyhra", { meno: mena[b.vitaz] });
+  const rozhodlo = b.rozhodlo === "abstak" ? t("suhrnLokality.rozhodloAbstak") : b.rozhodlo === "dlhy" ? t("suhrnLokality.rozhodloDlhy") : "";
   const riadky = zaznam === null ? [] : riadkySuhrnuLokality(zaznam);
   const pitkyCelkom = zaznam?.pitky[0]?.rekap.pitkyCelkom ?? zaznam?.pitky.length ?? 0;
   const cipy = (xs: RiadokZmien, p: PlayerId): ReactNode =>
@@ -104,7 +105,7 @@ function SuhrnLokalityObsah({ b, zaznam, ja, mena, avatary, menoKarty, piktogram
       >
         <div className="pocitadlo-scena">
           <div className="pocitadlo-panel hotovo sl-panel">
-            <span className="pocitadlo-nadpis">{finale ? "Finále" : `Kolo ${b.kolo}`} · súhrn lokality</span>
+            <span className="pocitadlo-nadpis">{t("suhrnLokality.nadpis", { kolo: finale ? t("suhrnLokality.finale") : t("suhrnLokality.kolo", { n: b.kolo }) })}</span>
             <span className="sl-vysledok">
               {b.vitaz !== null && <Avatar meno={mena[b.vitaz]} avatar={avatary[b.vitaz]} velkost={36} farba={b.vitaz === ja ? "ja" : "su"} />}
               <span className="pocitadlo-vyhodnotena" id={idNadpisu}>
@@ -114,22 +115,24 @@ function SuhrnLokalityObsah({ b, zaznam, ja, mena, avatary, menoKarty, piktogram
             <span className="pocitadlo-mena">
               {vysledok}
               {rozhodlo}
-              {bitka !== null && ` · tuhé ${bitka.tuheSpolu[ja]} : ${bitka.tuheSpolu[su]}`} · špaky za lokalitu: ty {zn(spolu[ja])}, {mena[su]} {zn(spolu[su])}
+              {bitka !== null && t("suhrnLokality.tuhe", { ja: bitka.tuheSpolu[ja], su: bitka.tuheSpolu[su] })}
+              {t("suhrnLokality.spakyZaLokalitu", { ja: zn(spolu[ja]), meno: mena[su], su: zn(spolu[su]) })}
             </span>
           </div>
           <div className="sl-telo">
-            <section className="sl-stlpec" aria-label="Pitky kola">
+            <section className="sl-stlpec" aria-label={t("suhrnLokality.pitkyKola")}>
               <h3 className="sl-nadpis">
-                Pitky{pitkyCelkom > 0 ? ` · ${pitkyCelkom}` : ""}
-                <small>kto čo získal a stratil</small>
+                {t("suhrnLokality.pitky")}
+                {pitkyCelkom > 0 ? ` · ${pitkyCelkom}` : ""}
+                <small>{t("suhrnLokality.ktoCoZiskal")}</small>
               </h3>
               {zaznam === null ? (
-                <p className="sl-pozn">Priebeh Pitiek sa pre túto lokalitu nezaznamenal.</p>
+                <p className="sl-pozn">{t("suhrnLokality.nezaznamenal")}</p>
               ) : (
-                <div className="rekap sl-pitky" role="table" aria-label="Pitky kola po hráčoch">
+                <div className="rekap sl-pitky" role="table" aria-label={t("suhrnLokality.poHracoch")}>
                   <div className="sl-riadok sl-hlava" role="row">
                     <span role="columnheader" className="moje">
-                      ty
+                      {t("suhrnLokality.ty")}
                     </span>
                     <span role="columnheader" />
                     <span role="columnheader" className="superove">
@@ -147,7 +150,7 @@ function SuhrnLokalityObsah({ b, zaznam, ja, mena, avatary, menoKarty, piktogram
                           <b>{r.nazov}</b>
                           {pk !== undefined && (
                             <button type="button" className="sl-rozpis" onClick={() => setDetail(pk)}>
-                              rekapitulácia
+                              {t("suhrnLokality.rekapitulacia")}
                             </button>
                           )}
                         </span>
@@ -159,10 +162,10 @@ function SuhrnLokalityObsah({ b, zaznam, ja, mena, avatary, menoKarty, piktogram
                   })}
                 </div>
               )}
-              {zaznam !== null && <p className="sl-pozn">Pitka 1 ráta aj stavbu ponuky a prvé Zhromaždenie, každá ďalšia aj svoje Zhromaždenie.</p>}
+              {zaznam !== null && <p className="sl-pozn">{t("suhrnLokality.pitka1")}</p>}
               {zaznam !== null && zaznam.posuny.length > 0 && (
                 <>
-                  <h3 className="sl-nadpis">Strach a reči starších</h3>
+                  <h3 className="sl-nadpis">{t("suhrnLokality.strachReci")}</h3>
                   <ul className="sl-posuny">
                     {zaznam.posuny.map((x, i) => (
                       <li key={i} className={x.kto === ja ? "moje" : "superove"}>
@@ -181,10 +184,10 @@ function SuhrnLokalityObsah({ b, zaznam, ja, mena, avatary, menoKarty, piktogram
                 </>
               )}
             </section>
-            <section className="sl-stlpec sl-bitka" aria-label="Bitka">
+            <section className="sl-stlpec sl-bitka" aria-label={t("suhrnLokality.bitka")}>
               <h3 className="sl-nadpis">
-                Bitka
-                <small>akcie ty vs. {mena[su]}, špaky a starší</small>
+                {t("suhrnLokality.bitka")}
+                <small>{t("suhrnLokality.akcieVs", { meno: mena[su] })}</small>
               </h3>
               {bitka !== null ? (
                 <RekapBitky
@@ -205,14 +208,14 @@ function SuhrnLokalityObsah({ b, zaznam, ja, mena, avatary, menoKarty, piktogram
                 />
               ) : (
                 <div className="rk-spaky-blok">
-                  <SpakyBitky b={b} ja={ja} mena={ja === 0 ? ["ty", mena[su]] : [mena[su], "ty"]} pred={spakyPredBitkou(b)} menoKarty={menoKarty} vyhraStrachom={vyhraStrachom} />
+                  <SpakyBitky b={b} ja={ja} mena={ja === 0 ? [t("suhrnLokality.ty"), mena[su]] : [mena[su], t("suhrnLokality.ty")]} pred={spakyPredBitkou(b)} menoKarty={menoKarty} vyhraStrachom={vyhraStrachom} />
                 </div>
               )}
             </section>
           </div>
           <div className="pocitadlo-pata">
             <button type="button" className="rk-dalej" onClick={onZavri} ref={zavriet}>
-              Zavrieť <kbd>Esc</kbd>
+              {t("suhrnLokality.zavriet")} <kbd>Esc</kbd>
             </button>
           </div>
         </div>

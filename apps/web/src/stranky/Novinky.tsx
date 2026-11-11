@@ -14,11 +14,11 @@ import { NOVINKY_VIDENE, citajVidene, ulozVidene } from "../lib/novinky.ts";
 import { Odkaz, useTitulok } from "../lib/router.tsx";
 import { Hlaska, Nacitavanie } from "../komponenty.tsx";
 import { HlavaStranky } from "../HlavaStranky.tsx";
-import { tvar } from "../lib/jazyk.ts";
+import { aktualnyJazyk, t, textyPodla } from "../i18n/jazyk.tsx";
 import "./novinky.css";
 
-const KATEGORIE = { pravidla: "Pravidlá", karty: "Karty", dizajn: "Dizajn", web: "Web", opravy: "Opravy" } as const;
-type Kategoria = keyof typeof KATEGORIE;
+type Kategoria = "pravidla" | "karty" | "dizajn" | "web" | "opravy";
+const KATEGORIE: Readonly<Record<Kategoria, string>> = textyPodla(["pravidla", "karty", "dizajn", "web", "opravy"], "novinky.kategoria");
 
 /** Čo mení hru — to musí hráč vedieť pred ďalšou partiou. */
 const MENI_HRU: readonly Kategoria[] = ["pravidla", "karty"];
@@ -37,11 +37,11 @@ interface Novinka {
 }
 
 const textOdkazu = (odkaz: string): string =>
-  odkaz.startsWith("/pravidla") ? "V pravidlách"
-  : odkaz.startsWith("/karty") ? "Pozrieť karty"
-  : odkaz.startsWith("/vyvoj") ? "Vo Vývoji"
-  : odkaz.startsWith("/profil") ? "V profile"
-  : "Viac";
+  odkaz.startsWith("/pravidla") ? t("novinky.odkaz.pravidla")
+  : odkaz.startsWith("/karty") ? t("novinky.odkaz.karty")
+  : odkaz.startsWith("/vyvoj") ? t("novinky.odkaz.vyvoj")
+  : odkaz.startsWith("/profil") ? t("novinky.odkaz.profil")
+  : t("novinky.odkaz.viac");
 
 // Poludnie, aby deň neposunulo časové pásmo.
 const denZDatumu = (datum: string): Date => new Date(`${datum}T12:00:00`);
@@ -53,7 +53,7 @@ function KategoriaZnacka({ k }: { readonly k: Kategoria }) {
 }
 
 export function Novinky() {
-  useTitulok("Novinky");
+  useTitulok(t("nav.novinky"));
   const [novinky, setNovinky] = useState<readonly Novinka[] | null>(null);
   const [chyba, setChyba] = useState<string | null>(null);
   const [filter, setFilter] = useState<Kategoria | null>(null);
@@ -139,7 +139,7 @@ export function Novinky() {
       setVidene(po);
       setVsetkyMeniHru(false);
       setUkazOstatne(false);
-      setOznam("Novinky sú označené ako prečítané.");
+      setOznam(t("novinky.oznacene"));
       window.dispatchEvent(new Event(NOVINKY_VIDENE));
     };
     if (!naUcte) {
@@ -163,7 +163,7 @@ export function Novinky() {
       </a>
       {n.odkaz !== "" && (
         <Odkaz href={n.odkaz} className="novinky-odkedy-ciel">
-          → {textOdkazu(n.odkaz).toLocaleLowerCase("sk")}
+          → {textOdkazu(n.odkaz).toLocaleLowerCase(aktualnyJazyk())}
         </Odkaz>
       )}
     </li>
@@ -171,9 +171,9 @@ export function Novinky() {
 
   const nicSaNezmenilo = (
     <div className="novinky-odkedy-nic">
-      <p>Od tvojej poslednej návštevy sa v pravidlách ani kartách nič nezmenilo. Môžeš rovno hrať.</p>
+      <p>{t("novinky.nicSaNezmenilo")}</p>
       <Odkaz href="/hra" className="tlacidlo tlacidlo-hlavne">
-        Hrať
+        {t("nav.hrat")}
       </Odkaz>
     </div>
   );
@@ -181,9 +181,9 @@ export function Novinky() {
   return (
     <div className="novinky">
       <HlavaStranky
-        nadpis="Novinky"
-        uvod="Čo sa v hre a na webe zmenilo — pravidlá, karty, vzhľad aj opravy. Najnovšie hore."
-        akcia={<Odkaz href="/vyvoj#roadmapa">Kam hra smeruje → Roadmapa</Odkaz>}
+        nadpis={t("nav.novinky")}
+        uvod={t("novinky.uvod")}
+        akcia={<Odkaz href="/vyvoj#roadmapa">{t("novinky.kamSmeruje")}</Odkaz>}
       />
       <p className="len-citacka" aria-live="polite">
         {oznam}
@@ -194,20 +194,20 @@ export function Novinky() {
       {novinky === null ? (
         chyba === null && <Nacitavanie />
       ) : novinky.length === 0 ? (
-        <p className="tlmene">Zatiaľ tu nič nie je. Prvé novinky pribudnú s najbližšou zmenou hry.</p>
+        <p className="tlmene">{t("novinky.zatialNic")}</p>
       ) : (
         <div className="mriezka">
           <div className="st-obsah novinky-obsah">
             {videne !== null && (
               <section className="panel novinky-odkedy" aria-labelledby="novinky-odkedy-nadpis">
-                <h2 id="novinky-odkedy-nadpis">Odkedy si tu nebol ({kratky(new Date(videne))}) — pred ďalšou partiou vedz:</h2>
+                <h2 id="novinky-odkedy-nadpis">{t("novinky.odkedy", { datum: kratky(new Date(videne)) })}</h2>
                 {nove.length === 0 ? (
                   nicSaNezmenilo
                 ) : (
                   <>
                     <div className="novinky-odkedy-stlpce">
                       <div className="novinky-odkedy-meni">
-                        <h3>Mení hru · {meniHru.length}</h3>
+                        <h3>{t("novinky.meniHru", { n: meniHru.length })}</h3>
                         {meniHru.length === 0 ? (
                           nicSaNezmenilo
                         ) : (
@@ -215,13 +215,13 @@ export function Novinky() {
                         )}
                         {meniHru.length > PRVE && (
                           <button type="button" className="tlacidlo-jemne tlacidlo-male" aria-expanded={vsetkyMeniHru} onClick={() => setVsetkyMeniHru(!vsetkyMeniHru)}>
-                            {vsetkyMeniHru ? "Menej ▴" : `a ${meniHru.length - PRVE} ${tvar(meniHru.length - PRVE, "ďalšia", "ďalšie", "ďalších")} ▸`}
+                            {vsetkyMeniHru ? t("novinky.menej") : t("novinky.aDalsie", { n: meniHru.length - PRVE })}
                           </button>
                         )}
                       </div>
                       <div className="novinky-odkedy-ostatne">
-                        <h3>Ostatné · {ostatne.length}</h3>
-                        <p className="tlmene">vzhľad, web, opravy</p>
+                        <h3>{t("novinky.ostatne", { n: ostatne.length })}</h3>
+                        <p className="tlmene">{t("novinky.ostatnePopis")}</p>
                         {ostatne.length > 0 && (
                           <button
                             type="button"
@@ -230,7 +230,7 @@ export function Novinky() {
                             aria-controls="novinky-odkedy-ostatne"
                             onClick={() => setUkazOstatne(!ukazOstatne)}
                           >
-                            {ukazOstatne ? "Skryť ▴" : "Ukázať ▸"}
+                            {ukazOstatne ? t("novinky.skryt") : t("novinky.ukazat")}
                           </button>
                         )}
                         {ukazOstatne && <ul id="novinky-odkedy-ostatne">{ostatne.map(polozkaBoxu)}</ul>}
@@ -238,9 +238,9 @@ export function Novinky() {
                     </div>
                     <div className="novinky-odkedy-spodok">
                       <button type="button" className="tlacidlo-hlavne" onClick={mamPrecitane} disabled={posiela}>
-                        Mám prečítané
+                        {t("novinky.mamPrecitane")}
                       </button>
-                      <span className="tlmene">Kým neklikneš, zmeny ostanú označené ako nové.</span>
+                      <span className="tlmene">{t("novinky.kymNeklikne")}</span>
                     </div>
                   </>
                 )}
@@ -249,18 +249,18 @@ export function Novinky() {
 
             <div className="hlasnik">
               <div className="hlasnik-hlavicka" aria-hidden="true">
-                <span className="hlasnik-titul">Hlásnik obce</span>
-                <span className="hlasnik-podtitul">čo sa v krčme zmenilo</span>
+                <span className="hlasnik-titul">{t("novinky.hlasnik")}</span>
+                <span className="hlasnik-podtitul">{t("novinky.hlasnikPodtitul")}</span>
               </div>
               <div className="hlasnik-pas">
                 <span>
-                  {dni.length} {tvar(dni.length, "vydanie", "vydania", "vydaní")}
+                  {t("novinky.vydani", { n: dni.length })}
                 </span>
                 <span>
-                  {novinky.length} {tvar(novinky.length, "správa", "správy", "správ")}
+                  {t("novinky.sprav", { n: novinky.length })}
                 </span>
               </div>
-              {dni.length === 0 && <p className="tlmene">V tejto kategórii zatiaľ nič nie je.</p>}
+              {dni.length === 0 && <p className="tlmene">{t("novinky.kategoriaPrazdna")}</p>}
               {dni.map((d) => {
                 const den = denZDatumu(d.datum);
                 const vydania = [...new Set(d.novinky.map((n) => n.vydanie).filter((v) => v !== ""))];
@@ -272,7 +272,7 @@ export function Novinky() {
                         {vydania.length > 0 && ` · ${vydania.join(" · ")}`}
                       </h2>
                       <span className="tlmene">
-                        {den.toLocaleDateString("sk-SK", { weekday: "long" })} · {d.novinky.length} {tvar(d.novinky.length, "zmena", "zmeny", "zmien")}
+                        {den.toLocaleDateString(aktualnyJazyk(), { weekday: "long" })} · {t("novinky.zmien", { n: d.novinky.length })}
                       </span>
                     </div>
                     <ul className="hlasnik-riadky">
@@ -285,7 +285,7 @@ export function Novinky() {
                               <button type="button" aria-expanded={otvorena} aria-controls={`novinka-${n.id}-text`} onClick={() => prepni(n.id)}>
                                 <KategoriaZnacka k={n.kategoria} />
                                 <span className="hlasnik-nadpis">{n.nadpis}</span>
-                                {nova && <span className="novinka-nova">nové</span>}
+                                {nova && <span className="novinka-nova">{t("novinky.nove")}</span>}
                                 <span className="hlasnik-sipka" aria-hidden="true">
                                   ▸
                                 </span>
@@ -307,10 +307,10 @@ export function Novinky() {
             </div>
           </div>
 
-          <aside className="st-bok novinky-bok" aria-label="Filter noviniek">
-            <div className="panel novinky-filtre" role="group" aria-label="Kategória">
+          <aside className="st-bok novinky-bok" aria-label={t("novinky.filter")}>
+            <div className="panel novinky-filtre" role="group" aria-label={t("novinky.kategoria")}>
               <button type="button" className={filter === null ? "aktivny" : undefined} aria-pressed={filter === null} onClick={() => setFilter(null)}>
-                <span>Všetko</span>
+                <span>{t("novinky.vsetko")}</span>
                 <small>{novinky.length}</small>
               </button>
               {(Object.keys(KATEGORIE) as Kategoria[]).map((k) => (

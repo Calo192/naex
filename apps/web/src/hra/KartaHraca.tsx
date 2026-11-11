@@ -6,16 +6,16 @@ import { useEffect, useLayoutEffect, useRef, useState, type CSSProperties, type 
 import { createPortal } from "react-dom";
 import { api } from "../lib/api.ts";
 import { Avatar } from "../komponenty.tsx";
-import { tvar } from "../lib/jazyk.ts";
 import { CisloFrajeriny } from "../stranky/Statistiky.tsx";
 import { FormaStvorce } from "../stranky/profil/Profil.tsx";
 import { hodnotaMetriky, type Bilancia, type ProfilApi } from "../stranky/profil/typy.ts";
 import type { HracInfo } from "./useHra.ts";
+import { t } from "../i18n/jazyk.tsx";
 
 const SIRKA = 300;
 const OKRAJ = 8;
 
-const bilanciaText = (b: Bilancia): string => `${b.vyhry} V · ${b.remizy} R · ${b.prehry} P`;
+const bilanciaText = (b: Bilancia): string => t("kartaHraca.bilancia", { v: b.vyhry, r: b.remizy, p: b.prehry });
 
 function Obsah({ info, ja }: { readonly info: HracInfo; readonly ja: boolean }) {
   const id = info.id;
@@ -34,9 +34,9 @@ function Obsah({ info, ja }: { readonly info: HracInfo; readonly ja: boolean }) 
     };
   }, [id, verejny]);
 
-  if (info.bot === true) return <p className="tlmene">Offline protihráč — nemá profil ani Frajerinu. Partie s ním sa do rebríčka nerátajú.</p>;
-  if (!verejny || chyba) return <p className="tlmene">Profil tohto hráča nie je verejný.</p>;
-  if (profil === null) return <p className="tlmene">Načítavam…</p>;
+  if (info.bot === true) return <p className="tlmene">{t("kartaHraca.bot")}</p>;
+  if (!verejny || chyba) return <p className="tlmene">{t("kartaHraca.neverejny")}</p>;
+  if (profil === null) return <p className="tlmene">{t("kartaHraca.nacitavam")}</p>;
 
   const f = profil.frajerina;
   const ludia = profil.bilancia.ludia;
@@ -46,22 +46,22 @@ function Obsah({ info, ja }: { readonly info: HracInfo; readonly ja: boolean }) 
     <>
       <div className="karta-hraca-frajerina">
         <span>
-          Frajerina <CisloFrajeriny f={f} />
+          {t("kartaHraca.frajerina")} <CisloFrajeriny f={f} />
         </span>
-        <span className="tlmene">{f.poradie !== null ? `${f.poradie}. v rebríčku` : f.titul}</span>
+        <span className="tlmene">{f.poradie !== null ? t("kartaHraca.vRebricku", { n: f.poradie }) : f.titul}</span>
       </div>
       {ludia.partie === 0 ? (
-        <p className="tlmene">Prvá partia s ľuďmi{boti > 0 && ` (${boti} ${tvar(boti, "partia", "partie", "partií")} s botmi)`}.</p>
+        <p className="tlmene">{boti > 0 ? t("kartaHraca.prvaSBotmi", { n: boti }) : t("kartaHraca.prva")}</p>
       ) : (
         <>
           <div className="karta-hraca-riadok">
-            <span className="tlmene">Forma</span>
-            <FormaStvorce vysledky={profil.forma} nazov="Posledných 5 partií" />
+            <span className="tlmene">{t("kartaHraca.forma")}</span>
+            <FormaStvorce vysledky={profil.forma} nazov={t("kartaHraca.posledne5")} />
           </div>
           {!ja && profil.vyDvaja !== null && profil.vyDvaja.partie > 0 && (
             <div className="karta-hraca-riadok">
-              <span className="tlmene">Vy dvaja</span>
-              <span title={`${profil.vyDvaja.partie} ${tvar(profil.vyDvaja.partie, "partia", "partie", "partií")} proti sebe, z jeho pohľadu`}>{bilanciaText(profil.vyDvaja)}</span>
+              <span className="tlmene">{t("kartaHraca.vyDvaja")}</span>
+              <span title={t("kartaHraca.protiSebe", { n: profil.vyDvaja.partie })}>{bilanciaText(profil.vyDvaja)}</span>
             </div>
           )}
           {metriky.map((m) => (
@@ -71,13 +71,13 @@ function Obsah({ info, ja }: { readonly info: HracInfo; readonly ja: boolean }) 
             </div>
           ))}
           <p className="karta-hraca-pocet tlmene">
-            {ludia.partie} {tvar(ludia.partie, "partia", "partie", "partií")} s ľuďmi
-            {boti > 0 && ` · + ${boti} s botmi`}
+            {t("kartaHraca.sLudmi", { n: ludia.partie })}
+            {boti > 0 && t("kartaHraca.plusBoti", { n: boti })}
           </p>
         </>
       )}
       <a className="karta-hraca-odkaz" href={`/hrac/${profil.hrac.id}`} target="_blank" rel="noopener">
-        Celý profil ↗
+        {t("kartaHraca.celyProfil")}
       </a>
     </>
   );
@@ -137,7 +137,7 @@ export function KartaHraca({ info, meno, ja, children }: { readonly info: HracIn
         className="karta-hraca-kotva"
         aria-haspopup="dialog"
         aria-expanded={poloha !== null}
-        title={`Karta hráča ${meno}`}
+        title={t("kartaHraca.karta", { meno })}
         onClick={() => (poloha === null ? otvor() : setPoloha(null))}
       >
         {children}
@@ -149,13 +149,13 @@ export function KartaHraca({ info, meno, ja, children }: { readonly info: HracIn
             ref={bublina}
             className="karta-hraca"
             role="dialog"
-            aria-label={`Karta hráča ${meno}`}
+            aria-label={t("kartaHraca.karta", { meno })}
             style={{ left: poloha.x, width: SIRKA, ...(poloha.hore ? { bottom: poloha.y } : { top: poloha.y }) } as CSSProperties}
           >
             <header className="karta-hraca-hlava">
               <Avatar meno={meno} avatar={info.avatar} velkost={44} farba={ja ? "ja" : "su"} />
               <strong>{meno}</strong>
-              <button type="button" className="karta-hraca-zavri" aria-label="Zavrieť" onClick={() => setPoloha(null)}>
+              <button type="button" className="karta-hraca-zavri" aria-label={t("kartaHraca.zavriet")} onClick={() => setPoloha(null)}>
                 ×
               </button>
             </header>
