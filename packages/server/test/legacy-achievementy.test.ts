@@ -34,8 +34,8 @@ const data = loadGameData(citaj("cards.json"), citaj("elders.json"), citaj("scor
 const katalog = nacitajKatalog();
 // Pas za groš (cigarety za pasy) sa od v12.2 nedá získať — pas cigarety nedáva.
 const LEGACY = ["pas-za-gros", "stamgast-pod-stolom", "fero-umlcany", "gizka-bez-reci"];
-/** Hviezdy získateľných achievementov: 189 pôvodných − 9 starých povah + 12 nových − 3 Pasu za groš (v12.2). */
-const SPOLU = 189;
+/** Hviezdy získateľných achievementov: 189 pôvodných − 9 starých povah + 12 nových − 3 Pasu za groš (v12.2) + 113 z druhej dávky (2026-11-11). */
+const SPOLU = 302;
 const POSTUP = PREDVOLENE_PRAVA.postup;
 
 type Db = ReturnType<typeof otvorDb>;

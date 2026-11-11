@@ -1,0 +1,162 @@
+<!doctype html>
+<html lang="sk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Achievementy NA EX! — druhá dávka</title>
+<style>
+  :root { --bg:#f6f1e7; --fg:#2a211a; --tlm:#6d5f52; --karta:#fffaf0; --ciara:#d9cdb8; --akcent:#9a3b1f; --ok:#2f6b3a; --kod:#8a5a00; --pozor:#7a2e6b; }
+  @media (prefers-color-scheme: dark) { :root { --bg:#1d1814; --fg:#eee4d4; --tlm:#a99b89; --karta:#28211b; --ciara:#43382e; --akcent:#e58a66; --ok:#7fc48b; --kod:#e0b354; --pozor:#d59ac8; } }
+  * { box-sizing: border-box; }
+  body { margin:0; background:var(--bg); color:var(--fg); font:16px/1.5 Georgia, "Times New Roman", serif; }
+  main { max-width: 1060px; margin: 0 auto; padding: 24px 16px 80px; }
+  h1 { font-size: 1.7rem; margin: 0 0 4px; }
+  h2 { font-size: 1.2rem; margin: 34px 0 6px; padding-top: 12px; border-top: 2px solid var(--ciara); }
+  p, li { max-width: 78ch; }
+  .tlm { color: var(--tlm); }
+  .filtre { position: sticky; top: 0; background: var(--bg); padding: 10px 0; display: flex; flex-wrap: wrap; gap: 6px; z-index: 2; border-bottom: 1px solid var(--ciara); }
+  button { font: inherit; font-size: .9rem; padding: 5px 11px; border: 1px solid var(--ciara); background: var(--karta); color: var(--fg); border-radius: 999px; cursor: pointer; }
+  button[aria-pressed="true"] { background: var(--akcent); color: #fff; border-color: var(--akcent); }
+  .mriezka { display: grid; grid-template-columns: repeat(auto-fill, minmax(310px, 1fr)); gap: 10px; margin-top: 10px; }
+  .a { background: var(--karta); border: 1px solid var(--ciara); border-radius: 8px; padding: 10px 12px; display: flex; flex-direction: column; gap: 4px; }
+  .a.vybrany { outline: 2px solid var(--ok); }
+  .a h3 { margin: 0; font-size: 1.05rem; display: flex; justify-content: space-between; gap: 8px; align-items: baseline; }
+  .a .popis { margin: 0; }
+  .a .prahy { font-variant-numeric: tabular-nums; color: var(--akcent); font-weight: bold; }
+  .a .tech { font: .8rem/1.35 Consolas, monospace; color: var(--tlm); margin: 0; overflow-wrap: anywhere; }
+  .a .pozn { font-size: .88rem; color: var(--tlm); margin: 0; }
+  .stitok { font: .72rem/1 Arial, sans-serif; padding: 3px 7px; border-radius: 999px; border: 1px solid currentColor; white-space: nowrap; }
+  .s-hotove { color: var(--ok); } .s-kod { color: var(--kod); } .s-rezim { color: var(--pozor); }
+  .a label { font: .85rem Arial, sans-serif; margin-top: auto; padding-top: 4px; cursor: pointer; }
+  .tajny::before { content: "tajný · "; color: var(--pozor); font-style: italic; }
+  #vyber { position: fixed; left: 0; right: 0; bottom: 0; background: var(--karta); border-top: 1px solid var(--ciara); padding: 8px 16px; display: flex; gap: 12px; align-items: center; justify-content: center; font: .9rem Arial, sans-serif; }
+</style>
+</head>
+<body>
+<main>
+<h1>Achievementy NA EX! — druhá dávka</h1>
+<p class="tlm">Návrh na rozhodnutie, 11. 11. 2026. V hre je 67 achievementov v 9 kategóriách (3 z nich už len LEGACY). Tu je 43 ďalších — hlavne k tomu, čo od prvej dávky pribudlo (hádka, výpalné, výhra strachom, krádež pri zajatí, Výtržník, podloženie, finále útočí zaostávajúci) a k tomu, čo hráča drží pri hre (návraty, spätná väzba).</p>
+
+<p><b>Stav 11. 11. 2026:</b> 38 achievementov pre Kalamitu 1 na 1 je implementovaných (vetva <code>features/achievementy-2</code>); 5 pre režimy v Zrejúcej čaká na uvoľnenie režimov. „Ešte jedno!“ vypadlo — doliatie pravidlá v12.2 rušia. Prahy v katalógu sú po meraní na partiách botov, tu ostali pôvodné odhady.</p>
+
+<h2>Skôr než vyberieš</h2>
+<ul>
+  <li><b>Zelené „bez kódu“</b> stoja nad metrikou, ktorá v jadre už je — stačí riadok v <code>achievementy.json</code> a preklady. <b>Žlté</b> chcú novú malú metriku. <b>Fialové</b> sú pre režimy len v Zrejúcej (2 na 2, Päta, Lakeť, Otočka) — až keď režim pôjde von.</li>
+  <li><b>Prahy sú odhad.</b> Prvá dávka ich mala z rozdelení v partiách botov (p50 / p90 / max); pred zapnutím treba to isté — inak bude ★★★ buď zadarmo, alebo nedosiahnuteľná.</li>
+  <li><b>Achievement sa hráčom nikdy neberie.</b> Čo stojí na mladom pravidle (výpalné, krádež, režimy), môže po zmene pravidiel skončiť ako LEGACY. Pri takých je poznámka.</li>
+  <li><b>Viac hviezd posunie ranky</b> (Deci 35 %, Sedmička 50 % hviezd): 38 implementovaných achievementov = 113 hviezd navyše, hranice rankov stúpnu. Nikoho to nezníži, ale kto je tesne pod rankom, bude k nemu mať ďalej.</li>
+  <li>Vynechal som všetko, čo odmeňuje hromadenie (cigarety na konci, výkupné) a body za vlastnú výhodu; naopak pribudli ocenenia za výhru zo znevýhodnenia.</li>
+</ul>
+
+<div class="filtre" id="filtre"></div>
+<div id="obsah"></div>
+
+<h2>Čo by som zobral ako prvé</h2>
+<p>Desať s najlepším pomerom radosť / práca: <b>Sekera v pni, Huba nevymáchaná, Rozhadzovač, Nútené práce, Forsáž</b> (bez kódu) a <b>Výtržník, O chlp, Posledná runda, Celá rada v pivnici, Sťažnosť krčmárovi</b> (malá metrika). Posledný je jediný, ktorý priamo živí Spätnú väzbu a známky na /vyvoj.</p>
+<p class="tlm">Dve veci v existujúcom katalógu, na ktoré som pri tom narazil: „Hrôza a des“ má v popise „tretím väzňom“, ale metrika ráta aj výhru strachom — návrh „Červená dedina“ to rozdeľuje. A metriku <code>vyhraKnockoutom</code> (súper nezvládol exekúciu / došiel mu balíček) treba pred použitím overiť proti dnešným pravidlám.</p>
+</main>
+<div id="vyber"><span id="pocet">Vybrané: 0</span><button id="kopiruj">Skopírovať zoznam vybraných</button></div>
+
+<script>
+const SKUPINY = [
+  ["bitka", "Bitka a hádka"], ["nerest", "Nerest a ekonomika"], ["linia", "Karty a línia"], ["starsi", "Starší"],
+  ["partie", "Partie"], ["krcma", "Okolo krčmy (web)"], ["kuriozity", "Kuriozity (tajné)"], ["rezimy", "Režimy v Zrejúcej"],
+];
+// [skupina, stav (h = bez kódu, k = nová metrika, r = režim), názov, popis, prahy, technika, poznámka, tajný text]
+const A = [
+  ["bitka","h","Sekera v pni","Vyhraj bitku, ktorou berieš špaky z aspoň {prah} bitiek na sekere.","1 / 2 / 3","sekeraZobrata · bitka","Metrika už je, nikto ju nepoužíva. Párový k „Všetko na sekeru“."],
+  ["bitka","h","Huba nevymáchaná","Vyhraj v jednej partii hádku v aspoň {prah} bitkách.","3 / 4 / 6","stat.hadkyVyhrane · partia","Hádka má zatiaľ len „o koľko“; toto je „ako často“."],
+  ["bitka","h","Zlé oko","Maj v jednej partii aspoň {prah} Povier, ktoré neprerušila súperova Viera.","4 / 7 / 10","stat.poveryUcinne · partia",""],
+  ["bitka","h","Svätuškár","Maj v jednej bitke aspoň {prah} aktívne Viery.","3 / 5 / 7","akcia.Viera · bitka",""],
+  ["bitka","h","Zákaz vstupu","Maj v jednej bitke aspoň {prah} aktívne Obmedzenia.","2 / 3 / 4","akcia.Obmedzenie · bitka",""],
+  ["bitka","h","Ruka ako lopata","Udeľ spolu {prah} tuhého.","200 / 1 000 / 5 000","stat.tuheUdelene · kariéra","Dlhý beh pre štamgastov."],
+  ["bitka","k","O fúz","Vyhraj bitku presne o 1 — spolu {prah}×.","5 / 25 / 100","nová: bitka s prebytkom 1","Opak Výprasku; tesné bitky sú tie, ktoré si hráč pamätá."],
+  ["bitka","k","Trasie sa, ale bije","Vyhraj bitku s aspoň {prah} Absťákmi.","2 / 3 / 4","nová: Absťáky víťaza pri vyhodnotení","Odmena za výhru zo znevýhodnenia."],
+
+  ["nerest","h","Rozhadzovač","Miň v jednej partii aspoň {prah} cigariet.","20 / 30 / 45","stat.cigaretyMinute · partia","Ocenenie za míňanie, nie za hromadenie (protiváha Boháča)."],
+  ["nerest","h","Spoveď","Priznaj spolu {prah} Cirhóz.","5 / 25 / 100","stat.cirhozyPriznane · kariéra",""],
+  ["nerest","h","Vyrovnaný účet","Zbav sa spolu {prah} Dlhov.","5 / 25 / 100","stat.dlhyZbavene · kariéra","Exekútor, Robota aj efekty kariet."],
+  ["nerest","h","Šichta","Maj v bitkách spolu {prah} aktívnych Robôt.","10 / 50 / 200","akcia.Robota · kariéra",""],
+  ["nerest","k","Výpalník","Vyber v jednej partii na výpalnom aspoň {prah} cigariet.","4 / 8 / 12","nová: cigarety z výpalného (krok 6c)","Výpalné je z v11.9 — mladé pravidlo, možný LEGACY."],
+
+  ["linia","h","Forsáž","Spôsob Forsáž (Posilnenie proti Posilneniu) — spolu {prah}×.","1 / 5 / 15","moment.forsaz · kariéra","Pečiatka už je; ráta sa obom ako Vzbura."],
+  ["linia","h","Mozole na palcoch","Vylož spolu {prah} kariet.","200 / 1 000 / 5 000","stat.kartyVylozene · kariéra",""],
+  ["linia","k","Na jeden dúšok","Vylož jedným ťahom aspoň {prah} karty.","3 / 4 / 5","nová: počet vyložení v jednom príkaze tah","Učí pokročilý ťah z §13."],
+  ["linia","k","Fušer","Podlož spolu {prah} Nástrojov.","10 / 50 / 200","nová: počítadlo podložení","Dedič ráta Dedičstvo, podloženie nemá nič."],
+  ["linia","k","Rekvalifikácia","Preškoľ akciu reťazou aspoň {prah} premien (Rana → Pecka → Petelica).","2 / 3 / 4","nová: dĺžka reťaze premien na karte","★★ a ★★★ skoro len so Zámočníkom alebo Školiteľom."],
+  ["linia","k","Výtržník","Sprav z karty Výtržníka (obe NA EX na tej istej karte) — spolu {prah}×.","1 / 5 / 20","nová: zrážka NA EX; obom","Zrážka je jeden z najlepších momentov Pitky a nemá nič."],
+
+  ["starsi","h","Nútené práce","Použi schopnosť väzňa spolu {prah}×.","5 / 25 / 100","moment.schopnostVazna · kariéra",""],
+  ["starsi","k","Červená dedina","Vyhraj partiu strachom (4 červení starší) — spolu {prah}×.","1 / 3 / 10","nová: vyhraStrachom (dnes zlúčené s väzňami)","Rozdelí „Hrôzu a des“ na väzňov a strach."],
+  ["starsi","k","Vreckár","Ukradni pri jednom zajatí aspoň {prah} špakov.","3 / 6 / 10","nová: krádež pri zajatí (krok 4e)","Krádež sa v11 → v11.12 menila; možný LEGACY."],
+  ["starsi","k","Celá rada v pivnici","Zajmi aspoň raz {prah} rôznych starších.","3 / 6 / 8","nová: rôzne (štítok = starší)","Zberateľský; ★★★ = všetkých osem."],
+  ["starsi","k","Mlčať je zlato","Vyhraj partiu, v ktorej si nevyhral ani jednu hádku — spolu {prah}×.","1 / 5 / 20","nová: výhra pri hadkyVyhrane = 0","Ukáže, že sa dá vyhrať aj bez rečí."],
+
+  ["partie","h","Rýchlovka","Vyhrané krátke partie (3 lokality): spolu {prah}.","5 / 25 / 100","vyhra.kratka · kariéra","Maratón má len dlhá partia."],
+  ["partie","h","Poctivá smena","Vyhrané stredné partie (5 lokalít): spolu {prah}.","3 / 15 / 50","vyhra.stredna · kariéra",""],
+  ["partie","k","O chlp","Vyhraj partiu najviac o 3 špaky — spolu {prah}×.","1 / 5 / 20","nová: rozdiel špakov 1 – 3","Presne výsledky, aké hra chce (15 : 13)."],
+  ["partie","k","Posledná runda","Vyhraj finále ako útočník a tým aj partiu — spolu {prah}×.","1 / 5 / 20","nová: útočník finále + víťaz partie","Vo finále útočí zaostávajúci — čistý obrat v poslednej bitke."],
+  ["partie","k","Poznám tu každý kút","Vyhraj bitku na {prah} rôznych lokalitách.","5 / 10 / všetky","nová: rôzne (štítok = lokalita)","Tretí prah = počet lokalít v sade; nová lokalita ho posunie (ako povahy bota)."],
+  ["partie","k","Odveta","Poraz človeka, ktorý ťa vo vašej predošlej partii porazil — spolu {prah}×.","1 / 5 / 20","nová, server: posledná vzájomná partia",""],
+
+  ["krcma","k","Sťažnosť krčmárovi","Pošli názor v Spätnej väzbe — spolu {prah}×.","1 / 5 / 20","server, mimo partie (ako Prvá hra)","Rátať len názory, ktoré admin neoznačil ako spam."],
+  ["krcma","k","Porotca","Ohodnoť hru známkami — {prah}×, najviac raz za verziu hry.","1 / 3 / 6","server, mimo partie","Živí /vyvoj (ľudia až od 3 hodnotiteľov)."],
+  ["krcma","k","Stály hosť","Dohraj partiu v {prah} rôznych dňoch.","7 / 30 / 100","server: rôzne (štítok = deň)","Návraty namiesto maratónu za jeden večer. Proti ľuďom aj botovi."],
+
+  ["kuriozity","h","Boxovacie vrece","Dostaň v jednej bitke aspoň {prah} poškodenia.","10 / 14 / 18","stat.poskodenieObdrzane · bitka","","Niekto to musí schytať."],
+  ["kuriozity","h","Platím rundu","Prehraj spolu {prah} partií.","10 / 50 / 200","prehra · kariéra","Cena útechy za to, že hráč ostal.","Aj prehra je škola."],
+  ["kuriozity","h","Podaj ruku","Dohraj partiu remízou — spolu {prah}×.","1 / 2 / 5","remiza · kariéra","","Ani ryba, ani rak."],
+  ["kuriozity","k","Zatĺkať, zatĺkať","Vyhraj partiu napriek aspoň {prah} nepriznaným Cirhózam.","1 / 2 / 3","nová: nepriznané Cirhózy víťaza na konci","Každá stojí −3 špaky.","Čo doktor nevie…"],
+  ["kuriozity","k","Záverečná o tretej","Dohraj partiu medzi 2:00 a 5:00 ráno — spolu {prah}×.","1 / 5 / 20","server (čas), mimo jadra","","Krčmárka už zhasína."],
+
+  ["rezimy","r","Parťáci","Vyhraj v 2 na 2 spolu {prah} partií.","1 / 10 / 50","nová: výhra tímu","Až po uvoľnení 2 na 2."],
+  ["rezimy","r","Do páru","Dohraj 2 na 2 s {prah} rôznymi spoluhráčmi.","2 / 5 / 15","nová, server: rôzne (štítok = spoluhráč)","Až po uvoľnení 2 na 2."],
+  ["rezimy","r","Podrazák","Podraz spolu {prah} starších (Päta, Lakeť, Otočka).","4 / 40 / 150","nová: podrazenia","Až po uvoľnení režimu."],
+  ["rezimy","r","Čistá práca","Vyhraj Pätu, Lakeť, Otočku bez straty staršieho — spolu {prah}×.","1 / 3 / 10","nová","Až po uvoľnení režimu."],
+  ["rezimy","r","Na doraz","Vyhraj Pätu, Lakeť, Otočku s jediným stojacim starším — spolu {prah}×.","1 / 5 / 20","nová","Odmena za výhru z najhoršej pozície."],
+];
+const STAV = { h: ["bez kódu", "s-hotove"], k: ["nová metrika", "s-kod"], r: ["až s režimom", "s-rezim"] };
+let filter = "vsetko";
+const vybrane = new Set();
+const el = (t, c, txt) => { const e = document.createElement(t); if (c) e.className = c; if (txt !== undefined) e.textContent = txt; return e; };
+
+function filtre() {
+  const f = document.getElementById("filtre"); f.replaceChildren();
+  const volby = [["vsetko", `Všetko (${A.length})`], ...Object.entries(STAV).map(([k, v]) => [k, `${v[0]} (${A.filter(a => a[1] === k).length})`])];
+  for (const [id, text] of volby) {
+    const b = el("button", "", text); b.setAttribute("aria-pressed", String(filter === id));
+    b.onclick = () => { filter = id; filtre(); kresli(); }; f.append(b);
+  }
+}
+function kresli() {
+  const o = document.getElementById("obsah"); o.replaceChildren();
+  for (const [sk, nazov] of SKUPINY) {
+    const zoznam = A.filter(a => a[0] === sk && (filter === "vsetko" || a[1] === filter));
+    if (zoznam.length === 0) continue;
+    o.append(el("h2", "", `${nazov} · ${zoznam.length}`));
+    const m = el("div", "mriezka");
+    for (const a of zoznam) {
+      const k = el("div", "a" + (vybrane.has(a[2]) ? " vybrany" : ""));
+      const h = el("h3"); h.append(el("span", "", a[2]), el("span", "stitok " + STAV[a[1]][1], STAV[a[1]][0]));
+      const p = el("p", "popis" + (a[7] !== undefined ? " tajny" : ""), a[3]);
+      k.append(h, p, el("div", "prahy", "★ " + a[4]));
+      if (a[7] !== undefined) k.append(el("p", "pozn", `Kým ho hráč nemá: „${a[7]}“`));
+      k.append(el("p", "tech", a[5]));
+      if (a[6]) k.append(el("p", "pozn", a[6]));
+      const l = el("label"); const c = el("input"); c.type = "checkbox"; c.checked = vybrane.has(a[2]);
+      c.onchange = () => { c.checked ? vybrane.add(a[2]) : vybrane.delete(a[2]); k.classList.toggle("vybrany", c.checked); pocet(); };
+      l.append(c, " beriem"); k.append(l); m.append(k);
+    }
+    o.append(m);
+  }
+}
+function pocet() { document.getElementById("pocet").textContent = `Vybrané: ${vybrane.size}`; }
+document.getElementById("kopiruj").onclick = async () => {
+  const text = A.filter(a => vybrane.has(a[2])).map(a => `${a[2]} (${a[4]})`).join("\n");
+  try { await navigator.clipboard.writeText(text); document.getElementById("pocet").textContent = `Skopírované: ${vybrane.size}`; }
+  catch { document.getElementById("pocet").textContent = text.replace(/\n/g, ", "); }
+};
+filtre(); kresli();
+</script>
+</body>
+</html>

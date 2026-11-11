@@ -19,7 +19,9 @@ import type { PlayerId } from "./types.ts";
 import { ALL_ACTIONS, ALL_PODMIENKY, opponentOf } from "./types.ts";
 import type { GameData } from "./data.ts";
 import type { Command, Event, GameState } from "./engine.ts";
-import { bitkyNaSekere, cervenychHraca } from "./engine.ts";
+import { bitkyNaSekere, cervenychHraca, lineState } from "./engine.ts";
+import { evaluateLine } from "./partia.ts";
+import { pocetAbstakov } from "./player.ts";
 import type { DvojicaStatistik, StatistikyHraca } from "./statistiky.ts";
 import { noveStatistiky, prazdneStatistiky, uzavriStatistiky, zapisTah } from "./statistiky.ts";
 import type { StavKroniky } from "./kronika.ts";
@@ -83,6 +85,12 @@ export interface KontextPartie {
   readonly botPovaha: string | null;
   /** Id účtu súpera každého hráča (null = bot alebo bez účtu). */
   readonly superi: readonly [string | null, string | null];
+  /** Deň kroku (RRRR-MM-DD, čas servera) — jadro čas nepozná; null či chýba = nerátať. */
+  readonly den?: string | null;
+  /** Hodina kroku 0–23 (čas servera). */
+  readonly hodina?: number | null;
+  /** Hráč prehral svoju predošlú dohratú partiu s týmto súperom — výhra je odveta. */
+  readonly odveta?: readonly [boolean, boolean];
 }
 
 export const BEZ_KONTEXTU: KontextPartie = { botPovaha: null, superi: [null, null] };
@@ -111,7 +119,7 @@ export interface Metrika {
   readonly popis: string;
   readonly zmer: (k: KrokMetriky) => Meranie;
   /** Pri druhu „rozne“: čo sa ráta ako rôzne (povaha, súper). */
-  readonly stitok?: (k: KrokMetriky, p: PlayerId) => string | null;
+  readonly stitok?: (k: KrokMetriky, p: PlayerId) => string | readonly string[] | null;
   /** Pri druhu „rozne“: ktoré štítky z kariéry ešte platia (povaha mohla z hry odísť); bez neho všetky. */
   readonly platnyStitok?: (stitok: string) => boolean;
 }
@@ -137,6 +145,34 @@ const naexy = (kr: StavKroniky, p: PlayerId, uspech: boolean): number =>
   [...kr.kola, kr.kolo].reduce((n, kolo) => n + kolo.naex.filter((x) => x.kto === p && x.uspech === uspech).length, 0);
 const zaverecne = (cmd: Command): number => (cmd.type === "zaverecna" ? 1 : cmd.type === "tah" ? cmd.kroky.reduce((n, c) => n + zaverecne(c), 0) : 0);
 const prirastok = (po: number, pred: number): number | null => (po > pred ? po - pred : null);
+const kladne = (n: number): number | null => (n > 0 ? n : null);
+/** Kroky príkazu: celý ťah Zhromaždenia rozložený, inak príkaz sám. */
+const krokyPrikazu = (cmd: Command): readonly Command[] => (cmd.type === "tah" ? cmd.kroky : [cmd]);
+/** Bitka, ktorú týmto krokom zapísali na nástenku. */
+const novaBitka = (k: KrokMetriky) => (k.po.nastenka.length > k.pred.nastenka.length ? k.po.nastenka.at(-1) : undefined);
+const noviVazni = (k: KrokMetriky, p: PlayerId): string[] => {
+  const mal = new Set((k.pred.vazni ?? []).map((v) => v.elderId));
+  return (k.po.vazni ?? []).filter((v) => v.hrac === p && !mal.has(v.elderId)).map((v) => v.elderId);
+};
+const vytrznikov = (s: GameState): number => s.strany.reduce((n, strana) => n + strana.filter((pl) => pl.vytrznik === true).length, 0);
+const nepriznaneCirhozy = (s: GameState, p: PlayerId): number => {
+  const h = s.hraci[p];
+  return [...h.ruka, ...h.doberaci, ...h.odhadzovaci].filter((c) => c.defId === "cirhoza").length;
+};
+/** Najdlhšia reťaz premien akcie (Nástroje, Školitelia) na hráčových kartách pri vyhodnotení bitky. */
+function najdlhsiaRetaz(k: KrokMetriky, p: PlayerId): number | null {
+  const e = bitky(k)[0];
+  if (e === undefined) return null;
+  const strany = e.strany ?? k.pred.strany;
+  const ev = evaluateLine(k.data, { ...lineState(k.pred), strany });
+  let n = 0;
+  for (const pl of strany.flat()) {
+    if (pl.playedBy !== p) continue;
+    const karta = ev.cards.get(pl.card.uid);
+    for (const slot of [...(karta?.left ?? []), ...(karta?.right ?? [])]) n = Math.max(n, slot?.retaz?.length ?? 0);
+  }
+  return kladne(n);
+}
 
 /** Polia štatistík, ktoré nie sú výkon hráča v kroku (počet partií v súčte, NA EX z kroniky na konci). */
 const NIE_METRIKY: ReadonlySet<string> = new Set(["partie", "partieV2", "bodovanePartie", "naexHodnotene", "naexUspesne"]);
@@ -185,6 +221,59 @@ const VLASTNE: Readonly<Record<string, Metrika>> = {
       }),
   },
   vyhraVydesenim: { druh: "sucet", popis: "okamžitá výhra väzňami alebo strachom (v9–v10 tretím väzňom, do v8 udržaným vydesením)", zmer: (k) => pre((p) => ak(vyhral(k, p) && vydesenim(k, p))) },
+  vyhraStrachom: {
+    druh: "sucet",
+    popis: "okamžitá výhra strachom: 4 červení starší, väzňov na výhru nie je dosť",
+    zmer: (k) =>
+      pre((p) =>
+        ak(
+          vyhral(k, p) &&
+            k.po.koniec?.body == null &&
+            (k.po.vazni ?? []).filter((v) => v.hrac === p).length < vazniNaVyhru(k.po.lokalitCelkom) &&
+            cervenychHraca(k.po, p) >= KONSTANTY.CERVENYCH_NA_VYHRU,
+        ),
+      ),
+  },
+  vyhraBezHadky: { druh: "sucet", popis: "výhra partie bez jedinej vyhratej hádky", zmer: (k) => pre((p) => ak(vyhral(k, p) && k.statPo[p].hadkyVyhrane === 0)) },
+  vyhraOChlp: {
+    druh: "sucet",
+    popis: "výhra partie najviac o 5 špakov",
+    zmer: (k) =>
+      pre((p) => {
+        const body = k.po.koniec?.body;
+        return ak(vyhral(k, p) && body != null && body[p] - body[opponentOf(p)] <= 5);
+      }),
+  },
+  // Vo finále útočí zaostávajúci (§14b) — kto doň išiel s menej špakmi a vyhral ho aj partiu.
+  vyhraFinaleZoZadu: {
+    druh: "sucet",
+    popis: "výhra finále aj partie hráčom, ktorý šiel do finále s menej špakmi",
+    zmer: (k) =>
+      pre((p) => {
+        const finale = k.po.nastenka.at(-1);
+        const predFinale = k.po.nastenka.at(-2);
+        if (!vyhral(k, p) || finale?.finale !== true || finale.vitaz !== p || predFinale === undefined) return null;
+        return ak(predFinale.spakyPo[p] < predFinale.spakyPo[opponentOf(p)]);
+      }),
+  },
+  nepriznaneCirhozyVyhra: {
+    druh: "max",
+    popis: "nepriznané Cirhózy víťaza na konci partie (ruka aj oba balíčky)",
+    zmer: (k) => pre((p) => (vyhral(k, p) ? kladne(nepriznaneCirhozy(k.po, p)) : null)),
+  },
+  odveta: {
+    druh: "sucet",
+    popis: "výhra nad človekom, s ktorým hráč predošlú vzájomnú partiu prehral (kontext zo servera)",
+    zmer: (k) => pre((p) => ak(vyhral(k, p) && k.kontext.odveta?.[p] === true)),
+  },
+  nocnaPartia: {
+    druh: "sucet",
+    popis: "partia dohratá medzi 2:00 a 5:00 (hodina zo servera)",
+    zmer: (k) => pre(() => ak(dohrata(k) && k.kontext.hodina != null && k.kontext.hodina >= 2 && k.kontext.hodina < 5)),
+  },
+  // Mimo partie — udeľuje server podľa počtu (ako výučbu).
+  nazory: { druh: "sucet", popis: "názory poslané v Spätnej väzbe (udeľuje server, v partii nič)", zmer: () => [null, null] },
+  hodnotenia: { druh: "sucet", popis: "hodnotenia hry známkami (udeľuje server, v partii nič)", zmer: () => [null, null] },
   vyhraKnockoutom: {
     druh: "sucet",
     popis: "výhra, lebo súper nečelil exekúcii alebo mu balíček klesol pod 5",
@@ -259,7 +348,53 @@ const VLASTNE: Readonly<Record<string, Metrika>> = {
     popis: "vyhratá bitka, keď hráč pri vyhodnotení nemal plný poldeci",
     zmer: (k) => pre((p) => ak(bitky(k).some((e) => e.vitaz === p) && k.pred.hraci[p].poldeciPlne === 0)),
   },
+  bitkaOJedno: {
+    druh: "sucet",
+    popis: "bitka vyhratá s Nakladačkou presne 1",
+    zmer: (k) => pre((p) => ak(bitky(k).some((e) => e.vitaz === p && e.prebytok === 1))),
+  },
+  abstakyVitaza: {
+    druh: "max",
+    popis: "Absťáky hráča v bitke, ktorú vyhral",
+    zmer: (k) => pre((p) => (bitky(k).some((e) => e.vitaz === p) ? kladne(pocetAbstakov(k.pred.hraci[p])) : null)),
+  },
+  retazPremien: { druh: "max", popis: "najdlhšia reťaz premien akcie na hráčovej karte pri vyhodnotení bitky (2 = dve premeny za sebou)", zmer: (k) => pre((p) => najdlhsiaRetaz(k, p)) },
+  kradezPriZajati: {
+    druh: "max",
+    popis: "špaky ukradnuté pri zajatí po jednej bitke",
+    zmer: (k) =>
+      pre((p) => {
+        const po = k.po.nastenka.at(-1)?.kradez?.[p] ?? 0;
+        const pred = k.po.nastenka.length === k.pred.nastenka.length ? (k.pred.nastenka.at(-1)?.kradez?.[p] ?? 0) : 0;
+        return kladne(po - pred);
+      }),
+  },
   // ---- ťahy a stav
+  vypalne: {
+    druh: "sucet",
+    popis: "cigarety vybrané na výpalnom (len s účtovnou knihou cigariet — applySPrisunom)",
+    zmer: (k) => pre((p) => kladne(k.udalosti.reduce((n, e) => n + (e.type === "zmenaCigariet" && e.hrac === p && e.zdroj === "vypalne" && e.suma > 0 ? e.suma : 0), 0))),
+  },
+  kartyVTahu: {
+    druh: "max",
+    popis: "karty vyložené do línie jedným ťahom (aj Záverečné)",
+    zmer: (k) =>
+      pre((p) =>
+        p !== k.autor
+          ? null
+          : kladne(krokyPrikazu(k.cmd).filter((c) => c.type === "zaverecna" || (c.type === "place" && (c.target === "vlastna" || c.target === "superova"))).length),
+      ),
+  },
+  podlozenia: {
+    druh: "sucet",
+    popis: "Nástroje podložené pod kartu v línii",
+    zmer: (k) => pre((p) => (p !== k.autor ? null : kladne(krokyPrikazu(k.cmd).filter((c) => c.type === "podloz").length))),
+  },
+  vytrznik: {
+    druh: "sucet",
+    popis: "Výtržník: obe NA EX na tej istej karte (ráta sa obom)",
+    zmer: (k) => pre(() => prirastok(vytrznikov(k.po), vytrznikov(k.pred))),
+  },
   zaverecne: { druh: "sucet", popis: "karty zahrané ako Záverečná", zmer: (k) => pre((p) => (p === k.autor && zaverecne(k.cmd) > 0 ? zaverecne(k.cmd) : null)) },
   naexUspech: {
     druh: "sucet",
@@ -293,6 +428,24 @@ const VLASTNE: Readonly<Record<string, Metrika>> = {
     stitok: (k) => k.kontext.botPovaha,
     // Staré výhry ostávajú v databáze, ale na nové povahy sa nezapočítavajú (Michal 2026-11-06).
     platnyStitok: jePovahaVHre,
+  },
+  zajatiStarsi: {
+    druh: "rozne",
+    popis: "počet rôznych starších, ktorých hráč aspoň raz zajal",
+    zmer: (k) => pre((p) => ak(noviVazni(k, p).length > 0)),
+    stitok: noviVazni,
+  },
+  rozneLokality: {
+    druh: "rozne",
+    popis: "počet rôznych lokalít (aj finálových), na ktorých hráč vyhral bitku",
+    zmer: (k) => pre((p) => ak(novaBitka(k)?.vitaz === p && novaBitka(k)?.lokalita != null)),
+    stitok: (k) => novaBitka(k)?.lokalita?.defId ?? null,
+  },
+  hraciDen: {
+    druh: "rozne",
+    popis: "počet rôznych dní, v ktorých hráč dohral partiu (deň zo servera)",
+    zmer: (k) => pre(() => ak(dohrata(k) && k.kontext.den != null)),
+    stitok: (k) => k.kontext.den ?? null,
   },
   rozniSuperi: {
     druh: "rozne",
@@ -570,7 +723,9 @@ export function krokAchievementov(
       vBitke[k] = v;
       if (a.agregacia === "rozne") {
         const s = (metrika(a.metrika) as Metrika).stitok?.(krok, p) ?? null;
-        if (s !== null && !(stitky[k] ?? []).includes(s)) stitky[k] = [...(stitky[k] ?? []), s];
+        for (const x of s === null ? [] : typeof s === "string" ? [s] : s) {
+          if (!(stitky[k] ?? []).includes(x)) stitky[k] = [...(stitky[k] ?? []), x];
+        }
         partia[k] = (stitky[k] ?? []).length;
         continue;
       }

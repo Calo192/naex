@@ -760,7 +760,12 @@ export async function spracujApi(ctx: ApiKontext, req: IncomingMessage, res: Ser
     if (r === "GET /znamky/moje") return ok(ctx.hodnotenia.moje(prihlaseny()));
     // Známky hry sa počítajú len z Vypálenej (Michal 2026-11-02).
     if (r === "PUT /znamky" && ctx.zrejuca !== null) throw voVypalenej("Hodnotenie hry");
-    if (r === "PUT /znamky") return ok(ctx.hodnotenia.uloz(prihlaseny(), await citajJson(req), teraz));
+    if (r === "PUT /znamky") {
+      const hodnotitel = prihlaseny();
+      const ulozene = ctx.hodnotenia.uloz(hodnotitel, await citajJson(req), teraz);
+      ctx.achievementy?.udelZaHodnotenia(hodnotitel, teraz);
+      return ok(ulozene);
+    }
 
     if (casti[1] === "roadmapa") {
       if (r === "GET /roadmapa") {
@@ -975,7 +980,9 @@ export async function spracujApi(ctx: ApiKontext, req: IncomingMessage, res: Ser
       }
       if (r === "POST /nazory") {
         const b = await citajJson(req);
-        return ok({ id: ctx.nazory.pridaj(p, b.kategoria, b.text, teraz, b.nadpis) }, 201);
+        const id = ctx.nazory.pridaj(p, b.kategoria, b.text, teraz, b.nadpis);
+        ctx.achievementy?.udelZaNazory(p, teraz);
+        return ok({ id }, 201);
       }
       if (Number.isInteger(kom)) {
         if (metoda === "DELETE" && casti.length === 4) {
