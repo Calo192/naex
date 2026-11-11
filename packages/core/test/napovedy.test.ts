@@ -79,7 +79,7 @@ describe("nápovedy — rozpoznanie z pohľadu hráča", () => {
     expect(ids(zh(1), 0)).not.toContain("dedicstvo");
   });
 
-  it("pas-cigarety (v12.2): na ťahu v Zhromaždení, po vyloženej karte a s plným poldecim; inak nie", () => {
+  it("pas-cigarety (v12.3): na ťahu v Zhromaždení, po vyloženej karte a s plným poldecim; inak nie", () => {
     const zh = (o: { naTahu?: 0 | 1; plne?: number; mojaKarta?: boolean; pasoval?: boolean }): GameState =>
       ({
         ...s0,
@@ -90,7 +90,7 @@ describe("nápovedy — rozpoznanie z pohľadu hráča", () => {
         zhromazdenieStav: { naTahu: o.naTahu ?? 0, zostavaLimit: [2, 2], pasoval: [o.pasoval ?? false, false], navyse: [0, 0] },
       }) as unknown as GameState;
     expect(ids(zh({}), 0)).toContain("pas-cigarety");
-    expect(napovedy(data, katalog, viewFor(data, zh({}), 0)).find((n) => n.id === "pas-cigarety")?.text).toMatch(/Za pas nedostaneš nič/);
+    expect(napovedy(data, katalog, viewFor(data, zh({}), 0)).find((n) => n.id === "pas-cigarety")?.text).toMatch(/Keď pasneš, dostaneš .{0,12}cigaretu za každý plný poldeci/);
     // Súper na ťahu, ešte bez vlastnej karty (súperova sa neráta), bez plného poldeci, po pase.
     expect(ids(zh({ naTahu: 1 }), 0)).not.toContain("pas-cigarety");
     expect(ids(zh({ mojaKarta: false }), 0)).not.toContain("pas-cigarety");

@@ -84,8 +84,8 @@ describe("§13 Vypiť len s plným poldeci aj na ďalšiu kartu (v11.16, v12.2)"
   });
 });
 
-describe("§6 pas cigarety nedáva (v12.2)", () => {
-  it("3 plné, jedna karta vyložená, ruka prázdna — pas za hráča nedá nič, 2 plné ostávajú", () => {
+describe("§6 pas za hráča dáva cigarety (v12.3)", () => {
+  it("3 plné, jedna karta vyložená, ruka prázdna — pas za hráča dá 2 cigarety, 2 plné ostávajú", () => {
     const pijan = inst("pijan");
     let s = vZhromazdeni(data, { ruka: [pijan], limit: [3, 3], plne: [3, 3] });
     const cig = s.hraci[0].cigarety;
@@ -94,7 +94,7 @@ describe("§6 pas cigarety nedáva (v12.2)", () => {
     expect(s.zhromazdenieStav?.zostavaLimit[0]).toBe(2);
     // Súper pasuje; hráč 0 s prázdnou rukou nemá čo vyložiť — pasuje za neho hra.
     s = apply(data, s, { type: "pass" }, 1).state;
-    expect(s.hraci[0].cigarety).toBe(cig);
+    expect(s.hraci[0].cigarety).toBe(cig + 2);
     expect(s.hraci[0].poldeciPlne).toBe(2);
   });
 });

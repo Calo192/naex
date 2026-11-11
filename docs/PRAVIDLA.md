@@ -1,6 +1,6 @@
 # NA EX! — pravidlá (špecifikácia)
 
-**Pravidlá v12.2 (platné od 2026-11-11)** — Vykladanie za poldeci (v12.2), Odpor aktívny len bez spoja, podmienka NA EX a Hrable (v12.1), Akcie navyše mení celý Nástroj, Traktorista, Pasca, Výherný automat, Kapybara a Predavačka (v12), Dobratie 2 karty po bitke a posilnenie Nástrojom po NA EX (v11.21), Hodnota stupňa 1 / 2 / 3 a reťaz premien (v11.20), Dohadzovačka len z konca kraja (v11.19), Vedúcko Podporou, Snúbenica, Traktorista a Miňištrant (v11.18), NA EX × Odpor a Posilnenie, Kapybara, Telefón, Krokodíl a hrany Náradia (v11.17), Vypiť, pas, Degustátorka, odpoveď na NA EX za poldeci, Nástroj len pod vlastné karty, Školiteľ aj Zviera (v11.16), Benzínka o cigaretu lacnejšie (v11.15), Frakcie, Občania v troch kategóriách, Náradie a karta z ponuky (v11.14), Lokality (v11.13), Reči na súperovom teplomere (v11.12), Hádka platí (v11.11), Ohováračka namiesto Alkoholika (v11.10), Dobratie do troch a výpalné (v11.9), Každý Hazard je Dlh (v11.8), Kostol a koniec línie (v11.7), Zajatie od minulého kola (v11.6), Identita kariet (v11.5), Zajatie Nakladačkou a presvedčenie (v11.4), Konflikt oboma smermi a Podpora (v11.3), Schopnosť väzňa (v11.2), Vzbura obráti kartu (v11.1) a Strach a reči (Michal 2026-11-02, docs/napady/strach-reci.html,
+**Pravidlá v12.3 (platné od 2026-11-11)** — Cigarety za pas (v12.3), Vykladanie za poldeci (v12.2), Odpor aktívny len bez spoja, podmienka NA EX a Hrable (v12.1), Akcie navyše mení celý Nástroj, Traktorista, Pasca, Výherný automat, Kapybara a Predavačka (v12), Dobratie 2 karty po bitke a posilnenie Nástrojom po NA EX (v11.21), Hodnota stupňa 1 / 2 / 3 a reťaz premien (v11.20), Dohadzovačka len z konca kraja (v11.19), Vedúcko Podporou, Snúbenica, Traktorista a Miňištrant (v11.18), NA EX × Odpor a Posilnenie, Kapybara, Telefón, Krokodíl a hrany Náradia (v11.17), Vypiť, pas, Degustátorka, odpoveď na NA EX za poldeci, Nástroj len pod vlastné karty, Školiteľ aj Zviera (v11.16), Benzínka o cigaretu lacnejšie (v11.15), Frakcie, Občania v troch kategóriách, Náradie a karta z ponuky (v11.14), Lokality (v11.13), Reči na súperovom teplomere (v11.12), Hádka platí (v11.11), Ohováračka namiesto Alkoholika (v11.10), Dobratie do troch a výpalné (v11.9), Každý Hazard je Dlh (v11.8), Kostol a koniec línie (v11.7), Zajatie od minulého kola (v11.6), Identita kariet (v11.5), Zajatie Nakladačkou a presvedčenie (v11.4), Konflikt oboma smermi a Podpora (v11.3), Schopnosť väzňa (v11.2), Vzbura obráti kartu (v11.1) a Strach a reči (Michal 2026-11-02, docs/napady/strach-reci.html,
 verzia 2) na v10.4
 (Hádka v10 — Michal 2026-11-01, docs/napady/hadka.html, verzia 4; v9 zmrazené 2026-10-30, krok 2
 revízie starších, docs/napady/starsi-krok2-zadanie.html; dávky v9.1 Chuť, v9.2 ponuka a NA EX naraz,
@@ -8,6 +8,14 @@ v9.3 Výtržník prebíja Úplatok; v10.1 zajatie pred ponukou; v10.2 Nástroj n
 Forsáž, Úplatok zrušený; v10.4 pojem Spáliť, Autority). Sada kariet: Vypálená hrá zverejnenú sadu v51 (v11.18), Zrejúca rozpracovaný stav tvorcu nad ňou (`cards.json` v master). Pravidlá sa
 menia len v dávkach; celá dávka dostane ďalšiu verziu (značka partií `v11`; presnú verziu ukazuje
 stránka Pravidlá — `VERZIA_PRAVIDIEL_PRESNA`).
+
+**Zmeny v12.3 oproti v12.2** (Michal 2026-11-11: „Treba nejakým spôsobom vrátiť cigarety za pas. Keď hráč pasne, dostane toľko cigariet, koľko má nevypitých poldeci.“ K poldeci: ostanú plné — cigarety sú odmena za šetrenie, poldeci ostávajú na NA EX a ďalšie Zhromaždenie; kto pasuje aj v ďalšom Zhromaždení toho kola, dostane cigarety znova; staré znenie v `docs/pravidla-historia.md`, sekcia v12.3):
+
+- **Cigarety za pas** (§6): kto pasuje, dostane **1 cigaretu za každý plný poldeci** (`KONSTANTY.CIGARETY_ZA_PAS_NA_POLDECI`). Poldeci sa tým **nevypijú** — ostanú plné na NA EX v Pitke a na ďalšie Zhromaždenie kola; kto pasuje aj v ňom, dostane cigarety znova. V 2 na 2 dostane tím cigarety za svoje plné poldeci, až keď pasuje aj druhý člen (ako do v12.1, §18).
+- **Vychovávateľka** (väzeň, §10): „Súper v tomto Zhromaždení hneď pasuje a za pas nedostane cigarety.“ — vynútený pas je bez cigariet, plné poldeci súperovi ostanú.
+- **Achievement Pas za groš** (cigarety za pasy v jednej partii) sa znova dá získať — legacy bol len vo v12.2; jeho hviezdy sa znova rátajú do prahov rankov (podiel 35 % / 50 % sa nemení).
+- **Platí všade** (§18, §19): Kalamita, 2 na 2 aj Päta, Lakeť, Otočka.
+- **Výklady Leadera, Michal zatiaľ nepotvrdil:** (1) Cigarety za pas = počet **plných poldeci v okamihu pasu**; maximum +1 z Vínka sa ráta len cez skutočný plný poldeci, ktorý pridá. (2) Pas, ktorý za hráča urobí hra (nemá čo vyložiť, nemá plný poldeci), dáva cigarety tiež — bez plného poldeci je to 0 (ako do v12.1). (3) **Záverečná** ukončí vykladanie ako pas, ale cigarety za zvyšné poldeci nedá (ako do v12.1). (4) **Obecný úrad** cigarety za pas nezdvojuje — nie sú z Pitky. (5) **Izolačka** sa nemení (uberá z doliatia po Pitke, v12.2); cigarety za pas neuberá.
 
 **Zmeny v12.2 oproti v12.1** (Michal 2026-11-11, schválené rovno na vypálenie: „Hráči začnú hru s troma poldeci. Na konci každej bitky sa im poldeci resetnú na max. Limit vykladania bude rovný presne počtu poldeci, ktoré majú na ruke. Za každú kartu, ktorú vyložia, sa im otočí jeden poldeci z plného na vypitý. Za pasovanie nebudú dostávať cigarety. Ak chcú dať 2, 3, 4 karty naraz… musia na to mať poldeci, ale každá ďalšia takto zahraná karta stojí toľko cigariet, koľko kariet navyše dávajú, čiže ak chcú dať dve karty, musia vypiť 2 poldeci a zaplatiť 1 cigaretu, ak chcú dať 3 karty, musia vypiť 3 poldeci a zaplatiť 2 cigarety a tak ďalej. Náradie, či už priznané alebo umiestnené pod postavu, nemíňa poldeci. Každú Pitku sa im resetne 1 poldeci z prázdneho na plný + aktívne akcie Poldeci.“; staré znenia v `docs/pravidla-historia.md`, sekcia v12.2):
 
@@ -986,11 +994,15 @@ limit vykladania = plné poldeci        (v12.2)
 
 Zhromaždenie končí, keď obaja pasujú (alebo za nich pasuje hra).
 
-**Pas:** kto pasuje, do najbližšej Pitky už nevykladá (súper vykladá sám). **Za pas nedostane nič**
-(v12.2, Michal 2026-11-11: „Za pasovanie nebudú dostávať cigarety.“) — nevyložené plné poldeci mu ostávajú
-na NA EX a ďalšie Zhromaždenie kola. Pasovanie ruší aj nevyužité ťahy navyše z Vypiť. Kto v Zhromaždení
-nemá čo vyložiť (nemá plný poldeci ani kartu, ktorú smie dať, kliatbu na priznanie ani Nástroj, na ktorý má
-cigarety), za toho hra pasuje (fajčiť sa v Zhromaždení nedá, §7). **Záverečná** (§13) ukončí vykladanie ako pas.
+**Pas:** kto pasuje, do najbližšej Pitky už nevykladá (súper vykladá sám) a dostane **1 cigaretu za každý
+plný poldeci** (v12.3, Michal 2026-11-11: „Keď hráč pasne, dostane toľko cigariet, koľko má nevypitých
+poldeci.“). Poldeci sa tým nevypijú — ostanú plné na NA EX a ďalšie Zhromaždenie kola; kto pasuje aj v ňom,
+dostane cigarety znova. Ráta sa počet plných poldeci v okamihu pasu (Vínko len cez poldeci, ktorý pridá).
+Cigarety za pas nie sú z Pitky — Obecný úrad ich nezdvojuje (§15). Pasovanie ruší aj nevyužité ťahy
+navyše z Vypiť. Kto v Zhromaždení nemá čo vyložiť (nemá plný poldeci ani kartu, ktorú smie dať, kliatbu na
+priznanie ani Nástroj, na ktorý má cigarety), za toho hra pasuje a cigarety za plné poldeci dostane tiež
+(fajčiť sa v Zhromaždení nedá, §7). **Záverečná** (§13) ukončí vykladanie ako pas, ale cigarety za ňu nedá;
+vynútený pas **Vychovávateľky** (§10) tiež nie.
 
 ---
 
@@ -1682,7 +1694,7 @@ Držiteľ má jeho **schopnosť** (nižšie). Nie je karta v línii (špaky za b
 | Farár | Odstráň jedno súperovo NA EX z karty. Jeho poldeci ostáva vypitý. | keď na niektorej karte leží súperovo (odkryté) NA EX — v Pitke aj v Zhromaždení ďalšej Pitky; súperovi sa poldeci odpíše ako vypitý (nerest NA EX ostáva, ako pri spálenej karte). Pri zrážke (Výtržník) ostane NA EX držiteľa a karta prestane byť Výtržníkom. |
 | Starosta | Do konca kola sú všetky aktívne akcie lokality posilnené. | keď je cieľom lokalita a v tomto kole ešte neplatí; **od použitia do konca kola** ×2 podľa Posilnenia (§6) na obe hrany (aj súperovu), násobí sa s ostatnými násobkami (Forsáž, NA EX). Platí pre **všetky** aktívne akcie hrán — v bitke aj v každej ďalšej Pitke kola (Hazard, Poškodenie pečene, Poldeci, Cigareta, Vízia, Obmedzenie); Pitky vyhodnotené pred použitím sa nemenia. Počet Pitiek nemení (posilnená akcia je stále jedna). |
 | Veterinár | Odhoď všetky priznané Cirhózy a Cirhózy na ruke. | keď má Cirhózu na ruke či priznanú; odhodiť = do odhadzovacieho balíčka (§17) |
-| Vychovávateľka | Súper v tomto Zhromaždení hneď pasuje. | len v Zhromaždení, vo svojom ťahu, keď súper ešte nepasoval: pas súpera je **vynútený** — v tomto Zhromaždení už nevyloží žiadnu kartu, aj keď ju držiteľ použije hneď prvým ťahom (cigarety za pas od v12.2 nie sú vôbec); držiteľ vykladá ďalej. Ďalšie Zhromaždenie (ďalšia Pitka) je bežné. |
+| Vychovávateľka | Súper v tomto Zhromaždení hneď pasuje a za pas nedostane cigarety. | len v Zhromaždení, vo svojom ťahu, keď súper ešte nepasoval: pas súpera je **vynútený** — v tomto Zhromaždení už nevyloží žiadnu kartu, aj keď ju držiteľ použije hneď prvým ťahom, a za tento pas **nedostane cigarety** (v12.3; plné poldeci mu ostanú); držiteľ vykladá ďalej. Ďalšie Zhromaždenie (ďalšia Pitka) je bežné — pas v ňom cigarety dáva. |
 | Autobusár | Z ponuky berieš kariet, koľko chceš, každú za jednu cigaretu; keď skončíš, môže pokračovať súper. | len pri braní z ponuky, keď ponuka nie je prázdna a hráč má cigaretu; jedným rozhodnutím vyberie karty (každá 1 cigareta, bez stropu 1–2 kariet a bez obmedzenia prvého ťahu obrancu), potom s braním končí a súper berie ďalej podľa §5 |
 | Hrobár | Vezmi si do ruky 1 kartu zo súperovho odhadzovacieho balíčka. | keď súperov odhadzovací balíček nie je prázdny (je verejný); karta odteraz patrí novému majiteľovi |
 
@@ -2023,8 +2035,8 @@ Nástroj s kartou (výklad Leadera). Pasovanie nevyužité ťahy navyše ruší.
 
 Na svojom ťahu v Zhromaždení smie hráč za **1 cigaretu** zahrať kartu z ruky
 ako **Záverečnú** — lícom dole na ktorýkoľvek koniec línie. Je to
-voliteľné a hráč tým v tomto Zhromaždení **končí s vykladaním** (ako pas); v jednom Zhromaždení
-teda najviac jedna.
+voliteľné a hráč tým v tomto Zhromaždení **končí s vykladaním** (ako pas, ale **bez cigariet za pas**,
+v12.3); v jednom Zhromaždení teda najviac jedna.
 
 - Je to bežné vyloženie: **stojí plný poldeci** ako každá karta (v12.2; Nástroj Záverečnou byť nemôže, do línie nejde), smie byť aj ďalšou
   kartou ťahu po Vypiť a platia pre ňu všetky pravidlá vykladania.
@@ -2457,8 +2469,9 @@ platí pre tím. Osobná je len **ruka** a **ťah**.
   línie. Karta je natočená k jeho tímu a patrí do partie tímu.
 - **Limit vykladania je tímový:** plné poldeci tímu (v12.2). Každá karta ktoréhokoľvek člena otočí
   plný poldeci tímu; karta navyše v ťahu (Vypiť) stojí cigaretu tímu.
-- **Pas hráča** (Michal 2026-11-02, Q1): pas člena len ukončí jeho vykladanie. Cigarety za pas od v12.2
-  nedostane ani tím. Zhromaždenie končí, keď skončili všetci štyria.
+- **Pas hráča** (Michal 2026-11-02, Q1): pas člena len ukončí jeho vykladanie a cigarety nedá. Keď pasuje
+  aj druhý člen, dostane tím **cigaretu za každý plný poldeci tímu** (v12.3). Zhromaždenie končí, keď
+  skončili všetci štyria.
 - **Záverečná:** najviac **jedna za tím**, za 1 cigaretu tímu; ukončí vykladanie
   **celého tímu** bez cigariet (Michal 2026-10-28).
 - **Priznanie:** Cirhózu z ruky smie priznať jej držiteľ; ide medzi priznané karty tímu.

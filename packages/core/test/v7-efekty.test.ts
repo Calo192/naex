@@ -366,8 +366,8 @@ describe("Zhromaždenie a Nástup (v7)", () => {
     const s = vZhromazdeni("zastavka", [[], [lezi(inst("autobusar"), 1)]], [inst("masiar"), inst("vandal")]);
     const z = { ...s, zhromazdenieStav: { ...s.zhromazdenieStav!, pasoval: [false, true] as [boolean, boolean] } };
     const po = apply(data, z, { type: "pass" }, 0).state;
-    // Pas od v12.2 cigarety nedáva — a Autobusár neberie nič.
-    expect(po.hraci[0].cigarety).toBe(s.hraci[0].cigarety);
+    // Pas dáva cigaretu za každý plný poldeci (v12.3) — Autobusár z nich neberie nič.
+    expect(po.hraci[0].cigarety).toBe(s.hraci[0].cigarety + s.hraci[0].poldeciPlne);
   });
 
   it("Starosta v línii od v9 Nástup nemá; Živnostník Nástup nemá ani v starej sade (Nástroj pod neho zanikol 2026-11-09); Anonymný alkoholik od v11.5 Nástup nemá", () => {

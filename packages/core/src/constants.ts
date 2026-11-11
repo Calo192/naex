@@ -80,9 +80,15 @@ export const KONSTANTY = {
   PRAH_DLHU_ZAKLAD: 1,
   /**
    * Ďalšia karta v tom istom ťahu (v12.2, Michal 2026-11-11): okrem plného poldeci stojí
-   * toľkoto cigariet — dve karty 1, tri karty 2. Cigarety za pas (2026-10-20 až v12.1) zanikli.
+   * toľkoto cigariet — dve karty 1, tri karty 2.
    */
   CENA_KARTY_NAVYSE: 1,
+  /**
+   * Pas (v12.3, Michal 2026-11-11: „Keď hráč pasne, dostane toľko cigariet, koľko má nevypitých
+   * poldeci.“): toľkoto cigariet za každý plný poldeci v okamihu pasu; poldeci ostanú plné.
+   * Od 2026-10-20 do v12.1 sa rátal zvyšok limitu, v12.2 pas nedával nič.
+   */
+  CIGARETY_ZA_PAS_NA_POLDECI: 1,
   /** Podloženie Nástroja pod kartu v línii (Náradie, Michal 2026-11-08, P4). */
   CENA_PODLOZENIA: 1,
   /** Záverečná (roadmapa #83, Michal 2026-10-23): karta lícom dole za cigaretu. */
@@ -323,13 +329,15 @@ export function vazniNaVyhru(lokalitCelkom: number): number {
 // v12.2 (Michal 2026-11-11) bez novej značky: vykladanie za poldeci — limit = plné poldeci, každá karta
 // do línie otočí jeden, n kariet v ťahu stojí n poldeci a n − 1 cigariet; 3 poldeci na štarte, po bitke
 // sa obnovia, po Pitke 1 zadarmo a akcie Poldeci; doliatie za cigarety a cigarety za pas zanikli.
+// v12.3 (Michal 2026-11-11) bez novej značky: pas znova dáva cigarety — toľko, koľko má hráč plných
+// poldeci, a tie ostanú plné; Vychovávateľka: súper za ten pas cigarety nedostane.
 export const VERZIA_PRAVIDIEL = "v12";
 /**
  * Presná verzia pravidiel vrátane dávky — hráč ju vidí na stránke Pravidlá, ktorá má
  * vždy odzrkadľovať správanie nasadenej hry (Michal 2026-10-31). Značka partií
  * (VERZIA_PRAVIDIEL) sa pri dávke nemení, táto áno.
  */
-export const VERZIA_PRAVIDIEL_PRESNA = "v12.2";
+export const VERZIA_PRAVIDIEL_PRESNA = "v12.3";
 /** Odkedy platí VERZIA_PRAVIDIEL_PRESNA — hráč ho vidí na stránke Pravidlá. */
 export const PRAVIDLA_PLATNE_OD = "2026-11-11";
 export type DlzkaHry = keyof typeof DLZKY_HRY;

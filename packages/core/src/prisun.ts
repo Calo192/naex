@@ -22,6 +22,7 @@ export const NAZVY_ZDROJOV_PRISUNU: Readonly<Record<ZdrojPrisunu, string>> = {
   policajtka: "Policajtka",
   postarka: "Poštárka",
   obecnyUrad: "Obecný úrad",
+  pas: "Za pas",
   pitka: "Po Pitke",
   obnova: "Po bitke",
   jogurt: "Jogurt",

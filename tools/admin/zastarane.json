@@ -704,14 +704,24 @@
       "pozn": "v12.1: Hrable — „Dedičstvo: Tvoj aktívny Odpor dáva v bitke poškodenie ako Pecka.“ (Michal 2026-11-11)"
     },
     {
-      "pojem": "cigarety za pas",
+      "pojem": "cigarety za pas za nevyložené karty (zvyšok limitu)",
       "vzory": [
-        "cigaret\\w* za pas",
-        "pas\\w*[^.!?]{0,40}(?:dostan|da)\\w* (?:\\w+ ){0,3}cigaret",
         "cigaret\\w* (?:\\w+ ){0,4}za (?:kazd\\w* )?kart\\w*[^.!?]{0,40}(?:smel|mohol)\\w* (?:\\w+ )?vylozi",
-        "pas\\w*[^.!?]{0,60}(?:dostal|dal)\\w* [^.!?]{0,15}cigaret"
+        "za (?:kazd\\w* )?nevylozen\\w* kart\\w*[^.!?]{0,30}cigaret",
+        "cigaret\\w*[^.!?]{0,30}za (?:kazd\\w* )?nevylozen\\w* kart"
       ],
-      "pozn": "v12.2 (Michal 2026-11-11): za pas sa nedostáva nič („Za pasovanie nebudú dostávať cigarety.“); Izolačka a Vychovávateľka majú nové znenie"
+      "pozn": "v12.3 (Michal 2026-11-11): za pas cigareta za každý plný poldeci v okamihu pasu, nie za zvyšok limitu (2026-10-20 až v12.1)"
+    },
+    {
+      "pojem": "pas bez cigariet",
+      "vzory": [
+        "za pas\\w* (?:\\w+ ){0,2}nic",
+        "pas\\w* bez cigaret",
+        "pas\\w* cigaret\\w* (?:ne|nie)",
+        "nic (?:za to|zan) nedost",
+        "cigaret\\w* za pas[^.!?]{0,20}(?:zanik|nie su|uz nie)"
+      ],
+      "pozn": "v12.3 (Michal 2026-11-11: „Keď hráč pasne, dostane toľko cigariet, koľko má nevypitých poldeci.“): pas znova dáva cigarety, plné poldeci ostanú plné; v12.2 pas nedával nič. Bez cigariet je len pas Vychovávateľky a Záverečná"
     },
     {
       "pojem": "doliatie za 2 cigarety",

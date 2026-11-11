@@ -16,6 +16,7 @@ import { join } from "node:path";
 import WebSocket from "ws";
 import type { ActionSums, CardInstance, CenyKliatob, ClientState, DopadyNahladu, Command, DruhMarkera, Event, GameData, PlacedCard, PlayerId, Pohlavie, Rod, Slot, StarsiVerejne, Stupen, VerejnyStav, Zdvih } from "@naex/core";
 import {
+  cigaretyZaPas,
   naexZaPitku,
   stavZavislosti,
   textNeresti,
@@ -900,7 +901,7 @@ function moznosti(v: ClientState): string[] {
     }
     case "zhromazdenie": {
       const z = v.zhromazdenieStav;
-      c({ type: "pass" }, "pasovať (do Pitky už nevykladáš, súper vykladá sám; za pas nič nedostaneš — v12.2; plné poldeci ti ostanú)");
+      c({ type: "pass" }, `pasovať (do Pitky už nevykladáš, súper vykladá sám; dostaneš ${cigaretyZaPas(v, ja)} cig. — cigaretu za každý plný poldeci; plné poldeci ti ostanú na NA EX a ďalšie Zhromaždenie)`);
       // V Zhromaždení sa nefajčí (§7) — motor smoke odmietne, preto ho ani neponúkať.
       if (zakazVypit(v)) out.push("(Kostol: v ťahu sa smie vyložiť len 1 karta)");
       // v12.2: Vypiť = ďalšia karta v ťahu — treba plný poldeci na túto aj ďalšiu kartu a cigaretu.

@@ -229,6 +229,21 @@ export function skoncilVykladanie(z: Pick<ZhromazdenieStav, "pasoval" | "skoncil
   return z.skoncili?.[kto] ?? z.pasoval[timMiesta(kto)];
 }
 
+/**
+ * Cigarety, ktoré miesto `kto` dostane, keď teraz pasuje (v12.3, §6) — jeden výpočet pre motor,
+ * náhľad pasu aj bota: cigareta za každý plný poldeci, len skutočné poldeci (Vínko ich pridá ako
+ * poldeci, nie ako limit). V 2 na 2 dostane tím cigarety až za pas druhého člena (Michal 2026-11-02, Q1).
+ */
+export function cigaretyZaPas(
+  s: { readonly hraci: readonly Pick<PlayerState, "poldeciPlne">[]; readonly zhromazdenieStav: Pick<ZhromazdenieStav, "skoncili"> | null },
+  kto: Miesto,
+): number {
+  const z = s.zhromazdenieStav;
+  if (z === null) return 0;
+  if (z.skoncili !== undefined && !z.skoncili[partnerMiesta(kto)]) return 0;
+  return Math.max(0, s.hraci[timMiesta(kto)]?.poldeciPlne ?? 0) * KONSTANTY.CIGARETY_ZA_PAS_NA_POLDECI;
+}
+
 export interface PitkaStav {
   readonly naTahu: PlayerId;
   readonly hotovy: readonly [boolean, boolean];
@@ -612,7 +627,7 @@ export type Command =
   | { readonly type: "draftStop" }
   | { readonly type: "place"; readonly uid: number; readonly target: CielVykladania }
   // Záverečná (roadmapa #83): za cigaretu karta lícom dole na koniec línie;
-  // hráč tým v tomto Zhromaždení končí s vykladaním (cigarety za pas nedostane).
+  // hráč tým v tomto Zhromaždení končí s vykladaním (cigarety za pas nedostane — ani v12.3).
   | { readonly type: "zaverecna"; readonly uid: number; readonly target: "vlastna" | "superova" }
   | { readonly type: "pass" }
   | { readonly type: "naex"; readonly uid: number }
@@ -668,7 +683,7 @@ export type Command =
 export type CielVykladania = "vlastna" | "superova" | "priznanie" | "dedicstvo";
 
 /** Odkiaľ prišli cigarety; „platba“ je hráčova vlastná útrata (šenok, fajčenie…), prísun to nie je. */
-export type ZdrojCigariet = "akcie" | "obmedzenie" | "obecnyUrad" | "porazeny" | "fajciar" | "vypalne" | "sofer" | "podvodnik" | "policajtka" | "postarka" | "platba";
+export type ZdrojCigariet = "akcie" | "obmedzenie" | "obecnyUrad" | "pas" | "porazeny" | "fajciar" | "vypalne" | "sofer" | "podvodnik" | "policajtka" | "postarka" | "platba";
 
 /**
  * Odkiaľ prišiel plný poldeci; „platba“ = vlastné minutie, ktoré si hráč zvolil (vyložená karta,
@@ -3620,10 +3635,19 @@ function cmdPass(s: MutState, data: GameData, kto: Miesto, events: Event[]): voi
       return;
     }
   }
-  // Pas do Pitky už nič nedáva (v12.2, Michal 2026-11-11: „Za pasovanie nebudú dostávať cigarety.“);
-  // nevyložené plné poldeci ostávajú na ďalšie Zhromaždenie. Súper vykladá sám.
+  // Pas (v12.3, Michal 2026-11-11): cigareta za každý plný poldeci — aj keď pasuje hra za hráča. Poldeci
+  // ostanú plné na NA EX a ďalšie Zhromaždenie (odmena za šetrenie). Pitka ich nezdvojuje (Obecný úrad).
+  // Súper vykladá sám.
+  const ziska = cigaretyZaPas(s as GameState, kto);
   z.pasoval[p] = true;
-  events.push({ type: "log", text: `Hráč ${p + 1} pasuje do Pitky.` });
+  zmenCigarety(s, p, "pas", ziska, events);
+  events.push({
+    type: "log",
+    text:
+      ziska > 0
+        ? `Hráč ${p + 1} pasuje do Pitky a za ${pocet(s.hraci[p].poldeciPlne, "plný poldeci", "plné poldeci", "plných poldeci")} dostáva ${cigariet(ziska)}.`
+        : `Hráč ${p + 1} pasuje do Pitky.`,
+  });
   posunTahZhromazdenia(s, data, p, events);
 }
 
@@ -4766,9 +4790,10 @@ function cmdSchopnostVazna(s: MutState, data: GameData, cmd: { elderId: string; 
     }
     case "vychovavatelka": {
       const z = s.zhromazdenieStav as DeepMutable<ZhromazdenieStav>;
+      // Nútený pas bez cigariet (v12.3, Michal 2026-11-11) — plné poldeci súperovi ostanú.
       z.pasoval[opp] = true;
       z.navyse[opp] = 0;
-      events.push({ type: "log", text: `${kto} — hráč ${opp + 1} v tomto Zhromaždení hneď pasuje.` });
+      events.push({ type: "log", text: `${kto} — hráč ${opp + 1} v tomto Zhromaždení hneď pasuje a za pas nedostane cigarety.` });
       break;
     }
     case "autobusar": {

@@ -8,7 +8,7 @@ import cardsJson from "../data/cards.json";
 import eldersJson from "../data/elders.json";
 import scorecardsJson from "../data/scorecards.json";
 import type { Command, Event, GameState } from "../src/index.ts";
-import { apply, eventsFor, loadGameData, naTahu, setupGame, tahBota } from "../src/index.ts";
+import { apply, eventsFor, legalCommands, loadGameData, naTahu, rngInt, rngSeed, setupGame, tahBota } from "../src/index.ts";
 
 const data = loadGameData(cardsJson, eldersJson, scorecardsJson);
 
@@ -27,9 +27,29 @@ function partia(seed: number): { readonly pred: GameState; readonly cmd: Command
   return out;
 }
 
+/** Partia náhodných hráčov (náhodný legálny ťah) — odpovedajú na NA EX častejšie než boti. */
+function nahodnaPartia(seed: number): { readonly pred: GameState; readonly cmd: Command; readonly events: readonly Event[] }[] {
+  let s = setupGame(data, seed, { lokalit: 3 });
+  let rng = rngSeed(seed ^ 0x27);
+  const out: { pred: GameState; cmd: Command; events: readonly Event[] }[] = [];
+  for (let n = 0; n < 20000 && s.koniec === null; n++) {
+    const kto = naTahu(s);
+    if (kto === null) break;
+    const cmds = legalCommands(data, s, kto);
+    const [i, r2] = rngInt(rng, cmds.length);
+    rng = r2;
+    const cmd = cmds[i] as Command;
+    const r = apply(data, s, cmd, kto);
+    out.push({ pred: s, cmd, events: r.events });
+    s = r.state;
+  }
+  return out;
+}
+
 describe("odpoveď na NA EX", () => {
-  // Semienka s odpoveďou lícom dole cez ťah (v11.1; bot po dobratí do ruky, v11.9: 7 a 8; v12.2: 16).
-  const partie = [3, 7, 8, 16, 21].map(partia);
+  // Semienka s odpoveďou lícom dole cez ťah (v11.1; bot po dobratí do ruky, v11.9: 7 a 8; v12.2: 16). V12.3 boti
+  // na NA EX odpovedajú oba naraz zriedka (v 70 partiách ani raz) — odpoveď lícom dole cez ťah dá náhodná partia 5.
+  const partie = [...[3, 7, 8, 16, 21].map(partia), nahodnaPartia(5)];
   const tahy = partie.flat();
 
   it("každá odpoveď sa ohlási udalosťou — vynechanie hneď, karta lícom dole až pri otočení (v9.2)", () => {

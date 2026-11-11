@@ -22,8 +22,9 @@ describe("odpoveď na NA EX ohlási zmenu prevahy a počtu Pitiek", () => {
   it("hláška práve vtedy, keď sa prevaha v kraji či počet Pitiek zmení", () => {
     let odpovedi = 0;
     let hlasky = 0;
-    // Odpoveď stojí od v11.16 plný poldeci — náhodní hráči odpovedajú zriedka, preto viac partií.
-    for (const seed of [1, 2, 3, 5, 8, 13, 21, 34, 55, 89, 144, 233, 377, 610, 987, 1597, 2584, 4181, 6765, 10946, 17711, 28657]) {
+    // Odpoveď stojí od v11.16 plný poldeci — náhodní hráči odpovedajú zriedka, preto viac partií
+    // (v12.3: 30444 a 30518 s tromi odpoveďami).
+    for (const seed of [1, 2, 3, 5, 8, 13, 21, 34, 55, 89, 144, 233, 377, 610, 987, 1597, 2584, 4181, 6765, 10946, 17711, 28657, 30444, 30518]) {
       let state: GameState = setupGame(data, seed);
       let rng = rngSeed(seed ^ 0x27);
       for (let i = 0; state.koniec === null && i < 20000; i++) {

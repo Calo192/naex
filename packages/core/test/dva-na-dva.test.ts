@@ -140,7 +140,7 @@ describe("Zhromaždenie 2 na 2", () => {
     expect(() => apply(data, s, { type: "place", uid: karta?.uid ?? -1, target: "vlastna" }, partner)).toThrow();
   });
 
-  it("pas člena aj tímu je bez cigariet (v12.2)", () => {
+  it("pas člena cigarety nedá, tím ich dostane za plné poldeci až po pase druhého (v12.3)", () => {
     let s = vZhromazdeni(3);
     const u = s.utocnik;
     const u1 = miestoNaTahu(s) as Miesto;
@@ -151,9 +151,12 @@ describe("Zhromaždenie 2 na 2", () => {
     // O1 vyloží, U1 už nehrá — na ťahu je U2, potom O2.
     s = vylozPijana(s);
     expect(miestoNaTahu(s)).toBe(partnerMiesta(u1));
+    const plne = s.hraci[u].poldeciPlne;
+    expect(plne).toBeGreaterThan(0);
     s = apply(data, s, { type: "pass" }, partnerMiesta(u1)).state;
-    // v12.2: pas cigarety nedáva — ani tímu, ktorý nevyložil nič.
-    expect(s.hraci[u].cigarety).toBe(cig);
+    // v12.3: tím dostane cigaretu za každý svoj plný poldeci (spoločný tímu); poldeci ostanú plné.
+    expect(s.hraci[u].cigarety).toBe(cig + plne);
+    expect(s.hraci[u].poldeciPlne).toBe(plne);
     expect(s.zhromazdenieStav?.pasoval[u]).toBe(true);
     expect(miestoNaTahu(s)).toBe(partnerMiesta(kapitan(s, opponentOf(u))));
   });

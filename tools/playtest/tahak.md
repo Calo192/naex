@@ -1,4 +1,4 @@
-# Ťahák — platné pravidlá NA EX! (v12.2 vykladanie za poldeci: limit = plné poldeci, každá karta jeden otočí, ďalšia karta v ťahu aj cigareta, 3 poldeci na štarte, po bitke všetky plné, po Pitke 1 zadarmo + akcie Poldeci, pas bez cigariet, doliatie zaniklo; v12.1 Odpor aktívny len bez spoja (štít proti NA EX), NA EX Odpor nechá tak, Hrable: aktívny Odpor = Pecka, v12 akcie navyše mení celý Nástroj aj Forsáž (zo spoja aj z Energeťáka), Traktorista Pecka s prevahou, Pasca Rana za každú priloženú kartu, Výherný automat Dlh v každej Pitke, Kapybara Furt, Predavačka navrch balíčka, v11.21 po bitke 2 karty bez ohľadu na ruku, Puška a Energeťák posilnia akcie aktívne po NA EX (×4), v11.20 hodnota stupňa 1 / 2 / 3 a reťaz premien (Školitelia, potom Nástroje), pojem Ponuka (predtým šenok), v11.19 Dohadzovačka len z konca kraja, v11.18 Vedúcko Podporou, Snúbenica, Traktorista a Miňištrant, v11.17 NA EX × Odpor a Posilnenie, Kapybara, Telefón, Krokodíl a hrany Náradia, v11.16 Vypiť len s limitom, pas bez ohľadu na ruku, Degustátorka hneď, odpoveď na NA EX za poldeci, Nástroj len pod svoje karty, Školiteľ aj Zviera, v11.15 Benzínka o 1 lacnejšie, v11.14 frakcie, Preškolenie a podloženie Nástrojov, v11.13 Lokality, v11.12 Reči na súperovom teplomere, zajatie a presvedčenie, identita kariet, Kostol na konci línie, každý Hazard je Dlh, 2026-11-10, Zrejúca; sada = cards.json v master)
+# Ťahák — platné pravidlá NA EX! (v12.3 pas dá cigaretu za každý plný poldeci (poldeci ostanú plné), Vychovávateľka: súper za pas nedostane cigarety; v12.2 vykladanie za poldeci: limit = plné poldeci, každá karta jeden otočí, ďalšia karta v ťahu aj cigareta, 3 poldeci na štarte, po bitke všetky plné, po Pitke 1 zadarmo + akcie Poldeci, doliatie zaniklo; v12.1 Odpor aktívny len bez spoja (štít proti NA EX), NA EX Odpor nechá tak, Hrable: aktívny Odpor = Pecka, v12 akcie navyše mení celý Nástroj aj Forsáž (zo spoja aj z Energeťáka), Traktorista Pecka s prevahou, Pasca Rana za každú priloženú kartu, Výherný automat Dlh v každej Pitke, Kapybara Furt, Predavačka navrch balíčka, v11.21 po bitke 2 karty bez ohľadu na ruku, Puška a Energeťák posilnia akcie aktívne po NA EX (×4), v11.20 hodnota stupňa 1 / 2 / 3 a reťaz premien (Školitelia, potom Nástroje), pojem Ponuka (predtým šenok), v11.19 Dohadzovačka len z konca kraja, v11.18 Vedúcko Podporou, Snúbenica, Traktorista a Miňištrant, v11.17 NA EX × Odpor a Posilnenie, Kapybara, Telefón, Krokodíl a hrany Náradia, v11.16 Vypiť len s limitom, pas bez ohľadu na ruku, Degustátorka hneď, odpoveď na NA EX za poldeci, Nástroj len pod svoje karty, Školiteľ aj Zviera, v11.15 Benzínka o 1 lacnejšie, v11.14 frakcie, Preškolenie a podloženie Nástrojov, v11.13 Lokality, v11.12 Reči na súperovom teplomere, zajatie a presvedčenie, identita kariet, Kostol na konci línie, každý Hazard je Dlh, 2026-11-10, Zrejúca; sada = cards.json v master)
 
 Spoločný ťahák AI hráčov — playtester (Zrejúca) ho číta z master, protihráč na
 Vypálenej z vetvy `vypalena` (tam platí jej verzia pravidiel). Podrobne v `docs/PRAVIDLA.md` (zmeny v jeho úvode). Pri
@@ -62,8 +62,10 @@ rozpore s `docs/PRAVIDLA.md` platí `docs/PRAVIDLA.md` a rozpor zapíš do
   a ďalší za každú tvoju aktívnu akciu Poldeci v línii (Jogurt +1). **Maximum** = 3 + barter + Krčmárka + Vínko.
   NA EX stojí plný poldeci (leží na karte do bitky — v ďalšom Zhromaždení kola ho nemáš). Priznanie a Nástroj
   (Dedičstvo aj podloženie) poldeci nemíňajú. Súperova **Degustátorka**, ktorá ti vyžerie plný poldeci, ti limit zníži hneď.
-- **Pas** (`pass`): do Pitky už nevykladáš; **cigarety za pas od v12.2 nie sú** — nevyložené plné poldeci
-  ti ostanú na NA EX a ďalšie Zhromaždenie kola.
+- **Pas** (`pass`, v12.3): do Pitky už nevykladáš a dostaneš **1 cigaretu za každý plný poldeci**, ktorý
+  máš v okamihu pasu — aj keď pasuje hra za teba. Poldeci sa tým **nevypijú**: ostanú ti plné na NA EX
+  a ďalšie Zhromaždenie kola; keď pasuješ aj v ňom, dostaneš cigarety znova. Šetriť poldeci sa teda oplatí.
+  **Záverečná** ukončí vykladanie ako pas, ale **bez cigariet**. Obecný úrad cigarety za pas nezdvojuje.
 - **Názvoslovie:** línia = celý rad; lokalita ju delí na dva **kraje**; línia má dva
   **konce**, žiaden nie je tvoj. **Tvoja partia** = všetky tvoje karty, kdekoľvek v línii.
   Akcie: Hazard (v8.2, kľúč v príkazoch a súčtoch ostáva `Dlh`; každá akcia = 1 Dlh),
@@ -154,7 +156,7 @@ rozpore s `docs/PRAVIDLA.md` platí `docs/PRAVIDLA.md` a rozpor zapíš do
   **Starosta:** **do konca kola** sú všetky aktívne akcie lokality **posilnené** (obom; v bitke aj v ďalších
   Pitkách — aj Hazard, pečeň, Poldeci, Cigareta, Vízia, Obmedzenie). **Veterinár:** odhoď všetky priznané Cirhózy a Cirhózy na ruke
   (do odhadzovacieho balíčka). **Vychovávateľka** (len v Zhromaždení): súper v tomto Zhromaždení hneď pasuje
-  (**už nevyloží nič**, aj keď ju použiješ prvým ťahom); ty vykladáš ďalej. **Autobusár** (len pri braní z ponuky): ber z ponuky, koľko chceš, **každú kartu za 1
+  (**už nevyloží nič**, aj keď ju použiješ prvým ťahom) **a za pas nedostane cigarety**; ty vykladáš ďalej. **Autobusár** (len pri braní z ponuky): ber z ponuky, koľko chceš, **každú kartu za 1
   cigaretu** (`uids`); potom s braním končíš a pokračuje súper. **Hrobár:** 1 karta zo súperovho
   odhadzovacieho balíčka do ruky (`uid`).
 - **Identita kariet (v11.5):** **Sypač** (Podpora, Školiteľ): keď sa priložením stretne s tvojou kartou, tá má do konca

@@ -8,7 +8,8 @@ import eldersJson from "../data/elders.json";
 import scorecardsJson from "../data/scorecards.json";
 import {
   apply,
-  balicekMiesta,
+  balicekMiesta,
+  cigaretyZaPas,
   clenMiesta,
   kapitan,
   kartyVRukach,
@@ -206,17 +207,21 @@ describe("viewFor 2 na 2 — Zhromaždenie a Pitka", () => {
     for (const m of miestaHry(s)) overPohlad(s, m);
   });
 
-  it("pas člena ani tímu cigarety nedá (v12.2)", () => {
+  it("pas člena cigarety nedá, pas tímu áno — náhľad z pohľadu sedí s motorom (v12.3)", () => {
     let s = vZhromazdeni(3);
     const u1 = miestoNaTahu(s) as Miesto;
     const cig = s.hraci[timMiesta(u1)].cigarety;
+    expect(cigaretyZaPas(viewFor(data, s, u1), u1)).toBe(0);
     s = apply(data, s, { type: "pass" }, u1).state;
     expect(s.hraci[timMiesta(u1)].cigarety).toBe(cig);
     s = vyloz(s);
     const u2 = partnerMiesta(u1);
     expect(miestoNaTahu(s)).toBe(u2);
+    const plne = s.hraci[timMiesta(u1)].poldeciPlne;
+    expect(plne).toBeGreaterThan(0);
+    expect(cigaretyZaPas(viewFor(data, s, u2), u2)).toBe(plne);
     s = apply(data, s, { type: "pass" }, u2).state;
-    expect(s.hraci[timMiesta(u1)].cigarety).toBe(cig);
+    expect(s.hraci[timMiesta(u1)].cigarety).toBe(cig + plne);
   });
 });
 
