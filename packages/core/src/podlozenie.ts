@@ -57,7 +57,7 @@ export function hranaMaCoRobit(data: GameData, hostitel: PlacedCard, hrana: Hran
   return pocetPoPreskoleni(data, hostitel, hrana.z, line) > 0;
 }
 
-/** Akcie navyše karty (pečať) — Nástroj ich mení ako hrany (v11.22). */
+/** Akcie navyše karty (pečať) — Nástroj ich mení ako hrany (v12). */
 function akcieNavyse(data: GameData, pl: PlacedCard): Action[] {
   return efektyNavyse(defOf(data, pl.card)).flatMap((e) => e.akcie);
 }

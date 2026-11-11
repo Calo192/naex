@@ -6,7 +6,7 @@ Preklad zvyšku `apps/web/src/i18n/pl.json` (781 kľúčov: stôl, Detail partie
 
 1. **`pravidla` › `kliatby.p6`** — „za Dlh, ktorý nemá čo spáliť, dostaneš 1 špak“. Podľa pravidiel (a `starsi.p26`: „spália priznaný Dlh, inak dajú špak“) ide o **Robotu**, ktorá nemá čo spáliť. V PL je preložený zamýšľaný význam: *za Robotę, która nie ma czego spalić, dostajesz 1 peta*. Opraviť slovenčinu?
 2. **`napovedy` › `presvedcenie`** — „Reči na červenú a päť navrch – a je presvedčený… Tvoje reči pri ňom zhoria, priazeň ti ostane.“ Pravidlá (`ciel-a-senok.p18`, pojem `presvedcenie`) hovoria: **3 body** hádky, reči na **celom** teplomere a **reči, strach aj priazeň ostávajú**. PL prekladá nápovedu verne (aj s rozporom); treba opraviť slovenský zdroj v `packages/core/data/vyucba/napovedy.json` a preklad potom upraviť.
-3. **Výučba „tvoja strana“** — `vyucba` › `k-ciel` („aby Pecka bola vľavo, na tvojej strane“) a `k-zh-bot1` („línia – tvoja vľavo, jeho vpravo“) sú v rozpore so zásadou „moja/súperova strana línie neexistuje“ (Michal 2026-11-08). PL je verné originálu; ak sa výučba pri v11.22 prepisuje, zvážiť aj toto.
+3. **Výučba „tvoja strana“** — `vyucba` › `k-ciel` („aby Pecka bola vľavo, na tvojej strane“) a `k-zh-bot1` („línia – tvoja vľavo, jeho vpravo“) sú v rozpore so zásadou „moja/súperova strana línie neexistuje“ (Michal 2026-11-08). PL je verné originálu; ak sa výučba pri v12 prepisuje, zvážiť aj toto.
 
 ## Nové pojmy (nie sú v glosári)
 

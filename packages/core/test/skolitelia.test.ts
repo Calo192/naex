@@ -60,7 +60,7 @@ const VEDUCKO_PODPORA = "Podpora: Preškolenie {Robota}→{Pecka}.";
 const SYPAC = "Podpora: Preškolenie {Rana}→{Pecka}.";
 const AA = "Podpora: Preškolenie {PoškodeniePečene}→{Viera}.";
 const TIPER = "Konflikt: Preškolenie {Cigareta}→{Dlh}.";
-/** Traktorista od v11.22 (Michal 2026-11-11): Pecka s prevahou, žiadne Dlhy (v11.18–v11.21 Dlh bez prevahy). */
+/** Traktorista od v12 (Michal 2026-11-11): Pecka s prevahou, žiadne Dlhy (v11.18–v11.21 Dlh bez prevahy). */
 const TRAKTORISTA = "Bitka: S prevahou v jeho kraji {Pecka}.";
 
 const lezi = (card: CardInstance, playedBy: PlayerId, x: Partial<PlacedCard> = {}): PlacedCard => ({ card, playedBy, ...x });
@@ -113,7 +113,7 @@ describe("budúca sada: 8 zmenených Občanov (test/data/obcania-kategorie.json 
     expect(navyse("dievcina_na_vydaj")).toEqual([{ spustac: "Podpora", tag: null, akcie: ["Povera"] }]);
     expect(navyse("opatrovatelka")).toEqual([{ spustac: "Spoločník", tag: "Pamätník", akcie: ["Robota"] }]);
     expect(navyse("sofer")).toEqual([{ spustac: "Bitka", tag: null, akcie: ["Pecka", "Rana"], podmienka: "Ak si v tomto kole nedal NA EX" }]);
-    // Traktorista v11.22: zo zoznamu z 2026-11-08 ostala len Pecka s prevahou (Dlh bez prevahy zanikol).
+    // Traktorista v12: zo zoznamu z 2026-11-08 ostala len Pecka s prevahou (Dlh bez prevahy zanikol).
     expect(navyse("traktoristka")).toEqual([{ spustac: "Bitka", tag: null, akcie: ["Pecka"], podmienka: "S prevahou v jeho kraji" }]);
     expect(efektyNavyse({ effectText: zoznam.karty.find((k) => k.id === "traktoristka")!.effect_text, tags: ["Občan"] })).toHaveLength(2);
   });
@@ -533,7 +533,7 @@ describe("Šofér: Bitka: Ak si v tomto kole nedal NA EX {Pecka} {Rana}", () => 
   });
 });
 
-describe("Traktorista: Bitka: S prevahou v jeho kraji {Pecka} (v11.22, Michal 2026-11-11)", () => {
+describe("Traktorista: Bitka: S prevahou v jeho kraji {Pecka} (v12, Michal 2026-11-11)", () => {
   const bezPrevahy = (t: CardInstance): GameState["strany"] => [[lezi(t, 0), lezi(inst("masiar"), 1), lezi(inst("vandal"), 1)], []];
   /** Pecka navyše Traktoristu v súčtoch hráča 0 (zdroj = jeho karta). */
   const peckaNavyse = (s: GameState, uid: number): number =>
@@ -565,7 +565,8 @@ describe("Traktorista: Bitka: S prevahou v jeho kraji {Pecka} (v11.22, Michal 20
 // --- Výučba a boti na budúcej sade ---------------------------------------------------------
 
 describe("budúca sada v hre", () => {
-  it("výučba Prvá hra prejde aj na budúcej sade — koniec 49 : 17 ako na dnešnej (prvé kolo bez Hazardu 2026-11-10; v11.20 57 : 16)", () => {
+  // Výučba sa prestavuje po v12 (Michal 2026-11-11: „Vypáľ zatiaľ, čo je, výučba sa k tomu pridá dodatočne“).
+  it.skip("výučba Prvá hra prejde aj na budúcej sade — koniec 49 : 17 ako na dnešnej (prvé kolo bez Hazardu 2026-11-10; v11.20 57 : 16)", () => {
     const scenar = scenarJson as unknown as ScenarVyucby;
     expect(overScenar(buduca, scenar)).toBeNull();
     const koniec = prehrajVyucbu(buduca, scenar, scenar.kroky.length).koniec;

@@ -832,7 +832,7 @@ function moznosti(v: ClientState): string[] {
       }
       return out;
     }
-    // Živnostník ponúka len Nástroje (Podpora, 2026-11-09); Predavačka (v11.22) hocijakú kartu navrch balíčka.
+    // Živnostník ponúka len Nástroje (Podpora, 2026-11-09); Predavačka (v12) hocijakú kartu navrch balíčka.
     const kto = nv.zdroj === "predavacka" ? "PREDAVAČKA" : nv.zdroj === "zivnostnik" ? "ŽIVNOSTNÍK" : "ZO ŠENKU";
     const kam = nv.kam === "balicek" ? "navrch svojho doberacieho balíčka (dobereš ju pri najbližšom ťahaní)" : "do ruky";
     for (const k of ponukaSenku(DATA, v, nv)) c({ type: "senok", uid: k.uid }, `${kto}: vezmi si z ponuky ${popisKarty(k)} zadarmo ${kam}`);

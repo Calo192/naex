@@ -590,7 +590,7 @@ export interface KrokPremeny {
 export interface PremenyKarty {
   /**
    * Vytlačená akcia → výsledok celej reťaze (Školitelia, potom Nástroje) — na hranách aj v akciách
-   * navyše (v11.22, Michal 2026-11-11: „aj akcia v efekte … sa dala zmeniť preškolením alebo Nástrojom“).
+   * navyše (v12, Michal 2026-11-11: „aj akcia v efekte … sa dala zmeniť preškolením alebo Nástrojom“).
    */
   readonly hrany: ReadonlyMap<Action, PremenaAkcie>;
   /** Všetky premeny karty v poradí reťaze: Školitelia, potom Nástroje. */
@@ -657,7 +657,7 @@ export function premenyNastrojov(data: GameData, pl: Pick<PlacedCard, "podlozene
  * potom Furt susedov, skôr ten, ktorý leží bližšie k lokalite (ležal skôr; karty oboch hráčov, aj
  * lícom dole ako Furt efekty akcií) — potom Nástroje pod kartou v poradí podloženia. Každá premena
  * pracuje na výsledku predošlej. Lokalita ani karta v strede nič nedostane. Reťaz mení hrany aj
- * akcie navyše (v11.22).
+ * akcie navyše (v12).
  */
 export function premenyVLinii(data: GameData, line: Pick<LineState, "lokalita" | "strany">): ReadonlyMap<number, PremenyKarty> {
   const skol = new Map<number, KrokPremeny[]>();
@@ -1522,7 +1522,7 @@ export function evaluateLine(data: GameData, line: LineState): LineEval {
 }
 
 /**
- * Akcie navyše karty tak, ako ich mení karta sama (v11.22, Michal 2026-11-11: „Chcem, aby aj akcia
+ * Akcie navyše karty tak, ako ich mení karta sama (v12, Michal 2026-11-11: „Chcem, aby aj akcia
  * v efekte … sa dala zmeniť preškolením alebo Nástrojom. V prípade, ak postava dostane Forsáž, akcia
  * v efekte sa posilní tiež.“ — „Áno, celý Nástroj“): reťaz premien ako na hranách (Školitelia, potom
  * Nástroje), potom Forsáž (zo spoja aj z Energeťáka — výklad Leadera 2026-11-11, Michal nepotvrdil)
@@ -1579,7 +1579,7 @@ function kratSlovami(data: GameData, line: LineState, pl: PlacedCard, e: EfektNa
     case "sofer":
       return kolo.naexVKole[p] ? 0 : 1;
     case "traktoristka":
-      // v11.22 (Michal 2026-11-11): „chcem, aby dával Pecku, keď má prevahu v kraji“ — prevaha v kraji,
+      // v12 (Michal 2026-11-11): „chcem, aby dával Pecku, keď má prevahu v kraji“ — prevaha v kraji,
       // kde leží, počas bitky; línia bez lokality kraje nemá.
       if (line.lokalita === null) return 0;
       return prevahaStran(data, line.strany)[stranaKarty(line, pl)] === p ? 1 : 0;
@@ -1623,7 +1623,7 @@ export function dlhyPoslednejPitky(data: GameData, line: LineState): DlhPosledne
 }
 
 /**
- * Dlhy, ktoré dáva motor rovno z Nástrojov v Dedičstve (Výherný automat, v11.22, Michal 2026-11-11:
+ * Dlhy, ktoré dáva motor rovno z Nástrojov v Dedičstve (Výherný automat, v12, Michal 2026-11-11:
  * „prah o 1 vyšší, ale každú Pitku 1 Dlh“) — za Pitku so spúšťačom `spustac`: „Pitka“ v každej,
  * „Posledná Pitka kola“ (staré sady) len v poslednej. Obecný úrad násobí volajúci.
  */
@@ -1647,11 +1647,11 @@ export function dlhyZDedicstva(data: GameData, dedicstvo: readonly { readonly de
 function kratVDedicstve(line: LineState, p: PlayerId, defId: string, e: EfektNavyse, zruseneOdporomSupera: number): number {
   const kolo = line.kolo;
   if (kolo === undefined || e.dedicstvo !== true) return 0;
-  // Výherný automat (v11.22): Dlh v každej Pitke — dá ho motor (dlhyZDedicstva), pečať len ukazuje, že platí.
+  // Výherný automat (v12): Dlh v každej Pitke — dá ho motor (dlhyZDedicstva), pečať len ukazuje, že platí.
   if (e.spustac === "Pitka") return e.podmienka === undefined ? 1 : 0;
   if (e.spustac === "Posledná Pitka kola") return kolo.poslednaPitka ? 1 : 0;
   if (e.spustac !== "Bitka") return 0;
-  // Pasca (v11.22, Michal 2026-11-11: „za KAŽDÚ priloženú kartu od súpera k mojej karte mu dám Ranu
+  // Pasca (v12, Michal 2026-11-11: „za KAŽDÚ priloženú kartu od súpera k mojej karte mu dám Ranu
   // navyše“): každá súperova karta priložená k tvojej v tomto kole, aj lícom dole — raz, keď ležala.
   // Starý text („Ak súper … priložil“) platí raz.
   if (defId === "pasca") return /Za každú/iu.test(e.podmienka ?? "") ? kolo.prilozeniaKu[p] : Math.min(1, kolo.prilozeniaKu[p]);

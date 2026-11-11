@@ -418,7 +418,8 @@ describe("návrat Nástroja a hra s podkladaním", () => {
     expect(podSuperovu).toBe(0);
   }, 240000);
 
-  it("výučba prejde aj so sadou s hranami (Nástroje bez slotov, varianty 0/0)", () => {
+  // Výučba sa prestavuje po v12 (Michal 2026-11-11: „Vypáľ zatiaľ, čo je, výučba sa k tomu pridá dodatočne“).
+  it.skip("výučba prejde aj so sadou s hranami (Nástroje bez slotov, varianty 0/0)", () => {
     const scenar = scenarJson as unknown as ScenarVyucby;
     expect(prehrajVyucbu(dataH, scenar, scenar.kroky.length).koniec?.vitaz).toBe(0);
   });

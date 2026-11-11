@@ -1672,7 +1672,7 @@
     {
       "id": "16.karta.pasca",
       "paragraf": "16. Výklad kariet",
-      "pravidlo": "Pasca (Dedičstvo: Bitka, v11.22): za každú kartu, ktorú súper v tomto kole priložil k tvojej, 1 Rana navyše (do v11.21 raz; v9.1 Rana, predtým Pecka).",
+      "pravidlo": "Pasca (Dedičstvo: Bitka, v12): za každú kartu, ktorú súper v tomto kole priložil k tvojej, 1 Rana navyše (do v11.21 raz; v9.1 Rana, predtým Pecka).",
       "stav": "pokryte",
       "testy": [
         "packages/core/test/v7-efekty.test.ts › Pasca: súper v kole priložil kartu k tvojej → Rana navyše (v9.1, predtým Pecka); Pijan: Rana za každé svoje NA EX",
@@ -2392,11 +2392,11 @@
     {
       "id": "16.karta.traktorista",
       "paragraf": "16. Výklad kariet",
-      "pravidlo": "Traktorista (v11.22): Bitka: S prevahou v jeho kraji {Pecka} — Pecka navyše s prevahou v jeho kraji, Dlhy nedáva; ľavá strana Rana namiesto Pecky (v11.18).",
+      "pravidlo": "Traktorista (v12): Bitka: S prevahou v jeho kraji {Pecka} — Pecka navyše s prevahou v jeho kraji, Dlhy nedáva; ľavá strana Rana namiesto Pecky (v11.18).",
       "stav": "pokryte",
       "testy": [
-        "packages/core/test/skolitelia.test.ts › Traktorista: Bitka: S prevahou v jeho kraji {Pecka} (v11.22, Michal 2026-11-11) › s prevahou v jeho kraji 1 Pecka navyše, bez prevahy nič; Dlh nedá ani bez prevahy v poslednej Pitke",
-        "packages/core/test/skolitelia.test.ts › Traktorista: Bitka: S prevahou v jeho kraji {Pecka} (v11.22, Michal 2026-11-11) › línia bez lokality nemá kraje — prevahu nemá nikto, Pecka navyše nie je",
+        "packages/core/test/skolitelia.test.ts › Traktorista: Bitka: S prevahou v jeho kraji {Pecka} (v12, Michal 2026-11-11) › s prevahou v jeho kraji 1 Pecka navyše, bez prevahy nič; Dlh nedá ani bez prevahy v poslednej Pitke",
+        "packages/core/test/skolitelia.test.ts › Traktorista: Bitka: S prevahou v jeho kraji {Pecka} (v12, Michal 2026-11-11) › línia bez lokality nemá kraje — prevahu nemá nikto, Pecka navyše nie je",
         "packages/core/test/karty-v11-18.test.ts › Traktorista bez Pecky na hranách › ľavá strana Rana a Pečeň, Pecka na hranách nikde; bez lokality Pecka navyše nie je a bitkaMody tuhé nepridá"
       ]
     },

@@ -70,7 +70,7 @@ export function sadaSNaradim(sada: Sada): Sada {
  * cigariet, súperov Zapaľovač), súperova Dievčina na vydaj s mojím Automatom (Cigareta → Hazard,
  * trčí hore), jeho Vandal s jeho Puškou (Posilnená Petelica) a Veštica s jeho Vínkom (NA EX); môj Sypač
  * a za ním Šofér so súperovým NA EX a mojou Puškou dole — Rany ako Pecky, posilnené, Valaška v Dedičstve: na jednej
- * akcii pôvodná akcia, iskra aj ×N naraz (Michal 2026-11-11), v pečati Pecka navyše ×2 (v11.22).
+ * akcii pôvodná akcia, iskra aj ×N naraz (Michal 2026-11-11), v pečati Pecka navyše ×2 (v12).
  * V ruke Puška, Energeťák a Pasca na zasunutie.
  */
 export function sNaradim(s: GameState, p: PlayerId): GameState {

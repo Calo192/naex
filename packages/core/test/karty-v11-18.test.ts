@@ -55,7 +55,7 @@ describe("texty kariet v11.18 v sade (cards.json)", () => {
     expect(text("vandal")).toBe("Nástup: Otoč lokalitu o 180°.");
     expect(text("degustatorka")).toBe("Nástup: Ak má súper viac plných poldeci ako ty, jeden mu vyžerie.");
     expect(text("snubenica")).toBe("Podpora: Chlap {Cigareta}.");
-    // v11.22 (Michal 2026-11-11): Traktorista Pecku s prevahou namiesto Dlhu bez prevahy (skolitelia.test.ts).
+    // v12 (Michal 2026-11-11): Traktorista Pecku s prevahou namiesto Dlhu bez prevahy (skolitelia.test.ts).
     expect(text("traktoristka")).toBe("Bitka: S prevahou v jeho kraji {Pecka}.");
     expect(text("ministrant")).toBe("Nepriateľ: Starešina {Pecka}.");
     // {Pečeň}→{Cigareta} má Krabička cigariet hore — dvojica X → Y je v sade jediná (§12).

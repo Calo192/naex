@@ -617,7 +617,7 @@ export interface HasicVolba {
   readonly tag?: Tag;
   /** Karta zo šenku: defId karty, ktorej Podpora voľbu dala; chýba = Zastávka. */
   readonly zdroj?: string;
-  /** Karta zo šenku ide navrch doberacieho balíčka (Predavačka, v11.22); chýba = do ruky. */
+  /** Karta zo šenku ide navrch doberacieho balíčka (Predavačka, v12); chýba = do ruky. */
   readonly kam?: "balicek";
   /** 2 na 2: rozhoduje člen, ktorý kartu vyložil, a karta ide do jeho ruky; chýba = kapitán. */
   readonly miesto?: Miesto;
@@ -3358,7 +3358,7 @@ function podpora(s: MutState, data: GameData, nositel: DeepMutable<PlacedCard>, 
         break;
       }
       const miesto = nositel.miesto === undefined ? {} : { miesto: nositel.miesto };
-      // Predavačka v11.22 (Michal 2026-11-11: „vezmi si jednu kartu z ponuky do dobieracieho balíčka“):
+      // Predavačka v12 (Michal 2026-11-11: „vezmi si jednu kartu z ponuky do dobieracieho balíčka“):
       // hocijaká karta z ponuky navrch vlastného doberacieho balíčka; ponuka sa nedopĺňa.
       if (def.id === "predavacka" && def.effectText.includes("navrch")) {
         if (s.senok.length === 0) {
@@ -4310,7 +4310,7 @@ function vyhodnotPitku(s: MutState, data: GameData, events: Event[]): void {
     if (pokuta[p] > 0) events.push({ type: "log", text: `Policajtka hráča ${opponentOf(p) + 1} píše pokutový blok: hráč ${p + 1} získava ${pocet(pokutaSpolu, "zadĺženie", "zadĺženia", "zadĺžení")} za akcie zrušené Odporom.` });
   }
   for (const p of [0, 1] as const) pridajZadlzenie(s, p, prirastky.zadlzenie[p], events);
-  // Výherný automat (Dedičstvo, v11.22, Michal 2026-11-11: „každú Pitku 1 Dlh“): Dlh rovno, nie
+  // Výherný automat (Dedičstvo, v12, Michal 2026-11-11: „každú Pitku 1 Dlh“): Dlh rovno, nie
   // zadĺženie cez prah — je to Dlh z Pitky, Obecný úrad ho ráta dvakrát.
   for (const p of [0, 1] as const) {
     const n = dlhyZDedicstva(data, s.hraci[p].dedicstvo, "Pitka");

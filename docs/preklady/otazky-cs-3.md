@@ -1,6 +1,6 @@
 # Otázky prekladateľa — CS, vlna 3e (2026-11-11)
 
-Preklad `apps/web/src/i18n/cs.json` (stôl, Detail partie, Novinky, Vývoj, Spätná väzba, `motor.*`, Predavačka v11.22)
+Preklad `apps/web/src/i18n/cs.json` (stôl, Detail partie, Novinky, Vývoj, Spätná väzba, `motor.*`, Predavačka v12)
 a dlhých textov `i18n/{pravidla,pojmy,vyucba,napovedy,achievementy}/cs.json`. Pojmy podľa `docs/preklady/glosar.json`.
 
 1. **Pečiatky momentov v achievementoch** (`achievementy/posledne-slovo`, `eso-v-rukave`) — popis odkazuje na pečiatku

@@ -160,7 +160,7 @@ describe("efekty v bitke (v7)", () => {
   });
 
   // Dlh bez prevahy dáva od 2026-11-08 len zápis „Posledná Pitka kola: … {Dlh}“ (skolitelia.test.ts).
-  it("Traktorista (v11.22, Michal 2026-11-11): s prevahou v jeho kraji Pecka navyše, bez nej nič; tuhé navyše starej sady nie", () => {
+  it("Traktorista (v12, Michal 2026-11-11): s prevahou v jeho kraji Pecka navyše, bez nej nič; tuhé navyše starej sady nie", () => {
     const t = inst("traktoristka");
     const s = vPitke("zastavka", [[lezi(t, 0)], []]);
     expect(navyse(s, "traktoristka", "Pecka")).toBe(1);

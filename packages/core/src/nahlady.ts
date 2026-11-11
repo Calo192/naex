@@ -60,7 +60,7 @@ export interface DlhyDoBitky {
 export function vyhladDlhov(data: GameData, stol: StolNahladu, dalsiePitky: number): readonly [DlhyDoBitky, DlhyDoBitky] {
   const nahlad = nahladPitky(data, stol);
   // D6 (v7): zvyšok zadĺženia sa medzi Pitkami nemaže — sčíta sa za všetky Pitky.
-  // Výherný automat (Dedičstvo, v11.22): Dlh v tejto aj každej ďalšej Pitke (engine vyhodnotPitku);
+  // Výherný automat (Dedičstvo, v12): Dlh v tejto aj každej ďalšej Pitke (engine vyhodnotPitku);
   // „Posledná Pitka kola“ starých sád (automat, Traktorista bez prevahy) raz (engine pokracujPoPitke).
   const zLinie = dlhyPoslednejPitky(data, lineState(stol));
   const automat = (p: PlayerId): number =>

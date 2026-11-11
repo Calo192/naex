@@ -303,10 +303,10 @@ const BONUS_EFEKTU: Readonly<Record<string, number>> = {
   zivnostnik: 0.5,
   velmi_smutiaca_vdova: 0.4,
   niekoho_stryna: 0.3,
-  // Školiteľ (v11.22): Furt {Viera}→{Cigareta} obom susedom — vidí ho evaluateLine pri simulácii vyloženia.
+  // Školiteľ (v12): Furt {Viera}→{Cigareta} obom susedom — vidí ho evaluateLine pri simulácii vyloženia.
   kapybara: 0.3,
   stryko_z_ameriky: 0.5,
-  // Podpora (v11.22): karta z ponuky navrch balíčka — vybraná, príde pri ďalšom ťahaní.
+  // Podpora (v12): karta z ponuky navrch balíčka — vybraná, príde pri ďalšom ťahaní.
   predavacka: 0.4,
   // Nástup spáli súperovo Zviera — bitku ráta simulácia vyloženia, zvyšok hry SPALENIE_ZA_KARTU.
   polovnik: 0.4,
@@ -325,7 +325,7 @@ const BONUS_EFEKTU: Readonly<Record<string, number>> = {
   // Sypač (Podpora, Školiteľ bez tagu): tvoja karta s Ranami ako Peckami — simulácia vyloženia (sPrilozenou).
   kulturista: 0.3,
   vandal: 0.2,
-  // Bitka (v11.22): Pecka s prevahou v jeho kraji — v bitke ju vidí evaluateLine.
+  // Bitka (v12): Pecka s prevahou v jeho kraji — v bitke ju vidí evaluateLine.
   traktoristka: 0.4,
   vymahac: 0.4,
   vychovavatelka: 0.4,
@@ -342,9 +342,9 @@ const DEDICSTVO: Readonly<Record<string, number>> = {
   vidly: 1,
   // v11.5 (Dedičstvo: Hádka): víťaz hádky — súper odhodí náhodnú kartu z ruky.
   noviny: 0.5,
-  // v11.22: Rana navyše za každú kartu, ktorú súper v kole priložil k mojej.
+  // v12: Rana navyše za každú kartu, ktorú súper v kole priložil k mojej.
   pasca: 1,
-  // v11.22: prah Dlhu +1, ale Dlh v každej Pitke.
+  // v12: prah Dlhu +1, ale Dlh v každej Pitke.
   vyherny_automat: -0.6,
   vinko: 0.8,
   lievik: 0.3,

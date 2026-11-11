@@ -1,4 +1,4 @@
-// Pravidlá v11.22 (Michal 2026-11-11, Zrejúca): akcie navyše mení celý podložený Nástroj aj Forsáž
+// Pravidlá v12 (Michal 2026-11-11, Zrejúca): akcie navyše mení celý podložený Nástroj aj Forsáž
 // Energeťáka; Traktorista „Bitka: S prevahou v jeho kraji {Pecka}.“, Pasca Rana za každú priloženú
 // kartu, Výherný automat „Pitka: {Dlh}.“, Kapybara „Furt: Preškolenie {Viera}→{Cigareta}.“.
 // Predavačka (karta z ponuky navrch balíčka) je vo frakcie.test.ts a dva-na-dva.test.ts.
@@ -50,7 +50,7 @@ function dohrajPitku(s0: GameState): { readonly s: GameState; readonly events: E
   return { s, events };
 }
 
-describe("akcie navyše mení celý podložený Nástroj (v11.22: „Áno, celý Nástroj“)", () => {
+describe("akcie navyše mení celý podložený Nástroj (v12: „Áno, celý Nástroj“)", () => {
   it("Puška dole (Posilnená Pecka) pod Šoférom bez NA EX: Pecka navyše ×2, Rana navyše ×1; pečať nesie násobok", () => {
     const sofer = inst("sofer");
     const s = vPitke("most", [[lezi(sofer, 0, pod("puska", "dolna"))], []]);

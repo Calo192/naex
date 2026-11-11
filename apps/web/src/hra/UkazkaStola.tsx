@@ -714,7 +714,7 @@ function odohrajSeed(data: GameData, seed: number): { readonly odohrane: Odohran
   return { odohrane: { zaciatok: s, dohraj: [], historia }, najdene: !["koniec-pitky", "zaverecna", "vizia", "vestica", "cintorin", "cigarety-pride", "cigarety-dopad", "poldeci-pride", "poldeci-dopad"].includes(stop) && !(stop === "suhrn" && p.get("rucne") !== null) };
 }
 
-/** Podpora Predavačky (v11.22) a Živnostníka (Michal 2026-11-09) — ukážka ju dá aj staršej sade v prehliadači. */
+/** Podpora Predavačky (v12) a Živnostníka (Michal 2026-11-09) — ukážka ju dá aj staršej sade v prehliadači. */
 const TEXTY_PODPORY_SENKU: Readonly<Record<string, string>> = {
   predavacka: "Podpora: Vezmi si z ponuky 1 kartu navrch svojho doberacieho balíčka.",
   zivnostnik: "Podpora: Vezmi si z ponuky 1 Nástroj.",

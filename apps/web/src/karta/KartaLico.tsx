@@ -43,7 +43,7 @@ export interface NavyseNaKarte {
   readonly zar?: readonly (ZarNaKarte | null)[];
   /** Akcia, ktorou sa akcia [j] ráta (Vedúcko, Sypač) — pečať ju kreslí namiesto vytlačenej. */
   readonly ako?: readonly string[];
-  /** Násobok akcie [j] — Forsáž a hrana posilnenia Nástroja pod kartou (v11.22); chýba = ×1. */
+  /** Násobok akcie [j] — Forsáž a hrana posilnenia Nástroja pod kartou (v12); chýba = ×1. */
   readonly nasobok?: readonly number[];
   /** Podpora a Konflikt: ktorá vytlačená strana susedí s kartou, s ktorou sa efekt spustil (šípka svieti). */
   readonly sipky?: { readonly lava: boolean; readonly prava: boolean };

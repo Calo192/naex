@@ -1,7 +1,7 @@
 # Otázky EN — vlna 3e (2026-11-11)
 
 Preklad prázdnych kľúčov `apps/web/src/i18n/en.json` (781: stôl, Detail partie, Novinky, Vývoj, Spätná väzba,
-vzory `motor.*`, Predavačka v11.22) a oblastí `pravidla`, `pojmy`, `vyucba`, `napovedy`, `achievementy`.
+vzory `motor.*`, Predavačka v12) a oblastí `pravidla`, `pojmy`, `vyucba`, `napovedy`, `achievementy`.
 Glosár sa nemenil; pochybnosti a nové pojmy sú tu.
 
 ## Zdroj (sk) a pravidlá hry

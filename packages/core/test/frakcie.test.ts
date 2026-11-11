@@ -123,7 +123,7 @@ describe("zápis efektu v tvorcovi: „Spúšťač: Tag {Akcia}.“", () => {
     expect(() => parseCards({ cards: [zla] })).toThrow(/Autorta/);
   });
 
-  it("celá sada zo špecifikácie sa načíta a 23 kariet má efekt navyše (14 frakcií, 7 skrytých akcií, v11.17 Krokodíl a Telefón; Kapybara od v11.22 len Preškolenie)", () => {
+  it("celá sada zo špecifikácie sa načíta a 23 kariet má efekt navyše (14 frakcií, 7 skrytých akcií, v11.17 Krokodíl a Telefón; Kapybara od v12 len Preškolenie)", () => {
     const s = [...data.cards.values()].filter((d) => efektyNavyse(d).length > 0).map((d) => d.id);
     expect(s).toHaveLength(23);
     expect(s).toEqual(expect.arrayContaining(["krokodil", "telefon"]));
@@ -449,7 +449,7 @@ describe("Konflikt bez tagu (Michal 2026-11-08) — karty zo skutočného cards.
   });
 });
 
-describe("Predavačka (v11.22) a Živnostník (2026-11-09): Podpora — karta z ponuky zadarmo", () => {
+describe("Predavačka (v12) a Živnostník (2026-11-09): Podpora — karta z ponuky zadarmo", () => {
   const sada = loadGameData(cardsJson, eldersJson, scorecardsJson);
   /** Hráč 0 vyloží `karta` k Pijanovi hráča `susedov`; šenok podľa `senok`. */
   const vylozenie = (karta: CardInstance, senok: CardInstance[], ruka: CardInstance[] = [], susedov: PlayerId = 0): GameState => ({
@@ -465,7 +465,7 @@ describe("Predavačka (v11.22) a Živnostník (2026-11-09): Podpora — karta z 
     expect(efektyNavyse(defOf(sada, { defId: "zivnostnik" }))).toEqual([]);
   });
 
-  it("Predavačka (v11.22): hocijaká karta z ponuky navrch doberacieho balíčka — ruka sa nemení, ponuka sa nedopĺňa", () => {
+  it("Predavačka (v12): hocijaká karta z ponuky navrch doberacieho balíčka — ruka sa nemení, ponuka sa nedopĺňa", () => {
     const pr = inst("predavacka");
     const vandal = inst("vandal");
     const masiar = inst("masiar");

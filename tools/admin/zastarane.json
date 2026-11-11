@@ -575,7 +575,7 @@
         "veduck\\w*[^.!?]{0,80}(?:superov|obom sused|oboch sused|obaja sused|oba sused|furt)",
         "furt\\W{0,3}preskolen"
       ],
-      "pozn": "v11.18: Vedúcko — „Podpora: Preškolenie {Robota}→{Pecka}.“ — len tvoja karta, s ktorou sa stretne priložením, do konca kola (vo Vypálenej od vypálenia v11.18 2026-11-09); „Furt: Preškolenie“ je od v11.22 platné (Kapybara)"
+      "pozn": "v11.18: Vedúcko — „Podpora: Preškolenie {Robota}→{Pecka}.“ — len tvoja karta, s ktorou sa stretne priložením, do konca kola (vo Vypálenej od vypálenia v11.18 2026-11-09); „Furt: Preškolenie“ je od v12 platné (Kapybara)"
     },
     {
       "pojem": "Snúbenica Nepriateľ: Autorita {Pohoršenie}",
@@ -633,7 +633,7 @@
         "kapybar\\w*[^.!?]{0,80}(?:podpor|konflikt|stretn)",
         "kapybar\\w*[^.!?]{0,80}cigaret\\w* navyse"
       ],
-      "pozn": "v11.22: Kapybara — „Furt: Preškolenie {Viera}→{Cigareta}.“ — obaja priami susedia, kým susedia; Podpora, Konflikt a Furt {Cigareta} zanikli (vo Vypálenej od vypálenia v11.22)"
+      "pozn": "v12: Kapybara — „Furt: Preškolenie {Viera}→{Cigareta}.“ — obaja priami susedia, kým susedia; Podpora, Konflikt a Furt {Cigareta} zanikli (vo Vypálenej od vypálenia v12)"
     },
     {
       "pojem": "Traktoristov Dlh bez prevahy",
@@ -641,7 +641,7 @@
         "traktoristw*[^.!?]{0,80}(?:bez prevah|poslednw* pitk)",
         "bez prevahw*[^.!?]{0,40}dlh"
       ],
-      "pozn": "v11.22: Traktorista — „Bitka: S prevahou v jeho kraji {Pecka}.“; Dlhy nedáva (vo Vypálenej od vypálenia v11.22)"
+      "pozn": "v12: Traktorista — „Bitka: S prevahou v jeho kraji {Pecka}.“; Dlhy nedáva (vo Vypálenej od vypálenia v12)"
     },
     {
       "pojem": "Výherný automat: Hazard v poslednej Pitke kola",
@@ -649,7 +649,7 @@
         "automat\\w*[^.!?]{0,80}posledn\\w* pitk",
         "posledn\\w* pitk\\w* kola[^.!?]{0,40}(?:automat|hazard)"
       ],
-      "pozn": "v11.22: Výherný automat — „Tvoj prah Dlhu je o 1 vyšší. Pitka: {Dlh}.“ — Dlh v každej Pitke (vo Vypálenej od vypálenia v11.22)"
+      "pozn": "v12: Výherný automat — „Tvoj prah Dlhu je o 1 vyšší. Pitka: {Dlh}.“ — Dlh v každej Pitke (vo Vypálenej od vypálenia v12)"
     },
     {
       "pojem": "Predavačka: Občan do ruky",
@@ -657,7 +657,7 @@
         "predavack\\w*[^.!?]{0,80}obcan",
         "predavack\\w*[^.!?]{0,80}do ruky"
       ],
-      "pozn": "v11.22: Predavačka — „Podpora: Vezmi si z ponuky 1 kartu navrch svojho doberacieho balíčka.“ (vo Vypálenej od vypálenia v11.22)"
+      "pozn": "v12: Predavačka — „Podpora: Vezmi si z ponuky 1 kartu navrch svojho doberacieho balíčka.“ (vo Vypálenej od vypálenia v12)"
     },
     {
       "pojem": "akcie navyše Nástroj nemení",
@@ -665,7 +665,7 @@
         "akci\\w* navyse[^.!?]{0,60}(?:nastroj|forsaz)[^.!?]{0,30}nemen",
         "(?:podlozen\\w* nastroj|forsaz)[^.!?]{0,40}(?:ju|ich) nemen"
       ],
-      "pozn": "v11.22: akcie navyše mení celý podložený Nástroj (preškolenie, hrana posilnenia) aj Forsáž Energeťáka (vo Vypálenej od vypálenia v11.22)"
+      "pozn": "v12: akcie navyše mení celý podložený Nástroj (preškolenie, hrana posilnenia) aj Forsáž Energeťáka (vo Vypálenej od vypálenia v12)"
     }
   ],
   "karty": [

@@ -419,7 +419,7 @@ describe("karta „do ruky“ ide tomu, kto efekt spustil (Q4)", () => {
   });
 
   it("Predavačka a Živnostník: z ponuky vyberá člen, ktorý kartu vyložil; Živnostník do jeho ruky, Predavačka navrch balíčka tímu", () => {
-    // Podpora (Michal 2026-11-09; Predavačka v11.22): k Pijanovi, ktorého vyložil kapitán tímu.
+    // Podpora (Michal 2026-11-09; Predavačka v12): k Pijanovi, ktorého vyložil kapitán tímu.
     for (const [defId, vziat, ina] of [["predavacka", "vandal", "vidly"], ["zivnostnik", "vidly", "vandal"]] as const) {
       const { s: s0, partner } = partnerNaTahu(defId);
       const tim = timMiesta(partner);
