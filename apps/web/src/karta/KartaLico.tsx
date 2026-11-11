@@ -43,6 +43,8 @@ export interface NavyseNaKarte {
   readonly zar?: readonly (ZarNaKarte | null)[];
   /** Akcia, ktorou sa akcia [j] ráta (Vedúcko, Sypač) — pečať ju kreslí namiesto vytlačenej. */
   readonly ako?: readonly string[];
+  /** Násobok akcie [j] — Forsáž Energeťáka a hrana posilnenia Nástroja pod kartou (v11.22); chýba = ×1. */
+  readonly nasobok?: readonly number[];
   /** Podpora a Konflikt: ktorá vytlačená strana susedí s kartou, s ktorou sa efekt spustil (šípka svieti). */
   readonly sipky?: { readonly lava: boolean; readonly prava: boolean };
 }
@@ -306,7 +308,8 @@ export function KartaLico(props: KartaLicoProps) {
         const r = { x, y, w };
         x += w + (gi < vsetky.length - 1 || !sSipkami ? medzera : medzera * 0.5);
         // Stavy ako na hrane: splnená = aktívna (žiar), nesplnená = neaktívna a sivá; mimo hry ako vytlačená.
-        const st: SlotStav | null = stav === undefined ? null : { stav: stav.krat === 0 ? "neaktivna" : "aktivna", nasobok: 1 };
+        const nasobok = prva < 0 ? 1 : (stav?.nasobok?.[prva] ?? 1);
+        const st: SlotStav | null = stav === undefined ? null : { stav: stav.krat === 0 ? "neaktivna" : "aktivna", nasobok };
         const co = prva < 0 ? t("karta.ucinokSoSuperom", { akcia: a }) : t("karta.akciaNavyse");
         const text =
           stav === undefined
@@ -317,7 +320,7 @@ export function KartaLico(props: KartaLicoProps) {
                 ? t("karta.navysePlatiKrat", { co, podmienka, n: stav.krat })
                 : t("karta.navysePlati", { co, podmienka });
         const zar = stav?.zar?.[prva] ?? null;
-        return ikona(`navyse${ei}-${a}`, r, a, st, zar, ` kl-navyse${stav !== undefined && stav.krat === 0 ? " kl-navyse-spi" : ""}${zar !== null ? " kl-zar-prava" : ""}`, text, kusov * Math.max(1, stav?.krat ?? 1));
+        return ikona(`navyse${ei}-${a}`, r, a, st, zar, ` kl-navyse${stav !== undefined && stav.krat === 0 ? " kl-navyse-spi" : ""}${zar !== null ? " kl-zar-prava" : ""}`, text, kusov * Math.max(1, stav?.krat ?? 1) * nasobok);
       });
       return [...lava, ...ikony, ...(sSipkami ? [sipka("prava")] : [])];
     });

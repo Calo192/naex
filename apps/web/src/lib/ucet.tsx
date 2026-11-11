@@ -5,7 +5,7 @@ import { api } from "./api.ts";
 import { aktualnyPar, pouziPar, volbaDoUctu, volbaZUctu } from "./paryHraca.ts";
 import { aktualnaSchema, pouziSchemu } from "./schemy.ts";
 import type { Pohlavie } from "@naex/core";
-import { aktualnyJazyk, nastavJazyk, t, type Jazyk } from "../i18n/jazyk.tsx";
+import { aktualnyJazyk, nastavJazyk, povolJazyky, t, type Jazyk } from "../i18n/jazyk.tsx";
 
 /**
  * Úroveň účtu — práva overuje server, tu len podľa nej kreslíme. Hráčske ranky
@@ -109,6 +109,8 @@ export interface Instancia {
   readonly bezPrava?: boolean;
   /** Hrá sa tu 2 na 2 a Päta, Lakeť, Otočka (len Zrejúca); server ich inde odmietne. */
   readonly rezimyNavyse?: boolean;
+  /** Hráč smie prepnúť jazyk (lokalizácia len v Zrejúcej, Michal 2026-11-11); inak len slovenčina. */
+  readonly jazyky?: boolean;
 }
 
 /** Smie prepnúť do Zrejúcej — len keď to server výslovne povie (starý server oprávnenie nepozná). */
@@ -157,6 +159,8 @@ export function UcetProvider({ children }: { children: ReactNode }) {
       .then((r) => {
         setPravaNavstevnika(r.pouzivatel === null ? (r.prava ?? null) : null);
         setInstancia(r.instancia ?? VYPALENA);
+        // Pred setJa — jazyk z profilu platí, len keď server jazyky povolil.
+        povolJazyky(r.instancia?.jazyky === true);
         setJa(r.pouzivatel);
       })
       .catch(() => setJa(null))

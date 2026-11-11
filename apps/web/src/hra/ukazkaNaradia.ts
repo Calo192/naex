@@ -68,8 +68,8 @@ export function sadaSNaradim(sada: Sada): Sada {
  * Stôl s podloženými Nástrojmi: moje Vedúcko so Živnostníkom (Preškolenie Robota → Pecka),
  * môj Hasič s mojimi Vidlami (Rana → Pecka, trčí dole), Zámočník s dvoma Nástrojmi (môj Krabička
  * cigariet, súperov Zapaľovač), súperova Dievčina na vydaj s mojím Automatom (Cigareta → Hazard,
- * trčí hore), jeho Vandal s jeho Puškou (Posilnená Petelica) a Veštica s jeho Vínkom (NA EX).
- * V ruke Puška, Energeťák a Pasca na zasunutie.
+ * trčí hore), jeho Vandal s jeho Puškou (Posilnená Petelica) a Veštica s jeho Vínkom (NA EX); môj Šofér
+ * s mojou Puškou dole (v11.22: Pecka navyše v pečati ×2). V ruke Puška, Energeťák a Pasca na zasunutie.
  */
 export function sNaradim(s: GameState, p: PlayerId): GameState {
   let uid = s.nextUid;
@@ -90,6 +90,7 @@ export function sNaradim(s: GameState, p: PlayerId): GameState {
         { card: k("zapalovac"), majitel: su, hrana: "horna" },
       ],
     },
+    { card: k("sofer"), playedBy: p, podlozene: [{ card: k("puska"), majitel: p, hrana: "dolna" }] },
   ];
   strany[su] = [
     { card: k("dievcina_na_vydaj"), playedBy: su, podlozene: [{ card: k("vyherny_automat"), majitel: p, hrana: "dolna" }] },

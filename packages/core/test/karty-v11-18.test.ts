@@ -55,13 +55,14 @@ describe("texty kariet v11.18 v sade (cards.json)", () => {
     expect(text("vandal")).toBe("Nástup: Otoč lokalitu o 180°.");
     expect(text("degustatorka")).toBe("Nástup: Ak má súper viac plných poldeci ako ty, jeden mu vyžerie.");
     expect(text("snubenica")).toBe("Podpora: Chlap {Cigareta}.");
-    expect(text("traktoristka")).toBe("Posledná Pitka kola: Bez prevahy v jeho kraji {Dlh}.");
+    // v11.22 (Michal 2026-11-11): Traktorista Pecku s prevahou namiesto Dlhu bez prevahy (skolitelia.test.ts).
+    expect(text("traktoristka")).toBe("Bitka: S prevahou v jeho kraji {Pecka}.");
     expect(text("ministrant")).toBe("Nepriateľ: Starešina {Pecka}.");
     // {Pečeň}→{Cigareta} má Krabička cigariet hore — dvojica X → Y je v sade jediná (§12).
     expect(text("anonymny_alkoholik")).toBe("Podpora: Preškolenie {PoškodeniePečene}→{Viera}.");
     expect(efektyNavyse(data.cards.get("snubenica")!)).toEqual([{ spustac: "Podpora", tag: "Chlap", akcie: ["Cigareta"] }]);
     expect(efektyNavyse(data.cards.get("ministrant")!)).toEqual([{ spustac: "Nepriateľ", tag: "Starešina", akcie: ["Pecka"] }]);
-    expect(efektyNavyse(data.cards.get("traktoristka")!)).toEqual([{ spustac: "Posledná Pitka kola", tag: null, akcie: ["Dlh"], podmienka: "Bez prevahy v jeho kraji" }]);
+    expect(efektyNavyse(data.cards.get("traktoristka")!)).toEqual([{ spustac: "Bitka", tag: null, akcie: ["Pecka"], podmienka: "S prevahou v jeho kraji" }]);
   });
 
   it("Vandal po vyložení otočí lokalitu; Degustátorka súperovi s viac plnými poldeci jeden vyžerie", () => {
@@ -103,8 +104,8 @@ describe("Snúbenica: Podpora: Chlap {Cigareta}", () => {
   });
 });
 
-describe("Traktorista bez Pecky s prevahou", () => {
-  it("ľavá strana Rana a Pečeň, Pecka nikde; s prevahou v jeho kraji ani Pecka navyše, ani tuhé navyše", () => {
+describe("Traktorista bez Pecky na hranách", () => {
+  it("ľavá strana Rana a Pečeň, Pecka na hranách nikde; bez lokality Pecka navyše nie je a bitkaMody tuhé nepridá", () => {
     const def = data.cards.get("traktoristka")!;
     const v = cardVariants(def);
     expect(v.left.every((l) => !l.includes("Pecka") && l.includes("Rana") && l.includes("PoškodeniePečene"))).toBe(true);

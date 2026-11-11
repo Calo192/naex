@@ -313,15 +313,18 @@ export function vazniNaVyhru(lokalitCelkom: number): number {
 // premeny sa reťazia všetky (Školitelia, potom Nástroje, každá na výsledku predošlej).
 // v11.21 (Michal 2026-11-10, Zrejúca) bez novej značky: po bitke si každý dobere presne 2 karty, nie do 3;
 // hrana posilnenia Nástroja a Forsáž Energeťáka posilnia akcie aktívne po NA EX (neaktívne ×4).
+// v11.22 (Michal 2026-11-11, Zrejúca) bez novej značky: akcie navyše mení celý podložený Nástroj aj Forsáž
+// Energeťáka; Traktorista Pecka s prevahou, Pasca Rana za každú priloženú kartu, Výherný automat Dlh v každej
+// Pitke, Kapybara Furt Preškolenie susedov, Predavačka karta z ponuky navrch balíčka.
 export const VERZIA_PRAVIDIEL = "v11";
 /**
  * Presná verzia pravidiel vrátane dávky — hráč ju vidí na stránke Pravidlá, ktorá má
  * vždy odzrkadľovať správanie nasadenej hry (Michal 2026-10-31). Značka partií
  * (VERZIA_PRAVIDIEL) sa pri dávke nemení, táto áno.
  */
-export const VERZIA_PRAVIDIEL_PRESNA = "v11.21";
+export const VERZIA_PRAVIDIEL_PRESNA = "v11.22";
 /** Odkedy platí VERZIA_PRAVIDIEL_PRESNA — hráč ho vidí na stránke Pravidlá. */
-export const PRAVIDLA_PLATNE_OD = "2026-11-10";
+export const PRAVIDLA_PLATNE_OD = "2026-11-11";
 export type DlzkaHry = keyof typeof DLZKY_HRY;
 export const ALL_DLZKY: readonly DlzkaHry[] = ["kratka", "stredna", "dlha"];
 export const PREDVOLENA_DLZKA: DlzkaHry = "stredna";

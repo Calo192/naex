@@ -19,7 +19,7 @@ export function zvolJazyk(j: Jazyk, ja: Pouzivatel | null, nastav: (p: Pouzivate
 
 export function PrepinacJazyka() {
   const jazyk = useJazyk();
-  const { ja, nastav } = useUcet();
+  const { ja, nastav, instancia } = useUcet();
   const [otvorene, setOtvorene] = useState(false);
   const obal = useRef<HTMLDivElement>(null);
 
@@ -38,6 +38,9 @@ export function PrepinacJazyka() {
       document.removeEventListener("keydown", esc);
     };
   }, [otvorene]);
+
+  // Prepínač len tam, kde server jazyky povolil (Zrejúca, Michal 2026-11-11).
+  if (instancia.jazyky !== true) return null;
 
   const vyber = (j: Jazyk): void => {
     setOtvorene(false);

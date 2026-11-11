@@ -67,6 +67,8 @@ createGameServer({
   ...(process.env.NAEX_ADRESA ? { adresa: process.env.NAEX_ADRESA } : {}),
   ...(zrejuca !== undefined ? { zrejuca } : {}),
   rezimyZrejucej: zrejuca !== undefined || (process.env.NODE_ENV !== "production" && process.env.NAEX_REZIMY_ZREJUCEJ === "1"),
+  // Prepínač jazykov: v Zrejúcej; vo vývoji aj inde (prekladatelia), NAEX_JAZYKY=0 ukáže Vypálenú.
+  ...(zrejuca === undefined && process.env.NODE_ENV !== "production" ? { jazyky: process.env.NAEX_JAZYKY !== "0" } : {}),
   ...(zrejuca === undefined && zrejucaAdresa !== undefined ? { zrejucaAdresa } : {}),
   ...(zrejuca === undefined && process.env.NAEX_ZREJUCA_URL ? { zrejucaUrl: process.env.NAEX_ZREJUCA_URL } : {}),
 })

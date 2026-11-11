@@ -200,7 +200,7 @@ export function Registracia() {
 
 export function Profil() {
   useTitulok(t("profil.mojProfil"));
-  const { ja, nastav } = useUcet();
+  const { ja, nastav, instancia } = useUcet();
   const jazyk = useJazyk();
   const [meno, setMeno] = useState(ja?.meno ?? "");
   const [sprava, setSprava] = useState<{ druh: "ok" | "chyba"; text: string } | null>(null);
@@ -592,6 +592,7 @@ export function Profil() {
       </section>
       <section className="panel preferencie" aria-labelledby="preferencie-nadpis">
         <h3 id="preferencie-nadpis">{t("profil.preferencie")}</h3>
+        {instancia.jazyky === true && (
         <fieldset className="skore-volby">
           <legend>{t("profil.jazyk")}</legend>
           <p className="tlmene">{t("profil.jazykPomoc")}</p>
@@ -602,6 +603,7 @@ export function Profil() {
             </label>
           ))}
         </fieldset>
+        )}
         <label className="skratky-volba">
           <input type="checkbox" checked={skratky} onChange={(e) => prepniSkratky(e.target.checked)} />
           <span>

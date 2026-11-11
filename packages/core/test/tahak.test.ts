@@ -42,7 +42,7 @@ describe("ťahák AI hráčov sedí s constants.ts", () => {
     ["Nástroj sa do línie nevykladá (Náradie 2026-11-08)", "Nástroj sa **do línie nevykladá**"],
     ["Forsáž (v10.3)", "Posilnenie + Posilnenie na spoji = **Forsáž** — obe karty spoja majú **všetky aktívne akcie posilnené ×2**"],
     ["Poľovník (v10.4)", "**spáli súperovo Zviera, ktoré je od lokality najďalej**"],
-    ["Kšeft zanikol, akcie navyše (frakcie)", "**Posilnenie, Odpor, Forsáž, NA EX ani Silná žena ju nemenia**"],
+    ["Kšeft zanikol, akcie navyše (frakcie, v11.22 celý Nástroj)", "**Posilnenie suseda, Odpor, spojová Forsáž, NA EX ani Silná žena ju nemenia**"],
     ["Vdova (frakcie)", "súper odhodí **1 náhodnú kartu z ruky**"],
     ["Predsedova vila (frakcie)", "vyfajčíš, tvoje reči pri jednom staršom o ďalší stupeň**"],
     ["Sypač (Školiteľ, 2026-11-08)", "**Sypač** (Podpora, Školiteľ): keď sa priložením stretne s tvojou kartou, tá má do konca kola **Rany ako Pecky**"],

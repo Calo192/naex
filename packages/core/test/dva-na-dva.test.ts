@@ -418,8 +418,8 @@ describe("karta „do ruky“ ide tomu, kto efekt spustil (Q4)", () => {
     expect(rukaMiesta(koniec, kap).length).toBe(rukaKapitana);
   });
 
-  it("Predavačka a Živnostník: zo šenku berie člen, ktorý kartu vyložil, a karta ide do jeho ruky", () => {
-    // Podpora (Michal 2026-11-09): k Pijanovi, ktorého vyložil kapitán tímu.
+  it("Predavačka a Živnostník: z ponuky vyberá člen, ktorý kartu vyložil; Živnostník do jeho ruky, Predavačka navrch balíčka tímu", () => {
+    // Podpora (Michal 2026-11-09; Predavačka v11.22): k Pijanovi, ktorého vyložil kapitán tímu.
     for (const [defId, vziat, ina] of [["predavacka", "vandal", "vidly"], ["zivnostnik", "vidly", "vandal"]] as const) {
       const { s: s0, partner } = partnerNaTahu(defId);
       const tim = timMiesta(partner);
@@ -434,11 +434,16 @@ describe("karta „do ruky“ ide tomu, kto efekt spustil (Q4)", () => {
       const po = apply(data, s, { type: "place", uid: 90001, target: "vlastna" }, partner).state;
       expect(po.hasicVolby?.[0]).toMatchObject({ typ: "senok", zdroj: defId, miesto: partner });
       expect(miestoNaTahu(po)).toBe(partner);
-      expect(legalCommands(data, po, partner)).toEqual([{ type: "senok", uid: dobra.uid }]);
+      // Predavačka smie hocijakú kartu z ponuky, Živnostník len Nástroj.
+      expect(legalCommands(data, po, partner)).toEqual(defId === "predavacka" ? s.senok.map((k) => ({ type: "senok", uid: k.uid })) : [{ type: "senok", uid: dobra.uid }]);
       expect(() => apply(data, po, { type: "senok", uid: dobra.uid }, kap)).toThrow();
       const rukaKapitana = rukaMiesta(po, kap).length;
+      const rukaPartnera = rukaMiesta(po, partner).length;
       const koniec = apply(data, po, { type: "senok", uid: dobra.uid }, partner).state;
-      expect(rukaMiesta(koniec, partner)).toContainEqual(dobra);
+      if (defId === "predavacka") {
+        expect(koniec.hraci[tim].doberaci[0]).toEqual(dobra);
+        expect(rukaMiesta(koniec, partner).length).toBe(rukaPartnera);
+      } else expect(rukaMiesta(koniec, partner)).toContainEqual(dobra);
       expect(rukaMiesta(koniec, kap).length).toBe(rukaKapitana);
     }
   });

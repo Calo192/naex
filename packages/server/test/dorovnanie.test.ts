@@ -54,7 +54,7 @@ describe("dorovnanie tvorcu so seedom", () => {
     expect(obsah.dorovnajSoSeedom(10)).toBe("hotovo");
     expect(pocetSad(db)).toBe(pred + 1);
     expect(obsah.karty.jeden("dvojcata")?.obrazok).not.toBeNull();
-    expect(obsah.karty.jeden("pasca")?.efekt).toContain("priložil kartu");
+    expect(obsah.karty.jeden("pasca")?.efekt).toContain("priložil k tvojej karte");
     expect(obsah.klucoveSlova.jeden("Prevaha")).not.toBeNull();
     const sada = obsah.aktualnaSada().sada;
     expect(sada.karty.map((k) => k.id)).toContain("dvojcata");

@@ -369,13 +369,13 @@ function sFrakciami(s: GameState, p: PlayerId): GameState {
  * nezapíše do tvorcu, ukážka ich dá sade len v prehliadači.
  */
 const TEXTY_SKRYTYCH_AKCII: Readonly<Record<string, string>> = {
-  pasca: "Dedičstvo: Bitka: Ak súper v tomto kole priložil kartu k tvojej {Rana}.",
+  pasca: "Dedičstvo: Bitka: Za každú kartu, ktorú súper v tomto kole priložil k tvojej karte {Rana}.",
   pijan: "Bitka: Za každé NA EX, ktoré si v tomto kole dal {Rana}.",
   svokra: "Bitka: Za každú tvoju kartu so súperovým NA EX {Rana}.",
   vymahac: "Bitka: Za každé 2 tvoje priznané Dlhy {Rana}.",
   sofer: "Bitka: Ak si v tomto kole nedal NA EX {Pecka} a dostaneš 1 cigaretu.",
-  traktoristka: "Bitka: Ak máš v jeho kraji prevahu {Pecka}. Inak získaš 1 Dlh.",
-  vyherny_automat: "Dedičstvo: Tvoj prah Dlhu je o 1 vyšší. Posledná Pitka kola: {Hazard}.",
+  traktoristka: "Bitka: S prevahou v jeho kraji {Pecka}.",
+  vyherny_automat: "Dedičstvo: Tvoj prah Dlhu je o 1 vyšší. Pitka: {Dlh}.",
 };
 
 function sadaSoSkrytymiAkciami(sada: Sada): Sada {
@@ -714,9 +714,9 @@ function odohrajSeed(data: GameData, seed: number): { readonly odohrane: Odohran
   return { odohrane: { zaciatok: s, dohraj: [], historia }, najdene: !["koniec-pitky", "zaverecna", "vizia", "vestica", "cintorin", "cigarety-pride", "cigarety-dopad", "poldeci-pride", "poldeci-dopad"].includes(stop) && !(stop === "suhrn" && p.get("rucne") !== null) };
 }
 
-/** Podpora Predavačky a Živnostníka (Michal 2026-11-09) — kým ju admin nezapíše do tvorcu, ukážka ju dá sade len v prehliadači. */
+/** Podpora Predavačky (v11.22) a Živnostníka (Michal 2026-11-09) — ukážka ju dá aj staršej sade v prehliadači. */
 const TEXTY_PODPORY_SENKU: Readonly<Record<string, string>> = {
-  predavacka: "Podpora: Vezmi si z ponuky 1 Občana.",
+  predavacka: "Podpora: Vezmi si z ponuky 1 kartu navrch svojho doberacieho balíčka.",
   zivnostnik: "Podpora: Vezmi si z ponuky 1 Nástroj.",
 };
 

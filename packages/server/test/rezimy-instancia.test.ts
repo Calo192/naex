@@ -5,7 +5,7 @@
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import { WebSocket } from "ws";
 import type { GameServer } from "../src/server.ts";
-import { Vypalena, REZIMY_LEN_V_ZREJUCEJ } from "../src/zrejuca.ts";
+import { JAZYKY_LEN_V_ZREJUCEJ, Vypalena, REZIMY_LEN_V_ZREJUCEJ } from "../src/zrejuca.ts";
 import { TEST_ADMIN, prihlas, registruj, testovaciServer } from "./pomocnik.ts";
 
 const volaj = (s: GameServer, metoda: string, cesta: string, cookie = "", telo?: unknown): Promise<Response> =>
@@ -69,6 +69,14 @@ describe("Vypálená (predvolený server)", () => {
     const ja = (await (await volaj(server, "GET", "/ja", cookie)).json()) as { instancia: { rezimyNavyse?: boolean } };
     expect(ja.instancia.rezimyNavyse).toBeUndefined();
   });
+
+  it("prepínač jazykov /ja nesľúbi, kým Michal lokalizáciu neuvoľní (Vypálená len po slovensky, 2026-11-11)", async () => {
+    expect(JAZYKY_LEN_V_ZREJUCEJ).toBe(true);
+    const ja = (await (await volaj(server, "GET", "/ja", cookie)).json()) as { instancia: { jazyky?: boolean } };
+    expect(ja.instancia.jazyky).toBeUndefined();
+    const navstevnik = (await (await volaj(server, "GET", "/ja")).json()) as { instancia: { jazyky?: boolean } };
+    expect(navstevnik.instancia.jazyky).toBeUndefined();
+  });
 });
 
 describe("zapnuté režimy (Zrejúca, vývoj s NAEX_REZIMY_ZREJUCEJ)", () => {
@@ -94,6 +102,23 @@ describe("zapnuté režimy (Zrejúca, vývoj s NAEX_REZIMY_ZREJUCEJ)", () => {
     expect((await volaj(server, "GET", "/rebricek-2na2")).status).toBe(200);
     const ja = (await (await volaj(server, "GET", "/ja", cookie)).json()) as { instancia: { rezimyNavyse?: boolean } };
     expect(ja.instancia.rezimyNavyse).toBe(true);
+  });
+});
+
+describe("prepínač jazykov zapnutý (Zrejúca, vývoj)", () => {
+  let server: GameServer;
+  let zmaz: () => Promise<void>;
+
+  beforeAll(async () => {
+    ({ server, zmaz } = await testovaciServer(TEST_ADMIN, { botPauzaMs: 0, jazyky: true }));
+  });
+  afterAll(async () => {
+    await zmaz();
+  });
+
+  it("/ja povie klientovi, že jazyky smie ponúknuť", async () => {
+    const ja = (await (await volaj(server, "GET", "/ja")).json()) as { instancia: { jazyky?: boolean } };
+    expect(ja.instancia.jazyky).toBe(true);
   });
 });
 
