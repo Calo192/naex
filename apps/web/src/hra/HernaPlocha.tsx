@@ -90,7 +90,7 @@ import { dalsiPohladSuhrnu, type KontextSuhrnu, type SuhrnBitky, type ZaciatokKo
 import { PAUZA_CIELA_MS, pauzaPoVolbeCiela, type PauzaCiela } from "./pauzaCiela.ts";
 import { poslednaPitkaVDavke, stolZastavenia } from "./zastaveniePitky.ts";
 import { lokalitaVStrede, lokalitaZNavrhu, natacamNavrh, tipNavrhuLokality } from "./natocenieNavrhu.ts";
-import { naexNaKarte, PeciatkaNaex, type NaexNaKarte } from "./PeciatkaNaex.tsx";
+import { naexNaKarte, PeciatkaNaex, type NaexNaKarte, type StavNaKarte } from "./PeciatkaNaex.tsx";
 import { farbaKarty, type Sada } from "@naex/tvorba";
 import { HernaKarta, ZarStolaKontext, vzhladKarty, type HernaKartaProps } from "./HernaKarta.tsx";
 import { useZarovnanieLinie } from "./zarovnanieLinie.ts";
@@ -2972,10 +2972,27 @@ export function HernaPlocha({
       const vybranaNaex = mode.typ === "naexCiel" && mode.uid === uid;
       const presunieSa = presunute.has(uid);
       const peciatkaNaex = naexNaKarteVLinii(naexBy, placed.naexBy2, skryteMoje, skryteSupera);
-      // Neaktívny Odpor či Posilnenie spárované s poldecom (v11.17) — hráč má vidieť, prečo NA EX nič nezrušilo.
-      const naexStit = lineEval.cards.get(uid)?.naexStit;
+      // Náradie (mock 2): s Nástrojom v ruke svietia karty, pod ktoré sa dá zasunúť; zasunutý v návrhu leží pod hostiteľom.
+      const podlozeneTu: readonly PodlozenyNastroj[] = [
+        ...(placed.podlozene ?? []),
+        ...(podlozenieNavrh?.hostitel === uid ? [{ card: podlozenieNavrh.nastroj, majitel: ja, hrana: podlozenieNavrh.hrana }] : []),
+      ];
+      // Stavy karty sú pečiatky cez ilustráciu ako NA EX (Michal 2026-11-11), nie štítky nad kartou;
+      // Výtržníka (zrážka, Injekcia), Vzburu, Forsáž a NA EX zahasené či posilnené (v11.17) pridá karta sama.
+      const komuRany = placed.playedBy === ja ? t("plocha.teba") : menoHraca(placed.playedBy);
+      const stavyZLinie: StavNaKarte[] = [
+        ...(placed.zaverecna === true
+          ? [
+              placed.odpoved === true
+                ? { druh: "odpoved" as const, text: t("peciatka.odpoved"), pod: t("peciatka.licomDole"), titul: t("plocha.odpovedTitul", { meno: menoHraca(super_) }) }
+                : { druh: "zaverecna" as const, text: t("peciatka.zaverecna"), pod: t("peciatka.licomDole"), titul: t("plocha.zaverecnaTitul") },
+            ]
+          : otocena
+            ? [{ druh: "zaverecna" as const, text: t("peciatka.zaverecna"), pod: t("peciatka.odhalena"), titul: t("plocha.odhalenaTitul") }]
+            : []),
+      ];
       const stitky =
-        nova || otocena || presunieSa || vytrznik || vybranaNaex || naexStit !== undefined || placed.zaverecna === true ? (
+        nova || presunieSa || vybranaNaex ? (
           <>
             {presunieSa && (
               <span className="nova-stitok" title={t("plocha.presunieTitul")}>
@@ -2987,50 +3004,9 @@ export function HernaPlocha({
                 {t("plocha.nova")}
               </span>
             )}
-            {vytrznik && (
-              <span
-                className="naex-nad vytrznik-stitok"
-                title={t("plocha.vytrznikTitul", { koho: placed.playedBy === ja ? t("plocha.teba") : menoHraca(placed.playedBy) })}
-              >
-                <IkonaPoldeci /> {t("plocha.vytrznik", { koho: placed.playedBy === ja ? t("plocha.teba") : menoHraca(placed.playedBy) })}
-              </span>
-            )}
-            {naexStit !== undefined && !vytrznik && (
-              <span
-                className="naex-nad"
-                title={
-                  naexStit === "Odpor"
-                    ? t("plocha.odporTitul")
-                    : t("plocha.posilnenieTitul")
-                }
-              >
-                <IkonaPoldeci /> {naexStit === "Odpor" ? t("plocha.odporZahasil") : t("plocha.posilnenieDrzi")}
-              </span>
-            )}
-            {/* Nad kartou ako NA EX — pod ňou zakrýval text efektu (UI inšpekcia); za štítkom NA EX sa posunie vyššie. */}
-            {placed.zaverecna === true &&
-              (placed.odpoved === true ? (
-                <span className="zaverecna-stitok" title={t("plocha.odpovedTitul", { meno: menoHraca(super_) })}>
-                  {t("plocha.odpovedLicomDole")}
-                </span>
-              ) : (
-                <span className="zaverecna-stitok" title={t("plocha.zaverecnaTitul")}>
-                  {t("plocha.zaverecnaLicom")}
-                </span>
-              ))}
-            {otocena && (
-              <span className="zaverecna-stitok" title={t("plocha.odhalenaTitul")}>
-                {t("plocha.zaverecnaOdhalena")}
-              </span>
-            )}
             {vybranaNaex && <span className="vybrana-pod">✓ {t("plocha.vybrana")}</span>}
           </>
         ) : undefined;
-      // Náradie (mock 2): s Nástrojom v ruke svietia karty, pod ktoré sa dá zasunúť; zasunutý v návrhu leží pod hostiteľom.
-      const podlozeneTu: readonly PodlozenyNastroj[] = [
-        ...(placed.podlozene ?? []),
-        ...(podlozenieNavrh?.hostitel === uid ? [{ card: podlozenieNavrh.nastroj, majitel: ja, hrana: podlozenieNavrh.hrana }] : []),
-      ];
       const nastrojVyber = nastrojKPodlozeniu;
       const smieSem = (k: CardInstance): boolean => ponukaPre(k).some((m) => m.hostitel === uid);
       // Podloženie naprázdno (v11.16, Michal 2026-11-09): ponúka sa, ale tlmene — ani jedna hrana tu nič nezmení.
@@ -3043,7 +3019,6 @@ export function HernaPlocha({
       const klikPodlozenia =
         nastrojVyber !== null ? (smieSem(nastrojVyber) ? () => zasun(nastrojVyber, uid) : undefined) : presunPodlozenie !== null ? () => zasun(presunPodlozenie, uid) : null;
       const cielPodlozenia = PODLOZIT + uid;
-      const injekcia = ucinkyNastrojov(data, { podlozene: podlozeneTu }).has("Výtržník");
       const hostitel = sLupou(
         {
           karta: placed.card,
@@ -3054,9 +3029,11 @@ export function HernaPlocha({
           vybrana: mode.typ === "naexCiel" && mode.uid === uid,
           spoj: spojPre(uid),
           jamky: jamkyStola.get(uid),
-          vytrznik: vytrznik || injekcia,
+          vytrznik,
+          komuRany,
           podlozene: podlozeneTu,
           naex: peciatkaNaex,
+          stavy: stavyZLinie,
         },
         {
           ...(jeCiel(cielPodlozenia) ? { ciel: cielPodlozenia } : {}),
@@ -3133,6 +3110,7 @@ export function HernaPlocha({
         hranaVnutorna: nahladSpojov?.uid === x.karta.uid ? nahladSpojov.n.vnutornaVytlacena : undefined,
         spoj: spojPre(x.karta.uid),
         jamky: jamkyStola.get(x.karta.uid),
+        ...(x.zaverecna === true ? { stavy: [{ druh: "zaverecna" as const, text: t("peciatka.zaverecna"), pod: t("peciatka.licomDole"), titul: t("plocha.zaverecnaTitul") }] } : {}),
       };
       const vrat = (): void => vratDoRuky(x.karta.uid);
       const obsah = tahatelna(
@@ -3140,7 +3118,6 @@ export function HernaPlocha({
         <>
           {karta(props)}
           {stitokPoldeci(x.karta.uid)}
-          {x.zaverecna === true && <span className="zaverecna-stitok">{t("plocha.zaverecnaLicom")}</span>}
         </>,
         undefined,
         NAHRADIT + x.karta.uid,

@@ -8,14 +8,15 @@
 
 import { createContext, useContext } from "react";
 import type { CardInstance, CardLineEval, ClientState, GameData, KtoraHrana, NavyseStav, PlayerId, PodlozenyNastroj } from "@naex/core";
-import { akciaVytrznika, defOf, efektyNavyse, menoAkcie, printedSides, stavNavyseVRuke } from "@naex/core";
+import { akciaVytrznika, defOf, efektyNavyse, menoAkcie, printedSides, stavNavyseVRuke, ucinkyNastrojov } from "@naex/core";
 import type { KartaNavrh, RozlozenieStrany, Sada } from "@naex/tvorba";
 import { PREDVOLENE_NASTAVENIA } from "@naex/tvorba";
 import { KartaLico, type NavyseNaKarte, type PreskolenieNaKarte, type RohSlotu, type SlotStav, type ZarNaKarte } from "../karta/KartaLico.tsx";
 import { preskoleniaZTextu } from "../karta/preskolenie.ts";
 import { zarSlotu } from "../karta/zar.ts";
 import { vzhladSady } from "../lib/sada.tsx";
-import { PeciatkaNaex, type NaexNaKarte } from "./PeciatkaNaex.tsx";
+import { nazovKarty, t } from "../i18n/jazyk.tsx";
+import { PeciatkyKarty, type NaexNaKarte, type StavNaKarte } from "./PeciatkaNaex.tsx";
 
 /**
  * Stôl pre žeravé ikony: komu karta patrí (ruka, línia) a čo mu posilňuje
@@ -119,6 +120,26 @@ export interface HernaKartaProps {
   readonly aktivnaHrana?: KtoraHrana | undefined;
   /** NA EX na karte v línii — pečiatka cez ilustráciu, aj v lupe. */
   readonly naex?: NaexNaKarte | undefined;
+  /** Stavy z línie, ktoré karta sama nevie (Výtržník s menom, Záverečná) — pečiatky pod NA EX. */
+  readonly stavy?: readonly StavNaKarte[] | undefined;
+  /** Komu sú Rany Výtržníka („teba“ či meno) — riadok pod pečiatkou VÝTRŽNÍK!. */
+  readonly komuRany?: string | undefined;
+}
+
+/**
+ * Pečiatky stavov karty: z línie (zLinie) a z vyhodnotenia — Vzbura, Forsáž, NA EX zahasené
+ * Odporom či posilnené Posilnením (pri Výtržníkovi nie, ten má akcie prepísané na Rany).
+ * Záverečná je stav karty, nie toho, čo robí — ide posledná.
+ */
+export function stavyKarty(ev: CardLineEval | null | undefined, vytrznik: boolean, zLinie: readonly StavNaKarte[] = []): StavNaKarte[] {
+  const zaverecna = (s: StavNaKarte): boolean => s.druh === "zaverecna" || s.druh === "odpoved";
+  const out: StavNaKarte[] = zLinie.filter((s) => !zaverecna(s));
+  if (vytrznik && !out.some((s) => s.druh === "vytrznik")) out.push({ druh: "vytrznik", text: t("peciatka.vytrznik"), titul: t("peciatka.vytrznik") });
+  if (!vytrznik && ev?.naexStit === "Odpor") out.push({ druh: "zahasene", text: t("peciatka.zahasene"), pod: "NA EX", titul: t("plocha.odporTitul") });
+  if (!vytrznik && ev?.naexStit === "Posilnenie") out.push({ druh: "posilnene", text: t("peciatka.posilnene"), pod: "NA EX", titul: t("plocha.posilnenieTitul") });
+  if (ev?.vzbura === true) out.push({ druh: "vzbura", text: t("peciatka.vzbura"), titul: t("peciatka.vzburaTitul") });
+  if (ev?.forsaz === true) out.push({ druh: "forsaz", text: t("peciatka.forsaz"), titul: t("peciatka.forsazTitul") });
+  return [...out, ...zLinie.filter(zaverecna)];
 }
 
 /**
@@ -139,7 +160,25 @@ function stavPreskoleni(efekt: string, stol: ZarStola | null, uid: number): Pres
   });
 }
 
-export function HernaKarta({ karta, sada, data, sirka, otocena = false, eval: ev, onClick, vybrana, bezPopisov, hranaVnutorna, spoj, jamky, vytrznik = false, stlacena, zakazana, podlozene, aktivnaHrana, naex }: HernaKartaProps) {
+/**
+ * Pečiatka Výtržníka: zrážka NA EX (vytrznik) alebo Injekcia pod kartou, ktorá z nej robí Výtržníka
+ * tou istou cestou; null = karta Výtržník nie je. komuRany = riadok pod pečiatkou a titulok.
+ */
+export function vytrznikNaKarte(data: GameData, zrazka: boolean, podlozene: readonly PodlozenyNastroj[] | undefined, komuRany: string | undefined): StavNaKarte | null {
+  const injekcia = (podlozene ?? []).find((n) => ucinkyNastrojov(data, { podlozene: [n] }).has("Výtržník"));
+  if (!zrazka && injekcia === undefined) return null;
+  const titul =
+    komuRany === undefined
+      ? t("peciatka.vytrznik")
+      : injekcia === undefined || zrazka
+        ? t("plocha.vytrznikTitul", { koho: komuRany })
+        : t("peciatka.vytrznikNastrojTitul", { nastroj: nazovKarty(data.cards.get(injekcia.card.defId)?.name ?? injekcia.card.defId), koho: komuRany });
+  return { druh: "vytrznik", text: t("peciatka.vytrznik"), pod: komuRany === undefined ? undefined : t("peciatka.ranyPre", { koho: komuRany }), titul };
+}
+
+export function HernaKarta({ karta, sada, data, sirka, otocena = false, eval: ev, onClick, vybrana, bezPopisov, hranaVnutorna, spoj, jamky, vytrznik = false, stlacena, zakazana, podlozene, aktivnaHrana, naex, stavy: stavyZLinie, komuRany }: HernaKartaProps) {
+  const stavVytrznika = vytrznikNaKarte(data, vytrznik, podlozene, komuRany);
+  const vytrznikTu = stavVytrznika !== null;
   const vytlacene = printedSides(data, karta);
   const stol = useContext(ZarStolaKontext);
   const vzhladK = vzhladKarty(sada, data, karta.defId);
@@ -159,7 +198,7 @@ export function HernaKarta({ karta, sada, data, sirka, otocena = false, eval: ev
       const a = vytlacene[ps][k] ?? null;
       const se = ev?.[ps][k];
       if (a === null) return null;
-      if (vytrznik) {
+      if (vytrznikTu) {
         const r = akciaVytrznika();
         if (r !== a) rohy[k] = { akcia: a, preco: "Výtržník" };
         return r;
@@ -234,11 +273,7 @@ export function HernaKarta({ karta, sada, data, sirka, otocena = false, eval: ev
       return { ...z, nova: teraz - prvy < TRVANIE_ISKRY_MS };
     }),
   }));
-  const odznaky = vytrznik ? (
-    <span className="odznak-vytrznik">Výtržník!</span>
-  ) : ev?.vzbura === true || ev?.forsaz === true ? (
-    <span>{[ev.vzbura ? "Vzbura!" : null, ev.forsaz ? "Forsáž!" : null].filter((x) => x !== null).join(" ")}</span>
-  ) : undefined;
+  const peciatky = stavyKarty(ev, vytrznikTu, [...(stavVytrznika === null ? [] : [stavVytrznika]), ...(stavyZLinie ?? [])]);
 
   const preskolenia = kde?.miesto === "linia" ? stavPreskoleni(vzhladK.efekt, stol, karta.uid) : undefined;
   const sRohmi = l.rohy.some((r) => r !== null) || p.rohy.some((r) => r !== null);
@@ -254,8 +289,7 @@ export function HernaKarta({ karta, sada, data, sirka, otocena = false, eval: ev
       sirka={sirka}
       sloty={l.sloty !== null && p.sloty !== null ? { lava: l.sloty, prava: p.sloty } : null}
       zar={zarL.some((z) => z !== null) || zarP.some((z) => z !== null) ? { lava: zarL, prava: zarP } : undefined}
-      odznaky={odznaky}
-      peciatka={naex === undefined ? undefined : <PeciatkaNaex naex={naex} />}
+      peciatka={naex === undefined && peciatky.length === 0 ? undefined : <PeciatkyKarty naex={naex} stavy={peciatky} />}
       navyse={navyse}
       onClick={onClick}
       vybrana={vybrana ?? false}
