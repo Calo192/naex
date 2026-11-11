@@ -26,7 +26,7 @@
     "melichar": "Prvý Dlh! Úprimne, nečudujem sa. Nie je to karta, počíta sa dole pri tebe a je hneď priznaný. V každej bitke po neho príde Exekútor aj s tvojimi špakmi, a pri remíze v bitke rozhodujú aj Dlhy: kto ich má viac, prehrá."
   },
   "pas-cigarety": {
-    "melichar": "Pasovať sa oplatí aj skôr: za každú kartu, ktorú si ešte smel vyložiť, dostaneš [Cigareta] cigaretu. Jednu by si potom mohol aj vrátiť, len tak spomínam."
+    "melichar": "Za každú kartu vypiješ jeden [Poldeci] poldeci: koľko máš plných, toľko kariet vyložíš. Viac kariet naraz smieš, ale každá navyše stojí [Cigareta] cigaretu. Za pas nedostaneš nič – plné poldeci ti len ostanú, na NA EX aj na ďalšie Zhromaždenie. Ja by som ich nenechal stáť."
   },
   "lokalita-pravidlo": {
     "melichar": "{lokalita} má vlastné pravidlo a platí celé kolo: {efekt}"
