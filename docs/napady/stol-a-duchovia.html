@@ -1,0 +1,504 @@
+<!doctype html>
+<html lang="sk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Stôl A + duchovia spojov: 4 mocky (2026-11-11)</title>
+<style>
+/* Farby: apps/web/src/schemy.css, schéma Krčma. */
+:root{
+  --pozadie:#14110e; --plocha:#1e1914; --plocha-2:#28211a; --plocha-3:#332a21;
+  --okraj:#3d3229; --okraj-svetly:#57483a; --text:#f1e8d8; --tlmeny:#b6a790; --slaby-text:#9d8f7b;
+  --akcent:#e9ad45; --akcent-tmavy:#b9802a; --akcent-svetly:#ffd08a; --na-akcente:#2b1b03;
+  --cervena:#d0563f; --cervena-text:#e5735c; --tehla-tmava:#a8341f; --zelena:#7cbf74; --zelena-svetla:#7fe39a;
+  --stol:oklab(0.288 -0.0205 0.0197); --stol-okraj:oklab(0.671 -0.103 0.064);
+  --nadpis:"Bitter",Georgia,serif; --pismo:Roboto,"Segoe UI",system-ui,sans-serif;
+}
+*{box-sizing:border-box}
+html{color-scheme:dark}
+body{margin:0;background:var(--pozadie);color:var(--text);font:16px/1.55 var(--pismo)}
+main{max-width:1240px;margin:0 auto;padding:28px clamp(12px,2.5vw,32px) 100px}
+h1,h2,h3{font-family:var(--nadpis);line-height:1.2;margin:0}
+h1{font-size:clamp(1.6rem,1.2rem + 1.6vw,2.2rem)}
+h2{font-size:1.45rem}
+p{margin:.45em 0;max-width:80ch}
+a{color:var(--akcent-svetly)}
+.mut{color:var(--tlmeny)} .mala{font-size:.875rem}
+code{overflow-wrap:anywhere;background:var(--plocha-2);border:1px solid var(--okraj);border-radius:6px;padding:0 5px;font-size:.85em}
+.box{background:var(--plocha);border:1px solid var(--okraj);border-radius:12px;padding:16px 18px;margin:16px 0}
+.verdikt{border-left:4px solid var(--akcent)}
+nav.obsah{display:flex;flex-wrap:wrap;gap:8px;margin:18px 0 28px}
+nav.obsah a{color:var(--text);text-decoration:none;background:var(--plocha);border:1px solid var(--okraj);padding:6px 12px;border-radius:999px;font-size:.875rem;min-height:36px;display:inline-flex;align-items:center}
+nav.obsah a:hover,nav.obsah a:focus-visible{border-color:var(--akcent);outline:none}
+section.var{background:var(--plocha);border:1px solid var(--okraj);border-radius:16px;padding:18px;margin:0 0 34px}
+.hlava{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;margin-bottom:6px}
+.pismeno{background:var(--akcent);color:var(--na-akcente);font:700 1.1rem var(--nadpis);border-radius:8px;padding:2px 10px}
+.stitok{font-size:.75rem;border:1px solid var(--okraj-svetly);border-radius:999px;padding:1px 9px;color:var(--tlmeny)}
+.stitok.odp{border-color:var(--akcent);color:var(--akcent-svetly)}
+.pm{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:14px}
+@media (max-width:760px){.pm{grid-template-columns:1fr}}
+.pm>div{background:var(--plocha-2);border-radius:10px;padding:10px 14px}
+.pm b{display:block;margin-bottom:2px}
+.plus b{color:var(--zelena-svetla)} .minus b{color:var(--cervena-text)}
+.tech{font-size:.875rem;color:var(--tlmeny);margin-top:10px}
+.tech b{color:var(--text)}
+.ovl{display:flex;flex-wrap:wrap;align-items:center;gap:4px 8px}
+.prepinac{display:inline-flex;border:1px solid var(--okraj-svetly);border-radius:999px;overflow:hidden;margin:10px 8px 8px 0}
+.prepinac button{background:transparent;color:var(--tlmeny);border:0;padding:8px 14px;font:600 .875rem var(--pismo);cursor:pointer;min-height:40px}
+.prepinac button[aria-pressed="true"]{background:var(--akcent);color:var(--na-akcente)}
+.prepinac button:focus-visible,.tl:focus-visible{outline:2px solid var(--akcent-svetly);outline-offset:2px}
+.tl{background:var(--plocha-2);color:var(--text);border:1px solid var(--okraj-svetly);border-radius:999px;padding:7px 14px;font:600 .875rem var(--pismo);cursor:pointer;min-height:40px}
+.tl:hover{border-color:var(--akcent)}
+.rozmer{font-size:.8rem;color:var(--slaby-text)}
+.ram{position:relative;overflow:hidden;border-radius:10px;border:1px solid var(--okraj);background:#000;margin-top:6px}
+.ram.plna{overflow:auto;max-height:92vh}
+.obrazovka{position:absolute;left:0;top:0;transform-origin:0 0;background-repeat:no-repeat;background-size:100% 100%;overflow:hidden}
+.ram.plna .obrazovka{position:relative}
+.kryt{position:absolute;background:var(--pozadie)}
+/* stôl */
+.plst{position:absolute;border:2px solid var(--stol-okraj);border-radius:18px;background:radial-gradient(ellipse at center,color-mix(in srgb,#7fe89a 14%,transparent),transparent 70%),var(--stol);box-shadow:0 0 30px color-mix(in srgb,var(--stol-okraj) 30%,transparent)}
+.pilulka{position:absolute;left:50%;transform:translateX(-50%);height:29px;white-space:nowrap;background:var(--plocha);border:2px solid var(--stol-okraj);border-radius:20px;color:var(--tlmeny);font:14.9px/23px var(--pismo);padding:0 18px;z-index:5}
+.pilulka b{color:var(--zelena-svetla)}
+.hrana{position:absolute;display:flex;align-items:center;justify-content:space-between;z-index:6}
+.pivnica{display:flex;flex-direction:column;align-items:center;color:var(--slaby-text);font:700 11px var(--pismo);letter-spacing:.08em}
+.pivnica span{font:700 22px var(--nadpis);color:#cfc3ae}
+.zaverecna{border:2px dashed #4a4036;border-radius:10px;padding:8px 14px;color:#5f564b;font:700 15px var(--nadpis)}
+.pasovat{border:3px solid var(--akcent);border-radius:12px;background:#2a1f12;color:var(--akcent);font:800 18px var(--nadpis);letter-spacing:.06em;padding:12px 22px;transform:rotate(-2deg);box-shadow:0 0 0 3px #2a1f12,0 4px 16px rgba(0,0,0,.5)}
+.posuv{position:absolute;overflow-x:auto;overflow-y:hidden;display:flex;scrollbar-width:thin;scrollbar-color:color-mix(in srgb,var(--akcent) 70%,transparent) transparent;overscroll-behavior-x:contain}
+.posuv::-webkit-scrollbar{height:8px}
+.posuv::-webkit-scrollbar-thumb{background:color-mix(in srgb,var(--akcent) 70%,transparent);border-radius:8px}
+.posuv.tien-l{-webkit-mask-image:linear-gradient(90deg,transparent 0,#000 70px);mask-image:linear-gradient(90deg,transparent 0,#000 70px)}
+.posuv.tien-p{-webkit-mask-image:linear-gradient(270deg,transparent 0,#000 70px);mask-image:linear-gradient(270deg,transparent 0,#000 70px)}
+.posuv.tien-l.tien-p{-webkit-mask-image:linear-gradient(90deg,transparent 0,#000 70px,#000 calc(100% - 70px),transparent 100%);mask-image:linear-gradient(90deg,transparent 0,#000 70px,#000 calc(100% - 70px),transparent 100%)}
+.stopa{display:flex;align-items:flex-start;margin:0 auto;flex:none;position:relative}
+.skupina{display:flex;flex-direction:column;flex:none;position:relative}
+.skupina.lok::before{content:"";position:absolute;inset:0 0 -6px;background:color-mix(in srgb,var(--akcent) 8%,transparent);border-radius:12px}
+.popis{height:22px;font:700 11.5px/22px var(--pismo);letter-spacing:.08em;text-transform:uppercase;white-space:nowrap;padding:0 6px;position:relative}
+.popis em{font-style:normal;text-transform:none;letter-spacing:0;font-weight:600;opacity:.9}
+.skupina.ja .popis{color:#65d1d5;text-align:right}
+.skupina.su .popis{color:#c97a9c}
+.skupina.lok .popis{color:var(--akcent-svetly);text-align:center;contain:inline-size}
+.rad{display:flex;align-items:flex-start;padding-top:22px;position:relative}
+.kc{position:relative;flex:none;border-radius:5.5%/3.75%;box-shadow:0 1px 2px rgba(0,0,0,.4),0 10px 26px rgba(0,0,0,.38);transition:filter .18s ease}
+.kc>img{position:absolute;left:0;top:0;display:block;border-radius:inherit;user-select:none;-webkit-user-drag:none}
+.kc .nastroj{position:absolute;top:-21px;left:22%;width:56%;height:21px;border-radius:7px 7px 0 0;background:#6dbf8c;color:#10301c;font:700 10px/21px var(--pismo);text-align:center;letter-spacing:.04em;text-transform:uppercase}
+.kc.stlm{filter:brightness(.5) saturate(.6)}
+.miesto{flex:none;border:2px dashed color-mix(in srgb,var(--zelena) 55%,transparent);border-radius:10px;background:color-mix(in srgb,var(--zelena) 6%,transparent);color:var(--zelena);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;font:600 11.5px var(--pismo);text-align:center;position:relative}
+.miesto .plus{font:700 26px/1 var(--pismo)}
+.miesto.ma-ducha{border:0;background:transparent}
+.miesto.ma-ducha>span{display:none}
+.sipka{position:absolute;z-index:8;width:44px;height:44px;border-radius:50%;border:2px solid var(--akcent);background:rgba(20,17,14,.88);color:var(--akcent);font:700 22px/1 var(--pismo);cursor:pointer;display:none;align-items:center;justify-content:center;flex-direction:column;box-shadow:0 4px 14px rgba(0,0,0,.5)}
+.sipka small{font:700 10px/1 var(--pismo);color:var(--akcent-svetly)}
+.sipka.vidno{display:flex}
+.sipka:hover{background:var(--akcent);color:var(--na-akcente)}
+.sipka:hover small{color:var(--na-akcente)}
+.nastred{position:absolute;z-index:8;transform:translateX(-50%);border:1px solid var(--okraj-svetly);background:rgba(20,17,14,.9);color:var(--akcent-svetly);border-radius:999px;font:600 12px var(--pismo);padding:5px 12px;cursor:pointer;display:none}
+.nastred.vidno{display:block}
+.okraj-spoj{position:absolute;z-index:9;display:none;background:rgba(20,17,14,.92);color:var(--akcent-svetly);border:1.5px solid var(--akcent);font:700 13px var(--pismo);border-radius:999px;padding:8px 14px;cursor:pointer;box-shadow:0 4px 14px rgba(0,0,0,.55)}
+.okraj-spoj.vidno{display:block}
+/* duch (spoločné) */
+.duch{position:absolute;left:0;top:0;animation:duch-in .2s ease-out}
+@keyframes duch-in{from{opacity:0;transform:translateY(8px)}}
+.duch .telo{position:absolute;inset:0;border-radius:5.5%/3.75%;overflow:hidden;-webkit-mask-image:linear-gradient(#000 72%,transparent 100%);mask-image:linear-gradient(#000 72%,transparent 100%)}
+.duch .telo img{width:100%;display:block}
+.duch.bez .telo{filter:grayscale(1) brightness(.75)}
+.cip{position:absolute;left:50%;transform:translateX(-50%);white-space:nowrap;border-radius:999px;font:700 13px/1 var(--pismo);padding:6px 11px;z-index:4}
+.cip.ucinok{background:var(--tehla-tmava);color:#fff}
+/* 1 · teplý obrys + tenký mostík */
+.s-obrys .duch .telo{opacity:.6;outline:2px dashed color-mix(in srgb,var(--akcent-svetly) 70%,transparent);outline-offset:2px}
+.s-obrys .duch.bez .telo{opacity:.42;outline-color:#6b645a}
+.s-obrys .krh{position:absolute;border-radius:50%;border:2px solid var(--akcent-svetly);transform:translate(-50%,-50%);z-index:3;pointer-events:none}
+.s-obrys .most{position:absolute;height:2px;margin-top:-1px;background:var(--akcent-svetly);z-index:3;pointer-events:none}
+.s-obrys .cip.pocet{background:var(--plocha);border:1px solid var(--akcent);color:var(--akcent-svetly)}
+.s-obrys .cip.pocet.bez{border-color:var(--okraj-svetly);color:var(--tlmeny)}
+/* 2 · len mostík + stlmenie */
+.s-most .duch .telo{opacity:.72;outline:1px solid color-mix(in srgb,var(--text) 45%,transparent);outline-offset:1px}
+.s-most .duch.bez .telo{opacity:.45}
+.s-most .most{position:absolute;height:3px;margin-top:-1.5px;background:var(--text);border-radius:2px;z-index:3;pointer-events:none;box-shadow:0 0 0 1px rgba(20,17,14,.6)}
+.s-most .most::before,.s-most .most::after{content:"";position:absolute;top:50%;width:9px;height:9px;margin-top:-4.5px;border-radius:50%;background:var(--text);box-shadow:0 0 0 1px rgba(20,17,14,.6)}
+.s-most .most::before{left:-4px} .s-most .most::after{right:-4px}
+.s-most .cip.pocet{background:rgba(20,17,14,.82);color:var(--text);font-weight:600}
+/* 3 · pečatka nad koncom, bez ducha */
+.s-pecat .miesto.ciel{border:2px solid color-mix(in srgb,var(--akcent) 75%,transparent);background:color-mix(in srgb,var(--akcent) 9%,transparent);color:var(--akcent-svetly)}
+.s-pecat .miesto.ciel-bez{border-color:#6b645a;color:var(--tlmeny);background:transparent}
+.pecatka{position:absolute;left:50%;bottom:calc(100% + 10px);transform:translateX(-50%) rotate(-4deg);background:#2a1f12;border:2px dashed var(--akcent);border-radius:12px;padding:6px 10px 8px;z-index:6;box-shadow:0 0 0 3px #2a1f12,0 8px 18px rgba(0,0,0,.55);white-space:nowrap;animation:pecat-in .2s ease-out}
+@keyframes pecat-in{from{opacity:0;transform:translateX(-50%) rotate(-4deg) scale(1.25)}}
+.pecatka h4{margin:0 0 5px;font:800 14px var(--nadpis);color:var(--akcent);letter-spacing:.06em;text-transform:uppercase;text-align:center}
+.pecatka .pary{display:flex;gap:8px;justify-content:center}
+.pecatka .par{display:flex;align-items:center;gap:3px}
+.pecatka .par i{display:block;border-radius:7px;background-repeat:no-repeat;box-shadow:0 0 0 1px rgba(0,0,0,.6)}
+.pecatka .par b{color:var(--akcent-svetly);font:700 12px var(--pismo)}
+.pecatka.bez{border-color:#6b645a;color:var(--tlmeny)}
+.pecatka.bez h4{color:var(--tlmeny)}
+.pecatka .ucinok{display:block;margin-top:6px;text-align:center;background:var(--tehla-tmava);color:#fff;border-radius:999px;font:700 12px var(--pismo);padding:3px 9px}
+/* 4 · svetlo pod duchom + počet */
+.s-lampa .duch::before{content:"";position:absolute;left:-45%;right:-45%;top:-18%;bottom:-30%;background:radial-gradient(ellipse 50% 50% at 50% 55%,color-mix(in srgb,var(--akcent-svetly) 46%,transparent),color-mix(in srgb,var(--akcent) 16%,transparent) 55%,transparent 75%);z-index:-1;pointer-events:none}
+.s-lampa .duch.bez::before{display:none}
+.s-lampa .duch .telo{opacity:.74;filter:sepia(.25) brightness(1.05)}
+.s-lampa .duch.bez .telo{opacity:.4;filter:grayscale(1) brightness(.75)}
+.s-lampa .iskra{position:absolute;width:16px;height:5px;margin:-2.5px 0 0 -8px;border-radius:3px;background:var(--akcent-svetly);box-shadow:0 0 8px 1px color-mix(in srgb,var(--akcent) 80%,transparent);z-index:3;pointer-events:none}
+.s-lampa .cislo{position:absolute;top:-16px;width:38px;height:38px;margin-left:-19px;border-radius:50%;background:#2a1f12;border:2px dashed var(--akcent);color:var(--akcent);font:800 20px/34px var(--nadpis);text-align:center;transform:rotate(-8deg);z-index:5;box-shadow:0 0 0 3px #2a1f12}
+.s-lampa .cislo.bez{border-color:#6b645a;color:var(--tlmeny);font-size:11px;line-height:13px;padding-top:4px}
+/* ruka: zóny, lupa, kurzor */
+.zona{position:absolute;border-radius:8px;cursor:pointer;z-index:10}
+.zona.akt{box-shadow:0 0 0 2px var(--akcent)}
+.nedasa{position:absolute;bottom:calc(100% + 8px);left:50%;transform:translateX(-50%);white-space:nowrap;background:#3a1d17;border:1px solid var(--cervena);color:#ffb3a3;font:700 12px var(--pismo);padding:4px 10px;border-radius:999px;z-index:30}
+.lupa{position:absolute;z-index:20;pointer-events:none;border-radius:5.5%/3.75%;overflow:hidden;background:#fff;box-shadow:0 0 0 2px var(--akcent),0 24px 50px rgba(0,0,0,.7);animation:lupa-in .14s ease-out}
+@keyframes lupa-in{from{transform:scale(.6);opacity:.4}}
+.lupa .ilu{position:absolute;left:0;right:0;top:0;overflow:hidden;background:#000}
+.lupa .ilu img{width:100%;display:block}
+.lupa .ef{position:absolute;left:0;right:0;bottom:0;display:flex;align-items:center;justify-content:center;text-align:center;color:#4a3826;font:13px/1.35 var(--pismo);padding:6px 10px}
+.lupa .ef b{color:#7a4a2a;text-decoration:underline dotted}
+.kurzor{position:absolute;z-index:40;pointer-events:none;width:22px;height:30px}
+.ram:hover .kurzor{display:none}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<main>
+<header>
+  <p class="mut mala">NA EX! · návrh dizajnu stola · 2026-11-11 · nadväzuje na <a href="stol-rozlozenie.html">stol-rozlozenie.html</a> (Michal vybral A + duchovia)</p>
+  <h1>Hotový stôl: rozloženie A a duchovia spojov bez prehnanej zelenej</h1>
+  <div class="box verdikt">
+    <p><b>Odporúčam mock 1, teda teplý obrys a tenký mostík.</b> Duch karty leží na konci línie, akcie spoja majú tenký krúžok v jantárovej farbe stola a medzi nimi je 2 px mostík. Je to rovnaká informácia ako v pôvodnej podobe G1, len potichu: nič nesvieti, nič nepulzuje a farba je z palety krčmy (<code>--akcent-svetly</code>), nie z výrazných herných signálov. Ak by aj to bolo veľa, druhá voľba je mock 4 (svetlo lampy pod duchom). Najtichší je mock 3: pečatka bez ducha, línia ostáva nedotknutá.</p>
+  </div>
+  <p class="mala mut">Všetky štyri mocky sú ten istý okamih: Zhromaždenie vo finále, 9 kariet + lokalita Herňa, kurzor nad <b>Degustátorkou</b> v ruke (nad ňou je lupa, ako v hre). <b>Prejdi myšou nad ďalšie karty v ruke:</b> Profesionálny tipér (2 + 1 spoj), Kôň (1 spoj, vpravo bez spoja), Cirhóza (nedá sa vyložiť). Keď myš opustí ruku, mock sa vráti k Degustátorke. V hre by duch zmizol. Na notebooku je pravý koniec mimo obrazovky, preto pri okraji vidno „2 spoje →“. Klik na ňu alebo na šípku posunie líniu. Miesto „+“ na konci má počas vykladania veľkosť karty. Duch ho len vyplní, takže línia sa pri prejdení myšou po ruke nehýbe. Na veľkom monitore sa línia vojde celá, karta sa na to zmenší o 7 % (z 221 na 205 px), namiesto aby sa línia posúvala o 200 px. Tlačidlo <b>Skutočná veľkosť</b> ukáže obrazovku 1 : 1.</p>
+</header>
+
+<nav class="obsah" aria-label="Obsah">
+  <a href="#m1">1 · teplý obrys + mostík</a><a href="#m4">4 · svetlo pod duchom</a><a href="#m3">3 · pečatka bez ducha</a><a href="#m2">2 · mostík + stlmenie</a><a href="#spolocne">Spoločné pre všetky</a>
+</nav>
+
+<section class="var" id="m1" data-styl="obrys">
+  <div class="hlava"><span class="pismeno">1</span><h2>Teplý obrys akcie + tenký mostík</h2><span class="stitok odp">odporúčam</span><span class="stitok">duch na konci (G1)</span></div>
+  <p>Polopriehľadný duch s prerušovaným krémovým obrysom leží na konci, kam by karta išla. Spojené akcie na duchovi aj na karte v línii majú 2 px jantárový krúžok bez žiary a spája ich 2 px mostík cez spoj. Nad duchom je tmavý štítok „2 spoje“ s jantárovým textom. Duch bez spoja je sivý a bez štítka farby. Kam sa nedá, tam nie je nič.</p>
+  <div class="ovl"><span class="prepinac" role="group" aria-label="Rozlíšenie"><button type="button" data-r="nb" aria-pressed="true">Notebook 1512 × 860</button><button type="button" data-r="vel" aria-pressed="false">Veľký monitor 2560 × 1080</button></span><button type="button" class="tl" data-plna>Skutočná veľkosť</button><span class="rozmer" data-rozmer></span></div>
+  <div class="ram"></div>
+  <div class="pm"><div class="plus"><b>Pre</b>Hráč presne vidí, kde karta bude ležať a ktoré akcie sa stretnú, a nič pritom nekričí. Jantár je farba „svetla na stole“, ktorú stôl už má (lokalita, posuvník). Kontrast krúžku #ffd08a voči plsti je ~9 : 1, takže je dobre vidno aj pri 2 px.</div><div class="minus"><b>Proti</b>Na tmavých ilustráciách tenký krúžok splýva s rámikom ikony akcie. Pri troch a viac spojoch je na hrane viac čiar naraz.</div></div>
+</section>
+
+<section class="var" id="m4" data-styl="lampa">
+  <div class="hlava"><span class="pismeno">4</span><h2>Svetlo lampy pod duchom + počet spojov</h2><span class="stitok">duch na konci (G1)</span><span class="stitok">posilňuje identitu krčmy</span></div>
+  <p>Duch nemá obrys. Pod ním je teplý kužeľ svetla, akoby naň svietila lampa nad stolom. Spoj ukazuje len krátka jantárová „iskra“ na švíku medzi kartami v riadku spojených akcií. Počet spojov je v okrúhlej pečiatke v rohu ducha, rovnakej ako „+1“ pečiatky na stole. Duch bez spoja ostane v tme.</p>
+  <div class="ovl"><span class="prepinac" role="group" aria-label="Rozlíšenie"><button type="button" data-r="nb" aria-pressed="true">Notebook 1512 × 860</button><button type="button" data-r="vel" aria-pressed="false">Veľký monitor 2560 × 1080</button></span><button type="button" class="tl" data-plna>Skutočná veľkosť</button><span class="rozmer" data-rozmer></span></div>
+  <div class="ram"></div>
+  <div class="pm"><div class="plus"><b>Pre</b>Atmosféra krčmy: „sem by si si sadol“. Číslo v pečiatke prečítaš na prvý pohľad aj na druhom konci stola. Na akciách v línii nie je žiadna farba, len iskra na švíku.</div><div class="minus"><b>Proti</b>Iskra je malá. Ktoré akcie sa spoja, treba hľadať, a číslo samo nepovie, ktoré to sú. Na veľkom monitore svetlo pôsobí jemne, na notebooku s menšou kartou je ho menej vidno.</div></div>
+</section>
+
+<section class="var" id="m3" data-styl="pecat">
+  <div class="hlava"><span class="pismeno">3</span><h2>Pečatka nad koncom línie, bez ducha</h2><span class="stitok">bez ducha (G2)</span><span class="stitok">najtichší</span></div>
+  <p>Na stole nepribudne karta ani farba na akciách. Miesto „+“ na konci dostane jantárový okraj a nad ním je pečatka „2 spoje“. V nej sú dvojice ikon <b>akcia v línii ↔ akcia novej karty</b>, vystrihnuté z oboch kariet a uložené v poradí zhora nadol. Pod pečatkou je červeno označený účinok („Cirhóza +2“). Bez spoja je pečatka sivá a kam sa nedá, tam nie je nič.</p>
+  <div class="ovl"><span class="prepinac" role="group" aria-label="Rozlíšenie"><button type="button" data-r="nb" aria-pressed="true">Notebook 1512 × 860</button><button type="button" data-r="vel" aria-pressed="false">Veľký monitor 2560 × 1080</button></span><button type="button" class="tl" data-plna>Skutočná veľkosť</button><span class="rozmer" data-rozmer></span></div>
+  <div class="ram"></div>
+  <div class="pm"><div class="plus"><b>Pre</b>Línia ostáva čistá a nehýbe sa. Pečatka hovorí jazykom pečiatok, ktoré hra už má (NA EX, „+1“), a dvojice ikon presne pomenujú, čo sa spojí. Implementácia je najlacnejšia, lebo netreba žiadne miesto navyše na konci.</div><div class="minus"><b>Proti</b>Hráč nevidí kartu na mieste, takže polohu a natočenie si domýšľa. Pečatka zakryje nadpis kraja („V zadnej miestnosti“) nad koncom línie.</div></div>
+</section>
+
+<section class="var" id="m2" data-styl="most">
+  <div class="hlava"><span class="pismeno">2</span><h2>Len mostík medzi hranami + stlmenie ostatných kariet</h2><span class="stitok">duch na konci (G1)</span></div>
+  <p>Akcie nemajú žiadny krúžok, len krémový mostík s bodkami na koncoch, položený cez švík v riadku spoja. Všetky karty v línii okrem dvoch krajných sa stlmia na 50 % jasu, takže pozornosť ide na konce. Duch má jemný svetlý obrys a nad ním je nenápadný štítok s počtom.</p>
+  <div class="ovl"><span class="prepinac" role="group" aria-label="Rozlíšenie"><button type="button" data-r="nb" aria-pressed="true">Notebook 1512 × 860</button><button type="button" data-r="vel" aria-pressed="false">Veľký monitor 2560 × 1080</button></span><button type="button" class="tl" data-plna>Skutočná veľkosť</button><span class="rozmer" data-rozmer></span></div>
+  <div class="ram"></div>
+  <div class="pm"><div class="plus"><b>Pre</b>Bez akejkoľvek farby navyše, len svetlo a tieň. Stlmenie odpovie na otázku „kam sa pozerať“ lepšie než farba a mostík je dobre vidno aj na tmavej ilustrácii.</div><div class="minus"><b>Proti</b>Stmavnutý stôl pri každom prejdení myšou po ruke bliká, a to proti zásade čistého a pokojného stola. Hráč, ktorý len číta karty v ruke, stráca výhľad na líniu.</div></div>
+</section>
+
+<section class="box" id="spolocne">
+  <h2>Spoločné pre všetky štyri</h2>
+  <p><b>Rozloženie A:</b> výšku karty počíta CSS z výšky stola (<code>container-type: size</code>). Na každom konci línie je počas vykladania miesto „+“ vo veľkosti karty. Lokalita sa po načítaní vycentruje, no ak by kratší koniec vytŕčal o menej než jednu kartu, línia sa zarovná naň, aby nebola žiadna karta odrezaná napoly. Šípky ukazujú počet skrytých kariet. Na veľkom monitore sa karta zmenší najviac o 10 %, ak sa tým línia vojde celá aj s miestom na kraji. Inak sa línia posúva.</p>
+  <p><b>Duchovia:</b> zobrazia sa pri prejdení myšou nad kartou v ruke (na dotykovej obrazovke pri podržaní, spolu s lupou). Dáta sú <code>moznostiMiesta</code> → <code>NahladVylozenia.pary</code> v <code>HernaPlocha.tsx</code>, stačí ich vypočítať pre jednu kartu. Prvé zobrazenie trvá 150–200 ms (rovnako ako lupa). <code>prefers-reduced-motion</code> animáciu vypne. Keď je koniec mimo obrazovky, pri okraji sa ukáže „N spojov →“ a klik naň línie posunie.</p>
+  <p><b>Lupa</b> nad kartou v ruke ostáva. Na notebooku prekryje spodok stredných kariet, nie však konce s duchmi.</p>
+  <p class="tech"><b>Dotknuté súbory:</b> <code>HernaPlocha.tsx</code> (veľkosť karty, posun, duch pri <code>nadLupou</code> karty v ruke), <code>hra.css</code>, nový malý komponent ducha alebo pečatky. Farby len zo <code>schemy.css</code> (<code>--akcent</code>, <code>--akcent-svetly</code>, <code>--text</code>, <code>--tehla-tmava</code>), takže v iných schémach sa prefarbia samy.</p>
+</section>
+</main>
+
+<script>
+(() => {
+"use strict";
+const IMG = "stol-rozlozenie/";
+const K = [
+  { img: "linia-0.jpg", meno: "Šarlatán", otoc: false },
+  { img: "linia-1.jpg", meno: "Mäsiar", otoc: false },
+  { img: "linia-2.jpg", meno: "Veterán", otoc: false },
+  { img: "linia-3.jpg", meno: "Herňa", otoc: true },
+  { img: "linia-4.jpg", meno: "Pijan", otoc: true, nastroj: true },
+  { img: "linia-5.jpg", meno: "Kočovník", otoc: true },
+  { img: "linia-6.jpg", meno: "Anonymný alkoholik", otoc: true },
+  { img: "linia-7.jpg", meno: "Dvojčatá", otoc: false },
+  { img: "linia-8.jpg", meno: "Dohadzovačka", otoc: false },
+  { img: "linia-9.jpg", meno: "Stryná", otoc: false },
+];
+const LOK = 3, POSUN = 0.325;
+/* riadky akcií (zlomok výšky karty) a vodorovné polohy slotov: karta v línii / karta v ruke */
+const RIADKY = [0.151, 0.265, 0.385, 0.515];
+const X_L = 0.085, X_P = 0.925, RX_L = 0.083, RX_P = 0.908;
+const RUKA = {
+  degustatorka: { meno: "Degustátorka", img: "ruka-degustatorka.jpg", vlavo: [0,3], vpravo: [0,1], ucinok: "Cirhóza +2",
+    ef: "<b>Nástup:</b> Ak má súper viac plných poldecí ako ty, jeden mu vyžerie." },
+  tiper: { meno: "Profesionálny tipér", img: "ruka-tiper.jpg", vlavo: [0,3], vpravo: [1], ef: "<b>Konflikt:</b> Preškolenie." },
+  kon: { meno: "Kôň", img: "ruka-kon.jpg", vlavo: [0], vpravo: [], ef: "<b>Furt:</b> Kým leží v línii, Nástroj smieš podložiť aj pod Zviera. Roboty Koňa pália o 1 Dlh viac." },
+  cirhoza: { meno: "Cirhóza", img: "ruka-cirhoza.jpg", nedasa: true, ef: "" },
+};
+const PORADIE = ["degustatorka", "tiper", "kon", "cirhoza"];
+const OBR = {
+  nb: { W: 1512, H: 860, img: "nb.jpg", kryt: [0,172,1512,495], plst: [16,191,1465,450], h: 254, lupaW: 196,
+        ruka: [[545,750,96,110],[649,750,96,110],[753,750,96,110],[857,750,96,110]] },
+  vel: { W: 2560, H: 1080, img: "vel.jpg", kryt: [0,236,2560,592], plst: [16,258,2513,541], h: 328, lupaW: 240,
+        ruka: [[1021,946,120,134],[1149,946,120,134],[1277,946,120,134],[1405,946,120,134]] },
+};
+const el = (t, c, html) => { const e = document.createElement(t); if (c) e.className = c; if (html !== undefined) e.innerHTML = html; return e; };
+const px = (n) => `${Math.round(n)}px`;
+const spoje = (n) => (n === 1 ? "1 spoj" : `${n} spoje`);
+
+/* ---------- línia ---------- */
+function linia(h, sirkaPosuvu) {
+  // výška z výšky stola; ak sa línia s miestom na kraji vojde pri zmenšení najviac o 10 %, zmenší sa
+  let w = Math.round(h * 54 / 80);
+  const potrebna = (ww) => 12 * ww + 40;
+  if (potrebna(w) > sirkaPosuvu && (sirkaPosuvu - 40) / 12 >= 0.9 * w) { w = Math.floor((sirkaPosuvu - 40) / 12); h = Math.round(w * 80 / 54); }
+  // miesto na kartu má počas vykladania veľkosť karty: duch ho vyplní a línia sa pri prejdení myšou nehýbe
+  const miestoW = w;
+  const stopa = el("div", "stopa");
+  stopa.style.padding = "0 20px";
+  const miesto = (s) => {
+    const m = el("div", "miesto", `<span class="plus">+</span><span>${s === "L" ? "spoj: 3" : "spoj: 2"}</span>`);
+    m.style.width = px(miestoW); m.style.height = px(0.76 * h); m.style.marginTop = px(44 + POSUN * h);
+    return m;
+  };
+  const kartyEl = new Map();
+  const mL = miesto("L"), mP = miesto("P");
+  stopa.append(mL);
+  let z = 1;
+  for (const [cls, popis, od] of [
+    ["ja", "← V zadnej miestnosti <em>· prevaha: ty</em>", (i) => i < LOK],
+    ["lok", "Finále · Lokalita", (i) => i === LOK],
+    ["su", "Pri automatoch <em>· prevaha: ty</em> →", (i) => i > LOK],
+  ]) {
+    const g = el("div", "skupina " + cls); g.append(el("div", "popis", popis));
+    const r = el("div", "rad");
+    K.forEach((k, i) => {
+      if (!od(i)) return;
+      const c = el("div", "kc"); c.tabIndex = -1;
+      c.style.width = px(w); c.style.height = px(h); c.style.marginTop = px(k.otoc ? 0 : POSUN * h); c.style.zIndex = z++;
+      const im = el("img"); im.src = IMG + k.img; im.alt = k.meno; im.style.width = px(w); im.style.height = px(h);
+      c.append(im);
+      if (k.nastroj) c.append(el("div", "nastroj", "Nástroj"));
+      kartyEl.set(i, c); r.append(c);
+    });
+    g.append(r); stopa.append(g);
+  }
+  stopa.append(mP);
+  return { stopa, w, h, miestoW, mL, mP, kartyEl };
+}
+
+/* ---------- zvýraznenie spoja podľa štýlu ---------- */
+function ikona(img, xFr, yFr, d) {
+  // výrez ikony akcie z obrázka karty: karta v pozadí veľká tak, aby ikona (~14 % šírky) mala d px
+  const W = d / 0.14, H = W * 1.484;
+  const i = el("i");
+  i.style.cssText = `width:${px(d)};height:${px(d)};background-image:url(${IMG}${img});background-size:${px(W)} ${px(H)};background-position:${px(-(xFr * W - d / 2))} ${px(-(yFr * H - d / 2))}`;
+  return i;
+}
+function zobraz(L, styl, kluc) {
+  for (const m of [L.mL, L.mP]) {
+    m.querySelectorAll(".duch,.pecatka").forEach((x) => x.remove());
+    m.classList.remove("ma-ducha", "ciel", "ciel-bez");
+  }
+  L.kartyEl.forEach((c) => { c.classList.remove("stlm"); c.querySelectorAll(".krh,.most,.iskra").forEach((x) => x.remove()); });
+  if (!kluc) return;
+  const d = RUKA[kluc];
+  if (d.nedasa) return;
+  const { w, h } = L;
+  if (styl === "most") L.kartyEl.forEach((c, i) => { if (i !== 0 && i !== 9) c.classList.add("stlm"); });
+  for (const s of ["L", "P"]) {
+    const m = s === "L" ? L.mL : L.mP;
+    const pary = s === "L" ? d.vlavo : d.vpravo;
+    const sused = L.kartyEl.get(s === "L" ? 0 : 9);
+    const ucinok = s === "P" && pary.length ? d.ucinok : null;
+    if (styl === "pecat") {
+      m.classList.add(pary.length ? "ciel" : "ciel-bez");
+      const p = el("div", "pecatka" + (pary.length ? "" : " bez"));
+      p.append(el("h4", "", pary.length ? spoje(pary.length) : "bez spoja"));
+      if (pary.length) {
+        const pr = el("div", "pary");
+        const dIk = Math.round(Math.max(26, w * 0.15));
+        for (const r of pary) {
+          const par = el("div", "par");
+          const vLinii = ikona(K[s === "L" ? 0 : 9].img, s === "L" ? X_L : X_P, RIADKY[r], dIk);
+          const nova = ikona(d.img, s === "L" ? RX_P : RX_L, RIADKY[r], dIk);
+          // poradie zľava doprava ako na stole: na ľavom konci nová karta vľavo
+          if (s === "L") par.append(nova, el("b", "", "↔"), vLinii); else par.append(vLinii, el("b", "", "↔"), nova);
+          pr.append(par);
+        }
+        p.append(pr);
+      }
+      if (ucinok) p.append(el("span", "ucinok", ucinok));
+      m.append(p);
+      continue;
+    }
+    // G1: duch na mieste
+    m.classList.add("ma-ducha");
+    const du = el("div", "duch" + (pary.length ? "" : " bez"));
+    du.style.width = px(w); du.style.height = px(0.76 * h);
+    const telo = el("div", "telo"); const im = el("img"); im.src = IMG + d.img; im.alt = ""; telo.append(im); du.append(telo);
+    const hranaDucha = s === "L" ? X_P : X_L, hranaSuseda = s === "L" ? X_L : X_P;
+    const seam = s === "L" ? 1 : 0; // švík: pravý okraj ducha na ľavom konci, ľavý na pravom
+    for (const r of pary) {
+      const y = RIADKY[r] * h;
+      if (styl === "obrys") {
+        for (const [kam, x] of [[du, hranaDucha], [sused, hranaSuseda]]) {
+          const k = el("div", "krh"); k.style.left = `${x * 100}%`; k.style.top = px(y); k.style.width = k.style.height = px(0.17 * w); kam.append(k);
+        }
+      }
+      if (styl === "obrys" || styl === "most") {
+        const mo = el("div", "most"); mo.style.top = px(y);
+        const od = s === "L" ? X_P : -(1 - X_P);
+        mo.style.left = `${od * 100}%`; mo.style.width = `${(1 - X_P + X_L) * 100}%`;
+        du.append(mo);
+      }
+      if (styl === "lampa") {
+        const is = el("div", "iskra"); is.style.left = `${seam * 100}%`; is.style.top = px(y); du.append(is);
+      }
+    }
+    if (styl === "lampa") {
+      const c = el("div", "cislo" + (pary.length ? "" : " bez"), pary.length ? String(pary.length) : "bez<br>spoja");
+      c.style.left = s === "L" ? "14%" : "86%";
+      du.append(c);
+    } else {
+      const c = el("div", "cip pocet" + (pary.length ? "" : " bez"), pary.length ? spoje(pary.length) : "bez spoja");
+      c.style.top = "-16px"; du.append(c);
+    }
+    if (ucinok) { const u = el("div", "cip ucinok", ucinok); u.style.top = px(0.76 * h - 4); du.append(u); }
+    m.append(du);
+  }
+}
+
+/* ---------- šípky, okraj so spojmi ---------- */
+function ovladanie(obr, posuv, L, x, y, w, hP, styl) {
+  const poloha = (c) => { let s = 0, e = c; while (e && e !== posuv) { s += e.offsetLeft; e = e.offsetParent; } return s; };
+  const stredY = y + 44 + POSUN * L.h + 0.34 * L.h;
+  const sL = el("button", "sipka"), sP = el("button", "sipka");
+  sL.type = sP.type = "button"; sL.setAttribute("aria-label", "Posunúť líniu doľava"); sP.setAttribute("aria-label", "Posunúť líniu doprava");
+  sL.style.left = px(x + 10); sP.style.left = px(x + w - 54); sL.style.top = sP.style.top = px(stredY - 22);
+  const nast = el("button", "nastred", "◎ Na lokalitu"); nast.type = "button"; nast.style.left = px(x + w / 2); nast.style.top = px(y + hP - 62);
+  const okL = el("button", "okraj-spoj"), okP = el("button", "okraj-spoj"); okL.type = okP.type = "button";
+  okL.style.left = px(x + 62); okP.style.right = px(parseFloat(obr.style.width) - (x + w) + 62);
+  okL.style.top = okP.style.top = px(stredY - 18);
+  obr.append(sL, sP, nast, okL, okP);
+  // lokalita do stredu; ak by kratší koniec vytŕčal o menej než kartu, zarovná sa naň (nič sa neodreže napoly)
+  const naLokalitu = () => {
+    const c = L.kartyEl.get(LOK), max = posuv.scrollWidth - posuv.clientWidth;
+    let s = poloha(c) + c.offsetWidth / 2 - posuv.clientWidth / 2;
+    if (s < L.w + 20) s = 0; else if (max - s < L.w + 20) s = max;
+    posuv.scrollLeft = s;
+  };
+  const obnov = () => {
+    const vl = posuv.scrollLeft, vp = vl + posuv.clientWidth, moze = posuv.scrollWidth > posuv.clientWidth + 2;
+    let hl = 0, hp = 0;
+    L.kartyEl.forEach((c) => { const p = poloha(c) + c.offsetWidth / 2; if (p < vl) hl++; if (p > vp) hp++; });
+    sL.classList.toggle("vidno", moze && vl > 4); sP.classList.toggle("vidno", moze && vp < posuv.scrollWidth - 4);
+    sL.innerHTML = `‹<small>${hl || ""}</small>`; sP.innerHTML = `›<small>${hp || ""}</small>`;
+    posuv.classList.toggle("tien-l", moze && vl > 4); posuv.classList.toggle("tien-p", moze && vp < posuv.scrollWidth - 4);
+    const lc = L.kartyEl.get(LOK); nast.classList.toggle("vidno", moze && Math.abs(poloha(lc) + lc.offsetWidth / 2 - (vl + posuv.clientWidth / 2)) > 60);
+    for (const [m, ok, s] of [[L.mL, okL, "L"], [L.mP, okP, "P"]]) {
+      const n = obr._pary ? obr._pary[s] : null;
+      const p = poloha(m) + m.offsetWidth / 2;
+      const mimo = s === "L" ? p < vl : p > vp;
+      ok.classList.toggle("vidno", n !== null && n > 0 && mimo);
+      if (n) ok.textContent = s === "L" ? `← ${spoje(n)}` : `${spoje(n)} →`;
+    }
+  };
+  sL.onclick = () => posuv.scrollBy({ left: -2 * L.w, behavior: "smooth" });
+  sP.onclick = () => posuv.scrollBy({ left: 2 * L.w, behavior: "smooth" });
+  nast.onclick = () => { posuv.style.scrollBehavior = "smooth"; naLokalitu(); posuv.style.scrollBehavior = ""; };
+  okL.onclick = () => posuv.scrollTo({ left: 0, behavior: "smooth" });
+  okP.onclick = () => posuv.scrollTo({ left: posuv.scrollWidth, behavior: "smooth" });
+  posuv.addEventListener("scroll", obnov, { passive: true });
+  return { obnov, naLokalitu };
+}
+
+/* ---------- obrazovka ---------- */
+function postav(ram, styl, r) {
+  ram.innerHTML = "";
+  const O = OBR[r];
+  const obr = el("div", "obrazovka s-" + styl);
+  obr.style.width = px(O.W); obr.style.height = px(O.H); obr.style.backgroundImage = `url(${IMG}${O.img})`;
+  ram.append(obr);
+  const [kx, ky, kw, kh] = O.kryt;
+  const kryt = el("div", "kryt"); kryt.style.cssText = `left:${px(kx)};top:${px(ky)};width:${px(kw)};height:${px(kh)}`; obr.append(kryt);
+  const [x, y, w, hP] = O.plst;
+  const plst = el("div", "plst"); plst.style.cssText = `left:${px(x)};top:${px(y)};width:${px(w)};height:${px(hP)}`; obr.append(plst);
+  const pil = el("div", "pilulka", "Potiahni kartu na stôl alebo klikni na <b>+</b> na konci línie, alebo pasuj do Pitky (cigareta za nevyloženú kartu). Ďalšia karta v ťahu stojí plný poldeci.");
+  pil.style.top = px(y - 14); obr.append(pil);
+  const posuv = el("div", "posuv");
+  posuv.style.cssText = `left:${px(x + 2)};top:${px(y + 24)};width:${px(w - 4)};height:${px(hP - 54)}`;
+  const L = linia(O.h, w - 4);
+  posuv.append(L.stopa); obr.append(posuv);
+  const hr = el("div", "hrana");
+  hr.style.cssText = `left:${px(x + 16)};top:${px(y + hP - 27)};width:${px(w - 32)}`;
+  hr.innerHTML = `<div class="pivnica"><span>0<small style="font-size:.6em;opacity:.7">/4</small></span>PIVNICA</div><div style="display:flex;gap:12px;align-items:center"><div class="zaverecna">−1 → záverečná</div><div class="pasovat">PASOVAŤ → +2</div></div>`;
+  obr.append(hr);
+  const ov = ovladanie(obr, posuv, L, x, y + 24, w, hP - 24, styl);
+  // ruka: zóny, lupa, kurzor
+  let lupa = null, nedasa = null;
+  const kurzor = el("div", "kurzor", `<svg viewBox="0 0 22 30" width="22" height="30" aria-hidden="true"><path d="M2 2 L2 24 L8 18.5 L12 28 L16 26.3 L12 17 L20 17 Z" fill="#fff" stroke="#000" stroke-width="1.6" stroke-linejoin="round"/></svg>`);
+  obr.append(kurzor);
+  const zony = [];
+  const aktivuj = (i) => {
+    const kluc = PORADIE[i], d = RUKA[kluc];
+    zony.forEach((z, j) => z.classList.toggle("akt", j === i));
+    obr._pary = d.nedasa ? null : { L: d.vlavo.length, P: d.vpravo.length };
+    zobraz(L, styl, kluc);
+    lupa?.remove(); nedasa?.remove();
+    const [rx, ry, rw] = O.ruka[i];
+    const lw = O.lupaW, lh = Math.round(lw * 1.481);
+    lupa = el("div", "lupa");
+    lupa.style.cssText = `width:${px(lw)};height:${px(lh)};left:${px(rx + rw / 2 - lw / 2)};top:${px(ry + 58 - lh)}`;
+    const ilu = el("div", "ilu"); ilu.style.height = px(lh * (d.ef ? 0.76 : 1));
+    const im = el("img"); im.src = IMG + d.img; im.alt = ""; ilu.append(im); lupa.append(ilu);
+    if (d.ef) { const ef = el("div", "ef", `<span>${d.ef}</span>`); ef.style.height = px(lh * 0.24); lupa.append(ef); }
+    obr.append(lupa);
+    if (d.nedasa) { nedasa = el("div", "nedasa", "Sem sa nedá vyložiť"); nedasa.style.left = px(rx + rw / 2); nedasa.style.top = px(ry + 58 - lh - 34); nedasa.style.bottom = "auto"; obr.append(nedasa); }
+    kurzor.style.left = px(rx + rw * 0.55); kurzor.style.top = px(ry + 66);
+    ov.obnov();
+  };
+  O.ruka.forEach(([rx, ry, rw, rh], i) => {
+    const z = el("div", "zona"); z.style.cssText = `left:${px(rx)};top:${px(ry)};width:${px(rw)};height:${px(rh)}`;
+    z.tabIndex = 0; z.setAttribute("role", "button"); z.setAttribute("aria-label", `Karta v ruke: ${RUKA[PORADIE[i]].meno}`);
+    z.addEventListener("pointerenter", () => aktivuj(i)); z.addEventListener("focus", () => aktivuj(i));
+    z.addEventListener("pointerleave", () => aktivuj(0)); z.addEventListener("click", () => aktivuj(i));
+    zony.push(z); obr.append(z);
+  });
+  const info = ram.parentElement.querySelector("[data-rozmer]");
+  mierka(ram);
+  requestAnimationFrame(() => {
+    aktivuj(0); ov.naLokalitu(); ov.obnov();
+    if (info) info.textContent = `karta ${L.w} × ${L.h} px · línia ${L.stopa.scrollWidth} px na ${w - 4} px stola${L.stopa.scrollWidth > w - 4 ? " → posun" : " → vojde sa"}`;
+  });
+}
+
+function mierka(ram) {
+  const obr = ram.querySelector(".obrazovka"); if (!obr) return;
+  const W = parseFloat(obr.style.width), H = parseFloat(obr.style.height);
+  const s = ram.classList.contains("plna") ? 1 : Math.min(1, ram.clientWidth / W);
+  obr.style.transform = s === 1 ? "none" : `scale(${s})`;
+  ram.style.height = ram.classList.contains("plna") ? `min(92vh, ${H + 2}px)` : px(H * s);
+}
+
+document.querySelectorAll("section.var").forEach((sec) => {
+  const ram = sec.querySelector(".ram"), styl = sec.dataset.styl;
+  // ?r=vel otvorí všetky mocky rovno vo veľkom monitore
+  const r0 = new URLSearchParams(location.search).get("r") === "vel" ? "vel" : "nb";
+  postav(ram, styl, r0);
+  sec.querySelectorAll(".prepinac button").forEach((q) => q.setAttribute("aria-pressed", String(q.dataset.r === r0)));
+  sec.querySelectorAll(".prepinac button").forEach((b) => b.addEventListener("click", () => {
+    sec.querySelectorAll(".prepinac button").forEach((q) => q.setAttribute("aria-pressed", String(q === b)));
+    postav(ram, styl, b.dataset.r);
+  }));
+  const pl = sec.querySelector("[data-plna]");
+  pl.addEventListener("click", () => { ram.classList.toggle("plna"); pl.textContent = ram.classList.contains("plna") ? "Zmenšiť na šírku" : "Skutočná veľkosť"; mierka(ram); });
+});
+const ro = new ResizeObserver((z) => z.forEach((x) => mierka(x.target)));
+document.querySelectorAll(".ram").forEach((r) => ro.observe(r));
+})();
+</script>
+</body>
+</html>
