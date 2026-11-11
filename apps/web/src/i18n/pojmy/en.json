@@ -33,7 +33,7 @@
   },
   "barter": {
     "pojem": "Gutter barter",
-    "popis": "",
+    "popis": "During the Booze-up, a new full shot for 5 cigarettes — for good; after the brawl it gets restored with the others.",
     "sk": {
       "pojem": "Stokársky barter",
       "popis": "Počas Pitky za 5 cigariet nový plný poldeci — natrvalo, po bitke sa obnoví s ostatnými."
@@ -105,7 +105,7 @@
   },
   "doliatie": {
     "pojem": "Refill",
-    "popis": "",
+    "popis": "At the end of every Booze-up one of your empty shots turns back to full for free, plus one more for each of your active Shot actions. There's no refilling for cigarettes.",
     "sk": {
       "pojem": "Doliatie",
       "popis": "Na konci každej Pitky sa ti jeden vypitý poldeci otočí na plný zadarmo a ďalší za každú tvoju aktívnu akciu Poldeci. Za cigarety sa nedolieva."
@@ -257,7 +257,7 @@
   },
   "limit": {
     "pojem": "Play limit",
-    "popis": "",
+    "popis": "How many cards you play: as many as you have full shots — every card turns one to empty.",
     "sk": {
       "pojem": "Limit vykladania",
       "popis": "Koľko kariet vyložíš: toľko, koľko máš plných poldeci — každá karta jeden otočí na vypitý."
@@ -313,7 +313,7 @@
   },
   "naex": {
     "pojem": "NA EX!",
-    "popis": "",
+    "popis": "A full shot onto a card in the line, chosen in secret in the Booze-up: it cancels the card's active actions and doubles its inactive ones. It leaves a Resistance in a link alone; it can't go on a card with an active (unpaired) Resistance — a hidden one or one from Plonk gets snuffed out; an unpaired Boost keeps its active actions.",
     "kratko": "Pour a full shot onto a card in the line, all in one go. Its actions in a link go dark; the lonely ones double.",
     "tvary": "NA EX",
     "sk": {
@@ -357,7 +357,7 @@
   },
   "nerest": {
     "pojem": "Vice",
-    "popis": "",
+    "popis": "Consumption only: an extra card in a turn (Down one) 1, an answer to NA EX 1, NA EX 2, a cigarette smoked 1. At the end of the round it's compared with your Thirst.",
     "sk": {
       "pojem": "Nerest",
       "popis": "Len konzumácia: karta navyše v ťahu (Vypiť) 1, odpoveď na NA EX 1, NA EX 2, vyfajčená cigareta 1. Na konci kola sa porovnáva s tvojou Chuťou."
@@ -381,7 +381,7 @@
   },
   "odpoved": {
     "pojem": "Answer to NA EX",
-    "popis": "",
+    "popis": "After the reveal, one card for each of your opponent's NA EX, face down, for a full shot (you down it: liver +1) and outside normal card play; the attacker answers first, then the defender on the other wing of the line; both flip over at once.",
     "sk": {
       "pojem": "Odpoveď na NA EX",
       "popis": "Po odkrytí jedna karta za každé súperovo NA EX, lícom dole, za plný poldeci (vypiješ ho: pečeň +1) a mimo vykladania; najprv odpovedá útočník, potom obranca na druhý kraj línie; obe sa otočia naraz."
@@ -397,7 +397,7 @@
   },
   "pas": {
     "pojem": "Pass",
-    "popis": "",
+    "popis": "You stop playing in the Assembly; you get nothing for it, and the full shots you didn't play stay yours.",
     "sk": {
       "pojem": "Pas",
       "popis": "Skončíš vykladanie v Zhromaždení; nič zaň nedostaneš, nevyložené plné poldeci ti ostanú."
@@ -462,7 +462,7 @@
   "pitka": {
     "pojem": "Booze-up",
     "popis": "The reckoning after the Assembly: NA EX, Debts, liver, cigarettes; one round has 1 to 4 booze-ups (in the finale on the pinnacle, 1 to 5).",
-    "kratko": "",
+    "kratko": "After the Assembly it's drinking time: you smoke, barter and secretly pour a NA EX onto a card in the line; at the end you get a shot refilled.",
     "tvary": "Booze-up, Booze-ups",
     "sk": {
       "pojem": "Pitka",
@@ -489,7 +489,7 @@
   },
   "poldeci": {
     "pojem": "Shot",
-    "popis": "",
+    "popis": "A glass of fruit brandy; every card you play costs a full one, and it also pays for a NA EX and an answer. After the brawl they're all restored, after the Booze-up one gets refilled. A full one at the end of the game is 1 butt.",
     "kratko": "A glass of fruit brandy. As many full ones as you have, that many cards you play, plus one. A full shot also pays for a NA EX.",
     "tvary": "shot, shots",
     "sk": {
@@ -709,7 +709,7 @@
   },
   "vypit": {
     "pojem": "Down one",
-    "popis": "",
+    "popis": "Another card in the same turn: on top of the full shot it costs a cigarette, liver +1, and it counts as a vice. Two cards = 2 shots and 1 cigarette.",
     "sk": {
       "pojem": "Vypiť",
       "popis": "Ďalšia karta v tom istom ťahu: okrem plného poldeci stojí cigaretu, pečeň +1 a ráta sa ako nerest. Dve karty = 2 poldeci a 1 cigareta."
@@ -733,7 +733,7 @@
   },
   "vzbura": {
     "pojem": "Revolt",
-    "popis": "",
+    "popis": "Resistance against Resistance: both cards flip — unlinked actions are active, linked ones inactive; the link's Resistances go out. Resistance against Boost: only the card with the Resistance, boosted on top. A Pitchfork tucked under a card flips it too. NA EX can't go on it.",
     "sk": {
       "pojem": "Vzbura",
       "popis": "Odpor proti Odporu: obe karty sa obrátia — nespojené akcie sú aktívne, spojené neaktívne; Odpory spoja zhasnú. Odpor proti Posilneniu: len karta s Odporom, navyše posilnená. Vidly podložené pod kartu ju obrátia tiež. NA EX na ňu nejde."

@@ -33,7 +33,7 @@
   },
   "barter": {
     "pojem": "Socký barter",
-    "popis": "",
+    "popis": "Během Pitky za 5 cigaret nový plný panák — natrvalo, po rvačce se obnoví s ostatními.",
     "sk": {
       "pojem": "Stokársky barter",
       "popis": "Počas Pitky za 5 cigariet nový plný poldeci — natrvalo, po bitke sa obnoví s ostatnými."
@@ -105,7 +105,7 @@
   },
   "doliatie": {
     "pojem": "Dolití",
-    "popis": "",
+    "popis": "Na konci každé Pitky se ti jeden vypitý panák otočí na plného zdarma a další za každou tvou aktivní akci Panák. Za cigarety se nedolévá.",
     "sk": {
       "pojem": "Doliatie",
       "popis": "Na konci každej Pitky sa ti jeden vypitý poldeci otočí na plný zadarmo a ďalší za každú tvoju aktívnu akciu Poldeci. Za cigarety sa nedolieva."
@@ -257,7 +257,7 @@
   },
   "limit": {
     "pojem": "Limit vykládání",
-    "popis": "",
+    "popis": "Kolik karet vyložíš: tolik, kolik máš plných panáků — každá karta jednoho otočí na vypitého.",
     "sk": {
       "pojem": "Limit vykladania",
       "popis": "Koľko kariet vyložíš: toľko, koľko máš plných poldeci — každá karta jeden otočí na vypitý."
@@ -313,7 +313,7 @@
   },
   "naex": {
     "pojem": "NA EX!",
-    "popis": "",
+    "popis": "Plný panák na kartu v linii, vybraný v Pitce skrytě: zruší její aktivní akce a zdvojí neaktivní. Odpor na spoji nechá být; na kartu s aktivním (nespárovaným) Odporem nejde — skryté či z Vínka uhasí; nespárované Posílení podrží aktivní akce.",
     "kratko": "Vylij plného panáka na ex na kartu v linii. Její akce ve spoji zhasnou, osamělé se zdvojí.",
     "tvary": "NA EX",
     "sk": {
@@ -357,7 +357,7 @@
   },
   "nerest": {
     "pojem": "Neřest",
-    "popis": "",
+    "popis": "Jen konzumace: karta navíc v tahu (Vypít) 1, odpověď na NA EX 1, NA EX 2, vykouřená cigareta 1. Na konci kola se porovnává s tvou Chutí.",
     "sk": {
       "pojem": "Nerest",
       "popis": "Len konzumácia: karta navyše v ťahu (Vypiť) 1, odpoveď na NA EX 1, NA EX 2, vyfajčená cigareta 1. Na konci kola sa porovnáva s tvojou Chuťou."
@@ -381,7 +381,7 @@
   },
   "odpoved": {
     "pojem": "Odpověď na NA EX",
-    "popis": "",
+    "popis": "Po odkrytí jedna karta za každé soupeřovo NA EX, lícem dolů, za plného panáka (vypiješ ho: játra +1) a mimo vykládání; nejdřív odpovídá útočník, potom obránce na druhý kraj linie; obě se otočí naráz.",
     "sk": {
       "pojem": "Odpoveď na NA EX",
       "popis": "Po odkrytí jedna karta za každé súperovo NA EX, lícom dole, za plný poldeci (vypiješ ho: pečeň +1) a mimo vykladania; najprv odpovedá útočník, potom obranca na druhý kraj línie; obe sa otočia naraz."
@@ -397,7 +397,7 @@
   },
   "pas": {
     "pojem": "Pas",
-    "popis": "",
+    "popis": "Skončíš vykládání ve Shromáždění; nic za to nedostaneš, nevyložené plné panáky ti zůstanou.",
     "sk": {
       "pojem": "Pas",
       "popis": "Skončíš vykladanie v Zhromaždení; nič zaň nedostaneš, nevyložené plné poldeci ti ostanú."
@@ -462,7 +462,7 @@
   "pitka": {
     "pojem": "Pitka",
     "popis": "Vyhodnocení po Shromáždění: NA EX, Dluhy, játra, cigarety; v jednom kole je 1 až 4 Pitek (ve finále na vrcholové lokalitě 1 až 5).",
-    "kratko": "",
+    "kratko": "Po Shromáždění se pije: kouříš, barteruješ a skrytě dáš NA EX na kartu v linii; na konci se ti dolije panák.",
     "tvary": "Pitka, Pitky, Pitce, Pitku, Pitkou, Pitek, Pitkám, Pitkách, Pitkami",
     "sk": {
       "pojem": "Pitka",
@@ -489,7 +489,7 @@
   },
   "poldeci": {
     "pojem": "Panák",
-    "popis": "",
+    "popis": "Štamprle pálenky; každá karta, kterou vyložíš, stojí plného, a platí se jím i NA EX a odpověď. Po rvačce se všechny obnoví, po Pitce se jeden dolije. Plný na konci hry je 1 vajgl.",
     "kratko": "Štamprle pálenky. Kolik máš plných, tolik karet vyložíš, a ještě jednu. Za plného panáka dáš i NA EX.",
     "tvary": "panák, panáka, panáku, panákem, panáky, panáků, panákům, panácích",
     "sk": {
@@ -709,7 +709,7 @@
   },
   "vypit": {
     "pojem": "Vypít",
-    "popis": "",
+    "popis": "Další karta v tomtéž tahu: kromě plného panáka stojí cigaretu, játra +1 a počítá se jako neřest. Dvě karty = 2 panáky a 1 cigareta.",
     "sk": {
       "pojem": "Vypiť",
       "popis": "Ďalšia karta v tom istom ťahu: okrem plného poldeci stojí cigaretu, pečeň +1 a ráta sa ako nerest. Dve karty = 2 poldeci a 1 cigareta."
@@ -733,7 +733,7 @@
   },
   "vzbura": {
     "pojem": "Vzpoura",
-    "popis": "",
+    "popis": "Odpor proti Odporu: obě karty se obrátí — nespojené akce jsou aktivní, spojené neaktivní; Odpory spoje zhasnou. Odpor proti Posílení: jen karta s Odporem, navíc posílená. Vidle podložené pod kartu ji obrátí také. NA EX na ni nejde.",
     "sk": {
       "pojem": "Vzbura",
       "popis": "Odpor proti Odporu: obe karty sa obrátia — nespojené akcie sú aktívne, spojené neaktívne; Odpory spoja zhasnú. Odpor proti Posilneniu: len karta s Odporom, navyše posilnená. Vidly podložené pod kartu ju obrátia tiež. NA EX na ňu nejde."
