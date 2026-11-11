@@ -10247,6 +10247,146 @@ button.pecat.kseft-pod-tlacidlo.ne:hover {
   }
 }
 
+/* ---- Karta z ponuky na stole (Michal 2026-11-11, mock A v docs/napady/vyber-z-ponuky.html) ---- */
+/* Živnostník, Predavačka, Zastávka: ponuka leží na plsti ako Vízia, línia za ňou stmavne. */
+.stol-plst:has(> .ponuka-na-stole) > .linia {
+  opacity: 0.3;
+  filter: saturate(0.6);
+  transition: opacity 0.2s ease, filter 0.2s ease;
+}
+
+.ponuka-na-stole {
+  position: absolute;
+  left: 0;
+  right: 0;
+  z-index: 6;
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+  pointer-events: none;
+}
+
+.ponuka-stol-karta {
+  position: relative;
+  margin: 0;
+  pointer-events: auto;
+  animation: vizia-vyjde 0.3s ease-out both;
+  transition: transform 0.16s ease;
+}
+
+.ponuka-stol-karta .kl {
+  box-shadow:
+    0 1px 2px rgba(0, 0, 0, 0.4),
+    0 14px 32px rgba(0, 0, 0, 0.55);
+  transition: box-shadow 0.16s ease;
+}
+
+.ponuka-stol-karta:not(.mimo, .vyznacena):hover {
+  transform: translateY(-6px);
+}
+
+/* Vyznačená karta sa vysunie a dostane jantárový okraj — vybraná, ešte nie vzatá. */
+.ponuka-stol-karta.vyznacena {
+  z-index: 2;
+  transform: translateY(-12px);
+}
+
+.ponuka-stol-karta.vyznacena .kl {
+  box-shadow:
+    0 0 0 3px var(--akcent),
+    0 18px 40px rgba(0, 0, 0, 0.6);
+}
+
+/* Nepriehľadne stlmená — cez polopriesvitnú kartu by presvitala línia a karta by sa čítala ako jej súčasť. */
+.ponuka-stol-karta.mimo .kl {
+  opacity: 1;
+  filter: grayscale(1) brightness(0.5);
+  cursor: not-allowed;
+}
+
+/* Prečo sa karta nedá vybrať — zosivenie samo nehovorí, že ide o druh karty. */
+.ponuka-mimo {
+  position: absolute;
+  left: 50%;
+  bottom: 10%;
+  translate: -50% 0;
+  padding: 3px 9px;
+  border: 1px solid var(--okraj-svetly);
+  border-radius: 999px;
+  white-space: nowrap;
+  font: 600 clamp(9px, calc(var(--ponuka-sirka) * 0.055), 13px) / 1.3 var(--pismo);
+  color: var(--tlmeny);
+  background: rgb(20 17 14 / 0.9);
+  pointer-events: none;
+}
+
+/* Pečiatka VZIAŤ! / NAVRCH! v tvare NA EX! a VZBURA! — tu je tlačidlom, veľkosť berie z karty. */
+button.naex-peciatka.ponuka-peciatka {
+  position: absolute;
+  left: 50%;
+  top: 40%;
+  z-index: 3;
+  translate: -50% -50%;
+  rotate: -12deg;
+  min-height: 0;
+  margin: 0;
+  padding: 0.22em 0.45em 0.2em;
+  gap: 0.12em;
+  border: 0.08em solid var(--akcent-svetly);
+  border-radius: 0.26em;
+  font: 800 calc(var(--ponuka-sirka) * 0.19) / 1 var(--nadpis);
+  color: var(--na-akcente);
+  background: color-mix(in srgb, var(--akcent) 94%, transparent);
+  box-shadow:
+    0 0.08em 0 #6b4a12,
+    0 0 0 0.12em color-mix(in srgb, var(--akcent-svetly) 22%, transparent),
+    0 0.25em 0.6em rgba(0, 0, 0, 0.6);
+  pointer-events: auto;
+  cursor: pointer;
+  animation: ponuka-razitko 0.22s cubic-bezier(0.2, 1.6, 0.4, 1);
+  transition: scale 0.12s ease;
+}
+
+button.naex-peciatka.ponuka-peciatka::after {
+  border-color: rgb(43 27 3 / 0.5);
+}
+
+button.naex-peciatka.ponuka-peciatka:hover:not(:disabled) {
+  scale: 1.07;
+  border-color: var(--akcent-svetly);
+  background: color-mix(in srgb, var(--akcent) 94%, transparent);
+}
+
+button.naex-peciatka.ponuka-peciatka:active:not(:disabled) {
+  scale: 0.96;
+  transform: none;
+}
+
+button.naex-peciatka.ponuka-peciatka:focus-visible {
+  outline: 3px solid #fff;
+  outline-offset: 4px;
+}
+
+.ponuka-peciatka .naex-peciatka-kto {
+  color: var(--akcent-svetly);
+  background: var(--na-akcente);
+}
+
+@keyframes ponuka-razitko {
+  from {
+    scale: 1.8;
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ponuka-stol-karta,
+  button.naex-peciatka.ponuka-peciatka {
+    animation: none;
+    transition: none;
+  }
+}
+
 /* ---- Veštica: výmena kariet medzi doberacími balíčkami (Michal 2026-11-03) ----
  * Tvoj balíček vľavo v tvojej farbe, súperov vpravo v jeho, v strede výmena so šípkami.
  * Panel ide na celú výšku vrstvy a karty sa zmenšia tak, aby sa zmestili bez posúvania. */
