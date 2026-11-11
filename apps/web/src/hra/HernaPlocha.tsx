@@ -101,6 +101,7 @@ import { rezimRadov } from "./spakyAStarsi.ts";
 import { Vrstva as VrstvaPanel } from "./Vrstva.tsx";
 import { VesticaVyber } from "./Vestica.tsx";
 import { rozmerVizie, ViziaNaStole, VolbyVizie, zamerVizie, type KartaVizie } from "./ViziaNaStole.tsx";
+import { PonukaNaStole, rozmerPonuky, type KartaPonuky } from "./PonukaNaStole.tsx";
 import {
   AkcieStrany,
   BitkaPanel,
@@ -145,7 +146,7 @@ import "./mobil-sirka.css";
 // Až po hra.css — jednotný bar upravuje aj jej pravidlá (os kola, nástroje, rezerva stola).
 import "./jbar.css";
 import { IkonaSpaku, Nastenka, sMinusom, spakyPredBitkou, textSpakovBitky } from "./Spaky.tsx";
-import { nazovKarty, prekladKariet, prelozHlasku, t, tr, tRod, tZoServera } from "../i18n/jazyk.tsx";
+import { nazovKarty, nazovTagu, prekladKariet, prelozHlasku, t, tr, tRod, tZoServera } from "../i18n/jazyk.tsx";
 import { spakov } from "../i18n/pocty.ts";
 
 /** Kľúč v localStorage: rozloženie línie starších (Teplomery alebo Pult). */
@@ -199,11 +200,11 @@ const PORADIE = "poradie:";
 /** Cieľ ťahania: karta v línii, pod ktorú sa Nástroj zasunie (Náradie 2026-11-08). */
 const PODLOZIT = "podlozit:";
 
-/** Pokyn voľby karty zo šenku podľa karty, ktorá ju dala (Zastávka nemá zdroj). */
+/** Pokyn voľby karty z ponuky podľa karty, ktorá ju dala (Zastávka nemá zdroj) — meno je v nadpise pilulky. */
 function textVolbySenku(zdroj: string | undefined): string {
-  if (zdroj === "predavacka") return t("plocha.volbaPredavacka");
-  if (zdroj === "zivnostnik") return t("plocha.volbaZivnostnik");
-  return t("plocha.volbaSenku");
+  if (zdroj === "predavacka") return t("ponuka.predavacka");
+  if (zdroj === "zivnostnik") return t("ponuka.zivnostnik");
+  return t("ponuka.zastavka");
 }
 
 /**
@@ -1201,17 +1202,10 @@ export function HernaPlocha({
   const limitTeraz = limitZhromazdenia(view, ja);
   const zoSenkuLimit = kolkoMozemBrat;
   const mojaVolbaSenku = view.volbaNastupu?.typ === "senok" && view.volbaNastupu.hrac === ja ? view.volbaNastupu : null;
-  // Keď hráč má vyberať kartu zo šenku (Starosta) či Vešticu, vrstva sa otvorí
-  // sama. Raz za fázu — ak ju zavrie, znova sa nevnucuje. Cieľ kola sa vyberá
-  // na stole (Michal 2026-10-19), nie vo vrstve.
-  const chceVrstvu: Vrstva | null = !somNaTahu || view.koniec !== null
-    ? null
-    : view.volbaVestica !== null
-        ? "vestica"
-    : // Karta z ponuky (Starosta, Dohadzovačka v7): ponuka sa otvorí sama.
-          view.volbaNastupu?.typ === "senok" && view.volbaNastupu.hrac === ja
-          ? "senok"
-          : null;
+  // Keď hráč má vyberať Vešticu, vrstva sa otvorí sama. Raz za fázu — ak ju zavrie,
+  // znova sa nevnucuje. Cieľ kola sa vyberá na stole (Michal 2026-10-19), karta
+  // z ponuky tiež (Michal 2026-11-11, PonukaNaStole) — nie vo vrstve.
+  const chceVrstvu: Vrstva | null = !somNaTahu || view.koniec !== null ? null : view.volbaVestica !== null ? "vestica" : null;
   // Výber lokality skončil (aj keď ho urobil súper) — vrstva by zakryla draft na stole.
   useEffect(() => {
     if (view.faza !== "volbaCiela") setVrstva((v) => (v === "lokality" ? null : v));
@@ -1772,6 +1766,94 @@ export function HernaPlocha({
     // ostane na stole, nech ho hráč opraví; prijatý ťah zmení klucTahu a návrh zmizne aj tak.
     if (vyucba !== true) setNavrh(null);
   };
+  // Karta z ponuky na plsti (Michal 2026-11-11, mock A): Živnostník, Predavačka, Zastávka. Klik na kartu
+  // ju len vyznačí, pečiatka ju vezme; „Pozrieť stôl“ ponuku odloží. Nová voľba (aj druhá Podpora po
+  // vzatí — ponuka je kratšia) má nový kľúč, a tak začína bez vyznačenia.
+  const klucPonuky =
+    mojaVolbaSenku === null || view.koniec !== null ? null : `${view.kolo}|${view.pitkaCislo}|${mojaVolbaSenku.zdroj ?? ""}|${view.senok.map((k) => k.uid).join(".")}`;
+  const [vyberPonuky, setVyberPonuky] = useState<{ readonly kluc: string | null; readonly uid: number | null; readonly odlozena: boolean; readonly odoslana: boolean }>({
+    kluc: null,
+    uid: null,
+    odlozena: false,
+    odoslana: false,
+  });
+  const vp = vyberPonuky.kluc === klucPonuky ? vyberPonuky : { kluc: klucPonuky, uid: null, odlozena: false, odoslana: false };
+  const zmenVyberPonuky = (z: Partial<Omit<typeof vp, "kluc">>): void => setVyberPonuky({ ...vp, ...z });
+  // Server zámer odmietol (ponuka sa nezmenila) — ponuka sa po chvíli vráti, aby výber nezostal zaseknutý.
+  useEffect(() => {
+    if (!vp.odoslana || klucPonuky === null) return;
+    const k = klucPonuky;
+    const id = window.setTimeout(() => setVyberPonuky((v) => (v.kluc === k ? { ...v, odoslana: false } : v)), 2500);
+    return () => window.clearTimeout(id);
+  }, [vp.odoslana, klucPonuky]);
+  // Vrstva Ponuka otvorená pred voľbou (pozeral si ju) by ponuku na stole zakryla.
+  useEffect(() => {
+    if (klucPonuky !== null) setVrstva((v) => (v === "senok" ? null : v));
+  }, [klucPonuky]);
+  useEffect(() => {
+    if (klucPonuky === null || vp.uid === null) return;
+    const onKey = (e: KeyboardEvent): void => {
+      if (e.key !== "Escape" || e.defaultPrevented) return;
+      e.preventDefault();
+      setVyberPonuky((v) => (v.kluc === klucPonuky ? { ...v, uid: null } : v));
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [klucPonuky, vp.uid]);
+  const povoleneZPonuky = mojaVolbaSenku === null ? [] : ponukaSenku(data, view, mojaVolbaSenku);
+  const naBalicek = mojaVolbaSenku?.kam === "balicek";
+  const kartyPonuky: readonly KartaPonuky[] =
+    klucPonuky === null || mojaVolbaSenku === null
+      ? []
+      : view.senok.map((k) => {
+          const smie = povoleneZPonuky.some((x) => x.uid === k.uid);
+          const tag = mojaVolbaSenku.tag;
+          return {
+            kluc: k.uid,
+            nazov: menoKarty(k.defId),
+            mimo: smie || tag === undefined ? undefined : t("ponuka.len", { tag: nazovTagu(tag) }),
+            render: (sirka: number) =>
+              sLupou(
+                { karta: k, sirka, vybrana: vp.uid === k.uid, onClick: smie ? () => zmenVyberPonuky({ uid: k.uid }) : undefined },
+                { trieda: smie ? undefined : "mimo-ponuky" },
+              ),
+          };
+        });
+  const rozmerKarietPonuky = rozmerPonuky(vnutroPlste, kartyPonuky.length, naSirku);
+  const vyznacenaVPonuke = vp.uid === null ? undefined : view.senok.find((k) => k.uid === vp.uid);
+  const vezmiZPonuky = (): void => {
+    if (vyznacenaVPonuke === undefined) return;
+    const k = vyznacenaVPonuke;
+    // Karta odletí tam, kam ide — do ruky, či na doberací balíček (Predavačka); prehľad, kam išla, chýbal.
+    const obdlznik = (el: Element | null | undefined): Obdlznik | null => {
+      const r = el?.getBoundingClientRect();
+      return r === undefined || r.width === 0 ? null : { left: r.left, top: r.top, width: r.width, height: r.height };
+    };
+    const z = obdlznik(document.querySelector(`.ponuka-stol-karta[data-uid="${k.uid}"] .kl`));
+    const posledna = [...document.querySelectorAll('[data-vyucba="ruka"] .kl')].at(-1);
+    const na = naBalicek ? obdlznik(document.querySelector(".balicek-nadpis")) : (obdlznik(posledna) ?? obdlznik(document.querySelector('[data-vyucba="ruka"]')));
+    if (z !== null && na !== null && !window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      setPrelety((x) => [...x, { kluc: `ponuka-${k.uid}`, z, na, karta: k }]);
+    }
+    zmenVyberPonuky({ odoslana: true });
+    posli({ type: "senok", uid: k.uid });
+  };
+  const ponukaNaStole =
+    klucPonuky === null || vp.odlozena || vp.odoslana || kartyPonuky.length === 0 ? null : (
+      <PonukaNaStole
+        key={klucPonuky}
+        karty={kartyPonuky}
+        rozmer={rozmerKarietPonuky}
+        vyznacena={vp.uid}
+        peciatka={
+          naBalicek
+            ? { text: t("ponuka.navrch"), pod: t("ponuka.doBalicka"), aria: t("ponuka.navrchAria", { karta: vyznacenaVPonuke === undefined ? "" : menoKarty(vyznacenaVPonuke.defId) }) }
+            : { text: t("ponuka.vziat"), pod: t("ponuka.doRuky"), aria: t("ponuka.vziatAria", { karta: vyznacenaVPonuke === undefined ? "" : menoKarty(vyznacenaVPonuke.defId) }) }
+        }
+        onVezmi={vezmiZPonuky}
+      />
+    );
+
   // Menej klikov (roadmapa #9 B): logika je v usePohodlie a v jadre (pohodlie.ts).
   const bezNaex = useBezNaexVBitke(view, posli);
   const odlozenyPas = useOdlozenyPrikaz(posli, `${klucTahu}|${vylozenia.length}`); // potiahnutá karta pas zruší
@@ -4124,19 +4206,14 @@ export function HernaPlocha({
           ),
         };
       }
-      // Šenok: Podpora Predavačky (len Občan) a Živnostníka (len Nástroj) ponúka len kartu toho druhu.
-      const ponuka = ponukaSenku(data, view, nv);
+      // Karta z ponuky leží na plsti (PonukaNaStole); pilulka hovorí prečo, hrana ponuku odloží a vráti.
       return {
-        nadpis: nv.zdroj === "predavacka" ? nazovKarty("Predavačka") : nv.zdroj === "zivnostnik" ? nazovKarty("Živnostník") : t("plocha.kartaZPonuky"),
-        text: (
-          <span className="vizia-text">
-            <span>{textVolbySenku(nv.zdroj)}</span>{" "}
-            {ponuka.map((k) => (
-              <span key={k.uid} className="vizia-karta">
-                {karta({ karta: k, sirka: 72, onClick: () => posli({ type: "senok", uid: k.uid }) })}
-              </span>
-            ))}
-          </span>
+        nadpis: nv.zdroj === "predavacka" ? nazovKarty("Predavačka") : nv.zdroj === "zivnostnik" ? nazovKarty("Živnostník") : t("ponuka.nadpisZastavka"),
+        text: textVolbySenku(nv.zdroj),
+        stred: (
+          <button type="button" className="pecat pecat-tichy ponuka-odloz" aria-pressed={vp.odlozena} onClick={() => zmenVyberPonuky({ odlozena: !vp.odlozena })}>
+            {vp.odlozena ? t("ponuka.spat") : t("ponuka.pozrietStol")}
+          </button>
         ),
       };
     }
@@ -5847,7 +5924,10 @@ export function HernaPlocha({
         view={view}
         onBitka={ucetBitky !== null && view.kolo === ucetBitky.kolo + 1 ? () => setUcetBitkyZavrety(false) : undefined}
         // Šenok na pozretie (napr. pred Starostom) — ďalší klik alebo Esc ho zavrie; v Drafte je na stole.
-        onDraft={() => setVrstva((v) => (v === "senok" ? null : "senok"))}
+        onDraft={() =>
+          // Počas výberu z ponuky leží ponuka na stole — tlačidlo ju odloží a vráti, okno by ju zdvojilo.
+          klucPonuky !== null ? zmenVyberPonuky({ odlozena: !vp.odlozena }) : setVrstva((v) => (v === "senok" ? null : "senok"))
+        }
       />
     </>
   );
@@ -6540,6 +6620,7 @@ export function HernaPlocha({
             {podLiniou}
             {naPlsti}
             {klucVizie !== null && kartyVizie.length > 0 && <ViziaNaStole key={klucVizie} karty={kartyVizie} rozmer={rozmerKarietVizie} />}
+            {ponukaNaStole}
             {vrstvaFazy !== null && !starsiViditelni && !nastenkaNaStole && (
               <div className="vrstva-fazy" ref={setVrstvaFazyEl}>
                 {vrstvaFazy}
@@ -6636,9 +6717,7 @@ export function HernaPlocha({
         <VrstvaPanel
           nazov={t("plocha.ponukaN", { n: view.senok.length })}
           pozn={
-            mojaVolbaSenku !== null
-              ? textVolbySenku(mojaVolbaSenku.zdroj)
-              : zoSenkuLimit > 0
+            zoSenkuLimit > 0
               ? t("plocha.klikniNaVybrane", { co: zoSenkuLimit === 1 ? t("plocha.kartu") : t("plocha.nulaAzKariet", { n: zoSenkuLimit }) })
               : t("plocha.vBalickoch", { naradie: view.naradiePocet, obcania: view.obcaniaPocet })
           }
@@ -6668,26 +6747,17 @@ export function HernaPlocha({
             {radSenkuSTienmi(view.senok, (k) => {
               const z: Zdroj = { karta: k, odkial: "senok", navrh: false };
               const vybrana = zoSenku.some((x) => x.uid === k.uid);
-              // Predavačka a Živnostník (Podpora) dovolia len kartu svojho druhu — ostatné sú zosivené.
-              const mimoPonuky = mojaVolbaSenku !== null && !ponukaSenku(data, view, mojaVolbaSenku).some((x) => x.uid === k.uid);
+              // Karta z ponuky (Živnostník, Predavačka, Zastávka) sa vyberá na stole (PonukaNaStole), nie tu.
               const props = {
                 karta: k,
                 sirka: SIRKA_VO_VRSTVE,
                 vybrana,
-                onClick:
-                  mojaVolbaSenku !== null
-                    ? mimoPonuky
-                      ? undefined
-                      : () => posli({ type: "senok", uid: k.uid })
-                    : zoSenkuLimit > 0
-                      ? () => prepniZoSenku(k.uid)
-                      : undefined,
+                onClick: zoSenkuLimit > 0 ? () => prepniZoSenku(k.uid) : undefined,
               };
               return sLupou(props, {
                 obsah: vybrana ? karta(props) : tahatelna(z, karta(props)),
                 zdroj: z,
                 odstran: vybrana ? () => prepniZoSenku(k.uid) : undefined,
-                trieda: mimoPonuky ? "mimo-ponuky" : undefined,
               });
             }, SIRKA_VO_VRSTVE)}
           </div>
