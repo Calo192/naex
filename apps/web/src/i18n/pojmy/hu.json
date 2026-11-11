@@ -4,26 +4,26 @@
     "popis": "Preklad dlhých textov: pri každom id prelož prázdne polia; pole sk je slovenský originál, z ktorého preklad vzniká — nemeň ho (keď sa slovenčina zmení, preklad sa ukáže ako zastaraný a v hre ostane slovenčina). Značky <p k=\"…\">, <strong>, <a href=\"…\"> a {parametre} ponechaj ako v origináli; pojmy podľa docs/preklady/glosar.json."
   },
   "abstak": {
-    "pojem": "",
-    "popis": "",
+    "pojem": "Remegés",
+    "popis": "Átok címkéjű kártya, ha a körben kevesebb a bűnöd, mint a Szomjad: a dobópakliba kerül, nem lehet bevallani; mindegyik a paklidban 1 kemény sebzést vesz el tőled a verekedésben. Eldönti a döntetlent keményben. A Látomás égeti el.",
     "sk": {
       "pojem": "Absťák",
       "popis": "Karta s tagom Kliatba za menej nerestí v kole, než je tvoja Chuť: ide do odhadzovacieho balíčka, nedá sa priznať; každý v tvojom balíčku ti v bitke uberie 1 tuhé. Rozhoduje remízu v tuhom. Spáli ho Vízia."
     }
   },
   "chut": {
-    "pojem": "",
-    "popis": "",
+    "pojem": "Szomj",
+    "popis": "A bűneid nyilvános mércéje, kezdetben 0. A kör végén: kevesebb bűn, mint a Szomj = egy Remegés kártya; utána Szomj = a nagyobbik ebből: (Szomj, a kör bűnei) − 1.",
     "sk": {
       "pojem": "Chuť",
       "popis": "Tvoja verejná latka nerestí, na začiatku 0. Na konci kola: menej nerestí než Chuť = karta Absťák; potom Chuť = väčšie z (Chuť, neresti kola) − 1."
     }
   },
   "akcia": {
-    "pojem": "",
-    "popis": "",
-    "kratko": "",
-    "tvary": "",
+    "pojem": "Akció",
+    "popis": "Szimbólum a kártya élén; csak akkor érvényes, ha a kötésben a szomszéd ugyanolyan magasságú akciójával találkozik.",
+    "kratko": "Ikon a kártya szélén. Csak akkor érvényes, ha a kötésben hozzáér a szomszéd kártya ugyanolyan magasan lévő ikonjához.",
+    "tvary": "akció, akciót, akciók, akciókat, akcióval, akciókkal, akciója, akciói, akcióit, akcióját, akciónak, akcióra, akcióért, akcióknál, akciókért",
     "sk": {
       "pojem": "Akcia",
       "popis": "Symbol na hrane karty; platí, len keď sa na spoji stretne s akciou suseda v rovnakej výške.",
@@ -32,18 +32,18 @@
     }
   },
   "barter": {
-    "pojem": "",
-    "popis": "",
+    "pojem": "Csöves cserebere",
+    "popis": "Ivászat közben 5 cigarettáért egy új, teli feles.",
     "sk": {
       "pojem": "Stokársky barter",
       "popis": "Počas Pitky za 5 cigariet nový plný poldeci."
     }
   },
   "bitka": {
-    "pojem": "",
-    "popis": "",
-    "kratko": "",
-    "tvary": "",
+    "pojem": "Verekedés",
+    "popis": "A kör vége: a több kemény sebzés nyer és csikkeket kap, az elöljárók pontoznak, a győztes az Elpáholást a félelmére osztja el, a veszekedés győztese pedig a veszekedést a pletykájára az ellenfél hőmérőin.",
+    "kratko": "A kör vége: összeadják a helyszín melletti kártyák ütéseit. Akinek több van, nyert, és minden kártyáért a sorban kap egy csikket.",
+    "tvary": "verekedés, verekedést, verekedések, verekedéseket, verekedésben, verekedésre, verekedésért, verekedésnél, verekedéssel, verekedésből, verekedésig, verekedései",
     "sk": {
       "pojem": "Bitka",
       "popis": "Koniec kola: viac tuhého poškodenia vyhráva a dostane špaky, starší bodujú, víťaz rozdelí Nakladačku na svoj strach a víťaz hádky hádku na svoje reči na teplomeroch súpera.",
@@ -52,10 +52,10 @@
     }
   },
   "cigareta": {
-    "pojem": "",
-    "popis": "",
-    "kratko": "",
-    "tvary": "",
+    "pojem": "Cigaretta",
+    "popis": "A játék pénze: ezzel fizetsz a kínálat kártyáiért, az Örökségért, a Szerszám alárakásáért, az újratöltésért, a csereberéért és a Záróráért; rágyújtással az Ivászaton rögtön egy extra kártya (1, 2, 3… cigaretta; a Benzinkúton az első ingyen). Verekedés után a vesztes 1-et kap, az ellenfél pedig sarcot fizet. A játék végén minden 5 cigaretta 1 csikk.",
+    "kratko": "A játék aprópénze. Ezzel fizetsz a kínálat kártyáiért és a rágyújtásért az Ivászaton; a ki nem játszott kártyáidért kapsz belőle.",
+    "tvary": "cigaretta, cigarettát, cigaretták, cigarettákat, cigarettáért, cigarettákért, cigarettával, cigarettákkal, cigarettád, cigarettádat, cigarettája, cigarettáid, cigarettánként",
     "sk": {
       "pojem": "Cigareta",
       "popis": "Mena hry: platí karty z ponuky, Dedičstvo, podloženie Nástroja, doliatie, barter a Záverečnú; fajčením v Pitke hneď karta navyše (1, 2, 3… cigarety; na Benzínke prvá zadarmo). Po bitke dostane porazený 1 a súper platí výpalné. Na konci hry každých 5 cigariet 1 špak.",
@@ -64,210 +64,210 @@
     }
   },
   "cirhoza": {
-    "pojem": "",
-    "popis": "",
+    "pojem": "Májzsugor",
+    "popis": "Átok a májból; a dobópaklidba kerül, bevallva az ellenfélnek +1 keményet ad a verekedésben, be nem vallva verekedés után a dobópaklidba kerül, és a játék végén 3 csikkbe kerül.",
     "sk": {
       "pojem": "Cirhóza",
       "popis": "Kliatba z pečene; ide do tvojho odhadzovacieho balíčka, priznaná dá súperovi v bitke +1 tuhé, nepriznaná ide po bitke do tvojho odhadzovacieho balíčka a na konci hry stojí 3 špaky."
     }
   },
   "dedicstvo": {
-    "pojem": "",
-    "popis": "",
+    "pojem": "Örökség",
+    "popis": "A soron kívül kitett Szerszám; a hatása érvényes, az ára pedig mindkettőtöknek nő: az 1., 2., 3. Szerszám 1, 2, 3 cigarettába kerül.",
     "sk": {
       "pojem": "Dedičstvo",
       "popis": "Nástroj vyložený mimo línie; platí jeho efekt a cena rastie pre oboch: 1., 2., 3. Nástroj stojí 1, 2, 3 cigarety."
     }
   },
   "dlh": {
-    "pojem": "",
-    "popis": "",
+    "pojem": "Adósság",
+    "popis": "A Hazárd átka — számláló, nem kártya: minden Hazárd akció az Ivászaton = 1 Adósság, azonnal bevallva; a bevallott Adósságokért minden verekedésben jön a Végrehajtó, és döntetlen verekedésnél az veszít, akinek több van.",
     "sk": {
       "pojem": "Dlh",
       "popis": "Kliatba z Hazardu — počítadlo, nie karta: každá akcia Hazard v Pitke = 1 Dlh, hneď priznaný; za priznané Dlhy príde v každej bitke Exekútor a pri remíze v bitke prehrá, kto ich má viac."
     }
   },
   "dobratie": {
-    "pojem": "",
-    "popis": "",
+    "pojem": "Húzás",
+    "popis": "A második körtől a kör elején 2 kártyát húzol, akárhány van a kezedben. Nincs kézlimit, és semmit sem kell eldobni.",
     "sk": {
       "pojem": "Dobratie",
       "popis": "Od druhého kola si na začiatku kola doberieš 2 karty, nech máš v ruke koľkokoľvek. Limit ruky nie je a nič sa neodhadzuje."
     }
   },
   "dlzka-hry": {
-    "pojem": "",
-    "popis": "",
+    "pojem": "Liga",
+    "popis": "A játék hossza — a helyszínek száma, amelyekért játszotok: Harmadosztály 3, Másodosztály 5, Első osztály 7; utánuk jön a döntő.",
     "sk": {
       "pojem": "Liga",
       "popis": "Dĺžka hry — počet lokalít, o ktoré sa hrá: Tretia liga 3, Druhá liga 5, Prvá liga 7; po nich príde finále."
     }
   },
   "doliatie": {
-    "pojem": "",
-    "popis": "",
+    "pojem": "Újratöltés",
+    "popis": "Ivászat közben 2 cigarettáért az üres felest visszafordítod telire.",
     "sk": {
       "pojem": "Doliatie",
       "popis": "Počas Pitky za 2 cigarety otočíš vypitý poldeci späť na plný."
     }
   },
   "efekt": {
-    "pojem": "",
-    "popis": "",
+    "pojem": "Hatás",
+    "popis": "A kártya szövege: mit csinál a kártya, és mikor; a mikort az elején álló vastag szó mondja meg.",
     "sk": {
       "pojem": "Efekt",
       "popis": "Text karty: čo karta robí a kedy; kedy hovorí tučné slovo na jeho začiatku."
     }
   },
   "hazard": {
-    "pojem": "",
-    "popis": "",
+    "pojem": "Hazárd",
+    "popis": "Akció, amely az Ivászaton 1 Adósságot ad.",
     "sk": {
       "pojem": "Hazard",
       "popis": "Akcia, ktorá ti v Pitke dá 1 Dlh."
     }
   },
   "zadlzenie": {
-    "pojem": "",
-    "popis": "",
+    "pojem": "Eladósodás",
+    "popis": "Amit a Hazárd és a kártyahatások adnak: 1 eladósodás rögtön 1 Adósság. Csak a Félkarú rablóval az Örökségben jön Adósság minden 2 után, a maradék a számlán marad.",
     "sk": {
       "pojem": "Zadĺženie",
       "popis": "Čo dáva Hazard a efekty kariet: 1 zadĺženie je hneď 1 Dlh. Len s Výherným automatom v Dedičstve je Dlh až za každé 2 a zvyšok ostáva na účte."
     }
   },
   "exekutor": {
-    "pojem": "",
-    "popis": "",
+    "pojem": "Végrehajtó",
+    "popis": "Minden verekedésben eljön, amíg van bevallott Adósságod: elég az Adósságaid fele (felfelé kerekítve) és ugyanannyi csikk; az Ügyvéd kegye 1 / 2 / 3-mal csökkenti. A bandádban lévő Hobbikertész abban a körben megvéd tőle.",
     "sk": {
       "pojem": "Exekútor",
       "popis": "Príde v každej bitke, kým máš priznaný Dlh: zhorí ti polovica Dlhov (zaokrúhlene nahor) a rovnako veľa špakov; tvoja priazeň Advokáta ich uberie o 1 / 2 / 3. Záhradkár v tvojej partii ťa v tom kole ochráni."
     }
   },
   "finale": {
-    "pojem": "",
-    "popis": "",
+    "pojem": "Döntő",
+    "popis": "Az utolsó verekedés a csúcshelyszínért, amelyet a több csikkel rendelkező játékos választ és forgat; úgy játsszák, mint bármelyik másikat (a helyszín a sor közepén, Ivászatok a kötések szerint), a lemaradó támad (kevesebb csikk), a győztes minden kártyáért a sorban 1 csikket kap.",
     "sk": {
       "pojem": "Finále",
       "popis": "Posledná bitka o pinnacle lokalitu, ktorú vyberie a natočí hráč s viac špakmi; hrá sa ako o každú inú (lokalita v strede línie, Pitky podľa spojov), útočí zaostávajúci (menej špakov), víťaz dostane 1 špak za každú kartu v línii."
     }
   },
   "pakt": {
-    "pojem": "",
-    "popis": "",
+    "pojem": "Paktum",
+    "popis": "Akció (v7): a kötésben úgy viselkedik, mint az az akció, amellyel párban áll — a rossz is. Paktum a Paktummal semmit sem csinál, az Ellenállás kioltja. Az akciót másoló Paktum minden hatás számára az az akció (a Gyomrosaid, a Vasvilla, a Telefon…).",
     "sk": {
       "pojem": "Pakt",
       "popis": "Akcia (v7): na spoji sa správa ako akcia, s ktorou je v páre — aj zlá. Pakt s Paktom nerobí nič, Odpor ho zruší. Pakt, ktorý akciu kopíruje, je ňou pre všetky efekty (tvoje Pecky, Vidly, Telefón…)."
     }
   },
   "konflikt": {
-    "pojem": "",
-    "popis": "",
+    "pojem": "Összetűzés",
+    "popis": "Kiváltó (v11.3): a kártya hatása, amikor hozzárakással az ellenfél kártyája mellé kerül — akár te raksz az ellenféléhez, akár az ellenfél a tiédhez; kettőspont utáni címkével csak az adott címkéjű kártyánál. A Szerszám alárakása, a NA EX, az ütközés és az áthelyezés nem váltja ki.",
     "sk": {
       "pojem": "Konflikt",
       "popis": "Spúšťač (v11.3): efekt karty, keď sa priložením ocitne vedľa súperovej karty — či prikladáš ty k súperovej, alebo súper k tvojej; s tagom za dvojbodkou len pri karte s tým tagom. Podloženie Nástroja, NA EX, zrážka ani presun ho nespustia."
     }
   },
   "podpora": {
-    "pojem": "",
-    "popis": "",
+    "pojem": "Támogatás",
+    "popis": "Kiváltó (v11.3): az Összetűzés tükörképe — a kártya hatása, amikor hozzárakással egy másik saját kártyáddal találkozik; kettőspont utáni címkével csak az adott címkéjű kártyával.",
     "sk": {
       "pojem": "Podpora",
       "popis": "Spúšťač (v11.3): zrkadlo Konfliktu — efekt karty, keď sa priložením stretne s inou tvojou kartou; s tagom za dvojbodkou len s kartou s tým tagom."
     }
   },
   "vyvolat-konflikt": {
-    "pojem": "",
-    "popis": "",
+    "pojem": "Összetűzést kiváltani",
+    "popis": "Kártyát rakni az ellenfél fekvő kártyájához, amelyen Összetűzés kiváltó van.",
     "sk": {
       "pojem": "Vyvolať Konflikt",
       "popis": "Priložiť kartu k súperovej ležiacej karte so spúšťačom Konflikt."
     }
   },
   "forsaz": {
-    "pojem": "",
-    "popis": "",
+    "pojem": "Padlógáz",
+    "popis": "Erősítés az Erősítés ellen: mindkét kártya összes aktív akciója erősített (×2); a NA EX az egyik Erősítésre kioltja. A kártya alá rakott Energiaital Padlógázt ad neki, amelyet a NA EX nem olt ki.",
     "sk": {
       "pojem": "Forsáž",
       "popis": "Posilnenie proti Posilneniu: obe karty majú všetky aktívne akcie posilnené (×2); NA EX na jedno z Posilnení ju zruší. Energeťák podložený pod kartu jej dá Forsáž, ktorú NA EX nezruší."
     }
   },
   "spolocnik": {
-    "pojem": "",
-    "popis": "",
+    "pojem": "Cimbora",
+    "popis": "Kiváltó: a kártyának extra akciói vannak a képen lévő pecsétből, amíg a bandádban van másik felfordított kártya a kettőspont utáni címkével — egyszer, akkor is, ha több van.",
     "sk": {
       "pojem": "Spoločník",
       "popis": "Spúšťač: karta má akcie navyše z pečate v obrázku, kým máš v partii inú odkrytú kartu s tagom za dvojbodkou — raz, aj pri viacerých."
     }
   },
   "nepriatel": {
-    "pojem": "",
-    "popis": "",
+    "pojem": "Ellenség",
+    "popis": "Kiváltó: a kártyának extra akciói vannak a képen lévő pecsétből, amíg az ellenfél bandájában van felfordított kártya a kettőspont utáni címkével — egyszer, akkor is, ha több van.",
     "sk": {
       "pojem": "Nepriateľ",
       "popis": "Spúšťač: karta má akcie navyše z pečate v obrázku, kým má súper v partii odkrytú kartu s tagom za dvojbodkou — raz, aj pri viacerých."
     }
   },
   "akcia-navyse": {
-    "pojem": "",
-    "popis": "",
+    "pojem": "Extra akció",
+    "popis": "Akció a kártyakép pecsétjéből: a kártya gazdájának aktív akciója az éleken kívül, ugyanannak az akciónak számít. A „Folyton: {Akcia}” feltétel nélkül érvényes, amíg a kártya fekszik. Az Erősítés, az Ellenállás, a Padlógáz, a NA EX és az alárakott Szerszám nem változtat rajta; az Örökségben lévő Szerszámok és az Oktató Átképzése igen.",
     "sk": {
       "pojem": "Akcia navyše",
       "popis": "Akcia z pečate v obrázku karty: aktívna akcia majiteľa karty mimo hrán, ráta sa ako tá istá akcia. „Furt: {Akcia}“ platí bez podmienky, kým karta leží. Posilnenie, Odpor, Forsáž, NA EX ani podložený Nástroj ju nemenia; Nástroje v Dedičstve a Preškolenie Školiteľa áno."
     }
   },
   "fajcenie": {
-    "pojem": "",
-    "popis": "",
+    "pojem": "Rágyújtás",
+    "popis": "Azonnal egy kártya a pakliból; csak az Ivászaton szabad, amíg be nem fejezed. Az első rágyújtás az Ivászaton 1 cigarettába kerül, a második 2-be, a harmadik 3-ba… és minden Ivászat 1-ről indul. A Benzinkúton mindegyik 1-gyel olcsóbb, az első ingyen.",
     "sk": {
       "pojem": "Fajčenie",
       "popis": "Karta z balíčka hneď; smieš len v Pitke, kým ju neskončíš. Prvé fajčenie v Pitke stojí 1 cigaretu, druhé 2, tretie 3… a každá Pitka začína od 1. Na Benzínke je každé o 1 lacnejšie, prvé zadarmo."
     }
   },
   "kliatba": {
-    "pojem": "",
-    "popis": "",
+    "pojem": "Átok",
+    "popis": "Ami a gazdájának árt: a Májzsugor és a Remegés kártya, meg az Adósság számláló (azonnal bevallva). Bevallani csak a Májzsugort lehet.",
     "sk": {
       "pojem": "Kliatba",
       "popis": "Čo škodí majiteľovi: karty Cirhóza a Absťák a počítadlo Dlh (hneď priznaný). Priznať sa dá len Cirhóza."
     }
   },
   "kolo": {
-    "pojem": "",
-    "popis": "",
+    "pojem": "Kör",
+    "popis": "Cél, kínálat, aztán Gyűlés Ivászattal 1–4-szer (a döntőben a csúcshelyszínen akár 5-ször), végül verekedés a helyszínért.",
     "sk": {
       "pojem": "Kolo",
       "popis": "Cieľ, ponuka, potom Zhromaždenie s Pitkou 1- až 4-krát (na pinnacle vo finále až 5-krát) a nakoniec bitka o lokalitu."
     }
   },
   "koniec-linie": {
-    "pojem": "",
-    "popis": "",
+    "pojem": "A sor vége",
+    "popis": "A sor két végének egyike, ahová kijátszanak; senkié — a kártyát bármelyikre teheted.",
     "sk": {
       "pojem": "Koniec línie",
       "popis": "Jeden z dvoch koncov línie, kam sa vykladá; nepatrí nikomu — kartu kladieš na ktorýkoľvek."
     }
   },
   "kraj": {
-    "pojem": "",
-    "popis": "",
+    "pojem": "Szárny",
+    "popis": "A sor fele a helyszín éle szerint; minden helyszínnek saját szárnynevei vannak (Kocsma: a csapnál és az ajtónál). Senkié.",
     "sk": {
       "pojem": "Kraj",
       "popis": "Polovica línie podľa hrany lokality; každá lokalita má vlastné mená krajov (Krčma: pri výčape a pri dverách). Nepatrí nikomu."
     }
   },
   "limit": {
-    "pojem": "",
-    "popis": "",
+    "pojem": "Kijátszási korlát",
+    "popis": "Hány kártyát játszol ki egy Gyűlésen: teli feles + 1.",
     "sk": {
       "pojem": "Limit vykladania",
       "popis": "Koľko kariet vyložíš v jednom Zhromaždení: plné poldeci + 1."
     }
   },
   "linia": {
-    "pojem": "",
-    "popis": "",
-    "kratko": "",
-    "tvary": "",
+    "pojem": "Sor",
+    "popis": "A kör kártyáinak teljes sora; a középen álló helyszín két szárnyra osztja (a döntőben is, ahol középen a csúcshelyszín áll).",
+    "kratko": "Kártyasor a helyszín mellett. A kártyát bármelyik végére teheted; a szomszéd kártyák a kötésekben érnek össze.",
+    "tvary": "sor, sort, sorba, sorban, sorból, sorhoz, sornak, sorát, sorok",
     "sk": {
       "pojem": "Línia",
       "popis": "Celý rad kariet v kole; lokalita v strede ho delí na dva kraje (aj vo finále, kde je v strede pinnacle).",
@@ -276,10 +276,10 @@
     }
   },
   "lokalita": {
-    "pojem": "",
-    "popis": "",
-    "kratko": "",
-    "tvary": "",
+    "pojem": "Helyszín",
+    "popis": "Kártya a sor közepén, amelyért a körben verekednek; a hatása abban a körben érvényes.",
+    "kratko": "Hely a faluban, amelyért a körben verekedtek. Az asztal közepén fekszik, a kártyák mellé kerülnek.",
+    "tvary": "helyszín, helyszínt, helyszínek, helyszíneket, helyszínen, helyszínért, helyszínnél, helyszínhez, helyszínre, helyszínről, helyszínnek, helyszíne",
     "sk": {
       "pojem": "Lokalita",
       "popis": "Karta v strede línie, o ktorú sa v kole bije; jej efekt platí v tom kole.",
@@ -288,34 +288,34 @@
     }
   },
   "reci": {
-    "pojem": "",
-    "popis": "",
+    "pojem": "Pletyka",
+    "popis": "Fokok blokkja az ellenfél hőmérőjén (az asztalon a te színedben sraffozva); a veszekedés emeli, az ő félelmének tetejétől lefelé, aztán fölé. Az 1 / 2 / 3. fok minden verekedésnél neked pontoz az ellenfél helyett, és alulról csak elvesztett veszekedés után csökken. Az ellenfél kegyén, a félelemmel nyert győzelmen és az elfogáson nem változtat.",
     "sk": {
       "pojem": "Reči",
       "popis": "Blok stupňov na teplomere súpera (na stole šrafa v tvojej farbe); dvíha ich hádka, od vrchu jeho strachu nadol, potom nad neho. Stupne 1 / 2 / 3 bodujú tebe pri každej bitke namiesto súpera, klesajú zospodu len po prehratej hádke. Súperovu priazeň, výhru strachom ani zajatie nemenia."
     }
   },
   "hadka": {
-    "pojem": "",
-    "popis": "",
+    "pojem": "Veszekedés",
+    "popis": "A verekedés lépése: akinek több puha sebzése van, a különbséggel megnyerte a veszekedést („Anna 3-mal nyerte a veszekedést”), és a pontozás után ezt a pletykájára osztja el az ellenfél hőmérőin — egy fok ára 1 / 2 / 3, a maradék elvész. Egyenlőségnél senki; a döntőben a veszekedés csikkre megy.",
     "sk": {
       "pojem": "Hádka",
       "popis": "Krok bitky: kto má viac mäkkého poškodenia, vyhral hádku o rozdiel („Ana vyhrala hádku o 3“) a po bodovaní ho rozdelí na svoje reči na teplomeroch súpera — stupeň stojí 1 / 2 / 3, zvyšok prepadne. Pri rovnosti nikto; vo finále ide hádka na špaky."
     }
   },
   "makke": {
-    "pojem": "",
-    "popis": "",
+    "pojem": "Puha sebzés",
+    "popis": "Botrány × 2 + az ellenfél Hite által ki nem oltott Babonák (Horoszkóppal × 2). Keményet nem csinál — csak a veszekedést dönti el.",
     "sk": {
       "pojem": "Mäkké poškodenie",
       "popis": "Pohoršenie × 2 + Povery, ktoré nezrušila súperova Viera (s Horoskopom × 2). Tuhé nerobí — rozhoduje len hádku."
     }
   },
   "naex": {
-    "pojem": "",
-    "popis": "",
-    "kratko": "",
-    "tvary": "",
+    "pojem": "NA EX!",
+    "popis": "Teli feles egy kártyára a sorban, az Ivászaton titokban kiválasztva: kioltja az aktív akcióit, és megduplázza az inaktívakat. A kioltott Ellenállás elengedi az akciót, amelyet kioltott; a pár nélküli Ellenállást a NA EX eloltja, a pár nélküli Erősítés megtartja az aktív akciókat.",
+    "kratko": "Egy teli felest fenékig egy kártyára öntesz a sorban. A kötésben lévő akciói kialszanak, a magányosak megduplázódnak.",
+    "tvary": "NA EX",
     "sk": {
       "pojem": "NA EX!",
       "popis": "Plný poldeci na kartu v línii, vybraný v Pitke skryto: zruší jej aktívne akcie a zdvojí neaktívne. Zrušený Odpor pustí akciu, ktorú rušil; nespárovaný Odpor NA EX zahasí, nespárované Posilnenie podrží aktívne akcie.",
@@ -324,146 +324,146 @@
     }
   },
   "naradie": {
-    "pojem": "",
-    "popis": "",
+    "pojem": "Szerszámpakli",
+    "popis": "A Szerszám címkéjű kártyák képpel lefelé; a kínálat összerakásakor 2 kártyát kapsz belőle, a kínálatból el nem vitt Szerszámok visszakerülnek az aljára.",
     "sk": {
       "pojem": "Balíček nástrojov",
       "popis": "Karty s tagom Nástroj lícom dole; pri stavbe ponuky z neho dostaneš 2 karty, nevzaté Nástroje z ponuky sa vracajú naspodok."
     }
   },
   "nastenka": {
-    "pojem": "",
-    "popis": "",
+    "pojem": "Kocsmai faliújság",
+    "popis": "A lejátszott verekedések: helyszín, győztes, és hány csikket szerzett érte a körben (verekedés, Meló, elöljárók…); a helyszínt a győztes nem kapja meg. A helyszínre kattintva látod az Ivászatok és a verekedés összesítőjét.",
     "sk": {
       "pojem": "Krčmová nástenka",
       "popis": "Odohrané bitky: lokalita, víťaz a koľko špakov za ňu v kole získal (bitka, Robota, starší…); lokalitu si víťaz neberie. Klik na lokalitu ukáže súhrn Pitiek a bitky."
     }
   },
   "nastroj": {
-    "pojem": "",
-    "popis": "",
+    "pojem": "Szerszám",
+    "popis": "Szerszám címkéjű kártya; a sorba nem játszható ki — 1 cigarettáért alárakod egy Polgár vagy Elöljáró alá a sorban (a kilógó él érvényes), vagy cigarettáért kiteszed az Örökségbe.",
     "sk": {
       "pojem": "Nástroj",
       "popis": "Karta s tagom Nástroj; do línie sa nevykladá — za 1 cigaretu ho podložíš pod Občana či Starešinu v línii (platí hrana, ktorá pretŕča), alebo ho za cigarety vyložíš do Dedičstva."
     }
   },
   "natocenie": {
-    "pojem": "",
-    "popis": "",
+    "pojem": "Elforgatás",
+    "popis": "Az előző veszekedés győztese elforgatja a helyszínt (az első körben és döntetlen veszekedés után az, aki választja) — ez dönti el, melyik éle melyik szárnyhoz tartozik.",
     "sk": {
       "pojem": "Natočenie",
       "popis": "Ako víťaz minulej hádky otočí lokalitu (v prvom kole a po remíze v hádke ten, kto ju vyberá) — určuje, ktorá jej hrana patrí ktorému kraju."
     }
   },
   "nerest": {
-    "pojem": "",
-    "popis": "",
+    "pojem": "Bűn",
+    "popis": "Csak a fogyasztás: Felhajtás 1, NA EX 2, elszívott cigaretta 1. A kör végén a Szomjaddal vetik össze.",
     "sk": {
       "pojem": "Nerest",
       "popis": "Len konzumácia: Vypiť 1, NA EX 2, vyfajčená cigareta 1. Na konci kola sa porovnáva s tvojou Chuťou."
     }
   },
   "obcania": {
-    "pojem": "",
-    "popis": "",
+    "pojem": "Polgárok paklija",
+    "popis": "A kínálat összes többi kártyája (Polgárok, Állatok, Elöljárók…) képpel lefelé; a kínálat összerakásakor 6 kártyát kapsz belőle.",
     "sk": {
       "pojem": "Balíček dedinčanov",
       "popis": "Všetky ostatné karty ponuky (Občania, Zvieratá, Starešinovia…) lícom dole; pri stavbe ponuky z neho dostaneš 6 kariet."
     }
   },
   "odhodenie": {
-    "pojem": "",
-    "popis": "",
+    "pojem": "Eldobni",
+    "popis": "A kártya a gazdája dobópaklijába kerül — amikor a húzópakli elfogy, megkeverik, és visszakerül a játékba. Az elégetés ellentéte.",
     "sk": {
       "pojem": "Odhodiť",
       "popis": "Karta ide do odhadzovacieho balíčka svojho majiteľa — keď sa doberací minie, zamieša sa a vráti do hry. Opak spálenia."
     }
   },
   "odpoved": {
-    "pojem": "",
-    "popis": "",
+    "pojem": "Válasz a NA EX-re",
+    "popis": "Felfedés után minden ellenfél-NA EX-ért egy kártya, képpel lefelé, egy teli felesért (felhajtod: máj +1), a korláton kívül; először a támadó válaszol, aztán a védő a sor másik szárnyára; a kettő egyszerre fordul fel.",
     "sk": {
       "pojem": "Odpoveď na NA EX",
       "popis": "Po odkrytí jedna karta za každé súperovo NA EX, lícom dole, za plný poldeci (vypiješ ho: pečeň +1) a mimo limitu; najprv odpovedá útočník, potom obranca na druhý kraj línie; obe sa otočia naraz."
     }
   },
   "partia": {
-    "pojem": "",
-    "popis": "",
+    "pojem": "Banda",
+    "popis": "Az összes kártyád a sorban, bárhol is fekszenek; az akcióik neked számítanak.",
     "sk": {
       "pojem": "Partia",
       "popis": "Všetky tvoje karty v línii, nech ležia kdekoľvek; ich akcie sa rátajú tebe."
     }
   },
   "pas": {
-    "pojem": "",
-    "popis": "",
+    "pojem": "Passz",
+    "popis": "Befejezed a kijátszást a Gyűlésen, és minden kártyáért, amit még kijátszhattál volna, kapsz egy cigarettát, akkor is, ha már semmi sincs a kezedben.",
     "sk": {
       "pojem": "Pas",
       "popis": "Skončíš vykladanie v Zhromaždení a za každú kartu, ktorú si ešte smel vyložiť, dostaneš cigaretu, aj keď ti v ruke už nič neostalo."
     }
   },
   "podlozenie": {
-    "pojem": "",
-    "popis": "",
+    "pojem": "Alárakás",
+    "popis": "Lépés a Gyűlésen 1 cigarettáért: a kezedből egy Szerszámot becsúsztatsz a saját Polgárod vagy Elöljáród alá a sorban (az ellenfél kártyája alá nem); a kilógó él érvényes. A verekedésig ott fekszik, aztán visszakerül annak a dobópaklijába, aki alárakta.",
     "sk": {
       "pojem": "Podloženie",
       "popis": "Ťah v Zhromaždení za 1 cigaretu: Nástroj z ruky zasunieš pod svojho Občana či Starešinu v línii (pod súperovu kartu nie); platí hrana, ktorá pretŕča. Leží do bitky, potom sa vráti do odhadzovacieho balíčka toho, kto ho podložil."
     }
   },
   "pokus": {
-    "pojem": "",
-    "popis": "",
+    "pojem": "Elfogás",
+    "popis": "Az Elpáholás elosztásakor (megnyerted a verekedést) 5 pontért elfogod azt az elöljárót, akinél a félelmed már ezen Elpáholás előtt 3 (az előző körből; az ugyanebben az elosztásban feltornázott nem elég; a pletyka nem számít). A foglyod lesz, és az ellenfél annyi csikket ad át neked, ahány veszekedéspontja pletykában van nála. A döntőben nem.",
     "sk": {
       "pojem": "Zajatie",
       "popis": "Pri rozdelení Nakladačky (vyhral si bitku) zajmeš za 5 bodov staršieho, pri ktorom je tvoj strach 3 už pred touto Nakladačkou (od minulého kola, dotiahnutý v tom istom rozdelení nestačí; reči sa nerátajú). Je tvoj väzeň a súper ti odovzdá toľko špakov, koľko bodov hádky má v rečiach pri ňom. Vo finále nie."
     }
   },
   "presvedcenie": {
-    "pojem": "",
-    "popis": "",
+    "pojem": "Meggyőzés",
+    "popis": "A veszekedés elosztásakor 3 pontért bármelyik elöljárót meggyőzöd, ha nála a pletykád az egész hőmérőt kitölti. A pletyka, a félelem és a kegy megmarad; a kártyája a kezedbe kerül, és végleg a paklidhoz tartozik. Azé, aki elsőként győzi meg; elfogni mindketten elfoghatják. A döntőben nem.",
     "sk": {
       "pojem": "Presvedčenie",
       "popis": "Pri rozdelení hádky presvedčíš za 3 body ktoréhokoľvek staršieho, keď máš pri ňom reči na celom teplomere. Reči, strach aj priazeň ostanú; jeho karta ide tebe do ruky a natrvalo patrí do tvojho balíčka. Kto prvý presvedčí, toho je; zajať ho smú obaja. Vo finále nie."
     }
   },
   "vazen": {
-    "pojem": "",
-    "popis": "",
+    "pojem": "Fogoly",
+    "popis": "Elfogott elöljáró a bevallott kártyáid között („a pincében”): nem ad kegyet, piros félelmednek számít, és tiéd a képessége (játékonként egyszer). Elfogáskor az ellenfél annyi csikket ad át neked, ahány veszekedéspontja pletykában van nála; a győzelemhez szükséges foglyok a liga szerint (2 / 3 / 4).",
     "sk": {
       "pojem": "Väzeň",
       "popis": "Zajatý starší medzi tvojimi priznanými kartami („v pivnici“): nedáva priazeň, ráta sa ako tvoj červený strach, máš jeho schopnosť (raz za hru). Pri zajatí ti súper odovzdá toľko špakov, koľko bodov hádky má pri ňom v rečiach; väzni na výhru podľa ligy (2 / 3 / 4)."
     }
   },
   "schopnost-vazna": {
-    "pojem": "",
-    "popis": "",
+    "pojem": "A fogoly képessége",
+    "popis": "Minden elfogott elöljárónak van képessége (pl. Postásnő: 4 cigarettát kapsz). Aki fogva tartja, játékonként egyszer használja, amikor akarja — a saját lépésében a kínálatból vételkor, a Gyűlésen vagy az Ivászaton. Utána elhasználódik, a fogoly a pincében marad.",
     "sk": {
       "pojem": "Schopnosť väzňa",
       "popis": "Každý zajatý starší má schopnosť (napr. Poštárka: dostaneš 4 cigarety). Jeho držiteľ ju použije raz za hru, kedy chce — vo svojom ťahu pri braní z ponuky, v Zhromaždení alebo v Pitke. Potom je minutá, väzeň ostáva v pivnici."
     }
   },
   "skolitel": {
-    "pojem": "",
-    "popis": "",
+    "pojem": "Oktató",
+    "popis": "Polgár vagy Állat X → Y Átképzés hatással (az Állatot a Hentes elhallgattatja): Folyton esetén mindkét szomszédját átképzi, amíg szomszédosak; Támogatásnál a te kártyádat, Összetűzésnél az ellenfélét, amellyel találkozik, a kör végéig.",
     "sk": {
       "pojem": "Školiteľ",
       "popis": "Občan alebo Zviera s efektom Preškolenie X → Y (Zviera umlčí Mäsiar): pri Furt preškolí oboch susedov, kým susedia; pri Podpore tvoju a pri Konflikte súperovu kartu, s ktorou sa stretne, do konca kola."
     }
   },
   "pecen": {
-    "pojem": "",
-    "popis": "",
+    "pojem": "Máj",
+    "popis": "Számláló az Ivászaton a Májkárosodás és a Feles akciókból, meg a NA EX-ből; minden teljes küszöbért egy Májzsugor.",
     "sk": {
       "pojem": "Pečeň",
       "popis": "Počítadlo v Pitke z akcií Poškodenie pečene, Poldeci a z NA EX; za každý celý prah Cirhóza."
     }
   },
   "pitka": {
-    "pojem": "",
-    "popis": "",
-    "kratko": "",
-    "tvary": "",
+    "pojem": "Ivászat",
+    "popis": "Kiértékelés a Gyűlés után: NA EX, Adósságok, máj, cigaretták; egy körben 1–4 Ivászat van (a döntőben a csúcshelyszínen 1–5).",
+    "kratko": "A Gyűlés után iszunk: rágyújtasz, újratöltesz, és titokban NA EX-et adsz egy kártyára a sorban.",
+    "tvary": "Ivászat, Ivászatot, Ivászatok, Ivászaton, Ivászatban, Ivászatra, Ivászatig, Ivászatból, Ivászatkor, Ivászatai, Ivászatonként",
     "sk": {
       "pojem": "Pitka",
       "popis": "Vyhodnotenie po Zhromaždení: NA EX, Dlhy, pečeň, cigarety; v jednom kole je 1 až 4 Pitiek (vo finále na pinnacle 1 až 5).",
@@ -472,26 +472,26 @@
     }
   },
   "podstrcenie": {
-    "pojem": "",
-    "popis": "",
+    "pojem": "Becsempészés",
+    "popis": "A saját kártyádat az ellenféléhez rakni; a tiéd marad, és az akciói neked számítanak.",
     "sk": {
       "pojem": "Podstrčenie",
       "popis": "Priložiť svoju kartu k súperovej; ostáva tvoja a jej akcie sa rátajú tebe."
     }
   },
   "pohorsenie": {
-    "pojem": "",
-    "popis": "",
+    "pojem": "Botrány",
+    "popis": "Akció: 2 puha sebzés a veszekedésbe (v10); az ellenfél Hite nem oltja ki.",
     "sk": {
       "pojem": "Pohoršenie",
       "popis": "Akcia: 2 mäkké poškodenie do hádky (v10); súperova Viera ho nezruší."
     }
   },
   "poldeci": {
-    "pojem": "",
-    "popis": "",
-    "kratko": "",
-    "tvary": "",
+    "pojem": "Feles",
+    "popis": "Egy kupica pálinka; a teli 1-gyel növeli a korlátot, és ezzel fizetsz a NA EX-ért és a lépés következő kártyájáért is. A játék végén minden teli feles 1 csikk.",
+    "kratko": "Egy kupica pálinka. Ahány teli feles van nálad, annyi kártyát játszol ki, plusz egyet. Egy teli felesért NA EX-et is adhatsz.",
+    "tvary": "feles, felest, felesek, feleseket, felessel, felesért, felesed, feleseid, felese, felesét",
     "sk": {
       "pojem": "Poldeci",
       "popis": "Pohárik pálenky; plný zvyšuje limit o 1 a platí ním NA EX aj ďalšiu kartu v ťahu. Plný na konci hry je 1 špak.",
@@ -500,74 +500,74 @@
     }
   },
   "povera": {
-    "pojem": "",
-    "popis": "",
+    "pojem": "Babona",
+    "popis": "Akció: 1 puha sebzés a veszekedésbe (v10; Horoszkóppal 2); az ellenfél Hite 1 : 1 arányban kioltja.",
     "sk": {
       "pojem": "Povera",
       "popis": "Akcia: 1 mäkké poškodenie do hádky (v10; s Horoskopom 2); súperova Viera ju zruší 1 : 1."
     }
   },
   "preskolenie": {
-    "pojem": "",
-    "popis": "",
+    "pojem": "Átképzés",
+    "popis": "A kártya X akciója Y-nak számít, még a kötések előtt, mindkét élen és az extra akciókban is. Az Oktató és az alárakott Szerszám éle csinálja; az átalakulások láncolódnak — előbb az Oktatók, aztán a Szerszámok, mindegyik az előző eredményén.",
     "sk": {
       "pojem": "Preškolenie",
       "popis": "Akcia X karty sa ráta ako Y, ešte pred spojmi, na oboch hranách aj v akciách navyše. Robí ho Školiteľ a hrana podloženého Nástroja; premeny sa reťazia — najprv Školitelia, potom Nástroje, každá na výsledku predošlej."
     }
   },
   "boss": {
-    "pojem": "",
-    "popis": "",
+    "pojem": "Boss",
+    "popis": "Elöljáró kártyája: 6 akció és egy bűn; a sorban csak az akciói vannak; a képessége csak azé, aki fogolyként tartja.",
     "sk": {
       "pojem": "Boss",
       "popis": "Karta staršieho: 6 akcií a jedna neresť; v línii má len akcie; jeho schopnosť má len ten, kto ho drží ako väzňa."
     }
   },
   "prebytok": {
-    "pojem": "",
-    "popis": "",
+    "pojem": "Elpáholás",
+    "popis": "Ennyivel nyersz kemény sebzésben (a győztes tartja); a pontozás után a félelmedre osztod el az elöljáróknál — egy fok ára 1 / 2 / 3, a maradék elvész. A döntőben csikkre megy.",
     "sk": {
       "pojem": "Nakladačka",
       "popis": "O koľko vyhrávaš v tuhom poškodení (drží ju víťaz); po bodovaní ju rozdelíš na svoj strach pri starších — stupeň stojí 1 / 2 / 3, zvyšok prepadne. Vo finále ide na špaky."
     }
   },
   "prevaha": {
-    "pojem": "",
-    "popis": "",
+    "pojem": "Fölény",
+    "popis": "Az birtokolja a szárnyon, akinek ott több saját Polgára, Állata és Elöljárója van; ő kapja a helyszín élének akcióit.",
     "sk": {
       "pojem": "Prevaha",
       "popis": "V kraji ju má, kto tam má viac svojich Občanov, Zvierat a Starešinov; dostane akcie hrany lokality."
     }
   },
   "priazen": {
-    "pojem": "",
-    "popis": "",
+    "pojem": "Kegy",
+    "popis": "Előny attól az elöljárótól, aki jobban fél az ellenfeledtől, mint tőled: erő = az ellenfél félelme − a te félelmed (1, 2 vagy 3). A pletyka nem számít; egyenlő félelemnél senkié.",
     "sk": {
       "pojem": "Priazeň",
       "popis": "Výhoda od staršieho, ktorý sa súpera bojí viac než teba: sila = strach súpera − tvoj strach (1, 2 alebo 3). Reči sa nerátajú; pri rovnakom strachu ju nemá nikto."
     }
   },
   "priznanie": {
-    "pojem": "",
-    "popis": "",
+    "pojem": "Bevallás",
+    "popis": "Az átkot a soron kívül, a saját játékterületedre teszed ki — végleg kikerül a pakliból.",
     "sk": {
       "pojem": "Priznanie",
       "popis": "Kliatbu vyložíš mimo línie do svojej hracej oblasti — natrvalo z balíčka."
     }
   },
   "sekera": {
-    "pojem": "",
-    "popis": "",
+    "pojem": "Krétára",
+    "popis": "Győztes nélküli verekedés (döntetlen keményben, Remegésben és Adósságban is): a csikkjeit a következő verekedés győztese viszi, a döntőben elvesznek.",
     "sk": {
       "pojem": "Na sekeru",
       "popis": "Bitka bez víťaza (remíza v tuhom, Absťákoch aj Dlhoch): jej špaky vezme víťaz najbližšej bitky, vo finále prepadnú."
     }
   },
   "senok": {
-    "pojem": "",
-    "popis": "",
-    "kratko": "",
-    "tvary": "",
+    "pojem": "Kínálat",
+    "popis": "Megvehető kártyák képpel felfelé; 1 kártyát vesztek 1 cigarettáért, vagy 2-t 3-ért.",
+    "kratko": "Megvehető kártyák, képpel felfelé. Egy egy cigaretta, kettő három cigaretta. Felváltva vesztek, amíg mindketten abba nem hagyjátok.",
+    "tvary": "kínálat, kínálatot, kínálatból, kínálatban, kínálatba, kínálatnak, kínálathoz",
     "sk": {
       "pojem": "Ponuka",
       "popis": "Karty na kúpu lícom nahor; beriete z nej 1 kartu za 1 cigaretu alebo 2 za 3.",
@@ -576,18 +576,18 @@
     }
   },
   "spalenie": {
-    "pojem": "",
-    "popis": "",
+    "pojem": "Elégetni",
+    "popis": "A kártya örökre kikerül a játékból — egyik pakliba sem tér vissza (pl. Látomás). Az elégetett Adósság eltűnik a számlálóról. Láng a pecsétben (Krokodil): a kártya, amellyel találkozik (az ellenfél Polgára), a verekedés végén elég.",
     "sk": {
       "pojem": "Spáliť",
       "popis": "Karta ide navždy z hry — nevracia sa do žiadneho balíčka (napr. Vízia). Spálený Dlh zmizne z počítadla. Plameň v pečati (Krokodíl): karta, s ktorou sa stretne (súperov Občan), sa na konci bitky spáli."
     }
   },
   "spoj": {
-    "pojem": "",
-    "popis": "",
-    "kratko": "",
-    "tvary": "",
+    "pojem": "Kötés",
+    "popis": "Az a hely, ahol két kártya, vagy egy kártya és a helyszín élei összeérnek.",
+    "kratko": "Az a hely, ahol két kártya összeér. Csak azok az ikonok érvényesek, amelyeknek ott ugyanolyan magasan párjuk van; a magányos ikon halott.",
+    "tvary": "kötés, kötést, kötések, kötéseket, kötésben, kötésekben, kötésnél, kötésre, kötéshez, kötései, kötésekből",
     "sk": {
       "pojem": "Spoj",
       "popis": "Miesto, kde sa dotknú hrany dvoch kariet alebo karty a lokality.",
@@ -596,10 +596,10 @@
     }
   },
   "starsi": {
-    "pojem": "",
-    "popis": "",
-    "kratko": "",
-    "tvary": "",
+    "pojem": "Elöljárók",
+    "popis": "A falu tekintélyes emberei; minden játékosnak saját 0–3-as hőmérője van mindegyiknél — a saját félelme, rajta az ellenfél pletykája. Verekedés után csikket és kegyet ad annak, akitől kevésbé fél.",
+    "kratko": "A falu nagyjai — a Plébános, a Polgármester és társaik. Aki fél tőled, csikkel fizet neked, ha megnyered a verekedést; minél jobban fél, annál többel.",
+    "tvary": "elöljáró, elöljárót, elöljárók, elöljárókat, elöljárónál, elöljáróknál, elöljárónak, elöljáróknak, elöljárótól, elöljáróktól, elöljáróért, elöljárója, elöljárói, elöljáróid, elöljáróidat",
     "sk": {
       "pojem": "Starší",
       "popis": "Vážená osoba dediny; každý hráč má pri ňom svoj teplomer 0–3 — svoj strach a na ňom súperove reči. Po bitke dáva špaky a priazeň tomu, koho sa bojí menej.",
@@ -608,18 +608,18 @@
     }
   },
   "stupen": {
-    "pojem": "",
-    "popis": "",
+    "pojem": "Fok",
+    "popis": "Helyzet az elöljáró skáláján: 0 nyugodt, 1 nyugtalan, 2 ijedt, 3 rémült. Az elöljáró foka egy játékos számára az ő félelme; az ellenfél pletykája ugyanazon a skálán fekszik. A belépés 1 / 2 / 3-ba kerül, verekedés után 1 / 3 / 6 csikket ad, a fokokat az ellenfél is tarthatja.",
     "sk": {
       "pojem": "Stupeň",
       "popis": "Poloha na stupnici staršieho: 0 pokojný, 1 znepokojený, 2 vystrašený, 3 vydesený. Stupeň staršieho pre hráča je jeho strach; reči súpera ležia na tej istej stupnici. Vstup stojí 1 / 2 / 3, po bitke dá 1 / 3 / 6 špakov, stupne môže držať súper."
     }
   },
   "strach": {
-    "pojem": "",
-    "popis": "",
-    "kratko": "",
-    "tvary": "",
+    "pojem": "Félelem",
+    "popis": "A játékos jelölője az elöljárónál, 0–3 (a hőmérő teli része) — mennyire fél tőled; az Elpáholás emeli, és nem csökken. Csak a félelem számít bele a kegybe, a félelemmel nyert győzelembe és az elfogásba.",
+    "kratko": "Mennyire fél tőled az elöljáró — a mellette lévő hőmérő. A megnyert verekedés emeli; nagyobb félelem, több csikk.",
+    "tvary": "félelem, félelmet, félelme, félelmed, félelmét, félelmedet, félelemmel, félelmen, félelemre, félelemből",
     "sk": {
       "pojem": "Strach",
       "popis": "Marker hráča pri staršom 0–3 (plná časť teplomera) — ako veľmi sa ťa bojí; dvíha ho Nakladačka a neklesá. Len strach sa ráta do priazne, výhry strachom a zajatia.",
@@ -628,10 +628,10 @@
     }
   },
   "spak": {
-    "pojem": "",
-    "popis": "",
-    "kratko": "",
-    "tvary": "",
+    "pojem": "Csikk",
+    "popis": "Győzelmi pont: a megnyert verekedésért (1 minden kártyáért a sorban), az elöljáróktól minden verekedés után (a győztes a félelemért a foglalt fokok nélkül, mindketten a pletykáért); a végén a megmaradt teli felesekért és cigarettákért is (beváltás); a döntő után az nyer, akinek több van.",
+    "kratko": "Cigarettavég, és egyben pont. A végén az nyer, akinek több csikkje van. A megnyert verekedés és a tőled félő elöljárók adják.",
+    "tvary": "csikk, csikket, csikkek, csikkeket, csikkre, csikkel, csikkért, csikkje, csikkjei, csikked, csikkeid",
     "sk": {
       "pojem": "Špak",
       "popis": "Víťazný bod: za vyhratú bitku (1 za každú kartu v línii), od starších po každej bitke (víťaz za strach bez obsadených stupňov, obaja za reči); na konci aj za zvyšné plné poldeci a cigarety (výkupné); po finále vyhrá, kto má viac.",
@@ -640,18 +640,18 @@
     }
   },
   "tag": {
-    "pojem": "",
-    "popis": "",
+    "pojem": "Címke",
+    "popis": "A kártya fajtája (Polgár, Állat, Elöljáró, Szerszám…); a hatások hivatkoznak rá — a kettőspont utáni címkés Cimbora, Ellenség, Támogatás vagy Összetűzés is.",
     "sk": {
       "pojem": "Tag",
       "popis": "Druh karty (Občan, Zviera, Starešina, Nástroj…); odkazujú na neho efekty — aj Spoločník, Nepriateľ, Podpora či Konflikt s tagom za dvojbodkou."
     }
   },
   "udery": {
-    "pojem": "",
-    "popis": "",
-    "kratko": "",
-    "tvary": "",
+    "pojem": "Ütések",
+    "popis": "A Pofon (1), a Gyomros (2) és a Fejes (3) akció; a szabályokban kemény sebzés. A verekedésben a kötésekben lévőket adják össze — akinek több van, nyer.",
+    "kratko": "A Pofon, a Gyomros és a Fejes — 1, 2 és 3. A verekedést az nyeri, akinek több ütése van a kötésekben.",
+    "tvary": "ütés, ütést, ütések, ütéseket, ütése, ütései, ütésből, ütésekből, ütéssel, ütésekkel, ütésért",
     "sk": {
       "pojem": "Údery",
       "popis": "Akcie Rana (1), Pecka (2) a Petelica (3); v pravidlách tuhé poškodenie. V bitke sa sčítajú tie v spojoch — kto má viac, vyhrá.",
@@ -660,98 +660,98 @@
     }
   },
   "tuhe": {
-    "pojem": "",
-    "popis": "",
+    "pojem": "Kemény sebzés",
+    "popis": "Sebzés a Pofonból (1), a Gyomrosból (2) és a Fejesből (3); akinek több van, megnyeri a verekedést.",
     "sk": {
       "pojem": "Tuhé poškodenie",
       "popis": "Poškodenie z Rany (1), Pecky (2) a Petelice (3); kto má viac, vyhrá bitku."
     }
   },
   "utocnik": {
-    "pojem": "",
-    "popis": "",
+    "pojem": "Támadó és védő",
+    "popis": "A támadó elvesztette az utolsó verekedést: elsőként játszik ki, és elsőként válaszol a NA EX-re; a védő választja a célt, és elsőként vesz a kínálatból (az első lépésben 1 kártyát); az Ivászatot mindketten egyszerre játsszák; a döntőben az támad, akinek kevesebb csikkje van, a csúcshelyszínt pedig a vezető választja.",
     "sk": {
       "pojem": "Útočník a obranca",
       "popis": "Útočník prehral poslednú bitku: vykladá prvý a na NA EX odpovedá prvý; obranca vyberá cieľ a berie z ponuky prvý (na prvom ťahu 1 kartu); Pitku hrajú obaja naraz; vo finále útočí, kto má menej špakov, a pinnacle vyberá vedúci."
     }
   },
   "viera": {
-    "pojem": "",
-    "popis": "",
+    "pojem": "Hit",
+    "popis": "Akció, amely 1 : 1 arányban kioltja az ellenfél Babonáit (a Horoszkóppal feljavítottakat is), a maradék pedig csökkenti az ellenfél kemény sebzését; a Botrány ellen nem segít.",
     "sk": {
       "pojem": "Viera",
       "popis": "Akcia, ktorá ruší súperove Povery 1 : 1 (aj vylepšené Horoskopom) a zvyšná znižuje jeho tuhé poškodenie; proti Pohoršeniu nepomáha."
     }
   },
   "vizia": {
-    "pojem": "",
-    "popis": "",
+    "pojem": "Látomás",
+    "popis": "Akció: az Ivászat végén minden aktív Látomásért megnézed a húzópaklid felső kártyáját, és a kezedbe veszed, vagy örökre elégeted.",
     "sk": {
       "pojem": "Vízia",
       "popis": "Akcia: na konci Pitky za každú aktívnu Víziu pozrieš vrchnú kartu svojho doberacieho balíčka a vezmeš si ju do ruky, alebo ju navždy spáliš."
     }
   },
   "vydesenie": {
-    "pojem": "",
-    "popis": "",
+    "pojem": "Rémült",
+    "popis": "Az elöljáró 3. foka egy játékos számára. A rémült félelem elfogáshoz enged, és beleszámít a félelemmel nyert győzelembe.",
     "sk": {
       "pojem": "Vydesený",
       "popis": "Stupeň 3 staršieho pre hráča. Vydesený strach ťa pustí k zajatiu a ráta sa do výhry strachom."
     }
   },
   "vytrznik": {
-    "pojem": "",
-    "popis": "",
+    "pojem": "Garázda",
+    "popis": "Kártya, amelyre ugyanazon az Ivászaton mindketten NA EX-et adtatok (vagy alatta Injekció fekszik): minden akciója Pofon a gazdájának, a verekedés végéig.",
     "sk": {
       "pojem": "Výtržník",
       "popis": "Karta, na ktorú ste obaja dali NA EX v tej istej Pitke (alebo pod ňou leží Injekcia): všetky jej akcie sú Rany pre majiteľa, do konca bitky."
     }
   },
   "vypit": {
-    "pojem": "",
-    "popis": "",
+    "pojem": "Felhajtani",
+    "popis": "A teli felest üresre fordítod, hogy ugyanabban a lépésben még egy kártyát kijátszhass: korlát −1, máj +1. 0-s korlátnál nem iszunk.",
     "sk": {
       "pojem": "Vypiť",
       "popis": "Otočíš plný poldeci na vypitý, aby si v tom istom ťahu vyložil ďalšiu kartu: limit −1, pečeň +1. Pri limite 0 sa nepije."
     }
   },
   "vykupne": {
-    "pojem": "",
-    "popis": "",
+    "pojem": "Beváltás",
+    "popis": "A döntő után minden teli felesért 1 csikket és minden teljes 5 megmaradt cigarettáért 1 csikket kapsz.",
     "sk": {
       "pojem": "Výkupné",
       "popis": "Po finále dostaneš 1 špak za každý plný poldeci a 1 špak za každých celých 5 cigariet, ktoré ti ostali."
     }
   },
   "vypalne": {
-    "pojem": "",
-    "popis": "",
+    "pojem": "Sarc",
+    "popis": "Közvetlenül a verekedés után az ellenfél 1 cigarettát ad neked minden elöljáróért, akinél piros a félelmed (a fogoly számít, a pletyka nem), amennyi van neki. A döntő után nem.",
     "sk": {
       "pojem": "Výpalné",
       "popis": "Hneď po bitke ti súper dá 1 cigaretu za každého staršieho s tvojím červeným strachom (väzeň sa ráta, reči nie), koľko má. Po finále nie."
     }
   },
   "vzbura": {
-    "pojem": "",
-    "popis": "",
+    "pojem": "Lázadás",
+    "popis": "Ellenállás az Ellenállás ellen: mindkét kártya megfordul — a kötetlen akciók aktívak, a kötöttek inaktívak. Ellenállás az Erősítés ellen: csak az Ellenállásos kártya, ráadásul erősítve. A kártya alá rakott Vasvilla is megfordítja. NA EX nem mehet rá.",
     "sk": {
       "pojem": "Vzbura",
       "popis": "Odpor proti Odporu: obe karty sa obrátia — nespojené akcie sú aktívne, spojené neaktívne. Odpor proti Posilneniu: len karta s Odporom, navyše posilnená. Vidly podložené pod kartu ju obrátia tiež. NA EX na ňu nejde."
     }
   },
   "zaverecna": {
-    "pojem": "",
-    "popis": "",
+    "pojem": "Záróra",
+    "popis": "Kártya képpel lefelé 1 cigarettáért; az Ivászat végén fordul fel, és utána a Gyűlésen már nem játszol ki.",
     "sk": {
       "pojem": "Záverečná",
       "popis": "Karta lícom dole za 1 cigaretu; otočí sa na konci Pitky a potom už v Zhromaždení nevykladáš."
     }
   },
   "zhromazdenie": {
-    "pojem": "",
-    "popis": "",
-    "kratko": "",
-    "tvary": "",
+    "pojem": "Gyűlés",
+    "popis": "Szakasz, amelyben a játékosok felváltva játszanak ki kártyákat a sorba; a támadó kezd.",
+    "kratko": "Szakasz, amelyben felváltva teszitek a kártyákat a kézből a helyszín mellé, egyetlen sorba.",
+    "tvary": "Gyűlés, Gyűlést, Gyűlésen, Gyűlésre, Gyűlések, Gyűlésben, Gyűlésből, Gyűléssel, Gyűlésig",
     "sk": {
       "pojem": "Zhromaždenie",
       "popis": "Fáza, v ktorej hráči striedavo vykladajú karty do línie; začína útočník.",
