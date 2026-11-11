@@ -197,7 +197,7 @@ export function KartaLico(props: KartaLicoProps) {
       kluc,
       sloty?.[strana][i] ?? null,
       zar,
-      `${props.spoj?.[strana].includes(i) === true ? " kl-spoj" : ""}${zar === null ? "" : ` kl-zar-${strana}`}${roh === null ? "" : ` kl-s-rohom kl-roh-${strana}`}`,
+      ` kl-strana-${strana}${props.spoj?.[strana].includes(i) === true ? " kl-spoj" : ""}${zar === null ? "" : ` kl-zar-${strana}`}${roh === null ? "" : ` kl-s-rohom kl-roh-${strana}`}`,
       undefined,
       undefined,
       roh,
