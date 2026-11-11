@@ -4,26 +4,26 @@
     "popis": "Preklad dlhých textov: pri každom id prelož prázdne polia; pole sk je slovenský originál, z ktorého preklad vzniká — nemeň ho (keď sa slovenčina zmení, preklad sa ukáže ako zastaraný a v hre ostane slovenčina). Značky <p k=\"…\">, <strong>, <a href=\"…\"> a {parametre} ponechaj ako v origináli; pojmy podľa docs/preklady/glosar.json."
   },
   "abstak": {
-    "pojem": "",
-    "popis": "",
+    "pojem": "Absťák",
+    "popis": "Karta s tagem Kletba za méně neřestí v kole, než je tvoje Chuť: jde do odhazovacího balíčku, nedá se přiznat; každý v tvém balíčku ti v rvačce ubere 1 tvrdé. Rozhoduje remízu v tvrdém. Spálí ho Vize.",
     "sk": {
       "pojem": "Absťák",
       "popis": "Karta s tagom Kliatba za menej nerestí v kole, než je tvoja Chuť: ide do odhadzovacieho balíčka, nedá sa priznať; každý v tvojom balíčku ti v bitke uberie 1 tuhé. Rozhoduje remízu v tuhom. Spáli ho Vízia."
     }
   },
   "chut": {
-    "pojem": "",
-    "popis": "",
+    "pojem": "Chuť",
+    "popis": "Tvoje veřejná laťka neřestí, na začátku 0. Na konci kola: méně neřestí než Chuť = karta Absťák; potom Chuť = větší z (Chuť, neřesti kola) − 1.",
     "sk": {
       "pojem": "Chuť",
       "popis": "Tvoja verejná latka nerestí, na začiatku 0. Na konci kola: menej nerestí než Chuť = karta Absťák; potom Chuť = väčšie z (Chuť, neresti kola) − 1."
     }
   },
   "akcia": {
-    "pojem": "",
-    "popis": "",
-    "kratko": "",
-    "tvary": "",
+    "pojem": "Akce",
+    "popis": "Symbol na hraně karty; platí, jen když se ve spoji potká s akcí souseda ve stejné výšce.",
+    "kratko": "Ikona na okraji karty. Platí, jen když se ve spoji dotkne stejně vysoko položené ikony sousední karty.",
+    "tvary": "akce, akci, akcí, akcím, akcemi, akcích",
     "sk": {
       "pojem": "Akcia",
       "popis": "Symbol na hrane karty; platí, len keď sa na spoji stretne s akciou suseda v rovnakej výške.",
@@ -32,18 +32,18 @@
     }
   },
   "barter": {
-    "pojem": "",
-    "popis": "",
+    "pojem": "Socký barter",
+    "popis": "Během Pitky za 5 cigaret nový plný panák.",
     "sk": {
       "pojem": "Stokársky barter",
       "popis": "Počas Pitky za 5 cigariet nový plný poldeci."
     }
   },
   "bitka": {
-    "pojem": "",
-    "popis": "",
-    "kratko": "",
-    "tvary": "",
+    "pojem": "Rvačka",
+    "popis": "Konec kola: víc tvrdého poškození vyhrává a dostane vajgly, starší bodují, vítěz rozdělí Nakládačku na svůj strach a vítěz hádky hádku na své řeči na soupeřových teploměrech.",
+    "kratko": "Konec kola: sečtou se údery z karet u lokality. Kdo má víc, vyhrál a bere vajgl za každou kartu v linii.",
+    "tvary": "rvačka, rvačky, rvačce, rvačku, rvačkou, rvaček, rvačkám, rvačkách, rvačkami",
     "sk": {
       "pojem": "Bitka",
       "popis": "Koniec kola: viac tuhého poškodenia vyhráva a dostane špaky, starší bodujú, víťaz rozdelí Nakladačku na svoj strach a víťaz hádky hádku na svoje reči na teplomeroch súpera.",
@@ -52,10 +52,10 @@
     }
   },
   "cigareta": {
-    "pojem": "",
-    "popis": "",
-    "kratko": "",
-    "tvary": "",
+    "pojem": "Cigareta",
+    "popis": "Měna hry: platí karty z Nabídky, Dědictví, podložení Nástroje, dolití, barter a Zavíračku; kouřením v Pitce hned karta navíc (1, 2, 3… cigarety; na Benzínce první zadarmo). Po rvačce dostane poražený 1 a soupeř platí výpalné. Na konci hry každých 5 cigaret 1 vajgl.",
+    "kratko": "Drobné téhle hry. Platíš jimi karty z Nabídky a kouření v Pitce; za karty, které nevyložíš, je dostaneš.",
+    "tvary": "cigareta, cigarety, cigaretě, cigaretu, cigaretou, cigaret, cigaretám, cigaretami, cigaretách",
     "sk": {
       "pojem": "Cigareta",
       "popis": "Mena hry: platí karty z ponuky, Dedičstvo, podloženie Nástroja, doliatie, barter a Záverečnú; fajčením v Pitke hneď karta navyše (1, 2, 3… cigarety; na Benzínke prvá zadarmo). Po bitke dostane porazený 1 a súper platí výpalné. Na konci hry každých 5 cigariet 1 špak.",
@@ -64,210 +64,210 @@
     }
   },
   "cirhoza": {
-    "pojem": "",
-    "popis": "",
+    "pojem": "Cirhóza",
+    "popis": "Kletba z jater; jde do tvého odhazovacího balíčku, přiznaná dá soupeři v rvačce +1 tvrdé, nepřiznaná jde po rvačce do tvého odhazovacího balíčku a na konci hry stojí 3 vajgly.",
     "sk": {
       "pojem": "Cirhóza",
       "popis": "Kliatba z pečene; ide do tvojho odhadzovacieho balíčka, priznaná dá súperovi v bitke +1 tuhé, nepriznaná ide po bitke do tvojho odhadzovacieho balíčka a na konci hry stojí 3 špaky."
     }
   },
   "dedicstvo": {
-    "pojem": "",
-    "popis": "",
+    "pojem": "Dědictví",
+    "popis": "Nástroj vyložený mimo linii; platí jeho efekt a cena roste pro oba: 1., 2., 3. Nástroj stojí 1, 2, 3 cigarety.",
     "sk": {
       "pojem": "Dedičstvo",
       "popis": "Nástroj vyložený mimo línie; platí jeho efekt a cena rastie pre oboch: 1., 2., 3. Nástroj stojí 1, 2, 3 cigarety."
     }
   },
   "dlh": {
-    "pojem": "",
-    "popis": "",
+    "pojem": "Dluh",
+    "popis": "Kletba z Hazardu — počítadlo, ne karta: každá akce Hazard v Pitce = 1 Dluh, hned přiznaný; za přiznané Dluhy přijde v každé rvačce Exekutor a při remíze v rvačce prohraje, kdo jich má víc.",
     "sk": {
       "pojem": "Dlh",
       "popis": "Kliatba z Hazardu — počítadlo, nie karta: každá akcia Hazard v Pitke = 1 Dlh, hneď priznaný; za priznané Dlhy príde v každej bitke Exekútor a pri remíze v bitke prehrá, kto ich má viac."
     }
   },
   "dobratie": {
-    "pojem": "",
-    "popis": "",
+    "pojem": "Dobírání",
+    "popis": "Od druhého kola si na začátku kola dobereš 2 karty, ať máš v ruce kolik chceš. Limit ruky není a nic se neodhazuje.",
     "sk": {
       "pojem": "Dobratie",
       "popis": "Od druhého kola si na začiatku kola doberieš 2 karty, nech máš v ruke koľkokoľvek. Limit ruky nie je a nič sa neodhadzuje."
     }
   },
   "dlzka-hry": {
-    "pojem": "",
-    "popis": "",
+    "pojem": "Liga",
+    "popis": "Délka hry — počet lokalit, o které se hraje: Třetí liga 3, Druhá liga 5, První liga 7; po nich přijde finále.",
     "sk": {
       "pojem": "Liga",
       "popis": "Dĺžka hry — počet lokalít, o ktoré sa hrá: Tretia liga 3, Druhá liga 5, Prvá liga 7; po nich príde finále."
     }
   },
   "doliatie": {
-    "pojem": "",
-    "popis": "",
+    "pojem": "Dolití",
+    "popis": "Během Pitky za 2 cigarety otočíš vypitého panáka zpátky na plného.",
     "sk": {
       "pojem": "Doliatie",
       "popis": "Počas Pitky za 2 cigarety otočíš vypitý poldeci späť na plný."
     }
   },
   "efekt": {
-    "pojem": "",
-    "popis": "",
+    "pojem": "Efekt",
+    "popis": "Text karty: co karta dělá a kdy; kdy, to říká tučné slovo na jeho začátku.",
     "sk": {
       "pojem": "Efekt",
       "popis": "Text karty: čo karta robí a kedy; kedy hovorí tučné slovo na jeho začiatku."
     }
   },
   "hazard": {
-    "pojem": "",
-    "popis": "",
+    "pojem": "Hazard",
+    "popis": "Akce, která ti v Pitce dá 1 Dluh.",
     "sk": {
       "pojem": "Hazard",
       "popis": "Akcia, ktorá ti v Pitke dá 1 Dlh."
     }
   },
   "zadlzenie": {
-    "pojem": "",
-    "popis": "",
+    "pojem": "Zadlužení",
+    "popis": "Co dává Hazard a efekty karet: 1 zadlužení je hned 1 Dluh. Jen s Výherním automatem v Dědictví je Dluh až za každá 2 a zbytek zůstává na účtu.",
     "sk": {
       "pojem": "Zadĺženie",
       "popis": "Čo dáva Hazard a efekty kariet: 1 zadĺženie je hneď 1 Dlh. Len s Výherným automatom v Dedičstve je Dlh až za každé 2 a zvyšok ostáva na účte."
     }
   },
   "exekutor": {
-    "pojem": "",
-    "popis": "",
+    "pojem": "Exekutor",
+    "popis": "Přijde v každé rvačce, dokud máš přiznaný Dluh: shoří ti polovina Dluhů (zaokrouhleno nahoru) a stejně vajglů; tvoje přízeň Advokáta je sníží o 1 / 2 / 3. Zahrádkář ve tvé partě tě v tom kole ochrání.",
     "sk": {
       "pojem": "Exekútor",
       "popis": "Príde v každej bitke, kým máš priznaný Dlh: zhorí ti polovica Dlhov (zaokrúhlene nahor) a rovnako veľa špakov; tvoja priazeň Advokáta ich uberie o 1 / 2 / 3. Záhradkár v tvojej partii ťa v tom kole ochráni."
     }
   },
   "finale": {
-    "pojem": "",
-    "popis": "",
+    "pojem": "Finále",
+    "popis": "Poslední rvačka o vrcholovou lokalitu, kterou vybere a natočí hráč s víc vajgly; hraje se jako o každou jinou (lokalita uprostřed linie, Pitky podle spojů), útočí ten, kdo ztrácí (méně vajglů), vítěz dostane 1 vajgl za každou kartu v linii.",
     "sk": {
       "pojem": "Finále",
       "popis": "Posledná bitka o pinnacle lokalitu, ktorú vyberie a natočí hráč s viac špakmi; hrá sa ako o každú inú (lokalita v strede línie, Pitky podľa spojov), útočí zaostávajúci (menej špakov), víťaz dostane 1 špak za každú kartu v línii."
     }
   },
   "pakt": {
-    "pojem": "",
-    "popis": "",
+    "pojem": "Pakt",
+    "popis": "Akce (v7): ve spoji se chová jako akce, se kterou je v páru — i ta zlá. Pakt s Paktem nedělá nic, Odpor ho zruší. Pakt, který akci kopíruje, je jí pro všechny efekty (tvoje Pecky, Vidle, Telefon…).",
     "sk": {
       "pojem": "Pakt",
       "popis": "Akcia (v7): na spoji sa správa ako akcia, s ktorou je v páre — aj zlá. Pakt s Paktom nerobí nič, Odpor ho zruší. Pakt, ktorý akciu kopíruje, je ňou pre všetky efekty (tvoje Pecky, Vidly, Telefón…)."
     }
   },
   "konflikt": {
-    "pojem": "",
-    "popis": "",
+    "pojem": "Konflikt",
+    "popis": "Spouštěč (v11.3): efekt karty, když se přiložením ocitne vedle soupeřovy karty — ať přikládáš ty k soupeřově, nebo soupeř k tvé; s tagem za dvojtečkou jen u karty s tím tagem. Podložení Nástroje, NA EX, srážka ani přesun ho nespustí.",
     "sk": {
       "pojem": "Konflikt",
       "popis": "Spúšťač (v11.3): efekt karty, keď sa priložením ocitne vedľa súperovej karty — či prikladáš ty k súperovej, alebo súper k tvojej; s tagom za dvojbodkou len pri karte s tým tagom. Podloženie Nástroja, NA EX, zrážka ani presun ho nespustia."
     }
   },
   "podpora": {
-    "pojem": "",
-    "popis": "",
+    "pojem": "Podpora",
+    "popis": "Spouštěč (v11.3): zrcadlo Konfliktu — efekt karty, když se přiložením potká s jinou tvou kartou; s tagem za dvojtečkou jen s kartou s tím tagem.",
     "sk": {
       "pojem": "Podpora",
       "popis": "Spúšťač (v11.3): zrkadlo Konfliktu — efekt karty, keď sa priložením stretne s inou tvojou kartou; s tagom za dvojbodkou len s kartou s tým tagom."
     }
   },
   "vyvolat-konflikt": {
-    "pojem": "",
-    "popis": "",
+    "pojem": "Vyvolat Konflikt",
+    "popis": "Přiložit kartu k soupeřově ležící kartě se spouštěčem Konflikt.",
     "sk": {
       "pojem": "Vyvolať Konflikt",
       "popis": "Priložiť kartu k súperovej ležiacej karte so spúšťačom Konflikt."
     }
   },
   "forsaz": {
-    "pojem": "",
-    "popis": "",
+    "pojem": "Forsáž",
+    "popis": "Posílení proti Posílení: obě karty mají všechny aktivní akce posílené (×2); NA EX na jedno z Posílení ji zruší. Energeťák podložený pod kartu jí dá Forsáž, kterou NA EX nezruší.",
     "sk": {
       "pojem": "Forsáž",
       "popis": "Posilnenie proti Posilneniu: obe karty majú všetky aktívne akcie posilnené (×2); NA EX na jedno z Posilnení ju zruší. Energeťák podložený pod kartu jej dá Forsáž, ktorú NA EX nezruší."
     }
   },
   "spolocnik": {
-    "pojem": "",
-    "popis": "",
+    "pojem": "Společník",
+    "popis": "Spouštěč: karta má akce navíc z pečeti v obrázku, dokud máš v partě jinou odkrytou kartu s tagem za dvojtečkou — jednou, i při více.",
     "sk": {
       "pojem": "Spoločník",
       "popis": "Spúšťač: karta má akcie navyše z pečate v obrázku, kým máš v partii inú odkrytú kartu s tagom za dvojbodkou — raz, aj pri viacerých."
     }
   },
   "nepriatel": {
-    "pojem": "",
-    "popis": "",
+    "pojem": "Nepřítel",
+    "popis": "Spouštěč: karta má akce navíc z pečeti v obrázku, dokud má soupeř v partě odkrytou kartu s tagem za dvojtečkou — jednou, i při více.",
     "sk": {
       "pojem": "Nepriateľ",
       "popis": "Spúšťač: karta má akcie navyše z pečate v obrázku, kým má súper v partii odkrytú kartu s tagom za dvojbodkou — raz, aj pri viacerých."
     }
   },
   "akcia-navyse": {
-    "pojem": "",
-    "popis": "",
+    "pojem": "Akce navíc",
+    "popis": "Akce z pečeti v obrázku karty: aktivní akce majitele karty mimo hrany, počítá se jako tatáž akce. „Furt: {Akcia}“ platí bez podmínky, dokud karta leží. Posílení, Odpor, Forsáž, NA EX ani podložený Nástroj ji nemění; Nástroje v Dědictví a Přeškolení Školitele ano.",
     "sk": {
       "pojem": "Akcia navyše",
       "popis": "Akcia z pečate v obrázku karty: aktívna akcia majiteľa karty mimo hrán, ráta sa ako tá istá akcia. „Furt: {Akcia}“ platí bez podmienky, kým karta leží. Posilnenie, Odpor, Forsáž, NA EX ani podložený Nástroj ju nemenia; Nástroje v Dedičstve a Preškolenie Školiteľa áno."
     }
   },
   "fajcenie": {
-    "pojem": "",
-    "popis": "",
+    "pojem": "Kouření",
+    "popis": "Karta z balíčku hned; smíš jen v Pitce, dokud ji neskončíš. První kouření v Pitce stojí 1 cigaretu, druhé 2, třetí 3… a každá Pitka začíná od 1. Na Benzínce je každé o 1 levnější, první zadarmo.",
     "sk": {
       "pojem": "Fajčenie",
       "popis": "Karta z balíčka hneď; smieš len v Pitke, kým ju neskončíš. Prvé fajčenie v Pitke stojí 1 cigaretu, druhé 2, tretie 3… a každá Pitka začína od 1. Na Benzínke je každé o 1 lacnejšie, prvé zadarmo."
     }
   },
   "kliatba": {
-    "pojem": "",
-    "popis": "",
+    "pojem": "Kletba",
+    "popis": "Co škodí majiteli: karty Cirhóza a Absťák a počítadlo Dluh (hned přiznaný). Přiznat se dá jen Cirhóza.",
     "sk": {
       "pojem": "Kliatba",
       "popis": "Čo škodí majiteľovi: karty Cirhóza a Absťák a počítadlo Dlh (hneď priznaný). Priznať sa dá len Cirhóza."
     }
   },
   "kolo": {
-    "pojem": "",
-    "popis": "",
+    "pojem": "Kolo",
+    "popis": "Cíl, Nabídka, potom Shromáždění s Pitkou 1- až 4krát (na vrcholové lokalitě ve finále až 5krát) a nakonec rvačka o lokalitu.",
     "sk": {
       "pojem": "Kolo",
       "popis": "Cieľ, ponuka, potom Zhromaždenie s Pitkou 1- až 4-krát (na pinnacle vo finále až 5-krát) a nakoniec bitka o lokalitu."
     }
   },
   "koniec-linie": {
-    "pojem": "",
-    "popis": "",
+    "pojem": "Konec linie",
+    "popis": "Jeden ze dvou konců linie, kam se vykládá; nepatří nikomu — kartu pokládáš na kterýkoli.",
     "sk": {
       "pojem": "Koniec línie",
       "popis": "Jeden z dvoch koncov línie, kam sa vykladá; nepatrí nikomu — kartu kladieš na ktorýkoľvek."
     }
   },
   "kraj": {
-    "pojem": "",
-    "popis": "",
+    "pojem": "Kraj",
+    "popis": "Polovina linie podle hrany lokality; každá lokalita má vlastní jména krajů (Hospoda: u výčepu a u dveří). Nepatří nikomu.",
     "sk": {
       "pojem": "Kraj",
       "popis": "Polovica línie podľa hrany lokality; každá lokalita má vlastné mená krajov (Krčma: pri výčape a pri dverách). Nepatrí nikomu."
     }
   },
   "limit": {
-    "pojem": "",
-    "popis": "",
+    "pojem": "Limit vykládání",
+    "popis": "Kolik karet vyložíš v jednom Shromáždění: plní panáci + 1.",
     "sk": {
       "pojem": "Limit vykladania",
       "popis": "Koľko kariet vyložíš v jednom Zhromaždení: plné poldeci + 1."
     }
   },
   "linia": {
-    "pojem": "",
-    "popis": "",
-    "kratko": "",
-    "tvary": "",
+    "pojem": "Linie",
+    "popis": "Celá řada karet v kole; lokalita uprostřed ji dělí na dva kraje (i ve finále, kde je uprostřed vrcholová lokalita).",
+    "kratko": "Řada karet u lokality. Kartu dáš na kterýkoli konec; sousední karty se dotýkají ve spojích.",
+    "tvary": "linie, linii, linií, liniemi, liniím, liniích",
     "sk": {
       "pojem": "Línia",
       "popis": "Celý rad kariet v kole; lokalita v strede ho delí na dva kraje (aj vo finále, kde je v strede pinnacle).",
@@ -276,10 +276,10 @@
     }
   },
   "lokalita": {
-    "pojem": "",
-    "popis": "",
-    "kratko": "",
-    "tvary": "",
+    "pojem": "Lokalita",
+    "popis": "Karta uprostřed linie, o kterou se v kole rve; její efekt platí v tom kole.",
+    "kratko": "Místo ve vesnici, o které se v kole rvete. Leží uprostřed stolu a karty se pokládají k ní.",
+    "tvary": "lokalita, lokality, lokalitě, lokalitu, lokalitou, lokalit, lokalitám, lokalitách, lokalitami",
     "sk": {
       "pojem": "Lokalita",
       "popis": "Karta v strede línie, o ktorú sa v kole bije; jej efekt platí v tom kole.",
@@ -288,34 +288,34 @@
     }
   },
   "reci": {
-    "pojem": "",
-    "popis": "",
+    "pojem": "Řeči",
+    "popis": "Blok stupňů na soupeřově teploměru (na stole šrafa v tvé barvě); zvedá je hádka, od vrchu jeho strachu dolů, potom nad něj. Stupně 1 / 2 / 3 bodují tobě při každé rvačce místo soupeře, klesají zespodu jen po prohrané hádce. Soupeřovu přízeň, výhru strachem ani zajetí nemění.",
     "sk": {
       "pojem": "Reči",
       "popis": "Blok stupňov na teplomere súpera (na stole šrafa v tvojej farbe); dvíha ich hádka, od vrchu jeho strachu nadol, potom nad neho. Stupne 1 / 2 / 3 bodujú tebe pri každej bitke namiesto súpera, klesajú zospodu len po prehratej hádke. Súperovu priazeň, výhru strachom ani zajatie nemenia."
     }
   },
   "hadka": {
-    "pojem": "",
-    "popis": "",
+    "pojem": "Hádka",
+    "popis": "Krok rvačky: kdo má víc měkkého poškození, vyhrál hádku o rozdíl („Ana vyhrála hádku o 3“) a po bodování ho rozdělí na své řeči na soupeřových teploměrech — stupeň stojí 1 / 2 / 3, zbytek propadne. Při rovnosti nikdo; ve finále jde hádka na vajgly.",
     "sk": {
       "pojem": "Hádka",
       "popis": "Krok bitky: kto má viac mäkkého poškodenia, vyhral hádku o rozdiel („Ana vyhrala hádku o 3“) a po bodovaní ho rozdelí na svoje reči na teplomeroch súpera — stupeň stojí 1 / 2 / 3, zvyšok prepadne. Pri rovnosti nikto; vo finále ide hádka na špaky."
     }
   },
   "makke": {
-    "pojem": "",
-    "popis": "",
+    "pojem": "Měkké poškození",
+    "popis": "Pohoršení × 2 + Pověry, které nezrušila soupeřova Víra (s Horoskopem × 2). Tvrdé nedělá — rozhoduje jen hádku.",
     "sk": {
       "pojem": "Mäkké poškodenie",
       "popis": "Pohoršenie × 2 + Povery, ktoré nezrušila súperova Viera (s Horoskopom × 2). Tuhé nerobí — rozhoduje len hádku."
     }
   },
   "naex": {
-    "pojem": "",
-    "popis": "",
-    "kratko": "",
-    "tvary": "",
+    "pojem": "NA EX!",
+    "popis": "Plný panák na kartu v linii, vybraný v Pitce skrytě: zruší její aktivní akce a zdvojí neaktivní. Zrušený Odpor pustí akci, kterou rušil; nespárovaný Odpor NA EX uhasí, nespárované Posílení podrží aktivní akce.",
+    "kratko": "Vylij plného panáka na ex na kartu v linii. Její akce ve spoji zhasnou, osamělé se zdvojí.",
+    "tvary": "NA EX",
     "sk": {
       "pojem": "NA EX!",
       "popis": "Plný poldeci na kartu v línii, vybraný v Pitke skryto: zruší jej aktívne akcie a zdvojí neaktívne. Zrušený Odpor pustí akciu, ktorú rušil; nespárovaný Odpor NA EX zahasí, nespárované Posilnenie podrží aktívne akcie.",
@@ -324,146 +324,146 @@
     }
   },
   "naradie": {
-    "pojem": "",
-    "popis": "",
+    "pojem": "Balíček nářadí",
+    "popis": "Karty s tagem Nástroj lícem dolů; při stavbě Nabídky z něj dostaneš 2 karty, nevzaté Nástroje z Nabídky se vracejí naspod.",
     "sk": {
       "pojem": "Balíček nástrojov",
       "popis": "Karty s tagom Nástroj lícom dole; pri stavbe ponuky z neho dostaneš 2 karty, nevzaté Nástroje z ponuky sa vracajú naspodok."
     }
   },
   "nastenka": {
-    "pojem": "",
-    "popis": "",
+    "pojem": "Hospodská nástěnka",
+    "popis": "Odehrané rvačky: lokalita, vítěz a kolik vajglů za ni v kole získal (rvačka, Robota, starší…); lokalitu si vítěz nebere. Klik na lokalitu ukáže souhrn Pitek a rvačky.",
     "sk": {
       "pojem": "Krčmová nástenka",
       "popis": "Odohrané bitky: lokalita, víťaz a koľko špakov za ňu v kole získal (bitka, Robota, starší…); lokalitu si víťaz neberie. Klik na lokalitu ukáže súhrn Pitiek a bitky."
     }
   },
   "nastroj": {
-    "pojem": "",
-    "popis": "",
+    "pojem": "Nástroj",
+    "popis": "Karta s tagem Nástroj; do linie se nevykládá — za 1 cigaretu ho podložíš pod Občana či Stařešinu v linii (platí hrana, která přečnívá), nebo ho za cigarety vyložíš do Dědictví.",
     "sk": {
       "pojem": "Nástroj",
       "popis": "Karta s tagom Nástroj; do línie sa nevykladá — za 1 cigaretu ho podložíš pod Občana či Starešinu v línii (platí hrana, ktorá pretŕča), alebo ho za cigarety vyložíš do Dedičstva."
     }
   },
   "natocenie": {
-    "pojem": "",
-    "popis": "",
+    "pojem": "Natočení",
+    "popis": "Jak vítěz minulé hádky otočí lokalitu (v prvním kole a po remíze v hádce ten, kdo ji vybírá) — určuje, která její hrana patří kterému kraji.",
     "sk": {
       "pojem": "Natočenie",
       "popis": "Ako víťaz minulej hádky otočí lokalitu (v prvom kole a po remíze v hádke ten, kto ju vyberá) — určuje, ktorá jej hrana patrí ktorému kraju."
     }
   },
   "nerest": {
-    "pojem": "",
-    "popis": "",
+    "pojem": "Neřest",
+    "popis": "Jen konzumace: Vypít 1, NA EX 2, vykouřená cigareta 1. Na konci kola se porovnává s tvou Chutí.",
     "sk": {
       "pojem": "Nerest",
       "popis": "Len konzumácia: Vypiť 1, NA EX 2, vyfajčená cigareta 1. Na konci kola sa porovnáva s tvojou Chuťou."
     }
   },
   "obcania": {
-    "pojem": "",
-    "popis": "",
+    "pojem": "Balíček vesničanů",
+    "popis": "Všechny ostatní karty Nabídky (Občané, Zvířata, Stařešinové…) lícem dolů; při stavbě Nabídky z něj dostaneš 6 karet.",
     "sk": {
       "pojem": "Balíček dedinčanov",
       "popis": "Všetky ostatné karty ponuky (Občania, Zvieratá, Starešinovia…) lícom dole; pri stavbe ponuky z neho dostaneš 6 kariet."
     }
   },
   "odhodenie": {
-    "pojem": "",
-    "popis": "",
+    "pojem": "Odhodit",
+    "popis": "Karta jde do odhazovacího balíčku svého majitele — když dojde dobírací, zamíchá se a vrátí do hry. Opak spálení.",
     "sk": {
       "pojem": "Odhodiť",
       "popis": "Karta ide do odhadzovacieho balíčka svojho majiteľa — keď sa doberací minie, zamieša sa a vráti do hry. Opak spálenia."
     }
   },
   "odpoved": {
-    "pojem": "",
-    "popis": "",
+    "pojem": "Odpověď na NA EX",
+    "popis": "Po odkrytí jedna karta za každé soupeřovo NA EX, lícem dolů, za plného panáka (vypiješ ho: játra +1) a mimo limit; nejdřív odpovídá útočník, potom obránce na druhý kraj linie; obě se otočí naráz.",
     "sk": {
       "pojem": "Odpoveď na NA EX",
       "popis": "Po odkrytí jedna karta za každé súperovo NA EX, lícom dole, za plný poldeci (vypiješ ho: pečeň +1) a mimo limitu; najprv odpovedá útočník, potom obranca na druhý kraj línie; obe sa otočia naraz."
     }
   },
   "partia": {
-    "pojem": "",
-    "popis": "",
+    "pojem": "Parta",
+    "popis": "Všechny tvoje karty v linii, ať leží kdekoli; jejich akce se počítají tobě.",
     "sk": {
       "pojem": "Partia",
       "popis": "Všetky tvoje karty v línii, nech ležia kdekoľvek; ich akcie sa rátajú tebe."
     }
   },
   "pas": {
-    "pojem": "",
-    "popis": "",
+    "pojem": "Pas",
+    "popis": "Skončíš vykládání ve Shromáždění a za každou kartu, kterou jsi ještě směl vyložit, dostaneš cigaretu, i když ti v ruce už nic nezbylo.",
     "sk": {
       "pojem": "Pas",
       "popis": "Skončíš vykladanie v Zhromaždení a za každú kartu, ktorú si ešte smel vyložiť, dostaneš cigaretu, aj keď ti v ruke už nič neostalo."
     }
   },
   "podlozenie": {
-    "pojem": "",
-    "popis": "",
+    "pojem": "Podložení",
+    "popis": "Tah ve Shromáždění za 1 cigaretu: Nástroj z ruky zasuneš pod svého Občana či Stařešinu v linii (pod soupeřovu kartu ne); platí hrana, která přečnívá. Leží do rvačky, potom se vrátí do odhazovacího balíčku toho, kdo ho podložil.",
     "sk": {
       "pojem": "Podloženie",
       "popis": "Ťah v Zhromaždení za 1 cigaretu: Nástroj z ruky zasunieš pod svojho Občana či Starešinu v línii (pod súperovu kartu nie); platí hrana, ktorá pretŕča. Leží do bitky, potom sa vráti do odhadzovacieho balíčka toho, kto ho podložil."
     }
   },
   "pokus": {
-    "pojem": "",
-    "popis": "",
+    "pojem": "Zajetí",
+    "popis": "Při rozdělení Nakládačky (vyhrál jsi rvačku) zajmeš za 5 bodů staršího, u kterého je tvůj strach 3 už před touto Nakládačkou (od minulého kola, dotažený v tomtéž rozdělení nestačí; řeči se nepočítají). Je tvůj zajatec a soupeř ti odevzdá tolik vajglů, kolik bodů hádky má v řečích u něj. Ve finále ne.",
     "sk": {
       "pojem": "Zajatie",
       "popis": "Pri rozdelení Nakladačky (vyhral si bitku) zajmeš za 5 bodov staršieho, pri ktorom je tvoj strach 3 už pred touto Nakladačkou (od minulého kola, dotiahnutý v tom istom rozdelení nestačí; reči sa nerátajú). Je tvoj väzeň a súper ti odovzdá toľko špakov, koľko bodov hádky má v rečiach pri ňom. Vo finále nie."
     }
   },
   "presvedcenie": {
-    "pojem": "",
-    "popis": "",
+    "pojem": "Přesvědčení",
+    "popis": "Při rozdělení hádky přesvědčíš za 3 body kteréhokoli staršího, když máš u něj řeči na celém teploměru. Řeči, strach i přízeň zůstanou; jeho karta jde tobě do ruky a natrvalo patří do tvého balíčku. Kdo první přesvědčí, toho je; zajmout ho smějí oba. Ve finále ne.",
     "sk": {
       "pojem": "Presvedčenie",
       "popis": "Pri rozdelení hádky presvedčíš za 3 body ktoréhokoľvek staršieho, keď máš pri ňom reči na celom teplomere. Reči, strach aj priazeň ostanú; jeho karta ide tebe do ruky a natrvalo patrí do tvojho balíčka. Kto prvý presvedčí, toho je; zajať ho smú obaja. Vo finále nie."
     }
   },
   "vazen": {
-    "pojem": "",
-    "popis": "",
+    "pojem": "Zajatec",
+    "popis": "Zajatý starší mezi tvými přiznanými kartami („ve sklepě“): nedává přízeň, počítá se jako tvůj červený strach, máš jeho schopnost (jednou za hru). Při zajetí ti soupeř odevzdá tolik vajglů, kolik bodů hádky má u něj v řečích; zajatců na výhru podle ligy (2 / 3 / 4).",
     "sk": {
       "pojem": "Väzeň",
       "popis": "Zajatý starší medzi tvojimi priznanými kartami („v pivnici“): nedáva priazeň, ráta sa ako tvoj červený strach, máš jeho schopnosť (raz za hru). Pri zajatí ti súper odovzdá toľko špakov, koľko bodov hádky má pri ňom v rečiach; väzni na výhru podľa ligy (2 / 3 / 4)."
     }
   },
   "schopnost-vazna": {
-    "pojem": "",
-    "popis": "",
+    "pojem": "Schopnost zajatce",
+    "popis": "Každý zajatý starší má schopnost (např. Pošťačka: dostaneš 4 cigarety). Kdo ho drží, použije ji jednou za hru, kdy chce — ve svém tahu při braní z Nabídky, ve Shromáždění nebo v Pitce. Potom je vyčerpaná, zajatec zůstává ve sklepě.",
     "sk": {
       "pojem": "Schopnosť väzňa",
       "popis": "Každý zajatý starší má schopnosť (napr. Poštárka: dostaneš 4 cigarety). Jeho držiteľ ju použije raz za hru, kedy chce — vo svojom ťahu pri braní z ponuky, v Zhromaždení alebo v Pitke. Potom je minutá, väzeň ostáva v pivnici."
     }
   },
   "skolitel": {
-    "pojem": "",
-    "popis": "",
+    "pojem": "Školitel",
+    "popis": "Občan nebo Zvíře s efektem Přeškolení X → Y (Zvíře umlčí Řezník): u Furt přeškolí oba sousedy, dokud sousedí; u Podpory tvou a u Konfliktu soupeřovu kartu, se kterou se potká, do konce kola.",
     "sk": {
       "pojem": "Školiteľ",
       "popis": "Občan alebo Zviera s efektom Preškolenie X → Y (Zviera umlčí Mäsiar): pri Furt preškolí oboch susedov, kým susedia; pri Podpore tvoju a pri Konflikte súperovu kartu, s ktorou sa stretne, do konca kola."
     }
   },
   "pecen": {
-    "pojem": "",
-    "popis": "",
+    "pojem": "Játra",
+    "popis": "Počítadlo v Pitce z akcí Poškození jater, Panák a z NA EX; za každý celý práh Cirhóza.",
     "sk": {
       "pojem": "Pečeň",
       "popis": "Počítadlo v Pitke z akcií Poškodenie pečene, Poldeci a z NA EX; za každý celý prah Cirhóza."
     }
   },
   "pitka": {
-    "pojem": "",
-    "popis": "",
-    "kratko": "",
-    "tvary": "",
+    "pojem": "Pitka",
+    "popis": "Vyhodnocení po Shromáždění: NA EX, Dluhy, játra, cigarety; v jednom kole je 1 až 4 Pitek (ve finále na vrcholové lokalitě 1 až 5).",
+    "kratko": "Po Shromáždění se pije: kouříš, doléváš a skrytě dáš NA EX na kartu v linii.",
+    "tvary": "Pitka, Pitky, Pitce, Pitku, Pitkou, Pitek, Pitkám, Pitkách, Pitkami",
     "sk": {
       "pojem": "Pitka",
       "popis": "Vyhodnotenie po Zhromaždení: NA EX, Dlhy, pečeň, cigarety; v jednom kole je 1 až 4 Pitiek (vo finále na pinnacle 1 až 5).",
@@ -472,26 +472,26 @@
     }
   },
   "podstrcenie": {
-    "pojem": "",
-    "popis": "",
+    "pojem": "Podstrčení",
+    "popis": "Přiložit svou kartu k soupeřově; zůstává tvoje a její akce se počítají tobě.",
     "sk": {
       "pojem": "Podstrčenie",
       "popis": "Priložiť svoju kartu k súperovej; ostáva tvoja a jej akcie sa rátajú tebe."
     }
   },
   "pohorsenie": {
-    "pojem": "",
-    "popis": "",
+    "pojem": "Pohoršení",
+    "popis": "Akce: 2 měkké poškození do hádky (v10); soupeřova Víra ho nezruší.",
     "sk": {
       "pojem": "Pohoršenie",
       "popis": "Akcia: 2 mäkké poškodenie do hádky (v10); súperova Viera ho nezruší."
     }
   },
   "poldeci": {
-    "pojem": "",
-    "popis": "",
-    "kratko": "",
-    "tvary": "",
+    "pojem": "Panák",
+    "popis": "Štamprle pálenky; plný zvyšuje limit o 1 a platí se jím NA EX i další karta v tahu. Plný na konci hry je 1 vajgl.",
+    "kratko": "Štamprle pálenky. Kolik máš plných, tolik karet vyložíš, a ještě jednu. Za plného panáka dáš i NA EX.",
+    "tvary": "panák, panáka, panáku, panákem, panáky, panáků, panákům, panácích",
     "sk": {
       "pojem": "Poldeci",
       "popis": "Pohárik pálenky; plný zvyšuje limit o 1 a platí ním NA EX aj ďalšiu kartu v ťahu. Plný na konci hry je 1 špak.",
@@ -500,74 +500,74 @@
     }
   },
   "povera": {
-    "pojem": "",
-    "popis": "",
+    "pojem": "Pověra",
+    "popis": "Akce: 1 měkké poškození do hádky (v10; s Horoskopem 2); soupeřova Víra ji zruší 1 : 1.",
     "sk": {
       "pojem": "Povera",
       "popis": "Akcia: 1 mäkké poškodenie do hádky (v10; s Horoskopom 2); súperova Viera ju zruší 1 : 1."
     }
   },
   "preskolenie": {
-    "pojem": "",
-    "popis": "",
+    "pojem": "Přeškolení",
+    "popis": "Akce X karty se počítá jako Y, ještě před spoji, na obou hranách i v akcích navíc. Dělá ho Školitel a hrana podloženého Nástroje; proměny se řetězí — nejdřív Školitelé, potom Nástroje, každá na výsledku předchozí.",
     "sk": {
       "pojem": "Preškolenie",
       "popis": "Akcia X karty sa ráta ako Y, ešte pred spojmi, na oboch hranách aj v akciách navyše. Robí ho Školiteľ a hrana podloženého Nástroja; premeny sa reťazia — najprv Školitelia, potom Nástroje, každá na výsledku predošlej."
     }
   },
   "boss": {
-    "pojem": "",
-    "popis": "",
+    "pojem": "Boss",
+    "popis": "Karta staršího: 6 akcí a jedna neřest; v linii má jen akce; jeho schopnost má jen ten, kdo ho drží jako zajatce.",
     "sk": {
       "pojem": "Boss",
       "popis": "Karta staršieho: 6 akcií a jedna neresť; v línii má len akcie; jeho schopnosť má len ten, kto ho drží ako väzňa."
     }
   },
   "prebytok": {
-    "pojem": "",
-    "popis": "",
+    "pojem": "Nakládačka",
+    "popis": "O kolik vyhráváš v tvrdém poškození (drží ji vítěz); po bodování ji rozdělíš na svůj strach u starších — stupeň stojí 1 / 2 / 3, zbytek propadne. Ve finále jde na vajgly.",
     "sk": {
       "pojem": "Nakladačka",
       "popis": "O koľko vyhrávaš v tuhom poškodení (drží ju víťaz); po bodovaní ju rozdelíš na svoj strach pri starších — stupeň stojí 1 / 2 / 3, zvyšok prepadne. Vo finále ide na špaky."
     }
   },
   "prevaha": {
-    "pojem": "",
-    "popis": "",
+    "pojem": "Převaha",
+    "popis": "V kraji ji má, kdo tam má víc svých Občanů, Zvířat a Stařešinů; dostane akce hrany lokality.",
     "sk": {
       "pojem": "Prevaha",
       "popis": "V kraji ju má, kto tam má viac svojich Občanov, Zvierat a Starešinov; dostane akcie hrany lokality."
     }
   },
   "priazen": {
-    "pojem": "",
-    "popis": "",
+    "pojem": "Přízeň",
+    "popis": "Výhoda od staršího, který se soupeře bojí víc než tebe: síla = strach soupeře − tvůj strach (1, 2 nebo 3). Řeči se nepočítají; při stejném strachu ji nemá nikdo.",
     "sk": {
       "pojem": "Priazeň",
       "popis": "Výhoda od staršieho, ktorý sa súpera bojí viac než teba: sila = strach súpera − tvoj strach (1, 2 alebo 3). Reči sa nerátajú; pri rovnakom strachu ju nemá nikto."
     }
   },
   "priznanie": {
-    "pojem": "",
-    "popis": "",
+    "pojem": "Přiznání",
+    "popis": "Kletbu vyložíš mimo linii do své herní oblasti — natrvalo z balíčku.",
     "sk": {
       "pojem": "Priznanie",
       "popis": "Kliatbu vyložíš mimo línie do svojej hracej oblasti — natrvalo z balíčka."
     }
   },
   "sekera": {
-    "pojem": "",
-    "popis": "",
+    "pojem": "Na sekyru",
+    "popis": "Rvačka bez vítěze (remíza v tvrdém, Absťácích i Dluzích): její vajgly vezme vítěz nejbližší rvačky, ve finále propadnou.",
     "sk": {
       "pojem": "Na sekeru",
       "popis": "Bitka bez víťaza (remíza v tuhom, Absťákoch aj Dlhoch): jej špaky vezme víťaz najbližšej bitky, vo finále prepadnú."
     }
   },
   "senok": {
-    "pojem": "",
-    "popis": "",
-    "kratko": "",
-    "tvary": "",
+    "pojem": "Nabídka",
+    "popis": "Karty na koupi lícem nahoru; berete z ní 1 kartu za 1 cigaretu nebo 2 za 3.",
+    "kratko": "Karty na koupi, lícem nahoru. Jedna stojí cigaretu, dvě tři cigarety. Berete střídavě, dokud oba nepřestanete.",
+    "tvary": "Nabídka, Nabídky, Nabídce, Nabídku, Nabídkou",
     "sk": {
       "pojem": "Ponuka",
       "popis": "Karty na kúpu lícom nahor; beriete z nej 1 kartu za 1 cigaretu alebo 2 za 3.",
@@ -576,18 +576,18 @@
     }
   },
   "spalenie": {
-    "pojem": "",
-    "popis": "",
+    "pojem": "Spálit",
+    "popis": "Karta jde navždy ze hry — nevrací se do žádného balíčku (např. Vize). Spálený Dluh zmizí z počítadla. Plamen v pečeti (Krokodýl): karta, se kterou se potká (soupeřův Občan), se na konci rvačky spálí.",
     "sk": {
       "pojem": "Spáliť",
       "popis": "Karta ide navždy z hry — nevracia sa do žiadneho balíčka (napr. Vízia). Spálený Dlh zmizne z počítadla. Plameň v pečati (Krokodíl): karta, s ktorou sa stretne (súperov Občan), sa na konci bitky spáli."
     }
   },
   "spoj": {
-    "pojem": "",
-    "popis": "",
-    "kratko": "",
-    "tvary": "",
+    "pojem": "Spoj",
+    "popis": "Místo, kde se dotknou hrany dvou karet nebo karty a lokality.",
+    "kratko": "Místo, kde se dotknou dvě karty. Platí jen ikony, které tam mají pár ve stejné výšce; osamělá ikona je mrtvá.",
+    "tvary": "spoj, spoje, spoji, spojem, spojů, spojům, spojích",
     "sk": {
       "pojem": "Spoj",
       "popis": "Miesto, kde sa dotknú hrany dvoch kariet alebo karty a lokality.",
@@ -596,10 +596,10 @@
     }
   },
   "starsi": {
-    "pojem": "",
-    "popis": "",
-    "kratko": "",
-    "tvary": "",
+    "pojem": "Starší",
+    "popis": "Vážená osoba vesnice; každý hráč má u něj svůj teploměr 0–3 — svůj strach a na něm soupeřovy řeči. Po rvačce dává vajgly a přízeň tomu, koho se bojí méně.",
+    "kratko": "Vesnické autority — Farář, Starosta a spol. Kdo se tě bojí, platí ti vajgly, když vyhraješ rvačku; čím víc se bojí, tím víc.",
+    "tvary": "starší, staršího, staršímu, starším, starších, staršími",
     "sk": {
       "pojem": "Starší",
       "popis": "Vážená osoba dediny; každý hráč má pri ňom svoj teplomer 0–3 — svoj strach a na ňom súperove reči. Po bitke dáva špaky a priazeň tomu, koho sa bojí menej.",
@@ -608,18 +608,18 @@
     }
   },
   "stupen": {
-    "pojem": "",
-    "popis": "",
+    "pojem": "Stupeň",
+    "popis": "Poloha na stupnici staršího: 0 klidný, 1 znepokojený, 2 vystrašený, 3 vyděšený. Stupeň staršího pro hráče je jeho strach; soupeřovy řeči leží na téže stupnici. Vstup stojí 1 / 2 / 3, po rvačce dá 1 / 3 / 6 vajglů, stupně může držet soupeř.",
     "sk": {
       "pojem": "Stupeň",
       "popis": "Poloha na stupnici staršieho: 0 pokojný, 1 znepokojený, 2 vystrašený, 3 vydesený. Stupeň staršieho pre hráča je jeho strach; reči súpera ležia na tej istej stupnici. Vstup stojí 1 / 2 / 3, po bitke dá 1 / 3 / 6 špakov, stupne môže držať súper."
     }
   },
   "strach": {
-    "pojem": "",
-    "popis": "",
-    "kratko": "",
-    "tvary": "",
+    "pojem": "Strach",
+    "popis": "Marker hráče u staršího 0–3 (plná část teploměru) — jak moc se tě bojí; zvedá ho Nakládačka a neklesá. Jen strach se počítá do přízně, výhry strachem a zajetí.",
+    "kratko": "Jak moc se tě starší bojí — teploměr u něj. Zvedá ho vyhraná rvačka; vyšší strach, víc vajglů.",
+    "tvary": "strach, strachu, strachem",
     "sk": {
       "pojem": "Strach",
       "popis": "Marker hráča pri staršom 0–3 (plná časť teplomera) — ako veľmi sa ťa bojí; dvíha ho Nakladačka a neklesá. Len strach sa ráta do priazne, výhry strachom a zajatia.",
@@ -628,10 +628,10 @@
     }
   },
   "spak": {
-    "pojem": "",
-    "popis": "",
-    "kratko": "",
-    "tvary": "",
+    "pojem": "Vajgl",
+    "popis": "Vítězný bod: za vyhranou rvačku (1 za každou kartu v linii), od starších po každé rvačce (vítěz za strach bez obsazených stupňů, oba za řeči); na konci i za zbylé plné panáky a cigarety (výkupné); po finále vyhraje, kdo má víc.",
+    "kratko": "Nedopalek, a zároveň bod. Na konci vyhraje, kdo má víc vajglů. Dává je vyhraná rvačka a starší, kteří se tě bojí.",
+    "tvary": "vajgl, vajglu, vajgle, vajglem, vajgly, vajglů, vajglům, vajglech",
     "sk": {
       "pojem": "Špak",
       "popis": "Víťazný bod: za vyhratú bitku (1 za každú kartu v línii), od starších po každej bitke (víťaz za strach bez obsadených stupňov, obaja za reči); na konci aj za zvyšné plné poldeci a cigarety (výkupné); po finále vyhrá, kto má viac.",
@@ -640,18 +640,18 @@
     }
   },
   "tag": {
-    "pojem": "",
-    "popis": "",
+    "pojem": "Tag",
+    "popis": "Druh karty (Občan, Zvíře, Stařešina, Nástroj…); odkazují na něj efekty — i Společník, Nepřítel, Podpora či Konflikt s tagem za dvojtečkou.",
     "sk": {
       "pojem": "Tag",
       "popis": "Druh karty (Občan, Zviera, Starešina, Nástroj…); odkazujú na neho efekty — aj Spoločník, Nepriateľ, Podpora či Konflikt s tagom za dvojbodkou."
     }
   },
   "udery": {
-    "pojem": "",
-    "popis": "",
-    "kratko": "",
-    "tvary": "",
+    "pojem": "Údery",
+    "popis": "Akce Rána (1), Pecka (2) a Herda (3); v pravidlech tvrdé poškození. V rvačce se sčítají ty ve spojích — kdo má víc, vyhraje.",
+    "kratko": "Akce Rána, Pecka a Herda — za 1, 2 a 3. V rvačce vyhraje, kdo má ve spojích víc úderů.",
+    "tvary": "úder, úderu, údery, úderů, úderem, úderům, úderech",
     "sk": {
       "pojem": "Údery",
       "popis": "Akcie Rana (1), Pecka (2) a Petelica (3); v pravidlách tuhé poškodenie. V bitke sa sčítajú tie v spojoch — kto má viac, vyhrá.",
@@ -660,98 +660,98 @@
     }
   },
   "tuhe": {
-    "pojem": "",
-    "popis": "",
+    "pojem": "Tvrdé poškození",
+    "popis": "Poškození z Rány (1), Pecky (2) a Herdy (3); kdo má víc, vyhraje rvačku.",
     "sk": {
       "pojem": "Tuhé poškodenie",
       "popis": "Poškodenie z Rany (1), Pecky (2) a Petelice (3); kto má viac, vyhrá bitku."
     }
   },
   "utocnik": {
-    "pojem": "",
-    "popis": "",
+    "pojem": "Útočník a obránce",
+    "popis": "Útočník prohrál poslední rvačku: vykládá první a na NA EX odpovídá první; obránce vybírá cíl a bere z Nabídky první (v prvním tahu 1 kartu); Pitku hrají oba naráz; ve finále útočí, kdo má méně vajglů, a vrcholovou lokalitu vybírá vedoucí.",
     "sk": {
       "pojem": "Útočník a obranca",
       "popis": "Útočník prehral poslednú bitku: vykladá prvý a na NA EX odpovedá prvý; obranca vyberá cieľ a berie z ponuky prvý (na prvom ťahu 1 kartu); Pitku hrajú obaja naraz; vo finále útočí, kto má menej špakov, a pinnacle vyberá vedúci."
     }
   },
   "viera": {
-    "pojem": "",
-    "popis": "",
+    "pojem": "Víra",
+    "popis": "Akce, která ruší soupeřovy Pověry 1 : 1 (i vylepšené Horoskopem) a zbylá snižuje jeho tvrdé poškození; proti Pohoršení nepomáhá.",
     "sk": {
       "pojem": "Viera",
       "popis": "Akcia, ktorá ruší súperove Povery 1 : 1 (aj vylepšené Horoskopom) a zvyšná znižuje jeho tuhé poškodenie; proti Pohoršeniu nepomáha."
     }
   },
   "vizia": {
-    "pojem": "",
-    "popis": "",
+    "pojem": "Vize",
+    "popis": "Akce: na konci Pitky se za každou aktivní Vizi podíváš na vrchní kartu svého dobíracího balíčku a vezmeš si ji do ruky, nebo ji navždy spálíš.",
     "sk": {
       "pojem": "Vízia",
       "popis": "Akcia: na konci Pitky za každú aktívnu Víziu pozrieš vrchnú kartu svojho doberacieho balíčka a vezmeš si ju do ruky, alebo ju navždy spáliš."
     }
   },
   "vydesenie": {
-    "pojem": "",
-    "popis": "",
+    "pojem": "Vyděšený",
+    "popis": "Stupeň 3 staršího pro hráče. Vyděšený strach tě pustí k zajetí a počítá se do výhry strachem.",
     "sk": {
       "pojem": "Vydesený",
       "popis": "Stupeň 3 staršieho pre hráča. Vydesený strach ťa pustí k zajatiu a ráta sa do výhry strachom."
     }
   },
   "vytrznik": {
-    "pojem": "",
-    "popis": "",
+    "pojem": "Výtržník",
+    "popis": "Karta, na kterou jste oba dali NA EX v téže Pitce (nebo pod ní leží Injekce): všechny její akce jsou Rány pro majitele, do konce rvačky.",
     "sk": {
       "pojem": "Výtržník",
       "popis": "Karta, na ktorú ste obaja dali NA EX v tej istej Pitke (alebo pod ňou leží Injekcia): všetky jej akcie sú Rany pre majiteľa, do konca bitky."
     }
   },
   "vypit": {
-    "pojem": "",
-    "popis": "",
+    "pojem": "Vypít",
+    "popis": "Otočíš plného panáka na vypitého, abys v tomtéž tahu vyložil další kartu: limit −1, játra +1. Při limitu 0 se nepije.",
     "sk": {
       "pojem": "Vypiť",
       "popis": "Otočíš plný poldeci na vypitý, aby si v tom istom ťahu vyložil ďalšiu kartu: limit −1, pečeň +1. Pri limite 0 sa nepije."
     }
   },
   "vykupne": {
-    "pojem": "",
-    "popis": "",
+    "pojem": "Výkupné",
+    "popis": "Po finále dostaneš 1 vajgl za každého plného panáka a 1 vajgl za každých celých 5 cigaret, které ti zbyly.",
     "sk": {
       "pojem": "Výkupné",
       "popis": "Po finále dostaneš 1 špak za každý plný poldeci a 1 špak za každých celých 5 cigariet, ktoré ti ostali."
     }
   },
   "vypalne": {
-    "pojem": "",
-    "popis": "",
+    "pojem": "Výpalné",
+    "popis": "Hned po rvačce ti soupeř dá 1 cigaretu za každého staršího s tvým červeným strachem (zajatec se počítá, řeči ne), kolik má. Po finále ne.",
     "sk": {
       "pojem": "Výpalné",
       "popis": "Hneď po bitke ti súper dá 1 cigaretu za každého staršieho s tvojím červeným strachom (väzeň sa ráta, reči nie), koľko má. Po finále nie."
     }
   },
   "vzbura": {
-    "pojem": "",
-    "popis": "",
+    "pojem": "Vzpoura",
+    "popis": "Odpor proti Odporu: obě karty se obrátí — nespojené akce jsou aktivní, spojené neaktivní. Odpor proti Posílení: jen karta s Odporem, navíc posílená. Vidle podložené pod kartu ji obrátí také. NA EX na ni nejde.",
     "sk": {
       "pojem": "Vzbura",
       "popis": "Odpor proti Odporu: obe karty sa obrátia — nespojené akcie sú aktívne, spojené neaktívne. Odpor proti Posilneniu: len karta s Odporom, navyše posilnená. Vidly podložené pod kartu ju obrátia tiež. NA EX na ňu nejde."
     }
   },
   "zaverecna": {
-    "pojem": "",
-    "popis": "",
+    "pojem": "Zavíračka",
+    "popis": "Karta lícem dolů za 1 cigaretu; otočí se na konci Pitky a potom už ve Shromáždění nevykládáš.",
     "sk": {
       "pojem": "Záverečná",
       "popis": "Karta lícom dole za 1 cigaretu; otočí sa na konci Pitky a potom už v Zhromaždení nevykladáš."
     }
   },
   "zhromazdenie": {
-    "pojem": "",
-    "popis": "",
-    "kratko": "",
-    "tvary": "",
+    "pojem": "Shromáždění",
+    "popis": "Fáze, ve které hráči střídavě vykládají karty do linie; začíná útočník.",
+    "kratko": "Fáze, ve které střídavě pokládáte karty z ruky k lokalitě do jedné řady — linie.",
+    "tvary": "Shromáždění, Shromážděním",
     "sk": {
       "pojem": "Zhromaždenie",
       "popis": "Fáza, v ktorej hráči striedavo vykladajú karty do línie; začína útočník.",

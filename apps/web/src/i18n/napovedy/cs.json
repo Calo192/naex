@@ -4,133 +4,133 @@
     "popis": "Preklad dlhých textov: pri každom id prelož prázdne polia; pole sk je slovenský originál, z ktorého preklad vzniká — nemeň ho (keď sa slovenčina zmení, preklad sa ukáže ako zastaraný a v hre ostane slovenčina). Značky <p k=\"…\">, <strong>, <a href=\"…\"> a {parametre} ponechaj ako v origináli; pojmy podľa docs/preklady/glosar.json."
   },
   "stavba-senku": {
-    "melichar": "",
+    "melichar": "Nabídku stavíte ty a soupeř naráz: klikni na čtyři karty, které půjdou do Nabídky (vybraná se zvedne), zbylé čtyři půjdou naspod balíčku. Naspod patří ty, které soupeři nepřeješ, neuvidí je. Nepřát něco druhým ti jde, to vím.",
     "sk": {
       "melichar": "Ponuku staviate ty a súper naraz: klikni na štyri karty, ktoré pôjdu do ponuky (vybraná sa zdvihne), zvyšné štyri pôjdu naspodok balíčka. Naspodok patria tie, ktoré súperovi nedopraješ, neuvidí ich. Nedopriať niečo druhým ti ide, to viem."
     }
   },
   "rola": {
-    "melichar.utocnik": "",
-    "melichar.obranca": "",
+    "melichar.utocnik": "Jsi útočník: kupuješ a hraješ první. Dnes rozhodl los, odteď je útočníkem ten, kdo prohraje rvačku. Tak si na tu roli zvykej.",
+    "melichar.obranca": "Jsi obránce: vybíráš lokalitu a na NA EX odpovídáš první. Dnes rozhodl los, odteď je obráncem ten, kdo vyhraje rvačku. Užívej si to, dokud to trvá.",
     "sk": {
       "melichar.utocnik": "Si útočník: kupuješ a hráš prvý. Dnes rozhodol žreb, odteraz je útočníkom ten, kto prehrá bitku. Tak si na tú rolu zvykaj.",
       "melichar.obranca": "Si obranca: vyberáš lokalitu a na NA EX odpovedáš prvý. Dnes rozhodol žreb, odteraz je obrancom ten, kto vyhrá bitku. Užívaj si to, kým to trvá."
     }
   },
   "odpoved-naex": {
-    "melichar": "",
+    "melichar": "Poslouchej, říkám to jen jednou. NA EX se odkryla a ty smíš za soupeřovo NA EX položit jednu kartu. Když jí spojíš akci, která na kartě s NA EX nebyla spojená s žádnou jinou akcí, NA EX ji zruší místo zdvojení.",
     "sk": {
       "melichar": "Pozorne, hovorím to len raz. NA EX sa odkryli a ty smieš za súperovo NA EX položiť jednu kartu. Keď ňou spojíš akciu, ktorá na karte s NA EX nebola spojená so žiadnou inou akciou, NA EX ju zruší namiesto zdvojenia."
     }
   },
   "prve-naex": {
-    "melichar": "",
+    "melichar": "NA EX! Plného [Poldeci] panáka dáš na Občana nebo Stařešinu v linii. Akce na té kartě, které nejsou spojené s žádnou jinou akcí, zdvojí, spojené zruší. Játra ti přibudou o 1. Ve 2. části výuky ti to ukážu pořádně, do té doby zkoušej na vlastní pěst.",
     "sk": {
       "melichar": "NA EX! Plný [Poldeci] poldeci dáš na Občana alebo Starešinu v línii. Akcie na tej karte, ktoré nie sú spojené so žiadnou inou akciou, zdvojí, spojené zruší. Pečeň ti pribudne o 1. V 2. časti výučby ti to ukážem poriadne, dovtedy skúšaj na vlastnú päsť."
     }
   },
   "pocet-pitiek": {
-    "melichar": "",
+    "melichar": "Pitka se dnes zopakuje: oba máte u lokality spojenou její akci. Před každou další Pitkou je nové Shromáždění. Víc příležitostí k chybám, mám z toho radost za tebe.",
     "sk": {
       "melichar": "Pitka sa dnes zopakuje: obaja máte pri lokalite spojenú jej akciu. Pred každou ďalšou Pitkou je nové Zhromaždenie. Viac príležitostí na chyby, teší ma to za teba."
     }
   },
   "zadlzenie": {
-    "melichar": "",
+    "melichar": "Akce [Dlh] Hazard ti v Pitce dá Dluh, za každou akci jeden. Kolik jich přinese stůl, vidíš předem dole u sebe. O dluzích něco víš, ne? Třeba o jedné cigaretě.",
     "sk": {
       "melichar": "Akcia [Dlh] Hazard ti v Pitke dá Dlh, za každú akciu jeden. Koľko ich prinesie stôl, vidíš vopred dole pri sebe. O dlžobách niečo vieš, však? Napríklad o jednej cigarete."
     }
   },
   "dlh": {
-    "melichar": "",
+    "melichar": "První Dluh! Upřímně, nedivím se. Není to karta, počítá se dole u tebe a je hned přiznaný. V každé rvačce si pro něj přijde Exekutor i s tvými vajgly, a při remíze v rvačce rozhodují i Dluhy: kdo jich má víc, prohraje.",
     "sk": {
       "melichar": "Prvý Dlh! Úprimne, nečudujem sa. Nie je to karta, počíta sa dole pri tebe a je hneď priznaný. V každej bitke po neho príde Exekútor aj s tvojimi špakmi, a pri remíze v bitke rozhodujú aj Dlhy: kto ich má viac, prehrá."
     }
   },
   "pas-cigarety": {
-    "melichar": "",
+    "melichar": "Pasovat se vyplatí i dřív: za každou kartu, kterou jsi ještě směl vyložit, dostaneš [Cigareta] cigaretu. Jednu bys pak mohl i vrátit, jen tak připomínám.",
     "sk": {
       "melichar": "Pasovať sa oplatí aj skôr: za každú kartu, ktorú si ešte smel vyložiť, dostaneš [Cigareta] cigaretu. Jednu by si potom mohol aj vrátiť, len tak spomínam."
     }
   },
   "lokalita-pravidlo": {
-    "melichar": "",
+    "melichar": "{lokalita} má vlastní pravidlo a platí celé kolo: {efekt}",
     "sk": {
       "melichar": "{lokalita} má vlastné pravidlo a platí celé kolo: {efekt}"
     }
   },
   "body": {
-    "melichar": "",
+    "melichar": "Vajgly dole u tebe rozhodnou, kdo vyhraje. Klikni na ně a uvidíš nástěnku: za co jsi je dostal. Kolik ti který starší zaplatí po vyhrané a po prohrané rvačce, ukáže dlaždice Starší. Až se ti ta čísla nebudou líbit, mně si nestěžuj.",
     "sk": {
       "melichar": "Špaky dole pri tebe rozhodnú, kto vyhrá. Klikni na ne a uvidíš nástenku: za čo si ich dostal. Koľko ti ktorý starší zaplatí po vyhratej a po prehratej bitke, ukáže dlaždica Starší. Keď sa ti tie čísla nebudú páčiť, mne sa nesťažuj."
     }
   },
   "pohorsenie": {
-    "melichar.moje": "",
-    "melichar.superove": "",
+    "melichar.moje": "Hádku jsi vyhrál: máš víc měkkého poškození, [Pohoršenie] Pohoršení 2, [Povera] Pověra 1. Rozdíl utratíš za své řeči u starších – vždy nad tvým strachem, stupeň do žluté 1, do oranžové 2, do červené 3. Co na další stupeň nestačí, propadne. Řeči ti platí po každé rvačce, i prohrané, a potom slábnou. Užívej si, dokud můžeš.",
+    "melichar.superove": "Hádku vyhrál soupeř: má víc měkkého poškození, [Pohoršenie] Pohoršení 2, [Povera] Pověra 1, a rozdíl utratí za své řeči u starších. Ty mu platí po každé rvačce, i prohrané. Příště si nech Víru na jeho Pověry. Nekoukej tak na mě, já ho nevyložil.",
     "sk": {
       "melichar.moje": "Hádku si vyhral: máš viac mäkkého poškodenia, [Pohoršenie] Pohoršenie 2, [Povera] Povera 1. Rozdiel minieš na svoje reči pri starších – vždy nad tvojím strachom, stupeň do žltej 1, do oranžovej 2, do červenej 3. Čo na ďalší stupeň nestačí, prepadne. Reči ti platia po každej bitke, aj prehratej, a potom slabnú. Užívaj, kým môžeš.",
       "melichar.superove": "Hádku vyhral súper: má viac mäkkého poškodenia, [Pohoršenie] Pohoršenie 2, [Povera] Povera 1, a rozdiel minie na svoje reči pri starších. Tie mu platia po každej bitke, aj prehratej. Nabudúce si nechaj Vieru na jeho Povery. Nepozeraj tak na mňa, ja som ho nevyložil."
     }
   },
   "abstak": {
-    "melichar": "",
+    "melichar": "Pozor na Absťák: tělo si zvyklo. Když v kole vypiješ [Poldeci] a vykouříš [Cigareta] míň, než je tvoje Chuť, přijde ti do balíčku karta Absťák. Každá ti v rvačce ubere 1 tvrdé a spálí ji jen Vize. Chuť klesá o jednu za kolo. Já jen radím, dělej si, jak chceš.",
     "sk": {
       "melichar": "Pozor na Absťák: telo si zvyklo. Keď v kole vypiješ [Poldeci] a vyfajčíš [Cigareta] menej, ako je tvoja Chuť, príde ti karta Absťák do balíčka. Každá ti v bitke uberie 1 tuhé a spáli ju len Vízia. Chuť klesá o jednu za kolo. Ja len radím, rob si, ako chceš."
     }
   },
   "cirhoza": {
-    "melichar": "",
+    "melichar": "V ruce máš Cirhózu z přetečených jater. Varoval jsem tě, ale dobře. Přiznaná tě vajgly nestojí, jenže soupeř za ni dostane v každé rvačce 1 tvrdé. Nepřiznaná jde po rvačce do tvého odhazovacího balíčku a na konci hry tě stojí 3 vajgly.",
     "sk": {
       "melichar": "V ruke máš Cirhózu z pretečenej pečene. Varoval som ťa, ale dobre. Priznaná ťa špaky nestojí, no súper za ňu dostane v každej bitke 1 tuhé. Nepriznaná ide po bitke do tvojho odhadzovacieho balíčka a na konci hry ťa stojí 3 špaky."
     }
   },
   "priazen": {
-    "melichar": "",
+    "melichar": "{starsi} se bojí soupeře víc než tebe, a proto ti projevuje přízeň: malý bonus, ten vidíš u něj. Její síla je rozdíl jejich strachů. Soupeři za ten strach platí vajgly, když vyhraje rvačku. Někdo tě má rád, to bych nečekal.",
     "sk": {
       "melichar": "{starsi} sa bojí súpera viac ako teba, a preto ti prejavuje priazeň: malý bonus, ten vidíš pri ňom. Jej sila je rozdiel ich strachov. Súperovi za ten strach platí špaky, keď vyhrá bitku. Niekto ťa má rád, to by som nečakal."
     }
   },
   "prevaha": {
-    "melichar": "",
+    "melichar": "Akce lokality v kraji dostane, kdo tam má víc svých Občanů, Zvířat a Stařešinů. Při rovnosti ten, čí karta leží u lokality. Počítat do tří umíš, to bude stačit.",
     "sk": {
       "melichar": "Akcie lokality v kraji dostane, kto tam má viac svojich Občanov, Zvierat a Starešinov. Pri rovnosti ten, koho karta leží pri lokalite. Rátať do troch vieš, to bude stačiť."
     }
   },
   "patronat": {
-    "melichar": "",
+    "melichar": "Tenhle starší se tě bojí na červené. Za pět z Nakládačky ho zajmeš – jde do tvého sklepa a soupeř ti dá vajgly za svůj marker u něj. Nemusíš, ale proč bys nechtěl.",
     "sk": {
       "melichar": "Tento starší sa ťa bojí na červenej. Za päť z Nakladačky ho zajmeš – ide do tvojej pivnice a súper ti dá špaky za svoj marker pri ňom. Nemusíš, ale prečo by si nechcel."
     }
   },
   "presvedcenie": {
-    "melichar": "",
+    "melichar": "Tenhle starší se bojí soupeře víc než tebe. Řeči na červenou a pět navrch – a je přesvědčený: jeho karta jde tobě do ruky a zůstává ve tvém balíčku. Tvoje řeči u něj shoří, přízeň ti zůstane.",
     "sk": {
       "melichar": "Tento starší sa súpera bojí viac než teba. Reči na červenú a päť navrch – a je presvedčený: jeho karta ide tebe do ruky a ostáva v tvojom balíčku. Tvoje reči pri ňom zhoria, priazeň ti ostane."
     }
   },
   "vydesenie": {
-    "melichar.moje": "",
-    "melichar.superove": "",
+    "melichar.moje": "Vyděšený starší! Bojí se tě na červené, takového smíš po vyhrané rvačce za pět z Nakládačky zajmout. Čtyři vyděšení a vyhraná rvačka – zajatci se počítají taky – a vyhrál jsi hned. Jen tak.",
+    "melichar.superove": "Soupeř ti vyděsil staršího. Bojí se ho na červené, a tak ho soupeř po vyhrané rvačce smí za pět z Nakládačky zajmout. Čtyři vyděšení a vyhraná rvačka – zajatci se počítají taky – a vyhrál. Ale to se určitě nestane. Že ne?",
     "sk": {
       "melichar.moje": "Vydesený starší! Bojí sa ťa na červenej, takého smieš po vyhratej bitke za päť z Nakladačky zajať. Štyria vydesení a vyhratá bitka – väzni sa rátajú tiež – a vyhral si hneď. Len.",
       "melichar.superove": "Súper ti vydesil staršieho. Bojí sa ho na červenej, a tak ho súper po vyhratej bitke smie za päť z Nakladačky zajať. Štyria vydesení a vyhratá bitka – väzni sa rátajú tiež – a vyhral. Ale to sa určite nestane. Však?"
     }
   },
   "dedicstvo": {
-    "melichar": "",
+    "melichar": "{karta} je Nástroj. Můžeš ho dát do Dědictví za [Cigareta] cigarety a jeho efekt pak platí do konce hry. Aspoň něco u tebe vydrží až do konce.",
     "sk": {
       "melichar": "{karta} je Nástroj. Môžeš ho dať do Dedičstva za [Cigareta] cigarety a jeho efekt potom platí do konca hry. Aspoň niečo u teba vydrží až do konca."
     }
   },
   "exekutor": {
-    "melichar": "",
+    "melichar": "Máš přiznaný Dluh, nechci nic říkat. V každé rvačce přijde Exekutor: shoří ti polovina Dluhů, zaokrouhleno nahoru, a stejně vajglů. Znám ho, nedoporučuju.",
     "sk": {
       "melichar": "Máš priznaný Dlh, nechcem nič hovoriť. V každej bitke príde Exekútor: zhorí ti polovica Dlhov, zaokrúhlene nahor, a rovnako veľa špakov. Poznám ho, neodporúčam."
     }
   },
   "zaverecna": {
-    "melichar": "",
+    "melichar": "Za [Cigareta] cigaretu smíš zahrát kartu lícem dolů jako Zavíračku, soupeř neví, co to je. Po ní už v tomhle Shromáždění nic nevyložíš. Zase cigareta, která nejde mně.",
     "sk": {
       "melichar": "Za [Cigareta] cigaretu smieš zahrať kartu lícom dole ako Záverečnú, súper nevie, čo to je. Po nej už v tomto Zhromaždení nič nevyložíš. Zase cigareta, ktorá nejde mne."
     }
