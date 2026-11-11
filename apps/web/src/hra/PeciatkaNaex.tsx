@@ -7,6 +7,7 @@
 import type { ReactNode } from "react";
 import type { PlayerId } from "@naex/core";
 import { opponentOf } from "@naex/core";
+import { t } from "../i18n/jazyk.tsx";
 
 /** NA EX na karte tak, ako ho hráč vidí. */
 export interface NaexNaKarte {
@@ -28,15 +29,15 @@ export function naexNaKarte(
   ja: PlayerId,
   menoHraca: (p: PlayerId) => string,
 ): NaexNaKarte | undefined {
-  if (n.naexBy !== undefined && n.naexBy2 !== undefined) return { od: "obaja", kto: "obaja" };
-  if (n.naexBy !== undefined) return n.naexBy === ja ? { od: "ja", kto: "tvoj" } : { od: "su", kto: menoHraca(n.naexBy) };
-  if (n.skryteMoje) return { od: "ja", kto: "tvoj", skryto: true };
+  if (n.naexBy !== undefined && n.naexBy2 !== undefined) return { od: "obaja", kto: t("peciatka.obaja") };
+  if (n.naexBy !== undefined) return n.naexBy === ja ? { od: "ja", kto: t("peciatka.tvoj") } : { od: "su", kto: menoHraca(n.naexBy) };
+  if (n.skryteMoje) return { od: "ja", kto: t("peciatka.tvoj"), skryto: true };
   if (n.skryteSupera) return { od: "su", kto: menoHraca(opponentOf(ja)), skryto: true };
   return undefined;
 }
 
 export function PeciatkaNaex({ naex }: { readonly naex: NaexNaKarte }) {
-  const kto = naex.skryto === true ? `${naex.kto} · skryto` : naex.kto;
+  const kto = naex.skryto === true ? `${naex.kto} · ${t("peciatka.skryto")}` : naex.kto;
   return (
     <span className={`naex-peciatka naex-peciatka-${naex.od}${naex.skryto === true ? " naex-peciatka-skryto" : ""}`} role="img" aria-label={`NA EX — ${kto}`}>
       <span className="naex-peciatka-text">NA EX!</span>

@@ -3714,33 +3714,6 @@ button.pecat-potvrd:disabled::after {
   pointer-events: none;
 }
 
-/* NA EX nad kartou v počítadle bitky; výber pre NA EX: nápis pod kartou (Michal 2026-10-21). */
-.naex-nad {
-  position: absolute;
-  top: -13px;
-  left: 50%;
-  z-index: 3;
-  transform: translateX(-50%);
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  padding: 2px 9px 2px 5px;
-  border-radius: 99px;
-  font: 800 0.68rem/1.4 var(--pismo);
-  letter-spacing: 0.06em;
-  white-space: nowrap;
-  color: #fff4e2;
-  background: var(--tehla-tmava);
-  border: 1px solid var(--cervena);
-  pointer-events: none;
-}
-
-.naex-nad .ikona-poldeci {
-  width: 15px;
-  height: 15px;
-  fill: #ffd08a;
-}
-
 /* Výtržník (zrážka NA EX): na prvý pohľad iná karta — červený okraj a pečiatka. */
 .s-lupou.vytrznik .kl {
   outline: 3px solid var(--cervena);
@@ -7561,22 +7534,6 @@ button.auto-hotovo-odkaz {
   outline-offset: 2px;
 }
 
-/* NA EX nad kartou v línii počítadla — kratší štítok, karty sú malé. */
-.pocitadlo-karta .pocitadlo-naex {
-  top: -11px;
-  padding: 1px 6px 1px 3px;
-  font-size: 0.58rem;
-}
-
-.pocitadlo-karta .pocitadlo-naex .ikona-poldeci {
-  width: 12px;
-  height: 12px;
-}
-
-.pocitadlo-karta.svieti .pocitadlo-naex {
-  display: none;
-}
-
 .rekap {
   position: relative;
   width: min(100%, 600px);
@@ -8922,13 +8879,6 @@ button.auto-hotovo-odkaz {
     gap: 5px;
     padding: 2px 5px;
     font-size: 0.78rem;
-  }
-
-  /* Na malej karte len poldeci, nápis by zakryl susedov. */
-  .pocitadlo-karta .pocitadlo-naex {
-    font-size: 0;
-    gap: 0;
-    padding: 1px 3px;
   }
 
   /* Dlhá línia sa na telefóne zalomí, karty sú aj tak malé. */

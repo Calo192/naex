@@ -2970,23 +2970,9 @@ export function HernaPlocha({
         ...(podlozenieNavrh?.hostitel === uid ? [{ card: podlozenieNavrh.nastroj, majitel: ja, hrana: podlozenieNavrh.hrana }] : []),
       ];
       // Stavy karty sú pečiatky cez ilustráciu ako NA EX (Michal 2026-11-11), nie štítky nad kartou;
-      // Vzburu, Forsáž a NA EX zahasené či posilnené (v11.17) pridá karta sama z vyhodnotenia.
+      // Výtržníka (zrážka, Injekcia), Vzburu, Forsáž a NA EX zahasené či posilnené (v11.17) pridá karta sama.
       const komuRany = placed.playedBy === ja ? t("plocha.teba") : menoHraca(placed.playedBy);
-      const injekcia = ucinkyNastrojov(data, { podlozene: podlozeneTu }).has("Výtržník");
-      const nastrojVytrznika = podlozeneTu.find((n) => ((h) => h?.druh === "karta" && h.ucinok === "Výtržník")(aktivnaHrana(data, n)));
       const stavyZLinie: StavNaKarte[] = [
-        ...(vytrznik || injekcia
-          ? [
-              {
-                druh: "vytrznik" as const,
-                text: t("peciatka.vytrznik"),
-                pod: t("peciatka.ranyPre", { koho: komuRany }),
-                titul: vytrznik
-                  ? t("plocha.vytrznikTitul", { koho: komuRany })
-                  : t("peciatka.vytrznikNastrojTitul", { nastroj: nastrojVytrznika === undefined ? "" : menoKarty(nastrojVytrznika.card.defId), koho: komuRany }),
-              },
-            ]
-          : []),
         ...(placed.zaverecna === true
           ? [
               placed.odpoved === true
@@ -3035,7 +3021,8 @@ export function HernaPlocha({
           vybrana: mode.typ === "naexCiel" && mode.uid === uid,
           spoj: spojPre(uid),
           jamky: jamkyStola.get(uid),
-          vytrznik: vytrznik || injekcia,
+          vytrznik,
+          komuRany,
           podlozene: podlozeneTu,
           naex: peciatkaNaex,
           stavy: stavyZLinie,

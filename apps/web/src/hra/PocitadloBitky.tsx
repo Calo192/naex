@@ -10,9 +10,9 @@
 // s upratovaním naraz a skutočná línia zo stola zmizne skôr, než počítadlo dobehne.
 
 import { useEffect, useState, type ReactNode } from "react";
-import type { CardInstance, CardLineEval, KrokPocitadla, LineEval, Moment, PlayerId, PocitadloBitky as Pocitadlo, RekapitulaciaBitky, StolBitky } from "@naex/core";
+import type { CardInstance, CardLineEval, KrokPocitadla, LineEval, Moment, PlacedCard, PlayerId, PocitadloBitky as Pocitadlo, PodlozenyNastroj, RekapitulaciaBitky, StolBitky } from "@naex/core";
 import { stavPocitadla, vlnyKariet, opponentOf } from "@naex/core";
-import { IkonaPoldeci } from "./Panely.tsx";
+import { naexNaKarte, type NaexNaKarte } from "./PeciatkaNaex.tsx";
 import { PilulkaPriazne } from "./KruzokPriazne.tsx";
 import { NAZOV_PRIAZNE, type PriazneBitky } from "./priazenKola.ts";
 import type { VyhraStrachom } from "./vyhraStrachom.ts";
@@ -265,6 +265,11 @@ export type KreslenieKarty = (k: {
   readonly otocena: boolean;
   readonly eval: CardLineEval | null;
   readonly bezPopisov: true;
+  /** NA EX a Výtržník ako pečiatky cez kartu — jednotne s líniou (Leader 2026-11-11). */
+  readonly naex?: NaexNaKarte | undefined;
+  readonly vytrznik?: boolean;
+  readonly komuRany?: string;
+  readonly podlozene?: readonly PodlozenyNastroj[] | undefined;
 }) => ReactNode;
 
 export interface PocitadloSLiniouProps {
@@ -302,7 +307,7 @@ export function PocitadloSLiniou({ vrstva, ja, mena, karta, menoKarty, piktogram
   const { stol, linia, rekap } = vrstva;
   const su = opponentOf(ja);
   const lok = stol.ciel?.lokalita ?? null;
-  const poradie: readonly { readonly card: CardInstance; readonly playedBy: PlayerId | null; readonly naexBy?: PlayerId | undefined }[] = [
+  const poradie: readonly (Pick<PlacedCard, "card" | "naexBy" | "naexBy2" | "vytrznik" | "podlozene"> & { readonly playedBy: PlayerId | null })[] = [
     ...[...stol.strany[ja]].reverse(),
     ...(lok === null ? [] : [{ card: lok, playedBy: null }]),
     ...stol.strany[su],
@@ -321,12 +326,11 @@ export function PocitadloSLiniou({ vrstva, ja, mena, karta, menoKarty, piktogram
           otocena: pl.playedBy === null ? stol.lokalitaOtocena !== (ja === 1) : pl.playedBy !== ja,
           eval: linia.cards.get(pl.card.uid) ?? null,
           bezPopisov: true,
+          naex: naexNaKarte({ naexBy: pl.naexBy, naexBy2: pl.naexBy2, skryteMoje: false, skryteSupera: false }, ja, (p) => mena[p]),
+          vytrznik: pl.vytrznik === true,
+          ...(pl.playedBy === null ? {} : { komuRany: pl.playedBy === ja ? t("plocha.teba") : mena[pl.playedBy] }),
+          podlozene: pl.podlozene,
         })}
-        {pl.naexBy !== undefined && (
-          <span className="naex-nad pocitadlo-naex" title={pl.naexBy === ja ? t("pocitadlo.naexTvoj") : t("pocitadlo.naexHraca", { meno: mena[pl.naexBy] })}>
-            <IkonaPoldeci /> NA EX
-          </span>
-        )}
       </>
     ),
   }));

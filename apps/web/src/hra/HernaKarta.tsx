@@ -8,14 +8,14 @@
 
 import { createContext, useContext } from "react";
 import type { CardInstance, CardLineEval, ClientState, GameData, KtoraHrana, NavyseStav, PlayerId, PodlozenyNastroj } from "@naex/core";
-import { akciaVytrznika, defOf, efektyNavyse, menoAkcie, printedSides, stavNavyseVRuke } from "@naex/core";
+import { akciaVytrznika, defOf, efektyNavyse, menoAkcie, printedSides, stavNavyseVRuke, ucinkyNastrojov } from "@naex/core";
 import type { KartaNavrh, RozlozenieStrany, Sada } from "@naex/tvorba";
 import { PREDVOLENE_NASTAVENIA } from "@naex/tvorba";
 import { KartaLico, type NavyseNaKarte, type PreskolenieNaKarte, type RohSlotu, type SlotStav, type ZarNaKarte } from "../karta/KartaLico.tsx";
 import { preskoleniaZTextu } from "../karta/preskolenie.ts";
 import { zarSlotu } from "../karta/zar.ts";
 import { vzhladSady } from "../lib/sada.tsx";
-import { t } from "../i18n/jazyk.tsx";
+import { nazovKarty, t } from "../i18n/jazyk.tsx";
 import { PeciatkyKarty, type NaexNaKarte, type StavNaKarte } from "./PeciatkaNaex.tsx";
 
 /**
@@ -122,6 +122,8 @@ export interface HernaKartaProps {
   readonly naex?: NaexNaKarte | undefined;
   /** Stavy z línie, ktoré karta sama nevie (Výtržník s menom, Záverečná) — pečiatky pod NA EX. */
   readonly stavy?: readonly StavNaKarte[] | undefined;
+  /** Komu sú Rany Výtržníka („teba“ či meno) — riadok pod pečiatkou VÝTRŽNÍK!. */
+  readonly komuRany?: string | undefined;
 }
 
 /**
@@ -158,7 +160,25 @@ function stavPreskoleni(efekt: string, stol: ZarStola | null, uid: number): Pres
   });
 }
 
-export function HernaKarta({ karta, sada, data, sirka, otocena = false, eval: ev, onClick, vybrana, bezPopisov, hranaVnutorna, spoj, jamky, vytrznik = false, stlacena, zakazana, podlozene, aktivnaHrana, naex, stavy: stavyZLinie }: HernaKartaProps) {
+/**
+ * Pečiatka Výtržníka: zrážka NA EX (vytrznik) alebo Injekcia pod kartou, ktorá z nej robí Výtržníka
+ * tou istou cestou; null = karta Výtržník nie je. komuRany = riadok pod pečiatkou a titulok.
+ */
+export function vytrznikNaKarte(data: GameData, zrazka: boolean, podlozene: readonly PodlozenyNastroj[] | undefined, komuRany: string | undefined): StavNaKarte | null {
+  const injekcia = (podlozene ?? []).find((n) => ucinkyNastrojov(data, { podlozene: [n] }).has("Výtržník"));
+  if (!zrazka && injekcia === undefined) return null;
+  const titul =
+    komuRany === undefined
+      ? t("peciatka.vytrznik")
+      : injekcia === undefined || zrazka
+        ? t("plocha.vytrznikTitul", { koho: komuRany })
+        : t("peciatka.vytrznikNastrojTitul", { nastroj: nazovKarty(data.cards.get(injekcia.card.defId)?.name ?? injekcia.card.defId), koho: komuRany });
+  return { druh: "vytrznik", text: t("peciatka.vytrznik"), pod: komuRany === undefined ? undefined : t("peciatka.ranyPre", { koho: komuRany }), titul };
+}
+
+export function HernaKarta({ karta, sada, data, sirka, otocena = false, eval: ev, onClick, vybrana, bezPopisov, hranaVnutorna, spoj, jamky, vytrznik = false, stlacena, zakazana, podlozene, aktivnaHrana, naex, stavy: stavyZLinie, komuRany }: HernaKartaProps) {
+  const stavVytrznika = vytrznikNaKarte(data, vytrznik, podlozene, komuRany);
+  const vytrznikTu = stavVytrznika !== null;
   const vytlacene = printedSides(data, karta);
   const stol = useContext(ZarStolaKontext);
   const vzhladK = vzhladKarty(sada, data, karta.defId);
@@ -178,7 +198,7 @@ export function HernaKarta({ karta, sada, data, sirka, otocena = false, eval: ev
       const a = vytlacene[ps][k] ?? null;
       const se = ev?.[ps][k];
       if (a === null) return null;
-      if (vytrznik) {
+      if (vytrznikTu) {
         const r = akciaVytrznika();
         if (r !== a) rohy[k] = { akcia: a, preco: "Výtržník" };
         return r;
@@ -253,7 +273,7 @@ export function HernaKarta({ karta, sada, data, sirka, otocena = false, eval: ev
       return { ...z, nova: teraz - prvy < TRVANIE_ISKRY_MS };
     }),
   }));
-  const peciatky = stavyKarty(ev, vytrznik, stavyZLinie);
+  const peciatky = stavyKarty(ev, vytrznikTu, [...(stavVytrznika === null ? [] : [stavVytrznika]), ...(stavyZLinie ?? [])]);
 
   const preskolenia = kde?.miesto === "linia" ? stavPreskoleni(vzhladK.efekt, stol, karta.uid) : undefined;
   const sRohmi = l.rohy.some((r) => r !== null) || p.rohy.some((r) => r !== null);

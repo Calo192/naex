@@ -5,8 +5,12 @@ import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it } from "vitest";
 import type { CardLineEval } from "@naex/core";
-import { stavyKarty } from "../src/hra/HernaKarta.tsx";
-import { PeciatkyKarty, type StavNaKarte } from "../src/hra/PeciatkaNaex.tsx";
+import { loadGameData } from "@naex/core";
+import cardsJson from "../../../packages/core/data/cards.json";
+import eldersJson from "../../../packages/core/data/elders.json";
+import scorecardsJson from "../../../packages/core/data/scorecards.json";
+import { stavyKarty, vytrznikNaKarte } from "../src/hra/HernaKarta.tsx";
+import { naexNaKarte, PeciatkyKarty, type StavNaKarte } from "../src/hra/PeciatkaNaex.tsx";
 
 const ev = (x: Partial<CardLineEval>): CardLineEval => ({ uid: 1, vzbura: false, forsaz: false, left: [], right: [], ...x });
 const zaverecna: StavNaKarte = { druh: "zaverecna", text: "ZÁVEREČNÁ", pod: "lícom dole", titul: "Tvoja Záverečná" };
@@ -48,5 +52,35 @@ describe("stavy karty ako pečiatky", () => {
     expect(html.indexOf("NA EX!")).toBeLessThan(html.indexOf("VÝTRŽNÍK!"));
     expect(html).toContain('title="Zrážka NA EX"');
     expect(html).toContain("stav-peciatka-vytrznik");
+  });
+});
+
+describe("Výtržník na karte: zrážka aj Injekcia pod kartou", () => {
+  const data = loadGameData(cardsJson, eldersJson, scorecardsJson);
+  const injekcia = { card: { uid: 2, defId: "lievik", leftLayout: 0, rightLayout: 0 }, majitel: 0 as const, hrana: "horna" as const };
+
+  it("Injekcia hore pod kartou: VÝTRŽNÍK! s riadkom, komu sú Rany, a menom Nástroja v titulku", () => {
+    const s = vytrznikNaKarte(data, false, [injekcia], "Fero");
+    expect(s).toMatchObject({ druh: "vytrznik", text: "VÝTRŽNÍK!", pod: "Rany pre Fero" });
+    expect(s?.titul).toContain("Injekcia pod kartou");
+  });
+
+  it("zrážka NA EX: titulok zrážky; NA EX! (obaja) navrchu a VÝTRŽNÍK! pod ním", () => {
+    const s = vytrznikNaKarte(data, true, undefined, "teba");
+    expect(s?.titul).toContain("Zrážka NA EX");
+    const html = renderToStaticMarkup(createElement(PeciatkyKarty, { naex: naexNaKarte({ naexBy: 0, naexBy2: 1, skryteMoje: false, skryteSupera: false }, 0, () => "Fero"), stavy: stavyKarty(null, true, s === null ? [] : [s]) }));
+    expect(html).toContain('class="peciatky-karty peciatky-2"');
+    expect(html).toContain("obaja");
+    expect(html).toContain("Rany pre teba");
+  });
+
+  it("bez zrážky a s Injekciou dole (preškolenie) karta Výtržník nie je", () => {
+    expect(vytrznikNaKarte(data, false, [{ ...injekcia, hrana: "dolna" }], "Fero")).toBeNull();
+    expect(vytrznikNaKarte(data, false, undefined, "Fero")).toBeNull();
+  });
+
+  it("texty pod NA EX! idú cez preklad (tvoj, obaja, skryto)", () => {
+    const html = renderToStaticMarkup(createElement(PeciatkyKarty, { naex: naexNaKarte({ naexBy: undefined, naexBy2: undefined, skryteMoje: true, skryteSupera: false }, 0, () => "Fero"), stavy: [] }));
+    expect(html).toContain("tvoj · skryto");
   });
 });
