@@ -6,10 +6,12 @@
 
 import type { CSSProperties } from "react";
 import type { ClientState, PlayerId } from "@naex/core";
-import { KONSTANTY, pocet } from "@naex/core";
+import { KONSTANTY } from "@naex/core";
+import { spakov } from "../i18n/pocty.ts";
 import { spakyPodlaZdroja } from "./spakyAStarsi.ts";
 import type { SpakyTeraz } from "@naex/core";
 import { HODNOTA_POLA } from "./textyStarsich.ts";
+import { t } from "../i18n/jazyk.tsx";
 
 export interface BarSpakovProps {
   readonly view: ClientState;
@@ -32,57 +34,58 @@ export function BarSpakov({ view, p, body, menoKarty }: BarSpakovProps) {
   const dlazdice = [
     {
       kluc: "lokality",
-      nazov: "Lokality",
+      nazov: t("barSpakov.lokality"),
       hodnota: zn(zaLokality),
       trieda: zaLokality > 0 ? "plus" : "",
-      pod: vyhrate.length === 0 ? "zatiaľ žiadna" : `${vyhrate.length}: ${mena.join(", ")}`,
-      popis: `Špaky za vyhraté bitky o lokality: ${vyhrate.length === 0 ? "zatiaľ žiadna" : mena.join(", ")}${zoSekery > 0 ? ` (z toho ${zoSekery} zo sekery)` : ""}.`,
+      pod: vyhrate.length === 0 ? t("barSpakov.ziadna") : `${vyhrate.length}: ${mena.join(", ")}`,
+      popis: t("barSpakov.lokalityPopis", { zoznam: vyhrate.length === 0 ? t("barSpakov.ziadna") : mena.join(", "), sekera: zoSekery > 0 ? t("barSpakov.zTohoSekera", { n: zoSekery }) : "" }),
     },
     {
       kluc: "starsi",
-      nazov: "Starší",
+      nazov: t("starsi.nazov"),
       hodnota: zn(rozpis.zaStarsich),
       trieda: rozpis.zaStarsich > 0 ? "plus" : "",
-      pod: `po bitke +${body.zaStarsichVyhra[p]} · prehra +${body.zaStarsichPrehra[p]}`,
-      popis: `Doteraz od starších ${zn(rozpis.zaStarsich)}. Po najbližšej bitke ${ja ? "ti" : "mu"} dajú ${body.zaStarsichVyhra[p]}, keď ju ${ja ? "vyhráš" : "vyhrá"} (strach a reči), a ${body.zaStarsichPrehra[p]}, keď ju ${ja ? "prehráš" : "prehrá"} (len reči). Stupeň dá ${HODNOTA_POLA} tomu, kto ho drží.`,
+      pod: t("barSpakov.starsiPod", { vyhra: body.zaStarsichVyhra[p], prehra: body.zaStarsichPrehra[p] }),
+      popis: ja ? t("barSpakov.starsiPopisJa", { doteraz: zn(rozpis.zaStarsich), vyhra: body.zaStarsichVyhra[p], prehra: body.zaStarsichPrehra[p], hodnota: HODNOTA_POLA }) : t("barSpakov.starsiPopisSu", { doteraz: zn(rozpis.zaStarsich), vyhra: body.zaStarsichVyhra[p], prehra: body.zaStarsichPrehra[p], hodnota: HODNOTA_POLA }),
     },
     {
       kluc: "finale",
-      nazov: "Sekera · finále",
+      nazov: t("barSpakov.sekeraFinale"),
       hodnota: zn(zaFinale),
       trieda: zaFinale > 0 ? "plus" : "",
       pod: [
-        finale === null ? "finále: ako každá bitka" : `finále ${zn(finale.zaBitku[p])}`,
-        rozpis.prebytok > 0 ? `Nakladačka +${rozpis.prebytok}` : null,
-        view.spakyNaSekere > 0 ? `na sekere ${view.spakyNaSekere}` : null,
+        finale === null ? t("barSpakov.finaleAkoKazda") : t("barSpakov.finaleN", { n: zn(finale.zaBitku[p]) }),
+        rozpis.prebytok > 0 ? t("spaky.nakladackaN", { n: `+${rozpis.prebytok}` }) : null,
+        view.spakyNaSekere > 0 ? t("panel.naSekere", { n: view.spakyNaSekere }) : null,
       ]
         .filter((t): t is string => t !== null)
         .join(" · "),
-      popis: `Finále je posledná bitka, o vrcholovú lokalitu, a boduje sa ako každá (víťaz 1 špak za každú kartu v línii); Nakladačka sa v ňom nerozdeľuje — víťaz za ňu dostane 1 špak za každý bod; starší bodujú ako po každej bitke. Remíza dá špaky bitky na sekeru — vezme ich víťaz ďalšej bitky, vo finále prepadnú.${view.spakyNaSekere > 0 ? ` Teraz na nej čaká ${view.spakyNaSekere}.` : ""}`,
+      popis: t("barSpakov.finalePopis") + (view.spakyNaSekere > 0 ? t("barSpakov.terazCaka", { n: view.spakyNaSekere }) : ""),
     },
     {
       kluc: "exekutor",
-      nazov: "Exekútor",
+      nazov: t("spaky.exekutor"),
       hodnota: zn(rozpis.exekutor),
       trieda: rozpis.exekutor < 0 ? "minus" : "",
-      pod: rozpis.exekutor < 0 ? "zhorené pri exekúcii" : "zatiaľ nič",
-      popis: "Špaky, ktoré zhoreli pri exekúcii (polovica priznaných Dlhov).",
+      pod: rozpis.exekutor < 0 ? t("barSpakov.zhorene") : t("barSpakov.zatialNic"),
+      popis: t("barSpakov.exekutorPopis"),
     },
     {
       // Výkupné a Cirhóza v jednej dlaždici — siedma by sa na notebooku nezmestila.
       kluc: "koniec",
-      nazov: "Koniec hry",
+      nazov: t("faza.koniecHry"),
       hodnota: zn(zaKoniec),
       trieda: zaKoniec > 0 ? "plus" : zaKoniec < 0 ? "minus" : "",
-      pod: [`výkupné ${zn(vykupne.spaky)}`, cirhozy > 0 ? `Cirhóza −${cirhozy * KONSTANTY.SPAKY_ZA_CIRHOZU}` : null].filter((t): t is string => t !== null).join(" · "),
+      pod: [t("barSpakov.vykupne", { n: zn(vykupne.spaky) }), cirhozy > 0 ? t("barSpakov.cirhozaMinus", { n: cirhozy * KONSTANTY.SPAKY_ZA_CIRHOZU }) : null].filter((t): t is string => t !== null).join(" · "),
       popis:
-        `Výkupné po finále: každý plný poldeci ${KONSTANTY.SPAKY_ZA_POLDECI} špak, každých celých ${KONSTANTY.CIGARIET_ZA_SPAK} cigariet 1 špak — ` +
-        `${view.koniec === null ? "teraz" : "na konci"} ${pocet(vykupne.poldeci, "plný poldeci", "plné poldeci", "plných poldeci")} a ${pocet(vykupne.cigarety, "cigareta", "cigarety", "cigariet")} = ${zn(vykupne.spaky)}. ` +
-        `Nepriznaná Cirhóza zoberie na konci hry ${pocet(KONSTANTY.SPAKY_ZA_CIRHOZU, "špak", "špaky", "špakov")} za kus (ruka aj oba balíčky)${cirhozy > 0 ? `, ${ja ? "máš" : "má"} ${cirhozy}` : ""}.`,
+        t("barSpakov.vykupnePopis", { zaPoldeci: KONSTANTY.SPAKY_ZA_POLDECI, zaCigarety: KONSTANTY.CIGARIET_ZA_SPAK, kedy: view.koniec === null ? t("spaky.teraz") : t("barSpakov.naKonci"), poldeci: t("koniec.plnychPoldeci", { n: vykupne.poldeci }), cigarety: t("koniec.cigariet", { n: vykupne.cigarety }), spolu: zn(vykupne.spaky) }) +
+        t("barSpakov.cirhozaPopis", { spaky: spakov(KONSTANTY.SPAKY_ZA_CIRHOZU) }) +
+        (cirhozy > 0 ? (ja ? t("barSpakov.mas", { n: cirhozy }) : t("barSpakov.ma", { n: cirhozy })) : "") +
+        ".",
     },
   ];
   return (
-    <div className="bar-spakov" style={{ "--n": dlazdice.length } as CSSProperties} role="list" aria-label="Špaky">
+    <div className="bar-spakov" style={{ "--n": dlazdice.length } as CSSProperties} role="list" aria-label={t("pult.spaky")}>
       {dlazdice.map((d) => (
         <div key={d.kluc} role="listitem" tabIndex={0} className={`zdroj spaky-dlazdica ${d.trieda}`} title={d.popis}>
           <span className="zdroj-nazov">{d.nazov}</span>

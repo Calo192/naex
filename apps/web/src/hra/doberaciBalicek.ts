@@ -3,6 +3,7 @@
 // nemá — viewFor posiela len zoradené defId s počtom (mojBalicekZlozenie).
 
 import type { CardInstance, GameData, ZlozeniePolozka } from "@naex/core";
+import { t } from "../i18n/jazyk.tsx";
 
 export interface SkupinaBalicka {
   readonly nazov: string;
@@ -21,6 +22,22 @@ const PODLA_TAGU: readonly (readonly [string, string])[] = [
   ["Občan", "Občania"],
 ];
 const SKUPINY = ["Občania", "Zvieratá", "Starešinovia", "Nástroje", "Lokality", "Kliatby", "Ostatné"];
+
+const KLUC_SKUPINY: Readonly<Record<string, string>> = {
+  Občania: "obcania",
+  Zvieratá: "zvierata",
+  Starešinovia: "staresinovia",
+  Nástroje: "nastroje",
+  Lokality: "lokality",
+  Kliatby: "kliatby",
+  Ostatné: "ostatne",
+};
+
+/** Názov skupiny na zobrazenie v jazyku hráča (nazov skupiny je slovenský kľúč). */
+export function nazovSkupiny(nazov: string): string {
+  const k = KLUC_SKUPINY[nazov];
+  return k === undefined ? nazov : t(`skupina.${k}`);
+}
 
 export function skupinyBalicka(data: GameData, zlozenie: readonly ZlozeniePolozka[]): SkupinaBalicka[] {
   const podla = new Map<string, { karta: CardInstance; meno: string; pocet: number }[]>();

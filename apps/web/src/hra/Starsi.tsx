@@ -16,6 +16,7 @@ import { IkonaSpaku } from "./Spaky.tsx";
 import { smerStarsieho, stupienkyStarsich } from "./spakyAStarsi.ts";
 import { NAZOV_ZDROJA, riadokDlazdice } from "./textyStarsich.ts";
 import { textCervenych } from "./vyhraStrachom.ts";
+import { t } from "../i18n/jazyk.tsx";
 
 export interface DlazdicaStarsichProps {
   readonly view: ClientState;
@@ -45,9 +46,7 @@ export function DlazdicaStarsich({ view, p, zaStarsich, zaStarsichPrehra, starsi
   const vazni = v.vazni[p];
   const hrozi = cervene >= v.cervenychNaVyhru - 1 || vazni >= v.vazniNaVyhru - 1;
   const tc = textCervenych(cervene, vazni, v.cervenychNaVyhru);
-  const titulVyhier =
-    `${tc.titul} Väzni ${vazni} z ${v.vazniNaVyhru}. ` +
-    `Kto vyhrá bitku a má ${v.cervenychNaVyhru} červené strachy (väzni sa rátajú) alebo ${v.vazniNaVyhru} väzňov, vyhráva hneď.`;
+  const titulVyhier = t("starsi.titulVyhier", { titul: tc.titul, vazni, naVyhru: v.vazniNaVyhru, cervenych: v.cervenychNaVyhru });
   return (
     <button
       type="button"
@@ -57,15 +56,16 @@ export function DlazdicaStarsich({ view, p, zaStarsich, zaStarsichPrehra, starsi
       data-vyucba-prvok="starsi"
       title={
         starsi.stlacene
-          ? "Späť na stôl (Esc)"
-          : `Priazeň ${ja ? "ti" : "mu"} dáva ${priazen} z ${view.starsi.length} starších (stĺpček hore) — ich efekt ${ja ? "máš" : "má"}. ` +
-            `Bojí sa ${ja ? "ťa" : "ho"} ${strach} (stĺpček dole). Po bitke ${ja ? "ti" : "mu"} starší dajú ${zaStarsich} pri výhre a ${zaStarsichPrehra} pri prehre. ${titulVyhier} Klik ukáže starších.` +
-            (posuny > 0 ? ` Od bitky sa zmenilo markerov: ${posuny}.` : "")
+          ? t("starsi.spatNaStol")
+          : (ja
+              ? t("starsi.titulJa", { priazen, z: view.starsi.length, strach, vyhra: zaStarsich, prehra: zaStarsichPrehra, vyhry: titulVyhier })
+              : t("starsi.titulSu", { priazen, z: view.starsi.length, strach, vyhra: zaStarsich, prehra: zaStarsichPrehra, vyhry: titulVyhier })) +
+            (posuny > 0 ? t("starsi.zmenyMarkerov", { n: posuny }) : "")
       }
       onClick={starsi.prepni}
     >
       <span className="zdroj-nazov">
-        Starší {starsi.stlacene ? "▴" : "▾"}
+        {t("starsi.nazov")} {starsi.stlacene ? "▴" : "▾"}
         {!starsi.stlacene && posuny > 0 && <span className="zdroj-posuny">⇄ {posuny}</span>}
         {/* Na nízkom okne nie je riadok pod číslom — stav výhier je odznakom pri nadpise (hra.css). */}
         <span className={`starsi-desi${hrozi ? " hrozi" : ""}`} title={titulVyhier}>
@@ -92,16 +92,16 @@ export function DlazdicaStarsich({ view, p, zaStarsich, zaStarsichPrehra, starsi
           {strach > 0 && <ZnackaStrachu uroven={najStrach} trieda={ja ? "moje" : "superove"} />}
           {/* Ikona špakov hneď za číslom — na 1366–1440 sa riadok oreže na konci a ikona by odpadla. */}
           {strach === 0 && zaStarsich === 0 ? (
-            `nikto sa ${ja ? "ťa" : "ho"} nebojí`
+            ja ? t("starsi.niktoTa") : t("starsi.niktoHo")
           ) : (
             <>
               +{zaStarsich}
-              <IkonaSpaku /> po výhre
+              <IkonaSpaku /> {t("starsi.poVyhre")}
             </>
           )}
         </span>
         <span className={`starsi-desi-riadok${hrozi ? " hrozi" : ""}`} title={titulVyhier}>
-          červené {tc.kratko} · {vazni > 0 ? "⛓" : "väzni"} {vazni}/{v.vazniNaVyhru}
+          {t("starsi.cervene")} {tc.kratko} · {vazni > 0 ? "⛓" : t("starsi.vazni")} {vazni}/{v.vazniNaVyhru}
         </span>
       </span>
     </button>
@@ -124,7 +124,7 @@ export interface BarStarsichProps {
  */
 export function BarStarsich({ view, data, p, menoKarty, menoSupera, mena }: BarStarsichProps) {
   return (
-    <div className="bar-starsich" style={{ "--n": view.starsi.length } as CSSProperties} role="list" aria-label="Starší">
+    <div className="bar-starsich" style={{ "--n": view.starsi.length } as CSSProperties} role="list" aria-label={t("starsi.nazov")}>
       {view.starsi.map((e) => (
         <DlazdicaStarsieho key={e.elderId} view={view} data={data} p={p} e={e} meno={menoKarty(e.karta.defId)} menoSupera={menoSupera} mena={mena} />
       ))}
@@ -157,13 +157,14 @@ function DlazdicaStarsieho({
   const zmeny = view.zmenyMarkerov.filter((x) => x.elderId === e.elderId);
   const fav = favourStarsieho(data, e);
   const pk = priazenKola(e, view.ja);
-  const mena: readonly [string, string] = menaHracov ?? (view.ja === 0 ? ["ty", menoSupera] : [menoSupera, "ty"]);
+  const ty = t("stol.ty");
+  const mena: readonly [string, string] = menaHracov ?? (view.ja === 0 ? [ty, menoSupera] : [menoSupera, ty]);
   const napoveda = useNapovedaStarsieho(() => obsahNapovedy({ data, elder: e, meno, ja: view.ja, mena }));
-  const riadok = presvedcil !== null ? `presvedčený${presvedcil === p ? "" : " (súper)"}` : smer === "dole" ? riadokDlazdice(smer, ja) : riadokPriazneDlazdice(pk.hrac, p, view.ja);
+  const riadok = presvedcil !== null ? (presvedcil === p ? t("starsi.presvedceny") : t("starsi.presvedcenySuperom")) : smer === "dole" ? riadokDlazdice(smer, ja) : riadokPriazneDlazdice(pk.hrac, p, view.ja);
   const popis =
-    `${meno}: priazeň ${ktoPriazen(pk, { ja: "ty", su: menoSupera })}. ${ja ? "Ty" : menoSupera}: ${textMarkerov(e.strach[p], e.reci[p])}, po vyhratej bitke ${vyhra} š.` +
-    (presvedcil === null ? "" : ` Presvedčil ho ${presvedcil === view.ja ? "ty" : "súper"} — karta staršieho je v jeho balíčku.`) +
-    (zmeny.length === 0 ? "" : ` Od bitky ${zmeny.length}× zmena (${[...new Set(zmeny.map((x) => NAZOV_ZDROJA[x.zdroj]))].join(", ")}).`);
+    t("starsi.popis", { meno, kto: ktoPriazen(pk, { ja: ty, su: menoSupera }), hrac: ja ? t("starsi.Ty") : menoSupera, markery: textMarkerov(e.strach[p], e.reci[p]), vyhra }) +
+    (presvedcil === null ? "" : presvedcil === view.ja ? t("starsi.presvedcilTy") : t("starsi.presvedcilSuper")) +
+    (zmeny.length === 0 ? "" : t("starsi.zmenyOdBitky", { n: zmeny.length, zdroje: [...new Set(zmeny.map((x) => NAZOV_ZDROJA[x.zdroj]))].join(", ") }));
   return (
     <div role="listitem" tabIndex={0} className={`zdroj starsi-dlazdica ${smer}`} style={{ "--znakov": meno.length } as CSSProperties} aria-label={popis} {...napoveda.props}>
       <span className="zdroj-nazov">

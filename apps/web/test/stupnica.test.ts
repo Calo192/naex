@@ -4,7 +4,7 @@
 import { describe, expect, it } from "vitest";
 import type { ZmenaMarkera } from "@naex/core";
 import { stitokZmien } from "../src/hra/LiniaStarsich.tsx";
-import { CENA_POLA, PRAVIDLO_STRACHU, nazovStupna, riadokDlazdice, riadokPriazne, rodStarsieho, slovoStupna, textZmeny } from "../src/hra/textyStarsich.ts";
+import { cenaPola, pravidloStrachu, nazovStupna, riadokDlazdice, riadokPriazne, rodStarsieho, slovoStupna, textZmeny } from "../src/hra/textyStarsich.ts";
 
 const MENA = ["Jano", "Fero"] as const;
 
@@ -38,10 +38,10 @@ describe("riadky pri staršom", () => {
   it("stupne a ceny v11: žltá 1, oranžová 2, červená 3; hodnota stupňa 1 / 2 / 3 (v11.20)", () => {
     expect(nazovStupna(0)).toBe("nič");
     expect(nazovStupna(3)).toBe("červená");
-    expect(CENA_POLA).toBe("stupeň stojí 1 / 2 / 3 (žltá / oranžová / červená)");
-    expect(PRAVIDLO_STRACHU).toContain("hodnotu 1 / 2 / 3 a dostane ju, kto ho drží");
-    expect(PRAVIDLO_STRACHU).toMatch(/Stupeň staršieho pre hráča je jeho strach/);
-    expect(PRAVIDLO_STRACHU).toMatch(/reči obaja, strach len víťaz/);
+    expect(cenaPola()).toBe("stupeň stojí 1 / 2 / 3 (žltá / oranžová / červená)");
+    expect(pravidloStrachu()).toContain("hodnotu 1 / 2 / 3 a dostane ju, kto ho drží");
+    expect(pravidloStrachu()).toMatch(/Stupeň staršieho pre hráča je jeho strach/);
+    expect(pravidloStrachu()).toMatch(/reči obaja, strach len víťaz/);
   });
 });
 

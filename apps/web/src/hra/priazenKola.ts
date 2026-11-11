@@ -7,9 +7,11 @@
 // Bez Reactu, aby sa dalo otestovať.
 
 import type { BitkaNaNastenke, ElderState, Favour, GameData, PlayerId, StavVyhier, Stupen, Vazen, ZmenaMarkera } from "@naex/core";
-import { KONSTANTY, NAZVY_ZON, favourStarsieho, blokReci, kradezZaZajatie, opponentOf, pocet, priazenHraca, priazenSila, spakyOdStarsieho as spakyOdStarsiehoJadra, spakyZaStupen, vydesil } from "@naex/core";
+import { spakov } from "../i18n/pocty.ts";
+import { KONSTANTY, NAZVY_ZON, favourStarsieho, blokReci, kradezZaZajatie, opponentOf, priazenHraca, priazenSila, spakyOdStarsieho as spakyOdStarsiehoJadra, spakyZaStupen, vydesil } from "@naex/core";
 import { UCINOK_KRATKO, UCINOK_PRIAZNE } from "./Scorecard.tsx";
 import { rodStarsieho, slovoStupna, type Rod } from "./textyStarsich.ts";
+import { t, tZoServera } from "../i18n/jazyk.tsx";
 
 /** Komu priazeň patrí z pohľadu hráča, ktorý sa pozerá. */
 export type KomuPriazen = "ja" | "su" | null;
@@ -31,19 +33,19 @@ export function priazenKola(elder: Pick<ElderState, "strach">, ja: PlayerId): Pr
 
 /** Krátky účinok priazne pre riadok nápovedy („ty: +1 tuhé v bitke“, „nikomu · pri +1: …“). */
 export function ucinokKola(fav: Favour, p: PriazenKola, mena: { readonly ja: string; readonly su: string }): { readonly komu: KomuPriazen; readonly kto: string | null; readonly text: string } {
-  if (p.komu === null || p.sila <= 0) return { komu: null, kto: null, text: `nikomu · pri +1: ${UCINOK_KRATKO[fav](1)}` };
+  if (p.komu === null || p.sila <= 0) return { komu: null, kto: null, text: t("priazen.nikomu", { ucinok: UCINOK_KRATKO[fav](1) }) };
   return { komu: p.komu, kto: p.komu === "ja" ? mena.ja : mena.su, text: UCINOK_KRATKO[fav](p.sila) };
 }
 
 /** „ty +2“, „Fero +1“, „nikto“. */
 export function ktoPriazen(p: Pick<PriazenKola, "komu" | "sila">, mena: { readonly ja: string; readonly su: string }): string {
-  return p.komu === null ? "nikto" : `${p.komu === "ja" ? mena.ja : mena.su} +${p.sila}`;
+  return p.komu === null ? t("stol.nikto") : `${p.komu === "ja" ? mena.ja : mena.su} +${p.sila}`;
 }
 
 /** Markery jedného hráča slovami: „strach žltá, reči oranžová“, „pokojný“. */
 export function textMarkerov(strach: number, reci: number): string {
-  if (strach === 0 && reci === 0) return "nič";
-  return [strach > 0 ? `strach ${NAZVY_ZON[strach]}` : null, reci > 0 ? `reči ${NAZVY_ZON[reci]}` : null].filter((x) => x !== null).join(", ");
+  if (strach === 0 && reci === 0) return t("starsi.nic");
+  return [strach > 0 ? t("priazen.strachZona", { zona: nazovZony(strach) }) : null, reci > 0 ? t("priazen.reciZona", { zona: nazovZony(reci) }) : null].filter((x) => x !== null).join(", ");
 }
 
 /** Riadok hráča v nápovede (R3, Michal 2026-11-02): strach, reči a špaky po bitke — menom hráča, nie „ty“. */
@@ -129,32 +131,26 @@ export interface VstupNapovedy {
  * Meno priazne podľa jej druhu (PRAVIDLA §10) — nie zo scorecardu: staré sady nesú „Exekútor“,
  * ktorý sa pri načítaní stal Advokátom (účinok by nesedel s menom).
  */
-export const NAZOV_PRIAZNE: Readonly<Record<Favour, string>> = {
-  UZERNIK: "Kmotor",
-  LAKOMEC: "Abstinent",
-  ROBOTA: "Robota",
-  BITKAR: "Bitkár",
-  VERIACI: "Veriaci",
-  FAJCIAR: "Fajčiar",
-  OHOVARACKA: "Ohováračka",
-  ADVOKAT: "Advokát",
-};
+const FAVOURY: readonly Favour[] = ["UZERNIK", "LAKOMEC", "ROBOTA", "BITKAR", "VERIACI", "FAJCIAR", "OHOVARACKA", "ADVOKAT"];
+/** Record s gettermi: text sa číta v jazyku hráča pri každom použití (kľúč predpona.FAVOUR). */
+const podlaFavouru = (predpona: string): Readonly<Record<Favour, string>> =>
+  Object.defineProperties(
+    {},
+    Object.fromEntries(FAVOURY.map((f) => [f, { get: () => t(`${predpona}.${f}`), enumerable: true }])),
+  ) as Readonly<Record<Favour, string>>;
+
+export const NAZOV_PRIAZNE: Readonly<Record<Favour, string>> = podlaFavouru("priazen.nazov");
 
 /** Kedy sa priazeň uplatní (PRAVIDLA §10, stĺpec „Uplatňuje sa pri“) — krátko do nadpisu nápovedy. */
-export const KEDY_PRIAZNE: Readonly<Record<Favour, string>> = {
-  UZERNIK: "po bitke",
-  LAKOMEC: "v bitke",
-  ROBOTA: "pri exekúcii",
-  BITKAR: "v bitke",
-  VERIACI: "v bitke",
-  FAJCIAR: "po bitke",
-  OHOVARACKA: "v bitke",
-  ADVOKAT: "pri exekúcii",
-};
+export const KEDY_PRIAZNE: Readonly<Record<Favour, string>> = podlaFavouru("priazen.kedy");
+
+const S_NAZVOM: ReadonlySet<Favour> = new Set<Favour>(["UZERNIK", "LAKOMEC", "ROBOTA", "ADVOKAT"]);
 
 /** Účinok priazne celou vetou bez názvu na začiatku („Kmotor: …“ je už v nadpise). */
 export function silaPriazne(fav: Favour, sila: number): string {
-  const t = UCINOK_PRIAZNE[fav](sila).replace(/^(Kmotor|Abstinent|Robota|Advokát): /, "");
+  // Názov pred dvojbodkou majú len priazne s menom (Kmotor, Abstinent, Robota, Advokát) — v každom jazyku.
+  const cela = UCINOK_PRIAZNE[fav](sila);
+  const t = S_NAZVOM.has(fav) ? cela.replace(/^[^:]+: /u, "") : cela;
   return t.charAt(0).toUpperCase() + t.slice(1);
 }
 
@@ -202,23 +198,23 @@ export function obsahNapovedy(v: VstupNapovedy): ObsahNapovedy {
  */
 export function vetaSpakov(r: Pick<RiadokHraca, "reci" | "vyhra" | "prehra">): string {
   const plus = (n: number): string => (n > 0 ? `+${n}` : "0");
-  return `pri výhre ${plus(r.vyhra)}, pri prehre ${plus(r.prehra)}${r.reci > 0 ? " (reči; keď prehráš hádku, klesnú zospodu)" : ""}`;
+  return t("priazen.vetaSpakov", { vyhra: plus(r.vyhra), prehra: plus(r.prehra) }) + (r.reci > 0 ? t("priazen.vetaSpakovReci") : "");
 }
 
 /** Komu priazeň patrí a prečo — celou vetou, menami hráčov. */
 export function vetaPriazne(o: Pick<ObsahNapovedy, "priazen" | "hraci" | "rod">): string {
   const [a, b] = o.hraci;
-  const strachSlovom = (r: RiadokHraca): string => (r.strach === 0 ? "žiadny" : slovoStupna(r.strach, o.rod));
+  const strachSlovom = (r: RiadokHraca): string => (r.strach === 0 ? t("priazen.ziadny") : slovoStupna(r.strach, o.rod));
   if (o.priazen.komu === null) {
-    return `Zatiaľ ju nemá nikto. Strach majú ${a.kto} aj ${b.kto} rovnaký (${a.strach === 0 ? "žiadny" : slovoStupna(a.strach, o.rod)}). Dostane ju ten, koho sa bojí menej: keď strach zdvihne ${a.kto}, dostane ju ${b.kto}, a naopak.`;
+    return t("priazen.vetaNikto", { a: a.kto, b: b.kto, strach: strachSlovom(a) });
   }
   const ma = o.priazen.komu === "ja" ? a : b;
-  return `Má ju ${ma.kto}, sila +${o.priazen.sila}. Strach: ${a.kto} ${strachSlovom(a)}, ${b.kto} ${strachSlovom(b)}. Sila je rozdiel strachov, reči sa nerátajú.`;
+  return t("priazen.vetaMa", { kto: ma.kto, sila: o.priazen.sila, a: a.kto, strachA: strachSlovom(a), b: b.kto, strachB: strachSlovom(b) });
 }
 
 /** Riziko zajatia s krádežou celou vetou. */
 export function vetaZajatia(z: ZajatieVNapovede, rod: Rod): string {
-  return `${z.kto} ho môže po vyhratej bitke zajať za ${KONSTANTY.CENA_ZAJATIA} z Nakladačky (strach ${slovoStupna(3, rod)}). ${z.obet} mu vtedy odovzdá ${pocet(z.kradez, "špak", "špaky", "špakov")} za svoje reči pri ňom (dnes).`;
+  return t("priazen.vetaZajatia", { kto: z.kto, cena: KONSTANTY.CENA_ZAJATIA, stupen: slovoStupna(3, rod), obet: z.obet, spaky: spakov(z.kradez) });
 }
 
 export interface VstupNapovedyVazna {
@@ -235,7 +231,8 @@ export function obsahNapovedyVazna(v: VstupNapovedyVazna): ObsahNapovedyVazna {
   const h = v.vazen.hrac;
   const k = kradezPriZajati(v.nastenka, v.vazen.elderId, h);
   const kradez = k === null ? null : { ...k, obet: kratkeMeno(v.mena[opponentOf(h)]) };
-  const schopnost = v.data.elders.get(v.vazen.karta.defId)?.schopnost ?? "";
+  const povodna = v.data.elders.get(v.vazen.karta.defId)?.schopnost ?? "";
+  const schopnost = povodna === "" ? "" : tZoServera(`schopnost.${v.vazen.karta.defId}`, povodna);
   const fav = v.data.scorecards.find((x) => x.id === v.vazen.scorecard)?.favour;
   return {
     druh: "vazen",
@@ -257,7 +254,7 @@ export function obsahNapovedyVazna(v: VstupNapovedyVazna): ObsahNapovedyVazna {
 
 /** Nápoveda nad teplomermi (krátka, 1–2 riadky). */
 export function riadkyKruzkov(): readonly string[] {
-  return ["Stĺpec: strach (plní sa zdola, neklesá) · šrafa: súperove reči na ňom.", "Tvoj vľavo, súperov vpravo."];
+  return [t("priazen.kruzky1"), t("priazen.kruzky2")];
 }
 
 /** Koľko starších dáva hráčovi `p` priazeň (dlaždica Starší, stĺpec na telefóne). */
@@ -267,9 +264,9 @@ export function pocetPriazniKola(starsi: readonly Pick<ElderState, "strach">[], 
 
 /** Krátky riadok dlaždice staršieho v bare hráča `p` podľa priazne. */
 export function riadokPriazneDlazdice(hrac: PlayerId | null, p: PlayerId, ja: PlayerId): string {
-  if (hrac === null) return "nikomu";
-  if (hrac === p) return p === ja ? "pomáha ti" : "pomáha mu";
-  return p === ja ? "pomáha súperovi" : "pomáha tebe";
+  if (hrac === null) return t("priazen.nikomuKratko");
+  if (hrac === p) return p === ja ? t("starsi.pomahaTi") : t("starsi.pomahaMu");
+  return p === ja ? t("starsi.pomahaSuperovi") : t("starsi.pomahaTebe");
 }
 
 /** Meno na lístok a do riadkov (portrét je úzky): „Bot Rapavý Fero“ → „Fero“, „Jano (AI)“ → „Jano“. */
@@ -315,7 +312,14 @@ export interface PriazneBitky {
 
 /** Titulok čipu hádky v rekapitulácii: „tvoja hádka na Krčmárke: reči žltá → oranžová“. */
 export function popisReciZHadky(x: ReciZHadky & { readonly meno: string }, menoSupera: string): string {
-  return `${x.komu === "ja" ? "tvoja hádka" : `hádka (${kratkeMeno(menoSupera)})`} na staršom ${x.meno}: reči ${NAZVY_ZON[x.z] ?? ""} → ${NAZVY_ZON[x.na] ?? ""}`;
+  return x.komu === "ja"
+    ? t("priazen.reciZHadkyJa", { meno: x.meno, z: nazovZony(x.z), na: nazovZony(x.na) })
+    : t("priazen.reciZHadkySu", { super: kratkeMeno(menoSupera), meno: x.meno, z: nazovZony(x.z), na: nazovZony(x.na) });
+}
+
+/** Názov zóny (NAZVY_ZON v jadre) v jazyku hráča; mimo stupnice prázdny. */
+function nazovZony(s: number): string {
+  return s >= 0 && s < NAZVY_ZON.length ? t(`zona.${s}`) : "";
 }
 
 /** Koľko špakov starší za strach a reči komu dal počas partie (pás starších na konci partie). */

@@ -9,10 +9,11 @@ import type { Sada } from "@naex/tvorba";
 import { farbaKarty, formatujEfekt } from "@naex/tvorba";
 import { Avatar } from "../komponenty.tsx";
 import { mediaUrl } from "../lib/api.ts";
-import { skupinyBalicka } from "./doberaciBalicek.ts";
+import { nazovSkupiny, skupinyBalicka } from "./doberaciBalicek.ts";
 import { vzhladKarty } from "./HernaKarta.tsx";
 import { IkonaCigareta } from "./ikonyZdrojov.tsx";
 import { Vrstva } from "./Vrstva.tsx";
+import { t } from "../i18n/jazyk.tsx";
 import "./galeria-kariet.css";
 
 /** Sekcia, pri ktorej sa galéria otvorí (dlaždica Karty, tlačidlá Balíček a Odhodené pri ruke). */
@@ -67,11 +68,11 @@ export function GaleriaKariet({ view, data, sada, hrac, moje, meno, avatar, sekc
   const skupiny = useMemo(() => (moje ? skupinyBalicka(data, view.mojBalicekZlozenie) : []), [moje, data, view.mojBalicekZlozenie]);
 
   const polozka = (s: Sekcia, karta: CardInstance, kde: string, pocet = 1): Polozka => ({ kluc: `${s}:${karta.uid}`, sekcia: s, karta, kde, pocet });
-  const priznane = h.priznane.map((k) => polozka("priznane", k, "Priznaná kliatba"));
-  const dedicstvo = h.dedicstvo.map((k) => polozka("dedicstvo", k, "Dedičstvo"));
-  const pivnica = vazni.map((v) => polozka("pivnica", v.karta, `Väzeň v pivnici · ${v.poradie}. zajatý`));
-  const balicek = skupiny.map((s) => ({ nazov: s.nazov, pocet: s.pocet, karty: s.karty.map((k) => polozka("balicek", k.karta, "Doberací balíček", k.pocet)) }));
-  const odhodene = moje ? h.odhadzovaci.map((k) => polozka("odhodene", k, "Odhadzovací balíček")) : [];
+  const priznane = h.priznane.map((k) => polozka("priznane", k, t("galeria.priznana")));
+  const dedicstvo = h.dedicstvo.map((k) => polozka("dedicstvo", k, t("galeria.dedicstvo")));
+  const pivnica = vazni.map((v) => polozka("pivnica", v.karta, t("galeria.vazen", { n: v.poradie })));
+  const balicek = skupiny.map((s) => ({ nazov: s.nazov, pocet: s.pocet, karty: s.karty.map((k) => polozka("balicek", k.karta, t("galeria.doberaci"), k.pocet)) }));
+  const odhodene = moje ? h.odhadzovaci.map((k) => polozka("odhodene", k, t("galeria.odhadzovaci"))) : [];
   const vsetky = [...priznane, ...dedicstvo, ...pivnica, ...balicek.flatMap((s) => s.karty), ...odhodene];
 
   const prvaVSekcii = (s: Sekcia): string | null => vsetky.find((p) => p.sekcia === s)?.kluc ?? null;
@@ -130,7 +131,7 @@ export function GaleriaKariet({ view, data, sada, hrac, moje, meno, avatar, sekc
       {pozn !== undefined && <span>{pozn}</span>}
     </h3>
   );
-  const nic = <span className="popis">Zatiaľ nič.</span>;
+  const nic = <span className="popis">{t("galeria.zatialNic")}</span>;
 
   const nepriznane = view.nepriznaneKliatby[hrac].cirhoza;
   const prahVaznov = vazniNaVyhru(view.lokalitCelkom);
@@ -144,31 +145,31 @@ export function GaleriaKariet({ view, data, sada, hrac, moje, meno, avatar, sekc
   const riadkyEfektu = useMemo(() => (vzVybranej === null ? [] : formatujEfekt(efektSlovami(vzVybranej.efekt), sada.klucoveSlova)), [vzVybranej, sada.klucoveSlova]);
 
   return (
-    <Vrstva nazov={moje ? "Tvoje karty" : `Karty — ${meno}`} skryta={skryta} onZavri={onZavri} trieda={moje ? "galeria-kariet" : "galeria-kariet supera"}>
+    <Vrstva nazov={moje ? t("galeria.tvojeKarty") : t("galeria.kartyHraca", { meno })} skryta={skryta} onZavri={onZavri} trieda={moje ? "galeria-kariet" : "galeria-kariet supera"}>
       <div className="gk">
         <aside className="gk-hrac">
           <Avatar meno={meno} avatar={avatar} velkost={96} farba={moje ? "ja" : "su"} />
           <div className="gk-pocitadla">
-            {riadok("Priznané kliatby", h.priznane.length)}
-            {nepriznane > 0 && riadok("Cirhózy nepriznané", nepriznane)}
-            {h.dlhy > 0 && riadok("Dlhy", h.dlhy)}
-            {h.abstaky > 0 && riadok("Absťáky", h.abstaky)}
-            {vazni.length > 0 && riadok("Väzni", `${vazni.length}/${prahVaznov}`)}
-            {riadok("Dedičstvo", h.dedicstvo.length)}
+            {riadok(t("tabula.priznaneKliatby"), h.priznane.length)}
+            {nepriznane > 0 && riadok(t("galeria.cirhozyNepriznane"), nepriznane)}
+            {h.dlhy > 0 && riadok(t("pult.dlhy"), h.dlhy)}
+            {h.abstaky > 0 && riadok(t("pocitadlo.abstak"), h.abstaky)}
+            {vazni.length > 0 && riadok(t("tabula.vazni"), `${vazni.length}/${prahVaznov}`)}
+            {riadok(t("galeria.dedicstvo"), h.dedicstvo.length)}
             {moje ? (
               <>
-                {riadok("Balíček", h.doberaciPocet)}
-                {riadok("Odhodené", h.odhadzovaci.length)}
+                {riadok(t("galeria.balicek"), h.doberaciPocet)}
+                {riadok(t("galeria.odhodene"), h.odhadzovaci.length)}
                 {riadok(
-                  "Ďalší Nástroj",
-                  <span className="gk-cena" title="Cena ďalšieho Nástroja do Dedičstva, rastie pre oboch">
+                  t("galeria.dalsiNastroj"),
+                  <span className="gk-cena" title={t("galeria.cenaNastroja")}>
                     {view.cenaDedicstva}
                     <IkonaCigareta />
                   </span>,
                 )}
               </>
             ) : (
-              riadok("V ruke", h.rukaPocet)
+              riadok(t("galeria.vRuke"), h.rukaPocet)
             )}
           </div>
         </aside>
@@ -176,19 +177,19 @@ export function GaleriaKariet({ view, data, sada, hrac, moje, meno, avatar, sekc
         <div className="gk-stred" ref={stred}>
           <div className="gk-dvojica">
             <section data-sekcia="priznane">
-              {nadpis("Priznané kliatby", h.priznane.length, "natrvalo mimo balíčka")}
+              {nadpis(t("tabula.priznaneKliatby"), h.priznane.length, t("galeria.natrvalo"))}
               <div className="gk-dlazdice hlavne">{priznane.length === 0 ? nic : priznane.map(dlazdica)}</div>
             </section>
             <section data-sekcia="dedicstvo">
-              {nadpis("Dedičstvo · Náradie", h.dedicstvo.length)}
+              {nadpis(t("galeria.dedicstvoNaradie"), h.dedicstvo.length)}
               <div className="gk-dlazdice hlavne">{dedicstvo.length === 0 ? nic : dedicstvo.map(dlazdica)}</div>
             </section>
           </div>
           {pivnica.length > 0 && (
             <section data-sekcia="pivnica" data-vyucba="pivnica">
-              {nadpis("Pivnica · väzni", `${vazni.length}/${prahVaznov}`)}
+              {nadpis(t("galeria.pivnica"), `${vazni.length}/${prahVaznov}`)}
               <p className="popis">
-                Väzeň nedáva priazeň a ráta sa držiteľovi ako červený strach. {moje ? "Jeho Kšeft spustíš v Pitke za vypitý plný poldeci, raz za Pitku." : "Jeho Kšeft má len držiteľ."}
+                {t("galeria.vazenPopis")} {moje ? t("galeria.vazenKseftJa") : t("galeria.vazenKseftSu")}
               </p>
               <div className="gk-dlazdice hlavne">{pivnica.map(dlazdica)}</div>
             </section>
@@ -196,13 +197,13 @@ export function GaleriaKariet({ view, data, sada, hrac, moje, meno, avatar, sekc
           {moje && (
             <>
               <section data-sekcia="balicek">
-                {nadpis("Doberací balíček", h.doberaciPocet, "podľa typu, poradie je tajné")}
-                {h.doberaciPocet === 0 && <span className="popis">Balíček je prázdny — pri ďalšom ťahaní sa doň zamiešajú odhodené karty.</span>}
+                {nadpis(t("galeria.doberaci"), h.doberaciPocet, t("galeria.podlaTypu"))}
+                {h.doberaciPocet === 0 && <span className="popis">{t("galeria.prazdny")}</span>}
                 <div className="gk-skupiny">
                   {balicek.map((s) => (
                     <div key={s.nazov} className="gk-skupina">
                       <h4>
-                        {s.nazov} <b>{s.pocet}</b>
+                        {nazovSkupiny(s.nazov)} <b>{s.pocet}</b>
                       </h4>
                       <div className="gk-dlazdice">{s.karty.map(dlazdica)}</div>
                     </div>
@@ -210,7 +211,7 @@ export function GaleriaKariet({ view, data, sada, hrac, moje, meno, avatar, sekc
                 </div>
               </section>
               <section data-sekcia="odhodene">
-                {nadpis("Odhadzovací balíček", h.odhadzovaci.length, "keď sa minie doberací, zamieša sa doň")}
+                {nadpis(t("galeria.odhadzovaci"), h.odhadzovaci.length, t("galeria.zamiesaSa"))}
                 <div className="gk-dlazdice">{odhodene.length === 0 ? nic : odhodene.map(dlazdica)}</div>
               </section>
             </>
@@ -219,7 +220,7 @@ export function GaleriaKariet({ view, data, sada, hrac, moje, meno, avatar, sekc
 
         <div className="gk-detail" ref={detail} aria-live="polite">
           {vybrana === null || vzVybranej === null ? (
-            <span className="popis">Zatiaľ žiadne karty.</span>
+            <span className="popis">{t("galeria.ziadneKarty")}</span>
           ) : (
             <>
               {sirkaVelkej > 0 && velka(vybrana.karta, sirkaVelkej)}

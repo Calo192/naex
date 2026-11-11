@@ -1,9 +1,11 @@
 // Prechody fáz na stole (Michal 2026-10-27): línia starších zmizne, hneď ako prestane byť
 // aktuálna, a pri prechode do novej fázy sa ukáže medziobrazovka (nadpis a 1–2 vety).
 
-import { cigariet, KONSTANTY, opponentOf } from "@naex/core";
+import { KONSTANTY, opponentOf } from "@naex/core";
+import { cigariet } from "../i18n/pocty.ts";
 import type { ClientState, PlayerId } from "@naex/core";
-import { CENA_POLA } from "./textyStarsich.ts";
+import { cenaPola } from "./textyStarsich.ts";
+import { t } from "../i18n/jazyk.tsx";
 
 /**
  * Kľúč fázy stola: mení sa pri každom prechode, ktorý hráča posúva k ďalšej práci —
@@ -42,9 +44,9 @@ export function medziobrazovka(
   if (view.koniec !== null) return null;
   const S = menoSupera;
   // Vo finále sa kolo nepočíta — nad nadpisom stojí „Finále“.
-  const kolo = view.rozpis !== undefined && view.kolo > view.lokalitCelkom ? "Finále" : `Kolo ${view.kolo}`;
+  const kolo = view.rozpis !== undefined && view.kolo > view.lokalitCelkom ? t("faza.finale") : t("faza.kolo", { n: view.kolo });
   /** Poradie Zhromaždenia či Pitky v kole ide nad nadpis — dlhý nadpis by sa zalomil. */
-  const poradie = (n: number): string => (view.pitkyCelkom > 1 ? `${kolo} · ${n} z ${view.pitkyCelkom}` : kolo);
+  const poradie = (n: number): string => (view.pitkyCelkom > 1 ? `${kolo} · ${t("os.izN", { i: n, n: view.pitkyCelkom })}` : kolo);
   // Hádka (v10): jednorazové okno, keď víťaz hádky rozdeľuje — pred poškodením, ešte bez počítadla.
   const hd = view.bitkaStav?.hadka;
   if (bitkaKola === null && view.faza === "bitka" && view.bitkaStav?.krok === "hadka" && hd !== undefined && hd.vitaz !== null && hd.zostava > 0) {
@@ -52,27 +54,27 @@ export function medziobrazovka(
     return {
       kluc: `${view.kolo}|hadka`,
       nadnadpis: kolo,
-      nadpis: "Hádka",
+      nadpis: t("delenie.hadka"),
       text:
         hd.vitaz === ja
-          ? `Vyhral si hádku ${skore} — o ${hd.velkost}. Po bitke ju rozdelíš na svoje reči pri starších (${CENA_POLA}). Priazne sa nemenia.`
-          : `${S} vyhral hádku ${skore} — o ${hd.velkost} — a po bitke ju rozdelí na svoje reči pri starších. Priazne sa nemenia; teraz príde poškodenie.`,
+          ? t("prechod.hadkaJa", { skore, n: hd.velkost, cena: cenaPola() })
+          : t("prechod.hadkaSu", { meno: S, skore, n: hd.velkost }),
     };
   }
   if (bitkaKola !== null || (view.faza === "bitka" && view.bitkaStav?.krok !== "prebytok")) {
     return {
       kluc: `${bitkaKola ?? view.kolo}|bitka`,
-      nadnadpis: `Kolo ${bitkaKola ?? view.kolo}`,
-      nadpis: "Bitka",
-      text: "Najprv hádka: Pohoršenia a Povery sú mäkké poškodenie — kto ho má viac, vyhral hádku a po bitke ju rozdelí na svoje reči. Potom poškodenie: viac tuhého (Rana, Pecka, Petelica) vyhráva bitku a špaky, rozdiel tuhého je Nakladačka na strach víťaza.",
+      nadnadpis: t("faza.kolo", { n: bitkaKola ?? view.kolo }),
+      nadpis: t("faza.bitka"),
+      text: t("prechod.bitka"),
     };
   }
   const obranca = view.utocnik !== ja;
   // v11.11: minulú hádku vyhral útočník, takže lokalitu vyberá obranca a natáča útočník.
   const natacaUtocnik = view.vitazPoslednejHadky === view.utocnik;
-  const vyberas = natacaUtocnik ? "vyberáš" : "vyberáš a natáčaš";
-  const vybera = natacaUtocnik ? "vyberá" : "vyberá a natáča";
-  const ktoNataca = !natacaUtocnik ? "" : obranca ? ` Natočí ju ${S}, víťaz minulej hádky.` : " Natočíš ju ty, víťaz minulej hádky.";
+  const vyberas = natacaUtocnik ? t("prechod.vyberas") : t("prechod.vyberasNatacas");
+  const vybera = natacaUtocnik ? t("prechod.vybera") : t("prechod.vyberaNataca");
+  const ktoNataca = !natacaUtocnik ? "" : obranca ? t("plocha.natociSuper", { meno: S }) : t("prechod.natocisTy");
   switch (view.faza) {
     case "volbaCiela": {
       // Pred finále (§14b): vedúci vyberá vrcholovú lokalitu, útočí zaostávajúci. Okno Finále
@@ -81,81 +83,79 @@ export function medziobrazovka(
         const rovnako = view.spaky[0] === view.spaky[1];
         const kto = rovnako
           ? obranca
-            ? `Špakov máte rovnako, útočí ${S} — po prehre v poslednej bitke; ty ${vyberas} vrcholovú lokalitu.${ktoNataca}`
-            : `Špakov máte rovnako, útočíš ty — po prehre v poslednej bitke; ${S} ${vybera} vrcholovú lokalitu.${ktoNataca}`
+            ? t("prechod.rovnakoUtociSuper", { meno: S, vyberas, nataca: ktoNataca })
+            : t("prechod.rovnakoUtocisTy", { meno: S, vybera, nataca: ktoNataca })
           : obranca
-            ? `Vedieš, preto ${vyberas} vrcholovú lokalitu; ${S} má menej špakov a útočí.${ktoNataca}`
-            : `Máš menej špakov, preto útočíš; ${S} vedie a ${vybera} vrcholovú lokalitu.${ktoNataca}`;
+            ? t("prechod.vedies", { meno: S, vyberas, nataca: ktoNataca })
+            : t("prechod.menejSpakov", { meno: S, vybera, nataca: ktoNataca });
         return {
           kluc: `${view.kolo}|lokalita-finale`,
-          nadnadpis: "Posledná bitka",
-          nadpis: "Výber vrcholovej lokality",
+          nadnadpis: t("prechod.poslednaBitka"),
+          nadpis: t("prechod.vyberVrcholovej"),
           text: kto,
         };
       }
       return {
         kluc: `${view.kolo}|lokalita`,
         nadnadpis: kolo,
-        nadpis: "O čo sa bijeme",
+        nadpis: t("faza.volbaCiela"),
         text: obranca
             ? natacaUtocnik
-              ? `Vyber lokalitu, o ktorú sa v tomto kole bije.${ktoNataca}`
-              : "Vyber lokalitu, o ktorú sa v tomto kole bije, a natoč ju — natočenie určí, ktorá jej hrana pripadne ktorému kraju línie."
-            : `${S} ako obranca ${vybera} lokalitu.${ktoNataca} Ty útočíš: z ponuky berieš druhý, vykladáš prvý a na NA EX odpovedáš prvý.`,
+              ? t("prechod.vyberLokalitu", { nataca: ktoNataca })
+              : t("prechod.vyberANatoc")
+            : t("prechod.superObranca", { meno: S, vybera, nataca: ktoNataca }),
       };
     }
     case "natocenieCiela":
       return {
         kluc: `${view.kolo}|natocenie`,
         nadnadpis: kolo,
-        nadpis: "Natočenie lokality",
+        nadpis: t("faza.natocenieCiela"),
         text: !obranca
-          ? `Minulá hádka je tvoja, preto lokalitu natáčaš ty — natočenie určí, ktorá jej hrana pripadne ktorému kraju línie.`
-          : `Lokalita je vybraná. Natáča ju ${S}, víťaz minulej hádky.`,
+          ? t("prechod.natacasTy")
+          : t("prechod.natacaSuper", { meno: S }),
       };
     case "draft":
       // Finále sa ohlási až s vybranou vrcholovou lokalitou (návrh #32), namiesto šenku.
       if (view.ciel?.typ === "finale") {
         return {
           kluc: `${view.kolo}|finale`,
-          nadnadpis: "Posledná bitka",
-          nadpis: "Finále",
+          nadnadpis: t("prechod.poslednaBitka"),
+          nadpis: t("faza.finale"),
           text:
-            "Bije sa o vrcholovú lokalitu ako o každú inú: Pitiek je podľa spojov s lokalitou, víťaz dostane 1 špak za každú kartu v línii. " +
-            "Nakladačka ani hádka sa nerozdeľujú — víťaz ich dostane v špakoch; starší po finále bodujú ako po každej bitke.",
+            t("prechod.finale"),
         };
       }
       return {
         kluc: `${view.kolo}|senok`,
         nadnadpis: kolo,
-        nadpis: "Ponuka",
+        nadpis: t("faza.draft"),
         text:
-          `Každý dostane ${KONSTANTY.STAVBA_NARADIE} karty z balíčka nástrojov a ${KONSTANTY.STAVBA_OBCANIA} z balíčka dedinčanov a tajne ich rozdelí: polovica pôjde do ponuky, polovica naspodok. ` +
-          `Potom beriete z ponuky striedavo, začína obranca (na prvom ťahu len 1 kartu) — 1 karta za ${cigariet(KONSTANTY.CENA_SENKU[1] ?? 1)}, 2 karty za ${cigariet(KONSTANTY.CENA_SENKU[2] ?? 3)}.`,
+          t("prechod.ponuka", { naradie: KONSTANTY.STAVBA_NARADIE, obcania: KONSTANTY.STAVBA_OBCANIA, jedna: cigariet(KONSTANTY.CENA_SENKU[1] ?? 1), dve: cigariet(KONSTANTY.CENA_SENKU[2] ?? 3) }),
       };
     case "zhromazdenie": {
       const n = view.pitkaCislo + 1;
       return {
         kluc: `${view.kolo}|zhromazdenie|${n}`,
         nadnadpis: poradie(n),
-        nadpis: "Zhromaždenie — kladenie kariet",
+        nadpis: t("os.zhromazdenie"),
         text:
-          (obranca ? `${S} vykladá prvý, potom sa striedate.` : "Vykladáš prvý, potom sa so súperom striedate.") +
-          " Kladieš karty z ruky k lokalite tak, aby sa ich akcie spojili; keď už nechceš, pasuj — za každú kartu, ktorú si ešte smel vyložiť, dostaneš cigaretu.",
+          (obranca ? t("prechod.superVykladaPrvy", { meno: S }) : t("prechod.vykladasPrvy")) +
+          t("prechod.kladies"),
       };
     }
     case "pitka":
       return {
         kluc: `${view.kolo}|pitka|${view.pitkaCislo}`,
         nadnadpis: poradie(view.pitkaCislo),
-        nadpis: "Pitka",
+        nadpis: t("faza.pitka"),
         // Pitka naraz (Michal 2026-10-27): hrajú obaja súčasne, len Bzdocha čaká na súpera.
         text:
           view.pitkaStav?.bzdocha === ja
-            ? `Máš Bzdochu: počkáš, kým ${S} skončí Pitku, potom hráš a vidíš jeho NA EX.`
-            : `Hráte obaja naraz: fajči, dolievaj a skryto vyber NA EX, potom „Skončiť Pitku“. ${
-                view.pitkaStav?.bzdocha != null ? `${S} má Bzdochu — hrá až po tebe a uvidí tvoje NA EX.` : "NA EX sa odkryjú, keď skončíte obaja"
-              }${view.pitkaStav?.bzdocha != null ? "" : obranca ? ` — ${S} na ne odpovie prvý lícom dole, ty potom na druhý kraj; otočia sa naraz.` : " — na ne odpovieš prvý lícom dole, súper potom na druhý kraj; otočia sa naraz."}`,
+            ? t("prechod.masBzdochu", { meno: S })
+            : `${t("prechod.hrateNaraz")} ${
+                view.pitkaStav?.bzdocha != null ? t("prechod.superMaBzdochu", { meno: S }) : t("prechod.odkryjuSa")
+              }${view.pitkaStav?.bzdocha != null ? "" : obranca ? t("prechod.superOdpovie", { meno: S }) : t("prechod.odpoviesPrvy")}`,
       };
     case "bitka": {
       // v11: Nakladačku rozdeľuje víťaz bitky na svoj strach (vo finále sa nerozdeľuje).
@@ -164,10 +164,10 @@ export function medziobrazovka(
       const text =
         drzi === ja
           ? vyberam
-            ? `Vyhral si bitku. Rozdeľ Nakladačku na svoj strach — klikni na stupeň v teplomeri pri staršom (${CENA_POLA}); staršieho na červenom strachu smieš za ${KONSTANTY.CENA_ZAJATIA} zajať. Čo už nikam nestačí, prepadne.`
-            : "Vyhral si bitku — Nakladačka ide na tvoj strach."
-          : `${S} vyhral bitku a rozdeľuje Nakladačku na svoj strach — starší sa ho začnú báť viac a priazeň sa posunie k tebe.`;
-      return { kluc: `${view.kolo}|Nakladačka`, nadnadpis: kolo, nadpis: "Nakladačka", text };
+            ? t("prechod.rozdelNakladacku", { cena: cenaPola(), zajatie: KONSTANTY.CENA_ZAJATIA })
+            : t("prechod.nakladackaTvoja")
+          : t("prechod.superRozdeluje", { meno: S });
+      return { kluc: `${view.kolo}|Nakladačka`, nadnadpis: kolo, nadpis: t("delenie.nakladacka"), text };
     }
     default:
       return null;
