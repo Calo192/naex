@@ -1,7 +1,10 @@
 // Pečiatka NA EX! cez ilustráciu karty, na ktorej leží poldeci (Michal 2026-11-09: „chcem, aby mala
 // cez seba pečiatku“) — vzhľad tlačidla NA EX! v Pitke. Pod nápisom kto ho dal vo farbe hráča. Kreslí
 // sa len to, čo pohľad hráča nesie (naexBy, vlastné či cez Bzdochu viditeľné skryté NA EX).
+// Ostatné stavy karty v línii (Vzbura, Výtržník, Forsáž…) sú pečiatky v tom istom jazyku, nie nápis
+// nad kartou (Michal 2026-11-11: „nech to majú cez karty nalepené pečiatkou podobne ako NA EX“).
 
+import type { ReactNode } from "react";
 import type { PlayerId } from "@naex/core";
 import { opponentOf } from "@naex/core";
 
@@ -38,6 +41,45 @@ export function PeciatkaNaex({ naex }: { readonly naex: NaexNaKarte }) {
     <span className={`naex-peciatka naex-peciatka-${naex.od}${naex.skryto === true ? " naex-peciatka-skryto" : ""}`} role="img" aria-label={`NA EX — ${kto}`}>
       <span className="naex-peciatka-text">NA EX!</span>
       <span className="naex-peciatka-kto">{kto}</span>
+    </span>
+  );
+}
+
+/** Stav karty v línii kreslený pečiatkou; druh určuje farbu (hra.css .stav-peciatka-<druh>). */
+export type DruhStavu = "vytrznik" | "vzbura" | "forsaz" | "zahasene" | "posilnene" | "zaverecna" | "odpoved";
+
+export interface StavNaKarte {
+  readonly druh: DruhStavu;
+  /** Krátke slovo veľkými písmenami („VZBURA!“). */
+  readonly text: string;
+  /** Malý riadok pod slovom (komu sú Rany, lícom dole…). */
+  readonly pod?: string | undefined;
+  /** Vysvetlenie stavu — title pečiatky. */
+  readonly titul: string;
+}
+
+export function PeciatkaStavu({ stav }: { readonly stav: StavNaKarte }) {
+  return (
+    <span className={`naex-peciatka stav-peciatka stav-peciatka-${stav.druh}`} role="img" aria-label={stav.pod === undefined ? stav.text : `${stav.text} — ${stav.pod}`} title={stav.titul}>
+      <span className="naex-peciatka-text">{stav.text}</span>
+      {stav.pod !== undefined && <span className="naex-peciatka-kto">{stav.pod}</span>}
+    </span>
+  );
+}
+
+/**
+ * Všetky pečiatky karty cez ilustráciu: NA EX navrchu, pod ním stavy. Viac pečiatok sa zmenší
+ * a striedavo nakloní, aby sa neprekryli (hra.css .peciatky-karty).
+ */
+export function PeciatkyKarty({ naex, stavy }: { readonly naex?: NaexNaKarte | undefined; readonly stavy: readonly StavNaKarte[] }): ReactNode {
+  const n = (naex === undefined ? 0 : 1) + stavy.length;
+  if (n === 0) return undefined;
+  return (
+    <span className={`peciatky-karty peciatky-${Math.min(n, 3)}`}>
+      {naex !== undefined && <PeciatkaNaex naex={naex} />}
+      {stavy.map((s) => (
+        <PeciatkaStavu key={s.druh} stav={s} />
+      ))}
     </span>
   );
 }

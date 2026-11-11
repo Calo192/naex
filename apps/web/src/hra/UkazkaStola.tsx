@@ -65,6 +65,9 @@
 //                  pečiatky nad súhrnom; inak padajú momenty, ktoré vyberie jadro ako na serveri
 //   &exekutor=1    hráčovi ?ja v prvej Pitke pridá 10 priznaných Dlhov (bar ukáže exekúciu v bitke)
 //                  (voľba Záhradkára pri exekúcii)
+//   &stop=stavy    Pitka, línia s pečiatkami stavov (Michal 2026-11-11): u hráča ?ja Vzbura (Vidly), Výtržník
+//                  (Injekcia) a Záverečná so súperovým NA EX; u súpera zrážka NA EX (NA EX + Výtržník), Forsáž (Energeťák)
+//                  a NA EX so Vzburou; sada dostane hrany Nástrojov ako pri stop=naradie — snímky s &bot=0
 //   &stop=autopas  ťah, po ktorom hra za hráča ?ja pasuje (nemá čo vyložiť) a súper vykladá ďalej —
 //                  po načítaní sa dohrá, stôl ukáže okno „Pasuješ“ s dôvodmi (&i=k: k-tý taký, od 0);
 //                  &kto=super: pasuje súper — hráč ?ja vidí pečiatku „nemá čo vyložiť“
@@ -263,6 +266,30 @@ function sBzdochou(data: GameData, s: GameState, p: PlayerId, caka = false): Gam
   const hotovy: [boolean, boolean] = [pitka.hotovy[0], pitka.hotovy[1]];
   hotovy[su] = true;
   return { ...t, pitkaStav: { ...pitka, naTahu: p, bzdocha: p, hotovy, skryteNaex: [...(pitka.skryteNaex ?? []), { hrac: su, uid: ciel }] } };
+}
+
+/**
+ * Línia so všetkými pečiatkami stavov naraz (stop=stavy): Nástroje s kartovou hranou hore dajú
+ * Vzburu (Vidly), Výtržníka (Injekcia) a Forsáž (Energeťák) bez hľadania spojov, ktoré by ich dali.
+ */
+function sPeciatkamiStavov(s: GameState, p: PlayerId): GameState {
+  let uid = s.nextUid;
+  const su = opponentOf(p);
+  const k = (defId: string): CardInstance => ({ uid: uid++, defId, leftLayout: 0, rightLayout: 0 });
+  const pod = (defId: string, majitel: PlayerId) => [{ card: k(defId), majitel, hrana: "horna" as const }];
+  const strany: [GameState["strany"][0], GameState["strany"][1]] = [[], []];
+  strany[p] = [
+    { card: k("pijan"), playedBy: p, podlozene: pod("vidly", p) },
+    { card: k("masiar"), playedBy: p, podlozene: pod("lievik", p) },
+    // Záverečná na kraji so súperovým NA EX — tri pečiatky na jednej karte.
+    { card: k("policajtka"), playedBy: p, naexBy: su, zaverecna: true },
+  ];
+  strany[su] = [
+    { card: k("stryko_z_ameriky"), playedBy: su, naexBy: p, naexBy2: su, vytrznik: true },
+    { card: k("pijan"), playedBy: su, podlozene: pod("energetak", su) },
+    { card: k("vandal"), playedBy: su, naexBy: p, podlozene: pod("vidly", su) },
+  ];
+  return { ...s, nextUid: uid, strany };
 }
 
 /** Hráčovi p dá do ruky Nástroj a cigarety aspoň na Dedičstvo — stôl ukáže voľbu „odkazujem“. */
@@ -595,6 +622,8 @@ function odohrajSeed(data: GameData, seed: number): { readonly odohrane: Odohran
       return najdene({ zaciatok: s, dohraj: [] });
     if (stop === "pitka" && s.kolo >= 2 && s.faza === "pitka" && mozeHrat(s, ja) && s.pitkaStav?.hotovy[opponentOf(ja)] === false && s.pitkaStav.reakcia === null && s.vizia === null && s.hraci[ja].cigarety >= 1)
       return najdene({ zaciatok: s, dohraj: [] });
+    if (stop === "stavy" && s.faza === "pitka" && s.pitkaStav?.reakcia === null && s.vizia === null)
+      return najdene({ zaciatok: sPeciatkamiStavov(s, ja), dohraj: [] });
     if (stop === "odpoved" && s.faza === "pitka" && s.vizia === null && s.pitkaStav?.reakcia === ja)
       return najdene({ zaciatok: s, dohraj: [] });
     if (stop === "kseft" && s.faza === "pitka" && s.ciel?.lokalita != null && mozeHrat(s, ja) && s.pitkaStav?.reakcia === null && !s.pitkaStav.hotovy[ja] && s.vizia === null) {
@@ -744,7 +773,7 @@ export function UkazkaStola() {
         ? sada
         : q().get("stop") === "skryte"
           ? sadaSoSkrytymiAkciami(sada)
-          : q().get("stop") === "naradie"
+          : q().get("stop") === "naradie" || q().get("stop") === "stavy"
             ? sadaSNaradim(sada)
             : q().get("senok") !== null
               ? sadaSPodporouSenku(sada)

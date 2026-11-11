@@ -3714,7 +3714,7 @@ button.pecat-potvrd:disabled::after {
   pointer-events: none;
 }
 
-/* Výtržník v línii: štítok nad kartou; výber pre NA EX: nápis pod kartou (Michal 2026-10-21). */
+/* NA EX nad kartou v počítadle bitky; výber pre NA EX: nápis pod kartou (Michal 2026-10-21). */
 .naex-nad {
   position: absolute;
   top: -13px;
@@ -3742,21 +3742,107 @@ button.pecat-potvrd:disabled::after {
 }
 
 /* Výtržník (zrážka NA EX): na prvý pohľad iná karta — červený okraj a pečiatka. */
-.naex-nad.vytrznik-stitok {
-  background: var(--cervena);
-  border-color: var(--cervena-svetla);
-  text-transform: uppercase;
-}
-
 .s-lupou.vytrznik .kl {
   outline: 3px solid var(--cervena);
   outline-offset: 1px;
 }
 
-.kl-odznaky > .odznak-vytrznik {
+/* Pečiatky stavov karty v línii (Michal 2026-11-11: „cez karty nalepené pečiatkou podobne ako NA EX“) —
+   tvar NA EX!, farba podľa stavu. Ležia pod akciami (.kl-peciatka), ikony ostanú čitateľné. Titulok
+   s vysvetlením chce myš, preto pečiatka stavu zachytáva hover (klik prejde na kartu). */
+.stav-peciatka {
+  border-color: var(--okraj-p);
+  color: var(--text-p);
+  background: var(--pozadie-p);
+  box-shadow:
+    0 0.08em 0 rgb(0 0 0 / 0.45),
+    0 0 0 0.12em color-mix(in srgb, var(--okraj-p) 22%, transparent),
+    0 0.25em 0.6em rgba(0, 0, 0, 0.55);
+  pointer-events: auto;
+  cursor: help;
+}
+
+.stav-peciatka::after {
+  border-color: color-mix(in srgb, var(--text-p) 45%, transparent);
+}
+
+/* Pod slovom býva „Rany pre <meno>“ — dlhšie ako meno pri NA EX. */
+.stav-peciatka .naex-peciatka-kto {
+  max-width: 13.5em;
+  color: var(--text-p);
+  background: rgb(0 0 0 / 0.35);
+}
+
+/* Výtržník: červený ako NA EX, ale tmavý — na karte so zrážkou sa od NA EX! odlíši na prvý pohľad. */
+.stav-peciatka-vytrznik {
+  --okraj-p: var(--cervena);
+  --text-p: #ffb5a6;
+  --pozadie-p: color-mix(in srgb, var(--cervena) 24%, rgb(10 6 5 / 0.92));
+}
+
+.stav-peciatka-vytrznik .naex-peciatka-kto {
+  color: #fff4e2;
   background: var(--cervena);
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
+}
+
+.stav-peciatka-vzbura {
+  --okraj-p: var(--akcent-svetly);
+  --text-p: var(--na-akcente);
+  --pozadie-p: color-mix(in srgb, var(--akcent) 92%, transparent);
+}
+
+.stav-peciatka-forsaz {
+  --okraj-p: var(--info-silna);
+  --text-p: #e6f4ff;
+  --pozadie-p: color-mix(in srgb, var(--info-silna) 42%, rgb(4 10 16 / 0.92));
+}
+
+.stav-peciatka-posilnene {
+  --okraj-p: var(--zelena);
+  --text-p: #e6fbe2;
+  --pozadie-p: color-mix(in srgb, var(--zelena) 34%, rgb(4 10 4 / 0.92));
+}
+
+/* Zahasené NA EX: popol — NA EX leží, ale karta sa ráta ako bez neho. */
+.stav-peciatka-zahasene {
+  --okraj-p: var(--slaby);
+  --text-p: #ddd3c4;
+  --pozadie-p: color-mix(in srgb, var(--slaby) 30%, rgb(8 7 6 / 0.9));
+}
+
+/* Záverečná a odpoveď lícom dole: farby štítku Záverečnej, čiarkovaný okraj ako skryté NA EX. */
+.stav-peciatka-zaverecna,
+.stav-peciatka-odpoved {
+  --okraj-p: var(--akcent);
+  --text-p: var(--akcent-svetly);
+  --pozadie-p: color-mix(in srgb, var(--plocha-2) 90%, transparent);
+  border-style: dashed;
+}
+
+/* Slovo stavu je dlhšie ako NA EX! — menšie, aby sa zmestilo medzi akcie na okrajoch ilustrácie. */
+.peciatky-karty > .stav-peciatka {
+  font-size: 0.74em;
+}
+
+/* Viac pečiatok na jednej karte (NA EX + Výtržník…): pod sebou, menšie a každá druhá naklonená
+   na opačnú stranu — okraje sa nekrížia cez nápisy. */
+.peciatky-karty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.16em;
+}
+
+.peciatky-2 {
+  font-size: 0.78em;
+}
+
+.peciatky-3 {
+  font-size: 0.62em;
+}
+
+.peciatky-karty > :nth-child(2n) {
+  rotate: 7deg;
 }
 
 /* Na karte už NA EX je — štítok „NA EX“ (dá sa dať) by sa s ním prekrýval. */
@@ -4746,25 +4832,6 @@ button.auto-hotovo-odkaz {
 .rub-text small {
   font: 500 0.66rem/1.2 var(--pismo);
   color: var(--tlmeny);
-}
-
-.zaverecna-stitok {
-  position: absolute;
-  left: 50%;
-  top: -10px;
-  z-index: 2;
-  translate: -50% 0;
-  padding: 1px 8px;
-  border-radius: 999px;
-  border: 1px solid var(--akcent);
-  background: var(--plocha-2);
-  color: var(--akcent-svetly);
-  font: 700 0.66rem/1.4 var(--pismo);
-  white-space: nowrap;
-}
-
-.naex-nad ~ .zaverecna-stitok {
-  top: -34px;
 }
 
 /*
