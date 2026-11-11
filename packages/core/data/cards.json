@@ -1,5 +1,5 @@
 {
- "source": "rozpracovaný stav tvorcu Vypálenej nad sadou v52 (záloha 2026-11-11T09:45Z), bez karty Dlh; pravidlá v11.22: Traktorista, Pasca, Výherný automat, Kapybara, Predavačka (Michal 2026-11-11)",
+ "source": "rozpracovaný stav tvorcu Vypálenej nad sadou v53 (záloha 2026-11-11T14:33), bez karty Dlh; pravidlá v12.1: Hrable — aktívny Odpor dáva poškodenie ako Pecka (Michal 2026-11-11)",
  "actions": [
   "Cigareta",
   "Dlh",
@@ -3615,7 +3615,7 @@
    "tags": [
     "Nástroj"
    ],
-   "effect_text": "Dedičstvo: Akcia zrušená tvojím Odporom sa ráta ako tvoja a je posilnená. Hore: {Odpor}→{Posilnenie}. Dole: {Posilnenie}→{Odpor}.",
+   "effect_text": "Dedičstvo: Tvoj aktívny Odpor dáva v bitke poškodenie ako Pecka. Hore: {Odpor}→{Posilnenie}. Dole: {Posilnenie}→{Odpor}.",
    "triggers": [
     "Dedičstvo"
    ],

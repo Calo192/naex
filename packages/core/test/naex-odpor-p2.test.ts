@@ -1,14 +1,16 @@
 // NA EX × Odpor × Posilnenie (v11.17, Michal 2026-11-09 „Teraz sú to čisto mŕtve akcie pri NA EX.“;
-// docs/napady/naex-odpor-posilnenie.html, P2 „Poldeci ako partner“ v miernejšej podobe):
-//  - Odpor zrušený cez NA EX pustí partnera — akcia, ktorú rušil, ožije ×1 (§7),
-//  - neaktívny Odpor pod NA EX je štít: NA EX zahasí, karta je ako bez neho,
+// docs/napady/naex-odpor-posilnenie.html, P2 „Poldeci ako partner“ v miernejšej podobe) a Odpor v12.1
+// (Michal 2026-11-11: „Odpor bude aktívny LEN vtedy, keď nie je spojený s inou akciou, a bude dávať
+// ‚NA EX‘ štít ako dáva teraz.“):
+//  - Odpor na spoji ruší partnera a deaktivuje sa; NA EX ho nechá tak (partner ostáva zrušený),
+//  - aktívny (nespárovaný) Odpor je štít: na kartu NA EX nejde, skryté či z Vínka zahasí,
 //  - neaktívne Posilnenie pod NA EX: NA EX nezruší aktívne akcie karty, neaktívne zdvojí,
-//  - na kartu s neaktívnym Odporom NA EX nejde a neaktívne Posilnenie sa do „neaktívnej“ neráta.
+//  - do podmienky NA EX sa Odpor neráta, neaktívny Pakt aj Posilnenie áno.
 // Očakávané hodnoty sú z textu §7.
 
 import { describe, expect, it } from "vitest";
 import type { CardDef, CardInstance, GameData, LineEval, LineState, PlacedCard, PlayerId } from "../src/index.ts";
-import { evaluateLine, naexCieleVLinii, ucinokNaex } from "../src/index.ts";
+import { dovodyBezNaex, evaluateLine, naexCieleVLinii, ucinokNaex } from "../src/index.ts";
 import type { Layout4 } from "./helpers.ts";
 import { EMPTY, instanceFor, makeDef, syntheticData } from "./helpers.ts";
 
@@ -57,49 +59,44 @@ const linia = (...karty: PlacedCard[]): LineState => ({ lokalita: null, lokalita
 const ev = (line: LineState): LineEval => evaluateLine(sada, line);
 const slot = (e: LineEval, uid: number, strana: "left" | "right", i: number) => e.cards.get(uid)?.[strana][i];
 
-describe("§7 Odpor zrušený cez NA EX pustí partnera (v11.17)", () => {
-  it("akcia, ktorú Odpor rušil, ožije ×1; NA EX karte zruší Pecku a zdvojí Vieru", () => {
+describe("§7 NA EX nechá Odpor na spoji tak (v12.1, Michal 2026-11-11)", () => {
+  it("akcia, ktorú Odpor ruší, ostáva zrušená; NA EX karte zruší Pecku a zdvojí Vieru", () => {
     const o = k("odporca");
     const b = k("obet");
     const bez = ev(linia(lezi(o), lezi(b)));
     expect(bez.sums[0]).toEqual({ Pecka: 1, Rana: 1 });
     expect(slot(bez, b.uid, "left", 0)).toMatchObject({ stav: "zrusena" });
+    // Odpor na spoji sa deaktivuje — zhasne ako zrušený (aj bez NA EX).
+    expect(slot(bez, o.uid, "right", 0)).toMatchObject({ action: "Odpor", stav: "zrusena", nasobok: 0 });
     const s = ev(linia(lezi(o, 1), lezi(b)));
-    expect(slot(s, b.uid, "left", 0)).toMatchObject({ action: "Rana", stav: "aktivna", nasobok: 1 });
+    expect(slot(s, b.uid, "left", 0)).toMatchObject({ action: "Rana", stav: "zrusena" });
     expect(slot(s, o.uid, "right", 0)).toMatchObject({ action: "Odpor", stav: "zrusena" });
-    expect(s.sums[0]).toEqual({ Rana: 2, Viera: 2 });
-    // Oživená akcia už nie je „zrušená Odporom“ — rozpis zrušených ju neukazuje.
-    expect(s.zrusene[0].Rana ?? []).toEqual([]);
+    expect(s.sums[0]).toEqual({ Rana: 1, Viera: 2 });
+    expect(s.zrusene[0].Rana?.map((z) => z.dovody)).toEqual([["Odpor"]]);
   });
 
-  it("Hrable: zrušená akcia, ktorú Hrable kradli, sa po NA EX vráti majiteľovi ×1", () => {
+  it("Hrable: Odpor na spoji Pecku nedá ani po NA EX (v12.1)", () => {
     const o = k("odporca");
     const b = k("obet");
     const nastroje = [["hrable"], []] as const;
-    const bez = ev({ ...linia(lezi(o), lezi(b)), nastroje });
-    // Rana ukradnutá Hrabľami ×2 + druhá Rana obete.
-    expect(bez.sums[0].Rana).toBe(3);
-    const s = ev({ ...linia(lezi(o, 1), lezi(b)), nastroje });
-    expect(s.sums[0].Rana).toBe(2);
-    expect(s.zdroje[0].Rana?.every((z) => !z.dovody.includes("karta:hrable"))).toBe(true);
+    expect(ev({ ...linia(lezi(o), lezi(b)), nastroje }).sums[0]).toEqual({ Pecka: 1, Rana: 1 });
+    expect(ev({ ...linia(lezi(o, 1), lezi(b)), nastroje }).sums[0]).toEqual({ Rana: 1, Viera: 2 });
   });
 
-  it("partner pod Vzburou ožije ako spojený, teda neaktívny", () => {
+  it("partner pod Vzburou ostáva zrušený", () => {
     const o = k("odporca");
     const b = k("obet_vzbura");
-    const bez = ev(linia(lezi(o), lezi(b), lezi(k("odpor3"))));
-    expect(bez.cards.get(b.uid)?.vzbura).toBe(true);
-    expect(slot(bez, b.uid, "left", 0)).toMatchObject({ stav: "zrusena" });
     const s = ev(linia(lezi(o, 1), lezi(b), lezi(k("odpor3"))));
-    expect(slot(s, b.uid, "left", 0)).toMatchObject({ stav: "neaktivna", nasobok: 0 });
+    expect(s.cards.get(b.uid)?.vzbura).toBe(true);
+    expect(slot(s, b.uid, "left", 0)).toMatchObject({ stav: "zrusena" });
   });
 
-  it("partner s vlastným NA EX: ožije a jeho NA EX ho zruší", () => {
+  it("partner s vlastným NA EX: zrušená akcia ostáva zrušená Odporom, druhú zruší jeho NA EX", () => {
     const o = k("odporca");
     const b = k("obet");
     const s = ev(linia(lezi(o, 1), lezi(b, 1)));
     expect(slot(s, b.uid, "left", 0)).toMatchObject({ stav: "zrusena", nasobok: 0 });
-    expect(s.zrusene[0].Rana?.map((z) => z.dovody)).toEqual([["NA EX"], ["NA EX"]]);
+    expect(s.zrusene[0].Rana?.map((z) => z.dovody)).toEqual([["Odpor"], ["NA EX"]]);
   });
 
   it("súperov Odpor na akcii karty s NA EX: bez NA EX na karte s Odporom akcia ostáva zrušená", () => {
@@ -110,20 +107,16 @@ describe("§7 Odpor zrušený cez NA EX pustí partnera (v11.17)", () => {
     expect(s.zrusene[0].Rana?.map((z) => z.dovody)).toEqual([["Odpor"], ["NA EX"]]);
   });
 
-  it("Energeťák chráni Posilnenie, Odpor nie; Zapaľovač podrží Cigaretu a Odpor aj tak zruší", () => {
-    const o = k("odporca");
-    const b = k("obet");
-    const e = ev({ ...linia(lezi(o, 1), lezi(b)), nastroje: [["energetak"], []] });
-    expect(slot(e, b.uid, "left", 0)).toMatchObject({ stav: "aktivna", nasobok: 1 });
+  it("Zapaľovač podrží Cigaretu; Odpor ruší ďalej", () => {
     const z = k("zap");
     const b2 = k("obet");
     const s = ev({ ...linia(lezi(z, 1), lezi(b2)), nastroje: [["zapalovac"], []] });
     expect(slot(s, z.uid, "right", 1)).toMatchObject({ action: "Cigareta", stav: "aktivna", nasobok: 1 });
-    expect(slot(s, b2.uid, "left", 0)).toMatchObject({ action: "Rana", stav: "aktivna", nasobok: 1 });
-    expect(s.sums[0]).toEqual({ Cigareta: 1, Rana: 2, Viera: 2 });
+    expect(slot(s, b2.uid, "left", 0)).toMatchObject({ action: "Rana", stav: "zrusena" });
+    expect(s.sums[0]).toEqual({ Cigareta: 1, Rana: 1, Viera: 2 });
   });
 
-  it("Veterán: NA EX mu Odpor nezruší (zdvojí ho naprázdno) — partner ostáva zrušený, Pecka ×2", () => {
+  it("Veterán: partner ostáva zrušený, Pecka ×2", () => {
     const v = k("veteran");
     const b = k("obet");
     const s = ev(linia(lezi(v, 1), lezi(b)));
@@ -131,16 +124,16 @@ describe("§7 Odpor zrušený cez NA EX pustí partnera (v11.17)", () => {
     expect(s.sums[0]).toEqual({ Pecka: 2, Rana: 1 });
   });
 
-  it("hrana lokality zrušená Odporom karty ožije — aktivuje Pitku", () => {
+  it("hrana lokality zrušená Odporom karty ostáva zrušená aj po NA EX", () => {
     const lok = instanceFor(sada, "lok", ["Rana", "Rana", null, null], EMPTY);
     const o = k("odporca");
     // Hráč 0 pri lokalite: pravá hrana karty stretne ľavú hranu lokality.
     const line = (naexBy?: PlayerId): LineState => ({ lokalita: lok, lokalitaOtocena: false, strany: [[lezi(o, naexBy)], []] });
     expect(ev(line()).aktivneStredu[0]).toBe(1);
-    expect(ev(line(1)).aktivneStredu[0]).toBe(2);
+    expect(ev(line(1)).aktivneStredu[0]).toBe(1);
   });
 
-  it("Vzbura, ktorá vznikla až po výbere: NA EX zruší Odpory spoja, Vzbura ostáva, nič neožije", () => {
+  it("Vzbura, ktorá vznikla až po výbere: Odpory spoja zhasnú, Vzbura ostáva", () => {
     const v = k("vzbura_po");
     const o = k("odpor_vl");
     const s = ev(linia(lezi(v, 1), lezi(o)));
@@ -153,7 +146,7 @@ describe("§7 Odpor zrušený cez NA EX pustí partnera (v11.17)", () => {
   });
 });
 
-describe("§7 neaktívny Odpor pod NA EX je štít (v11.17)", () => {
+describe("§7 aktívny (nespárovaný) Odpor pod NA EX je štít (v11.17, v12.1)", () => {
   it("NA EX zhasne: karta sa ráta ako bez neho a vyhodnotenie nesie naexStit", () => {
     const st = k("stit");
     const bez = ev(linia(lezi(st), lezi(k("sused_l"))));
@@ -165,10 +158,12 @@ describe("§7 neaktívny Odpor pod NA EX je štít (v11.17)", () => {
     expect(sNaex.cards.get(st.uid)?.right).toEqual(bez.cards.get(st.uid)?.right);
   });
 
-  it("na kartu so štítom NA EX nejde; bez Odporu áno", () => {
+  it("na kartu so štítom NA EX nejde — Odpor ju chráni; bez Odporu áno", () => {
     const st = k("stit");
     const bs = k("bez_stitu");
     expect(naexCieleVLinii(sada, linia(lezi(st), lezi(k("sused_l"))), 0)).toEqual([]);
+    expect(dovodyBezNaex(sada, linia(lezi(st), lezi(k("sused_l")))).get(st.uid)).toBe("odpor");
+    expect(slot(ev(linia(lezi(st), lezi(k("sused_l")))), st.uid, "left", 0)).toMatchObject({ action: "Odpor", stav: "aktivna" });
     expect(naexCieleVLinii(sada, linia(lezi(bs), lezi(k("sused_l"))), 0)).toEqual([bs.uid]);
   });
 
@@ -185,12 +180,12 @@ describe("§7 neaktívny Odpor pod NA EX je štít (v11.17)", () => {
     const s = ev(linia(lezi(st, undefined, { podlozene: vinko }), lezi(k("sused_l"))));
     expect(s.cards.get(st.uid)?.naexStit).toBe("Odpor");
     expect(s.sums[0]).toEqual({ Rana: 1, Pecka: 1 });
-    // Karta priložená k vonkajšej hrane Odpor spáruje (zruší jej Pecku) — štít padne: NA EX zruší Odpor
-    // (Pecka ožije) aj Ranu a zdvojí Vieru.
+    // Karta priložená k vonkajšej hrane Odpor spáruje (zruší jej Pecku) — štít padne: NA EX nechá Odpor
+    // tak (Pecka ostáva zrušená), zruší Ranu a zdvojí Vieru (v12.1).
     const su = k("sused");
     const spar = ev(linia(lezi(su), lezi(st, 1), lezi(k("sused_l"))));
     expect(spar.cards.get(st.uid)?.naexStit).toBeUndefined();
-    expect(slot(spar, su.uid, "right", 0)).toMatchObject({ action: "Pecka", stav: "aktivna", nasobok: 1 });
+    expect(slot(spar, su.uid, "right", 0)).toMatchObject({ action: "Pecka", stav: "zrusena" });
     expect(slot(spar, st.uid, "right", 0)).toMatchObject({ action: "Rana", stav: "zrusena" });
     expect(slot(spar, st.uid, "right", 1)).toMatchObject({ action: "Viera", stav: "aktivna", nasobok: 2 });
   });
@@ -234,20 +229,20 @@ describe("§7 neaktívne Posilnenie pod NA EX: aktívne akcie nezruší (v11.17,
     expect(s.sums[0]).toEqual({ Pecka: 2, Viera: 2 });
   });
 
-  it("výber: neaktívne Posilnenie sa do „neaktívnej“ neráta — sama by NA EX nič nezmenilo", () => {
+  it("výber: neaktívne Posilnenie sa do „neaktívnej“ ráta (v12.1, Michal 2026-11-11: „Áno, aj Posilnenie“)", () => {
     const len = k("posil_len");
     const p = k("posil");
-    expect(naexCieleVLinii(sada, linia(lezi(len), lezi(k("sused_l"))), 0)).toEqual([]);
+    expect(naexCieleVLinii(sada, linia(lezi(len), lezi(k("sused_l"))), 0)).toEqual([len.uid]);
     expect(naexCieleVLinii(sada, linia(lezi(p), lezi(k("sused_l"))), 0)).toEqual([p.uid]);
   });
 
-  it("výber: karta, ktorej jediná aktívna akcia je Odpor, je cieľ — NA EX partnera pustí", () => {
+  it("výber: Odpor na spoji sa do podmienky neráta — karta bez inej aktívnej akcie nie je cieľ", () => {
     // odpor_l: Odpor proti Pecke suseda, Rana bez partnera.
     const o = k("odpor_l");
     const sl = k("sused_l");
     const line = linia(lezi(o), lezi(sl));
-    expect(naexCieleVLinii(sada, line, 0)).toEqual([o.uid]);
+    expect(naexCieleVLinii(sada, line, 0)).toEqual([]);
+    expect(dovodyBezNaex(sada, line).get(o.uid)).toBe("bezAktivnej");
     expect(slot(ev(line), sl.uid, "left", 0)).toMatchObject({ stav: "zrusena" });
-    expect(slot(ev(linia(lezi(o, 1), lezi(sl))), sl.uid, "left", 0)).toMatchObject({ stav: "aktivna", nasobok: 1 });
   });
 });

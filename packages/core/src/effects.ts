@@ -115,7 +115,7 @@ export const REGISTER: Readonly<Record<string, EfektStatus>> = {
   zapalovac: "impl", // Dedičstvo: tvoje aktívne Cigarety nemožno zrušiť NA EX (partia.ts applyNaex)
   vyherne_zreby: "impl", // Dedičstvo: Hazardy aktívne nespojené, spojené neaktívne; NA EX potom ako vždy (partia.ts)
   pistalka: "impl", // Dedičstvo: tvoje Obmedzenia uberajú aj cigarety za pas (cmdPass)
-  hrable: "impl", // Dedičstvo: akcia zrušená tvojím Odporom sa ráta ako tvoja a je posilnená (partia.ts)
+  hrable: "impl", // Dedičstvo (v12.1): tvoj aktívny Odpor dáva v bitke poškodenie ako Pecka (partia.ts)
   zrkadlo: "impl", // Dedičstvo: tvoj Pakt kopíruje prepojenú akciu dvakrát (partia.ts)
   boxer: "impl", // Dedičstvo: tvoje Pecky o 1 poškodenie viac (nastrojeTuhe)
   telefon: "impl", // Dedičstvo (2026-11-09): Hádka — remízu (nie 0 : 0) vyhráva majiteľ (vysledokHadkyStola); Bitka — {Povera} za každú jeho akciu zrušenú súperovým Odporom (partia.ts kratVDedicstve); imunita Pohoršení do 2026-11-09 zanikla
@@ -617,7 +617,7 @@ const VPLYVY_BEZ_CISLA: readonly { readonly zdroj: string; readonly akcia: Actio
   { zdroj: "energetak", akcia: "Posilnenie", popis: "Posilnenie nemožno zrušiť NA EX" },
   { zdroj: "vyherne_zreby", akcia: "Dlh", popis: "Hazard je aktívny bez spoja, spojený neaktívny" },
   { zdroj: "pistalka", akcia: "Obmedzenie", popis: "Obmedzenie uberie aj cigarety za pas" },
-  { zdroj: "hrable", akcia: "Odpor", popis: "akcia zrušená Odporom je tvoja a posilnená" },
+  { zdroj: "hrable", akcia: "Odpor", popis: "aktívny Odpor (bez spoja) dáva v bitke poškodenie ako Pecka" },
   { zdroj: "zrkadlo", akcia: "Pakt", popis: "Pakt kopíruje prepojenú akciu dvakrát" },
   { zdroj: "jogurt", akcia: "Poldeci", popis: "Poldeci otočí vypitý poldeci hneď v Pitke" },
   { zdroj: "horoskop", akcia: "Povera", popis: "Povera má silu 2 (2 mäkké)" },

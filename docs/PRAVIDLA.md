@@ -1,6 +1,6 @@
 # NA EX! — pravidlá (špecifikácia)
 
-**Pravidlá v12 (platné od 2026-11-11)** — Akcie navyše mení celý Nástroj, Traktorista, Pasca, Výherný automat, Kapybara a Predavačka (v12), Dobratie 2 karty po bitke a posilnenie Nástrojom po NA EX (v11.21), Hodnota stupňa 1 / 2 / 3 a reťaz premien (v11.20), Dohadzovačka len z konca kraja (v11.19), Vedúcko Podporou, Snúbenica, Traktorista a Miňištrant (v11.18), NA EX × Odpor a Posilnenie, Kapybara, Telefón, Krokodíl a hrany Náradia (v11.17), Vypiť, pas, Degustátorka, odpoveď na NA EX za poldeci, Nástroj len pod vlastné karty, Školiteľ aj Zviera (v11.16), Benzínka o cigaretu lacnejšie (v11.15), Frakcie, Občania v troch kategóriách, Náradie a karta z ponuky (v11.14), Lokality (v11.13), Reči na súperovom teplomere (v11.12), Hádka platí (v11.11), Ohováračka namiesto Alkoholika (v11.10), Dobratie do troch a výpalné (v11.9), Každý Hazard je Dlh (v11.8), Kostol a koniec línie (v11.7), Zajatie od minulého kola (v11.6), Identita kariet (v11.5), Zajatie Nakladačkou a presvedčenie (v11.4), Konflikt oboma smermi a Podpora (v11.3), Schopnosť väzňa (v11.2), Vzbura obráti kartu (v11.1) a Strach a reči (Michal 2026-11-02, docs/napady/strach-reci.html,
+**Pravidlá v12.1 (platné od 2026-11-11)** — Odpor aktívny len bez spoja, podmienka NA EX a Hrable (v12.1), Akcie navyše mení celý Nástroj, Traktorista, Pasca, Výherný automat, Kapybara a Predavačka (v12), Dobratie 2 karty po bitke a posilnenie Nástrojom po NA EX (v11.21), Hodnota stupňa 1 / 2 / 3 a reťaz premien (v11.20), Dohadzovačka len z konca kraja (v11.19), Vedúcko Podporou, Snúbenica, Traktorista a Miňištrant (v11.18), NA EX × Odpor a Posilnenie, Kapybara, Telefón, Krokodíl a hrany Náradia (v11.17), Vypiť, pas, Degustátorka, odpoveď na NA EX za poldeci, Nástroj len pod vlastné karty, Školiteľ aj Zviera (v11.16), Benzínka o cigaretu lacnejšie (v11.15), Frakcie, Občania v troch kategóriách, Náradie a karta z ponuky (v11.14), Lokality (v11.13), Reči na súperovom teplomere (v11.12), Hádka platí (v11.11), Ohováračka namiesto Alkoholika (v11.10), Dobratie do troch a výpalné (v11.9), Každý Hazard je Dlh (v11.8), Kostol a koniec línie (v11.7), Zajatie od minulého kola (v11.6), Identita kariet (v11.5), Zajatie Nakladačkou a presvedčenie (v11.4), Konflikt oboma smermi a Podpora (v11.3), Schopnosť väzňa (v11.2), Vzbura obráti kartu (v11.1) a Strach a reči (Michal 2026-11-02, docs/napady/strach-reci.html,
 verzia 2) na v10.4
 (Hádka v10 — Michal 2026-11-01, docs/napady/hadka.html, verzia 4; v9 zmrazené 2026-10-30, krok 2
 revízie starších, docs/napady/starsi-krok2-zadanie.html; dávky v9.1 Chuť, v9.2 ponuka a NA EX naraz,
@@ -8,6 +8,15 @@ v9.3 Výtržník prebíja Úplatok; v10.1 zajatie pred ponukou; v10.2 Nástroj n
 Forsáž, Úplatok zrušený; v10.4 pojem Spáliť, Autority). Sada kariet: Vypálená hrá zverejnenú sadu v51 (v11.18), Zrejúca rozpracovaný stav tvorcu nad ňou (`cards.json` v master). Pravidlá sa
 menia len v dávkach; celá dávka dostane ďalšiu verziu (značka partií `v11`; presnú verziu ukazuje
 stránka Pravidlá — `VERZIA_PRAVIDIEL_PRESNA`).
+
+**Zmeny v12.1 oproti v12** (Michal 2026-11-11, z partie na Vypálenej: „Protihráčovi nešlo dať NA EX na väčšinu postáv v Pitke. Prečo? Podľa pravidiel sú to platné ciele na NA EX.“ Potom: „Spravíme zmenu pre Odpor. Odpor bude aktívny LEN vtedy, keď nie je spojený s inou akciou, a bude dávať ‚NA EX‘ štít ako dáva teraz. Bude aj naďalej rušiť akciu, s ktorou sa spojí, a zároveň sa deaktivuje aj Odpor. Keď sa Odpor stretne s Odporom, vznikne Vzbura ako teraz.“ — „Spolu s týmto chcem zmeniť aj náradie Hrable — s Hrabľami aktívny Odpor dáva poškodenie ako Pecka.“; staré znenie v `docs/pravidla-historia.md`, sekcia v12.1):
+
+- **Odpor je aktívny len bez spoja** (§2, §6): nespárovaný Odpor je aktívny a dáva karte **štít proti NA EX**. Na spoji zruší akciu, s ktorou sa spojí, a **sám sa deaktivuje** — na karte zhasne ako zrušený. Odpor proti Odporu = Vzbura ako doteraz.
+- **Na kartu s aktívnym (nespárovaným) Odporom NA EX dať nemožno** (§7) — Odpor ju chráni; hráč pri karte vidí dôvod. Na súperovu skrytú Záverečnú a NA EX z Vínka sa štít uplatní ako doteraz: NA EX zahasí.
+- **NA EX nechá Odpor tak** (§7): neaktivuje ho, nezdvojí, ani nezruší — Odpor na spoji ďalej ruší partnera (oživenie partnera z v11.17 zaniká). Ostatné akcie karty NA EX obráti ako zvyčajne; štít sa po NA EX neobjaví.
+- **Podmienka NA EX** (§7): do „aspoň 1 aktívna a aspoň 1 neaktívna akcia“ sa **Odpor neráta vôbec**; **neaktívny Pakt aj neaktívne Posilnenie sa rátajú** (Michal: „Áno, aj Posilnenie“). Na kartu, ktorej jedinou neaktívnou akciou je Pakt či Posilnenie, NA EX smie: Pakt nezdvojí, Posilnenie ho podrží (aktívne akcie nezruší) — vtedy sa na karte nezmení nič.
+- **Hrable** (Dedičstvo, §12): „Dedičstvo: Tvoj aktívny Odpor dáva v bitke poškodenie ako Pecka.“ Hrany ostávajú. Predtým: „Akcia zrušená tvojím Odporom sa ráta ako tvoja a je posilnená.“
+- **Výklady Leadera, Michal zatiaľ nepotvrdil:** (1) Hrable: každý aktívny Odpor tvojej karty v línii sa ráta ako **Pecka ×1** (2 tuhé) — aj pre efekty, ktoré rátajú tvoje Pecky (Valaška +1); Forsáž, NA EX ani viac Hrablí ho nezdvoja. (2) Aktívny Odpor dáva štít aj na karte so Vzburou (predtým nespojený Odpor karty so Vzburou štítom nebol). (3) Odpor **hrany lokality** sa ukazuje a do počtu Pitiek ráta ako doteraz (aktívny je na spoji s kartou). (4) Aktívny Odpor je aktívna akcia aj pre efekty, ktoré rátajú aktívne akcie karty (Dievčina na vydaj, Záverečná). (5) Odpor proti Posilneniu ostáva Vzburou karty s Odporom (posilnenou) — Michal sa k nemu ešte vyjadrí.
 
 **Zmeny v12 oproti v11.21** (Michal 2026-11-11, Zrejúca: „Treba upraviť Traktoristu. Jeho efekt dáva len Dlhy, chcem, aby dával Pecku, keď má prevahu v kraji, žiadne Dlhy v efekte. Pascu chcem upraviť — za KAŽDÚ priloženú kartu od súpera k mojej karte mu dám Ranu navyše v bitke. Výherný automat — prah o 1 vyšší, ale každú Pitku 1 Dlh. … Kapybara bude premieňať Vieru na Cigarety, bez ohľadu na to, či je to súperova alebo moja karta, proste Preškolenie Viera → Cigarety. Predavačka — vezmi si jednu kartu z ponuky do dobieracieho balíčka. Chcem, aby aj akcia v efekte, ako napríklad pri Opatrovateľke, sa dala zmeniť preškolením alebo Nástrojom. V prípade, ak postava dostane Forsáž, akcia v efekte sa posilní tiež.“ K Nástroju: „Áno, celý Nástroj.“; staré znenia v `docs/pravidla-historia.md`, sekcia v12):
 
@@ -588,9 +597,9 @@ len na Občana či Starešinu, priznanie len Kliatby) alebo efekt karty.
 | Vízia | `Vízia` | na konci Pitky: za každú aktívnu Víziu sa hráč pozrie na vrchnú kartu svojho doberacieho balíčka a vezme si ju do ruky, alebo ju **spáli** (navždy z hry) |
 | Poldeci | `Poldeci` | otočí jeden vypitý poldeci späť na plný — **až pri bitke** (§9.5); v Pitke pridá poškodenie pečene |
 | Posilnenie | `Posilnenie` | zdvojnásobí prepojenú akciu (priaznivú aj nepriaznivú); Posilnenie + Posilnenie = Forsáž (§6) |
-| Odpor | `Odpor` | zruší prepojenú akciu; Odpor + Odpor = Vzbura (§6) |
+| Odpor | `Odpor` | **v12.1:** aktívny len **bez spoja** — dáva karte štít proti NA EX (§7); na spoji zruší prepojenú akciu aj seba (zhasne); Odpor + Odpor = Vzbura (§6) |
 | Robota | `Robota` | v kroku exekúcie (po poškodení), **pred** Exekútorom, spáli 1 priznaný Dlh (z hry, §11); **za každý Dlh, ktorý nemá čo spáliť, dá 1 špak** (v8.4) |
-| Pakt | `Pakt` | **v7:** na spoji sa správa ako akcia, s ktorou je v páre (aj zlá — Hazard, Pečeň). Premení sa ešte pred násobkami: Pakt + Posilnenie = dve Posilnenia, teda Forsáž (v10.3). Pakt + Pakt nerobí nič. **Odpor** Pakt zruší ako každú akciu (Vzbura nevznikne). Neaktívny Pakt nemá čo kopírovať: do súčtov nejde, NA EX ho nezdvojí a do podmienky „aspoň 1 neaktívna akcia“ (§7) sa neráta. Na hranách lokalít Pakt nie je; pri lokalite kopíruje akciu hrany. Pri Výtržníkovi (§7) je Rana ako každá jeho akcia. **Pakt, ktorý kopíruje akciu, je tou akciou pre všetky efekty** (v11.16, Michal 2026-11-09): „tvoje Pecky“ (Boxer), Rany (Vidly), Povery (Horoskop), Cigarety (Zapaľovač) a iné efekty, ktoré sa viažu na akciu, rátajú aj Pakt, ktorý ju kopíruje. |
+| Pakt | `Pakt` | **v7:** na spoji sa správa ako akcia, s ktorou je v páre (aj zlá — Hazard, Pečeň). Premení sa ešte pred násobkami: Pakt + Posilnenie = dve Posilnenia, teda Forsáž (v10.3). Pakt + Pakt nerobí nič. **Odpor** Pakt zruší ako každú akciu (Vzbura nevznikne). Neaktívny Pakt nemá čo kopírovať: do súčtov nejde a NA EX ho nezdvojí; do podmienky „aspoň 1 neaktívna akcia“ (§7) sa od v12.1 ráta (predtým nie). Na hranách lokalít Pakt nie je; pri lokalite kopíruje akciu hrany. Pri Výtržníkovi (§7) je Rana ako každá jeho akcia. **Pakt, ktorý kopíruje akciu, je tou akciou pre všetky efekty** (v11.16, Michal 2026-11-09): „tvoje Pecky“ (Boxer), Rany (Vidly), Povery (Horoskop), Cigarety (Zapaľovač) a iné efekty, ktoré sa viažu na akciu, rátajú aj Pakt, ktorý ju kopíruje. |
 
 Akcia sa volá ako karta či zdroj, ktorý dáva: `PoškodeniePečene` → Poškodenie
 pečene, `Poldeci` → Poldeci, `Cigareta` → Cigareta (starý kľúč `Cigaretka` sa
@@ -846,7 +855,7 @@ efektívna_pravá(otočená) = ľavá čítaná odzadu
 |---|---|
 | X + Y (bežné akcie) | obe sa aktivujú, každá ×1 |
 | Posilnenie + X | X sa aktivuje ×2 |
-| Odpor + X | X je zrušená |
+| Odpor + X | X je zrušená a Odpor sa deaktivuje (v12.1) |
 | Odpor + Odpor | **Vzbura** (v11.1): obe karty sa **obrátia** — nespojené akcie sú aktívne, spojené neaktívne; lokalita len hranu pri tom kraji, nie obe |
 | Posilnenie + Odpor | **Vzbura iba karty s Odporom** (v11.1): obráti sa a jej aktívne akcie sú posilnené (×2); Posilnenie je zrušené, karta s ním nič nedostane |
 | Posilnenie + Posilnenie | **Forsáž** (v10.3): obe karty majú **všetky svoje aktívne akcie posilnené (×2)**; lokalita len hranu pri tom kraji |
@@ -855,9 +864,15 @@ Podložený Nástroj (§12) a Školiteľ (Preškolenie, vyššie) preškolia akc
 spojmi** — na spoji sa páruje už preškolená akcia — a Vidly, Energeťák, Vínko a Injekcia dávajú
 karte Vzburu, Forsáž, NA EX a Výtržníka v poradí nižšie.
 
-Keď NA EX zruší Posilnenie, zruší aj ×2, ktoré dávalo partnerovi na spoji; keď zruší Odpor,
-akcia, ktorú Odpor rušil, ožije ×1 (v11.17). Neaktívny Odpor či Posilnenie karty s NA EX sa
-spáruje s poldecom — Odpor NA EX zahasí, Posilnenie mu nedá zrušiť aktívne akcie (§7).
+**Odpor** (v12.1, Michal 2026-11-11: „Odpor bude aktívny LEN vtedy, keď nie je spojený s inou
+akciou, a bude dávať ‚NA EX‘ štít ako dáva teraz. Bude aj naďalej rušiť akciu, s ktorou sa spojí, a
+zároveň sa deaktivuje aj Odpor.“): nespárovaný Odpor je **aktívny** a kartu chráni pred NA EX (§7);
+na spoji zruší partnera a **zhasne** (neaktívny). NA EX ho nechá tak.
+
+Keď NA EX zruší Posilnenie, zruší aj ×2, ktoré dávalo partnerovi na spoji. Odpor NA EX nemení —
+akcia, ktorú Odpor ruší, ostáva zrušená (v12.1; v11.17–v12 ožila). Nespárovaný Odpor či neaktívne
+Posilnenie karty s NA EX sa spáruje s poldecom — Odpor NA EX zahasí, Posilnenie mu nedá zrušiť
+aktívne akcie (§7).
 
 **Vzbura** (v11.1, Michal 2026-11-02: „Majú sa aktivovať akcie naopak, nie aktivovať všetky.“) —
 podrobne:
@@ -906,7 +921,7 @@ podrobne:
 - **Pakt** proti Posilneniu je Posilnenie, teda tiež Forsáž.
 - **NA EX** na jednu z kariet spoja zruší jej Posilnenie, a tým aj Forsáž — obom kartám
   (rovnaký princíp ako „NA EX zruší aj ×2 partnerovi“, §7). Energeťák a Veterán to zastavia
-  ako dnes, rovnako neaktívne Posilnenie či Odpor tej karty (v11.17, §7). Ostatné akcie karty
+  ako dnes, rovnako neaktívne Posilnenie či nespárovaný Odpor tej karty (v11.17, §7). Ostatné akcie karty
   NA EX ruší a zdvojuje ako vždy.
 - Posilnenie a Odpor **Výtržníka** sú Rany (§7), Forsáž teda nevytvoria.
 - **Forsáž z Energeťáka** (podložený Nástroj, §12) sa neviaže na Posilnenie: NA EX ju nezruší.
@@ -1009,12 +1024,12 @@ kým sa NA EX neodkryjú.
   neaktívnu akciu** — nie na kartu bez aktívnej akcie ani na kartu, ktorej sú
   aktívne všetky. Aktívna = spárovaná a nezrušená Odporom; rozhoduje stav
   v okamihu výberu (odpoveď na NA EX už nič nemení). Platí aj pre Veterána.
-  Neaktívny Pakt a **neaktívne Posilnenie** sa do neaktívnych nerátajú (v11.17) —
-  samy by s NA EX nič nezmenili.
-- **Na kartu s neaktívnym Odporom NA EX nemožno dať** (v11.17, Michal 2026-11-09): Odpor bez
-  partnera by NA EX zahasil (nižšie, Poldeci ako partner) — NA EX by na karte nič nezmenilo,
-  len by sa vypilo (na Krčme by sa ním povinnosť obišla bez straty). Rozhoduje stav v okamihu
-  výberu; na súperovu skrytú Záverečnú sa NA EX dá aj tak (bod nižšie).
+  **Odpor sa do podmienky neráta vôbec** (v12.1). **Neaktívny Pakt aj neaktívne Posilnenie** sa
+  do neaktívnych rátajú (v12.1, Michal 2026-11-11: „Áno, aj Posilnenie“), hoci ich NA EX nezdvojí
+  (§2; Posilnenie NA EX podrží, nižšie).
+- **Na kartu s aktívnym (nespárovaným) Odporom NA EX nemožno dať** (v12.1, Michal 2026-11-11) —
+  Odpor ju chráni (štít, nižšie Poldeci ako partner). Rozhoduje stav v okamihu výberu; na súperovu
+  skrytú Záverečnú sa NA EX dá aj tak (bod nižšie).
 - **Na kartu so Vzburou NA EX nemožno dať** (v11.1, Michal 2026-11-02) — ani pri Odpore proti
   Odporu, ani proti Posilneniu (§6). Rozhoduje stav v okamihu výberu ako pri podmienke vyššie:
   Vzbura, ktorá vznikne až potom (odpoveď na NA EX, ďalšia karta pred odkrytím), NA EX nezruší.
@@ -1022,7 +1037,7 @@ kým sa NA EX neodkryjú.
   ostáva cieľom vždy (nič sa nesmie prezradiť); NA EX na nej po otočení ostáva.
 - **Akcia zrušená Odporom nie je ani aktívna, ani neaktívna** (v6.1): NA EX na jej
   karte ju nezruší (už zrušená je) ani nezdvojí, a pri výbere karty sa nepočíta ani do
-  aktívnych, ani do neaktívnych. Ožije, keď NA EX zruší samotný Odpor (nižšie).
+  aktívnych, ani do neaktívnych. NA EX na karte s Odporom ju neoživí (v12.1).
 - Na kartu, na ktorej **už poldeci leží** (z predošlej Pitky kola alebo z tvojho
   skrytého NA EX), sa ďalšie NA EX dať nedá. Súperovo skryté NA EX nevidíš —
   obaja tak môžete vybrať tú istú kartu (zrážka, nižšie).
@@ -1041,20 +1056,16 @@ kým sa NA EX neodkryjú.
   partnerovi** na spoji: partnerova akcia (aj akcia hrany lokality) ostáva
   aktívna, ale už len ×1. Veteránovi NA EX Posilnenie nezruší, takže partner má
   ×2 ďalej. Ak Posilnenie tvorilo **Forsáž** (§6), zanikne aj tá — obom kartám spoja.
-- **NA EX na kartu s Odporom** (v11.17, Michal 2026-11-09) zruší Odpor aj **zrušenie,
-  ktoré dával partnerovi** na spoji: akcia, ktorú Odpor rušil, **ožije ×1** (aj akcia
-  hrany lokality — ako každá aktívna hrana sa ráta do počtu Pitiek). Ožitá akcia je
-  bežná aktívna akcia: Forsáž jej karty ju zdvojí, NA EX na jej karte ju zruší, pod
-  Vzburou jej karty je spojená, teda neaktívna; súperove Hrable o ňu prídu. Veteránovi
-  NA EX Odpor nezruší, takže partner ostáva zrušený. Spoj Odpor proti Odporu nič nerušil —
-  NA EX jeho Odpor zruší, Vzbura ostáva.
+- **NA EX na kartu s Odporom na spoji** (v12.1, Michal 2026-11-11) Odpor **nechá tak** —
+  neaktivuje ho, nezdvojí ani nezruší: akcia, ktorú Odpor ruší, ostáva zrušená, spoj Odpor
+  proti Odporu ostáva Vzburou. Ostatné akcie karty NA EX obráti ako zvyčajne a štít sa po NA EX
+  neobjaví. (v11.17–v12 NA EX Odpor zrušil a partner ožil ×1.)
 - **Partner zrušenej akcie** na spoji (akcie, ktorú NA EX zrušil) ostáva **aktívny ×1**
-  — spoj zaniká len pre zrušenú akciu. Pri Posilnení prichádza o ×2, pri Odpore ožije
-  (body vyššie).
+  — spoj zaniká len pre zrušenú akciu. Pri Posilnení prichádza o ×2 (bod vyššie).
 - **Poldeci ako partner** (v11.17, Michal 2026-11-09; docs/napady/naex-odpor-posilnenie.html,
-  P2 v miernejšej podobe): neaktívny Odpor či Posilnenie karty s NA EX nemá partnera
+  P2 v miernejšej podobe): nespárovaný Odpor či neaktívne Posilnenie karty s NA EX nemá partnera
   na spoji — dostane ho v podobe poldeca:
-  - **Neaktívny Odpor NA EX zahasí** — Odpor ruší, čo má oproti sebe. Karta sa ráta ako
+  - **Aktívny (nespárovaný) Odpor NA EX zahasí** — Odpor ruší, čo má oproti sebe. Karta sa ráta ako
     bez NA EX; poldeci sa aj tak vypije a NA EX sa ráta ako dané (pečeň, nerest, Pijan,
     Svokra, Šofér). Takto môže NA EX ležať len na súperovej skrytej Záverečnej alebo z Vínka
     (na kartu so štítom NA EX dať nemožno, vyššie). Keď sa Odpor neskôr spáruje (odpoveď,
@@ -1062,8 +1073,8 @@ kým sa NA EX neodkryjú.
   - **Neaktívne Posilnenie NA EX podrží**: NA EX **nezruší aktívne akcie** karty (ani jej
     Posilnenie na spoji, takže partner má ×2 a Forsáž ostáva), neaktívne zdvojí ako vždy
     (×2, nie ×4). Dve neaktívne Posilnenia platia raz.
-  - Keď má karta oboje, **vyhrá Odpor**. Nespojený Odpor či Posilnenie karty so Vzburou je
-    aktívny (§6) — štítom nie je. Veterán: Odpor NA EX zahasí aj jemu (aktívne mu nezdvojí);
+  - Keď má karta oboje, **vyhrá Odpor**. Nespojené Posilnenie karty so Vzburou je aktívne (§6) —
+    štítom nie je; nespojený Odpor je aktívny vždy a štít dáva aj pod Vzburou (v12.1, výklad Leadera). Veterán: Odpor NA EX zahasí aj jemu (aktívne mu nezdvojí);
     Posilnenie na ňom nič nemení. Rovnako pre NA EX z Vínka (§12). Výtržník (zrážka, Injekcia)
     štít nemá — jeho Odpor a Posilnenie sú Rany.
 - NA EX leží na karte až do bitky — jej akcie sa vyhodnotia v **každej** Pitke
@@ -1953,7 +1964,7 @@ majiteľa; menia sa len **tvoje** akcie (karty, ktoré si zahral):
 | Zapaľovač | Tvoje aktívne Cigarety nemožno zrušiť NA EX. | NA EX na kartu zruší ostatné aktívne akcie; aktívne Cigarety ostanú ×1 (nezdvoja sa). |
 | Výherné žreby | Tvoje Hazardy sú aktívne, keď nie sú spojené, a neaktívne, keď sú spojené. | Rozhoduje, či slot má na spoji partnera; zrušené Odporom ostávajú zrušené. NA EX potom ako vždy: spojené (neaktívne) zdvojí, nespojené (aktívne) zruší (O1). |
 | Izolačka | Tvoje Obmedzenia uberajú aj cigarety, ktoré súper dostane za pas. | Pri súperovom pase sa mu cigarety za pas znížia o tvoje aktívne Obmedzenia v línii v tej chvíli (najmenej 0); v Pitke uberajú ako vždy. |
-| Hrable | Akcia zrušená tvojím Odporom sa ráta ako tvoja a je posilnená. | Zrušená akcia (nie Posilnenie, Odpor, Pakt) sa pripíše majiteľovi Odporu ×2. |
+| Hrable | Tvoj aktívny Odpor dáva v bitke poškodenie ako Pecka. | (v12.1) Každý aktívny (nespárovaný) Odpor tvojej karty v línii sa ráta ako Pecka ×1 — 2 tuhé; Odpor na spoji nie. Výklad Leadera: Pecka aj pre Valašku a iné efekty tvojich Pecky; Forsáž ani NA EX ju nezdvoja. Predtým (do v12): zrušená akcia sa pripísala majiteľovi Odporu ×2. |
 | Zrkadlo | Tvoj Pakt kopíruje prepojenú akciu dvakrát. | Pakt sa premení na akciu partnera ×2; proti Posilneniu ostáva nič. |
 | Valaška | Tvoje Pecky udeľujú o 1 poškodenie viac. | Každá tvoja aktívna Pecka +1 tuhé — z vyložených akcií aj akcia navyše (Šofér, frakcie), aj preškolená (Vedúcko, Sypač). |
 | Telefón | Hádka: Remíza v hádke je tvoja, ak nie je 0 : 0. Bitka: Za každú tvoju akciu zrušenú súperovým Odporom {Povera}. | (v11.17, Michal 2026-11-09) Remízu v hádke s mäkkým vyhráš o 0 (§9.1); majú ho obaja = remíza. V bitke 1 Povera navyše (akcia navyše, §6) za každú tvoju akciu — aj Pakt či Posilnenie — ktorú na spoji zrušil Odpor súperovej karty (Odpor hrany lokality nie); za každý Telefón zvlášť. Do v11.16: tvoje Pohoršenia nemožno zrušiť Odporom a NA EX. |

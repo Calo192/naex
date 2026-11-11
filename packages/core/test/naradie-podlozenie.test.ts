@@ -266,7 +266,7 @@ describe("kartové účinky — presne ako dnešnou cestou", () => {
     expect(zVinka.cards.get(host.uid)).toEqual(sPoldecom.cards.get(host.uid));
     expect(zVinka.sums).toEqual(sPoldecom.sums);
     const lok = makeDef("lok", ["Viera", "Viera", "Viera", "Viera"], ["Viera", "Viera", "Viera", "Viera"], { tags: ["Lokalita"] });
-    // Hostiteľ bez Odporu na voľnej hrane — nespárovaný Odpor NA EX zahasí a cieľom by nebol (v11.17).
+    // Hostiteľ bez Odporu na voľnej hrane — nespárovaný (aktívny) Odpor by ho chránil (v12.1).
     const R3: Layout4 = ["Rana", "Rana", null, "Rana"];
     const sl = syntheticData([...sd.cards.values(), lok, makeDef("host_ciel", R3, H_R)]);
     const lokalita = instanceFor(sl, "lok", ["Viera", "Viera", "Viera", "Viera"], ["Viera", "Viera", "Viera", "Viera"]);

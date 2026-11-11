@@ -313,7 +313,7 @@
   },
   "naex": {
     "pojem": "NA EX!",
-    "popis": "Pełny kieliszek na kartę w linii, wybrany w Popijawie w ukryciu: znosi jej aktywne akcje i podwaja nieaktywne. Zniesiony Opór puszcza akcję, którą blokował; niesparowany Opór gasi NA EX, niesparowane Wzmocnienie utrzymuje aktywne akcje.",
+    "popis": "",
     "kratko": "Wylej pełny kieliszek na ex na kartę w linii. Jej akcje na styku gasną, samotne się podwajają.",
     "tvary": "NA EX",
     "sk": {
@@ -733,7 +733,7 @@
   },
   "vzbura": {
     "pojem": "Bunt",
-    "popis": "Opór przeciw Oporowi: obie karty się odwracają — niesparowane akcje są aktywne, sparowane nieaktywne. Opór przeciw Wzmocnieniu: tylko karta z Oporem, w dodatku wzmocniona. Widły podłożone pod kartę też ją odwracają. NA EX na nią nie idzie.",
+    "popis": "",
     "sk": {
       "pojem": "Vzbura",
       "popis": "Odpor proti Odporu: obe karty sa obrátia — nespojené akcie sú aktívne, spojené neaktívne. Odpor proti Posilneniu: len karta s Odporom, navyše posilnená. Vidly podložené pod kartu ju obrátia tiež. NA EX na ňu nejde."

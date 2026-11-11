@@ -367,16 +367,17 @@
     {
       "id": "7.naex.aktivna-aj-neaktivna",
       "paragraf": "7. Pitka › NA EX",
-      "pravidlo": "NA EX len na kartu s aspoň 1 aktívnou a aspoň 1 neaktívnou akciou (aj Veterán; neaktívny Pakt a neaktívne Posilnenie sa nerátajú, v11.17) a nie na kartu s neaktívnym Odporom (v11.17); súperova skrytá Záverečná vždy a skryté Záverečné sa do posúdenia nerátajú (Michal 2026-10-23).",
+      "pravidlo": "NA EX len na kartu s aspoň 1 aktívnou a aspoň 1 neaktívnou akciou (aj Veterán; Odpor sa neráta, neaktívny Pakt aj Posilnenie áno, v12.1) a nie na kartu s aktívnym (nespárovaným) Odporom — ten ju chráni (v12.1); súperova skrytá Záverečná vždy a skryté Záverečné sa do posúdenia nerátajú (Michal 2026-10-23).",
       "stav": "pokryte",
       "testy": [
         "packages/core/test/naex-podmienka.test.ts › nie na osamotenú kartu (žiadna aktívna) ani na kartu so všetkými akciami aktívnymi; na zmiešanú áno",
         "packages/core/test/naex-podmienka.test.ts › Veterán výnimku nemá — so všetkými akciami aktívnymi naňho NA EX nejde",
         "packages/core/test/naex-podmienka.test.ts › server NA EX na osamotenú kartu odmietne",
         "packages/core/test/naex-podmienka.test.ts › sused, ktorého akciu páruje len skrytá Záverečná, nie je cieľom pre nikoho — server aj klient súpera vidia to isté",
-        "packages/core/test/naex-odpor-p2.test.ts › na kartu so štítom NA EX nejde; bez Odporu áno",
-        "packages/core/test/naex-odpor-p2.test.ts › výber: neaktívne Posilnenie sa do „neaktívnej“ neráta — sama by NA EX nič nezmenilo",
-        "packages/core/test/naex-odpor-p2.test.ts › výber: karta, ktorej jediná aktívna akcia je Odpor, je cieľ — NA EX partnera pustí"
+        "packages/core/test/naex-odpor-p2.test.ts › na kartu so štítom NA EX nejde — Odpor ju chráni; bez Odporu áno",
+        "packages/core/test/naex-ciele-zastavka.test.ts › cieľom sú Živnostník, Dievčina a Miňištrant — pre oboch hráčov",
+        "packages/core/test/naex-odpor-p2.test.ts › výber: neaktívne Posilnenie sa do „neaktívnej“ ráta (v12.1, Michal 2026-11-11: „Áno, aj Posilnenie“)",
+        "packages/core/test/naex-odpor-p2.test.ts › výber: Odpor na spoji sa do podmienky neráta — karta bez inej aktívnej akcie nie je cieľ"
       ]
     },
     {
@@ -467,18 +468,18 @@
     {
       "id": "7.naex.odpor",
       "paragraf": "7. Pitka › NA EX",
-      "pravidlo": "NA EX na kartu s Odporom zruší Odpor aj zrušenie partnera: akcia, ktorú Odpor rušil, ožije ×1 (aj hrana lokality; pod Vzburou partnera neaktívna; NA EX na partnerovi ju zruší; Hrable o ňu prídu); Veteránovi Odpor nezruší; spoj Odpor–Odpor nič neoživí, Vzbura ostáva (v11.17, Michal 2026-11-09).",
+      "pravidlo": "NA EX Odpor na spoji nechá tak (v12.1, Michal 2026-11-11): akcia, ktorú Odpor ruší, ostáva zrušená (aj hrana lokality, aj pod Vzburou), Odpor sa nezdvojí ani nezruší; spoj Odpor–Odpor ostáva Vzburou. Ostatné akcie karty NA EX obráti ako zvyčajne.",
       "stav": "pokryte",
       "testy": [
-        "packages/core/test/naex-odpor-p2.test.ts › akcia, ktorú Odpor rušil, ožije ×1; NA EX karte zruší Pecku a zdvojí Vieru",
-        "packages/core/test/naex-odpor-p2.test.ts › Hrable: zrušená akcia, ktorú Hrable kradli, sa po NA EX vráti majiteľovi ×1",
-        "packages/core/test/naex-odpor-p2.test.ts › partner pod Vzburou ožije ako spojený, teda neaktívny",
-        "packages/core/test/naex-odpor-p2.test.ts › partner s vlastným NA EX: ožije a jeho NA EX ho zruší",
+        "packages/core/test/naex-odpor-p2.test.ts › akcia, ktorú Odpor ruší, ostáva zrušená; NA EX karte zruší Pecku a zdvojí Vieru",
+        "packages/core/test/naex-odpor-p2.test.ts › Hrable: Odpor na spoji Pecku nedá ani po NA EX (v12.1)",
+        "packages/core/test/naex-odpor-p2.test.ts › partner pod Vzburou ostáva zrušený",
+        "packages/core/test/naex-odpor-p2.test.ts › partner s vlastným NA EX: zrušená akcia ostáva zrušená Odporom, druhú zruší jeho NA EX",
         "packages/core/test/naex-odpor-p2.test.ts › súperov Odpor na akcii karty s NA EX: bez NA EX na karte s Odporom akcia ostáva zrušená",
-        "packages/core/test/naex-odpor-p2.test.ts › Energeťák chráni Posilnenie, Odpor nie; Zapaľovač podrží Cigaretu a Odpor aj tak zruší",
-        "packages/core/test/naex-odpor-p2.test.ts › Veterán: NA EX mu Odpor nezruší (zdvojí ho naprázdno) — partner ostáva zrušený, Pecka ×2",
-        "packages/core/test/naex-odpor-p2.test.ts › hrana lokality zrušená Odporom karty ožije — aktivuje Pitku",
-        "packages/core/test/naex-odpor-p2.test.ts › Vzbura, ktorá vznikla až po výbere: NA EX zruší Odpory spoja, Vzbura ostáva, nič neožije"
+        "packages/core/test/naex-odpor-p2.test.ts › Zapaľovač podrží Cigaretu; Odpor ruší ďalej",
+        "packages/core/test/naex-odpor-p2.test.ts › Veterán: partner ostáva zrušený, Pecka ×2",
+        "packages/core/test/naex-odpor-p2.test.ts › hrana lokality zrušená Odporom karty ostáva zrušená aj po NA EX",
+        "packages/core/test/naex-odpor-p2.test.ts › Vzbura, ktorá vznikla až po výbere: Odpory spoja zhasnú, Vzbura ostáva"
       ]
     },
     {
@@ -679,13 +680,13 @@
     {
       "id": "12.naradie.linia",
       "paragraf": "12. Nástroje a Dedičstvo › Dedičstvo",
-      "pravidlo": "Náradie v línii (v8.4): Zapaľovač (Cigarety imúnne voči NA EX), Energeťák (Posilnenie imúnne voči NA EX), Výherné žreby (Hazard aktívny bez spoja, NA EX zdvojí spojené), Hrable (zrušená Odporom tvoja ×2), Zrkadlo (Pakt ×2). Puška (2026-10-30): prepojenú Petelicu namiesto zrušenia ráta za 2.",
+      "pravidlo": "Náradie v línii (v8.4): Zapaľovač (Cigarety imúnne voči NA EX), Energeťák (Posilnenie imúnne voči NA EX), Výherné žreby (Hazard aktívny bez spoja, NA EX zdvojí spojené), Hrable (v12.1: tvoj aktívny Odpor = Pecka v bitke), Zrkadlo (Pakt ×2). Puška (2026-10-30): prepojenú Petelicu namiesto zrušenia ráta za 2.",
       "stav": "pokryte",
       "testy": [
         "packages/core/test/naradie.test.ts › Zapaľovač: tvoje aktívne Cigarety NA EX nezruší (ostatné áno)",
         "packages/core/test/naradie.test.ts › Energeťák: tvoje Posilnenie NA EX nezruší — partner ostáva ×2",
         "packages/core/test/naradie.test.ts › Výherné žreby: Hazard nespojený aktívny, spojený neaktívny; NA EX zdvojí spojené (O1)",
-        "packages/core/test/naradie.test.ts › Hrable: akcia zrušená tvojím Odporom sa ráta ako tvoja a posilnená",
+        "packages/core/test/naradie.test.ts › Hrable (v12.1): tvoj aktívny Odpor dáva v bitke poškodenie ako Pecka; Odpor na spoji nie",
         "packages/core/test/naradie.test.ts › Zrkadlo: tvoj Pakt kopíruje prepojenú akciu dvakrát",
         "packages/core/test/naradie.test.ts › Puška: prepojenú Petelicu Odpor ani NA EX nezruší — udelí o 1 menej (3 → 2); súperove Hrable nemajú čo ukradnúť"
       ],

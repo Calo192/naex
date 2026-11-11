@@ -1243,7 +1243,7 @@
   "plocha.naexLenNastroj": "NA EX only on a Citizen or an Elder — this is a Tool.",
   "plocha.naexLen": "NA EX only on a Citizen or an Elder.",
   "plocha.naexLimit": "The NA EX limit for this Booze-up is used up — more NA EX only in the next Booze-up.",
-  "plocha.naexAktivna": "NA EX only goes on a card with at least one active and one inactive action.",
+  "plocha.naexAktivna": "",
   "plocha.krajCirhoza": "{n}× Cirrhosis",
   "plocha.cirhozaPriznana": " (confessed, it costs no butts, but your opponent gets +1 hard for it in every brawl)",
   "plocha.krajDlh": "{n}× Debt",

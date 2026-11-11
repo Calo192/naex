@@ -1276,7 +1276,7 @@
   "plocha.naexLenNastroj": "NA EX tylko na Obywatela albo Starszego — to jest Narzędzie.",
   "plocha.naexLen": "NA EX tylko na Obywatela albo Starszego.",
   "plocha.naexLimit": "Limit NA EX w tej Popijawie wyczerpany — kolejne NA EX dopiero w następnej Popijawie.",
-  "plocha.naexAktivna": "NA EX idzie tylko na kartę z co najmniej jedną aktywną i jedną nieaktywną akcją.",
+  "plocha.naexAktivna": "",
   "plocha.krajCirhoza": "{n}× Marskość",
   "plocha.cirhozaPriznana": " (przyznana nie zabiera petów, przeciwnik dostaje za nią +1 twarde w każdej bójce)",
   "plocha.krajDlh": "{n}× Dług",

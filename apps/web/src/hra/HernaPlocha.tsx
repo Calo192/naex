@@ -54,6 +54,7 @@ import type { Moment, ActionSums, DopadyNahladu, KliatbyNahladu, NahladNaexNaKar
 import type { KtoraHrana, MoznostPodlozenia, PodlozenyNastroj } from "@naex/core";
 import { aktivnaHrana, dovodNepodlozenia, hranyNastroja, ponukaPodlozenia, ucinkyNastrojov } from "@naex/core";
 import { sDlhmiPoradkyne } from "@naex/core";
+import { dovodyBezNaex } from "@naex/core";
 import { IkonaAkcie } from "../karta/IkonaAkcie.tsx";
 import { PodlozeneNastroje, smerPretrcania, vyskaHranyPod } from "./PodlozeneNastroje.tsx";
 import { vzhladSady } from "../lib/sada.tsx";
@@ -122,7 +123,7 @@ import { KseftPodKartou } from "./KseftPodKartou.tsx";
 import { IkonaMrezi } from "./ikonyZdrojov.tsx";
 import { kseftyNaStole } from "./kseftyNaStole.ts";
 import { moznostiVily } from "./volbaVily.ts";
-import { cieleSuperovhoNaex, vystrahaCela, vystrahaKratko } from "./vystrahyStola.ts";
+import { cieleSuperovhoNaex, vystrahaCela, vystrahaKratko, vystrahaVRuke } from "./vystrahyStola.ts";
 import { StavkaBitky } from "./StavkaBitky.tsx";
 import { UCINOK_KRATKO, UCINOK_PRIAZNE } from "./Scorecard.tsx";
 import type { HracInfo, SuhrnAchievementov, ZmenyFrajeriny } from "./useHra.ts";
@@ -1342,13 +1343,20 @@ export function HernaPlocha({
           dlhyBitka: dlhyBitka[p],
         };
 
-  // Prečo na kartu NA EX nejde — hráč to vidí pri karte (dizajn hra-20261021-1240, UX N4).
+  // Prečo na kartu NA EX nejde — hráč to vidí pri karte (dizajn hra-20261021-1240, UX N4); dôvod
+  // podmienky počíta jadro tak ako motor (v12.1: Odpor kartu chráni, nič na zrušenie či zdvojenie).
+  const dovodyNaex = useMemo(() => dovodyBezNaex(data, lineState(view)), [data, view]);
   const dovodBezNaexNaKartu = (pl: PlacedCard): string => {
     const def = data.cards.get(pl.card.defId);
     if (pl.naexBy !== undefined) return t("plocha.uzLezi");
     if (def !== undefined && !def.tags.includes("Občan") && !def.tags.includes("Starešina"))
       return def.tags.includes("Nástroj") ? t("plocha.naexLenNastroj") : t("plocha.naexLen");
     if (naexLimitMinuty) return t("plocha.naexLimit");
+    const dovod = dovodyNaex.get(pl.card.uid) ?? null;
+    if (dovod === "odpor") return t("plocha.naexOdporChrani");
+    if (dovod === "vzbura") return t("plocha.naexVzbura");
+    if (dovod === "bezAktivnej") return t("plocha.naexNicNaZrusenie");
+    if (dovod === "bezNeaktivnej") return t("plocha.naexNicNaZdvojenie");
     return t("plocha.naexAktivna");
   };
   /**
@@ -6770,6 +6778,7 @@ export function HernaPlocha({
               const pary = naMiesto?.pary ?? [];
               const strana = naMiesto?.vnutornaVytlacena;
               const vystraha = naMiesto !== undefined && miestoVolby !== null ? vystrahaVylozenia(k, miestoVolby) : null;
+              const stitokPecene = vystraha === null ? null : vystrahaVRuke(vystraha, ja);
               const spoj =
                 strana === undefined || pary.length === 0
                   ? undefined
@@ -6785,7 +6794,7 @@ export function HernaPlocha({
                   {dobrata && <span className="nova-stitok">{t("plocha.dobrana")}</span>}
                   {majitelPresvedcenej(view, k.uid) !== null && <span className="nova-stitok">{t("plocha.presvedcenyStarsi")}</span>}
                   {pary.length > 0 && <span className="spoj-stitok">{pary.length === 1 ? "1 spoj" : `${pary.length} spoje`}</span>}
-                  {vystraha !== null && <span className="pecen-stitok">{vystrahaKratko(vystraha, ja)}</span>}
+                  {stitokPecene !== null && <span className="pecen-stitok">{stitokPecene}</span>}
                 </>
               );
               const triedy = [nova || dobrata ? "nova-zo-senku" : ""];

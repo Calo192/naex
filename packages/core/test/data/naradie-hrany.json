@@ -27,7 +27,7 @@
       "nazov": "Hrable",
       "hore": "{Odpor}→{Posilnenie}",
       "dole": "{Posilnenie}→{Odpor}",
-      "effect_text": "Dedičstvo: Akcia zrušená tvojím Odporom sa ráta ako tvoja a je posilnená. Hore: {Odpor}→{Posilnenie}. Dole: {Posilnenie}→{Odpor}."
+      "effect_text": "Dedičstvo: Tvoj aktívny Odpor dáva v bitke poškodenie ako Pecka. Hore: {Odpor}→{Posilnenie}. Dole: {Posilnenie}→{Odpor}."
     },
     {
       "id": "lievik",

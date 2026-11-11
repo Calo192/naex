@@ -1243,7 +1243,7 @@
   "plocha.naexLenNastroj": "NA EX csak Polgárra vagy Elöljáróra — ez Szerszám.",
   "plocha.naexLen": "NA EX csak Polgárra vagy Elöljáróra.",
   "plocha.naexLimit": "Ezen az Ivászaton elfogyott a NA EX-korlát — a következő NA EX csak a következő Ivászaton.",
-  "plocha.naexAktivna": "NA EX csak olyan kártyára mehet, amelyen van legalább egy aktív és egy inaktív akció.",
+  "plocha.naexAktivna": "",
   "plocha.krajCirhoza": "{n}× Májzsugor",
   "plocha.cirhozaPriznana": " (a bevallott nem visz el csikket, az ellenfél viszont minden verekedésben +1 kemény sebzést kap érte)",
   "plocha.krajDlh": "{n}× Adósság",

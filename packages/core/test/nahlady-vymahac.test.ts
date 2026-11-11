@@ -46,7 +46,14 @@ describe("náhľad bitky ráta Vymáhača s Dlhmi po Pitkách kola", () => {
             const stol = stolPriPoskodeni(data, view, dalsiePitkyKola(data, view));
             const ranyNavyse = vymahace * (Math.floor(stol.hraci[p].dlhy / 2) - Math.floor(view.hraci[p].dlhy / 2));
             if (ranyNavyse <= 0) continue;
-            const rany = (x: typeof view): number => evaluateLine(data, lineState(x)).sums[p].Rana ?? 0;
+            // Kusy akcie navyše Vymáhača: Ranu môže Kulturista preškoliť na Pecku a Nástroj či Forsáž
+            // ju zdvojiť (v12, §6) — každý ďalší dôvod v zdroji je ×2.
+            const rany = (x: typeof view): number => {
+              const zdroje = evaluateLine(data, lineState(x)).zdroje[p];
+              return [...(zdroje.Rana ?? []), ...(zdroje.Pecka ?? [])]
+                .filter((z) => z.defId === "vymahac" && (z.dovody[0] ?? "").startsWith("akcia navyše"))
+                .reduce((a, z) => a + z.hodnota / 2 ** (z.dovody.length - 1), 0);
+            };
             expect(rany(stol) - rany(view), `seed ${seed}`).toBe(ranyNavyse);
             expect(poskodenieStola(data, stol).tuhe[p]).toBeGreaterThanOrEqual(poskodenieBitky(data, stol, evaluateLine(data, lineState(view)).sums).tuhe[p]);
             najdene++;
