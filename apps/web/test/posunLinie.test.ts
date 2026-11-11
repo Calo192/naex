@@ -2,7 +2,7 @@
 // a lokalita je po načítaní v strede bez napoly odrezanej karty.
 
 import { describe, expect, it } from "vitest";
-import { cielPosunu, sirkaPosuvnejLinie, skryteKarty, type Usek } from "../src/hra/posunLinie.ts";
+import { MAX_POKLESOV_REZIE, cielPosunu, prijmiReziu, sirkaPosuvnejLinie, skryteKarty, type Usek } from "../src/hra/posunLinie.ts";
 
 const MOZNOSTI = { min: 72, strop: 340, zmensenie: 0.9 };
 /** n kariet širokých `w` vedľa seba od 0. */
@@ -59,5 +59,40 @@ describe("vycentrovanie lokality", () => {
   it("oba konce kratšie než karta: zarovná sa na kratší", () => {
     expect(cielPosunu({ lavo: 410, pravo: 510 }, 950, 800, 100)).toBe(0);
     expect(cielPosunu({ lavo: 440, pravo: 540 }, 950, 800, 100)).toBe(150);
+  });
+});
+
+describe("réžia línie sa ustáli", () => {
+  /** Ako HernaPlocha: meria, kým prijmiReziu niečo prijme; vráti počet prijatých zmien. */
+  const ustal = (meraj: (rezia: number | null) => number): { readonly rezia: number | null; readonly zmien: number } => {
+    let rezia: number | null = null;
+    let poklesov = 0;
+    let zmien = 0;
+    for (; zmien < 100; zmien++) {
+      const namerana = meraj(rezia);
+      const z = prijmiReziu(rezia, namerana, poklesov);
+      if (z === null) break;
+      if (z === "pokles") poklesov++;
+      rezia = namerana;
+    }
+    return { rezia, zmien };
+  };
+
+  it("meranie skákajúce o 1 px tam a späť sa zastaví (1920 × 1080, Maximum update depth)", () => {
+    // Réžia 133 → karta 179 px → réžia 132 → karta 180 px → réžia 133 …
+    const v = ustal((r) => (r === 133 ? 132 : 133));
+    expect(v.zmien).toBeLessThan(5);
+    expect(v.rezia).toBe(133);
+  });
+
+  it("väčšie kolísanie nadol sa prijme najviac MAX_POKLESOV_REZIE-krát", () => {
+    const v = ustal((r) => (r === 140 ? 120 : 140));
+    expect(v.zmien).toBeLessThanOrEqual(2 * MAX_POKLESOV_REZIE + 1);
+  });
+
+  it("skutočný pokles (napr. nadpis už nie je zalomený) karty zväčší", () => {
+    expect(prijmiReziu(150, 120, 0)).toBe("pokles");
+    expect(prijmiReziu(150, 149, 0)).toBeNull();
+    expect(prijmiReziu(150, 151, 9)).toBe("rast");
   });
 });

@@ -196,3 +196,20 @@ export function usePosunLinie(
   );
   return { stav, posun, naLokalitu };
 }
+
+/** O koľko px musí réžia línie klesnúť, aby sa karty zväčšili, a koľkokrát to smie pre ten istý stav stola. */
+export const POKLES_REZIE = 4;
+export const MAX_POKLESOV_REZIE = 3;
+
+/**
+ * Či prijať nameranú réžiu línie (výšku plste mimo radu kariet). Meranie závisí od veľkosti
+ * kariet (zalomenie nadpisov, posun nakrivo) a pri subpixeloch vedelo skákať o 1 px tam a späť —
+ * réžia ↔ šírka karty sa točili dokola („Maximum update depth exceeded“ pri 1920 × 1080).
+ * Rast sa prijme vždy (karta sa nesmie orezať, réžia je zhora ohraničená), pokles len o viac
+ * než POKLES_REZIE a najviac MAX_POKLESOV_REZIE-krát — tak meranie vždy skončí.
+ */
+export function prijmiReziu(teraz: number | null, namerana: number, poklesov: number): "rast" | "pokles" | null {
+  if (teraz === null || namerana > teraz) return "rast";
+  if (teraz - namerana >= POKLES_REZIE && poklesov < MAX_POKLESOV_REZIE) return "pokles";
+  return null;
+}

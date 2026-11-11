@@ -94,7 +94,7 @@ import { naexNaKarte, PeciatkaNaex, type NaexNaKarte, type StavNaKarte } from ".
 import { farbaKarty, type Sada } from "@naex/tvorba";
 import { HernaKarta, ZarStolaKontext, vzhladKarty, type HernaKartaProps } from "./HernaKarta.tsx";
 import { useZarovnanieLinie } from "./zarovnanieLinie.ts";
-import { sirkaPosuvnejLinie, usePosunLinie } from "./posunLinie.ts";
+import { prijmiReziu, sirkaPosuvnejLinie, usePosunLinie } from "./posunLinie.ts";
 import { Lupa, maxMierkaLupy } from "./Lupa.tsx";
 import { LUPA_PREDVOLENA, useUcet } from "../lib/ucet.tsx";
 import { rezimRadov } from "./spakyAStarsi.ts";
@@ -833,7 +833,12 @@ export function HernaPlocha({
   });
   const [rezervaPosunu, setRezervaPosunu] = useState(REZERVA_POSUNU);
   const [rezervaHran, setRezervaHran] = useState(0);
-  useEffect(() => setRezervaPosunu(REZERVA_POSUNU), [view.kolo]);
+  // Obe rezervy v kole len rastú: presné nastavenie hrán (!==) sa pri výške karty z výšky stola
+  // vedelo točiť s veľkosťou karty dokola (zaokrúhlenie pomeru na hranici).
+  useEffect(() => {
+    setRezervaPosunu(REZERVA_POSUNU);
+    setRezervaHran(0);
+  }, [view.kolo]);
   useLayoutEffect(() => {
     const l = liniaRef.current;
     if (l === null) return;
@@ -852,7 +857,7 @@ export function HernaPlocha({
     let dole = 0;
     for (const el of l.querySelectorAll<HTMLElement>(".s-nastrojmi-dole")) dole = Math.max(dole, parseFloat(el.style.paddingBottom) || 0);
     const rd = Math.ceil((dole / vyska) * 20) / 20;
-    if (rd !== rezervaHran) setRezervaHran(rd);
+    if (rd > rezervaHran) setRezervaHran(rd);
   });
   // Kladiem kartu z ruky do línie: v Zhromaždení (kým nepasujem) alebo v odpovedi na NA EX.
   const vykladam =
@@ -880,6 +885,9 @@ export function HernaPlocha({
   useEffect(() => {
     posuvnikLinie.current = 0;
   }, [sirkaOkna, vyskaOkna]);
+  // Poklesy réžie sa rátajú pre jeden stav stola (prijmiReziu) — nové okno, kolo, fáza či karta začnú odznova.
+  const poklesyRezie = useRef({ kluc: "", pocet: 0 });
+  const klucRezie = `${sirkaOkna}x${vyskaOkna}|${view.kolo}|${view.faza}|${pocetVLinii}`;
   useLayoutEffect(() => {
     const plst = plstRef.current;
     const l = liniaRef.current;
@@ -900,7 +908,10 @@ export function HernaPlocha({
     const podRadom = lok.getBoundingClientRect().bottom - r.bottom;
     const dole = vnutroDole - l.getBoundingClientRect().bottom + okrajDole + posuvnikLinie.current + parseFloat(sl.paddingBottom) + podRadom;
     const rezia = Math.ceil(r.top - vnutroHore + dole);
-    if (reziaLinie === null || Math.abs(rezia - reziaLinie) >= 1) setReziaLinie(rezia);
+    if (poklesyRezie.current.kluc !== klucRezie) poklesyRezie.current = { kluc: klucRezie, pocet: 0 };
+    const zmena = prijmiReziu(reziaLinie, rezia, poklesyRezie.current.pocet);
+    if (zmena === "pokles") poklesyRezie.current.pocet++;
+    if (zmena !== null) setReziaLinie(rezia);
   });
   const sirkaPodlaVysky = stolScroll
     ? SIRKA_CITATELNA
