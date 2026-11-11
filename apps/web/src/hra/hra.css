@@ -1218,8 +1218,8 @@ button.zdroj-starsi[aria-pressed="true"] {
   white-space: nowrap;
 }
 
-/* Duch karty z ruky (Michal 2026-11-11): polopriehľadná karta na konci línie, kde by vytvorila
-   spoj — natočenie a zvislý posun ako skutočná karta (zarovnanieLinie.ts), bez mostíkov
+/* Duch karty z ruky (Michal 2026-11-11): polopriehľadná karta na každom konci línie, kam sa dá
+   vyložiť (so spojom aj bez neho) — natočenie a zvislý posun ako skutočná karta (zarovnanieLinie.ts), bez mostíkov
    a zvýraznenia akcií. Vyplní miesto na kartu, takže línia sa nehýbe. */
 .v-linii.s-duchom {
   position: relative;

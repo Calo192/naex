@@ -235,6 +235,8 @@
   "stol.posunVpravo": "",
   "stol.zaOkrajom": "",
   "stol.naLokalitu": "",
+  "stol.duchMimo": "",
+  "stol.duchMimoSpoj": "",
   "stol.finale": "finale",
   "stol.finaleLokalita": "finale · location",
   "stol.lokalita": "location",
