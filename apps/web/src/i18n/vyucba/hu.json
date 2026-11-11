@@ -86,7 +86,7 @@
     }
   },
   "k-kup-hasic": {
-    "melichar": "",
+    "melichar": "Te kezdesz. Vedd meg a Tűzoltót egy [Cigareta] cigarettáért: [Petelica] Fejese van, az 3 ütés.",
     "sk": {
       "melichar": "Začínaš ty. Kúp Hasiča za [Cigareta] cigaretu: má [Petelica] Petelicu, to sú 3 údery."
     }
@@ -122,9 +122,9 @@
     }
   },
   "i-poldeci": {
-    "melichar": "Hány kártyát játszol ki? A [Poldeci] feles egy kupica pálinka. Ahány teli van nálad, annyi kártya, meg még egy. Kettő van, tehát három.",
+    "melichar": "Hány kártyát játszol ki? A [Poldeci] feles egy kupica pálinka. Minden kártyáért felhajtasz egyet – ahány teli van nálad, annyi kártya. Három van.",
     "sk": {
-      "melichar": "Koľko kariet zahráš? [Poldeci] Poldeci je pohárik pálenky. Koľko máš plných, toľko kariet, a ešte jednu. Máš dva, teda tri."
+      "melichar": "Koľko kariet zahráš? [Poldeci] Poldeci je pohárik pálenky. Za každú kartu jeden vypiješ – koľko máš plných, toľko kariet. Máš tri."
     }
   },
   "k-masiar": {
@@ -164,19 +164,19 @@
     }
   },
   "k-hasic": {
-    "melichar": "",
+    "melichar": "Most a Tűzoltót a Hentes mögé. A [Petelica] Fejese megtalálja a Hentes [Pecka] Gyomrosát: még 3 + 2, tehát 9 : 6. Utána hagyd jóvá.",
     "sk": {
       "melichar": "Teraz Hasiča za Mäsiara. Jeho [Petelica] Petelica nájde Mäsiarovu [Pecka] Pecku: ďalšie 3 + 2, teda 9 : 6. Potom potvrď."
     }
   },
   "k-zh-bot3": {
-    "melichar": "A Törzsvendég hozzátette a Degusztátornőt. Az ő [Pecka] Gyomrosa összekötődött a Traktoros [Rana] Pofonjával: 8 : 9.",
+    "melichar": "A Törzsvendég hozzátette a Veteránt. A [Rana] Pofonja összekötődött a Traktoros [Rana] Pofonjával: 9 : 8.",
     "sk": {
-      "melichar": "Štamgast pridal Degustátorku. Jej [Pecka] Pecka sa spojila s [Rana] Ranou Traktoristu: 8 : 9."
+      "melichar": "Štamgast pridal Veterána. Jeho [Rana] Rana sa spojila s [Rana] Ranou Traktoristu: 9 : 8."
     }
   },
   "k-pas1": {
-    "melichar": "",
+    "melichar": "Az Iszákost tartsd meg, és passzolj (P). Az utolsó teli [Poldeci] felesedre mindjárt szükséged lesz.",
     "sk": {
       "melichar": "Pijana si nechaj a pasuj (P). Posledný plný [Poldeci] poldeci budeš o chvíľu potrebovať."
     }
@@ -202,10 +202,10 @@
     }
   },
   "k-naex": {
-    "melichar": "És most NA EX, erről kapta a nevét a játék: válaszd ki a Traktorost, és nyomd meg a NA EX-et. Ráöntesz egy felest, és kialszanak az ütései.",
+    "melichar": "És most NA EX, erről kapta a nevét a játék: válaszd ki a Traktorost, és nyomd meg a NA EX-et. Ráöntöd az utolsó felesedet, és kialszanak az ütései.",
     "inak": "A Traktoros, az ott középen a Törzsvendégnél. Arra.",
     "sk": {
-      "melichar": "A teraz NA EX, podľa neho sa hra volá: vyber Traktoristu a stlač NA EX. Vyleješ naň poldeci a jeho údery zhasnú.",
+      "melichar": "A teraz NA EX, podľa neho sa hra volá: vyber Traktoristu a stlač NA EX. Vyleješ naň posledný poldeci a jeho údery zhasnú.",
       "inak": "Traktorista, ten v strede u Štamgasta. Na neho."
     }
   },
@@ -216,15 +216,15 @@
     }
   },
   "k-hotovo-bot": {
-    "melichar": "",
+    "melichar": "A Törzsvendég végzett, és előkerült a NA EX: a Traktorosnak mindkét [Rana] Pofonja kialudt. Hogy mit mutat az Ivászat táblázata, azzal ma ne törődj. Jön a verekedés.",
     "sk": {
       "melichar": "Štamgast skončil a NA EX sa ukázalo: Traktoristovi zhasli obe [Rana] Rany. Čo ukáže tabuľka Pitky, dnes nechaj tak. Ide bitka."
     }
   },
   "i-bitka": {
-    "melichar": "Verekedés! A te ütéseid: négy Gyomros, darabja 2, és két Pofon, darabja 1, összesen 10. A Törzsvendégnek maradt egy Fejes meg két Gyomros, 7. 3-mal nyertél.",
+    "melichar": "Verekedés! A te ütéseid: három Gyomros, darabja 2, és egy Fejes, összesen 9. A Törzsvendégnek maradt egy Fejes, egy Pofon és egy Gyomros, 6. 3-mal nyertél.",
     "sk": {
-      "melichar": "Bitka! Tvoje údery: štyri Pecky po 2 a dve Rany po 1, spolu 10. Štamgastovi ostala Petelica a dve Pecky, 7. Vyhral si o 3."
+      "melichar": "Bitka! Tvoje údery: tri Pecky po 2 a Petelica, spolu 9. Štamgastovi ostala Petelica, Rana a Pecka, 6. Vyhral si o 3."
     }
   },
   "q-bitka": {
@@ -242,22 +242,22 @@
     }
   },
   "i-spaky": {
-    "melichar": "A győztes minden kártyáért a sorban kap egy csikket, az ellenféléiért is: hat kártya, hat csikk. Cigarettavégek, én egész életemben azokat gyűjtöm.",
+    "melichar": "A győztes minden kártyáért a sorban kap egy csikket, az ellenféléiért is: öt kártya, öt csikk. Cigarettavégek, én egész életemben azokat gyűjtöm.",
     "sk": {
-      "melichar": "Víťaz berie špak za každú kartu v línii, aj za súperove: šesť kariet, šesť špakov. Ohorky, tie ja zbieram celý život."
+      "melichar": "Víťaz berie špak za každú kartu v línii, aj za súperove: päť kariet, päť špakov. Ohorky, tie ja zbieram celý život."
     }
   },
   "q-lokality": {
     "melichar": "Hány csikket adott neked az Erdei útért vívott verekedés?",
-    "moznost.1": "Hatot, minden kártyáért a sorban egyet.",
+    "moznost.1": "Ötöt, minden kártyáért a sorban egyet.",
     "vysvetlenie.1": "Igen. Ezért verekszel.",
-    "moznost.2": "Tízet, az ütéseimért.",
+    "moznost.2": "Kilencet, az ütéseimért.",
     "vysvetlenie.2": "Az ütések döntötték el, ki nyert. A verekedésért járó csikkek a sor kártyáiért járnak.",
     "sk": {
       "melichar": "Koľko špakov ti dala bitka o Lesnú cestu?",
-      "moznost.1": "Šesť, za každú kartu v línii jeden.",
+      "moznost.1": "Päť, za každú kartu v línii jeden.",
       "vysvetlenie.1": "Áno. Preto sa biješ.",
-      "moznost.2": "Desať, za moje údery.",
+      "moznost.2": "Deväť, za moje údery.",
       "vysvetlenie.2": "Údery rozhodli, kto vyhral. Špaky za bitku sú za karty v línii."
     }
   },
@@ -302,9 +302,9 @@
     }
   },
   "i-vitaj2": {
-    "melichar": "Visszajöttél? Azt hittem, a Törzsvendég elvette a kedved. Ma NA EX teljes gőzzel és egy-két aljasság. Új kör: mindenkinek újratöltöttek egy üres [Poldeci] felest, neked azt, amelyik a NA EX-ből maradt. És a verekedés után húzol 2 kártyát: jött a Ministráns és az Iszákos.",
+    "melichar": "Visszajöttél? Azt hittem, a Törzsvendég elvette a kedved. Ma NA EX teljes gőzzel és egy-két aljasság. Új kör: a verekedés után minden [Poldeci] feles újratöltődött, megint három van. És a verekedés után húzol 2 kártyát: jött a Ministráns és az Iszákos.",
     "sk": {
-      "melichar": "Si späť? Myslel som, že ťa Štamgast odradil. Dnes NA EX naplno a zopár podlostí. Nové kolo: každému sa dolial jeden vypitý [Poldeci] poldeci, tebe ten z NA EX. A po bitke si doberieš 2 karty: prišiel Miňištrant a Pijan."
+      "melichar": "Si späť? Myslel som, že ťa Štamgast odradil. Dnes NA EX naplno a zopár podlostí. Nové kolo: po bitke sa všetky [Poldeci] poldeci doliali, máš zas tri. A po bitke si doberieš 2 karty: prišiel Miňištrant a Pijan."
     }
   },
   "i-rola": {
@@ -418,33 +418,33 @@
     }
   },
   "k-vypit": {
-    "melichar": "Most két kártya egy lépésben: az Iszákost a Focipálya mellé – azt, amelyiknek a [Poldeci] Felese a [Pecka] Gyomrossal, a [Rana] Pofonja a [Rana] Pofonnal találkozik –, mögé pedig a Ministránst, aztán hagyd jóvá. A lépés második kártyája egy teli [Poldeci] felesbe kerül: a játék magától felhajtja, a korlát eggyel csökken, a máj eggyel nő.",
+    "melichar": "Most két kártya egy lépésben: az Iszákost a Focipálya mellé – azt, amelyiknek a [Poldeci] Felese a [Pecka] Gyomrossal, a [Rana] Pofonja a [Rana] Pofonnal találkozik –, mögé pedig a Ministránst, aztán hagyd jóvá. Minden kártya felhajtja a maga [Poldeci] felesét, és ugyanabban a lépésben minden extráért adsz egy [Cigareta] cigarettát, a máj pedig eggyel nő.",
     "zle.1": "Ez az Iszákos a [Pecka] Gyomrossal a [Rana] Pofont kötné össze, lent pedig a [Poldeci] Felest. Ugyanoda jutnál, de ezt tedd el a harmadik körre. A másikat vedd.",
     "inak": "Iszákos a Focipálya mellé, a Ministráns mögé. Két kártya, egy lépés.",
     "sk": {
-      "melichar": "Teraz dve karty v jednom ťahu: Pijana k Ihrisku – toho, ktorého [Poldeci] Poldeci sa stretne s [Pecka] Peckou a [Rana] Rana s [Rana] Ranou – a za neho Miňištranta, potom potvrď. Druhá karta v ťahu stojí plný [Poldeci] poldeci: hra ho vypije sama, limit klesne o jedna, pečeň stúpne o jedna.",
+      "melichar": "Teraz dve karty v jednom ťahu: Pijana k Ihrisku – toho, ktorého [Poldeci] Poldeci sa stretne s [Pecka] Peckou a [Rana] Rana s [Rana] Ranou – a za neho Miňištranta, potom potvrď. Každá karta vypije svoj [Poldeci] poldeci a za každú navyše v tom istom ťahu dáš [Cigareta] cigaretu a pečeň stúpne o jedna.",
       "zle.1": "Tento Pijan by spojil s [Pecka] Peckou [Rana] Ranu a dole [Poldeci] Poldeci. Vyšlo by to nastejno, ale toho si odlož na tretie kolo. Zober toho druhého.",
       "inak": "Pijan k Ihrisku, Miňištrant za neho. Dve karty, jeden ťah."
     }
   },
   "q-vypit": {
     "melichar": "Mibe került a lépés második kártyája?",
-    "moznost.1": "Egy teli felesbe: kisebb korlát és több máj.",
-    "vysvetlenie.1": "Igen. Az ivás nincs ingyen. Higgy nekem.",
+    "moznost.1": "Egy felesbe, mint minden kártya, plusz egy cigarettába és májba.",
+    "vysvetlenie.1": "Igen. Két kártya egyszerre, egy cigaretta; három egyszerre, kettő. Az ivás nincs ingyen. Higgy nekem.",
     "moznost.2": "Semmibe, csak letettem.",
-    "vysvetlenie.2": "Nézd a feleseket: az egyik üres. És sajnos nem az enyém.",
+    "vysvetlenie.2": "Nézd a cigarettákat: egy elfogyott, és egy feles is. És sajnos nem az enyém.",
     "sk": {
       "melichar": "Čo ťa stála druhá karta v ťahu?",
-      "moznost.1": "Plný poldeci: limit menej a pečeň viac.",
-      "vysvetlenie.1": "Áno. Pitie nie je zadarmo. Ver mi.",
+      "moznost.1": "Poldeci ako každá karta, a navyše cigaretu a pečeň.",
+      "vysvetlenie.1": "Áno. Dve karty naraz, jedna cigareta; tri naraz, dve. Pitie nie je zadarmo. Ver mi.",
       "moznost.2": "Nič, len som ju položil.",
-      "vysvetlenie.2": "Pozri na poldeci: jeden je prázdny. A nie môj, bohužiaľ."
+      "vysvetlenie.2": "Pozri na cigarety: jedna ubudla, a poldeci tiež. A nie môj, bohužiaľ."
     }
   },
   "i-prevaha-tvoja": {
-    "melichar": "A gyepen kettő van neked, a Törzsvendégnek senki: a fölény a tiéd, és vele az éled akciói meg a Focipálya 2 keménye is. A Ministráns [Viera] Hite pedig kioltja az ellenfél [Povera] Babonáit, és ha nincs neki, a keményéből vesz el: 6 : 1. A korlát elfogyott, innen a játék passzol helyetted.",
+    "melichar": "A gyepen kettő van neked, a Törzsvendégnek senki: a fölény a tiéd, és vele az éled akciói meg a Focipálya 2 keménye is. A Ministráns [Viera] Hite pedig kioltja az ellenfél [Povera] Babonáit, és ha nincs neki, a keményéből vesz el: 6 : 1. Egy teli [Poldeci] felesed maradt.",
     "sk": {
-      "melichar": "Na trávniku máš dvoch, Štamgast nikoho: prevaha je tvoja a s ňou akcie tvojej hrany aj 2 tuhé z Ihriska. A Miňištrantova [Viera] Viera ruší súperove [Povera] Povery, a keď žiadne nemá, uberá mu tuhé: 6 : 1. Limit je minutý, ďalej za teba pasuje hra."
+      "melichar": "Na trávniku máš dvoch, Štamgast nikoho: prevaha je tvoja a s ňou akcie tvojej hrany aj 2 tuhé z Ihriska. A Miňištrantova [Viera] Viera ruší súperove [Povera] Povery, a keď žiadne nemá, uberá mu tuhé: 6 : 1. Plný [Poldeci] poldeci ti ostal jeden."
     }
   },
   "i-pitky": {
@@ -494,7 +494,7 @@
     }
   },
   "k-pas2": {
-    "melichar": "",
+    "melichar": "Passzolj (P). A passzért nem kapsz semmit, de a teli [Poldeci] felesed megmarad – az Ivászat után újratöltenek még egyet, és a második Gyűlésen többet játszol ki.",
     "sk": {
       "melichar": "Pasuj (P). Za pas nedostaneš nič, ale plný [Poldeci] poldeci ti ostane – po Pitke sa ti doleje a v druhom Zhromaždení zahráš viac."
     }
@@ -564,9 +564,9 @@
     }
   },
   "i-cirhoza2": {
-    "melichar": "Neked meg kicsordult a májad: a felhajtott feles, az Iszákos három akciója és a Ministráns mája, amit az Ikrek kötöttek össze neked – összesen 5. Májzsugorod van. A dobópaklidban fekszik, akkor jut a kezedbe, amikor a paklit megkeverik – és amíg meg nem szabadulsz tőle, a játék végén 3 csikkedbe kerül.",
+    "melichar": "Neked meg kicsordult a májad: a lépés második kártyája, az Iszákos három akciója és a Ministráns mája, amit az Ikrek kötöttek össze neked – összesen 5. Májzsugorod van. A dobópaklidban fekszik, akkor jut a kezedbe, amikor a paklit megkeverik – és amíg meg nem szabadulsz tőle, a játék végén 3 csikkedbe kerül.",
     "sk": {
-      "melichar": "A tebe pretiekla pečeň: vypitý poldeci, tri akcie Pijana a pečeň Miňištranta, ktorú ti spojili Dvojčatá – spolu 5. Máš Cirhózu. Leží v tvojom odhadzovacom balíčku, do ruky príde, keď sa balíček zamieša – a kým sa jej nezbavíš, stojí ťa na konci hry 3 špaky."
+      "melichar": "A tebe pretiekla pečeň: druhá karta v ťahu, tri akcie Pijana a pečeň Miňištranta, ktorú ti spojili Dvojčatá – spolu 5. Máš Cirhózu. Leží v tvojom odhadzovacom balíčku, do ruky príde, keď sa balíček zamieša – a kým sa jej nezbavíš, stojí ťa na konci hry 3 špaky."
     }
   },
   "q-dlh": {
@@ -584,9 +584,9 @@
     }
   },
   "k-zh2-bot3": {
-    "melichar": "Második Gyűlés, a Törzsvendég kezd: Anonim alkoholista az Iszákosa mellé.",
+    "melichar": "Az Ivászat után újratöltődik egy [Poldeci] feles, és még egy minden összekötött Feles akciódért – az Iszákosnak hála megint három teli van. Második Gyűlés, a Törzsvendég kezd: Anonim alkoholista az Iszákosa mellé.",
     "sk": {
-      "melichar": "Druhé Zhromaždenie, Štamgast začína: Anonymný alkoholik k jeho Pijanovi."
+      "melichar": "Po Pitke sa doleje jeden [Poldeci] poldeci a ďalší za každé tvoje spojené Poldeci – vďaka Pijanovi máš zas tri plné. Druhé Zhromaždenie, Štamgast začína: Anonymný alkoholik k jeho Pijanovi."
     }
   },
   "k-prevaha": {
@@ -596,9 +596,9 @@
     }
   },
   "k-pas2-bot": {
-    "melichar": "A Törzsvendég passzolt: a kártyáért, amit még kijátszhatott volna, kapott egy [Cigareta] cigarettát. A passz fizet, a kártyákkal spórolni megéri.",
+    "melichar": "A Törzsvendég passzolt. A passzért semmit sem kapott, de két teli [Poldeci] felese megmaradt. Hogy mire, meglátod az Ivászaton.",
     "sk": {
-      "melichar": "Štamgast pasoval: za kartu, ktorú ešte smel vyložiť, dostal [Cigareta] cigaretu. Pas sa platí, šetriť karty sa vypláca."
+      "melichar": "Štamgast pasoval. Za pas nedostal nič, ale dva plné [Poldeci] poldeci mu ostali. Na čo, uvidíš v Pitke."
     }
   },
   "k-prevaha2": {
@@ -608,23 +608,23 @@
     }
   },
   "k-pas3": {
-    "melichar": "",
+    "melichar": "Az Iszákost tartsd meg, és passzolj (P). Az utolsó teli [Poldeci] felesed a NA EX-é.",
     "sk": {
       "melichar": "Pijana si nechaj a pasuj (P). Posledný plný [Poldeci] poldeci je na NA EX."
     }
   },
   "q-dlh-karta": {
-    "melichar": "A Törzsvendégnek már van egy Adóssága, és az asztalon két összekötött Hazárd fekszik neki. Hány Adóssága lesz a második Ivászat után?",
-    "moznost.1": "Három: az első megmarad, és jön még kettő.",
+    "melichar": "A Törzsvendégnek már van egy Adóssága, és az asztalon egy összekötött Hazárd fekszik neki. Hány Adóssága lesz a második Ivászat után?",
+    "moznost.1": "Kettő: az első megmarad, és jön egy második.",
     "vysvetlenie.1": "Igen. Ami az asztalon fekszik, minden Ivászaton utolér, és az Adósság nem vész el sehová.",
-    "moznost.2": "Kettő: az Adósság az Ivászat után nullázódik.",
-    "vysvetlenie.2": "A máj nullázódik, nem az Adósság. Az első megmaradt, és jön még kettő.",
+    "moznost.2": "Egy: az Adósság az Ivászat után nullázódik.",
+    "vysvetlenie.2": "A máj nullázódik, nem az Adósság. Az első megmaradt, és jön egy második.",
     "sk": {
-      "melichar": "Štamgast už jeden Dlh má a na stole mu ležia dva spojené Hazardy. Koľko Dlhov bude mať po druhej Pitke?",
-      "moznost.1": "Tri: ten prvý ostane a pribudnú dva.",
+      "melichar": "Štamgast už jeden Dlh má a na stole mu leží spojený Hazard. Koľko Dlhov bude mať po druhej Pitke?",
+      "moznost.1": "Dva: ten prvý ostane a pribudne druhý.",
       "vysvetlenie.1": "Áno. Čo leží na stole, ťa dobehne v každej Pitke, a Dlh sa nikam nestratí.",
-      "moznost.2": "Dva: Dlh sa po Pitke vynuluje.",
-      "vysvetlenie.2": "Vynuluje sa pečeň, nie Dlh. Ten prvý ostal a dva pribudnú."
+      "moznost.2": "Jeden: Dlh sa po Pitke vynuluje.",
+      "vysvetlenie.2": "Vynuluje sa pečeň, nie Dlh. Ten prvý ostal a druhý pribudne."
     }
   },
   "i-naex2": {
@@ -670,9 +670,9 @@
     }
   },
   "k-odpoved-bot": {
-    "melichar": "Most a válaszok: az ellenfél minden NA EX-éért a játékos kijátszhat egy kártyát a kezéből, a korláton kívül és képpel lefelé – de egy teli [Poldeci] felesért, amit közben felhajt. Elsőként a támadó válaszol – a Törzsvendég letett egy kártyát képpel lefelé a te Alkoholistád mögé. Neked nincs teli felesed, az a NA EX alatt fekszik, úgyhogy nem válaszolsz. Hogy mi az, meglátod, ha a válaszok felfordulnak.",
+    "melichar": "Most a válaszok: az ellenfél minden NA EX-éért a játékos kijátszhat egy kártyát a kezéből képpel lefelé – de egy teli [Poldeci] felesért, amit közben felhajt. Elsőként a támadó válaszol – a Törzsvendég letett egy kártyát képpel lefelé a te Alkoholistád mögé, erre spórolta a feleseit. Neked nincs teli felesed, az a NA EX alatt fekszik, úgyhogy nem válaszolsz. Hogy mi az, meglátod, ha a válaszok felfordulnak.",
     "sk": {
-      "melichar": "Teraz odpovede: za každé súperovo NA EX smie hráč vyložiť jednu kartu z ruky, mimo limitu a lícom dole – ale za plný [Poldeci] poldeci, ten pri tom vypije. Prvý odpovedá útočník – Štamgast dal kartu lícom dole za tvojho Alkoholika. Ty plný poldeci nemáš, ten ti leží pod NA EX, tak neodpovedáš. Čo to je, uvidíš, až sa odpovede otočia."
+      "melichar": "Teraz odpovede: za každé súperovo NA EX smie hráč vyložiť jednu kartu z ruky lícom dole – ale za plný [Poldeci] poldeci, ten pri tom vypije. Prvý odpovedá útočník – Štamgast dal kartu lícom dole za tvojho Alkoholika, na to si šetril poldeci. Ty plný poldeci nemáš, ten ti leží pod NA EX, tak neodpovedáš. Čo to je, uvidíš, až sa odpovede otočia."
     }
   },
   "i-odpovede": {
@@ -702,9 +702,9 @@
     }
   },
   "k-povera3": {
-    "melichar": "A Hit kioltja a Babonákat, de a Macskának Folyton hatása van – olyan hatás, ami mindig érvényes: a Törzsvendég Babonáit a Hit nem oltja ki. Négy van neki és egy Botrány, ez 6 puha. A te két Babonád, a Ministránsé és az Igasságharcosé, kioltotta két [Viera] Hitét – neked csak a Botrány maradt, 2. A veszekedést 4-gyel nyerte, és verekedés után a pletykájára költi. Te ezúttal csak nézed.",
+    "melichar": "A Hit kioltja a Babonákat, de a Macskának Folyton hatása van – olyan hatás, ami mindig érvényes: a Törzsvendég Babonáit a Hit nem oltja ki. Négy van neki és egy Botrány, ez 6 puha. Neked két Babonád van, a Ministránsé és az Igasságharcosé, meg egy Botrány, 4. A veszekedést 2-vel nyerte, és verekedés után a pletykájára költi. Te ezúttal csak nézed.",
     "sk": {
-      "melichar": "Viera ruší Povery, ale Mačka má Furt – efekt, ktorý platí stále: Štamgastove Povery sa Vierou nerušia. Má štyri a Pohoršenie, to je 6 mäkkých. Tvoje dve Povery, Miňištranta a Praudovravca, mu zrušili dve jeho [Viera] Viery – ostalo ti len Pohoršenie, 2. Hádku vyhral o 4 a po bitke ju minie na svoje reči. Ty tentoraz len pozeráš."
+      "melichar": "Viera ruší Povery, ale Mačka má Furt – efekt, ktorý platí stále: Štamgastove Povery sa Vierou nerušia. Má štyri a Pohoršenie, to je 6 mäkkých. Ty máš dve Povery, Miňištranta a Praudovravca, a Pohoršenie, 4. Hádku vyhral o 2 a po bitke ju minie na svoje reči. Ty tentoraz len pozeráš."
     }
   },
   "q-povera": {
@@ -722,9 +722,9 @@
     }
   },
   "i-remiza2": {
-    "melichar": "Viszont a Hiteidnek nem volt mit kioltaniuk, így elvették az összes keményét: 4 : 0, a verekedés a tiéd. Ha a kemény egyenlő lenne, az nyer, akinek kevesebb bevallott Adóssága van – a Törzsvendégnek három volt, neked egy sem.",
+    "melichar": "Viszont a Hiteidnek nem volt mit kioltaniuk, így elvették az összes keményét: 5 : 0, a verekedés a tiéd. Ha a kemény egyenlő lenne, az nyer, akinek kevesebb bevallott Adóssága van – a Törzsvendégnek kettő volt, neked egy sem.",
     "sk": {
-      "melichar": "Zato tvoje Viery nemali čo rušiť, tak mu zobrali všetko tuhé: 4 : 0, bitka je tvoja. Keby bolo tuhé rovnako, vyhrá, kto má menej priznaných Dlhov – Štamgast mal tri, ty žiadny."
+      "melichar": "Zato tvoje Viery nemali čo rušiť, tak mu zobrali všetko tuhé: 5 : 0, bitka je tvoja. Keby bolo tuhé rovnako, vyhrá, kto má menej priznaných Dlhov – Štamgast mal dva, ty žiadny."
     }
   },
   "q-remiza2": {
@@ -748,15 +748,15 @@
     }
   },
   "k-nakladacka2": {
-    "melichar": "Győzelem 4-gyel. A különbséget Elpáholásnak hívják, és a félelemre költöd, mint múltkor. A Plébános narancson fél tőled, és a pirosig pont 3 hiányzik: emeld a félelmét pirosra. A maradék 1-et add a Buszsofőrnek sárgára – mindent el kell osztani, amit lehet –, és hagyd jóvá.",
+    "melichar": "Győzelem 5-tel. A különbséget Elpáholásnak hívják, és a félelemre költöd, mint múltkor. A Plébános narancson fél tőled, és a pirosig pont 3 hiányzik: emeld a félelmét pirosra. A maradék 2-t add a Kocsmárosnénak és a Buszsofőrnek, mindkettőnek sárgára – mindent el kell osztani, amit lehet –, és hagyd jóvá.",
     "sk": {
-      "melichar": "Výhra o 4. Rozdiel sa volá Nakladačka a minieš ju na strach, ako minule. Farár sa ťa bojí na oranžovej a do červenej je to presne 3: zdvihni mu strach na červenú. Zvyšný 1 daj Autobusárovi na žltú – rozdeliť treba všetko, čo sa dá – a potvrď."
+      "melichar": "Výhra o 5. Rozdiel sa volá Nakladačka a minieš ju na strach, ako minule. Farár sa ťa bojí na oranžovej a do červenej je to presne 3: zdvihni mu strach na červenú. Zvyšné 2 daj Krčmárke a Autobusárovi, každému na žltú – rozdeliť treba všetko, čo sa dá – a potvrď."
     }
   },
   "i-cena-posunu": {
-    "melichar": "Miért éppen így? Minden fok kerül valamibe: a sárgáig 1, a narancsig 2, a pirosig 3. Múltkor a Plébános 1 + 2-be került, ma a Plébános 3-ba és a Buszsofőr 1-be. El kell osztani, amit lehet; ami a következő fokra nem elég, elvész.",
+    "melichar": "Miért éppen így? Minden fok kerül valamibe: a sárgáig 1, a narancsig 2, a pirosig 3. Múltkor a Plébános 1 + 2-be került, ma a Plébános 3-ba, a Kocsmárosné 1-be és a Buszsofőr 1-be. El kell osztani, amit lehet; ami a következő fokra nem elég, elvész.",
     "sk": {
-      "melichar": "Prečo práve tak? Každý stupeň niečo stojí: do žltej 1, do oranžovej 2, do červenej 3. Minule stál Farár 1 + 2, dnes Farár 3 a Autobusár 1. Rozdeliť sa musí, čo sa dá; čo na ďalší stupeň nestačí, prepadne."
+      "melichar": "Prečo práve tak? Každý stupeň niečo stojí: do žltej 1, do oranžovej 2, do červenej 3. Minule stál Farár 1 + 2, dnes Farár 3, Krčmárka 1 a Autobusár 1. Rozdeliť sa musí, čo sa dá; čo na ďalší stupeň nestačí, prepadne."
     }
   },
   "q-prebytok": {
@@ -780,9 +780,9 @@
     }
   },
   "i-body": {
-    "melichar": "A verekedés után jött a végrehajtó is: akinek Adóssága van, annak elégeti az Adósságai felét, felfelé kerekítve, és ugyanannyi csikket. A Törzsvendégnek három volt: kettő elégett, egy maradt. Csikket viszont nem veszített – hogy miért, mindjárt.",
+    "melichar": "A verekedés után jött a végrehajtó is: akinek Adóssága van, annak elégeti az Adósságai felét, felfelé kerekítve, és ugyanannyi csikket. A Törzsvendégnek kettő volt: egy elégett, egy maradt. Csikket viszont nem veszített – hogy miért, mindjárt.",
     "sk": {
-      "melichar": "Po bitke prišiel aj exekútor: kto má Dlh, tomu spáli polovicu Dlhov, zaokrúhlene nahor, a rovnako veľa špakov. Štamgast mal tri: dva mu zhoreli, jeden mu ostal. Špak ale nestratil – prečo, hneď."
+      "melichar": "Po bitke prišiel aj exekútor: kto má Dlh, tomu spáli polovicu Dlhov, zaokrúhlene nahor, a rovnako veľa špakov. Štamgast mal dva: jeden mu zhorel, jeden mu ostal. Špak ale nestratil – prečo, hneď."
     }
   },
   "i-priazen": {
@@ -792,19 +792,19 @@
     }
   },
   "k-reci-bot": {
-    "melichar": "A veszekedést a Törzsvendég nyerte, és pletykára költötte – rágalomra. A pletyka fokokat foglal el a te hőmérődön, és ugyanannyiba kerül, mint a félelem: a Plébánosnál elfoglalta a pirosadat 3-ért, a Kocsmárosnénál a sárgádat 1-ért. Az a fok most az övé: a Plébános a pirosért minden verekedés után 3-at ad neki, akár nyer, akár nem, neked pedig a 6-ból 3 marad.",
+    "melichar": "A veszekedést a Törzsvendég nyerte, és pletykára költötte – rágalomra. A pletyka fokokat foglal el a te hőmérődön, és ugyanannyiba kerül, mint a félelem: a Kocsmárosnénál és a Buszsofőrnél is elfoglalta a sárgádat, 1 + 1-ért. Az a fok most az övé: a sárgáért mindkettő minden verekedés után 1-et ad neki, akár nyer, akár nem, neked pedig semmit.",
     "sk": {
-      "melichar": "Hádku vyhral Štamgast a minul ju na reči – ohováranie. Reči obsadzujú stupne na tvojom teplomere a stoja rovnako ako strach: pri Farárovi obsadil tvoju červenú za 3, pri Krčmárke tvoju žltú za 1. Ten stupeň je teraz jeho: Farár mu za červenú dá po každej bitke 3, nech vyhrá, či nie, a tebe zo 6 ostanú 3."
+      "melichar": "Hádku vyhral Štamgast a minul ju na reči – ohováranie. Reči obsadzujú stupne na tvojom teplomere a stoja rovnako ako strach: pri Krčmárke aj pri Autobusárovi obsadil tvoju žltú, za 1 + 1. Ten stupeň je teraz jeho: za žltú mu každý z nich dá po každej bitke 1, nech vyhrá, či nie, a tebe nedajú nič."
     }
   },
   "q-makke": {
-    "melichar": "A Törzsvendégnek pletykája van a pirosadon a Plébánosnál. Mikor fizet neki érte a Plébános?",
+    "melichar": "A Törzsvendégnek pletykája van a sárgádon a Kocsmárosnénál. Mikor fizet neki érte a Kocsmárosné?",
     "moznost.1": "A legközelebbi verekedés után, akkor is, ha elveszíti.",
     "vysvetlenie.1": "Igen. A pletyka a győztesnek és a vesztesnek is fizet. Csak annál csökken, aki elveszíti a veszekedést.",
     "moznost.2": "Csak ha megnyeri a verekedést.",
     "vysvetlenie.2": "Az a félelem. A pletyka a vesztesnek is fizet.",
     "sk": {
-      "melichar": "Štamgast má reči na tvojej červenej pri Farárovi. Kedy mu za ne Farár zaplatí?",
+      "melichar": "Štamgast má reči na tvojej žltej pri Krčmárke. Kedy mu za ne Krčmárka zaplatí?",
       "moznost.1": "Po najbližšej bitke, aj keď ju prehrá.",
       "vysvetlenie.1": "Áno. Reči platia víťazovi aj porazenému. Klesnú len tomu, kto prehrá hádku.",
       "moznost.2": "Len keď vyhrá bitku.",
@@ -812,9 +812,9 @@
     }
   },
   "i-strach-starosta": {
-    "melichar": "Nézd a Plébánost: piroson fél tőled, pedig azt a pirosat a Törzsvendég tartja pletykával. A félelem marad, a pletyka gyengül. Az elöljáró, aki piroson fél tőled, rémült: őt megnyert verekedés után elfoghatod, a harmadik részben megmutatom. Aki pedig megnyeri a verekedést, miközben négy elöljáró piroson fél tőle, azonnal nyert.",
+    "melichar": "Nézd a Kocsmárosnét: sárgán fél tőled, pedig azt a sárgát a Törzsvendég tartja pletykával. A félelem marad, a pletyka gyengül. A Plébános pedig piroson fél tőled – rémült: őt megnyert verekedés után elfoghatod, a harmadik részben megmutatom. Aki pedig megnyeri a verekedést, miközben négy elöljáró piroson fél tőle, azonnal nyert.",
     "sk": {
-      "melichar": "Pozri na Farára: bojí sa ťa na červenej, aj keď tú červenú drží Štamgast rečami. Strach ostáva, reči slabnú. Starší, ktorý sa ťa bojí na červenej, je vydesený: toho smieš po vyhratej bitke zajať, ukážem ti v tretej časti. A kto vyhrá bitku, keď sa ho na červenej bojí štvorica starších, vyhral hneď."
+      "melichar": "Pozri na Krčmárku: bojí sa ťa na žltej, aj keď tú žltú drží Štamgast rečami. Strach ostáva, reči slabnú. A Farár sa ťa bojí na červenej – je vydesený: toho smieš po vyhratej bitke zajať, ukážem ti v tretej časti. A kto vyhrá bitku, keď sa ho na červenej bojí štvorica starších, vyhral hneď."
     }
   },
   "q-vydesenie": {
@@ -832,9 +832,9 @@
     }
   },
   "i-spaky2": {
-    "melichar": "Csikkek: 10 a sor kártyáiért, az övéiért is, és 3 az elöljáróktól. A Törzsvendég megnyerte a veszekedést, ezért minden saját kártyájáért a sorban kapott egy csikket, hatot, pedig a verekedést elvesztette. 19 : 6. A vereségért kapott egy cigarettát, hogy ne búsuljon – és egyet rögtön odaadott neked sarcként: minden verekedés után az ellenfél egy cigarettát fizet neked minden elöljáróért, aki piroson fél tőled. A Buszsofőr pedig sárgán fél tőled, ezért a Törzsvendégnek a Keresztapa kegyét adta: a maradék Adósságát átírta rád.",
+    "melichar": "Csikkek: 9 a sor kártyáiért, az övéiért is, és 3 az elöljáróktól. A Törzsvendég megnyerte a veszekedést, ezért minden saját kártyájáért a sorban kapott egy csikket, ötöt, pedig a verekedést elvesztette. 17 : 5. A vereségért kapott egy cigarettát, hogy ne búsuljon – és egyet rögtön odaadott neked sarcként: minden verekedés után az ellenfél egy cigarettát fizet neked minden elöljáróért, aki piroson fél tőled. A Buszsofőr pedig sárgán fél tőled, ezért a Törzsvendégnek a Keresztapa kegyét adta: a maradék Adósságát átírta rád.",
     "sk": {
-      "melichar": "Špaky: 10 za karty v línii, aj za jeho, a 3 od starších. Štamgast vyhral hádku, tak dostal špak za každú svoju kartu v línii, šesť, hoci bitku prehral. 19 : 6. Za prehru dostal cigaretu, aby sa neutrápil – a jednu ti hneď dal ako výpalné: po každej bitke ti súper platí cigaretu za každého staršieho, ktorý sa ťa bojí na červenej. A Autobusár sa ťa bojí na žltej, tak dal Štamgastovi priazeň Kmotra: jeho zvyšný Dlh prepísal na teba."
+      "melichar": "Špaky: 9 za karty v línii, aj za jeho, a 3 od starších. Štamgast vyhral hádku, tak dostal špak za každú svoju kartu v línii, päť, hoci bitku prehral. 17 : 5. Za prehru dostal cigaretu, aby sa neutrápil – a jednu ti hneď dal ako výpalné: po každej bitke ti súper platí cigaretu za každého staršieho, ktorý sa ťa bojí na červenej. A Autobusár sa ťa bojí na žltej, tak dal Štamgastovi priazeň Kmotra: jeho zvyšný Dlh prepísal na teba."
     }
   },
   "i-dovidenia2": {
@@ -946,9 +946,9 @@
     }
   },
   "k-priznaj": {
-    "melichar": "Előbb az a Májzsugor. Az átkot a kezedből bevallhatod: kattints rá a kezedben, aztán a megjelenő Bevall mezőre, és hagyd jóvá. A bevallás nem fogyasztja sem a korlátot, sem a lépést.",
+    "melichar": "Előbb az a Májzsugor. Az átkot a kezedből bevallhatod: kattints rá a kezedben, aztán a megjelenő Bevall mezőre, és hagyd jóvá. A bevallás nem kerül sem felesbe, sem lépésbe.",
     "sk": {
-      "melichar": "Najprv tá Cirhóza. Kliatbu z ruky smieš priznať: klikni na ňu v ruke a potom na pole Priznať, ktoré sa ukáže, a potvrď. Priznanie nemíňa limit ani ťah."
+      "melichar": "Najprv tá Cirhóza. Kliatbu z ruky smieš priznať: klikni na ňu v ruke a potom na pole Priznať, ktoré sa ukáže, a potvrď. Priznanie nestojí poldeci ani ťah."
     }
   },
   "i-nastup": {
@@ -1004,15 +1004,15 @@
     }
   },
   "k-zh3-2": {
-    "melichar": "Most az Iszákost a Visszaeső mögé. A [Rana] Pofonja összekötődik a Visszaesővel, és te kapod, mert az Iszákos a tiéd. A Vasvillával kettőt ér: előrejelzés 7 : 0. A kezed üres, a korlát elfogyott, innen a játék passzol helyetted – és a passzért nem kapsz cigarettát, a passz csak a kihasználatlan korlátért fizet.",
+    "melichar": "Most az Iszákost a Visszaeső mögé. A [Rana] Pofonja összekötődik a Visszaesővel, és te kapod, mert az Iszákos a tiéd. A Vasvillával kettőt ér: előrejelzés 7 : 0. A kezed üres, a feleseidet kiittad, innen a játék passzol helyetted – és a passzért úgysem kapsz semmit.",
     "sk": {
-      "melichar": "Teraz Pijana za Recidivistu. Jeho [Rana] Rana sa spojí s Recidivistom a dostaneš ju ty, lebo Pijan je tvoj. S Vidlami za dve: odhad 7 : 0. Ruku máš prázdnu a limit minutý, ďalej za teba pasuje hra – a cigaretu za pas nedostaneš, pas sa platí len nevyužitým limitom."
+      "melichar": "Teraz Pijana za Recidivistu. Jeho [Rana] Rana sa spojí s Recidivistom a dostaneš ju ty, lebo Pijan je tvoj. S Vidlami za dve: odhad 7 : 0. Ruku máš prázdnu a poldeci vypité, ďalej za teba pasuje hra – a za pas aj tak nič nedostaneš."
     }
   },
   "k-hotovo5": {
-    "melichar": "Ivászat, kettő lesz: a házzal két akciója van összekötve neked, a Törzsvendégnek egy. Ma ne adj NA EX-et, és ne gyújts rá, spórolj a cigarettával. Kattints az „Ivászat vége” gombra (K).",
+    "melichar": "Ivászat, kettő lesz: a házzal két akciója van összekötve neked, a Törzsvendégnek egy. Ma NA EX-et nem adsz, a feleseidet kiittad, és ne gyújts rá, spórolj a cigarettával. Kattints az „Ivászat vége” gombra (K).",
     "sk": {
-      "melichar": "Pitka, budú dve: s domom máš spojené dve jeho akcie, Štamgast jednu. Dnes NA EX nedávaj ani nefajči, cigarety šetri. Klikni končím (K)."
+      "melichar": "Pitka, budú dve: s domom máš spojené dve jeho akcie, Štamgast jednu. NA EX dnes nedáš, poldeci máš vypité, a nefajči, cigarety šetri. Klikni končím (K)."
     }
   },
   "k-fajcit3-bot": {
@@ -1022,15 +1022,15 @@
     }
   },
   "k-hotovo5-bot": {
-    "melichar": "Az Ivászatot kiértékelték – a táblázat mutatja, ki mit kapott: neked csak májat, az is nullázódott, a Törzsvendégnek egy cigarettát a bejáratból. Második Gyűlés, a Törzsvendég kezd.",
+    "melichar": "Az Ivászatot kiértékelték – a táblázat mutatja, ki mit kapott: neked egy Adósságot a Visszaeső Hazárdjából, májat, az nullázódott, és egy újratöltött [Poldeci] felest; a Törzsvendégnek egy cigarettát a bejáratból. Második Gyűlés, a Törzsvendég kezd.",
     "sk": {
-      "melichar": "Pitka sa vyhodnotila – tabuľka ukazuje, čo komu pribudlo: tebe len pečeň, a tá sa vynulovala, Štamgastovi cigareta zo vchodu. Druhé Zhromaždenie, Štamgast začína."
+      "melichar": "Pitka sa vyhodnotila – tabuľka ukazuje, čo komu pribudlo: tebe Dlh z Hazardu Recidivistu, pečeň, tá sa vynulovala, a jeden dolievaný [Poldeci] poldeci; Štamgastovi cigareta zo vchodu. Druhé Zhromaždenie, Štamgast začína."
     }
   },
   "k-hotovo6": {
-    "melichar": "A második Gyűlést helyetted a játék passzolta le, kártyád nincs – de a korlátod három, úgyhogy három [Cigareta] cigarettád van. Második Ivászat, az utolsó: „Ivászat vége” (K).",
+    "melichar": "A második Gyűlést helyetted a játék passzolta le, kártyád nincs – és a passzért nem kapsz semmit. Második Ivászat, az utolsó: „Ivászat vége” (K).",
     "sk": {
-      "melichar": "Druhé Zhromaždenie za teba odpasovala hra, ruku nemáš – ale limit tri, tak máš tri [Cigareta] cigarety. Druhá Pitka, posledná: končím (K)."
+      "melichar": "Druhé Zhromaždenie za teba odpasovala hra, ruku nemáš – a za pas nič nedostaneš. Druhá Pitka, posledná: končím (K)."
     }
   },
   "k-hotovo6-bot": {
@@ -1040,9 +1040,9 @@
     }
   },
   "i-vyhra3": {
-    "melichar": "A verekedés a tiéd, 7 : 0. A Kultúrházban csak a saját kártyáidért kapsz csikket, hármat, a Törzsvendég pedig a Henteséért egyet. A Plébános a piros félelemért csak 3-at adott neked: a pirosat a Törzsvendég tartja pletykával, és azért neki fizetett, 3-at. A Kocsmárosné is neki fizetett, 1-et, a Buszsofőr neked 1-et. A Végrehajtó elégetett két Adósságodat két csikkel együtt. 24 : 11.",
+    "melichar": "A verekedés a tiéd, 7 : 0. A Kultúrházban csak a saját kártyáidért kapsz csikket, hármat, a Törzsvendég pedig a Henteséért egyet. A Plébános a piros félelemért 6-ot adott neked. A Kocsmárosné és a Buszsofőr a sárgádon lévő pletykáért a Törzsvendégnek fizetett, 1-1-et. A végrehajtó elégetett két Adósságodat két csikkel együtt. 24 : 8.",
     "sk": {
-      "melichar": "Bitka je tvoja, 7 : 0. Na Kultúrnom dome máš špaky len za svoje karty, tri, a Štamgast za svojho Mäsiara jeden. Farár ti za červený strach dal len 3: červenú drží Štamgast rečami a za ňu zaplatil jemu, 3. Krčmárka tiež platila jemu, 1, Autobusár tebe 1. Exekútor ti spálil dva Dlhy aj s dvoma špakmi. 24 : 11."
+      "melichar": "Bitka je tvoja, 7 : 0. Na Kultúrnom dome máš špaky len za svoje karty, tri, a Štamgast za svojho Mäsiara jeden. Farár ti za červený strach dal 6. Krčmárka a Autobusár zaplatili Štamgastovi za reči na tvojej žltej, po 1. Exekútor ti spálil dva Dlhy aj s dvoma špakmi. 24 : 8."
     }
   },
   "q-exekutor": {
@@ -1060,9 +1060,9 @@
     }
   },
   "k-nakladacka3": {
-    "melichar": "A 7-es Elpáholást én osztottam el helyetted, hogy ne üljünk itt reggelig. A Plébános az előző kör óta piroson fél tőled, ezért 5-ért elfogtam – ő a foglyod, és a pincében ül. A Törzsvendég pletykája nála és a Kocsmárosnénál az elvesztett veszekedés után alulról csökkent és megszűnt, így nem volt mit adnia érte. A Plébános képességét – levenni az ellenfél egyik NA EX-ét egy kártyáról – játékonként egyszer használhatod, amikor akarod. A maradék 2: a Buszsofőr sárgáról narancsra.",
+    "melichar": "A 7-es Elpáholást én osztottam el helyetted, hogy ne üljünk itt reggelig. A Plébános az előző kör óta piroson fél tőled, ezért 5-ért elfogtam – ő a foglyod, és a pincében ül. A Törzsvendégnek nála nem volt pletykája, így nem volt mit adnia neked; a pletykája a Kocsmárosnénál és a Buszsofőrnél az elvesztett veszekedés után alulról csökkent és megszűnt. A Plébános képességét – levenni az ellenfél egyik NA EX-ét egy kártyáról – játékonként egyszer használhatod, amikor akarod. A maradék 2: a Buszsofőr sárgáról narancsra.",
     "sk": {
-      "melichar": "Nakladačku 7 som ti rozdelil ja, nech tu nesedíme do rána. Farár sa ťa bojí na červenej od minulého kola, tak som ho za 5 zajal – je tvoj väzeň a sedí v pivnici. Štamgastove reči pri ňom aj pri Krčmárke po prehratej hádke klesli zospodu a zanikli, tak ti za ne nemal čo dať. Farárovu schopnosť – zhodiť jedno súperovo NA EX z karty – smieš raz za hru použiť, kedy chceš. Zvyšné 2: Autobusár zo žltej na oranžovú."
+      "melichar": "Nakladačku 7 som ti rozdelil ja, nech tu nesedíme do rána. Farár sa ťa bojí na červenej od minulého kola, tak som ho za 5 zajal – je tvoj väzeň a sedí v pivnici. Reči pri ňom Štamgast nemal, tak ti nemal čo dať; jeho reči pri Krčmárke a Autobusárovi po prehratej hádke klesli zospodu a zanikli. Farárovu schopnosť – zhodiť jedno súperovo NA EX z karty – smieš raz za hru použiť, kedy chceš. Zvyšné 2: Autobusár zo žltej na oranžovú."
     }
   },
   "k-reci3": {
@@ -1076,9 +1076,9 @@
     }
   },
   "i-po-bitke3": {
-    "melichar": "A vereségért a Törzsvendég kapott egy cigarettát, neked pedig sarcot adott: a fogoly piros félelemnek számít. Kegyet most a Buszsofőr ad neki 2-es erővel – ez a félelmed ára. És verekedés után húztál 2 kártyát: a Hentest és az Iszákost.",
+    "melichar": "A vereségért a Törzsvendég kapott egy cigarettát, neked pedig sarcot adott: a fogoly piros félelemnek számít. Kegyet most a Buszsofőr ad neki 2-es erővel és a Kocsmárosné 1-es erővel – ez a félelmed ára. És verekedés után húztál 2 kártyát: az Iszákost és a Hentest.",
     "sk": {
-      "melichar": "Za prehru dostal Štamgast cigaretu a tebe dal výpalné: väzeň sa ráta ako červený strach. Priazeň mu teraz dáva Autobusár v sile 2 – to je cena tvojho strachu. A po bitke si si dobral 2 karty: Mäsiara a Pijana."
+      "melichar": "Za prehru dostal Štamgast cigaretu a tebe dal výpalné: väzeň sa ráta ako červený strach. Priazeň mu teraz dáva Autobusár v sile 2 a Krčmárka v sile 1 – to je cena tvojho strachu. A po bitke si si dobral 2 karty: Pijana a Mäsiara."
     }
   },
   "q-strach": {
@@ -1122,9 +1122,9 @@
     }
   },
   "k-stop-finale": {
-    "melichar": "Többet ne vegyél, kattints az „elég” gombra (P). A cigarettákra szükséged lesz: az újratöltés is kerül valamibe.",
+    "melichar": "Többet ne vegyél, kattints az „elég” gombra (P). A cigarettákra szükséged lesz: a lépés extra kártyájára és a rágyújtásra is.",
     "sk": {
-      "melichar": "Viac nekupuj, klikni už neťahám (P). Cigarety budeš potrebovať: doliatie niečo stojí."
+      "melichar": "Viac nekupuj, klikni už neťahám (P). Cigarety budeš potrebovať: na kartu navyše v ťahu aj na fajčenie."
     }
   },
   "k-zh-finale-bot": {
@@ -1134,15 +1134,15 @@
     }
   },
   "k-pijan-finale": {
-    "melichar": "Tedd az Iszákost a villa mellé. Három akcióját köti össze: az [Posilnenie] Erősítést, amely megduplázza a [Poldeci] Felesét, a [Rana] Pofont és a [Dlh] Hazárdot. Három Ivászat lesz. 6 : 5, egyelőre.",
+    "melichar": "Tedd az Iszákost a villa mellé. Három akcióját köti össze: az [Posilnenie] Erősítést, amely megduplázza a [Poldeci] Felesét, a [Rana] Pofont és a [Dlh] Hazárdot. A duplázott Feles miatt minden Ivászat után akár két felessel többet töltenek újra neked. Három Ivászat lesz. 6 : 5, egyelőre.",
     "sk": {
-      "melichar": "Polož Pijana k vile. Spojí tri jej akcie: [Posilnenie] Posilnenie, ktoré mu zdvojí [Poldeci] Poldeci, [Rana] Ranu a [Dlh] Hazard. Pitky budú tri. 6 : 5, zatiaľ."
+      "melichar": "Polož Pijana k vile. Spojí tri jej akcie: [Posilnenie] Posilnenie, ktoré mu zdvojí [Poldeci] Poldeci, [Rana] Ranu a [Dlh] Hazard. Za zdvojené Poldeci sa ti po každej Pitke dolejú až dva poldeci navyše. Pitky budú tri. 6 : 5, zatiaľ."
     }
   },
   "k-zh-finale-pas": {
-    "melichar": "Most passzolj (P), pedig még két kártyát kijátszhatnál: mindegyikért kapsz egy [Cigareta] cigarettát, tehát kettőt. Az újratöltéshez kettő kell. A Hentest és a Rendőrnőt a következő Gyűlésen rakod ki.",
+    "melichar": "Most passzolj (P), pedig még két kártyát kijátszhatnál. A passzért nem kapsz semmit, de a Rendőrnőnek [Dlh] Hazárdja van, és ami az asztalon fekszik, az minden Ivászaton utolér. A Hentest és a Rendőrnőt a következő Gyűlésen rakod ki.",
     "sk": {
-      "melichar": "Teraz pasuj (P), hoci smieš ešte dve karty: za každú dostaneš [Cigareta] cigaretu, takže dve. Na doliatie potrebuješ dve. Mäsiara a Policajtku vyložíš v ďalšom Zhromaždení."
+      "melichar": "Teraz pasuj (P), hoci smieš ešte dve karty. Za pas nič nedostaneš, ale Policajtka má [Dlh] Hazard, a čo leží na stole, ťa dobehne v každej Pitke. Mäsiara a Policajtku vyložíš v ďalšom Zhromaždení."
     }
   },
   "k-finale-p1": {
@@ -1152,9 +1152,9 @@
     }
   },
   "k-finale-p1-bot": {
-    "melichar": "A döntő első Ivászata: neked a villa Hazárdjától egy Adósság. Második Gyűlés, a Törzsvendég kezd.",
+    "melichar": "A döntő első Ivászata: neked a villa Hazárdjától egy Adósság, és a feleseid háromra töltődtek fel. Második Gyűlés, a Törzsvendég kezd.",
     "sk": {
-      "melichar": "Prvá Pitka finále: tebe z Hazardu vily Dlh. Druhé Zhromaždenie, Štamgast začína."
+      "melichar": "Prvá Pitka finále: tebe z Hazardu vily Dlh a poldeci sa ti doliali na tri. Druhé Zhromaždenie, Štamgast začína."
     }
   },
   "k-finale-z2-bot": {
@@ -1178,21 +1178,21 @@
     }
   },
   "k-finale-p2": {
-    "melichar": "Jött a Hobbikertész, őt tartsd meg. „Ivászat vége” (K).",
+    "melichar": "Jött az Igasságharcos, őt tartsd meg. „Ivászat vége” (K).",
     "sk": {
-      "melichar": "Prišiel Záhradkár, toho si nechaj. Končím (K)."
+      "melichar": "Prišiel Praudovravec, toho si nechaj. Končím (K)."
     }
   },
   "k-finale-p2-bot": {
-    "melichar": "A döntő második Ivászata: felhajtott feles és máj a kártyákból – kicsordult a májad, egy Májzsugor megy a pakliba. A villa Hazárdja és a Rendőrnőé még két Adósságot adott neked, a Törzsvendégnek a Visszaeső egyet. Utolsó Gyűlés.",
+    "melichar": "A döntő második Ivászata: a lépés extra kártyája és a máj a kártyákból – kicsordult a májad, egy Májzsugor megy a pakliba. A villa Hazárdja és a Rendőrnőé még két Adósságot adott neked, a Törzsvendégnek a Visszaeső egyet. Utolsó Gyűlés.",
     "sk": {
-      "melichar": "Druhá Pitka finále: vypitý poldeci a pečeň z kariet – pečeň ti pretiekla, Cirhóza ide do balíčka. Hazard vily a Policajtkin ti dali ďalšie dva Dlhy, Štamgastovi Recidivista jeden. Posledné Zhromaždenie."
+      "melichar": "Druhá Pitka finále: karta navyše v ťahu a pečeň z kariet – pečeň ti pretiekla, Cirhóza ide do balíčka. Hazard vily a Policajtkin ti dali ďalšie dva Dlhy, Štamgastovi Recidivista jeden. Posledné Zhromaždenie."
     }
   },
   "k-zh-finale-pas3": {
-    "melichar": "Utolsó Gyűlés: a Hobbikertészt tartsd meg, és passzolj (P). A két kártyáért, amit kijátszhatnál, de nem teszed, két [Cigareta] cigarettát kapsz.",
+    "melichar": "Utolsó Gyűlés: az Igasságharcost tartsd meg, és passzolj (P). A teli [Poldeci] feleseid megmaradnak – a játék végén mindegyik egy csikk.",
     "sk": {
-      "melichar": "Posledné Zhromaždenie: Záhradkára si nechaj a pasuj (P). Za dve karty, ktoré smieš a nevyložíš, dostaneš dve [Cigareta] cigarety."
+      "melichar": "Posledné Zhromaždenie: Praudovravca si nechaj a pasuj (P). Plné [Poldeci] poldeci ti ostanú – každý je na konci hry špak."
     }
   },
   "k-naex-vytrznik": {
@@ -1202,9 +1202,9 @@
     }
   },
   "k-finale-p3": {
-    "melichar": "„Ivászat vége” (K). A maradék [Cigareta] cigarettát tartsd meg, a játék végén öt egy csikk.",
+    "melichar": "„Ivászat vége” (K). A maradék teli [Poldeci] feleseidet tartsd meg, a játék végén mindegyik egy csikk.",
     "sk": {
-      "melichar": "Končím (K). Zvyšné [Cigareta] cigarety si nechaj, päť ich je na konci hry špak."
+      "melichar": "Končím (K). Zvyšné plné [Poldeci] poldeci si nechaj, každý je na konci hry špak."
     }
   },
   "k-finale-p3-bot": {
@@ -1220,9 +1220,9 @@
     }
   },
   "k-bez-odpovede-finale": {
-    "melichar": "Válaszolhatnál a Hobbikertésszel, de egy teli [Poldeci] felesért – és az a játék végén egy csikk. Kattints a „válasz nélkül” gombra. Utána a döntő verekedése, kiszámolom neked.",
+    "melichar": "Válaszolhatnál az Igasságharcossal, de egy teli [Poldeci] felesért – és az a játék végén egy csikk. Kattints a „válasz nélkül” gombra. Utána a döntő verekedése, kiszámolom neked.",
     "sk": {
-      "melichar": "Ty by si mohol odpovedať Záhradkárom, ale za plný [Poldeci] poldeci – a ten je na konci hry špak. Klikni bez odpovede. Potom finálová bitka, zrátam ti ju."
+      "melichar": "Ty by si mohol odpovedať Praudovravcom, ale za plný [Poldeci] poldeci – a ten je na konci hry špak. Klikni bez odpovede. Potom finálová bitka, zrátam ti ju."
     }
   },
   "i-hadka-finale": {
@@ -1232,15 +1232,15 @@
     }
   },
   "i-bitka-finale": {
-    "melichar": "A döntő a tiéd, 21 : 5. Csikkek: öt a sor kártyáiért, és a 16-os Elpáholás a döntőben egy az egyben csikkre vált. Elöljárók: az Állatorvos 3-at a narancsig érő pletykáért, a Buszsofőr 3-at a narancs félelemért; a végrehajtó tőled hármat vitt el, a Törzsvendégtől egyet. A döntőben nem fognak el és nem győznek meg.",
+    "melichar": "A döntő a tiéd, 21 : 5. Csikkek: öt a sor kártyáiért, és a 16-os Elpáholás a döntőben egy az egyben csikkre vált. Elöljárók: az Állatorvos 3-at a narancsig érő pletykáért, a Buszsofőr 3-at a narancs félelemért, a Kocsmárosné 1-et a sárgáért; a végrehajtó tőled hármat vitt el, a Törzsvendégtől egyet. A döntőben nem fognak el és nem győznek meg.",
     "sk": {
-      "melichar": "Finále je tvoje, 21 : 5. Špaky: päť za karty v línii a Nakladačka 16 sa vo finále mení na špaky jedna ku jednej. Starší: Veterinár 3 za reči po oranžovú, Autobusár 3 za oranžový strach; exekútor ti zobral tri, Štamgastovi jeden. Vo finále sa nezajíma ani nepresviedča."
+      "melichar": "Finále je tvoje, 21 : 5. Špaky: päť za karty v línii a Nakladačka 16 sa vo finále mení na špaky jedna ku jednej. Starší: Veterinár 3 za reči po oranžovú, Autobusár 3 za oranžový strach, Krčmárka 1 za žltý; exekútor ti zobral tri, Štamgastovi jeden. Vo finále sa nezajíma ani nepresviedča."
     }
   },
   "i-koniec": {
-    "melichar": "Vége a játéknak. A megmaradt teli feleseket és cigarettákat beváltják: teli feles 1 csikk, öt cigaretta 1 csikk; neked ez 2-t hozott, a Törzsvendégnek 4-et – tizenhét cigarettát kapart össze. És két Májzsugor – a második körből és a döntőből – be nem vallva fekszik a paklidban, és 6 csikkedbe kerül; a Törzsvendégnek az egy 3-ba. 44 : 16.",
+    "melichar": "Vége a játéknak. A megmaradt teli feleseket és cigarettákat beváltják: teli feles 1 csikk, öt cigaretta 1 csikk; neked is és a Törzsvendégnek is 2-t hozott, két teli felesért. És két Májzsugor – a második körből és a döntőből – be nem vallva fekszik a paklidban, és 6 csikkedbe kerül; a Törzsvendégnek az egy 3-ba. 45 : 11.",
     "sk": {
-      "melichar": "Koniec hry. Zvyšné plné poldeci a cigarety sa vykúpia: plný poldeci 1 špak, päť cigariet 1 špak; tebe to dalo 2, Štamgastovi 4 – nahrabal si sedemnásť cigariet. A dve Cirhózy – z druhého kola a z finále – ti ležia v balíčku nepriznané a stoja ťa 6 špakov; Štamgasta jeho jedna 3. 44 : 16."
+      "melichar": "Koniec hry. Zvyšné plné poldeci a cigarety sa vykúpia: plný poldeci 1 špak, päť cigariet 1 špak; tebe aj Štamgastovi to dalo po 2, za dva plné poldeci. A dve Cirhózy – z druhého kola a z finále – ti ležia v balíčku nepriznané a stoja ťa 6 špakov; Štamgasta jeho jedna 3. 45 : 11."
     }
   },
   "q-koniec": {
