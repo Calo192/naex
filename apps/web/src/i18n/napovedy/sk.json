@@ -35,7 +35,7 @@
     "melichar": "Špaky dole pri tebe rozhodnú, kto vyhrá. Klikni na ne a uvidíš nástenku: za čo si ich dostal. Koľko ti ktorý starší zaplatí po vyhratej a po prehratej bitke, ukáže dlaždica Starší. Keď sa ti tie čísla nebudú páčiť, mne sa nesťažuj."
   },
   "pohorsenie": {
-    "melichar.moje": "Hádku si vyhral: máš viac mäkkého poškodenia, [Pohoršenie] Pohoršenie 2, [Povera] Povera 1. Rozdiel minieš na svoje reči pri starších – vždy nad tvojím strachom, stupeň do žltej 1, do oranžovej 2, do červenej 3. Čo na ďalší stupeň nestačí, prepadne. Reči ti platia po každej bitke, aj prehratej, a potom slabnú. Užívaj, kým môžeš.",
+    "melichar.moje": "Hádku si vyhral: máš viac mäkkého poškodenia, [Pohoršenie] Pohoršenie 2, [Povera] Povera 1. Rozdiel minieš na svoje reči pri starších – na súperovom teplomere, od vrchu jeho strachu nadol, stupeň do žltej 1, do oranžovej 2, do červenej 3. Čo na ďalší stupeň nestačí, prepadne. Reči ti platia po každej bitke, aj prehratej; klesnú ti, len keď hádku prehráš. Užívaj, kým môžeš.",
     "melichar.superove": "Hádku vyhral súper: má viac mäkkého poškodenia, [Pohoršenie] Pohoršenie 2, [Povera] Povera 1, a rozdiel minie na svoje reči pri starších. Tie mu platia po každej bitke, aj prehratej. Nabudúce si nechaj Vieru na jeho Povery. Nepozeraj tak na mňa, ja som ho nevyložil."
   },
   "abstak": {
@@ -51,10 +51,10 @@
     "melichar": "Akcie lokality v kraji dostane, kto tam má viac svojich Občanov, Zvierat a Starešinov. Pri rovnosti ten, koho karta leží pri lokalite. Rátať do troch vieš, to bude stačiť."
   },
   "patronat": {
-    "melichar": "Tento starší sa ťa bojí na červenej. Za päť z Nakladačky ho zajmeš – ide do tvojej pivnice a súper ti dá špaky za svoj marker pri ňom. Nemusíš, ale prečo by si nechcel."
+    "melichar": "Tento starší sa ťa bojí na červenej už od minulého kola. Za päť z Nakladačky ho zajmeš – ide do tvojej pivnice a súper ti dá toľko špakov, koľko sú hodné jeho reči pri ňom. Nemusíš, ale prečo by si nechcel."
   },
   "presvedcenie": {
-    "melichar": "Tento starší sa súpera bojí viac než teba. Reči na červenú a päť navrch – a je presvedčený: jeho karta ide tebe do ruky a ostáva v tvojom balíčku. Tvoje reči pri ňom zhoria, priazeň ti ostane."
+    "melichar": "Tohto staršieho smieš presvedčiť: dotiahni svoje reči na celý súperov teplomer pri ňom a pridaj tri body z hádky. Jeho karta ide tebe do ruky a ostáva v tvojom balíčku. Reči pri ňom aj priazeň ti ostanú. Konečne ťa niekto počúva."
   },
   "vydesenie": {
     "melichar.moje": "Vydesený starší! Bojí sa ťa na červenej, takého smieš po vyhratej bitke za päť z Nakladačky zajať. Štyria vydesení a vyhratá bitka – väzni sa rátajú tiež – a vyhral si hneď. Len.",

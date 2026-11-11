@@ -86,9 +86,11 @@ const SPUSTACE: Readonly<Record<string, Spustac>> = {
   // Dlh je hneď priznaný (počítadlo) — prvý je prvý Dlh hráča.
   dlh: (_d, v, ja) => (v.hraci[ja].dlhy > 0 ? ANO : null),
 
-  // v12.2: pas cigarety nedáva — text nápovede (packages/core/data/vyucba/napovedy.json) už neplatí; kým ho
-  // výučba neprepíše, nápoveda sa neukáže.
-  "pas-cigarety": () => null,
+  // v12.2 (id ostáva z čias cigariet za pas): limit za poldeci a pas bez cigariet. Hráč, ktorý už kartu vyložil
+  // a plný poldeci mu ostal, sa rozhoduje, či vykladať ďalej, alebo pasovať. Zhromaždenie samo nemá počítadlo
+  // vyložených kariet, preto stačí moja karta v línii — v tomto kole, línia sa po bitke vyprázdni.
+  "pas-cigarety": (_d, v, ja) =>
+    naMojomTahuVZhromazdeni(v, ja) && v.hraci[ja].poldeciPlne >= 1 && v.strany.some((s) => s.some((pl) => pl.playedBy === ja)) ? ANO : null,
 
   "lokalita-pravidlo": (d, v, _ja, def) => {
     const lok = v.ciel?.lokalita ?? null;

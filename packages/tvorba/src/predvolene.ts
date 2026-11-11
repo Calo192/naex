@@ -30,12 +30,12 @@ export const AKCIE_20261019: readonly { readonly kluc: string; readonly nazov: s
     nazov: "Poškodenie pečene",
     popis: "Pridá 1 poškodenie pečene. V Pitke za každý celý prah získaš Cirhózu — ide do tvojho odhadzovacieho balíčka.",
   },
-  { kluc: "Poldeci", nazov: "Poldeci", popis: "Pri bitke otočí jeden tvoj vypitý poldeci späť na plný. Poškodenie pečene z neho sa počíta už v Pitke." },
+  { kluc: "Poldeci", nazov: "Poldeci", popis: "Na konci každej Pitky otočí jeden tvoj vypitý poldeci späť na plný. Poškodenie pečene z neho sa počíta v Pitke." },
   {
     kluc: "Cigareta",
     nazov: "Cigareta",
     popis:
-      "V Pitke dostaneš 1 cigaretu (mínus súperove Obmedzenia). Cigarety sa prenášajú — platíš nimi karty z ponuky, Dedičstvo, podloženie Nástroja, doliatie poldeci, barter, Záverečnú aj fajčenie: " +
+      "V Pitke dostaneš 1 cigaretu (mínus súperove Obmedzenia). Cigarety sa prenášajú — platíš nimi karty z ponuky, Dedičstvo, podloženie Nástroja, ďalšiu kartu v tom istom ťahu, barter, Záverečnú aj fajčenie: " +
       `v Pitke dobereš kartu, prvé fajčenie v Pitke stojí ${KONSTANTY.CENA_FAJCENIA_ZAKLAD} cigaretu, druhé ${KONSTANTY.CENA_FAJCENIA_ZAKLAD + KONSTANTY.CENA_FAJCENIA_PRIRASTOK}, ` +
       `tretie ${KONSTANTY.CENA_FAJCENIA_ZAKLAD + 2 * KONSTANTY.CENA_FAJCENIA_PRIRASTOK}…`,
   },
@@ -64,7 +64,7 @@ export const PREDVOLENE_AKCIE: readonly AkciaDef[] = [
   ...AKCIE_20261019.map((a) => A(a.kluc, a.nazov, a.popis)),
   A("Posilnenie", "Posilnenie", "Zdvojnásobí prepojenú akciu — priaznivú aj nepriaznivú. Posilnenie proti Posilneniu = Forsáž: obe karty majú všetky aktívne akcie posilnené."),
   A("Odpor", "Odpor", "Odpor je aktívny len bez spoja a dáva karte štít proti NA EX. Na spoji zruší akciu, s ktorou sa spojí, aj seba. Odpor s Odporom = Vzbura."),
-  A("Robota", "Robota", "V bitke v kroku exekúcie, pred Exekútorom, spáli 1 tvoj priznaný Dlh (z hry). Za Dlh, ktorý nemá čo spáliť, ti dá 1 špak."),
+  A("Robota", "Robota", "V bitke v kroku exekúcie, pred Exekútorom, spáli 1 tvoj priznaný Dlh (z hry). Za každý Dlh, ktorý by spálila, no nemáš ho, ti dá 1 špak."),
   A("Pakt", "Pakt", "Na spoji sa správa ako akcia, s ktorou je v páre. Pakt s Paktom nerobí nič; Odpor ho zruší."),
 ].map((a, poradie) => ({ ...a, poradie }));
 
@@ -102,8 +102,8 @@ export const PREDVOLENE_KLUCOVE_SLOVA: readonly KlucoveSlovo[] = [
   // Kšeft zanikol (frakcie, Michal 2026-11-08); Kšeft väzňa nahradila v11.2 schopnosť väzňa (PRAVIDLA §10).
   // Spoločník a Nepriateľ (frakcie): akcie navyše, kým je v partii karta s tagom; zápis v texte
   // efektu „Spoločník: Tag {Akcia}.“ — piktogram v zložených zátvorkách (@naex/core navyse.ts).
-  S("Spoločník", "Kým máš v partii (karty natočené k tebe, kdekoľvek v línii) inú odkrytú kartu s tagom za dvojbodkou, máš akcie navyše z pečate v obrázku — raz, aj pri viacerých takých kartách. Rátajú sa ako tvoje akcie toho druhu v ich kroku; Posilnenie, Odpor, NA EX ani Forsáž ich nemenia."),
-  S("Nepriateľ", "Kým má súper v partii odkrytú kartu s tagom za dvojbodkou, máš akcie navyše z pečate v obrázku — raz, aj pri viacerých takých kartách. Rátajú sa ako tvoje akcie toho druhu v ich kroku; Posilnenie, Odpor, NA EX ani Forsáž ich nemenia."),
+  S("Spoločník", "Kým máš v partii (karty natočené k tebe, kdekoľvek v línii) inú odkrytú kartu s tagom za dvojbodkou, máš akcie navyše z pečate v obrázku — raz, aj pri viacerých takých kartách. Rátajú sa ako tvoje akcie toho druhu v ich kroku; Posilnenie suseda, Odpor ani NA EX ich nemenia, Forsáž karty a podložený Nástroj áno."),
+  S("Nepriateľ", "Kým má súper v partii odkrytú kartu s tagom za dvojbodkou, máš akcie navyše z pečate v obrázku — raz, aj pri viacerých takých kartách. Rátajú sa ako tvoje akcie toho druhu v ich kroku; Posilnenie suseda, Odpor ani NA EX ich nemenia, Forsáž karty a podložený Nástroj áno."),
   // Konflikt a Exekúcia (v7, Michal 2026-10-27, plan.md 13 a 14); Úplatok zanikol vo v10.3.
   // Konflikt oboma smermi a Podpora (v11.3, Michal 2026-11-03).
   S("Konflikt", "Spustí sa, keď sa táto karta priložením ocitne vedľa súperovej karty — či ju prikladáš ty k súperovej, alebo súper svoju k nej; s tagom za dvojbodkou len pri karte s tým tagom. Pri každom stretnutí, do konca kola. Nástroj, NA EX, zrážka ani presun karty ho nespúšťajú."),

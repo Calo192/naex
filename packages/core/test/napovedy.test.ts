@@ -79,6 +79,26 @@ describe("nápovedy — rozpoznanie z pohľadu hráča", () => {
     expect(ids(zh(1), 0)).not.toContain("dedicstvo");
   });
 
+  it("pas-cigarety (v12.2): na ťahu v Zhromaždení, po vyloženej karte a s plným poldecim; inak nie", () => {
+    const zh = (o: { naTahu?: 0 | 1; plne?: number; mojaKarta?: boolean; pasoval?: boolean }): GameState =>
+      ({
+        ...s0,
+        faza: "zhromazdenie",
+        ciel: { typ: "lokalita", lokalita: s0.lokalityVHre[0] },
+        hraci: s0.hraci.map((h) => ({ ...h, poldeciPlne: o.plne ?? 2 })),
+        strany: [o.mojaKarta === false ? [] : [{ card: inst("pijan"), playedBy: 0 }], [{ card: inst("pijan"), playedBy: 1 }]],
+        zhromazdenieStav: { naTahu: o.naTahu ?? 0, zostavaLimit: [2, 2], pasoval: [o.pasoval ?? false, false], navyse: [0, 0] },
+      }) as unknown as GameState;
+    expect(ids(zh({}), 0)).toContain("pas-cigarety");
+    expect(napovedy(data, katalog, viewFor(data, zh({}), 0)).find((n) => n.id === "pas-cigarety")?.text).toMatch(/Za pas nedostaneš nič/);
+    // Súper na ťahu, ešte bez vlastnej karty (súperova sa neráta), bez plného poldeci, po pase.
+    expect(ids(zh({ naTahu: 1 }), 0)).not.toContain("pas-cigarety");
+    expect(ids(zh({ mojaKarta: false }), 0)).not.toContain("pas-cigarety");
+    expect(ids(zh({ plne: 0 }), 0)).not.toContain("pas-cigarety");
+    expect(ids(zh({ pasoval: true }), 0)).not.toContain("pas-cigarety");
+    expect(ids({ ...zh({}), faza: "pitka" } as GameState, 0)).not.toContain("pas-cigarety");
+  });
+
   it("lokalita s vlastným pravidlom doplní názov a text karty; Jednota (v7 Kšeft) áno, Cintorín nápovedu nemá", () => {
     const krcma = inst("krcma");
     const s = { ...s0, faza: "zhromazdenie", ciel: { typ: "lokalita", lokalita: krcma } } as unknown as GameState;
@@ -173,8 +193,7 @@ describe("nápovedy — náhodné partie", () => {
         s = apply(data, s, cmds[idx] as Command, kto).state;
       }
     }
-    // pas-cigarety je od v12.2 vypnutá (pas cigarety nedáva), kým ju výučba neprepíše.
-    for (const id of ["stavba-senku", "rola", "body", "zaverecna"]) expect([...videne], id).toContain(id);
+    for (const id of ["stavba-senku", "rola", "pas-cigarety", "body", "zaverecna"]) expect([...videne], id).toContain(id);
   });
 });
 

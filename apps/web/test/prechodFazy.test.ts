@@ -73,12 +73,13 @@ describe("medziobrazovka — prechody fáz (výber lokality, šenok, Zhromažden
     expect(m?.text).not.toMatch(/bez lokality|vždy 3|stredu/i);
   });
 
-  it("Zhromaždenie: každé zvlášť; útočník vykladá prvý, pas dá cigarety", () => {
+  it("Zhromaždenie: každé zvlášť; útočník vykladá prvý, pas od v12.2 nič nedá", () => {
     const prve = medziobrazovka(p({ faza: "zhromazdenie", pitkaCislo: 0 }), 1, "Eva", null);
     expect(prve).toMatchObject({ kluc: "2|zhromazdenie|1", nadpis: "Zhromaždenie — kladenie kariet", nadnadpis: "Kolo 2 · 1 z 2" });
     expect(medziobrazovka(p({ kolo: 4, faza: "zhromazdenie", pitkaCislo: 0 }), 1, "Eva", null)?.nadnadpis).toBe("Finále · 1 z 2");
     expect(prve?.text).toMatch(/^Vykladáš prvý/);
-    expect(prve?.text).toMatch(/dostaneš cigaretu/);
+    expect(prve?.text).toMatch(/každá stojí plný poldeci/);
+    expect(prve?.text).toMatch(/nič za to nedostaneš, plné poldeci ti ostanú/);
     expect(medziobrazovka(p({ faza: "zhromazdenie", pitkaCislo: 1 }), 0, "Eva", null)).toMatchObject({ kluc: "2|zhromazdenie|2", text: expect.stringMatching(/^Eva vykladá prvý/) });
   });
 

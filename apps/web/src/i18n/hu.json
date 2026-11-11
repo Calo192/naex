@@ -534,7 +534,7 @@
   "tabula.limitKarietMale": "kártyakorlát",
   "tabula.novyPoldeci": "új feles",
   "tabula.kartaNavyse": "a lépés következő kártyája",
-  "tabula.chutText": "Bűn csak az, amit megiszol és elszívsz: Felhajtás 1, válasz a NA EX-re 1, NA EX {naex}, minden elszívott cigaretta 1. A kör végén: ha kevesebb a bűn, mint a Szomj = egy Remegés kártya a pakliba (mindegyik 1 kemény sebzést vesz el a verekedésben); utána Szomj = a nagyobbik (Szomj, bűnök) − {ubytok}.",
+  "tabula.chutText": "",
   "tabula.nerestiDnes": "mai bűnök",
   "tabula.hroziAbstak": "Remegés fenyeget",
   "tabula.ano": "igen",
@@ -723,8 +723,8 @@
   "galeria.dedicstvoNaradie": "Örökség · Szerszámok",
   "galeria.pivnica": "Pince · foglyok",
   "galeria.vazenPopis": "A fogoly nem ad kegyet, és a fogvatartójának piros félelemnek számít.",
-  "galeria.vazenKseftJa": "A Bizniszét az Ivászaton indítod egy teli feles felhajtásával, Ivászatonként egyszer.",
-  "galeria.vazenKseftSu": "A Bizniszét csak a fogvatartója használhatja.",
+  "galeria.vazenKseftJa": "",
+  "galeria.vazenKseftSu": "",
   "galeria.podlaTypu": "típus szerint, a sorrend titkos",
   "galeria.prazdny": "A pakli üres — a következő húzásnál belekeverik az eldobott kártyákat.",
   "galeria.zamiesaSa": "ha a húzópakli elfogy, belekeverik",
@@ -907,7 +907,7 @@
   },
   "rekap.tvojaKarta": "a te kártyád",
   "rekap.kartaHraca": "kártya: {meno}",
-  "rekap.mimoLinie": "soron kívül (kegy, pártfogás, kártyahatás)",
+  "rekap.mimoLinie": "",
   "rekap.zrusenaOdporom": "{nazov} — {odkial}: az Ellenállás törölte, 0-t adott",
   "rekap.zrusenaNaex": "{nazov} — {odkial}: a NA EX törölte, 0-t adott",
   "rekap.ubral": "{nazov} — {odkial}: kártyahatás miatt −{n}",
@@ -1039,7 +1039,7 @@
     "1": "{n} Remegés van a paklijában, a verekedésben −{ubera} kemény",
     "5": "{n} Remegés van a paklijában, a verekedésben −{ubera} kemény"
   },
-  "panel.chutPravidlo": "Bűn csak az, amit megiszol és elszívsz: Felhajtás 1, válasz a NA EX-re 1, NA EX {naex}, minden elszívott cigaretta 1 (az újratöltés, a cserebere és a fizetések nem). A kör végén: ha kevesebb a bűn, mint a Szomj = egy Remegés kártya a dobópakliba; utána Szomj = a nagyobbik (Szomj, bűnök) − {ubytok}. A Remegést nem lehet bevallani, verekedés után a kézből visszamegy a dobópakliba, és mindegyik a pakliban 1 kemény sebzést vesz el tőled a verekedésben. Elégetni a Látomás tudja. A döntő után már semmi sem számít.",
+  "panel.chutPravidlo": "",
   "panel.dalsiePitky": {
     "1": "a következő Ivászat",
     "5": "a következő {n} Ivászat"
@@ -1134,7 +1134,7 @@
   "panel.zdrojCirhoza": "az ellenfél bevallott Májzsugorai",
   "panel.zdrojViera": "az ellenfél semlegesítetlen Hite",
   "panel.zdrojAbstak": "Remegések (reszket a kéz)",
-  "panel.zdrojPasca": "az ellenfél Csapdája (−1 minden Állatodért a sorban)",
+  "panel.zdrojPasca": "",
   "panel.dovodPosilnenie": "Erősítéssel duplázva",
   "panel.dovodNaex": "NA EX-szel duplázva",
   "panel.dovodVzbura": "Lázadással aktiválva",
@@ -1214,7 +1214,7 @@
   "os.zhromazdenie": "Gyűlés — kártyák lerakása",
   "os.izN": "{i}/{n}",
   "os.zhromazdenieText": "Felváltva raktok ki kártyát a kézből a sor bármelyik végére, a támadó kezd. Kijátszási korlát = teli felesek; minden kártya egyet üresre fordít, és ugyanabban a lépésben minden további kártya egy cigarettába is kerül.",
-  "os.zhromazdenieText2": "Bármikor a lépésedben: bevallhatsz Májzsugort (kártyát nem kapsz érte, az ellenfél a verekedésben +1 kemény sebzést kap érte), Szerszámot tehetsz az Örökségbe (cigarettáért, az ár nő); rágyújtani csak az Ivászaton lehet. Aki passzol, az Ivászatig már nem játszik ki, és kap egy cigarettát minden kártyáért, amit még kijátszhatott volna, akkor is, ha már nincs mivel. Akkor ér véget, ha mindketten kimerítik a korlátot vagy passzolnak.",
+  "os.zhromazdenieText2": "",
   "os.pitkaText": "<b>Egyszerre játszotok</b>; a „kész” nem vonható vissza, és a NA EX-ek egyszerre fordulnak fel. NA EX! — egy teli feles a sorban álló Polgárra vagy Elöljáróra: törli az aktív akcióit, és duplázza az inaktívakat (a szorzók összeszorzódnak: NA EX × Erős nő = ×4); az ellenfél a felfordítás után egy kártyával válaszolhat, képpel lefelé (előbb a támadó, aztán a védő a másik szárnyra; egyszerre fordulnak fel). Rágyújtás (kártyánként 1, 2, 3… cig. minden Ivászaton), új feles (cserebere). Az Ivászat végén {dolieva} üres feles ingyen újratöltődik, és a Feles akciókért is.",
   "os.pitkaText2": "Utána jóváírják az akciókat: Hazárd (minden akció egy Adósság, azonnal bevallva), Májkárosodás és Feles (minden teljes küszöbért egy Májzsugor a dobópakliba), Korlátozás, Cigaretták és Látomás. Az Ivászat után a máj nullázódik.",
   "os.bitkaOLokalitu": "Verekedés a helyszínért",
@@ -1356,7 +1356,7 @@
   "plocha.naKoniecVpravoVelke": "A jobb végére",
   "plocha.klikniNaKartu": "kattints egy kártyára a kezedben. A kicsúszottak itt kötést alkotnak (világítanak a kötés akciói), a halványak kötés nélkül tehetők le.",
   "plocha.nastrojSemNie": "Szerszámot ide nem — a helyszín mellé nem lehet kirakni.",
-  "plocha.dalsiaKarta": "következő kártya a lépésben: −1 teli feles",
+  "plocha.dalsiaKarta": "",
   "plocha.zrusisPravym": "Jobb klikkel vagy Esc-pel visszavonod.",
   "plocha.zaverecnaTlacidlo": "Záróra: a javaslat utolsó kártyája képpel lefelé megy, {cig} fizetsz érte. Az ellenfél az Ivászat végéig nem látja, és nem rakhat mögé; te ezen a Gyűlésen már nem játszol ki.",
   "plocha.zaverecnaMale": "záróra",
@@ -1967,7 +1967,7 @@
   "prechod.ponuka": "Mindenki kap {naradie} kártyát a szerszámpakliból és {obcania} kártyát a Polgárok paklijából, és titokban kettéosztja őket: a fele a kínálatba megy, a fele alulra. Aztán felváltva vesztek a kínálatból, a védő kezd (az első lépésben csak 1 kártyát) — 1 kártya {jedna} cigarettáért, 2 kártya {dve} cigarettáért.",
   "prechod.superVykladaPrvy": "{meno} játszik ki elsőként, aztán felváltva jöttök.",
   "prechod.vykladasPrvy": "Te játszol ki elsőként, aztán felváltva jöttök az ellenféllel.",
-  "prechod.kladies": " A kezedből úgy rakod a kártyákat a helyszínhez, hogy az akcióik összekötődjenek; ha már nem akarsz, passzolj — minden kártyáért, amit még kijátszhattál volna, kapsz egy cigarettát.",
+  "prechod.kladies": "",
   "prechod.masBzdochu": "Nálad a Poloska: megvárod, amíg {meno} befejezi az Ivászatot, aztán te játszol, és látod a NA EX-ét.",
   "prechod.hrateNaraz": "Egyszerre játszotok: gyújts rá, vegyél felest, és válaszd ki rejtve a NA EX-et, aztán „Ivászat vége”.",
   "prechod.superMaBzdochu": "{meno} kezében a Poloska — csak utánad játszik, és látni fogja a NA EX-edet.",
@@ -2877,7 +2877,10 @@
     "1": "{meno} {n} cigarettát kap (Községháza: kétszer).",
     "5": "{meno} {n} cigarettát kap (Községháza: kétszer)."
   },
-  "motor.pijeDoDna": "{meno} fenékig iszik — rögtön kijátssza a következő kártyát, a korlátja ennyire csökken: {n}.",
+  "motor.pijeDoDna": {
+    "1": "",
+    "5": ""
+  },
   "motor.beriePonuka": {
     "1": "{meno} elvesz a kínálatból {n} cigarettáért: {karty}.",
     "5": "{meno} elvesz a kínálatból {n} cigarettáért: {karty}."

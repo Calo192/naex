@@ -3,7 +3,7 @@
 
 import { useLayoutEffect, useMemo, useRef, useState } from "react";
 import type { CardInstance, GameData, LineEval } from "@naex/core";
-import { KONSTANTY, battleOutcome, computeDamage, evaluateLine, loadGameData, spakov } from "@naex/core";
+import { KONSTANTY, battleOutcome, computeDamage, evaluateLine, kariet, loadGameData, spakov } from "@naex/core";
 import eldersJson from "@naex/core/data/elders.json";
 import scorecardsJson from "@naex/core/data/scorecards.json";
 import type { KartaNavrh, RozlozenieStrany, Sada, Vzhlad } from "@naex/tvorba";
@@ -274,9 +274,9 @@ export function UkazkaStupnice() {
   );
 }
 
-/** Limit vykladania = plné poldeci + 1 (pravidlá v4: poldeci s NA EX sa neráta). */
+/** Limit vykladania = plné poldeci (v12.2; poldeci s NA EX sa neráta). */
 export function UkazkaLimitu() {
-  const [plne, setPlne] = useState(2);
+  const [plne, setPlne] = useState<number>(KONSTANTY.START_POLDECI);
   const [vypite, setVypite] = useState(0);
   return (
     <div className="ukazka">
@@ -290,7 +290,14 @@ export function UkazkaLimitu() {
         {Array.from({ length: vypite }, (_, i) => <span key={`v${i}`} className="pohar vypity" />)}
       </div>
       <div className="ukazka-vysledok" aria-live="polite">
-        Limit vykladania = {plne} + 1 = <strong>{plne + 1}</strong> kariet. Vypité poldeci ani poldeci na kartách cez NA EX sa nerátajú.
+        {plne === 0 ? (
+          <>Bez plného poldeci nevykladáš — po Pitke sa ti jeden doleje zadarmo.</>
+        ) : (
+          <>
+            Vyložíš najviac <strong>{kariet(plne)}</strong> — koľko plných poldeci, toľko kariet; každá karta otočí jeden na vypitý.
+          </>
+        )}{" "}
+        Vypité poldeci ani poldeci na kartách cez NA EX sa nerátajú.
       </div>
     </div>
   );
