@@ -84,10 +84,10 @@ describe("pečiatka NA EX na karte", () => {
   const meno = (p: PlayerId): string => (p === 0 ? "Jano" : "Fero");
   const bez = { naexBy: undefined, naexBy2: undefined, skryteMoje: false, skryteSupera: false } as const;
 
-  it("odkryté NA EX: moje, súperovo s menom, zrážka oboch", () => {
+  it("odkryté NA EX: moje, súperovo s menom (pre čítačku), zrážka oboch", () => {
     expect(naexNaKarte({ ...bez, naexBy: 0 }, 0, meno)).toEqual({ od: "ja", kto: "tvoj" });
     expect(naexNaKarte({ ...bez, naexBy: 1 }, 0, meno)).toEqual({ od: "su", kto: "Fero" });
-    expect(naexNaKarte({ ...bez, naexBy: 1, naexBy2: 0 }, 0, meno)).toEqual({ od: "obaja", kto: "obaja" });
+    expect(naexNaKarte({ ...bez, naexBy: 1, naexBy2: 0 }, 0, meno)).toEqual({ od: "obaja", kto: "Fero" });
   });
 
   it("skryté NA EX len z pohľadu hráča — bez neho karta pečiatku nemá", () => {
@@ -98,10 +98,10 @@ describe("pečiatka NA EX na karte", () => {
     expect(naexNaKarte({ ...bez, naexBy: 1, skryteMoje: true }, 0, meno)).toEqual({ od: "su", kto: "Fero" });
   });
 
-  it("pečiatka nesie nápis NA EX! a kto ho dal; skryté odlíši triedou", () => {
+  it("pečiatka nesie len nápis NA EX! vo farbe hráča — kto ho dal, vie len čítačka; skryté odlíši triedou", () => {
     const html = renderToStaticMarkup(createElement(PeciatkaNaex, { naex: { od: "su", kto: "Fero" } }));
-    expect(html).toContain("NA EX!");
-    expect(html).toContain("Fero");
+    expect(html.replace(/<[^>]*>/gu, "")).toBe("NA EX!");
+    expect(html).toContain('aria-label="NA EX — Fero"');
     expect(html).toContain("naex-peciatka-su");
     const skryte = renderToStaticMarkup(createElement(PeciatkaNaex, { naex: { od: "ja", kto: "tvoj", skryto: true } }));
     expect(skryte).toContain("naex-peciatka-skryto");

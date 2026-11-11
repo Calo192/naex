@@ -1,12 +1,12 @@
-// Vízia na stole (Michal 2026-11-08, mockup V-B): karta leží na plsti, voľby sú dve tlačidlá
-// s piktogramom Dobratie a Spálenie v strede spodnej hrany — okno Vízie je preč.
+// Vízia na stole (Michal 2026-11-08, mockup V-B): karta leží na plsti — okno Vízie je preč. Voľby sú
+// pečiatky VZIAŤ! a SPÁLIŤ! cez kartu (Michal 2026-11-11: „radšej pečiatky ako buttony namiesto ikon“).
 
 import { existsSync, readFileSync } from "node:fs";
 import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it } from "vitest";
 import { IKONY } from "../src/karta/ikony.ts";
-import { rozmerVizie, VolbyVizie, zamerVizie } from "../src/hra/ViziaNaStole.tsx";
+import { rozmerVizie, ViziaNaStole, zamerVizie } from "../src/hra/ViziaNaStole.tsx";
 
 const POMER = 80 / 54;
 const MOCKUP = new URL("../../../docs/napady/ikony-final.html", import.meta.url);
@@ -69,36 +69,35 @@ describe("rozmer kariet na plsti", () => {
   });
 });
 
-describe("tlačidlá Vízie na hrane", () => {
+describe("pečiatky Vízie cez kartu (Michal 2026-11-11)", () => {
   const html = (pocet: number): string =>
     renderToStaticMarkup(
-      createElement(VolbyVizie, {
+      createElement(ViziaNaStole, {
         karty: [
-          { kluc: 1, nazov: "Nealko", ...(pocet > 1 ? { popis: "vrchná" } : {}) },
-          ...(pocet > 1 ? [{ kluc: 2, nazov: "Veštica", popis: "druhá" }] : []),
+          { kluc: 1, nazov: "Nealko", ...(pocet > 1 ? { popis: "vrchná" } : {}), render: () => createElement("span", { className: "kl" }) },
+          ...(pocet > 1 ? [{ kluc: 2, nazov: "Veštica", popis: "druhá", render: () => createElement("span", { className: "kl" }) }] : []),
         ],
         rozmer: rozmerVizie({ w: 1404, h: 390 }, pocet, false),
         onVolba: () => undefined,
       }),
     );
 
-  it("jedna karta: do ruky a spáliť, len piktogram a popis pod myšou", () => {
+  it("jedna karta: pečiatky VZIAŤ! (do ruky) a SPÁLIŤ! (navždy z hry) namiesto piktogramov", () => {
     const h = html(1);
     expect(h.match(/<button/g)).toHaveLength(2);
-    expect(h).toContain(IKONY.Dobratie[0]!.d);
-    expect(h).toContain(IKONY.Spálenie[0]!.d);
-    expect(h).toContain('aria-label="Do ruky: Nealko"');
-    expect(h).toContain('aria-label="Spáliť navždy z hry: Nealko"');
-    // Bez textu na tlačidle — medzi značkami nie je žiadne slovo.
-    expect(h.replace(/<[^>]*>/g, "").trim()).toBe("");
+    expect(h).toContain("VZIAŤ!");
+    expect(h).toContain("SPÁLIŤ!");
+    expect(h).toContain("naex-peciatka ponuka-peciatka vizia-peciatka vizia-volba vziat");
+    expect(h).not.toContain(IKONY.Dobratie[0]!.d);
+    expect(h).toContain('aria-label="Vziať Nealko do ruky"');
+    expect(h).toContain('aria-label="Spáliť Nealko navždy z hry"');
   });
 
-  it("Krištáľová guľa: každá karta má svoju dvojicu", () => {
+  it("Krištáľová guľa: každá karta má svoju dvojicu pečiatok", () => {
     const h = html(2);
     expect(h.match(/<button/g)).toHaveLength(4);
-    expect(h.match(/class="vizia-par"/g)).toHaveLength(2);
-    expect(h).toContain('aria-label="Do ruky: Nealko (vrchná)"');
-    expect(h).toContain('aria-label="Spáliť navždy z hry: Veštica (druhá)"');
+    expect(h).toContain('aria-label="Vziať Nealko (vrchná) do ruky"');
+    expect(h).toContain('aria-label="Spáliť Veštica (druhá) navždy z hry"');
   });
 });
 
@@ -107,6 +106,6 @@ describe("okno Vízie je preč", () => {
     const zdroj = readFileSync(new URL("../src/hra/HernaPlocha.tsx", import.meta.url), "utf8");
     expect(zdroj).not.toContain("OknoVizie");
     expect(zdroj).toContain("<ViziaNaStole");
-    expect(zdroj).toContain("<VolbyVizie");
+    expect(zdroj).not.toContain("<VolbyVizie");
   });
 });

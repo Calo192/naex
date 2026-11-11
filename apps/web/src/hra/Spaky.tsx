@@ -17,6 +17,7 @@ import { titulBezExekucie, textVyhryStrachom, type VyhraStrachom } from "./vyhra
 import "./spaky.css";
 import type { SpakyTeraz } from "@naex/core";
 import { t } from "../i18n/jazyk.tsx";
+import type { StavNaKarte } from "./PeciatkaNaex.tsx";
 
 export { IkonaSpaku };
 
@@ -99,8 +100,8 @@ export interface NastenkaProps {
   readonly ja: PlayerId;
   readonly mena: readonly [string, string];
   readonly avatary: readonly [string | null, string | null];
-  /** Karta lokality v danej šírke; bez nej nástenka ukáže len názov. */
-  readonly karta?: ((k: CardInstance, sirka: number) => ReactNode) | undefined;
+  /** Karta lokality v danej šírke; bez nej nástenka ukáže len názov. Odohraná dostane pečiatku výsledku. */
+  readonly karta?: ((k: CardInstance, sirka: number, stavy?: readonly StavNaKarte[]) => ReactNode) | undefined;
   readonly menoKarty: (defId: string) => string;
   readonly sirkaKarty?: number;
   /** Bez kariet — riadok lístkov (voľba cieľa, koniec hry na nízkom okne). */
@@ -287,7 +288,7 @@ function NastenkaObsah({ nastenka, zostava, ciel, ja, mena, avatary, karta, meno
           )}
         </span>
         {sKartou && karta !== undefined && l.lokalita !== null ? (
-          <span className="nastenka-karta">{karta(l.lokalita, sirkaKarty)}</span>
+          <span className="nastenka-karta">{karta(l.lokalita, sirkaKarty, b === undefined ? undefined : [peciatkaVysledku(b, ja, mena, popis)])}</span>
         ) : sKartou && l.finale ? (
           <span className="nastenka-karta nastenka-finale" style={{ width: sirkaKarty, height: Math.round(sirkaKarty * 1.48) }}>
             <b>{t("faza.finale")}</b>
@@ -684,6 +685,17 @@ export function rozpisLokality(b: BitkaNaNastenke, menoKarty?: (defId: string) =
     riadky: riadky.filter((r) => r.kluc === "bitka" || r.h[0] !== 0 || r.h[1] !== 0),
     spolu: [b.spakyPo[0] - pred[0], b.spakyPo[1] - pred[1]],
   };
+}
+
+/**
+ * Pečiatka výsledku bitky na karte lokality (Michal 2026-11-11, mock pečiatok): VYHRAL! vo farbe
+ * víťaza s menom a špakmi, ktoré za lokalitu získal, REMÍZA neutrálne. Leží na lokalite po bitke
+ * v strede línie aj na nástenke.
+ */
+export function peciatkaVysledku(b: BitkaNaNastenke, ja: PlayerId, mena: readonly [string, string], titul?: string): StavNaKarte {
+  if (b.vitaz === null) return { druh: "remiza", text: t("peciatka.remiza"), titul: titul ?? t("peciatka.remiza") };
+  const pod = t("peciatka.vyhralPod", { kto: b.vitaz === ja ? t("stol.ty") : mena[b.vitaz], spaky: zn(rozpisLokality(b).spolu[b.vitaz]) });
+  return { druh: "vyhral", hrac: b.vitaz === ja ? "ja" : "su", text: t("peciatka.vyhral"), pod, titul: titul ?? `${t("peciatka.vyhral")} — ${pod}` };
 }
 
 /**

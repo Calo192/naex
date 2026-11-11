@@ -6,7 +6,7 @@ import cardsJson from "../data/cards.json";
 import eldersJson from "../data/elders.json";
 import scorecardsJson from "../data/scorecards.json";
 import type { Command, Event, GameState, Moment, PlacedCard, PlayerId, StavMomentov } from "../src/index.ts";
-import { parseScorecards, MOMENTY, NALADY, NALADY_MOMENTOV, NOVE_MOMENTY, ZLATO_ZA_PARTIU, apply, buildGameData, legalCommands, loadGameData, momenty, naTahu, obmedzMomenty, rngInt, rngSeed, setupGame, naladaMomentu } from "../src/index.ts";
+import { parseScorecards, BEZ_PECIATKY, MOMENTY, NALADY, NALADY_MOMENTOV, NOVE_MOMENTY, ZLATO_ZA_PARTIU, apply, buildGameData, legalCommands, loadGameData, momenty, naTahu, obmedzMomenty, rngInt, rngSeed, setupGame, naladaMomentu } from "../src/index.ts";
 import type { Layout4 } from "./helpers.ts";
 import { EMPTY, instanceFor, makeDef, naexOdkryte, zPolohy } from "./helpers.ts";
 
@@ -102,6 +102,16 @@ describe("momenty — strop", () => {
       zlate += r.vybrane.length;
     }
     expect(zlate).toBe(ZLATO_ZA_PARTIU);
+  });
+
+  it("Záverečná bez pečiatky a hlášky (Michal 2026-11-11) — strop úseku nemíňa, iný moment padne", () => {
+    const s = setupGame(zaklad, 46);
+    const pitka: GameState = { ...s, faza: "pitka", pitkaCislo: 1 };
+    const zaverecna: Moment = { typ: "zaverecna", ...MOMENTY.zaverecna, hrac: 0, popis: "" };
+    expect(BEZ_PECIATKY.has("zaverecna")).toBe(true);
+    const a = obmedzMomenty([zaverecna], NOVE_MOMENTY, pitka);
+    expect(a).toEqual({ vybrane: [], stav: NOVE_MOMENTY });
+    expect(obmedzMomenty([zaverecna, m("bronz")], NOVE_MOMENTY, pitka).vybrane.map((x) => x.typ)).toEqual(["vyprask"]);
   });
 });
 

@@ -3834,21 +3834,39 @@ button.pecat-potvrd:disabled::after {
   background: var(--ja);
 }
 
-.naex-peciatka-su .naex-peciatka-kto {
-  color: var(--su-tmava);
-  background: var(--su);
+/* NA EX! na karte je vo farbe hráča, ktorý ho dal, bez mena (Michal 2026-11-11) — plná výplň
+   farbou hráča zo schémy, tmavé písmo; pri inom páre farieb v profile sa prefarbí. */
+.naex-peciatka-ja,
+.naex-peciatka-su {
+  --hrac: var(--ja);
+  --hrac-tmava: var(--ja-tmava);
+  border-color: color-mix(in srgb, var(--hrac) 55%, #fff);
+  color: var(--hrac-tmava);
+  background: color-mix(in srgb, var(--hrac) 92%, transparent);
+  box-shadow:
+    0 0.08em 0 var(--hrac-tmava),
+    0 0 0 0.12em color-mix(in srgb, var(--hrac) 22%, transparent),
+    0 0.25em 0.6em rgba(0, 0, 0, 0.55);
 }
 
-.naex-peciatka-obaja .naex-peciatka-kto {
-  color: var(--ja-tmava);
-  background: linear-gradient(90deg, var(--ja) 50%, var(--su) 50%);
+.naex-peciatka-su {
+  --hrac: var(--su);
+  --hrac-tmava: var(--su-tmava);
+  rotate: 10deg;
 }
 
-/* Skryté NA EX (moje, súperovo cez Bzdochu): súper o ňom nevie — pečiatka len obrysom. */
+.naex-peciatka-ja::after,
+.naex-peciatka-su::after {
+  border-color: color-mix(in srgb, var(--hrac-tmava) 50%, transparent);
+}
+
+/* Skryté NA EX (moje, súperovo cez Bzdochu): súper o ňom nevie — pečiatka len obrysom vo farbe hráča. */
 .naex-peciatka-skryto {
-  opacity: 0.72;
+  opacity: 0.8;
   border-style: dashed;
-  background: rgb(30 20 16 / 0.55);
+  border-color: var(--hrac);
+  color: var(--hrac);
+  background: color-mix(in srgb, var(--hrac-tmava) 70%, transparent);
   box-shadow: none;
 }
 
@@ -3858,6 +3876,10 @@ button.pecat-potvrd:disabled::after {
   display: grid;
   place-items: center;
   pointer-events: none;
+}
+
+.rub-peciatka-hore {
+  inset: 8% 0 auto 0;
 }
 
 /* Výtržník (zrážka NA EX): na prvý pohľad iná karta — červený okraj a pečiatka. */
@@ -3916,36 +3938,58 @@ button.pecat-potvrd:disabled::after {
   --pozadie-p: color-mix(in srgb, var(--info-silna) 42%, rgb(4 10 16 / 0.92));
 }
 
-.stav-peciatka-posilnene {
-  --okraj-p: var(--zelena);
-  --text-p: #e6fbe2;
-  --pozadie-p: color-mix(in srgb, var(--zelena) 34%, rgb(4 10 4 / 0.92));
+/* VYHRAL! na lokalite po bitke vo farbe víťaza, REMÍZA neutrálne (Michal 2026-11-11, mock pečiatok). */
+.stav-peciatka-vyhral {
+  --hrac: var(--ja);
+  --hrac-tmava: var(--ja-tmava);
+  --okraj-p: var(--hrac);
+  --text-p: color-mix(in srgb, var(--hrac) 18%, #fff);
+  --pozadie-p: color-mix(in srgb, var(--hrac) 30%, rgb(4 10 12 / 0.92));
 }
 
-/* Zahasené NA EX: popol — NA EX leží, ale karta sa ráta ako bez neho. */
-.stav-peciatka-zahasene {
-  --okraj-p: var(--slaby);
-  --text-p: #ddd3c4;
-  --pozadie-p: color-mix(in srgb, var(--slaby) 30%, rgb(8 7 6 / 0.9));
+.stav-peciatka-vyhral.stav-peciatka-su {
+  --hrac: var(--su);
+  --hrac-tmava: var(--su-tmava);
 }
 
-/* Záverečná a odpoveď lícom dole: farby štítku Záverečnej, čiarkovaný okraj ako skryté NA EX. */
-.stav-peciatka-zaverecna,
-.stav-peciatka-odpoved {
-  --okraj-p: var(--akcent);
-  --text-p: var(--akcent-svetly);
-  --pozadie-p: color-mix(in srgb, var(--plocha-2) 90%, transparent);
-  border-style: dashed;
+.stav-peciatka-vyhral .naex-peciatka-kto {
+  color: var(--hrac-tmava);
+  background: var(--hrac);
+}
+
+.stav-peciatka-remiza {
+  --okraj-p: var(--tlmeny);
+  --text-p: var(--text);
+  --pozadie-p: color-mix(in srgb, var(--plocha-3) 92%, transparent);
 }
 
 /* Slovo stavu je dlhšie ako NA EX! — menšie, aby sa zmestilo medzi akcie na okrajoch ilustrácie. */
-.peciatky-karty > .stav-peciatka {
+.peciatky-stavy > .stav-peciatka {
   font-size: 0.74em;
 }
 
-/* Viac pečiatok na jednej karte (NA EX + Výtržník…): pod sebou, menšie a každá druhá naklonená
-   na opačnú stranu — okraje sa nekrížia cez nápisy. */
+/* Pečiatky cez ilustráciu (Michal 2026-11-11): súperovo NA EX! pri hornom okraji, moje pri dolnom —
+   bližšie k strane stola toho, kto ho dal; stavy (Výtržník, Vzbura…) v strede. Viac pečiatok sa
+   zmenší a stavy sa striedavo nakloní, aby sa okraje nekrížili cez nápisy. */
 .peciatky-karty {
+  box-sizing: border-box;
+  display: grid;
+  grid-template-rows: 1fr auto 1fr;
+  justify-items: center;
+  width: 100%;
+  height: 100%;
+  padding: 0.3em 0;
+}
+
+.peciatky-hore {
+  align-self: start;
+}
+
+.peciatky-dole {
+  align-self: end;
+}
+
+.peciatky-stavy {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -3953,14 +3997,14 @@ button.pecat-potvrd:disabled::after {
 }
 
 .peciatky-2 {
-  font-size: 0.78em;
+  font-size: 0.85em;
 }
 
 .peciatky-3 {
-  font-size: 0.62em;
+  font-size: 0.72em;
 }
 
-.peciatky-karty > :nth-child(2n) {
+.peciatky-stavy > :nth-child(2n) {
   rotate: 7deg;
 }
 
@@ -10154,90 +10198,45 @@ button.pecat.kseft-pod-tlacidlo.ne:hover {
   }
 }
 
-/* Voľby v strede spodnej hrany: dvojica pod každou kartou, bez textu (popis pod myšou). */
-.vizia-volby {
-  display: inline-flex;
-  justify-content: center;
-  gap: var(--vizia-medzera, 0px);
+/* Voľby Vízie sú pečiatky cez kartu (Michal 2026-11-11) v tvare VZIAŤ! z výberu ponuky: VZIAŤ! hore,
+   SPÁLIŤ! v ohnivej farbe pod ním, naklonené na opačné strany. */
+.vizia-stol-karta {
+  position: relative;
 }
 
-.vizia-par {
-  display: inline-flex;
-  justify-content: center;
-  gap: 14px;
-  width: var(--vizia-sirka);
+button.naex-peciatka.ponuka-peciatka.vizia-peciatka {
+  top: 30%;
+  font-size: calc(var(--ponuka-sirka) * 0.14);
 }
 
-.vizia-volby button.vizia-volba {
-  display: grid;
-  place-items: center;
-  width: 60px;
-  height: 60px;
-  min-height: 0;
-  padding: 0;
-  border: 2px solid var(--okraj-svetly);
-  border-radius: 16px;
-  background: var(--plocha);
-  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.45);
-  cursor: pointer;
-  transition: transform 0.12s ease, border-color 0.12s ease, box-shadow 0.12s ease;
-}
-
-.vizia-volby button.vizia-volba.vziat {
-  border-color: var(--akcent);
+button.naex-peciatka.ponuka-peciatka.vizia-peciatka.spalit {
+  top: 58%;
+  rotate: 8deg;
+  border-color: #ff8a3d;
+  color: #fff1e0;
+  background: color-mix(in srgb, #c2410c 88%, transparent);
   box-shadow:
-    0 0 0 2px var(--akcent),
-    0 6px 16px rgba(0, 0, 0, 0.45);
+    0 0.08em 0 #5e1b0f,
+    0 0 0 0.12em rgb(255 138 61 / 0.22),
+    0 0.25em 0.6em rgba(0, 0, 0, 0.6);
 }
 
-.vizia-volby button.vizia-volba:hover,
-.vizia-volby button.vizia-volba:focus-visible {
-  transform: translateY(-2px);
+button.naex-peciatka.ponuka-peciatka.vizia-peciatka.spalit:hover:not(:disabled) {
+  border-color: #ff8a3d;
+  background: color-mix(in srgb, #c2410c 88%, transparent);
 }
 
-.vizia-volby button.vizia-volba.spalit:is(:hover, :focus-visible) {
-  border-color: var(--cervena);
-  box-shadow:
-    0 0 0 2px var(--cervena),
-    0 6px 16px rgba(0, 0, 0, 0.45);
+button.naex-peciatka.ponuka-peciatka.vizia-peciatka.spalit::after {
+  border-color: rgb(255 241 224 / 0.45);
 }
 
-/* Piktogram v rámčeku ako slot akcie na karte. */
-.vizia-volba-ram {
-  display: block;
-  width: 46px;
-  height: 46px;
-  padding: 4px;
-  border-radius: 11px;
-  background: var(--akcent);
-  box-shadow: 0 0 0 1px var(--text);
+.vizia-peciatka .naex-peciatka-kto {
+  max-width: none;
 }
 
-.vizia-volba.spalit .vizia-volba-ram {
-  background: var(--cervena);
-}
-
-.vizia-volba-ram .ikona-akcie {
-  display: block;
-  width: 100%;
-  height: 100%;
-  border-radius: 8px;
-}
-
-/* Nízke okno (notebook 1366 × 650): menšie tlačidlá, nech karta ostane veľká. */
-@media (max-height: 700px) {
-  .vizia-volby button.vizia-volba {
-    width: 52px;
-    height: 52px;
-    border-radius: 14px;
-  }
-
-  .vizia-volba-ram {
-    width: 38px;
-    height: 38px;
-    padding: 3px;
-    border-radius: 9px;
-  }
+.vizia-peciatka.spalit .naex-peciatka-kto {
+  color: #fff1e0;
+  background: #5e1b0f;
 }
 
 @media (prefers-reduced-motion: reduce) {
