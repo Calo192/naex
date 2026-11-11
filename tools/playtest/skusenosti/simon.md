@@ -7,7 +7,7 @@ vo feedback.md.
 ## Skúsenosti
 
 ### simon-9 · Keď má súper červený strach pri starších a vyhráva bitky, nedávam reči na tie červené, lebo pri zajatí ich ukradne podľa ceny stupňov a presvedčenú kartu zničí; reči dávam na jeho nižší strach alebo prázdne teplomery a plné teplomery presviedčam.
-- stav: overená
+- stav: neoverená
 - pravidlá: v11
 - potvrdenia: 1
 - vyvrátenia: 0
@@ -16,7 +16,7 @@ vo feedback.md.
 - prečo: §10 Zajatie (krádež: cena stupňov 1 / 2 / 3, nie ich bodová hodnota), Presvedčenie. 20261109-115955-1: K3 Autobusár (reči oranžová 2 + červená 3) → krádež 5; K5 Hrobár (1 + 2 + 3) → krádež 6 a presvedčený Hrobár z Šimonovho balíčka zmizol; Šimon mal hádky 5 : 0, a aj tak prehral. Farár (súperova oranžová) a Krčmárka dali Šimonovi 5 a 4 špaky za bitku bez rizika.
 
 ### simon-10 · Keď súper dá NA EX na vlastnú kartu, využijem odpoveď lícom dole (jedna karta zadarmo, mimo limitu) a položím kartu, ktorá spáruje jeho zdvojené neaktívne akcie na vonkajšej hrane (alebo mi zruší pečeň či Poldeci), lebo NA EX ruší len aktívne akcie a spárované sa nezdvoja.
-- stav: overená
+- stav: neoverená
 - pravidlá: v11
 - potvrdenia: 2
 - vyvrátenia: 0

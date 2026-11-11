@@ -7,7 +7,7 @@ vo feedback.md.
 ## Skúsenosti
 
 ### hela-1 · Keď hazardujem, vyberám hazard s vyčísliteľnou cenou (NA EX s náhľadom bitky pred a po, kliatb a Nakladačky), nie čistý žreb (Veľmi smútiaca vdova, fajčenie neskoro v kole), lebo skryté sú len súperove súbežné NA EX a odpoveď lícom dole; pečeň z NA EX stojí Cirhózy, ktoré sa v posledných Pitkách nedajú priznať (−3 za kus).
-- stav: overená
+- stav: neoverená
 - pravidlá: v11
 - potvrdenia: 3
 - vyvrátenia: 0
@@ -19,7 +19,7 @@ vo feedback.md.
 - oprava: 2026-11-09 20261109-115955-2: veta o Oslávencovi bola mŕtva (v sade nie je) a Vdova dnes odhodí náhodnú kartu z ruky, nie z balíčka — nie je to vyčísliteľný hazard (K5 odhodila Hele Kočovníka, 1 z 3 kariet); Heline vlastné NA EX dopadli podľa náhľadu vždy, keď súper nemal ako odpovedať (K2 Pitka 2, K5 hádka 6 : 3); 6 Cirhóz, 3 nepriznané = −9 (§14).
 
 ### hela-3 · Keď dávam NA EX, ktoré mi vyrobí priznaný Dlh (neaktívny Hazard na mojej karte), najprv spočítam remízu: pri vyrovnanom tuhom prehrávam na tiebreaku Dlhov, preto Dlhové NA EX dávam len pri náskoku aspoň 2 tuhé aj po súperovej odpovedi kartou.
-- stav: overená
+- stav: neoverená
 - pravidlá: v11
 - potvrdenia: 2
 - vyvrátenia: 0
@@ -38,7 +38,7 @@ vo feedback.md.
 - prečo: PRAVIDLA §7 zrážka, Výtržník. 115654-2 K4: Hela dala NA EX na vlastné Dvojčatá (odhad 80 %, že Šimon zaútočí na ne cez Čiernu mačku), Šimon dal NA EX na vlastného Praudovravca (Pohoršenie ×2, Povera ×2, Viera ×2) → Pečeň ×2 + Poldeci hrany × 3 Pitky = 3 Cirhózy (−9) a bitka 0 : 6.
 
 ### hela-6 · Keď súper hrozí NA EX na vlastnú kartu so zamknutou veľkou akciou alebo drží hádku cez Vzburu, podložím pod jeho kartu Nástroj, ktorý zmení jej Posilnenie či Odpor (Hrable: Odpor ↔ Posilnenie), a tým Vzburu vytvorím alebo zruším, lebo na kartu so Vzburou NA EX nejde; stojí 1 cigaretu a limit nemíňa.
-- stav: overená
+- stav: neoverená
 - pravidlá: v11
 - potvrdenia: 1
 - vyvrátenia: 0

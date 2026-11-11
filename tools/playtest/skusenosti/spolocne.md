@@ -7,7 +7,7 @@ vo feedback.md (návrh označí ako spoločný).
 ## Skúsenosti
 
 ### spolocne-1 · Keď chcem súperovi pokaziť hranu lokality, podstrčím mu ako prvú kartu pri lokalite kartu bez párových akcií, lebo prvá karta pri lokalite určuje, ktoré akcie hrany sa aktivujú.
-- stav: overená
+- stav: neoverená
 - pravidlá: v11
 - potvrdenia: 29
 - vyvrátenia: 0
@@ -16,7 +16,7 @@ vo feedback.md (návrh označí ako spoločný).
 - prečo: PRAVIDLA §6 (prvá karta pri lokalite určuje hranu, pri rovnosti prevahy rozhoduje). Použili ju súperi v každej z 6 partií: 105422-1 Svokra K1 a Vdova K3 pri lokalite v Ferovom kraji (K3 pokazila Hasičovu Petelicu s Krčmou); 105422-3 Dvojčatá K1 (Pecka + Rana hrany pre Helu) a Policajtka K3 (remíza prevahy 2 : 2). Platí aj naopak: svoj kraj obsaď skôr ako súper. 131033: P1 K2 Fero podstrčil Policajtku ako prvú kartu pri Ihrisku (Janova hrana sa nespárovala), P3 Eva blokovala Vila Kapybarou (K2) a Recidivistou (K5), Vilo ju Šoférom (K2: 5 : 0) a Dohadzovačkou (K5) — §6 platí aj vo v7. 161907: P1 Eva Pes (K1), Kôň + Praudovravec (K2), Jano Vdova (K3) a Mäsiar (K4) pri lokalite v súperovom kraji; P3 Hela Šofér (K2, K4), Bzdocha (K3), Kulturista (K5) a Vilo Dvojčatá, Mäsiar; P2 Fero Miňištrant (K1, K2), Pes (K2, K5) — prvá karta pri lokalite určila hranu a prevahu pri rovnosti. 090549: P1 Fero Pijan a Veterán K1, Šofér K2 v Vilovom kraji, Vilo Hasič K3 a Recidivista vo finále určili aktívne akcie hrany; P2 Jano Kulturista K3, Eva Záhradkár K4 a Janov Mäsiar K6 prvé pri lokalite; P3 Hela Pes K1 a Šimonov Šofér K2 (0 : 10 s Ihriskom). 115654: P1 Fero Manželka K1, Pes K2, Starosta K4 pri Vilovej lokalite (Pecka, Robota, Pecka hrany), Vilo Praudovravec K3, Snúbenica K4, Pes K5, Anonymný alkoholik finále; P2 Šimon Zámočník K4 a Miňištrant K5, Hela Dvojčatá K4, Šarlatán K5, Puška finále — Fero: „kto položí prvú kartu pri súperovej lokalite, rozhodne, či hrana žije“. 004030: P1 Šimon Kohút/Krokodíl ako prvá karta v Ferovom kraji 4× (K2, K4, K5, finále) a Fero Dvojčatá K3; P2 K2 Evin Praudovravec prvý v Vilovom kraji (zdvojil jej Pecku hrany); P3 K1 Janova Manželka prvá pri Zastávke (Pecka hrany pre neho), K2 Helina Opatrovateľka v Janovom kraji. 084841-1 (v10): K2 Fero Pes ako prvá karta pri Ihrisku (Šimonova hrana sa nespárovala, 0 : 13); K1 a K3 Šimonov Hasič pri lokalite pokazil Ferove hrany (K3 Hasič + Silná = 6 tuhých). Potvrdenie 2026-11-06 (v11.6, playtest štýlov): 20261106-015313-2 K1 Agresorov Kočovník prvý pri lokalite + Záverečná, telá 3 : 3 → prevaha a hrana jemu (0 : 5); 20261106-015313-1 K2 Klebetnej podstrčené Dvojčatá vzali Ekonómovi hranu, kým nedoložil 3 Občanov; 20261106-024710-2 finále Manželka ako prvá v Agresorovom kraji spárovala jeho hranu (Pecka + Petelica) → 21 : 3. §6 Prevaha v11 to potvrdzuje. v11.11: 173331-1 K3 Dievčina 3 : 3 v kraji prehodila hranu s Petelicou ×2 (+6 / −6), lebo pri rovnosti rozhoduje prvá karta. 165501-1 K1: Jano dvomi kartami (2 : 1) vzal Ferovi Pecku hrany; K4 Ferov Pes vpravo vrátil prevahu.
 
 ### spolocne-2 · Keď mám kartu s malou aktívnou a veľkou neaktívnou akciou (Hasič, Recidivista: Rana aktívna, Petelica neaktívna), ktorú sused nemôže spoilovať, dám NA EX na vlastnú kartu, lebo zruší malú a zdvojí veľkú; najsilnejšie je to, keď súperova karta priložená za moju akciu uzamkla, lebo odpoveď ju už nespáruje. Súperovu takú kartu čakám ako hrozbu, držím odpoveď a jeho kartu si sám neuzamknem.
-- stav: overená
+- stav: neoverená
 - pravidlá: v11
 - potvrdenia: 22
 - vyvrátenia: 0
@@ -25,7 +25,7 @@ vo feedback.md (návrh označí ako spoločný).
 - prečo: PRAVIDLA §7 (NA EX ruší aktívne a zdvojuje neaktívne akcie). 105422-3: K1 Jano dal NA EX na vlastný Hasič (Pitka 1), finále 17 : 0 po NA EX na Recidivistu s neaktívnou Petelicou (Petelica ×2); 062058: Hela „trik“ 5×, Fero self-NA EX na Svokru 3 : 2 → 7 : 2; 105422-1 K2 Fero NA EX na Veterána a odpoveď Manželkou 10 : 9. 131033: P1 K1 Jano NA EX na vlastný Hasič 4 → 10, K6 Fero na Vymáhača +6; P2 K1 Hela Mäsiar 2 → 4, K3 Vymáhač; P3 K3 Vilo Dvojčatá +6 (0 : 6 → 14 : 9). Vo v7 treba skontrolovať, či sused (Miňištrant, Posilnenie) neaktivoval všetky akcie: P1 K3 NA EX na Hasiča server odmietol. 161907: P1 K1 Jano NA EX na vlastnú Svokru 2 : 3 → 7 : 4; P2 K2 Fero NA EX na Veterána 8 : 7 a K5 Šimon NA EX na vlastný Veterán + Traktoristku (+9 tuhých, 13 : 4); P3 K1 Vilo NA EX na vlastné Dvojčatá (Dlh ×2, Pecka ×2, Rana ×2 = 6, 3 : 6). 090549: P2 K1 Jano NA EX na vlastný Pijan (4 : 5 → 7 : 5), K2 Eva NA EX na vlastný Mäsiar (Pecky ×2, 5 : 4 → 14 : 4); P3 K3 Hela NA EX na vlastný Zámočník (Pecka ×2, Robota ×2, 13 : 4). 115654: P1 K3 Vilo NA EX na vlastnú Vychovávateľku (Povera ×2, Cigareta ×2), finále Fero NA EX na Vešticu (Viera ×2 × Svätý text); P2 K4 Šimon NA EX na vlastného Praudovravca (Pohoršenie, Povera, Viera ×2 → 5 : 0), K5 Hela NA EX na Zámočník (Robota ×2 = 2 Dlhy spálené + špak) a Svokru (Pecka ×2) → 16 : 3. Potvrdenie 2026-11-06 (v11.6): 20261106-015313-2 Agresor NA EX na vlastný Hasič s neaktívnou Petelicou K3 9 : 8 → 13 : 8, K4 6 : 3 → 11 : 3 (priebeh.log). v11.11: 165715-1 K1 Hasič 18 : 3; 173331-1 K1 Manželka 8 mäkkých, K4 Dvojčatá medzi Praudovravcom a Kapybarou 3 Rany ×2 s Vidlami +12, 20 : 0; 185402-1 K3 Manželka 8 mäkkých, hádka 10 : 0. 165501-1 K5 Jano NA EX na vlastného Miňištranta 4 : 3 → 4 : 2 (neaktívna Viera ×2); K4 Fero NA EX na vlastných Hasičov so zamknutou Petelicou 12 : 7 → 18 : 7.
 
 ### spolocne-4 · Keď sa blíži finále, spočítam nepriznané Cirhózy v ruke aj v oboch balíčkoch a priznám všetky, ktoré môžem (aj Manželkou), lebo každá nepriznaná stojí −3 špaky; priznaná dá súperovi +1 tuhé v každej ďalšej bitke, takže pri poslednej bitke je priznanie lacnejšie.
-- stav: overená
+- stav: neoverená
 - pravidlá: v11
 - potvrdenia: 17
 - vyvrátenia: 0
@@ -35,7 +35,7 @@ vo feedback.md (návrh označí ako spoločný).
 - oprava: 2026-10-28 20261028-090549-1, -2, -3: číslo −5 bolo zo starého znenia, PRAVIDLA §11 a §14 v8 dávajú −3 za kus (Fero 7 Cirhóz −21, Jano a Eva po −9, Šimon −6 — výsledky sedeli na −3). Princíp ostáva, ale Jano a Eva Cirhózy vedome nepriznali (+1 tuhé súperovi) a skončili na −9, takže správanie ešte partia nepotvrdila.
 
 ### spolocne-5 · Keď kladiem Silnú ženu, Opatrovateľku alebo kartu s Posilnením vedľa karty s neaktívnym Poldeci/Poškodením pečene/Dlhom, pred položením si v náhľade NA EX pozriem súperov najhorší prípad (NA EX ×2 a Silná alebo Opatrovateľka ×2 dajú pečeň a Dlh ×4), lebo Cirhóza z poslednej Pitky finále sa už nedá priznať.
-- stav: overená
+- stav: neoverená
 - pravidlá: v11
 - potvrdenia: 22
 - vyvrátenia: 0
@@ -44,7 +44,7 @@ vo feedback.md (návrh označí ako spoločný).
 - prečo: PRAVIDLA §7, §8 (nová Cirhóza ide do odhadzovacieho balíčka), §14 (−5). 105422-1 finále: Autobusár + Silná + NA EX Evy dali Ferovi 3 Cirhózy, 2 ostali nepriznané (−10); 105422-2 K2: Vilo podľa náhľadu nedal NA EX na Veterána pri párovaní s Dievčinou (pečeň 3) a Cirhózu nedostal. 131033: P3 K4 Evino Hasičovo Posilnenie zdvojilo Vilovej Smetiarke Cigaretu (+4 cig.), K5 Posilnenie dalo Traktoristke Pečeň ×2 a odomklo NA EX Petelica ×2 (+6); P2 Šimon dal Silnú vedľa Svokry a mal zadĺženie +3 za Pitku. 161907: P1 K4 Evin NA EX na Janov Kočovník (neaktívna Pečeň + Dlh) dal 2 Cirhózy + 2 Dlh, K5 Jano to isté Evinmu Pijanovi; P2 K3 Fero pečeň 7/5 po NA EX na Záhradkára; P3 Vilo Pijana s neaktívnou pečeňou do línie nedal. 090549: P1 finále Silná vedľa Recidivisty s neaktívnym Dlh — NA EX ×4 dal Ferovi 17 Dlhov a 7 Cirhóz (−30 špakov vrátane Exekútora); P2 K2 Evin Pijan s 3 neaktívnymi zlými akciami po Janovom NA EX = 3 Cirhózy (−9); P3 K3 Šimonovo NA EX na Helinu Svokru zdvojilo Dlh a Poldeci. 115654: P1 K3 Vilo vlastné NA EX pečeň 1 + Poldeci ×2 = 3 → Cirhóza, finále Ferov NA EX na Šarlatána Pečeň ×2 = Cirhóza v oboch Pitkách; P2 K4 Hela NA EX na vlastné Dvojčatá (Pečeň ×2 + Poldeci hrany) × 3 Pitky = 3 Cirhózy (−9). 004030: P2 K5 Vilo Vypiť 1 + NA EX 1 + Živnostník ✓ 1 = Cirhóza; K2 Evin Šofér dostal Cirhózu po Vilovom NA EX; P3 K2 Janov NA EX na Helin Pijan (pečeň ×2 = 8) hrozil −9 špakov a Hela ho zmarila zrážkou. Potvrdenie 2026-11-06 (v11.6): 20261106-024710-1 K5 Ekonómova Silná žena vedľa Opatrovateľky s neaktívnou Poškodením pečene — Sabotérove NA EX ×2 × Silná ×2 = pečeň ×4 v každej Pitke, 3 Cirhózy (priebeh.log). 20261106-133718-2 K1: Rudova Silná vedľa Svokry s neaktívnym Hazardom, Sabotérovo NA EX = Dlh ×4, 10 Dlhov v kole. v11.11: 165715-1 K2 Manželka pri Opatrovateľke, súperovo NA EX: Hazard ×4 a pečeň ×4 v 2 Pitkách, 8 Dlhov, 2 Cirhózy, hádka 9 → 2 (§16 Opatrovateľka). 165501-1 K5 Fero: Silná žena vedľa Šoféra s Poldeci (pečeň ×2) + Janovo NA EX na Vdovu = 3 Cirhózy za kolo (−9), bitka 2 : 4; výhľad nepozrel. 20261109-115955-2 K4: Eva položila Degustátorku (vonkajšie Poldeci + Pečeň) bez prečítania hrozby; Helino NA EX dalo pečeň 7 a potom 4 v ďalšej Pitke = 2 Cirhózy aj po odpovedi (bez nej 4, −12); to isté platí pre Pijana pri plnom poldeci súpera.
 
 ### spolocne-6 · Keď staviam šenok, rátam, že zo šenku berie prvý obranca (na prvom ťahu len 1 kartu) a útočník druhý; ako útočník dám do šenku len to, čo mi nevadí nechať súperovi, a silné karty zakopem naspodok, ako obranca vezmem silné hneď, lebo ponuka je dar tomu, kto berie prvý (obranca môže aj stopnúť a nechať útočníkovi všetko).
-- stav: overená
+- stav: neoverená
 - pravidlá: v11
 - potvrdenia: 22
 - vyvrátenia: 0
@@ -55,7 +55,7 @@ vo feedback.md (návrh označí ako spoločný).
 - oprava: 2026-11-01 20261101-084841-1: pôvodné znenie („keď beriem prvý (útočník)“) odporovalo PRAVIDLÁM §5 v9.2 — prvý berie obranca, útočník druhý; hlásili Fero aj Šimon (v K5 a finále Šimon ako obranca nevzal nič a útočník Fero mal šenok pre seba). Zmysel (ponuka je dar tomu, kto berie prvý) ostáva, role sa prehodili.
 
 ### spolocne-7 · Keď môžem všetky akcie svojej karty spárovať (alebo zrušiť Odporom), súper na ňu nemôže dať NA EX, preto líniu stavam tak, aby nezostala neaktívna akcia na kartách, ktoré chcem chrániť.
-- stav: overená
+- stav: neoverená
 - pravidlá: v11
 - potvrdenia: 18
 - vyvrátenia: 0
@@ -64,7 +64,7 @@ vo feedback.md (návrh označí ako spoločný).
 - prečo: PRAVIDLA §7 (NA EX len na kartu s aspoň jednou aktívnou a jednou neaktívnou akciou; zrušená Odporom sa nepočíta, v6.1). 105422-2 K1: Vilo odpovedal Miňištrantom, Recidivista mala všetky akcie aktívne alebo zrušené Odporom a hrozba NA EX zmizla z výhľadu; 062058-1 K2 opak (Miňištrant dal Hasičovi platný cieľ). 131033: P1 K3 NA EX na Hasiča server odmietol (po Janovom Miňištrantovi všetky akcie aktívne), P2 Hasič s všetkými aktívnymi akciami Šimon neriešil ako cieľ, P3 K5 Evina Recidivista s oboma akciami spárovanými — Vilo NA EX nemohol. 161907: P3 K5 Praudovravec pri Kulturistovi aktivoval obe Dlh, NA EX naňho nešiel (Vilo aj Hela); P2 finále Fero odpovedal Strýkom, ktorý spároval vonkajšie neaktívne akcie Vymáhača, a Šimonovo NA EX sa zmarilo. 090549: P1 K3 a K6 Vilo Hasič s Poradkyňou — všetky akcie aktívne alebo zrušené, NA EX naň nebol možný a 6 tuhých ostalo. 115654: P1 K4 Zámočník a Starosta so všetkými akciami aktívnymi boli imúnne (Vilo dával NA EX len na Hasiča a Tipéra), finále Miňištrant so 4 spárovanými akciami bez ponuky NA EX; P2 K2 Veterán bez aktívnej akcie ako zátka, K5 Šimonov Záhradkár spároval Helinu zdvojenú Robotu. 004030: P1 K1 Vzbura (Recidivista + Manželka), K4 Hasič spojený s Miňištrantom bez cieľa pre NA EX; P2 K3 Vilov Pijan bez spoja imúnny, K1 Manželka všetky akcie aktívne. 084841-1 (v10): K1 Šimonova Vdova a Šofér a K5 Ferova Policajtka (všetky akcie ✓) nemali cieľ pre NA EX. 165501-1 K1: Jano Veterán spároval všetky akcie Recidivisty, NA EX naň nebolo v ponuke; K5 Ferova Silná spárovala Šoférovu vonkajšiu hranu. 20261109-115955-3 K3: súper priložil Poradkyňu k môjmu Veteránovi s Puškou, spároval mu vonkajšiu hranu a server odmietol NA EX („aspoň jedna aktívna a jedna neaktívna“) — preto vlastné NA EX na kartu s neaktívnou veľkou akciou dávam hneď v prvej Pitke, kým ju súper nezablokoval. 20261109-115955-2 K5 Kostol: konce línie Vymáhač (bez aktívnej akcie) a Čierna mačka (Zviera) — NA EX smie len na krajné karty, nikto nemal cieľ, bitka 10 : 2.
 
 ### spolocne-13 · Keď mi súper položí kartu k hrane lokality na moju stranu, položím do toho kraja Dvojčatá (2 proti 1) alebo viac kariet, lebo hranu aktivuje jeho karta, no akcie dostane ten, kto má v kraji prevahu.
-- stav: overená
+- stav: neoverená
 - pravidlá: v11
 - potvrdenia: 18
 - vyvrátenia: 0
@@ -73,7 +73,7 @@ vo feedback.md (návrh označí ako spoločný).
 - prečo: PRAVIDLA §6 (akcie hrany dostane hráč s prevahou). 062058-2 K4: Fero položil Starostu k hrane, Jano doložil Dvojčatá a Petelicu hrany (3 tuhé) dostal on. 131033: P1 K3 Jano doložil Mäsiara do Ferovho kraja a hranu zobral; P3 K3–K5 Vilo Dvojčatami (2 telá za slot) trikrát prehodil prevahu v Evinom kraji. 161907: P2 K2 Šimon vrátil prevahu 2 : 2 Bzdochou proti Ferovmu Miňištrantovi + Strýkovi; P3 K2 a K3 Vilo Dvojčatami (2 telá za slot) prehodil prevahu z 0 : 8 na 4 : 2 a prekonal Helinu Bzdochu. 090549: P1 K5 Vilo Dvojčatá pre prevahu; P2 K4 Jano a Eva Dvojčatá proti podstrčenej prvej karte; P3 K2 a K4 Helina prevaha po podstrčení Šoféra. 115654: P1 K5 Fero Manželka + Miňištrant + Podvodník (3 : 2) vrátili Pecku hrany proti Psovi, K4 Vilova Snúbenica 1 : 1 → jeho; P2 K4 Heline Dvojčatá pri Šimonovej lokalite = prevaha 2 tiel (potreboval 3). 004030: P1 K4 a finále Fero tretím telom (Silná) prehodil prevahu v Šimonovom kraji — Pecka hrany prešla k nemu (11 : 0 → 12 : 9, finále 5 : 4); P3 K1 Janove Dvojčatá po Manželke (3 : 2) vzali Hele hranu, K4 Hela držala kraj Vdovou a Strýkom. Potvrdenie 2026-11-06 (v11.6): 20261106-015313-1 K2 Ekonóm doložil 3 Občanov (Vymáhač, Bzdocha, Dievčina) proti podstrčeným Dvojčatám → 7 : 1 namiesto 1 : 6; 20261106-010635-1 K2 Agresor 2 karty v kraji proti 1 → 5 : 7 → 9 : 1. 165501-1 K2–K4: Fero vždy doložil kartu navyše a rovnosť prevahy rozhodla jeho karta pri lokalite; K4 Pes vpravo (Manželka 2 : 2).
 
 ### spolocne-17 · Keď kladiem kartu s Pečeňou či Poldeci (Pijan…), rátam pečeň v každej zostávajúcej Pitke kola (karta v línii ju pripisuje znova) a po každom položení si pozriem VÝHĽAD PITKY, lebo Cirhóza z poslednej Pitky finále sa už nedá priznať (−3 za kus).
-- stav: overená
+- stav: neoverená
 - pravidlá: v11
 - potvrdenia: 19
 - vyvrátenia: 0
@@ -84,7 +84,7 @@ vo feedback.md (návrh označí ako spoločný).
 - oprava: 2026-11-08 20261108-165501-1: vypustený Kšeft Oslávenec (Kšeft zanikol, §7 frakcie); princíp ostal.
 
 ### spolocne-18 · Keď kladiem kartu s Posilnením alebo akciou na vonkajší koniec či vedľa súperovej karty, najprv v náhľade zistím, čo tým súperovej karte aktivujem (aktívna akcia = oprávnenie na NA EX, Posilnenie zdvojí jeho akciu) a čo naň môže súper priložiť, lebo vonkajší koniec je rukojemník.
-- stav: overená
+- stav: neoverená
 - pravidlá: v11
 - potvrdenia: 17
 - vyvrátenia: 0
@@ -94,7 +94,7 @@ vo feedback.md (návrh označí ako spoločný).
 - oprava: 2026-11-08 20261108-165501-1: Nástroj sa od Náradia 2026-11-08 do línie nevykladá (§12, podloženie), preto vypustená časť o Nástroji v línii; zvyšok potvrdený tou istou partiou, stav overená v11.
 
 ### spolocne-21 · Keď dávam NA EX (aj s dobrým náhľadom), počítam, že súper odpovie kartou z ruky aj mimo limitu — spáruje neaktívne akcie na vonkajšej hrane alebo pridá vlastné — preto NA EX dávam len tam, kde neaktívne akcie sú na vnútornej hrane pri lokalite, alebo keď bitka ostane moja aj po odpovedi, alebo keď súper nemá čo odpovedať (prázdna ruka); náhľad „po najhoršej odpovedi“ nepozná jeho ruku.
-- stav: overená
+- stav: neoverená
 - pravidlá: v11
 - potvrdenia: 22
 - vyvrátenia: 0
@@ -103,7 +103,7 @@ vo feedback.md (návrh označí ako spoločný).
 - prečo: PRAVIDLA §7 Odpoveď na NA EX (jedna karta z ruky, bez limitu). P2 finále: Šimonovo NA EX na Vymáhača zmaril Fero Strýkom (8 : 10), Fero pasoval 3× s kartami a držal odpoveď, kým Šimonovo NA EX na vnútornú hranu (K3 Snúbenica Viera ×2) prešlo; P3 K5: Helino NA EX s odhadom „až 3 : 4“ skončilo 4 : 6 po Vilovej odpovedi Policajtkou. 090549: P1 K3 Fero zrušil Vilovo NA EX Manželkou; P2 K1 Eva odpovedala Dievčinou a Jano Pijanom, K4 Eva Manželkou na Janovo NA EX; P3 finále Šimon NA EX nedal, aby Hela nemala voľnú odpoveď. 115654: P1 K1 Vilo odpoveďou Vdovou spároval vonkajšie Hazardy Poradkyne (4 → 1 zadĺženie), finále Ferova Veštica s neaktívnou Vierou na vnútornej hrane = NA EX bez možnej odpovede; P2 K1 Šimon odpovedal Dievčinou (Viera + Pohoršenie → Bitkár) → 7 : 7, finále Šimon NA EX nedal, aby Hela nemala odpoveď. 004030: P1 K5 Fero NA EX na Mäsiara, Šimonova odpoveď Manželkou znížila pečeň; P2 K1 Eva odpovedala Pijanom na Vilovo NA EX (4 : 4 → 4 : 5 s Dievčinou), K2 Pitka 1 odpoveď Miňištrantom prehodila prevahu (7 : 7 → 0 : 14), kým pri prázdnej ruke Pitka 2 odpoveď nebola (9 : 1); P3 K1 Jano odpovedal Dievčinou na Helino NA EX (0 : 4 → 0 : 7). 084841-1 (v10): K3 Ferov NA EX na Recidivistu (9 : 9) zmaril Šimon odpoveďou Kulturistom (11 : 9); K4 Šimonov NA EX na Ferovu Recidivistu zmaril Fero odpoveďou Pijanom (Dlh −4 namiesto +6). Potvrdenie 2026-11-06 (v11.6): 20261106-010635-2 K2 Klebetná dala NA EX, Sabotér odpovedal Manželkou lícom dole na koniec jej kraja → 7 : 7 → 4 : 14 (Nakladačka 10); 20261106-015313-2 K4 Agresor odpovedal Stryňou, ktorá spárovala jeho PP a Dlh, a Sabotérovo NA EX zmarilo. v11.10: 123023-1 K5 Recidivista na vnútornej hrane +8, odpoveď Vandal to nezmenila; 123023-2 K2, K5, K6 odpoveď spárovala súperovo NA EX; 144117-1 K3 Dvojčatá +4; 144117-2 K4 P2 NA EX na vonkajšiu hranu Recidivistu 23 → 12 — súperka mala prázdnu ruku, ale vyfajčila kartu za 1 cigaretu, takže „prázdna ruka“ platí, len keď súper nemá ani cigaretu, ani balíček. v11.11: 185402-1 K4 Sabotérovo NA EX pri 11 : 3, odpoveď Vymáhačom 10 : 5 a švih 38; K5 NA EX nedal a odpoveď ostala len jemu (Vandal +4). 165501-1 K1: Fero odpovedal Pijanom na koniec línie a Janovi spároval neaktívnu Pečeň (Cirhóza); K3 Janova odpoveď Praudovravcom NA EX na zamknutú Strynú nezmarila.
 
 ### spolocne-22 · Keď súper položí kartu so Silnou ženou alebo Posilnením vedľa karty s neaktívnym Dlhom/Pečeňou, ktorú už nemôže spárovať, dám NA EX na tú kartu, lebo kliatby sa zdvojnásobia v každej Pitke kola a Exekútor ich ešte spáli aj so špakmi.
-- stav: overená
+- stav: neoverená
 - pravidlá: v11
 - potvrdenia: 8
 - vyvrátenia: 0
@@ -113,7 +113,7 @@ vo feedback.md (návrh označí ako spoločný).
 - oprava: 2026-11-09 20261109-115955-1: výnimka: keď má súper v línii Vymáhača, NA EX na jeho kartu so zdvojenými Hazardmi mu dá +1 Ranu za každé 2 Dlhy v tej istej bitke (20261109-115955-1 K4: NA EX na Recidivistu, Dlhy 4 → 14, Vymáhač 2 → 7 Rán, bitka 9 : 18 namiesto 3 : 7, a Záhradkár mu vypol exekúciu). Pred NA EX na kartu s Hazardom najprv skontrolujem Vymáhača (§16).
 
 ### spolocne-28 · Keď rátam skorý koniec, svoj aj súperov, výhra strachom potrebuje 4 červené už pred vyhranou bitkou a výhra väzňami 5 bodov Nakladačky za každého staršieho na červenej od minulého kola, preto pri súperových červených držím Nakladačku pod 5 × červené a rátam, že výhra strachom príde pred rozdelením aj exekúciou (kroky 4c, 4d, 4e), takže Dlhy, ktoré mu dávam, v tej bitke nič nestoja, a zajatie zmaže moje reči pri tom staršom.
-- stav: overená
+- stav: neoverená
 - pravidlá: v11
 - potvrdenia: 9
 - vyvrátenia: 0
@@ -123,7 +123,7 @@ vo feedback.md (návrh označí ako spoločný).
 - oprava: 2026-11-06 20261106-165715-1: pôvodná rada „reči k nim nedávam“ neplatí od v11.11 (Zrejúca), kde reči krátia strach pri tom istom staršom (§10, krok 4b): 165715-1 krátenie 13. Na v11.6 (Vypálená) krátenie nie je.
 
 ### spolocne-29 · Keď rozdeľujem Nakladačku na svoj strach, najprv si pozriem priazeň na scorecarde staršieho a rozdiel strachov, lebo priazeň (súperov strach − môj) dostane súper — Robota sily 3 mu bez Dlhov dá 3 špaky v každej bitke, s Fúrikom 6 — a priazne sa rozdávajú na scorecardoch náhodne každú partiu, nie podľa staršieho.
-- stav: overená
+- stav: neoverená
 - pravidlá: v11
 - potvrdenia: 7
 - vyvrátenia: 0
@@ -132,7 +132,7 @@ vo feedback.md (návrh označí ako spoločný).
 - prečo: PRAVIDLA §3, §10 Priazeň, §11 Robota. 20261106-010635-1 K1: Agresor dal Nakladačku 9 na Vychovávateľku (scorecard Robota) na červenú — Ekonóm potom dostal z Robôt 3 + 3 + 3 + 5 + 4 = 18 špakov (priebeh.log); 20261106-015313-1 K3: Klebetná dala 7 na Veterinára (v tej partii Robota) na červenú → Ekonóm s Fúrikom 7, 6 a 11 špakov z Robôt v K4, K5 a finále. v11.10: 123023-2 červená na Autobusára (Advokát 3) vypla Klebetnej exekúciu v K4 a K5 a Farár (Fajčiar) jej dával cigarety; 144117-2 červené na Kmotra, Advokáta a Abstinenta dali Klebetnej takmer nič, lebo nemala Dlhy. 165501-1 K4: Ferova Nakladačka 11 na Poštárku dala Janovi Ohováračku 3, ktorá v K5 zjedla všetku Ferovu Vieru; Jano v K1 odmietol NÁVRH s Farárom (Veriaci) a dal červenú Autobusárovi (Abstinent).
 
 ### spolocne-30 · Keď má súper na stole Bzdochu, nedávam NA EX na jeho kartu, a keď ju mám ja a vidím jeho NA EX na svojej karte, dám NA EX na tú istú kartu v tej istej Pitke, lebo zo zrážky je Výtržník a všetky jeho akcie sú Rany pre majiteľa karty; keď si súper dal NA EX na vlastnú kartu, zrážku nerobím, lebo Rany sú jeho. Keď majú Bzdochu obaja, vidí NA EX ten, kto Pitku skončí neskôr, a hráča bez ďalšieho ťahu (0 cigariet po NA EX) hra ukončí sama — preto NA EX dávam až ako posledný a nechám si cigaretu na čakanie.
-- stav: overená
+- stav: neoverená
 - pravidlá: v11
 - potvrdenia: 8
 - vyvrátenia: 0
@@ -142,7 +142,7 @@ vo feedback.md (návrh označí ako spoločný).
 - oprava: 2026-11-08 20261108-165501-1: doplnený prípad dvoch Bzdoch (PRAVIDLA §7, K2).
 
 ### spolocne-36 · Keď končím kolo, v ktorom vyhrám bitku alebo platím výpalné za súperove červené, nechám si na prvé branie v ďalšom kole aspoň 2 cigarety a Záverečnú či podloženie nekupujem za poslednú cigaretu, lebo víťaz je ďalšie kolo obranca a berie zo šenku prvý, výpalné stojí 1 cigaretu za každú súperovu červenú aj po mojej výhre a s nulou nevezmem nič — súper si vyberie celú ponuku.
-- stav: overená
+- stav: neoverená
 - pravidlá: v11
 - potvrdenia: 2
 - vyvrátenia: 0

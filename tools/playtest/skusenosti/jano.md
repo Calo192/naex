@@ -7,7 +7,7 @@ vo feedback.md.
 ## Skúsenosti
 
 ### jano-1 · Keď súper v Zhromaždení spasuje a ja ešte mám karty, položím všetko v poradí, ktoré chráni koniec línie, lebo po pase už nemôže zablokovať hranu ani doložiť telo.
-- stav: overená
+- stav: neoverená
 - pravidlá: v11
 - potvrdenia: 4
 - vyvrátenia: 0
@@ -26,7 +26,7 @@ vo feedback.md.
 - oprava: 2026-11-08 20261108-165501-1: časť „Pohoršenia na Bitkára“ odporuje §9.1 (hádka priazne nemení, Pohoršenie je v hádke); ostala len remíza (§9.4). Stav neoverená.
 
 ### jano-3 · Keď sa blíži finále, nechávam si aspoň 3 cigarety a 3 karty v ruke (neminiem všetko na zajatie či Záverečnú v predposlednom kole), lebo vo finále víťaz dostane 1 špak za každý bod Nakladačky (§9.4, §14b) a hráč bez cigariet a kariet nemá čím položiť prvé karty ani zamknúť kraj.
-- stav: overená
+- stav: neoverená
 - pravidlá: v11
 - potvrdenia: 3
 - vyvrátenia: 0
@@ -46,7 +46,7 @@ vo feedback.md.
 - prečo: PRAVIDLA §13 Záverečná (míňa limit, končí vykladanie, za ňu sa nedá priložiť). K3 Jano [vypiť, Šofér, Záverečná] pri Helinom kraji: bitka 7 : 1 (+9 špakov); K5 Záverečná (Recidivista, junk) v Helinom kraji pri 3 : 3 s kartou pri lokalite → 7 : 4 a väzeň Krčmárka (+8). Hela: „Jano trikrát hrozil Záverečnou na koniec kraja a ja som nemala protiťah“ (K3 1 : 7, K5 4 : 7). Cena: 1 cigareta, ktorú treba mať aj na finále (jano-3).
 
 ### jano-6 · Keď mám Vymáhača aj Záhradkára, nechám Dlhy rásť (vlastné NA EX na karty s Hazardom, lokalita so zdvojením), lebo Vymáhač dá Ranu za každé 2 priznané Dlhy a Záhradkár mi v tom kole zruší exekúciu.
-- stav: overená
+- stav: neoverená
 - pravidlá: v11
 - potvrdenia: 1
 - vyvrátenia: 0
@@ -55,7 +55,7 @@ vo feedback.md.
 - prečo: §16 Vymáhač a Záhradkár, §11. 20261109-115955-1: K4 13 Dlhov = 6 Rán (bitka 18 : 9), K5 ~17 Dlhov = 8 Rán (22 : 8), exekúcia 0 v K2, K4 aj K5. Jano mal 15 priznaných Dlhov na konci a hra skončila pred finále, takže ho nestáli nič; bez Záhradkára by Exekútor zhoril polovicu Dlhov a rovnako špakov.
 
 ### jano-7 · Keď súper vyhráva hádky a jeho reči na mojom teplomere bodujú 10 a viac za bitku, prestanem sa baviť o špakoch a idem na výhru väzňami: Nakladačku dávam na červený strach o kolo skôr a v ďalšej výhre zajmem dvoch starších naraz (5 + 5), lebo reči bodujú aj porazenému a body nedobehnem.
-- stav: overená
+- stav: neoverená
 - pravidlá: v11
 - potvrdenia: 1
 - vyvrátenia: 0

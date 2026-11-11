@@ -7,7 +7,7 @@ vo feedback.md.
 ## Skúsenosti
 
 ### vilo-1 · Keď bitku môže rozhodnúť remíza v tuhom, nevyrábam si priznaný Dlh (NA EX na vlastnú kartu s neaktívnym Hazardom, Poštárka, Dievčina) a Dlhy oboch si pred bitkou spočítam, lebo remízu v tuhom aj v Absťákoch prehráva, kto má viac priznaných Dlhov (§9.4) — jediný Dlh zmení výhru na prehru.
-- stav: overená
+- stav: neoverená
 - pravidlá: v11
 - potvrdenia: 3
 - vyvrátenia: 0
@@ -17,7 +17,7 @@ vo feedback.md.
 - oprava: 2026-10-30 20261030-115654-1: pôvodné znenie stálo na Kšefte Jednoty (1 Dlh → 2 cigarety), ktorý §15 v7 nemá (Jednota: kto má viac Dlhov, nesmie fajčiť ani dolievať) — Vilo to v partii overil a skúsenosť nepoužil; jadro (Dlh rozhoduje remízu) platí: 20261030-115654-2 K1 Hela prehrala 7 : 7 na Dlhy 1 : 0 po vlastnom Dlhovom NA EX (−8 špakov); prepísané bez Jednoty.
 
 ### vilo-2 · Keď mám priznané Dlhy, počítam s Exekútorom v každej bitke (polovica Dlhov nahor a rovnako špakov, aj pri jedinom Dlhu; Advokát špaky ušetrí, Záhradkár exekúciu obíde), preto Dlhy nenarábam (NA EX zdvojujúci moje neaktívne Dlhy, Silná vedľa Dlhu), držím Záhradkára a pri tesnej remíze si Dlhy spočítam, lebo menej Dlhov vyhráva.
-- stav: overená
+- stav: neoverená
 - pravidlá: v11
 - potvrdenia: 4
 - vyvrátenia: 0
@@ -46,7 +46,7 @@ vo feedback.md.
 - prečo: PRAVIDLA §7 (pečeň NA EX pri odkrytí), §8 prah 3, §16 Šofér. 115654-1 K5: Vilov NA EX zrušil Šoférov bonus +2 (a Fero zrážkou získal 6 Rán); K3 NA EX na vlastnú Vychovávateľku: pečeň 1 + Poldeci ×2 = 3 → log „Hráč 2 dosahuje prah pečene (3) — Cirhóza“, zahodená až Víziou. 004030-2 K5: Vypiť 1 + NA EX 1 + Živnostník ✓ 1 = prah pečene 3 → Cirhóza (rátané, nie z vlastného NA EX náhľadu).
 
 ### vilo-9 · Keď má súper silnú kartu s Odporom na hrane (Recidivista, Vdova) alebo mám kartu s Odporom, ktorú môžem priložiť, podstrčím ju na ten istý index (Odpor + Odpor = Vzbura: spojené akcie oboch kariet sa vypnú, nespojené zapnú) a kladiem ju až v poslednom Zhromaždení pred Pitkou, lebo súper Vzburu zhasne priložením karty k jej vonkajšej hrane.
-- stav: overená
+- stav: neoverená
 - pravidlá: v11
 - potvrdenia: 2
 - vyvrátenia: 0
