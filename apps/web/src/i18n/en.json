@@ -231,6 +231,10 @@
     "5": "{n} cards"
   },
   "stol.krajeTip": "Left: {lavy} · right: {pravy}",
+  "stol.posunVlavo": "",
+  "stol.posunVpravo": "",
+  "stol.zaOkrajom": "",
+  "stol.naLokalitu": "",
   "stol.finale": "finale",
   "stol.finaleLokalita": "finale · location",
   "stol.lokalita": "location",

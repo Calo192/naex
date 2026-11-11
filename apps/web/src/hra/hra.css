@@ -1107,6 +1107,152 @@ button.zdroj-starsi[aria-pressed="true"] {
   overflow-x: hidden;
 }
 
+/* ---- posúvaná línia (rozloženie A, Michal 2026-11-11) ----
+ * Kartu riadi výška stola (HernaPlocha, reziaLinie), čo sa nevojde do šírky, sa posúva
+ * vodorovne (posunLinie.ts). Okraj, za ktorým sú ďalšie karty, sa stratí do plste a šípka
+ * ukáže, koľko kariet tam je. Zvislo sa línia neposúva — duch karty z ruky smie trčať. */
+@media (min-width: 761px) {
+  .hra:not(.mobil-sirka) .linia {
+    overflow-y: hidden;
+    scroll-snap-type: none;
+    overscroll-behavior-x: contain;
+    scrollbar-width: thin;
+    scrollbar-color: color-mix(in srgb, var(--akcent) 60%, transparent) transparent;
+  }
+
+  .hra:not(.mobil-sirka) .linia.skryte-vlavo {
+    mask-image: linear-gradient(90deg, transparent 0, #000 64px);
+  }
+
+  .hra:not(.mobil-sirka) .linia.skryte-vpravo {
+    mask-image: linear-gradient(270deg, transparent 0, #000 64px);
+  }
+
+  .hra:not(.mobil-sirka) .linia.skryte-vlavo.skryte-vpravo {
+    mask-image: linear-gradient(90deg, transparent 0, #000 64px, #000 calc(100% - 64px), transparent 100%);
+  }
+}
+
+.posun-okraj {
+  position: absolute;
+  top: 50%;
+  z-index: 6;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  translate: 0 -50%;
+  pointer-events: none;
+}
+
+.posun-okraj.vlavo {
+  left: 8px;
+  align-items: flex-start;
+}
+
+.posun-okraj.vpravo {
+  right: 8px;
+  align-items: flex-end;
+}
+
+.posun-okraj > button {
+  pointer-events: auto;
+}
+
+.posun-sipka {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border: 2px solid var(--akcent);
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--pozadie) 88%, transparent);
+  color: var(--akcent);
+  font: 700 1.5rem/0.9 var(--pismo);
+  cursor: pointer;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.5);
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.posun-sipka small {
+  font: 700 0.65rem/1 var(--pismo);
+  color: var(--akcent-svetly);
+}
+
+.posun-sipka:hover,
+.posun-sipka:focus-visible {
+  background: var(--akcent);
+  color: var(--na-akcente);
+}
+
+.posun-sipka:hover small,
+.posun-sipka:focus-visible small {
+  color: var(--na-akcente);
+}
+
+.na-lokalitu {
+  padding: 5px 12px;
+  border: 1px solid var(--okraj-svetly);
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--pozadie) 90%, transparent);
+  color: var(--akcent-svetly);
+  font: 600 0.75rem/1.3 var(--pismo);
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.na-lokalitu:hover,
+.na-lokalitu:focus-visible {
+  border-color: var(--akcent);
+}
+
+/* Duch karty z ruky za okrajom — len nenápadná značka, klik by ruku aj tak opustil. */
+.duch-mimo {
+  padding: 3px 10px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--pozadie) 85%, transparent);
+  color: var(--akcent-svetly);
+  font: 600 0.72rem/1.3 var(--pismo);
+  white-space: nowrap;
+}
+
+/* Duch karty z ruky (Michal 2026-11-11): polopriehľadná karta na konci línie, kde by vytvorila
+   spoj — natočenie a zvislý posun ako skutočná karta (zarovnanieLinie.ts), bez mostíkov
+   a zvýraznenia akcií. Vyplní miesto na kartu, takže línia sa nehýbe. */
+.v-linii.s-duchom {
+  position: relative;
+}
+
+.v-linii.s-duchom > .miesto-volby {
+  border-color: transparent;
+  background: none;
+  color: transparent;
+}
+
+.duch-karty {
+  position: absolute;
+  top: 0;
+  left: 6px;
+  z-index: 2;
+  opacity: 0.55;
+  pointer-events: none;
+  animation: duch-in 0.18s ease-out;
+}
+
+@keyframes duch-in {
+  from {
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .duch-karty {
+    animation: none;
+  }
+}
+
 .moj-tah .linia {
   box-shadow:
     inset 0 2px 24px rgba(0, 0, 0, 0.45),

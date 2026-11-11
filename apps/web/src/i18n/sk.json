@@ -234,6 +234,10 @@
     "5": "{n} kariet"
   },
   "stol.krajeTip": "Vľavo: {lavy} · vpravo: {pravy}",
+  "stol.posunVlavo": "Posunúť líniu doľava",
+  "stol.posunVpravo": "Posunúť líniu doprava",
+  "stol.zaOkrajom": "za okrajom: {n}",
+  "stol.naLokalitu": "Na lokalitu",
   "stol.finale": "finále",
   "stol.finaleLokalita": "finále · lokalita",
   "stol.lokalita": "lokalita",

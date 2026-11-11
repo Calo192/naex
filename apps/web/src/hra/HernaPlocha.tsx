@@ -94,6 +94,7 @@ import { naexNaKarte, PeciatkaNaex, type NaexNaKarte, type StavNaKarte } from ".
 import { farbaKarty, type Sada } from "@naex/tvorba";
 import { HernaKarta, ZarStolaKontext, vzhladKarty, type HernaKartaProps } from "./HernaKarta.tsx";
 import { useZarovnanieLinie } from "./zarovnanieLinie.ts";
+import { sirkaPosuvnejLinie, usePosunLinie } from "./posunLinie.ts";
 import { Lupa, maxMierkaLupy } from "./Lupa.tsx";
 import { LUPA_PREDVOLENA, useUcet } from "../lib/ucet.tsx";
 import { rezimRadov } from "./spakyAStarsi.ts";
@@ -273,10 +274,19 @@ const MOBIL = 760;
 /** Výšky okna, pod ktorými sa stôl zhustí — rovnaké hranice má hra.css (@media max-height). */
 const NOTEBOOK = 920;
 const NIZKE_OKNO = 720;
-/** Partia je stredobod hry — karty 1,5× väčšie než pôvodných 132 px. */
+/** Partia je stredobod hry — karty 1,5× väčšie než pôvodných 132 px (telefón, prvé vykreslenie). */
 const SIRKA_V_LINII = 198;
-/** Dlhá línia sa zmenší na šírku stola, ale nie pod túto šírku karty. */
+/** Telefón na výšku: dlhá línia sa zmenší na šírku stola, ale nie pod túto šírku karty. */
 const SIRKA_V_LINII_MIN = 96;
+/**
+ * Počítač (rozloženie A, Michal 2026-11-11): kartu v línii riadi výška stola, nie šírka —
+ * čo sa nevojde, sa posúva. Strop len proti obrovským kartám na veľmi vysokom okne.
+ */
+const SIRKA_V_LINII_STROP = 340;
+/** Pod touto šírkou karty má lokalita vo finále krátky nadpis „finále“ (dlhý by vošiel do kraja vedľa). */
+const SIRKA_NADPISU_FINALE = 150;
+/** Keď sa celá línia vojde pri karte menšej najviac o desatinu, karta sa radšej zmenší, než by sa línia posúvala. */
+const ZMENSENIE_NA_CELU = 0.9;
 /**
  * Najmenšia čitateľná karta v línii. Bežné rozlíšenia ju neprekročia (1366 × 650 so
  * 7 kartami ≈ 84 px, 1440 × 800 so zoomom 125 % ≈ 79 px); menšie okno či zoom 150 %
@@ -285,7 +295,8 @@ const SIRKA_V_LINII_MIN = 96;
 const SIRKA_CITATELNA = 72;
 /** Ako dlho musí karta ostať pod SIRKA_CITATELNA, kým stôl prejde na scroll. */
 const ONESKORENIE_SCROLLU_MS = 200;
-/** Miesto na klik na konci strany — zlomok šírky karty v línii. */
+/** Miesto na klik na konci strany — zlomok šírky karty v línii (telefón; na počítači má miesto
+ *  veľkosť karty, aby ho duch karty z ruky len vyplnil a línia sa pri prechode myšou nehýbala). */
 const MIESTO_VOLBY = 0.42;
 /** Výška pod kartami v línii pre štítok Kšeftu (Michal 2026-11-02: celú kartu musí byť vidno). */
 const REZERVA_KSEFTU = 30;
@@ -323,6 +334,9 @@ function pravyKlik(fn: (() => void) | undefined): ((e: React.MouseEvent) => void
       };
 }
 
+/** Duch karty z ruky v línii: nástup po prejdení myšou na kartu a zhasnutie po odchode z ruky. */
+const NASTUP_DUCHA_MS = 150;
+const ODCHOD_Z_RUKY_MS = 80;
 /** Dĺžka doznievania lupy po odchode myši — rovnaká ako animácia .lupa.doznieva v hra.css. */
 const DOZNIEVANIE_LUPY_MS = 160;
 /** Ako dlho ostane hláška „karta sa nepoložila“ — stačí na prečítanie, potom nezavadzia. */
@@ -845,7 +859,7 @@ export function HernaPlocha({
     view.koniec === null &&
     ((view.faza === "zhromazdenie" && view.zhromazdenieStav !== null && !view.zhromazdenieStav.pasoval[ja]) ||
       (view.faza === "pitka" && view.pitkaStav?.reakcia === ja));
-  // +2: karta v strede a voľné miesto na koniec strany pri vykladaní;
+  // Telefón: +2 = karta v strede a voľné miesto na koniec strany pri vykladaní;
   // pri vykladaní ležia na oboch koncoch úzke miesta na klik (MIESTO_VOLBY).
   // Pod NOTEBOOK skryje hra.css riadok „na prebitie“ a popis strán pod lokalitou, nadpisy krajov sú tenšie.
   // Stôl so scrollom (Michal 2026-10-24): keď by karty v línii klesli pod čitateľnú
@@ -855,11 +869,48 @@ export function HernaPlocha({
   // až keď karta ostane pod minimom chvíľu (prvé rozloženie po načítaní ešte skáče).
   const [stolScroll, setStolScroll] = useState(false);
   useEffect(() => setStolScroll(false), [sirkaOkna, vyskaOkna]);
+  // Rozloženie A (Michal 2026-11-11): na počítači sa to, čo línia v plsti zaberá okrem kariet
+  // (okraj a nadpisy krajov, riadok pod lokalitou, posuvník), meria z DOM — pevné rezervy v px
+  // nesedeli s písmom Safari a protihráč na MacBooku videl spodok kariet odseknutý.
+  const [reziaLinie, setReziaLinie] = useState<number | null>(null);
+  // Posuvník sa ukáže až pri dlhej línii a vezme výšku. Rezerva naň len rastie — inak by sa karty
+  // pri jeho objavení zmenšili, posuvník zmizol a karty znova narástli (dokola).
+  const posuvnikLinie = useRef(0);
+  useEffect(() => {
+    posuvnikLinie.current = 0;
+  }, [sirkaOkna, vyskaOkna]);
+  useLayoutEffect(() => {
+    const plst = plstRef.current;
+    const l = liniaRef.current;
+    if (plst === null || l === null || mobil || naSirku || stolScroll) return;
+    const lok = l.querySelector<HTMLElement>(".linia-skupina.lokalita");
+    const rad = lok?.querySelector<HTMLElement>(":scope > .partia-rad");
+    if (lok == null || rad == null) return;
+    const sp = getComputedStyle(plst);
+    const sl = getComputedStyle(l);
+    const pr = plst.getBoundingClientRect();
+    const vnutroHore = pr.top + plst.clientTop + parseFloat(sp.paddingTop);
+    const vnutroDole = pr.top + plst.clientTop + plst.clientHeight - parseFloat(sp.paddingBottom);
+    const okrajDole = parseFloat(sl.borderBottomWidth) || 0;
+    posuvnikLinie.current = Math.max(posuvnikLinie.current, l.offsetHeight - l.clientHeight - l.clientTop - okrajDole);
+    const r = rad.getBoundingClientRect();
+    // Nad radom kariet: okraj línie a nadpisy krajov. Pod ním: riadok pod lokalitou, okraj,
+    // posuvník a čo z línie trčí pod plsť (alebo plsti ostáva pod líniou).
+    const podRadom = lok.getBoundingClientRect().bottom - r.bottom;
+    const dole = vnutroDole - l.getBoundingClientRect().bottom + okrajDole + posuvnikLinie.current + parseFloat(sl.paddingBottom) + podRadom;
+    const rezia = Math.ceil(r.top - vnutroHore + dole);
+    if (reziaLinie === null || Math.abs(rezia - reziaLinie) >= 1) setReziaLinie(rezia);
+  });
   const sirkaPodlaVysky = stolScroll
     ? SIRKA_CITATELNA
     : mobil || vyskaPlste === 0
       ? SIRKA_V_LINII
-      : Math.floor((vyskaPlste - rezervaKseftu - (vyskaOkna < NIZKE_OKNO ? PRIDAVOK_NIZKE : vyskaOkna < NOTEBOOK ? PRIDAVOK_NOTEBOOK : PRIDAVOK_LINIE)) / (POMER_KARTY * (1 + rezervaPosunu + rezervaHran)));
+      : Math.floor(
+          (vyskaPlste -
+            rezervaKseftu -
+            (reziaLinie !== null && !naSirku ? reziaLinie : vyskaOkna < NIZKE_OKNO ? PRIDAVOK_NIZKE : vyskaOkna < NOTEBOOK ? PRIDAVOK_NOTEBOOK : PRIDAVOK_LINIE)) /
+            (POMER_KARTY * (1 + rezervaPosunu + rezervaHran)),
+        );
   useEffect(() => {
     // Výučba stôl na scroll neprepína: návrh ťahu so spojom (vysunuté karty, pokyn v dvoch riadkoch
     // úzkeho stola) ho prepol natrvalo a pás hráča s rukou ostali pod okrajom okna (UI inšpekcia
@@ -881,20 +932,22 @@ export function HernaPlocha({
             SIRKA_NA_SIRKU_MIN_LINIA,
             Math.min(SIRKA_V_LINII, sirkaPodlaVysky, Math.floor((sirkaLinie - 24) / (pocetVLinii + 1 + (vykladam ? 2 * MIESTO_VOLBY : 0))) - 4),
           )
-        : // Minimum platí pre šírku (dlhá línia sa radšej posúva); výška stola ho prebije —
-        // na nízkom notebooku sa karty inak orezali dole (Michal 2026-10-23) — no nie pod
-        // čitateľnú veľkosť: tam už stôl prejde na scroll.
-        Math.max(
-          SIRKA_CITATELNA,
-          Math.min(
-            sirkaPodlaVysky,
-            Math.max(SIRKA_V_LINII_MIN, Math.min(SIRKA_V_LINII, Math.floor((sirkaLinie - 60) / (pocetVLinii + 2 + (vykladam ? 2 * MIESTO_VOLBY : 0))) - 12)),
-          ),
-        );
+        : mobil
+          ? Math.max(
+              SIRKA_CITATELNA,
+              Math.min(sirkaPodlaVysky, Math.max(SIRKA_V_LINII_MIN, Math.min(SIRKA_V_LINII, Math.floor((sirkaLinie - 60) / (pocetVLinii + 2 + (vykladam ? 2 * MIESTO_VOLBY : 0))) - 12))),
+            )
+          : // Rozloženie A: karta má výšku stola a dlhá línia sa posúva — no nie pod čitateľnú
+            // veľkosť: tam už stôl prejde na scroll. Celá línia aj s miestami na kartu na oboch
+            // koncoch (pri vykladaní majú veľkosť karty) sa ráta vždy, nech karty pri striedaní
+            // ťahov nemenia veľkosť.
+            sirkaPosuvnejLinie(sirkaPodlaVysky, sirkaLinie, pocetVLinii, { min: SIRKA_CITATELNA, strop: SIRKA_V_LINII_STROP, zmensenie: ZMENSENIE_NA_CELU });
+  // Lokalita v strede pohľadu: na počítači sa línia posúva (usePosunLinie), telefón ju zmenší na šírku.
+  const posunLinie = usePosunLinie(liniaRef, lokalitaRef, !mobil && !naSirku, sirkaVLinii, `${pocetVLinii}|${view.ciel?.lokalita?.uid ?? ""}|${sirkaVLinii}`);
   useEffect(() => {
     const l = liniaRef.current;
     const lok = lokalitaRef.current;
-    if (l === null || lok === null) return;
+    if (l === null || lok === null || (!mobil && !naSirku)) return;
     l.scrollTo({ left: lok.offsetLeft + lok.offsetWidth / 2 - l.clientWidth / 2, behavior: "smooth" });
   }, [pocetVLinii, view.ciel]);
 
@@ -2338,6 +2391,19 @@ export function HernaPlocha({
   // zFokusu: lupu otvoril fokus z klávesnice, zavrie ju jeho strata.
   // prechod: lupa sa preniesla zo susednej karty — nastúpi jemnejšie (bez skoku zo 50 %).
   const [lupa, setLupa] = useState<{ readonly kluc: string; readonly rect: DOMRect; readonly zFokusu?: boolean; readonly prechod?: boolean } | null>(null);
+  // Karta v ruke pod myšou (zväčšená na mieste) — jej duch leží na konci línie, kde vytvorí spoj.
+  // Nastúpi po chvíli ako lupa; pri prechode na susednú kartu sa len vymení, nezhasne.
+  // Telefón ducha nemá: miesta na koncoch sú tam úzke a podržanie karty patrí lupe.
+  const [nadRukou, setNadRukou] = useState<number | null>(null);
+  const casovacRuky = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
+  const mysNadRukou = (uid: number | null): void => {
+    clearTimeout(casovacRuky.current);
+    if (uid === null) casovacRuky.current = setTimeout(() => setNadRukou(null), ODCHOD_Z_RUKY_MS);
+    else if (nadRukou !== null) setNadRukou(uid);
+    else casovacRuky.current = setTimeout(() => setNadRukou(uid), NASTUP_DUCHA_MS);
+  };
+  useEffect(() => () => clearTimeout(casovacRuky.current), []);
+  const duchZRuky = nadRukou === null || tahanie !== null || !vykladam || mobil || naSirku ? null : (ruka.find((k) => k.uid === nadRukou) ?? null);
   // Lupa, ktorú myš práve opustila, chvíľu doznieva (Michal 2026-10-23: prechod z karty
   // na kartu „trhal“ — stará lupa zmizla naraz a nová skočila na miesto).
   const [doznieva, setDoznieva] = useState<{ readonly kluc: string; readonly rect: DOMRect } | null>(null);
@@ -2803,6 +2869,8 @@ export function HernaPlocha({
       readonly popis: string;
       readonly tukni?: boolean;
       readonly naMys?: (() => void) | undefined;
+      /** Myš (či fokus) prišla na kartu / odišla z nej — duch karty v línii. */
+      readonly nadKartou?: ((nad: boolean) => void) | undefined;
       /** Podržanie prsta (len na šírku telefónu) — lupa. */
       readonly podrz?: ((el: HTMLElement) => void) | undefined;
     },
@@ -2857,7 +2925,17 @@ export function HernaPlocha({
           : {
               tabIndex: 0,
               "aria-label": fokus.popis,
-              ...(fokus.naMys === undefined ? {} : { onMouseEnter: fokus.naMys }),
+              ...(fokus.naMys === undefined && fokus.nadKartou === undefined
+                ? {}
+                : {
+                    onMouseEnter: () => {
+                      fokus.naMys?.();
+                      fokus.nadKartou?.(true);
+                    },
+                  }),
+              ...(fokus.nadKartou === undefined
+                ? {}
+                : { onMouseLeave: () => fokus.nadKartou?.(false), onFocus: () => fokus.nadKartou?.(true), onBlur: () => fokus.nadKartou?.(false) }),
               ...(fokus.tukni === true
                 ? {
                     onClick: (e: React.MouseEvent<HTMLDivElement>) => {
@@ -3181,8 +3259,13 @@ export function HernaPlocha({
     const sSpojom = [...m.karty.values()].filter((n) => n.pary.length > 0).length;
     const nazov = p === ja ? t("plocha.naKoniecVlavo") : t("plocha.naKoniecVpravo");
     const vyska = (sirkaVLinii * 80) / 54;
-    const sirkaMiesta = Math.round(sirkaVLinii * MIESTO_VOLBY);
-    return vLinii(
+    const sirkaMiesta = naSirku || mobil ? Math.round(sirkaVLinii * MIESTO_VOLBY) : sirkaVLinii;
+    // Duch karty z ruky (Michal 2026-11-11): kam karta pod myšou v ruke vytvorí spoj, tam leží
+    // polopriehľadná, natočená ako by ležala — bez mostíkov a zvýraznenia akcií. Bez spoja nič.
+    const nahladDucha = duchZRuky === null ? undefined : m.karty.get(duchZRuky.uid);
+    const duch = nahladDucha !== undefined && nahladDucha.pary.length > 0 ? duchZRuky : null;
+    return (
+      <div key={-3} className={duch === null ? "v-linii" : "v-linii s-duchom"}>
       <button
         type="button"
         className={["miesto-volby", vybrane ? "vybrane" : "", moze ? "" : "zakazane"].join(" ")}
@@ -3209,8 +3292,13 @@ export function HernaPlocha({
             {!moze ? (m.kratko ?? m.dovod ?? t("plocha.nedaSa")) : vybrane ? t("plocha.vyberZRukyKratko") : sSpojom > 0 ? t("plocha.spoj", { pary: sSpojom }) : t("plocha.bezSpoja")}
           </span>
         )}
-      </button>,
-      -3,
+      </button>
+      {duch !== null && nahladDucha !== undefined && (
+        <div className="duch-karty" aria-hidden="true" data-pary={nahladDucha.pary.length}>
+          {karta({ karta: duch, sirka: sirkaVLinii })}
+        </div>
+      )}
+      </div>
     );
   };
   /** Súperova Záverečná lícom dole (roadmapa #83): rub na vonkajšom konci strany, NA EX na ňu prejde vždy. */
@@ -6377,7 +6465,13 @@ export function HernaPlocha({
             <div className={`stol-plst${liniaSkryta ? " linia-skryta" : ""}${starsiViditelni && krokStarsich !== null ? " krok-starsich" : ""}`} ref={plstRef}>
             {/* Línia kariet ostáva v DOM a drží výšku stola — línia starších leží nad ňou (#68). */}
             {nadLiniou}
-            <div className="linia harmonika-skupiny" ref={liniaRef} inert={liniaSkryta} aria-hidden={liniaSkryta || undefined} data-vyucba="linia">
+            <div
+              className={`linia harmonika-skupiny${posunLinie.stav.mozeVlavo ? " skryte-vlavo" : ""}${posunLinie.stav.mozeVpravo ? " skryte-vpravo" : ""}`}
+              ref={liniaRef}
+              inert={liniaSkryta}
+              aria-hidden={liniaSkryta || undefined}
+              data-vyucba="linia"
+            >
               <div className="linia-skupina moja">
                 {popisKraja(ja, "vlavo")}
                 <div className="partia-rad harmonika">{radStrany(ja)}</div>
@@ -6395,7 +6489,8 @@ export function HernaPlocha({
                       : t("stol.krajeTip", { lavy: krajStrany(ja) ?? "", pravy: krajStrany(super_) ?? "" })
                   }
                 >
-                  {jeFinaleStola && lokalita !== null ? (naSirku ? t("stol.finale") : t("stol.finaleLokalita")) : lokalita !== null || lokalitaNavrh !== null ? t("stol.lokalita") : t("stol.cielKola")}
+                  {/* Úzka lokalita (nízky notebook): dlhý nadpis by vošiel do nadpisu kraja vedľa. */}
+                  {jeFinaleStola && lokalita !== null ? (naSirku || sirkaVLinii < SIRKA_NADPISU_FINALE ? t("stol.finale") : t("stol.finaleLokalita")) : lokalita !== null || lokalitaNavrh !== null ? t("stol.lokalita") : t("stol.cielKola")}
                 </span>
                 <div className="partia-rad harmonika">{stredLinie}</div>
                 {popisStranStredu}
@@ -6410,6 +6505,37 @@ export function HernaPlocha({
                 <div className="partia-rad harmonika">{radStrany(super_)}</div>
               </div>
             </div>
+            {!mobil && !naSirku && !liniaSkryta && naPlsti === undefined && (["vlavo", "vpravo"] as const).map((smer) => {
+              // Okraj posúvanej línie: „Na lokalitu“, šípka s počtom kariet za okrajom a značka ducha mimo pohľadu.
+              const s = posunLinie.stav;
+              const moze = smer === "vlavo" ? s.mozeVlavo : s.mozeVpravo;
+              const skryte = smer === "vlavo" ? s.vlavo : s.vpravo;
+              const duchMimo = smer === "vlavo" ? s.duchVlavo : s.duchVpravo;
+              if (!moze) return null;
+              const popis = smer === "vlavo" ? t("stol.posunVlavo") : t("stol.posunVpravo");
+              return (
+                <div key={smer} className={`posun-okraj ${smer}`}>
+                  {s.lokalita === smer && (
+                    <button type="button" className="na-lokalitu" onClick={posunLinie.naLokalitu}>
+                      {smer === "vlavo" ? "‹ " : ""}
+                      {t("stol.naLokalitu")}
+                      {smer === "vpravo" ? " ›" : ""}
+                    </button>
+                  )}
+                  <button type="button" className="posun-sipka" onClick={() => posunLinie.posun(smer === "vlavo" ? -1 : 1)} aria-label={popis} title={skryte > 0 ? `${popis} · ${t("stol.zaOkrajom", { n: skryte })}` : popis}>
+                    <span aria-hidden="true">{smer === "vlavo" ? "‹" : "›"}</span>
+                    {skryte > 0 && <small>{skryte}</small>}
+                  </button>
+                  {duchMimo > 0 && (
+                    <span className="duch-mimo" aria-hidden="true">
+                      {smer === "vlavo" ? "← " : ""}
+                      {t("plocha.spoj", { pary: duchMimo })}
+                      {smer === "vpravo" ? " →" : ""}
+                    </span>
+                  )}
+                </div>
+              );
+            })}
             {podLiniou}
             {naPlsti}
             {klucVizie !== null && kartyVizie.length > 0 && <ViziaNaStole key={klucVizie} karty={kartyVizie} rozmer={rozmerKarietVizie} />}
@@ -6802,6 +6928,7 @@ export function HernaPlocha({
                   podrz: naSirku ? lupaRuky : undefined,
                   // Štítok „dobraná“ zmizne pri prvom prejdení myšou — hráč kartu videl (Michal 2026-10-30).
                   naMys: dobrata ? () => setDobrate((d) => d.filter((u) => u !== k.uid)) : undefined,
+                  nadKartou: (nad) => mysNadRukou(nad ? k.uid : null),
                 },
               );
             })}

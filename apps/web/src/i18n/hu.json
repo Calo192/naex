@@ -231,6 +231,10 @@
     "5": "{n} kártya"
   },
   "stol.krajeTip": "Balra: {lavy} · jobbra: {pravy}",
+  "stol.posunVlavo": "",
+  "stol.posunVpravo": "",
+  "stol.zaOkrajom": "",
+  "stol.naLokalitu": "",
   "stol.finale": "döntő",
   "stol.finaleLokalita": "döntő · helyszín",
   "stol.lokalita": "helyszín",
