@@ -132,7 +132,7 @@
     "popis": "What Gamble and card effects give: 1 indebtedness is 1 Debt straight away. Only with the Fruit Machine in your Heirloom is it a Debt for every 2, and the rest stays on the account.",
     "sk": {
       "pojem": "Zadĺženie",
-      "popis": "Čo dáva Hazard a efekty kariet: 1 zadĺženie je hneď 1 Dlh. Len s Výherným automatom v Dedičstve je Dlh až za každé 2 a zvyšok ostáva na účte."
+      "popis": "Čo dáva Hazard a efekty kariet: 1 zadĺženie je hneď 1 Dlh. Len s Výherným automatom v Dedičstve je Dlh až za každé 2 a zvyšok ostáva na účte; automat sám dá v každej Pitke 1 Dlh."
     }
   },
   "exekutor": {
@@ -212,7 +212,7 @@
     "popis": "An action from the seal in a card's picture: an active action of the card's owner, off the edges, counted as the same action. “Always: {Akcia}” applies with no condition while the card lies there. Boost, Resistance, Overdrive, NA EX and a tucked Tool don't change it; Tools in the Heirloom and a Trainer's Retraining do.",
     "sk": {
       "pojem": "Akcia navyše",
-      "popis": "Akcia z pečate v obrázku karty: aktívna akcia majiteľa karty mimo hrán, ráta sa ako tá istá akcia. „Furt: {Akcia}“ platí bez podmienky, kým karta leží. Posilnenie, Odpor, Forsáž, NA EX ani podložený Nástroj ju nemenia; Nástroje v Dedičstve a Preškolenie Školiteľa áno."
+      "popis": "Akcia z pečate v obrázku karty: aktívna akcia majiteľa karty mimo hrán, ráta sa ako tá istá akcia. „Furt: {Akcia}“ platí bez podmienky, kým karta leží. Posilnenie suseda, Odpor ani NA EX ju nemenia; Nástroje v Dedičstve, Preškolenie Školiteľa, celý podložený Nástroj (preškolenie, posilnenie) a Forsáž karty (zo spoja aj z Energeťáka) áno."
     }
   },
   "fajcenie": {

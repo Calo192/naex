@@ -132,7 +132,7 @@
     "popis": "To, co dają Hazard i efekty kart: 1 zadłużenie to od razu 1 Dług. Tylko z Jednorękim bandytą w Dziedzictwie Dług przychodzi dopiero za każde 2, a reszta zostaje na koncie.",
     "sk": {
       "pojem": "Zadĺženie",
-      "popis": "Čo dáva Hazard a efekty kariet: 1 zadĺženie je hneď 1 Dlh. Len s Výherným automatom v Dedičstve je Dlh až za každé 2 a zvyšok ostáva na účte."
+      "popis": "Čo dáva Hazard a efekty kariet: 1 zadĺženie je hneď 1 Dlh. Len s Výherným automatom v Dedičstve je Dlh až za každé 2 a zvyšok ostáva na účte; automat sám dá v každej Pitke 1 Dlh."
     }
   },
   "exekutor": {
@@ -212,7 +212,7 @@
     "popis": "Akcja z pieczęci na obrazku karty: aktywna akcja właściciela karty poza krawędziami, liczy się jako ta sama akcja. „Ciągle: {Akcia}” działa bez warunku, dopóki karta leży. Wzmocnienie, Opór, Turbo, NA EX ani podłożone Narzędzie jej nie zmieniają; Narzędzia w Dziedzictwie i Przeszkolenie Szkoleniowca — tak.",
     "sk": {
       "pojem": "Akcia navyše",
-      "popis": "Akcia z pečate v obrázku karty: aktívna akcia majiteľa karty mimo hrán, ráta sa ako tá istá akcia. „Furt: {Akcia}“ platí bez podmienky, kým karta leží. Posilnenie, Odpor, Forsáž, NA EX ani podložený Nástroj ju nemenia; Nástroje v Dedičstve a Preškolenie Školiteľa áno."
+      "popis": "Akcia z pečate v obrázku karty: aktívna akcia majiteľa karty mimo hrán, ráta sa ako tá istá akcia. „Furt: {Akcia}“ platí bez podmienky, kým karta leží. Posilnenie suseda, Odpor ani NA EX ju nemenia; Nástroje v Dedičstve, Preškolenie Školiteľa, celý podložený Nástroj (preškolenie, posilnenie) a Forsáž karty (zo spoja aj z Energeťáka) áno."
     }
   },
   "fajcenie": {
