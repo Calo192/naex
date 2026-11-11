@@ -54,13 +54,14 @@ describe("Pakt (§2, §6)", () => {
     expect(ev.cards.get(a.uid)?.left[1]?.stav).toBe("zrusena");
   });
 
-  it("12.3 bod 6: NA EX zruší aktívny Pakt, neaktívny nezdvojí a do „aspoň 1 neaktívna“ sa neráta", () => {
+  it("12.3 bod 6: NA EX zruší aktívny Pakt, neaktívny nezdvojí; do „aspoň 1 neaktívna“ sa od v12.1 ráta", () => {
     const data = syntheticData([makeDef("a", [null, "Pakt", "Pakt", null], EMPTY), makeDef("b", EMPTY, [null, "Pecka", null, null])]);
     const a = instanceFor(data, "a", [null, "Pakt", "Pakt", null], EMPTY);
     const b = instanceFor(data, "b", EMPTY, [null, "Pecka", null, null]);
     const bezNaex = line(own(a), own(b));
-    // Karta a má jeden aktívny (Pecka) a jeden neaktívny Pakt — NA EX by nemalo čo zdvojiť.
-    expect(naexMaZmysel(data, bezNaex).has(a.uid)).toBe(false);
+    // Karta a má jeden aktívny (Pecka) a jeden neaktívny Pakt — NA EX nemá čo zdvojiť, ale smie naň
+    // (Michal 2026-11-11: „Zrušiť obe obmedzenia.“).
+    expect(naexMaZmysel(data, bezNaex).has(a.uid)).toBe(true);
     const sNaex = line({ card: a, playedBy: 0, naexBy: 0 }, own(b));
     expect(evaluateLine(data, sNaex).sums[0]).toEqual({ Pecka: 1 });
   });

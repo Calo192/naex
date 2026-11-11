@@ -3463,3 +3463,13 @@ Staré znenie §16:
 > | Výherný automat | Dedičstvo: tvoj prah Dlhu je o 1 vyšší (§8); posledná Pitka kola: **Hazard** v pečati — po poslednej Pitke kola (pred bitkou) získaš 1 Dlh, Obecný úrad ho zdvojí. |
 
 Staré znenie §17: „| Akcia navyše | aktívna akcia majiteľa karty mimo jej hrán, z pečate v ilustrácii; ráta sa ako tá istá akcia (§6). „Furt: {A}“ platí bez podmienky, kým karta leží (v11.17); {Spálenie} v pečati nie je akcia — karta, s ktorou sa nositeľ stretne, sa na konci bitky spáli (§6) |“
+
+## v12.1 — NA EX na nespárovaný Odpor a neaktívny Pakt (Michal 2026-11-11)
+
+Michal: „Protihráčovi nešlo dať NA EX na väčšinu postáv v Pitke. Prečo? Podľa pravidiel sú to platné ciele na NA EX.“ — „Zrušiť obe obmedzenia.“ Nové znenie: `docs/PRAVIDLA.md`, Zmeny v12.1, §2 a §7.
+
+Staré znenie §7 podmienky výberu (v11.17–v12): „Neaktívny Pakt a **neaktívne Posilnenie** sa do neaktívnych nerátajú (v11.17) — samy by s NA EX nič nezmenili.“ a „**Na kartu s neaktívnym Odporom NA EX nemožno dať** (v11.17, Michal 2026-11-09): Odpor bez partnera by NA EX zahasil (nižšie, Poldeci ako partner) — NA EX by na karte nič nezmenilo, len by sa vypilo (na Krčme by sa ním povinnosť obišla bez straty). Rozhoduje stav v okamihu výberu; na súperovu skrytú Záverečnú sa NA EX dá aj tak (bod nižšie).“
+
+Staré znenie §7 Poldeci ako partner (časť, v11.17–v12): „Takto môže NA EX ležať len na súperovej skrytej Záverečnej alebo z Vínka (na kartu so štítom NA EX dať nemožno, vyššie).“
+
+Staré znenie §2 Pakt (časť, v7–v12): „Neaktívny Pakt nemá čo kopírovať: do súčtov nejde, NA EX ho nezdvojí a do podmienky „aspoň 1 neaktívna akcia“ (§7) sa neráta.“

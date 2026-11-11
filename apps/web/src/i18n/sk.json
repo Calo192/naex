@@ -1279,7 +1279,7 @@
   "plocha.naexLenNastroj": "NA EX len na Občana alebo Starešinu — toto je Nástroj.",
   "plocha.naexLen": "NA EX len na Občana alebo Starešinu.",
   "plocha.naexLimit": "Limit NA EX v tejto Pitke je minutý — ďalšie NA EX až v ďalšej Pitke.",
-  "plocha.naexAktivna": "NA EX ide len na kartu s aspoň jednou aktívnou a jednou neaktívnou akciou.",
+  "plocha.naexAktivna": "NA EX ide len na kartu bez Vzbury s aspoň jednou aktívnou a jednou neaktívnou akciou (neaktívne Posilnenie sa neráta).",
   "plocha.krajCirhoza": "{n}× Cirhóza",
   "plocha.cirhozaPriznana": " (priznaná špaky neuberie, súper za ňu +1 tuhé v každej bitke)",
   "plocha.krajDlh": "{n}× Dlh",

@@ -1276,7 +1276,7 @@
   "plocha.naexLenNastroj": "NA EX jen na Občana nebo Stařešinu — tohle je Nástroj.",
   "plocha.naexLen": "NA EX jen na Občana nebo Stařešinu.",
   "plocha.naexLimit": "Limit NA EX v téhle Pitce je vyčerpaný — další NA EX až v další Pitce.",
-  "plocha.naexAktivna": "NA EX jde jen na kartu s aspoň jednou aktivní a jednou neaktivní akcí.",
+  "plocha.naexAktivna": "",
   "plocha.krajCirhoza": "{n}× Cirhóza",
   "plocha.cirhozaPriznana": " (přiznaná vajgly neubere, soupeř za ni +1 tvrdé v každé rvačce)",
   "plocha.krajDlh": "{n}× Dluh",

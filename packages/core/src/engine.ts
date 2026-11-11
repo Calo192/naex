@@ -3732,7 +3732,7 @@ function cmdNaex(
     );
     need(
       naexMaZmysel(data, lineState(s as GameState)).has(placed.card.uid),
-      "NA EX smie len na kartu bez Vzbury a bez nespárovaného Odporu, ktorá má aspoň jednu aktívnu a aspoň jednu neaktívnu akciu.",
+      "NA EX smie len na kartu bez Vzbury, ktorá má aspoň jednu aktívnu a aspoň jednu neaktívnu akciu (neaktívne Posilnenie sa neráta).",
     );
   }
   pitka.skryteNaex = [...(pitka.skryteNaex ?? []), { hrac: p, uid: placed.card.uid }];
@@ -4016,7 +4016,7 @@ export function naexCieleVLinii(data: GameData, line: LineState, p: PlayerId, na
  * Karty, na ktoré má NA EX zmysel (Michal 2026-10-23): aspoň jedna akcia
  * aktívna (spárovaná a nezrušená Odporom) a aspoň jedna neaktívna — v okamihu
  * NA EX, aj Veterán. Na kartu so Vzburou (Odpor + Odpor aj Odpor + Posilnenie)
- * NA EX nejde (v11.1, Michal 2026-11-02), ani na kartu s neaktívnym Odporom (v11.17). Skryté Záverečné sa do vyhodnotenia
+ * NA EX nejde (v11.1, Michal 2026-11-02). Neaktívny Odpor ani Pakt NA EX nebránia (v12.1). Skryté Záverečné sa do vyhodnotenia
  * nerátajú, inak by odmietnutie NA EX na ich suseda prezradilo, čo leží lícom dole.
  */
 export function naexMaZmysel(data: GameData, line: LineState): ReadonlySet<number> {
@@ -4026,12 +4026,9 @@ export function naexMaZmysel(data: GameData, line: LineState): ReadonlySet<numbe
   for (const [uid, karta] of ev.cards) {
     const sloty = [...karta.left, ...karta.right];
     if (karta.vzbura) continue;
-    // Neaktívny Odpor NA EX zahasí (v11.17) — NA EX by na karte nič nezmenilo, len by sa vypilo
-    // (na Krčme by sa ním povinnosť obišla bez straty).
-    if (sloty.some((x) => x?.stav === "neaktivna" && x.action === "Odpor")) continue;
-    // Neaktívny Pakt NA EX nezdvojí (v7, plan.md 12.3 bod 6) a neaktívne Posilnenie sa spáruje
-    // s poldecom (v11.17) — do „neaktívnej“ sa nerátajú.
-    if (sloty.some((x) => x?.stav === "aktivna") && sloty.some((x) => x?.stav === "neaktivna" && x.action !== "Pakt" && x.action !== "Posilnenie")) out.add(uid);
+    // Michal 2026-11-11 („Zrušiť obe obmedzenia.“, v12.1): neaktívny Odpor kartu nevyradí a neaktívny
+    // Pakt sa ráta do neaktívnych. Neaktívne Posilnenie sa spáruje s poldecom (v11.17) — to sa neráta.
+    if (sloty.some((x) => x?.stav === "aktivna") && sloty.some((x) => x?.stav === "neaktivna" && x.action !== "Posilnenie")) out.add(uid);
   }
   return out;
 }

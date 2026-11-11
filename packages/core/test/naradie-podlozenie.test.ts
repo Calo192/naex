@@ -266,13 +266,14 @@ describe("kartové účinky — presne ako dnešnou cestou", () => {
     expect(zVinka.cards.get(host.uid)).toEqual(sPoldecom.cards.get(host.uid));
     expect(zVinka.sums).toEqual(sPoldecom.sums);
     const lok = makeDef("lok", ["Viera", "Viera", "Viera", "Viera"], ["Viera", "Viera", "Viera", "Viera"], { tags: ["Lokalita"] });
-    // Hostiteľ bez Odporu na voľnej hrane — nespárovaný Odpor NA EX zahasí a cieľom by nebol (v11.17).
+    // Hostiteľ bez Odporu na voľnej hrane — Vínko, Injekcia a Vidly sa skúšajú pod kartou, ktorá je cieľom aj bez štítu.
     const R3: Layout4 = ["Rana", "Rana", null, "Rana"];
     const sl = syntheticData([...sd.cards.values(), lok, makeDef("host_ciel", R3, H_R)]);
     const lokalita = instanceFor(sl, "lok", ["Viera", "Viera", "Viera", "Viera"], ["Viera", "Viera", "Viera", "Viera"]);
     const hc = instanceFor(sl, "host_ciel", R3, H_R);
     const ciele = (pl: PlacedCard): number[] => naexCieleVLinii(sl, { lokalita, lokalitaOtocena: false, strany: [[pl], []] }, 1);
-    expect(ciele({ card: host, playedBy: 0 })).toEqual([]);
+    // Nespárovaný Odpor NA EX zahasí, cieľom však je (v12.1, Michal 2026-11-11: „Zrušiť obe obmedzenia.“).
+    expect(ciele({ card: host, playedBy: 0 })).toEqual([host.uid]);
     expect(ciele({ card: hc, playedBy: 0 })).toEqual([hc.uid]);
     expect(ciele({ card: hc, playedBy: 0, podlozene: pod("vinko") })).toEqual([]);
     expect(ciele({ card: hc, playedBy: 0, podlozene: pod("lievik") })).toEqual([]);

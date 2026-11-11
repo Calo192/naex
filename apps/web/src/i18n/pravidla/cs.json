@@ -257,7 +257,7 @@
     "p11": "V Pitce, dokud ji neskončíš, položíš plného panáka na kartu v linii s tagem <strong>Občan</strong> nebo <strong>Stařešina</strong> — svou i soupeřovu. V základu jednou za Pitku. Karta musí mít <strong>aspoň jednu aktivní a aspoň jednu neaktivní akci</strong>; jinak by <p k=\"naex\">NA EX</p> nic nezměnilo. <strong>NA EX vybíráš skrytě</strong> — soupeř neví, jestli jsi ho dal, ani kam, dokud nejste hotoví oba.",
     "p12": "NA EX kartě <strong>zruší aktivní akce a zdvojí neaktivní</strong>. Akce se počítají majiteli karty: na své si zdvojíš Herdu nebo zrušíš vlastní Hazard, na soupeřově mu zrušíš, co potřeboval, ale jeho neaktivní mu zdvojíš. Násobky se násobí — NA EX vedle Silné ženy dá ×4, i Hazardu a Poškození jater. Panák leží na kartě do rvačky, takže NA EX se vyhodnotí v každé Pitce kola; játra +1 jsou tvoje (připíšou se při odkrytí) a v rvačce se panák vypije. Před potvrzením ti hra ukáže rvačku před a po i kletby, které z toho budou.",
     "p13": "Nedá se dát na kartu, na které už panák leží, ani na kartu, pod kterou leží Vínko, Injekce nebo Vidle.",
-    "p14": "Nedá se dát ani na kartu s <strong>nespárovaným Odporem</strong> — ten by NA EX uhasil. Neaktivní Pakt a neaktivní Posílení se do neaktivních akcí nepočítají.",
+    "p14": "",
     "p15": "Akce zrušená Odporem není ani aktivní, ani neaktivní — NA EX na její kartě ji nezdvojí.",
     "p16": "V Kostele jen na kartu na konci linie (na kterémkoli ze dvou konců), nejdál od Kostela.",
     "p17": "NA EX na kartu u lokality mění jen akce karty — akce hrany lokality zůstávají aktivní.",

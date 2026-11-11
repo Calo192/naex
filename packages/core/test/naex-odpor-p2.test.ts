@@ -165,10 +165,10 @@ describe("§7 neaktívny Odpor pod NA EX je štít (v11.17)", () => {
     expect(sNaex.cards.get(st.uid)?.right).toEqual(bez.cards.get(st.uid)?.right);
   });
 
-  it("na kartu so štítom NA EX nejde; bez Odporu áno", () => {
+  it("na kartu so štítom NA EX ide (v12.1, Michal 2026-11-11: „Zrušiť obe obmedzenia.“), bez Odporu tiež", () => {
     const st = k("stit");
     const bs = k("bez_stitu");
-    expect(naexCieleVLinii(sada, linia(lezi(st), lezi(k("sused_l"))), 0)).toEqual([]);
+    expect(naexCieleVLinii(sada, linia(lezi(st), lezi(k("sused_l"))), 0)).toEqual([st.uid]);
     expect(naexCieleVLinii(sada, linia(lezi(bs), lezi(k("sused_l"))), 0)).toEqual([bs.uid]);
   });
 

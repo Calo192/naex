@@ -673,6 +673,15 @@
         "(?:podlozen\\w* nastroj|forsaz)[^.!?]{0,40}(?:ju|ich) nemen"
       ],
       "pozn": "v12: akcie navyše mení celý podložený Nástroj (preškolenie, hrana posilnenia) aj Forsáž Energeťáka (vo Vypálenej od vypálenia v12)"
+    },
+    {
+      "pojem": "NA EX nie na kartu s nespárovaným Odporom či s jediným neaktívnym Paktom",
+      "vzory": [
+        "(?:nesparovan|neaktivn)\\w* odpor\\w*[^.!?]{0,60}(?:na ex|naex)[^.!?]{0,30}(?:nemoz|neda|nejd|nesmi)",
+        "(?:nemoz|neda|nejd|nesmi|nie)\\w*[^.!?]{0,60}kart\\w* s (?:nesparovan|neaktivn)\\w* odpor",
+        "neaktivn\\w* pakt\\w*[^.!?]{0,60}nerat"
+      ],
+      "pozn": "v12.1: NA EX smie aj na kartu s nespárovaným Odporom (štít ho zahasí) a neaktívny Pakt sa ráta do neaktívnych akcií (Michal 2026-11-11: „Zrušiť obe obmedzenia.“)"
     }
   ],
   "karty": [

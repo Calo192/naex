@@ -367,14 +367,15 @@
     {
       "id": "7.naex.aktivna-aj-neaktivna",
       "paragraf": "7. Pitka › NA EX",
-      "pravidlo": "NA EX len na kartu s aspoň 1 aktívnou a aspoň 1 neaktívnou akciou (aj Veterán; neaktívny Pakt a neaktívne Posilnenie sa nerátajú, v11.17) a nie na kartu s neaktívnym Odporom (v11.17); súperova skrytá Záverečná vždy a skryté Záverečné sa do posúdenia nerátajú (Michal 2026-10-23).",
+      "pravidlo": "NA EX len na kartu s aspoň 1 aktívnou a aspoň 1 neaktívnou akciou (aj Veterán; neaktívne Posilnenie sa neráta, v11.17; neaktívny Pakt sa ráta a neaktívny Odpor NA EX nebráni, v12.1); súperova skrytá Záverečná vždy a skryté Záverečné sa do posúdenia nerátajú (Michal 2026-10-23).",
       "stav": "pokryte",
       "testy": [
         "packages/core/test/naex-podmienka.test.ts › nie na osamotenú kartu (žiadna aktívna) ani na kartu so všetkými akciami aktívnymi; na zmiešanú áno",
         "packages/core/test/naex-podmienka.test.ts › Veterán výnimku nemá — so všetkými akciami aktívnymi naňho NA EX nejde",
         "packages/core/test/naex-podmienka.test.ts › server NA EX na osamotenú kartu odmietne",
         "packages/core/test/naex-podmienka.test.ts › sused, ktorého akciu páruje len skrytá Záverečná, nie je cieľom pre nikoho — server aj klient súpera vidia to isté",
-        "packages/core/test/naex-odpor-p2.test.ts › na kartu so štítom NA EX nejde; bez Odporu áno",
+        "packages/core/test/naex-odpor-p2.test.ts › na kartu so štítom NA EX ide (v12.1, Michal 2026-11-11: „Zrušiť obe obmedzenia.“), bez Odporu tiež",
+        "packages/core/test/naex-ciele-zastavka.test.ts › cieľom sú všetci piati Občania — pre oboch hráčov",
         "packages/core/test/naex-odpor-p2.test.ts › výber: neaktívne Posilnenie sa do „neaktívnej“ neráta — sama by NA EX nič nezmenilo",
         "packages/core/test/naex-odpor-p2.test.ts › výber: karta, ktorej jediná aktívna akcia je Odpor, je cieľ — NA EX partnera pustí"
       ]
