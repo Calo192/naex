@@ -708,7 +708,8 @@
       "vzory": [
         "cigaret\\w* za pas",
         "pas\\w*[^.!?]{0,40}(?:dostan|da)\\w* (?:\\w+ ){0,3}cigaret",
-        "cigaret\\w* (?:\\w+ ){0,4}za (?:kazd\\w* )?kart\\w*[^.!?]{0,40}(?:smel|mohol)\\w* (?:\\w+ )?vylozi"
+        "cigaret\\w* (?:\\w+ ){0,4}za (?:kazd\\w* )?kart\\w*[^.!?]{0,40}(?:smel|mohol)\\w* (?:\\w+ )?vylozi",
+        "pas\\w*[^.!?]{0,60}(?:dostal|dal)\\w* [^.!?]{0,15}cigaret"
       ],
       "pozn": "v12.2 (Michal 2026-11-11): za pas sa nedostáva nič („Za pasovanie nebudú dostávať cigarety.“); Izolačka a Vychovávateľka majú nové znenie"
     },
@@ -737,7 +738,9 @@
       "pojem": "otočenie poldeci na začiatku kola",
       "vzory": [
         "na zaciatku (?:kazdeho )?kola[^.!?]{0,60}(?:otoc|dolie|dolej)\\w*[^.!?]{0,30}poldec",
-        "poldec\\w*[^.!?]{0,60}(?:otoc|dolie|dolej)\\w*[^.!?]{0,30}na zaciatku (?:kazdeho )?kola"
+        "poldec\\w*[^.!?]{0,60}(?:otoc|dolie|dolej)\\w*[^.!?]{0,30}na zaciatku (?:kazdeho )?kola",
+        "na zaciatku (?:dalsieho |kazdeho )?kola[^.!?]{0,60}dolia\\w*[^.!?]{0,30}poldec",
+        "na zaciatku (?:dalsieho |kazdeho )?kola (?:sa )?dolie\\w*[^.!?]{0,20}poldec"
       ],
       "pozn": "v12.2 (Michal 2026-11-11): po bitke sa všetky poldeci obnovia na plné, na začiatku kola sa nič neotáča"
     },
