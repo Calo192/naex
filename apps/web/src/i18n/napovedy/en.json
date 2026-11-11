@@ -4,133 +4,133 @@
     "popis": "Preklad dlhých textov: pri každom id prelož prázdne polia; pole sk je slovenský originál, z ktorého preklad vzniká — nemeň ho (keď sa slovenčina zmení, preklad sa ukáže ako zastaraný a v hre ostane slovenčina). Značky <p k=\"…\">, <strong>, <a href=\"…\"> a {parametre} ponechaj ako v origináli; pojmy podľa docs/preklady/glosar.json."
   },
   "stavba-senku": {
-    "melichar": "",
+    "melichar": "You and your opponent set up the Market at the same time: click the four cards that go into the Market (the chosen one lifts up); the other four go to the bottom of the deck. The bottom is for the ones you begrudge your opponent — they won't see them. Begrudging others is your strong suit, I know.",
     "sk": {
       "melichar": "Ponuku staviate ty a súper naraz: klikni na štyri karty, ktoré pôjdu do ponuky (vybraná sa zdvihne), zvyšné štyri pôjdu naspodok balíčka. Naspodok patria tie, ktoré súperovi nedopraješ, neuvidí ich. Nedopriať niečo druhým ti ide, to viem."
     }
   },
   "rola": {
-    "melichar.utocnik": "",
-    "melichar.obranca": "",
+    "melichar.utocnik": "You're the attacker: you buy and play first. Today the draw decided it; from now on the attacker is whoever loses the brawl. So get used to the role.",
+    "melichar.obranca": "You're the defender: you choose the location and answer a NA EX first. Today the draw decided it; from now on the defender is whoever wins the brawl. Enjoy it while it lasts.",
     "sk": {
       "melichar.utocnik": "Si útočník: kupuješ a hráš prvý. Dnes rozhodol žreb, odteraz je útočníkom ten, kto prehrá bitku. Tak si na tú rolu zvykaj.",
       "melichar.obranca": "Si obranca: vyberáš lokalitu a na NA EX odpovedáš prvý. Dnes rozhodol žreb, odteraz je obrancom ten, kto vyhrá bitku. Užívaj si to, kým to trvá."
     }
   },
   "odpoved-naex": {
-    "melichar": "",
+    "melichar": "Pay attention, I'm only saying this once. The NA EX have been revealed, and for each of your opponent's NA EX you may lay one card. If it links an action that wasn't linked to any other action on the NA EX card, the NA EX cancels it instead of doubling it.",
     "sk": {
       "melichar": "Pozorne, hovorím to len raz. NA EX sa odkryli a ty smieš za súperovo NA EX položiť jednu kartu. Keď ňou spojíš akciu, ktorá na karte s NA EX nebola spojená so žiadnou inou akciou, NA EX ju zruší namiesto zdvojenia."
     }
   },
   "prve-naex": {
-    "melichar": "",
+    "melichar": "NA EX! You put a full [Poldeci] shot on a Citizen or an Elder in the line. The actions on that card that aren't linked to any other action get doubled; linked ones get cancelled. Your liver goes up by 1. I'll show you properly in part 2 of the tutorial; till then, try it off your own bat.",
     "sk": {
       "melichar": "NA EX! Plný [Poldeci] poldeci dáš na Občana alebo Starešinu v línii. Akcie na tej karte, ktoré nie sú spojené so žiadnou inou akciou, zdvojí, spojené zruší. Pečeň ti pribudne o 1. V 2. časti výučby ti to ukážem poriadne, dovtedy skúšaj na vlastnú päsť."
     }
   },
   "pocet-pitiek": {
-    "melichar": "",
+    "melichar": "The Booze-up comes round again today: you've both linked the location's action. Before every further Booze-up there's a new Assembly. More chances to make mistakes — I'm happy for you.",
     "sk": {
       "melichar": "Pitka sa dnes zopakuje: obaja máte pri lokalite spojenú jej akciu. Pred každou ďalšou Pitkou je nové Zhromaždenie. Viac príležitostí na chyby, teší ma to za teba."
     }
   },
   "zadlzenie": {
-    "melichar": "",
+    "melichar": "The [Dlh] Gamble action gives you a Debt in the Booze-up, one for each action. How many the table will bring, you can see in advance down by you. You know a thing or two about debts, don't you? Like about a certain cigarette.",
     "sk": {
       "melichar": "Akcia [Dlh] Hazard ti v Pitke dá Dlh, za každú akciu jeden. Koľko ich prinesie stôl, vidíš vopred dole pri sebe. O dlžobách niečo vieš, však? Napríklad o jednej cigarete."
     }
   },
   "dlh": {
-    "melichar": "",
+    "melichar": "First Debt! Honestly, I'm not surprised. It's not a card; it's counted down by you and confessed straight away. In every brawl the Bailiff comes for it, and for your butts too, and on a tied brawl Debts decide as well: whoever has more loses.",
     "sk": {
       "melichar": "Prvý Dlh! Úprimne, nečudujem sa. Nie je to karta, počíta sa dole pri tebe a je hneď priznaný. V každej bitke po neho príde Exekútor aj s tvojimi špakmi, a pri remíze v bitke rozhodujú aj Dlhy: kto ich má viac, prehrá."
     }
   },
   "pas-cigarety": {
-    "melichar": "",
+    "melichar": "Passing early can pay off too: for every card you could still have played you get a [Cigareta] cigarette. You could give one back afterwards — just mentioning it.",
     "sk": {
       "melichar": "Pasovať sa oplatí aj skôr: za každú kartu, ktorú si ešte smel vyložiť, dostaneš [Cigareta] cigaretu. Jednu by si potom mohol aj vrátiť, len tak spomínam."
     }
   },
   "lokalita-pravidlo": {
-    "melichar": "",
+    "melichar": "{lokalita} has its own rule and it applies all round: {efekt}",
     "sk": {
       "melichar": "{lokalita} má vlastné pravidlo a platí celé kolo: {efekt}"
     }
   },
   "body": {
-    "melichar": "",
+    "melichar": "The butts down by you decide who wins. Click them and you'll see the noticeboard: what you got them for. How much each elder pays you after a won and after a lost brawl is shown on the Elders tile. If you don't like those numbers, don't come crying to me.",
     "sk": {
       "melichar": "Špaky dole pri tebe rozhodnú, kto vyhrá. Klikni na ne a uvidíš nástenku: za čo si ich dostal. Koľko ti ktorý starší zaplatí po vyhratej a po prehratej bitke, ukáže dlaždica Starší. Keď sa ti tie čísla nebudú páčiť, mne sa nesťažuj."
     }
   },
   "pohorsenie": {
-    "melichar.moje": "",
-    "melichar.superove": "",
+    "melichar.moje": "You won the argument: you have more soft damage, [Pohoršenie] Scandal 2, [Povera] Superstition 1. You spend the difference on your rumours at the elders – always above your fear; a notch into yellow costs 1, into orange 2, into red 3. Whatever isn't enough for the next notch is forfeited. Rumours pay you after every brawl, lost ones too, and then they fade. Enjoy it while you can.",
+    "melichar.superove": "Your opponent won the argument: they have more soft damage, [Pohoršenie] Scandal 2, [Povera] Superstition 1, and they'll spend the difference on their rumours at the elders. Those pay them after every brawl, lost ones too. Next time keep some Faith back for their Superstitions. Don't look at me like that — I didn't play it.",
     "sk": {
       "melichar.moje": "Hádku si vyhral: máš viac mäkkého poškodenia, [Pohoršenie] Pohoršenie 2, [Povera] Povera 1. Rozdiel minieš na svoje reči pri starších – vždy nad tvojím strachom, stupeň do žltej 1, do oranžovej 2, do červenej 3. Čo na ďalší stupeň nestačí, prepadne. Reči ti platia po každej bitke, aj prehratej, a potom slabnú. Užívaj, kým môžeš.",
       "melichar.superove": "Hádku vyhral súper: má viac mäkkého poškodenia, [Pohoršenie] Pohoršenie 2, [Povera] Povera 1, a rozdiel minie na svoje reči pri starších. Tie mu platia po každej bitke, aj prehratej. Nabudúce si nechaj Vieru na jeho Povery. Nepozeraj tak na mňa, ja som ho nevyložil."
     }
   },
   "abstak": {
-    "melichar": "",
+    "melichar": "Watch out for the Shakes: your body's got used to it. If in a round you drink [Poldeci] and smoke [Cigareta] less than your Thirst, you get a Shakes card in your deck. Each one takes 1 hard off you in the brawl, and only Vision burns it. Thirst drops by one a round. I'm only advising; do as you like.",
     "sk": {
       "melichar": "Pozor na Absťák: telo si zvyklo. Keď v kole vypiješ [Poldeci] a vyfajčíš [Cigareta] menej, ako je tvoja Chuť, príde ti karta Absťák do balíčka. Každá ti v bitke uberie 1 tuhé a spáli ju len Vízia. Chuť klesá o jednu za kolo. Ja len radím, rob si, ako chceš."
     }
   },
   "cirhoza": {
-    "melichar": "",
+    "melichar": "You've got a Cirrhosis in your hand from an overflowing liver. I warned you, but fine. Confessed, it costs you no butts, but your opponent gets 1 hard for it in every brawl. Unconfessed, it goes to your discard pile after the brawl and costs you 3 butts at the end of the game.",
     "sk": {
       "melichar": "V ruke máš Cirhózu z pretečenej pečene. Varoval som ťa, ale dobre. Priznaná ťa špaky nestojí, no súper za ňu dostane v každej bitke 1 tuhé. Nepriznaná ide po bitke do tvojho odhadzovacieho balíčka a na konci hry ťa stojí 3 špaky."
     }
   },
   "priazen": {
-    "melichar": "",
+    "melichar": "{starsi} fears your opponent more than you, so they're showing you favour: a small bonus, you can see it by them. Its strength is the difference in their fear. They pay your opponent butts for that fear when the opponent wins a brawl. Somebody likes you — didn't see that coming.",
     "sk": {
       "melichar": "{starsi} sa bojí súpera viac ako teba, a preto ti prejavuje priazeň: malý bonus, ten vidíš pri ňom. Jej sila je rozdiel ich strachov. Súperovi za ten strach platí špaky, keď vyhrá bitku. Niekto ťa má rád, to by som nečakal."
     }
   },
   "prevaha": {
-    "melichar": "",
+    "melichar": "The location's actions in a wing go to whoever has more of their own Citizens, Animals and Elders there. On a tie, whoever's card lies next to the location. You can count to three; that'll do.",
     "sk": {
       "melichar": "Akcie lokality v kraji dostane, kto tam má viac svojich Občanov, Zvierat a Starešinov. Pri rovnosti ten, koho karta leží pri lokalite. Rátať do troch vieš, to bude stačiť."
     }
   },
   "patronat": {
-    "melichar": "",
+    "melichar": "This elder fears you in the red. For five of the Thrashing you capture them – they go into your cellar and your opponent gives you butts for their marker on them. You don't have to, but why wouldn't you.",
     "sk": {
       "melichar": "Tento starší sa ťa bojí na červenej. Za päť z Nakladačky ho zajmeš – ide do tvojej pivnice a súper ti dá špaky za svoj marker pri ňom. Nemusíš, ale prečo by si nechcel."
     }
   },
   "presvedcenie": {
-    "melichar": "",
+    "melichar": "This elder fears your opponent more than you. Rumours up to red and five on top – and they're persuaded: their card goes into your hand and stays in your deck. Your rumours on them burn up; your favour stays.",
     "sk": {
       "melichar": "Tento starší sa súpera bojí viac než teba. Reči na červenú a päť navrch – a je presvedčený: jeho karta ide tebe do ruky a ostáva v tvojom balíčku. Tvoje reči pri ňom zhoria, priazeň ti ostane."
     }
   },
   "vydesenie": {
-    "melichar.moje": "",
-    "melichar.superove": "",
+    "melichar.moje": "A terrified elder! They fear you in the red; after a won brawl you may capture one like that for five of the Thrashing. Four terrified and a won brawl – prisoners count too – and you've won on the spot. Simple as that.",
+    "melichar.superove": "Your opponent has terrified one of your elders. They fear the opponent in the red, so after a won brawl the opponent may capture them for five of the Thrashing. Four terrified and a won brawl – prisoners count too – and they've won. But that's surely not going to happen. Is it?",
     "sk": {
       "melichar.moje": "Vydesený starší! Bojí sa ťa na červenej, takého smieš po vyhratej bitke za päť z Nakladačky zajať. Štyria vydesení a vyhratá bitka – väzni sa rátajú tiež – a vyhral si hneď. Len.",
       "melichar.superove": "Súper ti vydesil staršieho. Bojí sa ho na červenej, a tak ho súper po vyhratej bitke smie za päť z Nakladačky zajať. Štyria vydesení a vyhratá bitka – väzni sa rátajú tiež – a vyhral. Ale to sa určite nestane. Však?"
     }
   },
   "dedicstvo": {
-    "melichar": "",
+    "melichar": "{karta} is a Tool. You can put it in your Heirloom for [Cigareta] cigarettes, and its effect then lasts till the end of the game. At least something of yours will last to the end.",
     "sk": {
       "melichar": "{karta} je Nástroj. Môžeš ho dať do Dedičstva za [Cigareta] cigarety a jeho efekt potom platí do konca hry. Aspoň niečo u teba vydrží až do konca."
     }
   },
   "exekutor": {
-    "melichar": "",
+    "melichar": "You've got a confessed Debt — I'm not saying anything. In every brawl the Bailiff comes: half your Debts burn, rounded up, and as many butts with them. I know him; I wouldn't recommend it.",
     "sk": {
       "melichar": "Máš priznaný Dlh, nechcem nič hovoriť. V každej bitke príde Exekútor: zhorí ti polovica Dlhov, zaokrúhlene nahor, a rovnako veľa špakov. Poznám ho, neodporúčam."
     }
   },
   "zaverecna": {
-    "melichar": "",
+    "melichar": "For a [Cigareta] cigarette you may play a card face down as Last Orders; your opponent doesn't know what it is. After it you play nothing more in this Assembly. Another cigarette that doesn't go to me.",
     "sk": {
       "melichar": "Za [Cigareta] cigaretu smieš zahrať kartu lícom dole ako Záverečnú, súper nevie, čo to je. Po nej už v tomto Zhromaždení nič nevyložíš. Zase cigareta, ktorá nejde mne."
     }
