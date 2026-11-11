@@ -14,17 +14,18 @@ import type { CardInstance, CardLineEval, KrokPocitadla, LineEval, Moment, Playe
 import { stavPocitadla, vlnyKariet, opponentOf } from "@naex/core";
 import { IkonaPoldeci } from "./Panely.tsx";
 import { PilulkaPriazne } from "./KruzokPriazne.tsx";
-import type { PriazneBitky } from "./priazenKola.ts";
+import { NAZOV_PRIAZNE, type PriazneBitky } from "./priazenKola.ts";
 import type { VyhraStrachom } from "./vyhraStrachom.ts";
 import { RekapBitky, StitkyMomentov, VysledokBitky, riadkovRekapitulacieBitky, type OdpovedNaNaex, type PiktogramyRekapitulacie } from "./Rekapitulacia.tsx";
+import { t } from "../i18n/jazyk.tsx";
 
 /** Zdroje bonusov a zrážok, ktoré nie sú kartou. */
-const ZDROJ: Readonly<Record<string, string>> = {
-  cirhoza: "Cirhózy súpera",
-  BITKAR: "priazeň Bitkára",
-  Viera: "Viera súpera",
-  pasca: "pasca",
-  abstak: "Absťáky",
+const ZDROJ: Readonly<Record<string, () => string>> = {
+  cirhoza: () => t("pocitadlo.cirhoza"),
+  BITKAR: () => t("pocitadlo.bitkar"),
+  Viera: () => t("pocitadlo.viera"),
+  pasca: () => t("pocitadlo.pasca"),
+  abstak: () => t("pocitadlo.abstak"),
 };
 
 export interface PocitadloBitkyProps {
@@ -96,11 +97,11 @@ export function PocitadloBitky({ p, ja, mena, menoKarty, rad, onKoniec, vysledok
     const z = k.zmena > 0 ? `+${k.zmena}` : `−${-k.zmena}`;
     if (k.druh === "karta") return `${z}${k.nasobok > 1 ? ` ×${k.nasobok}` : ""}`;
     // „spolu“ dorovná rozdiel oproti výsledku zo servera (Absťáky sú od v8.2 verejné).
-    if (k.druh === "spolu") return `ostatné ${z}`;
-    const meno = k.zdroj === null ? "" : (ZDROJ[k.zdroj] ?? menoKarty(k.zdroj));
+    if (k.druh === "spolu") return t("pocitadlo.ostatne", { z });
+    const meno = k.zdroj === null ? "" : (ZDROJ[k.zdroj]?.() ?? menoKarty(k.zdroj));
     // Štít len pri Viere súpera (obrana); Absťáky a pasca sú trest, nie obrana (UI inšpekcia).
     const znak = k.druh !== "zrazka" ? "" : k.zdroj === "Viera" ? "🛡 " : "↓ ";
-    if (k.naNule === true) return `${znak}${meno} (už na 0)`;
+    if (k.naNule === true) return `${znak}${t("pocitadlo.uzNaNule", { meno })}`;
     return `${znak}${meno} ${z}`;
   };
   const viditelne = hotovo ? p.kroky : p.kroky.filter((k) => k.vlna <= vlna);
@@ -108,7 +109,7 @@ export function PocitadloBitky({ p, ja, mena, menoKarty, rad, onKoniec, vysledok
   const zoznam = viditelne.filter((k) => k.druh !== "karta");
   // Riadky rekapitulácie podľa toho, kedy svieti ich karta; čo nie je kartou, s bonusmi.
   const vlnaKarty = (uid: number | null): number => (uid === null ? p.vlnaBonusov : (vlnyKariet?.get(uid) ?? 0));
-  const verdikt = vitaz === null ? "Remíza v tuhom" : vitaz === ja ? `Vyhrávaš o ${p.tuhe[ja] - p.tuhe[su]}` : `Prehrávaš o ${p.tuhe[su] - p.tuhe[ja]}`;
+  const verdikt = vitaz === null ? t("pocitadlo.remiza") : vitaz === ja ? t("pocitadlo.vyhravas", { n: p.tuhe[ja] - p.tuhe[su] }) : t("pocitadlo.prehravas", { n: p.tuhe[su] - p.tuhe[ja] });
 
   if (naSirku) {
     return (
@@ -123,7 +124,7 @@ export function PocitadloBitky({ p, ja, mena, menoKarty, rad, onKoniec, vysledok
       >
         <div className="rk-tel-pruh">
           <span className="rk-tel-hlava">
-            <span className="rk-tel-nadpis">Bitka · tuhé</span>
+            <span className="rk-tel-nadpis">{t("pocitadlo.nadpis")}</span>
             <span className="pocitadlo-cisla" aria-live="polite">
               <b className={`ja${(hotovo || vysledokHned) && vitaz === ja ? " vyhra" : ""}`}>{cislo[ja]}</b>
               <span className="pocitadlo-dvojbodka">:</span>
@@ -133,7 +134,7 @@ export function PocitadloBitky({ p, ja, mena, menoKarty, rad, onKoniec, vysledok
             {hotovo && <StitkyMomentov momenty={momenty} ja={ja} />}
           </span>
           <button type="button" className={`rk-dalej rk-tel-akcia${hotovo ? "" : " caka"}`} onClick={hotovo ? onKoniec : dobehni} autoFocus={hotovo}>
-            {hotovo ? "Ďalej" : "Hneď výsledok"}
+            {hotovo ? t("pocitadlo.dalej") : t("pocitadlo.hnedVysledok")}
           </button>
         </div>
         {hotovo && rekap !== null && <VysledokBitky r={rekap} ja={ja} mena={mena} vyhraStrachom={vyhraStrachom} />}
@@ -176,7 +177,7 @@ export function PocitadloBitky({ p, ja, mena, menoKarty, rad, onKoniec, vysledok
     >
       <div className={`pocitadlo-scena${rekap !== null && piktogramy !== undefined ? " s-rekapom" : ""}`}>
         <div className={`pocitadlo-panel${hotovo || vysledokHned ? " hotovo" : ""}`}>
-          <span className="pocitadlo-nadpis">Bitka · tuhé</span>
+          <span className="pocitadlo-nadpis">{t("pocitadlo.nadpis")}</span>
           <span className="pocitadlo-cisla" aria-live="polite">
             <b className={`ja${(hotovo || vysledokHned) && vitaz === ja ? " vyhra" : ""}`}>{cislo[ja]}</b>
             <span className="pocitadlo-dvojbodka">:</span>
@@ -227,11 +228,11 @@ export function PocitadloBitky({ p, ja, mena, menoKarty, rad, onKoniec, vysledok
                   {k.zdroj === "BITKAR" && priazne !== undefined ? (
                     // Pečiatka priazne menom staršieho a krúžkom (Michal 2026-10-31).
                     <>
-                      <PilulkaPriazne fav="BITKAR" p={{ komu: k.kto === ja ? "ja" : "su", sila: k.zmena }} /> {priazne.menoStarsieho("BITKAR") ?? "Bitkár"}: +{k.zmena} tuhé
+                      <PilulkaPriazne fav="BITKAR" p={{ komu: k.kto === ja ? "ja" : "su", sila: k.zmena }} /> {priazne.menoStarsieho("BITKAR") ?? NAZOV_PRIAZNE.BITKAR}: {t("pocitadlo.tuhe", { n: k.zmena })}
                     </>
                   ) : (
                     <>
-                      {k.kto === ja ? "ty" : mena[su]}: {popis(k)}
+                      {k.kto === ja ? t("stol.ty") : mena[su]}: {popis(k)}
                     </>
                   )}
                 </span>
@@ -246,11 +247,11 @@ export function PocitadloBitky({ p, ja, mena, menoKarty, rad, onKoniec, vysledok
             )}
             {hotovo && (
               <button type="button" className="rk-dalej" onClick={onKoniec} autoFocus>
-                Ďalej
+                {t("pocitadlo.dalej")}
               </button>
             )}
           </div>
-          <span className="pocitadlo-tip">{hotovo ? "Enter alebo Ďalej zavrie" : "klik, Esc alebo medzerník dobehne"}</span>
+          <span className="pocitadlo-tip">{hotovo ? t("pocitadlo.tipZavrie") : t("pocitadlo.tipDobehne")}</span>
         </div>
       </div>
     </div>
@@ -322,7 +323,7 @@ export function PocitadloSLiniou({ vrstva, ja, mena, karta, menoKarty, piktogram
           bezPopisov: true,
         })}
         {pl.naexBy !== undefined && (
-          <span className="naex-nad pocitadlo-naex" title={`NA EX — poldeci ${pl.naexBy === ja ? "tvoj" : `hráča ${mena[pl.naexBy]}`}`}>
+          <span className="naex-nad pocitadlo-naex" title={pl.naexBy === ja ? t("pocitadlo.naexTvoj") : t("pocitadlo.naexHraca", { meno: mena[pl.naexBy] })}>
             <IkonaPoldeci /> NA EX
           </span>
         )}

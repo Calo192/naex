@@ -13,6 +13,7 @@ import { adresaVyucby, bezPrvejCasti, napisVyucby, rozpracovana, useVyucbaUctu }
 // Len časti scenára (Vite JSON: pomenovaný import, kroky do balíka titulky nejdú).
 import { casti as CASTI_VYUCBY } from "@naex/core/data/vyucba/prva-hra.json";
 import { dlzkaVyucby } from "./dlzkaVyucby.ts";
+import { t, tr } from "../i18n/jazyk.tsx";
 
 const VEJAR = ["pijan", "farar", "krcma"];
 
@@ -31,16 +32,15 @@ export function Domov() {
       <HlavaStranky
         nadpis={
           <>
-            Bitka o dedinu. <em>Na ex!</em>
+            {tr("domov.nadpis", { naex: <em>Na ex!</em> })}
           </>
         }
-        uvod="Kompetitívna kartová hra pre dvoch v drsnom dedinskom prostredí."
+        uvod={t("domov.uvod")}
       />
       <section className="hero">
         <div>
           <p className="hero-text">
-            Vystavaj nezastaviteľnú partiu odhodlaných dedinských stvorení. Vypi si, pohádaj sa, ak ti chutí, aj sa pobi… hlavne
-            nech ten druhý vidí, že tebe nikto nebude blatníky na Pionieri ohýbať.
+            {t("domov.hero")}
           </p>
           {novacik ? (
             <div className="riadok-tlacidiel hero-novacik">
@@ -48,31 +48,31 @@ export function Domov() {
                 <img src="/melichar.jpg" alt="" width={40} height={40} />
                 <span>
                   {napisVyucby(vyucba)}
-                  <small>{dlzkaVyucby(CASTI_VYUCBY)} pri stole proti Štamgastovi</small>
+                  <small>{t("domov.priStole", { dlzka: dlzkaVyucby(CASTI_VYUCBY) })}</small>
                 </span>
               </Odkaz>
               <Odkaz href="/hra" className="tlacidlo">
-                {ja === null ? "Prihlás sa a hraj" : "Hrať teraz"}
+                {ja === null ? t("domov.prihlasSaAHraj") : t("domov.hratTeraz")}
               </Odkaz>
               <Odkaz href="/pravidla" className="hero-pravidla">
-                Pravidlá na čítanie
+                {t("domov.pravidlaNaCitanie")}
               </Odkaz>
             </div>
           ) : (
             <div className="riadok-tlacidiel">
               <Odkaz href="/hra" className="tlacidlo tlacidlo-hlavne">
-                {ja === null ? "Prihlás sa a hraj" : "Hrať teraz"}
+                {ja === null ? t("domov.prihlasSaAHraj") : t("domov.hratTeraz")}
               </Odkaz>
               {/* Pokusná verzia pre hráčov s oprávnením (Michal 2026-11-02). */}
               <VolbaZrejucej tvar="tlacidlo" />
               {/* Výučba pri stole (Michal 2026-10-23) — /hra?vyucba=1 ju rovno spustí. */}
               {vyucba !== null && vyucba.dostupna && (
                 <Odkaz href="/hra?vyucba=1" className="tlacidlo" data-vyucba-vstup="titulka">
-                  {rozpracovana(vyucba) ? "Pokračovať vo výučbe" : "Prvá hra — nauč sa hrať"}
+                  {rozpracovana(vyucba) ? t("vstup.pokracovat") : t("vstup.prvaHra")}
                 </Odkaz>
               )}
               <Odkaz href="/pravidla" className="tlacidlo">
-                Naučiť sa pravidlá
+                {t("domov.naucitSa")}
               </Odkaz>
             </div>
           )}
@@ -94,20 +94,20 @@ export function Domov() {
       <section className="tri-casti">
         <Odkaz href="/pravidla" className="cast">
           <span className="cast-znak" aria-hidden="true">📖</span>
-          <h2>Nauč sa hrať</h2>
-          <p>Pravidlá krok za krokom, s interaktívnymi príkladmi spájania kariet a výpočtu bitky.</p>
+          <h2>{t("domov.naucSaHrat")}</h2>
+          <p>{t("domov.naucSaHratText")}</p>
         </Odkaz>
         <Odkaz href="/karty" className="cast">
           <span className="cast-znak" aria-hidden="true">🃏</span>
-          <h2>Glosár kariet</h2>
-          <p>Všetky karty hry. Prejdi myšou ponad akciu alebo pojem a uvidíš, čo robí.</p>
+          <h2>{t("domov.glosar")}</h2>
+          <p>{t("domov.glosarText")}</p>
         </Odkaz>
         <Odkaz href="/hra" className="cast">
           <span className="cast-znak" aria-hidden="true">
             <IkonaPoldeci />
           </span>
-          <h2>Hraj proti kamarátovi</h2>
-          <p>Založ hru, pošli kód alebo si vyber súpera zo zoznamu otvorených hier.</p>
+          <h2>{t("domov.hrajProti")}</h2>
+          <p>{t("domov.hrajProtiText")}</p>
         </Odkaz>
       </section>
     </>

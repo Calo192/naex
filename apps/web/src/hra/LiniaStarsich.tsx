@@ -26,16 +26,18 @@
 import type { CSSProperties, KeyboardEvent as ReactKeyboardEvent, ReactNode } from "react";
 import { useState } from "react";
 import type { Action, BitkaNaNastenke, DruhMarkera, ElderState, GameData, PlayerId, PultStarsich, StarsiVerejne, StavVyhier, Stupen, ZmenaMarkera } from "@naex/core";
-import { NAZVY_ZON, STAV_STARSIEHO, blokReci, favourStarsieho, opponentOf, pocet, priazenHraca, priazenSila, spakyStarsieho, stupenStavu } from "@naex/core";
+import { NAZVY_ZON, blokReci, favourStarsieho, opponentOf, priazenHraca, priazenSila, spakyStarsieho, stupenStavu } from "@naex/core";
 import { FARBY_STUPNICE } from "@naex/tvorba";
 import { IKONY } from "../karta/ikony.ts";
 import { UCINOK_KRATKO, UCINOK_PRIAZNE } from "./Scorecard.tsx";
 import { KruzokPriazne, SlovoStupna, Stvorcek, spojUdalosti, useNapovedaStarsieho } from "./KruzokPriazne.tsx";
 import { kradezPriZajati, kratkeMeno, ktoPriazen, obsahNapovedy, obsahNapovedyVazna, priazenKola } from "./priazenKola.ts";
-import { NAZOV_ZDROJA, PRAVIDLO_STRACHU, rodStarsieho, slovoStupna, type Rod } from "./textyStarsich.ts";
+import { NAZOV_ZDROJA, pravidloStrachu, rodStarsieho, slovoStupna, type Rod } from "./textyStarsich.ts";
 import type { StupenRozdelenia } from "./teplomery.ts";
 import { NAZOV_KROKU, dotknuty, fazaKroku, opisKroku, riadkyKroku, stitkyKroku, type KontextSuhrnu, type KrokSuhrnu, type Markery, type StitokSuhrnu, type SuhrnBitky } from "./krokySuhrnu.ts";
 import { textCervenych } from "./vyhraStrachom.ts";
+import { spakov } from "../i18n/pocty.ts";
+import { t } from "../i18n/jazyk.tsx";
 import "./teplomery.css";
 
 export { IKONA_PRIAZNE } from "./KruzokPriazne.tsx";
@@ -139,7 +141,9 @@ export interface LiniaStarsichProps {
   readonly suhrn?: SuhrnNaLinii | undefined;
 }
 
-const spakov = (n: number): string => pocet(n, "špak", "špaky", "špakov");
+/** Stav staršieho slovom (STAV_STARSIEHO v jadre) v jazyku hráča. */
+const stavStarsieho = (s: number): string => t(`stupen.m${s >= 0 && s <= 3 ? s : 0}`);
+const nazovZony = (z: number): string => (z >= 0 && z < NAZVY_ZON.length ? t(`zona.${z}`) : "");
 
 /**
  * Farba stupňa 0–3 (farby stupnice sú pevné, ako na tlačenom scorecarde). FARBY_STUPNICE tvorcu
@@ -174,8 +178,8 @@ export function LiniaStarsich({ rad, data, ja, pohlad, mena, krok, zmenene, vyhr
         ) : (
           <span className="ls-tlmene">
             {/* Na telefóne myš ani Tab nie sú (playtest mobilu 20261031-191322) — mobil-sirka.css prepne vetu. */}
-            <span className="len-mys">Prejdi myšou alebo Tabom na staršieho — nápoveda ukáže, čo klik urobí.</span>
-            <span className="len-dotyk">Podrž prst na staršom — ukáže priazeň a strach; ťuk vyberie.</span>
+            <span className="len-mys">{t("linia.mys")}</span>
+            <span className="len-dotyk">{t("linia.dotyk")}</span>
           </span>
         )}
       </span>
@@ -213,12 +217,12 @@ export function LiniaStarsich({ rad, data, ja, pohlad, mena, krok, zmenene, vyhr
         {stred}
         <StavVyhierLinie vyhry={vyhry} ja={ja} mena={mena} />
         {suhrn === undefined && (
-          <span className="tp-prepinac" role="group" aria-label="Zobrazenie starších" title={PRAVIDLO_STRACHU}>
+          <span className="tp-prepinac" role="group" aria-label={t("linia.zobrazenie")} title={pravidloStrachu()}>
             <button type="button" aria-pressed={rezim === "teplomery"} onClick={() => onRezim("teplomery")}>
-              Teplomery
+              {t("linia.teplomery")}
             </button>
             <button type="button" aria-pressed={rezim === "pult"} onClick={() => onRezim("pult")}>
-              Pult
+              {t("linia.pult")}
             </button>
           </span>
         )}
@@ -269,11 +273,11 @@ export function LiniaStarsich({ rad, data, ja, pohlad, mena, krok, zmenene, vyhr
 /** Pás súhrnu po bitke nad radom: výsledok a kroky; pod nimi veta kroku. */
 function PasSuhrnu({ suhrn, krok }: { readonly suhrn: SuhrnNaLinii; readonly krok: KrokSuhrnu }) {
   const { bitka, kontext } = suhrn;
-  const vysledok = bitka.vitaz === null ? "na sekeru" : `víťaz ${kontext.mena[bitka.vitaz]}`;
+  const vysledok = bitka.vitaz === null ? t("linia.naSekeru") : t("linia.vitaz", { meno: kontext.mena[bitka.vitaz] });
   return (
-    <div className="r3-pas-suhrnu" role="group" aria-label={`Súhrn po bitke ${bitka.kolo}`}>
+    <div className="r3-pas-suhrnu" role="group" aria-label={t("linia.suhrnPoBitke", { n: bitka.kolo })}>
       <span className="r3-ps-bitka">
-        Bitka {bitka.kolo} · <b className={bitka.vitaz === null ? undefined : "vyhra"}>{vysledok}</b>
+        {t("linia.bitkaN", { n: bitka.kolo })} · <b className={bitka.vitaz === null ? undefined : "vyhra"}>{vysledok}</b>
       </span>
       <span className="r3-ps-kroky" aria-hidden="true">
         {bitka.kroky.map((k, i) => (
@@ -299,8 +303,8 @@ function StavVyhierLinie({ vyhry, ja, mena }: { readonly vyhry: StavVyhier; read
     const c = vyhry.cervene[p];
     const v = vyhry.vazni[p];
     const hrozi = c >= vyhry.cervenychNaVyhru - 1 || v >= vyhry.vazniNaVyhru - 1;
-    const kto = p === ja ? "ty" : kratkeMeno(mena[p]);
-    const popis = `${p === ja ? "Ty" : mena[p]}: ${textCervenych(c, v, vyhry.cervenychNaVyhru).titul} Väzni ${v} z ${vyhry.vazniNaVyhru} — kto vyhrá bitku a má dosť, vyhráva hneď.`;
+    const kto = p === ja ? t("stol.ty") : kratkeMeno(mena[p]);
+    const popis = t("linia.popisVyhier", { kto: p === ja ? t("starsi.Ty") : mena[p], titul: textCervenych(c, v, vyhry.cervenychNaVyhru).titul, v, z: vyhry.vazniNaVyhru });
     return (
       <span className={`tp-vyhry ${p === ja ? "ja" : "su"}${hrozi ? " hrozi" : ""}`} role="img" aria-label={popis} title={popis}>
         <span className="tp-vyhry-kto">{kto}</span>
@@ -386,7 +390,7 @@ function TeplomerStarsieho({
         ja,
         mena,
         akcia: klik?.akcia ?? null,
-        dalsi: s.presvedcil === null ? null : { nazov: "Presvedčený", text: `presvedčil ho ${kratke[s.presvedcil.kto]} — karta staršieho je v jeho balíčku; zajať ho smú obaja` },
+        dalsi: s.presvedcil === null ? null : { nazov: t("linia.presvedceny"), text: t("linia.presvedcilHo", { kto: kratke[s.presvedcil.kto] }) },
       }),
     { obrazok: s.obrazok, zvacsenina: () => <Zvacsenina s={s} fav={fav} pk={pk} /> },
   );
@@ -407,11 +411,15 @@ function TeplomerStarsieho({
   // v11.12: reči ležia na súperovom teplomere, stupeň hráča je jeho strach.
   const slovo = (h: PlayerId): string => slovoStupna(elder.strach[h], rod);
   const popis =
-    `${s.meno} — priazeň ${ktoPriazen(pk, { ja: kratke[ja], su: kratke[su] })}. ` +
-    `${kratke[ja]}: ${slovo(ja)}${elder.reci[ja] > 0 ? " (reči)" : ""}; ${kratke[su]}: ${slovo(su)}${elder.reci[su] > 0 ? " (reči)" : ""}.` +
-    (r?.zdvih != null ? ` Návrh: ${r.marker === "strach" ? "strach" : "reči"} ${slovoStupna(r.zdvih.z, rod)} → ${slovoStupna(r.zdvih.na, rod)} za ${r.zdvih.cena}.` : "") +
+    t("linia.popisPriazen", { meno: s.meno, kto: ktoPriazen(pk, { ja: kratke[ja], su: kratke[su] }) }) +
+    t("linia.popisStupne", { a: kratke[ja], stupenA: slovo(ja) + (elder.reci[ja] > 0 ? t("linia.reciZatvorka") : ""), b: kratke[su], stupenB: slovo(su) + (elder.reci[su] > 0 ? t("linia.reciZatvorka") : "") }) +
+    (r?.zdvih != null
+      ? r.marker === "strach"
+        ? t("linia.navrhStrach", { z: slovoStupna(r.zdvih.z, rod), na: slovoStupna(r.zdvih.na, rod), cena: r.zdvih.cena })
+        : t("linia.navrhReci", { z: slovoStupna(r.zdvih.z, rod), na: slovoStupna(r.zdvih.na, rod), cena: r.zdvih.cena })
+      : "") +
     (s.dovod !== undefined ? ` — ${s.dovod}` : "") +
-    (klik !== undefined && r === undefined ? ` — klikni: ${klik.akcia}` : "");
+    (klik !== undefined && r === undefined ? t("linia.klikni", { akcia: klik.akcia }) : "");
   const zmeny = suhrn === undefined ? (s.zmeny ?? []) : [];
   const ktoMenil = new Set(zmeny.map((x) => x.kto));
   const farbaZmien = ktoMenil.size !== 1 ? "" : ktoMenil.has(ja) ? " moje" : " superove";
@@ -475,8 +483,8 @@ function TeplomerStarsieho({
               </span>
             )
           ) : s.presvedcil !== null ? (
-            <span className={`tp-ohrozenie ${s.presvedcil.kto === ja ? "ja" : "su"}`} title={`Presvedčil ${kratke[s.presvedcil.kto]} — karta staršieho je jeho; zajať ho smú obaja`}>
-              ✦ presvedčil {kratke[s.presvedcil.kto]}
+            <span className={`tp-ohrozenie ${s.presvedcil.kto === ja ? "ja" : "su"}`} title={t("linia.presvedcilTitul", { kto: kratke[s.presvedcil.kto] })}>
+              ✦ {t("linia.presvedcil", { kto: kratke[s.presvedcil.kto] })}
             </span>
           ) : zmeny.length > 0 ? (
             <span className={`ls-listok tp-zmeny${farbaZmien}`}>⇄ {stitokZmien(zmeny)}</span>
@@ -520,16 +528,16 @@ function TeplomerStarsieho({
  */
 function PeciatkaAkcie({ a, elderId, meno, rod, vPulte = false }: { readonly a: AkciaStarsieho; readonly elderId: string; readonly meno: string; readonly rod: Rod; readonly vPulte?: boolean }) {
   const zajat = a.druh === "zajat";
-  const nazov = zajat ? "ZAJAŤ" : "PRESVEDČIŤ";
-  const hotovo = zajat ? (rod === "z" ? "ZAJATÁ" : "ZAJATÝ") : rod === "z" ? "PRESVEDČENÁ" : "PRESVEDČENÝ";
+  const nazov = zajat ? t("linia.zajat") : t("linia.presvedcit");
+  const hotovo = zajat ? (rod === "z" ? t("linia.zajata") : t("linia.zajaty")) : rod === "z" ? t("linia.presvedcena") : t("linia.presvedcenyVelke");
   const zastav = (e: { readonly stopPropagation: () => void }): void => e.stopPropagation();
   return (
     <button
       type="button"
       className={`tp-peciatka-akcie ${a.druh}${a.zapnuta ? " on" : ""}${vPulte ? " v-pulte" : ""}`}
       aria-pressed={a.zapnuta}
-      aria-label={a.zapnuta ? `${meno}: ${hotovo.toLowerCase()} za ${a.cena} — klik zruší` : `${zajat ? "Zajať" : "Presvedčiť"} ${meno} za ${a.cena}`}
-      title={a.zapnuta ? `${a.nahlad} Klik zruší.` : a.nahlad}
+      aria-label={a.zapnuta ? t("linia.akciaZapnuta", { meno, hotovo: hotovo.toLowerCase(), cena: a.cena }) : zajat ? t("linia.zajatZa", { meno, cena: a.cena }) : t("linia.presvedcitZa", { meno, cena: a.cena })}
+      title={a.zapnuta ? t("linia.klikZrusi", { nahlad: a.nahlad }) : a.nahlad}
       data-vyucba={`${a.druh}:${elderId}`}
       onPointerDown={zastav}
       onKeyDown={zastav}
@@ -565,7 +573,7 @@ function RiadokStupna({ kto, komu, strach, reci, rod }: { readonly kto: string; 
           {strach > 0 && <Stvorcek druh="strach" n={strach} />}
           {reci > 0 && <Stvorcek druh="reci" n={reci} />}
           <SlovoStupna n={vrchol} rod={rod} />
-          {reci > 0 && <span className="r3-pozn"> — reči</span>}
+          {reci > 0 && <span className="r3-pozn">{t("linia.pomlckaReci")}</span>}
         </>
       )}
     </span>
@@ -692,15 +700,22 @@ function PasR3({
             </span>
           );
         }
-        const co = r.marker === "strach" ? "strach" : "reči";
+        const jeStrach = r.marker === "strach";
+        const stupen = slovoStupna(z, rod);
         const label =
           st.stav === "vybrany"
             ? z === r.zdvih?.na
-              ? `${meno}: vrátiť ${co} o stupeň`
-              : `${meno}: ${co} len po ${slovoStupna(z, rod)}`
+              ? jeStrach
+                ? t("linia.vratitStrach", { meno })
+                : t("linia.vratitReci", { meno })
+              : jeStrach
+                ? t("linia.strachLenPo", { meno, stupen })
+                : t("linia.reciLenPo", { meno, stupen })
             : st.stav === "dosah"
-              ? `${meno}: ${co} po ${slovoStupna(z, rod)} za ${st.cena}`
-              : `${meno}: po ${slovoStupna(z, rod)} (${st.cena}) zvyšok nestačí`;
+              ? jeStrach
+                ? t("linia.strachPoZa", { meno, stupen, cena: st.cena })
+                : t("linia.reciPoZa", { meno, stupen, cena: st.cena })
+              : t("linia.nestaci", { meno, stupen, cena: st.cena });
         return (
           <button key={z} type="button" className={trieda} data-vyucba={`stupen:${elderId}:${z}`} aria-label={label} title={label} aria-disabled={st.stav === "mimo"} aria-pressed={st.stav === "vybrany"} onClick={() => r.klik(z)}>
             {obsah}
@@ -753,15 +768,15 @@ function KartaVazna({
   return (
     <div
       className={`ls-sc tp-k tp-vazen ${v.hrac === ja ? "ja" : "su"}${tlmeny === true ? " suhrn-tlmeny" : ""}`}
-      {...spojUdalosti(napoveda.props, { tabIndex: 0, "aria-label": `${v.meno} — v pivnici u ${kto}: je z neho stále ${slovoStupna(3, rod)}, ráta sa ako červená` })}
+      {...spojUdalosti(napoveda.props, { tabIndex: 0, "aria-label": t("linia.vazenAria", { meno: v.meno, kto, stupen: slovoStupna(3, rod) }) })}
     >
       <div className="ls-telo">
         <span className="ls-portret">
           {v.obrazok !== null ? <img src={v.obrazok} alt="" draggable={false} /> : <span className="ls-portret-prazdny" />}
-          <span className="tp-peciatka" role="img" aria-label={`V pivnici u ${kto}${kradez === null ? "" : ` · ${v.hrac === ja ? "vzal si" : "vzal ti"} ${spakov(kradez.spaky)}`}`}>
-            <b>V PIVNICI</b>
-            <span>u {kto}</span>
-            {kradez !== null && <small>{v.hrac === ja ? `vzal si ${spakov(kradez.spaky)}` : `vzal ti ${spakov(kradez.spaky)}`}</small>}
+          <span className="tp-peciatka" role="img" aria-label={t("linia.vPivniciU", { kto }) + (kradez === null ? "" : ` · ${v.hrac === ja ? t("linia.vzalSi", { spaky: spakov(kradez.spaky) }) : t("linia.vzalTi", { spaky: spakov(kradez.spaky) })}`)}>
+            <b>{t("linia.vPivnici")}</b>
+            <span>{t("linia.uKoho", { kto })}</span>
+            {kradez !== null && <small>{v.hrac === ja ? t("linia.vzalSi", { spaky: spakov(kradez.spaky) }) : t("linia.vzalTi", { spaky: spakov(kradez.spaky) })}</small>}
           </span>
         </span>
       </div>
@@ -769,8 +784,8 @@ function KartaVazna({
         <span className="tp-schopnost">{v.schopnost}</span>
       ) : (
         v.pouzita === true && (
-          <span className="tp-schopnost pouzita" title="Schopnosť väzňa je minutá (raz za hru).">
-            schopnosť použitá
+          <span className="tp-schopnost pouzita" title={t("linia.schopnostMinuta")}>
+            {t("linia.schopnostPouzita")}
           </span>
         )
       )}
@@ -778,7 +793,7 @@ function KartaVazna({
         <b className="ls-meno">{v.meno}</b>
         <span className="r3-riadky">
           <span className={`r3-riadok ${v.hrac === ja ? "ja" : "su"}`}>
-            <b className="kto">{kto}:</b> je z neho stále <SlovoStupna n={3} rod={rod} />
+            <b className="kto">{kto}:</b> {t("linia.jeZNehoStale")} <SlovoStupna n={3} rod={rod} />
           </span>
         </span>
       </span>
@@ -832,7 +847,7 @@ function Pipy({
         const novy = blok !== undefined ? !v(blokPred ?? null) : hodnota < z;
         const trieda = `z${z}${on ? " on" : ""}${on && novy ? " nove" : ""}${st !== undefined ? ` ${st.stav}` : ""}`;
         if (r === undefined || st === undefined || st.stav === "pod" || st.stav === "zamknuty") return <i key={z} className={trieda} />;
-        const label = `${meno}: ${reci ? "reči" : "strach"} na ${NAZVY_ZON[z]}${st.stav === "dosah" ? ` za ${st.cena}` : st.stav === "mimo" ? " — zvyšok nestačí" : ""}`;
+        const label = (reci ? t("linia.reciNa", { meno, zona: nazovZony(z) }) : t("linia.strachNa", { meno, zona: nazovZony(z) })) + (st.stav === "dosah" ? t("linia.za", { cena: st.cena }) : st.stav === "mimo" ? t("linia.zvysokNestaci") : "");
         return (
           <button key={z} type="button" className={`tp-seg ${trieda}`} aria-label={label} title={label} aria-disabled={st.stav === "mimo"} aria-pressed={st.stav === "vybrany"} onClick={() => r.klik(z)}>
             {st.stav === "dosah" ? st.cena : null}
@@ -847,7 +862,7 @@ function Pipy({
 function PriazenPultu({ e, data, ja, mena }: { readonly e: ElderState; readonly data: GameData; readonly ja: PlayerId; readonly mena: readonly [string, string] }) {
   const p = priazenKola(e, ja);
   const fav = favourStarsieho(data, e);
-  const popis = p.komu === null ? `nikomu · pri +1: ${UCINOK_KRATKO[fav](1)}` : `${p.komu === "ja" ? "ty" : kratkeMeno(mena[opponentOf(ja)])}: ${UCINOK_KRATKO[fav](p.sila)}`;
+  const popis = p.komu === null ? t("priazen.nikomu", { ucinok: UCINOK_KRATKO[fav](1) }) : `${p.komu === "ja" ? t("stol.ty") : kratkeMeno(mena[opponentOf(ja)])}: ${UCINOK_KRATKO[fav](p.sila)}`;
   return (
     <span className="tp-priazen" title={popis}>
       <span className={`tp-priazen-os${p.komu === null ? "" : ` ${p.komu}`}`} aria-hidden="true">
@@ -886,19 +901,19 @@ function PultLinie({
       <table className="tp-pult">
         <thead>
           <tr>
-            <th className="vlavo">Starší</th>
-            <th className="ja">ty strach</th>
-            <th className="ja">ty reči</th>
+            <th className="vlavo">{t("starsi.nazov")}</th>
+            <th className="ja">{t("linia.tyStrach")}</th>
+            <th className="ja">{t("linia.tyReci")}</th>
             <th>
-              Priazeň <span className="ja">◀ ty</span> · <span className="su">{menoSu} ▶</span>
+              {t("linia.priazen")} <span className="ja">◀ {t("stol.ty")}</span> · <span className="su">{menoSu} ▶</span>
             </th>
-            <th className="su">{menoSu} reči</th>
-            <th className="su">{menoSu} strach</th>
-            <th className="ja" title="špaky po bitke pri tvojej výhre · prehre">
-              ty výhra · prehra
+            <th className="su">{t("linia.hracReci", { meno: menoSu })}</th>
+            <th className="su">{t("linia.hracStrach", { meno: menoSu })}</th>
+            <th className="ja" title={t("linia.spakyTvoje")}>
+              {t("linia.tyVyhraPrehra")}
             </th>
-            <th className="su" title={`špaky po bitke pri výhre · prehre (${mena[su]})`}>
-              {menoSu} výhra · prehra
+            <th className="su" title={t("linia.spakySupera", { meno: mena[su] })}>
+              {t("linia.hracVyhraPrehra", { meno: menoSu })}
             </th>
           </tr>
         </thead>
@@ -908,10 +923,10 @@ function PultLinie({
               return (
                 <tr key={m.v.elderId} className="tp-pult-vazen">
                   <td className="vlavo">
-                    <PultMeno meno={m.v.meno} obrazok={m.v.obrazok} pod={`väzeň · ${m.v.hrac === ja ? "tvoj" : menoSu}`} />
+                    <PultMeno meno={m.v.meno} obrazok={m.v.obrazok} pod={m.v.hrac === ja ? t("linia.vazenTvoj") : t("linia.vazenHraca", { meno: menoSu })} />
                   </td>
                   <td colSpan={7} className={m.v.hrac === ja ? "ja" : "su"}>
-                    ⛓ v pivnici u {m.v.hrac === ja ? "teba" : menoSu} — ráta sa ako červená
+                    ⛓ {m.v.hrac === ja ? t("linia.vPivniciTeba") : t("linia.vPivniciHraca", { meno: menoSu })}
                   </td>
                 </tr>
               );
@@ -921,11 +936,11 @@ function PultLinie({
             const po = s.po ?? e;
             const b = spakyStarsieho(po);
             const r = s.rozdelenie;
-            const ohrozenie = s.presvedcil === null ? "" : ` · ✦ presvedčil ${s.presvedcil.kto === ja ? "ty" : menoSu}`;
+            const ohrozenie = s.presvedcil === null ? "" : ` · ✦ ${t("linia.presvedcil", { kto: s.presvedcil.kto === ja ? t("stol.ty") : menoSu })}`;
             return (
               <tr key={e.elderId} className={`${s.presvedcil !== null ? "ohrozeny" : ""}${r?.zdvih != null ? " s-posunom" : ""}`} data-vyucba={`starsi:${e.elderId}`}>
                 <td className={`vlavo${s.akcia !== undefined ? " s-peciatkou" : ""}`}>
-                  <PultMeno meno={s.meno} obrazok={s.obrazok} pod={`${STAV_STARSIEHO[stupenStavu(e)]}${ohrozenie}`} />
+                  <PultMeno meno={s.meno} obrazok={s.obrazok} pod={`${stavStarsieho(stupenStavu(e))}${ohrozenie}`} />
                   {s.akcia !== undefined && <PeciatkaAkcie a={s.akcia} elderId={e.elderId} meno={s.meno} rod={rodStarsieho(e.karta.defId, s.meno)} vPulte />}
                 </td>
                 <td>
@@ -955,13 +970,13 @@ function PultLinie({
         </tbody>
         <tfoot>
           <tr>
-            <td className="vlavo">Spolu{zmenene ? " po návrhu" : ""}</td>
+            <td className="vlavo">{zmenene ? t("linia.spoluPoNavrhu") : t("linia.spolu")}</td>
             <td colSpan={2} className="ja" title={textCervenych(vyhry.cervene[ja], vyhry.vazni[ja], vyhry.cervenychNaVyhru).titul}>
-              červené {textCervenych(vyhry.cervene[ja], vyhry.vazni[ja], vyhry.cervenychNaVyhru).kratko} · ⛓ {vyhry.vazni[ja]}/{vyhry.vazniNaVyhru}
+              {t("starsi.cervene")} {textCervenych(vyhry.cervene[ja], vyhry.vazni[ja], vyhry.cervenychNaVyhru).kratko} · ⛓ {vyhry.vazni[ja]}/{vyhry.vazniNaVyhru}
             </td>
             <td />
             <td colSpan={2} className="su" title={textCervenych(vyhry.cervene[su], vyhry.vazni[su], vyhry.cervenychNaVyhru).titul}>
-              červené {textCervenych(vyhry.cervene[su], vyhry.vazni[su], vyhry.cervenychNaVyhru).kratko} · ⛓ {vyhry.vazni[su]}/{vyhry.vazniNaVyhru}
+              {t("starsi.cervene")} {textCervenych(vyhry.cervene[su], vyhry.vazni[su], vyhry.cervenychNaVyhru).kratko} · ⛓ {vyhry.vazni[su]}/{vyhry.vazniNaVyhru}
             </td>
             <td className="tp-bd ja">
               <b>{sucet((x) => x.vyhra[ja])}</b> · {sucet((x) => x.prehra[ja])}
@@ -1017,7 +1032,7 @@ export function ucinokPriazne(data: GameData, elder: ElderState): { readonly kra
   const sila = priazenSila(elder);
   const pri = sila > 0 ? sila : 1;
   return {
-    kratko: `${sila > 0 ? "" : "pri +1: "}${UCINOK_KRATKO[fav](pri)}`,
-    cely: `${sila > 0 ? `Priazeň +${sila}` : "Priazeň (zatiaľ nikoho), pri +1"}: ${UCINOK_PRIAZNE[fav](pri)}`,
+    kratko: sila > 0 ? UCINOK_KRATKO[fav](pri) : t("linia.priJedna", { ucinok: UCINOK_KRATKO[fav](pri) }),
+    cely: sila > 0 ? t("linia.priazenSila", { sila, ucinok: UCINOK_PRIAZNE[fav](pri) }) : t("linia.priazenNikoho", { ucinok: UCINOK_PRIAZNE[fav](pri) }),
   };
 }

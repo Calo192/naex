@@ -8,8 +8,10 @@
 // z Kšeftov poslednej Pitky sú pred bitkou a ostanú v stave „pred“.
 
 import type { BitkaNaNastenke, ClientState, ElderState, PlayerId, Stupen, Vazen, ZmenaMarkera } from "@naex/core";
-import { cenaZdvihu, investovaneReci, kradezZaZajatie, najvyssiMarker, pocet, priazenHraca, priazenSila, spakyOdStarsieho, stupenNaBodovanie } from "@naex/core";
+import { cenaZdvihu, investovaneReci, kradezZaZajatie, najvyssiMarker, priazenHraca, priazenSila, spakyOdStarsieho, stupenNaBodovanie } from "@naex/core";
 import { slovoStupna, type Rod } from "./textyStarsich.ts";
+import { t } from "../i18n/jazyk.tsx";
+import { spakov } from "../i18n/pocty.ts";
 
 /** Strach a reči oboch hráčov. */
 export interface Markery {
@@ -38,12 +40,23 @@ export function zaciatokKola(view: Pick<ClientState, "kolo" | "starsi" | "vazni"
 /** Krok súhrnu v poradí pravidiel; koniec = priazeň a ďalšie kolo (vždy posledný). */
 export type KrokSuhrnu = "bodovanie" | "reci" | "nakladacka" | "hadka" | "koniec";
 
+// Gettery: názov sa číta v jazyku hráča pri vykreslení.
 export const NAZOV_KROKU: Readonly<Record<KrokSuhrnu, string>> = {
-  bodovanie: "Starší bodujú",
-  reci: "Reči klesnú",
-  nakladacka: "Nakladačka",
-  hadka: "Hádka",
-  koniec: "Priazeň a ďalšie kolo",
+  get bodovanie() {
+    return t("suhrn.bodovanie");
+  },
+  get reci() {
+    return t("suhrn.reci");
+  },
+  get nakladacka() {
+    return t("delenie.nakladacka");
+  },
+  get hadka() {
+    return t("delenie.hadka");
+  },
+  get koniec() {
+    return t("suhrn.koniec");
+  },
 };
 
 const PORADIE: readonly KrokSuhrnu[] = ["bodovanie", "reci", "nakladacka", "hadka", "koniec"];
@@ -240,7 +253,6 @@ export interface KontextSuhrnu {
   readonly nazovPriazne: (scorecard: string) => string;
 }
 
-const spakov = (n: number): string => pocet(n, "špak", "špaky", "špakov");
 
 /** Štítok nad portrétom v kroku: text, kratší na telefón a farba (hráč, chip = plný). */
 export interface StitokSuhrnu {
@@ -251,19 +263,26 @@ export interface StitokSuhrnu {
 
 export function stitkyKroku(e: StarsiVSuhrne, k: KrokSuhrnu, ja: PlayerId, c: KontextSuhrnu): readonly StitokSuhrnu[] {
   const rod = c.rod(e.defId);
-  const t = (p: PlayerId): "ja" | "su" => (p === ja ? "ja" : "su");
+  const strana = (p: PlayerId): "ja" | "su" => (p === ja ? "ja" : "su");
+  const reci = (na: number): string => (na === 0 ? t("suhrn.reciZanikli") : t("suhrn.reciDole", { stupen: slovoStupna(na, rod) }));
   if (k === "bodovanie") return ([0, 1] as const).filter((p) => e.bod[p] > 0).map((p) => ({ text: `+${spakov(e.bod[p])}`, kratko: `+${e.bod[p]}`, trieda: p === ja ? "chip-ja" : "chip-su" }));
-  if (k === "reci") return e.pokles.map((x) => ({ text: `▼ reči ${x.na === 0 ? "zanikli" : slovoStupna(x.na, rod)}`, kratko: `▼ reči ${x.na === 0 ? "zanikli" : slovoStupna(x.na, rod)}`, trieda: t(x.hrac) }));
-  if (k === "nakladacka") return e.nakladacka === null ? [] : [{ text: `▲ strach ${slovoStupna(e.nakladacka.na, rod)} · za ${e.nakladacka.cena}`, kratko: `▲ strach ${slovoStupna(e.nakladacka.na, rod)}`, trieda: t(e.nakladacka.hrac) }];
-  if (k === "hadka") return e.hadka === null ? [] : [{ text: `▲ reči ${slovoStupna(e.hadka.na, rod)} · za ${e.hadka.cena}`, kratko: `▲ reči ${slovoStupna(e.hadka.na, rod)}`, trieda: t(e.hadka.hrac) }];
+  if (k === "reci") return e.pokles.map((x) => ({ text: reci(x.na), kratko: reci(x.na), trieda: strana(x.hrac) }));
+  if (k === "nakladacka")
+    return e.nakladacka === null
+      ? []
+      : [{ text: t("suhrn.strachHoreZa", { stupen: slovoStupna(e.nakladacka.na, rod), cena: e.nakladacka.cena }), kratko: t("suhrn.strachHore", { stupen: slovoStupna(e.nakladacka.na, rod) }), trieda: strana(e.nakladacka.hrac) }];
+  if (k === "hadka")
+    return e.hadka === null
+      ? []
+      : [{ text: t("suhrn.reciHoreZa", { stupen: slovoStupna(e.hadka.na, rod), cena: e.hadka.cena }), kratko: t("suhrn.reciHore", { stupen: slovoStupna(e.hadka.na, rod) }), trieda: strana(e.hadka.hrac) }];
   const out: StitokSuhrnu[] = [];
   if (e.vazen !== null) return out;
   if (e.priazen.zmena) {
     const na = e.priazen.na;
-    const komu = na.hrac === null ? "nikto" : `${c.mena[na.hrac]} +${na.sila}`;
-    out.push({ text: `${c.nazovPriazne(e.scorecard)} → ${komu}`, kratko: `${c.nazovPriazne(e.scorecard)} → ${na.hrac === null ? "nikto" : `+${na.sila}`}`, trieda: na.hrac === null ? "ne" : t(na.hrac) });
+    const komu = na.hrac === null ? t("stol.nikto") : `${c.mena[na.hrac]} +${na.sila}`;
+    out.push({ text: `${c.nazovPriazne(e.scorecard)} → ${komu}`, kratko: `${c.nazovPriazne(e.scorecard)} → ${na.hrac === null ? t("stol.nikto") : `+${na.sila}`}`, trieda: na.hrac === null ? "ne" : strana(na.hrac) });
   }
-  for (const z of e.ohrozenie) out.push({ text: `⛓ ${c.mena[z.hrac]} môže zajať`, kratko: "⛓", trieda: "ne" });
+  for (const z of e.ohrozenie) out.push({ text: t("suhrn.mozeZajat", { meno: c.mena[z.hrac] }), kratko: "⛓", trieda: "ne" });
   return out;
 }
 
@@ -271,21 +290,26 @@ export function stitkyKroku(e: StarsiVSuhrne, k: KrokSuhrnu, ja: PlayerId, c: Ko
 export function riadkyKroku(e: StarsiVSuhrne, k: KrokSuhrnu, c: KontextSuhrnu): readonly string[] {
   const rod = c.rod(e.defId);
   const m = c.mena;
-  const nakl = (): string[] => (e.nakladacka === null ? [] : [`▲ ${m[e.nakladacka.hrac]} strach → ${slovoStupna(e.nakladacka.na, rod)}${k === "koniec" ? "" : ` · za ${e.nakladacka.cena}`}`]);
-  const hadka = (): string[] => (e.hadka === null ? [] : [`▲ ${m[e.hadka.hrac]} reči → ${slovoStupna(e.hadka.na, rod)}${k === "koniec" ? "" : ` · za ${e.hadka.cena}`}`]);
-  const pokles = (): string[] => e.pokles.map((x) => `▼ ${m[x.hrac]} reči ${x.na === 0 ? "zanikli" : `→ ${slovoStupna(x.na, rod)}`}`);
-  if (k === "bodovanie") return ([0, 1] as const).filter((p) => e.bod[p] > 0).map((p) => `${m[p]} +${e.bod[p]} (${e.bodZaReci[p] ? `${slovoStupna(e.bodStupen[p], rod)} — reči` : slovoStupna(e.bodStupen[p], rod)})`);
+  const za = (cena: number): string => (k === "koniec" ? "" : t("suhrn.za", { cena }));
+  const nakl = (): string[] => (e.nakladacka === null ? [] : [t("suhrn.riadokStrach", { meno: m[e.nakladacka.hrac], stupen: slovoStupna(e.nakladacka.na, rod) }) + za(e.nakladacka.cena)]);
+  const hadka = (): string[] => (e.hadka === null ? [] : [t("suhrn.riadokReci", { meno: m[e.hadka.hrac], stupen: slovoStupna(e.hadka.na, rod) }) + za(e.hadka.cena)]);
+  const pokles = (): string[] =>
+    e.pokles.map((x) => (x.na === 0 ? t("suhrn.riadokReciZanikli", { meno: m[x.hrac] }) : t("suhrn.riadokReciDole", { meno: m[x.hrac], stupen: slovoStupna(x.na, rod) })));
+  if (k === "bodovanie")
+    return ([0, 1] as const)
+      .filter((p) => e.bod[p] > 0)
+      .map((p) => `${m[p]} +${e.bod[p]} (${e.bodZaReci[p] ? t("suhrn.stupenReci", { stupen: slovoStupna(e.bodStupen[p], rod) }) : slovoStupna(e.bodStupen[p], rod)})`);
   if (k === "reci") return pokles();
   if (k === "nakladacka") return nakl();
   if (k === "hadka") return hadka();
-  if (e.vazen !== null) return [`⛓ v pivnici u ${m[e.vazen]}`];
-  const pr = (p: PriazenSuhrnu): string => (p.hrac === null ? "nikto" : `${m[p.hrac]} +${p.sila}`);
+  if (e.vazen !== null) return [t("suhrn.vPivnici", { meno: m[e.vazen] })];
+  const pr = (p: PriazenSuhrnu): string => (p.hrac === null ? t("stol.nikto") : `${m[p.hrac]} +${p.sila}`);
   return [
     ...nakl(),
     ...hadka(),
-    ...(e.priazen.zmena ? [`priazeň: ${pr(e.priazen.od)} → ${pr(e.priazen.na)}`] : []),
+    ...(e.priazen.zmena ? [t("suhrn.priazenZmena", { od: pr(e.priazen.od), na: pr(e.priazen.na) })] : []),
     ...pokles(),
-    ...e.ohrozenie.map((z) => `⛓ ${m[z.hrac]} môže zajať`),
+    ...e.ohrozenie.map((z) => t("suhrn.mozeZajat", { meno: m[z.hrac] })),
   ];
 }
 
@@ -301,18 +325,19 @@ export function opisKroku(s: SuhrnBitky, k: KrokSuhrnu, c: KontextSuhrnu): strin
       .join(", ");
   if (k === "bodovanie") {
     const ako =
-      s.vitaz === null ? "Na sekeru — obaja len za stupne, ktoré držia rečami." : "Reči bodujú obom, víťaz navyše za svoj strach bez stupňov, ktoré drží súper.";
-    return `Starší bodujú podľa stavu pred bitkou. ${ako} Spolu ${m[0]} +${s.spolu[0]}, ${m[1]} +${s.spolu[1]}.`;
+      s.vitaz === null ? t("suhrn.naSekeru") : t("suhrn.reciObom");
+    return t("suhrn.opisBodovania", { ako, a: m[0], x: s.spolu[0], b: m[1], y: s.spolu[1] });
   }
-  if (k === "reci") return "Kto prehral hádku, tomu reči klesnú zospodu: spodný stupeň zanikne.";
+  if (k === "reci") return t("suhrn.opisReci");
   if (k === "nakladacka" && s.nakladacka !== null)
-    return `${m[s.nakladacka.hrac]} dvíha Nakladačkou (${s.nakladacka.cena}) svoj strach: ${zoznam((e) => e.nakladacka?.cena ?? null)}. Plná časť rastie a hladina ide hore.`;
-  if (k === "hadka" && s.hadka !== null) return `${m[s.hadka.hrac]} dvíha hádkou (${s.hadka.cena}) svoje reči: ${zoznam((e) => e.hadka?.cena ?? null)}. Šrafa rastie na teplomere súpera.`;
-  const vety = ["Zátvorka medzi hladinami je priazeň, prerušovaná čiara je hladina pred bitkou."];
-  for (const e of s.starsi) if (e.vazen !== null) vety.push(`${c.menoStarsieho(e.defId)} je v pivnici u ${m[e.vazen]}.`);
+    return t("suhrn.opisNakladacky", { meno: m[s.nakladacka.hrac], cena: s.nakladacka.cena, zoznam: zoznam((e) => e.nakladacka?.cena ?? null) });
+  if (k === "hadka" && s.hadka !== null)
+    return t("suhrn.opisHadky", { meno: m[s.hadka.hrac], cena: s.hadka.cena, zoznam: zoznam((e) => e.hadka?.cena ?? null) });
+  const vety = [t("suhrn.opisKonca")];
+  for (const e of s.starsi) if (e.vazen !== null) vety.push(t("suhrn.jeVPivnici", { starsi: c.menoStarsieho(e.defId), meno: m[e.vazen] }));
   const ohr = [0, 1].flatMap((p) => {
     const kto = s.starsi.filter((e) => e.ohrozenie.some((z) => z.hrac === p)).map((e) => c.menoStarsieho(e.defId));
-    return kto.length === 0 ? [] : [`${m[p as PlayerId]} môže ďalšou Nakladačkou zajať: ${kto.join(", ")}.`];
+    return kto.length === 0 ? [] : [t("suhrn.mozeZajatDalsou", { meno: m[p as PlayerId], kto: kto.join(", ") })];
   });
   return [...vety, ...ohr].join(" ");
 }

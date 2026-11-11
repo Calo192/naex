@@ -13,6 +13,7 @@
 // ako segmenty s piktogramom v hlavnej akcii (mobil-sirka.css).
 
 import { useEffect, useLayoutEffect, useRef, useState, type ReactNode, type Ref } from "react";
+import { t } from "../i18n/jazyk.tsx";
 
 export interface PruhPokynuProps {
   readonly nadpis: ReactNode;
@@ -110,20 +111,20 @@ export function PruhPokynu({ nadpis, text, hlavna, vedlajsie, kluc, jednotny = f
           <button
             type="button"
             className="pruh-text pruh-sprava chyba"
-            title="Ťuk hlásenie zavrie — celé je v Logu"
+            title={t("pruh.zavrietHlasenie")}
             onClick={() => {
               setUkazanaChyba(null);
               onZrusChybu?.();
             }}
           >
-            <span className="pilulka-text">⚠ Ťah neprešiel: {ukazanaChyba}</span>
+            <span className="pilulka-text">⚠ {t("pruh.tahNepresiel", { chyba: ukazanaChyba })}</span>
           </button>
         ) : (
           <button
             type="button"
             className="pruh-text"
             aria-expanded={rozbaleny}
-            title="Ťuk ukáže celý pokyn"
+            title={t("pruh.celyPokyn")}
             onClick={() => {
               setRozbaleny((r) => !r);
               setOtvorene(false);
@@ -142,7 +143,7 @@ export function PruhPokynu({ nadpis, text, hlavna, vedlajsie, kluc, jednotny = f
             type="button"
             className="pruh-viac"
             aria-expanded={otvorene}
-            aria-label={otvorene ? "Zavrieť ďalšie akcie" : "Ďalšie akcie"}
+            aria-label={otvorene ? t("pruh.zavrietAkcie") : t("pruh.dalsieAkcie")}
             onClick={() => {
               setOtvorene((o) => !o);
               setRozbaleny(false);

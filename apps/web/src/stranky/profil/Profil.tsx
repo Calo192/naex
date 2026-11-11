@@ -7,11 +7,10 @@
 import { useEffect, useState, type ReactNode } from "react";
 import { api, textChyby } from "../../lib/api.ts";
 import { Odkaz, useTitulok } from "../../lib/router.tsx";
-import { NAZOV_UROVNE, RANKY_HRACOV, useUcet, type Pouzivatel, type Rola } from "../../lib/ucet.tsx";
+import { RANKY_HRACOV, nazovUrovne, useUcet, type Pouzivatel, type Rola } from "../../lib/ucet.tsx";
 import { Avatar, Hlaska, Nacitavanie } from "../../komponenty.tsx";
 import { HlavaStranky } from "../../HlavaStranky.tsx";
 import { datum } from "../../lib/datum.ts";
-import { tvar } from "../../lib/jazyk.ts";
 import { BilanciaPruh, CisloFrajeriny, GrafFrajeriny, Statistiky } from "../Statistiky.tsx";
 import {
   SKRATKA_VYSLEDKU,
@@ -31,6 +30,7 @@ import {
 import { PoslednePodtacky, VitrinaHraca } from "../../achievementy/VitrinaHraca.tsx";
 import { DLZKY_HRY, NAZOV_DLZKY } from "@naex/core";
 import { stavLigyVProfile, type StavLigy } from "../../hra/ligy.ts";
+import { t } from "../../i18n/jazyk.tsx";
 import "./profil.css";
 
 type Zalozka = "prehlad" | "suhrn" | "partie" | "achievementy";
@@ -79,7 +79,7 @@ function Forma({ vysledky, nadpis, pozn }: { readonly vysledky: readonly Vysledo
         <h2>{nadpis}</h2>
         {pozn !== undefined && <span className="tlmene">{pozn}</span>}
       </header>
-      {vysledky.length === 0 ? <p className="tlmene">Zatiaľ žiadna dohratá partia.</p> : <FormaStvorce vysledky={vysledky} nazov={nadpis} />}
+      {vysledky.length === 0 ? <p className="tlmene">{t("hrac.ziadnaPartia")}</p> : <FormaStvorce vysledky={vysledky} nazov={nadpis} />}
     </section>
   );
 }
@@ -105,8 +105,8 @@ function Porovnanie({ m }: { readonly m: Metrika }) {
   const lepsie = m.lepsie === "viac" ? rozdiel > 0 : rozdiel < 0;
   const trieda = rozdiel === 0 ? "" : lepsie ? "lepsie" : "horsie";
   return (
-    <span className={`metrika-porovnanie ${trieda}`} title={`Súperi v tých istých partiách: ${hodnotaMetriky(m, s)} (rozdiel ${znamienko(rozdiel)})`}>
-      {rozdiel === 0 ? "= ako súperi" : `${lepsie ? "▲" : "▼"} súperi ${hodnotaMetriky(m, s)}`}
+    <span className={`metrika-porovnanie ${trieda}`} title={t("hrac.superiTitul", { hodnota: hodnotaMetriky(m, s), rozdiel: znamienko(rozdiel) })}>
+      {rozdiel === 0 ? t("hrac.akoSuperi") : `${lepsie ? "▲" : "▼"} ${t("hrac.superiN", { hodnota: hodnotaMetriky(m, s) })}`}
     </span>
   );
 }
@@ -116,7 +116,7 @@ function KartaMetriky({ m }: { readonly m: Metrika }) {
     <div className="metrika" title={m.popis}>
       <span className="metrika-hodnota">{hodnotaMetriky(m, m.hodnota)}</span>
       <span className="metrika-nazov">{m.nazov}</span>
-      <span className="metrika-zdroj">{m.partii === 0 ? "zatiaľ bez dát" : `z ${m.partii} ${tvar(m.partii, "partie", "partií", "partií")}`}</span>
+      <span className="metrika-zdroj">{m.partii === 0 ? t("hrac.bezDat") : t("hrac.zPartii", { n: m.partii })}</span>
       <Porovnanie m={m} />
     </div>
   );
@@ -128,20 +128,20 @@ function SilneSlabe({ profil }: { readonly profil: ProfilApi }) {
   return (
     <section className="panel profil-karta">
       <header className="profil-karta-hlava">
-        <h2>{profil.pohlad === "vlastny" ? "Tvoje silné a slabé stránky" : "Silné a slabé stránky"}</h2>
-        <span className="tlmene">voči súperom v tých istých partiách</span>
+        <h2>{profil.pohlad === "vlastny" ? t("hrac.tvojeStranky") : t("hrac.stranky")}</h2>
+        <span className="tlmene">{t("hrac.vociSuperom")}</span>
       </header>
       {s.partii < 5 ? (
-        <p className="tlmene">Ukážu sa od 5 partií — zatiaľ {s.partii}. Každá partia im dodá istotu.</p>
+        <p className="tlmene">{t("hrac.ukazuSaOd", { n: s.partii })}</p>
       ) : (
         <div className="stranky-mriezka">
           <div>
-            <h3 className="stranky-nadpis dobre">▲ Čo ti ide</h3>
-            {s.silne.length === 0 ? <p className="tlmene">Zatiaľ nič výrazné.</p> : s.silne.map((x) => <Stranka key={x.kluc} text={x.text} dokaz={x.dokaz} dobra />)}
+            <h3 className="stranky-nadpis dobre">▲ {t("hrac.coTiIde")}</h3>
+            {s.silne.length === 0 ? <p className="tlmene">{t("hrac.nicVyrazne")}</p> : s.silne.map((x) => <Stranka key={x.kluc} text={x.text} dokaz={x.dokaz} dobra />)}
           </div>
           <div>
-            <h3 className="stranky-nadpis zle">▼ Kde to tečie</h3>
-            {s.slabe.length === 0 ? <p className="tlmene">Zatiaľ nič výrazné.</p> : s.slabe.map((x) => <Stranka key={x.kluc} text={x.text} dokaz={x.dokaz} />)}
+            <h3 className="stranky-nadpis zle">▼ {t("hrac.kdeTecie")}</h3>
+            {s.slabe.length === 0 ? <p className="tlmene">{t("hrac.nicVyrazne")}</p> : s.slabe.map((x) => <Stranka key={x.kluc} text={x.text} dokaz={x.dokaz} />)}
           </div>
         </div>
       )}
@@ -166,10 +166,10 @@ function RiadokPartieEl({ p }: { readonly p: RiadokPartie }) {
         <Avatar meno={p.super.meno} avatar={p.super.avatar} velkost={28} />
         <span>
           {p.super.id === null ? <strong>{p.super.meno}</strong> : <Odkaz href={`/hrac/${p.super.id}`}>{p.super.meno}</Odkaz>}
-          {p.super.bot !== undefined && <span className="odznak">bot</span>}
+          {p.super.bot !== undefined && <span className="odznak">{t("hrac.bot")}</span>}
           <small className="tlmene">
-            {datum(p.koniec)} · {p.kola} {tvar(p.kola, "kolo", "kolá", "kôl")} · {trvanie(p.trvanie)}
-            {!p.dohrata && " · nedohraná"}
+            {datum(p.koniec)} · {t("hrac.kol", { n: p.kola })} · {trvanie(p.trvanie)}
+            {!p.dohrata && t("hrac.nedohrana")}
           </small>
         </span>
       </span>
@@ -177,8 +177,8 @@ function RiadokPartieEl({ p }: { readonly p: RiadokPartie }) {
       <span className={`partia-frajerina ${p.frajerina === null ? "" : p.frajerina.po >= p.frajerina.pred ? "plus" : "minus"}`}>
         {p.frajerina === null ? "" : znamienko(p.frajerina.po - p.frajerina.pred)}
       </span>
-      <Odkaz href={`/partia/${p.id}`} className="partia-detail" aria-label={`Detail partie s ${p.super.meno}`}>
-        detail ›
+      <Odkaz href={`/partia/${p.id}`} className="partia-detail" aria-label={t("hrac.detailS", { meno: p.super.meno })}>
+        {t("hrac.detail")} ›
       </Odkaz>
     </li>
   );
@@ -188,8 +188,8 @@ function ZoznamPartii({ id, filter, limit }: { readonly id: number; readonly fil
   const [kolko, setKolko] = useState(limit);
   const { data, chyba } = usePartie(id, filter, kolko, true);
   if (chyba !== null) return <Hlaska>{chyba}</Hlaska>;
-  if (data === null) return <Nacitavanie text="Načítavam partie…" />;
-  if (data.partie.length === 0) return <p className="tlmene">V tomto výbere zatiaľ žiadna partia.</p>;
+  if (data === null) return <Nacitavanie text={t("hrac.nacitavamPartie")} />;
+  if (data.partie.length === 0) return <p className="tlmene">{t("hrac.vyberPrazdny")}</p>;
   return (
     <>
       <ol className="partie-zoznam">
@@ -199,7 +199,7 @@ function ZoznamPartii({ id, filter, limit }: { readonly id: number; readonly fil
       </ol>
       {data.pocet > data.partie.length && limit > 5 && (
         <button type="button" className="tlacidlo-male" onClick={() => setKolko((k) => k + 20)}>
-          načítať ďalšie ({data.pocet - data.partie.length})
+          {t("hrac.nacitatDalsie", { n: data.pocet - data.partie.length })}
         </button>
       )}
     </>
@@ -211,8 +211,8 @@ function BilanciaRiadok({ b, nazov }: { readonly b: Bilancia; readonly nazov: st
     <div className="bilancia-riadok">
       <span className="bilancia-nazov">{nazov}</span>
       <span>
-        <b>{b.partie}</b> {tvar(b.partie, "partia", "partie", "partií")} · <span className="dobre">{b.vyhry} V</span> · {b.remizy} R ·{" "}
-        <span className="zle">{b.prehry} P</span>
+        <b>{b.partie}</b> {t("hrac.partiaSlovo", { n: b.partie })} · <span className="dobre">{b.vyhry} {t("hrac.V")}</span> · {b.remizy} {t("hrac.R")} ·{" "}
+        <span className="zle">{b.prehry} {t("hrac.P")}</span>
       </span>
       <BilanciaPruh vyhry={b.vyhry} remizy={b.remizy} prehry={b.prehry} />
     </div>
@@ -224,8 +224,8 @@ function Ligy({ ligy, vlastny }: { readonly ligy: readonly StavLigy[]; readonly 
   return (
     <section className="panel profil-karta">
       <header className="profil-karta-hlava">
-        <h2>Ligy</h2>
-        <span className="tlmene">výhry proti ľuďom, s počítačom sa nerátajú</span>
+        <h2>{t("hrac.ligy")}</h2>
+        <span className="tlmene">{t("hrac.ligyPozn")}</span>
       </header>
       <ul className="profil-ligy">
         {ligy.map((l) => {
@@ -235,12 +235,12 @@ function Ligy({ ligy, vlastny }: { readonly ligy: readonly StavLigy[]; readonly 
               <div className="profil-liga-hlava">
                 <strong>{NAZOV_DLZKY[l.liga]}</strong>
                 <span className="tlmene">
-                  {DLZKY_HRY[l.liga]} {tvar(DLZKY_HRY[l.liga], "lokalita", "lokality", "lokalít")}
+                  {t("lobby.lokalit", { n: DLZKY_HRY[l.liga] })}
                 </span>
                 <span className="odznak">{stav}</span>
               </div>
               <div className="tlmene">
-                {l.vyhry ?? 0} {tvar(l.vyhry ?? 0, "výhra", "výhry", "výhier")}
+                {t("hrac.vyhier", { n: l.vyhry ?? 0 })}
                 {detail !== null && <> · {vlastny ? detail : detail.replace("(máš ", "(má ")}</>}
               </div>
               {l.postup !== null && l.pristup !== "odomknuta" && (
@@ -261,8 +261,8 @@ function PostupRankuOdznak({ p }: { readonly p: PostupRanku }) {
   const dalsi = p.dalsi;
   const title =
     dalsi === null
-      ? `Máš ${p.hviezdy} z ${p.spolu} hviezd achievementov.`
-      : `Máš ${p.hviezdy} z ${p.spolu} hviezd achievementov. ${NAZOV_UROVNE[dalsi.rank]} od ${dalsi.prah} ★ — chýba ${Math.max(0, dalsi.prah - p.hviezdy)}.`;
+      ? t("hrac.hviezdy", { n: p.hviezdy, spolu: p.spolu })
+      : t("hrac.hviezdyDalsi", { n: p.hviezdy, spolu: p.spolu, rank: nazovUrovne(dalsi.rank), prah: dalsi.prah, chyba: Math.max(0, dalsi.prah - p.hviezdy) });
   return (
     <span className="profil-postup-ranku" title={title}>
       {dalsi === null ? (
@@ -271,7 +271,7 @@ function PostupRankuOdznak({ p }: { readonly p: PostupRanku }) {
         </>
       ) : (
         <>
-          {NAZOV_UROVNE[dalsi.rank]}: {p.hviezdy} / {dalsi.prah} ★
+          {nazovUrovne(dalsi.rank)}: {p.hviezdy} / {dalsi.prah} ★
           <span className="profil-postup-pruh" aria-hidden="true">
             <span style={{ width: `${Math.min(100, (100 * p.hviezdy) / dalsi.prah)}%` }} />
           </span>
@@ -288,18 +288,18 @@ export function HracProfil({ id }: { readonly id: number }) {
   const [zalozka, setZalozka] = useState<Zalozka>("prehlad");
   const [obnov, setObnov] = useState(0);
   const { profil, chyba } = useProfilApi(id, filter, obnov);
-  useTitulok(profil?.hrac.meno ?? "Hráč");
+  useTitulok(profil?.hrac.meno ?? t("hrac.hrac"));
   const plny = profil !== null && profil.pohlad !== "cudzi";
   const forma20 = usePartie(id, filter, 20, plny);
 
   if (chyba !== null) {
     return (
       <HlavaStranky
-        nadpis="Hráč sa nenašiel"
+        nadpis={t("hrac.nenasielSa")}
         uvod={chyba}
         akcia={
           <Odkaz href="/rebricek" className="tlacidlo">
-            Rebríček
+            {t("nav.rebricek")}
           </Odkaz>
         }
       />
@@ -325,51 +325,51 @@ export function HracProfil({ id }: { readonly id: number }) {
 
   return (
     <div className="profil-hraca">
-      <HlavaStranky nadpis={profil.hrac.meno} uvod={vlastny ? "Tvoje štatistiky, partie a achievementy." : "Štatistiky, partie a achievementy hráča."} />
-      {profil.skryty && <p className="profil-skryty-pas">Skrytý profil — AI playtester. Hráči ho nevidia, správcovia áno.</p>}
+      <HlavaStranky nadpis={profil.hrac.meno} uvod={vlastny ? t("hrac.uvodVlastny") : t("hrac.uvod")} />
+      {profil.skryty && <p className="profil-skryty-pas">{t("hrac.skryty")}</p>}
       <section className="panel profil-hlavicka">
         <Avatar meno={profil.hrac.meno} avatar={profil.hrac.avatar} velkost={96} />
         <div className="profil-hlavicka-texty">
           <strong className="profil-meno">{profil.hrac.meno}</strong>
           <div className="profil-odznaky">
             <span className="odznak">{f.titul}</span>
-            {profil.hrac.rola === "admin" && <span className="odznak odznak-admin">tvorca hry</span>}
+            {profil.hrac.rola === "admin" && <span className="odznak odznak-admin">{t("hrac.tvorca")}</span>}
             {profil.hrac.rola === "subadmin" && <span className="odznak">subadmin</span>}
-            {RANKY_HRACOV.includes(profil.hrac.rola as Rola) && <span className="odznak">{NAZOV_UROVNE[profil.hrac.rola as Rola]}</span>}
+            {RANKY_HRACOV.includes(profil.hrac.rola as Rola) && <span className="odznak">{nazovUrovne(profil.hrac.rola as Rola)}</span>}
             {profil.postupRanku != null && <PostupRankuOdznak p={profil.postupRanku} />}
-            <span className="tlmene">v krčme od {datum(profil.hrac.vytvoreny)}</span>
+            <span className="tlmene">{t("hrac.vKrcmeOd", { datum: datum(profil.hrac.vytvoreny) })}</span>
           </div>
           {vlastny && (
             <div className="profil-vlastne">
-              <Odkaz href="/profil">Upraviť profil a nastavenia</Odkaz>
-              <label className="profil-prepinac" title="Ostatní uvidia len Frajerinu, bilanciu a formu.">
-                <input type="checkbox" checked={profil.suhrnSkryty} onChange={(e) => skrySuhrn(e.target.checked)} /> skryť môj súhrn pred ostatnými
+              <Odkaz href="/profil">{t("hrac.upravit")}</Odkaz>
+              <label className="profil-prepinac" title={t("hrac.ostatniUvidia")}>
+                <input type="checkbox" checked={profil.suhrnSkryty} onChange={(e) => skrySuhrn(e.target.checked)} /> {t("hrac.skrytSuhrn")}
               </label>
             </div>
           )}
         </div>
         <div className="profil-frajerina">
-          <span className="profil-frajerina-nazov">Frajerina</span>
+          <span className="profil-frajerina-nazov">{t("lobby.frajerina")}</span>
           <CisloFrajeriny f={f} velke />
           <span className="tlmene">
             {f.poradie !== null && (
               <>
-                <Odkaz href="/rebricek">{f.poradie}. v rebríčku</Odkaz> ·{" "}
+                <Odkaz href="/rebricek">{t("hrac.vRebricku", { n: f.poradie })}</Odkaz> ·{" "}
               </>
             )}
-            najvyššia {f.najvyssia}
+            {t("hrac.najvyssia", { n: f.najvyssia })}
           </span>
         </div>
       </section>
 
       <div className="profil-ovladanie">
-        <nav className="zalozky" aria-label="Časti profilu">
+        <nav className="zalozky" aria-label={t("hrac.casti")}>
           {(
             [
-              ["prehlad", "Prehľad"],
-              ["suhrn", "Súhrn"],
-              ...(plny ? ([["partie", "Partie"]] as const) : []),
-              ...(vitrina != null ? ([["achievementy", "Achievementy"]] as const) : []),
+              ["prehlad", t("hrac.prehlad")],
+              ["suhrn", t("hrac.suhrn")],
+              ...(plny ? ([["partie", t("hrac.partie")]] as const) : []),
+              ...(vitrina != null ? ([["achievementy", t("hrac.achievementy")]] as const) : []),
             ] as const
           ).map(([k, nazov]) => (
             <button key={k} type="button" className={zalozka === k ? "zalozka aktivna" : "zalozka"} aria-pressed={zalozka === k} onClick={() => setZalozka(k)}>
@@ -378,12 +378,12 @@ export function HracProfil({ id }: { readonly id: number }) {
           ))}
         </nav>
         {plny ? (
-          <div className="segment" role="group" aria-label="Partie">
+          <div className="segment" role="group" aria-label={t("hrac.partie")}>
             {(
               [
-                ["ludia", "S ľuďmi", profil.bilancia.ludia.partie],
-                ["boti", "S botmi", profil.bilancia.boti.partie],
-                ["spolu", "Spolu", profil.bilancia.ludia.partie + profil.bilancia.boti.partie],
+                ["ludia", t("hrac.sLudmi"), profil.bilancia.ludia.partie],
+                ["boti", t("hrac.sBotmi"), profil.bilancia.boti.partie],
+                ["spolu", t("linia.spolu"), profil.bilancia.ludia.partie + profil.bilancia.boti.partie],
               ] as const
             ).map(([k, nazov, n]) => (
               <button key={k} type="button" aria-pressed={filter === k} onClick={() => setFilter(k)}>
@@ -393,8 +393,8 @@ export function HracProfil({ id }: { readonly id: number }) {
           </div>
         ) : (
           <span className="tlmene">
-            {profil.bilancia.boti.partie > 0 && `+ ${profil.bilancia.boti.partie} ${tvar(profil.bilancia.boti.partie, "partia", "partie", "partií")} s botmi · `}
-            čísla len z partií s ľuďmi
+            {profil.bilancia.boti.partie > 0 && t("hrac.sBotmiPlus", { n: profil.bilancia.boti.partie })}
+            {t("hrac.cislaLen")}
           </span>
         )}
       </div>
@@ -403,15 +403,15 @@ export function HracProfil({ id }: { readonly id: number }) {
         <div className="profil-prehlad">
           {nova && (
             <section className="panel profil-karta profil-novy">
-              <h2>Prvých päť poldecí</h2>
+              <h2>{t("hrac.prvychPat")}</h2>
               <p>
                 {vlastny
-                  ? "Zatiaľ nemáš dohranú partiu. Po prvej uvidíš tu výsledky a čísla, od piatej silné a slabé stránky a od desiatej trend."
-                  : "Tento hráč zatiaľ nedohral žiadnu partiu."}
+                  ? t("hrac.novyVlastny")
+                  : t("hrac.novyCudzi")}
               </p>
               {vlastny && (
                 <Odkaz href="/hra" className="tlacidlo tlacidlo-hlavne">
-                  Zahrať si partiu
+                  {t("hrac.zahrat")}
                 </Odkaz>
               )}
             </section>
@@ -419,28 +419,28 @@ export function HracProfil({ id }: { readonly id: number }) {
           {plny ? (
             <Forma
               vysledky={(forma20.data?.partie ?? []).map((p) => p.vysledok)}
-              nadpis={`Forma · posledných ${Math.min(20, forma20.data?.partie.length ?? 0)}`}
-              pozn="najstaršia vľavo · detail je v Partiách"
+              nadpis={t("hrac.formaPoslednych", { n: Math.min(20, forma20.data?.partie.length ?? 0) })}
+              pozn={t("hrac.formaPozn")}
             />
           ) : (
-            <Forma vysledky={profil.forma} nadpis="Forma · posledných 5 s ľuďmi" />
+            <Forma vysledky={profil.forma} nadpis={t("hrac.forma5")} />
           )}
           {profil.vyDvaja !== null && profil.vyDvaja.partie > 0 && (
             <section className="panel profil-karta">
-              <h2>Vy dvaja</h2>
-              <BilanciaRiadok b={profil.vyDvaja} nazov="tvoje partie s ním" />
+              <h2>{t("hrac.vyDvaja")}</h2>
+              <BilanciaRiadok b={profil.vyDvaja} nazov={t("hrac.tvojePartieSNim")} />
             </section>
           )}
           {profil.suhrnSkryty && profil.pohlad === "cudzi" ? (
             <section className="panel profil-karta">
-              <p className="tlmene">Hráč si súhrn čísel skryl — vidno len Frajerinu, bilanciu a formu.</p>
+              <p className="tlmene">{t("hrac.suhrnSkryty")}</p>
             </section>
           ) : (
             hlavne.length > 0 && (
               <section className="panel profil-karta">
                 <header className="profil-karta-hlava">
-                  <h2>V číslach</h2>
-                  <span className="tlmene">porovnanie: súperi v tých istých partiách</span>
+                  <h2>{t("hrac.vCislach")}</h2>
+                  <span className="tlmene">{t("hrac.porovnanie")}</span>
                 </header>
                 <div className="metriky-mriezka">
                   {hlavne.map((m) => (
@@ -453,35 +453,35 @@ export function HracProfil({ id }: { readonly id: number }) {
           {vitrina != null && <PoslednePodtacky vitrina={vitrina} vlastna={vlastny} vsetky={() => setZalozka("achievementy")} />}
           <SilneSlabe profil={profil} />
           <section className="panel profil-karta">
-            <h2>Bilancia</h2>
-            <BilanciaRiadok b={profil.bilancia.ludia} nazov="s ľuďmi" />
-            <BilanciaRiadok b={profil.bilancia.boti} nazov="s botmi" />
+            <h2>{t("hrac.bilancia")}</h2>
+            <BilanciaRiadok b={profil.bilancia.ludia} nazov={t("hrac.sLudmiMale")} />
+            <BilanciaRiadok b={profil.bilancia.boti} nazov={t("hrac.sBotmiMale")} />
           </section>
           {profil.ligy !== undefined && <Ligy ligy={profil.ligy} vlastny={vlastny} />}
           {plny && (
             <div className="profil-dva-stlpce">
               <section className="panel profil-karta">
                 <header className="profil-karta-hlava">
-                  <h2>Posledné partie</h2>
+                  <h2>{t("hrac.poslednePartie")}</h2>
                   <button type="button" className="tlacidlo-male tlacidlo-jemne" onClick={() => setZalozka("partie")}>
-                    všetky ›
+                    {t("hrac.vsetky")} ›
                   </button>
                 </header>
                 <ZoznamPartii id={id} filter={filter} limit={5} />
               </section>
               {profil.superi.length > 0 && (
                 <section className="panel profil-karta">
-                  <h2>Súperi</h2>
+                  <h2>{t("hrac.superi")}</h2>
                   <ul className="superi-zoznam">
                     {profil.superi.map((s, i) => (
                       <li key={s.id ?? `b${i}`}>
                         <Avatar meno={s.meno} avatar={s.avatar} velkost={28} />
                         {s.id === null ? <strong>{s.meno}</strong> : <Odkaz href={`/hrac/${s.id}`}>{s.meno}</Odkaz>}
                         <span className="tlmene">
-                          {s.partie} {tvar(s.partie, "partia", "partie", "partií")}
+                          {t("hrac.partii", { n: s.partie })}
                         </span>
                         <span>
-                          <span className="dobre">{s.vyhry} V</span> · {s.remizy} R · <span className="zle">{s.prehry} P</span>
+                          <span className="dobre">{s.vyhry} {t("hrac.V")}</span> · {s.remizy} {t("hrac.R")} · <span className="zle">{s.prehry} {t("hrac.P")}</span>
                         </span>
                       </li>
                     ))}
@@ -492,7 +492,7 @@ export function HracProfil({ id }: { readonly id: number }) {
           )}
           {profil.historia.length > 1 && (
             <section className="panel profil-karta">
-              <h2>Vývoj Frajeriny</h2>
+              <h2>{t("hrac.vyvojFrajeriny")}</h2>
               <GrafFrajeriny historia={profil.historia} />
             </section>
           )}
@@ -503,23 +503,23 @@ export function HracProfil({ id }: { readonly id: number }) {
         <div className="profil-prehlad">
           {profil.suhrn === null ? (
             <section className="panel profil-karta">
-              <p className="tlmene">{profil.suhrnSkryty ? "Hráč si súhrn čísel skryl." : "Súhrn zatiaľ nie je."}</p>
+              <p className="tlmene">{profil.suhrnSkryty ? t("hrac.suhrnSkrytyKratko") : t("hrac.suhrnNie")}</p>
             </section>
           ) : (
             <section className="panel profil-karta">
               <header className="profil-karta-hlava">
-                <h2>Súhrn · {profil.suhrn.partii} {tvar(profil.suhrn.partii, "partia", "partie", "partií")}</h2>
-                <span className="tlmene">trend od 10 partií · priemer hráčov od 10 ľudí s 5+ partiami</span>
+                <h2>{t("hrac.suhrn")} · {t("hrac.partii", { n: profil.suhrn.partii })}</h2>
+                <span className="tlmene">{t("hrac.trendPozn")}</span>
               </header>
               <table className="suhrn-tabulka">
                 <thead>
                   <tr>
                     <th>Čo</th>
-                    <th>Hodnota</th>
-                    <th>Súperi</th>
-                    <th>Hráči</th>
-                    <th>Trend</th>
-                    <th>Z partií</th>
+                    <th>{t("hrac.hodnota")}</th>
+                    <th>{t("hrac.superi")}</th>
+                    <th>{t("hrac.hraci")}</th>
+                    <th>{t("hrac.trend")}</th>
+                    <th>{t("hrac.zPartiiNadpis")}</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -542,7 +542,7 @@ export function HracProfil({ id }: { readonly id: number }) {
           <SilneSlabe profil={profil} />
           {plny && (
             <details className="panel profil-karta">
-              <summary>Všetky počítadlá (celá história)</summary>
+              <summary>{t("hrac.vsetkyPocitadla")}</summary>
               <Statistiky profil={profil} vlastny={vlastny} />
             </details>
           )}
@@ -557,7 +557,7 @@ export function HracProfil({ id }: { readonly id: number }) {
 
       {zalozka === "partie" && plny && (
         <section className="panel profil-karta">
-          <h2>Partie</h2>
+          <h2>{t("hrac.partie")}</h2>
           <ZoznamPartii id={id} filter={filter} limit={20} />
         </section>
       )}

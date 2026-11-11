@@ -7,6 +7,7 @@ import { Fragment, useSyncExternalStore, type ReactNode } from "react";
 import { api } from "../lib/api.ts";
 import { ZDROJOVY_JAZYK, jazykZPrehliadaca, jeJazyk, preloz, useky, type Jazyk, type Parametre, type Slovnik } from "./preklad.ts";
 import { PRAZDNY_PREKLAD, zostavPreklad, type PrekladKariet, type SuborPrekladu } from "./karty.ts";
+import { najdiVzor, vzoryHlasok } from "./hlasky.ts";
 import sk from "./sk.json";
 
 export { JAZYKY, NAZVY_JAZYKOV, type Jazyk } from "./preklad.ts";
@@ -106,6 +107,21 @@ export function tZoServera(kluc: string, povodny: string, p?: Parametre): string
   if (stav.jazyk === ZDROJOVY_JAZYK || stav.slovnik === null) return povodny;
   const text = preloz(stav.jazyk, stav.slovnik, {}, kluc, p);
   return text === kluc ? povodny : text;
+}
+
+let vzory: ReturnType<typeof vzoryHlasok> | null = null;
+
+/**
+ * Hláška motora či servera (slovenský voľný text): po slovensky presne taká, ako prišla; v inom
+ * jazyku preklad vzoru motor.* / server.*, na ktorý celá sedí (hlasky.ts), inak originál.
+ */
+export function prelozHlasku(text: string): string {
+  if (stav.jazyk === ZDROJOVY_JAZYK || stav.slovnik === null) return text;
+  vzory ??= vzoryHlasok(ZDROJ);
+  const z = najdiVzor(text, vzory);
+  if (z === null) return text;
+  const p = preloz(stav.jazyk, stav.slovnik, {}, z.kluc, z.p);
+  return p === z.kluc ? text : p;
 }
 
 /** Tvar podľa rodu hráča (kľúč.m / .z / .n) — ako tvar() v jadre: bot je mužský, bez pohlavia neutrálny. */

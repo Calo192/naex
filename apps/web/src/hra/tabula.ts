@@ -1,10 +1,12 @@
 // Čísla pultu a tabule ty | súper na šírku telefónu (PultHraca.tsx) — čisté funkcie bez DOM.
 
 import type { ClientState, PlayerId, RiadokPrisunu, StavZavislosti } from "@naex/core";
-import { KONSTANTY, NAZVY_ZDROJOV_PRISUNU, cenaFajceniaHraca, limitZhromazdenia, spakov, sumaPrisunu } from "@naex/core";
+import { KONSTANTY, cenaFajceniaHraca, limitZhromazdenia, sumaPrisunu } from "@naex/core";
+import { nazovZdrojaPrisunu, spakov } from "../i18n/pocty.ts";
 import type { PrisunDlazdice } from "./PeciatkaZdroja.tsx";
 import type { SpakyTeraz } from "@naex/core";
-import { TITUL_BEZ_EXEKUCIE, hroziVyhraStrachom, textCervenych } from "./vyhraStrachom.ts";
+import { titulBezExekucie, hroziVyhraStrachom, textCervenych } from "./vyhraStrachom.ts";
+import { t } from "../i18n/jazyk.tsx";
 
 /** Prahy hráča (prahyHraca) — to, čo z nich pult a tabuľa ukazujú. */
 export interface PrahyPultu {
@@ -80,7 +82,7 @@ export function poldeciNaStole(view: PohladNaPoldeci, p: PlayerId): { readonly n
 }
 
 /** Do vysvetlenia poldeci, keď hráč má NA EX na stole (§9.5). */
-export const NA_STOLE_VYSVETLENIE = "Poldeci z NA EX leží na stole a ráta sa k vypitým: v bitke sa vypije a vráti sa vypitý.";
+export const naStoleVysvetlenie = (): string => t("tabula.naStole");
 
 /**
  * Čísla hráča z pohľadu: plné poldeci bez skrytých NA EX (tie už ležia na stole,
@@ -166,29 +168,29 @@ export function riadkyTabule(ja: CislaHraca, su: CislaHraca): RiadokTabule[] {
     ...(zle === undefined ? {} : { zleJa: zle(ja), zleSu: zle(su) }),
   });
   const riadky: RiadokTabule[] = [
-    r("karty", "Karty v ruke", (c) => String(c.karty)),
-    r("poldeci", "Poldeci plné · vypité", (c) => `${c.poldeci} · ${c.vypite + c.naStole}`),
-    r("limit", "Limit kariet", (c) => String(c.limit)),
-    r("cigarety", "Cigarety", (c) => String(c.cigarety)),
-    r("spaky", "Špaky", (c) => String(c.spaky)),
-    r("zaStarsich", "Za starších (výhra · prehra)", (c) => `+${c.zaStarsich} · +${c.zaStarsichPrehra}`),
+    r("karty", t("tabula.kartyVRuke"), (c) => String(c.karty)),
+    r("poldeci", t("tabula.poldeciPlneVypite"), (c) => `${c.poldeci} · ${c.vypite + c.naStole}`),
+    r("limit", t("tabula.limitKariet"), (c) => String(c.limit)),
+    r("cigarety", t("pult.cigarety"), (c) => String(c.cigarety)),
+    r("spaky", t("pult.spaky"), (c) => String(c.spaky)),
+    r("zaStarsich", t("tabula.zaStarsich"), (c) => `+${c.zaStarsich} · +${c.zaStarsichPrehra}`),
   ];
   if (ja.chut !== null || su.chut !== null) {
-    riadky.push(r("chut", "Chuť · neresti dnes", (c) => (c.chut === null ? "–" : `${c.chut} · ${c.nerestiDnes}`), (c) => c.chutHrozi));
+    riadky.push(r("chut", t("tabula.chutNeresti"), (c) => (c.chut === null ? "–" : `${c.chut} · ${c.nerestiDnes}`), (c) => c.chutHrozi));
   }
   riadky.push(
-    r("abstaky", "Absťáky v balíčku", (c) => String(c.abstaky), (c) => c.abstaky > 0),
-    r("dlhy", "Dlhy", (c) => (c.exekucia > 0 ? `${c.dlhy} (−${c.exekucia} š.)` : String(c.dlhy)), (c) => c.exekucia > 0),
+    r("abstaky", t("tabula.abstakyVBalicku"), (c) => String(c.abstaky), (c) => c.abstaky > 0),
+    r("dlhy", t("pult.dlhy"), (c) => (c.exekucia > 0 ? t("tabula.dlhyExekucia", { dlhy: c.dlhy, n: c.exekucia }) : String(c.dlhy)), (c) => c.exekucia > 0),
     ...(ukazZadlzenie(ja.zadlzenie, ja.prahDlhu) || ukazZadlzenie(su.zadlzenie, su.prahDlhu)
-      ? [r("zadlzenie", "Zadĺženie", (c) => (ukazZadlzenie(c.zadlzenie, c.prahDlhu) ? `${c.zadlzenie}/${c.prahDlhu}` : "–"), (c) => zadlzenieHrozi(c.zadlzenie, c.prahDlhu))]
+      ? [r("zadlzenie", t("tabula.zadlzenie"), (c) => (ukazZadlzenie(c.zadlzenie, c.prahDlhu) ? `${c.zadlzenie}/${c.prahDlhu}` : "–"), (c) => zadlzenieHrozi(c.zadlzenie, c.prahDlhu))]
       : []),
-    r("pecen", "Pečeň", (c) => `${c.pecen}/${c.prahPecene}`, (c) => c.pecen >= c.prahPecene - 1),
-    r("cirhozy", "Nepriznaná Cirhóza", (c) => String(c.cirhozyNepriznane), (c) => c.cirhozyNepriznane > 0),
-    r("balicek", "Balíček · odhodené", (c) => `${c.balicek} · ${c.odhodene}`),
-    r("priznane", "Priznané kliatby", (c) => String(c.priznane)),
-    r("dedicstvo", "Dedičstvo (náradie)", (c) => String(c.dedicstvo)),
-    r("cervene", "Červené", (c) => textCervenych(c.cervene, c.vazni, c.cervenychNaVyhru).odznak),
-    r("vazni", "Väzni", (c) => `${c.vazni}/${c.vazniNaVyhru}`),
+    r("pecen", t("pult.pecen"), (c) => `${c.pecen}/${c.prahPecene}`, (c) => c.pecen >= c.prahPecene - 1),
+    r("cirhozy", t("tabula.nepriznanaCirhoza"), (c) => String(c.cirhozyNepriznane), (c) => c.cirhozyNepriznane > 0),
+    r("balicek", t("tabula.balicekOdhodene"), (c) => `${c.balicek} · ${c.odhodene}`),
+    r("priznane", t("tabula.priznaneKliatby"), (c) => String(c.priznane)),
+    r("dedicstvo", t("tabula.dedicstvo"), (c) => String(c.dedicstvo)),
+    r("cervene", t("tabula.cervene"), (c) => textCervenych(c.cervene, c.vazni, c.cervenychNaVyhru).odznak),
+    r("vazni", t("tabula.vazni"), (c) => `${c.vazni}/${c.vazniNaVyhru}`),
   );
   return riadky;
 }
@@ -206,99 +208,105 @@ export interface DetailZdroja {
 /** Rozpis prísunu do okna zdroja: to isté, čo na počítači ukazuje nápoveda dlaždice. */
 function riadkyPrisunu(prisun: PrisunDlazdice | undefined): readonly (readonly [string, string])[] {
   if (prisun === undefined) return [];
-  const riadky = (rr: readonly RiadokPrisunu[], kedy: string) => rr.map((r) => [`${kedy} ${NAZVY_ZDROJOV_PRISUNU[r.zdroj]}`, sumaPrisunu(r.suma)] as const);
+  const riadky = (rr: readonly RiadokPrisunu[], kedy: string) => rr.map((r) => [`${kedy} ${nazovZdrojaPrisunu(r.zdroj)}`, sumaPrisunu(r.suma)] as const);
   const { cakajuci, nedavny, hodnota } = prisun;
   const pride = cakajuci?.riadky ?? [];
   return [
-    ...riadky(pride, "príde:"),
+    ...riadky(pride, t("tabula.pride")),
     ...(pride.length > 0 && cakajuci !== null ? [[cakajuci.po, `${hodnota} ▸ ${hodnota + cakajuci.suma}`] as const] : []),
-    ...(nedavny === null ? [] : riadky(nedavny.riadky, "naposledy:")),
+    ...(nedavny === null ? [] : riadky(nedavny.riadky, t("tabula.naposledy"))),
   ];
 }
 
 export function detailZdroja(zdroj: ZdrojStlpca, c: CislaHraca, ja: boolean, prisun?: PrisunDlazdice): DetailZdroja {
-  const kto = ja ? "Máš" : "Má";
+  const cig = (n: number): string => t("tabula.cig", { n });
   switch (zdroj) {
     case "karty":
       return {
-        nadpis: "Karty",
-        text: `${kto} v ruke ${c.karty}. Priznané kliatby a Nástroje v Dedičstve ukáže zoznam kariet.`,
+        nadpis: t("nav.karty"),
+        text: ja ? t("tabula.kartyTextJa", { n: c.karty }) : t("tabula.kartyTextSu", { n: c.karty }),
         riadky: [
-          ["v ruke", String(c.karty)],
-          ["doberací balíček", String(c.balicek)],
-          ["odhodené", String(c.odhodene)],
-          ["priznané kliatby", String(c.priznane)],
-          ["Dedičstvo (náradie)", String(c.dedicstvo)],
+          [t("tabula.vRuke"), String(c.karty)],
+          [t("tabula.doberaci"), String(c.balicek)],
+          [t("tabula.odhodene"), String(c.odhodene)],
+          [t("tabula.priznaneKliatbyMale"), String(c.priznane)],
+          [t("tabula.dedicstvo"), String(c.dedicstvo)],
         ],
       };
     case "poldeci":
       return {
-        nadpis: "Poldeci",
-        text: `Limit vykladania = plné + 1; na začiatku kola sa ${KONSTANTY.POLDECI_NA_ZACIATKU_KOLA} vypitý doleje sám. Plný poldeci platí ďalšiu kartu v ťahu Zhromaždenia alebo NA EX v Pitke. Na konci hry je každý plný ${KONSTANTY.SPAKY_ZA_POLDECI} špak.${c.naStole > 0 ? ` ${NA_STOLE_VYSVETLENIE}` : ""}`,
+        nadpis: t("pult.poldeci"),
+        text: t("tabula.poldeciText", { dolieva: KONSTANTY.POLDECI_NA_ZACIATKU_KOLA, spaky: KONSTANTY.SPAKY_ZA_POLDECI }) + (c.naStole > 0 ? ` ${naStoleVysvetlenie()}` : ""),
         riadky: [
-          ["plné", String(c.poldeci)],
-          ["vypité", String(c.vypite + c.naStole)],
-          ...(c.naStole > 0 ? [["z toho na stole (NA EX)", String(c.naStole)] as const] : []),
-          ["limit kariet", String(c.limit)],
+          [t("tabula.plne"), String(c.poldeci)],
+          [t("tabula.vypite"), String(c.vypite + c.naStole)],
+          ...(c.naStole > 0 ? [[t("tabula.zTohoNaStole"), String(c.naStole)] as const] : []),
+          [t("tabula.limitKarietMale"), String(c.limit)],
           ...riadkyPrisunu(prisun),
-          ["doliať vypitý", `${KONSTANTY.REFILL_CENA} cig.`],
-          ["nový poldeci", `${c.cenaBarteru} cig.`],
+          [t("tabula.doliatVypity"), cig(KONSTANTY.REFILL_CENA)],
+          [t("tabula.novyPoldeci"), cig(c.cenaBarteru)],
         ],
       };
     case "chut":
       return {
-        nadpis: "Chuť",
-        text: `Nerest je len to, čo vypiješ a vyfajčíš: Vypiť 1, odpoveď na NA EX 1, NA EX ${KONSTANTY.NEREST_NAEX}, každá vyfajčená cigareta 1. Na konci kola: menej nerestí než Chuť = karta Absťák do balíčka (každá uberie v bitke 1 tuhé); potom Chuť = väčšie z (Chuť, neresti) − ${KONSTANTY.CHUT_UBYTOK}.`,
+        nadpis: t("pult.chut"),
+        text: t("tabula.chutText", { naex: KONSTANTY.NEREST_NAEX, ubytok: KONSTANTY.CHUT_UBYTOK }),
         riadky: [
-          ["Chuť", c.chut === null ? "–" : String(c.chut)],
-          ["neresti dnes", String(c.nerestiDnes)],
-          ["Absťáky v balíčku", String(c.abstaky)],
-          ["hrozí Absťák", c.chutHrozi ? "áno" : "nie"],
+          [t("pult.chut"), c.chut === null ? "–" : String(c.chut)],
+          [t("tabula.nerestiDnes"), String(c.nerestiDnes)],
+          [t("tabula.abstakyVBalicku"), String(c.abstaky)],
+          [t("tabula.hroziAbstak"), c.chutHrozi ? t("tabula.ano") : t("tabula.nie")],
         ],
       };
     case "pecen":
       return {
-        nadpis: "Pečeň",
-        text: `Za každé ${c.prahPecene} poškodenia pečene vznikne v Pitke Cirhóza: nepriznaná na konci hry zoberie ${spakov(KONSTANTY.SPAKY_ZA_CIRHOZU)}, priznaná dá súperovi +1 tuhé v bitke. Po každej Pitke sa pečeň vynuluje.`,
+        nadpis: t("pult.pecen"),
+        text: t("tabula.pecenText", { prah: c.prahPecene, spaky: spakov(KONSTANTY.SPAKY_ZA_CIRHOZU) }),
         riadky: [
-          ["pečeň", `${c.pecen} z ${c.prahPecene}`],
-          ["nepriznaná Cirhóza", String(c.cirhozyNepriznane)],
+          [t("tabula.pecenMale"), t("tabula.zPrahu", { a: c.pecen, b: c.prahPecene })],
+          [t("tabula.nepriznanaCirhozaMale"), String(c.cirhozyNepriznane)],
         ],
       };
     case "dlhy":
       return {
-        nadpis: "Dlhy",
-        text: `${c.prahDlhu > 1 ? `Každé ${c.prahDlhu} zadĺženia v Pitke = Dlh, hneď priznaný; zvyšok zadĺženia ostáva na ďalší.` : "Každá akcia Hazard v Pitke = Dlh, hneď priznaný."} Za priznané Dlhy príde v každej bitke Exekútor: zhorí polovica Dlhov (nahor) a toľko špakov.${c.bezExekucie ? ` ${TITUL_BEZ_EXEKUCIE}` : ""}`,
+        nadpis: t("pult.dlhy"),
+        text:
+          (c.prahDlhu > 1 ? t("tabula.dlhyPrah", { n: c.prahDlhu }) : t("tabula.dlhyHazard")) +
+          t("tabula.dlhyExekutor") +
+          (c.bezExekucie ? ` ${titulBezExekucie()}` : ""),
         riadky: [
-          ["priznané Dlhy", String(c.dlhy)],
-          ...(ukazZadlzenie(c.zadlzenie, c.prahDlhu) ? [["zadĺženie", `${c.zadlzenie} z ${c.prahDlhu}`] as const] : []),
-          ["exekúcia v bitke", c.exekucia > 0 ? `−${spakov(c.exekucia)}${c.bezExekucie ? ", nie pri výhre strachom" : ""}` : "nie"],
+          [t("tabula.priznaneDlhy"), String(c.dlhy)],
+          ...(ukazZadlzenie(c.zadlzenie, c.prahDlhu) ? [[t("tabula.zadlzenieMale"), t("tabula.zPrahu", { a: c.zadlzenie, b: c.prahDlhu })] as const] : []),
+          [
+            t("tabula.exekuciaVBitke"),
+            c.exekucia > 0 ? `−${spakov(c.exekucia)}${c.bezExekucie ? t("tabula.niePriVyhreStrachom") : ""}` : t("tabula.nie"),
+          ],
         ],
       };
     case "cigarety":
       return {
-        nadpis: "Cigarety",
-        text: `Platíš nimi karty z ponuky (1 karta = ${KONSTANTY.CENA_SENKU[1] ?? 1}, 2 karty = ${KONSTANTY.CENA_SENKU[2] ?? 3}) a Dedičstvo; v Pitke fajčíš: karta za 1, ďalšia v tej istej Pitke za 2, potom 3… Na konci hry každých ${KONSTANTY.CIGARIET_ZA_SPAK} cigariet = 1 špak.`,
+        nadpis: t("pult.cigarety"),
+        text: t("tabula.cigaretyText", { jedna: KONSTANTY.CENA_SENKU[1] ?? 1, dve: KONSTANTY.CENA_SENKU[2] ?? 3, zaSpak: KONSTANTY.CIGARIET_ZA_SPAK }),
         riadky: [
-          ["cigarety", String(c.cigarety)],
+          [t("tabula.cigaretyMale"), String(c.cigarety)],
           ...riadkyPrisunu(prisun),
-          ["fajčenie teraz", c.cenaFajcenia === 0 ? "zadarmo" : `${c.cenaFajcenia} cig.`],
-          ["doliať poldeci", `${KONSTANTY.REFILL_CENA} cig.`],
-          ["nový poldeci", `${c.cenaBarteru} cig.`],
-          ["Nástroj do Dedičstva", `${c.cenaDedicstva} cig.`],
+          [t("tabula.fajcenieTeraz"), c.cenaFajcenia === 0 ? t("tabula.zadarmo") : cig(c.cenaFajcenia)],
+          [t("tabula.doliatPoldeci"), cig(KONSTANTY.REFILL_CENA)],
+          [t("tabula.novyPoldeci"), cig(c.cenaBarteru)],
+          [t("tabula.nastrojDoDedicstva"), cig(c.cenaDedicstva)],
         ],
       };
     case "spaky":
       return {
-        nadpis: "Špaky",
-        text: "Špaky sú body: za vyhraté bitky, za karty v línii, za starších, ktorí sa boja, a na konci hry výkupné. Odkiaľ prišli, ukáže krčmová nástenka.",
+        nadpis: t("pult.spaky"),
+        text: t("tabula.spakyText"),
         riadky: [
-          ["špaky", String(c.spaky)],
-          ["za starších po výhre", `+${c.zaStarsich}`],
-          ["za starších po prehre", `+${c.zaStarsichPrehra}`],
-          ["priazeň starších", String(c.priazen)],
-          ["červené", textCervenych(c.cervene, c.vazni, c.cervenychNaVyhru).kratko],
-          ["väzni", `${c.vazni} z ${c.vazniNaVyhru}`],
+          [t("tabula.spakyMale"), String(c.spaky)],
+          [t("tabula.zaStarsichPoVyhre"), `+${c.zaStarsich}`],
+          [t("tabula.zaStarsichPoPrehre"), `+${c.zaStarsichPrehra}`],
+          [t("tabula.priazenStarsich"), String(c.priazen)],
+          [t("tabula.cerveneMale"), textCervenych(c.cervene, c.vazni, c.cervenychNaVyhru).kratko],
+          [t("tabula.vazniMale"), t("tabula.zPrahu", { a: c.vazni, b: c.vazniNaVyhru })],
         ],
       };
   }

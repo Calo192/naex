@@ -8,11 +8,12 @@ import "./priazen-kola.css";
 import { createContext, useEffect, useLayoutEffect, useRef, useState, type CSSProperties, type FocusEvent, type HTMLAttributes, type PointerEvent as ReactPointerEvent, type ReactNode } from "react";
 import { createPortal } from "react-dom";
 import type { Action, Favour } from "@naex/core";
-import { pocet } from "@naex/core";
+import { spakov } from "../i18n/pocty.ts";
 import { FARBY_STUPNICE } from "@naex/tvorba";
 import { IKONY } from "../karta/ikony.ts";
 import { riadkyKruzkov, vetaPriazne, vetaSpakov, vetaZajatia, type KomuPriazen, type ObsahNapovedy, type ObsahNapovedyVazna, type PriazenKola } from "./priazenKola.ts";
 import { HODNOTA_POLA, slovoStupna, type Rod } from "./textyStarsich.ts";
+import { t } from "../i18n/jazyk.tsx";
 
 /** Ikona akcie, ktorú priazeň staršieho posilňuje — v krúžku priazne (mock C · Pečať). */
 export const IKONA_PRIAZNE: Readonly<Record<Favour, Action>> = {
@@ -156,22 +157,22 @@ export function ObsahNapovedyStarsieho({ o, obrazok = null }: { readonly o: Obsa
           {obrazok !== null && <img src={obrazok} alt="" draggable={false} />}
           <span>
             <b className="np-meno">{o.meno}</b>
-            <small className="np-nazov">plná = strach, šrafovaná = reči</small>
+            <small className="np-nazov">{t("napoveda.legenda")}</small>
           </span>
           <KruzokPriazne fav={o.favour} p={o.priazen} velkost={34} />
         </span>
-        {o.akcia !== null && <span className="np-akcia">Klik: {o.akcia}</span>}
+        {o.akcia !== null && <span className="np-akcia">{t("napoveda.klik", { akcia: o.akcia })}</span>}
         <table className="np-tab">
           <thead>
             <tr>
               <th />
               <th>
                 <Stvorcek druh="strach" n={2} />
-                strach
+                {t("rekap.strach")}
               </th>
               <th>
                 <Stvorcek druh="reci" n={2} />
-                reči u súpera
+                {t("napoveda.reciUSupera")}
               </th>
             </tr>
           </thead>
@@ -180,12 +181,12 @@ export function ObsahNapovedyStarsieho({ o, obrazok = null }: { readonly o: Obsa
               <tr key={h.komu} className={h.komu}>
                 <th>{h.kto}</th>
                 <td>{h.strach === 0 ? <span className="np-st s0">{slovoStupna(0, o.rod)}</span> : <SlovoStupna n={h.strach} rod={o.rod} />}</td>
-                <td>{h.reci === 0 ? <span className="np-st s0">—</span> : h.reciOd === h.reci ? slovoStupna(h.reci, o.rod) : `${slovoStupna(h.reciOd, o.rod)} až ${slovoStupna(h.reci, o.rod)}`}</td>
+                <td>{h.reci === 0 ? <span className="np-st s0">—</span> : h.reciOd === h.reci ? slovoStupna(h.reci, o.rod) : t("napoveda.odDo", { od: slovoStupna(h.reciOd, o.rod), do: slovoStupna(h.reci, o.rod) })}</td>
               </tr>
             ))}
           </tbody>
         </table>
-        <span className="np-h4">Špaky po bitke</span>
+        <span className="np-h4">{t("napoveda.spakyPoBitke")}</span>
         <ul className="np-sp">
           {o.hraci.map((h) => (
             <li key={h.komu} className={h.komu}>
@@ -194,23 +195,23 @@ export function ObsahNapovedyStarsieho({ o, obrazok = null }: { readonly o: Obsa
             </li>
           ))}
         </ul>
-        <span className="np-pozn">Stupeň dá {HODNOTA_POLA} tomu, kto ho drží: reči obom pri každej bitke, strach len víťazovi. Pri sekere obaja len za reči.</span>
+        <span className="np-pozn">{t("napoveda.stupenDa", { hodnota: HODNOTA_POLA })}</span>
       </div>
       <div className="np-b">
         <span className="np-h4">
-          <IkonaPriazneKruzku fav={o.favour} /> Priazeň {o.nazovPriazne} · {o.kedyPriazne}
+          <IkonaPriazneKruzku fav={o.favour} /> {t("linia.priazen")} {o.nazovPriazne} · {o.kedyPriazne}
         </span>
         <span className={`np-komu ${trieda(o.priazen.komu)}`}>{vetaPriazne(o)}</span>
-        <span className="np-pozn">Kto ju má, tomu platí podľa sily:</span>
+        <span className="np-pozn">{t("napoveda.podlaSily")}</span>
         <ol className="np-sily">
-          {o.sily.map((t, i) => (
+          {o.sily.map((sila, i) => (
             <li key={i} className={o.priazen.sila === i + 1 ? `on ${trieda(o.priazen.komu)}` : undefined}>
-              <b>sila {i + 1}</b>
-              <span>{t}</span>
+              <b>{t("napoveda.sila", { n: i + 1 })}</b>
+              <span>{sila}</span>
             </li>
           ))}
         </ol>
-        <span className="np-pozn">Priazeň ráta len strach (plnú časť). Reči priazeň nedávajú a nerátajú sa ani do výhry strachom, ani do zajatia.</span>
+        <span className="np-pozn">{t("napoveda.priazenRata")}</span>
         {o.zajatie.map((z) => (
           <span key={z.hrac} className={`np-zajatie ${z.komu}`}>
             ⛓ {vetaZajatia(z, o.rod)}
@@ -237,28 +238,28 @@ function ObsahNapovedyVaznaEl({ o, obrazok }: { readonly o: ObsahNapovedyVazna; 
           <span>
             <b className="np-meno">{o.meno}</b>
             <small className="np-nazov">
-              v pivnici · <b className={`np-kto ${o.komu}`}>{o.kto}</b>
+              {t("napoveda.vPivnici")} · <b className={`np-kto ${o.komu}`}>{o.kto}</b>
             </small>
           </span>
         </span>
         <span className="np-vazen">
-          <b className={`np-kto ${o.komu}`}>{o.kto}:</b> je z neho stále <SlovoStupna n={3} rod={o.rod} />. Ráta sa ako červená do výhry strachom (červené {o.cervene} z {o.cervenychNaVyhru}) a je väzeň (väzni {o.vazni} z {o.vazniNaVyhru}).
+          <b className={`np-kto ${o.komu}`}>{o.kto}:</b> {t("linia.jeZNehoStale")} <SlovoStupna n={3} rod={o.rod} />. {t("napoveda.rataSaAkoCervena", { c: o.cervene, cn: o.cervenychNaVyhru, v: o.vazni, vn: o.vazniNaVyhru })}
         </span>
         {o.kradez !== null && (
           <span className="np-vazen">
-            Krádež pri zajatí (bitka {o.kradez.kolo}): {o.kradez.obet} → {o.kto} {pocet(o.kradez.spaky, "špak", "špaky", "špakov")} za reči pri ňom.
+            {t("napoveda.kradez", { kolo: o.kradez.kolo, obet: o.kradez.obet, kto: o.kto, spaky: spakov(o.kradez.spaky) })}
           </span>
         )}
       </div>
       <div className="np-b">
-        <span className="np-h4">Čo už nerobí</span>
+        <span className="np-h4">{t("napoveda.coNerobi")}</span>
         <span className="np-vazen">
-          Teplomery nemá, nebojuje, špaky ani priazeň{o.nazovPriazne === null ? "" : ` ${o.nazovPriazne}`} nedáva. Nikto ho nevyslobodí.
+          {t("napoveda.nerobi", { priazen: o.nazovPriazne === null ? "" : ` ${o.nazovPriazne}` })}
         </span>
         {o.schopnost !== null && (
           <>
             <span className="np-h4">
-              Schopnosť väzňa ({o.kto}, raz za hru){o.pouzita ? " · použitá" : ""}
+              {t("napoveda.schopnost", { kto: o.kto })}{o.pouzita ? t("napoveda.pouzita") : ""}
             </span>
             <span className="np-vazen">{o.schopnost}</span>
           </>
@@ -379,7 +380,7 @@ export function useNapovedaStarsieho(obsah: () => ObsahNapovedy | ObsahNapovedyV
             <div
               className="np-zoom-clona"
               role="dialog"
-              aria-label={o?.meno ?? "Starší"}
+              aria-label={o?.meno ?? t("starsi.nazov")}
               onPointerDown={(e) => {
                 // Prst, ktorý zväčšeninu otvoril, ju hneď nezavrie — až ďalší ťuk.
                 e.stopPropagation();

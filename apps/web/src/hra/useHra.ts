@@ -5,7 +5,9 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type { ClientState, Command, DlzkaHry, Event, GameData, LokalitaVHistorii, Miesto, Pohlavie, Rod } from "@naex/core";
-import { kariet, loadGameData, rozlozRod } from "@naex/core";
+import { loadGameData, rozlozRod } from "@naex/core";
+import { prelozHlasku, t } from "../i18n/jazyk.tsx";
+import { kariet } from "../i18n/pocty.ts";
 import eldersJson from "@naex/core/data/elders.json";
 import scorecardsJson from "@naex/core/data/scorecards.json";
 import type { Sada } from "@naex/tvorba";
@@ -40,7 +42,7 @@ export function menoVoVete(h: HracInfo | null | undefined, p: number): string {
 /** Hláška motora pre človeka: tvary rodu podľa hráčov a mená namiesto „Hráč N“. */
 export function textHlasky(text: string, mena: readonly string[], rody: readonly [Rod, Rod]): string {
   // Aj „hráč 2“ uprostred vety (Hrobár, Svokra…) — inak ostalo „hráč 2 si berie 1 cigaretu“.
-  return rozlozRod(text, rody).replace(/[Hh]ráč ([12])/g, (_, n: string) => mena[Number(n) - 1] ?? `Hráč ${n}`);
+  return prelozHlasku(rozlozRod(text, rody).replace(/[Hh]ráč ([12])/g, (_, n: string) => mena[Number(n) - 1] ?? `Hráč ${n}`));
 }
 
 /** Zmena Frajeriny po dohraní partie (index = miesto hráča). */
@@ -291,29 +293,28 @@ const KLUC = KLUC_MIESTNOSTI;
 const KLUC_STOLA = "naex.stol2na2";
 
 export function textUdalosti(e: Event, mena: readonly string[], rody: readonly [Rod, Rod]): string | null {
-  const meno = (p: number) => mena[p] ?? `Hráč ${p + 1}`;
+  const meno = (p: number) => mena[p] ?? t("stol.hrac", { n: p + 1 });
   switch (e.type) {
     case "log":
       return textHlasky(e.text, mena, rody);
     case "autoPas":
       // Dôvody má len pasujúci (eventsFor); súperovi stačí verejné „už nemá čo vyložiť“.
-      return e.dovody.length > 0 ? `Hra pasovala za teba: ${e.dovody.join(" ")}` : null;
+      return e.dovody.length > 0 ? t("log.autoPas", { dovody: e.dovody.map(prelozHlasku).join(" ") }) : null;
     case "tahal":
-      return `${meno(e.hrac)} ťahá ${kariet(e.pocet)}.`;
+      return t("log.taha", { meno: meno(e.hrac), karty: kariet(e.pocet) });
     case "manualEfekt":
-      return `⚠ EFEKT (vyhodnoťte ručne): ${e.nazov} — ${e.text}`;
+      return `⚠ ${t("log.manualny", { nazov: e.nazov, text: e.text })}`;
     case "moment":
       return `★ ${textHlasky(e.moment.popis, mena, rody)}`;
     case "bitkaVysledok":
-      return `Bitka: tuhé ${e.damage.tuhe[0]}:${e.damage.tuhe[1]} — ${
+      return t("log.bitka", { a: e.damage.tuhe[0], b: e.damage.tuhe[1], vysledok:
         e.vitaz === null
-          ? "sekera, špaky za bitku čakajú na víťaza ďalšej bitky"
-          : `vyhráva ${meno(e.vitaz)}${e.rozhodlo === "abstak" ? " (remíza, menej Absťákov)" : e.rozhodlo === "dlhy" ? " (remíza, menej priznaných Dlhov)" : ""}`
-      }${e.prebytok > 0 ? `, Nakladačka ${e.prebytok}` : ""}.`;
+          ? t("log.sekera")
+          : t("log.vyhrava", { meno: meno(e.vitaz) }) + (e.rozhodlo === "abstak" ? t("log.remizaAbstaky") : e.rozhodlo === "dlhy" ? t("log.remizaDlhy") : ""), nakladacka: e.prebytok > 0 ? t("log.nakladacka", { n: e.prebytok }) : "" });
     case "koniec":
       return e.body === null
-        ? `KONIEC: ${textHlasky(e.dovod, mena, rody)}`
-        : `KONIEC: ${textHlasky(e.dovod, mena, rody)} Špaky ${e.body[0]}:${e.body[1]}.`;
+        ? t("log.koniec", { dovod: textHlasky(e.dovod, mena, rody) })
+        : t("log.koniecSpaky", { dovod: textHlasky(e.dovod, mena, rody), a: e.body[0], b: e.body[1] });
     default:
       return null;
   }
@@ -491,7 +492,7 @@ export function useHra(aktivne: boolean): HraHook {
           }
           // Zaniknutá alebo cudzia miestnosť pred vstupom → zabudni ju.
           if (reakcia.druh === "zabudni") localStorage.removeItem(KLUC);
-          if (reakcia.druh === "ukaz" || reakcia.ukaz) setChyba(msg.text);
+          if (reakcia.druh === "ukaz" || reakcia.ukaz) setChyba(prelozHlasku(msg.text));
           break;
         }
       }

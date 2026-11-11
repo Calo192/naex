@@ -5,6 +5,7 @@
 
 import type { BitkaNaNastenke, ClientState, PlayerId, StavVyhier } from "@naex/core";
 import { KONSTANTY, pocet } from "@naex/core";
+import { t } from "../i18n/jazyk.tsx";
 
 /**
  * Niekto už teraz má dosť červených: keď vyhrá najbližšiu bitku, hra skončí výhrou strachom
@@ -14,12 +15,12 @@ export function hroziVyhraStrachom(vyhry: StavVyhier): boolean {
   return Math.max(vyhry.cervene[0], vyhry.cervene[1]) >= vyhry.cervenychNaVyhru;
 }
 
-/** Vysvetlenie k „nie pri výhre strachom“ (dlaždica a tabuľa Dlhov). */
-export const TITUL_BEZ_EXEKUCIE =
-  `Kto vyhrá bitku a má aspoň ${KONSTANTY.CERVENYCH_NA_VYHRU} červené (väzni sa rátajú), vyhráva hneď — hra sa skončí pred exekúciou, Dlhy ani špaky nezhoria nikomu.`;
+/** Vysvetlenie k „nie pri výhre strachom“ (dlaždica a tabuľa Dlhov); funkcia, aby platil jazyk hráča. */
+export const titulBezExekucie = (): string =>
+  t("strach.bezExekucie", { n: KONSTANTY.CERVENYCH_NA_VYHRU });
 
-/** Väzni po slovensky: „1 väzeň“, „2 väzni“, „5 väzňov“. */
-export const vaznov = (n: number): string => pocet(n, "väzeň", "väzni", "väzňov");
+/** Väzni: „1 väzeň“, „2 väzni“, „5 väzňov“. */
+export const vaznov = (n: number): string => t("strach.vaznov", { n });
 
 export interface TextCervenych {
   /** „3 + 1 väzeň = 4/4“, bez väzňov „4/4“. */
@@ -38,10 +39,12 @@ export function textCervenych(cervene: number, vazni: number, naVyhru: number): 
     odznak: vazni > 0 ? `${naStupnici}+${vazni}/${naVyhru}` : `${cervene}/${naVyhru}`,
     titul:
       vazni > 0
-        ? `Červené ${cervene} z ${naVyhru}: ${pocet(naStupnici, "starší", "starší", "starších")} na červenom strachu a ${vaznov(vazni)} (väzeň sa ráta ako červená, na stupnici starších už nie je).`
-        : `Červené ${cervene} z ${naVyhru}: ${pocet(naStupnici, "starší", "starší", "starších")} na červenom strachu (väzni sa rátajú).`,
+        ? t("strach.titulVazni", { cervene, naVyhru, starsi: starsich(naStupnici), vazni: vaznov(vazni) })
+        : t("strach.titul", { cervene, naVyhru, starsi: starsich(naStupnici) }),
   };
 }
+
+const starsich = (n: number): string => t("strach.starsich", { n });
 
 export interface VyhraStrachom {
   readonly hrac: PlayerId;
@@ -72,6 +75,6 @@ export function vyhraStrachomBitky(view: Pick<ClientState, "koniec" | "nastenka"
 
 /** Riadok pod špakmi bitky: „Výhra strachom (4 červené) — exekúcia sa nekonala.“ */
 export function textVyhryStrachom(v: VyhraStrachom): string {
-  const cervene = `${v.cervene} červené${v.vazni > 0 ? `, z toho ${vaznov(v.vazni)}` : ""}`;
-  return `Výhra strachom (${cervene})${v.bezExekucie ? " — exekúcia sa nekonala, Dlhy ani špaky nezhoreli." : "."}`;
+  const cervene = v.vazni > 0 ? t("strach.cerveneZToho", { n: v.cervene, vazni: vaznov(v.vazni) }) : t("strach.cervene", { n: v.cervene });
+  return v.bezExekucie ? t("strach.vyhraBezExekucie", { cervene }) : t("strach.vyhra", { cervene });
 }

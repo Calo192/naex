@@ -12,7 +12,7 @@ import {
   LUPA_OD,
   LUPA_PREDVOLENA,
   MELICHAR_PREDVOLENY,
-  NAZOV_UROVNE,
+  nazovUrovne,
   jeSpravca,
   maPravo,
   useUcet,
@@ -29,10 +29,11 @@ import { JAZYKY, NAZVY_JAZYKOV, t, tr, useJazyk } from "../i18n/jazyk.tsx";
 import { zvolJazyk } from "../i18n/PrepinacJazyka.tsx";
 
 /** Pohlavie v profile (Michal 2026-10-22) — súper ho vidí len v tvare hlášok. */
-const VOLBY_POHLAVIA: readonly { readonly id: Pohlavie | null; readonly nazov: string; readonly popis: string }[] = [
-  { id: "muz", nazov: "Muž", popis: "„{meno} skončil bez NA EX.“" },
-  { id: "zena", nazov: "Žena", popis: "„{meno} skončila bez NA EX.“" },
-  { id: null, nazov: "Neuvádzať", popis: "„{meno}: koniec bez NA EX.“" },
+// Funkcia: texty v jazyku hráča pri vykreslení; {meno} dosadí t().
+const volbyPohlavia = (meno: string): readonly { readonly id: Pohlavie | null; readonly nazov: string; readonly popis: string }[] => [
+  { id: "muz", nazov: t("profil.muz"), popis: t("profil.muzPopis", { meno }) },
+  { id: "zena", nazov: t("profil.zena"), popis: t("profil.zenaPopis", { meno }) },
+  { id: null, nazov: t("profil.neuvadzat"), popis: t("profil.neuvadzatPopis", { meno }) },
 ];
 
 /**
@@ -220,7 +221,7 @@ export function Profil() {
     try {
       const r = await api.patch<{ pouzivatel: Pouzivatel }>("/profil", { meno });
       nastav(r.pouzivatel);
-      setSprava({ druh: "ok", text: "Herné meno je uložené." });
+      setSprava({ druh: "ok", text: t("profil.menoUlozene") });
     } catch (err) {
       chyba(err);
     }
@@ -272,7 +273,7 @@ export function Profil() {
     const skladby = await nacitajSkladby();
     const s = skladby[Math.floor(Math.random() * skladby.length)];
     if (s === undefined) {
-      setSprava({ druh: "chyba", text: "Hudba na serveri zatiaľ nie je." });
+      setSprava({ druh: "chyba", text: t("profil.hudbaNie") });
       return;
     }
     const a = new Audio(urlSkladby(s));
@@ -309,7 +310,7 @@ export function Profil() {
     const hlasky = await nacitajHlasky();
     const h = hlasky[Math.floor(Math.random() * hlasky.length)];
     if (h === undefined) {
-      setSprava({ druh: "chyba", text: "Hlášky majstra Melichara na serveri zatiaľ nie sú." });
+      setSprava({ druh: "chyba", text: t("profil.hlaskyNie") });
       return;
     }
     const a = new Audio(urlHlasky(h));
@@ -392,7 +393,7 @@ export function Profil() {
     try {
       const r = await api.put<{ pouzivatel: Pouzivatel }>("/profil/avatar-predvoleny", { avatar: id });
       nastav(r.pouzivatel);
-      setSprava({ druh: "ok", text: "Avatar je zmenený." });
+      setSprava({ druh: "ok", text: t("profil.avatarZmeneny") });
     } catch (err) {
       chyba(err);
     }
@@ -406,7 +407,7 @@ export function Profil() {
       const blob = await stvorec(await nacitajObrazok(f), 320);
       const r = await api.put<{ pouzivatel: Pouzivatel }>("/profil/avatar", blob, "image/jpeg");
       nastav(r.pouzivatel);
-      setSprava({ druh: "ok", text: "Avatar je nahratý." });
+      setSprava({ druh: "ok", text: t("profil.avatarNahraty") });
     } catch (err) {
       chyba(err);
     } finally {
@@ -429,7 +430,7 @@ export function Profil() {
       const r = await api.patch<{ pouzivatel: Pouzivatel }>("/profil", { email: hodnota });
       nastav(r.pouzivatel);
       setEmail(r.pouzivatel.email ?? "");
-      setSprava({ druh: "ok", text: r.pouzivatel.email == null ? "E-mail je vymazaný." : "E-mail je uložený." });
+      setSprava({ druh: "ok", text: r.pouzivatel.email == null ? t("profil.emailVymazany") : t("profil.emailUlozeny") });
     } catch (err) {
       chyba(err);
     }
@@ -441,7 +442,7 @@ export function Profil() {
       await api.post("/profil/heslo", { stare, nove });
       setStare("");
       setNove("");
-      setSprava({ druh: "ok", text: "Heslo je zmenené." });
+      setSprava({ druh: "ok", text: t("profil.hesloZmenene") });
     } catch (err) {
       chyba(err);
     }
@@ -450,16 +451,16 @@ export function Profil() {
   return (
     <div className="profil profil-siroky">
       <HlavaStranky
-        nadpis="Môj profil"
-        uvod="Herné meno, fotka a nastavenia webu aj partie."
+        nadpis={t("profil.mojProfil")}
+        uvod={t("profil.uvod")}
         akcia={
           <Odkaz href={`/hrac/${ja.id}`} className="tlacidlo">
-            Moje štatistiky a partie
+            {t("profil.statistikyAPartie")}
           </Odkaz>
         }
       />
-      {novy && <Hlaska druh="ok">Účet je pripravený. Nastav si herné meno a fotku — uvidí ich tvoj súper.</Hlaska>}
-      {obnovene && <Hlaska druh="ok">Heslo je zmenené a si prihlásený. Na ostatných zariadeniach sa prihlás novým heslom.</Hlaska>}
+      {novy && <Hlaska druh="ok">{t("profil.novy")}</Hlaska>}
+      {obnovene && <Hlaska druh="ok">{t("profil.obnovene")}</Hlaska>}
       {sprava !== null && <Hlaska druh={sprava.druh}>{sprava.text}</Hlaska>}
 
       <section className="panel profil-hlava">
@@ -470,15 +471,15 @@ export function Profil() {
         <div>
           <h2 style={{ marginBottom: 4 }}>{ja.meno}</h2>
           <div className="riadok-tlacidiel" style={{ color: "var(--slaby)" }}>
-            @{ja.login} <span className={jeSpravca(ja.rola) ? "odznak odznak-admin" : "odznak"}>{NAZOV_UROVNE[ja.rola]}</span>
+            @{ja.login} <span className={jeSpravca(ja.rola) ? "odznak odznak-admin" : "odznak"}>{nazovUrovne(ja.rola)}</span>
           </div>
           {ja.rola === "navstevnik" && (
             <p className="tlmene" style={{ margin: "6px 0 0" }}>
-              Rank Poldeci dostaneš po prvej dohratej partii, aj proti počítaču; Deci a Sedmičku po ďalších partiách s ľuďmi.
+              {t("profil.rankPoldeci")}
             </p>
           )}
           <p style={{ margin: "6px 0 0" }}>
-            <Odkaz href={`/hrac/${ja.id}`}>Moje štatistiky a partie</Odkaz>
+            <Odkaz href={`/hrac/${ja.id}`}>{t("profil.statistikyAPartie")}</Odkaz>
           </p>
           <div className="profil-avatar-akcie">
             <input
@@ -494,19 +495,19 @@ export function Profil() {
             />
             {maPravo(ja, "vlastna_fotka") && (
               <button className="tlacidlo-male" onClick={() => subor.current?.click()} disabled={nahrava}>
-                {nahrava ? "Nahrávam…" : ja.avatar === null ? "Nahrať fotku" : "Zmeniť fotku"}
+                {nahrava ? t("profil.nahravam") : ja.avatar === null ? t("profil.nahratFotku") : t("profil.zmenitFotku")}
               </button>
             )}
             <button className="tlacidlo-male" onClick={otvorGaleriu} aria-expanded={galeriaOtvorena}>
-              {galeriaOtvorena ? "Zavrieť výber" : "Vybrať avatara"}
+              {galeriaOtvorena ? t("profil.zavrietVyber") : t("profil.vybratAvatara")}
             </button>
             {ja.avatar !== null && (
               <button
                 className="tlacidlo-male tlacidlo-jemne"
                 onClick={() => void zmazAvatar()}
-                title="Namiesto fotky ti pridelí náhodnú dedinskú trosku."
+                title={t("profil.nahodnyTitul")}
               >
-                Náhodný avatar
+                {t("profil.nahodny")}
               </button>
             )}
           </div>
@@ -515,12 +516,12 @@ export function Profil() {
       </section>
 
       {galeriaOtvorena && (
-        <section className="panel galeria-avatarov" aria-label="Výber avatara">
-          <h3>Vyber si dedinskú trosku</h3>
+        <section className="panel galeria-avatarov" aria-label={t("profil.vyberAvatara")}>
+          <h3>{t("profil.vyberTrosku")}</h3>
           {galeria === null ? (
-            <p className="tlmene">Načítavam…</p>
+            <p className="tlmene">{t("profil.nacitavam")}</p>
           ) : galeria.length === 0 ? (
-            <p className="tlmene">Predvolené avatary zatiaľ nie sú.</p>
+            <p className="tlmene">{t("profil.ziadneAvatary")}</p>
           ) : (
             <div className="galeria-mriezka">
               {galeria.map((id) => (
@@ -530,7 +531,7 @@ export function Profil() {
                   className={id === ja.avatar ? "galeria-volba zvoleny" : "galeria-volba"}
                   onClick={() => void vyberAvatar(id)}
                   aria-pressed={id === ja.avatar}
-                  aria-label="Vybrať tento avatar"
+                  aria-label={t("profil.vybratTento")}
                 >
                   <img src={mediaUrl(id)} alt="" width={88} height={88} loading="lazy" />
                 </button>
@@ -543,25 +544,24 @@ export function Profil() {
       {/* Štatistiky sú na profile hráča (/hrac/:id) — tu len odkaz, nech nie sú na dvoch miestach. */}
       <section className="panel profil-odkaz-statistiky">
         <div>
-          <h2>Štatistiky</h2>
-          <p className="tlmene">Frajerina, forma, súhrn, silné a slabé stránky a história partií. Tam si vieš aj skryť súhrn pred ostatnými.</p>
+          <h2>{t("profil.statistiky")}</h2>
+          <p className="tlmene">{t("profil.statistikyPopis")}</p>
         </div>
         <Odkaz href={`/hrac/${ja.id}`} className="tlacidlo tlacidlo-hlavne">
-          Otvoriť profil hráča
+          {t("profil.otvoritProfil")}
         </Odkaz>
       </section>
 
-      <h2 className="profil-nastavenia-nadpis">Nastavenia účtu</h2>
+      <h2 className="profil-nastavenia-nadpis">{t("profil.nastavenia")}</h2>
       <section className="panel vzhlad-webu" aria-labelledby="vzhlad-webu-nadpis">
-        <h3 id="vzhlad-webu-nadpis">Vzhľad webu</h3>
+        <h3 id="vzhlad-webu-nadpis">{t("profil.vzhlad")}</h3>
         <p className="tlmene">
-          Farby inšpirované knihou Sanza Wadu <i>A Dictionary of Color Combinations</i>. Mení sa len okolie — karty a zóny
-          starších ostávajú. Svoju farbu a farbu súpera si vyberáš hore pri avatare. Ukladá sa samo.
+          {tr("profil.vzhladPopis")}
         </p>
         {/* Dve skupiny, Tmavé a Svetlé, po 14 (Michal 2026-10-23). */}
         {([
-          ["Tmavé", true],
-          ["Svetlé", false],
+          [t("profil.tmave"), true],
+          [t("profil.svetle"), false],
         ] as const).map(([nadpis, tmava]) => (
           <div key={nadpis} className="schemy-skupina">
             <h4 className="schemy-nadpis">{nadpis}</h4>
@@ -591,7 +591,7 @@ export function Profil() {
         ))}
       </section>
       <section className="panel preferencie" aria-labelledby="preferencie-nadpis">
-        <h3 id="preferencie-nadpis">Preferencie</h3>
+        <h3 id="preferencie-nadpis">{t("profil.preferencie")}</h3>
         <fieldset className="skore-volby">
           <legend>{t("profil.jazyk")}</legend>
           <p className="tlmene">{t("profil.jazykPomoc")}</p>
@@ -605,48 +605,45 @@ export function Profil() {
         <label className="skratky-volba">
           <input type="checkbox" checked={skratky} onChange={(e) => prepniSkratky(e.target.checked)} />
           <span>
-            <b>Klávesové skratky v partii</b> — K končím / hotovo / potvrdiť, P pasovať, N NA EX!, Esc zrušiť, ? zoznam. Pri písaní do poľa
-            nefungujú; M otvorí pult Melichara a číslice na ňom buchnú pečiatkou.
+            {tr("profil.skratky")}
           </span>
         </label>
         <label className="skratky-volba">
           <input type="checkbox" checked={medziobrazovky} onChange={(e) => prepniMedziobrazovky(e.target.checked)} />
           <span>
-            <b>Medziobrazovky pri prechode fáz</b> — pri výbere lokality, ponuky, Zhromaždení, Pitke, bitke, Nakladačky a vo finále sa ukáže názov fázy a čo máš
-            robiť. Ostane, kým neklikneš „Rozumiem“.
+            {tr("profil.medziobrazovky")}
           </span>
         </label>
         <label className="skratky-volba">
           <input type="checkbox" checked={napovedy} onChange={(e) => prepniNapovedy(e.target.checked)} />
           <span>
-            <b>Nápovedy majstra Melichara v partii</b> — keď sa v partii prvýkrát stretneš s niečím novým (Dlh, Absťák, Pohoršenie…),
-            Melichar to krátko vysvetlí. Každú povie len raz.
+            {tr("profil.napovedy")}
           </span>
         </label>
         <div className="riadok-tlacidiel napovedy-znova">
           <button type="button" className="tlacidlo-male" onClick={ukazNapovedyZnova} disabled={napovedyZnova}>
-            {napovedyZnova ? "Nápovedy sa ukážu znova" : "Ukázať nápovedy znova"}
+            {napovedyZnova ? t("profil.napovedyUkazuSa") : t("profil.ukazatNapovedy")}
           </button>
         </div>
         <fieldset className="skore-volby">
-          <legend>Ako o tebe písať v hláškach partie</legend>
-          {VOLBY_POHLAVIA.map((v) => (
+          <legend>{t("profil.akoOTebe")}</legend>
+          {volbyPohlavia(ja.meno).map((v) => (
             <label key={v.id ?? "nie"} className={v.id === pohlavie ? "skore-volba zvolena" : "skore-volba"}>
               <input type="radio" name="pohlavie" checked={v.id === pohlavie} onChange={() => vyberPohlavie(v.id)} />
               <span className="skore-nazov">{v.nazov}</span>
-              <span className="skore-popis">{v.popis.replace("{meno}", ja.meno)}</span>
+              <span className="skore-popis">{v.popis}</span>
             </label>
           ))}
         </fieldset>
       </section>
       <div className="profil-nastavenia">
       <form className="panel" onSubmit={(e) => void ulozMeno(e)}>
-        <h3>Herné meno</h3>
-        <Pole label="Ako ťa uvidí súper" pomoc="2 – 24 znakov.">
+        <h3>{t("ucet.hernemeno")}</h3>
+        <Pole label={t("profil.akoTaUvidi")} pomoc={t("profil.dlzkaMena")}>
           <input value={meno} onChange={(e) => setMeno(e.target.value)} maxLength={24} minLength={2} required />
         </Pole>
         <button type="submit" className="tlacidlo-hlavne" disabled={meno.trim() === ja.meno}>
-          Uložiť meno
+          {t("profil.ulozitMeno")}
         </button>
       </form>
 
@@ -657,38 +654,38 @@ export function Profil() {
           void ulozEmail(email);
         }}
       >
-        <h3>E-mail</h3>
-        <Pole label="E-mailová adresa" pomoc="Nepovinné. Použijeme ho len na obnovu zabudnutého hesla.">
-          <input type="email" autoComplete="email" inputMode="email" value={email} onChange={(e) => setEmail(e.target.value)} maxLength={254} placeholder="napr. fero@example.sk" />
+        <h3>{t("profil.email")}</h3>
+        <Pole label={t("profil.emailAdresa")} pomoc={t("profil.emailPomoc")}>
+          <input type="email" autoComplete="email" inputMode="email" value={email} onChange={(e) => setEmail(e.target.value)} maxLength={254} placeholder={t("profil.emailPriklad")} />
         </Pole>
         <div className="riadok-tlacidiel">
           <button type="submit" className="tlacidlo-hlavne" disabled={email.trim() === (ja.email ?? "")}>
-            Uložiť e-mail
+            {t("profil.ulozitEmail")}
           </button>
           {ja.email != null && (
             <button type="button" className="tlacidlo-jemne" onClick={() => void ulozEmail("")}>
-              Vymazať
+              {t("profil.vymazat")}
             </button>
           )}
         </div>
       </form>
 
       <form className="panel" onSubmit={(e) => void zmenHeslo(e)}>
-        <h3>Zmena hesla</h3>
-        <Pole label="Súčasné heslo">
+        <h3>{t("profil.zmenaHesla")}</h3>
+        <Pole label={t("profil.sucasneHeslo")}>
           <input type="password" autoComplete="current-password" value={stare} onChange={(e) => setStare(e.target.value)} required />
         </Pole>
-        <Pole label="Nové heslo" pomoc="Aspoň 8 znakov.">
+        <Pole label={t("profil.noveHeslo")} pomoc={t("ucet.hesloPomoc")}>
           <input type="password" autoComplete="new-password" value={nove} onChange={(e) => setNove(e.target.value)} minLength={8} required />
         </Pole>
-        <button type="submit">Zmeniť heslo</button>
+        <button type="submit">{t("profil.zmenitHeslo")}</button>
       </form>
 
       <div className="panel">
-        <h3>Zväčšenie kariet</h3>
+        <h3>{t("profil.zvacsenie")}</h3>
         <Pole
-          label={`Zväčšená karta: ${lupa} %`}
-          pomoc={`V hre sa karta zväčší, keď na ňu ukážeš myšou (ruka, stôl, starší, lokality), susedia jej uhnú — na ${lupa} % (${LUPA_OD} – ${LUPA_DO} %). Ukladá sa samo.`}
+          label={t("profil.zvacsenaKarta", { n: lupa })}
+          pomoc={t("profil.lupaPomoc", { n: lupa, od: LUPA_OD, do: LUPA_DO })}
         >
           <input
             type="range"
@@ -709,10 +706,10 @@ export function Profil() {
       </div>
 
       <div className="panel">
-        <h3>Hudba počas partie</h3>
+        <h3>{t("profil.hudba")}</h3>
         <Pole
-          label={hudba === 0 ? "Hlasitosť: vypnutá" : `Hlasitosť: ${hudba} %`}
-          pomoc="Počas partie hrajú v náhodnom poradí skladby z playlistu NaEx – PLEBS. Úplne vľavo je hudba vypnutá. Ukladá sa samo."
+          label={hudba === 0 ? t("profil.hlasitostVypnuta") : t("profil.hlasitost", { n: hudba })}
+          pomoc={t("profil.hudbaPomoc")}
         >
           <input
             type="range"
@@ -722,27 +719,27 @@ export function Profil() {
             step={5}
             value={hudba}
             onChange={(e) => setHudba(Number(e.target.value))}
-            aria-valuetext={hudba === 0 ? "vypnutá" : `${hudba} %`}
+            aria-valuetext={hudba === 0 ? t("profil.vypnuta") : `${hudba} %`}
           />
           <div className="posuvnik-stupnica" aria-hidden="true">
-            <span>vypnutá</span>
+            <span>{t("profil.vypnuta")}</span>
             <span>50 %</span>
             <span>100 %</span>
           </div>
         </Pole>
         <div className="riadok-tlacidiel" style={{ marginTop: 12 }}>
           <button type="button" className="tlacidlo-male" onClick={() => void prepniUkazku()} disabled={hudba === 0 && ukazkaHra === null}>
-            {ukazkaHra === null ? "Vyskúšať" : "Zastaviť ukážku"}
+            {ukazkaHra === null ? t("profil.vyskusat") : t("profil.zastavitUkazku")}
           </button>
           {ukazkaHra !== null && <span className="tlmene">♪ {ukazkaHra}</span>}
         </div>
       </div>
 
       <div className="panel">
-        <h3>Majster Melichar</h3>
+        <h3>{t("profil.melichar")}</h3>
         <Pole
-          label={melichar === 0 ? "Hlasitosť: vypnutý" : `Hlasitosť: ${melichar} %`}
-          pomoc="V partii proti počítaču sa ozve, keď na stole dopadne pečiatka momentu (zvrat, výprask, záchrana…) — nie práve najslušnejšie. Úplne vľavo mlčí. Ukladá sa samo."
+          label={melichar === 0 ? t("profil.hlasitostVypnuty") : t("profil.hlasitost", { n: melichar })}
+          pomoc={t("profil.melicharPomoc")}
         >
           <input
             type="range"
@@ -752,17 +749,17 @@ export function Profil() {
             step={5}
             value={melichar}
             onChange={(e) => setMelichar(Number(e.target.value))}
-            aria-valuetext={melichar === 0 ? "vypnutý" : `${melichar} %`}
+            aria-valuetext={melichar === 0 ? t("profil.vypnuty") : `${melichar} %`}
           />
           <div className="posuvnik-stupnica" aria-hidden="true">
-            <span>vypnutý</span>
+            <span>{t("profil.vypnuty")}</span>
             <span>50 %</span>
             <span>100 %</span>
           </div>
         </Pole>
         <div className="riadok-tlacidiel" style={{ marginTop: 12 }}>
           <button type="button" className="tlacidlo-male" onClick={() => void vyskusajHlasku()} disabled={melichar === 0}>
-            Vyskúšať
+            {t("profil.vyskusat")}
           </button>
         </div>
       </div>
