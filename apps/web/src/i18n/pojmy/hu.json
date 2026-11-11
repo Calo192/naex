@@ -33,10 +33,10 @@
   },
   "barter": {
     "pojem": "Csöves cserebere",
-    "popis": "Ivászat közben 5 cigarettáért egy új, teli feles.",
+    "popis": "",
     "sk": {
       "pojem": "Stokársky barter",
-      "popis": "Počas Pitky za 5 cigariet nový plný poldeci."
+      "popis": "Počas Pitky za 5 cigariet nový plný poldeci — natrvalo, po bitke sa obnoví s ostatnými."
     }
   },
   "bitka": {
@@ -105,10 +105,10 @@
   },
   "doliatie": {
     "pojem": "Újratöltés",
-    "popis": "Ivászat közben 2 cigarettáért az üres felest visszafordítod telire.",
+    "popis": "",
     "sk": {
       "pojem": "Doliatie",
-      "popis": "Počas Pitky za 2 cigarety otočíš vypitý poldeci späť na plný."
+      "popis": "Na konci každej Pitky sa ti jeden vypitý poldeci otočí na plný zadarmo a ďalší za každú tvoju aktívnu akciu Poldeci. Za cigarety sa nedolieva."
     }
   },
   "efekt": {
@@ -257,10 +257,10 @@
   },
   "limit": {
     "pojem": "Kijátszási korlát",
-    "popis": "Hány kártyát játszol ki egy Gyűlésen: teli feles + 1.",
+    "popis": "",
     "sk": {
       "pojem": "Limit vykladania",
-      "popis": "Koľko kariet vyložíš v jednom Zhromaždení: plné poldeci + 1."
+      "popis": "Koľko kariet vyložíš: toľko, koľko máš plných poldeci — každá karta jeden otočí na vypitý."
     }
   },
   "linia": {
@@ -357,10 +357,10 @@
   },
   "nerest": {
     "pojem": "Bűn",
-    "popis": "Csak a fogyasztás: Felhajtás 1, NA EX 2, elszívott cigaretta 1. A kör végén a Szomjaddal vetik össze.",
+    "popis": "",
     "sk": {
       "pojem": "Nerest",
-      "popis": "Len konzumácia: Vypiť 1, NA EX 2, vyfajčená cigareta 1. Na konci kola sa porovnáva s tvojou Chuťou."
+      "popis": "Len konzumácia: karta navyše v ťahu (Vypiť) 1, odpoveď na NA EX 1, NA EX 2, vyfajčená cigareta 1. Na konci kola sa porovnáva s tvojou Chuťou."
     }
   },
   "obcania": {
@@ -381,10 +381,10 @@
   },
   "odpoved": {
     "pojem": "Válasz a NA EX-re",
-    "popis": "Felfedés után minden ellenfél-NA EX-ért egy kártya, képpel lefelé, egy teli felesért (felhajtod: máj +1), a korláton kívül; először a támadó válaszol, aztán a védő a sor másik szárnyára; a kettő egyszerre fordul fel.",
+    "popis": "",
     "sk": {
       "pojem": "Odpoveď na NA EX",
-      "popis": "Po odkrytí jedna karta za každé súperovo NA EX, lícom dole, za plný poldeci (vypiješ ho: pečeň +1) a mimo limitu; najprv odpovedá útočník, potom obranca na druhý kraj línie; obe sa otočia naraz."
+      "popis": "Po odkrytí jedna karta za každé súperovo NA EX, lícom dole, za plný poldeci (vypiješ ho: pečeň +1) a mimo vykladania; najprv odpovedá útočník, potom obranca na druhý kraj línie; obe sa otočia naraz."
     }
   },
   "partia": {
@@ -397,10 +397,10 @@
   },
   "pas": {
     "pojem": "Passz",
-    "popis": "Befejezed a kijátszást a Gyűlésen, és minden kártyáért, amit még kijátszhattál volna, kapsz egy cigarettát, akkor is, ha már semmi sincs a kezedben.",
+    "popis": "",
     "sk": {
       "pojem": "Pas",
-      "popis": "Skončíš vykladanie v Zhromaždení a za každú kartu, ktorú si ešte smel vyložiť, dostaneš cigaretu, aj keď ti v ruke už nič neostalo."
+      "popis": "Skončíš vykladanie v Zhromaždení; nič zaň nedostaneš, nevyložené plné poldeci ti ostanú."
     }
   },
   "podlozenie": {
@@ -462,12 +462,12 @@
   "pitka": {
     "pojem": "Ivászat",
     "popis": "Kiértékelés a Gyűlés után: NA EX, Adósságok, máj, cigaretták; egy körben 1–4 Ivászat van (a döntőben a csúcshelyszínen 1–5).",
-    "kratko": "A Gyűlés után iszunk: rágyújtasz, újratöltesz, és titokban NA EX-et adsz egy kártyára a sorban.",
+    "kratko": "",
     "tvary": "Ivászat, Ivászatot, Ivászatok, Ivászaton, Ivászatban, Ivászatra, Ivászatig, Ivászatból, Ivászatkor, Ivászatai, Ivászatonként, Ivászata",
     "sk": {
       "pojem": "Pitka",
       "popis": "Vyhodnotenie po Zhromaždení: NA EX, Dlhy, pečeň, cigarety; v jednom kole je 1 až 4 Pitiek (vo finále na pinnacle 1 až 5).",
-      "kratko": "Po Zhromaždení sa pije: fajčíš, dolievaš a skryto dáš NA EX na kartu v línii.",
+      "kratko": "Po Zhromaždení sa pije: fajčíš, barteruješ a skryto dáš NA EX na kartu v línii; na konci sa ti doleje poldeci.",
       "tvary": "Pitka, Pitky, Pitke, Pitku, Pitkou, Pitiek"
     }
   },
@@ -489,12 +489,12 @@
   },
   "poldeci": {
     "pojem": "Feles",
-    "popis": "Egy kupica pálinka; a teli 1-gyel növeli a korlátot, és ezzel fizetsz a NA EX-ért és a lépés következő kártyájáért is. A játék végén minden teli feles 1 csikk.",
+    "popis": "",
     "kratko": "Egy kupica pálinka. Ahány teli feles van nálad, annyi kártyát játszol ki, plusz egyet. Egy teli felesért NA EX-et is adhatsz.",
     "tvary": "feles, felest, felesek, feleseket, felessel, felesért, felesed, feleseid, felese, felesét, felesbe",
     "sk": {
       "pojem": "Poldeci",
-      "popis": "Pohárik pálenky; plný zvyšuje limit o 1 a platí ním NA EX aj ďalšiu kartu v ťahu. Plný na konci hry je 1 špak.",
+      "popis": "Pohárik pálenky; každá karta, ktorú vyložíš, stojí plný, a platí ním aj NA EX a odpoveď. Po bitke sa všetky obnovia, po Pitke sa jeden doleje. Plný na konci hry je 1 špak.",
       "kratko": "Pohárik pálenky. Koľko máš plných, toľko kariet vyložíš, a ešte jednu. Za plný poldeci dáš aj NA EX.",
       "tvary": "poldeci"
     }
@@ -709,10 +709,10 @@
   },
   "vypit": {
     "pojem": "Felhajtani",
-    "popis": "A teli felest üresre fordítod, hogy ugyanabban a lépésben még egy kártyát kijátszhass: korlát −1, máj +1. 0-s korlátnál nem iszunk.",
+    "popis": "",
     "sk": {
       "pojem": "Vypiť",
-      "popis": "Otočíš plný poldeci na vypitý, aby si v tom istom ťahu vyložil ďalšiu kartu: limit −1, pečeň +1. Pri limite 0 sa nepije."
+      "popis": "Ďalšia karta v tom istom ťahu: okrem plného poldeci stojí cigaretu, pečeň +1 a ráta sa ako nerest. Dve karty = 2 poldeci a 1 cigareta."
     }
   },
   "vykupne": {

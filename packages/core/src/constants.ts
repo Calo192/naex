@@ -10,9 +10,10 @@ const HODNOTA_STUPNA: readonly number[] = [0, 1, 2, 3];
 export const KONSTANTY = {
   /**
    * Štartovacie vybavenie hráča (PRAVIDLA §3). Michal 2026-10-20 znížil
-   * poldeci z 3 na 2 (cigarety ostávajú 3) — pas teraz platí cigaretami.
+   * poldeci z 3 na 2, v12.2 (Michal 2026-11-11) späť na 3: plné poldeci sú limit
+   * vykladania a po každej bitke sa obnovia na maximum.
    */
-  START_POLDECI: 2,
+  START_POLDECI: 3,
   /**
    * Po každej bitke si hráč dobere toľkoto kariet (Michal 2026-10-19) —
    * namiesto doplnenia ruky na 5. Limit ruky nie je. Od 2026-10-27 len 1
@@ -24,11 +25,12 @@ export const KONSTANTY = {
   START_CIGARETY: 3,
 
   /**
-   * Formát 2 na 2 (Michal 2026-10-28): tím začína s 3 poldeci a 4 cigaretami
-   * a prah Dlhu aj Cirhózy má o 1 vyšší — zdroje a kliatby sú spoločné tímu.
+   * Formát 2 na 2 (Michal 2026-10-28): tím začína so 4 cigaretami a prah Dlhu aj
+   * Cirhózy má o 1 vyšší — zdroje a kliatby sú spoločné tímu. Poldeci v12.2: každý
+   * člen prináša svoje 3 (Michal 2026-11-11), tím ich má spolu 6.
    */
   DVA_NA_DVA: {
-    START_POLDECI: 3,
+    START_POLDECI: 6,
     START_CIGARETY: 4,
     PRAH_NAVYSE: 1,
   },
@@ -77,11 +79,10 @@ export const KONSTANTY = {
    */
   PRAH_DLHU_ZAKLAD: 1,
   /**
-   * Pas (Michal 2026-10-20): kto v Zhromaždení pasuje, dostane toľko cigariet,
-   * koľko kariet ešte smel vyložiť (zostávajúci limit), najviac toľko, koľko má
-   * kariet v ruke (v6.1), a hrá až v Pitke.
+   * Ďalšia karta v tom istom ťahu (v12.2, Michal 2026-11-11): okrem plného poldeci stojí
+   * toľkoto cigariet — dve karty 1, tri karty 2. Cigarety za pas (2026-10-20 až v12.1) zanikli.
    */
-  CIGARETY_ZA_PAS_NA_KARTU: 1,
+  CENA_KARTY_NAVYSE: 1,
   /** Podloženie Nástroja pod kartu v línii (Náradie, Michal 2026-11-08, P4). */
   CENA_PODLOZENIA: 1,
   /** Záverečná (roadmapa #83, Michal 2026-10-23): karta lícom dole za cigaretu. */
@@ -207,10 +208,8 @@ export const KONSTANTY = {
   /** Schopnosť väzňa Autobusára (v11.2): každá karta zo šenku za toľko cigariet. */
   AUTOBUSAR_CENA: 1,
 
-  /** Stokársky barter: cigarety → nový plný poldeci (PRAVIDLA §7); Lakomec zlacní. */
+  /** Stokársky barter: cigarety → nový plný poldeci, maximum +1 natrvalo (PRAVIDLA §7). */
   BARTER_CENA: 5,
-  /** Cigarety → otočenie vypitého poldeci (PRAVIDLA §7). */
-  REFILL_CENA: 2,
   /**
    * Fajčenie v Pitke (Michal 2026-10-27, PRAVIDLA §7): k-te fajčenie hráča v tej
    * istej Pitke stojí ZAKLAD + (k − 1) × PRIRASTOK cigariet — 1, 2, 3…; každá Pitka
@@ -227,11 +226,13 @@ export const KONSTANTY = {
   CENA_FAJCENIA_ZAKLAD: 1,
   CENA_FAJCENIA_PRIRASTOK: 1,
   /**
-   * Nové kolo, nový poldeci (Michal 2026-10-16, playtest 20261016-155120):
-   * na začiatku kola sa toľko vypitých poldeci otočí na plné. Bez toho hráč
-   * po drafte a NA EX ostal s limitom 1 až do konca partie (Eva 4 zo 7 kôl).
+   * Po každej Pitke sa toľkoto vypitých poldeci otočí na plné zadarmo (v12.2, Michal 2026-11-11),
+   * k tomu aktívne akcie Poldeci a Jogurt; po bitke sa obnovia všetky (okrem finále).
+   * Otočenie na začiatku kola (2026-10-16 až v12.1) zaniklo.
    */
-  POLDECI_NA_ZACIATKU_KOLA: 1,
+  POLDECI_PO_PITKE: 1,
+  /** Jogurt (Dedičstvo, v12.2): po každej Pitke sa doleje o toľkoto poldeci viac. */
+  JOGURT_POLDECI: 1,
 } as const;
 
 /**
@@ -319,13 +320,16 @@ export function vazniNaVyhru(lokalitCelkom: number): number {
 // v12.1 (Michal 2026-11-11) bez novej značky: Odpor je aktívny len bez spoja (dáva NA EX štít, karta nie je
 // cieľom NA EX), na spoji zruší partnera a deaktivuje sa; NA EX ho nechá tak. Do podmienky NA EX sa Odpor
 // neráta, neaktívny Pakt aj Posilnenie áno. Hrable: tvoj aktívny Odpor dáva v bitke poškodenie ako Pecka.
+// v12.2 (Michal 2026-11-11) bez novej značky: vykladanie za poldeci — limit = plné poldeci, každá karta
+// do línie otočí jeden, n kariet v ťahu stojí n poldeci a n − 1 cigariet; 3 poldeci na štarte, po bitke
+// sa obnovia, po Pitke 1 zadarmo a akcie Poldeci; doliatie za cigarety a cigarety za pas zanikli.
 export const VERZIA_PRAVIDIEL = "v12";
 /**
  * Presná verzia pravidiel vrátane dávky — hráč ju vidí na stránke Pravidlá, ktorá má
  * vždy odzrkadľovať správanie nasadenej hry (Michal 2026-10-31). Značka partií
  * (VERZIA_PRAVIDIEL) sa pri dávke nemení, táto áno.
  */
-export const VERZIA_PRAVIDIEL_PRESNA = "v12.1";
+export const VERZIA_PRAVIDIEL_PRESNA = "v12.2";
 /** Odkedy platí VERZIA_PRAVIDIEL_PRESNA — hráč ho vidí na stránke Pravidlá. */
 export const PRAVIDLA_PLATNE_OD = "2026-11-11";
 export type DlzkaHry = keyof typeof DLZKY_HRY;

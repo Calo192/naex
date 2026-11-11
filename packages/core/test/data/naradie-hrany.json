@@ -41,14 +41,14 @@
       "nazov": "Izolačka",
       "hore": "{Pečeň}→{Obmedzenie}",
       "dole": "Posilnené {Obmedzenie}",
-      "effect_text": "Dedičstvo: Tvoje Obmedzenia uberajú aj cigarety, ktoré súper dostane za pas. Hore: {Pečeň}→{Obmedzenie}. Dole: Posilnené {Obmedzenie}."
+      "effect_text": "Dedičstvo: Za každé tvoje aktívne Obmedzenie sa súperovi po Pitke doleje o 1 poldeci menej. Hore: {Pečeň}→{Obmedzenie}. Dole: Posilnené {Obmedzenie}."
     },
     {
       "id": "jogurt",
       "nazov": "Jogurt",
       "hore": "{Pečeň}→{Posilnenie}",
       "dole": "{Pečeň}→{Hazard}",
-      "effect_text": "Dedičstvo: Tvoje Poldeci otáčajú vypitý poldeci hneď v Pitke, nie až v bitke. Hore: {Pečeň}→{Posilnenie}. Dole: {Pečeň}→{Hazard}."
+      "effect_text": "Dedičstvo: Po každej Pitke sa ti doleje o 1 poldeci viac. Hore: {Pečeň}→{Posilnenie}. Dole: {Pečeň}→{Hazard}."
     },
     {
       "id": "cigorky",
@@ -125,7 +125,7 @@
       "nazov": "Vínko",
       "hore": "NA EX",
       "dole": "{Pečeň}→{Poldeci}",
-      "effect_text": "Dedičstvo: Počíta sa, akoby si mal plný poldeci navyše. Nemôžeš dolievať poldeci za cigarety. Hore: NA EX. Dole: {Pečeň}→{Poldeci}."
+      "effect_text": "Dedičstvo: Tvoje maximum poldeci je o 1 vyššie. Hore: NA EX. Dole: {Pečeň}→{Poldeci}."
     },
     {
       "id": "vyherne_zreby",

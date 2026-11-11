@@ -33,10 +33,10 @@
   },
   "barter": {
     "pojem": "Menelski barter",
-    "popis": "W czasie Popijawy za 5 papierosów nowy pełny kieliszek.",
+    "popis": "",
     "sk": {
       "pojem": "Stokársky barter",
-      "popis": "Počas Pitky za 5 cigariet nový plný poldeci."
+      "popis": "Počas Pitky za 5 cigariet nový plný poldeci — natrvalo, po bitke sa obnoví s ostatnými."
     }
   },
   "bitka": {
@@ -105,10 +105,10 @@
   },
   "doliatie": {
     "pojem": "Dolewka",
-    "popis": "W czasie Popijawy za 2 papierosy odwracasz wypity kieliszek z powrotem na pełny.",
+    "popis": "",
     "sk": {
       "pojem": "Doliatie",
-      "popis": "Počas Pitky za 2 cigarety otočíš vypitý poldeci späť na plný."
+      "popis": "Na konci každej Pitky sa ti jeden vypitý poldeci otočí na plný zadarmo a ďalší za každú tvoju aktívnu akciu Poldeci. Za cigarety sa nedolieva."
     }
   },
   "efekt": {
@@ -257,10 +257,10 @@
   },
   "limit": {
     "pojem": "Limit wykładania",
-    "popis": "Ile kart wyłożysz w jednym Zebraniu: pełne kieliszki + 1.",
+    "popis": "",
     "sk": {
       "pojem": "Limit vykladania",
-      "popis": "Koľko kariet vyložíš v jednom Zhromaždení: plné poldeci + 1."
+      "popis": "Koľko kariet vyložíš: toľko, koľko máš plných poldeci — každá karta jeden otočí na vypitý."
     }
   },
   "linia": {
@@ -357,10 +357,10 @@
   },
   "nerest": {
     "pojem": "Grzech",
-    "popis": "Tylko konsumpcja: Wypić 1, NA EX 2, wypalony papieros 1. Na koniec rundy porównuje się z twoim Pragnieniem.",
+    "popis": "",
     "sk": {
       "pojem": "Nerest",
-      "popis": "Len konzumácia: Vypiť 1, NA EX 2, vyfajčená cigareta 1. Na konci kola sa porovnáva s tvojou Chuťou."
+      "popis": "Len konzumácia: karta navyše v ťahu (Vypiť) 1, odpoveď na NA EX 1, NA EX 2, vyfajčená cigareta 1. Na konci kola sa porovnáva s tvojou Chuťou."
     }
   },
   "obcania": {
@@ -381,10 +381,10 @@
   },
   "odpoved": {
     "pojem": "Odpowiedź na NA EX",
-    "popis": "Po odkryciu jedna karta za każde NA EX przeciwnika, rewersem do góry, za pełny kieliszek (wypijasz go: wątroba +1) i poza limitem; najpierw odpowiada atakujący, potem obrońca na drugie skrzydło linii; obie odwracają się naraz.",
+    "popis": "",
     "sk": {
       "pojem": "Odpoveď na NA EX",
-      "popis": "Po odkrytí jedna karta za každé súperovo NA EX, lícom dole, za plný poldeci (vypiješ ho: pečeň +1) a mimo limitu; najprv odpovedá útočník, potom obranca na druhý kraj línie; obe sa otočia naraz."
+      "popis": "Po odkrytí jedna karta za každé súperovo NA EX, lícom dole, za plný poldeci (vypiješ ho: pečeň +1) a mimo vykladania; najprv odpovedá útočník, potom obranca na druhý kraj línie; obe sa otočia naraz."
     }
   },
   "partia": {
@@ -397,10 +397,10 @@
   },
   "pas": {
     "pojem": "Pas",
-    "popis": "Kończysz wykładanie w Zebraniu i za każdą kartę, którą jeszcze mogłeś wyłożyć, dostajesz papierosa, nawet jeśli w ręce nic ci już nie zostało.",
+    "popis": "",
     "sk": {
       "pojem": "Pas",
-      "popis": "Skončíš vykladanie v Zhromaždení a za každú kartu, ktorú si ešte smel vyložiť, dostaneš cigaretu, aj keď ti v ruke už nič neostalo."
+      "popis": "Skončíš vykladanie v Zhromaždení; nič zaň nedostaneš, nevyložené plné poldeci ti ostanú."
     }
   },
   "podlozenie": {
@@ -462,12 +462,12 @@
   "pitka": {
     "pojem": "Popijawa",
     "popis": "Rozliczenie po Zebraniu: NA EX, Długi, wątroba, papierosy; w jednej rundzie jest od 1 do 4 Popijaw (w finale na lokacji szczytowej od 1 do 5).",
-    "kratko": "Po Zebraniu się pije: palisz, dolewasz i w ukryciu dajesz NA EX na kartę w linii.",
+    "kratko": "",
     "tvary": "Popijawa, Popijawy, Popijawie, Popijawę, Popijawą, Popijaw, Popijawom, Popijawami, Popijawach",
     "sk": {
       "pojem": "Pitka",
       "popis": "Vyhodnotenie po Zhromaždení: NA EX, Dlhy, pečeň, cigarety; v jednom kole je 1 až 4 Pitiek (vo finále na pinnacle 1 až 5).",
-      "kratko": "Po Zhromaždení sa pije: fajčíš, dolievaš a skryto dáš NA EX na kartu v línii.",
+      "kratko": "Po Zhromaždení sa pije: fajčíš, barteruješ a skryto dáš NA EX na kartu v línii; na konci sa ti doleje poldeci.",
       "tvary": "Pitka, Pitky, Pitke, Pitku, Pitkou, Pitiek"
     }
   },
@@ -489,12 +489,12 @@
   },
   "poldeci": {
     "pojem": "Kieliszek",
-    "popis": "Kieliszek wódki; pełny podnosi limit o 1 i płaci się nim za NA EX i za kolejną kartę w ruchu. Pełny na koniec gry to 1 pet.",
+    "popis": "",
     "kratko": "Kieliszek wódki. Ile masz pełnych, tyle kart wyłożysz, i jeszcze jedną. Za pełny kieliszek dasz też NA EX.",
     "tvary": "kieliszek, kieliszka, kieliszki, kieliszków, kieliszkowi, kieliszkiem, kieliszku, kieliszkom, kieliszkami, kieliszkach",
     "sk": {
       "pojem": "Poldeci",
-      "popis": "Pohárik pálenky; plný zvyšuje limit o 1 a platí ním NA EX aj ďalšiu kartu v ťahu. Plný na konci hry je 1 špak.",
+      "popis": "Pohárik pálenky; každá karta, ktorú vyložíš, stojí plný, a platí ním aj NA EX a odpoveď. Po bitke sa všetky obnovia, po Pitke sa jeden doleje. Plný na konci hry je 1 špak.",
       "kratko": "Pohárik pálenky. Koľko máš plných, toľko kariet vyložíš, a ešte jednu. Za plný poldeci dáš aj NA EX.",
       "tvary": "poldeci"
     }
@@ -709,10 +709,10 @@
   },
   "vypit": {
     "pojem": "Wypić",
-    "popis": "Odwracasz pełny kieliszek na wypity, żeby w tym samym ruchu wyłożyć kolejną kartę: limit −1, wątroba +1. Przy limicie 0 się nie pije.",
+    "popis": "",
     "sk": {
       "pojem": "Vypiť",
-      "popis": "Otočíš plný poldeci na vypitý, aby si v tom istom ťahu vyložil ďalšiu kartu: limit −1, pečeň +1. Pri limite 0 sa nepije."
+      "popis": "Ďalšia karta v tom istom ťahu: okrem plného poldeci stojí cigaretu, pečeň +1 a ráta sa ako nerest. Dve karty = 2 poldeci a 1 cigareta."
     }
   },
   "vykupne": {

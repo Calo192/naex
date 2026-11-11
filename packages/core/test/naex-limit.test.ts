@@ -7,7 +7,7 @@ import cardsJson from "../data/cards.json";
 import eldersJson from "../data/elders.json";
 import scorecardsJson from "../data/scorecards.json";
 import type { Command, GameState, PlayerId } from "../src/index.ts";
-import { apply, legalCommands, loadGameData, moznostiNaex, mozeHrat, naTahu, rngInt, rngSeed, setupGame } from "../src/index.ts";
+import { apply, evaluateLine, legalCommands, lineState, loadGameData, moznostiNaex, mozeHrat, naTahu, rngInt, rngSeed, setupGame } from "../src/index.ts";
 
 const data = loadGameData(cardsJson, eldersJson, scorecardsJson);
 
@@ -52,7 +52,10 @@ describe("NA EX mimo limitu vykladania", () => {
           if (uid !== undefined) {
             const bez = poPitke(s);
             const sNaex = poPitke(apply(data, s, { type: "naex", uid }, p).state);
-            if (bez.faza === "zhromazdenie" && sNaex.faza === "zhromazdenie") {
+            // Po Pitke dolievajú aj akcie Poldeci (v12.2) — NA EX ich na karte mení; také prípady sa nerátajú.
+            const poldeci = (t: GameState): readonly number[] => evaluateLine(data, lineState(t)).sums.map((x) => x.Poldeci ?? 0);
+            const rovnakePoldeci = poldeci(bez).join() === poldeci(sNaex).join();
+            if (bez.faza === "zhromazdenie" && sNaex.faza === "zhromazdenie" && rovnakePoldeci) {
               const su: PlayerId = p === 0 ? 1 : 0;
               const z0 = bez.zhromazdenieStav!;
               const z1 = sNaex.zhromazdenieStav!;

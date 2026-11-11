@@ -51,7 +51,7 @@ export const MA_DOST: Readonly<Record<StarsiId, { readonly nazov: string; readon
   autobusar: { nazov: "Ty nastupuješ prvý", text: "Z ponuky berieš vždy prvý a hneď 2 karty.", hned: false },
   starosta: { nazov: "Kde sa pije, poviem ja", text: "Lokalitu vyberáš a natáčaš ty.", hned: false },
   hrobar: { nazov: "Aspoň mám robotu", text: "+1 tuhé za každého podrazeného staršieho.", hned: false },
-  krcmarka: { nazov: "Už ti nenalejem", text: "Súperovi sa na začiatku kola neotočí vypitý poldeci.", hned: false },
+  krcmarka: { nazov: "Už ti nenalejem", text: "Súperovi sa po Pitke nedoleje poldeci zadarmo.", hned: false },
 };
 
 export function jeVyradenaVPate(defId: string): boolean {

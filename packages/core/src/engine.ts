@@ -52,6 +52,7 @@ import {
   freshPlayer,
   hodnotaViery,
   kartyVRukach,
+  limitVykladania,
   pocetAbstakov,
   prahCirhozy,
   prahDlhu,
@@ -89,7 +90,8 @@ import type { Moment } from "./momenty.ts";
 import type { HadkaRekapitulacie, RekapitulaciaBitky, RekapitulaciaPitky, ZaverecnaOdhalena } from "./rekapitulacia.ts";
 import { akcieKartyVLinii, rekapitulaciaBitky, rekapitulaciaPitky } from "./rekapitulacia.ts";
 import {
-  doliatieZakazane,
+  JEDNOTA_ZAKAZ,
+  poldeciZadarmoPoPitke,
   bitkaMody,
   bezLimituDruzstva,
   dovodZakazuFajcit,
@@ -105,7 +107,6 @@ import {
   jeCielLokalita,
   jeEfektManual,
   lenVlastnaStrana,
-  limitBonusDedicstva,
   limitZhromazdenia,
   naexZaPitku,
   prahCirhozyBonus,
@@ -226,38 +227,6 @@ export function poradieVykladania(state: Pick<GameState, "format" | "kapitani" |
 /** Miesto už v tomto Zhromaždení nevykladá — v 1 na 1 pas hráča. */
 export function skoncilVykladanie(z: Pick<ZhromazdenieStav, "pasoval" | "skoncili">, kto: Miesto): boolean {
   return z.skoncili?.[kto] ?? z.pasoval[timMiesta(kto)];
-}
-
-/**
- * Za koľko kariet dostane hráč cigarety, keď teraz pasuje (§6): celý zvyšok limitu.
- * Karty v ruke ho od v11.16 neobmedzujú (Michal 2026-11-09) — kto vyložil všetko, čo
- * mal, dostane cigarety aj za limit, ktorý už nemal čím využiť.
- */
-export function kartyZaPas(z: Pick<ZhromazdenieStav, "zostavaLimit">, p: PlayerId): number {
-  return Math.max(0, z.zostavaLimit[p]);
-}
-
-/**
- * Cigarety, ktoré hráč p dostane, keď teraz pasuje — jeden výpočet pre motor aj
- * náhľad pasu: karty za pas (kartyZaPas) a Izolačka (id pistalka) v súperovom
- * Dedičstve (Náradie 2026-10-30): súperove aktívne Obmedzenia v línii ich uberajú, najmenej 0.
- * V 2 na 2 pasuje miesto `kto`: kým partner vykladá, pas cigarety nedá (Michal 2026-11-02, Q1).
- */
-export function cigaretyZaPas(
-  data: GameData,
-  s: VerejnyStav & { readonly lokalitaOtocena: boolean; readonly zhromazdenieStav: Pick<ZhromazdenieStav, "pasoval" | "zostavaLimit" | "skoncili"> | null },
-  kto: Miesto,
-): number {
-  const z = s.zhromazdenieStav;
-  if (z === null) return 0;
-  const p = timMiesta(kto);
-  if (z.skoncili !== undefined && !z.skoncili[partnerMiesta(kto)]) return 0;
-  const karty = kartyZaPas(z, p);
-  const zaPas = karty * KONSTANTY.CIGARETY_ZA_PAS_NA_KARTU;
-  const q = opponentOf(p);
-  if (zaPas === 0 || !vDedicstve(s, q, "pistalka")) return zaPas;
-  const obmedzenia = sucetSRadom(data, s, evaluateLine(data, lineState(s)).sums, q).Obmedzenie ?? 0;
-  return Math.max(0, zaPas - obmedzenia);
 }
 
 export interface PitkaStav {
@@ -594,7 +563,6 @@ export interface GameState {
   /** Koľkokrát súper v tomto kole priložil kartu ku karte hráča (Pasca v7); verejné. */
   readonly prilozeniaKu?: readonly [number, number];
   /** Poldeci, ktoré akcie Poldeci v tomto kole už otočili v Pitke (Jogurt, Náradie 2026-10-30). */
-  readonly poldeciOtoceneVKole?: readonly [number, number];
 }
 
 /** Čakajúca voľba Hasiča. */
@@ -674,14 +642,13 @@ export type Command =
   // Fajčenie: pocet kariet naraz (chýba = 1).
   | { readonly type: "smoke"; readonly pocet?: number }
   | { readonly type: "barter" }
-  | { readonly type: "refillPoldeci" }
   // Rozdelenie (v11 Strach a reči): víťaz bitky rozdelí Nakladačku na svoj strach (prebytok),
   // víťaz hádky hádku na svoje reči (reci) — jedným zámerom, na ktorý stupeň pri ktorom staršom.
   // v11.4: zajatia = starší zajatí za 5 bodov Nakladačky, presvedcenia = presvedčení za 5 bodov hádky.
   | { readonly type: "prebytok"; readonly zdvihy: readonly Zdvih[]; readonly zajatia?: readonly string[] }
   | { readonly type: "reci"; readonly zdvihy: readonly Zdvih[]; readonly presvedcenia?: readonly string[] }
-  // Vypiť (pravidlá v3): v Zhromaždení otoč plný poldeci na vypitý — limit
-  // klesne o 1, ale ďalšou kartou ťah nekončí (zahráš dve za sebou).
+  // Vypiť (v12.2): ďalšia karta v tom istom ťahu — cigareta, pečeň +1 a nerest; ďalšou kartou
+  // ťah nekončí. Poldeci otočí až samotná karta, ako každá.
   | { readonly type: "vypit" }
   // Celý ťah v Zhromaždení naraz (Michal 2026-10-19): klient pošle priznania,
   // vyloženia a pred každou ďalšou kartou Vypiť — vykoná sa všetko, alebo nič.
@@ -701,10 +668,13 @@ export type Command =
 export type CielVykladania = "vlastna" | "superova" | "priznanie" | "dedicstvo";
 
 /** Odkiaľ prišli cigarety; „platba“ je hráčova vlastná útrata (šenok, fajčenie…), prísun to nie je. */
-export type ZdrojCigariet = "akcie" | "obmedzenie" | "obecnyUrad" | "pas" | "porazeny" | "fajciar" | "vypalne" | "sofer" | "podvodnik" | "policajtka" | "postarka" | "platba";
+export type ZdrojCigariet = "akcie" | "obmedzenie" | "obecnyUrad" | "porazeny" | "fajciar" | "vypalne" | "sofer" | "podvodnik" | "policajtka" | "postarka" | "platba";
 
-/** Odkiaľ prišiel plný poldeci; „platba“ = vlastné minutie, ktoré si hráč zvolil (Vypiť, NA EX, vyžrať v Päte). */
-export type ZdrojPoldeci = "akcie" | "zaciatokKola" | "jogurt" | "doliatie" | "barter" | "krcmarka" | "degustatorka" | "platba";
+/**
+ * Odkiaľ prišiel plný poldeci; „platba“ = vlastné minutie, ktoré si hráč zvolil (vyložená karta,
+ * NA EX, odpoveď, vyžrať v Päte). „pitka“ = 1 zadarmo po Pitke, „obnova“ = po bitke na maximum (v12.2).
+ */
+export type ZdrojPoldeci = "akcie" | "pitka" | "obnova" | "jogurt" | "vinko" | "barter" | "krcmarka" | "degustatorka" | "platba";
 
 export type Event =
   | { readonly type: "log"; readonly text: string; readonly pre?: PlayerId }
@@ -893,6 +863,17 @@ function zmenPoldeci(s: MutState, p: PlayerId, zdroj: ZdrojPoldeci, suma: number
   if (suma === 0) return;
   hrac(s, p).poldeciPlne += suma;
   events.push({ type: "zmenaPoldeci", hrac: p, zdroj, suma });
+  // Limit vykladania = plné poldeci (v12.2): každá zmena v Zhromaždení (karta, Degustátorka, Vínko,
+  // Krčmárka) sa prejaví hneď.
+  const z = s.zhromazdenieStav;
+  if (z !== null) z.zostavaLimit[p] = limitVykladania(s.hraci[p]);
+}
+
+/** Plný poldeci na vypitý — za vyloženú kartu, odpoveď na NA EX či vyžratie v Päte. */
+function vypiPlny(s: MutState, p: PlayerId, n: number, events: Event[]): void {
+  if (n <= 0) return;
+  zmenPoldeci(s, p, "platba", -n, events);
+  hrac(s, p).poldeciVypite += n;
 }
 
 export function formatHry(state: Pick<GameState, "format">): Format {
@@ -1290,15 +1271,52 @@ export interface NahladPitkyHraca {
   readonly dlhy: number;
   /** Cigarety, ktoré vyhodnotenie ešte pripíše (rozpisCigaretPitky); po vyhodnotení nuly. */
   readonly cigarety: CigaretyPitky;
-  /** Vypité poldeci, ktoré akcie Poldeci v línii ešte otočia na plné (v bitke, s Jogurtom už v Pitke). */
+  /** Vypité poldeci, ktoré sa po Pitke dolejú (doliatiePoPitke). */
   readonly poldeci: PoldeciPitky;
 }
 
 export interface PoldeciPitky {
-  /** Aktívne akcie Poldeci, ktoré ešte nič neotočili. */
+  /** Aktívne akcie Poldeci v línii. */
   readonly akcie: number;
-  /** Čo z nich naozaj otočí: najviac toľko, koľko je vypitých a ležiacich na stole cez NA EX. */
+  /** Koľko vypitých sa po Pitke naozaj otočí na plné — najviac toľko, koľko je vypitých. */
   readonly zisk: number;
+  /** Zisk po zdrojoch v poradí motora: zadarmo, Jogurt, akcie Poldeci. */
+  readonly casti: readonly (readonly ["pitka" | "jogurt" | "akcie", number])[];
+  /** Koľko súperova Izolačka z doliatia naozaj ubrala. */
+  readonly izolacka: number;
+}
+
+/**
+ * Doliatie po Pitke (v12.2, §7) — jeden výpočet pre motor (dolejPoPitke) aj náhľad: 1 poldeci zadarmo
+ * (v 2 na 2 za každého člena), Jogurt o 1 viac, každá aktívna akcia Poldeci 1. Súperova Izolačka uberie
+ * 1 za každé jeho aktívne Obmedzenie, najprv zo zadarmo (výklad Leadera 2026-11-11). Má dosť Krčmárky
+ * (Päta): súperovi sa nedoleje nič zadarmo ani z Jogurtu, akcie Poldeci áno.
+ */
+export function doliatiePoPitke(
+  s: Pick<VerejnyStav, "hraci" | "format" | "pata"> & { readonly hraci: readonly [VypitePoldeci, VypitePoldeci] },
+  sums: readonly [ActionSums, ActionSums],
+  p: PlayerId,
+  vypite: number = s.hraci[p].poldeciVypite,
+): PoldeciPitky {
+  const q = opponentOf(p);
+  const nenalejem = s.pata !== undefined && maDost(s.pata, q, "krcmarka");
+  const jogurt = !nenalejem && s.hraci[p].dedicstvo.some((k) => k.defId === "jogurt") ? KONSTANTY.JOGURT_POLDECI : 0;
+  const zadarmo = nenalejem ? 0 : poldeciZadarmoPoPitke(s, p) - jogurt;
+  const akcie = sums[p].Poldeci ?? 0;
+  let ubrat = s.hraci[q].dedicstvo.some((k) => k.defId === "pistalka") ? (sums[q].Obmedzenie ?? 0) : 0;
+  let zostava = vypite;
+  let izolacka = 0;
+  const casti: (readonly ["pitka" | "jogurt" | "akcie", number])[] = [];
+  for (const [zdroj, n] of [["pitka", zadarmo], ["jogurt", jogurt], ["akcie", akcie]] as const) {
+    const zIzolacky = Math.min(ubrat, n);
+    ubrat -= zIzolacky;
+    izolacka += zIzolacky;
+    const teraz = Math.min(n - zIzolacky, zostava);
+    if (teraz <= 0) continue;
+    zostava -= teraz;
+    casti.push([zdroj, teraz]);
+  }
+  return { akcie, zisk: vypite - zostava, casti, izolacka };
 }
 
 /**
@@ -1312,7 +1330,6 @@ export function nahladPitky(
     readonly lokalitaOtocena: boolean;
     readonly hraci: readonly [VerejnyHrac & PecenHraca & VypitePoldeci, VerejnyHrac & PecenHraca & VypitePoldeci];
     readonly vizia: GameState["vizia"];
-    readonly poldeciOtoceneVKole?: readonly [number, number];
     readonly zaverecne?: readonly { readonly uid: number; readonly naexBy: PlayerId | null }[];
   },
   /** Kto v tejto Pitke dal NA EX (Stryná) — klient pozná len to, čo vidí. */
@@ -1328,16 +1345,8 @@ export function nahladPitky(
   // a nulujú sa až v dokonciPitku. Rátať ich znova hlásilo kliatby, ktoré nevzniknú
   // (playtest 20261021-143600).
   const vyhodnotena = s.vizia !== null;
-  // Poradie motora (vypiPoldeci): poldeci z NA EX sa vypijú skôr, než ich akcie otočia. Skryté NA EX
-  // pozná len ten, kto ich dal — kto ich má rátať, pošle stôl s nimi (sMojimiSkrytymiNaex).
-  const poldeciPitky = (p: PlayerId): PoldeciPitky => {
-    const akcie = Math.max(0, (linia.sums[p].Poldeci ?? 0) - (s.poldeciOtoceneVKole?.[p] ?? 0));
-    const strany = s.strany.flat();
-    const naStole = strany.filter((pl) => pl.naexBy === p || pl.naexBy2 === p).length;
-    // Súperova Záverečná lícom dole v pohľade v strany nie je — NA EX na jej rube je len v zaverecne.
-    const naRube = (s.zaverecne ?? []).filter((z) => z.naexBy === p && !strany.some((pl) => pl.card.uid === z.uid)).length;
-    return { akcie, zisk: Math.min(akcie, s.hraci[p].poldeciVypite + naStole + naRube) };
-  };
+  // Po vyhodnotení (Vízia) sa ešte dolieva — doliatie je až na konci Pitky (dolejPoPitke).
+  const poldeciPitky = (p: PlayerId): PoldeciPitky => doliatiePoPitke(s, linia.sums, p);
   const pre = (p: PlayerId): NahladPitkyHraca => {
     const prahPecene = prahCirhozy() + prahCirhozyBonus(s, p);
     const prahD = prahDlhu() + prahDlhuBonus(s, p);
@@ -1903,6 +1912,21 @@ export function applySPrisunom(
   return applyPrikaz(data, state, cmd, kto, false);
 }
 
+/** Krok ťahu, ktorý by sám ťah ukončil — vyloženie (nie priznanie), podloženie, Záverečná. */
+function krokVykladania(k: Command): boolean {
+  return (k.type === "place" && k.target !== "priznanie") || k.type === "podloz" || k.type === "zaverecna";
+}
+
+/**
+ * Krok ťahu, ktorý stojí plný poldeci a ráta sa do ceny ťahu v cigaretách (v12.2): karta do línie
+ * aj Záverečná. Nástroj (Dedičstvo, podloženie) a priznanie nie, na Družstve ani karta s Robotou.
+ */
+function platenyKrokTahu(data: GameData, s: GameState, kto: Miesto, k: Command): boolean {
+  if (k.type !== "zaverecna" && !(k.type === "place" && (k.target === "vlastna" || k.target === "superova"))) return false;
+  const karta = rukaMiesta(s, kto).find((x) => x.uid === k.uid);
+  return karta === undefined || !bezLimituDruzstva(cielLokalita(s)?.defId ?? null, defOf(data, karta));
+}
+
 /** `vTahu`: krok ťahu poslaného naraz — Hasič vyložený skôr v tom istom ťahu ho nezastaví. */
 function applyPrikaz(
   data: GameData,
@@ -1922,13 +1946,26 @@ function applyPrikaz(
     need(state.faza === "zhromazdenie", "Celý ťah naraz sa hrá len v Zhromaždení.");
     need(!cakaHasic(state), najprvVolba(state, hracId));
     need(cmd.kroky.length > 0, "Ťah je prázdny.");
+    // Vypiť (v12.2) platí len ďalšiu kartu do línie — samo by kupovalo nerest a pečeň za cigaretu.
+    const platene = cmd.kroky.map((k) => platenyKrokTahu(data, state, kto, k));
+    const vypitia = cmd.kroky.filter((k) => k.type === "vypit").length;
+    need(cmd.kroky.at(-1)?.type !== "vypit" && vypitia <= Math.max(0, platene.filter(Boolean).length - 1), "Vypiť sa dá len pred ďalšou kartou do línie.");
     let st = state;
     const vsetky: Event[] = [];
-    for (const k of cmd.kroky) {
+    for (const [i, k] of cmd.kroky.entries()) {
       need(k.type === "place" || k.type === "vypit" || k.type === "zaverecna" || k.type === "podloz", "V ťahu smú byť len vyloženia, podloženia, Vypiť a Záverečná.");
       // O vytiahnutej karte Hasiča hráč rozhodne po zvyšku ťahu (ten poslal skôr, než ju videl);
       // ťah sa preto posudzuje bez čakania na Hasiča.
       need(st.faza === "zhromazdenie" && naTahuVoFaze(st) === kto, "Ťah sa skončil skôr, než si vyložil všetky karty.");
+      // Nástroj a karta Robota na Družstve cenu ťahu nezvyšujú (v12.2): ťah po nich pokračuje zadarmo,
+      // rovnako po karte, za ktorou idú už len také. Na Kostole nie — v ťahu je len 1 karta.
+      const pokracuje = i < cmd.kroky.length - 1 && krokVykladania(k) && !(platene[i] === true && platene.slice(i + 1).some(Boolean)) && !zakazVypit(st);
+      if (pokracuje && st.zhromazdenieStav !== null) {
+        const z = st.zhromazdenieStav;
+        const navyse: [number, number] = [z.navyse[0], z.navyse[1]];
+        navyse[hracId] += 1;
+        st = { ...st, zhromazdenieStav: { ...z, navyse } };
+      }
       const r = applyPrikaz(data, st, k, kto, true);
       st = r.state;
       vsetky.push(...r.events);
@@ -2037,9 +2074,6 @@ function applyPrikaz(
       break;
     case "barter":
       cmdBarter(s, data, hracId, events);
-      break;
-    case "refillPoldeci":
-      cmdRefill(s, hracId, events);
       break;
     case "hasic":
       cmdHasic(s, data, cmd, kto, events);
@@ -2724,9 +2758,8 @@ function cmdPlace(
     zmenCigarety(s, p, "platba", -cena, events);
     s.dedicstvaVylozene += 1;
     const karta = vezmiZRuky(s, kto, cmd.uid);
-    const bonusPred = limitBonusDedicstva(s.hraci[p].dedicstvo);
     hrac(s, p).dedicstvo.push(karta as DeepMutable<CardInstance>);
-    pridajLimit(z, p, limitBonusDedicstva(s.hraci[p].dedicstvo) - bonusPred);
+    vinkoDoDedicstva(s, data, p, karta, events);
     events.push({
       type: "log",
       text: `Hráč ${p + 1} vykladá ${def.name} do Dedičstva za ${cigariet(cena)} (ďalšie Dedičstvo stojí ${cenaDedicstva(s as GameState)}).`,
@@ -2735,10 +2768,10 @@ function cmdPlace(
   } else {
     // Nástroj sa do línie nevykladá (Náradie 2026-11-08) — podkladá sa (cmdPodloz).
     need(!jeNastroj, NASTROJ_DO_LINIE);
-    // Karty limit míňajú (Kočovník od 2026-10-19 tiež); Družstvo: karty s akciou Robota nie.
+    // Každá karta do línie otočí plný poldeci (v12.2; Kočovník tiež); Družstvo: karty s akciou Robota nie.
     if (!bezLimituDruzstva(cielLokalita(s as GameState)?.defId ?? null, def)) {
-      need(z.zostavaLimit[p] > 0, "Limit vykladania je vyčerpaný.");
-      uberLimit(z, p, 1);
+      need(limitVykladania(s.hraci[p]) > 0, BEZ_PLNEHO_POLDECI);
+      vypiPlny(s, p, 1, events);
     }
     vylozDoLinie(s, data, kto, cmd.uid, cmd.target, events);
   }
@@ -2765,9 +2798,8 @@ function zoSkladu(s: MutState, data: GameData, p: PlayerId, uid: number, events:
   zmenCigarety(s, p, "platba", -cena, events);
   s.senok.splice(i, 1);
   s.dedicstvaVylozene += 1;
-  const bonusPred = limitBonusDedicstva(s.hraci[p].dedicstvo);
   hrac(s, p).dedicstvo.push(karta);
-  pridajLimit(z, p, limitBonusDedicstva(s.hraci[p].dedicstvo) - bonusPred);
+  vinkoDoDedicstva(s, data, p, karta as CardInstance, events);
   events.push({ type: "log", text: `Sklad: hráč ${p + 1} vykladá ${defOf(data, karta as CardInstance).name} z ponuky do Dedičstva za ${cigariet(cena)}.` });
   manualEfekty(s, data, "Dedičstvo", events);
   const nova = s.naradie.shift();
@@ -2780,7 +2812,7 @@ function zoSkladu(s: MutState, data: GameData, p: PlayerId, uid: number, events:
 /**
  * Záverečná (roadmapa #83, Michal 2026-10-23): za cigaretu karta z ruky lícom
  * dole na koniec línie. Míňa limit ako bežné vyloženie (aj po Vypiť) a hráč
- * tým v tomto Zhromaždení končí — bez cigariet za pas.
+ * tým v tomto Zhromaždení končí ako pri pase.
  */
 function cmdZaverecna(
   s: MutState,
@@ -2799,8 +2831,8 @@ function cmdZaverecna(
   const def = defOf(data, kartaVRuke as CardInstance);
   need(!def.tags.includes("Nástroj"), NASTROJ_DO_LINIE);
   if (!bezLimituDruzstva(cielLokalita(s as GameState)?.defId ?? null, def)) {
-    need(z.zostavaLimit[p] > 0, "Limit vykladania je vyčerpaný.");
-    uberLimit(z, p, 1);
+    need(limitVykladania(s.hraci[p]) > 0, BEZ_PLNEHO_POLDECI);
+    vypiPlny(s, p, 1, events);
   }
   vylozDoLinie(s, data, kto, cmd.uid, cmd.target, events, true);
   zmenCigarety(s, p, "platba", -KONSTANTY.CENA_ZAVERECNEJ, events);
@@ -2958,8 +2990,14 @@ export const NASTROJ_DO_LINIE = "Nástroj sa do línie nevykladá — podlož ho
 /** Dôvod pre server aj klienta, keď chce hráč odpovedať na NA EX bez plného poldeci (v11.16, §7). */
 export const ODPOVED_BEZ_POLDECI = "Odpoveď na NA EX stojí plný poldeci — nemáš ho.";
 
-/** Dôvod pre server aj klienta, keď hráč pije pri vyčerpanom limite vykladania (v11.16, §13). */
-export const VYPIT_BEZ_LIMITU = "Vypiť sa dá, len kým ti zostáva limit vykladania — pri limite 0 nie.";
+/** Dôvod pre server aj klienta, keď na ďalšiu kartu ťahu chýba plný poldeci (v12.2, §13). */
+export const VYPIT_BEZ_LIMITU = "Na ďalšiu kartu v tom istom ťahu treba ďalší plný poldeci.";
+
+/** Karta do línie bez plného poldeci (v12.2, §6). */
+export const BEZ_PLNEHO_POLDECI = "Každá karta stojí plný poldeci — nemáš ho.";
+
+/** Kostol (v12.2): v ťahu len jedna karta. */
+export const KOSTOL_JEDNA_KARTA = "Kostol: v ťahu sa smie vyložiť len 1 karta.";
 
 /**
  * Podloženie (Náradie, Michal 2026-11-08, PRAVIDLA §12): Nástroj z ruky pod kartu v línii
@@ -3537,7 +3575,6 @@ function nastupEfekt(
         hrac(s, opp).poldeciVypite += 1;
         // v11.16 (Michal 2026-11-09): súperov zostávajúci limit klesne hneď, ako pri Vypiť a Vínku.
         const z = s.zhromazdenieStav;
-        if (s.faza === "zhromazdenie" && z !== null) uberLimit(z, opp, 1);
         events.push({
           type: "log",
           text: `Degustátorka: hráčovi ${opp + 1} vyžerie plný poldeci — je vypitý${s.faza === "zhromazdenie" && z !== null ? `, limit mu klesá na ${z.zostavaLimit[opp]}` : ""}.`,
@@ -3558,15 +3595,14 @@ function nastupEfekt(
 }
 
 /**
- * Vínko vyložené do Dedičstva v Zhromaždení (návrh #26 B, Michal 2026-10-28):
- * zostávajúci limit stúpne hneď, ako keby bol v limite od začiatku Zhromaždenia.
+ * Vínko v Dedičstve (v12.2, Michal 2026-11-11: „Tvoje maximum poldeci je o 1 vyššie.“): pri vyložení
+ * pribudne plný poldeci, ktorý sa po každej bitke obnoví ako ostatné — v Zhromaždení je to hneď o kartu viac.
  */
-function pridajLimit(z: DeepMutable<ZhromazdenieStav>, p: PlayerId, n: number): void {
-  z.zostavaLimit[p] += n;
-}
-
-function uberLimit(z: DeepMutable<ZhromazdenieStav>, p: PlayerId, n: number): void {
-  z.zostavaLimit[p] = Math.max(0, z.zostavaLimit[p] - n);
+function vinkoDoDedicstva(s: MutState, data: GameData, p: PlayerId, karta: CardInstance, events: Event[]): void {
+  // Maximum je o 1 vyššie raz — druhé Vínko nepridá (ako bonus k limitu do v12.1).
+  if (karta.defId !== "vinko" || s.hraci[p].dedicstvo.filter((k) => k.defId === "vinko").length > 1) return;
+  zmenPoldeci(s, p, "vinko", 1, events);
+  events.push({ type: "log", text: `${defOf(data, karta).name}: hráč ${p + 1} má o poldeci viac — nový plný poldeci.` });
 }
 
 function cmdPass(s: MutState, data: GameData, kto: Miesto, events: Event[]): void {
@@ -3576,8 +3612,7 @@ function cmdPass(s: MutState, data: GameData, kto: Miesto, events: Event[]): voi
   need(!skoncilVykladanie(z, kto), "Už si pasoval.");
   z.navyse[p] = 0;
   if (z.skoncili !== undefined) {
-    // 2 na 2 (Michal 2026-11-02): pas člena len ukončí jeho vykladanie. Cigarety za zvyšok
-    // limitu dostane tím, až keď pasuje aj druhý.
+    // 2 na 2 (Michal 2026-11-02): pas člena len ukončí jeho vykladanie, tím vykladá ďalej.
     z.skoncili[kto] = true;
     if (!z.skoncili[partnerMiesta(kto)]) {
       events.push({ type: "log", text: `Hráč ${kto + 1} pasuje do Pitky — tím vykladá ďalej.` });
@@ -3585,47 +3620,33 @@ function cmdPass(s: MutState, data: GameData, kto: Miesto, events: Event[]): voi
       return;
     }
   }
+  // Pas do Pitky už nič nedáva (v12.2, Michal 2026-11-11: „Za pasovanie nebudú dostávať cigarety.“);
+  // nevyložené plné poldeci ostávajú na ďalšie Zhromaždenie. Súper vykladá sám.
   z.pasoval[p] = true;
-  // Pas (Michal 2026-10-20): cigareta za každú kartu, ktorú hráč ešte smel
-  // vyložiť — aj keď pasuje hra za neho; karty v ruke ju od v11.16 neobmedzujú.
-  // Do Pitky už nehrá, súper vykladá sám.
-  const karty = kartyZaPas(z, p);
-  const ziska = cigaretyZaPas(data, s as GameState, kto);
-  const pistalka = karty * KONSTANTY.CIGARETY_ZA_PAS_NA_KARTU - ziska;
-  if (pistalka > 0) events.push({ type: "log", text: `${data.cards.get("pistalka")?.name ?? "Izolačka"}: súperove Obmedzenia uberajú hráčovi ${p + 1} ${cigariet(pistalka)} za pas.` });
-  zmenCigarety(s, p, "pas", ziska, events);
-  events.push({
-    type: "log",
-    text:
-      ziska > 0
-        ? `Hráč ${p + 1} pasuje do Pitky a za ${pocet(karty, "nevyloženú kartu", "nevyložené karty", "nevyložených kariet")} dostáva ${cigariet(ziska)}.`
-        : `Hráč ${p + 1} pasuje do Pitky.`,
-  });
+  events.push({ type: "log", text: `Hráč ${p + 1} pasuje do Pitky.` });
   posunTahZhromazdenia(s, data, p, events);
 }
 
 /**
- * Vypiť (pravidlá v3): plný poldeci sa otočí na vypitý. Limit vykladania
- * hneď klesne o 1 (poldeci už nie je plný), pečeň +1 a ráta sa ako nerest —
- * zato hráč ďalšou kartou neodovzdá ťah. Smie piť opakovane.
+ * Vypiť (v12.2): ďalšia karta v tom istom ťahu. Poldeci otočí až karta (ako každá), Vypiť
+ * stojí cigaretu, pečeň +1 a nerest — zato hráč ďalšou kartou neodovzdá ťah. Smie piť
+ * opakovane, kým má plný poldeci na každú kartu ťahu.
  */
 function cmdVypit(s: MutState, kto: Miesto, events: Event[]): void {
   const p = timMiesta(kto);
   const z = s.zhromazdenieStav;
   need(s.faza === "zhromazdenie" && z !== null, "Vypiť sa dá len v Zhromaždení.");
   need(!skoncilVykladanie(z, kto), "Už si pasoval.");
-  need(!zakazVypit(s as GameState), "Kostol: nikto nesmie vypiť.");
-  need(s.hraci[p].poldeciPlne > 0, "Nemáš plný poldeci.");
-  // v11.16 (Michal 2026-11-09): pri limite 0 by vypitie limit neznížilo — bola by to len
-  // kúpa neresti mimo Pitky.
-  need(z.zostavaLimit[p] > 0, VYPIT_BEZ_LIMITU);
+  need(!zakazVypit(s as GameState), KOSTOL_JEDNA_KARTA);
+  const cena = KONSTANTY.CENA_KARTY_NAVYSE;
+  need(s.hraci[p].cigarety >= cena, `Ďalšia karta v ťahu stojí ${cigariet(cena)}.`);
+  // Plný poldeci treba na kartu, po ktorej hráč pokračuje, aj na ďalšiu.
+  need(limitVykladania(s.hraci[p]) >= z.navyse[p] + 2, VYPIT_BEZ_LIMITU);
   const player = hrac(s, p);
-  zmenPoldeci(s, p, "platba", -1, events);
-  player.poldeciVypite += 1;
+  zmenCigarety(s, p, "platba", -cena, events);
   player.nerestiTotoKolo += 1;
-  uberLimit(z, p, 1);
   z.navyse[p] += 1;
-  events.push({ type: "log", text: `Hráč ${p + 1} pije do dna — zahrá ďalšiu kartu hneď, limit mu klesá na ${z.zostavaLimit[p]}.` });
+  events.push({ type: "log", text: `Hráč ${p + 1} pije do dna — za ${cigariet(cena)} zahrá ďalšiu kartu hneď.` });
   // Pečeň sa vyhodnocuje len v Pitke (Michal 2026-10-16): vypitie ju pripíše
   // dopredu a prah Cirhózy sa skontroluje v najbližšej Pitke.
   player.pecen += 1;
@@ -4248,6 +4269,7 @@ export function barterCena(_data: GameData, _s: VerejnyStav, _p: PlayerId): numb
 
 function cmdBarter(s: MutState, data: GameData, p: PlayerId, events: Event[]): void {
   need(s.faza === "pitka" && s.pitkaStav?.reakcia === null, "Barter sa robí počas Pitky.");
+  need(!jednotaZakazuje(s as GameState, p), JEDNOTA_ZAKAZ);
   // Zjednodušenie v1: barter berie len cigarety, ktoré hráč má (pravidlá pripúšťajú
   // aj aktívne akcie Cigareta) — viď README.
   const cena = barterCena(data, s as GameState, p);
@@ -4255,18 +4277,6 @@ function cmdBarter(s: MutState, data: GameData, p: PlayerId, events: Event[]): v
   zmenCigarety(s, p, "platba", -cena, events);
   zmenPoldeci(s, p, "barter", 1, events);
   events.push({ type: "log", text: `Hráč ${p + 1} robí stokársky barter za ${cigariet(cena)} — nový plný poldeci.` });
-}
-
-function cmdRefill(s: MutState, p: PlayerId, events: Event[]): void {
-  need(s.faza === "pitka" && s.pitkaStav?.reakcia === null, "Poldeci sa dopĺňa počas Pitky.");
-  need(!doliatieZakazane(s as GameState, p), "Vínko: poldeci za cigarety dolievať nesmieš.");
-  need(!jednotaZakazuje(s as GameState, p), "Jednota: máš viac priznaných Dlhov — nesmieš fajčiť ani dolievať.");
-  need(s.hraci[p].cigarety >= KONSTANTY.REFILL_CENA, `Treba ${KONSTANTY.REFILL_CENA} cigarety.`);
-  need(s.hraci[p].poldeciVypite > 0, "Nemáš vypitý poldeci.");
-  zmenCigarety(s, p, "platba", -KONSTANTY.REFILL_CENA, events);
-  hrac(s, p).poldeciVypite -= 1;
-  zmenPoldeci(s, p, "doliatie", 1, events);
-  events.push({ type: "log", text: `Hráč ${p + 1} otáča poldeci za 2 cigarety.` });
 }
 
 function cmdSkipNaex(s: MutState, data: GameData, p: PlayerId, events: Event[]): void {
@@ -4353,21 +4363,6 @@ function vyhodnotPitku(s: MutState, data: GameData, events: Event[]): void {
         text: `Hráč ${p + 1} získava ${cigariet(ziska)}${urad > 0 ? " (Obecný úrad: dvakrát)" : ""}.`,
       });
     }
-  }
-
-  // Jogurt (Dedičstvo, Náradie 2026-10-30): tvoje Poldeci otáčajú vypitý poldeci hneď v Pitke —
-  // čo otočia teraz, bitka už neotočí (poldeciOtoceneVKole).
-  for (const p of [0, 1] as const) {
-    if (!vDedicstve(s as GameState, p, "jogurt")) continue;
-    const otocene = s.poldeciOtoceneVKole?.[p] ?? 0;
-    const teraz = Math.min(Math.max(0, (sums[p].Poldeci ?? 0) - otocene), s.hraci[p].poldeciVypite);
-    if (teraz <= 0) continue;
-    hrac(s, p).poldeciVypite -= teraz;
-    zmenPoldeci(s, p, "jogurt", teraz, events);
-    const nove: [number, number] = [s.poldeciOtoceneVKole?.[0] ?? 0, s.poldeciOtoceneVKole?.[1] ?? 0];
-    nove[p] += teraz;
-    s.poldeciOtoceneVKole = nove;
-    events.push({ type: "log", text: `Jogurt: hráčovi ${p + 1} akcie Poldeci otáčajú ${pocet(teraz, "vypitý poldeci", "vypité poldeci", "vypitých poldeci")} na plný hneď v Pitke.` });
   }
 
   for (const p of [0, 1] as const) {
@@ -4773,7 +4768,7 @@ function cmdSchopnostVazna(s: MutState, data: GameData, cmd: { elderId: string; 
       const z = s.zhromazdenieStav as DeepMutable<ZhromazdenieStav>;
       z.pasoval[opp] = true;
       z.navyse[opp] = 0;
-      events.push({ type: "log", text: `${kto} — hráč ${opp + 1} v tomto Zhromaždení pasuje bez cigariet.` });
+      events.push({ type: "log", text: `${kto} — hráč ${opp + 1} v tomto Zhromaždení hneď pasuje.` });
       break;
     }
     case "autobusar": {
@@ -4956,6 +4951,24 @@ function cmdVolbaFrakcie(s: MutState, data: GameData, cmd: Extract<Command, { ty
 }
 
 /** Koniec Pitky: pečeň a zadĺženie sa vynulujú, ide ďalšia Pitka alebo bitka. */
+/**
+ * Po každej Pitke (v12.2, Michal 2026-11-11: „Každú Pitku sa im resetne 1 poldeci z prázdneho na plný
+ * + aktívne akcie Poldeci.“): vypité poldeci sa otočia na plné — 1 zadarmo (Jogurt o 1 viac) a za každú
+ * aktívnu akciu Poldeci v línii. Až po otočení Záverečných, ktoré do línie ešte pridajú akcie.
+ */
+function dolejPoPitke(s: MutState, data: GameData, events: Event[]): void {
+  const sums = sRadom(data, s as GameState, evaluateLine(data, lineState(s as GameState))).sums;
+  for (const p of [0, 1] as const) {
+    const d = doliatiePoPitke(s as GameState, sums, p);
+    for (const [zdroj, n] of d.casti) {
+      hrac(s, p).poldeciVypite -= n;
+      zmenPoldeci(s, p, zdroj, n, events);
+    }
+    if (d.izolacka > 0) events.push({ type: "log", text: `${data.cards.get("pistalka")?.name ?? "Izolačka"}: súperove Obmedzenia uberajú hráčovi ${p + 1} z doliatia po Pitke ${pocet(d.izolacka, "poldeci", "poldeci", "poldeci")}.` });
+    if (d.zisk > 0) events.push({ type: "log", text: `Hráčovi ${p + 1} sa po Pitke dolieva ${pocet(d.zisk, "poldeci", "poldeci", "poldeci")}.` });
+  }
+}
+
 function dokonciPitku(s: MutState, data: GameData, events: Event[]): void {
   if (zbernyDvor(s, data, events)) return;
   // Záverečné sa otočia ešte pred vynulovaním pečene — Nástup (napr. Niekoho
@@ -4965,6 +4978,7 @@ function dokonciPitku(s: MutState, data: GameData, events: Event[]): void {
   const rekap = s.pitkyKola?.at(-1);
   if (rekap !== undefined && rekap.pitka === s.pitkaCislo) events.push({ type: "pitkaRekap", rekap: rekap as RekapitulaciaPitky });
   s.zaciatokPitky = null;
+  dolejPoPitke(s, data, events);
   // Pečeň žije len počas Pitky (Michal 2026-10-16). Zadĺženie od v7 nie (D6,
   // Michal 2026-10-27): zvyšok pod prahom ostáva na účte do ďalšej Pitky aj kola.
   for (const p of [0, 1] as const) {
@@ -5389,15 +5403,17 @@ export interface PolozkaVykladania {
 export interface PlanVykladania {
   /** Príkazy pre { type: "tah" } v poradí, v akom ich server vykoná. */
   readonly kroky: readonly Command[];
-  /** Koľko plných poldeci ťah vypije (Vypiť pred každou ďalšou kartou). */
+  /** Koľko plných poldeci ťah otočí — jeden za každú kartu do línie (v12.2). */
   readonly poldeci: number;
+  /** Karty navyše (Vypiť): každá stojí CENA_KARTY_NAVYSE cigariet, pečeň +1 a nerest. */
+  readonly navyse: number;
   /** Prečo sa ťah nedá zahrať (prvá chyba), inak null. */
   readonly chyba: string | null;
   /** Limit vykladania po ťahu. */
   readonly zostava: number;
 }
 
-/** Hráč v pláne ťahu; Dedičstvo kvôli Vínku, ktoré zvýši limit hneď. */
+/** Hráč v pláne ťahu; Dedičstvo kvôli Vínku, ktoré pridá plný poldeci hneď. */
 export interface PlanHraca {
   readonly cigarety: number;
   readonly poldeciPlne: number;
@@ -5405,10 +5421,10 @@ export interface PlanHraca {
 }
 
 /**
- * Celý ťah v Zhromaždení naraz (Michal 2026-10-19): priznania nič nestoja
- * a ťah neukončia; každá ďalšia karta do línie či do Dedičstva po prvej stojí
- * plný poldeci (Vypiť — limit klesne o 1). Klient z toho kreslí návrh a cenu,
- * server ten istý ťah overí znova príkazom „tah“.
+ * Celý ťah v Zhromaždení naraz (Michal 2026-10-19): priznania nič nestoja a ťah neukončia.
+ * Od v12.2 každá karta do línie otočí plný poldeci a každá ďalšia stojí aj cigaretu (Vypiť pred ňou):
+ * n kariet = n poldeci a n − 1 cigariet. Nástroj (Dedičstvo, podloženie) a na Družstve karta
+ * s Robotou cenu nezvyšujú. Klient z toho kreslí návrh a cenu, server ten istý ťah overí príkazom „tah“.
  */
 export function planVykladania(
   data: GameData,
@@ -5430,28 +5446,27 @@ export function planVykladania(
   const tahove = polozky.filter((x) => x.ciel !== "priznanie");
   let strany = stav.strany;
   let zostava = zostavaLimit;
-  let plne = stav.hraci[p].poldeciPlne;
   let cigarety = stav.hraci[p].cigarety;
   let dedicstva = stav.dedicstvaVylozene;
-  let mojeDedicstvo: readonly { readonly defId: string }[] = stav.hraci[p].dedicstvo ?? [];
+  let maVinko = (stav.hraci[p].dedicstvo ?? []).some((k) => k.defId === "vinko");
   let poldeci = 0;
-  const chyba = (text: string): PlanVykladania => ({ kroky, poldeci, chyba: text, zostava });
+  let navyse = 0;
+  const chyba = (text: string): PlanVykladania => ({ kroky, poldeci, navyse, chyba: text, zostava });
   const lokalita = cielLokalitaId(stav);
-  // Kostol: nikto nesmie vypiť — bez Vypiť ide v ťahu len jedna karta.
-  if (tahove.length > 1 && zakazVypit(stav)) return chyba("Kostol: nikto nesmie vypiť — v ťahu len jedna karta.");
+  if (tahove.length > 1 && zakazVypit(stav)) return chyba(KOSTOL_JEDNA_KARTA);
   for (const x of priznania) {
     if (!cieleVykladania(data, strany, p, x.karta, zostava, true, lokalita, zablokovane).includes("priznanie")) return chyba(`${defOf(data, x.karta).name} sa nedá priznať.`);
     kroky.push({ type: "place", uid: x.karta.uid, target: "priznanie" });
   }
+  const platena = (x: PolozkaVykladania): boolean => x.ciel !== "dedicstvo" && !bezLimituDruzstva(lokalita, defOf(data, x.karta));
   for (let i = 0; i < tahove.length; i++) {
     const x = tahove[i] as PolozkaVykladania;
-    // Každá karta okrem poslednej: najprv Vypiť, aby ďalšia neukončila ťah.
-    if (i < tahove.length - 1) {
-      if (plne <= 0) return chyba("Na ďalšiu kartu v tom istom ťahu treba plný poldeci.");
-      if (zostava <= 0) return chyba(VYPIT_BEZ_LIMITU);
-      plne -= 1;
-      poldeci += 1;
-      zostava -= 1;
+    // Karta, po ktorej ide ďalšia karta do línie: najprv Vypiť, aby ťah neskončil.
+    if (platena(x) && tahove.slice(i + 1).some(platena)) {
+      if (zostava < 2) return chyba(VYPIT_BEZ_LIMITU);
+      if (cigarety < KONSTANTY.CENA_KARTY_NAVYSE) return chyba(`Ďalšia karta v ťahu stojí ${cigariet(KONSTANTY.CENA_KARTY_NAVYSE)}.`);
+      cigarety -= KONSTANTY.CENA_KARTY_NAVYSE;
+      navyse += 1;
       kroky.push({ type: "vypit" });
     }
     const cena = cenaDedicstva({ dedicstvaVylozene: dedicstva });
@@ -5462,7 +5477,7 @@ export function planVykladania(
           : defOf(data, x.karta).tags.includes("Nástroj")
             ? NASTROJ_DO_LINIE
             : zostava <= 0
-              ? "Limit vykladania je vyčerpaný."
+              ? BEZ_PLNEHO_POLDECI
               : `${defOf(data, x.karta).name} sem vyložiť nemôžeš.`,
       );
     }
@@ -5478,18 +5493,22 @@ export function planVykladania(
     if (x.ciel === "dedicstvo") {
       cigarety -= cena;
       dedicstva += 1;
-      const bonusPred = limitBonusDedicstva(mojeDedicstvo);
-      mojeDedicstvo = [...mojeDedicstvo, x.karta];
-      zostava += limitBonusDedicstva(mojeDedicstvo) - bonusPred;
+      // Vínko (v12.2): nový plný poldeci hneď — len prvé.
+      if (x.karta.defId === "vinko" && !maVinko) {
+        zostava += 1;
+        maVinko = true;
+      }
     } else {
       const kam: PlayerId = x.ciel === "vlastna" ? p : opponentOf(p);
       const nova = [...strany[kam], { card: x.karta, playedBy: p }];
       strany = kam === 0 ? [nova, strany[1]] : [strany[0], nova];
-      const def = defOf(data, x.karta);
-      if (!bezLimituDruzstva(lokalita, def)) zostava -= 1;
+      if (platena(x)) {
+        zostava -= 1;
+        poldeci += 1;
+      }
     }
   }
-  return { kroky, poldeci, chyba: null, zostava };
+  return { kroky, poldeci, navyse, chyba: null, zostava };
 }
 
 /**
@@ -5578,7 +5597,7 @@ export function dovodyAutoPasu(data: GameData, state: GameState, p: PlayerId, kt
             ? "nemá v sade hrany na podloženie"
             : "pod kartami v línii by nemal čo robiť";
       pridaj(`— ${podlozit} a Dedičstvo stojí ${cigariet(cena)}, máš ${state.hraci[p].cigarety}.`, def.name);
-    } else if (z.zostavaLimit[p] <= 0 && !bezLimituDruzstva(lokalita, def)) pridaj("— limit vykladania máš v tomto Zhromaždení vyčerpaný.", def.name);
+    } else if (z.zostavaLimit[p] <= 0 && !bezLimituDruzstva(lokalita, def)) pridaj("— limit vykladania máš vyčerpaný, nemáš plný poldeci.", def.name);
     else pridaj(`nemá kam (${strany()}).`, def.name);
   }
   return [...skupiny].map(([dovod, mena]) => `${mena.join(", ")} ${dovod}`);
@@ -6123,7 +6142,7 @@ function vyplatSpaky(s: MutState, outcome: BattleOutcome, events: Event[]): void
   });
 }
 
-/** Krok 5 — poldeci: NA EX sa vypijú, aktívne akcie Poldeci otáčajú vypité. */
+/** Krok 5 — poldeci: NA EX sa vypijú, potom sa všetky obnovia (v12.2; akcie Poldeci dolievajú po Pitke). */
 function vypiPoldeci(s: MutState, data: GameData, events: Event[]): void {
   const b = s.bitkaStav;
   if (b === null) return;
@@ -6144,16 +6163,17 @@ function vypiPoldeci(s: MutState, data: GameData, events: Event[]): void {
       }
     }
   }
-  for (const p of [0, 1] as const) {
-    // Jogurt: čo akcie Poldeci otočili už v Pitke, sa v bitke neotáča znova.
-    let otocenia = Math.max(0, (b.sums[p].Poldeci ?? 0) - (s.poldeciOtoceneVKole?.[p] ?? 0));
-    while (otocenia > 0 && s.hraci[p].poldeciVypite > 0) {
-      hrac(s, p).poldeciVypite -= 1;
-      zmenPoldeci(s, p, "akcie", 1, events);
-      otocenia--;
+  // Na konci bitky sa poldeci obnovia na maximum (v12.2, Michal 2026-11-11: „Na konci každej bitky sa
+  // im poldeci resetnú na max.“); po finále nie — výkupné ráta plné poldeci po finálovej bitke.
+  if (!jeFinale(s)) {
+    for (const p of [0, 1] as const) {
+      const n = s.hraci[p].poldeciVypite;
+      if (n <= 0) continue;
+      hrac(s, p).poldeciVypite = 0;
+      zmenPoldeci(s, p, "obnova", n, events);
     }
   }
-  events.push({ type: "log", text: "Poldeci z NA EX sa vypili; aktívne akcie Poldeci otočili vypité." });
+  events.push({ type: "log", text: jeFinale(s) ? "Poldeci z NA EX sa vypili." : "Poldeci z NA EX sa vypili; všetky poldeci sa obnovujú na plné." });
 }
 
 /** Kliatby kola, kontrola konca, ďalšie kolo — po návrate kariet (vratKartyPoBitke) a Cintoríne. */
@@ -6316,7 +6336,6 @@ function koniecBitkyPoNavrate(s: MutState, data: GameData, events: Event[], vita
   s.cirhozyVKole = [0, 0];
   s.naexVKole = [false, false];
   delete s.kseftyKola;
-  delete s.poldeciOtoceneVKole;
   delete s.prilozeniaKu;
   s.pitkyKola = [];
 
@@ -6345,7 +6364,6 @@ function koniecBitkyPoNavrate(s: MutState, data: GameData, events: Event[], vita
       type: "log",
       text: `Finále (${s.spaky[0]} : ${s.spaky[1]} špakov): útočí hráč ${s.utocnik + 1}, hráč ${opponentOf(s.utocnik) + 1} vyberá a natáča pinnacle lokalitu.`,
     });
-    dolejNaZaciatkuKola(s, events);
     doberPoBitke(s, events);
     return;
   }
@@ -6353,7 +6371,6 @@ function koniecBitkyPoNavrate(s: MutState, data: GameData, events: Event[], vita
   s.faza = "volbaCiela";
   events.push({ type: "faza", faza: "volbaCiela" });
   events.push({ type: "log", text: `Kolo ${s.kolo}: útočí hráč ${s.utocnik + 1}.` });
-  dolejNaZaciatkuKola(s, events);
   doberPoBitke(s, events);
 }
 
@@ -6382,19 +6399,6 @@ function vyplatVypalne(s: MutState, events: Event[]): void {
     zmenCigarety(s, p, "vypalne", -zaplati, events);
     zmenCigarety(s, su, "vypalne", zaplati, events);
     events.push({ type: "log", text: `Výpalné: hráč ${p + 1} platí hráčovi ${su + 1} ${cigariet(zaplati)}.` });
-  }
-}
-
-/** Začiatok kola: vypité poldeci sa čiastočne otočia na plné (PRAVIDLA §6). */
-function dolejNaZaciatkuKola(s: MutState, events: Event[]): void {
-  for (const p of [0, 1] as const) {
-    // Má dosť Krčmárky: súperovi sa neotočí.
-    if (s.pata !== undefined && maDost(s.pata as HraPata, opponentOf(p), "krcmarka")) continue;
-    const pocet = Math.min(KONSTANTY.POLDECI_NA_ZACIATKU_KOLA, s.hraci[p].poldeciVypite);
-    if (pocet <= 0) continue;
-    hrac(s, p).poldeciVypite -= pocet;
-    zmenPoldeci(s, p, "zaciatokKola", pocet, events);
-    events.push({ type: "log", text: `Hráč ${p + 1} si na začiatku kola dolieva ${pocet} poldeci.` });
   }
 }
 
@@ -6558,10 +6562,16 @@ export function legalCommands(data: GameData, state: GameState, kto: Miesto): Co
       if (skladPonuka(data, state) && state.hraci[p].cigarety >= cenaDedicstva(state) && !skoncilVykladanie(z, kto)) {
         for (const k of state.senok) if (jeNaradie(data, k)) vylozenia.push({ type: "place", uid: k.uid, target: "dedicstvo" });
       }
-      // Vypiť len znižuje limit — keď sa nedá nič vyložiť, nepomôže (priznanie
-      // ťah neodovzdáva, tomu vypitie tiež nepridá). Pri limite 0 sa nesmie (v11.16).
-      const doLinie = vylozenia.some((c) => c.type === "place" && c.target !== "priznanie");
-      if (doLinie && state.hraci[p].poldeciPlne > 0 && z.zostavaLimit[p] > 0 && !skoncilVykladanie(z, kto) && !zakazVypit(state)) out.push({ type: "vypit" });
+      // Vypiť (v12.2) má zmysel, len keď sa dá vyložiť karta a na ďalšiu ostane plný poldeci.
+      const doLinie = vylozenia.some((c) => c.type === "place" && (c.target === "vlastna" || c.target === "superova"));
+      if (
+        doLinie &&
+        limitVykladania(state.hraci[p]) >= z.navyse[p] + 2 &&
+        state.hraci[p].cigarety >= KONSTANTY.CENA_KARTY_NAVYSE &&
+        !skoncilVykladanie(z, kto) &&
+        !zakazVypit(state)
+      )
+        out.push({ type: "vypit" });
       // Fajčiť sa v Zhromaždení nesmie (v5, Michal 2026-10-24) — len v Pitke.
       out.push(...vylozenia);
       break;
@@ -6595,16 +6605,8 @@ export function legalCommands(data: GameData, state: GameState, kto: Miesto): Co
         for (const uid of moznostiNaex(data, state, p)) out.push({ type: "naex", uid });
       }
       if (mozeFajcit(data, state, p)) out.push({ type: "smoke", pocet: 1 });
-      if (state.hraci[p].cigarety >= barterCena(data, state, p)) {
+      if (state.hraci[p].cigarety >= barterCena(data, state, p) && !jednotaZakazuje(state, p)) {
         out.push({ type: "barter" });
-      }
-      if (
-        state.hraci[p].cigarety >= KONSTANTY.REFILL_CENA &&
-        state.hraci[p].poldeciVypite > 0 &&
-        !doliatieZakazane(state, p) &&
-        !jednotaZakazuje(state, p)
-      ) {
-        out.push({ type: "refillPoldeci" });
       }
       break;
     }

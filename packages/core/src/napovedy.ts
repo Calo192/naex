@@ -14,7 +14,7 @@ import type { GameData } from "./data.ts";
 import { defOf } from "./data.ts";
 import type { ClientState } from "./view.ts";
 import { priazenHraca, priazenSila, vydesil } from "./elders.ts";
-import { kartyZaPas, lineState, nahladPitky, naexCieleVLinii, prahyHraca, verejneAbstaky } from "./engine.ts";
+import { lineState, nahladPitky, naexCieleVLinii, prahyHraca, verejneAbstaky } from "./engine.ts";
 import { bodyRozdelenia, krokRozdelenia, moznostiAkcie } from "./rozdelenie.ts";
 import { evaluateLine } from "./partia.ts";
 import { stavZavislosti } from "./zavislost.ts";
@@ -86,12 +86,9 @@ const SPUSTACE: Readonly<Record<string, Spustac>> = {
   // Dlh je hneď priznaný (počítadlo) — prvý je prvý Dlh hráča.
   dlh: (_d, v, ja) => (v.hraci[ja].dlhy > 0 ? ANO : null),
 
-  "pas-cigarety": (_d, v, ja) => {
-    if (!naMojomTahuVZhromazdeni(v, ja) || v.zhromazdenieStav === null) return null;
-    // „Už som vyložil“ z pohľadu: moja karta leží v línii (do Zhromaždenia kola nič iné nedáva).
-    const vylozil = v.strany.some((strana) => strana.some((pl) => pl.playedBy === ja));
-    return vylozil && kartyZaPas(v.zhromazdenieStav, ja) >= 1 ? ANO : null;
-  },
+  // v12.2: pas cigarety nedáva — text nápovede (packages/core/data/vyucba/napovedy.json) už neplatí; kým ho
+  // výučba neprepíše, nápoveda sa neukáže.
+  "pas-cigarety": () => null,
 
   "lokalita-pravidlo": (d, v, _ja, def) => {
     const lok = v.ciel?.lokalita ?? null;

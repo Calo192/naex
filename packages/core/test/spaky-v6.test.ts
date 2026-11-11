@@ -148,8 +148,9 @@ describe("finále (v8): karty v línii", () => {
     const s = predPoskodenim({ ciel: FINALE, lokalityVHre: [], sums: [{}, {}], karty: [2, 1], uprav: (t) => ({ ...t, spakyNaSekere: 2, spaky: [4, 4] }) });
     const st = pohorsenie(s).state;
     expect(st.nastenka.at(-1)).toMatchObject({ vitaz: null, prepadlo: 5, zaBitku: [0, 0], zaStarsich: [0, 0] });
-    // Nový stupeň z Pohoršenia vo finále nič nedá (v8.3) — remíza 4 + 2 : 4 + 2.
-    expect(st.koniec).toMatchObject({ vitaz: null, body: [4 + 2, 4 + 2] });
+    // Nový stupeň z Pohoršenia vo finále nič nedá (v8.3) — remíza 4 + 3 : 4 + 3 (výkupné 3 plných poldeci, v12.2;
+    // po finále sa poldeci neobnovujú).
+    expect(st.koniec).toMatchObject({ vitaz: null, body: [4 + 3, 4 + 3] });
   });
 });
 
@@ -196,9 +197,10 @@ describe("v6: špaky sú verejné", () => {
     };
     const bez: GameState = { ...s0, faza: "pitka", pitkaStav: pitka };
     const s: GameState = { ...bez, pitkaStav: { ...pitka, skryteNaex: [{ hrac: 0, uid: 999001 }] } };
-    expect(spakyTeraz(viewFor(data, s, 0)).vykupne[0]).toEqual({ poldeci: 1, cigarety: 3, spaky: 1 });
+    // Štart v12.2: 3 plné poldeci.
+    expect(spakyTeraz(viewFor(data, s, 0)).vykupne[0]).toEqual({ poldeci: 2, cigarety: 3, spaky: 2 });
     expect(spakyTeraz(viewFor(data, s, 1))).toEqual(spakyTeraz(viewFor(data, bez, 1)));
-    expect(spakyTeraz(viewFor(data, s, 1)).vykupne[0]).toEqual({ poldeci: 2, cigarety: 3, spaky: 2 });
+    expect(spakyTeraz(viewFor(data, s, 1)).vykupne[0]).toEqual({ poldeci: 3, cigarety: 3, spaky: 3 });
   });
 
   it("odhad špakov (v11.12): strach víťazovi bez obsadených stupňov, reči obom — verejné, rovnaké pre oboch", () => {

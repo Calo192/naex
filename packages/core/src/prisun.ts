@@ -14,7 +14,6 @@ const UDALOST_DRUHU = { cigarety: "zmenaCigariet", poldeci: "zmenaPoldeci" } as 
 export const NAZVY_ZDROJOV_PRISUNU: Readonly<Record<ZdrojPrisunu, string>> = {
   akcie: "Akcie",
   obmedzenie: "Obmedzenie",
-  pas: "Za pas",
   porazeny: "Porazený",
   fajciar: "Fajčiar",
   vypalne: "Výpalné",
@@ -23,9 +22,10 @@ export const NAZVY_ZDROJOV_PRISUNU: Readonly<Record<ZdrojPrisunu, string>> = {
   policajtka: "Policajtka",
   postarka: "Poštárka",
   obecnyUrad: "Obecný úrad",
-  zaciatokKola: "Začiatok kola",
+  pitka: "Po Pitke",
+  obnova: "Po bitke",
   jogurt: "Jogurt",
-  doliatie: "Doliatie",
+  vinko: "Vínko",
   barter: "Nový poldeci",
   krcmarka: "Krčmárka",
   degustatorka: "Degustátorka",
@@ -77,7 +77,7 @@ export function riadkyCakajuceho(c: CigaretyPitky): readonly RiadokPrisunu[] {
 
 /** Riadky čakajúcich poldeci z náhľadu Pitky — len to, čo akcie naozaj otočia. */
 export function riadkyCakajucichPoldeci(c: PoldeciPitky): readonly RiadokPrisunu[] {
-  return c.zisk === 0 ? [] : [{ zdroj: "akcie", suma: c.zisk }];
+  return c.casti.map(([zdroj, suma]) => ({ zdroj, suma }));
 }
 
 /** „+3“, „−1“ — pravé mínus ako na kartách a v bare. */

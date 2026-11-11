@@ -57,7 +57,8 @@ describe("odpoveď na NA EX ohlási zmenu prevahy a počtu Pitiek", () => {
         state = po;
       }
     }
-    expect(odpovedi).toBeGreaterThan(10);
+    // v12.2: bez doliatia za cigarety majú náhodní hráči v Pitke plný poldeci zriedkavejšie.
+    expect(odpovedi).toBeGreaterThan(5);
     expect(hlasky).toBeGreaterThan(0);
   });
 });

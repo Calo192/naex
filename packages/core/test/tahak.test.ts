@@ -87,7 +87,9 @@ describe("ťahák AI hráčov sedí s constants.ts", () => {
       ((k) => `dáš **${k.doSenku} do ponuky** v ľubovoľnom mixe a ${k.odhod} naspodok`)(krokStavby(KONSTANTY.STAVBA_NARADIE + KONSTANTY.STAVBA_OBCANIA)),
     ],
     ["doplnenie šenku v pomere (v8.5)", `najprv z Náradia, kým v ňom nie sú ${KONSTANTY.STAVBA_NARADIE} Nástroje, zvyšok z Občanov`],
-    ["doliatie", `${KONSTANTY.REFILL_CENA} cigarety → vypitý poldeci`],
+    ["doliatie po Pitke (v12.2)", `doleje **${KONSTANTY.POLDECI_PO_PITKE} vypitý poldeci zadarmo**`],
+    ["karty navyše v ťahu (v12.2)", `**n kariet = n plných poldeci a n − 1 cigariet**`],
+    ["Vypiť stojí cigaretu (v12.2)", `${KONSTANTY.CENA_KARTY_NAVYSE} cigareta, pečeň +1, 1 nerest`],
     [
       "fajčenie (2026-10-27)",
       `prvé fajčenie v Pitke ${cenaFajcenia(0)} cigareta, druhé ${cenaFajcenia(1)}, tretie ${cenaFajcenia(2)}…`,

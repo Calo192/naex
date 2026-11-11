@@ -8,11 +8,9 @@ import scorecardsJson from "../data/scorecards.json";
 import type { CardInstance, GameState, PlacedCard, PlayerId } from "../src/index.ts";
 import {
   REGISTER,
-  doliatieZakazane,
   bitkaMody,
   computeDamage,
   jeEfektManual,
-  limitBonus,
   loadGameData,
   prahCirhozyBonus,
   setupGame,
@@ -61,21 +59,13 @@ describe("M10 — vzorové efekty (háčiky)", () => {
     expect(prahCirhozyBonus(fakeState({ ciel: { typ: "lokalita", lokalita: ihrisko } }), 0)).toBe(0);
   });
 
-  it("nealko: prah Cirhózy +2; vinko doliatie aj +1 limit, zastávka spoločný limit", () => {
+  it("nealko: prah Cirhózy +2 (Vínko od v12.2 pridá plný poldeci pri vyložení — vinko-limit-hned.test.ts)", () => {
     const base = setupGame(data, 1);
     const sNealkom = fakeState({
       hraci: [{ ...base.hraci[0], dedicstvo: [inst("nealko")] }, base.hraci[1]],
     });
     expect(prahCirhozyBonus(sNealkom, 0)).toBe(2);
     expect(prahCirhozyBonus(sNealkom, 1)).toBe(0);
-
-    const sVinkom = fakeState({
-      hraci: [{ ...base.hraci[0], dedicstvo: [inst("vinko")] }, base.hraci[1]],
-    });
-    expect(doliatieZakazane(sVinkom, 0)).toBe(true);
-    expect(doliatieZakazane(sVinkom, 1)).toBe(false);
-    expect(limitBonus(sVinkom, 0)).toBe(1);
-    expect(limitBonus(sVinkom, 1)).toBe(0);
 
   });
 

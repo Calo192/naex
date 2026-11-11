@@ -160,10 +160,10 @@ describe("ruka: po bitke 2 karty, žiadny limit ruky (v11.21)", () => {
     expect(po.hraci[1].ruka).toHaveLength(KONSTANTY.DOBRATIE_PO_BITKE);
   });
 
-  it("štart: 2 poldeci (Michal 2026-10-20), 3 cigarety, 4 karty v ruke (v6)", () => {
+  it("štart: 3 poldeci (v12.2; 2026-10-20 až v12.1 dva), 3 cigarety, 4 karty v ruke (v6)", () => {
     const s = setupSBalickom(data, 41);
     for (const p of [0, 1] as const) {
-      expect([s.hraci[p].poldeciPlne, s.hraci[p].cigarety, s.hraci[p].ruka.length]).toEqual([2, 3, 4]);
+      expect([s.hraci[p].poldeciPlne, s.hraci[p].cigarety, s.hraci[p].ruka.length]).toEqual([3, 3, 4]);
     }
   });
 });
@@ -264,7 +264,7 @@ describe("Dedičstvo: cena rastie spoločne pre oboch (1, 2, 3 … cigariet)", (
 
 // --- Nástroj v línii -------------------------------------------------------------
 
-describe("ťah v Zhromaždení naraz: ďalšia karta stojí poldeci (Michal 2026-10-19)", () => {
+describe("ťah v Zhromaždení naraz: každá karta poldeci, ďalšia aj cigaretu (Michal 2026-10-19, v12.2)", () => {
   it("dve karty = Vypiť pred prvou; server ich vykoná atomicky a ťah prejde na súpera", () => {
     const [a, b, d] = [inst("pijan"), inst("ministrant"), inst("cirhoza")];
     const s = sHracom(
@@ -278,7 +278,8 @@ describe("ťah v Zhromaždení naraz: ďalšia karta stojí poldeci (Michal 2026
       { karta: b, ciel: "superova" },
     ]);
     expect(plan.chyba).toBeNull();
-    expect(plan.poldeci).toBe(1);
+    expect(plan.poldeci).toBe(2);
+    expect(plan.navyse).toBe(1);
     expect(plan.kroky).toEqual([
       { type: "place", uid: d.uid, target: "priznanie" },
       { type: "vypit" },
@@ -288,7 +289,8 @@ describe("ťah v Zhromaždení naraz: ďalšia karta stojí poldeci (Michal 2026
     const po = apply(data, s, { type: "tah", kroky: plan.kroky }, 0).state;
     expect(po.strany[0].map((x) => x.card.uid)).toEqual([a.uid]);
     expect(po.strany[1].map((x) => x.card.uid)).toEqual([b.uid]);
-    expect(po.hraci[0].poldeciPlne).toBe(2);
+    expect(po.hraci[0].poldeciPlne).toBe(1);
+    expect(po.hraci[0].cigarety).toBe(s.hraci[0].cigarety - 1);
     expect(po.zhromazdenieStav?.zostavaLimit[0]).toBe(1);
     expect(naTahu(po)).toBe(1);
   });
@@ -296,13 +298,13 @@ describe("ťah v Zhromaždení naraz: ďalšia karta stojí poldeci (Michal 2026
   it("bez poldeci druhá karta nejde; chybný ťah sa nevykoná vôbec", () => {
     const [a, b] = [inst("pijan"), inst("ministrant")];
     const s = sHracom(vZhromazdeniHrac0(61, {}), 0, { ruka: [a, b], poldeciPlne: 0 });
-    const plan = planVykladania(data, s, 0, 2, [
+    const plan = planVykladania(data, s, 0, 0, [
       { karta: a, ciel: "vlastna" },
       { karta: b, ciel: "vlastna" },
     ]);
     expect(plan.chyba).toMatch(/plný poldeci/);
     const zle: Command = { type: "tah", kroky: [{ type: "place", uid: a.uid, target: "vlastna" }, { type: "place", uid: b.uid, target: "vlastna" }] };
-    expect(() => apply(data, s, zle, 0)).toThrow(/skončil/);
+    expect(() => apply(data, s, zle, 0)).toThrow(/plný poldeci/);
     // Nič sa nezmenilo — stav je nemenný, apply vracia nový.
     expect(s.strany[0]).toHaveLength(0);
   });
@@ -365,11 +367,11 @@ describe("Vízia: vrchnú kartu balíčka do ruky, alebo zahodiť (Michal 2026-1
 
 
 
-describe("pas (Michal 2026-10-20): do Pitky, cigareta za každú nevyloženú kartu", () => {
-  it("pasujúci dostane cigarety za zostávajúci limit a súper vykladá sám", () => {
+describe("pas (Michal 2026-10-20): do Pitky; cigarety za pas od v12.2 nie", () => {
+  it("pasujúci nedostane nič (v12.2) a súper vykladá sám", () => {
     let s = vZhromazdeniHrac0(44, { ruka: [inst("pijan"), inst("pijan")], cigarety: 0 });
     s = apply(data, s, { type: "pass" }, 0).state;
-    expect(s.hraci[0].cigarety).toBe(2);
+    expect(s.hraci[0].cigarety).toBe(0);
     expect(s.zhromazdenieStav?.pasoval).toEqual([true, false]);
     expect(naTahu(s)).toBe(1);
     expect(() => apply(data, s, { type: "place", uid: s.hraci[0].ruka[0]!.uid, target: "vlastna" }, 0)).toThrow();
@@ -379,7 +381,7 @@ describe("pas (Michal 2026-10-20): do Pitky, cigareta za každú nevyloženú ka
     expect(naTahu(s)).toBe(1);
     const cigarety = s.hraci[1].cigarety;
     s = apply(data, s, { type: "pass" }, 1).state;
-    expect(s.hraci[1].cigarety).toBe(cigarety + 1);
+    expect(s.hraci[1].cigarety).toBe(cigarety);
     expect(s.faza).toBe("pitka");
   });
 

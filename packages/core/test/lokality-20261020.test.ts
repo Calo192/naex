@@ -101,27 +101,33 @@ describe("Most: karty len na vlastnú stranu", () => {
   });
 });
 
-describe("Družstvo: karty s akciou Robota nemíňajú limit vykladania", () => {
+describe("Družstvo: karty s akciou Robota nestoja poldeci (v12.2)", () => {
   it("karta s Robotou ide aj pri vyčerpanom limite, iná karta nie", () => {
     const zamocnik = inst("zamocnik");
     const pijan = inst("pijan");
     expect(cieleVykladania(data, [[], []], 0, zamocnik, 0, true, "druzstvo")).toContain("vlastna");
     expect(cieleVykladania(data, [[], []], 0, pijan, 0, true, "druzstvo")).toEqual([]);
     expect(cieleVykladania(data, [[], []], 0, zamocnik, 0, true, "krcma")).toEqual([]);
-    const s = vZhromazdeni("druzstvo", [zamocnik, pijan], 0);
+    const s = vZhromazdeni("druzstvo", [zamocnik, pijan], 0, 0);
     const po = apply(data, s, { type: "place", uid: zamocnik.uid, target: "vlastna" }, 0).state;
     expect(po.strany[0].map((pl) => pl.card.uid)).toEqual([zamocnik.uid]);
+    expect([po.hraci[0].poldeciPlne, po.hraci[0].poldeciVypite]).toEqual([0, 0]);
   });
 
-  it("návrh ťahu: dve karty s Robotou pri limite 1 (za Vypiť), bez Družstva nie", () => {
+  it("návrh ťahu: dve karty s Robotou pri 1 plnom poldeci v jednom ťahu bez cigarety, bez Družstva nie", () => {
     const polozky = [
       { karta: inst("zamocnik"), ciel: "vlastna" as const },
       { karta: inst("zahradkar"), ciel: "vlastna" as const },
     ];
-    const druzstvo = vZhromazdeni("druzstvo", polozky.map((x) => x.karta), 1);
-    expect(planVykladania(data, druzstvo, 0, 1, polozky).chyba).toBeNull();
-    const krcma = vZhromazdeni("krcma", polozky.map((x) => x.karta), 1);
-    expect(planVykladania(data, krcma, 0, 1, polozky).chyba).toMatch(/Limit/);
+    const druzstvo = vZhromazdeni("druzstvo", polozky.map((x) => x.karta), 1, 1);
+    const plan = planVykladania(data, druzstvo, 0, 1, polozky);
+    expect(plan.chyba).toBeNull();
+    expect([plan.poldeci, plan.navyse]).toEqual([0, 0]);
+    const po = apply(data, druzstvo, { type: "tah", kroky: plan.kroky }, 0).state;
+    expect(po.strany[0]).toHaveLength(2);
+    expect([po.hraci[0].poldeciPlne, po.hraci[0].cigarety]).toEqual([1, druzstvo.hraci[0].cigarety]);
+    const krcma = vZhromazdeni("krcma", polozky.map((x) => x.karta), 1, 1);
+    expect(planVykladania(data, krcma, 0, 1, polozky).chyba).toMatch(/plný poldeci/);
   });
 });
 

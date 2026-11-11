@@ -18,7 +18,7 @@ const data = loadGameData(citaj("cards.json"), citaj("elders.json"), citaj("scor
 
 const nova = () => ({
   partie: 0, vyhry: 0, remizy: 0, body: 0, bitky: 0, bitkyVyhrane: 0, tuhe: 0, makke: 0, viera: 0, povery: 0,
-  cigaretyZiskane: 0, cigaretyNaKonci: 0, vizie: 0, fajcenia: 0, dolievania: 0, bartery: 0, poldeciNajviac: 0,
+  cigaretyZiskane: 0, cigaretyNaKonci: 0, vizie: 0, fajcenia: 0, bartery: 0, poldeciNajviac: 0,
   kartyPredFinale: 0, kartyVoFinale: 0, rukaPredFinale: 0, naexVlastne: 0, naexSuperove: 0,
   dlhySupera: 0, pecenSupera: 0, cirhozySupera: 0, zaStarsich: 0, zaStarsichPrehra: 0, vyhraStrachom: 0, tahy: 0, ms: 0, najdlhsi: 0,
 });
@@ -64,7 +64,6 @@ function partia(seed: number, sedadla: readonly [string, string], st: readonly [
     }
     if (cmd.type === "vizia" && cmd.vziat) st[p].vizie++;
     if (cmd.type === "smoke") st[p].fajcenia++;
-    if (cmd.type === "refillPoldeci") st[p].dolievania++;
     if (cmd.type === "barter") st[p].bartery++;
     if (cmd.type === "naex") {
       const karta = s.strany.flat().find((pl) => pl.card.uid === cmd.uid);
@@ -179,7 +178,6 @@ async function hlavny(): Promise<void> {
     ["karty vyložené pred finále", (s) => n(s.kartyPredFinale, s.partie)],
     ["karty vo finále", (s) => n(s.kartyVoFinale, s.partie)],
     ["ruka pred finále", (s) => n(s.rukaPredFinale, s.partie)],
-    ["dolievania za cigarety", (s) => n(s.dolievania, s.partie)],
     ["bartery (nový poldeci)", (s) => n(s.bartery, s.partie)],
     ["najviac poldeci naraz", (s) => n(s.poldeciNajviac, s.partie)],
     ["NA EX na vlastné karty", (s) => n(s.naexVlastne, s.partie)],

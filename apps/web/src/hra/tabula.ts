@@ -236,14 +236,14 @@ export function detailZdroja(zdroj: ZdrojStlpca, c: CislaHraca, ja: boolean, pri
     case "poldeci":
       return {
         nadpis: t("pult.poldeci"),
-        text: t("tabula.poldeciText", { dolieva: KONSTANTY.POLDECI_NA_ZACIATKU_KOLA, spaky: KONSTANTY.SPAKY_ZA_POLDECI }) + (c.naStole > 0 ? ` ${naStoleVysvetlenie()}` : ""),
+        text: t("tabula.poldeciText", { dolieva: KONSTANTY.POLDECI_PO_PITKE, spaky: KONSTANTY.SPAKY_ZA_POLDECI }) + (c.naStole > 0 ? ` ${naStoleVysvetlenie()}` : ""),
         riadky: [
           [t("tabula.plne"), String(c.poldeci)],
           [t("tabula.vypite"), String(c.vypite + c.naStole)],
           ...(c.naStole > 0 ? [[t("tabula.zTohoNaStole"), String(c.naStole)] as const] : []),
           [t("tabula.limitKarietMale"), String(c.limit)],
           ...riadkyPrisunu(prisun),
-          [t("tabula.doliatVypity"), cig(KONSTANTY.REFILL_CENA)],
+          [t("tabula.kartaNavyse"), cig(KONSTANTY.CENA_KARTY_NAVYSE)],
           [t("tabula.novyPoldeci"), cig(c.cenaBarteru)],
         ],
       };
@@ -291,7 +291,7 @@ export function detailZdroja(zdroj: ZdrojStlpca, c: CislaHraca, ja: boolean, pri
           [t("tabula.cigaretyMale"), String(c.cigarety)],
           ...riadkyPrisunu(prisun),
           [t("tabula.fajcenieTeraz"), c.cenaFajcenia === 0 ? t("tabula.zadarmo") : cig(c.cenaFajcenia)],
-          [t("tabula.doliatPoldeci"), cig(KONSTANTY.REFILL_CENA)],
+          [t("tabula.kartaNavyse"), cig(KONSTANTY.CENA_KARTY_NAVYSE)],
           [t("tabula.novyPoldeci"), cig(c.cenaBarteru)],
           [t("tabula.nastrojDoDedicstva"), cig(c.cenaDedicstva)],
         ],

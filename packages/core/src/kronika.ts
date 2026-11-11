@@ -124,7 +124,10 @@ export function zapisDoKroniky(
   }
   // NA EX sa posúdi, keď súper odpovedal (alebo nemohol): reakcia už nečaká a stále je Pitka.
   if (caka !== null && po.pitkaStav?.reakcia == null) {
-    const uspech = po.faza === "pitka" ? rozdiel(data, po, caka.kto) > caka.pred : null;
+    // Pitka sa často dohrá v tom istom príkaze (v12.2: po NA EX býva „hotovo“ jediná možnosť) — línia
+    // s NA EX ostáva v ďalšom Zhromaždení kola aj v bitke, kým sa karty nevrátia.
+    const posudit = po.faza === "pitka" || ((po.faza === "zhromazdenie" || po.faza === "bitka") && po.kolo === pred.kolo && po.strany.some((x) => x.length > 0));
+    const uspech = posudit ? rozdiel(data, po, caka.kto) > caka.pred : null;
     const index = caka.index;
     kolo = { ...kolo, naex: kolo.naex.map((n, i) => (i === index ? { ...n, uspech } : n)) };
     caka = null;

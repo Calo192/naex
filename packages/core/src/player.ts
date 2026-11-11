@@ -98,12 +98,20 @@ export function pocetAbstakov(player: Pick<PlayerState, "ruka" | "rukaDruheho" |
 }
 
 /**
- * Limit vykladania = plné poldeci + 1. Vypité poldeci, poldeci ležiace na
- * kartách cez NA EX (pravidlá v4, Michal 2026-10-23 — oslabenie NA EX)
- * a priznané karty limit neovplyvňujú (PRAVIDLA §6).
+ * Limit vykladania = plné poldeci (v12.2, Michal 2026-11-11: „Limit vykladania bude rovný
+ * presne počtu poldeci“; do v12.1 plné + 1). Vypité poldeci a poldeci ležiace na kartách
+ * cez NA EX sa nerátajú (PRAVIDLA §6).
  */
 export function limitVykladania(player: Pick<PlayerState, "poldeciPlne">): number {
-  return player.poldeciPlne + 1;
+  return player.poldeciPlne;
+}
+
+/**
+ * Maximum poldeci — na toľko plných sa obnovia po bitke (v12.2): štart, barter, Krčmárka a Vínko.
+ * Poldeci nikdy nezmiznú (vypité ostávajú, NA EX sa v bitke vypije), preto stačí ich spočítať.
+ */
+export function maximumPoldeci(player: Pick<PlayerState, "poldeciPlne" | "poldeciVypite">, naStole = 0): number {
+  return player.poldeciPlne + player.poldeciVypite + naStole;
 }
 
 // Priazne v5 (Michal 2026-10-24/25): Kmotor (Úžerník) a Abstinent (Lakomec)

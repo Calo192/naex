@@ -8,8 +8,7 @@ import eldersJson from "../data/elders.json";
 import scorecardsJson from "../data/scorecards.json";
 import {
   apply,
-  balicekMiesta,
-  cigaretyZaPas,
+  balicekMiesta,
   clenMiesta,
   kapitan,
   kartyVRukach,
@@ -207,24 +206,17 @@ describe("viewFor 2 na 2 — Zhromaždenie a Pitka", () => {
     for (const m of miestaHry(s)) overPohlad(s, m);
   });
 
-  it("náhľad cigariet za pas: kým partner vykladá, pas nedá nič", () => {
+  it("pas člena ani tímu cigarety nedá (v12.2)", () => {
     let s = vZhromazdeni(3);
     const u1 = miestoNaTahu(s) as Miesto;
-    const zaPas = (m: Miesto): number => {
-      const v = viewFor(data, s, m);
-      return cigaretyZaPas(data, v, m);
-    };
-    expect(zaPas(u1)).toBe(0);
     const cig = s.hraci[timMiesta(u1)].cigarety;
     s = apply(data, s, { type: "pass" }, u1).state;
     expect(s.hraci[timMiesta(u1)].cigarety).toBe(cig);
     s = vyloz(s);
     const u2 = partnerMiesta(u1);
     expect(miestoNaTahu(s)).toBe(u2);
-    // Posledný z tímu: zvyšok limitu 3, v oboch rukách 8 kariet → 3 — ako motor.
-    expect(zaPas(u2)).toBe(3);
     s = apply(data, s, { type: "pass" }, u2).state;
-    expect(s.hraci[timMiesta(u1)].cigarety).toBe(cig + 3);
+    expect(s.hraci[timMiesta(u1)].cigarety).toBe(cig);
   });
 });
 

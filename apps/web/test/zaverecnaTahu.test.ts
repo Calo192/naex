@@ -46,7 +46,8 @@ describe("Záverečná ako koniec ťahu", () => {
     expect(t.kroky).toEqual([{ type: "vypit" }, { type: "place", uid: a.uid, target: "vlastna" }, { type: "zaverecna", uid: b.uid, target: "superova" }]);
     const po = apply(data, s, { type: "tah", kroky: t.kroky! }, 0).state;
     expect(po.strany[1]).toEqual([{ card: b, playedBy: 0, zaverecna: true }]);
-    expect(po.hraci[0].cigarety).toBe(2);
+    // v12.2: karta navyše 1 cigareta (Vypiť) a Záverečná 1.
+    expect(po.hraci[0].cigarety).toBe(1);
     expect(po.zhromazdenieStav?.pasoval[0]).toBe(true);
   });
 
@@ -83,7 +84,8 @@ describe("Záverečná ako koniec ťahu", () => {
     const a = inst("pijan");
     const b = inst("hasic");
     const s0 = vZhromazdeni([a, b]);
-    const s = { ...s0, hraci: [{ ...s0.hraci[0], poldeciPlne: 0 }, s0.hraci[1]] } as GameState;
+    // Limit vykladania = plné poldeci (v12.2).
+    const s = { ...s0, hraci: [{ ...s0.hraci[0], poldeciPlne: 0 }, s0.hraci[1]], zhromazdenieStav: { ...s0.zhromazdenieStav!, zostavaLimit: [0, 3] } } as GameState;
     const t = tahSoZaverecnou(data, viewFor(data, s, 0), 0, [
       { karta: a, ciel: "vlastna" },
       { karta: b, ciel: "vlastna" },

@@ -20,7 +20,6 @@ import {
   stavZavislosti,
   textNeresti,
   jeCoTahat,
-  cigaretyZaPas,
   KONSTANTY,
   cakaSBzdochou,
   hraVPitke,
@@ -76,11 +75,11 @@ import {
   nerozdelenaHadka,
   barterCena,
   limitBuduceKolo,
+  limitPoPitke,
   limitZhromazdenia,
   lineState,
   loadGameData,
   dovodZakazuFajcit,
-  jednotaZakazuje,
   cenaFajceniaHraca,
   prveFajcenieZadarmo,
   sDlhmiPoradkyne,
@@ -379,9 +378,12 @@ function cenaNaexText(v: ClientState, uid: number): string {
     odp === null
       ? ""
       : `, po najhoršej možnej odpovedi súpera až ${odp.damage.tuhe[ja]}:${odp.damage.tuhe[su]} (napr. ${meno(odp.karta.defId)} na ${koniecLinie(v, odp.strana)}; jeho ruku nevidíš)`;
-  const limitPo = limitBuduceKolo(n.odkrytie.view, ja, false, DATA);
-  const limitBez = limitBuduceKolo(sMojimiSkrytymiNaex(DATA, v), ja, false, DATA);
-  const limit = `; v ďalšom kole limit ${limitPo === limitBez ? `ostane ${limitBez}` : `${limitPo} namiesto ${limitBez}`}`;
+  // v12.2: poldeci z NA EX chýba v ďalšom Zhromaždení kola; po bitke sa obnoví.
+  const dalsie = v.pitkaCislo < v.pitkyCelkom;
+  const limitPo = dalsie ? limitPoPitke(n.odkrytie.view, ja, DATA) : limitBuduceKolo(n.odkrytie.view, ja, false, DATA);
+  const bez = sMojimiSkrytymiNaex(DATA, v);
+  const limitBez = dalsie ? limitPoPitke(bez, ja, DATA) : limitBuduceKolo(bez, ja, false, DATA);
+  const limit = `; ${dalsie ? "v ďalšom Zhromaždení" : "v ďalšom kole"} limit ${limitPo === limitBez ? `ostane ${limitBez}` : `${limitPo} namiesto ${limitBez}`}`;
   // Efekty Prehra (Dievčina na vydaj) náhľad jadra nemodeluje — playtest 20261028-090549-2, Eva.
   const prehra = prehraNaexText(DATA, sVidenymiSkrytymiNaex(DATA, v), sVidenymiSkrytymiNaex(DATA, n.odkrytie.view), uid);
   return `; bitka (tuhé) ${n.pred.tuhe[ja]}:${n.pred.tuhe[su]} → ${n.po.tuhe[ja]}:${n.po.tuhe[su]}${odpoved}${limit}, Nakladačka ${prebytok(n.prebytokPred)} → ${prebytok(n.prebytokPo)}; kliatby z tejto a ďalších Pitiek kola (NA EX leží do bitky): ty ${pre(ja)}, súper ${pre(su)}${dopady}${prehra}${navyse.length > 0 ? `; ${navyse.join("; ")}` : ""}; súper má v ruke ${kariet(v.hraci[su].rukaPocet)} a smie odpovedať jednou`;
@@ -426,7 +428,7 @@ function vykresli(v: ClientState, mena: readonly string[]): string {
         ? ` | po odkrytí tvojho skrytého NA EX: poldeci plné ${poOdkryti.poldeciPlne}, pečeň ${poOdkryti.pecen}, cigarety ${poOdkryti.cigarety}`
         : "";
     out.push(
-      `${p === ja ? "TVOJE ZDROJE" : "SÚPEROVE ZDROJE"}: poldeci plné ${h.poldeciPlne}, vypité ${h.poldeciVypite} (limit vykladania ${limitZhromazdenia(v, p)}, v ďalšom kole ${limitBuduceKolo(vs, p, false, DATA)}) | cigarety ${h.cigarety} | pečeň ${h.pecen}/${pr.cirhoza} | pečeň žije len počas Pitky${pr.dlh > 1 || h.zadlzenie > 0 ? `, zadĺženie ${h.zadlzenie}/${pr.dlh} ostáva na účte aj do ďalšieho kola (D6)` : ""} | priznané dlhy ${pr.priznaneDlhy} (Exekútor v každej bitke: zhorí polovica nahor a rovnako veľa špakov — teraz ${pr.exekucia}${pr.priznaneDlhy > 0 && pr.exekucia === 0 ? ", Záhradkár ťa obíde" : ""}; pri remíze v bitke prehráva viac Dlhov) | Absťáky ${h.abstaky} v balíčku (karty, počet verejný) | nepriznané Cirhózy ${v.nepriznaneKliatby[p].cirhoza} (verejný počet) | ruka ${h.rukaPocet}, balíček ${h.doberaciPocet}, odhodené ${h.odhadzovaci.length}${poSkrytom}`,
+      `${p === ja ? "TVOJE ZDROJE" : "SÚPEROVE ZDROJE"}: poldeci plné ${h.poldeciPlne}, vypité ${h.poldeciVypite} (limit vykladania = plné ${limitZhromazdenia(v, p)}, po bitke ${limitBuduceKolo(vs, p, false, DATA)}) | cigarety ${h.cigarety} | pečeň ${h.pecen}/${pr.cirhoza} | pečeň žije len počas Pitky${pr.dlh > 1 || h.zadlzenie > 0 ? `, zadĺženie ${h.zadlzenie}/${pr.dlh} ostáva na účte aj do ďalšieho kola (D6)` : ""} | priznané dlhy ${pr.priznaneDlhy} (Exekútor v každej bitke: zhorí polovica nahor a rovnako veľa špakov — teraz ${pr.exekucia}${pr.priznaneDlhy > 0 && pr.exekucia === 0 ? ", Záhradkár ťa obíde" : ""}; pri remíze v bitke prehráva viac Dlhov) | Absťáky ${h.abstaky} v balíčku (karty, počet verejný) | nepriznané Cirhózy ${v.nepriznaneKliatby[p].cirhoza} (verejný počet) | ruka ${h.rukaPocet}, balíček ${h.doberaciPocet}, odhodené ${h.odhadzovaci.length}${poSkrytom}`,
     );
     const vyhladP = vyhladPitkyText(vs, p);
     if (vyhladP !== null) out.push(`  VÝHĽAD PITKY: ${vyhladP}`);
@@ -898,15 +900,14 @@ function moznosti(v: ClientState): string[] {
     }
     case "zhromazdenie": {
       const z = v.zhromazdenieStav;
-      c({ type: "pass" }, `pasovať (do Pitky už nevykladáš, súper vykladá sám; dostaneš ${cigaretyZaPas(DATA, v, ja)} cig. — cigaretu za každú kartu, ktorú si ešte smel vyložiť, aj keď už nemáš čo vyložiť)`);
+      c({ type: "pass" }, "pasovať (do Pitky už nevykladáš, súper vykladá sám; za pas nič nedostaneš — v12.2; plné poldeci ti ostanú)");
       // V Zhromaždení sa nefajčí (§7) — motor smoke odmietne, preto ho ani neponúkať.
-      if (zakazVypit(v)) out.push("(Kostol: nikto nesmie vypiť — v ťahu len jedna karta)");
-      // v11.16: pri limite 0 sa nepije — motor vypit odmietne, preto ho ani neponúkať.
-      if (v.hraci[ja].poldeciPlne > 0 && z !== null && z.zostavaLimit[ja] > 0 && !zakazVypit(v)) {
-        const zostava = z.zostavaLimit[ja];
+      if (zakazVypit(v)) out.push("(Kostol: v ťahu sa smie vyložiť len 1 karta)");
+      // v12.2: Vypiť = ďalšia karta v ťahu — treba plný poldeci na túto aj ďalšiu kartu a cigaretu.
+      if (z !== null && v.hraci[ja].poldeciPlne >= z.navyse[ja] + 2 && v.hraci[ja].cigarety >= KONSTANTY.CENA_KARTY_NAVYSE && !zakazVypit(v)) {
         c(
           { type: "vypit" },
-          `VYPIŤ do dna: plný poldeci → vypitý; limit vykladania hneď ${zostava} → ${zostava - 1}, zato ďalšou kartou ti ťah neskončí; pečeň +1 (vyhodnotí sa v najbližšej Pitke)${zostava <= 1 ? ". POZOR: po vypití už nič nevyložíš" : ""}`,
+          `VYPIŤ do dna: ďalšia karta v tomto ťahu — ${cigariet(KONSTANTY.CENA_KARTY_NAVYSE)}, pečeň +1 (vyhodnotí sa v najbližšej Pitke) a nerest; každá karta aj tak otočí svoj plný poldeci (máš ${v.hraci[ja].poldeciPlne}); ďalšou kartou ti ťah neskončí`,
         );
       }
       // Sklad (frakcie 2026-11-08): Nástroj zo šenku rovno do Dedičstva za cenu Dedičstva.
@@ -1028,9 +1029,8 @@ function moznosti(v: ClientState): string[] {
         c({ type: "smoke", pocet: 1 }, cenaFajc === 0 ? `fajči zadarmo (Benzínka: každé fajčenie o 1 cigaretu lacnejšie) — hneď si doberieš kartu (ťah nekončí); ďalšie v tejto Pitke za ${cigariet(cenaFajceniaHraca(v, ja, 2))}` : `fajči za ${cigariet(cenaFajc)}${prveFajcenieZadarmo(v) ? " (Benzínka: o 1 lacnejšie)" : ""} — hneď si doberieš kartu (ťah nekončí); ďalšie fajčenie v tejto Pitke o cigaretu drahšie`);
       }
       const cenaBarteru = barterCena(DATA, v, ja);
-      if (h.cigarety >= cenaBarteru) c({ type: "barter" }, `barter ${cenaBarteru} cigariet → nový plný poldeci navyše`);
-      if (h.cigarety >= KONSTANTY.REFILL_CENA && h.poldeciVypite > 0 && !h.dedicstvo.some((x) => x.defId === "vinko") && !jednotaZakazuje(v, ja))
-        c({ type: "refillPoldeci" }, `${KONSTANTY.REFILL_CENA} cigarety → dolej vypitý poldeci`);
+      if (h.cigarety >= cenaBarteru && zakazFajc === null) c({ type: "barter" }, `barter ${cenaBarteru} cigariet → nový plný poldeci navyše (maximum +1 natrvalo, po bitke sa obnoví)`);
+      // v12.2: doliatie za cigarety zaniklo — po Pitke sa doleje 1 vypitý zadarmo a akcie Poldeci.
       if (v.ciel?.lokalita?.defId === "krcma" && naexMoznosti > 0) out.push("(Krčma: kým máš plný poldeci a kam ho dať, musíš dať NA EX — hotovo zatiaľ nejde)");
       else
         c(

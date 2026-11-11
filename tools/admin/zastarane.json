@@ -702,6 +702,60 @@
         "akci\\w* zrusen\\w* tvojim odpor"
       ],
       "pozn": "v12.1: Hrable — „Dedičstvo: Tvoj aktívny Odpor dáva v bitke poškodenie ako Pecka.“ (Michal 2026-11-11)"
+    },
+    {
+      "pojem": "cigarety za pas",
+      "vzory": [
+        "cigaret\\w* za pas",
+        "pas\\w*[^.!?]{0,40}(?:dostan|da)\\w* (?:\\w+ ){0,3}cigaret",
+        "cigaret\\w* (?:\\w+ ){0,4}za (?:kazd\\w* )?kart\\w*[^.!?]{0,40}(?:smel|mohol)\\w* (?:\\w+ )?vylozi"
+      ],
+      "pozn": "v12.2 (Michal 2026-11-11): za pas sa nedostáva nič („Za pasovanie nebudú dostávať cigarety.“); Izolačka a Vychovávateľka majú nové znenie"
+    },
+    {
+      "pojem": "doliatie za 2 cigarety",
+      "vzory": [
+        "doliat\\w*[^.!?]{0,30}(?:2|dve) cigaret",
+        "(?:2|dve) cigaret\\w*[^.!?]{0,40}(?:vypit\\w* poldec|dolie|dolia)",
+        "dolie\\w*[^.!?]{0,20}za cigaret",
+        "fajcit ani doliev",
+        "nemozes doliev"
+      ],
+      "pozn": "v12.2 (Michal 2026-11-11): doliatie za cigarety zaniklo; po Pitke sa doleje 1 poldeci zadarmo a akcie Poldeci, barter ostáva"
+    },
+    {
+      "pojem": "limit = plné poldeci + 1",
+      "vzory": [
+        "plne\\w* poldeci \\+ ?1",
+        "plne\\w* poldeci plus (?:1|jed)",
+        "limit\\w*[^.!?]{0,30}vzdy aspon (?:1|jed)",
+        "limit\\w* (?:je )?aspon (?:1|jed)"
+      ],
+      "pozn": "v12.2 (Michal 2026-11-11): limit vykladania = presne plné poldeci; bez plného poldeci sa nevykladá"
+    },
+    {
+      "pojem": "otočenie poldeci na začiatku kola",
+      "vzory": [
+        "na zaciatku (?:kazdeho )?kola[^.!?]{0,60}(?:otoc|dolie|dolej)\\w*[^.!?]{0,30}poldec",
+        "poldec\\w*[^.!?]{0,60}(?:otoc|dolie|dolej)\\w*[^.!?]{0,30}na zaciatku (?:kazdeho )?kola"
+      ],
+      "pozn": "v12.2 (Michal 2026-11-11): po bitke sa všetky poldeci obnovia na plné, na začiatku kola sa nič neotáča"
+    },
+    {
+      "pojem": "Vypiť = ďalšia karta za plný poldeci (limit −1)",
+      "vzory": [
+        "kazd\\w* dalsi\\w* kart\\w*[^.!?]{0,40}stoj\\w* (?:jeden )?plny poldeci",
+        "vypi\\w*[^.!?]{0,40}limit\\w* (?:klesn|−|-)"
+      ],
+      "pozn": "v12.2 (Michal 2026-11-11): n kariet v ťahu = n plných poldeci a n − 1 cigariet; každá karta otočí svoj poldeci"
+    },
+    {
+      "pojem": "akcie Poldeci otáčajú v bitke",
+      "vzory": [
+        "akci\\w* poldeci[^.!?]{0,40}(?:az )?(?:pri|v) bitk",
+        "jogurt\\w*[^.!?]{0,80}(?:hned v pitke|nie az v bitke)"
+      ],
+      "pozn": "v12.2 (Michal 2026-11-11): akcie Poldeci dolievajú na konci každej Pitky; Jogurt: „Po každej Pitke sa ti doleje o 1 poldeci viac.“"
     }
   ],
   "karty": [

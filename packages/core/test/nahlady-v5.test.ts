@@ -87,8 +87,9 @@ describe("náhľad NA EX v5 = zúčtovanie motora", () => {
     const sV = sPriaznou(s, "BITKAR", 0, 1);
     const skryte = apply(sada, sV, { type: "naex", uid: ciel }, 1).state;
     const nahlad = sMojimiSkrytymiNaex(sada, viewFor(sada, skryte, 1));
-    let st = apply(sada, skryte, { type: "skipNaex" }, 1).state;
-    st = apply(sada, st, { type: "skipNaex" }, 0).state;
+    // Bez doliatia za cigarety (v12.2) mávajú hráči v Pitke len „hotovo“ — to hra urobí sama.
+    let st = skryte;
+    for (const q of [1, 0] as const) if (st.pitkaStav?.reakcia === null && st.pitkaStav.hotovy[q] === false) st = apply(sada, st, { type: "skipNaex" }, q).state;
     // Hráč 0 má čím odpovedať — stav stojí po odkrytí, pred vyhodnotením Pitky.
     expect(st.pitkaStav?.reakcia).toBe(0);
     const odkryte = viewFor(sada, st, 1);
