@@ -90,7 +90,7 @@
     "melichar": "Štamgast pridal Veterána. Jeho [Rana] Rana sa spojila s [Rana] Ranou Traktoristu: 9 : 8."
   },
   "k-pas1": {
-    "melichar": "Pijana si nechaj a pasuj (P). Posledný plný [Poldeci] poldeci budeš o chvíľu potrebovať."
+    "melichar": "Pijana si nechaj a pasuj (P). Za plný [Poldeci] poldeci dostaneš [Cigareta] cigaretu a poldeci ti ostane – o chvíľu ho budeš potrebovať."
   },
   "q-zhromazdenie": {
     "melichar": "Tak čo sa robí v Zhromaždení?",
@@ -249,7 +249,7 @@
     "vysvetlenie.2": "Áno. Strana nie je partia. Karta patrí tomu, ku komu je natočená."
   },
   "k-pas2": {
-    "melichar": "Pasuj (P). Za pas nedostaneš nič, ale plný [Poldeci] poldeci ti ostane – po Pitke sa ti doleje a v druhom Zhromaždení zahráš viac."
+    "melichar": "Pasuj (P). Za plný [Poldeci] poldeci dostaneš [Cigareta] cigaretu a poldeci ti ostane – po Pitke sa ti doleje a v druhom Zhromaždení zahráš viac. Šetriť sa oplatí."
   },
   "k-zaverecna-bot": {
     "melichar": "A toto: Štamgast dal za [Cigareta] cigaretu kartu lícom dole, za Dvojčatá. To je Záverečná – ráta sa, len nevidíš, čo je to, kým sa na konci Pitky neotočí. Za ňu nikto nič nepriloží a Štamgast v tomto Zhromaždení končí."
@@ -300,13 +300,13 @@
     "melichar": "Vráť si trávnik: polož Praudovravca na koniec línie, za Liberála, a potvrď. Na trávniku bude 3 : 3 a pri rovnosti rozhoduje karta pri lokalite – tvoj Pijan."
   },
   "k-pas2-bot": {
-    "melichar": "Štamgast pasoval. Za pas nedostal nič, ale dva plné [Poldeci] poldeci mu ostali. Na čo, uvidíš v Pitke."
+    "melichar": "Štamgast pasoval: za dva plné [Poldeci] poldeci dostal dve [Cigareta] cigarety a poldeci mu ostali. Na čo, uvidíš v Pitke."
   },
   "k-prevaha2": {
     "melichar": "Teraz Anonymného alkoholika za Praudovravca. Na trávniku budeš mať štyroch proti trom: prevaha je tvoja a 2 tuhé z Ihriska sa vrátia."
   },
   "k-pas3": {
-    "melichar": "Pijana si nechaj a pasuj (P). Posledný plný [Poldeci] poldeci je na NA EX."
+    "melichar": "Pijana si nechaj a pasuj (P). Za posledný plný [Poldeci] poldeci dostaneš [Cigareta] cigaretu a poldeci ti ostane na NA EX."
   },
   "q-dlh-karta": {
     "melichar": "Štamgast už jeden Dlh má a na stole mu leží spojený Hazard. Koľko Dlhov bude mať po druhej Pitke?",
@@ -504,7 +504,7 @@
     "melichar": "Teraz Recidivistu za Miňištranta. Jeho [Petelica] Petelica a [Rana] Rana sa spoja s Miňištrantom a sú tvoje, lebo Recidivista je tvoj; Rana s Vidlami udrie za dve. 5 : 0."
   },
   "k-zh3-2": {
-    "melichar": "Teraz Pijana za Recidivistu. Jeho [Rana] Rana sa spojí s Recidivistom a dostaneš ju ty, lebo Pijan je tvoj. S Vidlami za dve: odhad 7 : 0. Ruku máš prázdnu a poldeci vypité, ďalej za teba pasuje hra – a za pas aj tak nič nedostaneš."
+    "melichar": "Teraz Pijana za Recidivistu. Jeho [Rana] Rana sa spojí s Recidivistom a dostaneš ju ty, lebo Pijan je tvoj. S Vidlami za dve: odhad 7 : 0. Ruku máš prázdnu a poldeci vypité, ďalej za teba pasuje hra – a bez plného poldeci za pas nič nedostaneš."
   },
   "k-hotovo5": {
     "melichar": "Pitka, budú dve: s domom máš spojené dve jeho akcie, Štamgast jednu. NA EX dnes nedáš, poldeci máš vypité, a nefajči, cigarety šetri. Klikni končím (K)."
@@ -516,7 +516,7 @@
     "melichar": "Pitka sa vyhodnotila – tabuľka ukazuje, čo komu pribudlo: tebe Dlh z Hazardu Recidivistu, pečeň, tá sa vynulovala, a jeden dolievaný [Poldeci] poldeci; Štamgastovi cigareta zo vchodu. Druhé Zhromaždenie, Štamgast začína."
   },
   "k-hotovo6": {
-    "melichar": "Druhé Zhromaždenie za teba odpasovala hra, ruku nemáš – a za pas nič nedostaneš. Druhá Pitka, posledná: končím (K)."
+    "melichar": "Druhé Zhromaždenie za teba odpasovala hra, ruku nemáš – za poldeci, ktorý sa ti po Pitke dolial, si dostal [Cigareta] cigaretu. Druhá Pitka, posledná: končím (K)."
   },
   "k-hotovo6-bot": {
     "melichar": "Bitka: najprv hádka. Miňištrantova [Povera] Povera ti ostala, Štamgast nemá Vieru, čo by ju zrušila, a k nej [Pohoršenie] Pohoršenie domu: 3 mäkké. Štamgast nemá nič. Hádka je tvoja o 3 – a finále natáčaš zas ty."
@@ -572,7 +572,7 @@
     "melichar": "Polož Pijana k vile. Spojí tri jej akcie: [Posilnenie] Posilnenie, ktoré mu zdvojí [Poldeci] Poldeci, [Rana] Ranu a [Dlh] Hazard. Za zdvojené Poldeci sa ti po každej Pitke dolejú až dva poldeci navyše. Pitky budú tri. 6 : 5, zatiaľ."
   },
   "k-zh-finale-pas": {
-    "melichar": "Teraz pasuj (P), hoci smieš ešte dve karty. Za pas nič nedostaneš, ale Policajtka má [Dlh] Hazard, a čo leží na stole, ťa dobehne v každej Pitke. Mäsiara a Policajtku vyložíš v ďalšom Zhromaždení."
+    "melichar": "Teraz pasuj (P), hoci smieš ešte dve karty: za dva plné [Poldeci] poldeci dostaneš dve [Cigareta] cigarety a poldeci ti ostanú. A Policajtka má [Dlh] Hazard, a čo leží na stole, ťa dobehne v každej Pitke. Mäsiara a Policajtku vyložíš v ďalšom Zhromaždení."
   },
   "k-finale-p1": {
     "melichar": "Klikni končím (K)."
@@ -597,7 +597,7 @@
     "melichar": "Druhá Pitka finále: karta navyše v ťahu a pečeň z kariet – pečeň ti pretiekla, Cirhóza ide do balíčka. Hazard vily a Policajtkin ti dali ďalšie dva Dlhy, Štamgastovi Recidivista jeden. Posledné Zhromaždenie."
   },
   "k-zh-finale-pas3": {
-    "melichar": "Posledné Zhromaždenie: Praudovravca si nechaj a pasuj (P). Plné [Poldeci] poldeci ti ostanú – každý je na konci hry špak."
+    "melichar": "Posledné Zhromaždenie: Praudovravca si nechaj a pasuj (P). Za tri plné [Poldeci] poldeci dostaneš tri [Cigareta] cigarety a poldeci ti ostanú – každý je na konci hry špak."
   },
   "k-naex-vytrznik": {
     "melichar": "Posledné NA EX daj na svojho Pijana, toho pri vile. Štamgast naň mieri, poznám ho, a keď tam dá aj on, je to zrážka: z Pijana bude Výtržník a všetky jeho akcie budú tvoje Rany."
@@ -621,7 +621,7 @@
     "melichar": "Finále je tvoje, 21 : 5. Špaky: päť za karty v línii a Nakladačka 16 sa vo finále mení na špaky jedna ku jednej. Starší: Veterinár 3 za reči po oranžovú, Autobusár 3 za oranžový strach, Krčmárka 1 za žltý; exekútor ti zobral tri, Štamgastovi jeden. Vo finále sa nezajíma ani nepresviedča."
   },
   "i-koniec": {
-    "melichar": "Koniec hry. Zvyšné plné poldeci a cigarety sa vykúpia: plný poldeci 1 špak, päť cigariet 1 špak; tebe aj Štamgastovi to dalo po 2, za dva plné poldeci. A dve Cirhózy – z druhého kola a z finále – ti ležia v balíčku nepriznané a stoja ťa 6 špakov; Štamgasta jeho jedna 3. 45 : 11."
+    "melichar": "Koniec hry. Zvyšné plné poldeci a cigarety sa vykúpia: plný poldeci 1 špak, päť cigariet 1 špak. Tebe dva plné poldeci a jedenásť cigariet dali 4, Štamgastovi dva poldeci a osemnásť cigariet, väčšinou z pasov, 5. A dve Cirhózy – z druhého kola a z finále – ti ležia v balíčku nepriznané a stoja ťa 6 špakov; Štamgasta jeho jedna 3. 47 : 14."
   },
   "q-koniec": {
     "melichar": "Koľko ťa stáli tvoje nepriznané Cirhózy?",
