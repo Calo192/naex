@@ -15,6 +15,7 @@ import { IkonaSpaku } from "./IkonaSpaku.tsx";
 import type { HracInfo } from "./useHra.ts";
 import { detailZdroja, riadkyTabule, ukazZadlzenie, type CislaHraca, type ZdrojStlpca } from "./tabula.ts";
 import { Medziobrazovka } from "./Medziobrazovka.tsx";
+import { t } from "../i18n/jazyk.tsx";
 
 /** Piktogram akcie z karty (IKONY) v štvorci 0..100. */
 function Pikto({ kluc }: { readonly kluc: "Dlh" | "PoškodeniePečene" }) {
@@ -64,8 +65,8 @@ export function StlpecHraca({ view, p, info, meno, cisla, naTahu, karty, detail,
     </button>
   );
   return (
-    <section className={`stlpec-hraca ${ja ? "moj" : "superov"}${naTahu ? " na-tahu" : ""}`} aria-label={`Hráč ${meno}`}>
-      <button type="button" className="stlpec-kto" aria-expanded={tabula.otvorena} title={`${ja ? "Ty" : meno} · ${utoci ? "útočník" : "obranca"} — ťuk ukáže tabuľu: ty a súper`} onClick={tabula.prepni}>
+    <section className={`stlpec-hraca ${ja ? "moj" : "superov"}${naTahu ? " na-tahu" : ""}`} aria-label={t("pultHraca.hrac", { meno })}>
+      <button type="button" className="stlpec-kto" aria-expanded={tabula.otvorena} title={t("pultHraca.ktoTitul", { kto: ja ? t("pultHraca.ty") : meno, rola: utoci ? t("pultHraca.utocnik") : t("pultHraca.obranca") })} onClick={tabula.prepni}>
         <Avatar meno={meno} avatar={info?.avatar ?? null} velkost={30} farba={ja ? "ja" : "su"} />
         <span className={`stlpec-rola ${utoci ? "utocnik" : "obranca"}`} aria-hidden="true">
           {utoci ? "⚔" : "⛨"}
@@ -75,20 +76,20 @@ export function StlpecHraca({ view, p, info, meno, cisla, naTahu, karty, detail,
         type="button"
         className={["stlpec-cip stlpec-karty", c !== null ? "ako-ciel" : "", c?.aktivny === true ? "ciel-zona" : "", c?.zamknute != null ? "zamknuta" : ""].join(" ")}
         data-ciel={c?.dataCiel}
-        aria-label={c !== null ? (c.zamknute ?? `${c.nazov}: ${c.pozn}`) : `Karty v ruke ${cisla.karty}`}
-        title={c !== null ? (c.zamknute ?? `${c.nazov}: ${c.pozn}`) : `Karty v ruke ${cisla.karty}`}
+        aria-label={c !== null ? (c.zamknute ?? `${c.nazov}: ${c.pozn}`) : t("pultHraca.kartyVRuke", { n: cisla.karty })}
+        title={c !== null ? (c.zamknute ?? `${c.nazov}: ${c.pozn}`) : t("pultHraca.kartyVRuke", { n: cisla.karty })}
         onClick={c?.onKlik ?? (() => detail("karty"))}
       >
         <IkonaKarty />
-        <b>{c !== null ? "sem" : cisla.karty}</b>
+        <b>{c !== null ? t("pultHraca.sem") : cisla.karty}</b>
       </button>
-      {cip("poldeci", <IkonaPoldeci />, cisla.poldeci, `Poldeci plné ${cisla.poldeci}, vypité ${cisla.vypite + cisla.naStole}${cisla.naStole > 0 ? ` (${cisla.naStole} na stole)` : ""}, limit kariet ${cisla.limit}`, false, prisunPoldeci !== undefined && <PeciatkaZdroja prisun={prisunPoldeci} />)}
-      {cisla.chut !== null && cip("chut", <IkonaAbstak />, cisla.chut, `Chuť ${cisla.chut}, neresti dnes ${cisla.nerestiDnes}`, cisla.chutHrozi)}
-      {cip("pecen", <Pikto kluc="PoškodeniePečene" />, cisla.pecen, `Pečeň ${cisla.pecen} z ${cisla.prahPecene}`, cisla.pecen >= cisla.prahPecene - 1)}
-      {cip("dlhy", <Pikto kluc="Dlh" />, cisla.dlhy, `Dlhy ${cisla.dlhy}${ukazZadlzenie(cisla.zadlzenie, cisla.prahDlhu) ? `, zadĺženie ${cisla.zadlzenie} z ${cisla.prahDlhu}` : ""}`, cisla.exekucia > 0)}
-      {cip("cigarety", <IkonaCigareta />, cisla.cigarety, `Cigarety ${cisla.cigarety}`, false, prisunCigariet !== undefined && <PeciatkaZdroja prisun={prisunCigariet} />)}
-      {cip("spaky", <IkonaSpaku />, cisla.spaky, `Špaky ${cisla.spaky}`)}
-      <button type="button" className={`stlpec-cip stlpec-starsi${starsi.stlacene ? " stlacene" : ""}`} aria-pressed={starsi.stlacene} aria-label={`Starší: priazeň ${cisla.priazen} — ťuk ukáže líniu starších`} title="Starší — línia starších" onClick={starsi.prepni}>
+      {cip("poldeci", <IkonaPoldeci />, cisla.poldeci, t("pultHraca.poldeci", { plne: cisla.poldeci, vypite: cisla.vypite + cisla.naStole, naStole: cisla.naStole > 0 ? t("pultHraca.naStole", { n: cisla.naStole }) : "", limit: cisla.limit }), false, prisunPoldeci !== undefined && <PeciatkaZdroja prisun={prisunPoldeci} />)}
+      {cisla.chut !== null && cip("chut", <IkonaAbstak />, cisla.chut, t("pultHraca.chut", { chut: cisla.chut, neresti: cisla.nerestiDnes }), cisla.chutHrozi)}
+      {cip("pecen", <Pikto kluc="PoškodeniePečene" />, cisla.pecen, t("pultHraca.pecen", { pecen: cisla.pecen, prah: cisla.prahPecene }), cisla.pecen >= cisla.prahPecene - 1)}
+      {cip("dlhy", <Pikto kluc="Dlh" />, cisla.dlhy, t("pultHraca.dlhy", { n: cisla.dlhy, zadlzenie: ukazZadlzenie(cisla.zadlzenie, cisla.prahDlhu) ? t("pultHraca.zadlzenie", { z: cisla.zadlzenie, prah: cisla.prahDlhu }) : "" }), cisla.exekucia > 0)}
+      {cip("cigarety", <IkonaCigareta />, cisla.cigarety, t("pultHraca.cigarety", { n: cisla.cigarety }), false, prisunCigariet !== undefined && <PeciatkaZdroja prisun={prisunCigariet} />)}
+      {cip("spaky", <IkonaSpaku />, cisla.spaky, t("pultHraca.spaky", { n: cisla.spaky }))}
+      <button type="button" className={`stlpec-cip stlpec-starsi${starsi.stlacene ? " stlacene" : ""}`} aria-pressed={starsi.stlacene} aria-label={t("pultHraca.starsiAria", { n: cisla.priazen })} title={t("pultHraca.starsiTitul")} onClick={starsi.prepni}>
         <IkonaPriazne />
         <b>{cisla.priazen}</b>
       </button>
@@ -97,8 +98,8 @@ export function StlpecHraca({ view, p, info, meno, cisla, naTahu, karty, detail,
         <button
           type="button"
           className={`stlpec-cip stlpec-pivnica${pivnica.vazni === 0 ? " prazdna" : ""}${pivnica.dostupna ? " dostupna" : ""}`}
-          aria-label={`Pivnica — väzni ${pivnica.vazni} z ${pivnica.naVyhru}${pivnica.dostupna ? ", schopnosť väzňa môžeš teraz použiť" : ""}`}
-          title="Pivnica — tvoji väzni a ich schopnosti"
+          aria-label={t("pultHraca.pivnicaAria", { vazni: pivnica.vazni, naVyhru: pivnica.naVyhru, dostupna: pivnica.dostupna ? t("pultHraca.schopnostTeraz") : "" })}
+          title={t("pultHraca.pivnicaTitul")}
           onClick={pivnica.otvor}
         >
           <IkonaMrezi />
@@ -131,10 +132,10 @@ export function Tabula({ ja, su, avatary, zavri, akcie }: TabulaProps) {
   return (
     <>
       <div className="porovnanie-zaves" onClick={zavri} />
-      <div className="porovnanie" role="dialog" aria-label="Ty a súper">
+      <div className="porovnanie" role="dialog" aria-label={t("pultHraca.tyASuper")}>
         <div className="porovnanie-hlava">
-          <strong>Ty a súper</strong>
-          <button type="button" className="porovnanie-zavri" onClick={zavri} aria-label="Zavrieť">
+          <strong>{t("pultHraca.tyASuper")}</strong>
+          <button type="button" className="porovnanie-zavri" onClick={zavri} aria-label={t("pultHraca.zavriet")}>
             ✕
           </button>
         </div>
@@ -221,7 +222,7 @@ export function NapovedaPodrzania() {
   if (!ukaz) return null;
   return (
     <button type="button" className="napoveda-podrzania" onClick={() => setUkaz(false)}>
-      <span aria-hidden="true">☝</span> Podrž kartu = zväčšenie · ťuk na kartu = výber
+      <span aria-hidden="true">☝</span> {t("pultHraca.podrzKartu")}
     </button>
   );
 }

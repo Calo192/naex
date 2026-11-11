@@ -5,16 +5,17 @@
 // M a číslice 1–9 patria pultu Melichara (kláves pečiatky je v skupina.json). Vypínač je v profile (Preferencie).
 
 import { useEffect, useRef, useState } from "react";
+import { t } from "../i18n/jazyk.tsx";
 
 export const SKRATKY_V_PARTII: readonly { readonly klaves: string; readonly popis: string }[] = [
-  { klaves: "K", popis: "končím · hotovo · potvrdiť ťah" },
-  { klaves: "P", popis: "pasovať (v ponuke „už neťahám“)" },
-  { klaves: "N", popis: "NA EX! na vybranú kartu" },
-  { klaves: "O", popis: "tvoje karty: balíček, odhodené, priznané, Dedičstvo" },
-  { klaves: "Esc", popis: "zrušiť výber · zavrieť · nakoniec vrátiť návrh ťahu do ruky" },
-  { klaves: "M", popis: "pult majstra Melichara" },
-  { klaves: "1–9", popis: "pečiatka Melichara s tým číslom — náhodná hláška zo skupiny" },
-  { klaves: "?", popis: "tento zoznam" },
+  { klaves: "K", get popis() { return t("skratky.k"); } },
+  { klaves: "P", get popis() { return t("skratky.p"); } },
+  { klaves: "N", get popis() { return t("skratky.n"); } },
+  { klaves: "O", get popis() { return t("skratky.o"); } },
+  { klaves: "Esc", get popis() { return t("skratky.esc"); } },
+  { klaves: "M", get popis() { return t("skratky.m"); } },
+  { klaves: "1–9", get popis() { return t("skratky.cisla"); } },
+  { klaves: "?", get popis() { return t("skratky.otaznik"); } },
 ];
 
 const STLACITELNE = new Set(["k", "p", "n", "o"]);
@@ -102,10 +103,10 @@ export function useSkratky(
 
 export function SkratkyNapoveda({ onZavri }: { readonly onZavri: () => void }) {
   return (
-    <div className="skratky-napoveda" role="dialog" aria-label="Klávesové skratky">
+    <div className="skratky-napoveda" role="dialog" aria-label={t("skratky.nadpis")}>
       <header>
-        <strong>Klávesové skratky</strong>
-        <button type="button" className="tlacidlo-male" onClick={onZavri} aria-label="Zavrieť (Esc)">
+        <strong>{t("skratky.nadpis")}</strong>
+        <button type="button" className="tlacidlo-male" onClick={onZavri} aria-label={t("skratky.zavriet")}>
           ✕
         </button>
       </header>
@@ -119,7 +120,7 @@ export function SkratkyNapoveda({ onZavri }: { readonly onZavri: () => void }) {
           </div>
         ))}
       </dl>
-      <p className="tlmene">Pri písaní do poľa skratky nefungujú. Vypnúť ich môžeš v Profile → Preferencie.</p>
+      <p className="tlmene">{t("skratky.priPisani")}</p>
     </div>
   );
 }

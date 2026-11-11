@@ -16,6 +16,7 @@ import type { DetailPartieApi, HracVPartii } from "../stranky/profil/typy.ts";
 import { HernaPlocha } from "./HernaPlocha.tsx";
 import { textUdalosti, type HracInfo } from "./useHra.ts";
 import { useNepodporovaneZariadenie } from "./zariadenie.ts";
+import { prelozHlasku, t } from "../i18n/jazyk.tsx";
 
 interface ZoznamKrokov {
   readonly pocet: number;
@@ -37,42 +38,9 @@ interface StavKroku {
 /** Krok za krokom pri prehrávaní. */
 const TEMPO_MS = 1200;
 
-/** Ťahy hráča po slovensky (typ príkazu z jadra). */
-const NAZOV_TAHU: Readonly<Record<string, string>> = {
-  chooseLocation: "volí cieľ kola",
-  natocLokalitu: "natáča lokalitu",
-  patronat: "patronát staršieho",
-  bezPatronatu: "bez patronátu",
-  pokus: "pokus o zajatie",
-  bezPokusu: "bez pokusu o zajatie",
-  kseftVazna: "Kšeft väzňa",
-  schopnostVazna: "schopnosť väzňa",
-  stavbaSenku: "stavia ponuku",
-  draftBer: "berie z ponuky",
-  draftStop: "končí s ponukou",
-  place: "vykladá kartu",
-  pass: "pas",
-  naex: "NA EX!",
-  skipNaex: "bez NA EX",
-  bezReakcie: "bez reakcie",
-  postarka: "Poštárka",
-  starosta: "Starosta",
-  benzinka: "Benzínka",
-  vestica: "Veštica",
-  vizia: "Vízia",
-  vykup: "výkup",
-  cintorin: "Cintorín",
-  zivnostnik: "Živnostník",
-  senok: "berie z ponuky zadarmo",
-  nastroj: "Nástroj pod Živnostníka",
-  smoke: "cigareta",
-  barter: "výmena",
-  refillPoldeci: "dolieva poldeci",
-  hasic: "Hasič",
-  pohorsenie: "Pohoršenie",
-  prebytok: "rozdeľuje Nakladačku",
-  kar: "Kar",
-};
+/** Ťahy hráča (typ príkazu z jadra) — texty v sk.json pod prehravac.tah.<typ>. */
+const TAHY: ReadonlySet<string> = new Set(["chooseLocation", "natocLokalitu", "patronat", "bezPatronatu", "pokus", "bezPokusu", "kseftVazna", "schopnostVazna", "stavbaSenku", "draftBer", "draftStop", "place", "pass", "naex", "skipNaex", "bezReakcie", "postarka", "starosta", "benzinka", "vestica", "vizia", "vykup", "cintorin", "zivnostnik", "senok", "nastroj", "smoke", "barter", "refillPoldeci", "hasic", "pohorsenie", "prebytok", "kar"]);
+const nazovTahu = (typ: string): string => (TAHY.has(typ) ? t(`prehravac.tah.${typ}`) : typ);
 
 const krokZAdresy = (): number => {
   const n = Number(new URLSearchParams(location.search).get("krok"));
@@ -90,7 +58,7 @@ function info(h: HracVPartii): HracInfo {
 }
 
 export function Prehravac({ id }: { readonly id: number }) {
-  useTitulok("Prehrávač partie");
+  useTitulok(t("prehravac.titul"));
   const { sada } = useSada();
   const nepodporovane = useNepodporovaneZariadenie();
   const [zoznam, setZoznam] = useState<ZoznamKrokov | null>(null);
@@ -182,7 +150,7 @@ export function Prehravac({ id }: { readonly id: number }) {
 
   const data = useMemo(() => (sada === null ? null : loadGameData(sada.cardsJson, eldersJson, sada.scorecardsJson ?? scorecardsJson)), [sada]);
   const hraci = useMemo((): readonly [HracInfo | null, HracInfo | null] => (detail === null ? [null, null] : [info(detail.hraci[0]), info(detail.hraci[1])]), [detail]);
-  const mena = useMemo(() => hraci.map((h, i) => h?.meno ?? `Hráč ${i + 1}`), [hraci]);
+  const mena = useMemo(() => hraci.map((h, i) => h?.meno ?? t("prehravac.hrac", { cislo: i + 1 })), [hraci]);
   const log = useMemo(
     () => (stav === null ? [] : stav.log.map((e) => textUdalosti(e, mena, [null, null])).filter((t): t is string => t !== null)),
     [stav, mena],
@@ -190,14 +158,14 @@ export function Prehravac({ id }: { readonly id: number }) {
 
   const spat = (
     <Odkaz href={`/partia/${id}`} className="tlacidlo">
-      Detail partie
+      {t("prehravac.detailPartie")}
     </Odkaz>
   );
   if (chyba !== null) {
     return (
       <div className="formular-stred panel" style={{ textAlign: "center" }}>
-        <h1>Partiu sa nepodarilo prehrať</h1>
-        <p className="tlmene">{chyba}</p>
+        <h1>{t("prehravac.nepodarilo")}</h1>
+        <p className="tlmene">{prelozHlasku(chyba)}</p>
         {spat}
       </div>
     );
@@ -205,8 +173,8 @@ export function Prehravac({ id }: { readonly id: number }) {
   if (zoznam !== null && !zoznam.dostupny) {
     return (
       <div className="formular-stred panel" style={{ textAlign: "center" }}>
-        <h1>Túto partiu nemožno prehrať</h1>
-        <p className="tlmene">{zoznam.dovod}</p>
+        <h1>{t("prehravac.nemozno")}</h1>
+        <p className="tlmene">{zoznam.dovod === null ? null : prelozHlasku(zoznam.dovod)}</p>
         {spat}
       </div>
     );
@@ -214,24 +182,24 @@ export function Prehravac({ id }: { readonly id: number }) {
   if (nepodporovane !== null) {
     return (
       <div className="formular-stred panel" style={{ textAlign: "center" }}>
-        <h1>Prehrávač potrebuje širokú obrazovku</h1>
-        <p>Herný stôl sa sem nezmestí. Priebeh po kolách a záverečný účet nájdeš v detaile partie.</p>
+        <h1>{t("prehravac.sirokaObrazovka")}</h1>
+        <p>{t("prehravac.nezmesti")}</p>
         {spat}
       </div>
     );
   }
-  if (zoznam === null || detail === null || data === null || sada === null || stav === null) return <Nacitavanie text="Prehrávam partiu…" />;
+  if (zoznam === null || detail === null || data === null || sada === null || stav === null) return <Nacitavanie text={t("prehravac.prehravam")} />;
 
   const krok = zoznam.kroky[n - 1];
   const kto = krok === undefined ? null : mena[krok.miesto];
-  const popis = krok === undefined ? "začiatok partie" : `${kto}: ${krok.typ === null ? "ťah" : (NAZOV_TAHU[krok.typ] ?? krok.typ)}`;
+  const popis = krok === undefined ? t("prehravac.zaciatok") : `${kto}: ${krok.typ === null ? t("prehravac.tah") : nazovTahu(krok.typ)}`;
 
   const ovladanie = (
-    <div className="prehravac-ovladanie" role="group" aria-label="Prehrávač partie">
-      <button type="button" className="tlacidlo-male" onClick={() => setN(0)} disabled={n === 0} title="Na začiatok (Home)" aria-label="Na začiatok">
+    <div className="prehravac-ovladanie" role="group" aria-label={t("prehravac.titul")}>
+      <button type="button" className="tlacidlo-male" onClick={() => setN(0)} disabled={n === 0} title={t("prehravac.naZaciatokTitul")} aria-label={t("prehravac.naZaciatok")}>
         ⏮
       </button>
-      <button type="button" className="tlacidlo-male" onClick={() => posun(-1)} disabled={n === 0} title="Krok späť (←)" aria-label="Krok späť">
+      <button type="button" className="tlacidlo-male" onClick={() => posun(-1)} disabled={n === 0} title={t("prehravac.krokSpatTitul")} aria-label={t("prehravac.krokSpat")}>
         ◀
       </button>
       <button
@@ -241,15 +209,15 @@ export function Prehravac({ id }: { readonly id: number }) {
           if (n >= pocet) setN(0);
           setHra((h) => !h);
         }}
-        title="Prehrávať (medzerník)"
+        title={t("prehravac.prehravat")}
         aria-pressed={hra}
       >
         {hra ? "❚❚" : "▶"}
       </button>
-      <button type="button" className="tlacidlo-male" onClick={() => posun(1)} disabled={n >= pocet} title="Krok vpred (→)" aria-label="Krok vpred">
+      <button type="button" className="tlacidlo-male" onClick={() => posun(1)} disabled={n >= pocet} title={t("prehravac.krokVpredTitul")} aria-label={t("prehravac.krokVpred")}>
         ▶|
       </button>
-      <button type="button" className="tlacidlo-male" onClick={() => setN(pocet)} disabled={n >= pocet} title="Na koniec (End)" aria-label="Na koniec">
+      <button type="button" className="tlacidlo-male" onClick={() => setN(pocet)} disabled={n >= pocet} title={t("prehravac.naKoniecTitul")} aria-label={t("prehravac.naKoniec")}>
         ⏭
       </button>
       <input
@@ -262,7 +230,7 @@ export function Prehravac({ id }: { readonly id: number }) {
           setHra(false);
           setN(Number(e.target.value));
         }}
-        aria-label="Krok partie"
+        aria-label={t("prehravac.krokPartie")}
       />
       <span className="prehravac-krok" title={popis}>
         <strong>
@@ -271,12 +239,12 @@ export function Prehravac({ id }: { readonly id: number }) {
         <span className="tlmene">{popis}</span>
       </span>
       {zoznam.ja === null && (
-        <button type="button" className="tlacidlo-male tlacidlo-jemne" onClick={() => setMiesto((m) => opponentOf(m))} title="Správca: pohľad druhého hráča">
-          pohľad: {mena[miesto]}
+        <button type="button" className="tlacidlo-male tlacidlo-jemne" onClick={() => setMiesto((m) => opponentOf(m))} title={t("prehravac.pohladTitul")}>
+          {t("prehravac.pohlad", { meno: mena[miesto] ?? "" })}
         </button>
       )}
       <Odkaz href={`/partia/${id}`} className="opustit tlacidlo-male tlacidlo-jemne">
-        zavrieť
+        {t("prehravac.zavriet")}
       </Odkaz>
     </div>
   );

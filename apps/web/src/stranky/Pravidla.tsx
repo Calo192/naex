@@ -14,6 +14,7 @@ import { PojmyPravidiel, chodNaPojem } from "./pravidla/Pojem.tsx";
 import { SLOVNIK } from "./pravidla/slovnik.ts";
 import { VyzvaVyucby } from "../hra/VstupyVyucby.tsx";
 import { HlavaStranky } from "../HlavaStranky.tsx";
+import { aktualnyJazyk, t, tr, usePrekladKariet } from "../i18n/jazyk.tsx";
 
 /** Ilustrácie kapitol (generuje Admin, bez nápisu) — chýbajúca = zástupný pás, žiadne 404. */
 const OBRAZKY = import.meta.glob("./pravidla-obrazky/*.{jpg,jpeg,webp,png}", { eager: true, query: "?url", import: "default" }) as Record<
@@ -25,7 +26,7 @@ const obrazokKapitoly = (meno: string): string | null =>
 
 /** „2026-10-24“ → „24. 10. 2026“ — tak, ako dátum píšu hráči. */
 const [rokPlatnosti, mesiacPlatnosti, denPlatnosti] = PRAVIDLA_PLATNE_OD.split("-").map(Number);
-const VERZIA = `Pravidlá ${VERZIA_PRAVIDIEL_PRESNA}, platné od ${denPlatnosti}. ${mesiacPlatnosti}. ${rokPlatnosti}`;
+const verzia = (): string => t("pravidla.verzia", { verzia: VERZIA_PRAVIDIEL_PRESNA, den: denPlatnosti ?? "", mesiac: mesiacPlatnosti ?? "", rok: rokPlatnosti ?? "" });
 
 /** Kam dopadne skok na kotvu: pod lepkavú hlavičku webu, na mobile aj pod lištu „N / 15“. */
 function odsadenie(): number {
@@ -98,11 +99,11 @@ function hladaj(dotaz: string): Vysledok[] {
   const out: Vysledok[] = [];
   const videne = new Set<string>();
   for (const p of SLOVNIK) {
-    const t = bezDiakritiky(`${p.pojem} ${p.popis}`);
-    if (!t.includes(q)) continue;
+    const text = bezDiakritiky(`${p.pojem} ${p.popis}`);
+    if (!text.includes(q)) continue;
     const kotva = `pojem-${p.id}`;
     videne.add(kotva);
-    out.push({ kotva, kde: `Slovník › ${p.pojem}`, ukazka: p.popis });
+    out.push({ kotva, kde: t("pravidla.vSlovnikuKde", { pojem: p.pojem }), ukazka: p.popis });
   }
   for (const sekcia of document.querySelectorAll<HTMLElement>("section.kapitola")) {
     const nazov = sekcia.querySelector("h2")?.textContent ?? "";
@@ -141,8 +142,8 @@ function Hladanie({ poVybere }: { readonly poVybere?: () => void }) {
         type="search"
         value={dotaz}
         onChange={(e) => setDotaz(e.target.value)}
-        placeholder="Hľadaj pravidlo alebo pojem…"
-        aria-label="Hľadať v pravidlách"
+        placeholder={t("pravidla.hladajPlaceholder")}
+        aria-label={t("pravidla.hladat")}
         data-pravidla-hladanie=""
         onKeyDown={(e) => {
           if (e.key === "Enter" && vysledky[0] !== undefined) vyber(vysledky[0].kotva);
@@ -150,8 +151,8 @@ function Hladanie({ poVybere }: { readonly poVybere?: () => void }) {
         }}
       />
       {dotaz.trim().length >= 2 && (
-        <ul className="pravidla-vysledky" aria-label="Výsledky hľadania" aria-live="polite">
-          {vysledky.length === 0 && <li className="tlmene">Nič sa nenašlo.</li>}
+        <ul className="pravidla-vysledky" aria-label={t("pravidla.vysledky")} aria-live="polite">
+          {vysledky.length === 0 && <li className="tlmene">{t("pravidla.nicSaNenaslo")}</li>}
           {vysledky.map((v, i) => (
             <li key={`${v.kotva}-${i}`}>
               <button type="button" onClick={() => vyber(v.kotva)}>
@@ -246,7 +247,7 @@ function Obsah({
     skocNa(id);
   };
   return (
-    <nav className="pravidla-obsah" aria-label="Obsah pravidiel">
+    <nav className="pravidla-obsah" aria-label={t("pravidla.obsahPravidiel")}>
       {CASTI.map((c) => {
         const kapitolyCasti = KAPITOLY.filter((k) => k.cast === c.id);
         if (kompaktny && c.id !== aktivnaCast) {
@@ -254,7 +255,7 @@ function Obsah({
           return (
             <div key={c.id} className="obsah-cast">
               <button type="button" className="obsah-cast-skok" onClick={() => prva !== undefined && skocNa(prva.id)}>
-                {c.id} · {c.nazov} <span>{kapitolyCasti.length} kap.</span>
+                {c.id} · {c.nazov} <span>{t("pravidla.kapitolKratko", { n: kapitolyCasti.length })}</span>
               </button>
             </div>
           );
@@ -276,14 +277,14 @@ function Obsah({
                       <span className="obsah-cislo">{i + 1}</span>
                       <span className="obsah-nazov">
                         {k.kratky ?? k.nazov}
-                        {precitana && <span className="obsah-skryte">, prečítané</span>}
+                        {precitana && <span className="obsah-skryte">{t("pravidla.precitane")}</span>}
                       </span>
                       {precitana && (
                         <span className="obsah-precitana" aria-hidden="true">
                           ✓
                         </span>
                       )}
-                      {ukazky.has(k.id) && <span className="obsah-ukazka">ukážka</span>}
+                      {ukazky.has(k.id) && <span className="obsah-ukazka">{t("pravidla.ukazka")}</span>}
                     </a>
                     {je && aktivna !== undefined && (podkapitoly.get(k.id)?.length ?? 0) > 0 && (
                       <ul className="obsah-pod">
@@ -309,10 +310,10 @@ function Obsah({
         aria-current={poloha.kapitola === KAPITOLY.length ? "location" : undefined}
         onClick={klik("slovnik")}
       >
-        <span>A–Z</span> Slovník
+        <span>A–Z</span> {t("pravidla.slovnik")}
       </a>
       <Odkaz href="/karty" className="obsah-slovnik">
-        <span aria-hidden="true">→</span> Karty: príbeh a účel v hre
+        <span aria-hidden="true">→</span> {t("pravidla.kartyPribeh")}
       </Odkaz>
     </nav>
   );
@@ -331,22 +332,28 @@ function PasKapitoly({ kapitola, index }: { readonly kapitola: Kapitola; readonl
 
 function Slovnik({ sada }: { readonly sada: Sada }) {
   const [filter, setFilter] = useState("");
+  const preklad = usePrekladKariet();
   const q = bezDiakritiky(filter.trim());
-  const pojmy = [...SLOVNIK].sort((a, b) => a.pojem.localeCompare(b.pojem, "sk")).filter((p) => q === "" || bezDiakritiky(`${p.pojem} ${p.popis}`).includes(q));
-  const spustace = sada.klucoveSlova.filter((k) => k.tucne && (q === "" || bezDiakritiky(`${k.slovo} ${k.popis}`).includes(q)));
-  const slovesa = sada.klucoveSlova.filter((k) => !k.tucne && (q === "" || bezDiakritiky(`${k.slovo} ${k.popis}`).includes(q)));
+  // Kľúčové slová kariet v jazyku hráča — preklad kariet (prekladateľ ich má vo vzhľade).
+  const klucoveSlova = sada.klucoveSlova.map((k) => {
+    const p = preklad.klucoveSlova.get(k.slovo);
+    return p === undefined ? k : { ...k, slovo: p.slovo, popis: p.popis === "" ? k.popis : p.popis };
+  });
+  const pojmy = [...SLOVNIK].sort((a, b) => a.pojem.localeCompare(b.pojem, aktualnyJazyk())).filter((p) => q === "" || bezDiakritiky(`${p.pojem} ${p.popis}`).includes(q));
+  const spustace = klucoveSlova.filter((k) => k.tucne && (q === "" || bezDiakritiky(`${k.slovo} ${k.popis}`).includes(q)));
+  const slovesa = klucoveSlova.filter((k) => !k.tucne && (q === "" || bezDiakritiky(`${k.slovo} ${k.popis}`).includes(q)));
   return (
     <section id="slovnik" className="slovnik" aria-labelledby="slovnik-nadpis">
-      <span className="kapitola-kicker">Na konci · A–Z</span>
-      <h2 id="slovnik-nadpis">Slovník</h2>
-      <p className="tlmene">Každý pojem jednou vetou — tie isté vety sa ukážu pod myšou pri podčiarknutom slove v texte.</p>
+      <span className="kapitola-kicker">{t("pravidla.naKonci")}</span>
+      <h2 id="slovnik-nadpis">{t("pravidla.slovnik")}</h2>
+      <p className="tlmene">{t("pravidla.slovnikUvod")}</p>
       <input
         type="search"
         className="slovnik-filter"
         value={filter}
         onChange={(e) => setFilter(e.target.value)}
-        placeholder="Filtrovať pojmy…"
-        aria-label="Filtrovať slovník"
+        placeholder={t("pravidla.filtrovatPojmy")}
+        aria-label={t("pravidla.filtrovatSlovnik")}
       />
       <dl className="slovnik-zoznam">
         {pojmy.map((p) => (
@@ -358,7 +365,7 @@ function Slovnik({ sada }: { readonly sada: Sada }) {
       </dl>
       {spustace.length > 0 && (
         <>
-          <h3 id="slovnik-kedy">Kedy efekt platí — tučné slová na kartách</h3>
+          <h3 id="slovnik-kedy">{t("pravidla.slovnikKedy")}</h3>
           <dl className="slovnik-zoznam">
             {spustace.map((k) => (
               <div key={k.slovo} className="slovnik-pojem spustac">
@@ -371,7 +378,7 @@ function Slovnik({ sada }: { readonly sada: Sada }) {
       )}
       {slovesa.length > 0 && (
         <>
-          <h3 id="slovnik-co">Čo efekt robí — slová kurzívou</h3>
+          <h3 id="slovnik-co">{t("pravidla.slovnikCo")}</h3>
           <dl className="slovnik-zoznam">
             {slovesa.map((k) => (
               <div key={k.slovo} className="slovnik-pojem sloveso">
@@ -384,15 +391,13 @@ function Slovnik({ sada }: { readonly sada: Sada }) {
           </dl>
         </>
       )}
-      <p>
-        Všetky karty s efektmi, variantmi, príbehom a účelom v hre nájdeš v <Odkaz href="/karty">glosári kariet</Odkaz>.
-      </p>
+      <p>{tr("pravidla.vsetkyKarty", { glosar: <Odkaz href="/karty">{t("pravidla.glosarKariet")}</Odkaz> })}</p>
     </section>
   );
 }
 
 export function Pravidla() {
-  useTitulok("Pravidlá");
+  useTitulok(t("nav.pravidla"));
   const { sada } = useSada();
   const poloha = usePoloha();
   const vysokeOkno = useVysokeOkno();
@@ -484,21 +489,21 @@ export function Pravidla() {
   // Pokrok podľa kapitoly, nie podľa posunu stránky — „6 / 15“ a pruh 40 % (Leader 2026-10-24:
   // percento z posunu pri kapitole 6 ukazovalo 25 % a mátlo).
   const vSlovniku = poloha.kapitola >= KAPITOLY.length;
-  const kdeSom = vSlovniku ? "Slovník" : `${poloha.kapitola + 1} / ${KAPITOLY.length}`;
+  const kdeSom = vSlovniku ? t("pravidla.slovnik") : `${poloha.kapitola + 1} / ${KAPITOLY.length}`;
   const percent = vSlovniku ? 100 : Math.round(((poloha.kapitola + 1) / KAPITOLY.length) * 100);
 
   return (
     <PojmyPravidiel>
-      <HlavaStranky nadpis="Pravidlá" uvod="Ako sa NA EX! hrá — od rýchleho štartu po slovník pojmov." />
+      <HlavaStranky nadpis={t("nav.pravidla")} uvod={t("pravidla.uvod")} />
       <div className="pravidla mriezka">
         <aside className="pravidla-bok st-prirucka-obsah">
           <div className="pravidla-bok-hlava">
-            <span className="tlmene">Obsah</span>
+            <span className="tlmene">{t("pravidla.obsah")}</span>
             <span className="tlmene">
               {kdeSom}
             </span>
           </div>
-          <p className="pravidla-verzia tlmene">{VERZIA}</p>
+          <p className="pravidla-verzia tlmene">{verzia()}</p>
           <div className="pravidla-pokrok" aria-hidden="true">
             <i style={{ width: `${percent}%` }} />
           </div>
@@ -512,15 +517,15 @@ export function Pravidla() {
             <span className="pravidla-lista-cislo">
               {vSlovniku ? "A–Z" : kdeSom}
             </span>
-            <span className="pravidla-lista-nazov">{aktivna?.nazov ?? "Slovník"}</span>
+            <span className="pravidla-lista-nazov">{aktivna?.nazov ?? t("pravidla.slovnik")}</span>
             <span aria-hidden="true">▾</span>
           </button>
           <i style={{ width: `${percent}%` }} aria-hidden="true" />
         </div>
         {mobilObsah && (
           <div className="pravidla-sheet-zaclona" onClick={() => setMobilObsah(false)}>
-            <div className="pravidla-sheet" ref={sheetRef} role="dialog" aria-modal="true" aria-label="Obsah pravidiel" onClick={(e) => e.stopPropagation()}>
-              <button type="button" className="pravidla-sheet-zavriet" aria-label="Zavrieť obsah" onClick={() => setMobilObsah(false)}>
+            <div className="pravidla-sheet" ref={sheetRef} role="dialog" aria-modal="true" aria-label={t("pravidla.obsahPravidiel")} onClick={(e) => e.stopPropagation()}>
+              <button type="button" className="pravidla-sheet-zavriet" aria-label={t("pravidla.zavrietObsah")} onClick={() => setMobilObsah(false)}>
                 ✕
               </button>
               <Hladanie poVybere={() => setMobilObsah(false)} />
@@ -533,9 +538,9 @@ export function Pravidla() {
           {/* Kto ešte nemá 1. časť výučby, toho pošleme najprv k Melicharovi; Pravidlá ostanú príručkou (#104). */}
           <VyzvaVyucby />
           {/* Na mobile bok s nadpisom chýba — verzia ide nad prvú kapitolu. */}
-          <p className="pravidla-verzia pravidla-verzia-mobil tlmene">{VERZIA}</p>
+          <p className="pravidla-verzia pravidla-verzia-mobil tlmene">{verzia()}</p>
           {sada === null ? (
-            <div className="kostra-textu" aria-label="Načítava sa">
+            <div className="kostra-textu" aria-label={t("pravidla.nacitava")}>
               {[92, 100, 84, 96, 70, 0, 88, 100, 60].map((w, i) => (
                 <span key={i} style={{ width: `${w}%` }} />
               ))}
@@ -548,18 +553,16 @@ export function Pravidla() {
                 return (
                   <section key={k.id} id={k.id} className="kapitola" aria-labelledby={`${k.id}-nadpis`}>
                     {prvaVCasti && cast !== undefined && (
-                      <div className="kapitola-cast">
-                        Časť {cast.id} · {cast.nazov}
-                      </div>
+                      <div className="kapitola-cast">{t("pravidla.cast", { cast: cast.id, nazov: cast.nazov })}</div>
                     )}
                     <PasKapitoly kapitola={k} index={i} />
                     <span className="kapitola-kicker">
-                      {k.cast} · kapitola {i + 1} / {KAPITOLY.length}
-                      {minuty.has(k.id) && ` · ≈ ${minuty.get(k.id)} min`}
+                      {t("pravidla.kicker", { cast: k.cast, cislo: i + 1, spolu: KAPITOLY.length })}
+                      {minuty.has(k.id) && t("pravidla.minut", { n: minuty.get(k.id) ?? 0 })}
                     </span>
                     <h2 id={`${k.id}-nadpis`}>{k.nazov}</h2>
                     <div className="v-skratke">
-                      <strong>V skratke</strong>
+                      <strong>{t("pravidla.vSkratke")}</strong>
                       <ul>
                         {k.vSkratke.map((b) => (
                           <li key={b}>{b}</li>
@@ -569,7 +572,7 @@ export function Pravidla() {
                     <div className="kapitola-telo">{k.obsah(sada)}</div>
                     {/* Tichý predeľ namiesto „Ďalej: …“ — ďalšia kapitola je hneď pod ním a skáče sa z obsahu po boku (dizajn #24 A). */}
                     <div className="kapitola-koniec" aria-hidden="true">
-                      <span>koniec kapitoly {i + 1}</span>
+                      <span>{t("pravidla.koniecKapitoly", { cislo: i + 1 })}</span>
                     </div>
                   </section>
                 );

@@ -6,7 +6,7 @@ import { Odkaz } from "../lib/router.tsx";
 import { useSada } from "../lib/sada.tsx";
 import { useUcet } from "../lib/ucet.tsx";
 import type { SuhrnAchievementov, ZiskAchievementu } from "../hra/useHra.ts";
-import { rankPodtacka, textVzacnosti } from "./data.ts";
+import { prelozAchievement, rankPodtacka, textVzacnosti } from "./data.ts";
 import { OznamAchievementu, type ZiskVOzname } from "./OznamAchievementu.tsx";
 import { NAZOV_RANKU, Podtacok } from "./Podtacok.tsx";
 import { piktogramPodtacka } from "./piktogram.ts";
@@ -20,7 +20,7 @@ export function OznamZiskov({ zisky }: { readonly zisky: readonly ZiskAchievemen
   const ikony = sada?.ikonyBodovania;
   const oznamy = useMemo(
     (): readonly ZiskVOzname[] =>
-      zisky.map((z) => ({ kluc: `${z.id}-${z.rank}`, id: z.id, nazov: z.nazov, rank: rankPodtacka(z.rank), tajny: z.tajny, ...piktogramPodtacka(z.piktogram, ikony ?? []) })),
+      zisky.map(prelozAchievement).map((z) => ({ kluc: `${z.id}-${z.rank}`, id: z.id, nazov: z.nazov, rank: rankPodtacka(z.rank), tajny: z.tajny, ...piktogramPodtacka(z.piktogram, ikony ?? []) })),
     [zisky, ikony],
   );
   return <OznamAchievementu zisky={oznamy} />;
@@ -34,8 +34,8 @@ export function SuhrnPoPartii({ suhrn }: { readonly suhrn: SuhrnAchievementov })
   // Bronz aj striebro toho istého v jednej partii = jeden podtácok s vyšším rankom.
   const najvyssie = new Map<string, ZiskAchievementu>();
   for (const z of suhrn.ziskane) if ((najvyssie.get(z.id)?.rank ?? 0) < z.rank) najvyssie.set(z.id, z);
-  const ziskane = [...najvyssie.values()];
-  const { chybaloMalo } = suhrn;
+  const ziskane = [...najvyssie.values()].map(prelozAchievement);
+  const chybaloMalo = suhrn.chybaloMalo.map(prelozAchievement);
   if (ziskane.length === 0 && chybaloMalo.length === 0) return null;
   return (
     <section className="koniec-achievementy" aria-label="Achievementy z partie">

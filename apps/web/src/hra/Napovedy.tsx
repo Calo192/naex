@@ -20,8 +20,26 @@ import { rezimMelichara } from "./bar.ts";
 import { CisloStrany, MelicharVBare, NaJednomMieste, StrankovanaVeta, kusyVety, useStrany } from "./MelicharBar.tsx";
 import { prvkyKluca } from "./Vyucba.tsx";
 import "./vyucba.css";
+import { t, textOblasti } from "../i18n/jazyk.tsx";
 
-const katalog = katalogJson as unknown as KatalogNapoved;
+const katalogSk = katalogJson as unknown as KatalogNapoved;
+
+/**
+ * Katalóg s textami v jazyku hráča (i18n/napovedy) — jadro do nich dosadí mená ({lokalita},
+ * {karta}); spúšťače ostávajú. Prvé čítanie v inom jazyku preklad načíta.
+ */
+function katalogVJazyku(): KatalogNapoved {
+  return {
+    ...katalogSk,
+    napovedy: katalogSk.napovedy.map((n) => ({
+      ...n,
+      melichar:
+        typeof n.melichar === "string"
+          ? textOblasti("napovedy", n.id, "melichar", n.melichar)
+          : Object.fromEntries(Object.entries(n.melichar).map(([v, text]) => [v, textOblasti("napovedy", n.id, `melichar.${v}`, text)])),
+    })),
+  };
+}
 
 /** Bez účtu (alebo keď server neodpovedá) sa videné pamätajú v prehliadači. */
 const KLUC_VIDENE = "naex.napovedy.videne";
@@ -118,6 +136,7 @@ export function useVypinacNapoved(): { readonly zapnute: boolean; readonly prepn
 /** Ukážka z adresy (?ukazka-napovedy=id): text z pohľadu, ak situácia platí, inak prvý variant. */
 function ukazkaZAdresy(data: GameData, view: ClientState): Napoveda | null {
   const id = new URLSearchParams(location.search).get("ukazka-napovedy");
+  const katalog = katalogVJazyku();
   const def = katalog.napovedy.find((n) => n.id === id);
   if (def === undefined) return null;
   const zive = napovedy(data, katalog, view).find((n) => n.id === def.id);
@@ -182,7 +201,7 @@ export function NapovedaMelichara({
   // Situácia sa zachytí hneď (bot ťahá rýchlo — voľba cieľa trvá chvíľu), ukáže sa, keď je pokoj.
   useEffect(() => {
     if (!zapnute || videne === null || cakajuca !== null || ukazana !== null) return;
-    const n = dalsiaNapoveda(data, katalog, view, videne);
+    const n = dalsiaNapoveda(data, katalogVJazyku(), view, videne);
     if (n !== null) setCakajuca(n);
   }, [data, view, zapnute, videne, cakajuca, ukazana]);
 
@@ -245,7 +264,7 @@ export function NapovedaMelichara({
       vpravo={
         <>
           {strany.strana > 0 && (
-            <button type="button" className="tlacidlo-jemne mel-spat" onClick={strany.predosla} title="Predošlá strana textu" aria-label="Predošlá strana textu">
+            <button type="button" className="tlacidlo-jemne mel-spat" onClick={strany.predosla} title={t("vyucba.predoslaStrana")} aria-label={t("vyucba.predoslaStrana")}>
               ‹
             </button>
           )}
@@ -253,13 +272,13 @@ export function NapovedaMelichara({
           <NaJednomMieste
             ukaz={strany.dalsiaJe ? "a" : "b"}
             a={(ziva) => (
-              <button type="button" className="tlacidlo-hlavne mel-dalej" tabIndex={ziva ? undefined : -1} onClick={ziva ? strany.dalsia : undefined} title="Ďalšia strana nápovedy">
-                ďalej
+              <button type="button" className="tlacidlo-hlavne mel-dalej" tabIndex={ziva ? undefined : -1} onClick={ziva ? strany.dalsia : undefined} title={t("napovedy.dalsiaStrana")}>
+                {t("vyucba.dalej")}
               </button>
             )}
             b={(ziva) => (
-              <button type="button" className="tlacidlo-hlavne mel-dalej" tabIndex={ziva ? undefined : -1} onClick={ziva ? zavri : undefined} title="Nápoveda zmizne (aj Esc).">
-                rozumiem
+              <button type="button" className="tlacidlo-hlavne mel-dalej" tabIndex={ziva ? undefined : -1} onClick={ziva ? zavri : undefined} title={t("napovedy.zmizne")}>
+                {t("napovedy.rozumiem")}
               </button>
             )}
           />
@@ -270,9 +289,9 @@ export function NapovedaMelichara({
               vypni();
               zavri();
             }}
-            title="Nápovedy zapneš znova v profile."
+            title={t("napovedy.zapnesVProfile")}
           >
-            vypnúť nápovedy
+            {t("napovedy.vypnut")}
           </button>
         </>
       }

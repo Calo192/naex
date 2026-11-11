@@ -28,6 +28,7 @@ import { useHlaskyVyucby } from "./Melichar.tsx";
 import { stitokTahu, zmenyStola } from "./zmenyVyucby.ts";
 import type { Sada } from "@naex/tvorba";
 import { moznostiKvizu, rezimMelichara } from "./bar.ts";
+import { aktualnyJazyk, prelozHlasku, t, textOblasti } from "../i18n/jazyk.tsx";
 import { CisloStrany, MelicharVBare, NaJednomMieste, StrankovanaVeta, VetaMelichara, kusyVety, useStrany, type KusVety } from "./MelicharBar.tsx";
 import "./vyucba.css";
 
@@ -90,7 +91,11 @@ const ADRESA_VYUCBY = "/hra?vyucba=1";
 export const adresaVyucby = (prihlaseny: boolean): string => (prihlaseny ? ADRESA_VYUCBY : `/prihlasenie?spat=${encodeURIComponent(ADRESA_VYUCBY)}`);
 
 /** Nápis hlavného tlačidla výučby pre nováčika. */
-export const napisVyucby = (v: VyucbaUctu | null): string => (v !== null && rozpracovana(v) ? "Pokračovať vo výučbe" : "Nauč sa hrať s Majstrom Melicharom");
+export const napisVyucby = (v: VyucbaUctu | null): string => (v !== null && rozpracovana(v) ? t("vyucba.pokracovatVoVyucbe") : t("vyucba.naucSaHrat"));
+
+/** Texty scenára (Melichar, otázky, rady, názov časti) v jazyku hráča — i18n/vyucba, podľa id kroku. */
+const textKroku = (id: string, sk: string): string => textOblasti("vyucba", id, null, sk);
+export const nazovCasti = (c: { readonly cast: number; readonly nazov: string }): string => textOblasti("vyucba", `cast-${c.cast}`, "nazov", c.nazov);
 
 // ---- výučba pri stole ----------------------------------------------------------
 
@@ -381,7 +386,9 @@ export function VyucbaStol({
   readonly sada: Sada | null;
 }) {
   const krok = stav.krok;
-  const radaText = rada?.text ?? null;
+  // Rada patrí k aktuálnemu kroku — jej preklad je pri ňom (zle.N, inak).
+  const radaText = rada === null ? null : krok === null ? rada.text : textKroku(krok.id, rada.text);
+  const vetaKroku = krok === null ? "" : textKroku(krok.id, krok.melichar);
   const { prehraj: prehrajHlasku } = useHlaskyVyucby();
   useEffect(() => {
     zrusChybu();
@@ -584,9 +591,9 @@ export function VyucbaStol({
   if (krok === null) {
     kusy.push(...kusyVety("hotovo", textNaKonci(stav, view), sada));
   } else if (vOdpovedi) {
-    kusy.push({ kluc: "verdikt", obsah: <strong className="mel-verdikt">{vybrana.spravna === true ? "Správne. " : "Nie celkom. "}</strong> });
-    kusy.push(...kusyVety("vysvetlenie", vybrana.vysvetlenie, sada));
-    if (vybrana.spravna !== true) kusy.push({ kluc: "skus", obsah: " Skús inú možnosť." });
+    kusy.push({ kluc: "verdikt", obsah: <strong className="mel-verdikt">{vybrana.spravna === true ? t("vyucba.spravne") : t("vyucba.nieCelkom")}</strong> });
+    kusy.push(...kusyVety("vysvetlenie", textKroku(krok.id, vybrana.vysvetlenie), sada));
+    if (vybrana.spravna !== true) kusy.push({ kluc: "skus", obsah: t("vyucba.skusInu") });
   } else {
     if (stitokText !== null) {
       kusy.push(
@@ -598,7 +605,7 @@ export function VyucbaStol({
         ),
       );
     }
-    if (chyba !== null) kusy.push(kusOddeleny("chyba", <span className="vyucba-chyba">{chyba}</span>));
+    if (chyba !== null) kusy.push(kusOddeleny("chyba", <span className="vyucba-chyba">{prelozHlasku(chyba)}</span>));
     if (radaText !== null) {
       kusy.push(
         kusOddeleny(
@@ -609,11 +616,11 @@ export function VyucbaStol({
         ),
       );
     }
-    kusy.push(...kusyVety("veta", krok.melichar, sada));
+    kusy.push(...kusyVety("veta", vetaKroku, sada));
     // Ťah hry za hráča bez textu: bar nesmie zmiznúť — stôl by ostal bez slova (playtest výučby 20261025, krok 6).
-    if (krok.melichar.trim() === "" && stitokText === null && krok.kto === "auto" && tahaIny) kusy.push({ kluc: "auto", obsah: "Tento ťah spraví hra za teba — chvíľu počkaj." });
+    if (krok.melichar.trim() === "" && stitokText === null && krok.kto === "auto" && tahaIny) kusy.push({ kluc: "auto", obsah: t("vyucba.tahZaTeba") });
   }
-  const podpis = [krok?.id ?? "hotovo", pohlad, odpoved ?? "", stitokText ?? "", chyba ?? "", radaText ?? "", vOdpovedi ? vybrana.vysvetlenie : (krok?.melichar ?? "")].join("|");
+  const podpis = [krok?.id ?? "hotovo", pohlad, odpoved ?? "", stitokText ?? "", chyba ?? "", radaText ?? "", vOdpovedi ? vybrana.vysvetlenie : vetaKroku].join("|");
   const strany = useStrany(podpis);
 
   // Enter = „ďalej“ v kroku bez ťahu, aj keď fokus ostal na karte či tlačidle po kliku myšou
@@ -676,16 +683,17 @@ export function VyucbaStol({
 
   // Vlastný nápis (Dať cigaretu, Odovzdať cigaretu) až na poslednej strane textu — dovtedy tlačidlo listuje.
   // Oba nápisy ležia v tlačidle na jednom mieste, šírka tlačidla sa so stranou nemení (NaJednomMieste).
-  const vlastnyNapis = krok !== null && krok.tlacidlo !== null && jeInfo ? krok.tlacidlo : null;
-  const napisDalej = vlastnyNapis !== null && !strany.dalsiaJe ? vlastnyNapis : "ďalej";
+  const vlastnyNapis = krok !== null && krok.tlacidlo !== null && jeInfo ? textKroku(krok.id, krok.tlacidlo) : null;
+  const napisDalsej = t("vyucba.dalej");
+  const napisDalej = vlastnyNapis !== null && !strany.dalsiaJe ? vlastnyNapis : napisDalsej;
   const tlacidloDalej = (ziva: boolean) => (
     <button
       ref={ziva && !spatHlavne ? dalejRef : undefined}
       className="tlacidlo-hlavne mel-dalej vyucba-dalej"
       {...(ziva ? { onClick: () => enter?.(), "data-vyucba-dalej": "" } : { type: "button" as const, tabIndex: -1 })}
-      {...(ziva && krok?.odovzdaCigaretu === true && napisDalej !== "ďalej" ? { "data-vyucba-cigareta": "" } : {})}
+      {...(ziva && krok?.odovzdaCigaretu === true && napisDalej !== napisDalsej ? { "data-vyucba-cigareta": "" } : {})}
     >
-      {vlastnyNapis === null ? "ďalej" : <NaJednomMieste ukaz={strany.dalsiaJe ? "a" : "b"} a={() => "ďalej"} b={() => vlastnyNapis} />} <kbd>Enter</kbd>
+      {vlastnyNapis === null ? napisDalsej : <NaJednomMieste ukaz={strany.dalsiaJe ? "a" : "b"} a={() => napisDalsej} b={() => vlastnyNapis} />} <kbd>Enter</kbd>
     </button>
   );
   // Koniec časti: ponuka až na poslednej strane textu, dovtedy „ďalej“ — obe na jednom mieste.
@@ -696,15 +704,15 @@ export function VyucbaStol({
           ref={ziva ? dalejRef : undefined}
           className="tlacidlo-hlavne mel-dalej"
           {...(ziva ? { onClick: pokracovat, "data-vyucba-dalsia-cast": "" } : { type: "button" as const, tabIndex: -1 })}
-          title={`${stav.dalsiaCast.cast}. časť: ${stav.dalsiaCast.nazov} (asi ${stav.dalsiaCast.minuty} minút)`}
+          title={t("vyucba.castTitul", { cast: stav.dalsiaCast.cast, nazov: nazovCasti(stav.dalsiaCast), minuty: stav.dalsiaCast.minuty })}
         >
-          Pokračovať {stav.dalsiaCast.cast}. časťou <kbd>Enter</kbd>
+          {t("vyucba.pokracovatCastou", { cast: stav.dalsiaCast.cast })} <kbd>Enter</kbd>
         </button>
       )}
       {/* Ďalšia časť ešte nie je hotová — ponuka ostáva viditeľná, nech hráč vie, že príde. */}
       {stav.pripravujeme !== null && (
-        <button type="button" disabled {...(ziva ? { "data-vyucba-dalsia-cast": "" } : {})} title={`${stav.pripravujeme.cast}. časť výučby (${stav.pripravujeme.nazov}) pripravujeme.`}>
-          {stav.pripravujeme.cast}. časť pripravujeme
+        <button type="button" disabled {...(ziva ? { "data-vyucba-dalsia-cast": "" } : {})} title={t("vyucba.pripravujemeTitul", { cast: stav.pripravujeme.cast, nazov: nazovCasti(stav.pripravujeme) })}>
+          {t("vyucba.pripravujeme", { cast: stav.pripravujeme.cast })}
         </button>
       )}
       <button
@@ -712,15 +720,16 @@ export function VyucbaStol({
         className={stav.dalsiaCast === null ? "tlacidlo-hlavne mel-dalej" : undefined}
         {...(ziva ? { onClick: hratProtiPocitacu, "data-vyucba-koniec": "" } : { type: "button" as const, tabIndex: -1 })}
       >
-        Hrať proti počítaču{stav.dalsiaCast === null && <kbd>Enter</kbd>}
+        {t("vyucba.hratProtiPocitacu")}
+        {stav.dalsiaCast === null && <kbd>Enter</kbd>}
       </button>
-      <button {...(ziva ? { onClick: prerusit } : { type: "button" as const, tabIndex: -1 })}>Do lobby</button>
+      <button {...(ziva ? { onClick: prerusit } : { type: "button" as const, tabIndex: -1 })}>{t("vyucba.doLobby")}</button>
     </>
   );
   // Úvod: „Dať cigaretu“ alebo „Preskočiť výučbu“ — dve tlačidlá, prerušenie by bolo tretie (Michal 2026-10-25).
   const preskocenie = krok !== null && krok.preskocenie && !vOdpovedi;
   const predoslaStrana = strany.strana > 0 && (
-    <button type="button" className="tlacidlo-jemne mel-spat" onClick={strany.predosla} title="Predošlá strana textu" aria-label="Predošlá strana textu">
+    <button type="button" className="tlacidlo-jemne mel-spat" onClick={strany.predosla} title={t("vyucba.predoslaStrana")} aria-label={t("vyucba.predoslaStrana")}>
       ‹
     </button>
   );
@@ -744,17 +753,17 @@ export function VyucbaStol({
             <>
               <span
                 className="mel-pocitadlo"
-                aria-label={`Výučba, ${krok?.cast.cast ?? stav.koniecCasti ?? 1}. časť: ${percento} %`}
-                title={krok === null ? undefined : `${krok.cast.cast}. časť: ${krok.cast.nazov}`}
+                aria-label={t("vyucba.pocitadlo", { cast: krok?.cast.cast ?? stav.koniecCasti ?? 1, percento })}
+                title={krok === null ? undefined : t("vyucba.castNazov", { cast: krok.cast.cast, nazov: nazovCasti(krok.cast) })}
               >
-                {krok !== null && <span className="mel-cast">{krok.cast.cast}. časť · </span>}
+                {krok !== null && <span className="mel-cast">{t("vyucba.castBodka", { cast: krok.cast.cast })}</span>}
                 {percento} %
               </span>
               <CisloStrany strany={strany} />
               {/* Okno odpovede nahradilo otázku — nech hráč vie, na čo Melichar odpovedá. */}
               {vOdpovedi && (
                 <span className="mel-tvoja">
-                  tvoja odpoveď: <VetaMelichara text={vybrana.text} sada={sada} />
+                  {t("vyucba.tvojaOdpoved")} <VetaMelichara text={textKroku(krok?.id ?? "", vybrana.text)} sada={sada} />
                 </span>
               )}
             </>
@@ -762,7 +771,7 @@ export function VyucbaStol({
           moznosti={
             moznosti.length > 0 && !vOdpovedi ? (
               // Po Entere na otázke možnosti bliknú (nový key spustí animáciu znova).
-              <div key={napovedKvizu} className={`vyucba-moznosti${napovedKvizu > 0 ? " napoveda" : ""}`} role="group" aria-label="Možnosti odpovede — klikni, alebo stlač 1 či 2">
+              <div key={napovedKvizu} className={`vyucba-moznosti${napovedKvizu > 0 ? " napoveda" : ""}`} role="group" aria-label={t("vyucba.moznostiOdpovede")}>
                 {kviz.zobrazene.map(({ index, moznost: m }, k) => {
                   const stav = odpoved === index ? (m.spravna === true ? " spravna" : " zla") : "";
                   return (
@@ -777,7 +786,7 @@ export function VyucbaStol({
                       <kbd>{k + 1}</kbd>
                       {/* Jeden kus textu — tlačidlo je flex a medzera by vznikla aj okolo piktogramu. */}
                       <span>
-                        <VetaMelichara text={m.text} sada={sada} />
+                        <VetaMelichara text={textKroku(krok?.id ?? "", m.text)} sada={sada} />
                       </span>
                     </button>
                   );
@@ -794,9 +803,9 @@ export function VyucbaStol({
             ) : (
               <>
                 {predoslaStrana}
-                {!vOdpovedi && krok.kto === "hrac" && <span className="vyucba-stav">Tvoj ťah</span>}
-                {!vOdpovedi && krok.kto === "bot" && !krok.vykonany && <span className="vyucba-stav vyucba-caka">{menoBota} ťahá…</span>}
-                {!vOdpovedi && krok.kto === "auto" && !krok.vykonany && <span className="vyucba-stav vyucba-caka">Hra ťahá za teba…</span>}
+                {!vOdpovedi && krok.kto === "hrac" && <span className="vyucba-stav">{t("vyucba.tvojTah")}</span>}
+                {!vOdpovedi && krok.kto === "bot" && !krok.vykonany && <span className="vyucba-stav vyucba-caka">{t("vyucba.botTaha", { meno: menoBota })}</span>}
+                {!vOdpovedi && krok.kto === "auto" && !krok.vykonany && <span className="vyucba-stav vyucba-caka">{t("vyucba.hraTaha")}</span>}
                 {vOdpovedi && (
                   <button
                     ref={spatHlavne ? dalejRef : undefined}
@@ -804,19 +813,21 @@ export function VyucbaStol({
                     className={spatHlavne ? "tlacidlo-hlavne mel-dalej kviz-spat" : "mel-dalej kviz-spat"}
                     onClick={spatNaOtazku}
                     data-vyucba-spat=""
-                    title="Späť na otázku (aj Backspace)"
+                    title={t("vyucba.spatNaOtazkuTitul")}
                   >
-                    späť na otázku{spatHlavne && <kbd>Enter</kbd>}
+                    {t("vyucba.spatNaOtazku")}
+                    {spatHlavne && <kbd>Enter</kbd>}
                   </button>
                 )}
                 {(strany.dalsiaJe || (jeInfo && !spatHlavne)) && tlacidloDalej(true)}
                 {preskocenie ? (
-                  <button type="button" className="mel-dalej vyucba-preskocit" onClick={preskocit} data-vyucba-preskocit="" title="Výučbu preskočíš — nájdeš ju kedykoľvek na stránke Hrať.">
-                    Preskočiť výučbu
+                  <button type="button" className="mel-dalej vyucba-preskocit" onClick={preskocit} data-vyucba-preskocit="" title={t("vyucba.preskocitTitul")}>
+                    {t("vyucba.preskocit")}
                   </button>
                 ) : (
-                  <button type="button" className="tlacidlo-jemne vyucba-prerusit" onClick={prerusit} title="Prerušiť výučbu — postup sa uloží, pokračuješ na stránke Hrať.">
-                    prerušiť<span className="vyucba-dlhy-popis"> výučbu</span>
+                  <button type="button" className="tlacidlo-jemne vyucba-prerusit" onClick={prerusit} title={t("vyucba.prerusitTitul")}>
+                    {t("vyucba.prerusit")}
+                    <span className="vyucba-dlhy-popis">{t("vyucba.prerusitDlhy")}</span>
                   </button>
                 )}
               </>
@@ -859,7 +870,7 @@ export function enterNaKonciCasti(stav: Pick<StavVyucby, "dalsiaCast">): "pokrac
  */
 export function textNaKonci(stav: Pick<StavVyucby, "koniecCasti" | "dalsiaCast" | "pripravujeme">, view: Pick<ClientState, "koniec" | "ja">): string {
   const cast = stav.koniecCasti ?? 1;
-  const napoveda = "V partii proti počítaču sa ozvem krátkou nápovedou, keď sa objaví niečo nové.";
+  const napoveda = t("vyucba.napoveda");
   const dalsia = stav.dalsiaCast ?? stav.pripravujeme;
   if (dalsia === null) {
     const k = view.koniec;
@@ -867,17 +878,16 @@ export function textNaKonci(stav: Pick<StavVyucby, "koniecCasti" | "dalsiaCast" 
     const vysledok =
       k === null || k.body === null
         ? ""
-        : ` Partia skončila ${k.body[view.ja]} : ${k.body[su]} na špaky — ${k.vitaz === view.ja ? "vyhral si" : k.vitaz === null ? "remíza" : "vyhral Štamgast"}.`;
-    return `Výučbu máš za sebou, hviezdička za ${radovaCast(cast, "akuzativ")} časť je tvoja.${vysledok} ${napoveda}`;
+        : t("vyucba.vysledok", { ja: k.body[view.ja], su: k.body[su], kto: k.vitaz === view.ja ? t("vyucba.vyhralSi") : k.vitaz === null ? t("vyucba.remiza") : t("vyucba.vyhralStamgast") });
+    return t("vyucba.koniecVyucby", { cast: radovaCast(cast, "akuzativ"), vysledok, napoveda });
   }
   const co =
     stav.dalsiaCast !== null
-      ? `${velke(radovaCast(dalsia.cast, "nominativ"))} časť, ${dalsia.nazov}, trvá asi ${dalsia.minuty} minút — pokračuje táto partia.`
-      : `${velke(radovaCast(dalsia.cast, "akuzativ"))} časť (${dalsia.nazov}) pripravujeme.`;
-  return `${velke(radovaCast(cast, "akuzativ"))} časť máš za sebou, hviezdička za ňu je tvoja. ${co} ${napoveda}`;
+      ? t("vyucba.dalsiaCastText", { Cast: velke(radovaCast(dalsia.cast, "nominativ")), nazov: nazovCasti(dalsia), minuty: dalsia.minuty })
+      : t("vyucba.pripravujemeText", { Cast: velke(radovaCast(dalsia.cast, "akuzativ")), nazov: nazovCasti(dalsia) });
+  return t("vyucba.koniecCastiText", { Cast: velke(radovaCast(cast, "akuzativ")), co, napoveda });
 }
 
 // Bar delí text na vety podľa bodky — „1. časť“ by sa zlomila za číslom, preto slovom.
-const RADOVE = { nominativ: ["prvá", "druhá", "tretia", "štvrtá"], akuzativ: ["prvú", "druhú", "tretiu", "štvrtú"] } as const;
-const radovaCast = (n: number, pad: keyof typeof RADOVE): string => RADOVE[pad][n - 1] ?? `${n}`;
-const velke = (s: string): string => s.charAt(0).toLocaleUpperCase("sk") + s.slice(1);
+const radovaCast = (n: number, pad: "nominativ" | "akuzativ"): string => (n >= 1 && n <= 4 ? t(`vyucba.radova.${pad}.${n}`) : `${n}`);
+const velke = (s: string): string => s.charAt(0).toLocaleUpperCase(aktualnyJazyk()) + s.slice(1);

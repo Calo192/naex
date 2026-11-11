@@ -1,0 +1,616 @@
+{
+  "_meta": {
+    "jazyk": "hu",
+    "popis": "Preklad dlhých textov: pri každom id prelož prázdne polia; pole sk je slovenský originál, z ktorého preklad vzniká — nemeň ho (keď sa slovenčina zmení, preklad sa ukáže ako zastaraný a v hre ostane slovenčina). Značky <p k=\"…\">, <strong>, <a href=\"…\"> a {parametre} ponechaj ako v origináli; pojmy podľa docs/preklady/glosar.json."
+  },
+  "kategoria.bitka": {
+    "nazov": "",
+    "sk": {
+      "nazov": "Bitka"
+    }
+  },
+  "kategoria.nerest": {
+    "nazov": "",
+    "sk": {
+      "nazov": "Nerest"
+    }
+  },
+  "kategoria.naex": {
+    "nazov": "",
+    "sk": {
+      "nazov": "NA EX a Záverečná"
+    }
+  },
+  "kategoria.linia": {
+    "nazov": "",
+    "sk": {
+      "nazov": "Karty a línia"
+    }
+  },
+  "kategoria.starsi": {
+    "nazov": "",
+    "sk": {
+      "nazov": "Starší"
+    }
+  },
+  "kategoria.ekonomika": {
+    "nazov": "",
+    "sk": {
+      "nazov": "Ekonomika"
+    }
+  },
+  "kategoria.partie": {
+    "nazov": "",
+    "sk": {
+      "nazov": "Partie"
+    }
+  },
+  "kategoria.bot": {
+    "nazov": "",
+    "sk": {
+      "nazov": "Proti botovi"
+    }
+  },
+  "kategoria.kuriozity": {
+    "nazov": "",
+    "sk": {
+      "nazov": "Kuriozity (tajné)"
+    }
+  },
+  "tazka-ruka": {
+    "nazov": "",
+    "popis": "",
+    "sk": {
+      "nazov": "Ťažká ruka",
+      "popis": "V jednej bitke udeľ aspoň {prah} tuhého."
+    }
+  },
+  "vyprask": {
+    "nazov": "",
+    "popis": "",
+    "sk": {
+      "nazov": "Výprask",
+      "popis": "Vyhraj bitku s prebytkom aspoň {prah}."
+    }
+  },
+  "petelica-z-neba": {
+    "nazov": "",
+    "popis": "",
+    "sk": {
+      "nazov": "Petelica z neba",
+      "popis": "Maj v jednej bitke aspoň {prah} aktívne Petelice."
+    }
+  },
+  "krcmovy-boxer": {
+    "nazov": "",
+    "popis": "",
+    "sk": {
+      "nazov": "Krčmový boxer",
+      "popis": "Vyhraj v jednej partii aspoň {prah} z jej bitiek."
+    }
+  },
+  "bez-milosti": {
+    "nazov": "",
+    "popis": "",
+    "sk": {
+      "nazov": "Bez milosti",
+      "popis": "Vyhraj všetky bitky partie — spolu {prah}×."
+    }
+  },
+  "otocka": {
+    "nazov": "",
+    "popis": "",
+    "sk": {
+      "nazov": "Otočka",
+      "popis": "Vyhraj ako útočník (porazený z minulej bitky) spolu {prah} bitiek."
+    }
+  },
+  "komin": {
+    "nazov": "",
+    "popis": "",
+    "sk": {
+      "nazov": "Komín",
+      "popis": "Vyfajčené cigarety za jedno kolo: aspoň {prah}."
+    }
+  },
+  "do-dna": {
+    "nazov": "",
+    "popis": "",
+    "sk": {
+      "nazov": "Do dna",
+      "popis": "Vypi do dna za jedno kolo aspoň {prah} poldeci."
+    }
+  },
+  "pecen-z-ocele": {
+    "nazov": "",
+    "popis": "",
+    "sk": {
+      "nazov": "Pečeň z ocele",
+      "popis": "Nazbieraj v jednej Pitke aspoň {prah} poškodenia pečene."
+    }
+  },
+  "ruzova-pecienka": {
+    "nazov": "",
+    "popis": "",
+    "sk": {
+      "nazov": "Ružová pečienka",
+      "popis": "Cirhózy získané v jednej partii: aspoň {prah}."
+    }
+  },
+  "traslave-ruky": {
+    "nazov": "",
+    "popis": "",
+    "sk": {
+      "nazov": "Trasľavé ruky",
+      "popis": "Absťáky v jednej partii: aspoň {prah}."
+    }
+  },
+  "stokar": {
+    "nazov": "",
+    "popis": "",
+    "sk": {
+      "nazov": "Stokár",
+      "popis": "Kúp stokárskym barterom spolu {prah} poldeci."
+    }
+  },
+  "celozivotny-fajciar": {
+    "nazov": "",
+    "popis": "",
+    "sk": {
+      "nazov": "Celoživotný fajčiar",
+      "popis": "Vyfajči spolu {prah} cigariet."
+    }
+  },
+  "na-ex": {
+    "nazov": "",
+    "popis": "",
+    "sk": {
+      "nazov": "Na ex!",
+      "popis": "Daj spolu {prah}× NA EX."
+    }
+  },
+  "na-zdravie-suseda": {
+    "nazov": "",
+    "popis": "",
+    "sk": {
+      "nazov": "Na zdravie suseda",
+      "popis": "Daj v jednej partii aspoň {prah}× NA EX na súperovu kartu."
+    }
+  },
+  "trafene": {
+    "nazov": "",
+    "popis": "",
+    "sk": {
+      "nazov": "Trafené!",
+      "popis": "Daj v jednej partii aspoň {prah} NA EX, ktoré aj po súperovej odpovedi zlepšia bitku v tvoj prospech."
+    }
+  },
+  "kontra": {
+    "nazov": "",
+    "popis": "",
+    "sk": {
+      "nazov": "Kontra",
+      "popis": "Odpovedz v jednej partii kartou na súperovo NA EX aspoň {prah}×."
+    }
+  },
+  "bomba": {
+    "nazov": "",
+    "popis": "",
+    "sk": {
+      "nazov": "Bomba",
+      "popis": "Odpáľ BOMBU ×4 (akcia so štvornásobkom) — spolu {prah}×."
+    }
+  },
+  "posledne-slovo": {
+    "nazov": "",
+    "popis": "",
+    "sk": {
+      "nazov": "Posledné slovo",
+      "popis": "Otoč bitku posledným slovom (pečiatka ZVRAT!) — spolu {prah}×."
+    }
+  },
+  "zaverecna": {
+    "nazov": "",
+    "popis": "",
+    "sk": {
+      "nazov": "Záverečná",
+      "popis": "Zahraj spolu {prah} kariet ako Záverečnú."
+    }
+  },
+  "eso-v-rukave": {
+    "nazov": "",
+    "popis": "",
+    "sk": {
+      "nazov": "Eso v rukáve",
+      "popis": "Otoč bitku Záverečnou (pečiatka ZÁVEREČNÁ!) — spolu {prah}×."
+    }
+  },
+  "plny-stol": {
+    "nazov": "",
+    "popis": "",
+    "sk": {
+      "nazov": "Plný stôl",
+      "popis": "Maj v línii pri vyhodnotení bitky aspoň {prah} svojich kariet."
+    }
+  },
+  "podstrkovac": {
+    "nazov": "",
+    "popis": "",
+    "sk": {
+      "nazov": "Podstrkovač",
+      "popis": "Podstrč v jednej partii aspoň {prah} kariet — priložených k súperovej karte."
+    }
+  },
+  "pan-oboch-krajov": {
+    "nazov": "",
+    "popis": "",
+    "sk": {
+      "nazov": "Pán oboch krajov",
+      "popis": "Maj prevahu v oboch krajoch lokality naraz — spolu v {prah} bitkách."
+    }
+  },
+  "dlhy-vecer": {
+    "nazov": "",
+    "popis": "",
+    "sk": {
+      "nazov": "Dlhý večer",
+      "popis": "Vyhraj v jednej partii bitky, ktoré mali spolu aspoň {prah} Pitiek."
+    }
+  },
+  "vzbura": {
+    "nazov": "",
+    "popis": "",
+    "sk": {
+      "nazov": "Vzbura",
+      "popis": "Spôsob Vzburu (Odpor + Odpor na spoji) — spolu {prah}×."
+    }
+  },
+  "strasiak": {
+    "nazov": "",
+    "popis": "",
+    "sk": {
+      "nazov": "Strašiak",
+      "popis": "Vydesení starší na konci partie: aspoň {prah}."
+    }
+  },
+  "budicek": {
+    "nazov": "",
+    "popis": "",
+    "sk": {
+      "nazov": "Prvý väzeň",
+      "popis": "Zajmi prvého staršieho v partii — spolu {prah}×."
+    }
+  },
+  "patron": {
+    "nazov": "",
+    "popis": "",
+    "sk": {
+      "nazov": "Patrón",
+      "popis": "Presvedč staršieho (za hádku) — spolu {prah}×."
+    }
+  },
+  "vazen-v-pivnici": {
+    "nazov": "",
+    "popis": "",
+    "sk": {
+      "nazov": "Väzeň v pivnici",
+      "popis": "Zajmi staršieho (za Nakladačku) — spolu {prah}×."
+    }
+  },
+  "pohorsenie": {
+    "nazov": "",
+    "popis": "",
+    "sk": {
+      "nazov": "Hádka",
+      "popis": "Vyhraj hádku o aspoň {prah}."
+    }
+  },
+  "milacik-dediny": {
+    "nazov": "",
+    "popis": "",
+    "sk": {
+      "nazov": "Miláčik dediny",
+      "popis": "Maj naraz priazeň aspoň {prah} starších."
+    }
+  },
+  "zachranene": {
+    "nazov": "",
+    "popis": "",
+    "sk": {
+      "nazov": "Zachránené",
+      "popis": "Vyhraj bitku, keď sa súpera niektorý starší bojí na červenej (výhrou by ho mohol zajať) — spolu {prah}×."
+    }
+  },
+  "hroza-a-des": {
+    "nazov": "",
+    "popis": "",
+    "sk": {
+      "nazov": "Hrôza a des",
+      "popis": "Vyhraj partiu tretím väzňom — spolu {prah}×."
+    }
+  },
+  "bohac": {
+    "nazov": "",
+    "popis": "",
+    "sk": {
+      "nazov": "Boháč",
+      "popis": "Maj naraz aspoň {prah} cigariet."
+    }
+  },
+  "stamgast-senku": {
+    "nazov": "",
+    "popis": "",
+    "sk": {
+      "nazov": "Štamgast ponuky",
+      "popis": "Vezmi v jednej partii z ponuky aspoň {prah} kariet."
+    }
+  },
+  "dedic": {
+    "nazov": "",
+    "popis": "",
+    "sk": {
+      "nazov": "Dedič",
+      "popis": "Nástroje vyložené do Dedičstva: spolu {prah}."
+    }
+  },
+  "exekutor-u-dveri": {
+    "nazov": "",
+    "popis": "",
+    "sk": {
+      "nazov": "Exekútor u dverí",
+      "popis": "Čeľ exekúcii a prežij ju (odovzdaj Nástroj) — spolu {prah}×."
+    }
+  },
+  "pas-za-gros": {
+    "nazov": "",
+    "popis": "",
+    "sk": {
+      "nazov": "Pas za groš",
+      "popis": "Dostaň v jednej partii za pasy aspoň {prah} cigariet."
+    }
+  },
+  "prva-hra": {
+    "nazov": "",
+    "popis": "",
+    "sk": {
+      "nazov": "Prvá hra",
+      "popis": "Dokonči {prah}. časť výučby u majstra Melichara. Po prvej už nie si Nealko, ale Poldeci."
+    }
+  },
+  "prva-runda": {
+    "nazov": "",
+    "popis": "",
+    "sk": {
+      "nazov": "Prvá runda",
+      "popis": "Vyhrané partie: spolu {prah}."
+    }
+  },
+  "stamgast": {
+    "nazov": "",
+    "popis": "",
+    "sk": {
+      "nazov": "Štamgast",
+      "popis": "Dohraj spolu {prah} partií."
+    }
+  },
+  "kto-vyhrava-plati": {
+    "nazov": "",
+    "popis": "",
+    "sk": {
+      "nazov": "Kto vyhráva, platí",
+      "popis": "Výhry za sebou: {prah}."
+    }
+  },
+  "majster-bodov": {
+    "nazov": "",
+    "popis": "",
+    "sk": {
+      "nazov": "Majster špakov",
+      "popis": "Získaj v jednej partii aspoň {prah} špakov."
+    }
+  },
+  "na-hlavu": {
+    "nazov": "",
+    "popis": "",
+    "sk": {
+      "nazov": "Na hlavu",
+      "popis": "Vyhraj partiu aspoň o {prah} špakov."
+    }
+  },
+  "z-popola": {
+    "nazov": "",
+    "popis": "",
+    "sk": {
+      "nazov": "Z popola",
+      "popis": "Vyhraj partiu, hoci si po niektorom kole prehrával aspoň o {prah} špakov."
+    }
+  },
+  "maraton": {
+    "nazov": "",
+    "popis": "",
+    "sk": {
+      "nazov": "Maratón",
+      "popis": "Vyhrané partie Prvej ligy (7 lokalít): spolu {prah}."
+    }
+  },
+  "kamarati-z-krcmy": {
+    "nazov": "",
+    "popis": "",
+    "sk": {
+      "nazov": "Kamaráti z krčmy",
+      "popis": "Dohraj partiu s {prah} rôznymi ľuďmi."
+    }
+  },
+  "stamgast-pod-stolom": {
+    "nazov": "",
+    "popis": "",
+    "sk": {
+      "nazov": "Štamgast pod stolom",
+      "popis": "Vyhraj nad Štamgastom spolu {prah}×."
+    }
+  },
+  "fero-umlcany": {
+    "nazov": "",
+    "popis": "",
+    "sk": {
+      "nazov": "Rapavý Fero umlčaný",
+      "popis": "Vyhraj nad Rapavým Ferom spolu {prah}×."
+    }
+  },
+  "gizka-bez-reci": {
+    "nazov": "",
+    "popis": "",
+    "sk": {
+      "nazov": "Teta Gizka bez reči",
+      "popis": "Vyhraj nad Tetou Gizkou spolu {prah}×."
+    }
+  },
+  "igor-v-jarku": {
+    "nazov": "",
+    "popis": "",
+    "sk": {
+      "nazov": "Igor v jarku",
+      "popis": "Vyhraj nad Igorom spolu {prah}×."
+    }
+  },
+  "rudo-obraty": {
+    "nazov": "",
+    "popis": "",
+    "sk": {
+      "nazov": "Rudo obratý do nitky",
+      "popis": "Vyhraj nad Rudom spolu {prah}×."
+    }
+  },
+  "bozena-sa-prezehnala": {
+    "nazov": "",
+    "popis": "",
+    "sk": {
+      "nazov": "Božena sa prežehnala",
+      "popis": "Vyhraj nad Boženou spolu {prah}×."
+    }
+  },
+  "darina-si-to-vypila": {
+    "nazov": "",
+    "popis": "",
+    "sk": {
+      "nazov": "Darina si to vypila",
+      "popis": "Vyhraj nad Darinou spolu {prah}×."
+    }
+  },
+  "cela-krcma": {
+    "nazov": "",
+    "popis": "",
+    "sk": {
+      "nazov": "Celá krčma porazená",
+      "popis": "Porazené povahy bota: {prah} zo 4."
+    }
+  },
+  "trening-u-melichara": {
+    "nazov": "",
+    "popis": "",
+    "sk": {
+      "nazov": "Tréning u Melichara",
+      "popis": "Dohrané partie s botom: spolu {prah}."
+    }
+  },
+  "abstinent": {
+    "nazov": "",
+    "popis": "",
+    "tajnyText": "",
+    "sk": {
+      "nazov": "Abstinent",
+      "popis": "Dohraj partiu bez jedinej neresti: nevypi, nefajči, nedaj NA EX, nedolievaj, nebarteruj — spolu {prah}×.",
+      "tajnyText": "Niekto tu pije len vodu…"
+    }
+  },
+  "pecenovy-pastet": {
+    "nazov": "",
+    "popis": "",
+    "tajnyText": "",
+    "sk": {
+      "nazov": "Pečeňový paštét",
+      "popis": "Získaj v jednej Pitke aspoň {prah} Cirhózy.",
+      "tajnyText": "Aj pečeň má svoje hranice."
+    }
+  },
+  "vlastny-gol": {
+    "nazov": "",
+    "popis": "",
+    "tajnyText": "",
+    "sk": {
+      "nazov": "Vlastný gól",
+      "popis": "Daj NA EX, ktoré ti po súperovej odpovedi bitku zhorší — spolu {prah}×.",
+      "tajnyText": "Aj to sa stáva najlepším."
+    }
+  },
+  "vsetko-na-sekeru": {
+    "nazov": "",
+    "popis": "",
+    "tajnyText": "",
+    "sk": {
+      "nazov": "Všetko na sekeru",
+      "popis": "Ukonči v jednej partii aspoň {prah} bitky remízou (lokalita na sekeru).",
+      "tajnyText": "Ani jeden, ani druhý."
+    }
+  },
+  "nasucho": {
+    "nazov": "",
+    "popis": "",
+    "tajnyText": "",
+    "sk": {
+      "nazov": "Nasucho",
+      "popis": "Vyhraj bitku bez jediného plného poldeci — spolu {prah}×.",
+      "tajnyText": "Na sucho sa bije najlepšie."
+    }
+  },
+  "prazdne-vrecka": {
+    "nazov": "",
+    "popis": "",
+    "tajnyText": "",
+    "sk": {
+      "nazov": "Prázdne vrecká",
+      "popis": "Vyhraj partiu s 0 cigaretami na konci — spolu {prah}×.",
+      "tajnyText": "Posledná cigareta padla na víťazstvo."
+    }
+  },
+  "stastie-v-nestasti": {
+    "nazov": "",
+    "popis": "",
+    "tajnyText": "",
+    "sk": {
+      "nazov": "Šťastie v nešťastí",
+      "popis": "Vyhraj partiu, hoci súper vyhral viac bitiek — spolu {prah}×.",
+      "tajnyText": "Bitky prehráš, vojnu vyhráš."
+    }
+  },
+  "exekutor-odisiel": {
+    "nazov": "",
+    "popis": "",
+    "tajnyText": "",
+    "sk": {
+      "nazov": "Exekútor odišiel s prázdnou",
+      "popis": "Vyhraj partiu, v ktorej si čelil exekúcii — spolu {prah}×.",
+      "tajnyText": "Klopal na dvere, ale…"
+    }
+  },
+  "dlznik-roka": {
+    "nazov": "",
+    "popis": "",
+    "tajnyText": "",
+    "sk": {
+      "nazov": "Dlžník roka",
+      "popis": "Priznané Dlhy naraz: aspoň {prah}.",
+      "tajnyText": "Aj banka by sa zľakla."
+    }
+  },
+  "zberatel-haraburdia": {
+    "nazov": "",
+    "popis": "",
+    "tajnyText": "",
+    "sk": {
+      "nazov": "Zberateľ haraburdia",
+      "popis": "Maj naraz v ruke aspoň {prah} kariet.",
+      "tajnyText": "Dačo sa ešte zíde."
+    }
+  }
+}

@@ -6,6 +6,7 @@
 // Tvar je kópia výstupu bodyTeraz jadra v5, ktorý server uložil do kroniky.
 
 import type { Podmienka, PlayerId, SlotIndex } from "@naex/core";
+import { textyPodla } from "../i18n/jazyk.tsx";
 
 /** Podmienka scorecardu v záverečnom bodovaní v5 (BodPodmienky jadra v5). */
 export interface BodPodmienky {
@@ -49,18 +50,7 @@ export const SMER_V5: Readonly<Record<Podmienka, number>> = {
 export const PORADIE_PODMIENOK: readonly Podmienka[] = ["lokality", "starsi", "cigarety", "rezerva", "znepokojenie", "strach", "vydesenie", "dlh", "cirhoza", "abstak"];
 
 /** Čo sa v súboji podmienky porovnáva — prvý riadok nápovedy. */
-export const ZA_CO: Readonly<Record<Podmienka, string>> = {
-  lokality: "Vyhrá, kto ovláda viac lokalít (vyhraté bitky o lokalitu).",
-  starsi: "Vyhrá, kto má viac väzňov.",
-  cigarety: "Vyhrá, kto má na konci viac cigariet.",
-  znepokojenie: "Vyhrá, koho sa aspoň v žltej zóne bojí viac OSTATNÝCH starších (tento sa neráta).",
-  strach: "Vyhrá, koho sa aspoň v oranžovej zóne bojí viac OSTATNÝCH starších (tento sa neráta).",
-  vydesenie: "Vyhrá, kto vydesil viac OSTATNÝCH starších (červená krajná pozícia).",
-  dlh: "Vyhrá, kto má menej Dlhov — aj priznaných. Zbavíš sa ich pálením v bitke a kartami (Dievčina, Robota, Stryná…).",
-  cirhoza: "Vyhrá, kto má menej nepriznaných Cirhóz v ruke a v balíčkoch.",
-  abstak: "Vyhrá, kto za celú hru získal menej Absťákov — zbavením sa Absťáku neubudnú.",
-  rezerva: "Vyhrá, kto má na konci viac plných poldeci; Vínko v Dedičstve sa ráta ako plný.",
-};
+export const ZA_CO: Readonly<Record<Podmienka, string>> = textyPodla(PORADIE_PODMIENOK, "bodyPodmienok.zaCo");
 
 /** Súboj jednej aktívnej podmienky pri staršom. */
 export interface SubojPodmienky {

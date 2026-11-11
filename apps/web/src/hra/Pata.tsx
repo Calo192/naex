@@ -11,14 +11,20 @@ import { IkonaAkcie } from "../karta/IkonaAkcie.tsx";
 import { mediaUrl } from "../lib/api.ts";
 import { HernaKarta, vzhladKarty } from "./HernaKarta.tsx";
 import "./pata.css";
+import { nazovKarty, t, tr, tZoServera } from "../i18n/jazyk.tsx";
 
 function menoStarsieho(data: GameData, id: string): string {
-  return data.cards.get(id)?.name ?? id;
+  return nazovKarty(data.cards.get(id)?.name ?? id);
 }
 
+/** Má dosť staršieho; text v jazyku hráča (kľúč pata.maDost.<id> zrkadlí jadro). */
 function maDostStarsieho(id: string): { readonly nazov: string; readonly text: string } | null {
-  return MA_DOST[id as StarsiId] ?? null;
+  const md = MA_DOST[id as StarsiId];
+  return md === undefined ? null : { nazov: md.nazov, text: tZoServera(`pata.maDost.${id}`, md.text) };
 }
+
+/** Karta súpera po mene v jazyku hráča. */
+const menoKarty = (data: GameData, k: Parameters<typeof defOf>[1]): string => nazovKarty(defOf(data, k).name);
 
 function FotoStarsieho({ data, sada, id }: { readonly data: GameData; readonly sada: Sada; readonly id: string }) {
   const o = vzhladKarty(sada, data, id).obrazok;
@@ -35,7 +41,9 @@ function useSadaPata(sada: Sada): Sada {
       ...sada,
       karty: sada.karty.map((k) => {
         const md = maDostStarsieho(k.id);
-        return md === null ? k : { ...k, efekt: `Má dosť — ${md.nazov}: ${md.text}` };
+        const sk = MA_DOST[k.id as StarsiId];
+        // Efekt karty ostáva slovenský — prekladá ho preklad kariet a pečate čítajú slovenčinu.
+        return md === null || sk === undefined ? k : { ...k, efekt: `Má dosť — ${sk.nazov}: ${sk.text}` };
       }),
     }),
     [sada],
@@ -50,7 +58,7 @@ function radHraca(view: ClientState, data: GameData, rad: readonly StarsiPata[],
 /** Aktívne akcie ako piktogramy z karty s počtom. */
 function Akcie({ sumy, sada, velke = false }: { readonly sumy: ActionSums | undefined; readonly sada: Sada; readonly velke?: boolean }) {
   const akcie = [...sada.akcie].sort((a, b) => a.poradie - b.poradie).filter((a) => (sumy?.[a.kluc as Action] ?? 0) > 0);
-  if (akcie.length === 0) return <span className="pt-akcie-nic">žiadna akcia</span>;
+  if (akcie.length === 0) return <span className="pt-akcie-nic">{t("pata.ziadnaAkcia")}</span>;
   return (
     <span className={`pt-akcie${velke ? " velke" : ""}`}>
       {akcie.map((a) => {
@@ -81,8 +89,8 @@ function Znacky({ s, sada }: { readonly s: StarsiPata; readonly sada: Sada }) {
     );
   return (
     <span className="pt-znacky">
-      {znacka("Viera", "stit", "Štít", s.stit)}
-      {znacka("Pohoršenie", "jed", "Jed", s.jed)}
+      {znacka("Viera", "stit", t("pata.stit"), s.stit)}
+      {znacka("Pohoršenie", "jed", t("pata.jed"), s.jed)}
     </span>
   );
 }
@@ -131,13 +139,13 @@ function KartaStarsieho({
         <div className="pt-hore">
           <b>{meno}</b>
           {s.podrazeny ? (
-            <span className="pt-padol">padol</span>
+            <span className="pt-padol">{t("pata.padol")}</span>
           ) : (
             <>
-              <span className="pt-pecen" title={`Pečeň ${s.pecen} z ${max}`}>
+              <span className="pt-pecen" title={t("pata.pecenZ", { pecen: s.pecen, max })}>
                 <strong>{s.pecen}</strong>/{max}
               </span>
-              <span className="pt-ukaz" role="img" aria-label={`Pečeň ${s.pecen} z ${max}`}>
+              <span className="pt-ukaz" role="img" aria-label={t("pata.pecenZ", { pecen: s.pecen, max })}>
                 <i className={s.pecen <= max / 3 ? "nizka" : undefined} style={{ width: `${Math.min(100, (100 * s.pecen) / max)}%` }} />
               </span>
             </>
@@ -214,7 +222,7 @@ export function PortretyStarsich({
   };
   const otvorene = lupa !== null && rady.uid === null ? lupa : null;
   return (
-    <div className="pt-pult" aria-label={moj ? "Môj rad starších" : "Súperov rad starších"}>
+    <div className="pt-pult" aria-label={moj ? t("pata.mojRad") : t("pata.superovRad")}>
       {(moj ? rad : [...rad].reverse()).map((x) => {
         const max = PATA.PECEN[x.karta.defId as StarsiId] ?? x.pecen;
         const meno = menoStarsieho(data, x.karta.defId);
@@ -224,7 +232,11 @@ export function PortretyStarsich({
             type="button"
             className={`pt-m${x.podrazeny ? " padol" : ""}${rady.uid === x.karta.uid ? " stlaceny" : ""}`}
             aria-pressed={rady.uid === x.karta.uid}
-            aria-label={x.podrazeny ? `${meno}, padol` : `${meno}, pečeň ${x.pecen} z ${max}${x.stit > 0 ? `, štít ${x.stit}` : ""}${x.jed > 0 ? `, jed ${x.jed}` : ""}`}
+            aria-label={
+              x.podrazeny
+                ? t("pata.menoPadol", { meno })
+                : `${t("pata.menoPecen", { meno, pecen: x.pecen, max })}${x.stit > 0 ? t("pata.ciarkaStit", { n: x.stit }) : ""}${x.jed > 0 ? t("pata.ciarkaJed", { n: x.jed }) : ""}`
+            }
             onMouseEnter={(e) => setLupa(kotva(e.currentTarget, x))}
             onMouseLeave={() => setLupa(null)}
             onFocus={(e) => setLupa(kotva(e.currentTarget, x))}
@@ -237,7 +249,7 @@ export function PortretyStarsich({
             <FotoStarsieho data={data} sada={sada} id={x.karta.defId} />
             <Znacky s={x} sada={sada} />
             {x.podrazeny ? (
-              <span className="pt-padol">padol</span>
+              <span className="pt-padol">{t("pata.padol")}</span>
             ) : (
               <span className="pt-m-stav">
                 <span className="pt-pecen">
@@ -257,13 +269,13 @@ export function PortretyStarsich({
           className="pt-m pt-m-ruka"
           tabIndex={0}
           role="img"
-          aria-label={`Súperova ruka: ${rukaSupera.map((k) => defOf(data, k).name).join(", ") || "prázdna"}`}
+          aria-label={t("pata.superovaRukaZoznam", { karty: rukaSupera.map((k) => menoKarty(data, k)).join(", ") || t("pata.prazdna") })}
           onMouseEnter={(e) => setRukaNad(kotva(e.currentTarget, rad[0] as StarsiPata))}
           onMouseLeave={() => setRukaNad(null)}
           onFocus={(e) => setRukaNad(kotva(e.currentTarget, rad[0] as StarsiPata))}
           onBlur={() => setRukaNad(null)}
         >
-          <small>Ruka</small>
+          <small>{t("pata.ruka")}</small>
           <strong>{rukaSupera.length}</strong>
         </span>
       )}
@@ -280,8 +292,8 @@ export function PortretyStarsich({
         rukaSupera !== undefined &&
         createPortal(
           <div className="pt-detail-ruka" style={poloha(rukaNad, SIRKA_RUKY, 260)}>
-            <b>Súperova ruka</b>
-            {rukaSupera.length === 0 ? <span className="tlmene">prázdna</span> : <ul>{rukaSupera.map((k) => <li key={k.uid}>{defOf(data, k).name}</li>)}</ul>}
+            <b>{t("pata.superovaRuka")}</b>
+            {rukaSupera.length === 0 ? <span className="tlmene">{t("pata.prazdna")}</span> : <ul>{rukaSupera.map((k) => <li key={k.uid}>{menoKarty(data, k)}</li>)}</ul>}
           </div>,
           document.body,
         )}
@@ -318,13 +330,13 @@ function PolovicePlste({ view, data, sada, rady }: Omit<Vlastnosti, "cmd"> & { r
     const v = radHraca(view, data, h.rady[p], p);
     return (
       <div className={`pt-polovica${moj ? " moja" : " super"}`}>
-        <span className="pt-polovica-kto">{moj ? "Ty" : "Súper"}</span>
+        <span className="pt-polovica-kto">{moj ? t("pata.ty") : t("pata.super")}</span>
         <ol className={`pt-polovica-rad${orez ? " orez" : ""}`}>
           {(moj ? h.rady[p] : [...h.rady[p]].reverse()).map((s) => {
             const id = s.karta.defId;
             const max = PATA.PECEN[id as StarsiId] ?? s.pecen;
             const pecen = s.podrazeny ? (
-              <span className="pt-padol">padol</span>
+              <span className="pt-padol">{t("pata.padol")}</span>
             ) : (
               <>
                 <span className="pt-pecen">
@@ -357,7 +369,7 @@ function PolovicePlste({ view, data, sada, rady }: Omit<Vlastnosti, "cmd"> & { r
         {rad(view.ja)}
       </div>
       <button type="button" className="tlacidlo pt-polovice-spat" onClick={rady.zavri}>
-        Späť na líniu
+        {t("pata.spatNaLiniu")}
       </button>
     </div>
   );
@@ -381,14 +393,14 @@ export function RadyNaKonci({
     <div className="pt-koniec">
       {([view.ja, opponentOf(view.ja)] as const).map((p) => (
         <div key={p} className="pt-koniec-rad">
-          <b>{p === view.ja ? "Ty" : mena[p]}</b>
+          <b>{p === view.ja ? t("pata.ty") : mena[p]}</b>
           {h.rady[p].map((s) => {
             const src = obrazok(s.karta.defId);
             return (
               <span key={s.karta.uid} className={`pt-m${s.podrazeny ? " padol" : ""}`} title={menoStarsieho(data, s.karta.defId)}>
                 {src !== null && <img src={src} alt="" loading="lazy" />}
                 {s.podrazeny ? (
-                  <span className="pt-padol">padol</span>
+                  <span className="pt-padol">{t("pata.padol")}</span>
                 ) : (
                   <span className="pt-m-stav">
                     <span className="pt-pecen">
@@ -427,7 +439,7 @@ export function RadStarsich({
   const vyskaLupy = Math.round(SIRKA_LUPY * POMER_STARSIEHO);
   return (
     <>
-      <ul className={`pt-rad${moj ? " moj" : " super"}`} aria-label={moj ? "Môj rad starších" : "Súperov rad starších"}>
+      <ul className={`pt-rad${moj ? " moj" : " super"}`} aria-label={moj ? t("pata.mojRad") : t("pata.superovRad")}>
         {(moj ? rad : [...rad].reverse()).map((s) => (
           <KartaStarsieho key={s.karta.uid} s={s} data={data} sada={sada} sumy={v.naStarsom.get(s.karta.uid)} ukaz={setLupa} skry={() => setLupa(null)} />
         ))}
@@ -458,29 +470,31 @@ function Draft({ view, data, sada, cmd }: Vlastnosti) {
   const naRade = view.mozemHrat;
   return (
     <div className="pt-okno">
-      <h2>Draft starších</h2>
-      <p>{naRade ? "Vyber si staršieho." : "Vyberá súper."} Hadovito: každý 4, cieľ je podraziť všetkých súperových.</p>
+      <h2>{t("pata.draft")}</h2>
+      <p>
+        {naRade ? t("pata.vyberSi") : t("pata.vyberaSuper")} {t("pata.hadovito")}
+      </p>
       <div className="pt-draft">
         {h.ponuka.map((k) => {
           const md = maDostStarsieho(k.defId);
           return (
             <button key={k.uid} type="button" className="pt-volba" disabled={!naRade} onClick={() => cmd({ type: "pataVyber", elderId: k.defId })}>
               <FotoStarsieho data={data} sada={sada} id={k.defId} />
-              <b>{defOf(data, k).name}</b>
-              <span>Pečeň {PATA.PECEN[k.defId as StarsiId]}</span>
-              {md !== null && <span className="tlmene">Má dosť: {md.text}</span>}
+              <b>{menoKarty(data, k)}</b>
+              <span>{t("pata.pecen", { n: PATA.PECEN[k.defId as StarsiId] ?? "" })}</span>
+              {md !== null && <span className="tlmene">{t("pata.maDost", { text: md.text })}</span>}
             </button>
           );
         })}
       </div>
       <div className="pt-vybrate">
         <div>
-          <h3>Tvoji</h3>
-          <p>{h.rady[view.ja].map((s) => menoStarsieho(data, s.karta.defId)).join(", ") || "zatiaľ nikto"}</p>
+          <h3>{t("pata.tvoji")}</h3>
+          <p>{h.rady[view.ja].map((s) => menoStarsieho(data, s.karta.defId)).join(", ") || t("pata.zatialNikto")}</p>
         </div>
         <div>
-          <h3>Súperovi</h3>
-          <p>{h.rady[view.ja === 0 ? 1 : 0].map((s) => menoStarsieho(data, s.karta.defId)).join(", ") || "zatiaľ nikto"}</p>
+          <h3>{t("pata.superovi")}</h3>
+          <p>{h.rady[view.ja === 0 ? 1 : 0].map((s) => menoStarsieho(data, s.karta.defId)).join(", ") || t("pata.zatialNikto")}</p>
         </div>
       </div>
     </div>
@@ -574,16 +588,16 @@ function RadNaStole({ view, data, sada, cmd }: Vlastnosti) {
   return (
     <div className={`pt-rad-stol${nizka ? " nizka" : ""}`} ref={ref}>
       <div className="pt-rad-super">
-        <span className="tlmene">Súper skladá, poradie uvidíš po odhalení</span>
+        <span className="tlmene">{t("pata.superSklada")}</span>
         {h.rady[opponentOf(view.ja)].map((s) => (
           <span key={s.karta.uid} className={`pt-rub${s.podrazeny ? " padol" : ""}`}>
             <FotoStarsieho data={data} sada={sada} id={s.karta.defId} />
             <b>{menoStarsieho(data, s.karta.defId)}</b>
-            {s.podrazeny ? "padol" : s.pecen}
+            {s.podrazeny ? t("pata.padol") : s.pecen}
           </span>
         ))}
       </div>
-      <ol className="pt-rad-karty" aria-label="Poradie môjho radu">
+      <ol className="pt-rad-karty" aria-label={t("pata.poradieRadu")}>
         {rad.map((s, i) => {
           const id = s.karta.defId;
           const taha = tah?.id === id;
@@ -594,7 +608,7 @@ function RadNaStole({ view, data, sada, cmd }: Vlastnosti) {
                 style={taha ? { transform: `translateX(${tah.dx}px)` } : undefined}
                 tabIndex={0}
                 role="button"
-                aria-label={`${menoStarsieho(data, id)}, ${i + 1}. v rade. Šípky ho posúvajú.`}
+                aria-label={t("pata.vRade", { meno: menoStarsieho(data, id), cislo: i + 1 })}
                 onKeyDown={(e) => klaves(e, i)}
                 onPointerDown={(e) => {
                   e.currentTarget.setPointerCapture(e.pointerId);
@@ -615,13 +629,13 @@ function RadNaStole({ view, data, sada, cmd }: Vlastnosti) {
       </ol>
       <div className="pt-rad-hrana">
         <span className="pt-rad-spolu">
-          <span className="tlmene">Rad dá</span>
+          <span className="tlmene">{t("pata.radDa")}</span>
           <Akcie sumy={v.sumy} sada={sada} velke />
         </span>
         <button type="button" className="tlacidlo tlacidlo-hlavne" onClick={() => cmd({ type: "pataRad", poradie })}>
-          Potvrdiť rad
+          {t("pata.potvrditRad")}
         </button>
-        <span className="tlmene pt-rad-tip">Potiahni, alebo klikni na dve karty a vymenia sa.</span>
+        <span className="tlmene pt-rad-tip">{t("pata.potiahni")}</span>
       </div>
     </div>
   );
@@ -640,8 +654,8 @@ function Vymena({ view, data, cmd }: Vlastnosti) {
   const su: PlayerId = view.ja === 0 ? 1 : 0;
   return (
     <div className="pt-okno">
-      <h2>Do radu!</h2>
-      <p>Má dosť Vychovávateľky: smieš vymeniť dvoch susedných starších v súperovom rade.</p>
+      <h2>{t("pata.doRadu")}</h2>
+      <p>{t("pata.doRaduText")}</p>
       <div className="riadok-tlacidiel">
         {h.rady[su].slice(1).map((s, i) => (
           <button key={s.karta.uid} type="button" className="tlacidlo" onClick={() => cmd({ type: "pataVymena", index: i })}>
@@ -649,7 +663,7 @@ function Vymena({ view, data, cmd }: Vlastnosti) {
           </button>
         ))}
         <button type="button" className="tlacidlo tlacidlo-hlavne" onClick={() => cmd({ type: "pataVymena", index: null })}>
-          Nechať tak
+          {t("pata.nechatTak")}
         </button>
       </div>
     </div>
@@ -680,11 +694,11 @@ function Pocitadlo({
   return (
     <span className="pt-pocitadlo">
       {nazov}
-      <button type="button" className="tlacidlo" aria-label={`${nazov} menej`} onClick={menej}>
+      <button type="button" className="tlacidlo" aria-label={t("pata.menej", { nazov })} onClick={menej}>
         −
       </button>
       <output>{hodnota}</output>
-      <button type="button" className="tlacidlo" aria-label={`${nazov} viac`} onClick={viac}>
+      <button type="button" className="tlacidlo" aria-label={t("pata.viac", { nazov })} onClick={viac}>
         +
       </button>
     </span>
@@ -700,18 +714,16 @@ function Liecenie({ view, data, cmd }: Vlastnosti) {
   const naDlh = roboty - sucet(liecenie);
   return (
     <div className="pt-okno">
-      <h2>Robota</h2>
-      <p>
-        Máš {roboty} Robôt. Každá spáli Dlh, alebo vylieči {PATA.ROBOTA_LIECI} pečene. Potom príde exekúcia.
-      </p>
+      <h2>{t("pata.robota")}</h2>
+      <p>{t("pata.robotaText", { roboty, lieci: PATA.ROBOTA_LIECI })}</p>
       <ul className="pt-ciele">
         {stojaci(h, view.ja).map((s) => {
           const id = s.karta.defId;
           return (
             <li key={id}>
-              <b>{menoStarsieho(data, id)}</b> pečeň {s.pecen}
+              <b>{menoStarsieho(data, id)}</b> {t("pata.pecenMale", { n: s.pecen })}
               <Pocitadlo
-                nazov="Liečiť"
+                nazov={t("pata.liecit")}
                 hodnota={liecenie[id] ?? 0}
                 menej={() => setLiecenie((r) => pricitaj(r, id, -1))}
                 viac={() => naDlh > 0 && setLiecenie((r) => pricitaj(r, id, 1))}
@@ -720,9 +732,9 @@ function Liecenie({ view, data, cmd }: Vlastnosti) {
           );
         })}
       </ul>
-      <p>Na spálenie Dlhov ostáva {naDlh} Robôt.</p>
+      <p>{t("pata.naSpalenie", { n: naDlh })}</p>
       <button type="button" className="tlacidlo tlacidlo-hlavne" onClick={() => cmd({ type: "pataLiecenie", robotyNaDlh: naDlh, liecenie })}>
-        Potvrdiť
+        {t("pata.potvrdit")}
       </button>
     </div>
   );
@@ -740,10 +752,8 @@ function Utok({ view, data, cmd }: Vlastnosti) {
   const ostJed = v.pohorsenie - sucet(jed);
   return (
     <div className="pt-okno">
-      <h2>Rozdeľ tuhé a jed</h2>
-      <p>
-        Tuhé ostáva <strong>{ostTuhe}</strong>, jed ostáva <strong>{ostJed}</strong>. Povery {v.povery} idú samy každému, cez štít.
-      </p>
+      <h2>{t("pata.rozdel")}</h2>
+      <p>{tr("pata.rozdelText", { tuhe: ostTuhe, jed: ostJed, povery: v.povery })}</p>
       <ul className="pt-ciele">
         {stojaci(h, su).map((s) => {
           const id = s.karta.defId;
@@ -751,21 +761,21 @@ function Utok({ view, data, cmd }: Vlastnosti) {
           const pecenPo = s.pecen - (body - Math.min(s.stit + (h.bitka?.vstupU[su].viera ?? 0), body)) - (jed[id] ?? 0) - s.jed;
           return (
             <li key={id}>
-              <b>{menoStarsieho(data, id)}</b> pečeň {s.pecen}
-              {s.stit > 0 && `, štít ${s.stit}`}
-              {s.jed > 0 && `, jed ${s.jed}`}
-              <Pocitadlo nazov="Tuhé" hodnota={tuhe[id] ?? 0} menej={() => setTuhe((r) => pricitaj(r, id, -1))} viac={() => ostTuhe > 0 && setTuhe((r) => pricitaj(r, id, 1))} />
-              <Pocitadlo nazov="Jed" hodnota={jed[id] ?? 0} menej={() => setJed((r) => pricitaj(r, id, -1))} viac={() => ostJed > 0 && setJed((r) => pricitaj(r, id, 1))} />
+              <b>{menoStarsieho(data, id)}</b> {t("pata.pecenMale", { n: s.pecen })}
+              {s.stit > 0 && t("pata.ciarkaStit", { n: s.stit })}
+              {s.jed > 0 && t("pata.ciarkaJed", { n: s.jed })}
+              <Pocitadlo nazov={t("pata.tuhe")} hodnota={tuhe[id] ?? 0} menej={() => setTuhe((r) => pricitaj(r, id, -1))} viac={() => ostTuhe > 0 && setTuhe((r) => pricitaj(r, id, 1))} />
+              <Pocitadlo nazov={t("pata.jed")} hodnota={jed[id] ?? 0} menej={() => setJed((r) => pricitaj(r, id, -1))} viac={() => ostJed > 0 && setJed((r) => pricitaj(r, id, 1))} />
               <span className="tlmene">
-                Po útoku {pecenPo}
-                {pecenPo <= 0 ? ", padne" : ""}
+                {t("pata.poUtoku", { n: pecenPo })}
+                {pecenPo <= 0 ? t("pata.padne") : ""}
               </span>
             </li>
           );
         })}
       </ul>
       <button type="button" className="tlacidlo tlacidlo-hlavne" disabled={ostTuhe !== 0 || ostJed !== 0} onClick={() => cmd({ type: "pataUtok", tuhe, jed })}>
-        Potvrdiť
+        {t("pata.potvrdit")}
       </button>
     </div>
   );
@@ -778,10 +788,8 @@ function Vyzrat({ view, data, cmd }: Vlastnosti) {
   const plne = view.hraci[view.ja].poldeciPlne;
   return (
     <div className="pt-okno">
-      <h2>Dať vyžrať</h2>
-      <p>
-        Plný poldeci za {PATA.VYZRAT_PECEN} pečene staršiemu. Máš plných poldeci: {plne}. Chýbajú v ďalšom kole.
-      </p>
+      <h2>{t("pata.datVyzrat")}</h2>
+      <p>{t("pata.vyzratText", { pecen: PATA.VYZRAT_PECEN, plne })}</p>
       <div className="riadok-tlacidiel">
         {stojaci(h, view.ja).map((s) => (
           <button key={s.karta.uid} type="button" className="tlacidlo" onClick={() => cmd({ type: "pataVyzrat", elderId: s.karta.defId })}>
@@ -789,7 +797,7 @@ function Vyzrat({ view, data, cmd }: Vlastnosti) {
           </button>
         ))}
         <button type="button" className="tlacidlo tlacidlo-hlavne" onClick={() => cmd({ type: "pataVyzrat", elderId: null })}>
-          Hotovo
+          {t("pata.hotovo")}
         </button>
       </div>
     </div>
@@ -811,7 +819,7 @@ export function RozhodnutiePata(p: Vlastnosti) {
   if (!p.view.mozemHrat) {
     return (
       <div className="pt-oznam" role="status">
-        Súper rozhoduje…
+        {t("pata.superRozhoduje")}
       </div>
     );
   }
@@ -836,7 +844,7 @@ export function RukaSupera({ view, data }: { readonly view: ClientState; readonl
   if (view.rukaSupera === undefined) return null;
   return (
     <div className="pt-ruka-supera">
-      <b>Súperova ruka:</b> {view.rukaSupera.map((k) => defOf(data, k).name).join(", ") || "prázdna"}
+      <b>{t("pata.superovaRukaDvojbodka")}</b> {view.rukaSupera.map((k) => menoKarty(data, k)).join(", ") || t("pata.prazdna")}
     </div>
   );
 }

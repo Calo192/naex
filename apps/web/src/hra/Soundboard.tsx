@@ -24,6 +24,7 @@ import { TICHO_MS, prepniPult, pultVBare, stavPauzy, zostavaPauzy } from "./pult
 import { ID_TLACIDLA_PARTIE } from "./stitokPartie.ts";
 import type { HlaskaVPartii } from "./useHra.ts";
 import "./soundboard.css";
+import { aktualnyJazyk, t } from "../i18n/jazyk.tsx";
 
 /** Udalosť, ktorou menu Partia otvorí a zavrie pult (Soundboard žije v hlavičke celú partiu). */
 const PREPNI_PULT = "naex:pult-melichara";
@@ -56,7 +57,7 @@ function pecate({ hlasky, skupiny }: Melichar): Pecat[] {
   return skupiny.map((skupina) => ({ skupina, hlasky: hlasky.filter((h) => h.skupina === skupina.id) })).filter((p) => p.hlasky.length > 0);
 }
 
-const pocetHlasok = (n: number): string => (n === 1 ? "1 hláška" : n >= 2 && n <= 4 ? `${n} hlášky` : `${n} hlášok`);
+const pocetHlasok = (n: number): string => t("soundboard.hlasok", { n });
 
 function Vlny() {
   return (
@@ -335,29 +336,31 @@ export function Soundboard({ ja: miesto, menoSupera, udalost, pusti }: Soundboar
   };
 
   const klavesy = (pult ?? []).flatMap((p) => (p.skupina.klaves === null ? [] : [p.skupina.klaves]));
-  const sek = (zostava / 1000).toLocaleString("sk-SK", { minimumFractionDigits: 1, maximumFractionDigits: 1 });
+  const sek = (zostava / 1000).toLocaleString(aktualnyJazyk(), { minimumFractionDigits: 1, maximumFractionDigits: 1 });
   const textStavu =
     stav === "moja"
-      ? "Melichar hovorí za teba…"
+      ? t("soundboard.hovoriZaTeba")
       : stav === "odpocet"
-        ? "Chvíľu ticho…"
+        ? t("soundboard.chviluTicho")
         : superHra
-          ? `${menoSupera} púšťa Melichara — môžeš odpovedať`
+          ? t("soundboard.superPusta", { meno: menoSupera })
           : stlmene
-            ? "U teba stlmený — súper ťa počuje"
-            : "Buchni pečiatkou — počuje ťa aj súper";
+            ? t("soundboard.uTebaStlmeny")
+            : t("soundboard.buchni");
   // Stav v hlavičke len kým sa niečo deje — tlačidlo pultu je v menu Partia.
   const stavVHlavicke =
     vBare
       ? null
       : stav === "moja"
-        ? "Melichar hovorí za teba"
+        ? t("soundboard.hovoriZaTebaKratko")
         : stav === "odpocet"
-          ? `Chvíľu ticho — ${sek} s`
+          ? t("soundboard.chviluTichoSek", { sek })
           : pockaVidno
-            ? "Majster Melichar práve hovorí — pult otvoríš, keď dohovorí"
+            ? t("soundboard.pockaj")
             : null;
-  const skratky = `M otvorí a zavrie${klavesy.length > 0 ? ` · ${klavesy[0]}${klavesy.length > 1 ? `–${klavesy[klavesy.length - 1]}` : ""} pečiatka` : ""} · Esc zavrie`;
+  const skratky = t("soundboard.skratky", {
+    pecatky: klavesy.length > 0 ? t("soundboard.skratkyPeciatky", { klavesy: `${klavesy[0]}${klavesy.length > 1 ? `–${klavesy[klavesy.length - 1]}` : ""}` }) : "",
+  });
   const idPanela = useId();
   const data = { "data-ja": stav, "data-super": superHra ? "1" : "0", "data-stlmene": stlmene ? "1" : "0" };
 
@@ -379,7 +382,8 @@ export function Soundboard({ ja: miesto, menoSupera, udalost, pusti }: Soundboar
           <>
             <Vlny />
             <span>
-              <span className="meno">{menoSupera}</span> púšťa Melichara{stlmene ? " (stlmené)" : ""}
+              <span className="meno">{menoSupera}</span> {t("soundboard.pustaMelichara")}
+              {stlmene ? t("soundboard.stlmene") : ""}
             </span>
           </>
         )}
@@ -388,12 +392,12 @@ export function Soundboard({ ja: miesto, menoSupera, udalost, pusti }: Soundboar
       {/* Bar nad stolom: data-mel-rezim="cely" mu povie, že jeho riadky má schovať (JednotnyBar). */}
       {vBare &&
         createPortal(
-          <section className="sb-bar" id={idPanela} ref={panel} data-mel-rezim="cely" aria-label="Pult majstra Melichara" onKeyDown={sipky} {...data}>
+          <section className="sb-bar" id={idPanela} ref={panel} data-mel-rezim="cely" aria-label={t("soundboard.pultMajstra")} onKeyDown={sipky} {...data}>
             <span className={`sb-medailon${hovori ? " hovori" : ""}`} aria-hidden="true">
               <Fuzy hovori={hovori} />
             </span>
             <div className={`sb-info ${trasie % 2 === 1 ? "trasie" : trasie > 0 ? "trasie2" : ""}`}>
-              <span className="sb-kto">Pult Melichara</span>
+              <span className="sb-kto">{t("soundboard.pultMelichara")}</span>
               <span className="sb-stav" role="status" title={textStavu}>
                 {(stav === "moja" || (stav === "pripravene" && superHra)) && <Vlny />}
                 <span className="sb-stav-text">{textStavu}</span>
@@ -401,10 +405,10 @@ export function Soundboard({ ja: miesto, menoSupera, udalost, pusti }: Soundboar
               </span>
               <i className="sb-pas" style={{ width: stav === "odpocet" ? `${(zostava / TICHO_MS) * 100}%` : 0 }} />
             </div>
-            {pult === null && <p className="sb-prazdne">Hlášky sa načítavajú…</p>}
-            {pult !== null && pult.length === 0 && <p className="sb-prazdne">Majster Melichar dnes nemá čo povedať — hlášky na serveri nie sú.</p>}
+            {pult === null && <p className="sb-prazdne">{t("soundboard.nacitavaju")}</p>}
+            {pult !== null && pult.length === 0 && <p className="sb-prazdne">{t("soundboard.nemaCo")}</p>}
             {pult !== null && pult.length > 0 && (
-              <div className="sb-pult" role="group" aria-label="Pečiatky skupín hlášok">
+              <div className="sb-pult" role="group" aria-label={t("soundboard.peciatky")}>
                 {pult.map((p, i) => {
                   const { skupina } = p;
                   const hraje = skupinaMojej === skupina.id;
@@ -416,7 +420,7 @@ export function Soundboard({ ja: miesto, menoSupera, udalost, pusti }: Soundboar
                       style={{ "--farba": farbaSkupiny(skupina.farba), "--naklon": `${i % 2 === 0 ? -1.2 : 1}deg` } as CSSProperties}
                       aria-disabled={stav !== "pripravene" || undefined}
                       aria-keyshortcuts={skupina.klaves ?? undefined}
-                      aria-label={`${skupina.nazov}: náhodná hláška${skupina.klaves !== null ? ` (kláves ${skupina.klaves})` : ""}`}
+                      aria-label={`${t("soundboard.nahodnaHlaska", { nazov: skupina.nazov })}${skupina.klaves !== null ? t("soundboard.klaves", { klaves: skupina.klaves }) : ""}`}
                       title={`${skupina.nazov}${skupina.citat !== "" ? ` — „${skupina.citat}“` : ""} · ${pocetHlasok(p.hlasky.length)}`}
                       onClick={() => pustiSkupinu(p)}
                     >
@@ -432,18 +436,18 @@ export function Soundboard({ ja: miesto, menoSupera, udalost, pusti }: Soundboar
               </div>
             )}
             <div className="sb-ovladanie">
-              <label title="Hlasitosť Melichara u teba — súper ho počuje podľa svojej">
+              <label title={t("soundboard.hlasitostTitul")}>
                 <IkonaReproduktor />
-                <input type="range" min="0" max="100" value={hlasitost} aria-label="Hlasitosť Melichara u teba" onChange={(e) => setHlasitost(Number(e.target.value))} />
+                <input type="range" min="0" max="100" value={hlasitost} aria-label={t("soundboard.hlasitost")} onChange={(e) => setHlasitost(Number(e.target.value))} />
               </label>
               {stlmene ? (
                 <button type="button" className="sb-zapnut" onClick={() => setHlasitost(MELICHAR_PREDVOLENY)}>
-                  Zapnúť zvuk
+                  {t("soundboard.zapnutZvuk")}
                 </button>
               ) : (
                 <output>{hlasitost} %</output>
               )}
-              <button type="button" className="sb-zavriet" aria-label="Zavrieť pult (Esc)" title={skratky} onClick={() => zavri(true)}>
+              <button type="button" className="sb-zavriet" aria-label={t("soundboard.zavrietPult")} title={skratky} onClick={() => zavri(true)}>
                 ✕
               </button>
             </div>

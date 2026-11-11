@@ -6,6 +6,7 @@ import type { BodyTeraz } from "../../hra/bodyPodmienok.tsx";
 import type { StavLigy } from "../../hra/ligy.ts";
 import type { VitrinaApi } from "../../achievementy/data.ts";
 import type { ProfilHraca } from "../Statistiky.tsx";
+import { textyPodla } from "../../i18n/jazyk.tsx";
 
 export type Vysledok = "vyhra" | "prehra" | "remiza";
 export type FilterPartii = "ludia" | "boti" | "spolu";

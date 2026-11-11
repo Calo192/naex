@@ -6,14 +6,16 @@ import { opponentOf, type PlayerId, type Podmienka } from "@naex/core";
 import { NAZOV_PODMIENKY } from "../karta/podmienky.ts";
 import { PORADIE_PODMIENOK, SMER_V5, ZA_CO, bodyPoPodmienkach, jeBodovanieV5, kohoBoduje, subojeStarsieho, type BodyPodmienky, type BodyTeraz } from "./bodyPodmienok.tsx";
 import { znamienko } from "./Scorecard.tsx";
+import { t } from "../i18n/jazyk.tsx";
 
-const JEDNOTKA: Readonly<Record<Podmienka, string>> = {
+/** Jednotka kusov podmienky — kľúč v sk.json (krcmovyUcet.ks, krcmovyUcet.starsich). */
+const JEDNOTKA: Readonly<Record<Podmienka, "ks" | "starsich">> = {
   lokality: "ks",
   starsi: "ks",
   cigarety: "ks",
-  znepokojenie: "starších",
-  strach: "starších",
-  vydesenie: "starších",
+  znepokojenie: "starsich",
+  strach: "starsich",
+  vydesenie: "starsich",
   dlh: "ks",
   cirhoza: "ks",
   abstak: "ks",
@@ -38,54 +40,50 @@ interface Riadok {
 const trieda = (b: number): string => (b > 0 ? "plus" : b < 0 ? "minus" : "nula");
 
 /** Do v4 sa za podmienky bodovalo za kus — nápoveda starej partie (ZA_CO je už súboj v5). */
-const ZA_V4: Readonly<Partial<Record<Podmienka, string>>> = {
-  lokality: "Za každú ovládnutú lokalitu.",
-  cigarety: "Za každé 3 cigarety na konci hry.",
-  dlh: "Za každý Dlh, aj priznaný.",
-  cirhoza: "Za každú nepriznanú Cirhózu.",
-};
+const ZA_V4: ReadonlySet<Podmienka> = new Set(["lokality", "cigarety", "dlh", "cirhoza"]);
+const zaV4 = (p: Podmienka): string | undefined => (ZA_V4.has(p) ? t(`krcmovyUcet.zaV4.${p}`) : undefined);
 
 /**
  * Pravidlá v5: riadok za každého staršieho — koľko jeho súbojov kto vyhral a kto
  * za neho dostal body (pri rovnosti obaja).
  */
 function UcetV5({ body, ja, mena, menoStarsieho, kolo }: KrcmovyUcetProps) {
-  const kedy = `zatvorené po kole ${kolo}`;
+  const kedy = t("krcmovyUcet.zatvorene", { kolo });
   const su = opponentOf(ja);
   const rozdiel = body.spolu[ja] - body.spolu[su];
   return (
-    <section className="krcmovy-ucet" role="region" aria-label={`Účet — body, ${kedy}`}>
+    <section className="krcmovy-ucet" role="region" aria-label={t("krcmovyUcet.aria", { kedy })}>
       <header className="ucet-hlava">
-        <strong>Účet · {kedy}</strong>
+        <strong>{t("krcmovyUcet.hlava", { kedy })}</strong>
       </header>
       <div className="ucet-mena">
-        <span className="ucet-meno ja">{mena[ja]} (ty)</span>
+        <span className="ucet-meno ja">{t("krcmovyUcet.ty", { meno: mena[ja] })}</span>
         <span className="ucet-meno su">{mena[su]}</span>
       </div>
       <div className="ucet-tabulka" role="table">
         <div className="ucet-riadok ucet-zahlavie" role="row">
-          <span>súboje</span>
-          <span>body</span>
-          <span className="ucet-stred">starší · body získa</span>
-          <span>body</span>
-          <span>súboje</span>
+          <span>{t("krcmovyUcet.suboje")}</span>
+          <span>{t("krcmovyUcet.body")}</span>
+          <span className="ucet-stred">{t("krcmovyUcet.starsiBody")}</span>
+          <span>{t("krcmovyUcet.body")}</span>
+          <span>{t("krcmovyUcet.suboje")}</span>
         </div>
         {body.starsi.map((s) => {
           const kto = kohoBoduje(s);
           const suboje = subojeStarsieho(s);
           const popis = suboje
-            .map((x) => `${NAZOV_PODMIENKY[x.podmienka]} ${x.hodnoty[ja]} : ${x.hodnoty[su]}${x.vitaz === null ? " (rovnosť)" : x.vitaz === ja ? " (ty)" : ` (${mena[su]})`}`)
+            .map((x) => `${NAZOV_PODMIENKY[x.podmienka]} ${x.hodnoty[ja]} : ${x.hodnoty[su]}${x.vitaz === null ? t("krcmovyUcet.rovnost") : x.vitaz === ja ? t("krcmovyUcet.tyZatvorka") : ` (${mena[su]})`}`)
             .join(" · ");
           return (
-            <div key={s.elderId} role="row" className="ucet-riadok" title={`${menoStarsieho(s.elderId)}: ${popis || "bez aktívnej podmienky"}`}>
-              <span className="ucet-kusy">{s.vyhry[ja]} z {suboje.length}</span>
+            <div key={s.elderId} role="row" className="ucet-riadok" title={`${menoStarsieho(s.elderId)}: ${popis || t("krcmovyUcet.bezPodmienky")}`}>
+              <span className="ucet-kusy">{t("krcmovyUcet.zPoctu", { n: s.vyhry[ja], spolu: suboje.length })}</span>
               <b className={`ucet-sucet ${trieda(s.body[ja])}`}>{znamienko(s.body[ja])}</b>
               <span className="ucet-stred">
                 {menoStarsieho(s.elderId)}{" "}
-                <span className="ucet-zakus">{kto === null ? "nikto" : kto === "obaja" ? "obaja" : kto === ja ? "ty" : mena[su]}</span>
+                <span className="ucet-zakus">{kto === null ? t("krcmovyUcet.nikto") : kto === "obaja" ? t("krcmovyUcet.obaja") : kto === ja ? t("krcmovyUcet.tyMale") : mena[su]}</span>
               </span>
               <b className={`ucet-sucet ${trieda(s.body[su])}`}>{znamienko(s.body[su])}</b>
-              <span className="ucet-kusy">{s.vyhry[su]} z {suboje.length}</span>
+              <span className="ucet-kusy">{t("krcmovyUcet.zPoctu", { n: s.vyhry[su], spolu: suboje.length })}</span>
             </div>
           );
         })}
@@ -93,19 +91,16 @@ function UcetV5({ body, ja, mena, menoStarsieho, kolo }: KrcmovyUcetProps) {
           <span />
           <b className={`ucet-sucet ${trieda(body.spolu[ja])}`}>{znamienko(body.spolu[ja])}</b>
           <span className="ucet-stred">
-            Spolu{" "}
+            {t("krcmovyUcet.spolu")}{" "}
             <span className={`ucet-peciatka ${rozdiel >= 0 ? "vedie" : "chyba"}`}>
-              {rozdiel > 0 ? `výhra o ${rozdiel}` : rozdiel < 0 ? `prehra o ${-rozdiel}` : "remíza"}
+              {rozdiel > 0 ? t("krcmovyUcet.vyhraO", { n: rozdiel }) : rozdiel < 0 ? t("krcmovyUcet.prehraO", { n: -rozdiel }) : t("krcmovyUcet.remiza")}
             </span>
           </span>
           <b className={`ucet-sucet ${trieda(body.spolu[su])}`}>{znamienko(body.spolu[su])}</b>
           <span />
         </div>
       </div>
-      <p className="ucet-pata">
-        súboje = vyhraté aktívne podmienky staršieho · body za staršieho získa, kto ich vyhrá viac (rovnosť = obaja): 1 + zóny strachu, s
-        priazňou či v strede 1
-      </p>
+      <p className="ucet-pata">{t("krcmovyUcet.pataV5")}</p>
     </section>
   );
 }
@@ -116,7 +111,7 @@ export function KrcmovyUcet(props: KrcmovyUcetProps) {
 
 /** Partie do v4: body za kusy po podmienkach (kusy × body × počet scorecardov). */
 function UcetV4({ body, ja, mena, menoStarsieho, kolo }: KrcmovyUcetProps) {
-  const kedy = `zatvorené po kole ${kolo}`;
+  const kedy = t("krcmovyUcet.zatvorene", { kolo });
   const su = opponentOf(ja);
   const podmienky = bodyPoPodmienkach(body);
   const riadky: Riadok[] = PORADIE_PODMIENOK.map((podmienka) => {
@@ -124,34 +119,34 @@ function UcetV4({ body, ja, mena, menoStarsieho, kolo }: KrcmovyUcetProps) {
     return { podmienka, m, zaKus: SMER_V5[podmienka] * (m?.zdroje.length ?? 0) };
   });
 
-  const kusy = (r: Riadok, p: PlayerId): string => `${r.m?.kusy[p] ?? 0} ${JEDNOTKA[r.podmienka]}`;
+  const kusy = (r: Riadok, p: PlayerId): string => `${r.m?.kusy[p] ?? 0} ${t(`krcmovyUcet.${JEDNOTKA[r.podmienka]}`)}`;
   const starsi = (r: Riadok): string =>
-    r.m === undefined ? "nikde aktívna" : `zo starších: ${r.m.zdroje.map((z) => menoStarsieho(z.elderId)).join(", ")}`;
+    r.m === undefined ? t("krcmovyUcet.nikdeAktivna") : t("krcmovyUcet.zoStarsich", { mena: r.m.zdroje.map((z) => menoStarsieho(z.elderId)).join(", ") });
   const rozdiel = body.spolu[ja] - body.spolu[su];
 
   return (
-    <section className="krcmovy-ucet" role="region" aria-label={`Účet — body, ${kedy}`}>
+    <section className="krcmovy-ucet" role="region" aria-label={t("krcmovyUcet.aria", { kedy })}>
       <header className="ucet-hlava">
-        <strong>Účet · {kedy}</strong>
+        <strong>{t("krcmovyUcet.hlava", { kedy })}</strong>
       </header>
       <div className="ucet-mena">
-        <span className="ucet-meno ja">{mena[ja]} (ty)</span>
+        <span className="ucet-meno ja">{t("krcmovyUcet.ty", { meno: mena[ja] })}</span>
         <span className="ucet-meno su">{mena[su]}</span>
       </div>
       <div className="ucet-tabulka" role="table">
         <div className="ucet-riadok ucet-zahlavie" role="row">
-          <span>kusy</span>
-          <span>súčet</span>
-          <span className="ucet-stred">podmienka · za kus</span>
-          <span>súčet</span>
-          <span>kusy</span>
+          <span>{t("krcmovyUcet.kusy")}</span>
+          <span>{t("krcmovyUcet.sucet")}</span>
+          <span className="ucet-stred">{t("krcmovyUcet.podmienkaZaKus")}</span>
+          <span>{t("krcmovyUcet.sucet")}</span>
+          <span>{t("krcmovyUcet.kusy")}</span>
         </div>
         {riadky.map((r) => (
           <div
             key={r.podmienka}
             role="row"
             className={`ucet-riadok ${r.m === undefined ? "neaktivna" : ""}`}
-            title={`${NAZOV_PODMIENKY[r.podmienka]}: ${ZA_V4[r.podmienka] ?? ZA_CO[r.podmienka]} ${starsi(r)}.`}
+            title={`${NAZOV_PODMIENKY[r.podmienka]}: ${zaV4(r.podmienka) ?? ZA_CO[r.podmienka]} ${starsi(r)}.`}
           >
             <span className="ucet-kusy">{kusy(r, ja)}</span>
             <b className={`ucet-sucet ${trieda(r.m?.body[ja] ?? 0)}`}>{znamienko(r.m?.body[ja] ?? 0)}</b>
@@ -166,16 +161,16 @@ function UcetV4({ body, ja, mena, menoStarsieho, kolo }: KrcmovyUcetProps) {
           <span />
           <b className={`ucet-sucet ${trieda(body.spolu[ja])}`}>{znamienko(body.spolu[ja])}</b>
           <span className="ucet-stred">
-            Spolu{" "}
+            {t("krcmovyUcet.spolu")}{" "}
             <span className={`ucet-peciatka ${rozdiel >= 0 ? "vedie" : "chyba"}`}>
-              {rozdiel > 0 ? `výhra o ${rozdiel}` : rozdiel < 0 ? `prehra o ${-rozdiel}` : "remíza"}
+              {rozdiel > 0 ? t("krcmovyUcet.vyhraO", { n: rozdiel }) : rozdiel < 0 ? t("krcmovyUcet.prehraO", { n: -rozdiel }) : t("krcmovyUcet.remiza")}
             </span>
           </span>
           <b className={`ucet-sucet ${trieda(body.spolu[su])}`}>{znamienko(body.spolu[su])}</b>
           <span />
         </div>
       </div>
-      <p className="ucet-pata">za kus = body podmienky × počet scorecardov, kde je aktívna · súčet = kusy × za kus</p>
+      <p className="ucet-pata">{t("krcmovyUcet.pataV4")}</p>
     </section>
   );
 }

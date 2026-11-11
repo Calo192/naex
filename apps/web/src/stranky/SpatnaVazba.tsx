@@ -13,34 +13,20 @@ import { jeSpravca, maPravo, useUcet, type Pouzivatel } from "../lib/ucet.tsx";
 import { Avatar, Hlaska, Nacitavanie } from "../komponenty.tsx";
 import { HlavaStranky } from "../HlavaStranky.tsx";
 import { kratkyDen } from "../lib/datum.ts";
-import { tvar } from "../lib/jazyk.ts";
 import { HodnotenieHry } from "./HodnotenieHry.tsx";
+import { aktualnyJazyk, t, textyPodla } from "../i18n/jazyk.tsx";
 import "./statistiky.css";
 
 /** Poradie = poradie vo formulári „O čom píšeš?“. Kľúče sú tie isté ako pred 2026-10-27 — staré názory ostávajú. */
-const KATEGORIE = {
-  chyba: "Chyba",
-  pravidla: "Pravidlá a balans",
-  karty: "Karty",
-  hranie: "Hranie a ovládanie",
-  web: "Web a vzhľad",
-  napad: "Nápad",
-  ine: "Iné",
-} as const;
-type Kategoria = keyof typeof KATEGORIE;
+type Kategoria = "chyba" | "pravidla" | "karty" | "hranie" | "web" | "napad" | "ine";
+const KATEGORIE: Readonly<Record<Kategoria, string>> = textyPodla(["chyba", "pravidla", "karty", "hranie", "web", "napad", "ine"], "spatnaVazba.kategoria");
 
-const STAVY = {
-  nove: "nové",
-  prijate: "prečítané",
-  planovane: "plánujeme",
-  hotove: "hotovo",
-  zamietnute: "nebudeme robiť",
-} as const;
-type Stav = keyof typeof STAVY;
+type Stav = "nove" | "prijate" | "planovane" | "hotove" | "zamietnute";
+const STAVY: Readonly<Record<Stav, string>> = textyPodla(["nove", "prijate", "planovane", "hotove", "zamietnute"], "spatnaVazba.stav");
 
 /** Záložky stavu; Otvorené = nové + prečítané (server). */
-const ZALOZKY = { otvorene: "Otvorené", planovane: "Plánujeme", hotove: "Hotovo", zamietnute: "Nebudeme" } as const;
-type Zalozka = keyof typeof ZALOZKY;
+type Zalozka = "otvorene" | "planovane" | "hotove" | "zamietnute";
+const ZALOZKY: Readonly<Record<Zalozka, string>> = textyPodla(["otvorene", "planovane", "hotove", "zamietnute"], "spatnaVazba.zalozka");
 type Pocty = Readonly<Record<Zalozka, { readonly ludia: number; readonly ai: number }>>;
 
 type Triedenie = "nove" | "cigarety" | "diskusia";
@@ -135,15 +121,15 @@ function titulZTextu(text: string): { readonly titul: string; readonly ukazka: s
 
 function kedy(cas: number): string {
   const s = Math.round((Date.now() - cas) / 1000);
-  if (s < 60) return "práve teraz";
+  if (s < 60) return t("spatnaVazba.kedy.teraz");
   const min = Math.round(s / 60);
-  if (min < 60) return `pred ${min} min`;
+  if (min < 60) return t("spatnaVazba.kedy.min", { n: min });
   const h = Math.round(min / 60);
-  if (h < 24) return `pred ${h} h`;
+  if (h < 24) return t("spatnaVazba.kedy.h", { n: h });
   const dni = Math.round(h / 24);
-  if (dni === 1) return "včera";
-  if (dni < 7) return `pred ${dni} ${tvar(dni, "dňom", "dňami", "dňami")}`;
-  return new Date(cas).toLocaleDateString("sk-SK", { day: "numeric", month: "numeric", year: "numeric" });
+  if (dni === 1) return t("spatnaVazba.kedy.vcera");
+  if (dni < 7) return t("spatnaVazba.kedy.dni", { n: dni });
+  return new Date(cas).toLocaleDateString(aktualnyJazyk(), { day: "numeric", month: "numeric", year: "numeric" });
 }
 
 /** Cigareta ako „páči sa mi“: zapálená, keď si ju dal ty. */
@@ -161,12 +147,12 @@ export function TlacidloCigarety({
   readonly navstevnik?: boolean;
 }) {
   const popis = navstevnik
-    ? "Cigarety tvoj rank zatiaľ dávať nesmie."
+    ? t("spatnaVazba.cig.rank")
     : vlastne
-    ? "Sám sebe cigaretu nedáš."
+    ? t("spatnaVazba.cig.sebe")
     : moja
-      ? "Zobrať cigaretu späť"
-      : "Dať cigaretu — páči sa mi to";
+      ? t("spatnaVazba.cig.spat")
+      : t("spatnaVazba.cig.dat");
   return (
     <button
       type="button"
@@ -175,7 +161,7 @@ export function TlacidloCigarety({
       disabled={vlastne || navstevnik}
       aria-pressed={moja}
       title={popis}
-      aria-label={`${popis} (${pocet} ${tvar(pocet, "cigareta", "cigarety", "cigariet")})`}
+      aria-label={t("spatnaVazba.cig.aria", { popis, n: pocet })}
     >
       <svg viewBox="0 0 40 20" aria-hidden="true">
         <g className="dym">
@@ -218,10 +204,10 @@ function MenoAutora({ autor }: { readonly autor: Autor }) {
   return (
     <span className="nazor-autor">
       <Odkaz href={`/hrac/${autor.id}`}>{autor.meno}</Odkaz>
-      {autor.rola === "admin" && <span className="odznak odznak-admin">tvorca hry</span>}
+      {autor.rola === "admin" && <span className="odznak odznak-admin">{t("spatnaVazba.tvorca")}</span>}
       {autor.rola === "subadmin" && <span className="odznak">subadmin</span>}
       {autor.ai && (
-        <span className="odznak odznak-ai" title="Napísal AI agent (playtester alebo protihráč)">
+        <span className="odznak odznak-ai" title={t("spatnaVazba.aiAgent")}>
           AI
         </span>
       )}
@@ -251,8 +237,8 @@ function KomentarPolozka({ k, ja, obnov, chyba }: { readonly k: Komentar; readon
           <TlacidloCigarety pocet={stav.pocet} moja={stav.moja} vlastne={k.autor.id === ja.id} prepni={prepni} navstevnik={!maPravo(ja, "spatna_vazba_reagovat")} />
           {(k.autor.id === ja.id || jeSpravca(ja.rola)) && (
             <PotvrdTlacidlo
-              text="zmazať"
-              potvrdenie="naozaj zmazať?"
+              text={t("spatnaVazba.zmazat")}
+              potvrdenie={t("spatnaVazba.naozajZmazat")}
               akcia={() => {
                 api.del(`/nazory/komentare/${k.id}`).then(obnov).catch(chyba);
               }}
@@ -283,11 +269,11 @@ function StavNazoru({ n }: { readonly n: Nazor }) {
         <>
           {" · "}
           <Odkaz href={`/novinky#novinka-${n.novinka.id}`} title={n.novinka.nadpis}>
-            v Novinkách {kratkyDen(n.novinka.datum)} →
+            {t("spatnaVazba.vNovinkach", { den: kratkyDen(n.novinka.datum) })}
           </Odkaz>
         </>
       )}
-      {n.stav === "zamietnute" && n.dovod !== "" && <span className="nazor-dovod"> — prečo: {n.dovod}</span>}
+      {n.stav === "zamietnute" && n.dovod !== "" && <span className="nazor-dovod">{t("spatnaVazba.preco", { dovod: n.dovod })}</span>}
     </span>
   );
 }
@@ -444,7 +430,7 @@ function NazorRiadok({
         <MenoAutora autor={n.autor} />
         <span className="tlmene">
           {kedy(n.vytvoreny)}
-          {n.upraveny !== null && " · upravené"}
+          {n.upraveny !== null && t("spatnaVazba.upravene")}
         </span>
       </div>
 
@@ -456,14 +442,14 @@ function NazorRiadok({
             <p className="nazor-text">{n.text}</p>
           ) : (
             <form className="nazor-uprava" onSubmit={ulozUpravu}>
-              <input value={uprava.nadpis} onChange={(e) => setUprava({ ...uprava, nadpis: e.target.value })} maxLength={MAX_NADPIS} aria-label="Jednou vetou" placeholder="Jednou vetou (nepovinné)" />
-              <textarea value={uprava.text} onChange={(e) => setUprava({ ...uprava, text: e.target.value })} maxLength={MAX_NAZOR} rows={5} autoFocus aria-label="Podrobnosti" />
+              <input value={uprava.nadpis} onChange={(e) => setUprava({ ...uprava, nadpis: e.target.value })} maxLength={MAX_NADPIS} aria-label={t("spatnaVazba.jednouVetou")} placeholder={t("spatnaVazba.jednouVetouNepovinne")} />
+              <textarea value={uprava.text} onChange={(e) => setUprava({ ...uprava, text: e.target.value })} maxLength={MAX_NAZOR} rows={5} autoFocus aria-label={t("spatnaVazba.podrobnosti")} />
               <div className="riadok-tlacidiel">
                 <button type="submit" className="tlacidlo-hlavne tlacidlo-male" disabled={uprava.text.trim().length < 3}>
-                  Uložiť
+                  {t("spatnaVazba.ulozit")}
                 </button>
                 <button type="button" className="tlacidlo-male tlacidlo-jemne" onClick={() => setUprava(null)}>
-                  Zrušiť
+                  {t("spatnaVazba.zrusit")}
                 </button>
               </div>
             </form>
@@ -478,7 +464,7 @@ function NazorRiadok({
           className="tlacidlo-male tlacidlo-jemne nazor-komentare-tlacidlo"
           onClick={() => setOtvoreny(!otvoreny)}
           aria-expanded={otvoreny}
-          aria-label={`${komentare.length} ${tvar(komentare.length, "komentár", "komentáre", "komentárov")}${otvoreny ? "" : " — otvoriť"}`}
+          aria-label={`${t("spatnaVazba.komentarov", { n: komentare.length })}${otvoreny ? "" : t("spatnaVazba.otvorit")}`}
         >
           <IkonaBubliny /> {komentare.length}
         </button>
@@ -486,13 +472,13 @@ function NazorRiadok({
         {admin && <SpravaStavu n={n} novinky={novinky} obnov={obnov} chyba={chyba} />}
         {otvoreny && moj && uprava === null && (
           <button type="button" className="tlacidlo-male tlacidlo-jemne" onClick={() => setUprava({ nadpis: n.nadpis, text: n.text })}>
-            upraviť
+            {t("spatnaVazba.upravit")}
           </button>
         )}
         {otvoreny && (moj || admin) && (
           <PotvrdTlacidlo
-            text="zmazať"
-            potvrdenie="naozaj zmazať?"
+            text={t("spatnaVazba.zmazat")}
+            potvrdenie={t("spatnaVazba.naozajZmazat")}
             akcia={() => {
               api.del(`/nazory/${n.id}`).then(obnov).catch(chyba);
             }}
@@ -517,8 +503,8 @@ function NazorRiadok({
                 onChange={(e) => setKomentar(e.target.value)}
                 maxLength={MAX_KOMENTAR}
                 rows={komentar.length > 80 ? 3 : 1}
-                placeholder="Napíš komentár…"
-                aria-label="Nový komentár"
+                placeholder={t("spatnaVazba.napisKomentar")}
+                aria-label={t("spatnaVazba.novyKomentar")}
                 onKeyDown={(e) => {
                   if (e.key === "Enter" && !e.shiftKey && komentar.trim().length >= 3) {
                     e.preventDefault();
@@ -527,7 +513,7 @@ function NazorRiadok({
                 }}
               />
               <button type="submit" className="tlacidlo-male" disabled={posiela || komentar.trim().length < 3}>
-                Odoslať
+                {t("spatnaVazba.odoslat")}
               </button>
             </form>
           )}
@@ -573,10 +559,10 @@ function NovyNazor({ pridany, zrus, chyba }: { readonly pridany: (id: number) =>
 
   return (
     <form className="panel novy-nazor" onSubmit={odosli} aria-labelledby="novy-nazor-nadpis" noValidate>
-      <h2 id="novy-nazor-nadpis">Napísať názor</h2>
+      <h2 id="novy-nazor-nadpis">{t("spatnaVazba.napisatNazor")}</h2>
       <fieldset className="novy-nazor-kategorie">
-        <legend>O čom píšeš?</legend>
-        <div className="cipy" role="radiogroup" aria-label="O čom píšeš?" aria-required="true" aria-invalid={bezKategorie} aria-describedby={bezKategorie ? "novy-nazor-bez-kategorie" : undefined}>
+        <legend>{t("spatnaVazba.oCom")}</legend>
+        <div className="cipy" role="radiogroup" aria-label={t("spatnaVazba.oCom")} aria-required="true" aria-invalid={bezKategorie} aria-describedby={bezKategorie ? "novy-nazor-bez-kategorie" : undefined}>
           {(Object.keys(KATEGORIE) as Kategoria[]).map((k, i) => (
             <label key={k} className={`cip ${kategoria === k ? "aktivny" : ""}`}>
               <input
@@ -596,18 +582,18 @@ function NovyNazor({ pridany, zrus, chyba }: { readonly pridany: (id: number) =>
         </div>
         {bezKategorie && (
           <p id="novy-nazor-bez-kategorie" className="novy-nazor-chyba" role="alert">
-            Vyber, o čom píšeš.
+            {t("spatnaVazba.vyberOCom")}
           </p>
         )}
       </fieldset>
       <label className="novy-nazor-pole">
         <span>
-          Jednou vetou <span className="tlmene">(nepovinné)</span>
+          {t("spatnaVazba.jednouVetou")} <span className="tlmene">{t("spatnaVazba.nepovinne")}</span>
         </span>
-        <input value={nadpis} onChange={(e) => setNadpis(e.target.value)} maxLength={MAX_NADPIS} placeholder="napr. „Puška v Dedičstve sa nesčítava“" />
+        <input value={nadpis} onChange={(e) => setNadpis(e.target.value)} maxLength={MAX_NADPIS} placeholder={t("spatnaVazba.nadpisPriklad")} />
       </label>
       <label className="novy-nazor-pole">
-        <span>Podrobnosti</span>
+        <span>{t("spatnaVazba.podrobnosti")}</span>
         <textarea
           ref={podrobnosti}
           value={text}
@@ -619,11 +605,11 @@ function NovyNazor({ pridany, zrus, chyba }: { readonly pridany: (id: number) =>
           rows={5}
           aria-invalid={kratky}
           aria-describedby={kratky ? "novy-nazor-kratky" : undefined}
-          placeholder={kategoria === "chyba" ? "Čo si robil, čo si čakal a čo sa stalo…" : "Čo ťa bavilo, čo nedáva zmysel, ktorá karta je prisilná, čo by si zmenil…"}
+          placeholder={kategoria === "chyba" ? t("spatnaVazba.placeholderChyba") : t("spatnaVazba.placeholderNazor")}
         />
         {kratky && (
           <span id="novy-nazor-kratky" className="novy-nazor-chyba" role="alert">
-            Napíš aspoň pár slov.
+            {t("spatnaVazba.parSlov")}
           </span>
         )}
       </label>
@@ -633,10 +619,10 @@ function NovyNazor({ pridany, zrus, chyba }: { readonly pridany: (id: number) =>
         </span>
         <div className="riadok-tlacidiel">
           <button type="button" className="tlacidlo-jemne" onClick={zrus}>
-            Zrušiť
+            {t("spatnaVazba.zrusit")}
           </button>
           <button type="submit" className="tlacidlo-hlavne" disabled={posiela}>
-            {posiela ? "Posielam…" : "Zverejniť"}
+            {posiela ? t("spatnaVazba.posielam") : t("spatnaVazba.zverejnit")}
           </button>
         </div>
       </div>
@@ -699,7 +685,7 @@ function ArchivSkrytych({ zmena, chyba }: { readonly zmena: () => void; readonly
 }
 
 export function SpatnaVazba() {
-  useTitulok("Spätná väzba");
+  useTitulok(t("nav.spatnaVazba"));
   const { ja, obnov: obnovUcet } = useUcet();
   const [nazory, setNazory] = useState<readonly Nazor[] | null>(null);
   const [pocty, setPocty] = useState<Pocty | null>(null);
@@ -774,35 +760,35 @@ export function SpatnaVazba() {
     setTriedenie("nove");
     setZalozka("otvorene");
     if (ja.ai === true) prepniAi(true);
-    setOznam("Názor je zverejnený. Ďakujeme — tvorca ho uvidí medzi novými.");
+    setOznam(t("spatnaVazba.zverejneny"));
     setFokus(id);
     obnov();
   };
 
   const napisatPrvy = smiePisat && (
     <button type="button" className="tlacidlo" onClick={otvorPisanie}>
-      Napísať prvý názor
+      {t("spatnaVazba.prvyNazor")}
     </button>
   );
 
   return (
     <div className="spatna-vazba">
       <HlavaStranky
-        nadpis="Spätná väzba"
-        uvod="Čo funguje, čo nie a čo by si zmenil. Tvorca pri každom názore označí, čo s ním urobí."
+        nadpis={t("nav.spatnaVazba")}
+        uvod={t("spatnaVazba.uvod")}
         akcia={
           <>
             {spolu !== null && (
               <span>
-                {spolu} {tvar(spolu, "názor", "názory", "názorov")} · {pocet("hotove") ?? 0} {tvar(pocet("hotove") ?? 0, "hotový", "hotové", "hotových")}
+                {t("spatnaVazba.nazorov", { n: spolu })} · {t("spatnaVazba.hotovych", { n: pocet("hotove") ?? 0 })}
               </span>
             )}
             {smiePisat ? (
               <button ref={tlacidloPisat} type="button" className="tlacidlo-hlavne" onClick={otvorPisanie} aria-expanded={pise}>
-                ✎ Napísať názor
+                {t("spatnaVazba.napisatNazorTlacidlo")}
               </button>
             ) : (
-              <span>Tvoj rank spätnú väzbu zatiaľ len číta — písať môžeš po prvej dohratej partii.</span>
+              <span>{t("spatnaVazba.rankCita")}</span>
             )}
           </>
         }
@@ -824,7 +810,7 @@ export function SpatnaVazba() {
             />
           )}
 
-          <div className="nazory-zalozky" role="group" aria-label="Stav názorov">
+          <div className="nazory-zalozky" role="group" aria-label={t("spatnaVazba.stavNazorov")}>
             {(Object.keys(ZALOZKY) as Zalozka[]).map((z) => (
               <button
                 key={z}
@@ -851,9 +837,9 @@ export function SpatnaVazba() {
 
           <div className="nazory-filtre" hidden={archiv}>
             <label>
-              <span className="tlmene">Kategória</span>
+              <span className="tlmene">{t("spatnaVazba.kategoriaPopis")}</span>
               <select value={filter ?? ""} onChange={(e) => setFilter(e.target.value === "" ? null : (e.target.value as Kategoria))}>
-                <option value="">všetky</option>
+                <option value="">{t("spatnaVazba.vsetky")}</option>
                 {(Object.keys(KATEGORIE) as Kategoria[]).map((k) => (
                   <option key={k} value={k}>
                     {KATEGORIE[k]}
@@ -862,19 +848,19 @@ export function SpatnaVazba() {
               </select>
             </label>
             <label>
-              <span className="tlmene">Zoradiť</span>
+              <span className="tlmene">{t("spatnaVazba.zoradit")}</span>
               <select value={triedenie} onChange={(e) => setTriedenie(e.target.value as Triedenie)}>
-                <option value="nove">najnovšie</option>
-                <option value="cigarety">najviac cigariet</option>
-                <option value="diskusia">najživšia diskusia</option>
+                <option value="nove">{t("spatnaVazba.najnovsie")}</option>
+                <option value="cigarety">{t("spatnaVazba.najviacCigariet")}</option>
+                <option value="diskusia">{t("spatnaVazba.najzivsia")}</option>
               </select>
             </label>
-            <div className="nazory-ai" role="group" aria-label="Kto písal">
+            <div className="nazory-ai" role="group" aria-label={t("spatnaVazba.ktoPisal")}>
               <button type="button" aria-pressed={!ukazAi} onClick={() => prepniAi(false)}>
-                Od ľudí <small>{ludiaTu}</small>
+                {t("spatnaVazba.odLudi")} <small>{ludiaTu}</small>
               </button>
               <button type="button" aria-pressed={ukazAi} onClick={() => prepniAi(true)}>
-                Aj od AI playtesterov <small>{ludiaTu + aiTu}</small>
+                {t("spatnaVazba.ajOdAi")} <small>{ludiaTu + aiTu}</small>
               </button>
             </div>
           </div>
@@ -888,18 +874,18 @@ export function SpatnaVazba() {
               {!ukazAi && aiTu > 0 ? (
                 <>
                   <p>
-                    Od ľudí tu zatiaľ nič nie je. AI playtesteri po partiách napísali {aiTu} {tvar(aiTu, "postreh", "postrehy", "postrehov")}.
+                    {t("spatnaVazba.odLudiNic", { n: aiTu })}
                   </p>
                   <div className="riadok-tlacidiel">
                     <button type="button" className="tlacidlo" onClick={() => prepniAi(true)}>
-                      Ukázať ich
+                      {t("spatnaVazba.ukazatIch")}
                     </button>
                     {napisatPrvy}
                   </div>
                 </>
               ) : (
                 <>
-                  <p>{zalozka === "otvorene" && filter === null ? "Zatiaľ tu nie je žiadny názor." : "V tejto záložke zatiaľ nič nie je."}</p>
+                  <p>{zalozka === "otvorene" && filter === null ? t("spatnaVazba.ziadnyNazor") : t("spatnaVazba.zalozkaPrazdna")}</p>
                   {zalozka === "otvorene" && napisatPrvy}
                 </>
               )}
