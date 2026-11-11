@@ -46,7 +46,7 @@
     }
   },
   "kategoria.krcma": {
-    "nazov": "",
+    "nazov": "Around the Pub",
     "sk": {
       "nazov": "Okolo krčmy"
     }
@@ -112,64 +112,64 @@
     }
   },
   "sekera-v-pni": {
-    "nazov": "",
-    "popis": "",
+    "nazov": "The Tab Comes Due",
+    "popis": "Win a brawl that takes the butts from at least {prah} brawls on the Tab.",
     "sk": {
       "nazov": "Sekera v pni",
       "popis": "Vyhraj bitku, ktorou berieš špaky z aspoň {prah} bitiek na sekere."
     }
   },
   "huba-nevymachana": {
-    "nazov": "",
-    "popis": "",
+    "nazov": "Gobby",
+    "popis": "Win the argument in at least {prah} brawls of a single game.",
     "sk": {
       "nazov": "Huba nevymáchaná",
       "popis": "Vyhraj v jednej partii hádku v aspoň {prah} bitkách."
     }
   },
   "zle-oko": {
-    "nazov": "",
-    "popis": "",
+    "nazov": "Evil Eye",
+    "popis": "Have at least {prah} Superstitions in a single game that your opponent's Faith didn't cancel.",
     "sk": {
       "nazov": "Zlé oko",
       "popis": "Maj v jednej partii aspoň {prah} Povier, ktoré neprerušila súperova Viera."
     }
   },
   "svatuskar": {
-    "nazov": "",
-    "popis": "",
+    "nazov": "Holy Joe",
+    "popis": "Have at least {prah} active Faiths in a single brawl.",
     "sk": {
       "nazov": "Svätuškár",
       "popis": "Maj v jednej bitke aspoň {prah} aktívne Viery."
     }
   },
   "zakaz-vstupu": {
-    "nazov": "",
-    "popis": "",
+    "nazov": "No Entry",
+    "popis": "Have at least {prah} active Restrictions in a single brawl.",
     "sk": {
       "nazov": "Zákaz vstupu",
       "popis": "Maj v jednej bitke aspoň {prah} aktívne Obmedzenia."
     }
   },
   "ruka-ako-lopata": {
-    "nazov": "",
-    "popis": "",
+    "nazov": "Hands Like Shovels",
+    "popis": "Deal {prah} hard in total.",
     "sk": {
       "nazov": "Ruka ako lopata",
       "popis": "Udeľ spolu {prah} tuhého."
     }
   },
   "o-fuz": {
-    "nazov": "",
-    "popis": "",
+    "nazov": "By a Whisker",
+    "popis": "Win a brawl by exactly 1 — {prah}× in total.",
     "sk": {
       "nazov": "O fúz",
       "popis": "Vyhraj bitku presne o 1 — spolu {prah}×."
     }
   },
   "trasie-sa-ale-bije": {
-    "nazov": "",
-    "popis": "",
+    "nazov": "Shaking, but Still Swinging",
+    "popis": "Win a brawl with at least {prah} Shakes.",
     "sk": {
       "nazov": "Trasie sa, ale bije",
       "popis": "Vyhraj bitku s aspoň {prah} Absťákmi."
@@ -232,8 +232,8 @@
     }
   },
   "spoved": {
-    "nazov": "",
-    "popis": "",
+    "nazov": "Confession",
+    "popis": "Confess {prah} Cirrhoses in total.",
     "sk": {
       "nazov": "Spoveď",
       "popis": "Priznaj spolu {prah} Cirhóz."
@@ -344,48 +344,48 @@
     }
   },
   "forsaz": {
-    "nazov": "",
-    "popis": "",
+    "nazov": "Overdrive",
+    "popis": "Set off an Overdrive (Boost against Boost) — {prah}× in total.",
     "sk": {
       "nazov": "Forsáž",
       "popis": "Spôsob Forsáž (Posilnenie proti Posilneniu) — spolu {prah}×."
     }
   },
   "mozole-na-palcoch": {
-    "nazov": "",
-    "popis": "",
+    "nazov": "Calloused Thumbs",
+    "popis": "Play {prah} cards in total.",
     "sk": {
       "nazov": "Mozole na palcoch",
       "popis": "Vylož spolu {prah} kariet."
     }
   },
   "na-jeden-dusok": {
-    "nazov": "",
-    "popis": "",
+    "nazov": "In One Gulp",
+    "popis": "Play at least {prah} cards in a single turn.",
     "sk": {
       "nazov": "Na jeden dúšok",
       "popis": "Vylož jedným ťahom aspoň {prah} karty."
     }
   },
   "fuser": {
-    "nazov": "",
-    "popis": "",
+    "nazov": "Bodger",
+    "popis": "Tuck {prah} Tools in total.",
     "sk": {
       "nazov": "Fušer",
       "popis": "Podlož spolu {prah} Nástrojov."
     }
   },
   "rekvalifikacia": {
-    "nazov": "",
-    "popis": "",
+    "nazov": "Reskilled",
+    "popis": "Retrain an action on your own card through a chain of at least {prah} conversions (Punch → Wallop → Haymaker).",
     "sk": {
       "nazov": "Rekvalifikácia",
       "popis": "Preškoľ akciu na svojej karte reťazou aspoň {prah} premien (Rana → Pecka → Petelica)."
     }
   },
   "vytrznik": {
-    "nazov": "",
-    "popis": "",
+    "nazov": "Hooligan",
+    "popis": "Turn a card into a Hooligan (both NA EX on the same card) — {prah}× in total.",
     "sk": {
       "nazov": "Výtržník",
       "popis": "Sprav z karty Výtržníka (obe NA EX na tej istej karte) — spolu {prah}×."
@@ -456,40 +456,40 @@
     }
   },
   "nutene-prace": {
-    "nazov": "",
-    "popis": "",
+    "nazov": "Forced Labour",
+    "popis": "Use a prisoner's ability {prah}× in total.",
     "sk": {
       "nazov": "Nútené práce",
       "popis": "Použi schopnosť väzňa spolu {prah}×."
     }
   },
   "cervena-dedina": {
-    "nazov": "",
-    "popis": "",
+    "nazov": "Red Village",
+    "popis": "Win a game by fear (4 red elders) — {prah}× in total.",
     "sk": {
       "nazov": "Červená dedina",
       "popis": "Vyhraj partiu strachom (4 červení starší) — spolu {prah}×."
     }
   },
   "vreckar": {
-    "nazov": "",
-    "popis": "",
+    "nazov": "Pickpocket",
+    "popis": "Steal at least {prah} butts by capturing after a single brawl.",
     "sk": {
       "nazov": "Vreckár",
       "popis": "Ukradni pri zajatí po jednej bitke aspoň {prah} špakov."
     }
   },
   "cela-rada-v-pivnici": {
-    "nazov": "",
-    "popis": "",
+    "nazov": "The Whole Council in the Cellar",
+    "popis": "Capture {prah} different elders, each at least once.",
     "sk": {
       "nazov": "Celá rada v pivnici",
       "popis": "Zajmi aspoň raz {prah} rôznych starších."
     }
   },
   "mlcat-je-zlato": {
-    "nazov": "",
-    "popis": "",
+    "nazov": "Silence Is Golden",
+    "popis": "Win a game in which you didn't win a single argument — {prah}× in total.",
     "sk": {
       "nazov": "Mlčať je zlato",
       "popis": "Vyhraj partiu, v ktorej si nevyhral ani jednu hádku — spolu {prah}×."
@@ -536,32 +536,32 @@
     }
   },
   "rozhadzovac": {
-    "nazov": "",
-    "popis": "",
+    "nazov": "Big Spender",
+    "popis": "Spend at least {prah} cigarettes in a single game.",
     "sk": {
       "nazov": "Rozhadzovač",
       "popis": "Miň v jednej partii aspoň {prah} cigariet."
     }
   },
   "vyrovnany-ucet": {
-    "nazov": "",
-    "popis": "",
+    "nazov": "All Square",
+    "popis": "Get rid of {prah} Debts in total.",
     "sk": {
       "nazov": "Vyrovnaný účet",
       "popis": "Zbav sa spolu {prah} Dlhov."
     }
   },
   "sichta": {
-    "nazov": "",
-    "popis": "",
+    "nazov": "Hard Graft",
+    "popis": "Have {prah} active Work actions in brawls in total.",
     "sk": {
       "nazov": "Šichta",
       "popis": "Maj v bitkách spolu {prah} aktívnych Robôt."
     }
   },
   "vypalnik": {
-    "nazov": "",
-    "popis": "",
+    "nazov": "Racketeer",
+    "popis": "Collect at least {prah} cigarettes in protection money in a single game.",
     "sk": {
       "nazov": "Výpalník",
       "popis": "Vyber v jednej partii na výpalnom aspoň {prah} cigariet."
@@ -640,48 +640,48 @@
     }
   },
   "rychlovka": {
-    "nazov": "",
-    "popis": "",
+    "nazov": "Quickie",
+    "popis": "Short games won (3 locations): {prah} in total.",
     "sk": {
       "nazov": "Rýchlovka",
       "popis": "Vyhrané krátke partie (3 lokality): spolu {prah}."
     }
   },
   "poctiva-smena": {
-    "nazov": "",
-    "popis": "",
+    "nazov": "An Honest Day's Work",
+    "popis": "Medium games won (5 locations): {prah} in total.",
     "sk": {
       "nazov": "Poctivá smena",
       "popis": "Vyhrané stredné partie (5 lokalít): spolu {prah}."
     }
   },
   "o-chlp": {
-    "nazov": "",
-    "popis": "",
+    "nazov": "By a Hair",
+    "popis": "Win a game by 5 butts at most — {prah}× in total.",
     "sk": {
       "nazov": "O chlp",
       "popis": "Vyhraj partiu najviac o 5 špakov — spolu {prah}×."
     }
   },
   "posledna-runda": {
-    "nazov": "",
-    "popis": "",
+    "nazov": "Last Round",
+    "popis": "Go into the finale with fewer butts, win it and the game with it — {prah}× in total.",
     "sk": {
       "nazov": "Posledná runda",
       "popis": "Choď do finále s menej špakmi, vyhraj ho a s ním aj partiu — spolu {prah}×."
     }
   },
   "poznam-tu-kazdy-kut": {
-    "nazov": "",
-    "popis": "",
+    "nazov": "I Know Every Corner Here",
+    "popis": "Win a brawl at {prah} different locations.",
     "sk": {
       "nazov": "Poznám tu každý kút",
       "popis": "Vyhraj bitku na {prah} rôznych lokalitách."
     }
   },
   "odveta": {
-    "nazov": "",
-    "popis": "",
+    "nazov": "Payback",
+    "popis": "Beat someone who beat you in your previous game against each other — {prah}× in total.",
     "sk": {
       "nazov": "Odveta",
       "popis": "Poraz človeka, ktorý ťa vo vašej predošlej partii porazil — spolu {prah}×."
@@ -860,9 +860,9 @@
     }
   },
   "boxovacie-vrece": {
-    "nazov": "",
-    "popis": "",
-    "tajnyText": "",
+    "nazov": "Punching Bag",
+    "popis": "Take at least {prah} damage in a single brawl.",
+    "tajnyText": "Somebody's got to take it.",
     "sk": {
       "nazov": "Boxovacie vrece",
       "popis": "Dostaň v jednej bitke aspoň {prah} poškodenia.",
@@ -870,9 +870,9 @@
     }
   },
   "platim-rundu": {
-    "nazov": "",
-    "popis": "",
-    "tajnyText": "",
+    "nazov": "This Round's on Me",
+    "popis": "Lose {prah} games in total.",
+    "tajnyText": "Losing is a lesson too.",
     "sk": {
       "nazov": "Platím rundu",
       "popis": "Prehraj spolu {prah} partií.",
@@ -880,9 +880,9 @@
     }
   },
   "podaj-ruku": {
-    "nazov": "",
-    "popis": "",
-    "tajnyText": "",
+    "nazov": "Shake on It",
+    "popis": "Finish a game in a draw — {prah}× in total.",
+    "tajnyText": "Neither fish nor fowl.",
     "sk": {
       "nazov": "Podaj ruku",
       "popis": "Dohraj partiu remízou — spolu {prah}×.",
@@ -890,9 +890,9 @@
     }
   },
   "zatlkat-zatlkat": {
-    "nazov": "",
-    "popis": "",
-    "tajnyText": "",
+    "nazov": "Deny, Deny, Deny",
+    "popis": "Win a game despite at least {prah} unconfessed Cirrhoses.",
+    "tajnyText": "What the doctor doesn't know…",
     "sk": {
       "nazov": "Zatĺkať, zatĺkať",
       "popis": "Vyhraj partiu napriek aspoň {prah} nepriznaným Cirhózam.",
@@ -900,9 +900,9 @@
     }
   },
   "zaverecna-o-tretej": {
-    "nazov": "",
-    "popis": "",
-    "tajnyText": "",
+    "nazov": "Last Orders at Three",
+    "popis": "Finish a game between 2:00 and 5:00 in the morning — {prah}× in total.",
+    "tajnyText": "The landlady's already turning the lights off.",
     "sk": {
       "nazov": "Záverečná o tretej",
       "popis": "Dohraj partiu medzi 2:00 a 5:00 ráno — spolu {prah}×.",
@@ -910,24 +910,24 @@
     }
   },
   "staznost-krcmarovi": {
-    "nazov": "",
-    "popis": "",
+    "nazov": "Complaint to the Landlord",
+    "popis": "Send an opinion through Feedback — {prah}× in total.",
     "sk": {
       "nazov": "Sťažnosť krčmárovi",
       "popis": "Pošli názor v Spätnej väzbe — spolu {prah}×."
     }
   },
   "porotca": {
-    "nazov": "",
-    "popis": "",
+    "nazov": "Juror",
+    "popis": "Rate the game — {prah}× in total.",
     "sk": {
       "nazov": "Porotca",
       "popis": "Ohodnoť hru známkami — spolu {prah}×."
     }
   },
   "staly-host": {
-    "nazov": "",
-    "popis": "",
+    "nazov": "Familiar Face",
+    "popis": "Finish a game on {prah} different days.",
     "sk": {
       "nazov": "Stály hosť",
       "popis": "Dohraj partiu v {prah} rôznych dňoch."
