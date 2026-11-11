@@ -4,133 +4,133 @@
     "popis": "Preklad dlhých textov: pri každom id prelož prázdne polia; pole sk je slovenský originál, z ktorého preklad vzniká — nemeň ho (keď sa slovenčina zmení, preklad sa ukáže ako zastaraný a v hre ostane slovenčina). Značky <p k=\"…\">, <strong>, <a href=\"…\"> a {parametre} ponechaj ako v origináli; pojmy podľa docs/preklady/glosar.json."
   },
   "stavba-senku": {
-    "melichar": "",
+    "melichar": "A kínálatot te és az ellenfél egyszerre rakjátok össze: kattints arra a négy kártyára, amelyik a kínálatba megy (a kiválasztott felemelkedik), a maradék négy a pakli aljára kerül. Alulra azok valók, amelyeket nem sajnálsz az ellenféltől, nem fogja látni őket. Másoktól sajnálni valamit – az megy neked, tudom.",
     "sk": {
       "melichar": "Ponuku staviate ty a súper naraz: klikni na štyri karty, ktoré pôjdu do ponuky (vybraná sa zdvihne), zvyšné štyri pôjdu naspodok balíčka. Naspodok patria tie, ktoré súperovi nedopraješ, neuvidí ich. Nedopriať niečo druhým ti ide, to viem."
     }
   },
   "rola": {
-    "melichar.utocnik": "",
-    "melichar.obranca": "",
+    "melichar.utocnik": "Te vagy a támadó: elsőként veszel és játszol ki. Ma a sorsolás döntött, mostantól az a támadó, aki elveszíti a verekedést. Szokj hozzá ehhez a szerephez.",
+    "melichar.obranca": "Te vagy a védő: te választod a helyszínt, és a NA EX-re elsőként válaszolsz. Ma a sorsolás döntött, mostantól az a védő, aki megnyeri a verekedést. Élvezd, amíg tart.",
     "sk": {
       "melichar.utocnik": "Si útočník: kupuješ a hráš prvý. Dnes rozhodol žreb, odteraz je útočníkom ten, kto prehrá bitku. Tak si na tú rolu zvykaj.",
       "melichar.obranca": "Si obranca: vyberáš lokalitu a na NA EX odpovedáš prvý. Dnes rozhodol žreb, odteraz je obrancom ten, kto vyhrá bitku. Užívaj si to, kým to trvá."
     }
   },
   "odpoved-naex": {
-    "melichar": "",
+    "melichar": "Figyelj, csak egyszer mondom. A NA EX-ek felfedődtek, és az ellenfél NA EX-éért letehetsz egy kártyát. Ha vele összekötsz egy akciót, amely a NA EX-es kártyán semmilyen más akcióval nem volt összekötve, a NA EX megduplázás helyett kioltja.",
     "sk": {
       "melichar": "Pozorne, hovorím to len raz. NA EX sa odkryli a ty smieš za súperovo NA EX položiť jednu kartu. Keď ňou spojíš akciu, ktorá na karte s NA EX nebola spojená so žiadnou inou akciou, NA EX ju zruší namiesto zdvojenia."
     }
   },
   "prve-naex": {
-    "melichar": "",
+    "melichar": "NA EX! Egy teli [Poldeci] felest adsz egy Polgárra vagy Elöljáróra a sorban. Annak a kártyának azokat az akcióit, amelyek semmilyen más akcióval nincsenek összekötve, megduplázza, az összekötötteket kioltja. A májad 1-gyel nő. Az oktatás 2. részében rendesen megmutatom, addig próbálkozz a saját szakálladra.",
     "sk": {
       "melichar": "NA EX! Plný [Poldeci] poldeci dáš na Občana alebo Starešinu v línii. Akcie na tej karte, ktoré nie sú spojené so žiadnou inou akciou, zdvojí, spojené zruší. Pečeň ti pribudne o 1. V 2. časti výučby ti to ukážem poriadne, dovtedy skúšaj na vlastnú päsť."
     }
   },
   "pocet-pitiek": {
-    "melichar": "",
+    "melichar": "Az Ivászat ma megismétlődik: mindkettőtöknek van a helyszínnél egy összekötött akciója. Minden további Ivászat előtt új Gyűlés van. Több alkalom a hibázásra, örülök neked.",
     "sk": {
       "melichar": "Pitka sa dnes zopakuje: obaja máte pri lokalite spojenú jej akciu. Pred každou ďalšou Pitkou je nové Zhromaždenie. Viac príležitostí na chyby, teší ma to za teba."
     }
   },
   "zadlzenie": {
-    "melichar": "",
+    "melichar": "A [Dlh] Hazárd akció az Ivászaton Adósságot ad, minden akcióért egyet. Hogy mennyit hoz az asztal, azt előre látod lent magad előtt. Az adósságokról tudsz egyet s mást, nem? Például egy cigarettáról.",
     "sk": {
       "melichar": "Akcia [Dlh] Hazard ti v Pitke dá Dlh, za každú akciu jeden. Koľko ich prinesie stôl, vidíš vopred dole pri sebe. O dlžobách niečo vieš, však? Napríklad o jednej cigarete."
     }
   },
   "dlh": {
-    "melichar": "",
+    "melichar": "Az első Adósság! Őszintén, nem csodálom. Nem kártya, lent nálad számolják, és azonnal bevallott. Minden verekedésben jön érte a Végrehajtó, a csikkjeidért is, és döntetlen verekedésnél az Adósságok is döntenek: akinek több van, veszít.",
     "sk": {
       "melichar": "Prvý Dlh! Úprimne, nečudujem sa. Nie je to karta, počíta sa dole pri tebe a je hneď priznaný. V každej bitke po neho príde Exekútor aj s tvojimi špakmi, a pri remíze v bitke rozhodujú aj Dlhy: kto ich má viac, prehrá."
     }
   },
   "pas-cigarety": {
-    "melichar": "",
+    "melichar": "Passzolni hamarabb is megéri: minden kártyáért, amit még kijátszhattál volna, kapsz egy [Cigareta] cigarettát. Egyet aztán vissza is adhatnál, csak úgy mondom.",
     "sk": {
       "melichar": "Pasovať sa oplatí aj skôr: za každú kartu, ktorú si ešte smel vyložiť, dostaneš [Cigareta] cigaretu. Jednu by si potom mohol aj vrátiť, len tak spomínam."
     }
   },
   "lokalita-pravidlo": {
-    "melichar": "",
+    "melichar": "{lokalita} – saját szabály, egész körben érvényes: {efekt}",
     "sk": {
       "melichar": "{lokalita} má vlastné pravidlo a platí celé kolo: {efekt}"
     }
   },
   "body": {
-    "melichar": "",
+    "melichar": "A lent nálad lévő csikkek döntik el, ki nyer. Kattints rájuk, és látod a faliújságot: miért kaptad őket. Hogy melyik elöljáró mennyit fizet neked megnyert és elvesztett verekedés után, azt az Elöljárók csempe mutatja. Ha nem tetszenek a számok, ne nekem panaszkodj.",
     "sk": {
       "melichar": "Špaky dole pri tebe rozhodnú, kto vyhrá. Klikni na ne a uvidíš nástenku: za čo si ich dostal. Koľko ti ktorý starší zaplatí po vyhratej a po prehratej bitke, ukáže dlaždica Starší. Keď sa ti tie čísla nebudú páčiť, mne sa nesťažuj."
     }
   },
   "pohorsenie": {
-    "melichar.moje": "",
-    "melichar.superove": "",
+    "melichar.moje": "Megnyerted a veszekedést: több puha sebzésed van, [Pohoršenie] Botrány 2, [Povera] Babona 1. A különbséget a pletykádra költöd az elöljáróknál – mindig a félelmed fölé, egy fok a sárgáig 1, a narancsig 2, a pirosig 3. Ami a következő fokra nem elég, elvész. A pletyka minden verekedés után fizet, az elvesztett után is, aztán gyengül. Élvezd, amíg lehet.",
+    "melichar.superove": "A veszekedést az ellenfél nyerte: több puha sebzése van, [Pohoršenie] Botrány 2, [Povera] Babona 1, és a különbséget a pletykájára költi az elöljáróknál. Az minden verekedés után fizet neki, az elvesztett után is. Legközelebb tartogass Hitet a Babonáira. Ne nézz így rám, nem én raktam ki.",
     "sk": {
       "melichar.moje": "Hádku si vyhral: máš viac mäkkého poškodenia, [Pohoršenie] Pohoršenie 2, [Povera] Povera 1. Rozdiel minieš na svoje reči pri starších – vždy nad tvojím strachom, stupeň do žltej 1, do oranžovej 2, do červenej 3. Čo na ďalší stupeň nestačí, prepadne. Reči ti platia po každej bitke, aj prehratej, a potom slabnú. Užívaj, kým môžeš.",
       "melichar.superove": "Hádku vyhral súper: má viac mäkkého poškodenia, [Pohoršenie] Pohoršenie 2, [Povera] Povera 1, a rozdiel minie na svoje reči pri starších. Tie mu platia po každej bitke, aj prehratej. Nabudúce si nechaj Vieru na jeho Povery. Nepozeraj tak na mňa, ja som ho nevyložil."
     }
   },
   "abstak": {
-    "melichar": "",
+    "melichar": "Vigyázz a Remegésre: a test hozzászokott. Ha egy körben kevesebbet iszol [Poldeci] és szívsz el [Cigareta], mint a Szomjad, egy Remegés kártya kerül a paklidba. Mindegyik 1 keményet vesz el tőled a verekedésben, és csak a Látomás égeti el. A Szomj körönként eggyel csökken. Én csak tanácsot adok, csinálj, amit akarsz.",
     "sk": {
       "melichar": "Pozor na Absťák: telo si zvyklo. Keď v kole vypiješ [Poldeci] a vyfajčíš [Cigareta] menej, ako je tvoja Chuť, príde ti karta Absťák do balíčka. Každá ti v bitke uberie 1 tuhé a spáli ju len Vízia. Chuť klesá o jednu za kolo. Ja len radím, rob si, ako chceš."
     }
   },
   "cirhoza": {
-    "melichar": "",
+    "melichar": "Egy Májzsugor van a kezedben a kicsordult májból. Figyelmeztettelek, de jól van. Bevallva nem kerül csikkedbe, de az ellenfél miatta minden verekedésben 1 keményet kap. Be nem vallva verekedés után a dobópaklidba megy, és a játék végén 3 csikkedbe kerül.",
     "sk": {
       "melichar": "V ruke máš Cirhózu z pretečenej pečene. Varoval som ťa, ale dobre. Priznaná ťa špaky nestojí, no súper za ňu dostane v každej bitke 1 tuhé. Nepriznaná ide po bitke do tvojho odhadzovacieho balíčka a na konci hry ťa stojí 3 špaky."
     }
   },
   "priazen": {
-    "melichar": "",
+    "melichar": "{starsi} jobban fél az ellenfeledtől, mint tőled, ezért a kegyét mutatja neked: kis bónusz, mellette látod. Az ereje a félelmeik különbsége. Az ellenfélnek ezért a félelemért csikkel fizet, amikor megnyeri a verekedést. Valaki kedvel téged, erre nem számítottam.",
     "sk": {
       "melichar": "{starsi} sa bojí súpera viac ako teba, a preto ti prejavuje priazeň: malý bonus, ten vidíš pri ňom. Jej sila je rozdiel ich strachov. Súperovi za ten strach platí špaky, keď vyhrá bitku. Niekto ťa má rád, to by som nečakal."
     }
   },
   "prevaha": {
-    "melichar": "",
+    "melichar": "A helyszín akcióit a szárnyon az kapja, akinek ott több saját Polgára, Állata és Elöljárója van. Egyenlőségnél az, akinek a kártyája a helyszín mellett fekszik. Háromig számolni tudsz, az elég lesz.",
     "sk": {
       "melichar": "Akcie lokality v kraji dostane, kto tam má viac svojich Občanov, Zvierat a Starešinov. Pri rovnosti ten, koho karta leží pri lokalite. Rátať do troch vieš, to bude stačiť."
     }
   },
   "patronat": {
-    "melichar": "",
+    "melichar": "Ez az elöljáró piroson fél tőled. Az Elpáholásból ötért elfogod – a pincédbe kerül, és az ellenfél csikket ad neked a nála lévő jelölőjéért. Nem kötelező, de miért ne akarnád.",
     "sk": {
       "melichar": "Tento starší sa ťa bojí na červenej. Za päť z Nakladačky ho zajmeš – ide do tvojej pivnice a súper ti dá špaky za svoj marker pri ňom. Nemusíš, ale prečo by si nechcel."
     }
   },
   "presvedcenie": {
-    "melichar": "",
+    "melichar": "Ez az elöljáró jobban fél az ellenfeledtől, mint tőled. Pletyka a pirosig, meg öt rá – és meg van győzve: a kártyája a kezedbe kerül, és a paklidban marad. A pletykád nála elég, a kegy megmarad neked.",
     "sk": {
       "melichar": "Tento starší sa súpera bojí viac než teba. Reči na červenú a päť navrch – a je presvedčený: jeho karta ide tebe do ruky a ostáva v tvojom balíčku. Tvoje reči pri ňom zhoria, priazeň ti ostane."
     }
   },
   "vydesenie": {
-    "melichar.moje": "",
-    "melichar.superove": "",
+    "melichar.moje": "Rémült elöljáró! Piroson fél tőled, az ilyet megnyert verekedés után ötért elfoghatod az Elpáholásból. Négy rémült és egy megnyert verekedés – a foglyok is számítanak –, és azonnal nyertél. Csak úgy.",
+    "melichar.superove": "Az ellenfél megrémítette az egyik elöljáródat. Piroson fél tőle, így az ellenfél megnyert verekedés után ötért elfoghatja az Elpáholásból. Négy rémült és egy megnyert verekedés – a foglyok is számítanak –, és nyert. De ez biztosan nem fog megtörténni. Ugye?",
     "sk": {
       "melichar.moje": "Vydesený starší! Bojí sa ťa na červenej, takého smieš po vyhratej bitke za päť z Nakladačky zajať. Štyria vydesení a vyhratá bitka – väzni sa rátajú tiež – a vyhral si hneď. Len.",
       "melichar.superove": "Súper ti vydesil staršieho. Bojí sa ho na červenej, a tak ho súper po vyhratej bitke smie za päť z Nakladačky zajať. Štyria vydesení a vyhratá bitka – väzni sa rátajú tiež – a vyhral. Ale to sa určite nestane. Však?"
     }
   },
   "dedicstvo": {
-    "melichar": "",
+    "melichar": "{karta}: ez egy Szerszám. [Cigareta] Cigarettáért az Örökségbe teheted, és a hatása aztán a játék végéig érvényes. Legalább valami kitart nálad a végéig.",
     "sk": {
       "melichar": "{karta} je Nástroj. Môžeš ho dať do Dedičstva za [Cigareta] cigarety a jeho efekt potom platí do konca hry. Aspoň niečo u teba vydrží až do konca."
     }
   },
   "exekutor": {
-    "melichar": "",
+    "melichar": "Bevallott Adósságod van, nem akarok semmit mondani. Minden verekedésben jön a Végrehajtó: elég az Adósságaid fele, felfelé kerekítve, és ugyanannyi csikk. Ismerem, nem ajánlom.",
     "sk": {
       "melichar": "Máš priznaný Dlh, nechcem nič hovoriť. V každej bitke príde Exekútor: zhorí ti polovica Dlhov, zaokrúhlene nahor, a rovnako veľa špakov. Poznám ho, neodporúčam."
     }
   },
   "zaverecna": {
-    "melichar": "",
+    "melichar": "Egy [Cigareta] cigarettáért kijátszhatsz egy kártyát képpel lefelé Záróraként, az ellenfél nem tudja, mi az. Utána ezen a Gyűlésen már semmit sem raksz ki. Már megint egy cigaretta, ami nem nekem jut.",
     "sk": {
       "melichar": "Za [Cigareta] cigaretu smieš zahrať kartu lícom dole ako Záverečnú, súper nevie, čo to je. Po nej už v tomto Zhromaždení nič nevyložíš. Zase cigareta, ktorá nejde mne."
     }
