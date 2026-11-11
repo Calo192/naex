@@ -4,26 +4,26 @@
     "popis": "Preklad dlhých textov: pri každom id prelož prázdne polia; pole sk je slovenský originál, z ktorého preklad vzniká — nemeň ho (keď sa slovenčina zmení, preklad sa ukáže ako zastaraný a v hre ostane slovenčina). Značky <p k=\"…\">, <strong>, <a href=\"…\"> a {parametre} ponechaj ako v origináli; pojmy podľa docs/preklady/glosar.json."
   },
   "abstak": {
-    "pojem": "",
-    "popis": "",
+    "pojem": "The Shakes",
+    "popis": "A card tagged Curse that you get for fewer vices in a round than your Thirst: it goes to your discard pile and can't be confessed; each one in your deck takes 1 hard off you in the brawl. It breaks a tie on hard. Vision burns it.",
     "sk": {
       "pojem": "Absťák",
       "popis": "Karta s tagom Kliatba za menej nerestí v kole, než je tvoja Chuť: ide do odhadzovacieho balíčka, nedá sa priznať; každý v tvojom balíčku ti v bitke uberie 1 tuhé. Rozhoduje remízu v tuhom. Spáli ho Vízia."
     }
   },
   "chut": {
-    "pojem": "",
-    "popis": "",
+    "pojem": "Thirst",
+    "popis": "Your public bar for vices, 0 at the start. At the end of the round: fewer vices than your Thirst = a Shakes card; then Thirst = the greater of (Thirst, the round's vices) − 1.",
     "sk": {
       "pojem": "Chuť",
       "popis": "Tvoja verejná latka nerestí, na začiatku 0. Na konci kola: menej nerestí než Chuť = karta Absťák; potom Chuť = väčšie z (Chuť, neresti kola) − 1."
     }
   },
   "akcia": {
-    "pojem": "",
-    "popis": "",
-    "kratko": "",
-    "tvary": "",
+    "pojem": "Action",
+    "popis": "A symbol on the edge of a card; it only counts when it meets a neighbour's action at the same height in a link.",
+    "kratko": "An icon on the edge of a card. It only counts when, in a link, it touches an icon at the same height on the next card.",
+    "tvary": "action, actions",
     "sk": {
       "pojem": "Akcia",
       "popis": "Symbol na hrane karty; platí, len keď sa na spoji stretne s akciou suseda v rovnakej výške.",
@@ -32,18 +32,18 @@
     }
   },
   "barter": {
-    "pojem": "",
-    "popis": "",
+    "pojem": "Gutter barter",
+    "popis": "During the Booze-up, a new full shot for 5 cigarettes.",
     "sk": {
       "pojem": "Stokársky barter",
       "popis": "Počas Pitky za 5 cigariet nový plný poldeci."
     }
   },
   "bitka": {
-    "pojem": "",
-    "popis": "",
-    "kratko": "",
-    "tvary": "",
+    "pojem": "Brawl",
+    "popis": "End of the round: more hard damage wins and gets butts, the elders score, the winner splits the Thrashing onto their fear, and the winner of the argument splits the argument onto their rumours on the opponent's thermometers.",
+    "kratko": "End of the round: the hits from the cards around the location are added up. Whoever has more has won and takes a butt for every card in the line.",
+    "tvary": "brawl, brawls",
     "sk": {
       "pojem": "Bitka",
       "popis": "Koniec kola: viac tuhého poškodenia vyhráva a dostane špaky, starší bodujú, víťaz rozdelí Nakladačku na svoj strach a víťaz hádky hádku na svoje reči na teplomeroch súpera.",
@@ -52,10 +52,10 @@
     }
   },
   "cigareta": {
-    "pojem": "",
-    "popis": "",
-    "kratko": "",
-    "tvary": "",
+    "pojem": "Cigarette",
+    "popis": "The game's currency: it pays for cards from the Market, the Heirloom, tucking a Tool, refills, barter and Last Orders; smoking in the Booze-up gets you an extra card at once (1, 2, 3… cigarettes; at the Petrol Station the first is free). After the brawl the loser gets 1 and the opponent pays protection money. At the end of the game every 5 cigarettes make 1 butt.",
+    "kratko": "This game's small change. You pay for cards from the Market and for smoking in the Booze-up; you get them for cards you don't play.",
+    "tvary": "cigarette, cigarettes, cigs",
     "sk": {
       "pojem": "Cigareta",
       "popis": "Mena hry: platí karty z ponuky, Dedičstvo, podloženie Nástroja, doliatie, barter a Záverečnú; fajčením v Pitke hneď karta navyše (1, 2, 3… cigarety; na Benzínke prvá zadarmo). Po bitke dostane porazený 1 a súper platí výpalné. Na konci hry každých 5 cigariet 1 špak.",
@@ -64,210 +64,210 @@
     }
   },
   "cirhoza": {
-    "pojem": "",
-    "popis": "",
+    "pojem": "Cirrhosis",
+    "popis": "A Curse from the liver; it goes to your discard pile. Confessed, it gives your opponent +1 hard in the brawl; unconfessed, it goes to your discard pile after the brawl and costs 3 butts at the end of the game.",
     "sk": {
       "pojem": "Cirhóza",
       "popis": "Kliatba z pečene; ide do tvojho odhadzovacieho balíčka, priznaná dá súperovi v bitke +1 tuhé, nepriznaná ide po bitke do tvojho odhadzovacieho balíčka a na konci hry stojí 3 špaky."
     }
   },
   "dedicstvo": {
-    "pojem": "",
-    "popis": "",
+    "pojem": "Heirloom",
+    "popis": "A Tool laid outside the line; its effect applies and the price rises for both players: the 1st, 2nd, 3rd Tool costs 1, 2, 3 cigarettes.",
     "sk": {
       "pojem": "Dedičstvo",
       "popis": "Nástroj vyložený mimo línie; platí jeho efekt a cena rastie pre oboch: 1., 2., 3. Nástroj stojí 1, 2, 3 cigarety."
     }
   },
   "dlh": {
-    "pojem": "",
-    "popis": "",
+    "pojem": "Debt",
+    "popis": "A Curse from Gamble — a counter, not a card: each Gamble action in the Booze-up = 1 Debt, confessed at once; for confessed Debts the Bailiff turns up in every brawl, and on a tied brawl whoever has more of them loses.",
     "sk": {
       "pojem": "Dlh",
       "popis": "Kliatba z Hazardu — počítadlo, nie karta: každá akcia Hazard v Pitke = 1 Dlh, hneď priznaný; za priznané Dlhy príde v každej bitke Exekútor a pri remíze v bitke prehrá, kto ich má viac."
     }
   },
   "dobratie": {
-    "pojem": "",
-    "popis": "",
+    "pojem": "Drawing",
+    "popis": "From the second round on, you draw 2 cards at the start of the round, however many you hold. There's no hand limit and nothing gets discarded.",
     "sk": {
       "pojem": "Dobratie",
       "popis": "Od druhého kola si na začiatku kola doberieš 2 karty, nech máš v ruke koľkokoľvek. Limit ruky nie je a nič sa neodhadzuje."
     }
   },
   "dlzka-hry": {
-    "pojem": "",
-    "popis": "",
+    "pojem": "Division",
+    "popis": "Length of the game — the number of locations you fight over: Third Division 3, Second Division 5, First Division 7; after them comes the finale.",
     "sk": {
       "pojem": "Liga",
       "popis": "Dĺžka hry — počet lokalít, o ktoré sa hrá: Tretia liga 3, Druhá liga 5, Prvá liga 7; po nich príde finále."
     }
   },
   "doliatie": {
-    "pojem": "",
-    "popis": "",
+    "pojem": "Refill",
+    "popis": "During the Booze-up, for 2 cigarettes you turn an empty shot back to full.",
     "sk": {
       "pojem": "Doliatie",
       "popis": "Počas Pitky za 2 cigarety otočíš vypitý poldeci späť na plný."
     }
   },
   "efekt": {
-    "pojem": "",
-    "popis": "",
+    "pojem": "Effect",
+    "popis": "The card's text: what the card does and when; the bold word at its start says when.",
     "sk": {
       "pojem": "Efekt",
       "popis": "Text karty: čo karta robí a kedy; kedy hovorí tučné slovo na jeho začiatku."
     }
   },
   "hazard": {
-    "pojem": "",
-    "popis": "",
+    "pojem": "Gamble",
+    "popis": "An action that gives you 1 Debt in the Booze-up.",
     "sk": {
       "pojem": "Hazard",
       "popis": "Akcia, ktorá ti v Pitke dá 1 Dlh."
     }
   },
   "zadlzenie": {
-    "pojem": "",
-    "popis": "",
+    "pojem": "Indebtedness",
+    "popis": "What Gamble and card effects give: 1 indebtedness is 1 Debt straight away. Only with the Fruit Machine in your Heirloom is it a Debt for every 2, and the rest stays on the account.",
     "sk": {
       "pojem": "Zadĺženie",
       "popis": "Čo dáva Hazard a efekty kariet: 1 zadĺženie je hneď 1 Dlh. Len s Výherným automatom v Dedičstve je Dlh až za každé 2 a zvyšok ostáva na účte."
     }
   },
   "exekutor": {
-    "pojem": "",
-    "popis": "",
+    "pojem": "Bailiff",
+    "popis": "Turns up in every brawl while you have a confessed Debt: half your Debts burn (rounded up) and as many butts with them; your favour with the Lawyer cuts that by 1 / 2 / 3. The Allotment Man in your crew protects you that round.",
     "sk": {
       "pojem": "Exekútor",
       "popis": "Príde v každej bitke, kým máš priznaný Dlh: zhorí ti polovica Dlhov (zaokrúhlene nahor) a rovnako veľa špakov; tvoja priazeň Advokáta ich uberie o 1 / 2 / 3. Záhradkár v tvojej partii ťa v tom kole ochráni."
     }
   },
   "finale": {
-    "pojem": "",
-    "popis": "",
+    "pojem": "Finale",
+    "popis": "The last brawl, over a pinnacle location chosen and turned by the player with more butts; it's played like any other (location in the middle of the line, booze-ups by links), the one behind (fewer butts) attacks, and the winner gets 1 butt for every card in the line.",
     "sk": {
       "pojem": "Finále",
       "popis": "Posledná bitka o pinnacle lokalitu, ktorú vyberie a natočí hráč s viac špakmi; hrá sa ako o každú inú (lokalita v strede línie, Pitky podľa spojov), útočí zaostávajúci (menej špakov), víťaz dostane 1 špak za každú kartu v línii."
     }
   },
   "pakt": {
-    "pojem": "",
-    "popis": "",
+    "pojem": "Pact",
+    "popis": "An action (v7): in a link it behaves like the action it's paired with — bad ones too. Pact with Pact does nothing; Resistance cancels it. A Pact that copies an action counts as that action for every effect (your Wallops, Pitchfork, Phone…).",
     "sk": {
       "pojem": "Pakt",
       "popis": "Akcia (v7): na spoji sa správa ako akcia, s ktorou je v páre — aj zlá. Pakt s Paktom nerobí nič, Odpor ho zruší. Pakt, ktorý akciu kopíruje, je ňou pre všetky efekty (tvoje Pecky, Vidly, Telefón…)."
     }
   },
   "konflikt": {
-    "pojem": "",
-    "popis": "",
+    "pojem": "Clash",
+    "popis": "Trigger (v11.3): a card's effect when it ends up next to an opponent's card through placing — whether you place yours against theirs or they place theirs against yours; with a tag after the colon, only with a card of that tag. Tucking a Tool, NA EX, a collision or a move don't trigger it.",
     "sk": {
       "pojem": "Konflikt",
       "popis": "Spúšťač (v11.3): efekt karty, keď sa priložením ocitne vedľa súperovej karty — či prikladáš ty k súperovej, alebo súper k tvojej; s tagom za dvojbodkou len pri karte s tým tagom. Podloženie Nástroja, NA EX, zrážka ani presun ho nespustia."
     }
   },
   "podpora": {
-    "pojem": "",
-    "popis": "",
+    "pojem": "Support",
+    "popis": "Trigger (v11.3): the mirror of Clash — a card's effect when, through placing, it meets another of your own cards; with a tag after the colon, only with a card of that tag.",
     "sk": {
       "pojem": "Podpora",
       "popis": "Spúšťač (v11.3): zrkadlo Konfliktu — efekt karty, keď sa priložením stretne s inou tvojou kartou; s tagom za dvojbodkou len s kartou s tým tagom."
     }
   },
   "vyvolat-konflikt": {
-    "pojem": "",
-    "popis": "",
+    "pojem": "Trigger a Clash",
+    "popis": "Place a card against an opponent's card already lying there that has a Clash trigger.",
     "sk": {
       "pojem": "Vyvolať Konflikt",
       "popis": "Priložiť kartu k súperovej ležiacej karte so spúšťačom Konflikt."
     }
   },
   "forsaz": {
-    "pojem": "",
-    "popis": "",
+    "pojem": "Overdrive",
+    "popis": "Boost against Boost: both cards have all their active actions boosted (×2); a NA EX on one of the Boosts cancels it. An Energy Drink tucked under a card gives it an Overdrive that NA EX can't cancel.",
     "sk": {
       "pojem": "Forsáž",
       "popis": "Posilnenie proti Posilneniu: obe karty majú všetky aktívne akcie posilnené (×2); NA EX na jedno z Posilnení ju zruší. Energeťák podložený pod kartu jej dá Forsáž, ktorú NA EX nezruší."
     }
   },
   "spolocnik": {
-    "pojem": "",
-    "popis": "",
+    "pojem": "Ally",
+    "popis": "Trigger: the card has bonus actions from the seal in its picture as long as you have another face-up card with the tag after the colon in your crew — once, even with several.",
     "sk": {
       "pojem": "Spoločník",
       "popis": "Spúšťač: karta má akcie navyše z pečate v obrázku, kým máš v partii inú odkrytú kartu s tagom za dvojbodkou — raz, aj pri viacerých."
     }
   },
   "nepriatel": {
-    "pojem": "",
-    "popis": "",
+    "pojem": "Enemy",
+    "popis": "Trigger: the card has bonus actions from the seal in its picture as long as your opponent has a face-up card with the tag after the colon in their crew — once, even with several.",
     "sk": {
       "pojem": "Nepriateľ",
       "popis": "Spúšťač: karta má akcie navyše z pečate v obrázku, kým má súper v partii odkrytú kartu s tagom za dvojbodkou — raz, aj pri viacerých."
     }
   },
   "akcia-navyse": {
-    "pojem": "",
-    "popis": "",
+    "pojem": "Bonus action",
+    "popis": "An action from the seal in a card's picture: an active action of the card's owner, off the edges, counted as the same action. “Always: {Akcia}” applies with no condition while the card lies there. Boost, Resistance, Overdrive, NA EX and a tucked Tool don't change it; Tools in the Heirloom and a Trainer's Retraining do.",
     "sk": {
       "pojem": "Akcia navyše",
       "popis": "Akcia z pečate v obrázku karty: aktívna akcia majiteľa karty mimo hrán, ráta sa ako tá istá akcia. „Furt: {Akcia}“ platí bez podmienky, kým karta leží. Posilnenie, Odpor, Forsáž, NA EX ani podložený Nástroj ju nemenia; Nástroje v Dedičstve a Preškolenie Školiteľa áno."
     }
   },
   "fajcenie": {
-    "pojem": "",
-    "popis": "",
+    "pojem": "Smoking",
+    "popis": "A card from your deck at once; allowed only in the Booze-up, until you end it. The first smoke in a Booze-up costs 1 cigarette, the second 2, the third 3… and every Booze-up starts again from 1. At the Petrol Station each is 1 cheaper, the first free.",
     "sk": {
       "pojem": "Fajčenie",
       "popis": "Karta z balíčka hneď; smieš len v Pitke, kým ju neskončíš. Prvé fajčenie v Pitke stojí 1 cigaretu, druhé 2, tretie 3… a každá Pitka začína od 1. Na Benzínke je každé o 1 lacnejšie, prvé zadarmo."
     }
   },
   "kliatba": {
-    "pojem": "",
-    "popis": "",
+    "pojem": "Curse",
+    "popis": "Whatever hurts its owner: the Cirrhosis and Shakes cards and the Debt counter (confessed at once). Only Cirrhosis can be confessed.",
     "sk": {
       "pojem": "Kliatba",
       "popis": "Čo škodí majiteľovi: karty Cirhóza a Absťák a počítadlo Dlh (hneď priznaný). Priznať sa dá len Cirhóza."
     }
   },
   "kolo": {
-    "pojem": "",
-    "popis": "",
+    "pojem": "Round",
+    "popis": "Target, Market, then an Assembly with a Booze-up 1 to 4 times (up to 5 times on the pinnacle in the finale), and finally the brawl for the location.",
     "sk": {
       "pojem": "Kolo",
       "popis": "Cieľ, ponuka, potom Zhromaždenie s Pitkou 1- až 4-krát (na pinnacle vo finále až 5-krát) a nakoniec bitka o lokalitu."
     }
   },
   "koniec-linie": {
-    "pojem": "",
-    "popis": "",
+    "pojem": "End of the line",
+    "popis": "One of the two ends of the line where cards are played; it belongs to nobody — you lay a card on either one.",
     "sk": {
       "pojem": "Koniec línie",
       "popis": "Jeden z dvoch koncov línie, kam sa vykladá; nepatrí nikomu — kartu kladieš na ktorýkoľvek."
     }
   },
   "kraj": {
-    "pojem": "",
-    "popis": "",
+    "pojem": "Wing",
+    "popis": "Half of the line, by the location's edge; every location has its own wing names (Pub: by the tap and by the door). It belongs to nobody.",
     "sk": {
       "pojem": "Kraj",
       "popis": "Polovica línie podľa hrany lokality; každá lokalita má vlastné mená krajov (Krčma: pri výčape a pri dverách). Nepatrí nikomu."
     }
   },
   "limit": {
-    "pojem": "",
-    "popis": "",
+    "pojem": "Play limit",
+    "popis": "How many cards you play in one Assembly: full shots + 1.",
     "sk": {
       "pojem": "Limit vykladania",
       "popis": "Koľko kariet vyložíš v jednom Zhromaždení: plné poldeci + 1."
     }
   },
   "linia": {
-    "pojem": "",
-    "popis": "",
-    "kratko": "",
-    "tvary": "",
+    "pojem": "Line",
+    "popis": "The whole row of cards in a round; the location in the middle splits it into two wings (in the finale too, where the pinnacle sits in the middle).",
+    "kratko": "The row of cards by the location. You put a card on either end; neighbouring cards touch in links.",
+    "tvary": "line, lines",
     "sk": {
       "pojem": "Línia",
       "popis": "Celý rad kariet v kole; lokalita v strede ho delí na dva kraje (aj vo finále, kde je v strede pinnacle).",
@@ -276,10 +276,10 @@
     }
   },
   "lokalita": {
-    "pojem": "",
-    "popis": "",
-    "kratko": "",
-    "tvary": "",
+    "pojem": "Location",
+    "popis": "The card in the middle of the line that the round is fought over; its effect applies that round.",
+    "kratko": "A place in the village you're fighting over this round. It lies in the middle of the table and cards are laid against it.",
+    "tvary": "location, locations",
     "sk": {
       "pojem": "Lokalita",
       "popis": "Karta v strede línie, o ktorú sa v kole bije; jej efekt platí v tom kole.",
@@ -288,34 +288,34 @@
     }
   },
   "reci": {
-    "pojem": "",
-    "popis": "",
+    "pojem": "Rumours",
+    "popis": "A block of notches on the opponent's thermometer (hatching in your colour on the table); the argument raises them, from the top of their fear downwards, then above it. Notches 1 / 2 / 3 score for you instead of the opponent in every brawl, and they drop from the bottom only after a lost argument. They don't change the opponent's favour, victory by fear or capture.",
     "sk": {
       "pojem": "Reči",
       "popis": "Blok stupňov na teplomere súpera (na stole šrafa v tvojej farbe); dvíha ich hádka, od vrchu jeho strachu nadol, potom nad neho. Stupne 1 / 2 / 3 bodujú tebe pri každej bitke namiesto súpera, klesajú zospodu len po prehratej hádke. Súperovu priazeň, výhru strachom ani zajatie nemenia."
     }
   },
   "hadka": {
-    "pojem": "",
-    "popis": "",
+    "pojem": "Argument",
+    "popis": "A step of the brawl: whoever has more soft damage has won the argument by the difference (“Ana won the argument by 3”) and after scoring splits it onto their rumours on the opponent's thermometers — a notch costs 1 / 2 / 3, the rest is forfeited. On a tie, nobody; in the finale the argument goes to butts.",
     "sk": {
       "pojem": "Hádka",
       "popis": "Krok bitky: kto má viac mäkkého poškodenia, vyhral hádku o rozdiel („Ana vyhrala hádku o 3“) a po bodovaní ho rozdelí na svoje reči na teplomeroch súpera — stupeň stojí 1 / 2 / 3, zvyšok prepadne. Pri rovnosti nikto; vo finále ide hádka na špaky."
     }
   },
   "makke": {
-    "pojem": "",
-    "popis": "",
+    "pojem": "Soft damage",
+    "popis": "Scandal × 2 + Superstitions not cancelled by the opponent's Faith (× 2 with the Horoscope). It does no hard damage — it only decides the argument.",
     "sk": {
       "pojem": "Mäkké poškodenie",
       "popis": "Pohoršenie × 2 + Povery, ktoré nezrušila súperova Viera (s Horoskopom × 2). Tuhé nerobí — rozhoduje len hádku."
     }
   },
   "naex": {
-    "pojem": "",
-    "popis": "",
-    "kratko": "",
-    "tvary": "",
+    "pojem": "NA EX!",
+    "popis": "A full shot onto a card in the line, chosen in secret in the Booze-up: it cancels the card's active actions and doubles its inactive ones. A cancelled Resistance lets go of the action it was cancelling; an unpaired Resistance snuffs out the NA EX, an unpaired Boost keeps its active actions.",
+    "kratko": "Pour a full shot onto a card in the line, all in one go. Its actions in a link go dark; the lonely ones double.",
+    "tvary": "NA EX",
     "sk": {
       "pojem": "NA EX!",
       "popis": "Plný poldeci na kartu v línii, vybraný v Pitke skryto: zruší jej aktívne akcie a zdvojí neaktívne. Zrušený Odpor pustí akciu, ktorú rušil; nespárovaný Odpor NA EX zahasí, nespárované Posilnenie podrží aktívne akcie.",
@@ -324,146 +324,146 @@
     }
   },
   "naradie": {
-    "pojem": "",
-    "popis": "",
+    "pojem": "Tools deck",
+    "popis": "Cards tagged Tool, face down; when the Market is set up you get 2 cards from it, and Tools nobody took from the Market go back to the bottom.",
     "sk": {
       "pojem": "Balíček nástrojov",
       "popis": "Karty s tagom Nástroj lícom dole; pri stavbe ponuky z neho dostaneš 2 karty, nevzaté Nástroje z ponuky sa vracajú naspodok."
     }
   },
   "nastenka": {
-    "pojem": "",
-    "popis": "",
+    "pojem": "Pub noticeboard",
+    "popis": "Brawls played: location, winner and how many butts they got for it that round (brawl, Work, elders…); the winner doesn't take the location. Clicking a location shows a summary of the booze-ups and the brawl.",
     "sk": {
       "pojem": "Krčmová nástenka",
       "popis": "Odohrané bitky: lokalita, víťaz a koľko špakov za ňu v kole získal (bitka, Robota, starší…); lokalitu si víťaz neberie. Klik na lokalitu ukáže súhrn Pitiek a bitky."
     }
   },
   "nastroj": {
-    "pojem": "",
-    "popis": "",
+    "pojem": "Tool",
+    "popis": "A card tagged Tool; it isn't played into the line — for 1 cigarette you tuck it under a Citizen or Elder in the line (the edge that sticks out counts), or for cigarettes you lay it into your Heirloom.",
     "sk": {
       "pojem": "Nástroj",
       "popis": "Karta s tagom Nástroj; do línie sa nevykladá — za 1 cigaretu ho podložíš pod Občana či Starešinu v línii (platí hrana, ktorá pretŕča), alebo ho za cigarety vyložíš do Dedičstva."
     }
   },
   "natocenie": {
-    "pojem": "",
-    "popis": "",
+    "pojem": "Facing",
+    "popis": "The winner of the last argument turns the location (in the first round and after a tied argument, whoever chooses it) — it decides which of its edges belongs to which wing.",
     "sk": {
       "pojem": "Natočenie",
       "popis": "Ako víťaz minulej hádky otočí lokalitu (v prvom kole a po remíze v hádke ten, kto ju vyberá) — určuje, ktorá jej hrana patrí ktorému kraju."
     }
   },
   "nerest": {
-    "pojem": "",
-    "popis": "",
+    "pojem": "Vice",
+    "popis": "Consumption only: Down one 1, NA EX 2, a cigarette smoked 1. At the end of the round it's compared with your Thirst.",
     "sk": {
       "pojem": "Nerest",
       "popis": "Len konzumácia: Vypiť 1, NA EX 2, vyfajčená cigareta 1. Na konci kola sa porovnáva s tvojou Chuťou."
     }
   },
   "obcania": {
-    "pojem": "",
-    "popis": "",
+    "pojem": "Villagers deck",
+    "popis": "All the other Market cards (Citizens, Animals, Elders…) face down; when the Market is set up you get 6 cards from it.",
     "sk": {
       "pojem": "Balíček dedinčanov",
       "popis": "Všetky ostatné karty ponuky (Občania, Zvieratá, Starešinovia…) lícom dole; pri stavbe ponuky z neho dostaneš 6 kariet."
     }
   },
   "odhodenie": {
-    "pojem": "",
-    "popis": "",
+    "pojem": "Discard",
+    "popis": "The card goes to its owner's discard pile — when the draw pile runs out it's shuffled and comes back into play. The opposite of burning.",
     "sk": {
       "pojem": "Odhodiť",
       "popis": "Karta ide do odhadzovacieho balíčka svojho majiteľa — keď sa doberací minie, zamieša sa a vráti do hry. Opak spálenia."
     }
   },
   "odpoved": {
-    "pojem": "",
-    "popis": "",
+    "pojem": "Answer to NA EX",
+    "popis": "After the reveal, one card for each of your opponent's NA EX, face down, for a full shot (you down it: liver +1) and outside the limit; the attacker answers first, then the defender on the other wing of the line; both flip over at once.",
     "sk": {
       "pojem": "Odpoveď na NA EX",
       "popis": "Po odkrytí jedna karta za každé súperovo NA EX, lícom dole, za plný poldeci (vypiješ ho: pečeň +1) a mimo limitu; najprv odpovedá útočník, potom obranca na druhý kraj línie; obe sa otočia naraz."
     }
   },
   "partia": {
-    "pojem": "",
-    "popis": "",
+    "pojem": "Crew",
+    "popis": "All your cards in the line, wherever they lie; their actions count for you.",
     "sk": {
       "pojem": "Partia",
       "popis": "Všetky tvoje karty v línii, nech ležia kdekoľvek; ich akcie sa rátajú tebe."
     }
   },
   "pas": {
-    "pojem": "",
-    "popis": "",
+    "pojem": "Pass",
+    "popis": "You stop playing in the Assembly and get a cigarette for every card you could still have played, even if there's nothing left in your hand.",
     "sk": {
       "pojem": "Pas",
       "popis": "Skončíš vykladanie v Zhromaždení a za každú kartu, ktorú si ešte smel vyložiť, dostaneš cigaretu, aj keď ti v ruke už nič neostalo."
     }
   },
   "podlozenie": {
-    "pojem": "",
-    "popis": "",
+    "pojem": "Tuck",
+    "popis": "A move in the Assembly for 1 cigarette: you slide a Tool from your hand under your own Citizen or Elder in the line (not under an opponent's card); the edge that sticks out counts. It stays until the brawl, then goes back to the discard pile of whoever tucked it.",
     "sk": {
       "pojem": "Podloženie",
       "popis": "Ťah v Zhromaždení za 1 cigaretu: Nástroj z ruky zasunieš pod svojho Občana či Starešinu v línii (pod súperovu kartu nie); platí hrana, ktorá pretŕča. Leží do bitky, potom sa vráti do odhadzovacieho balíčka toho, kto ho podložil."
     }
   },
   "pokus": {
-    "pojem": "",
-    "popis": "",
+    "pojem": "Capture",
+    "popis": "When splitting the Thrashing (you won the brawl), for 5 points you capture an elder where your fear was already 3 before this Thrashing (since the last round — topping it up in the same split isn't enough; rumours don't count). They're your prisoner, and your opponent hands you as many butts as they have argument points in rumours on them. Not in the finale.",
     "sk": {
       "pojem": "Zajatie",
       "popis": "Pri rozdelení Nakladačky (vyhral si bitku) zajmeš za 5 bodov staršieho, pri ktorom je tvoj strach 3 už pred touto Nakladačkou (od minulého kola, dotiahnutý v tom istom rozdelení nestačí; reči sa nerátajú). Je tvoj väzeň a súper ti odovzdá toľko špakov, koľko bodov hádky má v rečiach pri ňom. Vo finále nie."
     }
   },
   "presvedcenie": {
-    "pojem": "",
-    "popis": "",
+    "pojem": "Persuasion",
+    "popis": "When splitting the argument, for 3 points you persuade any elder whose whole thermometer is covered in your rumours. Rumours, fear and favour stay; their card goes into your hand and belongs to your deck for good. First to persuade keeps them; both may capture them. Not in the finale.",
     "sk": {
       "pojem": "Presvedčenie",
       "popis": "Pri rozdelení hádky presvedčíš za 3 body ktoréhokoľvek staršieho, keď máš pri ňom reči na celom teplomere. Reči, strach aj priazeň ostanú; jeho karta ide tebe do ruky a natrvalo patrí do tvojho balíčka. Kto prvý presvedčí, toho je; zajať ho smú obaja. Vo finále nie."
     }
   },
   "vazen": {
-    "pojem": "",
-    "popis": "",
+    "pojem": "Prisoner",
+    "popis": "A captured elder among your confessed cards (“in the cellar”): gives no favour, counts as your red fear, and you have their ability (once per game). On capture your opponent hands you as many butts as they have argument points in rumours on them; prisoners needed to win depend on the division (2 / 3 / 4).",
     "sk": {
       "pojem": "Väzeň",
       "popis": "Zajatý starší medzi tvojimi priznanými kartami („v pivnici“): nedáva priazeň, ráta sa ako tvoj červený strach, máš jeho schopnosť (raz za hru). Pri zajatí ti súper odovzdá toľko špakov, koľko bodov hádky má pri ňom v rečiach; väzni na výhru podľa ligy (2 / 3 / 4)."
     }
   },
   "schopnost-vazna": {
-    "pojem": "",
-    "popis": "",
+    "pojem": "Prisoner's ability",
+    "popis": "Every captured elder has an ability (e.g. Postwoman: you get 4 cigarettes). Whoever holds them uses it once per game, whenever they like — on their turn while taking from the Market, in the Assembly or in the Booze-up. Then it's spent and the prisoner stays in the cellar.",
     "sk": {
       "pojem": "Schopnosť väzňa",
       "popis": "Každý zajatý starší má schopnosť (napr. Poštárka: dostaneš 4 cigarety). Jeho držiteľ ju použije raz za hru, kedy chce — vo svojom ťahu pri braní z ponuky, v Zhromaždení alebo v Pitke. Potom je minutá, väzeň ostáva v pivnici."
     }
   },
   "skolitel": {
-    "pojem": "",
-    "popis": "",
+    "pojem": "Trainer",
+    "popis": "A Citizen or Animal with the effect Retraining X → Y (the Butcher silences an Animal): with Always it retrains both neighbours while they're neighbours; with Support your card, and with Clash the opponent's card it meets, until the end of the round.",
     "sk": {
       "pojem": "Školiteľ",
       "popis": "Občan alebo Zviera s efektom Preškolenie X → Y (Zviera umlčí Mäsiar): pri Furt preškolí oboch susedov, kým susedia; pri Podpore tvoju a pri Konflikte súperovu kartu, s ktorou sa stretne, do konca kola."
     }
   },
   "pecen": {
-    "pojem": "",
-    "popis": "",
+    "pojem": "Liver",
+    "popis": "A counter in the Booze-up fed by Liver Damage and Shot actions and by NA EX; a Cirrhosis for every full threshold.",
     "sk": {
       "pojem": "Pečeň",
       "popis": "Počítadlo v Pitke z akcií Poškodenie pečene, Poldeci a z NA EX; za každý celý prah Cirhóza."
     }
   },
   "pitka": {
-    "pojem": "",
-    "popis": "",
-    "kratko": "",
-    "tvary": "",
+    "pojem": "Booze-up",
+    "popis": "The reckoning after the Assembly: NA EX, Debts, liver, cigarettes; one round has 1 to 4 booze-ups (in the finale on the pinnacle, 1 to 5).",
+    "kratko": "After the Assembly it's drinking time: you smoke, refill and secretly pour a NA EX onto a card in the line.",
+    "tvary": "Booze-up, Booze-ups",
     "sk": {
       "pojem": "Pitka",
       "popis": "Vyhodnotenie po Zhromaždení: NA EX, Dlhy, pečeň, cigarety; v jednom kole je 1 až 4 Pitiek (vo finále na pinnacle 1 až 5).",
@@ -472,26 +472,26 @@
     }
   },
   "podstrcenie": {
-    "pojem": "",
-    "popis": "",
+    "pojem": "Planting",
+    "popis": "Placing your card against an opponent's; it stays yours and its actions count for you.",
     "sk": {
       "pojem": "Podstrčenie",
       "popis": "Priložiť svoju kartu k súperovej; ostáva tvoja a jej akcie sa rátajú tebe."
     }
   },
   "pohorsenie": {
-    "pojem": "",
-    "popis": "",
+    "pojem": "Scandal",
+    "popis": "Action: 2 soft damage to the argument (v10); the opponent's Faith doesn't cancel it.",
     "sk": {
       "pojem": "Pohoršenie",
       "popis": "Akcia: 2 mäkké poškodenie do hádky (v10); súperova Viera ho nezruší."
     }
   },
   "poldeci": {
-    "pojem": "",
-    "popis": "",
-    "kratko": "",
-    "tvary": "",
+    "pojem": "Shot",
+    "popis": "A glass of fruit brandy; a full one raises your limit by 1 and pays for a NA EX and for another card in the turn. A full one at the end of the game is 1 butt.",
+    "kratko": "A glass of fruit brandy. As many full ones as you have, that many cards you play, plus one. A full shot also pays for a NA EX.",
+    "tvary": "shot, shots",
     "sk": {
       "pojem": "Poldeci",
       "popis": "Pohárik pálenky; plný zvyšuje limit o 1 a platí ním NA EX aj ďalšiu kartu v ťahu. Plný na konci hry je 1 špak.",
@@ -500,74 +500,74 @@
     }
   },
   "povera": {
-    "pojem": "",
-    "popis": "",
+    "pojem": "Superstition",
+    "popis": "Action: 1 soft damage to the argument (v10; 2 with the Horoscope); the opponent's Faith cancels it 1 : 1.",
     "sk": {
       "pojem": "Povera",
       "popis": "Akcia: 1 mäkké poškodenie do hádky (v10; s Horoskopom 2); súperova Viera ju zruší 1 : 1."
     }
   },
   "preskolenie": {
-    "pojem": "",
-    "popis": "",
+    "pojem": "Retraining",
+    "popis": "A card's action X counts as Y, before links are made, on both edges and in bonus actions. A Trainer does it, and so does the edge of a tucked Tool; changes chain — Trainers first, then Tools, each working on the result of the one before.",
     "sk": {
       "pojem": "Preškolenie",
       "popis": "Akcia X karty sa ráta ako Y, ešte pred spojmi, na oboch hranách aj v akciách navyše. Robí ho Školiteľ a hrana podloženého Nástroja; premeny sa reťazia — najprv Školitelia, potom Nástroje, každá na výsledku predošlej."
     }
   },
   "boss": {
-    "pojem": "",
-    "popis": "",
+    "pojem": "Boss",
+    "popis": "An elder's card: 6 actions and one vice; in the line it has only actions; only whoever holds it as a prisoner has its ability.",
     "sk": {
       "pojem": "Boss",
       "popis": "Karta staršieho: 6 akcií a jedna neresť; v línii má len akcie; jeho schopnosť má len ten, kto ho drží ako väzňa."
     }
   },
   "prebytok": {
-    "pojem": "",
-    "popis": "",
+    "pojem": "Thrashing",
+    "popis": "How much you win by in hard damage (the winner holds it); after scoring you split it onto your fear at the elders — a notch costs 1 / 2 / 3, the rest is forfeited. In the finale it goes to butts.",
     "sk": {
       "pojem": "Nakladačka",
       "popis": "O koľko vyhrávaš v tuhom poškodení (drží ju víťaz); po bodovaní ju rozdelíš na svoj strach pri starších — stupeň stojí 1 / 2 / 3, zvyšok prepadne. Vo finále ide na špaky."
     }
   },
   "prevaha": {
-    "pojem": "",
-    "popis": "",
+    "pojem": "Upper hand",
+    "popis": "In a wing, whoever has more of their own Citizens, Animals and Elders there has it; they get the actions of the location's edge.",
     "sk": {
       "pojem": "Prevaha",
       "popis": "V kraji ju má, kto tam má viac svojich Občanov, Zvierat a Starešinov; dostane akcie hrany lokality."
     }
   },
   "priazen": {
-    "pojem": "",
-    "popis": "",
+    "pojem": "Favour",
+    "popis": "An advantage from an elder who fears your opponent more than you: strength = opponent's fear − your fear (1, 2 or 3). Rumours don't count; with equal fear nobody has it.",
     "sk": {
       "pojem": "Priazeň",
       "popis": "Výhoda od staršieho, ktorý sa súpera bojí viac než teba: sila = strach súpera − tvoj strach (1, 2 alebo 3). Reči sa nerátajú; pri rovnakom strachu ju nemá nikto."
     }
   },
   "priznanie": {
-    "pojem": "",
-    "popis": "",
+    "pojem": "Confession",
+    "popis": "You lay a Curse outside the line in your play area — out of your deck for good.",
     "sk": {
       "pojem": "Priznanie",
       "popis": "Kliatbu vyložíš mimo línie do svojej hracej oblasti — natrvalo z balíčka."
     }
   },
   "sekera": {
-    "pojem": "",
-    "popis": "",
+    "pojem": "On the Tab",
+    "popis": "A brawl with no winner (tied on hard, Shakes and Debts): its butts go to the winner of the next brawl; in the finale they're forfeited.",
     "sk": {
       "pojem": "Na sekeru",
       "popis": "Bitka bez víťaza (remíza v tuhom, Absťákoch aj Dlhoch): jej špaky vezme víťaz najbližšej bitky, vo finále prepadnú."
     }
   },
   "senok": {
-    "pojem": "",
-    "popis": "",
-    "kratko": "",
-    "tvary": "",
+    "pojem": "Market",
+    "popis": "Cards for sale, face up; you take 1 card from it for 1 cigarette or 2 for 3.",
+    "kratko": "Cards for sale, face up. One costs a cigarette, two cost three cigarettes. You take turns until you both stop.",
+    "tvary": "Market, Markets",
     "sk": {
       "pojem": "Ponuka",
       "popis": "Karty na kúpu lícom nahor; beriete z nej 1 kartu za 1 cigaretu alebo 2 za 3.",
@@ -576,18 +576,18 @@
     }
   },
   "spalenie": {
-    "pojem": "",
-    "popis": "",
+    "pojem": "Burn",
+    "popis": "The card leaves the game for good — it doesn't go back to any pile (e.g. Vision). A burnt Debt disappears from the counter. A flame in the seal (Crocodile): the card it meets (an opponent's Citizen) is burnt at the end of the brawl.",
     "sk": {
       "pojem": "Spáliť",
       "popis": "Karta ide navždy z hry — nevracia sa do žiadneho balíčka (napr. Vízia). Spálený Dlh zmizne z počítadla. Plameň v pečati (Krokodíl): karta, s ktorou sa stretne (súperov Občan), sa na konci bitky spáli."
     }
   },
   "spoj": {
-    "pojem": "",
-    "popis": "",
-    "kratko": "",
-    "tvary": "",
+    "pojem": "Link",
+    "popis": "The place where the edges of two cards, or of a card and the location, touch.",
+    "kratko": "The place where two cards touch. Only icons with a partner at the same height there count; a lonely icon is dead.",
+    "tvary": "link, links, linked",
     "sk": {
       "pojem": "Spoj",
       "popis": "Miesto, kde sa dotknú hrany dvoch kariet alebo karty a lokality.",
@@ -596,10 +596,10 @@
     }
   },
   "starsi": {
-    "pojem": "",
-    "popis": "",
-    "kratko": "",
-    "tvary": "",
+    "pojem": "Elders",
+    "popis": "A respected person of the village; each player has their own 0–3 thermometer at each one — their own fear, with the opponent's rumours on it. After the brawl the elder gives butts and favour to whoever they fear less.",
+    "kratko": "The village's big shots — the Priest, the Mayor and co. Whoever fears you pays you butts when you win a brawl; the more they fear, the more they pay.",
+    "tvary": "elder, elders",
     "sk": {
       "pojem": "Starší",
       "popis": "Vážená osoba dediny; každý hráč má pri ňom svoj teplomer 0–3 — svoj strach a na ňom súperove reči. Po bitke dáva špaky a priazeň tomu, koho sa bojí menej.",
@@ -608,18 +608,18 @@
     }
   },
   "stupen": {
-    "pojem": "",
-    "popis": "",
+    "pojem": "Notch",
+    "popis": "A position on an elder's scale: 0 calm, 1 uneasy, 2 scared, 3 terrified. An elder's notch for a player is that player's fear; the opponent's rumours lie on the same scale. Getting in costs 1 / 2 / 3; after the brawl it gives 1 / 3 / 6 butts; notches can be held by the opponent.",
     "sk": {
       "pojem": "Stupeň",
       "popis": "Poloha na stupnici staršieho: 0 pokojný, 1 znepokojený, 2 vystrašený, 3 vydesený. Stupeň staršieho pre hráča je jeho strach; reči súpera ležia na tej istej stupnici. Vstup stojí 1 / 2 / 3, po bitke dá 1 / 3 / 6 špakov, stupne môže držať súper."
     }
   },
   "strach": {
-    "pojem": "",
-    "popis": "",
-    "kratko": "",
-    "tvary": "",
+    "pojem": "Fear",
+    "popis": "A player's marker at an elder, 0–3 (the solid part of the thermometer) — how much they fear you; the Thrashing raises it and it never drops. Only fear counts towards favour, victory by fear and capture.",
+    "kratko": "How much an elder fears you — the thermometer by them. A won brawl raises it; more fear, more butts.",
+    "tvary": "fear, fears",
     "sk": {
       "pojem": "Strach",
       "popis": "Marker hráča pri staršom 0–3 (plná časť teplomera) — ako veľmi sa ťa bojí; dvíha ho Nakladačka a neklesá. Len strach sa ráta do priazne, výhry strachom a zajatia.",
@@ -628,10 +628,10 @@
     }
   },
   "spak": {
-    "pojem": "",
-    "popis": "",
-    "kratko": "",
-    "tvary": "",
+    "pojem": "Butt",
+    "popis": "A victory point: for a won brawl (1 for every card in the line), from the elders after every brawl (the winner for fear without notches held, both for rumours); at the end also for leftover full shots and cigarettes (cash-in); after the finale whoever has more wins.",
+    "kratko": "A dog-end, and a point too. At the end, whoever has more butts wins. You get them from a won brawl and from elders who fear you.",
+    "tvary": "butt, butts",
     "sk": {
       "pojem": "Špak",
       "popis": "Víťazný bod: za vyhratú bitku (1 za každú kartu v línii), od starších po každej bitke (víťaz za strach bez obsadených stupňov, obaja za reči); na konci aj za zvyšné plné poldeci a cigarety (výkupné); po finále vyhrá, kto má viac.",
@@ -640,18 +640,18 @@
     }
   },
   "tag": {
-    "pojem": "",
-    "popis": "",
+    "pojem": "Tag",
+    "popis": "The kind of card (Citizen, Animal, Elder, Tool…); effects refer to it — Ally, Enemy, Support and Clash with a tag after the colon too.",
     "sk": {
       "pojem": "Tag",
       "popis": "Druh karty (Občan, Zviera, Starešina, Nástroj…); odkazujú na neho efekty — aj Spoločník, Nepriateľ, Podpora či Konflikt s tagom za dvojbodkou."
     }
   },
   "udery": {
-    "pojem": "",
-    "popis": "",
-    "kratko": "",
-    "tvary": "",
+    "pojem": "Hits",
+    "popis": "The Punch (1), Wallop (2) and Haymaker (3) actions; in the rules, hard damage. In the brawl the ones in links are added up — whoever has more wins.",
+    "kratko": "The Punch, Wallop and Haymaker actions — worth 1, 2 and 3. In the brawl, whoever has more hits in links wins.",
+    "tvary": "hit, hits",
     "sk": {
       "pojem": "Údery",
       "popis": "Akcie Rana (1), Pecka (2) a Petelica (3); v pravidlách tuhé poškodenie. V bitke sa sčítajú tie v spojoch — kto má viac, vyhrá.",
@@ -660,98 +660,98 @@
     }
   },
   "tuhe": {
-    "pojem": "",
-    "popis": "",
+    "pojem": "Hard damage",
+    "popis": "Damage from the Punch (1), Wallop (2) and Haymaker (3); whoever has more wins the brawl.",
     "sk": {
       "pojem": "Tuhé poškodenie",
       "popis": "Poškodenie z Rany (1), Pecky (2) a Petelice (3); kto má viac, vyhrá bitku."
     }
   },
   "utocnik": {
-    "pojem": "",
-    "popis": "",
+    "pojem": "Attacker and defender",
+    "popis": "The attacker lost the last brawl: plays first and answers a NA EX first; the defender chooses the target and takes from the Market first (1 card on the first go); both play the Booze-up at the same time; in the finale whoever has fewer butts attacks, and the leader chooses the pinnacle.",
     "sk": {
       "pojem": "Útočník a obranca",
       "popis": "Útočník prehral poslednú bitku: vykladá prvý a na NA EX odpovedá prvý; obranca vyberá cieľ a berie z ponuky prvý (na prvom ťahu 1 kartu); Pitku hrajú obaja naraz; vo finále útočí, kto má menej špakov, a pinnacle vyberá vedúci."
     }
   },
   "viera": {
-    "pojem": "",
-    "popis": "",
+    "pojem": "Faith",
+    "popis": "An action that cancels the opponent's Superstitions 1 : 1 (Horoscope-boosted ones too), and what's left lowers their hard damage; it doesn't help against Scandal.",
     "sk": {
       "pojem": "Viera",
       "popis": "Akcia, ktorá ruší súperove Povery 1 : 1 (aj vylepšené Horoskopom) a zvyšná znižuje jeho tuhé poškodenie; proti Pohoršeniu nepomáha."
     }
   },
   "vizia": {
-    "pojem": "",
-    "popis": "",
+    "pojem": "Vision",
+    "popis": "Action: at the end of the Booze-up, for each active Vision you look at the top card of your draw pile and either take it into your hand or burn it for good.",
     "sk": {
       "pojem": "Vízia",
       "popis": "Akcia: na konci Pitky za každú aktívnu Víziu pozrieš vrchnú kartu svojho doberacieho balíčka a vezmeš si ju do ruky, alebo ju navždy spáliš."
     }
   },
   "vydesenie": {
-    "pojem": "",
-    "popis": "",
+    "pojem": "Terrified",
+    "popis": "An elder's notch 3 for a player. Terrified fear lets you capture and counts towards victory by fear.",
     "sk": {
       "pojem": "Vydesený",
       "popis": "Stupeň 3 staršieho pre hráča. Vydesený strach ťa pustí k zajatiu a ráta sa do výhry strachom."
     }
   },
   "vytrznik": {
-    "pojem": "",
-    "popis": "",
+    "pojem": "Hooligan",
+    "popis": "A card you both poured a NA EX on in the same Booze-up (or with an Injection tucked under it): all its actions are Punches for its owner, until the end of the brawl.",
     "sk": {
       "pojem": "Výtržník",
       "popis": "Karta, na ktorú ste obaja dali NA EX v tej istej Pitke (alebo pod ňou leží Injekcia): všetky jej akcie sú Rany pre majiteľa, do konca bitky."
     }
   },
   "vypit": {
-    "pojem": "",
-    "popis": "",
+    "pojem": "Down one",
+    "popis": "You turn a full shot to empty so you can play another card in the same turn: limit −1, liver +1. At limit 0 there's no drinking.",
     "sk": {
       "pojem": "Vypiť",
       "popis": "Otočíš plný poldeci na vypitý, aby si v tom istom ťahu vyložil ďalšiu kartu: limit −1, pečeň +1. Pri limite 0 sa nepije."
     }
   },
   "vykupne": {
-    "pojem": "",
-    "popis": "",
+    "pojem": "Cash-in",
+    "popis": "After the finale you get 1 butt for every full shot and 1 butt for every whole 5 cigarettes you have left.",
     "sk": {
       "pojem": "Výkupné",
       "popis": "Po finále dostaneš 1 špak za každý plný poldeci a 1 špak za každých celých 5 cigariet, ktoré ti ostali."
     }
   },
   "vypalne": {
-    "pojem": "",
-    "popis": "",
+    "pojem": "Protection money",
+    "popis": "Straight after the brawl your opponent gives you 1 cigarette for every elder with your red fear (a prisoner counts, rumours don't), as many as they have. Not after the finale.",
     "sk": {
       "pojem": "Výpalné",
       "popis": "Hneď po bitke ti súper dá 1 cigaretu za každého staršieho s tvojím červeným strachom (väzeň sa ráta, reči nie), koľko má. Po finále nie."
     }
   },
   "vzbura": {
-    "pojem": "",
-    "popis": "",
+    "pojem": "Revolt",
+    "popis": "Resistance against Resistance: both cards flip — unlinked actions are active, linked ones inactive. Resistance against Boost: only the card with the Resistance, boosted on top. A Pitchfork tucked under a card flips it too. NA EX can't go on it.",
     "sk": {
       "pojem": "Vzbura",
       "popis": "Odpor proti Odporu: obe karty sa obrátia — nespojené akcie sú aktívne, spojené neaktívne. Odpor proti Posilneniu: len karta s Odporom, navyše posilnená. Vidly podložené pod kartu ju obrátia tiež. NA EX na ňu nejde."
     }
   },
   "zaverecna": {
-    "pojem": "",
-    "popis": "",
+    "pojem": "Last Orders",
+    "popis": "A card face down for 1 cigarette; it flips over at the end of the Booze-up, and after that you play no more in the Assembly.",
     "sk": {
       "pojem": "Záverečná",
       "popis": "Karta lícom dole za 1 cigaretu; otočí sa na konci Pitky a potom už v Zhromaždení nevykladáš."
     }
   },
   "zhromazdenie": {
-    "pojem": "",
-    "popis": "",
-    "kratko": "",
-    "tvary": "",
+    "pojem": "Assembly",
+    "popis": "The phase in which players take turns playing cards into the line; the attacker starts.",
+    "kratko": "The phase in which you take turns laying cards from your hand by the location in a single row — the line.",
+    "tvary": "Assembly, Assemblies",
     "sk": {
       "pojem": "Zhromaždenie",
       "popis": "Fáza, v ktorej hráči striedavo vykladajú karty do línie; začína útočník.",
