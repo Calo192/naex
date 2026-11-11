@@ -14,7 +14,7 @@ import type { GameData } from "./data.ts";
 import { defOf } from "./data.ts";
 import type { ClientState } from "./view.ts";
 import { priazenHraca, priazenSila, vydesil } from "./elders.ts";
-import { lineState, nahladPitky, naexCieleVLinii, prahyHraca, verejneAbstaky } from "./engine.ts";
+import { cigaretyZaPas, lineState, nahladPitky, naexCieleVLinii, prahyHraca, verejneAbstaky } from "./engine.ts";
 import { bodyRozdelenia, krokRozdelenia, moznostiAkcie } from "./rozdelenie.ts";
 import { evaluateLine } from "./partia.ts";
 import { stavZavislosti } from "./zavislost.ts";
@@ -86,11 +86,11 @@ const SPUSTACE: Readonly<Record<string, Spustac>> = {
   // Dlh je hneď priznaný (počítadlo) — prvý je prvý Dlh hráča.
   dlh: (_d, v, ja) => (v.hraci[ja].dlhy > 0 ? ANO : null),
 
-  // v12.2 (id ostáva z čias cigariet za pas): limit za poldeci a pas bez cigariet. Hráč, ktorý už kartu vyložil
-  // a plný poldeci mu ostal, sa rozhoduje, či vykladať ďalej, alebo pasovať. Zhromaždenie samo nemá počítadlo
+  // v12.3: limit za poldeci a pas za cigaretu na každý plný poldeci. Hráč, ktorý už kartu vyložil a plný
+  // poldeci mu ostal, sa rozhoduje, či vykladať ďalej, alebo pasovať. Zhromaždenie samo nemá počítadlo
   // vyložených kariet, preto stačí moja karta v línii — v tomto kole, línia sa po bitke vyprázdni.
   "pas-cigarety": (_d, v, ja) =>
-    naMojomTahuVZhromazdeni(v, ja) && v.hraci[ja].poldeciPlne >= 1 && v.strany.some((s) => s.some((pl) => pl.playedBy === ja)) ? ANO : null,
+    naMojomTahuVZhromazdeni(v, ja) && cigaretyZaPas(v, ja) >= 1 && v.strany.some((s) => s.some((pl) => pl.playedBy === ja)) ? ANO : null,
 
   "lokalita-pravidlo": (d, v, _ja, def) => {
     const lok = v.ciel?.lokalita ?? null;

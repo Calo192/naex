@@ -367,11 +367,12 @@ describe("Vízia: vrchnú kartu balíčka do ruky, alebo zahodiť (Michal 2026-1
 
 
 
-describe("pas (Michal 2026-10-20): do Pitky; cigarety za pas od v12.2 nie", () => {
-  it("pasujúci nedostane nič (v12.2) a súper vykladá sám", () => {
-    let s = vZhromazdeniHrac0(44, { ruka: [inst("pijan"), inst("pijan")], cigarety: 0 });
+describe("pas (Michal 2026-10-20): do Pitky; v12.3 cigareta za každý plný poldeci", () => {
+  it("pasujúci dostane cigaretu za každý plný poldeci, tie ostanú plné, a súper vykladá sám", () => {
+    let s = vZhromazdeniHrac0(44, { ruka: [inst("pijan"), inst("pijan")], cigarety: 0, poldeciPlne: 3, poldeciVypite: 0 });
     s = apply(data, s, { type: "pass" }, 0).state;
-    expect(s.hraci[0].cigarety).toBe(0);
+    expect(s.hraci[0].cigarety).toBe(3);
+    expect(s.hraci[0].poldeciPlne).toBe(3);
     expect(s.zhromazdenieStav?.pasoval).toEqual([true, false]);
     expect(naTahu(s)).toBe(1);
     expect(() => apply(data, s, { type: "place", uid: s.hraci[0].ruka[0]!.uid, target: "vlastna" }, 0)).toThrow();
@@ -380,13 +381,15 @@ describe("pas (Michal 2026-10-20): do Pitky; cigarety za pas od v12.2 nie", () =
     s = apply(data, s, { type: "place", uid: karta.uid, target: "vlastna" }, 1).state;
     expect(naTahu(s)).toBe(1);
     const cigarety = s.hraci[1].cigarety;
+    const plne = s.hraci[1].poldeciPlne;
+    expect(plne).toBeGreaterThan(0);
     s = apply(data, s, { type: "pass" }, 1).state;
-    expect(s.hraci[1].cigarety).toBe(cigarety);
+    expect(s.hraci[1].cigarety).toBe(cigarety + plne);
     expect(s.faza).toBe("pitka");
   });
 
-  it("kto vyčerpal limit, za pas nič nedostane", () => {
-    let s = vZhromazdeniHrac0(45, { ruka: [inst("pijan")], cigarety: 0 });
+  it("kto nemá plný poldeci, za pas nič nedostane", () => {
+    let s = vZhromazdeniHrac0(45, { ruka: [inst("pijan")], cigarety: 0, poldeciPlne: 0, poldeciVypite: 3 });
     s = { ...s, zhromazdenieStav: { ...s.zhromazdenieStav!, zostavaLimit: [0, 2] } };
     s = apply(data, s, { type: "pass" }, 0).state;
     expect(s.hraci[0].cigarety).toBe(0);

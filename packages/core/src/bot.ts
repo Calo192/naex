@@ -1044,8 +1044,11 @@ function sKartou(data: GameData, s: GameState, q: PlayerId, v: Vylozenie): GameS
 /** Najlepšie vyloženie hráča q podľa odhadu bitky, alebo null, keď žiadne nepomôže. */
 function najlepsieVylozenie(k: Kontext, s: GameState, ruka: readonly CardInstance[], q: PlayerId, limit: number): Vylozenie | null {
   const pred = hodnotaBitky(k, s, q, 0.9);
-  // Karta z ruky a plný poldeci, ktorý za ňu hráč vypije (v12.2).
-  const cenaKarty = k.povaha.zdroje * (uzitokRuky(s, q, ruka.length) - uzitokRuky(s, q, ruka.length - 1) + (limit > 0 ? cenaPlnehoPoldeci(s, s.hraci[q].poldeciPlne) : 0));
+  // Karta z ruky a plný poldeci, ktorý za ňu hráč vypije (v12.2), aj cigareta, ktorú by za ten
+  // poldeci dal pas (v12.3).
+  const c = s.hraci[q].cigarety;
+  const zaPas = uzitokCigariet(s, c + KONSTANTY.CIGARETY_ZA_PAS_NA_POLDECI) - uzitokCigariet(s, c);
+  const cenaKarty = k.povaha.zdroje * (uzitokRuky(s, q, ruka.length) - uzitokRuky(s, q, ruka.length - 1) + (limit > 0 ? cenaPlnehoPoldeci(s, s.hraci[q].poldeciPlne) + zaPas : 0));
   let najlepsie: Vylozenie | null = null;
   let najlepsiaHodnota = pred + 0.05;
   const videne = new Set<string>();
@@ -1084,6 +1087,9 @@ function dohrajZhromazdenie(k: Kontext, s: GameState): GameState {
   const navyse: [number, number] = [z.navyse[0], z.navyse[1]];
   // Každá vyložená karta otočí plný poldeci (v12.2) — nanečisto dohrané Zhromaždenie ich vypije tiež.
   const vypite: [number, number] = [0, 0];
+  // Pas dáva cigaretu za každý plný poldeci (v12.3). Bez nej by skutočný pas (s cigaretami) vyzeral
+  // lepšie než vykladanie, po ktorom sa v nanečisto dohranom Zhromaždení pasuje zadarmo.
+  const cigarety: [number, number] = [s.hraci[0].cigarety, s.hraci[1].cigarety];
   let naTahu = timMiesta(z.naTahu);
   for (let krok = 0; krok < 30 && !(pasoval[0] && pasoval[1]); krok++) {
     const q = naTahu;
@@ -1091,6 +1097,7 @@ function dohrajZhromazdenie(k: Kontext, s: GameState): GameState {
     if (v === null) {
       pasoval[q] = true;
       navyse[q] = 0;
+      cigarety[q] += Math.max(0, s.hraci[q].poldeciPlne - vypite[q]) * KONSTANTY.CIGARETY_ZA_PAS_NA_POLDECI;
     } else {
       strany = sKartou(k.data, { ...s, strany }, q, v).strany;
       ruky[q] = ruky[q].filter((x) => x.uid !== v.karta.uid);
@@ -1109,8 +1116,8 @@ function dohrajZhromazdenie(k: Kontext, s: GameState): GameState {
     ...s,
     strany,
     hraci: [
-      { ...s.hraci[0], ruka: ruky[0], poldeciPlne: s.hraci[0].poldeciPlne - vypite[0], poldeciVypite: s.hraci[0].poldeciVypite + vypite[0] },
-      { ...s.hraci[1], ruka: ruky[1], poldeciPlne: s.hraci[1].poldeciPlne - vypite[1], poldeciVypite: s.hraci[1].poldeciVypite + vypite[1] },
+      { ...s.hraci[0], ruka: ruky[0], cigarety: cigarety[0], poldeciPlne: s.hraci[0].poldeciPlne - vypite[0], poldeciVypite: s.hraci[0].poldeciVypite + vypite[0] },
+      { ...s.hraci[1], ruka: ruky[1], cigarety: cigarety[1], poldeciPlne: s.hraci[1].poldeciPlne - vypite[1], poldeciVypite: s.hraci[1].poldeciVypite + vypite[1] },
     ],
     zhromazdenieStav: { ...z, naTahu, zostavaLimit: limit, pasoval, navyse },
   };

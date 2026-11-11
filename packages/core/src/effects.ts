@@ -107,14 +107,14 @@ export const REGISTER: Readonly<Record<string, EfektStatus>> = {
   veteran: "impl", // Furt: NA EX naňho aktívne akcie zdvojí (nezruší), neaktívne nezdvojí (partia.ts, Michal 2026-10-23)
   velmi_smutiaca_vdova: "impl", // Konflikt: súper odhodí 1 náhodnú kartu z ruky, pri ktorejkoľvek jeho karte (2026-11-08 bez tagu, predtým Chlap); staré znenie z balíčka za Chlapov (konflikt)
   vestica: "impl", // Spoločník: Pamätník {Povera} {Povera} (navyse.ts); stará Prehra — výmena kariet v balíčkoch (krok bitky 5b) — len stará sada
-  vychovavatelka: "impl", // Schopnosť väzňa: súper v tomto Zhromaždení hneď pasuje
+  vychovavatelka: "impl", // Schopnosť väzňa: súper v tomto Zhromaždení hneď pasuje a za pas nedostane cigarety (v12.3)
   vinko: "impl", // Dedičstvo (v12.2): maximum poldeci +1 — pri vyložení nový plný poldeci (cmdPlace)
   vyherny_automat: "impl", // Dedičstvo: prah Dlhu +1; Pitka: {Dlh} v každej Pitke (v12, engine vyhodnotPitku; stará sada v poslednej Pitke kola)
   zastavka: "impl", // Pitka (v9.1): po prvej Pitke kola každý 1 karta z ponuky zadarmo, najprv útočník (engine dokonciPitku)
   // Náradie (Michal 2026-10-30, docs/napady/naradie-akcie.html): Nástroje do Dedičstva a Tipér.
   zapalovac: "impl", // Dedičstvo: tvoje aktívne Cigarety nemožno zrušiť NA EX (partia.ts applyNaex)
   vyherne_zreby: "impl", // Dedičstvo: Hazardy aktívne nespojené, spojené neaktívne; NA EX potom ako vždy (partia.ts)
-  pistalka: "impl", // Dedičstvo: tvoje Obmedzenia uberajú aj cigarety za pas — od v12.2 pas cigarety nedáva, efekt čaká na nové znenie
+  pistalka: "impl", // Dedičstvo (v12.2): tvoje aktívne Obmedzenia uberajú súperovi z doliatia po Pitke (cigarety za pas v12.3 nemení)
   hrable: "impl", // Dedičstvo (v12.1): tvoj aktívny Odpor dáva v bitke poškodenie ako Pecka (partia.ts)
   zrkadlo: "impl", // Dedičstvo: tvoj Pakt kopíruje prepojenú akciu dvakrát (partia.ts)
   boxer: "impl", // Dedičstvo: tvoje Pecky o 1 poškodenie viac (nastrojeTuhe)

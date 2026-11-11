@@ -29,7 +29,7 @@
   },
   "cigareta": {
     "pojem": "Cigareta",
-    "popis": "Mena hry: platí karty z ponuky, Dedičstvo, podloženie Nástroja, barter, Záverečnú a každú ďalšiu kartu v tom istom ťahu; fajčením v Pitke hneď karta navyše (1, 2, 3… cigarety; na Benzínke prvá zadarmo). Po bitke dostane porazený 1 a súper platí výpalné. Na konci hry každých 5 cigariet 1 špak.",
+    "popis": "Mena hry: platí karty z ponuky, Dedičstvo, podloženie Nástroja, barter, Záverečnú a každú ďalšiu kartu v tom istom ťahu; fajčením v Pitke hneď karta navyše (1, 2, 3… cigarety; na Benzínke prvá zadarmo). Za pas dostaneš cigaretu za každý plný poldeci; po bitke dostane porazený 1 a súper platí výpalné. Na konci hry každých 5 cigariet 1 špak.",
     "kratko": "Drobné tejto hry. Platíš nimi karty z ponuky, fajčenie v Pitke a každú ďalšiu kartu v tom istom ťahu.",
     "tvary": "cigareta, cigarety, cigarete, cigaretu, cigaretou, cigariet, cigaretám, cigaretami"
   },
@@ -201,7 +201,7 @@
   },
   "pas": {
     "pojem": "Pas",
-    "popis": "Skončíš vykladanie v Zhromaždení; nič zaň nedostaneš, nevyložené plné poldeci ti ostanú."
+    "popis": "Skončíš vykladanie v Zhromaždení a za každý plný poldeci dostaneš cigaretu; poldeci ti ostanú plné."
   },
   "podlozenie": {
     "pojem": "Podloženie",
@@ -247,7 +247,7 @@
   },
   "poldeci": {
     "pojem": "Poldeci",
-    "popis": "Pohárik pálenky; každá karta, ktorú vyložíš, stojí plný, a platí ním aj NA EX a odpoveď. Po bitke sa všetky obnovia, po Pitke sa jeden doleje. Plný na konci hry je 1 špak.",
+    "popis": "Pohárik pálenky; každá karta, ktorú vyložíš, stojí plný, a platí ním aj NA EX a odpoveď. Pri pase dostaneš za každý plný cigaretu a ostane plný. Po bitke sa všetky obnovia, po Pitke sa jeden doleje. Plný na konci hry je 1 špak.",
     "kratko": "Pohárik pálenky. Koľko máš plných, toľko kariet vyložíš. Za plný poldeci dáš aj NA EX.",
     "tvary": "poldeci"
   },

@@ -1,5 +1,5 @@
 {
- "source": "rozpracovaný stav tvorcu Vypálenej nad sadou v54 (záloha 2026-11-11T16:35), bez karty Dlh; pravidlá v12.2: plné poldeci = limit vykladania — Jogurt, Vínko, Družstvo, Kostol, Jednota, Izolačka, Vychovávateľka (Michal 2026-11-11)",
+ "source": "rozpracovaný stav tvorcu Vypálenej nad sadou v55 (záloha 2026-11-11T19:58), bez karty Dlh; pravidlá v12.3: cigarety za pas späť — Vychovávateľka: súper za pas nedostane cigarety (Michal 2026-11-11)",
  "actions": [
   "Cigareta",
   "Dlh",
@@ -1332,7 +1332,7 @@
     "Starešina",
     "Žena"
    ],
-   "effect_text": "Väzeň — raz za hru: Súper v tomto Zhromaždení hneď pasuje.",
+   "effect_text": "Väzeň — raz za hru: Súper v tomto Zhromaždení hneď pasuje a za pas nedostane cigarety.",
    "triggers": [
     "Väzeň"
    ],

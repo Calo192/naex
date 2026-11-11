@@ -3691,3 +3691,28 @@ Staré znenie §18.7 Pitka tímu (časť, do v12.1):
 Staré znenie §19 Má dosť Krčmárky (do v12.1):
 
 > | Krčmárka | Už ti nenalejem | Súperovi sa na začiatku kola neotočí vypitý poldeci. |
+
+## v12.3 — Cigarety za pas (Michal 2026-11-11)
+
+Michal: „Treba nejakým spôsobom vrátiť cigarety za pas. Keď hráč pasne, dostane toľko cigariet, koľko má nevypitých poldeci.“ Plné poldeci po pase ostanú plné; Vychovávateľka späť na „Súper v tomto Zhromaždení hneď pasuje a za pas nedostane cigarety.“; achievement Pas za groš znova získateľný.
+
+Staré znenie §6 Pas a koniec Zhromaždenia (v12.2):
+
+> ### Pas a koniec Zhromaždenia
+>
+> Zhromaždenie končí, keď obaja pasujú (alebo za nich pasuje hra).
+>
+> **Pas:** kto pasuje, do najbližšej Pitky už nevykladá (súper vykladá sám). **Za pas nedostane nič**
+> (v12.2, Michal 2026-11-11: „Za pasovanie nebudú dostávať cigarety.“) — nevyložené plné poldeci mu ostávajú
+> na NA EX a ďalšie Zhromaždenie kola. Pasovanie ruší aj nevyužité ťahy navyše z Vypiť. Kto v Zhromaždení
+> nemá čo vyložiť (nemá plný poldeci ani kartu, ktorú smie dať, kliatbu na priznanie ani Nástroj, na ktorý má
+> cigarety), za toho hra pasuje (fajčiť sa v Zhromaždení nedá, §7). **Záverečná** (§13) ukončí vykladanie ako pas.
+
+Staré znenie §10 Vychovávateľka (v12.2):
+
+> | Vychovávateľka | Súper v tomto Zhromaždení hneď pasuje. | len v Zhromaždení, vo svojom ťahu, keď súper ešte nepasoval: pas súpera je **vynútený** — v tomto Zhromaždení už nevyloží žiadnu kartu, aj keď ju držiteľ použije hneď prvým ťahom (cigarety za pas od v12.2 nie sú vôbec); držiteľ vykladá ďalej. Ďalšie Zhromaždenie (ďalšia Pitka) je bežné. |
+
+Staré znenie §18.6 Pas hráča (v12.2):
+
+> - **Pas hráča** (Michal 2026-11-02, Q1): pas člena len ukončí jeho vykladanie. Cigarety za pas od v12.2
+>   nedostane ani tím. Zhromaždenie končí, keď skončili všetci štyria.

@@ -878,11 +878,16 @@
     {
       "id": "6.pas",
       "paragraf": "6. Zhromaždenie › Pas a koniec Zhromaždenia",
-      "pravidlo": "Kto pasuje, do Pitky už nevykladá; cigarety za pas od v12.2 nedostane.",
+      "pravidlo": "Kto pasuje, do Pitky už nevykladá a dostane cigaretu za každý plný poldeci, ktoré ostanú plné (v12.3); aj pas za hráča; Záverečná a Vychovávateľka bez cigariet, Obecný úrad ich nezdvojuje.",
       "stav": "pokryte",
       "testy": [
-        "packages/core/test/pravidla-v12-2.test.ts › pas cigarety nedá a plné poldeci ostávajú",
-        "packages/core/test/pravidla-20261019.test.ts › pasujúci nedostane nič (v12.2) a súper vykladá sám"
+        "packages/core/test/pravidla-v12-3.test.ts › %i plných poldeci = toľko cigariet; poldeci ostanú plné, náhľad sedí s motorom",
+        "packages/core/test/pravidla-v12-3.test.ts › pas, ktorý urobí hra za hráča (prázdna ruka), dáva cigarety tiež",
+        "packages/core/test/pravidla-v12-3.test.ts › pas v ďalšom Zhromaždení toho istého kola dá cigarety znova",
+        "packages/core/test/pravidla-v12-3.test.ts › Obecný úrad cigarety za pas nezdvojuje — nie sú z Pitky",
+        "packages/core/test/pravidla-v12-3.test.ts › Záverečná ukončí vykladanie ako pas, ale cigarety za zvyšné poldeci nedá",
+        "packages/core/test/pravidla-v12-3.test.ts › Vychovávateľka: súper hneď pasuje a za pas nedostane cigarety — plné poldeci mu ostanú; log to povie",
+        "packages/core/test/pravidla-20261019.test.ts › pasujúci dostane cigaretu za každý plný poldeci, tie ostanú plné, a súper vykladá sám"
       ]
     },
     {

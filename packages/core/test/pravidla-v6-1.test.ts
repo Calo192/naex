@@ -36,8 +36,8 @@ function vZhromazdeni(seed: number): GameState {
   return s;
 }
 
-describe("§6 pas (v12.2): bez cigariet, nech hráč nechá limitu koľkokoľvek", () => {
-  it("s prázdnou rukou ani s jednou kartou pas cigarety nedá", () => {
+describe("§6 pas (v12.3): cigareta za každý plný poldeci, nech má v ruke čokoľvek", () => {
+  it("s prázdnou rukou aj s jednou kartou pas dá toľko cigariet, koľko má plných poldeci", () => {
     const s = vZhromazdeni(4);
     expect(s.faza).toBe("zhromazdenie");
     const p = naTahu(s)!;
@@ -47,8 +47,10 @@ describe("§6 pas (v12.2): bez cigariet, nech hráč nechá limitu koľkokoľvek
       hraci: s.hraci.map((h, i) => (i === p ? { ...h, ruka } : h)) as unknown as GameState["hraci"],
     });
     const zisk = (t: GameState): number => apply(data, t, { type: "pass" }, p).state.hraci[p].cigarety - t.hraci[p].cigarety;
-    expect(zisk(sRukou([]))).toBe(0);
-    expect(zisk(sRukou(s.hraci[p].ruka.slice(0, 1)))).toBe(0);
+    const plne = s.hraci[p].poldeciPlne;
+    expect(plne).toBeGreaterThanOrEqual(2);
+    expect(zisk(sRukou([]))).toBe(plne);
+    expect(zisk(sRukou(s.hraci[p].ruka.slice(0, 1)))).toBe(plne);
   });
 });
 

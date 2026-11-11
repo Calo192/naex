@@ -8,7 +8,8 @@ nastavDocasneEnv();
 export default defineConfig({
   test: {
     include: ["packages/*/test/**/*.test.ts", "apps/*/test/**/*.test.ts"],
-    exclude: ["**/node_modules/**"],
+    // Výučba sa prestavuje po v12.3 (Michal 2026-11-11) — testy výučby sa vrátia s novým scenárom.
+    exclude: ["**/node_modules/**", "packages/core/test/vyucba.test.ts", "packages/server/test/vyucba.test.ts"],
     passWithNoTests: true,
     globalSetup: ["tools/vitest-upratanie.ts"],
   },

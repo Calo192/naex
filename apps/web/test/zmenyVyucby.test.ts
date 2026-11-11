@@ -46,9 +46,9 @@ describe("zmeny na stole po ťahu bota či hry vo výučbe", () => {
   it("cigarety za kúpu Štamgasta svietia na jeho bare, za tvoju na tvojom", () => {
     expect(tah("k-kupa-bot").kluce).toContain("bar-supera:cigarety");
     expect(tah("k-kup-hasic").kluce).toContain("bar:cigarety");
-    // Záverečná stojí Štamgasta cigaretu (2. časť; pas od v12.2 cigarety nedáva).
+    // Záverečná stojí Štamgasta cigaretu (2. časť); pas mu od v12.3 dá cigaretu za každý plný poldeci.
     expect(tah("k-zaverecna-bot").kluce).toContain("bar-supera:cigarety");
-    expect(tah("k-pas2-bot").kluce).not.toContain("bar-supera:cigarety");
+    expect(tah("k-pas2-bot").kluce).toContain("bar-supera:cigarety");
   });
 
   it("kúpu Štamgasta zo šenku ukáže jeho dlaždica Karty — karta v jeho ruke je skrytá", () => {
