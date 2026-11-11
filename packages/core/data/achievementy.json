@@ -232,7 +232,7 @@
       "id": "zle-oko",
       "nazov": "Zlé oko",
       "kategoria": "bitka",
-      "popis": "Maj v jednej partii aspoň {prah} Povier, ktoré neprerušila súperova Viera.",
+      "popis": "Maj v jednej partii aspoň {prah} Povier, ktoré nezrušila súperova Viera.",
       "metrika": "stat.poveryUcinne",
       "rozsah": "partia",
       "prahy": [
@@ -393,7 +393,7 @@
       "id": "do-dna",
       "nazov": "Do dna",
       "kategoria": "nerest",
-      "popis": "Vypi do dna za jedno kolo aspoň {prah} poldeci.",
+      "popis": "Vypi do dna za jedno kolo aspoň {prah} poldeci — ráta sa len poldeci za kartu navyše v ťahu, za prvú kartu nie.",
       "metrika": "stat.poldeciVypite",
       "rozsah": "kolo",
       "prahy": [
@@ -2051,7 +2051,7 @@
       "id": "abstinent",
       "nazov": "Abstinent",
       "kategoria": "kuriozity",
-      "popis": "Dohraj partiu bez jedinej neresti: nevypi, nefajči, nedaj NA EX, nedolievaj, nebarteruj — spolu {prah}×.",
+      "popis": "Dohraj partiu bez jedinej neresti: žiadna karta navyše v ťahu, nefajči, nedaj NA EX, nebarteruj — spolu {prah}×.",
       "metrika": "bezNeresti",
       "rozsah": "kariera",
       "prahy": [
@@ -2581,7 +2581,7 @@
     {
       "id": "bezNeresti",
       "typ": "počítadlo",
-      "popis": "dohratá partia bez vypitia, fajčenia, NA EX, doliatia a barteru"
+      "popis": "dohratá partia bez karty navyše v ťahu, fajčenia, NA EX a barteru"
     },
     {
       "id": "vyhraNad.<povaha>",

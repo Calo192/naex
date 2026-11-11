@@ -607,10 +607,10 @@ const VPLYVY_BEZ_CISLA: readonly { readonly zdroj: string; readonly akcia: Actio
   { zdroj: "zapalovac", akcia: "Cigareta", popis: "aktívnu Cigaretu nemožno zrušiť NA EX" },
   { zdroj: "energetak", akcia: "Posilnenie", popis: "Posilnenie nemožno zrušiť NA EX" },
   { zdroj: "vyherne_zreby", akcia: "Dlh", popis: "Hazard je aktívny bez spoja, spojený neaktívny" },
-  { zdroj: "pistalka", akcia: "Obmedzenie", popis: "Obmedzenie uberie aj cigarety za pas" },
+  { zdroj: "pistalka", akcia: "Obmedzenie", popis: "aktívne Obmedzenie uberie súperovi z doliatia po Pitke 1 poldeci" },
   { zdroj: "hrable", akcia: "Odpor", popis: "aktívny Odpor (bez spoja) dáva v bitke poškodenie ako Pecka" },
   { zdroj: "zrkadlo", akcia: "Pakt", popis: "Pakt kopíruje prepojenú akciu dvakrát" },
-  { zdroj: "jogurt", akcia: "Poldeci", popis: "Poldeci otočí vypitý poldeci hneď v Pitke" },
+  { zdroj: "jogurt", akcia: "Poldeci", popis: "po každej Pitke sa ti doleje o 1 poldeci viac" },
   { zdroj: "horoskop", akcia: "Povera", popis: "Povera má silu 2 (2 mäkké)" },
   { zdroj: "kristalova_gula", akcia: "Vízia", popis: "Vízia ukáže 2 vrchné karty" },
 ];

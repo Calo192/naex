@@ -67,7 +67,7 @@
   },
   "zle-oko": {
     "nazov": "Zlé oko",
-    "popis": "Maj v jednej partii aspoň {prah} Povier, ktoré neprerušila súperova Viera."
+    "popis": "Maj v jednej partii aspoň {prah} Povier, ktoré nezrušila súperova Viera."
   },
   "svatuskar": {
     "nazov": "Svätuškár",
@@ -95,7 +95,7 @@
   },
   "do-dna": {
     "nazov": "Do dna",
-    "popis": "Vypi do dna za jedno kolo aspoň {prah} poldeci."
+    "popis": "Vypi do dna za jedno kolo aspoň {prah} poldeci — ráta sa len poldeci za kartu navyše v ťahu, za prvú kartu nie."
   },
   "pecen-z-ocele": {
     "nazov": "Pečeň z ocele",
@@ -383,7 +383,7 @@
   },
   "abstinent": {
     "nazov": "Abstinent",
-    "popis": "Dohraj partiu bez jedinej neresti: nevypi, nefajči, nedaj NA EX, nedolievaj, nebarteruj — spolu {prah}×.",
+    "popis": "Dohraj partiu bez jedinej neresti: žiadna karta navyše v ťahu, nefajči, nedaj NA EX, nebarteruj — spolu {prah}×.",
     "tajnyText": "Niekto tu pije len vodu…"
   },
   "pecenovy-pastet": {

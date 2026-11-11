@@ -110,8 +110,8 @@
       "uroven": "A",
       "spustac": {
         "kedy": "hráč je v Zhromaždení na ťahu, už vyložil kartu a ešte mu ostal plný poldeci (v12.2: limit za poldeci, pas cigarety nedáva; id ostáva)",
-        "podmienka": "view.faza === \"zhromazdenie\" && naTahu === ja && v tomto Zhromaždení som vyložil kartu && view.hraci[ja].poldeciPlne >= 1",
-        "jadro": ["packages/core/src/napovedy.ts:91 spúšťač (od v12.2 vypnutý, zapne Developer)", "docs/PRAVIDLA.md §6 Limit vykladania, Pas a koniec Zhromaždenia", "docs/PRAVIDLA.md §13 Vypiť"]
+        "podmienka": "view.faza === \"zhromazdenie\" && naTahu === ja && v línii leží moja karta (v tomto kole) && view.hraci[ja].poldeciPlne >= 1",
+        "jadro": ["packages/core/src/napovedy.ts pas-cigarety", "docs/PRAVIDLA.md §6 Limit vykladania, Pas a koniec Zhromaždenia", "docs/PRAVIDLA.md §13 Vypiť"]
       },
       "melichar": "Za každú kartu vypiješ jeden [Poldeci] poldeci: koľko máš plných, toľko kariet vyložíš. Viac kariet naraz smieš, ale každá navyše stojí [Cigareta] cigaretu. Za pas nedostaneš nič – plné poldeci ti len ostanú, na NA EX aj na ďalšie Zhromaždenie. Ja by som ich nenechal stáť.",
       "zvyraznit": ["tlacidlo:pas", "bar:poldeci"]
@@ -153,7 +153,7 @@
         "jadro": ["packages/core/src/engine.ts BitkaKrok reci", "packages/core/src/engine.ts cmdRozdelenie", "docs/PRAVIDLA.md §9.1 Hádka (v10, v11)"]
       },
       "melichar": {
-        "moje": "Hádku si vyhral: máš viac mäkkého poškodenia, [Pohoršenie] Pohoršenie 2, [Povera] Povera 1. Rozdiel minieš na svoje reči pri starších – vždy nad tvojím strachom, stupeň do žltej 1, do oranžovej 2, do červenej 3. Čo na ďalší stupeň nestačí, prepadne. Reči ti platia po každej bitke, aj prehratej, a potom slabnú. Užívaj, kým môžeš.",
+        "moje": "Hádku si vyhral: máš viac mäkkého poškodenia, [Pohoršenie] Pohoršenie 2, [Povera] Povera 1. Rozdiel minieš na svoje reči pri starších – na súperovom teplomere, od vrchu jeho strachu nadol, stupeň do žltej 1, do oranžovej 2, do červenej 3. Čo na ďalší stupeň nestačí, prepadne. Reči ti platia po každej bitke, aj prehratej; klesnú ti, len keď hádku prehráš. Užívaj, kým môžeš.",
         "superove": "Hádku vyhral súper: má viac mäkkého poškodenia, [Pohoršenie] Pohoršenie 2, [Povera] Povera 1, a rozdiel minie na svoje reči pri starších. Tie mu platia po každej bitke, aj prehratej. Nabudúce si nechaj Vieru na jeho Povery. Nepozeraj tak na mňa, ja som ho nevyložil."
       },
       "zvyraznit": ["linia-starsich"]
@@ -216,7 +216,7 @@
         "podmienka": "krokRozdelenia(view, ja) === \"prebytok\" && moznostiAkcie(view, ja, \"strach\", body) nie je prázdne",
         "jadro": ["packages/core/src/rozdelenie.ts moznostiAkcie, overRozdelenie", "docs/PRAVIDLA.md §10 Zajatie a väzeň (v11.4)"]
       },
-      "melichar": "Tento starší sa ťa bojí na červenej. Za päť z Nakladačky ho zajmeš – ide do tvojej pivnice a súper ti dá špaky za svoj marker pri ňom. Nemusíš, ale prečo by si nechcel.",
+      "melichar": "Tento starší sa ťa bojí na červenej už od minulého kola. Za päť z Nakladačky ho zajmeš – ide do tvojej pivnice a súper ti dá toľko špakov, koľko sú hodné jeho reči pri ňom. Nemusíš, ale prečo by si nechcel.",
       "zvyraznit": ["linia-starsich"]
     },
     {
@@ -228,7 +228,7 @@
         "podmienka": "krokRozdelenia(view, ja) === \"reci\" && moznostiAkcie(view, ja, \"reci\", body) nie je prázdne",
         "jadro": ["packages/core/src/rozdelenie.ts moznostiAkcie, overRozdelenie", "docs/PRAVIDLA.md §10 Presvedčenie (v11.4)"]
       },
-      "melichar": "Tento starší sa súpera bojí viac než teba. Reči na červenú a päť navrch – a je presvedčený: jeho karta ide tebe do ruky a ostáva v tvojom balíčku. Tvoje reči pri ňom zhoria, priazeň ti ostane.",
+      "melichar": "Tohto staršieho smieš presvedčiť: dotiahni svoje reči na celý súperov teplomer pri ňom a pridaj tri body z hádky. Jeho karta ide tebe do ruky a ostáva v tvojom balíčku. Reči pri ňom aj priazeň ti ostanú. Konečne ťa niekto počúva.",
       "zvyraznit": ["linia-starsich"]
     },
     {

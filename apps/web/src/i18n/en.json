@@ -534,7 +534,7 @@
   "tabula.limitKarietMale": "card limit",
   "tabula.novyPoldeci": "new shot",
   "tabula.kartaNavyse": "another card in a turn",
-  "tabula.chutText": "A vice is only what you drink and smoke: Down one 1, answer to NA EX 1, NA EX {naex}, each cigarette smoked 1. At the end of the round: fewer vices than your Thirst = a Shakes card into your deck (each one takes 1 hard off you in the brawl); then Thirst = the greater of (Thirst, vices) − {ubytok}.",
+  "tabula.chutText": "",
   "tabula.nerestiDnes": "vices today",
   "tabula.hroziAbstak": "Shakes looming",
   "tabula.ano": "yes",
@@ -723,8 +723,8 @@
   "galeria.dedicstvoNaradie": "Heirloom · Tools",
   "galeria.pivnica": "Cellar · prisoners",
   "galeria.vazenPopis": "A prisoner gives no favour and counts as red fear for whoever holds him.",
-  "galeria.vazenKseftJa": "You trigger his Deal in the Booze-up for a full shot downed, once per Booze-up.",
-  "galeria.vazenKseftSu": "Only the holder has his Deal.",
+  "galeria.vazenKseftJa": "",
+  "galeria.vazenKseftSu": "",
   "galeria.podlaTypu": "by type; the order is secret",
   "galeria.prazdny": "The deck is empty — the next time you draw, the discarded cards get shuffled into it.",
   "galeria.zamiesaSa": "when the draw pile runs out, these get shuffled into it",
@@ -907,7 +907,7 @@
   },
   "rekap.tvojaKarta": "your card",
   "rekap.kartaHraca": "card: {meno}",
-  "rekap.mimoLinie": "outside the line (favour, patronage, card effect)",
+  "rekap.mimoLinie": "",
   "rekap.zrusenaOdporom": "{nazov} — {odkial}: cancelled by Resistance, gave 0",
   "rekap.zrusenaNaex": "{nazov} — {odkial}: cancelled through NA EX, gave 0",
   "rekap.ubral": "{nazov} — {odkial}: a card effect took off {n}",
@@ -1039,7 +1039,7 @@
     "1": "has {n} Shakes card in their deck, −{ubera} hard in the brawl",
     "5": "has {n} Shakes cards in their deck, −{ubera} hard in the brawl"
   },
-  "panel.chutPravidlo": "A vice is only what you drink and smoke: Down one 1, answer to NA EX 1, NA EX {naex}, each cigarette smoked 1 (refills, barter and payments don't count). At the end of the round: fewer vices than your Thirst = a Shakes card into your discard pile; then Thirst = the greater of (Thirst, vices) − {ubytok}. The Shakes can't be confessed; after the brawl it goes from your hand back to the discard pile, and each one in your deck takes 1 hard off you in the brawl. Vision may burn it. After the finale nothing is checked.",
+  "panel.chutPravidlo": "",
   "panel.dalsiePitky": {
     "1": "next Booze-up",
     "5": "next {n} Booze-ups"
@@ -1134,7 +1134,7 @@
   "panel.zdrojCirhoza": "opponent's confessed Cirrhoses",
   "panel.zdrojViera": "opponent's uncancelled Faith",
   "panel.zdrojAbstak": "The Shakes (hands trembling)",
-  "panel.zdrojPasca": "opponent's Trap (−1 for each of your Animals in the line)",
+  "panel.zdrojPasca": "",
   "panel.dovodPosilnenie": "doubled by Boost",
   "panel.dovodNaex": "doubled through NA EX",
   "panel.dovodVzbura": "activated by Revolt",
@@ -1214,7 +1214,7 @@
   "os.zhromazdenie": "Assembly — playing cards",
   "os.izN": "{i} of {n}",
   "os.zhromazdenieText": "You take turns playing cards from your hand onto either end of the line; the attacker starts. Play limit = full shots; every card turns one to empty, and each further card in the same turn costs a cigarette as well.",
-  "os.zhromazdenieText2": "Any time on your turn: confess a Cirrhosis (you don't get a card for it; your opponent gets +1 hard for it in the brawl), put a Tool into the Heirloom (for cigarettes, the price goes up); smoking waits for the Booze-up. Whoever passes plays no more cards until the Booze-up and gets a cigarette for every card they could still have played, even if they have nothing left to play. It ends when both have used up their limit or passed.",
+  "os.zhromazdenieText2": "",
   "os.pitkaText": "<b>You both play at once</b>; “done” can't be undone and the NA EXes are revealed at the same time. NA EX! — a full shot on a Citizen or an Elder in the line: it cancels their active actions and doubles the inactive ones (multipliers multiply: NA EX × Strong, Independent Woman = ×4); once revealed, the opponent may answer with one card face down (attacker first, then the defender on the other wing; they flip at the same time). Smoke (a card for 1, 2, 3… cig. in each Booze-up), new shot (barter). At the end of the Booze-up {dolieva} empty shot is refilled for free, plus one per Shot action.",
   "os.pitkaText2": "Then the actions are tallied: Gamble (each action a Debt, confessed at once), Liver Damage and Shot (a Cirrhosis into the discard pile for every full threshold), Restriction, Cigarettes and Vision. The liver resets to zero after the Booze-up.",
   "os.bitkaOLokalitu": "Brawl for the location",
@@ -1356,7 +1356,7 @@
   "plocha.naKoniecVpravoVelke": "To the right end",
   "plocha.klikniNaKartu": "click a card in your hand. The ones that pop up will link here (the linked actions light up); the dimmed ones can be laid without a link.",
   "plocha.nastrojSemNie": "Not a Tool here — Tools aren't played next to the location.",
-  "plocha.dalsiaKarta": "another card this turn: −1 full shot",
+  "plocha.dalsiaKarta": "",
   "plocha.zrusisPravym": "Cancel with a right click or Esc.",
   "plocha.zaverecnaTlacidlo": "Last Orders: the last card of the proposal goes face down for {cig}. Your opponent can't see it until the end of the Booze-up and can't play behind it; you play no more cards in this Assembly.",
   "plocha.zaverecnaMale": "last orders",
@@ -1967,7 +1967,7 @@
   "prechod.ponuka": "Each of you gets {naradie} cards from the Tools deck and {obcania} from the Citizens deck and splits them in secret: half goes to the Market, half to the bottom. Then you take from the Market in turns, the defender first (only 1 card on the first turn) — 1 card for {jedna}, 2 cards for {dve}.",
   "prechod.superVykladaPrvy": "{meno} plays first, then you take turns.",
   "prechod.vykladasPrvy": "You play first, then you and your opponent take turns.",
-  "prechod.kladies": " You lay cards from your hand next to the location so their actions link up; when you've had enough, pass — you get a cigarette for every card you could still have played.",
+  "prechod.kladies": "",
   "prechod.masBzdochu": "You have the Earwig: you wait until {meno} finishes the Booze-up, then you play and see their NA EX.",
   "prechod.hrateNaraz": "You both play at once: smoke, buy shots and secretly pick your NA EX, then “End the Booze-up”.",
   "prechod.superMaBzdochu": "{meno} has the Earwig — plays only after you and will see your NA EX.",
@@ -2877,7 +2877,10 @@
     "1": "{meno} gets {n} cigarette (Council Office: twice).",
     "5": "{meno} gets {n} cigarettes (Council Office: twice)."
   },
-  "motor.pijeDoDna": "{meno} downs one — plays another card straight away; their limit drops to {n}.",
+  "motor.pijeDoDna": {
+    "1": "",
+    "5": ""
+  },
   "motor.beriePonuka": {
     "1": "{meno} takes {karty} from the Market for {n} cigarette.",
     "5": "{meno} takes {karty} from the Market for {n} cigarettes."
