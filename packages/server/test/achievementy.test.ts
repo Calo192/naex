@@ -151,12 +151,86 @@ describe("achievementy na serveri", () => {
     expect(hviezdyA).toBeLessThan(Math.ceil(spolu * 0.35));
     expect((await api<{ postupRanku: PostupRanku }>(a, `/hraci/${idA}`)).postupRanku).toEqual({ hviezdy: hviezdyA, spolu, dalsi: { rank: "deci", prah: Math.ceil(spolu * 0.35) } });
     expect((await api<{ postupRanku: PostupRanku }>(b, `/hraci/${idA}`)).postupRanku).toBeNull();
+
+    // Druhá dávka (Michal 2026-11-11). Stály hosť: jeden deň s dohratou partiou; odveta zatiaľ nie je (prvá vzájomná partia).
+    const postup = async (cookie: string, metrika: string): Promise<Polozka["postup"] | undefined> => {
+      const id = katalog.achievementy.find((x) => x.metrika === metrika)?.id;
+      return (await vitrinaHraca(cookie)).find((x) => x.id === id)?.postup;
+    };
+    for (const cookie of [a, b]) {
+      expect(await postup(cookie, "hraciDen")).toEqual({ hodnota: 1, aktualna: null });
+      expect(await postup(cookie, "odveta")).toEqual({ hodnota: 0, aktualna: null });
+    }
+    // Mimo partie: názor v Spätnej väzbe a hodnotenie hry dajú hviezdu hneď, druhý názor ju neduplikuje.
+    const rank = async (cookie: string, metrika: string): Promise<number | undefined> => {
+      const id = katalog.achievementy.find((x) => x.metrika === metrika)?.id;
+      return (await vitrinaHraca(cookie)).find((x) => x.id === id)?.rank;
+    };
+    expect(await rank(a, "nazory")).toBe(0);
+    expect(await rank(a, "hodnotenia")).toBe(0);
+    expect(await api<{ id?: number }>(a, "/nazory", "POST", { kategoria: "pravidla", text: "Výtržník by si zaslúžil vlastnú pečiatku." })).toMatchObject({ id: expect.any(Number) });
+    expect(await rank(a, "nazory")).toBe(1);
+    await api(a, "/nazory", "POST", { kategoria: "pravidla", text: "A ešte jedna vec k hádke." });
+    expect(await rank(a, "nazory")).toBe(1);
+    expect(await api<{ cas?: number }>(a, "/znamky", "PUT", { znamky: { zabava: 8 } })).toMatchObject({ cas: expect.any(Number) });
+    expect(await rank(a, "hodnotenia")).toBe(1);
+    expect(await rank(b, "nazory")).toBe(0);
+
     await api(a, "/profil", "PATCH", { skrytySuhrn: true });
     expect((await api<{ achievementy: Vitrina }>(b, `/hraci/${idA}`)).achievementy).toBeNull();
     expect((await api<{ achievementy: Vitrina }>(a, `/hraci/${idA}`)).achievementy).not.toBeNull();
     ra2.zavri();
     rb.zavri();
   }, 180_000);
+
+  it("odveta: ráta sa výhra nad človekom, s ktorým hráč predošlú vzájomnú partiu prehral", async () => {
+    const a = (await registruj(server.port)).cookie;
+    const b = (await registruj(server.port)).cookie;
+    /** Odohrá partiu (a zakladá, sedí na mieste 0) a vráti víťaza. */
+    const partia = async (): Promise<0 | 1 | null> => {
+      const ra = new Robot(server.port, a);
+      const rb = new Robot(server.port, b);
+      await ra.otvorene();
+      await rb.otvorene();
+      ra.posli({ type: "create" });
+      await cakaj(() => ra.privitanie.code !== undefined, "privítanie A");
+      rb.posli({ type: "join", code: ra.privitanie.code });
+      await cakaj(() => ra.view !== null && rb.view !== null, "začiatok partie");
+      for (let tahov = 0; ; tahov++) {
+        await cakaj(() => ra.view?.koniec != null || ra.view?.mozemHrat === true || rb.view?.mozemHrat === true, "niekto na ťahu");
+        if (ra.view?.koniec != null) break;
+        const r = ra.view?.mozemHrat === true ? ra : rb;
+        const pred = r.pocetStavov;
+        r.posli({ type: "cmd", cmd: r.vyberTah() });
+        await cakaj(() => r.pocetStavov > pred || r.chyby.length > 0, "odpoveď servera");
+        r.chyby.splice(0);
+        expect(tahov).toBeLessThan(4000);
+      }
+      await cakaj(() => suhrny(ra).length > 0 && suhrny(rb).length > 0, "súhrny na konci");
+      const vitaz = (ra.view?.koniec?.vitaz ?? null) as 0 | 1 | null;
+      ra.zavri();
+      rb.zavri();
+      return vitaz;
+    };
+    const odveta = nacitajKatalog().achievementy.find((x) => x.metrika === "odveta");
+    expect(odveta).toBeDefined();
+    const hodnota = async (cookie: string): Promise<number | undefined> =>
+      (await api<{ achievementy: Vitrina }>(cookie, "/achievementy")).achievementy?.achievementy.find((x) => x.id === odveta?.id)?.postup?.hodnota;
+
+    // Tri partie: odveta je každá výhra hneď po prehre s tým istým človekom.
+    const vysledky = [await partia(), await partia(), await partia()];
+    for (const [cookie, miesto] of [
+      [a, 0],
+      [b, 1],
+    ] as const) {
+      let cakane = 0;
+      for (let i = 1; i < vysledky.length; i++) {
+        const predtym = vysledky[i - 1];
+        if (predtym !== null && predtym !== miesto && vysledky[i] === miesto) cakane++;
+      }
+      expect(await hodnota(cookie)).toBe(cakane);
+    }
+  }, 240_000);
 
   it("partia proti botovi: achievementy „ludia“ sa nerátajú, bot nič nezíska", async () => {
     const a = (await registruj(server.port)).cookie;

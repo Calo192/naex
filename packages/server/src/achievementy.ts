@@ -133,6 +133,13 @@ export interface AchievementyMiestnosti {
 
 const klucVedra = (proti: ProtiKomu | TypPartie, a: Achievement): string => `${proti}|${klucKariery(a)}`;
 
+// Deň a hodina pre „Stály hosť“ a „Záverečná o tretej“ — čas hráčov, nie servera (ten beží v UTC).
+const CAS_HRACOV = new Intl.DateTimeFormat("sv-SE", { timeZone: "Europe/Bratislava", year: "numeric", month: "2-digit", day: "2-digit", hour: "2-digit", hourCycle: "h23" });
+function denAHodina(cas: number): { readonly den: string; readonly hodina: number } {
+  const cast = (typ: string): string => CAS_HRACOV.formatToParts(new Date(cas)).find((x) => x.type === typ)?.value ?? "";
+  return { den: `${cast("year")}-${cast("month")}-${cast("day")}`, hodina: Number(cast("hour")) };
+}
+
 export class Achievementy {
   readonly katalog: KatalogAchievementov;
   private readonly db: Db;
@@ -228,10 +235,26 @@ export class Achievementy {
       const s = hraci[i === 0 ? 1 : 0];
       return s === null || s.ai ? null : String(s.id);
     };
+    // Odveta: hráč prehral poslednú dohratú partiu s týmto človekom.
+    const dlzi = (i: PlayerId): boolean => {
+      const ja = hraci[i];
+      const su = hraci[i === 0 ? 1 : 0];
+      if (ja === null || su === null || ja.ai || su.ai) return false;
+      const r = this.db
+        .prepare(
+          `SELECT a.vysledok FROM partie_hraci a
+             JOIN partie_hraci b ON b.partia = a.partia AND b.pouzivatel = ?
+             JOIN partie p ON p.id = a.partia
+            WHERE a.pouzivatel = ? AND p.dohrata = 1
+            ORDER BY p.koniec DESC, p.id DESC LIMIT 1`,
+        )
+        .get(su.id, ja.id) as { vysledok: string } | undefined;
+      return r?.vysledok === "prehra";
+    };
     return {
       stav: noveAchievementy(),
       typ,
-      kontext: { botPovaha: typ === "bot" ? botPovaha : null, superi: [superId(0), superId(1)] },
+      kontext: { botPovaha: typ === "bot" ? botPovaha : null, superi: [superId(0), superId(1)], odveta: [dlzi(0), dlzi(1)] },
       hraci: [hrac(0), hrac(1)],
     };
   }
@@ -251,7 +274,7 @@ export class Achievementy {
     miestnost: string,
     cas: number,
   ): { readonly zisky: readonly [ZiskAchievementu[], ZiskAchievementu[]]; readonly suhrny: readonly [SuhrnAchievementov | null, SuhrnAchievementov | null] } {
-    const krok = krokAchievementov(this.katalog, data, am.stav, pred, cmd, autor, po, udalosti, am.kontext);
+    const krok = krokAchievementov(this.katalog, data, am.stav, pred, cmd, autor, po, udalosti, { ...am.kontext, ...denAHodina(cas) });
     am.stav = krok.stav;
     const koniec = pred.koniec === null && po.koniec !== null;
     const zisky: [ZiskAchievementu[], ZiskAchievementu[]] = [[], []];
@@ -369,6 +392,38 @@ export class Achievementy {
       out.push(ziskPreKlienta(a, rank, cast));
     }
     return out;
+  }
+
+  /**
+   * Achievementy mimo partie (Spätná väzba, známky): rank podľa počtu, ktorý server práve
+   * spočítal. Udelia sa raz a neberú sa — skrytý názor či stiahnuté hodnotenie hviezdu nezmaže.
+   */
+  private udelZaPocet(pouzivatel: number, metrika: string, pocet: number, cas: number): ZiskAchievementu[] {
+    const drzane = this.drzane(pouzivatel);
+    const out: ZiskAchievementu[] = [];
+    for (const a of ziskatelne(this.katalog)) {
+      if (a.metrika !== metrika) continue;
+      const mal = drzane.get(a.id) ?? 0;
+      const rank = rankZaHodnotu(a, pocet);
+      if (rank <= mal) continue;
+      this.zapisRanky(pouzivatel, a.id, mal, rank, cas, metrika);
+      out.push(ziskPreKlienta(a, rank, pocet));
+    }
+    return out;
+  }
+
+  /** Po poslaní názoru v Spätnej väzbe: rátajú sa názory, ktoré správca neskryl. AI účty nič. */
+  udelZaNazory(hrac: { readonly id: number; readonly ai: boolean }, cas: number): ZiskAchievementu[] {
+    if (hrac.ai) return [];
+    const r = this.db.prepare("SELECT COUNT(*) AS n FROM nazory WHERE autor = ? AND skryty IS NULL").get(hrac.id) as { n: number };
+    return this.udelZaPocet(hrac.id, "nazory", Number(r.n), cas);
+  }
+
+  /** Po ohodnotení hry známkami: rátajú sa hráčove hodnotenia na webe (nie importy z playtestov, nie stiahnuté). */
+  udelZaHodnotenia(hrac: { readonly id: number; readonly ai: boolean }, cas: number): ZiskAchievementu[] {
+    if (hrac.ai) return [];
+    const r = this.db.prepare("SELECT COUNT(*) AS n FROM znamky WHERE pouzivatel = ? AND zdroj = '' AND data <> '{}'").get(hrac.id) as { n: number };
+    return this.udelZaPocet(hrac.id, "hodnotenia", Number(r.n), cas);
   }
 
   /**
