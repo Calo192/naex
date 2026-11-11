@@ -184,12 +184,9 @@ export function hromadic(data: GameData, s: GameState, p: PlayerId, seed: number
         const odpoved = vazne ? najlepsiNaTuhe(data, s, p, cmds.filter(doLinie), 0) : null;
         return odpoved ?? cmds.find((c) => c.type === "bezReakcie") ?? nahodny();
       }
-      const refill = cmds.find((c) => c.type === "refillPoldeci");
       const barter = cmds.find((c) => c.type === "barter");
       const smoke = cmds.find((c) => c.type === "smoke");
       const fajcil = s.pitkaStav?.fajcenie[p] ?? 0;
-      // Vypité poldeci dolieva: vo finále každý plný znamená kartu navyše v limite (alebo špak z výkupného).
-      if (refill !== undefined && h.cigarety >= 4) return refill;
       if (barter !== undefined && h.cigarety >= 9) return barter;
       // Prvé fajčenie v Pitke stojí 1 cigaretu; vo finále dofajčí aj druhé, ak mu ostane z čoho.
       if (smoke !== undefined && (fajcil === 0 ? h.cigarety >= (finale ? 1 : 3) : finale && fajcil === 1 && h.cigarety >= 3)) return smoke;

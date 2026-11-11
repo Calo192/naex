@@ -1,5 +1,5 @@
 {
- "source": "rozpracovaný stav tvorcu Vypálenej nad sadou v53 (záloha 2026-11-11T14:33), bez karty Dlh; pravidlá v12.1: Hrable — aktívny Odpor dáva poškodenie ako Pecka (Michal 2026-11-11)",
+ "source": "rozpracovaný stav tvorcu Vypálenej nad sadou v54 (záloha 2026-11-11T16:35), bez karty Dlh; pravidlá v12.2: plné poldeci = limit vykladania — Jogurt, Vínko, Družstvo, Kostol, Jednota, Izolačka, Vychovávateľka (Michal 2026-11-11)",
  "actions": [
   "Cigareta",
   "Dlh",
@@ -214,7 +214,7 @@
    "tags": [
     "Nástroj"
    ],
-   "effect_text": "Dedičstvo: Počíta sa, akoby si mal plný poldeci navyše. Nemôžeš dolievať poldeci za cigarety. Hore: NA EX. Dole: {Pečeň}→{Poldeci}.",
+   "effect_text": "Dedičstvo: Tvoje maximum poldeci je o 1 vyššie. Hore: NA EX. Dole: {Pečeň}→{Poldeci}.",
    "triggers": [
     "Dedičstvo"
    ],
@@ -1332,7 +1332,7 @@
     "Starešina",
     "Žena"
    ],
-   "effect_text": "Väzeň — raz za hru: Súper v tomto Zhromaždení hneď pasuje a za pas nedostane cigarety.",
+   "effect_text": "Väzeň — raz za hru: Súper v tomto Zhromaždení hneď pasuje.",
    "triggers": [
     "Väzeň"
    ],
@@ -1930,7 +1930,7 @@
    "tags": [
     "Lokalita"
    ],
-   "effect_text": "Zhromaždenie: Nikto nesmie vypiť. Pitka: NA EX sa smie dať len na kartu na konci línie (na ktoromkoľvek z dvoch koncov).",
+   "effect_text": "Zhromaždenie: V ťahu sa smie vyložiť len 1 karta. Pitka: NA EX sa smie dať len na kartu na konci línie (na ktoromkoľvek z dvoch koncov).",
    "triggers": [
     "Zhromaždenie",
     "Pitka"
@@ -2291,7 +2291,7 @@
    "tags": [
     "Lokalita"
    ],
-   "effect_text": "Pitka: Kto má viac priznaných Dlhov, nesmie v tejto Pitke fajčiť ani dolievať.",
+   "effect_text": "Pitka: Kto má viac priznaných Dlhov, nesmie v tejto Pitke fajčiť ani barterovať.",
    "triggers": [
     "Pitka"
    ],
@@ -2460,7 +2460,7 @@
    "tags": [
     "Lokalita"
    ],
-   "effect_text": "Zhromaždenie: Karty s akciou Robota nemíňajú limit vykladania.",
+   "effect_text": "Zhromaždenie: Karty s akciou Robota nestoja poldeci.",
    "triggers": [
     "Zhromaždenie"
    ],
@@ -3640,7 +3640,7 @@
    "tags": [
     "Nástroj"
    ],
-   "effect_text": "Dedičstvo: Tvoje Poldeci otáčajú vypitý poldeci hneď v Pitke, nie až v bitke. Hore: {Pečeň}→{Posilnenie}. Dole: {Pečeň}→{Hazard}.",
+   "effect_text": "Dedičstvo: Po každej Pitke sa ti doleje o 1 poldeci viac. Hore: {Pečeň}→{Posilnenie}. Dole: {Pečeň}→{Hazard}.",
    "triggers": [
     "Dedičstvo"
    ],
@@ -3690,7 +3690,7 @@
    "tags": [
     "Nástroj"
    ],
-   "effect_text": "Dedičstvo: Tvoje Obmedzenia uberajú aj cigarety, ktoré súper dostane za pas. Hore: {Pečeň}→{Obmedzenie}. Dole: Posilnené {Obmedzenie}.",
+   "effect_text": "Dedičstvo: Za každé tvoje aktívne Obmedzenie sa súperovi po Pitke doleje o 1 poldeci menej. Hore: {Pečeň}→{Obmedzenie}. Dole: Posilnené {Obmedzenie}.",
    "triggers": [
     "Dedičstvo"
    ],

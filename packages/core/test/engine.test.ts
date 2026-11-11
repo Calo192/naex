@@ -84,7 +84,7 @@ function smoke(seed: number, kontrolaFiltrovania: boolean): { state: GameState; 
 }
 
 describe("M6 — setup", () => {
-  it("hra sa rozdá (v6): 4 štartovky v ruke, prázdny doberací balíček, šenok prázdny, poldeci 2, cigarety 3", () => {
+  it("hra sa rozdá (v6): 4 štartovky v ruke, prázdny doberací balíček, šenok prázdny, poldeci 3 (v12.2), cigarety 3", () => {
     const state = setupGame(data, 42);
     for (const p of [0, 1] as const) {
       expect(state.hraci[p].ruka.map((k) => k.defId).sort()).toEqual(["dievcina_na_vydaj", "milujuca_manzelka", "ministrant", "pijan"]);
@@ -95,7 +95,7 @@ describe("M6 — setup", () => {
     expect(state.starsi.length).toBe(8);
     expect(state.lokalityVHre.length).toBe(DLZKY_HRY.stredna);
     expect(state.lokalitCelkom).toBe(DLZKY_HRY.stredna);
-    expect(state.hraci[0].poldeciPlne).toBe(2);
+    expect(state.hraci[0].poldeciPlne).toBe(3);
     expect(state.hraci[0].cigarety).toBe(3);
     expect(state.faza).toBe("volbaCiela");
   });

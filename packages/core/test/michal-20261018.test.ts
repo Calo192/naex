@@ -80,7 +80,8 @@ describe("automatický pas", () => {
       ...s,
       faza: "zhromazdenie",
       ciel: { typ: "lokalita", lokalita: s.lokalityVHre[0]! },
-      hraci: [{ ...s.hraci[0], ruka, cigarety }, s.hraci[1]],
+      // Limit vykladania = plné poldeci (v12.2).
+      hraci: [{ ...s.hraci[0], ruka, cigarety, poldeciPlne: limit }, s.hraci[1]],
       zhromazdenieStav: { naTahu: 0, zostavaLimit: [limit, 0], pasoval: [false, true], navyse: [0, 0] },
     } as GameState;
   }
@@ -99,7 +100,7 @@ describe("automatický pas", () => {
     const s = zhromazdenie([a, b], 1, 0);
     const po = apply(data, s, { type: "place", uid: a.uid, target: "vlastna" }, 0 as PlayerId);
     const pre = (q: PlayerId) => eventsFor(po.events, q).filter((e) => e.type === "autoPas");
-    expect(pre(0)).toEqual([{ type: "autoPas", hrac: 0, dovody: ["Miňištrant — limit vykladania máš v tomto Zhromaždení vyčerpaný."], pre: 0 }]);
+    expect(pre(0)).toEqual([{ type: "autoPas", hrac: 0, dovody: ["Miňištrant — limit vykladania máš vyčerpaný, nemáš plný poldeci."], pre: 0 }]);
     // Súper sa nedozvie, čo má pasujúci v ruke.
     expect(pre(1)).toEqual([{ type: "autoPas", hrac: 0, dovody: [], pre: 1 }]);
   });

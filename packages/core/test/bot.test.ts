@@ -275,15 +275,6 @@ describe("offline protihráč — výkupné zdrojov (2026-10-27)", () => {
     };
   }
 
-  it("vo finále dolieva vypité poldeci, kým to výkupné zvýši (2 cigarety → plný poldeci = špak)", () => {
-    for (const povaha of POVAHY) {
-      // Bez Absťáku v hre — dolieva kvôli výkupnému, nie kvôli nerestiam.
-      const s = vPitkeFinale({ poldeciPlne: 0, poldeciVypite: 2, cigarety: 7, nerestiTotoKolo: 3 });
-      expect(legalCommands(data, s, 0).some((c) => c.type === "refillPoldeci")).toBe(true);
-      expect(tahBota(data, s, 0, 5, { povaha: povaha.id }).type, povaha.id).toBe("refillPoldeci");
-    }
-  });
-
   it("vo finále nefajčí cigaretu, ktorá by zobrala špak z výkupného, ani kvôli Absťáku po finále", () => {
     for (const povaha of POVAHY) {
       // Jedna karta v ruke (s prázdnou by fajčil — karta mu ešte môže vyhrať finále), súper má v kole 6 nerestí.
@@ -395,8 +386,11 @@ describe("offline protihráč — celá partia vrátane finále (Michal 2026-11-
       expect(legalCommands(data, tenka, 0).some((c) => c.type === "smoke")).toBe(true);
       // Do v11.20 by kartu nahradilo dobratie do 3, teraz ruka v ďalšom kole narastie o ňu.
       expect(tahBota(data, tenka, 0, 5, { povaha: povaha.id }).type, povaha.id).toBe("smoke");
-      // Rudo z prebytku najprv nalieva — to je jeho štýl; ostatní si dokúpia kartu.
-      expect(tahBota(data, v(14, 3), 0, 5, { povaha: povaha.id }).type, povaha.id).toBe(povaha.poldeci === undefined ? "smoke" : "barter");
+      // Rudo z prebytku najprv nalieva — to je jeho štýl; ostatní si dokúpia kartu, alebo (v12.2) poldeci
+      // navyše natrvalo, keď majú v ruke viac kariet, než je ich limit.
+      const zPrebytku = tahBota(data, v(14, 3), 0, 5, { povaha: povaha.id }).type;
+      if (povaha.poldeci === undefined) expect(["smoke", "barter"], povaha.id).toContain(zPrebytku);
+      else expect(zPrebytku, povaha.id).toBe("barter");
     }
   });
 });

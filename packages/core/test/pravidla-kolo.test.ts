@@ -198,7 +198,8 @@ describe("§13 Vypiť, §11 priznanie a §12 Dedičstvo v ťahu", () => {
     const dobre: Command = { type: "tah", kroky: [{ type: "vypit" }, { type: "place", uid: a.uid, target: "vlastna" }, { type: "place", uid: b.uid, target: "vlastna" }] };
     const po = apply(data, s, dobre, 0).state;
     expect(po.strany[0].map((pl) => pl.card.uid)).toEqual([a.uid, b.uid]);
-    expect(po.hraci[0].poldeciPlne).toBe(1);
+    // v12.2: dve karty = dva plné poldeci a cigareta.
+    expect(po.hraci[0].poldeciPlne).toBe(0);
   });
 
   it("§6/§11: priznanie neodovzdá ťah, vyloženie Nástroja do Dedičstva áno — a limit vykladania nemíňa", () => {
@@ -415,14 +416,14 @@ describe("§2, §6 a §7 — doplnky prvého prechodu", () => {
       pitkyCelkom: 2,
     });
     s = sHracom(s, 0, { poldeciPlne: 1, poldeciVypite: 0, cigarety: 5 });
-    // Útočník 0 dokúpi barterom poldeci v Pitke — v ďalšom Zhromaždení má limit 2 + 0 + 1.
+    // Útočník 0 dokúpi barterom poldeci v Pitke — v ďalšom Zhromaždení má limit = 2 plné (v12.2).
     // Obranca nemá kam dať NA EX (karty bez neaktívnej akcie) — jeho ťah hra prejde sama.
     if (naTahu(s) === 1) s = apply(sada, s, { type: "skipNaex" }, 1).state;
     s = apply(sada, s, { type: "barter" }, 0).state;
     // Po barteri mu ostane len „hotovo“ — aj to hra urobí sama.
     if (s.faza === "pitka") s = apply(sada, s, { type: "skipNaex" }, 0).state;
     expect(s.faza).toBe("zhromazdenie");
-    expect(s.zhromazdenieStav?.zostavaLimit[0]).toBe(2 + 0 + 1);
+    expect(s.zhromazdenieStav?.zostavaLimit[0]).toBe(2);
     expect(s.zhromazdenieStav?.naTahu).toBe(0);
   });
 

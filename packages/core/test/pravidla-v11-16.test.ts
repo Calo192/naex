@@ -7,7 +7,7 @@ import cardsJson from "../data/cards.json";
 import eldersJson from "../data/elders.json";
 import scorecardsJson from "../data/scorecards.json";
 import type { CardInstance, Command, Event, GameData, GameState, LineState, PlacedCard, PlayerId } from "../src/index.ts";
-import { ODPOVED_BEZ_POLDECI, VYPIT_BEZ_LIMITU, apply, evaluateLine, legalCommands, lineState, loadGameData, naTahu, opponentOf, planVykladania, ponukaPodlozenia, setupGame, tahBota } from "../src/index.ts";
+import { KONSTANTY, ODPOVED_BEZ_POLDECI, VYPIT_BEZ_LIMITU, apply, applySPrisunom, evaluateLine, legalCommands, lineState, loadGameData, naTahu, opponentOf, planVykladania, ponukaPodlozenia, setupGame, tahBota } from "../src/index.ts";
 import type { Layout4 } from "./helpers.ts";
 import { EMPTY, instanceFor, makeDef, syntheticData } from "./helpers.ts";
 import { dataSHranami } from "./naradieData.ts";
@@ -49,25 +49,27 @@ function vZhromazdeni(
   };
 }
 
-describe("§13 Vypiť len so zostávajúcim limitom (v11.16)", () => {
-  it("pri limite 0 server Vypiť odmietne a hra ho neponúkne; pri limite 1 smie a limit klesne na 0", () => {
-    const nula = vZhromazdeni(data, { ruka: [inst("pijan"), inst("masiar")], limit: [0, 3] });
-    expect(() => apply(data, nula, { type: "vypit" }, 0)).toThrow(VYPIT_BEZ_LIMITU);
-    expect(legalCommands(data, nula, 0).some((c) => c.type === "vypit")).toBe(false);
+describe("§13 Vypiť len s plným poldeci aj na ďalšiu kartu (v11.16, v12.2)", () => {
+  it("s 1 plným server Vypiť odmietne a hra ho neponúkne; s 2 smie — cigareta, nerest, poldeci otočí až karta", () => {
+    const jedenPlny = vZhromazdeni(data, { ruka: [inst("pijan"), inst("masiar")], limit: [1, 3], plne: [1, 3] });
+    expect(() => apply(data, jedenPlny, { type: "vypit" }, 0)).toThrow(VYPIT_BEZ_LIMITU);
+    expect(legalCommands(data, jedenPlny, 0).some((c) => c.type === "vypit")).toBe(false);
 
-    const jeden = vZhromazdeni(data, { ruka: [inst("pijan"), inst("masiar")], limit: [1, 3] });
-    expect(legalCommands(data, jeden, 0).some((c) => c.type === "vypit")).toBe(true);
-    const po = apply(data, jeden, { type: "vypit" }, 0).state;
-    expect(po.zhromazdenieStav?.zostavaLimit[0]).toBe(0);
-    expect(po.hraci[0].poldeciPlne).toBe(1);
-    // Druhé vypitie pri limite 0 už nie — predtým by bolo len kúpou neresti.
+    const dva = vZhromazdeni(data, { ruka: [inst("pijan"), inst("masiar")], limit: [2, 3], plne: [2, 3] });
+    expect(legalCommands(data, dva, 0).some((c) => c.type === "vypit")).toBe(true);
+    const po = apply(data, dva, { type: "vypit" }, 0).state;
+    expect(po.hraci[0].poldeciPlne).toBe(2);
+    expect(po.hraci[0].cigarety).toBe(dva.hraci[0].cigarety - KONSTANTY.CENA_KARTY_NAVYSE);
+    expect(po.hraci[0].nerestiTotoKolo).toBe(1);
+    expect(po.zhromazdenieStav?.navyse[0]).toBe(1);
+    // Tretia karta by potrebovala tretí plný poldeci.
     expect(legalCommands(data, po, 0).some((c) => c.type === "vypit")).toBe(false);
   });
 
-  it("plán ťahu (klient aj príkaz tah) odmietne Vypiť pri limite 0", () => {
-    const s = vZhromazdeni(data, { ruka: [inst("pijan"), inst("masiar")], limit: [0, 3] });
+  it("plán ťahu (klient aj príkaz tah) odmietne druhú kartu s jediným plným poldeci", () => {
+    const s = vZhromazdeni(data, { ruka: [inst("pijan"), inst("masiar")], limit: [1, 3], plne: [1, 3] });
     const [a, b] = s.hraci[0].ruka as [CardInstance, CardInstance];
-    const plan = planVykladania(data, s, 0, 0, [
+    const plan = planVykladania(data, s, 0, 1, [
       { karta: a, ciel: "vlastna" },
       { karta: b, ciel: "vlastna" },
     ]);
@@ -82,42 +84,38 @@ describe("§13 Vypiť len so zostávajúcim limitom (v11.16)", () => {
   });
 });
 
-describe("§6 pas bez ohľadu na karty v ruke (v11.16)", () => {
-  it("limit 3, jedna karta vyložená, ruka prázdna — pas dá 2 cigarety", () => {
+describe("§6 pas cigarety nedáva (v12.2)", () => {
+  it("3 plné, jedna karta vyložená, ruka prázdna — pas za hráča nedá nič, 2 plné ostávajú", () => {
     const pijan = inst("pijan");
-    let s = vZhromazdeni(data, { ruka: [pijan], limit: [3, 3] });
+    let s = vZhromazdeni(data, { ruka: [pijan], limit: [3, 3], plne: [3, 3] });
     const cig = s.hraci[0].cigarety;
     s = apply(data, s, { type: "place", uid: pijan.uid, target: "vlastna" }, 0).state;
     expect(s.hraci[0].ruka).toEqual([]);
     expect(s.zhromazdenieStav?.zostavaLimit[0]).toBe(2);
     // Súper pasuje; hráč 0 s prázdnou rukou nemá čo vyložiť — pasuje za neho hra.
     s = apply(data, s, { type: "pass" }, 1).state;
-    expect(s.hraci[0].cigarety).toBe(cig + 2);
+    expect(s.hraci[0].cigarety).toBe(cig);
+    expect(s.hraci[0].poldeciPlne).toBe(2);
   });
 });
 
 describe("§16 Degustátorka zníži súperov limit hneď (v11.16)", () => {
   it("súper s viac plnými poldeci: plný poldeci je vypitý a jeho zostávajúci limit hneď klesne o 1", () => {
     const deg = inst("degustatorka");
-    const s = vZhromazdeni(data, { ruka: [deg, inst("pijan")], limit: [3, 3], plne: [0, 2] });
+    const s = vZhromazdeni(data, { ruka: [deg, inst("pijan")], limit: [1, 2], plne: [1, 2] });
     const po = apply(data, s, { type: "place", uid: deg.uid, target: "vlastna" }, 0).state;
     expect(po.hraci[1].poldeciPlne).toBe(1);
     expect(po.hraci[1].poldeciVypite).toBe(1);
-    expect(po.zhromazdenieStav?.zostavaLimit[1]).toBe(2);
-    // Majiteľovi Degustátorka limit minie ako každé vyloženie.
-    expect(po.zhromazdenieStav?.zostavaLimit[0]).toBe(2);
+    expect(po.zhromazdenieStav?.zostavaLimit[1]).toBe(1);
+    // Majiteľ za Degustátorku vypije plný poldeci ako za každú kartu (v12.2) — pred jej Nástupom.
+    expect(po.zhromazdenieStav?.zostavaLimit[0]).toBe(0);
   });
 
-  it("súperov limit neklesne pod 0; bez viac plných poldeci sa nič nemení", () => {
+  it("bez viac plných poldeci sa nič nemení — porovnáva sa po zaplatení Degustátorky", () => {
     const deg = inst("degustatorka");
-    const vycerpany = apply(data, vZhromazdeni(data, { ruka: [deg, inst("pijan")], limit: [3, 0], plne: [0, 2] }), { type: "place", uid: deg.uid, target: "vlastna" }, 0).state;
-    expect(vycerpany.zhromazdenieStav?.zostavaLimit[1]).toBe(0);
-    expect(vycerpany.hraci[1].poldeciPlne).toBe(1);
-
-    const deg2 = inst("degustatorka");
-    const rovnako = apply(data, vZhromazdeni(data, { ruka: [deg2, inst("pijan")], limit: [3, 3], plne: [2, 2] }), { type: "place", uid: deg2.uid, target: "vlastna" }, 0).state;
-    expect(rovnako.zhromazdenieStav?.zostavaLimit[1]).toBe(3);
-    expect(rovnako.hraci[1].poldeciPlne).toBe(2);
+    const rovnako = apply(data, vZhromazdeni(data, { ruka: [deg, inst("pijan")], limit: [2, 1], plne: [2, 1] }), { type: "place", uid: deg.uid, target: "vlastna" }, 0).state;
+    expect(rovnako.zhromazdenieStav?.zostavaLimit[1]).toBe(1);
+    expect(rovnako.hraci[1].poldeciPlne).toBe(1);
   });
 });
 
@@ -186,14 +184,12 @@ describe("§7 odpoveď na NA EX stojí plný poldeci (v11.16)", () => {
   });
 
   it("odpoveď z pohľadu: vypitý poldeci a nerest sa pripíšu hneď", () => {
-    // Druhý ešte odpovedá — Pitka sa nevyhodnotila, zmenu vidno čistú. Bez plného poldeci či
-    // karty by druhý odpoveď vynechal a Pitka by sa vyhodnotila hneď.
-    const t = tahy.find((x) => x.cmd.type === "place" && x.pred.pitkaStav?.frontaReakcii?.length && apply(data, x.pred, x.cmd, x.pred.pitkaStav.reakcia as PlayerId).state.pitkaStav?.reakcia === opponentOf(x.pred.pitkaStav.reakcia as PlayerId))!;
+    // Po odpovedi sa Pitka často hneď vyhodnotí a doleje (v12.2) — platba je v knihe poldeci.
+    const t = tahy.find((x) => x.cmd.type === "place")!;
     const q = t.pred.pitkaStav!.reakcia as PlayerId;
-    const po = apply(data, t.pred, t.cmd, q).state;
-    expect(po.hraci[q].poldeciPlne).toBe(t.pred.hraci[q].poldeciPlne - 1);
-    expect(po.hraci[q].poldeciVypite).toBe(t.pred.hraci[q].poldeciVypite + 1);
-    expect(po.hraci[q].nerestiTotoKolo).toBe(t.pred.hraci[q].nerestiTotoKolo + 1);
+    const r = applySPrisunom(data, t.pred, t.cmd, q);
+    expect(r.events).toContainEqual({ type: "zmenaPoldeci", hrac: q, zdroj: "platba", suma: -1 });
+    expect(r.state.hraci[q].nerestiTotoKolo).toBeGreaterThanOrEqual(t.pred.hraci[q].nerestiTotoKolo + 1);
   });
 });
 

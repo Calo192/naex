@@ -26,25 +26,25 @@ function placed(playedBy: 0 | 1, naexBy?: 0 | 1): PlacedCard {
 }
 
 describe("M3 — limit vykladania", () => {
-  it("2 plné poldeci na štarte → limit 3 (Michal 2026-10-20)", () => {
+  it("3 plné poldeci na štarte → limit 3 (v12.2, Michal 2026-11-11: limit = plné poldeci)", () => {
     const player = freshPlayer();
-    expect(player.poldeciPlne).toBe(2);
+    expect(player.poldeciPlne).toBe(3);
     expect(limitVykladania(player)).toBe(3);
   });
 
-  it("po vypití jedného → limit 2", () => {
+  it("po vypití jedného → limit 1 z 2", () => {
     const player = { ...freshPlayer(), poldeciPlne: 1, poldeciVypite: 1 };
-    expect(limitVykladania(player)).toBe(2);
+    expect(limitVykladania(player)).toBe(1);
   });
 
   it("poldeci cez NA EX limit nezvyšuje — ani majiteľovi poldeci (pravidlá v4)", () => {
     // Hráč 0 dal NA EX na kartu ležiacu v partii hráča 1: plný poldeci odišiel
-    // z jeho zásoby na kartu — limit je len 1 + 1 = 2 (do v4 bol 3).
+    // z jeho zásoby na kartu — limit je len 1 (v12.2 bez + 1).
     const s0 = setupGame(loadGameData(cardsJson, eldersJson, scorecardsJson), 1);
     const strany: [PlacedCard[], PlacedCard[]] = [[], [placed(1, 0)]];
     const s = { ...s0, strany, hraci: [{ ...s0.hraci[0], poldeciPlne: 1 }, { ...s0.hraci[1], poldeciPlne: 2 }] } as typeof s0;
-    expect(limitZhromazdenia(s, 0)).toBe(2);
-    expect(limitZhromazdenia(s, 1)).toBe(3);
+    expect(limitZhromazdenia(s, 0)).toBe(1);
+    expect(limitZhromazdenia(s, 1)).toBe(2);
   });
 
   it("priznané karty limit neovplyvňujú", () => {
@@ -53,7 +53,7 @@ describe("M3 — limit vykladania", () => {
       poldeciPlne: 2,
       priznane: [instanceFor(data, "obcan", EMPTY, EMPTY)],
     };
-    expect(limitVykladania(player)).toBe(3);
+    expect(limitVykladania(player)).toBe(2);
   });
 });
 

@@ -52,7 +52,8 @@ describe("zastavenie po poslednej Pitke", () => {
       poslednych++;
       expect(d.events[i]?.type).toBe("pitkaRekap");
       expect(d.events.slice(i).some((e) => e.type === "faza" && e.faza === "bitka")).toBe(true);
-      expect(d.pred.faza).toBe("pitka");
+      // v12.2: po pase často nikto nemá v Pitke inú možnosť než „hotovo“ — Pitku dohrá ešte ťah Zhromaždenia.
+      expect(["pitka", "zhromazdenie"]).toContain(d.pred.faza);
     }
     expect(poslednych).toBeGreaterThan(3);
   });

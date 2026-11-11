@@ -11,7 +11,8 @@ import type { BitkaStav, CardInstance, GameState, LineState, PlacedCard, PlayerI
 import {
   apply,
   favourStarsieho,
-  cigaretyZaPas,
+  KONSTANTY,
+  doliatiePoPitke,
   evaluateLine,
   legalCommands,
   loadGameData,
@@ -148,19 +149,21 @@ describe("Náradie mimo línie (§11, §12)", () => {
     expect(vplyvyNaAkcie(s, 0)).toContainEqual({ akcia: "Pecka", zdroj: "boxer", o: 1 });
   });
 
-  it("Izolačka (pistalka): súperove Obmedzenia v línii uberajú aj cigarety za pas", () => {
+  it("Izolačka (pistalka, v12.2): za každé súperovo aktívne Obmedzenie sa ti po Pitke doleje o 1 poldeci menej", () => {
     const s0 = setupGame(data, 4);
-    const zh = { naTahu: 0, pasoval: [false, false], zostavaLimit: [3, 3], navyse: [0, 0] };
-    const s = { ...s0, zhromazdenieStav: zh as unknown as GameState["zhromazdenieStav"], lokalitaOtocena: false };
-    const bez = cigaretyZaPas(data, s as GameState, 0);
-    expect(bez).toBe(3);
-    // Bez Obmedzení v línii Izolačka nič neuberie.
-    expect(cigaretyZaPas(data, sDedicstvom(s as GameState, 1, ["pistalka"]), 0)).toBe(3);
-    // Súper (hráč 1) má v línii spoj Obmedzenie–Obmedzenie = 2 aktívne: s Izolačkou za pas 3 − 2.
-    const o = (): CardInstance => instanceFor(data, "obmedzenie_test", ["Obmedzenie", null, null, null], ["Obmedzenie", null, null, null]);
-    const sObm = { ...s, strany: [[], [{ card: o(), playedBy: 1 as PlayerId }, { card: o(), playedBy: 1 as PlayerId }]] } as GameState;
-    expect(cigaretyZaPas(data, sObm, 0)).toBe(3);
-    expect(cigaretyZaPas(data, sDedicstvom(sObm, 1, ["pistalka"]), 0)).toBe(1);
+    const s: GameState = { ...s0, hraci: [{ ...s0.hraci[0], poldeciPlne: 0, poldeciVypite: 5 }, s0.hraci[1]] };
+    const sums = [{ Poldeci: 2 }, { Obmedzenie: 2 }] as const;
+    // Bez Izolačky: 1 zadarmo + 2 akcie Poldeci.
+    expect(doliatiePoPitke(s, sums, 0).zisk).toBe(3);
+    // Súperova Izolačka uberie 2 — najprv to zadarmo, potom z akcií.
+    const iz = doliatiePoPitke(sDedicstvom(s, 1, ["pistalka"]), sums, 0);
+    expect(iz.zisk).toBe(1);
+    expect(iz.izolacka).toBe(2);
+    expect(iz.casti).toEqual([["akcie", 1]]);
+    // Najmenej 0 — Obmedzení viac než doliatia.
+    expect(doliatiePoPitke(sDedicstvom(s, 1, ["pistalka"]), [{}, { Obmedzenie: 4 }], 0).zisk).toBe(0);
+    // Vlastná Izolačka tvoje doliatie nemení.
+    expect(doliatiePoPitke(sDedicstvom(s, 0, ["pistalka"]), sums, 0).zisk).toBe(3);
   });
 
   it("Robota bez Dlhu dá špak; s Fúrikom spáli 2 Dlhy, bez nich 2 špaky", () => {
@@ -195,7 +198,7 @@ describe("Náradie mimo línie (§11, §12)", () => {
     expect(d.spaky[0] - b.spaky[0]).toBe(1);
   });
 
-  it("Jogurt: tvoje Poldeci otočia vypitý poldeci hneď v Pitke, bitka ich znova neotočí", () => {
+  it("Jogurt (v12.2): po každej Pitke sa doleje o 1 poldeci viac", () => {
     const s0 = setupGame(data, 7);
     const k = (): CardInstance => instanceFor(data, "poldeci_test", ["Poldeci", null, null, null], ["Poldeci", null, null, null]);
     const pitka = (jogurt: boolean): GameState => {
@@ -209,7 +212,7 @@ describe("Náradie mimo línie (§11, §12)", () => {
         pitkyCelkom: 1,
         pitkaCislo: 1,
         pitkaStav: { naTahu: 0, hotovy: [false, false], naexPouzity: [false, false], fajcenie: [0, 0], reakcia: null, postarka: [false, false], starosta: [false, false], naexPocet: [0, 0] },
-        hraci: [{ ...s0.hraci[0], poldeciPlne: 0, poldeciVypite: 2 }, s0.hraci[1]],
+        hraci: [{ ...s0.hraci[0], poldeciPlne: 0, poldeciVypite: 6 }, s0.hraci[1]],
       };
       return jogurt ? sDedicstvom(zaklad, 0, ["jogurt"]) : zaklad;
     };
@@ -224,8 +227,8 @@ describe("Náradie mimo línie (§11, §12)", () => {
     };
     const bez = skonci(pitka(false));
     const s = skonci(pitka(true));
-    expect(s.hraci[0].poldeciPlne - bez.hraci[0].poldeciPlne).toBeGreaterThanOrEqual(1);
-    expect(s.poldeciOtoceneVKole?.[0] ?? 0).toBeGreaterThanOrEqual(1);
+    expect(bez.hraci[0].poldeciPlne).toBeGreaterThanOrEqual(2);
+    expect(s.hraci[0].poldeciPlne - bez.hraci[0].poldeciPlne).toBe(KONSTANTY.JOGURT_POLDECI);
   });
 
   it("Krištáľová guľa: Vízia ponúkne aj druhú kartu zhora — tá ide do ruky, vrchná ostane navrchu", () => {

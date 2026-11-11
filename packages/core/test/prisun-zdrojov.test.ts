@@ -88,7 +88,8 @@ describe("účtovná kniha cigariet", () => {
 
   it("náhodné partie prejdú hlavnými zdrojmi prísunu", () => {
     const zdroje = new Set(KROKY.flatMap((k) => k.events.flatMap((e) => (e.type === "zmenaCigariet" ? [e.zdroj] : []))));
-    for (const z of ["akcie", "pas", "porazeny", "platba"] as const) expect(zdroje).toContain(z);
+    // Cigarety za pas zanikli vo v12.2.
+    for (const z of ["akcie", "porazeny", "platba"] as const) expect(zdroje).toContain(z);
   });
 
   it("apply vracia to isté ako applySPrisunom bez knihy — stopa partie sa nemení", () => {
@@ -263,29 +264,32 @@ describe("účtovná kniha poldeci", () => {
 
   it("náhodné partie prejdú hlavnými zdrojmi poldeci", () => {
     const zdroje = new Set(KROKY.flatMap((k) => k.events.flatMap((e) => (e.type === "zmenaPoldeci" ? [e.zdroj] : []))));
-    for (const z of ["zaciatokKola", "doliatie", "akcie", "platba"] as const) expect(zdroje).toContain(z);
+    for (const z of ["pitka", "obnova", "platba"] as const) expect(zdroje).toContain(z);
   });
 
-  it("Vypiť a odkryté NA EX sú platba, prísun nespustia; doliatie a nový poldeci áno", () => {
+  it("vyložená karta je platba poldeci, Vypiť len cigaretou (v12.2); nový poldeci z barteru je prísun", () => {
+    const karty = KROKY.filter((k) => k.cmd.type === "place" && (k.cmd.target === "vlastna" || k.cmd.target === "superova") && k.pred.faza === "zhromazdenie");
+    expect(karty.length).toBeGreaterThan(0);
+    for (const { events, kto } of karty) expect(zdrojePoldeci(events, kto)[0]).toBe("platba");
     const vypit = KROKY.filter((k) => k.cmd.type === "vypit");
-    expect(vypit.length).toBeGreaterThan(0);
     for (const { events, kto } of vypit) {
-      expect(zdrojePoldeci(events, kto)).toEqual(["platba"]);
-      expect(prisunPoldeci(events)[kto]).toBeNull();
+      expect(zdrojePoldeci(events, kto)).toEqual([]);
+      expect(events).toContainEqual({ type: "zmenaCigariet", hrac: kto, zdroj: "platba", suma: -KONSTANTY.CENA_KARTY_NAVYSE });
     }
-    const nakup = KROKY.filter((k) => k.cmd.type === "refillPoldeci" || k.cmd.type === "barter");
-    expect(nakup.length).toBeGreaterThan(0);
-    for (const { events, kto, cmd } of nakup) {
-      // Keď ťah Pitku dohrá (nevyhnutné ťahy hrá hra sama), pribudnú aj akcie Poldeci z jej vyhodnotenia.
-      expect(prisunPoldeci(events)[kto]?.riadky).toContainEqual({ zdroj: cmd.type === "barter" ? "barter" : "doliatie", suma: 1 });
+    const nakup = KROKY.filter((k) => k.cmd.type === "barter");
+    for (const { events, kto } of nakup) {
+      // Keď ťah Pitku dohrá (nevyhnutné ťahy hrá hra sama), pribudne aj doliatie po Pitke.
+      expect(prisunPoldeci(events)[kto]?.riadky).toContainEqual({ zdroj: "barter", suma: 1 });
     }
   });
 
-  it("začiatok kola doleje cez knihu ako zdroj Začiatok kola", () => {
-    const krok = KROKY.find((k) => k.events.some((e) => e.type === "zmenaPoldeci" && e.zdroj === "zaciatokKola"));
+  it("po bitke sa poldeci obnovia cez knihu ako zdroj Po bitke — celé vypité na plné (v12.2)", () => {
+    const krok = KROKY.find((k) => k.events.some((e) => e.type === "zmenaPoldeci" && e.zdroj === "obnova"));
     expect(krok).toBeDefined();
-    const e = krok?.events.find((x) => x.type === "zmenaPoldeci" && x.zdroj === "zaciatokKola");
-    expect(e?.type === "zmenaPoldeci" ? e.suma : 0).toBe(KONSTANTY.POLDECI_NA_ZACIATKU_KOLA);
+    for (const p of [0, 1] as const) {
+      const e = krok?.events.find((x) => x.type === "zmenaPoldeci" && x.zdroj === "obnova" && x.hrac === p);
+      if (e?.type === "zmenaPoldeci") expect(krok?.po.hraci[p].poldeciVypite).toBe(0);
+    }
   });
 
   it("Degustátorka je súperov efekt: záporný prísun, nie platba", () => {
@@ -297,7 +301,7 @@ describe("účtovná kniha poldeci", () => {
   it("knihy cigariet a poldeci sa nemiešajú", () => {
     const events: Event[] = [
       { type: "zmenaCigariet", hrac: 0, zdroj: "platba", suma: -2 },
-      { type: "zmenaPoldeci", hrac: 0, zdroj: "doliatie", suma: 1 },
+      { type: "zmenaPoldeci", hrac: 0, zdroj: "pitka", suma: 1 },
     ];
     expect(prisunZUdalosti(events)).toEqual([null, null]);
     expect(prisunZUdalosti(events, "poldeci")[0]?.suma).toBe(1);
@@ -305,20 +309,20 @@ describe("účtovná kniha poldeci", () => {
 });
 
 describe("čakajúce poldeci a náhľad Pitky", () => {
-  it("najviac toľko, koľko je vypitých a na stole; riadok len keď niečo naozaj otočí", () => {
-    expect(riadkyCakajucichPoldeci({ akcie: 3, zisk: 1 })).toEqual([{ zdroj: "akcie", suma: 1 }]);
-    expect(riadkyCakajucichPoldeci({ akcie: 2, zisk: 0 })).toEqual([]);
+  it("najviac toľko, koľko je vypitých; riadky po zdrojoch, len keď niečo naozaj otočí", () => {
+    expect(riadkyCakajucichPoldeci({ akcie: 3, zisk: 2, casti: [["pitka", 1], ["akcie", 1]], izolacka: 0 })).toEqual([{ zdroj: "pitka", suma: 1 }, { zdroj: "akcie", suma: 1 }]);
+    expect(riadkyCakajucichPoldeci({ akcie: 2, zisk: 0, casti: [], izolacka: 0 })).toEqual([]);
     for (const { pred } of KROKY) {
       if (pred.faza !== "pitka" && pred.faza !== "zhromazdenie") continue;
       if (pred.ciel === null) continue;
-      for (const n of nahladPitky(data, pred)) {
-        expect(n.poldeci.zisk).toBeLessThanOrEqual(n.poldeci.akcie);
-        expect(n.poldeci.zisk).toBeGreaterThanOrEqual(0);
+      for (const [p, n] of nahladPitky(data, pred).entries()) {
+        expect(n.poldeci.zisk).toBeLessThanOrEqual(pred.hraci[p]?.poldeciVypite ?? 0);
+        expect(n.poldeci.zisk).toBe(n.poldeci.casti.reduce((a, [, x]) => a + x, 0));
       }
     }
   });
 
-  it("posledný odhad pred bitkou bez skrytého NA EX sa zhoduje s tým, čo akcie v kole otočili", () => {
+  it("posledný odhad pred bitkou bez skrytého NA EX sa zhoduje s tým, čo sa po Pitke dolialo (v12.2)", () => {
     let porovnane = 0;
     let zhody = 0;
     for (const kroky of PARTIE) {
@@ -326,10 +330,10 @@ describe("čakajúce poldeci a náhľad Pitky", () => {
         if (!events.some((e) => e.type === "bitkaVysledok") || pred.faza !== "pitka" || pred.ciel === null) return;
         if ((pred.pitkaStav?.skryteNaex?.length ?? 0) > 0) return;
         const odhad = nahladPitky(data, pred);
-        // Bitka čaká na rozdelenie Nakladačky a Rečí — poldeci sa vypijú až po nich, nie v ťahu bitky.
-        const dalsie = kroky.slice(i).filter((k) => k.pred.kolo === pred.kolo);
+        // Doliatie po Pitke je v tom istom ťahu, ktorý Pitku dohrá.
+        const dalsie = kroky.slice(i, i + 1);
         for (const p of [0, 1] as const) {
-          const naozaj = dalsie.flatMap((k) => k.events).reduce((n, e) => (e.type === "zmenaPoldeci" && e.hrac === p && (e.zdroj === "akcie" || e.zdroj === "jogurt") ? n + e.suma : n), 0);
+          const naozaj = dalsie.flatMap((k) => k.events).reduce((n, e) => (e.type === "zmenaPoldeci" && e.hrac === p && (e.zdroj === "akcie" || e.zdroj === "jogurt" || e.zdroj === "pitka") ? n + e.suma : n), 0);
           porovnane++;
           if (odhad[p].poldeci.zisk === naozaj) zhody++;
         }
@@ -340,14 +344,14 @@ describe("čakajúce poldeci a náhľad Pitky", () => {
     expect(zhody / porovnane).toBeGreaterThan(0.8);
   });
 
-  it("Jogurt: čo akcie otočili už v Pitke, pečiatka nesľúbi druhýkrát", () => {
+  it("Jogurt: pečiatka sľúbi o poldeci viac, keď je čo doliať (v12.2)", () => {
     const s = KROKY.find((k) => k.pred.ciel !== null && k.pred.faza === "pitka")?.pred;
     expect(s).toBeDefined();
     if (s === undefined) return;
-    const bez = nahladPitky(data, s);
-    const otocene = [bez[0].poldeci.akcie, bez[1].poldeci.akcie] as const;
-    const po = nahladPitky(data, { ...s, poldeciOtoceneVKole: otocene });
-    for (const n of po) expect(n.poldeci).toEqual({ akcie: 0, zisk: 0 });
+    const vypite = { ...s, hraci: s.hraci.map((h) => ({ ...h, poldeciVypite: 9 })) as unknown as GameState["hraci"] };
+    const bez = nahladPitky(data, vypite);
+    const sJogurtom = { ...vypite, hraci: [{ ...vypite.hraci[0], dedicstvo: [...vypite.hraci[0].dedicstvo, { uid: 99901, defId: "jogurt", leftLayout: 0, rightLayout: 0 }] }, vypite.hraci[1]] as unknown as GameState["hraci"] };
+    expect(nahladPitky(data, sJogurtom)[0].poldeci.zisk).toBe(bez[0].poldeci.zisk + KONSTANTY.JOGURT_POLDECI);
   });
 });
 

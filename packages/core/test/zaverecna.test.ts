@@ -75,7 +75,8 @@ describe("Záverečná — zahranie", () => {
     expect(legalCommands(data, s, 0)).toContainEqual({ type: "zaverecna", uid: pijan.uid, target: "vlastna" });
     const { state, events } = apply(data, s, { type: "zaverecna", uid: pijan.uid, target: "vlastna" }, 0);
     expect(state.hraci[0].cigarety).toBe(2);
-    expect(state.zhromazdenieStav?.zostavaLimit[0]).toBe(2);
+    // v12.2: Záverečná otočí plný poldeci ako každá karta.
+    expect(state.zhromazdenieStav?.zostavaLimit[0]).toBe(1);
     expect(state.zhromazdenieStav?.pasoval[0]).toBe(true);
     expect(state.strany[0]).toEqual([{ card: pijan, playedBy: 0, zaverecna: true }]);
     // Log meno karty neprezradí.
@@ -90,8 +91,8 @@ describe("Záverečná — zahranie", () => {
     const pijan = inst("pijan");
     expect(() => apply(data, vZhromazdeni([pijan], [[], []], 0), { type: "zaverecna", uid: pijan.uid, target: "vlastna" }, 0)).toThrow(/stojí/);
     const bezLimitu = vZhromazdeni([pijan]);
-    const s = { ...bezLimitu, zhromazdenieStav: { ...bezLimitu.zhromazdenieStav!, zostavaLimit: [0, 3] as [number, number] } };
-    expect(() => apply(data, s, { type: "zaverecna", uid: pijan.uid, target: "vlastna" }, 0)).toThrow(/Limit/);
+    const s = { ...bezLimitu, hraci: [{ ...bezLimitu.hraci[0], poldeciPlne: 0 }, bezLimitu.hraci[1]] as GameState["hraci"], zhromazdenieStav: { ...bezLimitu.zhromazdenieStav!, zostavaLimit: [0, 3] as [number, number] } };
+    expect(() => apply(data, s, { type: "zaverecna", uid: pijan.uid, target: "vlastna" }, 0)).toThrow(/plný poldeci/);
   });
 
   it("planVykladania: Záverečná ako posledná karta ťahu, inak chyba", () => {

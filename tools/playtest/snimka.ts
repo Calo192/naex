@@ -12,6 +12,7 @@
 // --klik klikne na prvok (CSS selektor, napr. ".tlacidlo-naex") a odfotí výsledok;
 // --klik sa dá zopakovať — kliky idú postupne, po každom snímka.
 // --vyrez selektor odfotí len okolie prvku (dá sa zopakovať); pri stole vypíše, či stránka scrolluje.
+// --jazyk sk odfotí web v danom jazyku (inak jazyk prehliadača).
 // --schema noc odfotí web vo farebnej schéme (id z apps/web/src/lib/schemy.ts).
 // --par w9 [--prehod] odfotí web s párom farieb hráča (apps/web/src/lib/paryHraca.ts);
 // pár uložený v účte má prednosť, preto len pre účty, ktoré si ho v profile nevybrali.
@@ -75,6 +76,8 @@ const vyrezy = args.flatMap((a, i) => (args[i - 1] === "--vyrez" ? [a] : []));
 /** Farebná schéma webu (apps/web/src/lib/schemy.ts), napr. „noc"; inak tá z účtu. */
 const schema = volba("--schema");
 const par = volba("--par");
+/** Jazyk webu (sk, en…) — AI účet v headless Chrome inak dostane jazyk prehliadača. */
+const jazyk = volba("--jazyk");
 const nazov = ((web ? hracArg : nazovArg) ?? "stav").replace(/[^a-z0-9_-]/gi, "_");
 
 /** Kam a ako sa prihlásiť: hráč partie playtestu, alebo AI účet na webe. */
@@ -154,8 +157,10 @@ try {
   let id = 0;
   const cakajuce = new Map<number, (v: Record<string, unknown>) => void>();
   ws.on("message", (d) => {
-    const m = JSON.parse(String(d)) as { id?: number; result?: Record<string, unknown> };
+    const m = JSON.parse(String(d)) as { id?: number; method?: string; params?: { exceptionDetails?: { exception?: { description?: string }; text?: string } }; result?: Record<string, unknown> };
     if (m.id !== undefined) cakajuce.get(m.id)?.(m.result ?? {});
+    // Chyba v stránke (prázdny stôl) — bez nej by snímka bola len tmavé pozadie.
+    if (m.method === "Runtime.exceptionThrown") console.error(`chyba stránky: ${m.params?.exceptionDetails?.exception?.description ?? m.params?.exceptionDetails?.text ?? "?"}`.slice(0, 1500));
   });
   const posli = (method: string, params: Record<string, unknown> = {}) =>
     new Promise<Record<string, unknown>>((ok) => {
@@ -165,6 +170,7 @@ try {
     });
   const js = (expression: string) => posli("Runtime.evaluate", { expression, awaitPromise: true, returnByValue: true });
 
+  await posli("Runtime.enable");
   await posli("Emulation.setDeviceMetricsOverride", { width: sirka, height: vyska, deviceScaleFactor: 1, mobile: mobil });
   if (mobil) await posli("Emulation.setTouchEmulationEnabled", { enabled: true });
   if (ma("--iphone"))
@@ -182,6 +188,7 @@ try {
   const miestnost =
     (ucet.miestnost === null ? "" : `localStorage.setItem('naex.miestnost',${JSON.stringify(ucet.miestnost)});`) +
     (schema === undefined ? "" : `localStorage.setItem('naex-schema',${JSON.stringify(schema)});`) +
+    (jazyk === undefined ? "" : `localStorage.setItem('naex_jazyk',${JSON.stringify(jazyk)});`) +
     (par === undefined ? "" : `localStorage.setItem('naex-par',${JSON.stringify(par)});localStorage.setItem('naex-prehod',${JSON.stringify(ma("--prehod") ? "1" : "0")});`);
   await js(
     `fetch('/api/prihlasenie',{method:'POST',headers:{'content-type':'application/json','x-naex':'1'},body:JSON.stringify(${JSON.stringify({ login: ucet.login, heslo: ucet.heslo })})}).then(r=>r.status).then(s=>{${miestnost}return s})`,

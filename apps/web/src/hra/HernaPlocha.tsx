@@ -49,7 +49,7 @@ import type {
   ZobrataVerejne,
   Zdvih,
 } from "@naex/core";
-import { prveFajcenieZadarmo, opisReci, sRadom, odhadSpakovKola, type StavOdhadu, riadkyCakajuceho, riadkyCakajucichPoldeci, KONSTANTY, jeCoTahat, jeFinaleNaNastenke, cigaretyZaPas, efektyPrehry, hrozbaKliatob, mozeEsteNaex, textHrozbyKliatob, textyEfektovPrehry, cenaKliatby, battleOutcome, prebytokNaRozdelenie, nahladPitky, vyhladDlhov, evaluateLine, efektyNavyse, pocitadloBitky, pitkaPredBitkou, hrozbaNaex, krokStavby, planVykladania, barterCena, limitBuduceKolo, limitZhromazdenia, lineState, nahladZajatia, prevahaStran, krajeStran, dovodZakazuFajcit, defOf, jednotaZakazuje, ponukaSenku, cenaFajceniaHraca, naexLimitMinuty as naexLimitMinutyHraca, sMojimiSkrytymiNaex, sPrilozenou, vystrahaPecene, nahladNaexNaKartu, najhorsiaOdpovedNaNaex, cenaTahu, nahladVylozenia, moznostiNaexVPohlade, zablokovaneStrany, NASTROJ_DO_LINIE, favourStarsieho, krokRozdelenia, cieleOdpovede, maxZoSenku, bodyRozdelenia, printedSides, poskodenieBitky, rozpisPoskodenia, prahyHraca, scorecardStarsieho, stavKraja, stavkaBitky, stavZavislosti, stranyLokality, vidiVolbuSupera, hraVPitke, cakaSBzdochou, opponentOf, majitelPresvedcenej, moznostiAkcie, cenaAkcieUplna, zdvihyPreAkcie, navrhRozdelenia, pohladPoRozdeleni, priazenHraca, priazenSila, pultStarsich, spakyTeraz, NAZVY_ZON, vazniNaVyhru } from "@naex/core";
+import { prveFajcenieZadarmo, opisReci, sRadom, odhadSpakovKola, type StavOdhadu, riadkyCakajuceho, riadkyCakajucichPoldeci, KONSTANTY, jeCoTahat, jeFinaleNaNastenke, efektyPrehry, hrozbaKliatob, mozeEsteNaex, textHrozbyKliatob, textyEfektovPrehry, cenaKliatby, battleOutcome, prebytokNaRozdelenie, nahladPitky, vyhladDlhov, evaluateLine, efektyNavyse, pocitadloBitky, pitkaPredBitkou, hrozbaNaex, krokStavby, planVykladania, barterCena, limitBuduceKolo, limitPoPitke, limitZhromazdenia, lineState, nahladZajatia, prevahaStran, krajeStran, dovodZakazuFajcit, defOf, ponukaSenku, cenaFajceniaHraca, naexLimitMinuty as naexLimitMinutyHraca, sMojimiSkrytymiNaex, sPrilozenou, vystrahaPecene, nahladNaexNaKartu, najhorsiaOdpovedNaNaex, cenaTahu, nahladVylozenia, moznostiNaexVPohlade, zablokovaneStrany, NASTROJ_DO_LINIE, favourStarsieho, krokRozdelenia, cieleOdpovede, maxZoSenku, bodyRozdelenia, printedSides, poskodenieBitky, rozpisPoskodenia, prahyHraca, scorecardStarsieho, stavKraja, stavkaBitky, stavZavislosti, stranyLokality, vidiVolbuSupera, hraVPitke, cakaSBzdochou, opponentOf, majitelPresvedcenej, moznostiAkcie, cenaAkcieUplna, zdvihyPreAkcie, navrhRozdelenia, pohladPoRozdeleni, priazenHraca, priazenSila, pultStarsich, spakyTeraz, NAZVY_ZON, vazniNaVyhru } from "@naex/core";
 import type { Moment, ActionSums, DopadyNahladu, KliatbyNahladu, NahladNaexNaKartu, PrebytokNahladu, NahladVylozenia, PolozkaVykladania, Rod, Slot, StranaLinie, VystrahaPecene } from "@naex/core";
 import type { KtoraHrana, MoznostPodlozenia, PodlozenyNastroj } from "@naex/core";
 import { aktivnaHrana, dovodNepodlozenia, hranyNastroja, ponukaPodlozenia, ucinkyNastrojov } from "@naex/core";
@@ -1333,7 +1333,7 @@ export function HernaPlocha({
   // ktoré navrhnutý ťah vypije.
   const otocenaTeraz = lokalitaNavrh?.otocena ?? view.lokalitaOtocena;
   // Pečeň zo skrytých NA EX už nesie zaklad (sMojimiSkrytymiNaex).
-  const vypijemVTahu = plan?.poldeci ?? 0;
+  const vypijemVTahu = plan?.navyse ?? 0;
   // Stávka bitky (návrh 3 A): v pásme kola a pri potvrdení pasu.
   const stavka = useMemo(
     () => (view.faza === "zhromazdenie" || view.faza === "pitka" ? stavkaBitky(view) : null),
@@ -1352,7 +1352,6 @@ export function HernaPlocha({
       lokalitaOtocena: otocenaTeraz,
       vizia: view.vizia,
       zaverecne: view.zaverecne,
-      ...(view.poldeciOtoceneVKole === undefined ? {} : { poldeciOtoceneVKole: view.poldeciOtoceneVKole }),
     });
   }, [data, view, stol, ja, vypijemVTahu, otocenaTeraz, zaklad]);
   /** Špaky jednej Cirhózy a jedného Dlhu na konci hry (cenaKliatby: Cirhóza −SPAKY_ZA_CIRHOZU, Dlh 0). */
@@ -1564,7 +1563,7 @@ export function HernaPlocha({
     const poNavrhu: ClientState = {
       ...zaklad,
       strany: stol.strany,
-      hraci: hraciSPecenou(zaklad.hraci, plan?.poldeci ?? 0),
+      hraci: hraciSPecenou(zaklad.hraci, plan?.navyse ?? 0),
       ...(stol.prilozeniaKu === undefined ? {} : { prilozeniaKu: stol.prilozeniaKu }),
     };
     // Odpoveď na NA EX je jediná karta: nová nahradí navrhnutú, ráta sa teda bez nej.
@@ -1575,8 +1574,8 @@ export function HernaPlocha({
       const kluc = `${k.uid}:${kam}`;
       const znama = pamat.get(kluc);
       if (znama !== undefined) return znama;
-      // Ďalšia karta v tom istom ťahu sa platí plným poldeci — aj to je pečeň.
-      const vypije = plan === null || reagujem ? 0 : planTahu([...vylozenia, { karta: k, ciel: kam }]).poldeci - plan.poldeci;
+      // Ďalšia karta v tom istom ťahu sa pije do dna (v12.2: cigareta a pečeň +1).
+      const vypije = plan === null || reagujem ? 0 : planTahu([...vylozenia, { karta: k, ciel: kam }]).navyse - plan.navyse;
       const po = sPrilozenou(data, pred, kam === "vlastna" ? ja : super_, k, ja);
       const v = vystrahaPecene(data, pred, { ...po, hraci: hraciSPecenou(po.hraci, vypije) });
       pamat.set(kluc, v);
@@ -3836,7 +3835,7 @@ export function HernaPlocha({
     if (view.faza === "zhromazdenie" && plan !== null && vylozenia.length > 0) {
       return {
         stred: pecatTahu({
-          text: <>{t("plocha.potvrdit")}{plan.poldeci > 0 && <span className="cena">−{t("spaky.nPoldeci", { n: plan.poldeci })}</span>}</>,
+          text: <>{t("plocha.potvrdit")}{plan.poldeci > 0 && <span className="cena">−{t("spaky.nPoldeci", { n: plan.poldeci })}{plan.navyse > 0 && ` · −${cigariet(plan.navyse * KONSTANTY.CENA_KARTY_NAVYSE)}`}</span>}</>,
           skratka: "k",
           dovod: plan.chyba === null ? chybaVoVyucbe : prelozHlasku(plan.chyba),
           akcia: () => posli({ type: "tah", kroky: plan.kroky }),
@@ -4371,7 +4370,6 @@ export function HernaPlocha({
         // Celý ťah naraz (Michal 2026-10-19): karty sa ťahajú na stôl ako návrh,
         // každá ďalšia stojí plný poldeci, server dostane ťah až po „potvrdiť“ na stole.
         if (vylozenia.length === 0 || plan === null) {
-          const zaPas = cigaretyZaPas(data, view, ja);
           // Náradie (Michal 2026-11-08): Nástroj v ruke sa zasúva pod kartu v línii, nielen odkazuje.
           const nastrojVRuke = ruka.some((k) => ponukaPre(k).length > 0);
           const pokynNaradia =
@@ -4387,7 +4385,7 @@ export function HernaPlocha({
               nadpis,
               text: (
                 <>
-                  <strong>{t("zhrom.pasujesOdlozene", { cigarety: cigariet(zaPas), meno: menoHraca(super_), s: odlozenyPas.zostavaS })}</strong>
+                  <strong>{t("zhrom.pasujesOdlozene", { meno: menoHraca(super_), s: odlozenyPas.zostavaS })}</strong>
                   {stavka !== null && (
                     <>
                       <br />
@@ -4410,7 +4408,7 @@ export function HernaPlocha({
             text: textNahladuTahania ?? textVolbyMiesta ?? (![...moznostiMiesta.values()].some((m) => m.karty.size > 0) ? (
               // Pri vyčerpanom limite pokyn „potiahni kartu“ zavádzal (playtest výučby 20261025, K11).
               <>
-                {zaPas > 0 ? tr("zhrom.nicNevylozisZaPas", { cigarety: cigariet(zaPas) }) : tr("zhrom.nicNevylozis")}{" "}
+                {tr("zhrom.nicNevylozis")}{" "}
                 {pokynNaradia}
                 <span className="tlmene">{[...moznostiMiesta.values()].find((m) => m.dovod !== null)?.dovod ?? ""}</span>
               </>
@@ -4431,7 +4429,7 @@ export function HernaPlocha({
                   title={t("zhrom.pasTip")}
                   onClick={() => (mozemVylozit && vyucba !== true ? odlozenyPas.spusti({ type: "pass" }) : posli({ type: "pass" }))}
                 >
-                  <Vymena das={t("zhrom.pasovat")} dostanes={<CenaCigariet n={zaPas} znamienko="+" />} />
+                  {t("zhrom.pasovat")}
                 </button>
               );
               // Na telefóne je pas hlavná akcia pruhu pokynu, záverečná a odkaz idú do ▾.
@@ -4477,6 +4475,7 @@ export function HernaPlocha({
                 <strong className="poldeci-varovanie">
                   {" "}
                   {t("plocha.tahStoji", { n: plan.poldeci, z: zostava, na: plan.zostava })}
+                  {plan.navyse > 0 && t("plocha.tahStojiNavyse", { cigarety: cigariet(plan.navyse * KONSTANTY.CENA_KARTY_NAVYSE), n: plan.navyse })}
                   {mojVyhlad !== null && mojVyhlad.cirhozy > 0 && (vystrahaNavrhu?.cirhozy[ja] ?? 0) === 0
                     ? t("plocha.vPitkeCirhoza", { n: mojVyhlad.cirhozy, s: mojVyhlad.cirhozy * cenyKliatob[ja].cirhoza })
                     : ""}
@@ -4598,8 +4597,6 @@ export function HernaPlocha({
         // Krčma chce jedno NA EX; po ňom už končím nič neblokuje.
         const krcma = view.ciel?.lokalita?.defId === "krcma" && dovodBezNaex === null && mojeSkryteNaex.size === 0;
         const cenaBarteru = barterCena(data, view, ja);
-        // Vínko (Michal 2026-10-19): s ním sa poldeci za cigarety nedolieva.
-        const vinko = hracJa.dedicstvo.some((k) => k.defId === "vinko");
         const zakazFajc = dovodZakazuFajcit(data, view, ja);
         // Pitka naraz (Michal 2026-10-27): obaja hrajú súčasne; poradie platí len pre odpovede na NA EX.
         const superSkoncil = pitkaSt?.hotovy[super_] === true;
@@ -4625,8 +4622,16 @@ export function HernaPlocha({
               : t("plocha.vyberateSkryto")}{" "}
           </>
         );
-        const limitPo = limitBuduceKolo(zaklad, ja, true, data);
-        const limitBez = limitBuduceKolo(zaklad, ja, false, data);
+        // v12.2: NA EX vezme plný poldeci do bitky — chýba v ďalšom Zhromaždení kola; po bitke sa obnoví.
+        const dalsieZhrom = view.pitkaCislo < view.pitkyCelkom;
+        const limitDalej = (s: ClientState, naex: boolean): number => {
+          if (!dalsieZhrom) return limitBuduceKolo(s, ja, false, data);
+          const h = s.hraci[ja];
+          const po: ClientState = naex ? { ...s, hraci: (ja === 0 ? [{ ...h, poldeciPlne: Math.max(0, h.poldeciPlne - 1) }, s.hraci[1]] : [s.hraci[0], { ...h, poldeciPlne: Math.max(0, h.poldeciPlne - 1) }]) as ClientState["hraci"] } : s;
+          return limitPoPitke(po, ja, data);
+        };
+        const limitPo = limitDalej(zaklad, true);
+        const limitBez = limitDalej(zaklad, false);
         // „Skončiť Pitku“ chce druhý klik len vtedy, keď hráč má plný poldeci a NA EX nedal (Michal 2026-10-27).
         const hotovoVzdavaNaex =
           dovodBezNaex === null && mojeSkryteNaex.size === 0 && (pitkaSt?.naexPocet?.[ja] ?? 0) === 0 && hracJa.poldeciPlne > 0 && !krcma;
@@ -4657,28 +4662,11 @@ export function HernaPlocha({
               akcia: () => cmd({ type: "smoke", pocet: 1 }),
             })}
             {pecatNakupu({
-              kluc: "doliat",
-              zisk: <IkonaPoldeci />,
-              nazov: t("plocha.doliat"),
-              cena: KONSTANTY.REFILL_CENA,
-              dovod: vinko
-                ? t("plocha.vinko")
-                : jednotaZakazuje(view, ja)
-                ? t("plocha.jednota")
-                : hracJa.poldeciVypite === 0
-                  ? t("plocha.nemasVypity")
-                  : cig < KONSTANTY.REFILL_CENA
-                    ? t("plocha.doliatStoji", { cena: cigariet(KONSTANTY.REFILL_CENA), mas: cig })
-                    : null,
-              tip: t("plocha.doliatTip", { cena: cigariet(KONSTANTY.REFILL_CENA) }),
-              akcia: () => cmd({ type: "refillPoldeci" }),
-            })}
-            {pecatNakupu({
               kluc: "novy",
               zisk: <IkonaPoldeci novy />,
               nazov: t("tabula.novyPoldeci"),
               cena: cenaBarteru,
-              dovod: cig < cenaBarteru ? t("plocha.barterStoji", { cena: cigariet(cenaBarteru), mas: cig }) : null,
+              dovod: zakazFajc !== null ? zakazFajc : cig < cenaBarteru ? t("plocha.barterStoji", { cena: cigariet(cenaBarteru), mas: cig }) : null,
               tip: t("plocha.barterTip", { cena: cigariet(cenaBarteru) }),
               akcia: () => cmd({ type: "barter" }),
             })}
@@ -4719,7 +4707,7 @@ export function HernaPlocha({
         const naRub = vybranaUid !== null && view.zaverecne.some((z) => z.uid === vybranaUid);
         const menoVybranej = naRub ? t("plocha.superovuZaverecnu") : vybranaUid === null ? "" : menoKarty(view.strany.flat().find((pl) => pl.card.uid === vybranaUid)?.card.defId ?? "");
         // Limit po NA EX na túto kartu: akcie Poldeci po NA EX (zruší či zdvojí ich) — playtest 20261026-173610-1.
-        const limitPoVybranej = vybrana === undefined ? limitPo : limitBuduceKolo(vybrana.odkrytie.view, ja, false, data);
+        const limitPoVybranej = vybrana === undefined ? limitPo : limitDalej(vybrana.odkrytie.view, false);
         const textVyberu = naRub ? (
           <span className="naex-vyber-text">
             {tr("plocha.naexNaRub")}
@@ -5815,7 +5803,7 @@ export function HernaPlocha({
       return { cislo: n, popis: vyloz, tip: t("plocha.vZhromazdeniVylozi", { vyloz, karty: kariet(n) }) };
     }
     const dalsiaPitka = view.faza === "pitka" && view.pitkaCislo < view.pitkyCelkom;
-    const n = dalsiaPitka ? limitZhromazdenia(view, p) : limitBuduceKolo(view, p, false, data);
+    const n = dalsiaPitka ? limitPoPitke(view, p, data) : limitBuduceKolo(view, p, false, data);
     return { cislo: n, popis: t("plocha.dalej"), tip: `${dalsiaPitka ? t("plocha.dalsieZhromazdenie") : t("plocha.dalsieKolo")}: ${kariet(n)}` };
   };
   const kartyDlazdica = (p: PlayerId): KartyDlazdica => ({
@@ -6051,7 +6039,7 @@ export function HernaPlocha({
       else if (ps.hotovy[p]) pozn("stav", `✓ ${tRod("plocha.skoncil", rodHracaP(p))}${naex || skryte ? ` ${t("plocha.poNaex")}` : odkryte ? ` ${t("plocha.bezNaex")}` : ""}`);
       else if (skryte) pozn("stav", t("plocha.naexSkrytoKratko"), t("plocha.superNevidi2"));
       else if (naex) pozn("stav", t("plocha.naexDal"));
-      if (view.pitkaCislo < view.pitkyCelkom) pozn("limit", `${t("plocha.dalsieZhromazdenie")}: ${limitZhromazdenia(view, p)}`, t("plocha.limitDalsieho"));
+      if (view.pitkaCislo < view.pitkyCelkom) pozn("limit", `${t("plocha.dalsieZhromazdenie")}: ${limitPoPitke(view, p, data)}`, t("plocha.limitDalsieho"));
     } else if (view.faza === "draft" && draft !== null) {
       casti.push(rukaPocet(p));
       if (draft.krok === "stavba") pozn("stav", draft.vybral[p] ? `✓ ${tRod("plocha.vybral", rodHracaP(p))}` : t("plocha.staviaPonuku"));

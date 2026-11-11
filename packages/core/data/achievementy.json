@@ -916,6 +916,7 @@
     },
     {
       "id": "pas-za-gros",
+      "legacy": true,
       "nazov": "Pas za groš",
       "kategoria": "ekonomika",
       "popis": "Dostaň v jednej partii za pasy aspoň {prah} cigariet.",

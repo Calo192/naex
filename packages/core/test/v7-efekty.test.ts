@@ -324,10 +324,10 @@ describe("Pitka (v7)", () => {
     expect([...h.ruka, ...h.doberaci, ...h.odhadzovaci].some((k) => k.defId === "cirhoza")).toBe(true);
   });
 
-  it("Jednota: kto má viac priznaných Dlhov, nesmie fajčiť ani dolievať; Benzínka nikomu fajčiť nezakáže", () => {
+  it("Jednota: kto má viac priznaných Dlhov, nesmie fajčiť ani barterovať (v12.2); Benzínka nikomu fajčiť nezakáže", () => {
     const s = sHracom(sHracom(vPitke("jednota", [[], []]), 0, { dlhy: 2, cigarety: 9, poldeciVypite: 1 }), 1, { dlhy: 1 });
     const legal = legalCommands(data, s, 0);
-    expect(legal.some((c) => c.type === "smoke" || c.type === "refillPoldeci")).toBe(false);
+    expect(legal.some((c) => c.type === "smoke" || c.type === "barter")).toBe(false);
     const b = sHracom(vPitke("benzinka", [[lezi(inst("zamocnik"), 0), lezi(inst("vandal"), 0)], [lezi(inst("masiar"), 1)]]), 0, { cigarety: 5 });
     expect(legalCommands(data, b, 0).some((c) => c.type === "smoke")).toBe(true);
     const b1 = { ...sHracom(b, 1, { cigarety: 5 }), pitkaStav: pitkaStav(1) };
@@ -366,8 +366,8 @@ describe("Zhromaždenie a Nástup (v7)", () => {
     const s = vZhromazdeni("zastavka", [[], [lezi(inst("autobusar"), 1)]], [inst("masiar"), inst("vandal")]);
     const z = { ...s, zhromazdenieStav: { ...s.zhromazdenieStav!, pasoval: [false, true] as [boolean, boolean] } };
     const po = apply(data, z, { type: "pass" }, 0).state;
-    // Cigareta za každú kartu zvyšku limitu, bez ohľadu na karty v ruke (v11.16).
-    expect(po.hraci[0].cigarety).toBe(s.hraci[0].cigarety + s.zhromazdenieStav!.zostavaLimit[0]);
+    // Pas od v12.2 cigarety nedáva — a Autobusár neberie nič.
+    expect(po.hraci[0].cigarety).toBe(s.hraci[0].cigarety);
   });
 
   it("Starosta v línii od v9 Nástup nemá; Živnostník Nástup nemá ani v starej sade (Nástroj pod neho zanikol 2026-11-09); Anonymný alkoholik od v11.5 Nástup nemá", () => {

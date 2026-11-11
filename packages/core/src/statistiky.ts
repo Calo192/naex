@@ -324,8 +324,9 @@ function zapisJedneho(
         case "barter":
           s.bartery += 1;
           break;
-        case "refillPoldeci":
-          s.dolievania += 1;
+        case "vypit":
+          // v12.2: do dna sa pije len za kartu navyše v ťahu — otočenie poldeci za každú kartu nie je nerest.
+          s.poldeciVypite += 1;
           break;
         case "prebytok":
           s.posunyPrebytkom += 1;
@@ -387,7 +388,6 @@ function zapisJedneho(
   s.dlhyZiskane += noveDlhy;
   s.dlhyZbavene += Math.max(0, hPred.dlhy + noveDlhy - hPo.dlhy);
   s.abstakyZiskane += (hPo.abstakyZiskane ?? 0) - (hPred.abstakyZiskane ?? 0);
-  s.poldeciVypite += Math.max(0, hPo.poldeciVypite - hPred.poldeciVypite);
   const dCig = hPo.cigarety - hPred.cigarety;
   if (dCig > 0) s.cigaretyZiskane += dCig;
   if (dCig < 0) s.cigaretyMinute += -dCig;

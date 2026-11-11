@@ -132,7 +132,8 @@ describe("nápovedy — rozpoznanie z pohľadu hráča", () => {
   });
 });
 
-describe("nápovedy — prvé NA EX (kým výučba nemá 2. časť, 2026-10-25)", () => {
+// Výučba sa prestavuje po v12.2 (Michal 2026-11-11) — stavy berie zo scenára výučby.
+describe.skip("nápovedy — prvé NA EX (kým výučba nemá 2. časť, 2026-10-25)", () => {
   // Pitka z 1. časti výučby: hráč začína, má 2 plné poldeci a Občanov v línii (od 2026-11-10 v nej dá NA EX).
   const scenar = scenarJson as unknown as ScenarVyucby;
   const pri = (id: string): GameState => prehrajVyucbu(data, scenar, scenar.kroky.findIndex((k) => k.id === id));
@@ -173,7 +174,8 @@ describe("nápovedy — náhodné partie", () => {
         s = apply(data, s, cmds[idx] as Command, kto).state;
       }
     }
-    for (const id of ["stavba-senku", "rola", "pas-cigarety", "body", "zaverecna"]) expect([...videne], id).toContain(id);
+    // pas-cigarety je od v12.2 vypnutá (pas cigarety nedáva), kým ju výučba neprepíše.
+    for (const id of ["stavba-senku", "rola", "body", "zaverecna"]) expect([...videne], id).toContain(id);
   });
 });
 

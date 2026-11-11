@@ -60,9 +60,9 @@ describe("príprava 2 na 2", () => {
     expect(kartyVRukach(s.hraci[0])).toHaveLength(2 * start);
   });
 
-  it("tím začína s 3 poldeci a 4 cigaretami, prahy Dlhu a Cirhózy o 1 vyššie", () => {
+  it("tím začína so 6 poldeci (3 za člena, v12.2) a 4 cigaretami, prahy Dlhu a Cirhózy o 1 vyššie", () => {
     for (const h of s.hraci) {
-      expect(h.poldeciPlne).toBe(3);
+      expect(h.poldeciPlne).toBe(6);
       expect(h.cigarety).toBe(4);
     }
     expect(prahDlhuBonus(s, 0)).toBe(1);
@@ -91,6 +91,8 @@ function vZhromazdeni(limit: number): GameState {
     ciel: { typ: "lokalita", lokalita },
     pitkyCelkom: 1,
     pitkaCislo: 0,
+    // Limit vykladania = plné poldeci tímu (v12.2).
+    hraci: [{ ...s.hraci[0], poldeciPlne: limit }, { ...s.hraci[1], poldeciPlne: limit }],
     zhromazdenieStav: {
       naTahu: kapitan(s, s.utocnik),
       zostavaLimit: [limit, limit],
@@ -138,7 +140,7 @@ describe("Zhromaždenie 2 na 2", () => {
     expect(() => apply(data, s, { type: "place", uid: karta?.uid ?? -1, target: "vlastna" }, partner)).toThrow();
   });
 
-  it("pas člena je bez cigariet, tím dostane cigarety až za posledného", () => {
+  it("pas člena aj tímu je bez cigariet (v12.2)", () => {
     let s = vZhromazdeni(3);
     const u = s.utocnik;
     const u1 = miestoNaTahu(s) as Miesto;
@@ -150,8 +152,8 @@ describe("Zhromaždenie 2 na 2", () => {
     s = vylozPijana(s);
     expect(miestoNaTahu(s)).toBe(partnerMiesta(u1));
     s = apply(data, s, { type: "pass" }, partnerMiesta(u1)).state;
-    // Tím nevyložil nič: zvyšok limitu 3, v rukách 8 kariet → 3 cigarety.
-    expect(s.hraci[u].cigarety).toBe(cig + 3);
+    // v12.2: pas cigarety nedáva — ani tímu, ktorý nevyložil nič.
+    expect(s.hraci[u].cigarety).toBe(cig);
     expect(s.zhromazdenieStav?.pasoval[u]).toBe(true);
     expect(miestoNaTahu(s)).toBe(partnerMiesta(kapitan(s, opponentOf(u))));
   });
@@ -192,7 +194,8 @@ function vOdpovedi(uprav: (s: GameState) => GameState = (s) => s): GameState {
   const naex = legalCommands(data, s, kapitan(s, o)).find((c) => c.type === "naex");
   if (naex === undefined) throw new Error("Bez NA EX.");
   s = apply(data, s, naex, kapitan(s, o)).state;
-  s = apply(data, s, { type: "skipNaex" }, kapitan(s, o)).state;
+  // v12.2: bez doliatia za cigarety má tím po NA EX často len „hotovo“ — hra ho urobí sama.
+  if (s.pitkaStav?.hotovy[o] === false) s = apply(data, s, { type: "skipNaex" }, kapitan(s, o)).state;
   s = uprav(s);
   return apply(data, s, { type: "skipNaex" }, kapitan(s, u)).state;
 }

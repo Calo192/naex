@@ -118,11 +118,13 @@ describe("fajčenie zdražie v Pitke (Michal 2026-10-27)", () => {
   });
 
   it("každá Pitka začína fajčenie znova od 1 cigarety (náhodné partie, fajčí sa, kedy sa dá)", () => {
-    // Semienko 31 od v8.5 (Náradie a Občania): partia so seedom 22 mala už len 3 Pitky.
-    let s = setupGame(data, 7, { lokalit: 3 });
-    let rng = rngSeed(5);
+    // Semienko 31 od v8.5 (Náradie a Občania): partia so seedom 22 mala už len 3 Pitky. Od v12.2 (bez
+    // cigariet za pas) fajčia náhodní hráči menej — preto viac partií.
     let novychPitiek = 0;
     let poFajceni = 0;
+    for (const seed of [7, 2, 4, 9, 10]) {
+    let s = setupGame(data, seed, { lokalit: 3 });
+    let rng = rngSeed(5);
     let fajciliVPredoslej = false;
     for (let krok = 0; s.koniec === null && krok < 4000; krok++) {
       const p = ([0, 1] as const).find((q) => mozeHrat(s, q)) ?? naTahu(s);
@@ -139,6 +141,7 @@ describe("fajčenie zdražie v Pitke (Michal 2026-10-27)", () => {
         expect(s.pitkaStav.fajcenie).toEqual([0, 0]);
       }
       if (s.pitkaStav !== null) fajciliVPredoslej = s.pitkaStav.fajcenie[0] + s.pitkaStav.fajcenie[1] > 0;
+    }
     }
     expect(novychPitiek).toBeGreaterThan(3);
     expect(poFajceni).toBeGreaterThan(0);

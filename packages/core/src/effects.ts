@@ -16,7 +16,7 @@ import type { CardInstance } from "./types.ts";
 import type { ActionSums, LineEval, PlacedCard, ZdrojAkcie, ZdrojeAkcii } from "./partia.ts";
 import { evaluateLine, prevahaStran, silaVKraji, zvieratAUmlcane } from "./partia.ts";
 import type { PlayerState } from "./player.ts";
-import { limitVykladania } from "./player.ts";
+import { limitVykladania, maximumPoldeci } from "./player.ts";
 import { KONSTANTY } from "./constants.ts";
 import { efektyNavyse } from "./navyse.ts";
 import type { VysledokHadky } from "./battle.ts";
@@ -84,7 +84,7 @@ export const REGISTER: Readonly<Record<string, EfektStatus>> = {
   hrobar: "impl", // Schopnosť väzňa: karta zo súperovho odhadzovacieho balíčka do ruky
   ihrisko: "impl", // Bitka: v každom kraji +2 tuhé tomu, kto tam má viac svojich Občanov, Zvierat a Starešinov (Michal 2026-10-20; Dvojčatá za dve, v8)
   krcma: "impl", // Pitka: s plným poldeci povinný NA EX (bez NA EX sa Pitka neskončí); prah Cirhózy +2
-  krcmarka: "impl", // Schopnosť väzňa: nový plný poldeci
+  krcmarka: "impl", // Schopnosť väzňa: nový plný poldeci — maximum +1 natrvalo (v12.2)
   lesna_cesta: "impl", // Bitka (v11.13): 2 tuhé za každé svoje Zviera v línii
   liberal: "impl", // Furt (v10.3): s rovnako ženami a chlapmi v partii majiteľa sú jeho aktívne akcie posilnené (partia.ts kartoveEfekty)
   milujuca_manzelka: "impl", // Pitka (v7, M2): tvoje poškodenie pečene v Pitke −1 (prirastkyPitky)
@@ -107,19 +107,19 @@ export const REGISTER: Readonly<Record<string, EfektStatus>> = {
   veteran: "impl", // Furt: NA EX naňho aktívne akcie zdvojí (nezruší), neaktívne nezdvojí (partia.ts, Michal 2026-10-23)
   velmi_smutiaca_vdova: "impl", // Konflikt: súper odhodí 1 náhodnú kartu z ruky, pri ktorejkoľvek jeho karte (2026-11-08 bez tagu, predtým Chlap); staré znenie z balíčka za Chlapov (konflikt)
   vestica: "impl", // Spoločník: Pamätník {Povera} {Povera} (navyse.ts); stará Prehra — výmena kariet v balíčkoch (krok bitky 5b) — len stará sada
-  vychovavatelka: "impl", // Schopnosť väzňa: súper v tomto Zhromaždení hneď pasuje bez cigariet
-  vinko: "impl", // Dedičstvo: poldeci navyše; nedolieva poldeci za cigarety (Michal 2026-10-19)
+  vychovavatelka: "impl", // Schopnosť väzňa: súper v tomto Zhromaždení hneď pasuje
+  vinko: "impl", // Dedičstvo (v12.2): maximum poldeci +1 — pri vyložení nový plný poldeci (cmdPlace)
   vyherny_automat: "impl", // Dedičstvo: prah Dlhu +1; Pitka: {Dlh} v každej Pitke (v12, engine vyhodnotPitku; stará sada v poslednej Pitke kola)
   zastavka: "impl", // Pitka (v9.1): po prvej Pitke kola každý 1 karta z ponuky zadarmo, najprv útočník (engine dokonciPitku)
   // Náradie (Michal 2026-10-30, docs/napady/naradie-akcie.html): Nástroje do Dedičstva a Tipér.
   zapalovac: "impl", // Dedičstvo: tvoje aktívne Cigarety nemožno zrušiť NA EX (partia.ts applyNaex)
   vyherne_zreby: "impl", // Dedičstvo: Hazardy aktívne nespojené, spojené neaktívne; NA EX potom ako vždy (partia.ts)
-  pistalka: "impl", // Dedičstvo: tvoje Obmedzenia uberajú aj cigarety za pas (cmdPass)
+  pistalka: "impl", // Dedičstvo: tvoje Obmedzenia uberajú aj cigarety za pas — od v12.2 pas cigarety nedáva, efekt čaká na nové znenie
   hrable: "impl", // Dedičstvo (v12.1): tvoj aktívny Odpor dáva v bitke poškodenie ako Pecka (partia.ts)
   zrkadlo: "impl", // Dedičstvo: tvoj Pakt kopíruje prepojenú akciu dvakrát (partia.ts)
   boxer: "impl", // Dedičstvo: tvoje Pecky o 1 poškodenie viac (nastrojeTuhe)
   telefon: "impl", // Dedičstvo (2026-11-09): Hádka — remízu (nie 0 : 0) vyhráva majiteľ (vysledokHadkyStola); Bitka — {Povera} za každú jeho akciu zrušenú súperovým Odporom (partia.ts kratVDedicstve); imunita Pohoršení do 2026-11-09 zanikla
-  jogurt: "impl", // Dedičstvo: tvoje Poldeci otáčajú vypitý poldeci hneď v Pitke (vyhodnotPitku)
+  jogurt: "impl", // Dedičstvo (v12.2): po každej Pitke sa doleje o 1 poldeci viac (dolejPoPitke)
   energetak: "impl", // Dedičstvo: tvoje Posilnenie nemožno zrušiť NA EX (partia.ts)
   horoskop: "impl", // Dedičstvo (v10): tvoje Povery majú silu 2 — mäkké (stranyBitky)
   furik: "impl", // Dedičstvo: tvoje Roboty pália o 1 Dlh viac (exekucieBitky)
@@ -131,7 +131,7 @@ export const REGISTER: Readonly<Record<string, EfektStatus>> = {
   zamocnik: "impl", // Furt (Náradie 2026-11-08): pod neho smie ľubovoľne veľa Nástrojov (podlozenie.ts)
   zivnostnik: "impl", // Podpora (2026-11-09): Nástroj z ponuky do ruky (engine podpora, voľba senok)
   pes: "impl", // Furt (v7): aktívne akcie na spoji so súperovou kartou ×2 (partia.ts)
-  kostol: "impl", // Zhromaždenie: nikto nevypije; Pitka (v11.7): NA EX len na kartu na konci línie
+  kostol: "impl", // Zhromaždenie (v12.2): v ťahu len 1 karta; Pitka (v11.7): NA EX len na kartu na konci línie
   zahradkar: "impl", // Exekúcia (Michal 2026-10-28): v línii v tvojej partii ťa exekúcia v tomto kole obíde (zahradkarChrani)
   svokra: "impl", // Bitka: za každú tvoju kartu so súperovým NA EX súperovi Rana (Michal 2026-10-26)
   sarlatan: "impl", // Spoločník: Autorita {Povera} {Povera} (navyse.ts); starý Konflikt — Dlhy Viera, Povery Rana — len stará sada (partia.ts)
@@ -145,10 +145,10 @@ export const REGISTER: Readonly<Record<string, EfektStatus>> = {
   most: "impl", // Zhromaždenie: každý vykladá len na koniec línie po svojej ľavici (lenVlastnaStrana)
   cintorin: "impl", // Prehra (v11.13): porazený si smie vziať do ruky 1 kartu zo svojho odhadzovacieho balíčka (krok bitky cintorin)
   obecny_urad: "impl", // Pitka (v11.13): cigarety a Dlhy získané v Pitke sa rátajú dvakrát (nasobokPitky)
-  jednota: "impl", // Pitka (v7): kto má viac priznaných Dlhov, nefajčí ani nedolieva
+  jednota: "impl", // Pitka (v7): kto má viac priznaných Dlhov, nefajčí ani nebarteruje (v12.2, predtým nedolieval)
   kulturny_dom: "impl", // Bitka (v11.13): každý hráč dostane špaky len za svoje karty v línii, aj víťaz (spakyZaVyhru)
   vinna_pivnica: "impl", // Pitka: NA EX až dvakrát
-  druzstvo: "impl", // Zhromaždenie (v11.13): karty s akciou Robota nemíňajú limit vykladania
+  druzstvo: "impl", // Zhromaždenie (v12.2): karty s akciou Robota nestoja poldeci ani cigarety ťahu
   kar: "impl", // Pitka (v7): pečeň za NA EX dostane súper toho, kto ho dal (odhalNaex)
   // Sada v7 (revízia, Michal 2026-10-27) — schválené novinky, nové karty a lokality.
   vidly: "impl", // Dedičstvo (v7): Rany o 1 poškodenie viac (nastrojeTuhe)
@@ -358,21 +358,7 @@ export function prahCirhozyBonus(state: VerejnyStav, p: PlayerId): number {
   );
 }
 
-/** vinko: počíta sa ako nevypitý poldeci navyše (limit vykladania +1). */
-export function limitBonus(state: VerejnyStav, p: PlayerId): number {
-  return limitBonusDedicstva(state.hraci[p].dedicstvo);
-}
-
-/**
- * Bonus k limitu z Dedičstva samotného — engine aj plán ťahu ho porovnajú pred
- * a po vyložení, lebo Vínko vyložené v Zhromaždení platí hneď (návrh #26 B,
- * Michal 2026-10-28), nie až od ďalšieho Zhromaždenia.
- */
-export function limitBonusDedicstva(dedicstvo: readonly { readonly defId: string }[]): number {
-  return dedicstvo.some((k) => k.defId === "vinko") ? 1 : 0;
-}
-
-/** kostol: nikto nesmie vypiť (v Zhromaždení teda len jedna karta za ťah). */
+/** kostol (v12.2, Michal 2026-11-11): v ťahu sa smie vyložiť len 1 karta — žiadna ďalšia karta ťahu. */
 export function zakazVypit(state: Pick<VerejnyStav, "ciel">): boolean {
   return jeCielLokalita(state, "kostol");
 }
@@ -387,7 +373,7 @@ export function naexLenNaKonci(line: { readonly lokalita: CardInstance | null })
 
 /** Prečo hráč p teraz nesmie fajčiť, null = smie. Jednota: kto má viac priznaných Dlhov. */
 export function dovodZakazuFajcit(_data: GameData, state: VerejnyStav, p: PlayerId): string | null {
-  if (jednotaZakazuje(state, p)) return "Jednota: máš viac priznaných Dlhov — nesmieš fajčiť ani dolievať.";
+  if (jednotaZakazuje(state, p)) return JEDNOTA_ZAKAZ;
   return null;
 }
 
@@ -404,7 +390,10 @@ export function nasobokPitky(state: Pick<VerejnyStav, "ciel">): number {
   return jeCielLokalita(state, "obecny_urad") ? KONSTANTY.EFEKT.OBECNY_URAD_NASOBOK : 1;
 }
 
-/** Jednota (Pitka, v7): hráč s viac priznanými Dlhmi ako súper nesmie fajčiť ani dolievať. */
+/** Dôvod zákazu Jednoty pre server aj klienta. */
+export const JEDNOTA_ZAKAZ = "Jednota: máš viac priznaných Dlhov — nesmieš fajčiť ani barterovať.";
+
+/** Jednota (Pitka, v7): hráč s viac priznanými Dlhmi ako súper nesmie fajčiť ani barterovať (v12.2, predtým dolievať). */
 export function jednotaZakazuje(state: VerejnyStav, p: PlayerId): boolean {
   if (!jeCielLokalita(state, "jednota")) return false;
   return state.hraci[p].dlhy > state.hraci[opponentOf(p)].dlhy;
@@ -418,7 +407,7 @@ export function lenVlastnaStrana(lokalita: string | null): boolean {
   return lokalita === "most";
 }
 
-/** druzstvo (v11.13): karta s akciou Robota na ktorejkoľvek hrane nemíňa limit vykladania. */
+/** druzstvo (v12.2): karta s akciou Robota na ktorejkoľvek hrane nestojí poldeci ani cigarety ťahu (ako Nástroj). */
 export function bezLimituDruzstva(lokalita: string | null, def: Pick<CardDef, "left" | "right">): boolean {
   return lokalita === "druzstvo" && ((def.left.actions.Robota ?? 0) > 0 || (def.right.actions.Robota ?? 0) > 0);
 }
@@ -448,48 +437,50 @@ interface PoldeciHraca {
 }
 
 /**
- * Limit vykladania na začiatku Zhromaždenia tohto kola (PRAVIDLA §6) — pre
- * náhľad „limit po tomto ťahu“. `zmenaPoldeci` mení plné poldeci (−1 za
- * kartu zo šenku).
+ * Limit vykladania = plné poldeci (PRAVIDLA §6, v12.2) — pre náhľad „limit po tomto ťahu“.
+ * `zmenaPoldeci` mení plné poldeci.
  */
 export function limitZhromazdenia(state: StavPoldeci, p: PlayerId, zmenaPoldeci = 0): number {
-  return limitVykladania({ poldeciPlne: Math.max(0, state.hraci[p].poldeciPlne + zmenaPoldeci) }) + limitBonus(state, p);
+  return limitVykladania({ poldeciPlne: Math.max(0, state.hraci[p].poldeciPlne + zmenaPoldeci) });
 }
 
 /**
- * Odhad limitu v ďalšom kole v poradí motora: poldeci na stole cez NA EX sa
- * pri bitke vypijú (vypiPoldeci), aktívne akcie Poldeci v línii otočia vypité
- * na plné a na začiatku kola sa dolejú (KONSTANTY.POLDECI_NA_ZACIATKU_KOLA).
- * Nevie o Krčmárke, doliatí cigaretami ani o budúcej Zastávke — ukazuje, s čím
- * hráč ráta, ak nič z toho nepríde. `naex` = dá teraz NA EX (na neznámu kartu;
- * kto ju pozná, pošle stav po NA EX a `naex` false). Akciu Poldeci ráta len
- * s dátami sady a so stavom, ktorý pozná otočenie lokality — predtým ju náhľad
- * vynechal a sľuboval limit o 1 nižší (playtest 20261026-173610-1).
+ * Koľko vypitých poldeci sa po Pitke otočí na plné bez akcií Poldeci (v12.2): 1 zadarmo
+ * (v 2 na 2 za každého člena tímu) a Jogurt v Dedičstve o 1 viac.
  */
-export function limitBuduceKolo(state: StavPoldeci & { readonly lokalitaOtocena?: boolean }, p: PlayerId, naex = false, data?: GameData): number {
-  const h = state.hraci[p];
-  // Zrážka NA EX (v5, Výtržník): druhý poldeci na karte je toho druhého hráča.
-  const naStole = state.strany.flat().filter((pl) => pl.naexBy === p || pl.naexBy2 === p).length + (naex ? 1 : 0);
-  const vypite = h.poldeciVypite + naStole;
-  const otocia = data === undefined || state.lokalitaOtocena === undefined ? 0 : Math.min(vypite, akciePoldeci(data, state, state.lokalitaOtocena)[p]);
-  const plne = h.poldeciPlne - (naex ? 1 : 0) + otocia;
-  const dolieva = Math.min(KONSTANTY.POLDECI_NA_ZACIATKU_KOLA, vypite - otocia);
-  return plne + dolieva + 1 + limitBonus(state, p);
+export function poldeciZadarmoPoPitke(state: Pick<VerejnyStav, "hraci" | "format">, p: PlayerId): number {
+  const clenov = state.format === "2na2" ? 2 : 1;
+  return KONSTANTY.POLDECI_PO_PITKE * clenov + (state.hraci[p].dedicstvo.some((k) => k.defId === "jogurt") ? KONSTANTY.JOGURT_POLDECI : 0);
 }
 
-/** Aktívne akcie Poldeci v línii — v bitke otočia toľko vypitých poldeci na plné (vypiPoldeci). */
+/**
+ * Limit v ďalšom Zhromaždení tohto kola: po Pitke sa doleje poldeci zadarmo a aktívne akcie
+ * Poldeci (dolejPoPitke). Bez dát sady ráta len doliatie zadarmo. Skryté NA EX musí mať
+ * `state` už odpísané (sMojimiSkrytymiNaex).
+ */
+export function limitPoPitke(state: StavPoldeci & { readonly lokalitaOtocena?: boolean }, p: PlayerId, data?: GameData): number {
+  const h = state.hraci[p];
+  const akcie = data === undefined || state.lokalitaOtocena === undefined ? 0 : akciePoldeci(data, state, state.lokalitaOtocena)[p];
+  return h.poldeciPlne + Math.min(h.poldeciVypite, poldeciZadarmoPoPitke(state, p) + akcie);
+}
+
+/**
+ * Limit v ďalšom kole: po bitke sa poldeci obnovia na maximum (v12.2) — plné, vypité aj
+ * ležiace na kartách cez NA EX. NA EX teraz (`naex`) maximum nemení. `data` ostáva kvôli
+ * volajúcim spred v12.2, keď sa rátali akcie Poldeci v bitke.
+ */
+export function limitBuduceKolo(state: StavPoldeci & { readonly lokalitaOtocena?: boolean }, p: PlayerId, _naex = false, _data?: GameData): number {
+  // Zrážka NA EX (v5, Výtržník): druhý poldeci na karte je toho druhého hráča.
+  const naStole = state.strany.flat().filter((pl) => pl.naexBy === p || pl.naexBy2 === p).length;
+  return maximumPoldeci(state.hraci[p], naStole);
+}
+
+/** Aktívne akcie Poldeci v línii — po Pitke otočia toľko vypitých poldeci na plné (dolejPoPitke). */
 function akciePoldeci(data: GameData, state: VerejnyStav, lokalitaOtocena: boolean): readonly [number, number] {
   const sums = evaluateLine(data, { lokalita: state.ciel?.lokalita ?? null, lokalitaOtocena, strany: state.strany }).sums;
   return [sums[0].Poldeci ?? 0, sums[1].Poldeci ?? 0];
 }
 
-/**
- * vinko: nemôžeš dolievať poldeci za cigarety (Michal 2026-10-19 — predtým
- * zakazovalo stokársky barter; ten je s Vínkom povolený).
- */
-export function doliatieZakazane(state: GameState, p: PlayerId): boolean {
-  return vDedicstve(state, p, "vinko");
-}
 
 
 /** Bitkové modifikátory závislé od kariet v hre. */

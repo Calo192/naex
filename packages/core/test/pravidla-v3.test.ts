@@ -36,7 +36,7 @@ function vZhromazdeni(ruka: CardInstance[]): GameState {
   return {
     ...s,
     faza: "zhromazdenie",
-    hraci: [{ ...s.hraci[0], ruka, poldeciPlne: 2, poldeciVypite: 0 }, s.hraci[1]],
+    hraci: [{ ...s.hraci[0], ruka, poldeciPlne: 3, poldeciVypite: 0 }, s.hraci[1]],
     zhromazdenieStav: { naTahu: 0, zostavaLimit: [3, 3], pasoval: [false, false], navyse: [0, 0] },
   } as GameState;
 }
@@ -80,16 +80,17 @@ describe("NA EX na vlastné aj súperove karty", () => {
 });
 
 describe("Vypiť", () => {
-  it("limit klesne o 1, ďalšou kartou ťah nekončí, pečeň +1 a nerest", () => {
+  it("v12.2: cigareta, pečeň +1 a nerest, ďalšou kartou ťah nekončí; poldeci otočí každá karta", () => {
     const [a, b, c] = [inst("pijan"), inst("ministrant"), inst("pijan")];
     let s = vZhromazdeni([a, b, c]);
     expect(legalCommands(data, s, 0)).toContainEqual({ type: "vypit" });
     const r = apply(data, s, { type: "vypit" }, 0);
     s = r.state;
-    expect(s.hraci[0].poldeciPlne).toBe(1);
-    expect(s.hraci[0].poldeciVypite).toBe(1);
+    expect(s.hraci[0].poldeciPlne).toBe(3);
+    expect(s.hraci[0].poldeciVypite).toBe(0);
+    expect(s.hraci[0].cigarety).toBe(setupGame(data, 4).hraci[0].cigarety - 1);
     expect(s.hraci[0].nerestiTotoKolo).toBe(1);
-    expect(s.zhromazdenieStav?.zostavaLimit[0]).toBe(2);
+    expect(s.zhromazdenieStav?.zostavaLimit[0]).toBe(3);
     expect(r.events).toContainEqual({ type: "pecen", hrac: 0, mnozstvo: 1 });
     // Prvá karta po vypití: hráč 0 pokračuje.
     s = apply(data, s, { type: "place", uid: a.uid, target: "vlastna" }, 0).state;
@@ -97,7 +98,8 @@ describe("Vypiť", () => {
     // Druhá karta: ťah prechádza na súpera.
     s = apply(data, s, { type: "place", uid: b.uid, target: "vlastna" }, 0).state;
     expect(s.zhromazdenieStav?.naTahu).toBe(1);
-    expect(s.zhromazdenieStav?.zostavaLimit[0]).toBe(0);
+    expect(s.zhromazdenieStav?.zostavaLimit[0]).toBe(1);
+    expect([s.hraci[0].poldeciPlne, s.hraci[0].poldeciVypite]).toEqual([1, 2]);
   });
 
   it("dá sa piť opakovane; pasovanie zruší nevyužité ťahy navyše", () => {
@@ -105,8 +107,8 @@ describe("Vypiť", () => {
     s = apply(data, s, { type: "vypit" }, 0).state;
     s = apply(data, s, { type: "vypit" }, 0).state;
     expect(s.zhromazdenieStav?.navyse[0]).toBe(2);
-    expect(s.zhromazdenieStav?.zostavaLimit[0]).toBe(1);
-    expect(legalCommands(data, s, 0)).not.toContainEqual({ type: "vypit" }); // poldeci už nie sú plné
+    expect(s.zhromazdenieStav?.zostavaLimit[0]).toBe(3);
+    expect(legalCommands(data, s, 0)).not.toContainEqual({ type: "vypit" }); // na štvrtú kartu plný poldeci nie je
     s = apply(data, s, { type: "pass" }, 0).state;
     expect(s.zhromazdenieStav?.navyse[0]).toBe(0);
     expect(() => apply(data, s, { type: "vypit" }, 1)).not.toThrow();

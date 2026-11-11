@@ -130,7 +130,8 @@ describe("Poľovník (Nástup, v10.4)", () => {
     const s = vZhromazdeni([[lezi(inst("pijan"), 0)], [lezi(inst("recidivista"), 1, { naexBy: 0 })]], [p]);
     const st = apply(data, s, { type: "place", uid: p.uid, target: "vlastna" }, 0).state;
     expect(ids(st)[1]).toEqual([]);
-    expect(st.hraci[0].poldeciVypite).toBe(s.hraci[0].poldeciVypite + 1);
+    // v12.2: +1 za samotného Poľovníka (každá karta otočí plný poldeci), +1 zo spálenej karty.
+    expect(st.hraci[0].poldeciVypite).toBe(s.hraci[0].poldeciVypite + 2);
     expect(st.hraci[0].nerestiTotoKolo).toBe(s.hraci[0].nerestiTotoKolo + KONSTANTY.NEREST_NAEX);
   });
 

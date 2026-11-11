@@ -48,14 +48,14 @@ describe("Odkazujem: Nástroj do Dedičstva", () => {
     expect(po.zhromazdenieStav?.zostavaLimit[0]).toBe(3);
   });
 
-  it("s kartou v návrhu ide Nástroj na koniec ťahu po Vypiť — rovnako ako pri potvrdení návrhu", () => {
+  it("s kartou v návrhu ide Nástroj na koniec ťahu bez Vypiť (v12.2: Nástroj cenu ťahu nezvýši) — rovnako ako pri potvrdení návrhu", () => {
     const pijan = inst("pijan");
     const vidly = inst("vidly");
     const s = vZhromazdeni([pijan, vidly]);
     const polozky = [{ karta: pijan, ciel: "vlastna" as const }, { karta: vidly, ciel: "vlastna" as const }];
     expect(polozkyOdkazu(polozky, vidly)).toEqual([{ karta: pijan, ciel: "vlastna" }, { karta: vidly, ciel: "dedicstvo" }]);
     const t = tahOdkazu(data, viewFor(data, s, 0), 0, polozky, vidly);
-    expect(t.kroky).toEqual([{ type: "vypit" }, { type: "place", uid: pijan.uid, target: "vlastna" }, { type: "place", uid: vidly.uid, target: "dedicstvo" }]);
+    expect(t.kroky).toEqual([{ type: "place", uid: pijan.uid, target: "vlastna" }, { type: "place", uid: vidly.uid, target: "dedicstvo" }]);
     const po = apply(data, s, { type: "tah", kroky: t.kroky! }, 0).state;
     expect(po.strany[0].map((x) => x.card.uid)).toEqual([pijan.uid]);
     expect(po.hraci[0].dedicstvo.map((k) => k.uid)).toEqual([vidly.uid]);

@@ -138,11 +138,9 @@ describe("§8 Chuť: koniec kola (v9.1)", () => {
 });
 
 describe("§8 Nerest = len konzumácia (v9.1)", () => {
-  it("fajčenie 1 za každú cigaretu; doliatie, barter, Dedičstvo ani šenok nie", () => {
+  it("fajčenie 1 za každú cigaretu; barter, Dedičstvo ani šenok nie (doliatie za cigarety od v12.2 nie je)", () => {
     const s0 = setupSBalickom(data, 11);
     let s: GameState = sHracom({ ...s0, faza: "pitka", utocnik: 0, pitkyCelkom: 1, pitkaCislo: 1, pitkaStav: pitkaStav(0) }, 0, { cigarety: 12, poldeciVypite: 1, nerestiTotoKolo: 0 });
-    s = apply(data, s, { type: "refillPoldeci" }, 0).state;
-    expect(s.hraci[0].nerestiTotoKolo).toBe(0);
     s = apply(data, s, { type: "barter" }, 0).state;
     expect(s.hraci[0].nerestiTotoKolo).toBe(0);
     s = apply(data, s, { type: "smoke", pocet: 1 }, 0).state;

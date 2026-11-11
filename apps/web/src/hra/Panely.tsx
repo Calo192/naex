@@ -638,7 +638,7 @@ export function HracDoska({
                   {jeCielLokalita(view, "zastavka") && t("panel.zastavka")}
                   {t("panel.dalsieKolo", { n: buduci })}
                 </span>
-                {t("panel.poldeciPravidlo", { dolieva: KONSTANTY.POLDECI_NA_ZACIATKU_KOLA, spaky: KONSTANTY.SPAKY_ZA_POLDECI })}
+                {t("panel.poldeciPravidlo", { dolieva: KONSTANTY.POLDECI_PO_PITKE, spaky: KONSTANTY.SPAKY_ZA_POLDECI })}
                 {naexNaStole > 0 && ` ${naStoleVysvetlenie()}`}
               </>
             ),
@@ -662,7 +662,7 @@ export function HracDoska({
                 {jeCielLokalita(view, "benzinka") && t("panel.benzinka")}
                 {view.faza === "pitka" &&
                   (ja ? t("panel.fajcenieJa", { cena: cenaFajceniaHraca(view, p) === 0 ? t("tabula.zadarmo") : t("panel.zaN", { n: cenaFajceniaHraca(view, p) }) }) : t("panel.fajcenieSu", { cena: cenaFajceniaHraca(view, p) === 0 ? t("tabula.zadarmo") : t("panel.zaN", { n: cenaFajceniaHraca(view, p) }) }))}
-                {t("panel.cigaretyPravidlo2", { doliatie: KONSTANTY.REFILL_CENA, novy: cenaNovehoPoldeci, hrana: ja ? t("panel.naHrane") : "", zaSpak: KONSTANTY.CIGARIET_ZA_SPAK })}
+                {t("panel.cigaretyPravidlo2", { navyse: KONSTANTY.CENA_KARTY_NAVYSE, novy: cenaNovehoPoldeci, hrana: ja ? t("panel.naHrane") : "", zaSpak: KONSTANTY.CIGARIET_ZA_SPAK })}
               </>
             ),
           }}
@@ -1587,7 +1587,7 @@ export function PriebehKola({
           nadpis: t("faza.pitka") + (viac ? ` ${t("os.izN", { i, n: pitiek })}` : ""),
           text: (
             <>
-              {tr("os.pitkaText", { doliatie: KONSTANTY.REFILL_CENA })}
+              {tr("os.pitkaText", { dolieva: KONSTANTY.POLDECI_PO_PITKE })}
               <span className="tip-riadok">
                 {t("os.pitkaText2")}
               </span>
