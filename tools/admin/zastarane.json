@@ -559,15 +559,13 @@
       "pozn": "v11.15: Benzínka — „Pitka: Každé fajčenie v tejto Pitke stojí o 1 cigaretu menej.“ (0, 1, 2 …); „prvé zadarmo“ ostáva pravdou, „ďalšie 2“ nie (vo Vypálenej od vypálenia v11.17 2026-11-09)"
     },
     {
-      "pojem": "NA EX: akcia zrušená Odporom ostáva zrušená, mŕtvy Odpor a Posilnenie",
+      "pojem": "NA EX: mŕtvy Odpor a Posilnenie",
       "vzory": [
-        "(?:zrusen\\w* odpor\\w*|odpor\\w*[^.!?]{0,40}zrusil\\w*)[^.!?]{0,40}ostava zrusen",
-        "ostava zrusen",
         "(?:odpor|posilnen)\\w*[^.!?]{0,60}mrtv",
         "mrtv\\w*[^.!?]{0,40}(?:odpor|posilnen)",
         "neaktivn\\w* (?:odpor|posilnen)\\w*[^.!?]{0,60}(?:nic nerob|zbytocn|nemaj\\w* zmysel)"
       ],
-      "pozn": "v11.17: NA EX na Odpore oživí akciu, ktorú Odpor rušil (×1); neaktívny Odpor je štít, neaktívne Posilnenie podrží aktívne akcie (vo Vypálenej od vypálenia v11.17 2026-11-09)"
+      "pozn": "v11.17: neaktívne Posilnenie podrží aktívne akcie; v12.1 Odpor na spoji ruší partnera aj seba a NA EX ho nechá tak. Vzory „ostáva zrušená“ vymazané pri v12.1 — akcia zrušená Odporom pri NA EX zrušená ostáva znova (Michal 2026-11-11)"
     },
     {
       "pojem": "Vedúcko Furt: Roboty susedov aj súpera ako Pecky",
@@ -685,7 +683,8 @@
     {
       "pojem": "neaktívny Odpor ako štít (starý pojem)",
       "vzory": [
-        "neaktivn\\w* odpor\\w*[^.!?]{0,60}(?:zahas|stit|na ex|naex)"
+        "neaktivn\\w* odpor\\w*[^.!?]{0,60}(?:zahas|stit|na ex|naex)",
+        "(?:na ex|naex)[^.!?]{0,60}(?:nemozno|neda|nesmie)[^.!?]{0,40}neaktivn\\w* odpor"
       ],
       "pozn": "v12.1: Odpor je aktívny len bez spoja — štít dáva aktívny (nespárovaný) Odpor; na spoji je neaktívny (Michal 2026-11-11)"
     },
