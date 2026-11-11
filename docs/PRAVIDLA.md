@@ -11,7 +11,7 @@ stránka Pravidlá — `VERZIA_PRAVIDIEL_PRESNA`).
 
 **Zmeny v11.22 oproti v11.21** (Michal 2026-11-11, Zrejúca: „Treba upraviť Traktoristu. Jeho efekt dáva len Dlhy, chcem, aby dával Pecku, keď má prevahu v kraji, žiadne Dlhy v efekte. Pascu chcem upraviť — za KAŽDÚ priloženú kartu od súpera k mojej karte mu dám Ranu navyše v bitke. Výherný automat — prah o 1 vyšší, ale každú Pitku 1 Dlh. … Kapybara bude premieňať Vieru na Cigarety, bez ohľadu na to, či je to súperova alebo moja karta, proste Preškolenie Viera → Cigarety. Predavačka — vezmi si jednu kartu z ponuky do dobieracieho balíčka. Chcem, aby aj akcia v efekte, ako napríklad pri Opatrovateľke, sa dala zmeniť preškolením alebo Nástrojom. V prípade, ak postava dostane Forsáž, akcia v efekte sa posilní tiež.“ K Nástroju: „Áno, celý Nástroj.“; staré znenia v `docs/pravidla-historia.md`, sekcia v11.22):
 
-- **Akcie navyše mení celý Nástroj aj Forsáž Energeťáka** (§6, §12): akcie navyše v pečati karty (Opatrovateľka, Šofér, Traktorista…) mení podložený Nástroj rovnako ako akcie na hranách — **preškolenie** X → Y (v reťazi premien za Školiteľmi, v11.20) aj **hrana posilnenia** „Posilnená {X}“ (Puška, Pasca, Fúrik, Horoskop, Izolačka; ×2) — a **Forsáž Energeťáka** ich zdvojí (×2). Pečať ukáže zmenenú akciu a násobok. Puška dole pod Šoférom, ktorý v kole nedal NA EX: jeho Pecka navyše ×2; Energeťák hore pod Opatrovateľkou s Pamätníkom: Robota navyše ×2. Akcie navyše nie sú na spoji, preto ich NA EX nemení — posilnenie platí ×2. Posilnenie suseda, Odpor, spojová Forsáž a Silná žena ich nemenia ako doteraz. Predtým (do v11.21) ich menili len Školitelia; „akcie navyše Nástroj nemení“ zaniká.
+- **Akcie navyše mení celý Nástroj aj Forsáž** (§6, §12): akcie navyše v pečati karty (Opatrovateľka, Šofér, Traktorista…) mení podložený Nástroj rovnako ako akcie na hranách — **preškolenie** X → Y (v reťazi premien za Školiteľmi, v11.20) aj **hrana posilnenia** „Posilnená {X}“ (Puška, Pasca, Fúrik, Horoskop, Izolačka; ×2) — a **Forsáž** karty ich zdvojí (×2). Pečať ukáže zmenenú akciu a násobok. Puška dole pod Šoférom, ktorý v kole nedal NA EX: jeho Pecka navyše ×2; Energeťák hore pod Opatrovateľkou s Pamätníkom: Robota navyše ×2. Akcie navyše nie sú na spoji, preto ich NA EX nemení — posilnenie platí ×2. Posilnenie suseda, Odpor a Silná žena ich nemenia ako doteraz. Predtým (do v11.21) ich menili len Školitelia; „akcie navyše Nástroj nemení“ zaniká. **Výklad Leadera (2026-11-11), Michal zatiaľ nepotvrdil:** Michal napísal všeobecne „ak postava dostane Forsáž“ — preto akcie navyše zdvojí **každá Forsáž karty**, aj **zo spoja** (Posilnenie + Posilnenie, aj Pakt proti Posilneniu), kým ju NA EX na jednom z Posilnení nezruší; Forsáž zo spoja a z Energeťáka sa násobia (×4) ako na hranách.
 - **Traktorista** (§16): „Bitka: S prevahou v jeho kraji {Pecka}.“ — **Pecka navyše**, keď máš v bitke prevahu v jeho kraji (aj vo finále — pinnacle lokalita má kraje). Dlh bez prevahy v poslednej Pitke kola zaniká; Traktorista Dlhy nedáva.
 - **Pasca** (Dedičstvo, §16): „Bitka: Za každú kartu, ktorú súper v tomto kole priložil k tvojej karte {Rana}.“ — **1 Rana navyše za každú súperovu kartu**, ktorú v tomto kole priložil k tvojej karte (aj lícom dole — Záverečná, odpoveď na NA EX; každá karta raz, keď ju priložil). Presun Dohadzovačkou, spálenie Poľovníkom ani podloženie Nástroja priloženie nie sú. Predtým 1 Rana, ak priložil aspoň jednu.
 - **Výherný automat** (Dedičstvo, §8, §16): „Tvoj prah Dlhu je o 1 vyšší. Pitka: {Dlh}.“ — **1 Dlh v každej Pitke** (rovno Dlh, nie zadĺženie cez prah; Obecný úrad ho zdvojí ako iné Dlhy z Pitky). Predtým 1 Dlh len v poslednej Pitke kola.
@@ -786,8 +786,9 @@ počíta ako ťah, priznanie nie.
   2026-11-11: „Chcem, aby aj akcia v efekte, ako napríklad pri Opatrovateľke, sa dala zmeniť
   preškolením alebo Nástrojom. V prípade, ak postava dostane Forsáž, akcia v efekte sa posilní
   tiež.“ — „Áno, celý Nástroj“): akciová hrana ju preškolí v reťazi premien ako akcie hrán, hrana
-  posilnenia „Posilnená {X}“ a Forsáž Energeťáka ju zdvoja (×2, každá zvlášť — Puška aj Energeťák
-  ×4). Na spoji nie je, preto ju Posilnenie suseda, Odpor, spojová Forsáž, NA EX či Silná žena
+  posilnenia „Posilnená {X}“ a **Forsáž** karty — zo spoja aj z Energeťáka (zo spoja výklad Leadera
+  2026-11-11, Michal nepotvrdil; zrušená NA EX neplatí) — ju zdvoja (×2, každá zvlášť — Puška aj
+  Energeťák ×4). Na spoji nie je, preto ju Posilnenie suseda, Odpor, NA EX či Silná žena
   nemenia (do v11.21 ju nemenil ani podložený Nástroj). Keď Preškolenie či Nástroj mení akciu, karta,
   ktorej sa týka, ukáže zmenenú akciu na hrane aj v pečati (Michal 2026-11-08), posilnenú s ×N.
   Skrytá Záverečná podmienku nesplní ani akcie navyše nedostane.
@@ -896,7 +897,8 @@ podrobne:
 **Forsáž** (v10.3, Michal 2026-11-02) — podrobne:
 
 - Karta s Forsážou má posilnené **všetky** svoje aktívne akcie, nielen tie na spoji — aj zlé
-  (Hazard, Poškodenie pečene), ako Posilnenie. Akcia, ktorú navyše posilňuje Posilnenie suseda
+  (Hazard, Poškodenie pečene), ako Posilnenie — a od v11.22 aj **akcie navyše** v pečati (×2;
+  výklad Leadera 2026-11-11, Michal nepotvrdil). Akcia, ktorú navyše posilňuje Posilnenie suseda
   z druhého spoja, má **×4**. Násobky sa násobia ďalej (Silná žena, Liberál, Pes…).
 - Akcie aktívne po **Vzbure** (nespojené, v11.1; aj aktivované Výhernými žrebmi) Forsáž zdvojí
   tiež; spojené akcie karty so Vzburou sú neaktívne, tie nezdvojí. Vzbura z Odporu proti
@@ -2305,7 +2307,7 @@ Kôň v kroku Exekútora. Michal ich potvrdí.
 | Podpora | spúšťač (v11.3): zrkadlo Konfliktu — efekt karty, keď sa priložením stretne s inou kartou toho istého hráča (§6, §16) |
 | Vyvolať Konflikt | priložiť kartu k súperovej ležiacej karte so spúšťačom Konflikt (§16) |
 | Spoločník / Nepriateľ | spúšťač (frakcie): akcie navyše, kým je v tvojej / súperovej partii odkrytá karta s tagom (§6, §16) |
-| Akcia navyše | aktívna akcia majiteľa karty mimo jej hrán, z pečate v ilustrácii; ráta sa ako tá istá akcia (§6). „Furt: {A}“ platí bez podmienky, kým karta leží (v11.17); {Spálenie} v pečati nie je akcia — karta, s ktorou sa nositeľ stretne, sa na konci bitky spáli (§6). Mení ju Školiteľ aj celý podložený Nástroj — preškolenie, hrana posilnenia, Forsáž Energeťáka (v11.22) |
+| Akcia navyše | aktívna akcia majiteľa karty mimo jej hrán, z pečate v ilustrácii; ráta sa ako tá istá akcia (§6). „Furt: {A}“ platí bez podmienky, kým karta leží (v11.17); {Spálenie} v pečati nie je akcia — karta, s ktorou sa nositeľ stretne, sa na konci bitky spáli (§6). Mení ju Školiteľ, celý podložený Nástroj — preškolenie, hrana posilnenia — a Forsáž karty, zo spoja aj z Energeťáka (v11.22) |
 | Bitka (akcia navyše) | podmienka slovami pred piktogramom („Bitka: Ak si v tomto kole nedal NA EX {Pecka}“): akcia navyše toľkokrát, koľkokrát podmienka platí v bitke (§6, §16) |
 | Forsáž | Posilnenie + Posilnenie na spoji (v10.3): obe karty majú všetky aktívne akcie posilnené (×2); lokalita len hranu; NA EX na jedno z Posilnení ju zruší (§6). Aj z Energeťáka pod kartou — tú NA EX nezruší a platí na akcie aktívne po NA EX, neaktívne aktivované NA EX ×4 (v11.21, §12) |
 | Vzbura | Odpor + Odpor na spoji (v11.1): obe karty sa obrátia — nespojené akcie aktívne, spojené neaktívne; Odpor + Posilnenie: len karta s Odporom, navyše posilnená; NA EX na ňu nejde; lokalita len hranu (§6, §7). Aj z Vidiel pod kartou (§12) |

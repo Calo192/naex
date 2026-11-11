@@ -29,10 +29,10 @@
 //
 // Akcia navyše je aktívna akcia majiteľa karty mimo jej hrán: do súčtov ide ako tá
 // istá akcia a vyhodnotí sa v jej kroku. Nie je na spoji, preto ju nemení Posilnenie suseda,
-// Odpor, spojová Forsáž, NA EX ani Silná žena; mení ju Náradie v Dedičstve, efekty, ktoré
-// menia všetky akcie hráča (rátajú zo súčtov), preškolenie karty (Školitelia, preskolenie.ts)
-// a celý podložený Nástroj — preškolenie, hrana posilnenia aj Forsáž Energeťáka (v11.22,
-// Michal 2026-11-11; partia.ts premenNavyse).
+// Odpor, NA EX ani Silná žena; mení ju Náradie v Dedičstve, efekty, ktoré menia všetky akcie
+// hráča (rátajú zo súčtov), preškolenie karty (Školitelia, preskolenie.ts), celý podložený
+// Nástroj — preškolenie, hrana posilnenia — a Forsáž karty, zo spoja aj z Energeťáka (v11.22,
+// Michal 2026-11-11; Forsáž zo spoja výklad Leadera; partia.ts premenNavyse).
 //
 // „Spúšťač: Preškolenie {X}→{Y}.“ (Školitelia) akcia navyše nie je — číta ho preskolenie.ts.
 
@@ -210,7 +210,7 @@ export interface NavyseStav extends EfektNavyse {
   readonly ako?: readonly Action[];
   /** uid karty, ktorá akciu [j] preškolila (Nástroj či Školiteľ); null = nepreškolená. */
   readonly akoOd?: readonly (number | null)[];
-  /** Násobok akcie [j] — Forsáž Energeťáka a hrana posilnenia Nástroja pod kartou (v11.22); chýba = ×1. */
+  /** Násobok akcie [j] — Forsáž (zo spoja, z Energeťáka) a hrana posilnenia Nástroja pod kartou (v11.22); chýba = ×1. */
   readonly nasobok?: readonly number[];
   /** Dôvody násobku akcie [j] pre rozpis („Forsáž“, „karta:puska“). */
   readonly posilnilo?: readonly (readonly string[])[];

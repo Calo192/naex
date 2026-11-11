@@ -1437,7 +1437,7 @@ export function evaluateLine(data: GameData, line: LineState): LineEval {
   const aktivne = (side: 0 | 1): number => (stred === null ? 0 : stred.stav[side]!.filter((x) => x === "aktivna").length);
 
   // Akcie navyše (frakcie): majiteľovi karty, mimo hrán — nič, čo mení akcie na spojoch, ich nemení;
-  // mení ich karta sama (premenNavyse: preškolenie, Nástroj pod ňou, Forsáž Energeťáka). Pred
+  // mení ich karta sama (premenNavyse: preškolenie, Nástroj pod ňou, Forsáž). Pred
   // Presbiterom, ktorý uberá z celého súčtu Viery.
   const tagy = (defId: string): readonly Tag[] => data.cards.get(defId)?.tags ?? [];
   const elemPodla = new Map(elems.map((e) => [e.uid, e]));
@@ -1525,14 +1525,19 @@ export function evaluateLine(data: GameData, line: LineState): LineEval {
  * Akcie navyše karty tak, ako ich mení karta sama (v11.22, Michal 2026-11-11: „Chcem, aby aj akcia
  * v efekte … sa dala zmeniť preškolením alebo Nástrojom. V prípade, ak postava dostane Forsáž, akcia
  * v efekte sa posilní tiež.“ — „Áno, celý Nástroj“): reťaz premien ako na hranách (Školitelia, potom
- * Nástroje), potom Forsáž Energeťáka a hrana posilnenia na akciu po premene, každá ×2. Na spoji
- * nie sú, preto ich Posilnenie suseda, Odpor, spojová Forsáž, NA EX ani Silná žena nemenia.
+ * Nástroje), potom Forsáž (zo spoja aj z Energeťáka — výklad Leadera 2026-11-11, Michal nepotvrdil)
+ * a hrana posilnenia na akciu po premene, každá ×2. Na spoji nie sú, preto ich Posilnenie suseda,
+ * Odpor, NA EX ani Silná žena nemenia.
  */
 function premenNavyse(e: NavyseStav, elem: Elem | undefined): NavyseStav {
   if (elem === undefined) return e;
   const m = elem.premeny.hrany;
   const ako = e.akcie.map((a): Action => m.get(a)?.na ?? a);
-  const posilnenia = ako.map((a) => [elem.forsazNastroj ? "Forsáž" : null, ...(elem.posilneniaNastrojom.has(a) ? [`karta:${elem.posilneniaNastrojom.get(a) ?? ""}`] : [])].filter((x): x is string => x !== null));
+  // Forsáž zo spoja (applyForsaz ju nechá len zo spojov, ktoré NA EX neruší); lokalita akcie navyše nemá.
+  const forsazSpoja = !elem.isLokalita && (elem.forsaz[0] || elem.forsaz[1]);
+  const posilnenia = ako.map((a) =>
+    [forsazSpoja ? "Forsáž" : null, elem.forsazNastroj ? "Forsáž" : null, ...(elem.posilneniaNastrojom.has(a) ? [`karta:${elem.posilneniaNastrojom.get(a) ?? ""}`] : [])].filter((x): x is string => x !== null),
+  );
   const premenene = ako.some((a, j) => a !== e.akcie[j]);
   const posilnene = posilnenia.some((x) => x.length > 0);
   return {

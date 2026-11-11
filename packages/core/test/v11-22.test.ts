@@ -10,6 +10,7 @@ import eldersJson from "../data/elders.json";
 import scorecardsJson from "../data/scorecards.json";
 import type { CardInstance, Event, GameState, PitkaStav, PlacedCard, PlayerId } from "../src/index.ts";
 import { apply, evaluateLine, legalCommands, lineState, loadGameData, ponukaPodlozenia, setupGame, vyhladDlhov } from "../src/index.ts";
+import { EMPTY, instanceFor, makeDef, syntheticData } from "./helpers.ts";
 
 const data = loadGameData(cardsJson, eldersJson, scorecardsJson);
 
@@ -70,6 +71,21 @@ describe("akcie navyše mení celý podložený Nástroj (v11.22: „Áno, celý
     expect(navyse(s, sofer.uid, "Rana")).toBe(2);
     const zdroj = (evaluateLine(data, lineState(s)).zdroje[0].Rana ?? []).find((z) => z.uid === sofer.uid && z.dovody.some((d) => d.startsWith("akcia navyše")));
     expect(zdroj?.dovody).toContain("Forsáž");
+  });
+
+  it("Forsáž zo spoja (Posilnenie + Posilnenie) zdvojí akcie navyše; NA EX, ktorý Posilnenie zruší, ju zruší aj tu (výklad Leadera 2026-11-11)", () => {
+    const a = makeDef("a", [null, "Posilnenie", null, null], EMPTY, { tags: ["Občan"], triggers: ["Furt"], effectText: "Furt: {Pecka}." });
+    const b = makeDef("b", EMPTY, [null, "Posilnenie", null, null], { tags: ["Občan"] });
+    const sd = syntheticData([a, b]);
+    const kartaA = instanceFor(sd, "a", [null, "Posilnenie", null, null], EMPTY);
+    const kartaB = instanceFor(sd, "b", EMPTY, [null, "Posilnenie", null, null]);
+    const pecky = (naex: boolean) =>
+      evaluateLine(sd, { lokalita: null, lokalitaOtocena: false, strany: [[{ card: kartaA, playedBy: 0, ...(naex ? { naexBy: 1 as const } : {}) }, { card: kartaB, playedBy: 0 }], []] });
+    const s = pecky(false);
+    expect(s.cards.get(kartaA.uid)?.forsaz).toBe(true);
+    expect(s.sums[0].Pecka).toBe(2);
+    expect(s.cards.get(kartaA.uid)?.navyse?.[0]).toMatchObject({ akcie: ["Pecka"], nasobok: [2] });
+    expect(pecky(true).sums[0].Pecka).toBe(1);
   });
 
   it("NA EX na kartu akcie navyše nemení — Puška ich posilní ×2 aj pod NA EX", () => {
