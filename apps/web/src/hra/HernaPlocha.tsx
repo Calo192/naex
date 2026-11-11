@@ -1776,11 +1776,17 @@ export function HernaPlocha({
     // ostane na stole, nech ho hráč opraví; prijatý ťah zmení klucTahu a návrh zmizne aj tak.
     if (vyucba !== true) setNavrh(null);
   };
-  // Karta z ponuky na plsti (Michal 2026-11-11, mock A): Živnostník, Predavačka, Zastávka. Klik na kartu
-  // ju len vyznačí, pečiatka ju vezme; „Pozrieť stôl“ ponuku odloží. Nová voľba (aj druhá Podpora po
-  // vzatí — ponuka je kratšia) má nový kľúč, a tak začína bez vyznačenia.
-  const klucPonuky =
-    mojaVolbaSenku === null || view.koniec !== null ? null : `${view.kolo}|${view.pitkaCislo}|${mojaVolbaSenku.zdroj ?? ""}|${view.senok.map((k) => k.uid).join(".")}`;
+  // Karta z ponuky na plsti (Michal 2026-11-11, mock A): Živnostník, Predavačka, Zastávka a tým istým
+  // tokom Cintorín (karta z vlastného odhadzovacieho balíčka). Klik na kartu ju len vyznačí, pečiatka
+  // ju vezme; „Pozrieť stôl“ výber odloží. Nová voľba (aj druhá Podpora po vzatí — ponuka je kratšia)
+  // má nový kľúč, a tak začína bez vyznačenia.
+  const mojCintorin = view.faza === "bitka" && bs0 !== null && bs0.krok === "cintorin" && bs0.caka === ja && view.koniec === null;
+  const zdrojVyberu: readonly CardInstance[] = mojCintorin ? view.hraci[ja].odhadzovaci : view.senok;
+  const klucPonuky = mojCintorin
+    ? `cintorin|${view.kolo}|${zdrojVyberu.map((k) => k.uid).join(".")}`
+    : mojaVolbaSenku === null || view.koniec !== null
+      ? null
+      : `${view.kolo}|${view.pitkaCislo}|${mojaVolbaSenku.zdroj ?? ""}|${view.senok.map((k) => k.uid).join(".")}`;
   const [vyberPonuky, setVyberPonuky] = useState<{ readonly kluc: string | null; readonly uid: number | null; readonly odlozena: boolean; readonly odoslana: boolean }>({
     kluc: null,
     uid: null,
@@ -1810,14 +1816,15 @@ export function HernaPlocha({
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
   }, [klucPonuky, vp.uid]);
-  const povoleneZPonuky = mojaVolbaSenku === null ? [] : ponukaSenku(data, view, mojaVolbaSenku);
-  const naBalicek = mojaVolbaSenku?.kam === "balicek";
+  // Cintorín dovolí hocijakú kartu balíčka; Predavačka a Živnostník len svoj druh.
+  const povoleneZPonuky = mojCintorin ? zdrojVyberu : mojaVolbaSenku === null ? [] : ponukaSenku(data, view, mojaVolbaSenku);
+  const naBalicek = !mojCintorin && mojaVolbaSenku?.kam === "balicek";
   const kartyPonuky: readonly KartaPonuky[] =
-    klucPonuky === null || mojaVolbaSenku === null
+    klucPonuky === null
       ? []
-      : view.senok.map((k) => {
+      : zdrojVyberu.map((k) => {
           const smie = povoleneZPonuky.some((x) => x.uid === k.uid);
-          const tag = mojaVolbaSenku.tag;
+          const tag = mojCintorin ? undefined : mojaVolbaSenku?.tag;
           return {
             kluc: k.uid,
             nazov: menoKarty(k.defId),
@@ -1830,7 +1837,7 @@ export function HernaPlocha({
           };
         });
   const rozmerKarietPonuky = rozmerPonuky(vnutroPlste, kartyPonuky.length, naSirku);
-  const vyznacenaVPonuke = vp.uid === null ? undefined : view.senok.find((k) => k.uid === vp.uid);
+  const vyznacenaVPonuke = vp.uid === null ? undefined : zdrojVyberu.find((k) => k.uid === vp.uid);
   const vezmiZPonuky = (): void => {
     if (vyznacenaVPonuke === undefined) return;
     const k = vyznacenaVPonuke;
@@ -1846,7 +1853,7 @@ export function HernaPlocha({
       setPrelety((x) => [...x, { kluc: `ponuka-${k.uid}`, z, na, karta: k }]);
     }
     zmenVyberPonuky({ odoslana: true });
-    posli({ type: "senok", uid: k.uid });
+    posli(mojCintorin ? { type: "cintorin", uid: k.uid } : { type: "senok", uid: k.uid });
   };
   const ponukaNaStole =
     klucPonuky === null || vp.odlozena || vp.odoslana || kartyPonuky.length === 0 ? null : (
@@ -4904,22 +4911,21 @@ export function HernaPlocha({
         if (b.krok === "cintorin") {
           // Cintorín (v11.13): porazený si smie vziať do ruky 1 kartu zo svojho odhadzovacieho balíčka —
           // čaká sa po návrate kariet, takže sú v ňom aj karty z práve odohranej línie (Michal 2026-11-07).
+          // Karty ležia na plsti (PonukaNaStole) ako pri ponuke; vziať si nemusí — „Nič si neber“ je vedľa.
+          const nic = (
+            <button type="button" className="pecat pecat-tichy cintorin-nic" onClick={() => posli({ type: "cintorin", uid: null })}>
+              {t("ponuka.nicSiNeber")}
+            </button>
+          );
           return {
             nadpis: nazovKarty("Cintorín"),
-            text: (
-              <span className="zberatel-text">
-                <span>
-                  {tRod("plocha.cintorin", rodHracaP(ja))}: {tr("plocha.cintorinText")}
-                </span>
-                <span className="zberatel-ponuka">
-                  {view.hraci[ja].odhadzovaci.map((k, _, vsetky) => (
-                    // S kartami z línie býva balíček dlhší — menšie karty, nech panel na notebooku nezakryje spodok stola.
-                    <span key={k.uid}>{karta({ karta: k, sirka: vsetky.length > 12 ? 64 : 84, onClick: () => posli({ type: "cintorin", uid: k.uid }) })}</span>
-                  ))}
-                </span>
-              </span>
+            text: t("ponuka.cintorin"),
+            stred: (
+              <button type="button" className="pecat pecat-tichy ponuka-odloz" aria-pressed={vp.odlozena} onClick={() => zmenVyberPonuky({ odlozena: !vp.odlozena })}>
+                {vp.odlozena ? t("ponuka.spat") : t("ponuka.pozrietStol")}
+              </button>
             ),
-            tlacidla: <button onClick={() => posli({ type: "cintorin", uid: null })}>{t("starsi.nic")}</button>,
+            ...(naSirku ? { druha: nic } : { vpravo: nic }),
           };
         }
         // Nakladačka (strach) a hádka (reči), v11: klik na stupeň v teplomeri pridá zdvih.
@@ -5925,7 +5931,7 @@ export function HernaPlocha({
         // Šenok na pozretie (napr. pred Starostom) — ďalší klik alebo Esc ho zavrie; v Drafte je na stole.
         onDraft={() =>
           // Počas výberu z ponuky leží ponuka na stole — tlačidlo ju odloží a vráti, okno by ju zdvojilo.
-          klucPonuky !== null ? zmenVyberPonuky({ odlozena: !vp.odlozena }) : setVrstva((v) => (v === "senok" ? null : "senok"))
+          klucPonuky !== null && !mojCintorin ? zmenVyberPonuky({ odlozena: !vp.odlozena }) : setVrstva((v) => (v === "senok" ? null : "senok"))
         }
       />
     </>

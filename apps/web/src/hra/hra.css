@@ -10255,14 +10255,18 @@ button.pecat.kseft-pod-tlacidlo.ne:hover {
   transition: opacity 0.2s ease, filter 0.2s ease;
 }
 
+/* Šírka radu (max-width) z rozmerPonuky — dlhý odhadzovací balíček pri Cintoríne sa zalomí do radov. */
 .ponuka-na-stole {
   position: absolute;
   left: 0;
   right: 0;
   z-index: 6;
   display: flex;
+  flex-wrap: wrap;
   justify-content: center;
   align-items: flex-end;
+  align-content: flex-end;
+  margin-inline: auto;
   pointer-events: none;
 }
 
