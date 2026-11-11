@@ -3260,10 +3260,10 @@ export function HernaPlocha({
     const nazov = p === ja ? t("plocha.naKoniecVlavo") : t("plocha.naKoniecVpravo");
     const vyska = (sirkaVLinii * 80) / 54;
     const sirkaMiesta = naSirku || mobil ? Math.round(sirkaVLinii * MIESTO_VOLBY) : sirkaVLinii;
-    // Duch karty z ruky (Michal 2026-11-11): kam karta pod myšou v ruke vytvorí spoj, tam leží
-    // polopriehľadná, natočená ako by ležala — bez mostíkov a zvýraznenia akcií. Bez spoja nič.
+    // Duch karty z ruky (Michal 2026-11-11): kam sa karta pod myšou v ruke dá vyložiť (so spojom
+    // aj bez neho), tam leží polopriehľadná, natočená ako by ležala — bez mostíkov a zvýraznenia akcií.
     const nahladDucha = duchZRuky === null ? undefined : m.karty.get(duchZRuky.uid);
-    const duch = nahladDucha !== undefined && nahladDucha.pary.length > 0 ? duchZRuky : null;
+    const duch = nahladDucha !== undefined ? duchZRuky : null;
     return (
       <div key={-3} className={duch === null ? "v-linii" : "v-linii s-duchom"}>
       <button
@@ -6511,6 +6511,7 @@ export function HernaPlocha({
               const moze = smer === "vlavo" ? s.mozeVlavo : s.mozeVpravo;
               const skryte = smer === "vlavo" ? s.vlavo : s.vpravo;
               const duchMimo = smer === "vlavo" ? s.duchVlavo : s.duchVpravo;
+              const textDucha = duchMimo === null ? null : duchMimo > 0 ? t("stol.duchMimoSpoj", { pary: duchMimo }) : t("stol.duchMimo");
               if (!moze) return null;
               const popis = smer === "vlavo" ? t("stol.posunVlavo") : t("stol.posunVpravo");
               return (
@@ -6526,10 +6527,10 @@ export function HernaPlocha({
                     <span aria-hidden="true">{smer === "vlavo" ? "‹" : "›"}</span>
                     {skryte > 0 && <small>{skryte}</small>}
                   </button>
-                  {duchMimo > 0 && (
+                  {textDucha !== null && (
                     <span className="duch-mimo" aria-hidden="true">
                       {smer === "vlavo" ? "← " : ""}
-                      {t("plocha.spoj", { pary: duchMimo })}
+                      {textDucha}
                       {smer === "vpravo" ? " →" : ""}
                     </span>
                   )}

@@ -60,12 +60,12 @@ export interface StavPosunu {
   readonly mozeVpravo: boolean;
   /** Kam je lokalita odsunutá (nie je celá vidno), inak null. */
   readonly lokalita: "vlavo" | "vpravo" | null;
-  /** Spoje ducha karty z ruky, ktorý leží za ľavým / pravým okrajom (0 = žiadny). */
-  readonly duchVlavo: number;
-  readonly duchVpravo: number;
+  /** Duch karty z ruky za ľavým / pravým okrajom: počet jeho spojov (0 = miesto bez spoja), null = žiadny. */
+  readonly duchVlavo: number | null;
+  readonly duchVpravo: number | null;
 }
 
-const BEZ_POSUNU: StavPosunu = { vlavo: 0, vpravo: 0, mozeVlavo: false, mozeVpravo: false, lokalita: null, duchVlavo: 0, duchVpravo: 0 };
+const BEZ_POSUNU: StavPosunu = { vlavo: 0, vpravo: 0, mozeVlavo: false, mozeVpravo: false, lokalita: null, duchVlavo: null, duchVpravo: null };
 
 /** Úsek prvku v súradniciach obsahu línie. */
 function usek(el: Element, linia: HTMLElement, zaciatok: number): Usek {
@@ -98,8 +98,8 @@ function zmeraj(linia: HTMLElement, lokalita: HTMLElement | null): StavPosunu {
     const u = usek(lokalita, linia, zaciatok);
     lok = u.lavo < okno.lavo - 1 ? "vlavo" : u.pravo > okno.pravo + 1 ? "vpravo" : null;
   }
-  let duchVlavo = 0;
-  let duchVpravo = 0;
+  let duchVlavo: number | null = null;
+  let duchVpravo: number | null = null;
   for (const d of linia.querySelectorAll<HTMLElement>(".duch-karty")) {
     const u = usek(d, linia, zaciatok);
     const pary = Number(d.dataset.pary ?? "0");

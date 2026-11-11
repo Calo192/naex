@@ -238,6 +238,8 @@
   "stol.posunVpravo": "Posunúť líniu doprava",
   "stol.zaOkrajom": "za okrajom: {n}",
   "stol.naLokalitu": "Na lokalitu",
+  "stol.duchMimo": "miesto",
+  "stol.duchMimoSpoj": "miesto · spoj: {pary}",
   "stol.finale": "finále",
   "stol.finaleLokalita": "finále · lokalita",
   "stol.lokalita": "lokalita",
