@@ -34,6 +34,21 @@ describe("rozmer kariet ponuky na plsti", () => {
     expect(rozmerPonuky({ w: 1330, h: 295 }, 5, false).sirka).toBeGreaterThanOrEqual(140);
   });
 
+  it("dlhý odhadzovací balíček (Cintorín): karty sa zalomia do radov a celé sa zmestia do plste", () => {
+    for (const plst of [...plste, { w: 700, h: 240 }]) {
+      const naSirku = plst.w === 700;
+      for (const pocet of [8, 12, 16, 24]) {
+        const r = rozmerPonuky(plst, pocet, naSirku);
+        const rady = Math.ceil(pocet / r.naRad);
+        expect(rady).toBeLessThanOrEqual(3);
+        expect(rady * r.sirka * POMER + (rady - 1) * r.medzera + r.dole + (naSirku ? 18 : 46)).toBeLessThanOrEqual(plst.h);
+        expect(r.naRad * r.sirka + (r.naRad - 1) * r.medzera).toBeLessThanOrEqual(plst.w);
+      }
+    }
+    // Monitor: 12 kariet v dvoch radoch po 6 vyjde väčších ako v jednom rade.
+    expect(rozmerPonuky({ w: 1884, h: 540 }, 12, false).naRad).toBe(6);
+  });
+
   it("telefón na šírku: hrana nie je, karty siahajú takmer po spodok plste", () => {
     const r = rozmerPonuky({ w: 700, h: 240 }, 5, true);
     expect(r.dole).toBe(8);
@@ -91,7 +106,14 @@ describe("HernaPlocha: výber z ponuky", () => {
 
   it("zámer senok posiela len pečiatka, nie klik na kartu", () => {
     expect(zdroj.match(/type: "senok"/g)).toHaveLength(1);
-    expect(zdroj).toMatch(/const vezmiZPonuky = [\s\S]*?posli\(\{ type: "senok", uid: k\.uid \}\)/);
+    expect(zdroj).toMatch(/const vezmiZPonuky = [\s\S]*?\{ type: "senok", uid: k\.uid \}/);
+  });
+
+  it("Cintorín: kartu berie len pečiatka, „Nič si neber“ je samostatné tlačidlo; malé karty v pilulke sú preč", () => {
+    expect(zdroj.match(/type: "cintorin"/g)).toHaveLength(2);
+    expect(zdroj).toContain('posli(mojCintorin ? { type: "cintorin", uid: k.uid } : { type: "senok", uid: k.uid })');
+    expect(zdroj).toMatch(/cintorin-nic[^\n]*posli\(\{ type: "cintorin", uid: null \}\)/);
+    expect(zdroj).not.toContain("zberatel-ponuka");
   });
 
   it("ponuka sa ukáže na stole, okno Ponuka sa pri voľbe samo neotvára", () => {
