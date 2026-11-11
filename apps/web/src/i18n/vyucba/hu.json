@@ -85,10 +85,10 @@
       "melichar": "Platí sa [Cigareta] cigaretami, tie máš dole pri sebe: deväť. Karta stojí jednu. Na drobné si zvykni, väčšie peniaze tu nevidíš."
     }
   },
-  "k-kup-vymahac": {
-    "melichar": "Te kezdesz. Vedd meg a Behajtót egy [Cigareta] cigarettáért: van egy [Pecka] Gyomrosa, az 2 ütés.",
+  "k-kup-hasic": {
+    "melichar": "",
     "sk": {
-      "melichar": "Začínaš ty. Kúp Vymáhača za [Cigareta] cigaretu: má [Pecka] Pecku, to sú 2 údery."
+      "melichar": "Začínaš ty. Kúp Hasiča za [Cigareta] cigaretu: má [Petelica] Petelicu, to sú 3 údery."
     }
   },
   "k-kupa-bot": {
@@ -163,10 +163,10 @@
       "melichar": "Štamgast pridal Traktoristu k Poľovníkovi. Jeho [Rana] Rana sa spojila s [Petelica] Petelicou: 1 + 3. A s prevahou má Traktorista [Pecka] Pecku navyše: 4 : 6."
     }
   },
-  "k-vymahac": {
-    "melichar": "Most a Behajtót a Hentes mögé. Az ő [Pecka] Gyomrosa megtalálja a Hentes [Pecka] Gyomrosát: még 2 + 2, tehát 8 : 6. Utána hagyd jóvá.",
+  "k-hasic": {
+    "melichar": "",
     "sk": {
-      "melichar": "Teraz Vymáhača za Mäsiara. Jeho [Pecka] Pecka nájde Mäsiarovu [Pecka] Pecku: ďalšie 2 + 2, teda 8 : 6. Potom potvrď."
+      "melichar": "Teraz Hasiča za Mäsiara. Jeho [Petelica] Petelica nájde Mäsiarovu [Pecka] Pecku: ďalšie 3 + 2, teda 9 : 6. Potom potvrď."
     }
   },
   "k-zh-bot3": {
@@ -175,10 +175,10 @@
       "melichar": "Štamgast pridal Degustátorku. Jej [Pecka] Pecka sa spojila s [Rana] Ranou Traktoristu: 8 : 9."
     }
   },
-  "k-zahradkar": {
-    "melichar": "A harmadik, az utolsó: a Hobbikertész a Behajtó mögé. [Rana] Pofon a [Rana] Pofonra, 10 : 9. Hagyd jóvá, ma több kártyát nem szabad.",
+  "k-pas1": {
+    "melichar": "",
     "sk": {
-      "melichar": "Tretia, posledná: Záhradkár za Vymáhača. [Rana] Rana na [Rana] Ranu, 10 : 9. Potvrď, viac kariet dnes nesmieš."
+      "melichar": "Pijana si nechaj a pasuj (P). Posledný plný [Poldeci] poldeci budeš o chvíľu potrebovať."
     }
   },
   "q-zhromazdenie": {
@@ -215,8 +215,8 @@
       "melichar": "Viac netreba. Klikni končím (K)."
     }
   },
-  "k-bez-odpovede-bot": {
-    "melichar": "A Törzsvendég végzett, és kiderült a NA EX: a Traktorosnak kialudt mindkét [Rana] Pofonja. Hogy mit mutat az Ivászat táblázata, azt ma hagyd. Jön a verekedés.",
+  "k-hotovo-bot": {
+    "melichar": "",
     "sk": {
       "melichar": "Štamgast skončil a NA EX sa ukázalo: Traktoristovi zhasli obe [Rana] Rany. Čo ukáže tabuľka Pitky, dnes nechaj tak. Ide bitka."
     }
@@ -493,6 +493,12 @@
       "vysvetlenie.2": "Áno. Strana nie je partia. Karta patrí tomu, ku komu je natočená."
     }
   },
+  "k-pas2": {
+    "melichar": "",
+    "sk": {
+      "melichar": "Pasuj (P). Za pas nedostaneš nič, ale plný [Poldeci] poldeci ti ostane – po Pitke sa ti doleje a v druhom Zhromaždení zahráš viac."
+    }
+  },
   "k-zaverecna-bot": {
     "melichar": "És ez: a Törzsvendég egy [Cigareta] cigarettáért letett egy kártyát képpel lefelé, az Ikrek mögé. Ez a Záróra – számít, csak nem látod, mi az, amíg az Ivászat végén fel nem fordul. Mögé senki sem rakhat semmit, és a Törzsvendég ezen a Gyűlésen végzett.",
     "sk": {
@@ -589,10 +595,10 @@
       "melichar": "Vráť si trávnik: polož Praudovravca na koniec línie, za Liberála, a potvrď. Na trávniku bude 3 : 3 a pri rovnosti rozhoduje karta pri lokalite – tvoj Pijan."
     }
   },
-  "k-zh2-bot4": {
-    "melichar": "A Törzsvendég az Alkoholista mögé egy második Alkoholistát tett.",
+  "k-pas2-bot": {
+    "melichar": "A Törzsvendég passzolt: a kártyáért, amit még kijátszhatott volna, kapott egy [Cigareta] cigarettát. A passz fizet, a kártyákkal spórolni megéri.",
     "sk": {
-      "melichar": "Štamgast pridal za Alkoholika druhého Alkoholika."
+      "melichar": "Štamgast pasoval: za kartu, ktorú ešte smel vyložiť, dostal [Cigareta] cigaretu. Pas sa platí, šetriť karty sa vypláca."
     }
   },
   "k-prevaha2": {
@@ -601,10 +607,10 @@
       "melichar": "Teraz Anonymného alkoholika za Praudovravca. Na trávniku budeš mať štyroch proti trom: prevaha je tvoja a 2 tuhé z Ihriska sa vrátia."
     }
   },
-  "k-pas2-bot": {
-    "melichar": "A Törzsvendég passzolt: a kártyáért, amit még kijátszhatott volna, kapott egy [Cigareta] cigarettát. A passz fizet, a kártyákkal spórolni megéri.",
+  "k-pas3": {
+    "melichar": "",
     "sk": {
-      "melichar": "Štamgast pasoval: za kartu, ktorú ešte smel vyložiť, dostal [Cigareta] cigaretu. Pas sa platí, šetriť karty sa vypláca."
+      "melichar": "Pijana si nechaj a pasuj (P). Posledný plný [Poldeci] poldeci je na NA EX."
     }
   },
   "q-dlh-karta": {
@@ -1187,12 +1193,6 @@
     "melichar": "Utolsó Gyűlés: a Hobbikertészt tartsd meg, és passzolj (P). A két kártyáért, amit kijátszhatnál, de nem teszed, két [Cigareta] cigarettát kapsz.",
     "sk": {
       "melichar": "Posledné Zhromaždenie: Záhradkára si nechaj a pasuj (P). Za dve karty, ktoré smieš a nevyložíš, dostaneš dve [Cigareta] cigarety."
-    }
-  },
-  "k-doliatie": {
-    "melichar": "Utolsó Ivászat. Újratöltés: két [Cigareta] cigarettáért az üres [Poldeci] felest visszafordítod telire – egy új ötbe kerülne. A játék végén a teli feles egy csikk, két cigaretta nem. Számolj.",
-    "sk": {
-      "melichar": "Posledná Pitka. Doliatie: za dve [Cigareta] cigarety otočíš vypitý [Poldeci] poldeci späť na plný – nový by stál päť. Na konci hry je plný poldeci špak, dve cigarety nie. Počítaj."
     }
   },
   "k-naex-vytrznik": {

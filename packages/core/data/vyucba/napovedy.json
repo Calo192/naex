@@ -109,12 +109,12 @@
       "poradie": 8,
       "uroven": "A",
       "spustac": {
-        "kedy": "hráč je v Zhromaždení na ťahu, už vyložil kartu a ešte mu ostal limit",
-        "podmienka": "view.faza === \"zhromazdenie\" && naTahu === ja && v tomto Zhromaždení som vyložil kartu && kartyZaPas(view.zhromazdenie, ja) >= 1",
-        "jadro": ["packages/core/src/engine.ts:158 kartyZaPas", "docs/PRAVIDLA.md §6 Pas a koniec Zhromaždenia"]
+        "kedy": "hráč je v Zhromaždení na ťahu, už vyložil kartu a ešte mu ostal plný poldeci (v12.2: limit za poldeci, pas cigarety nedáva; id ostáva)",
+        "podmienka": "view.faza === \"zhromazdenie\" && naTahu === ja && v tomto Zhromaždení som vyložil kartu && view.hraci[ja].poldeciPlne >= 1",
+        "jadro": ["packages/core/src/napovedy.ts:91 spúšťač (od v12.2 vypnutý, zapne Developer)", "docs/PRAVIDLA.md §6 Limit vykladania, Pas a koniec Zhromaždenia", "docs/PRAVIDLA.md §13 Vypiť"]
       },
-      "melichar": "Pasovať sa oplatí aj skôr: za každú kartu, ktorú si ešte smel vyložiť, dostaneš [Cigareta] cigaretu. Jednu by si potom mohol aj vrátiť, len tak spomínam.",
-      "zvyraznit": ["tlacidlo:pas"]
+      "melichar": "Za každú kartu vypiješ jeden [Poldeci] poldeci: koľko máš plných, toľko kariet vyložíš. Viac kariet naraz smieš, ale každá navyše stojí [Cigareta] cigaretu. Za pas nedostaneš nič – plné poldeci ti len ostanú, na NA EX aj na ďalšie Zhromaždenie. Ja by som ich nenechal stáť.",
+      "zvyraznit": ["tlacidlo:pas", "bar:poldeci"]
     },
     {
       "id": "lokalita-pravidlo",
