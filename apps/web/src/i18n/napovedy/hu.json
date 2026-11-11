@@ -48,9 +48,9 @@
     }
   },
   "pas-cigarety": {
-    "melichar": "Passzolni hamarabb is megéri: minden kártyáért, amit még kijátszhattál volna, kapsz egy [Cigareta] cigarettát. Egyet aztán vissza is adhatnál, csak úgy mondom.",
+    "melichar": "Minden kártyáért felhajtasz egy [Poldeci] felest: ahány teli van nálad, annyi kártyát játszol ki. Egyszerre több kártyát is szabad, de mindegyik extra egy [Cigareta] cigarettába kerül. A passzért nem kapsz semmit – a teli feleseid csak megmaradnak, a NA EX-re és a következő Gyűlésre. Én nem hagynám őket sokáig állni.",
     "sk": {
-      "melichar": "Pasovať sa oplatí aj skôr: za každú kartu, ktorú si ešte smel vyložiť, dostaneš [Cigareta] cigaretu. Jednu by si potom mohol aj vrátiť, len tak spomínam."
+      "melichar": "Za každú kartu vypiješ jeden [Poldeci] poldeci: koľko máš plných, toľko kariet vyložíš. Viac kariet naraz smieš, ale každá navyše stojí [Cigareta] cigaretu. Za pas nedostaneš nič – plné poldeci ti len ostanú, na NA EX aj na ďalšie Zhromaždenie. Ja by som ich nenechal stáť."
     }
   },
   "lokalita-pravidlo": {

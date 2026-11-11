@@ -39,18 +39,18 @@
  },
  "vinko": {
   "nazov": "Borocska",
-  "efekt": "Örökség: Úgy számít, mintha lenne egy plusz teli feles. Cigarettáért nem tölthetsz újra felest. Fent: NA EX. Lent: {Pečeň}→{Poldeci}.",
+  "efekt": "Örökség: A felesmaximumod 1-gyel magasabb. Fent: NA EX. Lent: {Pečeň}→{Poldeci}.",
   "sk": {
    "nazov": "Vínko",
-   "efekt": "Dedičstvo: Počíta sa, akoby si mal plný poldeci navyše. Nemôžeš dolievať poldeci za cigarety. Hore: NA EX. Dole: {Pečeň}→{Poldeci}."
+   "efekt": "Dedičstvo: Tvoje maximum poldeci je o 1 vyššie. Hore: NA EX. Dole: {Pečeň}→{Poldeci}."
   }
  },
  "pasca": {
   "nazov": "Csapda",
-  "efekt": "Örökség: Verekedés: Ha az ellenfél ebben a körben lapot illesztett a lapodhoz {Rana}. Fent: {Pečeň}→{Rana}. Lent: Erősített {Rana}.",
+  "efekt": "Örökség: Verekedés: Minden lapért, amelyet az ellenfél ebben a körben a lapodhoz illesztett {Rana}. Fent: {Pečeň}→{Rana}. Lent: Erősített {Rana}.",
   "sk": {
    "nazov": "Pasca",
-   "efekt": "Dedičstvo: Bitka: Ak súper v tomto kole priložil kartu k tvojej karte {Rana}. Hore: {Pečeň}→{Rana}. Dole: Posilnená {Rana}."
+   "efekt": "Dedičstvo: Bitka: Za každú kartu, ktorú súper v tomto kole priložil k tvojej karte {Rana}. Hore: {Pečeň}→{Rana}. Dole: Posilnená {Rana}."
   }
  },
  "puska": {
@@ -79,10 +79,10 @@
  },
  "vyherny_automat": {
   "nazov": "Félkarú rabló",
-  "efekt": "Örökség: Az Adósság-küszöböd 1-gyel magasabb. A kör utolsó ivászata: {Hazard}. Fent: {Hazard}→{Poldeci}. Lent: {Hazard}→{Pecka}.",
+  "efekt": "Örökség: Az Adósság-küszöböd 1-gyel magasabb. Ivászat: {Dlh}. Fent: {Hazard}→{Poldeci}. Lent: {Hazard}→{Pecka}.",
   "sk": {
    "nazov": "Výherný automat",
-   "efekt": "Dedičstvo: Tvoj prah Dlhu je o 1 vyšší. Posledná Pitka kola: {Hazard}. Hore: {Hazard}→{Poldeci}. Dole: {Hazard}→{Pecka}."
+   "efekt": "Dedičstvo: Tvoj prah Dlhu je o 1 vyšší. Pitka: {Dlh}. Hore: {Hazard}→{Poldeci}. Dole: {Hazard}→{Pecka}."
   }
  },
  "dlh": {
@@ -273,10 +273,10 @@
  },
  "vychovavatelka": {
   "nazov": "Nevelőnő",
-  "efekt": "Fogoly — játékonként egyszer: Az ellenfél ezen a Gyűlésen azonnal passzol, és a passzért nem kap cigarettát.",
+  "efekt": "Fogoly — játékonként egyszer: Az ellenfél ezen a Gyűlésen azonnal passzol.",
   "sk": {
    "nazov": "Vychovávateľka",
-   "efekt": "Väzeň — raz za hru: Súper v tomto Zhromaždení hneď pasuje a za pas nedostane cigarety."
+   "efekt": "Väzeň — raz za hru: Súper v tomto Zhromaždení hneď pasuje."
   }
  },
  "liberal": {
@@ -395,14 +395,14 @@
  },
  "kostol": {
   "nazov": "Templom",
-  "efekt": "Gyűlés: Senki sem hajthat fel felest. Ivászat: NA EX-et csak a sor végén lévő lapra lehet adni (bármelyik végén).",
+  "efekt": "Gyűlés: Egy lépésben csak 1 lapot lehet kijátszani. Ivászat: NA EX-et csak a sor végén lévő lapra lehet adni (bármelyik végén).",
   "kraje": [
    "az oltárnál",
    "a bejáratnál"
   ],
   "sk": {
    "nazov": "Kostol",
-   "efekt": "Zhromaždenie: Nikto nesmie vypiť. Pitka: NA EX sa smie dať len na kartu na konci línie (na ktoromkoľvek z dvoch koncov)."
+   "efekt": "Zhromaždenie: V ťahu sa smie vyložiť len 1 karta. Pitka: NA EX sa smie dať len na kartu na konci línie (na ktoromkoľvek z dvoch koncov)."
   }
  },
  "svokra": {
@@ -471,14 +471,14 @@
  },
  "jednota": {
   "nazov": "Vegyesbolt",
-  "efekt": "Ivászat: Akinek több bevallott Adóssága van, ebben az ivászatban nem gyújthat rá és nem tölthet újra.",
+  "efekt": "Ivászat: Akinek több bevallott Adóssága van, ebben az ivászatban nem gyújthat rá és nem csereberélhet.",
   "kraje": [
    "a pultnál",
    "a bolt előtt"
   ],
   "sk": {
    "nazov": "Jednota",
-   "efekt": "Pitka: Kto má viac priznaných Dlhov, nesmie v tejto Pitke fajčiť ani dolievať."
+   "efekt": "Pitka: Kto má viac priznaných Dlhov, nesmie v tejto Pitke fajčiť ani barterovať."
   }
  },
  "kulturny_dom": {
@@ -507,14 +507,14 @@
  },
  "druzstvo": {
   "nazov": "Téesz",
-  "efekt": "Gyűlés: A Meló akciós lapok nem fogyasztják a kijátszási korlátot.",
+  "efekt": "Gyűlés: A Meló akciós lapok nem kerülnek felesbe.",
   "kraje": [
    "a földeken",
    "az értekezleten"
   ],
   "sk": {
    "nazov": "Družstvo",
-   "efekt": "Zhromaždenie: Karty s akciou Robota nemíňajú limit vykladania."
+   "efekt": "Zhromaždenie: Karty s akciou Robota nestoja poldeci."
   }
  },
  "cintorin": {
@@ -591,10 +591,10 @@
  },
  "kapybara": {
   "nazov": "Kapibara",
-  "efekt": "Támogatás: Átképzés {Viera}→{Cigareta}. Összetűzés: Átképzés {Viera}→{Cigareta}. Folyton: {Cigareta}.",
+  "efekt": "Folyton: Átképzés {Viera}→{Cigareta}.",
   "sk": {
    "nazov": "Kapybara",
-   "efekt": "Podpora: Preškolenie {Viera}→{Cigareta}. Konflikt: Preškolenie {Viera}→{Cigareta}. Furt: {Cigareta}."
+   "efekt": "Furt: Preškolenie {Viera}→{Cigareta}."
   }
  },
  "kon": {
@@ -665,10 +665,10 @@
  },
  "traktoristka": {
   "nazov": "Traktoros",
-  "efekt": "A kör utolsó ivászata: Ha a szárnyában nincs fölényed {Dlh}.",
+  "efekt": "Verekedés: Ha a szárnyában fölényed van {Pecka}.",
   "sk": {
    "nazov": "Traktorista",
-   "efekt": "Posledná Pitka kola: Bez prevahy v jeho kraji {Dlh}."
+   "efekt": "Bitka: S prevahou v jeho kraji {Pecka}."
   }
  },
  "vymahac": {
@@ -762,18 +762,18 @@
  },
  "hrable": {
   "nazov": "Gereblye",
-  "efekt": "Örökség: Az Ellenállásod által érvénytelenített akció a tiédnek számít, és erősített. Fent: {Odpor}→{Posilnenie}. Lent: {Posilnenie}→{Odpor}.",
+  "efekt": "Örökség: Az aktív Ellenállásod a verekedésben úgy sebez, mint egy Gyomros. Fent: {Odpor}→{Posilnenie}. Lent: {Posilnenie}→{Odpor}.",
   "sk": {
    "nazov": "Hrable",
-   "efekt": "Dedičstvo: Akcia zrušená tvojím Odporom sa ráta ako tvoja a je posilnená. Hore: {Odpor}→{Posilnenie}. Dole: {Posilnenie}→{Odpor}."
+   "efekt": "Dedičstvo: Tvoj aktívny Odpor dáva v bitke poškodenie ako Pecka. Hore: {Odpor}→{Posilnenie}. Dole: {Posilnenie}→{Odpor}."
   }
  },
  "jogurt": {
   "nazov": "Joghurt",
-  "efekt": "Örökség: A Feles akcióid már az ivászatban teli felessé fordítják az üres felest, nem csak a verekedésben. Fent: {Pečeň}→{Posilnenie}. Lent: {Pečeň}→{Hazard}.",
+  "efekt": "Örökség: Minden Ivászat után 1-gyel több felest töltenek újra neked. Fent: {Pečeň}→{Posilnenie}. Lent: {Pečeň}→{Hazard}.",
   "sk": {
    "nazov": "Jogurt",
-   "efekt": "Dedičstvo: Tvoje Poldeci otáčajú vypitý poldeci hneď v Pitke, nie až v bitke. Hore: {Pečeň}→{Posilnenie}. Dole: {Pečeň}→{Hazard}."
+   "efekt": "Dedičstvo: Po každej Pitke sa ti doleje o 1 poldeci viac. Hore: {Pečeň}→{Posilnenie}. Dole: {Pečeň}→{Hazard}."
   }
  },
  "kristalova_gula": {
@@ -786,11 +786,11 @@
  },
  "pistalka": {
   "nazov": "Szigszalag",
-  "efekt": "Örökség: A Korlátozásaid azokat a cigarettákat is elveszik, amelyeket az ellenfél a passzért kap. Fent: {Pečeň}→{Obmedzenie}. Lent: Erősített {Obmedzenie}.",
+  "efekt": "Örökség: Minden aktív Korlátozásodért az ellenfélnek az Ivászat után 1-gyel kevesebb felest töltenek újra. Fent: {Pečeň}→{Obmedzenie}. Lent: Erősített {Obmedzenie}.",
   "pozn": "Szigszalag = hovorová izolačka, univerzálna oprava.",
   "sk": {
    "nazov": "Izolačka",
-   "efekt": "Dedičstvo: Tvoje Obmedzenia uberajú aj cigarety, ktoré súper dostane za pas. Hore: {Pečeň}→{Obmedzenie}. Dole: Posilnené {Obmedzenie}."
+   "efekt": "Dedičstvo: Za každé tvoje aktívne Obmedzenie sa súperovi po Pitke doleje o 1 poldeci menej. Hore: {Pečeň}→{Obmedzenie}. Dole: Posilnené {Obmedzenie}."
   }
  },
  "profesionalny_tiper": {
@@ -851,10 +851,10 @@
  },
  "predavacka": {
   "nazov": "Eladónő",
-  "efekt": "Támogatás: Vegyél a kínálatból 1 Polgárt.",
+  "efekt": "Támogatás: Vegyél a kínálatból 1 lapot a húzópaklid tetejére.",
   "sk": {
    "nazov": "Predavačka",
-   "efekt": "Podpora: Vezmi si z ponuky 1 Občana."
+   "efekt": "Podpora: Vezmi si z ponuky 1 kartu navrch svojho doberacieho balíčka."
   }
  },
  "veducko": {

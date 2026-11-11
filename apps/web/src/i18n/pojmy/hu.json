@@ -33,7 +33,7 @@
   },
   "barter": {
     "pojem": "Csöves cserebere",
-    "popis": "",
+    "popis": "Ivászat közben 5 cigarettáért egy új, teli feles — végleg, verekedés után a többivel együtt újratöltődik.",
     "sk": {
       "pojem": "Stokársky barter",
       "popis": "Počas Pitky za 5 cigariet nový plný poldeci — natrvalo, po bitke sa obnoví s ostatnými."
@@ -105,7 +105,7 @@
   },
   "doliatie": {
     "pojem": "Újratöltés",
-    "popis": "",
+    "popis": "Minden Ivászat végén egy üres feles ingyen telire fordul, és még egy minden aktív Feles akciódért. Cigarettáért nem lehet újratölteni.",
     "sk": {
       "pojem": "Doliatie",
       "popis": "Na konci každej Pitky sa ti jeden vypitý poldeci otočí na plný zadarmo a ďalší za každú tvoju aktívnu akciu Poldeci. Za cigarety sa nedolieva."
@@ -257,7 +257,7 @@
   },
   "limit": {
     "pojem": "Kijátszási korlát",
-    "popis": "",
+    "popis": "Hány kártyát játszol ki: ahány teli feles van nálad — minden kártya egyet üresre fordít.",
     "sk": {
       "pojem": "Limit vykladania",
       "popis": "Koľko kariet vyložíš: toľko, koľko máš plných poldeci — každá karta jeden otočí na vypitý."
@@ -313,7 +313,7 @@
   },
   "naex": {
     "pojem": "NA EX!",
-    "popis": "",
+    "popis": "Teli feles egy kártyára a sorban, az Ivászaton titokban kiválasztva: kioltja az aktív akcióit, és megduplázza az inaktívakat. A kötésben lévő Ellenállást békén hagyja; aktív (pár nélküli) Ellenállásos kártyára nem mehet — a rejtett vagy a Borocskából jövő NA EX-et az Ellenállás eloltja; a pár nélküli Erősítés megtartja az aktív akciókat.",
     "kratko": "Egy teli felest fenékig egy kártyára öntesz a sorban. A kötésben lévő akciói kialszanak, a magányosak megduplázódnak.",
     "tvary": "NA EX",
     "sk": {
@@ -357,7 +357,7 @@
   },
   "nerest": {
     "pojem": "Bűn",
-    "popis": "",
+    "popis": "Csak a fogyasztás: extra kártya a lépésben (Felhajtás) 1, válasz a NA EX-re 1, NA EX 2, elszívott cigaretta 1. A kör végén a Szomjaddal vetik össze.",
     "sk": {
       "pojem": "Nerest",
       "popis": "Len konzumácia: karta navyše v ťahu (Vypiť) 1, odpoveď na NA EX 1, NA EX 2, vyfajčená cigareta 1. Na konci kola sa porovnáva s tvojou Chuťou."
@@ -381,7 +381,7 @@
   },
   "odpoved": {
     "pojem": "Válasz a NA EX-re",
-    "popis": "",
+    "popis": "Felfedés után minden ellenfél-NA EX-ért egy kártya, képpel lefelé, egy teli felesért (felhajtod: máj +1), a kijátszáson kívül; először a támadó válaszol, aztán a védő a sor másik szárnyára; a kettő egyszerre fordul fel.",
     "sk": {
       "pojem": "Odpoveď na NA EX",
       "popis": "Po odkrytí jedna karta za každé súperovo NA EX, lícom dole, za plný poldeci (vypiješ ho: pečeň +1) a mimo vykladania; najprv odpovedá útočník, potom obranca na druhý kraj línie; obe sa otočia naraz."
@@ -397,7 +397,7 @@
   },
   "pas": {
     "pojem": "Passz",
-    "popis": "",
+    "popis": "Befejezed a kijátszást a Gyűlésen; semmit sem kapsz érte, a fel nem használt teli feleseid megmaradnak.",
     "sk": {
       "pojem": "Pas",
       "popis": "Skončíš vykladanie v Zhromaždení; nič zaň nedostaneš, nevyložené plné poldeci ti ostanú."
@@ -462,7 +462,7 @@
   "pitka": {
     "pojem": "Ivászat",
     "popis": "Kiértékelés a Gyűlés után: NA EX, Adósságok, máj, cigaretták; egy körben 1–4 Ivászat van (a döntőben a csúcshelyszínen 1–5).",
-    "kratko": "",
+    "kratko": "A Gyűlés után iszunk: rágyújtasz, csereberélsz, és titokban NA EX-et adsz egy kártyára a sorban; a végén újratöltenek egy felest.",
     "tvary": "Ivászat, Ivászatot, Ivászatok, Ivászaton, Ivászatban, Ivászatra, Ivászatig, Ivászatból, Ivászatkor, Ivászatai, Ivászatonként, Ivászata",
     "sk": {
       "pojem": "Pitka",
@@ -489,7 +489,7 @@
   },
   "poldeci": {
     "pojem": "Feles",
-    "popis": "",
+    "popis": "Egy kupica pálinka; minden kártya, amelyet kijátszol, egy telibe kerül, és ezzel fizetsz a NA EX-ért és a válaszért is. Verekedés után mind újratöltődik, az Ivászat után egy. A játék végén minden teli feles 1 csikk.",
     "kratko": "Egy kupica pálinka. Ahány teli feles van nálad, annyi kártyát játszol ki, plusz egyet. Egy teli felesért NA EX-et is adhatsz.",
     "tvary": "feles, felest, felesek, feleseket, felessel, felesért, felesed, feleseid, felese, felesét, felesbe",
     "sk": {
@@ -709,7 +709,7 @@
   },
   "vypit": {
     "pojem": "Felhajtani",
-    "popis": "",
+    "popis": "Következő kártya ugyanabban a lépésben: a teli feles mellett egy cigarettába is kerül, máj +1, és bűnnek számít. Két kártya = 2 feles és 1 cigaretta.",
     "sk": {
       "pojem": "Vypiť",
       "popis": "Ďalšia karta v tom istom ťahu: okrem plného poldeci stojí cigaretu, pečeň +1 a ráta sa ako nerest. Dve karty = 2 poldeci a 1 cigareta."
@@ -733,7 +733,7 @@
   },
   "vzbura": {
     "pojem": "Lázadás",
-    "popis": "",
+    "popis": "Ellenállás az Ellenállás ellen: mindkét kártya megfordul — a kötetlen akciók aktívak, a kötöttek inaktívak; a kötés Ellenállásai kialszanak. Ellenállás az Erősítés ellen: csak az Ellenállásos kártya, ráadásul erősítve. A kártya alá rakott Vasvilla is megfordítja. NA EX nem mehet rá.",
     "sk": {
       "pojem": "Vzbura",
       "popis": "Odpor proti Odporu: obe karty sa obrátia — nespojené akcie sú aktívne, spojené neaktívne; Odpory spoja zhasnú. Odpor proti Posilneniu: len karta s Odporom, navyše posilnená. Vidly podložené pod kartu ju obrátia tiež. NA EX na ňu nejde."

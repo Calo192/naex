@@ -46,7 +46,7 @@
     }
   },
   "kategoria.krcma": {
-    "nazov": "",
+    "nazov": "A kocsma körül",
     "sk": {
       "nazov": "Okolo krčmy"
     }
@@ -112,64 +112,64 @@
     }
   },
   "sekera-v-pni": {
-    "nazov": "",
-    "popis": "",
+    "nazov": "Tiszta tábla",
+    "popis": "Nyerj meg egy verekedést, amellyel legalább {prah} krétára ment verekedés csikkjeit viszed el.",
     "sk": {
       "nazov": "Sekera v pni",
       "popis": "Vyhraj bitku, ktorou berieš špaky z aspoň {prah} bitiek na sekere."
     }
   },
   "huba-nevymachana": {
-    "nazov": "",
-    "popis": "",
+    "nazov": "Felvágott nyelv",
+    "popis": "Egy játszmában nyerd meg a veszekedést legalább {prah} verekedésben.",
     "sk": {
       "nazov": "Huba nevymáchaná",
       "popis": "Vyhraj v jednej partii hádku v aspoň {prah} bitkách."
     }
   },
   "zle-oko": {
-    "nazov": "",
-    "popis": "",
+    "nazov": "Szemmel verés",
+    "popis": "Legyen egy játszmában legalább {prah} Babonád, amelyet nem oltott ki az ellenfél Hite.",
     "sk": {
       "nazov": "Zlé oko",
       "popis": "Maj v jednej partii aspoň {prah} Povier, ktoré neprerušila súperova Viera."
     }
   },
   "svatuskar": {
-    "nazov": "",
-    "popis": "",
+    "nazov": "Szenteskedő",
+    "popis": "Legyen egy verekedésben legalább {prah} aktív Hited.",
     "sk": {
       "nazov": "Svätuškár",
       "popis": "Maj v jednej bitke aspoň {prah} aktívne Viery."
     }
   },
   "zakaz-vstupu": {
-    "nazov": "",
-    "popis": "",
+    "nazov": "Belépni tilos",
+    "popis": "Legyen egy verekedésben legalább {prah} aktív Korlátozásod.",
     "sk": {
       "nazov": "Zákaz vstupu",
       "popis": "Maj v jednej bitke aspoň {prah} aktívne Obmedzenia."
     }
   },
   "ruka-ako-lopata": {
-    "nazov": "",
-    "popis": "",
+    "nazov": "Lapátkéz",
+    "popis": "Okozz összesen {prah} kemény sebzést.",
     "sk": {
       "nazov": "Ruka ako lopata",
       "popis": "Udeľ spolu {prah} tuhého."
     }
   },
   "o-fuz": {
-    "nazov": "",
-    "popis": "",
+    "nazov": "Egy hajszállal",
+    "popis": "Nyerj meg egy verekedést pontosan 1-gyel — összesen {prah}×.",
     "sk": {
       "nazov": "O fúz",
       "popis": "Vyhraj bitku presne o 1 — spolu {prah}×."
     }
   },
   "trasie-sa-ale-bije": {
-    "nazov": "",
-    "popis": "",
+    "nazov": "Remeg, de üt",
+    "popis": "Nyerj meg egy verekedést legalább {prah} Remegéssel.",
     "sk": {
       "nazov": "Trasie sa, ale bije",
       "popis": "Vyhraj bitku s aspoň {prah} Absťákmi."
@@ -232,8 +232,8 @@
     }
   },
   "spoved": {
-    "nazov": "",
-    "popis": "",
+    "nazov": "Gyónás",
+    "popis": "Vallj be összesen {prah} Májzsugort.",
     "sk": {
       "nazov": "Spoveď",
       "popis": "Priznaj spolu {prah} Cirhóz."
@@ -344,48 +344,48 @@
     }
   },
   "forsaz": {
-    "nazov": "",
-    "popis": "",
+    "nazov": "Padlógáz",
+    "popis": "Hozz létre Padlógázt (Erősítés az Erősítés ellen) — összesen {prah}×.",
     "sk": {
       "nazov": "Forsáž",
       "popis": "Spôsob Forsáž (Posilnenie proti Posilneniu) — spolu {prah}×."
     }
   },
   "mozole-na-palcoch": {
-    "nazov": "",
-    "popis": "",
+    "nazov": "Kérges hüvelykujj",
+    "popis": "Játssz ki összesen {prah} kártyát.",
     "sk": {
       "nazov": "Mozole na palcoch",
       "popis": "Vylož spolu {prah} kariet."
     }
   },
   "na-jeden-dusok": {
-    "nazov": "",
-    "popis": "",
+    "nazov": "Egy hajtásra",
+    "popis": "Játssz ki egy lépésben legalább {prah} kártyát.",
     "sk": {
       "nazov": "Na jeden dúšok",
       "popis": "Vylož jedným ťahom aspoň {prah} karty."
     }
   },
   "fuser": {
-    "nazov": "",
-    "popis": "",
+    "nazov": "Kontár",
+    "popis": "Rakj alá összesen {prah} Szerszámot.",
     "sk": {
       "nazov": "Fušer",
       "popis": "Podlož spolu {prah} Nástrojov."
     }
   },
   "rekvalifikacia": {
-    "nazov": "",
-    "popis": "",
+    "nazov": "Szakmaváltás",
+    "popis": "Képezz át egy akciót a saját kártyádon legalább {prah} átalakulásból álló lánccal (Pofon → Gyomros → Fejes).",
     "sk": {
       "nazov": "Rekvalifikácia",
       "popis": "Preškoľ akciu na svojej karte reťazou aspoň {prah} premien (Rana → Pecka → Petelica)."
     }
   },
   "vytrznik": {
-    "nazov": "",
-    "popis": "",
+    "nazov": "Garázda",
+    "popis": "Csinálj egy kártyából Garázdát (mindkét NA EX ugyanazon a kártyán) — összesen {prah}×.",
     "sk": {
       "nazov": "Výtržník",
       "popis": "Sprav z karty Výtržníka (obe NA EX na tej istej karte) — spolu {prah}×."
@@ -456,40 +456,40 @@
     }
   },
   "nutene-prace": {
-    "nazov": "",
-    "popis": "",
+    "nazov": "Kényszermunka",
+    "popis": "Használd a fogoly képességét összesen {prah}×.",
     "sk": {
       "nazov": "Nútené práce",
       "popis": "Použi schopnosť väzňa spolu {prah}×."
     }
   },
   "cervena-dedina": {
-    "nazov": "",
-    "popis": "",
+    "nazov": "Vörös falu",
+    "popis": "Nyerj meg egy játszmát félelemmel (4 piros elöljáró) — összesen {prah}×.",
     "sk": {
       "nazov": "Červená dedina",
       "popis": "Vyhraj partiu strachom (4 červení starší) — spolu {prah}×."
     }
   },
   "vreckar": {
-    "nazov": "",
-    "popis": "",
+    "nazov": "Zsebtolvaj",
+    "popis": "Lopj el egy verekedés utáni elfogáskor legalább {prah} csikket.",
     "sk": {
       "nazov": "Vreckár",
       "popis": "Ukradni pri zajatí po jednej bitke aspoň {prah} špakov."
     }
   },
   "cela-rada-v-pivnici": {
-    "nazov": "",
-    "popis": "",
+    "nazov": "Az egész tanács a pincében",
+    "popis": "Fogj el legalább egyszer {prah} különböző elöljárót.",
     "sk": {
       "nazov": "Celá rada v pivnici",
       "popis": "Zajmi aspoň raz {prah} rôznych starších."
     }
   },
   "mlcat-je-zlato": {
-    "nazov": "",
-    "popis": "",
+    "nazov": "Hallgatni arany",
+    "popis": "Nyerj meg egy játszmát, amelyben egyetlen veszekedést sem nyertél — összesen {prah}×.",
     "sk": {
       "nazov": "Mlčať je zlato",
       "popis": "Vyhraj partiu, v ktorej si nevyhral ani jednu hádku — spolu {prah}×."
@@ -536,32 +536,32 @@
     }
   },
   "rozhadzovac": {
-    "nazov": "",
-    "popis": "",
+    "nazov": "Pazarló",
+    "popis": "Költs el egy játszmában legalább {prah} cigarettát.",
     "sk": {
       "nazov": "Rozhadzovač",
       "popis": "Miň v jednej partii aspoň {prah} cigariet."
     }
   },
   "vyrovnany-ucet": {
-    "nazov": "",
-    "popis": "",
+    "nazov": "Rendezett számla",
+    "popis": "Szabadulj meg összesen {prah} Adósságtól.",
     "sk": {
       "nazov": "Vyrovnaný účet",
       "popis": "Zbav sa spolu {prah} Dlhov."
     }
   },
   "sichta": {
-    "nazov": "",
-    "popis": "",
+    "nazov": "Gürcölés",
+    "popis": "Legyen a verekedésekben összesen {prah} aktív Melód.",
     "sk": {
       "nazov": "Šichta",
       "popis": "Maj v bitkách spolu {prah} aktívnych Robôt."
     }
   },
   "vypalnik": {
-    "nazov": "",
-    "popis": "",
+    "nazov": "Sarcoló",
+    "popis": "Szedj be egy játszmában sarcként legalább {prah} cigarettát.",
     "sk": {
       "nazov": "Výpalník",
       "popis": "Vyber v jednej partii na výpalnom aspoň {prah} cigariet."
@@ -640,48 +640,48 @@
     }
   },
   "rychlovka": {
-    "nazov": "",
-    "popis": "",
+    "nazov": "Gyorsmenet",
+    "popis": "Megnyert rövid játszmák (3 helyszín): összesen {prah}.",
     "sk": {
       "nazov": "Rýchlovka",
       "popis": "Vyhrané krátke partie (3 lokality): spolu {prah}."
     }
   },
   "poctiva-smena": {
-    "nazov": "",
-    "popis": "",
+    "nazov": "Becsületes műszak",
+    "popis": "Megnyert közepes játszmák (5 helyszín): összesen {prah}.",
     "sk": {
       "nazov": "Poctivá smena",
       "popis": "Vyhrané stredné partie (5 lokalít): spolu {prah}."
     }
   },
   "o-chlp": {
-    "nazov": "",
-    "popis": "",
+    "nazov": "Éppen hogy",
+    "popis": "Nyerj meg egy játszmát legfeljebb 5 csikkel — összesen {prah}×.",
     "sk": {
       "nazov": "O chlp",
       "popis": "Vyhraj partiu najviac o 5 špakov — spolu {prah}×."
     }
   },
   "posledna-runda": {
-    "nazov": "",
-    "popis": "",
+    "nazov": "Utolsó kör",
+    "popis": "Menj a döntőbe kevesebb csikkel, nyerd meg, és vele a játszmát is — összesen {prah}×.",
     "sk": {
       "nazov": "Posledná runda",
       "popis": "Choď do finále s menej špakmi, vyhraj ho a s ním aj partiu — spolu {prah}×."
     }
   },
   "poznam-tu-kazdy-kut": {
-    "nazov": "",
-    "popis": "",
+    "nazov": "Itt minden zugot ismerek",
+    "popis": "Nyerj verekedést {prah} különböző helyszínen.",
     "sk": {
       "nazov": "Poznám tu každý kút",
       "popis": "Vyhraj bitku na {prah} rôznych lokalitách."
     }
   },
   "odveta": {
-    "nazov": "",
-    "popis": "",
+    "nazov": "Visszavágó",
+    "popis": "Győzd le azt, aki az előző közös játszmátokban legyőzött — összesen {prah}×.",
     "sk": {
       "nazov": "Odveta",
       "popis": "Poraz človeka, ktorý ťa vo vašej predošlej partii porazil — spolu {prah}×."
@@ -860,9 +860,9 @@
     }
   },
   "boxovacie-vrece": {
-    "nazov": "",
-    "popis": "",
-    "tajnyText": "",
+    "nazov": "Bokszzsák",
+    "popis": "Kapj egy verekedésben legalább {prah} sebzést.",
+    "tajnyText": "Valakinek ki kell kapnia.",
     "sk": {
       "nazov": "Boxovacie vrece",
       "popis": "Dostaň v jednej bitke aspoň {prah} poškodenia.",
@@ -870,9 +870,9 @@
     }
   },
   "platim-rundu": {
-    "nazov": "",
-    "popis": "",
-    "tajnyText": "",
+    "nazov": "Én fizetem a kört",
+    "popis": "Veszíts el összesen {prah} játszmát.",
+    "tajnyText": "A vereség is iskola.",
     "sk": {
       "nazov": "Platím rundu",
       "popis": "Prehraj spolu {prah} partií.",
@@ -880,9 +880,9 @@
     }
   },
   "podaj-ruku": {
-    "nazov": "",
-    "popis": "",
-    "tajnyText": "",
+    "nazov": "Kezet rá",
+    "popis": "Fejezz be egy játszmát döntetlennel — összesen {prah}×.",
+    "tajnyText": "Se hús, se hal.",
     "sk": {
       "nazov": "Podaj ruku",
       "popis": "Dohraj partiu remízou — spolu {prah}×.",
@@ -890,9 +890,9 @@
     }
   },
   "zatlkat-zatlkat": {
-    "nazov": "",
-    "popis": "",
-    "tajnyText": "",
+    "nazov": "Tagadni, tagadni",
+    "popis": "Nyerj meg egy játszmát legalább {prah} be nem vallott Májzsugor ellenére.",
+    "tajnyText": "Amit a doki nem tud…",
     "sk": {
       "nazov": "Zatĺkať, zatĺkať",
       "popis": "Vyhraj partiu napriek aspoň {prah} nepriznaným Cirhózam.",
@@ -900,9 +900,9 @@
     }
   },
   "zaverecna-o-tretej": {
-    "nazov": "",
-    "popis": "",
-    "tajnyText": "",
+    "nazov": "Záróra hajnali háromkor",
+    "popis": "Játssz végig egy játszmát hajnali 2:00 és 5:00 között — összesen {prah}×.",
+    "tajnyText": "A kocsmárosné már oltja a villanyt.",
     "sk": {
       "nazov": "Záverečná o tretej",
       "popis": "Dohraj partiu medzi 2:00 a 5:00 ráno — spolu {prah}×.",
@@ -910,24 +910,24 @@
     }
   },
   "staznost-krcmarovi": {
-    "nazov": "",
-    "popis": "",
+    "nazov": "Panasz a kocsmárosnál",
+    "popis": "Küldj véleményt a Visszajelzésben — összesen {prah}×.",
     "sk": {
       "nazov": "Sťažnosť krčmárovi",
       "popis": "Pošli názor v Spätnej väzbe — spolu {prah}×."
     }
   },
   "porotca": {
-    "nazov": "",
-    "popis": "",
+    "nazov": "Esküdt",
+    "popis": "Értékeld a játékot osztályzatokkal — összesen {prah}×.",
     "sk": {
       "nazov": "Porotca",
       "popis": "Ohodnoť hru známkami — spolu {prah}×."
     }
   },
   "staly-host": {
-    "nazov": "",
-    "popis": "",
+    "nazov": "Állandó vendég",
+    "popis": "Játssz végig játszmát {prah} különböző napon.",
     "sk": {
       "nazov": "Stály hosť",
       "popis": "Dohraj partiu v {prah} rôznych dňoch."

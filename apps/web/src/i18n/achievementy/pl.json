@@ -46,7 +46,7 @@
     }
   },
   "kategoria.krcma": {
-    "nazov": "",
+    "nazov": "Wokół knajpy",
     "sk": {
       "nazov": "Okolo krčmy"
     }
@@ -112,64 +112,64 @@
     }
   },
   "sekera-v-pni": {
-    "nazov": "",
-    "popis": "",
+    "nazov": "Krecha wymazana",
+    "popis": "Wygraj bójkę, którą zgarniasz pety z co najmniej {prah} bójek na krechę.",
     "sk": {
       "nazov": "Sekera v pni",
       "popis": "Vyhraj bitku, ktorou berieš špaky z aspoň {prah} bitiek na sekere."
     }
   },
   "huba-nevymachana": {
-    "nazov": "",
-    "popis": "",
+    "nazov": "Niewyparzona gęba",
+    "popis": "Wygraj w jednej partii kłótnię w co najmniej {prah} bójkach.",
     "sk": {
       "nazov": "Huba nevymáchaná",
       "popis": "Vyhraj v jednej partii hádku v aspoň {prah} bitkách."
     }
   },
   "zle-oko": {
-    "nazov": "",
-    "popis": "",
+    "nazov": "Złe oko",
+    "popis": "Zabobony w jednej partii, których nie zniosła Wiara przeciwnika: co najmniej {prah}.",
     "sk": {
       "nazov": "Zlé oko",
       "popis": "Maj v jednej partii aspoň {prah} Povier, ktoré neprerušila súperova Viera."
     }
   },
   "svatuskar": {
-    "nazov": "",
-    "popis": "",
+    "nazov": "Świętoszek",
+    "popis": "Aktywne Wiary w jednej bójce: co najmniej {prah}.",
     "sk": {
       "nazov": "Svätuškár",
       "popis": "Maj v jednej bitke aspoň {prah} aktívne Viery."
     }
   },
   "zakaz-vstupu": {
-    "nazov": "",
-    "popis": "",
+    "nazov": "Wstęp wzbroniony",
+    "popis": "Aktywne Ograniczenia w jednej bójce: co najmniej {prah}.",
     "sk": {
       "nazov": "Zákaz vstupu",
       "popis": "Maj v jednej bitke aspoň {prah} aktívne Obmedzenia."
     }
   },
   "ruka-ako-lopata": {
-    "nazov": "",
-    "popis": "",
+    "nazov": "Łapa jak łopata",
+    "popis": "Zadane twarde obrażenia: razem {prah}.",
     "sk": {
       "nazov": "Ruka ako lopata",
       "popis": "Udeľ spolu {prah} tuhého."
     }
   },
   "o-fuz": {
-    "nazov": "",
-    "popis": "",
+    "nazov": "O włos",
+    "popis": "Wygraj bójkę dokładnie o 1 — razem {prah}×.",
     "sk": {
       "nazov": "O fúz",
       "popis": "Vyhraj bitku presne o 1 — spolu {prah}×."
     }
   },
   "trasie-sa-ale-bije": {
-    "nazov": "",
-    "popis": "",
+    "nazov": "Trzęsie się, ale bije",
+    "popis": "Wygraj bójkę z co najmniej {prah} Głodami.",
     "sk": {
       "nazov": "Trasie sa, ale bije",
       "popis": "Vyhraj bitku s aspoň {prah} Absťákmi."
@@ -232,8 +232,8 @@
     }
   },
   "spoved": {
-    "nazov": "",
-    "popis": "",
+    "nazov": "Spowiedź",
+    "popis": "Przyznane Marskości: razem {prah}.",
     "sk": {
       "nazov": "Spoveď",
       "popis": "Priznaj spolu {prah} Cirhóz."
@@ -344,48 +344,48 @@
     }
   },
   "forsaz": {
-    "nazov": "",
-    "popis": "",
+    "nazov": "Turbo",
+    "popis": "Wywołaj Turbo (Wzmocnienie przeciw Wzmocnieniu) — razem {prah}×.",
     "sk": {
       "nazov": "Forsáž",
       "popis": "Spôsob Forsáž (Posilnenie proti Posilneniu) — spolu {prah}×."
     }
   },
   "mozole-na-palcoch": {
-    "nazov": "",
-    "popis": "",
+    "nazov": "Odciski na kciukach",
+    "popis": "Wyłożone karty: razem {prah}.",
     "sk": {
       "nazov": "Mozole na palcoch",
       "popis": "Vylož spolu {prah} kariet."
     }
   },
   "na-jeden-dusok": {
-    "nazov": "",
-    "popis": "",
+    "nazov": "Jednym haustem",
+    "popis": "Karty wyłożone jednym ruchem: co najmniej {prah}.",
     "sk": {
       "nazov": "Na jeden dúšok",
       "popis": "Vylož jedným ťahom aspoň {prah} karty."
     }
   },
   "fuser": {
-    "nazov": "",
-    "popis": "",
+    "nazov": "Partacz",
+    "popis": "Podłożone Narzędzia: razem {prah}.",
     "sk": {
       "nazov": "Fušer",
       "popis": "Podlož spolu {prah} Nástrojov."
     }
   },
   "rekvalifikacia": {
-    "nazov": "",
-    "popis": "",
+    "nazov": "Przekwalifikowanie",
+    "popis": "Przeszkol akcję na swojej karcie łańcuchem co najmniej {prah} przemian (Strzał → Bomba → Sierpowy).",
     "sk": {
       "nazov": "Rekvalifikácia",
       "popis": "Preškoľ akciu na svojej karte reťazou aspoň {prah} premien (Rana → Pecka → Petelica)."
     }
   },
   "vytrznik": {
-    "nazov": "",
-    "popis": "",
+    "nazov": "Awanturnik",
+    "popis": "Zrób z karty Awanturnika (oba NA EX na tej samej karcie) — razem {prah}×.",
     "sk": {
       "nazov": "Výtržník",
       "popis": "Sprav z karty Výtržníka (obe NA EX na tej istej karte) — spolu {prah}×."
@@ -456,40 +456,40 @@
     }
   },
   "nutene-prace": {
-    "nazov": "",
-    "popis": "",
+    "nazov": "Roboty przymusowe",
+    "popis": "Użyj zdolności jeńca — razem {prah}×.",
     "sk": {
       "nazov": "Nútené práce",
       "popis": "Použi schopnosť väzňa spolu {prah}×."
     }
   },
   "cervena-dedina": {
-    "nazov": "",
-    "popis": "",
+    "nazov": "Czerwona wieś",
+    "popis": "Wygraj partię strachem (4 czerwonych starszych) — razem {prah}×.",
     "sk": {
       "nazov": "Červená dedina",
       "popis": "Vyhraj partiu strachom (4 červení starší) — spolu {prah}×."
     }
   },
   "vreckar": {
-    "nazov": "",
-    "popis": "",
+    "nazov": "Kieszonkowiec",
+    "popis": "Pety ukradzione przy pojmaniu po jednej bójce: co najmniej {prah}.",
     "sk": {
       "nazov": "Vreckár",
       "popis": "Ukradni pri zajatí po jednej bitke aspoň {prah} špakov."
     }
   },
   "cela-rada-v-pivnici": {
-    "nazov": "",
-    "popis": "",
+    "nazov": "Cała rada w piwnicy",
+    "popis": "Różni starsi pojmani choć raz: co najmniej {prah}.",
     "sk": {
       "nazov": "Celá rada v pivnici",
       "popis": "Zajmi aspoň raz {prah} rôznych starších."
     }
   },
   "mlcat-je-zlato": {
-    "nazov": "",
-    "popis": "",
+    "nazov": "Milczenie jest złotem",
+    "popis": "Wygraj partię, w której nie wygrałeś ani jednej kłótni — razem {prah}×.",
     "sk": {
       "nazov": "Mlčať je zlato",
       "popis": "Vyhraj partiu, v ktorej si nevyhral ani jednu hádku — spolu {prah}×."
@@ -536,32 +536,32 @@
     }
   },
   "rozhadzovac": {
-    "nazov": "",
-    "popis": "",
+    "nazov": "Rozrzutnik",
+    "popis": "Papierosy wydane w jednej partii: co najmniej {prah}.",
     "sk": {
       "nazov": "Rozhadzovač",
       "popis": "Miň v jednej partii aspoň {prah} cigariet."
     }
   },
   "vyrovnany-ucet": {
-    "nazov": "",
-    "popis": "",
+    "nazov": "Rachunek wyrównany",
+    "popis": "Długi, których się pozbyłeś: razem {prah}.",
     "sk": {
       "nazov": "Vyrovnaný účet",
       "popis": "Zbav sa spolu {prah} Dlhov."
     }
   },
   "sichta": {
-    "nazov": "",
-    "popis": "",
+    "nazov": "Szychta",
+    "popis": "Aktywne Roboty w bójkach: razem {prah}.",
     "sk": {
       "nazov": "Šichta",
       "popis": "Maj v bitkách spolu {prah} aktívnych Robôt."
     }
   },
   "vypalnik": {
-    "nazov": "",
-    "popis": "",
+    "nazov": "Haraczownik",
+    "popis": "Papierosy zebrane z haraczu w jednej partii: co najmniej {prah}.",
     "sk": {
       "nazov": "Výpalník",
       "popis": "Vyber v jednej partii na výpalnom aspoň {prah} cigariet."
@@ -640,48 +640,48 @@
     }
   },
   "rychlovka": {
-    "nazov": "",
-    "popis": "",
+    "nazov": "Na szybko",
+    "popis": "Wygrane krótkie partie (3 lokacje): razem {prah}.",
     "sk": {
       "nazov": "Rýchlovka",
       "popis": "Vyhrané krátke partie (3 lokality): spolu {prah}."
     }
   },
   "poctiva-smena": {
-    "nazov": "",
-    "popis": "",
+    "nazov": "Uczciwa zmiana",
+    "popis": "Wygrane średnie partie (5 lokacji): razem {prah}.",
     "sk": {
       "nazov": "Poctivá smena",
       "popis": "Vyhrané stredné partie (5 lokalít): spolu {prah}."
     }
   },
   "o-chlp": {
-    "nazov": "",
-    "popis": "",
+    "nazov": "Ledwo, ledwo",
+    "popis": "Wygraj partię najwyżej o 5 petów — razem {prah}×.",
     "sk": {
       "nazov": "O chlp",
       "popis": "Vyhraj partiu najviac o 5 špakov — spolu {prah}×."
     }
   },
   "posledna-runda": {
-    "nazov": "",
-    "popis": "",
+    "nazov": "Ostatnia runda",
+    "popis": "Wejdź do finału z mniejszą liczbą petów, wygraj go, a z nim partię — razem {prah}×.",
     "sk": {
       "nazov": "Posledná runda",
       "popis": "Choď do finále s menej špakmi, vyhraj ho a s ním aj partiu — spolu {prah}×."
     }
   },
   "poznam-tu-kazdy-kut": {
-    "nazov": "",
-    "popis": "",
+    "nazov": "Znam tu każdy kąt",
+    "popis": "Lokacje, na których wygrałeś bójkę: {prah} różnych.",
     "sk": {
       "nazov": "Poznám tu každý kút",
       "popis": "Vyhraj bitku na {prah} rôznych lokalitách."
     }
   },
   "odveta": {
-    "nazov": "",
-    "popis": "",
+    "nazov": "Rewanż",
+    "popis": "Pokonaj człowieka, który pokonał cię w waszej poprzedniej partii — razem {prah}×.",
     "sk": {
       "nazov": "Odveta",
       "popis": "Poraz človeka, ktorý ťa vo vašej predošlej partii porazil — spolu {prah}×."
@@ -860,9 +860,9 @@
     }
   },
   "boxovacie-vrece": {
-    "nazov": "",
-    "popis": "",
-    "tajnyText": "",
+    "nazov": "Worek treningowy",
+    "popis": "Obrażenia przyjęte w jednej bójce: co najmniej {prah}.",
+    "tajnyText": "Ktoś musi oberwać.",
     "sk": {
       "nazov": "Boxovacie vrece",
       "popis": "Dostaň v jednej bitke aspoň {prah} poškodenia.",
@@ -870,9 +870,9 @@
     }
   },
   "platim-rundu": {
-    "nazov": "",
-    "popis": "",
-    "tajnyText": "",
+    "nazov": "Stawiam kolejkę",
+    "popis": "Przegrane partie: razem {prah}.",
+    "tajnyText": "Przegrana też uczy.",
     "sk": {
       "nazov": "Platím rundu",
       "popis": "Prehraj spolu {prah} partií.",
@@ -880,9 +880,9 @@
     }
   },
   "podaj-ruku": {
-    "nazov": "",
-    "popis": "",
-    "tajnyText": "",
+    "nazov": "Podaj rękę",
+    "popis": "Zakończ partię remisem — razem {prah}×.",
+    "tajnyText": "Ni pies, ni wydra.",
     "sk": {
       "nazov": "Podaj ruku",
       "popis": "Dohraj partiu remízou — spolu {prah}×.",
@@ -890,9 +890,9 @@
     }
   },
   "zatlkat-zatlkat": {
-    "nazov": "",
-    "popis": "",
-    "tajnyText": "",
+    "nazov": "W zaparte",
+    "popis": "Wygraj partię mimo nieprzyznanych Marskości: co najmniej {prah}.",
+    "tajnyText": "Czego lekarz nie wie…",
     "sk": {
       "nazov": "Zatĺkať, zatĺkať",
       "popis": "Vyhraj partiu napriek aspoň {prah} nepriznaným Cirhózam.",
@@ -900,9 +900,9 @@
     }
   },
   "zaverecna-o-tretej": {
-    "nazov": "",
-    "popis": "",
-    "tajnyText": "",
+    "nazov": "Ostatnia kolejka o trzeciej",
+    "popis": "Dokończ partię między 2:00 a 5:00 rano — razem {prah}×.",
+    "tajnyText": "Bufetowa już gasi światło.",
     "sk": {
       "nazov": "Záverečná o tretej",
       "popis": "Dohraj partiu medzi 2:00 a 5:00 ráno — spolu {prah}×.",
@@ -910,24 +910,24 @@
     }
   },
   "staznost-krcmarovi": {
-    "nazov": "",
-    "popis": "",
+    "nazov": "Skarga do barmana",
+    "popis": "Wyślij opinię w Opiniach — razem {prah}×.",
     "sk": {
       "nazov": "Sťažnosť krčmárovi",
       "popis": "Pošli názor v Spätnej väzbe — spolu {prah}×."
     }
   },
   "porotca": {
-    "nazov": "",
-    "popis": "",
+    "nazov": "Juror",
+    "popis": "Wystaw grze oceny — razem {prah}×.",
     "sk": {
       "nazov": "Porotca",
       "popis": "Ohodnoť hru známkami — spolu {prah}×."
     }
   },
   "staly-host": {
-    "nazov": "",
-    "popis": "",
+    "nazov": "Stały gość",
+    "popis": "Dni, w których dokończyłeś partię: {prah} różnych.",
     "sk": {
       "nazov": "Stály hosť",
       "popis": "Dohraj partiu v {prah} rôznych dňoch."
