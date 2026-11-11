@@ -48,9 +48,9 @@
     }
   },
   "pas-cigarety": {
-    "melichar": "Spasować opłaca się i wcześniej: za każdą kartę, którą jeszcze mogłeś wyłożyć, dostajesz [Cigareta] papierosa. Jednego mógłbyś mi potem oddać, tak tylko wspominam.",
+    "melichar": "Za każdą kartę wypijasz jeden [Poldeci] kieliszek: ile masz pełnych, tyle kart wyłożysz. Więcej kart naraz możesz, ale każda dodatkowa kosztuje [Cigareta] papierosa. Za pas nic nie dostaniesz – pełne kieliszki po prostu ci zostaną, na NA EX i na kolejne Zebranie. Ja bym im nie dał się zagrzać.",
     "sk": {
-      "melichar": "Pasovať sa oplatí aj skôr: za každú kartu, ktorú si ešte smel vyložiť, dostaneš [Cigareta] cigaretu. Jednu by si potom mohol aj vrátiť, len tak spomínam."
+      "melichar": "Za každú kartu vypiješ jeden [Poldeci] poldeci: koľko máš plných, toľko kariet vyložíš. Viac kariet naraz smieš, ale každá navyše stojí [Cigareta] cigaretu. Za pas nedostaneš nič – plné poldeci ti len ostanú, na NA EX aj na ďalšie Zhromaždenie. Ja by som ich nenechal stáť."
     }
   },
   "lokalita-pravidlo": {

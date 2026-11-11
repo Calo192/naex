@@ -33,7 +33,7 @@
   },
   "barter": {
     "pojem": "Menelski barter",
-    "popis": "",
+    "popis": "W czasie Popijawy za 5 papierosów nowy pełny kieliszek — na stałe, po bójce odnawia się z pozostałymi.",
     "sk": {
       "pojem": "Stokársky barter",
       "popis": "Počas Pitky za 5 cigariet nový plný poldeci — natrvalo, po bitke sa obnoví s ostatnými."
@@ -105,7 +105,7 @@
   },
   "doliatie": {
     "pojem": "Dolewka",
-    "popis": "",
+    "popis": "Na koniec każdej Popijawy jeden wypity kieliszek odwraca ci się na pełny za darmo, a kolejny za każdą twoją aktywną akcję Kieliszek. Za papierosy się nie dolewa.",
     "sk": {
       "pojem": "Doliatie",
       "popis": "Na konci každej Pitky sa ti jeden vypitý poldeci otočí na plný zadarmo a ďalší za každú tvoju aktívnu akciu Poldeci. Za cigarety sa nedolieva."
@@ -257,7 +257,7 @@
   },
   "limit": {
     "pojem": "Limit wykładania",
-    "popis": "",
+    "popis": "Ile kart wyłożysz: tyle, ile masz pełnych kieliszków — każda karta odwraca jeden na wypity.",
     "sk": {
       "pojem": "Limit vykladania",
       "popis": "Koľko kariet vyložíš: toľko, koľko máš plných poldeci — každá karta jeden otočí na vypitý."
@@ -313,7 +313,7 @@
   },
   "naex": {
     "pojem": "NA EX!",
-    "popis": "",
+    "popis": "Pełny kieliszek na kartę w linii, wybrany w Popijawie w ukryciu: znosi jej aktywne akcje i podwaja nieaktywne. Opór na styku zostawia w spokoju; na kartę z aktywnym (niesparowanym) Oporem nie idzie — ukryte albo z Winka Opór gasi; niesparowane Wzmocnienie utrzymuje aktywne akcje.",
     "kratko": "Wylej pełny kieliszek na ex na kartę w linii. Jej akcje na styku gasną, samotne się podwajają.",
     "tvary": "NA EX",
     "sk": {
@@ -357,7 +357,7 @@
   },
   "nerest": {
     "pojem": "Grzech",
-    "popis": "",
+    "popis": "Tylko konsumpcja: dodatkowa karta w ruchu (Wypić) 1, odpowiedź na NA EX 1, NA EX 2, wypalony papieros 1. Na koniec rundy porównuje się z twoim Pragnieniem.",
     "sk": {
       "pojem": "Nerest",
       "popis": "Len konzumácia: karta navyše v ťahu (Vypiť) 1, odpoveď na NA EX 1, NA EX 2, vyfajčená cigareta 1. Na konci kola sa porovnáva s tvojou Chuťou."
@@ -381,7 +381,7 @@
   },
   "odpoved": {
     "pojem": "Odpowiedź na NA EX",
-    "popis": "",
+    "popis": "Po odkryciu jedna karta za każde NA EX przeciwnika, rewersem do góry, za pełny kieliszek (wypijasz go: wątroba +1) i poza wykładaniem; najpierw odpowiada atakujący, potem obrońca na drugie skrzydło linii; obie odwracają się naraz.",
     "sk": {
       "pojem": "Odpoveď na NA EX",
       "popis": "Po odkrytí jedna karta za každé súperovo NA EX, lícom dole, za plný poldeci (vypiješ ho: pečeň +1) a mimo vykladania; najprv odpovedá útočník, potom obranca na druhý kraj línie; obe sa otočia naraz."
@@ -397,7 +397,7 @@
   },
   "pas": {
     "pojem": "Pas",
-    "popis": "",
+    "popis": "Kończysz wykładanie w Zebraniu; nic za to nie dostajesz, niewykorzystane pełne kieliszki ci zostają.",
     "sk": {
       "pojem": "Pas",
       "popis": "Skončíš vykladanie v Zhromaždení; nič zaň nedostaneš, nevyložené plné poldeci ti ostanú."
@@ -462,7 +462,7 @@
   "pitka": {
     "pojem": "Popijawa",
     "popis": "Rozliczenie po Zebraniu: NA EX, Długi, wątroba, papierosy; w jednej rundzie jest od 1 do 4 Popijaw (w finale na lokacji szczytowej od 1 do 5).",
-    "kratko": "",
+    "kratko": "Po Zebraniu się pije: palisz, robisz barter i w ukryciu dajesz NA EX na kartę w linii; na koniec dolewa ci się kieliszek.",
     "tvary": "Popijawa, Popijawy, Popijawie, Popijawę, Popijawą, Popijaw, Popijawom, Popijawami, Popijawach",
     "sk": {
       "pojem": "Pitka",
@@ -489,7 +489,7 @@
   },
   "poldeci": {
     "pojem": "Kieliszek",
-    "popis": "",
+    "popis": "Kieliszek wódki; każda karta, którą wyłożysz, kosztuje pełny, i płaci się nim też za NA EX i odpowiedź. Po bójce wszystkie się odnawiają, po Popijawie jeden się dolewa. Pełny na koniec gry to 1 pet.",
     "kratko": "Kieliszek wódki. Ile masz pełnych, tyle kart wyłożysz, i jeszcze jedną. Za pełny kieliszek dasz też NA EX.",
     "tvary": "kieliszek, kieliszka, kieliszki, kieliszków, kieliszkowi, kieliszkiem, kieliszku, kieliszkom, kieliszkami, kieliszkach",
     "sk": {
@@ -709,7 +709,7 @@
   },
   "vypit": {
     "pojem": "Wypić",
-    "popis": "",
+    "popis": "Kolejna karta w tym samym ruchu: oprócz pełnego kieliszka kosztuje papierosa, wątroba +1 i liczy się jako grzech. Dwie karty = 2 kieliszki i 1 papieros.",
     "sk": {
       "pojem": "Vypiť",
       "popis": "Ďalšia karta v tom istom ťahu: okrem plného poldeci stojí cigaretu, pečeň +1 a ráta sa ako nerest. Dve karty = 2 poldeci a 1 cigareta."
@@ -733,7 +733,7 @@
   },
   "vzbura": {
     "pojem": "Bunt",
-    "popis": "",
+    "popis": "Opór przeciw Oporowi: obie karty się odwracają — niepołączone akcje są aktywne, połączone nieaktywne; Opory na styku gasną. Opór przeciw Wzmocnieniu: tylko karta z Oporem, w dodatku wzmocniona. Widły podłożone pod kartę też ją odwracają. NA EX na nią nie idzie.",
     "sk": {
       "pojem": "Vzbura",
       "popis": "Odpor proti Odporu: obe karty sa obrátia — nespojené akcie sú aktívne, spojené neaktívne; Odpory spoja zhasnú. Odpor proti Posilneniu: len karta s Odporom, navyše posilnená. Vidly podložené pod kartu ju obrátia tiež. NA EX na ňu nejde."
