@@ -1,0 +1,851 @@
+<!doctype html>
+<html lang="sk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Rozloženie herného stola — mocky (2026-11-11)</title>
+<style>
+:root{
+  --pozadie:#14110e; --plocha:#1e1914; --plocha-2:#28211a; --plocha-3:#332a21;
+  --okraj:#3d3229; --okraj-svetly:#57483a; --text:#f1e8d8; --tlmeny:#b6a790; --slaby-text:#9d8f7b;
+  --akcent:#e9ad45; --akcent-svetly:#ffd08a; --na-akcente:#2b1b03;
+  --cervena:#d0563f; --cervena-text:#e5735c; --zelena:#7cbf74; --zelena-svetla:#7fe39a; --zelena-ziariva:#7dff9c;
+  --info:#8fc3e0; --ja:#5cc0cf; --su:#c97a9c;
+  --stol:oklab(0.288 -0.0205 0.0197); --stol-okraj:oklab(0.671 -0.103 0.064);
+  --nadpis:"Bitter",Georgia,serif; --pismo:Roboto,"Segoe UI",system-ui,sans-serif;
+  --polomer:12px;
+}
+*{box-sizing:border-box}
+html{color-scheme:dark}
+body{margin:0;background:var(--pozadie);color:var(--text);font:16px/1.55 var(--pismo)}
+main{max-width:1240px;margin:0 auto;padding:28px clamp(12px,2.5vw,32px) 100px}
+h1,h2,h3{font-family:var(--nadpis);line-height:1.2;margin:0}
+h1{font-size:clamp(1.6rem,1.2rem + 1.6vw,2.2rem)}
+h2{font-size:1.5rem;margin:0 0 .4em}
+h3{font-size:1.15rem;margin:1em 0 .3em}
+p{margin:.45em 0;max-width:78ch}
+a{color:var(--akcent-svetly)}
+.mut{color:var(--tlmeny)}
+.mala{font-size:.875rem}
+code{overflow-wrap:anywhere;background:var(--plocha-2);border:1px solid var(--okraj);border-radius:6px;padding:0 5px;font-size:.85em}
+.box{background:var(--plocha);border:1px solid var(--okraj);border-radius:var(--polomer);padding:16px 18px;margin:16px 0}
+.verdikt{border-left:4px solid var(--akcent)}
+.odpor{border:1px solid color-mix(in srgb,var(--akcent) 60%,var(--okraj));background:color-mix(in srgb,var(--akcent) 7%,var(--plocha))}
+nav.obsah{display:flex;flex-wrap:wrap;gap:8px;margin:18px 0 28px}
+nav.obsah a{color:var(--text);text-decoration:none;background:var(--plocha);border:1px solid var(--okraj);padding:6px 12px;border-radius:999px;font-size:.875rem;min-height:36px;display:inline-flex;align-items:center}
+nav.obsah a:hover,nav.obsah a:focus-visible{border-color:var(--akcent);outline:none}
+section{margin:0 0 40px}
+section.var{background:var(--plocha);border:1px solid var(--okraj);border-radius:16px;padding:18px;margin:0 0 34px}
+.hlava{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;margin-bottom:6px}
+.pismeno{background:var(--akcent);color:var(--na-akcente);font:700 1.1rem var(--nadpis);border-radius:8px;padding:2px 10px}
+.stitok{font-size:.75rem;border:1px solid var(--okraj-svetly);border-radius:999px;padding:1px 9px;color:var(--tlmeny)}
+.stitok.odp{border-color:var(--akcent);color:var(--akcent-svetly)}
+.pm{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:14px}
+@media (max-width:760px){.pm{grid-template-columns:1fr}}
+.pm>div{background:var(--plocha-2);border-radius:10px;padding:10px 14px}
+.pm b{display:block;margin-bottom:2px}
+.plus b{color:var(--zelena-svetla)} .minus b{color:var(--cervena-text)}
+.tech{font-size:.875rem;color:var(--tlmeny);margin-top:10px}
+.tech b{color:var(--text)}
+/* prepínač rozlíšenia */
+.prepinac{display:inline-flex;border:1px solid var(--okraj-svetly);border-radius:999px;overflow:hidden;margin:10px 8px 8px 0}
+.prepinac button{background:transparent;color:var(--tlmeny);border:0;padding:8px 14px;font:600 .875rem var(--pismo);cursor:pointer;min-height:40px}
+.prepinac button[aria-pressed="true"]{background:var(--akcent);color:var(--na-akcente)}
+.prepinac button:focus-visible,.tl:focus-visible{outline:2px solid var(--akcent-svetly);outline-offset:2px}
+.tl{background:var(--plocha-2);color:var(--text);border:1px solid var(--okraj-svetly);border-radius:999px;padding:7px 14px;font:600 .875rem var(--pismo);cursor:pointer;min-height:40px}
+.tl:hover{border-color:var(--akcent)}
+.ovl{display:flex;flex-wrap:wrap;align-items:center;gap:4px 8px}
+.rozmer{font-size:.8rem;color:var(--slaby-text)}
+/* rám so zmenšenou obrazovkou */
+.ram{position:relative;overflow:hidden;border-radius:10px;border:1px solid var(--okraj);background:#000;margin-top:6px}
+.ram.plna{overflow:auto;max-height:92vh}
+.obrazovka{position:absolute;left:0;top:0;transform-origin:0 0;background-repeat:no-repeat;background-size:100% 100%;overflow:hidden}
+.ram.plna .obrazovka{position:relative}
+.kryt{position:absolute;background:var(--pozadie)}
+.vrstva{position:absolute;inset:0;pointer-events:none}
+.vrstva>*{pointer-events:auto}
+/* plsť a pilulka */
+.plst{position:absolute;border:2px solid var(--stol-okraj);border-radius:18px;background:radial-gradient(ellipse at center,color-mix(in srgb,#7fe89a 14%,transparent),transparent 70%),var(--stol);box-shadow:0 0 30px color-mix(in srgb,var(--stol-okraj) 30%,transparent)}
+.pilulka{position:absolute;left:50%;transform:translateX(-50%);height:29px;white-space:nowrap;background:#1e1914;border:2px solid var(--stol-okraj);border-radius:20px;color:#b6a790;font:14.9px/23px var(--pismo);padding:0 18px;z-index:5}
+.pilulka b{color:var(--zelena-svetla)}
+.hrana{position:absolute;display:flex;align-items:center;gap:10px;z-index:6}
+.pivnica{display:flex;flex-direction:column;align-items:center;color:#9d8f7b;font:700 11px var(--pismo);letter-spacing:.08em}
+.pivnica span{font:700 22px var(--nadpis);color:#cfc3ae}
+.zaverecna{border:2px dashed #4a4036;border-radius:10px;padding:8px 14px;color:#5f564b;font:700 15px var(--nadpis)}
+.pasovat{border:3px solid var(--akcent);border-radius:12px;background:#2a1f12;color:var(--akcent);font:800 18px var(--nadpis);letter-spacing:.06em;padding:12px 22px;transform:rotate(-2deg);box-shadow:0 0 0 3px #2a1f12,0 4px 16px rgba(0,0,0,.5)}
+/* posuvná línia */
+.posuv{position:absolute;overflow-x:auto;overflow-y:hidden;display:flex;scrollbar-width:thin;scrollbar-color:color-mix(in srgb,var(--akcent) 70%,transparent) transparent;scroll-behavior:smooth;overscroll-behavior-x:contain}
+.posuv::-webkit-scrollbar{height:8px}
+.posuv::-webkit-scrollbar-thumb{background:color-mix(in srgb,var(--akcent) 70%,transparent);border-radius:8px}
+.posuv.tien-l{-webkit-mask-image:linear-gradient(90deg,transparent 0,#000 70px);mask-image:linear-gradient(90deg,transparent 0,#000 70px)}
+.posuv.tien-p{-webkit-mask-image:linear-gradient(270deg,transparent 0,#000 70px);mask-image:linear-gradient(270deg,transparent 0,#000 70px)}
+.posuv.tien-l.tien-p{-webkit-mask-image:linear-gradient(90deg,transparent 0,#000 70px,#000 calc(100% - 70px),transparent 100%);mask-image:linear-gradient(90deg,transparent 0,#000 70px,#000 calc(100% - 70px),transparent 100%)}
+.stopa{display:flex;align-items:flex-start;margin:0 auto;flex:none;padding:0 24px;position:relative}
+.skupina{display:flex;flex-direction:column;flex:none;position:relative}
+.skupina.lok::before{content:"";position:absolute;inset:0 0 -6px;background:color-mix(in srgb,var(--akcent) 8%,transparent);border-radius:12px}
+.popis{height:22px;font:700 11.5px/22px var(--pismo);letter-spacing:.08em;text-transform:uppercase;white-space:nowrap;padding:0 6px;position:relative}
+.popis em{font-style:normal;text-transform:none;letter-spacing:0;font-weight:600;opacity:.9}
+.skupina.ja .popis{color:#65d1d5;text-align:right}
+.skupina.su .popis{color:#c97a9c}
+.skupina.lok .popis{color:#ffd08a;text-align:center;contain:inline-size}
+.rad{display:flex;align-items:flex-start;padding-top:22px;position:relative}
+.kc{position:relative;flex:none;border-radius:5.5%/3.75%;box-shadow:0 1px 2px rgba(0,0,0,.4),0 10px 26px rgba(0,0,0,.38);transition:transform .18s ease,box-shadow .18s ease}
+.kc>img{position:absolute;left:0;display:block;border-radius:inherit;user-select:none;-webkit-user-drag:none}
+.kc .orez{position:absolute;inset:0;overflow:hidden;border-radius:inherit}
+.kc .orez>img{position:absolute;left:0;display:block}
+.kc .nastroj{position:absolute;top:-21px;left:22%;width:56%;height:21px;border-radius:7px 7px 0 0;background:#6dbf8c;color:#10301c;font:700 10px/21px var(--pismo);text-align:center;letter-spacing:.04em;text-transform:uppercase}
+.kc .kw{position:absolute;right:6%;padding:1px 7px;border-radius:999px;background:#fff;color:#4a3826;font:700 11px/16px var(--pismo);box-shadow:0 1px 3px rgba(0,0,0,.35);white-space:nowrap}
+.kc .kw::after{content:"i";display:inline-block;margin-left:5px;width:13px;height:13px;border-radius:50%;border:1.5px solid #8a6d4a;font:700 9px/10px var(--pismo);text-align:center;color:#8a6d4a;vertical-align:1px}
+.kc.zh{box-shadow:-10px 0 14px -6px rgba(0,0,0,.65)}
+.kc.zh:hover,.kc.zh:focus-visible{transform:translateY(-12px);z-index:60!important;outline:none}
+.kc.zh:hover>img,.kc.zh:focus-visible>img{box-shadow:0 0 0 3px var(--akcent),0 18px 40px rgba(0,0,0,.6)}
+.miesto{flex:none;border:2px dashed color-mix(in srgb,var(--zelena) 55%,transparent);border-radius:10px;background:color-mix(in srgb,var(--zelena) 6%,transparent);color:var(--zelena);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;font:600 11.5px var(--pismo);text-align:center;position:relative;transition:width .18s ease}
+.miesto .plus{font:700 26px/1 var(--pismo)}
+/* šípky posunu */
+.sipka{position:absolute;z-index:8;width:44px;height:44px;border-radius:50%;border:2px solid var(--akcent);background:rgba(20,17,14,.88);color:var(--akcent);font:700 22px/1 var(--pismo);cursor:pointer;display:none;align-items:center;justify-content:center;flex-direction:column;box-shadow:0 4px 14px rgba(0,0,0,.5)}
+.sipka small{font:700 10px/1 var(--pismo);color:var(--akcent-svetly)}
+.sipka.vidno{display:flex}
+.sipka:hover{background:var(--akcent);color:var(--na-akcente)}
+.sipka:hover small{color:var(--na-akcente)}
+.nastred{position:absolute;z-index:8;transform:translateX(-50%);border:1px solid var(--okraj-svetly);background:rgba(20,17,14,.9);color:var(--akcent-svetly);border-radius:999px;font:600 12px var(--pismo);padding:5px 12px;cursor:pointer;display:none}
+.nastred.vidno{display:block}
+.okraj-spoj{position:absolute;z-index:9;display:none;background:var(--zelena-ziariva);color:#0b2a16;font:800 13px var(--pismo);border-radius:999px;padding:8px 14px;cursor:pointer;box-shadow:0 0 0 3px rgba(20,17,14,.8),0 0 22px color-mix(in srgb,var(--zelena-ziariva) 60%,transparent)}
+.okraj-spoj.vidno{display:block}
+/* bublina s textom efektu */
+.bublina{position:absolute;z-index:80;max-width:280px;background:#fff;color:#3d3022;border-radius:10px;padding:8px 12px;font:14px/1.4 var(--pismo);box-shadow:0 10px 30px rgba(0,0,0,.55);pointer-events:none;display:none}
+.bublina h4{margin:0 0 3px;font:700 14px var(--nadpis);color:#2a2016}
+.bublina b{color:#7a4a2a;text-decoration:underline dotted}
+/* zóny ruky v ráme */
+.zona{position:absolute;border-radius:8px;cursor:pointer;z-index:10}
+.zona:hover,.zona.akt{box-shadow:0 0 0 3px var(--akcent),0 0 18px color-mix(in srgb,var(--akcent) 60%,transparent)}
+.zona .nedasa{display:none;position:absolute;bottom:calc(100% + 8px);left:50%;transform:translateX(-50%);white-space:nowrap;background:#3a1d17;border:1px solid var(--cervena);color:#ffb3a3;font:700 12px var(--pismo);padding:4px 10px;border-radius:999px}
+.zona.akt .nedasa.ma{display:block}
+/* duch G1 */
+.duch{position:relative;flex:none}
+.duch .telo{position:absolute;inset:0;border-radius:5.5%/3.75%;overflow:hidden;opacity:.62;outline:2px dashed var(--zelena-ziariva);outline-offset:2px;-webkit-mask-image:linear-gradient(#000 70%,transparent 100%);mask-image:linear-gradient(#000 70%,transparent 100%)}
+.duch .telo img{width:100%;display:block}
+.duch.bez .telo{filter:grayscale(1) brightness(.7);outline-color:#8f877a;opacity:.45}
+.duch{animation:duch-in .2s ease-out}
+@keyframes duch-in{from{opacity:0;transform:translateY(10px)}}
+.cip{position:absolute;left:50%;transform:translateX(-50%);white-space:nowrap;border-radius:999px;font:800 13px/1 var(--pismo);padding:6px 11px;z-index:4}
+.cip.spoj{background:var(--zelena-ziariva);color:#0b2a16;box-shadow:0 0 16px color-mix(in srgb,var(--zelena-ziariva) 55%,transparent)}
+.cip.bez{background:#4a443c;color:#e6dccb}
+.cip.ucinok{background:#a8341f;color:#fff;font-weight:700}
+.krh{position:absolute;border-radius:50%;border:3px solid var(--zelena-ziariva);box-shadow:0 0 12px var(--zelena-ziariva),inset 0 0 8px color-mix(in srgb,var(--zelena-ziariva) 60%,transparent);transform:translate(-50%,-50%);z-index:3;pointer-events:none}
+.krh.pulz{animation:pulz 1.2s ease-in-out infinite}
+@keyframes pulz{50%{box-shadow:0 0 22px 4px var(--zelena-ziariva)}}
+.zips{position:absolute;height:6px;margin-top:-3px;border-radius:3px;background:var(--zelena-ziariva);box-shadow:0 0 10px var(--zelena-ziariva);z-index:3;pointer-events:none}
+/* G2: schéma hrany v mieste na kartu */
+.miesto .bod{position:absolute;left:50%;width:14px;height:14px;margin:-7px 0 0 -7px;border-radius:50%;border:2px solid #8f877a}
+.miesto .bod.par{background:var(--zelena-ziariva);border-color:var(--zelena-ziariva);box-shadow:0 0 10px var(--zelena-ziariva)}
+.miesto.g2-akt{border-style:solid;border-color:var(--zelena-ziariva);background:color-mix(in srgb,var(--zelena-ziariva) 10%,transparent)}
+.miesto.g2-bez{border-color:#6b645a;color:#9d958a}
+.miesto .cip{top:-14px}
+/* ukážka duchov */
+.gdemo{position:relative;padding:18px 0 8px}
+.gplst{display:flex;position:relative;border:2px solid var(--stol-okraj);border-radius:18px;background:var(--stol);padding:46px 0 34px;overflow:hidden}
+.preskok{flex:none;align-self:center;width:130px;color:var(--tlmeny);font:600 12px/1.4 var(--pismo);text-align:center;padding:0 8px}
+.preskok b{display:block;font:700 22px var(--nadpis);color:var(--slaby-text)}
+.gruka{display:flex;justify-content:center;gap:12px;padding:16px 0 4px;flex-wrap:wrap}
+.rk{position:relative;width:118px;height:132px;border-radius:8px;overflow:hidden;cursor:pointer;border:0;padding:0;background:#000;transition:transform .15s ease,box-shadow .15s ease;box-shadow:0 6px 16px rgba(0,0,0,.5)}
+.rk img{width:118px;display:block}
+.rk:hover,.rk:focus-visible,.rk.akt{transform:translateY(-10px);box-shadow:0 0 0 3px var(--akcent),0 12px 22px rgba(0,0,0,.55);outline:none}
+.rk .krh{border-width:2px}
+.gsvg{position:absolute;inset:0;pointer-events:none;overflow:visible;z-index:20}
+.legenda{display:flex;flex-wrap:wrap;gap:8px 18px;font-size:.875rem;color:var(--tlmeny);margin-top:6px}
+.legenda i{display:inline-block;width:14px;height:14px;border-radius:50%;vertical-align:-2px;margin-right:6px}
+/* tenké pruhy (C) */
+.pruh{position:absolute;display:flex;align-items:stretch;gap:6px;z-index:6}
+.pruh .ch{position:relative;display:flex;align-items:center;gap:7px;background:#1e1914;border:1px solid #3d3229;border-radius:8px;padding:0 12px;white-space:nowrap;cursor:default}
+.pruh .ch small{font:700 10px var(--pismo);letter-spacing:.08em;color:#9d8f7b;text-transform:uppercase}
+.pruh .ch b{font:800 19px var(--nadpis)}
+.pruh .ch span{font:600 12px var(--pismo);color:#b6a790}
+.pruh .ch.var{background:#2b1712;border-color:#7a3426}
+.pruh .ch.var span{color:#ffb19e}
+.pruh .ch.av{gap:9px;flex:1;justify-content:flex-end}
+.pruh .ch.av.ja{justify-content:flex-start}
+.pruh .av i{width:26px;height:26px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font:800 14px var(--pismo);font-style:normal;color:#14110e}
+.pruh .ch .tip{display:none;position:absolute;left:50%;transform:translateX(-50%);background:#28211a;border:1px solid #57483a;color:#e8dcc6;font:600 12px/1.35 var(--pismo);padding:6px 10px;border-radius:8px;white-space:nowrap;z-index:30}
+.pruh.hore .ch .tip{top:calc(100% + 6px)}
+.pruh.dole .ch .tip{bottom:calc(100% + 6px)}
+.pruh .ch:hover .tip{display:block}
+.pruh .ch:hover{border-color:var(--akcent)}
+/* súčasný stav */
+.snimka{position:relative;margin:8px 0 4px;border-radius:10px;overflow:hidden;border:1px solid var(--okraj)}
+.snimka img{width:100%;height:auto;display:block}
+.snimka .zn{position:absolute;border:2px dashed var(--akcent);border-radius:8px}
+.snimka .zn.l{border:2px solid var(--ja)}
+.snimka .zn span{position:absolute;left:6px;top:4px;background:rgba(20,17,14,.9);color:var(--akcent-svetly);font:700 clamp(9px,1vw,13px) var(--pismo);padding:2px 7px;border-radius:6px;white-space:nowrap}
+.snimka .zn.l span{color:var(--ja);top:auto;bottom:4px}
+figcaption{font-size:.875rem;color:var(--tlmeny);margin-bottom:18px}
+.dve{display:grid;grid-template-columns:1fr;gap:6px}
+/* audit */
+.filtre{display:flex;gap:6px;flex-wrap:wrap;margin:6px 0 10px}
+.filtre button{background:var(--plocha-2);border:1px solid var(--okraj-svetly);color:var(--tlmeny);border-radius:999px;padding:6px 12px;font:600 .8rem var(--pismo);cursor:pointer;min-height:36px}
+.filtre button[aria-pressed="true"]{border-color:var(--akcent);color:var(--akcent-svetly)}
+table{width:100%;border-collapse:collapse;font-size:.9rem}
+th,td{text-align:left;vertical-align:top;padding:8px 10px;border-bottom:1px solid var(--okraj)}
+th{color:var(--tlmeny);font-weight:600}
+.zav{font:700 .75rem var(--pismo);border-radius:999px;padding:2px 8px;white-space:nowrap}
+.zav.vys{background:#4a1f17;color:#ffb3a3}
+.zav.str{background:#43351a;color:#ffd08a}
+.zav.niz{background:#23302a;color:#a6e3b8}
+.tab-obal{overflow-x:auto}
+@media (max-width:700px){td:nth-child(4),th:nth-child(4){display:none}}
+ol.poradie li{margin:.35em 0}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important;scroll-behavior:auto!important}}
+</style>
+</head>
+<body>
+<main>
+<header>
+  <p class="mut mala">NA EX! · návrh dizajnu stola · 2026-11-11 · podklad: playtest Michala na živom webe</p>
+  <h1>Rozloženie herného stola: väčšie karty, vodorovný posun a duchovia spojov</h1>
+  <div class="box verdikt">
+    <p><b>Verdikt.</b> Karty v línii sa dnes zmenšujú podľa <b>šírky</b> stola, aby sa celá línia vošla bez posunu. Preto má notebook pri 9 kartách karty 102 × 151 px a línia zaberá iba 44 % výšky stola. Navrhujem otočiť pravidlo: <b>veľkosť karty sa odvodí z voľnej výšky stola</b> a čo sa nevojde do šírky, sa posúva vodorovne. Na notebooku sú tak karty o 70 % väčšie. Na veľkom monitore 2560 × 1080 to pomôže menej (+18 %). Tam totiž výšku neberie línia, ale pruhy zdrojov, hlavička a ruka (45 % okna), takže väčší zisk prinesie až variant C.</p>
+  </div>
+  <div class="box odpor">
+    <p><b>Odporúčam (na prvom mieste):</b> <b>A, teda výška riadi kartu, s posunom a šípkami</b>, k tomu <b>duchovia G1 (duch na mieste)</b>. Ako automatickú poistku pre nízke okná pridať <b>B (skrátená karta)</b>, keď by plná karta bola nižšia než 300 px. <b>C (tenké pruhy)</b> nechať na samostatné rozhodnutie, lebo mení jednotnú kostru stola. <b>D (harmonika)</b> je záloha pre prípad, že posúvanie línie nebude Michalovi sedieť.</p>
+  </div>
+  <p class="mala mut">Všetky mocky sú statické HTML zložené z vystrihnutých kariet súčasného stola (ukážka <code>/hra/ukazka-stola?seed=8&amp;lokalit=7&amp;stop=finale&amp;karty=9&amp;ja=1</code>, 9 kariet + lokalita Herňa). Hlavička, pruhy a ruka sú skutočné snímky, stred stola je mock. Tlačidlo <b>Skutočná veľkosť</b> ukáže obrazovku 1 : 1. Na veľkom monitore tak uvidíš presne, čo by si videl v hre. Posúvanie, šípky, bubliny aj duchovia v mockoch reagujú na myš.</p>
+</header>
+
+<nav class="obsah" aria-label="Obsah">
+  <a href="#stav">Súčasný stav</a><a href="#audit">Audit</a><a href="#zaklad">Spoločný základ</a>
+  <a href="#varA">A · výška riadi kartu</a><a href="#duchovia">Duchovia G1 / G2</a><a href="#varD">D · harmonika</a>
+  <a href="#varB">B · skrátená karta</a><a href="#varC">C · tenké pruhy</a><a href="#poradie">Poradie</a><a href="#otazky">Otázky</a>
+</nav>
+
+<section id="stav">
+  <h2>Súčasný stav</h2>
+  <div class="dve">
+    <figure style="margin:0">
+      <div class="snimka"><img src="stol-rozlozenie/nb.jpg" alt="Herný stôl pri 1512 × 860: línia 9 kariet v strede, nad ňou aj pod ňou prázdna zelená plsť" width="1512" height="860">
+        <div class="zn" style="left:1.06%;top:22.2%;width:96.9%;height:52.3%"><span>stôl 1465 × 450 px</span></div>
+        <div class="zn l" style="left:15.8%;top:32.2%;width:67.5%;height:26.2%"><span>línia 1020 × 225 px · karta 102 × 151</span></div>
+      </div>
+      <figcaption>Notebook 1512 × 860 (Chrome). Karty majú 102 × 151 px a text efektu je písaný asi 6 px písmom, ktoré sa nedá prečítať. Línia zaberá 200 z 450 px výšky stola a nad aj pod ňou ostáva ~120 px prázdnej plste. Nadpisy krajov sa zrážajú: „FINÁLE · LOKALITA<b>PRI AUTOMATOCH</b>“. V Chrome som orezanie nevidel. Michal ho videl v Safari na MacBooku (pozri audit, bod 2).</figcaption>
+    </figure>
+    <figure style="margin:0">
+      <div class="snimka"><img src="stol-rozlozenie/vel.jpg" alt="Herný stôl pri 2560 × 1080: línia uprostred, vľavo aj vpravo prázdna plsť, pruhy hore a dole zaberajú veľa výšky" width="2560" height="1080">
+        <div class="zn" style="left:.63%;top:23.9%;width:98.2%;height:50.1%"><span>stôl 2513 × 541 px</span></div>
+        <div class="zn l" style="left:9.7%;top:35.6%;width:79.9%;height:34.3%"><span>línia 2045 × 370 px · karta 188 × 279</span></div>
+      </div>
+      <figcaption>Veľký monitor 2560 × 1080. Karta má 188 × 279 px a strop je 198 px šírky (<code>SIRKA_V_LINII</code>). Línia síce využíva 68 % výšky stola, ale stôl má len 541 px. Hlavička, pruh súpera, pokyn, pruh hráča a ruka zaberajú 490 px, teda 45 % okna. S reálnou lištou prehliadača (okno ~2560 × 950) sú karty ešte o ~20 % menšie, a to sedí s Michalovým „~200 px“.</figcaption>
+    </figure>
+  </div>
+</section>
+
+<section id="audit">
+  <h2>Audit</h2>
+  <div class="filtre" role="group" aria-label="Filter podľa závažnosti">
+    <button type="button" data-f="vsetko" aria-pressed="true">Všetko</button>
+    <button type="button" data-f="vys" aria-pressed="false">Vysoká</button>
+    <button type="button" data-f="str" aria-pressed="false">Stredná</button>
+    <button type="button" data-f="niz" aria-pressed="false">Nízka</button>
+  </div>
+  <div class="tab-obal"><table id="audit-tab">
+    <thead><tr><th>#</th><th>Závažnosť</th><th>Problém</th><th>Dôkaz</th></tr></thead>
+    <tbody>
+      <tr data-z="vys"><td>1</td><td><span class="zav vys">vysoká</span></td><td>Šírka karty v línii sa počíta zo šírky stola: <code>(šírka − 60) / (počet + 2) − 12</code>. Pri 7 až 10 kartách na notebooku vyjde karta 96 až 125 px široká a text efektu sa nedá prečítať. Výška stola sa využije len na 44 %.</td><td><code>HernaPlocha.tsx:890</code>, snímka nb.jpg</td></tr>
+      <tr data-z="vys"><td>2</td><td><span class="zav vys">vysoká</span></td><td>Súper na MacBooku (Safari, ~1512 × 860) vidí spodok kariet odrezaný pruhom zdrojov. <i>V Chrome sa mi to nezopakovalo, toto je hypotéza:</i> výška karty sa počíta v JS z pevných rezerv v px (<code>PRIDAVOK_NOTEBOOK = 38</code>, <code>REZERVA_RADOV_NOTEBOOK = 92</code>, <code>REZERVA_POSUNU</code>). Iné metriky písma v Safari alebo zalomený nadpis kraja tak spravia líniu vyššiu, než výpočet ráta. Riešenie v spoločnom základe (CSS kontajner) túto triedu chýb odstráni.</td><td><code>HernaPlocha.tsx:303–312, 861</code></td></tr>
+      <tr data-z="str"><td>3</td><td><span class="zav str">stredná</span></td><td>Na veľkom monitore je strop karty 198 px šírky a pruhy so zdrojmi zaberajú 45 % výšky okna. Ani na 2560 × 1440 by karta nenarástla.</td><td><code>HernaPlocha.tsx:276</code>, vel.jpg</td></tr>
+      <tr data-z="str"><td>4</td><td><span class="zav str">stredná</span></td><td>Línia sa vie posúvať (<code>overflow-x:auto</code>, prichytenie a vycentrovanie lokality už existujú), ale posun nastúpi až pri karte 96 px. Nie sú šípky ani náznak, koľko kariet je mimo obrazovky.</td><td><code>hra.css:1084–1098</code>, <code>HernaPlocha.tsx:894–900</code></td></tr>
+      <tr data-z="str"><td>5</td><td><span class="zav str">stredná</span></td><td>Na notebooku sa nadpisy krajov a lokality zrážajú: „LOKALITAPRI AUTOMATOCH“. Úzka lokalita (102 px) nedá nadpisu miesto.</td><td>nb.jpg, y ≈ 212</td></tr>
+      <tr data-z="niz"><td>6</td><td><span class="zav niz">nízka</span></td><td>Prejdenie myšou nad kartou v ruke ukáže len lupu. Kde karta vytvorí spoj, sa dá zistiť len opačne, klikom na koniec línie (ruka potom ukáže „2 spoje“). Michal chce smer z ruky na stôl.</td><td><code>HernaPlocha.tsx:1590–1640</code> (moznostiMiesta)</td></tr>
+      <tr data-z="niz"><td>7</td><td><span class="zav niz">nízka</span></td><td>„+ spoj: 3“ na konci línie ukazuje číslo bez väzby na konkrétnu kartu. Hráč nevie, ktorá karta z ruky ho dá.</td><td>nb.jpg, miesta na kartu</td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<section id="zaklad">
+  <h2>Spoločný základ všetkých variantov</h2>
+  <p>Výšku karty počíta CSS, nie JS. Riadok línie dostane <code>container-type: size</code> a jeho výška je presne to, čo zvýši po hlavičke, nadpisoch krajov a hrane stola, nech je písmo v prehliadači akékoľvek. Karta potom nemôže pretiecť pod pruh zdrojov, čím odpadá bod 2 auditu:</p>
+  <pre class="box" style="overflow-x:auto;font-size:.85rem;line-height:1.5"><code style="background:none;border:0">.stol-plst   { display:grid; grid-template-rows: auto 1fr; }   /* nadpisy krajov | línia */
+.linia       { container-type: size; overflow-x: auto; }
+.linia .kl   { --h: clamp(140px, 100cqh / (1 + var(--posun)), 520px);   /* --posun: 0.325 plná, 0.14 skrátená */
+               height: var(--h); width: calc(var(--h) * 54 / 80); }</code></pre>
+  <p>Línia ostáva nakrivo (karta podľa natočenia hore/dole) a lokalita sa po načítaní vycentruje (to už robí <code>HernaPlocha.tsx:894</code>). Pribudnú šípky ‹ › s počtom skrytých kariet, jemné stmavenie okraja, za ktorým sú ďalšie karty, a tenký jantárový posuvník. Strop 198 px (<code>SIRKA_V_LINII</code>) a výpočet podľa šírky odpadnú. Telefón na šírku ostáva, ako je (línia sa tam nikdy neposúva, <code>SIRKA_NA_SIRKU_MIN</code>).</p>
+</section>
+
+<!-- ================= A ================= -->
+<section class="var" id="varA">
+  <div class="hlava"><span class="pismeno">A</span><h2>Výška riadi kartu, línia sa posúva</h2><span class="stitok odp">odporúčam</span><span class="stitok">náročnosť: stredná</span></div>
+  <p>Plná karta, ktorej výška je odvodená z výšky stola. Široká línia sa posúva vodorovne a po načítaní je lokalita v strede. Šípky ukazujú, koľko kariet je za okrajom. Tlačidlo „Na lokalitu“ sa ukáže, keď lokalitu odsunieš. Na notebooku <b>prejdi myšou nad kartu v ruke</b>: na koncoch línie sa ukážu duchovia (G1). Keď je koniec mimo obrazovky, zasvieti pri okraji „2 spoje →“.</p>
+  <div class="ovl"><span class="prepinac" role="group" aria-label="Rozlíšenie"><button type="button" data-r="nb" aria-pressed="true">Notebook 1512 × 860</button><button type="button" data-r="vel" aria-pressed="false">Veľký monitor 2560 × 1080</button></span><button type="button" class="tl" data-plna>Skutočná veľkosť</button><span class="rozmer" data-rozmer></span></div>
+  <div class="ram" data-var="A"></div>
+  <div class="pm"><div class="plus"><b>Pre</b>Notebook: karta 172 × 254 px namiesto 102 × 151, text efektu sa dá čítať a celá karta je vždy na stole. Je to najmenšia zmena princípu: posun aj centrovanie lokality už v kóde sú, len začnú platiť skôr.</div><div class="minus"><b>Proti</b>Na notebooku je naraz vidno asi 7 z 10 kariet a jeden koniec línie je mimo obrazovky, hoci práve na koncoch sa hrá. Šípky a „N spojov →“ to zmierňujú, ale treba posúvať. Na veľkom monitore je zisk len +18 % (222 px).</div></div>
+  <p class="tech"><b>Dotknuté súbory:</b> <code>HernaPlocha.tsx</code> (výpočet <code>sirkaVLinii</code> → CSS premenná, šípky, okraj so spojmi), <code>hra.css</code> (<code>.linia</code>, <code>.stol-plst</code>, posuvník, maska okrajov), <code>zarovnanieLinie.ts</code> bez zmeny. <b>Mobil na šírku:</b> bez zmeny.</p>
+</section>
+
+<!-- ================= Duchovia ================= -->
+<section class="var" id="duchovia">
+  <div class="hlava"><span class="pismeno">G</span><h2>Duchovia spojov: dve podoby</h2><span class="stitok">náročnosť: stredná (dáta už sú)</span></div>
+  <p>Pri prejdení myšou nad kartou v ruke sa na <b>oboch koncoch línie</b> ukáže, kde by karta vytvorila spoj: akcia k akcii, hrana k hrane. Dáta na to stôl už počíta pre opačný smer, keď klikneš na koniec línie (<code>moznostiMiesta</code> → <code>NahladVylozenia.pary</code>). Stačí ich zobraziť pre jednu kartu. Keď je kraj prázdny, duch leží hneď pri lokalite. Vyskúšaj karty v ruke: <b>Degustátorka</b> (2 + 2 spoje, vpravo Cirhóza +2), <b>Profesionálny tipér</b> (2 + 1), <b>Kôň</b> (1 spoj, vpravo bez spoja), <b>Cirhóza</b> (nedá sa vyložiť). Na dotykovej obrazovke stačí ťuknúť.</p>
+
+  <h3>G1 · Duch na mieste <span class="stitok odp">odporúčam</span></h3>
+  <div class="ram" data-duch="g1"></div>
+  <div class="legenda"><span><i style="background:var(--zelena-ziariva)"></i>spoj: krúžky na oboch akciách, spojené mostíkom</span><span><i style="background:#8f877a"></i>sivý duch: dá sa sem položiť, ale bez spoja</span><span>žiadny duch: sem sa nedá</span></div>
+  <div class="pm"><div class="plus"><b>Pre</b>Hráč vidí výsledok rovno: kde karta bude ležať, ako bude natočená a ktoré akcie sa stretnú. Je to rovnaký jazyk ako pri ťahaní karty, takže netreba nič nové učiť.</div><div class="minus"><b>Proti</b>Duch zaberie na konci miesto jednej karty. Pri dlhej línii na notebooku je jeden koniec mimo obrazovky a ukáže sa len „N spojov →“ pri okraji. Na prekrytie lupou treba dať pozor, aby lupa nezakryla ducha (lupa ide nad ruku, duch na stôl, takže by sa nemali stretnúť).</div></div>
+
+  <h3>G2 · Zvýraznenie hrán + šípka</h3>
+  <div class="ram" data-duch="g2"></div>
+  <div class="legenda"><span><i style="background:var(--zelena-ziariva)"></i>akcia, ktorá sa spojí (na karte v línii pulzuje)</span><span><i style="border:2px solid #8f877a"></i>akcia novej karty bez páru</span><span>šípka od karty v ruke ku koncu, kde vznikne spoj</span></div>
+  <div class="pm"><div class="plus"><b>Pre</b>Línia sa nehýbe a nič na nej nepribúda. Vidno, ktoré akcie <i>súčasných</i> kariet sa rozsvietia. Zmestí sa aj na úzky koniec a vyjde lacnejšie, lebo stačí znova použiť zvýraznenie z výberu klikom (<code>spojSuseda</code>).</div><div class="minus"><b>Proti</b>Hráč si musí v hlave predstaviť, ako karta k hrane prilieha, pretože schéma s bodkami je abstraktná. Šípky cez stôl pri dvoch koncoch naraz pôsobia neporiadne a proti zásade čistého stola.</div></div>
+</section>
+
+<!-- ================= D ================= -->
+<section class="var" id="varD">
+  <div class="hlava"><span class="pismeno">D</span><h2>Harmonika: konce plné, stred zhustený, bez posunu</h2><span class="stitok">náročnosť: stredná</span></div>
+  <p>Výška karty je rovnaká ako v A, ale nič sa neposúva. Plné ostanú lokalita a <b>dve krajné karty na každom konci</b>, teda tam, kde vznikajú spoje. Karty v strede sa prekryjú ako vejár v ruke. Prejdením myšou sa karta vysunie nad susedov. Na veľkom monitore sa línia vojde celá, takže harmonika sa nezapne a D vyzerá ako A.</p>
+  <div class="ovl"><span class="prepinac" role="group" aria-label="Rozlíšenie"><button type="button" data-r="nb" aria-pressed="true">Notebook 1512 × 860</button><button type="button" data-r="vel" aria-pressed="false">Veľký monitor 2560 × 1080</button></span><button type="button" class="tl" data-plna>Skutočná veľkosť</button><span class="rozmer" data-rozmer></span></div>
+  <div class="ram" data-var="D"></div>
+  <div class="pm"><div class="plus"><b>Pre</b>Celá línia aj oba konce sú stále na očiach a duchovia sú vždy vidno. Karty majú rovnakú veľkosť ako v A. Hra už harmoniku pozná (ruka, lupa v línii), takže je to známe správanie.</div><div class="minus"><b>Proti</b>Stredné karty ukazujú len pruh s ľavou hranou a kus ilustrácie. Ich text efektu prečítaš až prejdením myšou. Pri 12 a viac kartách sa stred zhustí na úzke pásiky a ani zvislé posunutie nakrivo už nebude dobre vidno.</div></div>
+  <p class="tech"><b>Dotknuté súbory:</b> <code>HernaPlocha.tsx</code> (šírka viditeľného pruhu, poradie z-index), <code>hra.css</code> (<code>.harmonika-aktivna</code> v línii už existuje, rozšíriť). <b>Mobil na šírku:</b> dá sa použiť aj tam namiesto zmenšovania pod <code>SIRKA_NA_SIRKU_MIN</code>.</p>
+</section>
+
+<!-- ================= B ================= -->
+<section class="var" id="varB">
+  <div class="hlava"><span class="pismeno">B</span><h2>Skrátená karta pri malej výške</h2><span class="stitok">náročnosť: stredná</span><span class="stitok odp">ako poistka k A</span></div>
+  <p>Keď by plná karta vyšla nižšia než 300 px, karta v línii stratí biely blok s textom efektu. Ostane ilustrácia s akciami a pás s menom, na ktorom je štítok s kľúčovým slovom („Furt“, „Bitka“, „Spoločník“…). Celý text sa ukáže v <b>bubline pri myši</b> (vyskúšaj prejsť po kartách). Posun nakrivo klesne z 0,325 na 0,14 výšky karty, takže tá istá výška stola unesie o 39 % väčšiu kartu. Na veľkom monitore je karta vyššia ako 300 px a ostáva plná, ako v A.</p>
+  <div class="ovl"><span class="prepinac" role="group" aria-label="Rozlíšenie"><button type="button" data-r="nb" aria-pressed="true">Notebook 1512 × 860</button><button type="button" data-r="vel" aria-pressed="false">Veľký monitor 2560 × 1080</button></span><button type="button" class="tl" data-plna>Skutočná veľkosť</button><span class="rozmer" data-rozmer></span></div>
+  <div class="ram" data-var="B"></div>
+  <div class="pm"><div class="plus"><b>Pre</b>Najväčšie ilustrácie a akcie na notebooku (karta 236 × 350 px, viditeľná časť 285 px). Akcie, teda to, čo sa v línii počíta, sú čitateľné aj bez myši. Štítok s kľúčovým slovom hovorí, že karta má efekt a akého je druhu.</div><div class="minus"><b>Proti</b>Text efektu sa nedá prečítať naraz pri viacerých kartách a na dotykovej obrazovke treba podržať. Karta v línii vyzerá inak než v ruke a v tlači. Väčšie karty tiež znamenajú viac posúvania: na notebooku je vidno ~5,5 karty.</div></div>
+  <p class="tech"><b>Dotknuté súbory:</b> <code>HernaKarta.tsx</code> (prop <code>skratena</code>: orez a štítok kľúčového slova), <code>karta/</code> (kotvy <code>.kl-kotva</code> ostávajú, takže <code>zarovnanieLinie.ts</code> bude fungovať ďalej), <code>Lupa.tsx</code> alebo nová bublina, <code>hra.css</code>. <b>Kontrast:</b> štítok #4a3826 na bielej má 11,4 : 1.</p>
+</section>
+
+<!-- ================= C ================= -->
+<section class="var" id="varC">
+  <div class="hlava"><span class="pismeno">C</span><h2>Tenké pruhy zdrojov, viac výšky stolu</h2><span class="stitok">náročnosť: veľká</span><span class="stitok">vyžaduje rozhodnutie</span></div>
+  <p>Pruh súpera aj tvoj pruh sa zúžia na jeden riadok s číslami a ikonami (34 a 36 px namiesto 60 až 90). Podrobnosti („v Pitke: Dlh ×2 · po bitke ×−2“, „chýba 4 · +1 Abšťák“) sa ukážu prejdením myšou nad čipom (vyskúšaj). Získaná výška ide do stola a karty k tomu rastú ako v A. Je to jediný variant, ktorý výrazne pomôže veľkému monitoru: karta 283 × 420 px namiesto 188 × 279.</p>
+  <div class="ovl"><span class="prepinac" role="group" aria-label="Rozlíšenie"><button type="button" data-r="nb" aria-pressed="true">Notebook 1512 × 860</button><button type="button" data-r="vel" aria-pressed="false">Veľký monitor 2560 × 1080</button></span><button type="button" class="tl" data-plna>Skutočná veľkosť</button><span class="rozmer" data-rozmer></span></div>
+  <div class="ram" data-var="C"></div>
+  <div class="pm"><div class="plus"><b>Pre</b>Najväčší zisk na veľkom monitore (+50 % veľkosti karty) a čistejší stôl: čísla sú na očiach, vysvetlivky len na požiadanie. Dá sa kombinovať s A aj D.</div><div class="minus"><b>Proti</b>Pruhy dnes odpovedajú na „koľko mám a čo sa stane v Pitke“ bez myši, takže časť tejto informácie sa schová. Zasahuje do jednotnej kostry stola (pás hráča, pečiatky +1, odznaky Abšťáka), preto je to veľká zmena a treba overiť playtestom zrozumiteľnosti.</div></div>
+  <p class="tech"><b>Dotknuté súbory:</b> <code>PultHraca.tsx</code>, <code>pult.ts</code>, <code>JednotnyBar.tsx</code>, <code>jbar.css</code>, <code>hra.css</code> (výšky v <code>@media (max-height)</code>), výučba (<code>data-vyucba</code> ciele v pruhoch). <b>Mobil na šírku:</b> pruhy sú tam už zhustené, teda bez zmeny.</p>
+</section>
+
+<section id="poradie">
+  <h2>Odporúčané poradie</h2>
+  <ol class="poradie">
+    <li><b>Spoločný základ + A</b>: výška z CSS kontajnera, posun, šípky, vycentrovaná lokalita. Rieši orezanie v Safari aj malé karty na notebooku. Treba overiť na MacBooku v Safari.</li>
+    <li><b>G1 duchovia</b> nad A, s výzvou „N spojov →“ pri okraji, keď je koniec mimo obrazovky.</li>
+    <li><b>B</b> ako automatický režim pod 300 px výšky karty (nízke notebooky 1366 × 650, zoom 125 % a viac).</li>
+    <li><b>C</b> až po samostatnom rozhodnutí o pruhoch. Ak ti na veľkom monitore A nebude stačiť, toto je ďalší krok.</li>
+    <li><b>D</b> len ak sa posúvanie neosvedčí. A a D sa navzájom vylučujú.</li>
+  </ol>
+</section>
+
+<section id="otazky">
+  <h2>Otázky na Michala</h2>
+  <ol class="poradie">
+    <li><b>Posun, alebo harmonika?</b> Pri posune (A) je na notebooku jeden koniec línie mimo obrazovky. Je to v poriadku, alebo majú byť oba konce vždy vidno (D)?</li>
+    <li><b>Duch G1, alebo G2?</b> Mám ich ukázať len pri prejdení myšou, alebo aj počas ťahania karty (tam dnes svieti iba miesto)?</li>
+    <li><b>Skrátená karta (B):</b> stačí v línii štítok s kľúčovým slovom a text v bubline, alebo musí byť text efektu vždy na karte?</li>
+    <li><b>Pruhy zdrojov (C):</b> smie sa pri čísle skryť vysvetlivka („v Pitke: …“) do bubliny? Ak áno, pripravím samostatný mock pruhov.</li>
+    <li>Ktoré okno má tvoj veľký monitor naozaj (s lištou prehliadača)? Podľa toho doladím prah 300 px a strop výšky karty.</li>
+  </ol>
+</section>
+</main>
+
+<script>
+(() => {
+"use strict";
+const IMG = "stol-rozlozenie/";
+/* Karty línie zľava doprava (pohľad hráča ?ja=1). otoc = natočená (text hore, leží vyššie). */
+const K = [
+  { img: "linia-0.jpg", meno: "Šarlatán", otoc: false, kw: "Spoločník", ef: "<b>Spoločník:</b> Autorita." },
+  { img: "linia-1.jpg", meno: "Mäsiar", otoc: false, kw: "Furt", ef: "<b>Furt:</b> Efekty Zvierat v jeho okolí neplatia." },
+  { img: "linia-2.jpg", meno: "Veterán", otoc: false, kw: "Furt", ef: "<b>Furt:</b> NA EX na neho jeho aktívne akcie nezruší, ale zdvojí. Neaktívne nezdvojí." },
+  { img: "linia-3.jpg", meno: "Herňa", otoc: true, lok: true, kw: "Bitka", ef: "<b>Bitka:</b> Víťaz dostane navyše toľko špakov, koľko má porazený priznaných Dlhov." },
+  { img: "linia-4.jpg", meno: "Pijan", otoc: true, nastroj: true, kw: "Bitka", ef: "<b>Bitka:</b> Za každé NA EX, ktoré si v tomto kole dal." },
+  { img: "linia-5.jpg", meno: "Kočovník", otoc: true, kw: "Spoločník", ef: "<b>Spoločník:</b> Pamätník." },
+  { img: "linia-6.jpg", meno: "Anonymný alkoholik", otoc: true, kw: "Podpora", ef: "<b>Podpora:</b> Preškolenie." },
+  { img: "linia-7.jpg", meno: "Dvojčatá", otoc: false, kw: "Furt", ef: "<b>Furt:</b> Do prevahy sa rátajú za dvoch." },
+  { img: "linia-8.jpg", meno: "Dohadzovačka", otoc: false, kw: "Nástup", ef: "<b>Nástup:</b> Ak susedíš s Občanom alebo Starešinom, za teba sa presunie karta z konca druhého kraja, ak je to Občan alebo Starešina opačného pohlavia ako tvoj sused." },
+  { img: "linia-9.jpg", meno: "Stryná", otoc: false, kw: "Konflikt", ef: "<b>Konflikt.</b>" },
+];
+const LOK = 3;
+/* Riadky akcií na hrane (zlomok výšky plnej vzpriamenej karty) a vodorovné polohy slotov. */
+const RIADKY = [0.151, 0.265, 0.385, 0.515];
+const X_L = 0.085, X_P = 0.925;
+const PLNA = 0.325, SKRAT = 0.14, BIELA = 0.185;
+/* Karty v ruke: obsadené sloty na tlačenej ľavej (L) a pravej (P) hrane; páry na ľavom a pravom konci línie. */
+const RUKA = {
+  degustatorka: { meno: "Degustátorka", img: "ruka-degustatorka.jpg", L: [1,1,0,0], P: [1,0,0,1], vlavo: [0,3], vpravo: [0,1], ucinok: "Cirhóza +2" },
+  tiper: { meno: "Profesionálny tipér", img: "ruka-tiper.jpg", L: [0,1,1,0], P: [1,0,0,1], vlavo: [0,3], vpravo: [1] },
+  kon: { meno: "Kôň", img: "ruka-kon.jpg", L: [0,0,1,0], P: [1,0,0,0], vlavo: [0], vpravo: [] },
+  cirhoza: { meno: "Cirhóza", img: "ruka-cirhoza.jpg", nedasa: true },
+};
+const PORADIE_RUKY = ["degustatorka", "tiper", "kon", "cirhoza"];
+
+const el = (tag, cls, html) => { const e = document.createElement(tag); if (cls) e.className = cls; if (html !== undefined) e.innerHTML = html; return e; };
+const px = (n) => `${Math.round(n)}px`;
+const spoje = (n) => (n === 1 ? "1 spoj" : n >= 2 && n <= 4 ? `${n} spoje` : `${n} spojov`);
+
+/* Obrazovky: snímky, polohy kariet v ruke, rozloženie variantov. */
+const OBR = {
+  nb: { W: 1512, H: 860, img: "nb.jpg",
+        ruka: [[545,750,96,110],[649,750,96,110],[753,750,96,110],[857,750,96,110]] },
+  vel: { W: 2560, H: 1080, img: "vel.jpg",
+        ruka: [[1021,946,120,134],[1149,946,120,134],[1277,946,120,134],[1405,946,120,134]] },
+};
+const VAR = {
+  A: { nb: { kryt: [0,172,1512,495], plst: [16,191,1465,450], h: 254, rez: "plna", duch: true },
+       vel: { kryt: [0,236,2560,592], plst: [16,258,2513,541], h: 328, rez: "plna" } },
+  D: { nb: { kryt: [0,172,1512,495], plst: [16,191,1465,450], h: 254, rez: "harmonika" },
+       vel: { kryt: [0,236,2560,592], plst: [16,258,2513,541], h: 328, rez: "harmonika" } },
+  B: { nb: { kryt: [0,172,1512,495], plst: [16,191,1465,450], h: 350, rez: "skratena" },
+       vel: { kryt: [0,236,2560,592], plst: [16,258,2513,541], h: 328, rez: "plna" } },
+  C: { nb: { kryt: [0,104,1512,641], plst: [16,164,1465,513], h: 300, rez: "plna", pruhy: { hore: [16,110,1465,34], dole: [16,704,1465,36] } },
+       vel: { kryt: [0,132,2560,814], plst: [16,200,2513,669], h: 420, rez: "plna", pruhy: { hore: [16,140,2513,36], dole: [16,898,2513,40] } } },
+};
+
+/* ---------- línia ---------- */
+function linia(o) {
+  // o: { h, rez, karty (indexy alebo "skok"), dostupna (šírka pre harmoniku), duchPriestor, popisy }
+  const h = o.h, w = Math.round(h * 54 / 80);
+  const skrat = o.rez === "skratena";
+  const posun = skrat ? SKRAT : PLNA;
+  const karty = o.karty;
+  const maOtoc = karty.some((i) => i !== "skok" && K[i].otoc);
+  const hore = (k) => (maOtoc && !k.otoc ? posun * h : 0);
+  const miestoW = Math.max(60, Math.round(0.42 * w));
+  const stopa = el("div", "stopa");
+  const pad = o.duchPriestor ? w - miestoW + 20 : 24;
+  stopa.style.padding = `0 ${pad}px`;
+  const vysRadu = 22 + h * (1 + (maOtoc ? posun : 0) - (skrat ? BIELA : 0));
+  // harmonika: koľko px ukáže zhustená karta
+  let zh = null;
+  if (o.rez === "harmonika" && o.dostupna) {
+    const n = karty.length;
+    const plnaSirka = n * w + 2 * miestoW + 48;
+    if (plnaSirka > o.dostupna) {
+      const plne = new Set([0, 1, LOK, n - 2, n - 1]);
+      const pocetZh = n - plne.size;
+      const s = Math.max(28, Math.floor((o.dostupna - 48 - 2 * miestoW - plne.size * w) / pocetZh));
+      zh = { plne, s };
+    }
+  }
+  const miesto = (strana) => {
+    const m = el("div", "miesto", `<span class="plus">+</span><span>${strana === "L" ? "spoj: 3" : "spoj: 2"}</span>`);
+    m.style.width = px(miestoW);
+    m.style.height = px(0.675 * h);
+    m.style.marginTop = px(44 + (maOtoc ? posun * h : 0));
+    m.dataset.strana = strana;
+    return m;
+  };
+  const kartaEl = (i, z) => {
+    const k = K[i];
+    const c = el("div", "kc" + (skrat ? " skrat" : ""));
+    c.tabIndex = 0;
+    c.dataset.i = i;
+    c.style.width = px(w);
+    c.style.height = px(skrat ? h * (1 - BIELA) : h);
+    c.style.marginTop = px(hore(k));
+    c.style.zIndex = z;
+    const im = el("img");
+    im.src = IMG + k.img; im.alt = k.meno; im.width = w; im.height = h;
+    im.style.width = px(w); im.style.height = px(h);
+    im.style.top = skrat && k.otoc ? px(-BIELA * h) : "0";
+    if (skrat) { const orez = el("div", "orez"); orez.append(im); c.append(orez); } else c.append(im);
+    if (k.nastroj) c.append(el("div", "nastroj", "Nástroj"));
+    if (skrat) {
+      const kw = el("span", "kw", k.kw);
+      // štítok sedí na vonkajšej hrane karty (vzpriamená dole, natočená hore), aby nezakryl tagy
+      kw.style.top = k.otoc ? "-9px" : px((1 - BIELA) * h - 9);
+      c.append(kw);
+    }
+    if (zh && !zh.plne.has(i)) { c.classList.add("zh"); c.style.width = px(zh.s); im.style.width = px(w); }
+    return c;
+  };
+  const mL = miesto("L"), mP = miesto("P");
+  stopa.append(mL);
+  const skupiny = [
+    { cls: "ja", popis: "← V zadnej miestnosti <em>· prevaha: ty</em>", od: (i) => i !== "skok" && i < LOK },
+    { cls: "lok", popis: "Finále · Lokalita", od: (i) => i === LOK },
+    { cls: "su", popis: "Pri automatoch <em>· prevaha: ty</em> →", od: (i) => i !== "skok" && i > LOK },
+  ];
+  let z = 1;
+  const kartyEl = new Map();
+  if (karty.includes("skok")) {
+    // ukážka koncov: ľavé karty, preskok, pravé karty — bez lokality
+    const g = el("div", "skupina ja"); g.append(el("div", "popis", "← ľavý koniec · v zadnej miestnosti"));
+    const r = el("div", "rad"); g.append(r);
+    const g2 = el("div", "skupina su"); g2.append(el("div", "popis", "pravý koniec · pri automatoch →"));
+    const r2 = el("div", "rad"); g2.append(r2);
+    let ciel = r;
+    for (const i of karty) {
+      if (i === "skok") { ciel = r2; continue; }
+      const c = kartaEl(i, z++); kartyEl.set(i, c); ciel.append(c);
+    }
+    const sk = el("div", "preskok", `<b>· · ·</b>6 kariet a lokalita Herňa`);
+    sk.style.marginTop = px(44 + 0.2 * h);
+    stopa.append(g, sk, g2);
+  } else {
+    for (const s of skupiny) {
+      const g = el("div", "skupina " + s.cls);
+      g.append(el("div", "popis", s.popis));
+      const r = el("div", "rad");
+      for (const i of karty.filter(s.od)) { const c = kartaEl(i, z++); kartyEl.set(i, c); r.append(c); }
+      g.append(r);
+      stopa.append(g);
+    }
+  }
+  stopa.append(mP);
+  stopa.style.height = px(vysRadu + 22);
+  return { stopa, w, h, miestoW, mL, mP, kartyEl, posun, maOtoc, pad };
+}
+
+/* ---------- duch na konci línie ---------- */
+function krh(parent, xFr, yPx, d, pulz) {
+  const r = el("div", "krh" + (pulz ? " pulz" : ""));
+  r.style.left = `${xFr * 100}%`; r.style.top = px(yPx); r.style.width = px(d); r.style.height = px(d);
+  parent.append(r); return r;
+}
+function zobrazDucha(L, kluc, styl) {
+  // L: výsledok linia(); kluc: karta v ruke; styl: "g1" | "g2"
+  for (const m of [L.mL, L.mP]) {
+    m.querySelectorAll(".duch,.bod,.cip").forEach((x) => x.remove());
+    m.classList.remove("g2-akt", "g2-bez");
+    m.style.width = px(L.miestoW); m.style.border = ""; m.style.background = ""; m.style.height = px(0.675 * L.h);
+    m.querySelectorAll(":scope > span").forEach((s) => (s.style.display = ""));
+  }
+  L.kartyEl.forEach((c) => c.querySelectorAll(".krh,.zips").forEach((x) => x.remove()));
+  if (!kluc) return;
+  const d = RUKA[kluc];
+  if (d.nedasa) return;
+  const w = L.w, h = L.h, ring = 0.16 * w;
+  const lavy = L.kartyEl.get(0) ?? [...L.kartyEl.values()][0];
+  const pravy = L.kartyEl.get(9) ?? [...L.kartyEl.values()].at(-1);
+  for (const strana of ["L", "P"]) {
+    const m = strana === "L" ? L.mL : L.mP;
+    const pary = strana === "L" ? d.vlavo : d.vpravo;
+    const sused = strana === "L" ? lavy : pravy;
+    // akcie suseda, ktoré sa spoja: ľavý koniec = ľavá hrana suseda, pravý = pravá
+    for (const p of pary) krh(sused, strana === "L" ? X_L : X_P, RIADKY[p] * h, ring, styl === "g2");
+    if (styl === "g1") {
+      m.style.width = px(w);
+      m.style.border = "0"; m.style.background = "transparent";
+      m.querySelectorAll(":scope > span").forEach((s) => (s.style.display = "none"));
+      const du = el("div", "duch" + (pary.length === 0 ? " bez" : ""));
+      du.style.cssText = `position:absolute;left:0;top:0;width:${px(w)};height:${px(0.76 * h)}`;
+      const telo = el("div", "telo"); const im = el("img"); im.src = IMG + d.img; im.alt = ""; telo.append(im); du.append(telo);
+      // duch leží ako vzpriamená karta: jeho hrana ku susedovi
+      const hrana = strana === "L" ? X_P : X_L;
+      for (const p of pary) {
+        krh(du, hrana, RIADKY[p] * h, ring, false);
+        const zi = el("div", "zips");
+        zi.style.top = px(RIADKY[p] * h);
+        if (strana === "L") { zi.style.left = `${X_P * 100}%`; zi.style.width = `${(1 - X_P + X_L) * 100}%`; }
+        else { zi.style.left = `${-(1 - X_P) * 100}%`; zi.style.width = `${(1 - X_P + X_L) * 100}%`; }
+        du.append(zi);
+      }
+      const c = el("div", "cip " + (pary.length ? "spoj" : "bez"), pary.length ? spoje(pary.length) : "bez spoja");
+      c.style.top = "-16px"; du.append(c);
+      const uc = strana === "P" ? d.ucinok : null;
+      if (uc && pary.length) { const u = el("div", "cip ucinok", uc); u.style.top = px(0.76 * h - 6); du.append(u); }
+      m.style.height = px(0.76 * h);
+      m.append(du);
+    } else {
+      m.classList.add(pary.length ? "g2-akt" : "g2-bez");
+      m.querySelectorAll(":scope > span").forEach((s) => (s.style.display = "none"));
+      const hranaNovej = strana === "L" ? d.P : d.L;
+      hranaNovej.forEach((obs, i) => {
+        if (!obs) return;
+        const b = el("div", "bod" + (pary.includes(i) ? " par" : ""));
+        b.style.top = px(RIADKY[i] * h);
+        m.append(b);
+      });
+      const c = el("div", "cip " + (pary.length ? "spoj" : "bez"), pary.length ? spoje(pary.length) : "bez spoja");
+      m.append(c);
+      if (strana === "P" && d.ucinok && pary.length) { const u = el("div", "cip ucinok", d.ucinok); u.style.top = "auto"; u.style.bottom = "-14px"; m.append(u); }
+    }
+  }
+}
+
+/* ---------- posuvník, šípky, „N spojov →“ ---------- */
+function ovladaniePosunu(obr, posuv, L, rect) {
+  const [px0, py0, pw, ph] = rect;
+  const stredY = py0 + 44 + (L.maOtoc ? L.posun * L.h : 0) + 0.34 * L.h;
+  const sL = el("button", "sipka"); sL.type = "button"; sL.setAttribute("aria-label", "Posunúť líniu doľava");
+  const sP = el("button", "sipka"); sP.type = "button"; sP.setAttribute("aria-label", "Posunúť líniu doprava");
+  sL.style.left = px(px0 + 10); sP.style.left = px(px0 + pw - 54);
+  sL.style.top = sP.style.top = px(stredY - 22);
+  const nast = el("button", "nastred", "◎ Na lokalitu"); nast.type = "button";
+  nast.style.left = px(px0 + pw / 2); nast.style.top = px(py0 + ph - 62);
+  const okL = el("button", "okraj-spoj"); okL.type = "button";
+  const okP = el("button", "okraj-spoj"); okP.type = "button";
+  okL.style.left = px(px0 + 62);
+  okL.style.top = okP.style.top = px(stredY + 34);
+  okP.style.left = "auto"; okP.style.right = px(OBRW(obr) - (px0 + pw) + 62);
+  obr.append(sL, sP, nast, okL, okP);
+  const lok = () => L.kartyEl.get(LOK);
+  const poloha = (c) => { let x = 0, e = c; while (e && e !== posuv) { x += e.offsetLeft; e = e.offsetParent; } return x; };
+  const naLokalitu = (hladko) => {
+    const c = lok(); if (!c) return;
+    const ciel = poloha(c) + c.offsetWidth / 2 - posuv.clientWidth / 2;
+    posuv.style.scrollBehavior = hladko ? "smooth" : "auto";
+    posuv.scrollLeft = ciel;
+    posuv.style.scrollBehavior = "";
+  };
+  const obnov = () => {
+    const vl = posuv.scrollLeft, vp = vl + posuv.clientWidth;
+    let skryteL = 0, skryteP = 0;
+    L.kartyEl.forEach((c) => { const x = poloha(c); if (x + c.offsetWidth * 0.5 < vl) skryteL++; if (x + c.offsetWidth * 0.5 > vp) skryteP++; });
+    const moze = posuv.scrollWidth > posuv.clientWidth + 2;
+    sL.classList.toggle("vidno", moze && vl > 4);
+    sP.classList.toggle("vidno", moze && vp < posuv.scrollWidth - 4);
+    sL.innerHTML = `‹<small>${skryteL || ""}</small>`; sP.innerHTML = `›<small>${skryteP || ""}</small>`;
+    posuv.classList.toggle("tien-l", moze && vl > 4);
+    posuv.classList.toggle("tien-p", moze && vp < posuv.scrollWidth - 4);
+    const c = lok();
+    if (c) { const x = poloha(c) + c.offsetWidth / 2; nast.classList.toggle("vidno", moze && Math.abs(x - (vl + posuv.clientWidth / 2)) > 60); }
+    // konce s duchom mimo obrazovky
+    for (const [m, ok, smer] of [[L.mL, okL, "L"], [L.mP, okP, "P"]]) {
+      const cip = m.querySelector(".cip.spoj");
+      const x = poloha(m);
+      const mimo = smer === "L" ? x + m.offsetWidth * 0.5 < vl : x + m.offsetWidth * 0.5 > vp;
+      ok.classList.toggle("vidno", !!cip && mimo);
+      if (cip) ok.textContent = smer === "L" ? `← ${cip.textContent}` : `${cip.textContent} →`;
+    }
+  };
+  sL.onclick = () => { posuv.scrollBy({ left: -L.w * 2, behavior: "smooth" }); };
+  sP.onclick = () => { posuv.scrollBy({ left: L.w * 2, behavior: "smooth" }); };
+  nast.onclick = () => naLokalitu(true);
+  okL.onclick = () => { posuv.scrollTo({ left: 0, behavior: "smooth" }); };
+  okP.onclick = () => { posuv.scrollTo({ left: posuv.scrollWidth, behavior: "smooth" }); };
+  posuv.addEventListener("scroll", obnov, { passive: true });
+  return { obnov, naLokalitu };
+}
+const OBRW = (obr) => parseFloat(obr.style.width);
+
+/* ---------- bublina s textom efektu ---------- */
+function bublina(obr, posuv, skala) {
+  const b = el("div", "bublina"); obr.append(b);
+  posuv.addEventListener("pointermove", (e) => {
+    const c = e.target.closest(".kc"); if (!c) { b.style.display = "none"; return; }
+    const k = K[c.dataset.i];
+    b.innerHTML = `<h4>${k.meno}</h4>${k.ef}`;
+    const r = obr.getBoundingClientRect(), s = skala();
+    let x = (e.clientX - r.left) / s + 16, y = (e.clientY - r.top) / s + 18;
+    b.style.display = "block";
+    if (x + b.offsetWidth > OBRW(obr) - 8) x -= b.offsetWidth + 32;
+    b.style.left = px(x); b.style.top = px(y);
+  });
+  posuv.addEventListener("pointerleave", () => (b.style.display = "none"));
+  posuv.addEventListener("focusin", (e) => {
+    const c = e.target.closest(".kc"); if (!c) return;
+    const k = K[c.dataset.i]; b.innerHTML = `<h4>${k.meno}</h4>${k.ef}`; b.style.display = "block";
+    const rc = c.getBoundingClientRect(), r = obr.getBoundingClientRect(), s = skala();
+    b.style.left = px((rc.left - r.left) / s); b.style.top = px((rc.bottom - r.top) / s + 6);
+  });
+  posuv.addEventListener("focusout", () => (b.style.display = "none"));
+}
+
+/* ---------- tenké pruhy (C) ---------- */
+function pruhy(obr, p) {
+  const ch = (lab, val, tip, varovanie, extra = "") => `<div class="ch${varovanie ? " var" : ""}"><small>${lab}</small><b>${val}</b>${extra}${tip ? `<div class="tip">${tip}</div>` : ""}</div>`;
+  const hore = el("div", "pruh hore");
+  hore.style.cssText += `left:${px(p.hore[0])};top:${px(p.hore[1])};width:${px(p.hore[2])};height:${px(p.hore[3])}`;
+  hore.innerHTML =
+    ch("vyloží", "1", "ruka 4 · priznané 4", false, "<span>ruka 4 · priznané 4</span>") +
+    ch("poldeci", "0", "2 vypité (2 na stole) · limit kariet 1") +
+    ch("cigarety", "1", "") +
+    ch("chuť", "5", "dnes 4 · chýba 1 · +1 Abšťák", true, "<span>Abšťák ×1</span>") +
+    ch("pečeň", "0 ▸ 1/3", "v Pitke: nič") +
+    ch("dlhy", "3", "v Pitke: Dlh ×1 · po bitke ×−1", true, "<span>−2</span>") +
+    ch("starší", "3", "+8 špakov po výhre · červené 0/4 · väzni 0/4") +
+    ch("špaky", "23", "") +
+    `<div class="ch av"><span style="color:#c97a9c;font-weight:700">Igor · útočník</span><span>nepriznané · Cirhóza</span><i style="background:#c97a9c">I</i></div>`;
+  hore.style.borderLeft = "3px solid #c97a9c";
+  const dole = el("div", "pruh dole");
+  dole.style.cssText += `left:${px(p.dole[0])};top:${px(p.dole[1])};width:${px(p.dole[2])};height:${px(p.dole[3])}`;
+  dole.innerHTML =
+    `<div class="ch av ja"><i style="background:#5cc0cf">J</i><span style="color:#5cc0cf;font-weight:700">Jano (ty) · obranca</span><span>nepriznané · Cirhóza</span></div>` +
+    ch("špaky", "111", "") +
+    ch("starší", "1", "+25 špakov po výhre · červené 3/4 · väzni 0/4") +
+    ch("dlhy", "11", "v Pitke: Dlh ×2 · po bitke ×−2", true, "<span>−6</span>") +
+    ch("pečeň", "0 ▸ 7/3", "v Pitke: Cirhóza ×2 · −6 š · ďalšia Pitka: ×2", true) +
+    ch("chuť", "7", "dnes 3 · chýba 4 · +1 Abšťák", true, "<span>Abšťák ×2</span>") +
+    ch("cigarety", "1", "") +
+    ch("poldeci", "1", "plné · 1 vypité · limit kariet 2") +
+    ch("vyložíš", "2", "ruka 4 · priznané 4", false, "<span>ruka 4 · priznané 4</span>");
+  dole.style.borderLeft = "3px solid #5cc0cf";
+  obr.append(hore, dole);
+}
+
+/* ---------- zostavenie obrazovky variantu ---------- */
+function postavObrazovku(ram, v, r) {
+  ram.innerHTML = "";
+  const O = OBR[r], cfg = VAR[v][r];
+  const obr = el("div", "obrazovka");
+  obr.style.width = px(O.W); obr.style.height = px(O.H);
+  obr.style.backgroundImage = `url(${IMG}${O.img})`;
+  ram.append(obr);
+  const [kx, ky, kw, kh] = cfg.kryt;
+  const kryt = el("div", "kryt"); kryt.style.cssText = `left:${px(kx)};top:${px(ky)};width:${px(kw)};height:${px(kh)}`;
+  obr.append(kryt);
+  const [x, y, w, hP] = cfg.plst;
+  const plst = el("div", "plst"); plst.style.cssText = `left:${px(x)};top:${px(y)};width:${px(w)};height:${px(hP)}`;
+  obr.append(plst);
+  const pil = el("div", "pilulka", "Potiahni kartu na stôl alebo klikni na <b>+</b> na konci línie, alebo pasuj do Pitky (cigareta za nevyloženú kartu). Ďalšia karta v ťahu stojí plný poldeci.");
+  pil.style.top = px(y - 14); obr.append(pil);
+  const posuv = el("div", "posuv");
+  posuv.style.cssText = `left:${px(x + 2)};top:${px(y + 24)};width:${px(w - 4)};height:${px(hP - 54)}`;
+  const L = linia({ h: cfg.h, rez: cfg.rez, karty: K.map((_, i) => i), dostupna: w - 4, duchPriestor: !!cfg.duch });
+  posuv.append(L.stopa);
+  obr.append(posuv);
+  const hr = el("div", "hrana");
+  hr.style.cssText = `left:${px(x + 16)};top:${px(y + hP - 27)};width:${px(w - 32)};justify-content:space-between`;
+  hr.innerHTML = `<div class="pivnica"><span>0<small style="font-size:.6em;opacity:.7">/4</small></span>PIVNICA</div><div style="display:flex;gap:12px;align-items:center"><div class="zaverecna">−1 → záverečná</div><div class="pasovat">PASOVAŤ → +2</div></div>`;
+  obr.append(hr);
+  if (cfg.pruhy) pruhy(obr, cfg.pruhy);
+  const skala = () => parseFloat(obr.dataset.s || "1");
+  const ov = ovladaniePosunu(obr, posuv, L, [x, y + 24, w, hP - 24]);
+  if (cfg.rez === "skratena") bublina(obr, posuv, skala);
+  if (cfg.duch) {
+    O.ruka.forEach(([rx, ry, rw, rh], i) => {
+      const kluc = PORADIE_RUKY[i];
+      const z = el("div", "zona"); z.style.cssText = `left:${px(rx)};top:${px(ry)};width:${px(rw)};height:${px(rh)}`;
+      z.tabIndex = 0; z.setAttribute("role", "button"); z.setAttribute("aria-label", `Duch: ${RUKA[kluc].meno}`);
+      if (RUKA[kluc].nedasa) { const n = el("div", "nedasa ma", "Sem sa nedá vyložiť"); z.append(n); }
+      const zap = () => {
+        obr.querySelectorAll(".zona").forEach((q) => q.classList.toggle("akt", q === z));
+        const pred = L.mL.offsetWidth;
+        zobrazDucha(L, kluc, "g1");
+        posuv.style.scrollBehavior = "auto";
+        posuv.scrollLeft += L.mL.offsetWidth - pred;
+        posuv.style.scrollBehavior = "";
+        ov.obnov();
+      };
+      const vyp = () => {
+        z.classList.remove("akt");
+        const pred = L.mL.offsetWidth;
+        zobrazDucha(L, null);
+        posuv.style.scrollBehavior = "auto";
+        posuv.scrollLeft += L.mL.offsetWidth - pred;
+        posuv.style.scrollBehavior = "";
+        ov.obnov();
+      };
+      z.addEventListener("pointerenter", zap); z.addEventListener("focus", zap);
+      z.addEventListener("pointerleave", vyp); z.addEventListener("blur", vyp);
+      obr.append(z);
+    });
+  }
+  const sirkaStopy = L.stopa.scrollWidth;
+  const info = ram.parentElement.querySelector("[data-rozmer]");
+  if (info) {
+    const kw2 = Math.round(cfg.h * 54 / 80), vid = cfg.rez === "skratena" ? Math.round(cfg.h * (1 - BIELA)) : cfg.h;
+    info.textContent = `karta ${kw2} × ${vid} px · línia ${sirkaStopy} px na ${w - 4} px stola${sirkaStopy > w - 4 ? " → posun" : " → vojde sa"}`;
+  }
+  mierka(ram);
+  requestAnimationFrame(() => { ov.naLokalitu(false); ov.obnov(); });
+}
+
+/* ---------- ukážka duchov (len konce línie) ---------- */
+function postavDuchov(ram, styl) {
+  ram.innerHTML = "";
+  const W = 1180;
+  const obr = el("div", "obrazovka"); obr.style.width = px(W); obr.style.background = "var(--pozadie)";
+  ram.append(obr);
+  const demo = el("div", "gdemo"); obr.append(demo);
+  const gp = el("div", "gplst"); demo.append(gp);
+  const L = linia({ h: 230, rez: "plna", karty: [0, 1, "skok", 8, 9] });
+  L.stopa.style.margin = "0 auto";
+  gp.append(L.stopa);
+  const ruka = el("div", "gruka"); demo.append(ruka);
+  const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg"); svg.setAttribute("class", "gsvg"); demo.append(svg);
+  const tlacidla = {};
+  let predvolena = "degustatorka";
+  const ukaz = (kluc) => {
+    Object.entries(tlacidla).forEach(([k, b]) => { b.classList.toggle("akt", k === kluc); b.setAttribute("aria-pressed", String(k === kluc)); b.querySelectorAll(".krh").forEach((x) => x.remove()); });
+    zobrazDucha(L, kluc, styl);
+    svg.innerHTML = "";
+    const d = RUKA[kluc];
+    if (styl === "g2" && !d.nedasa) {
+      const b = tlacidla[kluc];
+      // akcie na hranách karty v ruke, ktoré sa spoja (ľavá hrana → pravý koniec, pravá → ľavý)
+      d.vpravo.forEach((i) => krh(b, X_L, RIADKY[i] * 175, 18, false));
+      d.vlavo.forEach((i) => krh(b, X_P, RIADKY[i] * 175, 18, false));
+      const s = parseFloat(obr.dataset.s || "1");
+      const dr = demo.getBoundingClientRect(), br = b.getBoundingClientRect();
+      for (const [m, pary] of [[L.mL, d.vlavo], [L.mP, d.vpravo]]) {
+        const mr = m.getBoundingClientRect();
+        const x1 = (br.left + br.width / 2 - dr.left) / s, y1 = (br.top - dr.top) / s;
+        const x2 = (mr.left + mr.width / 2 - dr.left) / s, y2 = (mr.bottom - dr.top) / s + 4;
+        const farba = pary.length ? "#7dff9c" : "#6b645a";
+        const p = document.createElementNS("http://www.w3.org/2000/svg", "path");
+        p.setAttribute("d", `M${x1},${y1} C${x1},${y1 - 60} ${x2},${y2 + 70} ${x2},${y2}`);
+        p.setAttribute("fill", "none"); p.setAttribute("stroke", farba); p.setAttribute("stroke-width", pary.length ? "3" : "2");
+        p.setAttribute("stroke-dasharray", pary.length ? "0" : "6 6"); p.setAttribute("opacity", pary.length ? ".9" : ".6");
+        const hrot = document.createElementNS("http://www.w3.org/2000/svg", "path");
+        hrot.setAttribute("d", `M${x2 - 7},${y2 + 10} L${x2},${y2} L${x2 + 7},${y2 + 10}`);
+        hrot.setAttribute("fill", "none"); hrot.setAttribute("stroke", farba); hrot.setAttribute("stroke-width", "3");
+        svg.append(p, hrot);
+      }
+    }
+    if (d.nedasa) {
+      const n = el("div", "cip bez", "Cirhóza: sem sa nedá vyložiť");
+      n.style.cssText = "position:absolute;left:50%;top:8px;transform:translateX(-50%)";
+      n.dataset.docasne = "1"; gp.append(n);
+    } else gp.querySelectorAll("[data-docasne]").forEach((x) => x.remove());
+  };
+  for (const kluc of PORADIE_RUKY) {
+    const d = RUKA[kluc];
+    const b = el("button", "rk"); b.type = "button"; b.setAttribute("aria-label", d.meno); b.setAttribute("aria-pressed", "false");
+    const im = el("img"); im.src = IMG + d.img; im.alt = ""; b.append(im);
+    b.addEventListener("pointerenter", (e) => { if (e.pointerType === "mouse") ukaz(kluc); });
+    b.addEventListener("pointerleave", (e) => { if (e.pointerType === "mouse") ukaz(predvolena); });
+    b.addEventListener("click", () => { predvolena = kluc; ukaz(kluc); });
+    b.addEventListener("focus", () => ukaz(kluc));
+    tlacidla[kluc] = b; ruka.append(b);
+  }
+  obr.style.height = "auto";
+  mierka(ram);
+  requestAnimationFrame(() => { mierka(ram); ukaz(predvolena); });
+  ram._prekresli = () => ukaz(predvolena);
+}
+
+/* ---------- mierka rámu ---------- */
+function mierka(ram) {
+  const obr = ram.querySelector(".obrazovka"); if (!obr) return;
+  const W = parseFloat(obr.style.width);
+  const H = obr.style.height === "auto" ? obr.scrollHeight : parseFloat(obr.style.height);
+  const s = ram.classList.contains("plna") ? 1 : Math.min(1, ram.clientWidth / W);
+  obr.style.transform = s === 1 ? "none" : `scale(${s})`;
+  obr.dataset.s = String(s);
+  ram.style.height = ram.classList.contains("plna") ? `min(92vh, ${H + 2}px)` : px(H * s);
+}
+
+/* ---------- prepojenie ---------- */
+document.querySelectorAll("section.var").forEach((sec) => {
+  const ram = sec.querySelector(".ram[data-var]");
+  if (!ram) return;
+  let r = "nb";
+  const v = ram.dataset.var;
+  postavObrazovku(ram, v, r);
+  sec.querySelectorAll(".prepinac button").forEach((b) => b.addEventListener("click", () => {
+    r = b.dataset.r;
+    sec.querySelectorAll(".prepinac button").forEach((q) => q.setAttribute("aria-pressed", String(q === b)));
+    postavObrazovku(ram, v, r);
+  }));
+  const pl = sec.querySelector("[data-plna]");
+  pl.addEventListener("click", () => {
+    ram.classList.toggle("plna");
+    pl.textContent = ram.classList.contains("plna") ? "Zmenšiť na šírku" : "Skutočná veľkosť";
+    mierka(ram);
+  });
+});
+document.querySelectorAll(".ram[data-duch]").forEach((ram) => postavDuchov(ram, ram.dataset.duch));
+const ro = new ResizeObserver((zaznamy) => zaznamy.forEach((z) => { mierka(z.target); z.target._prekresli?.(); }));
+document.querySelectorAll(".ram").forEach((r) => ro.observe(r));
+
+/* audit filter */
+document.querySelectorAll(".filtre button").forEach((b) => b.addEventListener("click", () => {
+  document.querySelectorAll(".filtre button").forEach((q) => q.setAttribute("aria-pressed", String(q === b)));
+  document.querySelectorAll("#audit-tab tbody tr").forEach((tr) => { tr.hidden = b.dataset.f !== "vsetko" && tr.dataset.z !== b.dataset.f; });
+}));
+})();
+</script>
+</body>
+</html>
