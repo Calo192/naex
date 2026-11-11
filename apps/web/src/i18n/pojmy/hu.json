@@ -23,7 +23,7 @@
     "pojem": "Akció",
     "popis": "Szimbólum a kártya élén; csak akkor érvényes, ha a kötésben a szomszéd ugyanolyan magasságú akciójával találkozik.",
     "kratko": "Ikon a kártya szélén. Csak akkor érvényes, ha a kötésben hozzáér a szomszéd kártya ugyanolyan magasan lévő ikonjához.",
-    "tvary": "akció, akciót, akciók, akciókat, akcióval, akciókkal, akciója, akciói, akcióit, akcióját, akciónak, akcióra, akcióért, akcióknál, akciókért",
+    "tvary": "akció, akciót, akciók, akciókat, akcióval, akciókkal, akciója, akciói, akcióit, akcióját, akciónak, akcióra, akcióért, akcióknál, akciókért, akcióim, akcióid, akcióidat, akcióinak",
     "sk": {
       "pojem": "Akcia",
       "popis": "Symbol na hrane karty; platí, len keď sa na spoji stretne s akciou suseda v rovnakej výške.",
@@ -43,7 +43,7 @@
     "pojem": "Verekedés",
     "popis": "A kör vége: a több kemény sebzés nyer és csikkeket kap, az elöljárók pontoznak, a győztes az Elpáholást a félelmére osztja el, a veszekedés győztese pedig a veszekedést a pletykájára az ellenfél hőmérőin.",
     "kratko": "A kör vége: összeadják a helyszín melletti kártyák ütéseit. Akinek több van, nyert, és minden kártyáért a sorban kap egy csikket.",
-    "tvary": "verekedés, verekedést, verekedések, verekedéseket, verekedésben, verekedésre, verekedésért, verekedésnél, verekedéssel, verekedésből, verekedésig, verekedései",
+    "tvary": "verekedés, verekedést, verekedések, verekedéseket, verekedésben, verekedésre, verekedésért, verekedésnél, verekedéssel, verekedésből, verekedésig, verekedései, verekedése, verekedésekben",
     "sk": {
       "pojem": "Bitka",
       "popis": "Koniec kola: viac tuhého poškodenia vyhráva a dostane špaky, starší bodujú, víťaz rozdelí Nakladačku na svoj strach a víťaz hádky hádku na svoje reči na teplomeroch súpera.",
@@ -55,7 +55,7 @@
     "pojem": "Cigaretta",
     "popis": "A játék pénze: ezzel fizetsz a kínálat kártyáiért, az Örökségért, a Szerszám alárakásáért, az újratöltésért, a csereberéért és a Záróráért; rágyújtással az Ivászaton rögtön egy extra kártya (1, 2, 3… cigaretta; a Benzinkúton az első ingyen). Verekedés után a vesztes 1-et kap, az ellenfél pedig sarcot fizet. A játék végén minden 5 cigaretta 1 csikk.",
     "kratko": "A játék aprópénze. Ezzel fizetsz a kínálat kártyáiért és a rágyújtásért az Ivászaton; a ki nem játszott kártyáidért kapsz belőle.",
-    "tvary": "cigaretta, cigarettát, cigaretták, cigarettákat, cigarettáért, cigarettákért, cigarettával, cigarettákkal, cigarettád, cigarettádat, cigarettája, cigarettáid, cigarettánként",
+    "tvary": "cigaretta, cigarettát, cigaretták, cigarettákat, cigarettáért, cigarettákért, cigarettával, cigarettákkal, cigarettád, cigarettádat, cigarettája, cigarettáid, cigarettánként, cigarettám, cigarettába, cigarettákra, cigarettáidra, cigarettájához, cigarettáról",
     "sk": {
       "pojem": "Cigareta",
       "popis": "Mena hry: platí karty z ponuky, Dedičstvo, podloženie Nástroja, doliatie, barter a Záverečnú; fajčením v Pitke hneď karta navyše (1, 2, 3… cigarety; na Benzínke prvá zadarmo). Po bitke dostane porazený 1 a súper platí výpalné. Na konci hry každých 5 cigariet 1 špak.",
@@ -267,7 +267,7 @@
     "pojem": "Sor",
     "popis": "A kör kártyáinak teljes sora; a középen álló helyszín két szárnyra osztja (a döntőben is, ahol középen a csúcshelyszín áll).",
     "kratko": "Kártyasor a helyszín mellett. A kártyát bármelyik végére teheted; a szomszéd kártyák a kötésekben érnek össze.",
-    "tvary": "sor, sort, sorba, sorban, sorból, sorhoz, sornak, sorát, sorok",
+    "tvary": "sor, sort, sorba, sorban, sorból, sorhoz, sornak, sorát, sorok, sorában",
     "sk": {
       "pojem": "Línia",
       "popis": "Celý rad kariet v kole; lokalita v strede ho delí na dva kraje (aj vo finále, kde je v strede pinnacle).",
@@ -279,7 +279,7 @@
     "pojem": "Helyszín",
     "popis": "Kártya a sor közepén, amelyért a körben verekednek; a hatása abban a körben érvényes.",
     "kratko": "Hely a faluban, amelyért a körben verekedtek. Az asztal közepén fekszik, a kártyák mellé kerülnek.",
-    "tvary": "helyszín, helyszínt, helyszínek, helyszíneket, helyszínen, helyszínért, helyszínnél, helyszínhez, helyszínre, helyszínről, helyszínnek, helyszíne",
+    "tvary": "helyszín, helyszínt, helyszínek, helyszíneket, helyszínen, helyszínért, helyszínnél, helyszínhez, helyszínre, helyszínről, helyszínnek, helyszíne, helyszínnel",
     "sk": {
       "pojem": "Lokalita",
       "popis": "Karta v strede línie, o ktorú sa v kole bije; jej efekt platí v tom kole.",
@@ -463,7 +463,7 @@
     "pojem": "Ivászat",
     "popis": "Kiértékelés a Gyűlés után: NA EX, Adósságok, máj, cigaretták; egy körben 1–4 Ivászat van (a döntőben a csúcshelyszínen 1–5).",
     "kratko": "A Gyűlés után iszunk: rágyújtasz, újratöltesz, és titokban NA EX-et adsz egy kártyára a sorban.",
-    "tvary": "Ivászat, Ivászatot, Ivászatok, Ivászaton, Ivászatban, Ivászatra, Ivászatig, Ivászatból, Ivászatkor, Ivászatai, Ivászatonként",
+    "tvary": "Ivászat, Ivászatot, Ivászatok, Ivászaton, Ivászatban, Ivászatra, Ivászatig, Ivászatból, Ivászatkor, Ivászatai, Ivászatonként, Ivászata",
     "sk": {
       "pojem": "Pitka",
       "popis": "Vyhodnotenie po Zhromaždení: NA EX, Dlhy, pečeň, cigarety; v jednom kole je 1 až 4 Pitiek (vo finále na pinnacle 1 až 5).",
@@ -491,7 +491,7 @@
     "pojem": "Feles",
     "popis": "Egy kupica pálinka; a teli 1-gyel növeli a korlátot, és ezzel fizetsz a NA EX-ért és a lépés következő kártyájáért is. A játék végén minden teli feles 1 csikk.",
     "kratko": "Egy kupica pálinka. Ahány teli feles van nálad, annyi kártyát játszol ki, plusz egyet. Egy teli felesért NA EX-et is adhatsz.",
-    "tvary": "feles, felest, felesek, feleseket, felessel, felesért, felesed, feleseid, felese, felesét",
+    "tvary": "feles, felest, felesek, feleseket, felessel, felesért, felesed, feleseid, felese, felesét, felesbe",
     "sk": {
       "pojem": "Poldeci",
       "popis": "Pohárik pálenky; plný zvyšuje limit o 1 a platí ním NA EX aj ďalšiu kartu v ťahu. Plný na konci hry je 1 špak.",
@@ -567,7 +567,7 @@
     "pojem": "Kínálat",
     "popis": "Megvehető kártyák képpel felfelé; 1 kártyát vesztek 1 cigarettáért, vagy 2-t 3-ért.",
     "kratko": "Megvehető kártyák, képpel felfelé. Egy egy cigaretta, kettő három cigaretta. Felváltva vesztek, amíg mindketten abba nem hagyjátok.",
-    "tvary": "kínálat, kínálatot, kínálatból, kínálatban, kínálatba, kínálatnak, kínálathoz",
+    "tvary": "kínálat, kínálatot, kínálatból, kínálatban, kínálatba, kínálatnak, kínálathoz, kínálatnál",
     "sk": {
       "pojem": "Ponuka",
       "popis": "Karty na kúpu lícom nahor; beriete z nej 1 kartu za 1 cigaretu alebo 2 za 3.",
@@ -599,7 +599,7 @@
     "pojem": "Elöljárók",
     "popis": "A falu tekintélyes emberei; minden játékosnak saját 0–3-as hőmérője van mindegyiknél — a saját félelme, rajta az ellenfél pletykája. Verekedés után csikket és kegyet ad annak, akitől kevésbé fél.",
     "kratko": "A falu nagyjai — a Plébános, a Polgármester és társaik. Aki fél tőled, csikkel fizet neked, ha megnyered a verekedést; minél jobban fél, annál többel.",
-    "tvary": "elöljáró, elöljárót, elöljárók, elöljárókat, elöljárónál, elöljáróknál, elöljárónak, elöljáróknak, elöljárótól, elöljáróktól, elöljáróért, elöljárója, elöljárói, elöljáróid, elöljáróidat",
+    "tvary": "elöljáró, elöljárót, elöljárók, elöljárókat, elöljárónál, elöljáróknál, elöljárónak, elöljáróknak, elöljárótól, elöljáróktól, elöljáróért, elöljárója, elöljárói, elöljáróid, elöljáróidat, elöljáróra, elöljáródat",
     "sk": {
       "pojem": "Starší",
       "popis": "Vážená osoba dediny; každý hráč má pri ňom svoj teplomer 0–3 — svoj strach a na ňom súperove reči. Po bitke dáva špaky a priazeň tomu, koho sa bojí menej.",
@@ -619,7 +619,7 @@
     "pojem": "Félelem",
     "popis": "A játékos jelölője az elöljárónál, 0–3 (a hőmérő teli része) — mennyire fél tőled; az Elpáholás emeli, és nem csökken. Csak a félelem számít bele a kegybe, a félelemmel nyert győzelembe és az elfogásba.",
     "kratko": "Mennyire fél tőled az elöljáró — a mellette lévő hőmérő. A megnyert verekedés emeli; nagyobb félelem, több csikk.",
-    "tvary": "félelem, félelmet, félelme, félelmed, félelmét, félelmedet, félelemmel, félelmen, félelemre, félelemből",
+    "tvary": "félelem, félelmet, félelme, félelmed, félelmét, félelmedet, félelemmel, félelmen, félelemre, félelemből, félelemnek, félelemért",
     "sk": {
       "pojem": "Strach",
       "popis": "Marker hráča pri staršom 0–3 (plná časť teplomera) — ako veľmi sa ťa bojí; dvíha ho Nakladačka a neklesá. Len strach sa ráta do priazne, výhry strachom a zajatia.",
@@ -631,7 +631,7 @@
     "pojem": "Csikk",
     "popis": "Győzelmi pont: a megnyert verekedésért (1 minden kártyáért a sorban), az elöljáróktól minden verekedés után (a győztes a félelemért a foglalt fokok nélkül, mindketten a pletykáért); a végén a megmaradt teli felesekért és cigarettákért is (beváltás); a döntő után az nyer, akinek több van.",
     "kratko": "Cigarettavég, és egyben pont. A végén az nyer, akinek több csikkje van. A megnyert verekedés és a tőled félő elöljárók adják.",
-    "tvary": "csikk, csikket, csikkek, csikkeket, csikkre, csikkel, csikkért, csikkje, csikkjei, csikked, csikkeid",
+    "tvary": "csikk, csikket, csikkek, csikkeket, csikkre, csikkel, csikkért, csikkje, csikkjei, csikked, csikkeid, csikkbe, csikkekbe, csikkedbe, csikkjeid, csikkjeidért",
     "sk": {
       "pojem": "Špak",
       "popis": "Víťazný bod: za vyhratú bitku (1 za každú kartu v línii), od starších po každej bitke (víťaz za strach bez obsadených stupňov, obaja za reči); na konci aj za zvyšné plné poldeci a cigarety (výkupné); po finále vyhrá, kto má viac.",
@@ -651,7 +651,7 @@
     "pojem": "Ütések",
     "popis": "A Pofon (1), a Gyomros (2) és a Fejes (3) akció; a szabályokban kemény sebzés. A verekedésben a kötésekben lévőket adják össze — akinek több van, nyer.",
     "kratko": "A Pofon, a Gyomros és a Fejes — 1, 2 és 3. A verekedést az nyeri, akinek több ütése van a kötésekben.",
-    "tvary": "ütés, ütést, ütések, ütéseket, ütése, ütései, ütésből, ütésekből, ütéssel, ütésekkel, ütésért",
+    "tvary": "ütés, ütést, ütések, ütéseket, ütése, ütései, ütésből, ütésekből, ütéssel, ütésekkel, ütésért, ütésed, ütéseid, ütéseimért",
     "sk": {
       "pojem": "Údery",
       "popis": "Akcie Rana (1), Pecka (2) a Petelica (3); v pravidlách tuhé poškodenie. V bitke sa sčítajú tie v spojoch — kto má viac, vyhrá.",
