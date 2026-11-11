@@ -65,9 +65,10 @@
 //                  pečiatky nad súhrnom; inak padajú momenty, ktoré vyberie jadro ako na serveri
 //   &exekutor=1    hráčovi ?ja v prvej Pitke pridá 10 priznaných Dlhov (bar ukáže exekúciu v bitke)
 //                  (voľba Záhradkára pri exekúcii)
-//   &stop=stavy    Pitka, línia s pečiatkami stavov (Michal 2026-11-11): u hráča ?ja Vzbura (Vidly), Výtržník
-//                  (Injekcia) a Záverečná so súperovým NA EX; u súpera zrážka NA EX (NA EX + Výtržník), Forsáž (Energeťák)
-//                  a NA EX so Vzburou; sada dostane hrany Nástrojov ako pri stop=naradie — snímky s &bot=0
+//   &stop=stavy    Pitka od kola &i=k, línia s pečiatkami stavov (Michal 2026-11-11): u hráča ?ja Vzbura (Vidly),
+//                  Výtržník (Injekcia) a súperovo NA EX; u súpera zrážka NA EX (2× NA EX + Výtržník), Forsáž (Energeťák)
+//                  a moje NA EX so Vzburou; v ruke Cirhóza; &remiza=1 zmení poslednú bitku nástenky na remízu;
+//                  sada dostane hrany Nástrojov ako pri stop=naradie — snímky s &bot=0
 //   &stop=autopas  ťah, po ktorom hra za hráča ?ja pasuje (nemá čo vyložiť) a súper vykladá ďalej —
 //                  po načítaní sa dohrá, stôl ukáže okno „Pasuješ“ s dôvodmi (&i=k: k-tý taký, od 0);
 //                  &kto=super: pasuje súper — hráč ?ja vidí pečiatku „nemá čo vyložiť“
@@ -271,8 +272,10 @@ function sBzdochou(data: GameData, s: GameState, p: PlayerId, caka = false): Gam
 /**
  * Línia so všetkými pečiatkami stavov naraz (stop=stavy): Nástroje s kartovou hranou hore dajú
  * Vzburu (Vidly), Výtržníka (Injekcia) a Forsáž (Energeťák) bez hľadania spojov, ktoré by ich dali.
+ * Moje NA EX (Vandal) a súperovo (Policajtka) v ich farbách, zrážka s tromi pečiatkami (Strýko),
+ * v ruke Cirhóza bez jamiek; remiza = posledná bitka na nástenke sa na ukážku zmení na remízu.
  */
-function sPeciatkamiStavov(s: GameState, p: PlayerId): GameState {
+function sPeciatkamiStavov(s: GameState, p: PlayerId, remiza: boolean): GameState {
   let uid = s.nextUid;
   const su = opponentOf(p);
   const k = (defId: string): CardInstance => ({ uid: uid++, defId, leftLayout: 0, rightLayout: 0 });
@@ -281,15 +284,17 @@ function sPeciatkamiStavov(s: GameState, p: PlayerId): GameState {
   strany[p] = [
     { card: k("pijan"), playedBy: p, podlozene: pod("vidly", p) },
     { card: k("masiar"), playedBy: p, podlozene: pod("lievik", p) },
-    // Záverečná na kraji so súperovým NA EX — tri pečiatky na jednej karte.
-    { card: k("policajtka"), playedBy: p, naexBy: su, zaverecna: true },
+    { card: k("policajtka"), playedBy: p, naexBy: su },
   ];
   strany[su] = [
     { card: k("stryko_z_ameriky"), playedBy: su, naexBy: p, naexBy2: su, vytrznik: true },
     { card: k("pijan"), playedBy: su, podlozene: pod("energetak", su) },
     { card: k("vandal"), playedBy: su, naexBy: p, podlozene: pod("vidly", su) },
   ];
-  return { ...s, nextUid: uid, strany };
+  const h = { ...s.hraci[p], ruka: [...s.hraci[p].ruka, k("cirhoza")] };
+  const posledna = s.nastenka.at(-1);
+  const nastenka = remiza && posledna !== undefined ? [...s.nastenka.slice(0, -1), { ...posledna, vitaz: null }] : s.nastenka;
+  return { ...s, nextUid: uid, strany, nastenka, hraci: p === 0 ? [h, s.hraci[1]] : [s.hraci[0], h] };
 }
 
 /** Hráčovi p dá do ruky Nástroj a cigarety aspoň na Dedičstvo — stôl ukáže voľbu „odkazujem“. */
@@ -622,8 +627,8 @@ function odohrajSeed(data: GameData, seed: number): { readonly odohrane: Odohran
       return najdene({ zaciatok: s, dohraj: [] });
     if (stop === "pitka" && s.kolo >= 2 && s.faza === "pitka" && mozeHrat(s, ja) && s.pitkaStav?.hotovy[opponentOf(ja)] === false && s.pitkaStav.reakcia === null && s.vizia === null && s.hraci[ja].cigarety >= 1)
       return najdene({ zaciatok: s, dohraj: [] });
-    if (stop === "stavy" && s.faza === "pitka" && s.pitkaStav?.reakcia === null && s.vizia === null)
-      return najdene({ zaciatok: sPeciatkamiStavov(s, ja), dohraj: [] });
+    if (stop === "stavy" && s.kolo >= Math.max(1, i) && s.faza === "pitka" && s.pitkaStav?.reakcia === null && s.vizia === null)
+      return najdene({ zaciatok: sPeciatkamiStavov(s, ja, p.get("remiza") === "1"), dohraj: [] });
     if (stop === "odpoved" && s.faza === "pitka" && s.vizia === null && s.pitkaStav?.reakcia === ja)
       return najdene({ zaciatok: s, dohraj: [] });
     if (stop === "kseft" && s.faza === "pitka" && s.ciel?.lokalita != null && mozeHrat(s, ja) && s.pitkaStav?.reakcia === null && !s.pitkaStav.hotovy[ja] && s.vizia === null) {

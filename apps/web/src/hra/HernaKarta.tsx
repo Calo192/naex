@@ -8,7 +8,7 @@
 
 import { createContext, useContext } from "react";
 import type { CardInstance, CardLineEval, ClientState, GameData, KtoraHrana, NavyseStav, PlayerId, PodlozenyNastroj } from "@naex/core";
-import { akciaVytrznika, defOf, efektyNavyse, menoAkcie, printedSides, stavNavyseVRuke, ucinkyNastrojov } from "@naex/core";
+import { akciaVytrznika, cieleVykladania, defOf, efektyNavyse, menoAkcie, printedSides, stavNavyseVRuke, ucinkyNastrojov } from "@naex/core";
 import type { KartaNavrh, RozlozenieStrany, Sada } from "@naex/tvorba";
 import { PREDVOLENE_NASTAVENIA } from "@naex/tvorba";
 import { KartaLico, type NavyseNaKarte, type PreskolenieNaKarte, type RohSlotu, type SlotStav, type ZarNaKarte } from "../karta/KartaLico.tsx";
@@ -120,26 +120,23 @@ export interface HernaKartaProps {
   readonly aktivnaHrana?: KtoraHrana | undefined;
   /** NA EX na karte v línii — pečiatka cez ilustráciu, aj v lupe. */
   readonly naex?: NaexNaKarte | undefined;
-  /** Stavy z línie, ktoré karta sama nevie (Výtržník s menom, Záverečná) — pečiatky pod NA EX. */
+  /** Stavy z línie, ktoré karta sama nevie (Výtržník s menom, VYHRAL! na lokalite) — pečiatky medzi NA EX. */
   readonly stavy?: readonly StavNaKarte[] | undefined;
   /** Komu sú Rany Výtržníka („teba“ či meno) — riadok pod pečiatkou VÝTRŽNÍK!. */
   readonly komuRany?: string | undefined;
 }
 
 /**
- * Pečiatky stavov karty: z línie (zLinie) a z vyhodnotenia — Vzbura, Forsáž, NA EX zahasené
- * Odporom či posilnené Posilnením (pri Výtržníkovi nie, ten má akcie prepísané na Rany).
- * Záverečná je stav karty, nie toho, čo robí — ide posledná.
+ * Pečiatky stavov karty: z línie (zLinie — Výtržník s menom, VYHRAL! na lokalite) a z vyhodnotenia —
+ * Vzbura, Forsáž. NA EX zahasené či posilnené a Záverečná pečiatku nemajú (Michal 2026-11-11:
+ * „Zahasené, Posilnené a Záverečná rušíme“).
  */
 export function stavyKarty(ev: CardLineEval | null | undefined, vytrznik: boolean, zLinie: readonly StavNaKarte[] = []): StavNaKarte[] {
-  const zaverecna = (s: StavNaKarte): boolean => s.druh === "zaverecna" || s.druh === "odpoved";
-  const out: StavNaKarte[] = zLinie.filter((s) => !zaverecna(s));
+  const out: StavNaKarte[] = [...zLinie];
   if (vytrznik && !out.some((s) => s.druh === "vytrznik")) out.push({ druh: "vytrznik", text: t("peciatka.vytrznik"), titul: t("peciatka.vytrznik") });
-  if (!vytrznik && ev?.naexStit === "Odpor") out.push({ druh: "zahasene", text: t("peciatka.zahasene"), pod: "NA EX", titul: t("plocha.odporTitul") });
-  if (!vytrznik && ev?.naexStit === "Posilnenie") out.push({ druh: "posilnene", text: t("peciatka.posilnene"), pod: "NA EX", titul: t("plocha.posilnenieTitul") });
   if (ev?.vzbura === true) out.push({ druh: "vzbura", text: t("peciatka.vzbura"), titul: t("peciatka.vzburaTitul") });
   if (ev?.forsaz === true) out.push({ druh: "forsaz", text: t("peciatka.forsaz"), titul: t("peciatka.forsazTitul") });
-  return [...out, ...zLinie.filter(zaverecna)];
+  return out;
 }
 
 /**
@@ -174,6 +171,17 @@ export function vytrznikNaKarte(data: GameData, zrazka: boolean, podlozene: read
         ? t("plocha.vytrznikTitul", { koho: komuRany })
         : t("peciatka.vytrznikNastrojTitul", { nastroj: nazovKarty(data.cards.get(injekcia.card.defId)?.name ?? injekcia.card.defId), koho: komuRany });
   return { druh: "vytrznik", text: t("peciatka.vytrznik"), pod: komuRany === undefined ? undefined : t("peciatka.ranyPre", { koho: komuRany }), titul };
+}
+
+/**
+ * Karty, ktoré sa na stôl nehrajú (kliatba, ktorá nie je Občan, Absťák), nemajú jamky na prázdnych
+ * indexoch (Michal 2026-11-11: „nemusia mať dierky“). Pravidlo vykladania je len v jadre
+ * (cieleVykladania) — tu sa pýta na prázdnej línii s voľným limitom. Nástroj ostáva, ako je:
+ * jeho hrany kreslí karta inak a jamky mu nedáva už KartaLico.
+ */
+export function bezJamiek(data: GameData, karta: CardInstance): boolean {
+  if (defOf(data, karta).tags.includes("Nástroj")) return false;
+  return !cieleVykladania(data, [[], []], 0, karta, 1).some((c) => c === "vlastna" || c === "superova");
 }
 
 export function HernaKarta({ karta, sada, data, sirka, otocena = false, eval: ev, onClick, vybrana, bezPopisov, hranaVnutorna, spoj, jamky, vytrznik = false, stlacena, zakazana, podlozene, aktivnaHrana, naex, stavy: stavyZLinie, komuRany }: HernaKartaProps) {
@@ -300,7 +308,7 @@ export function HernaKarta({ karta, sada, data, sirka, otocena = false, eval: ev
       bezPopisov={bezPopisov ?? false}
       slotyBezFokusu
       spoj={spoj === undefined ? undefined : { lava: spoj.left, prava: spoj.right }}
-      jamky={jamky === undefined ? undefined : { lava: jamky.left, prava: jamky.right }}
+      jamky={jamky === undefined || bezJamiek(data, karta) ? undefined : { lava: jamky.left, prava: jamky.right }}
       idKarty={karta.defId}
       uidKarty={karta.uid}
     />

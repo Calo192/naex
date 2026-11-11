@@ -1,19 +1,20 @@
 // Stavy karty v línii sú pečiatky cez ilustráciu ako NA EX! (Michal 2026-11-11: „nech to majú cez
-// karty nalepené pečiatkou podobne ako NA EX, nie ako teraz malým nápisom nad kartou“).
+// karty nalepené pečiatkou podobne ako NA EX, nie ako teraz malým nápisom nad kartou“). Zahasené,
+// Posilnené a Záverečná pečiatku nemajú; VYHRAL! / REMÍZA leží na lokalite po bitke.
 
 import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it } from "vitest";
-import type { CardLineEval } from "@naex/core";
+import type { BitkaNaNastenke, CardInstance, CardLineEval } from "@naex/core";
 import { loadGameData } from "@naex/core";
 import cardsJson from "../../../packages/core/data/cards.json";
 import eldersJson from "../../../packages/core/data/elders.json";
 import scorecardsJson from "../../../packages/core/data/scorecards.json";
-import { stavyKarty, vytrznikNaKarte } from "../src/hra/HernaKarta.tsx";
+import { bezJamiek, stavyKarty, vytrznikNaKarte } from "../src/hra/HernaKarta.tsx";
 import { naexNaKarte, PeciatkyKarty, type StavNaKarte } from "../src/hra/PeciatkaNaex.tsx";
+import { peciatkaVysledku } from "../src/hra/Spaky.tsx";
 
 const ev = (x: Partial<CardLineEval>): CardLineEval => ({ uid: 1, vzbura: false, forsaz: false, left: [], right: [], ...x });
-const zaverecna: StavNaKarte = { druh: "zaverecna", text: "ZÁVEREČNÁ", pod: "lícom dole", titul: "Tvoja Záverečná" };
 const vytrznik: StavNaKarte = { druh: "vytrznik", text: "VÝTRŽNÍK!", pod: "Rany pre teba", titul: "Zrážka NA EX" };
 
 describe("stavy karty ako pečiatky", () => {
@@ -26,10 +27,9 @@ describe("stavy karty ako pečiatky", () => {
     for (const x of s) expect(x.titul.length).toBeGreaterThan(20);
   });
 
-  it("NA EX zahasené Odporom a posilnené Posilnením — pri Výtržníkovi nie, ten má akcie prepísané na Rany", () => {
-    expect(stavyKarty(ev({ naexStit: "Odpor" }), false).map((x) => x.druh)).toEqual(["zahasene"]);
-    expect(stavyKarty(ev({ naexStit: "Posilnenie" }), false).map((x) => x.druh)).toEqual(["posilnene"]);
-    expect(stavyKarty(ev({ naexStit: "Odpor" }), true, [vytrznik]).map((x) => x.druh)).toEqual(["vytrznik"]);
+  it("NA EX zahasené Odporom či posilnené Posilnením pečiatku nemá (Michal 2026-11-11)", () => {
+    expect(stavyKarty(ev({ naexStit: "Odpor" }), false)).toEqual([]);
+    expect(stavyKarty(ev({ naexStit: "Posilnenie" }), false)).toEqual([]);
   });
 
   it("Výtržník z línie (s menom) má prednosť pred holým; bez neho karta Výtržníka doplní sama", () => {
@@ -37,21 +37,44 @@ describe("stavy karty ako pečiatky", () => {
     expect(stavyKarty(null, true).map((x) => [x.druh, x.pod])).toEqual([["vytrznik", undefined]]);
   });
 
-  it("Záverečná ide za stavy, ktoré menia akcie", () => {
-    expect(stavyKarty(ev({ vzbura: true }), true, [zaverecna, vytrznik]).map((x) => x.druh)).toEqual(["vytrznik", "vzbura", "zaverecna"]);
-  });
-
   it("karta bez stavu nemá pečiatku", () => {
     expect(stavyKarty(ev({}), false)).toEqual([]);
     expect(renderToStaticMarkup(createElement(PeciatkyKarty, { stavy: [] }))).toBe("");
   });
+});
 
-  it("NA EX + Výtržník: dve pečiatky pod sebou, NA EX navrchu, Výtržník s titulkom", () => {
-    const html = renderToStaticMarkup(createElement(PeciatkyKarty, { naex: { od: "obaja", kto: "obaja" }, stavy: [vytrznik] }));
-    expect(html).toContain('class="peciatky-karty peciatky-2"');
-    expect(html.indexOf("NA EX!")).toBeLessThan(html.indexOf("VÝTRŽNÍK!"));
-    expect(html).toContain('title="Zrážka NA EX"');
-    expect(html).toContain("stav-peciatka-vytrznik");
+describe("NA EX! vo farbe hráča, pri jeho strane, bez mena", () => {
+  const meno = (): string => "Fero";
+  const html = (naexBy: 0 | 1 | undefined, naexBy2: 0 | 1 | undefined, stavy: readonly StavNaKarte[] = []): string =>
+    renderToStaticMarkup(createElement(PeciatkyKarty, { naex: naexNaKarte({ naexBy, naexBy2, skryteMoje: false, skryteSupera: false }, 0, meno), stavy }));
+
+  it("moje NA EX je dole (bližšie ku mne) v mojej farbe, súperovo hore v jeho — meno na pečiatke nie je", () => {
+    const moje = html(0, undefined);
+    expect(moje).toMatch(/peciatky-hore"><\/span>/u);
+    expect(moje).toMatch(/peciatky-dole"><span class="naex-peciatka naex-peciatka-ja"/u);
+    const superovo = html(1, undefined);
+    expect(superovo).toMatch(/peciatky-hore"><span class="naex-peciatka naex-peciatka-su"/u);
+    expect(superovo).toMatch(/peciatky-dole"><\/span>/u);
+    // Meno je len pre čítačku, nie text pečiatky.
+    expect(superovo.replace(/<[^>]*>/gu, "")).toBe("NA EX!");
+    expect(superovo).toContain('aria-label="NA EX — Fero"');
+  });
+
+  it("zrážka: dve NA EX! (súperovo hore, moje dole) a VÝTRŽNÍK! medzi nimi — tri pečiatky", () => {
+    const h = html(0, 1, stavyKarty(null, true, [vytrznik]));
+    expect(h).toContain('class="peciatky-karty peciatky-3"');
+    expect(h.match(/NA EX!/gu)).toHaveLength(2);
+    expect(h.indexOf("naex-peciatka-su")).toBeLessThan(h.indexOf("VÝTRŽNÍK!"));
+    expect(h.indexOf("VÝTRŽNÍK!")).toBeLessThan(h.indexOf("naex-peciatka-ja"));
+    expect(h).toContain('title="Zrážka NA EX"');
+    expect(h).not.toContain("obaja");
+  });
+
+  it("skryté NA EX len obrysom, bez mena aj bez „skryto“ na pečiatke", () => {
+    const h = renderToStaticMarkup(createElement(PeciatkyKarty, { naex: naexNaKarte({ naexBy: undefined, naexBy2: undefined, skryteMoje: true, skryteSupera: false }, 0, meno), stavy: [] }));
+    expect(h).toContain("naex-peciatka-ja naex-peciatka-skryto");
+    expect(h.replace(/<[^>]*>/gu, "")).toBe("NA EX!");
+    expect(h).toContain("tvoj · skryto");
   });
 });
 
@@ -65,12 +88,11 @@ describe("Výtržník na karte: zrážka aj Injekcia pod kartou", () => {
     expect(s?.titul).toContain("Injekcia pod kartou");
   });
 
-  it("zrážka NA EX: titulok zrážky; NA EX! (obaja) navrchu a VÝTRŽNÍK! pod ním", () => {
+  it("zrážka NA EX: titulok zrážky a riadok, komu sú Rany", () => {
     const s = vytrznikNaKarte(data, true, undefined, "teba");
     expect(s?.titul).toContain("Zrážka NA EX");
     const html = renderToStaticMarkup(createElement(PeciatkyKarty, { naex: naexNaKarte({ naexBy: 0, naexBy2: 1, skryteMoje: false, skryteSupera: false }, 0, () => "Fero"), stavy: stavyKarty(null, true, s === null ? [] : [s]) }));
-    expect(html).toContain('class="peciatky-karty peciatky-2"');
-    expect(html).toContain("obaja");
+    expect(html).toContain('class="peciatky-karty peciatky-3"');
     expect(html).toContain("Rany pre teba");
   });
 
@@ -78,9 +100,47 @@ describe("Výtržník na karte: zrážka aj Injekcia pod kartou", () => {
     expect(vytrznikNaKarte(data, false, [{ ...injekcia, hrana: "dolna" }], "Fero")).toBeNull();
     expect(vytrznikNaKarte(data, false, undefined, "Fero")).toBeNull();
   });
+});
 
-  it("texty pod NA EX! idú cez preklad (tvoj, obaja, skryto)", () => {
-    const html = renderToStaticMarkup(createElement(PeciatkyKarty, { naex: naexNaKarte({ naexBy: undefined, naexBy2: undefined, skryteMoje: true, skryteSupera: false }, 0, () => "Fero"), stavy: [] }));
-    expect(html).toContain("tvoj · skryto");
+describe("jamky len na kartách, ktoré idú do línie (Michal 2026-11-11: „nemusia mať dierky“)", () => {
+  const data = loadGameData(cardsJson, eldersJson, scorecardsJson);
+  const k = (defId: string): CardInstance => ({ uid: 1, defId, leftLayout: 0, rightLayout: 0 });
+
+  it("Cirhóza a Absťák jamky nemajú, Občan áno, Nástroj ostáva, ako je", () => {
+    expect(bezJamiek(data, k("cirhoza"))).toBe(true);
+    expect(bezJamiek(data, k("abstak"))).toBe(true);
+    expect(bezJamiek(data, k("pijan"))).toBe(false);
+    expect(bezJamiek(data, k("vidly"))).toBe(false);
+  });
+});
+
+describe("VYHRAL! / REMÍZA na lokalite po bitke", () => {
+  const b = (vitaz: 0 | 1 | null): BitkaNaNastenke =>
+    ({
+      kolo: 1,
+      lokalita: { uid: 9, defId: "krcma", leftLayout: 0, rightLayout: 0 },
+      vitaz,
+      rozhodlo: "tuhe",
+      pitky: 2,
+      zaBitku: vitaz === 0 ? [6, 0] : vitaz === 1 ? [0, 6] : [0, 0],
+      zoSekery: 0,
+      abstakZrazka: 0,
+      prepadlo: 0,
+      zaStarsich: [0, 0],
+      exekutor: [0, 0],
+      prebytok: [0, 0],
+      spakyPo: vitaz === 0 ? [6, 0] : vitaz === 1 ? [0, 6] : [0, 0],
+    }) as unknown as BitkaNaNastenke;
+
+  it("víťaz: VYHRAL! v jeho farbe s menom a špakmi za lokalitu", () => {
+    expect(peciatkaVysledku(b(0), 0, ["Jano", "Fero"])).toMatchObject({ druh: "vyhral", hrac: "ja", text: "VYHRAL!", pod: "ty · +6" });
+    expect(peciatkaVysledku(b(1), 0, ["Jano", "Fero"])).toMatchObject({ druh: "vyhral", hrac: "su", pod: "Fero · +6" });
+    const h = renderToStaticMarkup(createElement(PeciatkyKarty, { stavy: [peciatkaVysledku(b(1), 0, ["Jano", "Fero"])] }));
+    expect(h).toContain("stav-peciatka-vyhral stav-peciatka-su");
+  });
+
+  it("remíza: REMÍZA neutrálne, bez farby hráča", () => {
+    const s = peciatkaVysledku(b(null), 0, ["Jano", "Fero"], "Remíza pri Krčme");
+    expect(s).toEqual({ druh: "remiza", text: "REMÍZA", titul: "Remíza pri Krčme" });
   });
 });

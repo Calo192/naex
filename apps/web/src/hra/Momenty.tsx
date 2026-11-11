@@ -14,7 +14,7 @@
 
 import { useEffect, useRef, useState, type CSSProperties } from "react";
 import type { Event, Moment, NaladaMomentu, PlayerId, TypMomentu } from "@naex/core";
-import { MOMENTY, naladaMomentu } from "@naex/core";
+import { BEZ_PECIATKY, MOMENTY, naladaMomentu } from "@naex/core";
 import "./hra.css";
 
 /** Ako dlho je pečiatka veľká — dopad (0,45 s) a asi 2 s na prečítanie. */
@@ -77,7 +77,8 @@ export function Momenty({ udalosti, ja, mena, hovor, pocitadloBezi = false, port
   beziRef.current = pocitadloBezi;
 
   useEffect(() => {
-    const momenty = udalosti.events.flatMap((e) => (e.type === "moment" ? [e.moment] : []));
+    // Moment bez pečiatky (Záverečná) od staršieho servera sa neukáže ani pri prechode na novú verziu.
+    const momenty = udalosti.events.flatMap((e) => (e.type === "moment" && !BEZ_PECIATKY.has(e.moment.typ) ? [e.moment] : []));
     if (momenty.length > 0) setCakajuce({ id: udalosti.id, momenty });
   }, [udalosti]);
 

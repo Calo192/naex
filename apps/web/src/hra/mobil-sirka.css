@@ -1970,47 +1970,6 @@ html.stol-na-sirku .rk-tel-zoznam .rk-legenda {
   display: none;
 }
 
-/* Vízia (Michal 2026-11-08): voľby sú v pruhu pokynu ako segmenty s piktogramom — „do ruky“
-   žltý ako hlavná akcia, „spáliť“ tmavý ako druhá voľba; pri guli dve dvojice za sebou
-   v poradí kariet na plsti. */
-.hra.mobil-sirka .pruh-hlavna .vizia-volby {
-  display: flex;
-  align-items: stretch;
-  gap: 4px;
-}
-
-.hra.mobil-sirka .pruh-hlavna .vizia-par {
-  width: auto;
-  gap: 0;
-  align-items: stretch;
-}
-
-.hra.mobil-sirka .pruh-hlavna .vizia-volby button.vizia-volba {
-  width: auto;
-  height: auto;
-  padding: 0 10px;
-  border: 0;
-  border-left: 1px solid var(--okraj);
-  border-radius: 0;
-  box-shadow: none;
-  transform: none;
-}
-
-.hra.mobil-sirka .pruh-hlavna .vizia-volby button.vizia-volba.spalit {
-  background: var(--plocha-3);
-}
-
-.hra.mobil-sirka .pruh-hlavna .vizia-volba-ram {
-  width: 28px;
-  height: 28px;
-  padding: 2px;
-  border-radius: 6px;
-}
-
-.hra.mobil-sirka .pruh-hlavna .vizia-volba-ram .ikona-akcie {
-  border-radius: 4px;
-}
-
 /* „Vybraná“ pri karte: malý štítok na jej spodku, nie pečiatka cez susednú kartu. */
 .hra.mobil-sirka:not(.stol-scroll) .vybrana-pod {
   bottom: 3px;

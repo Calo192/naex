@@ -268,6 +268,12 @@ export interface StavMomentov {
 
 export const NOVE_MOMENTY: StavMomentov = { usek: null, zlate: 0 };
 
+/**
+ * Momenty bez pečiatky a hlášky (Michal 2026-11-11: „nebude sa robiť taký hukot okolo Záverečnej“).
+ * Jadro ich ďalej ráta — achievement moment.zaverecna platí —, len ich server nepošle a strop nemíňajú.
+ */
+export const BEZ_PECIATKY: ReadonlySet<TypMomentu> = new Set<TypMomentu>(["zaverecna"]);
+
 /** Úsek kola pre strop: každá Pitka (aj jej Zhromaždenie) zvlášť, bitka zvlášť. */
 function usekKola(s: GameState): string {
   if (s.faza === "bitka" || s.koniec !== null) return `${s.kolo}:b`;
@@ -282,7 +288,7 @@ function usekKola(s: GameState): string {
 export function obmedzMomenty(kandidati: readonly Moment[], stav: StavMomentov, po: GameState): { vybrane: Moment[]; stav: StavMomentov } {
   // Schopnosť väzňa padne vždy (Michal 2026-11-02) a strop úseku nemíňa.
   const vzdy = kandidati.filter((m) => m.typ === "schopnostVazna");
-  const ostatne = kandidati.filter((m) => m.typ !== "schopnostVazna");
+  const ostatne = kandidati.filter((m) => m.typ !== "schopnostVazna" && !BEZ_PECIATKY.has(m.typ));
   const usek = usekKola(po);
   if (stav.usek === usek) return { vybrane: vzdy, stav };
   const povolene = ostatne.filter((m) => m.stupen !== "zlato" || stav.zlate < ZLATO_ZA_PARTIU);

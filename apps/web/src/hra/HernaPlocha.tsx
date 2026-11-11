@@ -49,7 +49,7 @@ import type {
   ZobrataVerejne,
   Zdvih,
 } from "@naex/core";
-import { cigaretyZaPas, prveFajcenieZadarmo, opisReci, sRadom, odhadSpakovKola, type StavOdhadu, riadkyCakajuceho, riadkyCakajucichPoldeci, KONSTANTY, jeCoTahat, jeFinaleNaNastenke, efektyPrehry, hrozbaKliatob, mozeEsteNaex, textHrozbyKliatob, textyEfektovPrehry, cenaKliatby, battleOutcome, prebytokNaRozdelenie, nahladPitky, vyhladDlhov, evaluateLine, efektyNavyse, pocitadloBitky, pitkaPredBitkou, hrozbaNaex, krokStavby, planVykladania, barterCena, limitBuduceKolo, limitPoPitke, limitZhromazdenia, lineState, nahladZajatia, prevahaStran, krajeStran, dovodZakazuFajcit, defOf, ponukaSenku, cenaFajceniaHraca, naexLimitMinuty as naexLimitMinutyHraca, sMojimiSkrytymiNaex, sPrilozenou, vystrahaPecene, nahladNaexNaKartu, najhorsiaOdpovedNaNaex, cenaTahu, nahladVylozenia, moznostiNaexVPohlade, zablokovaneStrany, NASTROJ_DO_LINIE, favourStarsieho, krokRozdelenia, cieleOdpovede, maxZoSenku, bodyRozdelenia, printedSides, poskodenieBitky, rozpisPoskodenia, prahyHraca, scorecardStarsieho, stavKraja, stavkaBitky, stavZavislosti, stranyLokality, vidiVolbuSupera, hraVPitke, cakaSBzdochou, opponentOf, majitelPresvedcenej, moznostiAkcie, cenaAkcieUplna, zdvihyPreAkcie, navrhRozdelenia, pohladPoRozdeleni, priazenHraca, priazenSila, pultStarsich, spakyTeraz, NAZVY_ZON, vazniNaVyhru } from "@naex/core";
+import { BEZ_PECIATKY, cigaretyZaPas, prveFajcenieZadarmo, opisReci, sRadom, odhadSpakovKola, type StavOdhadu, riadkyCakajuceho, riadkyCakajucichPoldeci, KONSTANTY, jeCoTahat, jeFinaleNaNastenke, efektyPrehry, hrozbaKliatob, mozeEsteNaex, textHrozbyKliatob, textyEfektovPrehry, cenaKliatby, battleOutcome, prebytokNaRozdelenie, nahladPitky, vyhladDlhov, evaluateLine, efektyNavyse, pocitadloBitky, pitkaPredBitkou, hrozbaNaex, krokStavby, planVykladania, barterCena, limitBuduceKolo, limitPoPitke, limitZhromazdenia, lineState, nahladZajatia, prevahaStran, krajeStran, dovodZakazuFajcit, defOf, ponukaSenku, cenaFajceniaHraca, naexLimitMinuty as naexLimitMinutyHraca, sMojimiSkrytymiNaex, sPrilozenou, vystrahaPecene, nahladNaexNaKartu, najhorsiaOdpovedNaNaex, cenaTahu, nahladVylozenia, moznostiNaexVPohlade, zablokovaneStrany, NASTROJ_DO_LINIE, favourStarsieho, krokRozdelenia, cieleOdpovede, maxZoSenku, bodyRozdelenia, printedSides, poskodenieBitky, rozpisPoskodenia, prahyHraca, scorecardStarsieho, stavKraja, stavkaBitky, stavZavislosti, stranyLokality, vidiVolbuSupera, hraVPitke, cakaSBzdochou, opponentOf, majitelPresvedcenej, moznostiAkcie, cenaAkcieUplna, zdvihyPreAkcie, navrhRozdelenia, pohladPoRozdeleni, priazenHraca, priazenSila, pultStarsich, spakyTeraz, NAZVY_ZON, vazniNaVyhru } from "@naex/core";
 import type { Moment, ActionSums, DopadyNahladu, KliatbyNahladu, NahladNaexNaKartu, PrebytokNahladu, NahladVylozenia, PolozkaVykladania, Rod, Slot, StranaLinie, VystrahaPecene } from "@naex/core";
 import type { KtoraHrana, MoznostPodlozenia, PodlozenyNastroj } from "@naex/core";
 import { aktivnaHrana, dovodNepodlozenia, hranyNastroja, ponukaPodlozenia, ucinkyNastrojov } from "@naex/core";
@@ -90,7 +90,7 @@ import { dalsiPohladSuhrnu, type KontextSuhrnu, type SuhrnBitky, type ZaciatokKo
 import { PAUZA_CIELA_MS, pauzaPoVolbeCiela, type PauzaCiela } from "./pauzaCiela.ts";
 import { poslednaPitkaVDavke, stolZastavenia } from "./zastaveniePitky.ts";
 import { lokalitaVStrede, lokalitaZNavrhu, natacamNavrh, tipNavrhuLokality } from "./natocenieNavrhu.ts";
-import { naexNaKarte, PeciatkaNaex, type NaexNaKarte, type StavNaKarte } from "./PeciatkaNaex.tsx";
+import { naexNaKarte, PeciatkaNaex, peciatkyNaex, type NaexNaKarte, type StavNaKarte } from "./PeciatkaNaex.tsx";
 import { farbaKarty, type Sada } from "@naex/tvorba";
 import { HernaKarta, ZarStolaKontext, vzhladKarty, type HernaKartaProps } from "./HernaKarta.tsx";
 import { useZarovnanieLinie } from "./zarovnanieLinie.ts";
@@ -100,7 +100,7 @@ import { LUPA_PREDVOLENA, useUcet } from "../lib/ucet.tsx";
 import { rezimRadov } from "./spakyAStarsi.ts";
 import { Vrstva as VrstvaPanel } from "./Vrstva.tsx";
 import { VesticaVyber } from "./Vestica.tsx";
-import { rozmerVizie, ViziaNaStole, VolbyVizie, zamerVizie, type KartaVizie } from "./ViziaNaStole.tsx";
+import { rozmerVizie, ViziaNaStole, zamerVizie, type KartaVizie } from "./ViziaNaStole.tsx";
 import { PonukaNaStole, rozmerPonuky, type KartaPonuky } from "./PonukaNaStole.tsx";
 import {
   AkcieStrany,
@@ -145,7 +145,7 @@ import "./hra.css";
 import "./mobil-sirka.css";
 // Až po hra.css — jednotný bar upravuje aj jej pravidlá (os kola, nástroje, rezerva stola).
 import "./jbar.css";
-import { IkonaSpaku, Nastenka, sMinusom, spakyPredBitkou, textSpakovBitky } from "./Spaky.tsx";
+import { IkonaSpaku, Nastenka, peciatkaVysledku, sMinusom, spakyPredBitkou, textSpakovBitky } from "./Spaky.tsx";
 import { nazovKarty, nazovTagu, prekladKariet, prelozHlasku, t, tr, tRod, tZoServera } from "../i18n/jazyk.tsx";
 import { spakov } from "../i18n/pocty.ts";
 
@@ -1757,7 +1757,7 @@ export function HernaPlocha({
     if (krokVyberu === "vestica") setMode({ typ: "vestica", moja: null, jeho: null });
   }, [krokVyberu, klucTahu]);
 
-  // Vízia na stole (Michal 2026-11-08, mockup V-B): karty na plsti nad rukou, voľby na spodnej hrane.
+  // Vízia na stole (Michal 2026-11-08, mockup V-B): karty na plsti nad rukou, voľby sú pečiatky cez karty (Michal 2026-11-11).
   const viziaK = view.vizia !== null && somNaTahu && view.koniec === null ? view.volbaVizia : null;
   const viziaK2 = viziaK === null ? null : (view.volbaViziaDruha ?? null);
   /** Nová Vízia (aj ďalšia v tej istej Pitke) = nový kľúč — karty znova vyjdú z balíčka. */
@@ -2060,7 +2060,7 @@ export function HernaPlocha({
     }
     if (nove.length === 0) return;
     // Momenty (Výprask, Zvrat…) patria k poslednému vyhodnoteniu dávky.
-    const momentyDavky = events.flatMap((e) => (e.type === "moment" ? [e.moment] : []));
+    const momentyDavky = events.flatMap((e) => (e.type === "moment" && !BEZ_PECIATKY.has(e.moment.typ) ? [e.moment] : []));
     const posledna = nove.at(-1);
     if (momentyDavky.length > 0 && posledna !== undefined && posledna.druh !== "stol") nove[nove.length - 1] = { ...posledna, momenty: momentyDavky };
     pocitadloAktivne.current = true;
@@ -2930,7 +2930,7 @@ export function HernaPlocha({
       ja={ja}
       mena={[menoHraca(0), menoHraca(1)]}
       avatary={[hraci[0]?.avatar ?? null, hraci[1]?.avatar ?? null]}
-      karta={sKartami ? (k, sirka) => karta({ karta: k, sirka }) : undefined}
+      karta={sKartami ? (k, sirka, stavy) => karta({ karta: k, sirka, ...(stavy === undefined ? {} : { stavy }) }) : undefined}
       menoKarty={menoKarty}
       favour={favourPodlaIdStola}
       sirkaKarty={Math.round(sirkaKarty)}
@@ -3155,19 +3155,22 @@ export function HernaPlocha({
         ...(podlozenieNavrh?.hostitel === uid ? [{ card: podlozenieNavrh.nastroj, majitel: ja, hrana: podlozenieNavrh.hrana }] : []),
       ];
       // Stavy karty sú pečiatky cez ilustráciu ako NA EX (Michal 2026-11-11), nie štítky nad kartou;
-      // Výtržníka (zrážka, Injekcia), Vzburu, Forsáž a NA EX zahasené či posilnené (v11.17) pridá karta sama.
+      // Výtržníka (zrážka, Injekcia), Vzburu a Forsáž pridá karta sama. Záverečná a odpoveď lícom dole
+      // pečiatku nemajú (Michal 2026-11-11: „Zahasené, Posilnené a Záverečná rušíme“) — povie to bublina.
       const komuRany = placed.playedBy === ja ? t("plocha.teba") : menoHraca(placed.playedBy);
-      const stavyZLinie: StavNaKarte[] = [
-        ...(placed.zaverecna === true
-          ? [
-              placed.odpoved === true
-                ? { druh: "odpoved" as const, text: t("peciatka.odpoved"), pod: t("peciatka.licomDole"), titul: t("plocha.odpovedTitul", { meno: menoHraca(super_) }) }
-                : { druh: "zaverecna" as const, text: t("peciatka.zaverecna"), pod: t("peciatka.licomDole"), titul: t("plocha.zaverecnaTitul") },
-            ]
+      const naexStit = vytrznik ? undefined : lineEval.cards.get(uid)?.naexStit;
+      const titulStavu =
+        placed.zaverecna === true
+          ? placed.odpoved === true
+            ? t("plocha.odpovedTitul", { meno: menoHraca(super_) })
+            : t("plocha.zaverecnaTitul")
           : otocena
-            ? [{ druh: "zaverecna" as const, text: t("peciatka.zaverecna"), pod: t("peciatka.odhalena"), titul: t("plocha.odhalenaTitul") }]
-            : []),
-      ];
+            ? t("plocha.odhalenaTitul")
+            : naexStit === "Odpor"
+              ? t("plocha.odporTitul")
+              : naexStit === "Posilnenie"
+                ? t("plocha.posilnenieTitul")
+                : null;
       const stitky =
         nova || presunieSa || vybranaNaex ? (
           <>
@@ -3210,10 +3213,10 @@ export function HernaPlocha({
           komuRany,
           podlozene: podlozeneTu,
           naex: peciatkaNaex,
-          stavy: stavyZLinie,
         },
         {
           ...(jeCiel(cielPodlozenia) ? { ciel: cielPodlozenia } : {}),
+          ...(titulStavu !== null ? { titul: titulStavu } : {}),
           trieda: [
             nastrojVyber !== null ? (smieSem(nastrojVyber) ? "podloz-ciel" : "podloz-nie") : "",
             prazdne !== null ? "podloz-prazdne" : "",
@@ -3287,7 +3290,6 @@ export function HernaPlocha({
         hranaVnutorna: nahladSpojov?.uid === x.karta.uid ? nahladSpojov.n.vnutornaVytlacena : undefined,
         spoj: spojPre(x.karta.uid),
         jamky: jamkyStola.get(x.karta.uid),
-        ...(x.zaverecna === true ? { stavy: [{ druh: "zaverecna" as const, text: t("peciatka.zaverecna"), pod: t("peciatka.licomDole"), titul: t("plocha.zaverecnaTitul") }] } : {}),
       };
       const vrat = (): void => vratDoRuky(x.karta.uid);
       const obsah = tahatelna(
@@ -3410,7 +3412,7 @@ export function HernaPlocha({
     // Ako karta v línii: značka, keď NA EX dať môžeš; klik rovno, alebo po pečiatke NA EX!.
     const znacka = naexMozny && naexCiele.has(z.uid);
     const klik = znacka && (naexPriamo || mode.typ === "naexCiel") ? () => setMode(vybrana ? { typ: "ziadny" } : { typ: "naexCiel", uid: z.uid }) : undefined;
-    const naexRubu = naexNaKarteVLinii(z.naexBy ?? undefined, undefined, mojeSkryteNaex.has(z.uid), superoveSkryteNaex.has(z.uid));
+    const rubNaex = peciatkyNaex(naexNaKarteVLinii(z.naexBy ?? undefined, undefined, mojeSkryteNaex.has(z.uid), superoveSkryteNaex.has(z.uid)));
     return vLinii(
       <button
         type="button"
@@ -3426,9 +3428,15 @@ export function HernaPlocha({
           {z.odpoved === true ? t("plocha.odpoved") : t("rekapText.zaverecna")}
           <small>{z.odpoved === true ? t("plocha.rubOdpovedPod") : dalsiaZaverecna ? t("plocha.rubNovaPod") : t("plocha.rubPod")}</small>
         </span>
-        {naexRubu !== undefined && (
+        {/* NA EX na rube leží pri strane toho, kto ho dal (Michal 2026-11-11) — súperovo hore, moje dole. */}
+        {rubNaex.hore !== null && (
+          <span className="rub-peciatka rub-peciatka-hore" style={{ fontSize: sirkaVLinii * 0.15 }}>
+            <PeciatkaNaex naex={rubNaex.hore} />
+          </span>
+        )}
+        {rubNaex.dole !== null && (
           <span className="rub-peciatka" style={{ fontSize: sirkaVLinii * 0.15 }}>
-            <PeciatkaNaex naex={naexRubu} />
+            <PeciatkaNaex naex={rubNaex.dole} />
           </span>
         )}
         {vybrana && <span className="vybrana-pod">✓ {t("plocha.vybrana")}</span>}
@@ -3553,6 +3561,10 @@ export function HernaPlocha({
     );
   const stredLinie = ((): ReactNode => {
     if (stred !== null && !stred.navrh) {
+      // Lokalita po bitke (Nakladačka, Reči) už nesie výsledok — VYHRAL! / REMÍZA (Michal 2026-11-11).
+      // Kým stôl stojí pred vyhodnotením (zastavenie, Počítadlo), výsledok neprezradí — ten ukáže Počítadlo.
+      const vysledok =
+        pocitadloBezi || zadrzanyView !== null ? undefined : view.nastenka.find((b) => b.kolo === view.kolo && b.lokalita?.uid === stred.karta.uid);
       return kseftPod(
         stred.karta.uid,
         sLupou({
@@ -3562,6 +3574,7 @@ export function HernaPlocha({
           eval: lineEval.cards.get(stred.karta.uid) ?? null,
           spoj: spojPre(stred.karta.uid),
           jamky: jamkyStola.get(stred.karta.uid),
+          ...(vysledok === undefined ? {} : { stavy: [peciatkaVysledku(vysledok, ja, [menoHraca(0), menoHraca(1)])] }),
         }),
       );
     }
@@ -4518,7 +4531,7 @@ export function HernaPlocha({
       case "pitka": {
         if (view.vizia !== null) {
           // Vízia (Michal 2026-10-19): vrchná karta balíčka do ruky, alebo navždy preč. Karta leží
-          // na stole a voľby sú v strede spodnej hrany (Michal 2026-11-08, mockup V-B).
+          // na stole (Michal 2026-11-08, mockup V-B) a voľby sú pečiatky cez ňu (Michal 2026-11-11).
           const zostava = view.vizia.zostava[ja];
           const este = zostava > 1 ? t("plocha.esteVizia", { n: zostava - 1 }) : "";
           // Krištáľová guľa (Náradie 2026-10-30): dve vrchné karty — o jednej rozhodneš, druhá ostane navrchu.
@@ -4528,7 +4541,6 @@ export function HernaPlocha({
             text: gula
               ? t("plocha.viziaDve") + este
               : t("plocha.viziaJedna") + este,
-            stred: kartyVizie.length === 0 ? undefined : <VolbyVizie karty={kartyVizie} rozmer={rozmerKarietVizie} onVolba={(i, vziat) => posli(zamerVizie(i, vziat))} />,
           };
         }
         const hracJa = view.hraci[ja];
@@ -6626,7 +6638,7 @@ export function HernaPlocha({
             })}
             {podLiniou}
             {naPlsti}
-            {klucVizie !== null && kartyVizie.length > 0 && <ViziaNaStole key={klucVizie} karty={kartyVizie} rozmer={rozmerKarietVizie} />}
+            {klucVizie !== null && kartyVizie.length > 0 && <ViziaNaStole key={klucVizie} karty={kartyVizie} rozmer={rozmerKarietVizie} onVolba={(i, vziat) => posli(zamerVizie(i, vziat))} />}
             {ponukaNaStole}
             {vrstvaFazy !== null && !starsiViditelni && !nastenkaNaStole && (
               <div className="vrstva-fazy" ref={setVrstvaFazyEl}>

@@ -12,7 +12,7 @@
 import { useEffect, useState, type ReactNode } from "react";
 import type { CardInstance, CardLineEval, KrokPocitadla, LineEval, Moment, PlacedCard, PlayerId, PocitadloBitky as Pocitadlo, PodlozenyNastroj, RekapitulaciaBitky, StolBitky } from "@naex/core";
 import { stavPocitadla, vlnyKariet, opponentOf } from "@naex/core";
-import { naexNaKarte, type NaexNaKarte } from "./PeciatkaNaex.tsx";
+import { naexNaKarte, type NaexNaKarte, type StavNaKarte } from "./PeciatkaNaex.tsx";
 import { PilulkaPriazne } from "./KruzokPriazne.tsx";
 import { NAZOV_PRIAZNE, type PriazneBitky } from "./priazenKola.ts";
 import type { VyhraStrachom } from "./vyhraStrachom.ts";
@@ -34,7 +34,7 @@ export interface PocitadloBitkyProps {
   readonly mena: readonly [string, string];
   readonly menoKarty: (defId: string) => string;
   /** Línia v okamihu bitky zľava doprava (tvoja strana · lokalita · súperova), už nakreslené karty. */
-  readonly rad: readonly { readonly uid: number; readonly karta: ReactNode }[];
+  readonly rad: readonly { readonly uid: number; readonly karta: ReactNode; readonly poVysledku?: ReactNode }[];
   readonly onKoniec: () => void;
   /**
    * Výučba: konečný výsledok je na paneli od začiatku a karty len ukazujú, odkiaľ je. Rastúce
@@ -186,13 +186,13 @@ export function PocitadloBitky({ p, ja, mena, menoKarty, rad, onKoniec, vysledok
           <span className="pocitadlo-mena">ty · {mena[su]}</span>
         </div>
         <div className="pocitadlo-rad">
-          {rad.map(({ uid, karta }) => {
+          {rad.map(({ uid, karta, poVysledku }) => {
             const teraz = hotovo ? [] : p.kroky.filter((k) => k.uid === uid && k.vlna === vlna);
             const bola = p.kroky.some((k) => k.uid === uid && (hotovo || k.vlna < vlna));
             const kto = teraz[0]?.kto;
             return (
               <div key={uid} className={`pocitadlo-karta${teraz.length > 0 ? ` svieti ${kto === ja ? "ja" : "su"}` : ""}${bola ? " bola" : ""}`}>
-                {karta}
+                {(hotovo || vysledokHned) && poVysledku !== undefined ? poVysledku : karta}
                 {teraz.map((k) => (
                   <span key={k.kto} className={`pocitadlo-prispevok ${k.kto === ja ? "ja" : "su"}${k.nasobok > 1 ? " nasobok" : ""}`}>
                     {popis(k)}
@@ -270,6 +270,8 @@ export type KreslenieKarty = (k: {
   readonly vytrznik?: boolean;
   readonly komuRany?: string;
   readonly podlozene?: readonly PodlozenyNastroj[] | undefined;
+  /** VYHRAL! / REMÍZA na lokalite, keď je výsledok bitky spočítaný. */
+  readonly stavy?: readonly StavNaKarte[] | undefined;
 }) => ReactNode;
 
 export interface PocitadloSLiniouProps {
@@ -316,23 +318,30 @@ export function PocitadloSLiniou({ vrstva, ja, mena, karta, menoKarty, piktogram
   const { pevne, riadok, spakyVedla } = rozmeryVrstvy(window.innerHeight, window.innerWidth);
   const vyskaKariet = window.innerHeight - pevne - (rekap === null ? 0 : riadok * riadkovRekapitulacieBitky(rekap, spakyVedla, vyhraStrachom !== null));
   const sirka = Math.max(36, Math.min(110, Math.floor((window.innerWidth - 120) / Math.max(1, poradie.length)), Math.floor(vyskaKariet / 1.4)));
+  // Lokalita po spočítaní bitky nesie výsledok pečiatkou (Michal 2026-11-11, mock pečiatok).
+  const tuhe = vrstva.p.tuhe;
+  const vitaz = tuhe[ja] === tuhe[su] ? null : tuhe[ja] > tuhe[su] ? ja : su;
+  const vysledok: StavNaKarte =
+    vitaz === null
+      ? { druh: "remiza", text: t("peciatka.remiza"), pod: `${tuhe[ja]} : ${tuhe[su]}`, titul: t("pocitadlo.remiza") }
+      : { druh: "vyhral", hrac: vitaz === ja ? "ja" : "su", text: t("peciatka.vyhral"), pod: `${vitaz === ja ? t("stol.ty") : mena[vitaz]} · ${tuhe[vitaz]} : ${tuhe[opponentOf(vitaz)]}`, titul: vitaz === ja ? t("pocitadlo.vyhravas", { n: tuhe[ja] - tuhe[su] }) : t("pocitadlo.prehravas", { n: tuhe[su] - tuhe[ja] }) };
+  const kresli = (pl: (typeof poradie)[number], stavy?: readonly StavNaKarte[]): ReactNode =>
+    karta({
+      karta: pl.card,
+      sirka,
+      otocena: pl.playedBy === null ? stol.lokalitaOtocena !== (ja === 1) : pl.playedBy !== ja,
+      eval: linia.cards.get(pl.card.uid) ?? null,
+      bezPopisov: true,
+      naex: naexNaKarte({ naexBy: pl.naexBy, naexBy2: pl.naexBy2, skryteMoje: false, skryteSupera: false }, ja, (p) => mena[p]),
+      vytrznik: pl.vytrznik === true,
+      ...(pl.playedBy === null ? {} : { komuRany: pl.playedBy === ja ? t("plocha.teba") : mena[pl.playedBy] }),
+      podlozene: pl.podlozene,
+      ...(stavy === undefined ? {} : { stavy }),
+    });
   const rad = poradie.map((pl) => ({
     uid: pl.card.uid,
-    karta: (
-      <>
-        {karta({
-          karta: pl.card,
-          sirka,
-          otocena: pl.playedBy === null ? stol.lokalitaOtocena !== (ja === 1) : pl.playedBy !== ja,
-          eval: linia.cards.get(pl.card.uid) ?? null,
-          bezPopisov: true,
-          naex: naexNaKarte({ naexBy: pl.naexBy, naexBy2: pl.naexBy2, skryteMoje: false, skryteSupera: false }, ja, (p) => mena[p]),
-          vytrznik: pl.vytrznik === true,
-          ...(pl.playedBy === null ? {} : { komuRany: pl.playedBy === ja ? t("plocha.teba") : mena[pl.playedBy] }),
-          podlozene: pl.podlozene,
-        })}
-      </>
-    ),
+    karta: <>{kresli(pl)}</>,
+    ...(pl.playedBy === null ? { poVysledku: <>{kresli(pl, [vysledok])}</> } : {}),
   }));
   return (
     <PocitadloBitky
