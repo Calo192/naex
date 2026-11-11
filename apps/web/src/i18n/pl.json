@@ -234,6 +234,10 @@
     "5": "{n} kart"
   },
   "stol.krajeTip": "Po lewej: {lavy} · po prawej: {pravy}",
+  "stol.posunVlavo": "",
+  "stol.posunVpravo": "",
+  "stol.zaOkrajom": "",
+  "stol.naLokalitu": "",
   "stol.finale": "finał",
   "stol.finaleLokalita": "finał · lokacja",
   "stol.lokalita": "lokacja",

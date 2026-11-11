@@ -234,6 +234,10 @@
     "5": "{n} karet"
   },
   "stol.krajeTip": "Vlevo: {lavy} · vpravo: {pravy}",
+  "stol.posunVlavo": "",
+  "stol.posunVpravo": "",
+  "stol.zaOkrajom": "",
+  "stol.naLokalitu": "",
   "stol.finale": "finále",
   "stol.finaleLokalita": "finále · lokalita",
   "stol.lokalita": "lokalita",
