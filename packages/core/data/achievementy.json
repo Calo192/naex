@@ -715,7 +715,7 @@
       "id": "eso-v-rukave",
       "nazov": "Eso v rukáve",
       "kategoria": "naex",
-      "popis": "Otoč bitku Záverečnou (pečiatka ZÁVEREČNÁ!) — spolu {prah}×.",
+      "popis": "Otoč bitku Záverečnou — spolu {prah}×.",
       "metrika": "moment.zaverecna",
       "rozsah": "kariera",
       "prahy": [
