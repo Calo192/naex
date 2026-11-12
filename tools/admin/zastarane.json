@@ -769,6 +769,18 @@
         "jogurt\\w*[^.!?]{0,80}(?:hned v pitke|nie az v bitke)"
       ],
       "pozn": "v12.2 (Michal 2026-11-11): akcie Poldeci dolievajú na konci každej Pitky; Jogurt: „Po každej Pitke sa ti doleje o 1 poldeci viac.“"
+    },
+    {
+      "pojem": "výpalné platí súper",
+      "vzory": [
+        "zaplati\\w*[^.!?]{0,40}vypaln",
+        "vypaln\\w*[^.!?]{0,30}plati\\w* (?:len )?(?:porazen|ten|super|vitaz)",
+        "vypaln\\w*[^.!?]{0,40}(?:zobral|vzal|vycist)",
+        "super\\w*[^.!?]{0,30} da\\w* 1 cigaret\\w* za kazd\\w* (?:tv\\w* cerven|starsi\\w* s tv\\w* cerven)",
+        "vypaln\\w*[^.!?]{0,40}od super",
+        "porazen\\w*[^.!?]{0,30}plati\\w*[^.!?]{0,20}vitaz\\w*[^.!?]{0,20}vypaln"
+      ],
+      "pozn": "v12.4 (Michal 2026-11-12): výpalné dá banka, súper nič neplatí ani nestráca; do v12.3 platil súper zo svojich cigariet"
     }
   ],
   "karty": [
