@@ -260,9 +260,18 @@ const PARTIE = [
   { id: "20261109-115955-3", report: "20261109-115955.html", dlzka: "stredná, výhra strachom v K5, asi 78 min (Zrejúca, Opus)", vysledok: "Fero 98 : 18 Vilo", mena: ["Fero","Vilo"],
     jano: [8,8,5,6,9,6,5,6,8,8,5,9], eva: [6,8,4,6,9,5,5,6,8,8,4,9],
     zmenyPred: [] },
+  { id: "20261111-221937-1", report: "20261111-221937.html", dlzka: "stredná (5 lokalít + finále), asi 47 min (Vypálená v12.3 lokálne, Opus)", vysledok: "Eva 82 : 18 Hela", mena: ["Hela","Eva"],
+    jano: [6,7,4,6,8,6,5,5,7,7,3,8], eva: [7,8,6,6,9,6,5,6,8,7,5,9],
+    zmenyPred: ["Pravidlá v11.15: Benzínka — každé fajčenie o 1 cigaretu lacnejšie","Dlh Finančnej poradkyne zobrazený pri súperovi (bar, náhľady, rekapitulácia, bot)","Natočenie lokality klikom pri natočení cieľa"] },
+  { id: "20261111-221937-2", report: "20261111-221937.html", dlzka: "stredná (5 lokalít + finále), asi 52 min (Vypálená v12.3 lokálne, Opus)", vysledok: "Vilo 80 : 28 Fero", mena: ["Vilo","Fero"],
+    jano: [8,8,5,7,9,6,5,6,8,8,4,9], eva: [6,7,4,6,9,6,5,6,8,8,3,9],
+    zmenyPred: [] },
+  { id: "20261111-221937-3", report: "20261111-221937.html", dlzka: "stredná, výhra strachom v K5, asi 33 min (Vypálená v12.3 lokálne, Opus)", vysledok: "Jano 64 : 33 Šimon", mena: ["Jano","Šimon"],
+    jano: [7,8,4,7,8,7,6,6,7,8,4,9], eva: [6,7,4,6,8,7,6,6,7,8,4,8],
+    zmenyPred: [] },
 ];
 // Zmeny, ktoré ešte žiadna partia neoverila.
-const CAKAJUCE = ["Pravidlá v11.15: Benzínka — každé fajčenie o 1 cigaretu lacnejšie","Dlh Finančnej poradkyne zobrazený pri súperovi (bar, náhľady, rekapitulácia, bot)","Natočenie lokality klikom pri natočení cieľa"];
+const CAKAJUCE = [];
 
 const priemer = (a) => a.reduce((x, y) => x + y, 0) / a.length;
 const f1 = (x) => x.toFixed(1).replace(".", ",");
