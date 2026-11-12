@@ -38,7 +38,7 @@ import { hranaMaCoRobit } from "./podlozenie.ts";
 import { KONSTANTY, vazniNaVyhru } from "./constants.ts";
 import { abstakyVBitke, spakyPriExekucii, zhoriPriExekucii } from "./battle.ts";
 import type { ElderState } from "./elders.ts";
-import { kradezZaZajatie, priazenPre, spakyOdStarsieho, spakyZaReci, spakyZaStrach, spakyZaStupen, strachZ, vydesil } from "./elders.ts";
+import { krokyZdvihu, kradezZaZajatie, priazenPre, spakyOdStarsieho, spakyZaReci, spakyZaStrach, spakyZaStupen, strachZ, vydesil } from "./elders.ts";
 import { jeCielLokalita, nasobokPitky, partiaHraca, sDlhmiPoradkyne } from "./effects.ts";
 import { stranyLokality } from "./hrany.ts";
 import { stavZavislosti } from "./zavislost.ts";
@@ -109,6 +109,10 @@ export interface Povaha {
   readonly skoda?: number;
   /** Hodnota vlastnej aktívnej akcie navyše — v línii aj pri výbere karty (Rudo: Cigareta a Vízia, Božena: Povery a Viera). */
   readonly akcie?: Partial<Readonly<Record<Action, number>>>;
+  /** Násobok postupu k výhre strachom — Nakladačka, ktorá dotiahne červené (Igor: ide na 4 červené). */
+  readonly strach?: number;
+  /** Strop prebytku v odhade bitky namiesto PREBYTOK_STROP — útočník chce vyhrať vysoko, nie len vyhrať. */
+  readonly stropPrebytku?: number;
 }
 
 /** Násobok bitky — vo finále bitkaFinale, ak ho povaha má. */
@@ -152,6 +156,9 @@ export const POVAHY: readonly Povaha[] = [
     prahStarsi: -0.3,
     nahodnost: 0.15,
     tuhe: 0.6,
+    // Agresor (Michal 2026-11-12): vysoká Nakladačka na červené, výpalné a výhru strachom.
+    strach: 1,
+    stropPrebytku: 16,
   },
   {
     id: "rudo",
@@ -738,10 +745,13 @@ function hodnotaBitky(k: Kontext, s: GameState, q: PlayerId, ostrost: number): n
   const celk = dmg.celkove[q] - dmg.celkove[o];
   const sanca = 1 / (1 + Math.exp(-ostrost * m));
   // Vo finále je Nakladačka priamo špaky (v9.1) — bez stropu, každý bod rozdielu sa ráta.
-  const prebytok = jeFinale(s) ? celk : Math.max(-PREBYTOK_STROP, Math.min(PREBYTOK_STROP, celk));
+  const strop = k.povaha.stropPrebytku ?? PREBYTOK_STROP;
+  const prebytok = jeFinale(s) ? celk : Math.max(-strop, Math.min(strop, celk));
   const bitka = nasobokBitky(k, s);
   let v = bitka * (k.stavka * (sanca - 0.5) + kartyVStavke(s, q, sanca) + cenaBoduPrebytku(s) * prebytok);
   v += (k.povaha.tuhe ?? 0) * dmg.tuhe[q];
+  // Nakladačka nad strop prebytku nie je zbytočná, keď z nej vzniknú červené (výpalné, zajatie, výhra strachom).
+  if (!jeFinale(s)) v += bitka * (celk >= 0 ? ziskNakladacky(k, s, q, celk) : -ziskNakladacky(k, s, o, -celk));
 
   // Hádka (v11): víťaz ju po bitke rozdelí na svoje reči (vo finále špaky 1 : 1) — v bitke
   // ju bot ráta presne (najlepsi). Kým bitka nezačala, ide z línie.
@@ -979,7 +989,32 @@ function hodnotaVysledku(k: Kontext, s: GameState, b: NonNullable<GameState["bit
   const prebytok = drzi === null ? 0 : (drzi === ja ? 1 : -1) * Math.min(PREBYTOK_STROP, b.prebytokZostava);
   const hd = b.hadka;
   const hadka = hd === undefined || hd.vitaz === null ? 0 : (hd.vitaz === ja ? 1 : -1) * Math.min(HADKA_STROP, hd.zostava);
-  return nasobokBitky(k, s) * (cenaBoduPrebytku(s) * prebytok + (k.povaha.hadka ?? 1) * cenaBoduHadky(s) * hadka);
+  const cervene = drzi === null || jeFinale(s) ? 0 : (drzi === ja ? 1 : -1) * ziskNakladacky(k, s, drzi, b.prebytokZostava);
+  return nasobokBitky(k, s) * (cenaBoduPrebytku(s) * prebytok + (k.povaha.hadka ?? 1) * cenaBoduHadky(s) * hadka + cervene);
+}
+
+/**
+ * Čo hráčovi q prinesie Nakladačka `body` navyše k bodovaniu: najlacnejších starších, ktorých z nej
+ * dotiahne na červenú, a o koľko ho to posunie k výhre strachom, zajatiu a výpalnému (hodnotaVydesenia).
+ * Bez toho bot nevidel rozdiel medzi Nakladačkou 8 a 14 (strop prebytku), hoci 12 sú dve červené
+ * (Jano Bitkár, playtest 20261111-221937-3).
+ */
+function ziskNakladacky(k: Kontext, s: GameState, q: PlayerId, body: number): number {
+  if (k.povaha.strach === undefined || body <= 0 || kolPoTomto(s) === 0) return 0;
+  const ceny = s.starsi
+    .map((e, i) => ({ i, cena: vydesil(e, q) ? Number.POSITIVE_INFINITY : (krokyZdvihu(e, q, "strach").at(-1)?.cena ?? Number.POSITIVE_INFINITY) }))
+    .sort((a, b) => a.cena - b.cena);
+  let zostava = body;
+  const nove = new Set<number>();
+  for (const c of ceny) {
+    if (c.cena > zostava) break;
+    zostava -= c.cena;
+    nove.add(c.i);
+  }
+  if (nove.size === 0) return 0;
+  const starsi = s.starsi.map((e, i): ElderState => (nove.has(i) ? { ...e, strach: q === 0 ? [3, e.strach[1]] : [e.strach[0], 3] } : e));
+  const nasobok = q === k.ja ? k.povaha.strach : 1;
+  return nasobok * k.povaha.body * (hodnotaVydesenia({ ...s, starsi }, q) - hodnotaVydesenia(s, q));
 }
 
 /**
