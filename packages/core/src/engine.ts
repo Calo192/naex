@@ -6409,21 +6409,15 @@ export function utocnikFinale(spaky: readonly [number, number], vitazPoslednej: 
 }
 
 /**
- * Výpalné (v11.9, §10): obaja platia naraz zo stavu pred výplatou, takže poradie hráčov
- * nerozhoduje a čerstvo prijaté výpalné sa nedá v tom istom kroku odovzdať ďalej.
+ * Výpalné (v11.9, §10; v12.4 z banky): za každú červenú dostane hráč cigaretu z banky, súper nič nestráca —
+ * porazený by inak zaplatil víťazovi aj cigarety, ktoré potrebuje na ponuku, a prehral znova (playtest 20261111-221937).
  */
 function vyplatVypalne(s: MutState, events: Event[]): void {
-  const platba = ([0, 1] as const).map((p) => {
-    const su = opponentOf(p);
-    return Math.min(cervenychHraca(s as GameState, su) * KONSTANTY.VYPALNE_ZA_CERVENU, s.hraci[p].cigarety);
-  }) as [number, number];
   for (const p of [0, 1] as const) {
-    const zaplati = platba[p];
-    if (zaplati <= 0) continue;
-    const su = opponentOf(p);
-    zmenCigarety(s, p, "vypalne", -zaplati, events);
-    zmenCigarety(s, su, "vypalne", zaplati, events);
-    events.push({ type: "log", text: `Výpalné: hráč ${p + 1} platí hráčovi ${su + 1} ${cigariet(zaplati)}.` });
+    const suma = cervenychHraca(s as GameState, p) * KONSTANTY.VYPALNE_ZA_CERVENU;
+    if (suma <= 0) continue;
+    zmenCigarety(s, p, "vypalne", suma, events);
+    events.push({ type: "log", text: `Výpalné: hráč ${p + 1} dostane z banky ${cigariet(suma)}.` });
   }
 }
 

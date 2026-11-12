@@ -10,6 +10,7 @@ import scenarJson from "../data/vyucba/prva-hra.json";
 import type { CardInstance, Command, GameState, Rozdanie, ScenarVyucby, VolbaKroku } from "../src/index.ts";
 import {
   apply,
+  KONSTANTY,
   pocetAbstakov,
   spakyTeraz,
   defOf,
@@ -707,9 +708,10 @@ describe("výučba Prvá hra — 2. a 3. časť (pravidlá v8, exekúcia po poš
     // Nakladačka 5 (Farár 3, Krčmárka 1, Autobusár 1). Hráč 49 + vykúpenie 2 − 6 = 45, Štamgast 12 + 2 − 3 = 11.
     // v12.3 (cigarety za pas za plné poldeci): ťahy ostali, hráč končí s 11 cigaretami, Štamgast s 18 (väčšinou z pasov) —
     // vykúpenie hráč 2 + 2 = 4, Štamgast 2 + 3 = 5: 49 + 4 − 6 = 47, 12 + 5 − 3 = 14.
-    expect(koniec.koniec?.body).toEqual([47, 14]);
-    expect([koniec.hraci[0].cigarety, koniec.hraci[1].cigarety]).toEqual([11, 18]);
-    expect(cela.kroky[i("i-koniec")]?.melichar).toContain("47 : 14");
+    // v12.4 (výpalné z banky): Štamgast si cigarety za prehru nechá — končí s 20, vykúpenie 2 + 4 = 6: 12 + 6 − 3 = 15.
+    expect(koniec.koniec?.body).toEqual([47, 15]);
+    expect([koniec.hraci[0].cigarety, koniec.hraci[1].cigarety]).toEqual([11, 20]);
+    expect(cela.kroky[i("i-koniec")]?.melichar).toContain("47 : 15");
     expect(koniec.vazni.map((v) => [v.elderId, v.hrac])).toEqual([["farar", 0]]);
     // Nepriznané Cirhózy: hráčova z 2. kola a z finále (i-koniec, q-koniec), Štamgastova z 2. kola.
     expect(koniec.koniec?.cirhozy).toEqual([2, 1]);
@@ -793,8 +795,9 @@ describe("výučba Prvá hra — 2. a 3. časť (pravidlá v8, exekúcia po poš
     // Autobusár dal Štamgastovi Kmotra: jeho Dlh, ktorý exekútor nespálil, prešiel na hráča (i-spaky2).
     expect(kolo3.hraci[0].dlhy).toBe(1);
     expect(kolo3.hraci[1].dlhy).toBe(0);
-    // Výpalné (v11.9): Farár je po Nakladačke na červenej — Štamgast cigaretu za prehru odovzdá hráčovi (v12 bez Fajčiara).
-    expect(kolo3.hraci[1].cigarety).toBe(bitka.hraci[1].cigarety);
+    // Výpalné (v11.9, v12.4 z banky): Farár je po Nakladačke na červenej — hráč dostane cigaretu z banky,
+    // Štamgast si cigaretu za prehru nechá (v12 bez Fajčiara).
+    expect(kolo3.hraci[1].cigarety).toBe(bitka.hraci[1].cigarety + KONSTANTY.CIGARETY_PORAZENEMU);
     expect(kolo3.hraci[0].cigarety).toBe(bitka.hraci[0].cigarety + 1);
     // Na začiatku 3. kola sa zamiešal odhadzovací balíček a hráč si dobral Cirhózu (i-vitaj3, k-priznaj).
     expect(kolo3.hraci[0].ruka.at(-1)?.defId).toBe("cirhoza");
@@ -861,8 +864,8 @@ describe("výučba Prvá hra — 2. a 3. časť (pravidlá v8, exekúcia po poš
     expect(silaPriazne(data, kolo4, "BITKAR", 1)).toBe(0);
     expect(silaPriazne(data, kolo4, "FAJCIAR", 1)).toBe(0);
     expect(silaPriazne(data, kolo4, "UZERNIK", 1)).toBe(2);
-    // Výpalné (v11.9) za väzňa: Farár sa ráta ako červený strach držiteľa; Štamgast dostal cigaretu za prehru a dal ju.
-    expect(kolo4.hraci[1].cigarety).toBe(vyhra.hraci[1].cigarety);
+    // Výpalné (v11.9) za väzňa: Farár sa ráta ako červený strach držiteľa; platí banka (v12.4), Štamgast si cigaretu za prehru nechá.
+    expect(kolo4.hraci[1].cigarety).toBe(vyhra.hraci[1].cigarety + KONSTANTY.CIGARETY_PORAZENEMU);
     expect(body(kolo4)).toEqual([24, 8]);
     // Do finále má hráč 8 cigariet (v12.3: v 2. kole 2 pasy, v 3. kole pas za hráča po doliatí — po cigarete; v12.2 mal 4).
     expect(kolo4.hraci[0].cigarety).toBe(8);

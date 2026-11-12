@@ -1,6 +1,6 @@
 # NA EX! — pravidlá (špecifikácia)
 
-**Pravidlá v12.3 (platné od 2026-11-11)** — Cigarety za pas (v12.3), Vykladanie za poldeci (v12.2), Odpor aktívny len bez spoja, podmienka NA EX a Hrable (v12.1), Akcie navyše mení celý Nástroj, Traktorista, Pasca, Výherný automat, Kapybara a Predavačka (v12), Dobratie 2 karty po bitke a posilnenie Nástrojom po NA EX (v11.21), Hodnota stupňa 1 / 2 / 3 a reťaz premien (v11.20), Dohadzovačka len z konca kraja (v11.19), Vedúcko Podporou, Snúbenica, Traktorista a Miňištrant (v11.18), NA EX × Odpor a Posilnenie, Kapybara, Telefón, Krokodíl a hrany Náradia (v11.17), Vypiť, pas, Degustátorka, odpoveď na NA EX za poldeci, Nástroj len pod vlastné karty, Školiteľ aj Zviera (v11.16), Benzínka o cigaretu lacnejšie (v11.15), Frakcie, Občania v troch kategóriách, Náradie a karta z ponuky (v11.14), Lokality (v11.13), Reči na súperovom teplomere (v11.12), Hádka platí (v11.11), Ohováračka namiesto Alkoholika (v11.10), Dobratie do troch a výpalné (v11.9), Každý Hazard je Dlh (v11.8), Kostol a koniec línie (v11.7), Zajatie od minulého kola (v11.6), Identita kariet (v11.5), Zajatie Nakladačkou a presvedčenie (v11.4), Konflikt oboma smermi a Podpora (v11.3), Schopnosť väzňa (v11.2), Vzbura obráti kartu (v11.1) a Strach a reči (Michal 2026-11-02, docs/napady/strach-reci.html,
+**Pravidlá v12.4 (platné od 2026-11-12)** — Výpalné z banky (v12.4), Cigarety za pas (v12.3), Vykladanie za poldeci (v12.2), Odpor aktívny len bez spoja, podmienka NA EX a Hrable (v12.1), Akcie navyše mení celý Nástroj, Traktorista, Pasca, Výherný automat, Kapybara a Predavačka (v12), Dobratie 2 karty po bitke a posilnenie Nástrojom po NA EX (v11.21), Hodnota stupňa 1 / 2 / 3 a reťaz premien (v11.20), Dohadzovačka len z konca kraja (v11.19), Vedúcko Podporou, Snúbenica, Traktorista a Miňištrant (v11.18), NA EX × Odpor a Posilnenie, Kapybara, Telefón, Krokodíl a hrany Náradia (v11.17), Vypiť, pas, Degustátorka, odpoveď na NA EX za poldeci, Nástroj len pod vlastné karty, Školiteľ aj Zviera (v11.16), Benzínka o cigaretu lacnejšie (v11.15), Frakcie, Občania v troch kategóriách, Náradie a karta z ponuky (v11.14), Lokality (v11.13), Reči na súperovom teplomere (v11.12), Hádka platí (v11.11), Ohováračka namiesto Alkoholika (v11.10), Dobratie do troch a výpalné (v11.9), Každý Hazard je Dlh (v11.8), Kostol a koniec línie (v11.7), Zajatie od minulého kola (v11.6), Identita kariet (v11.5), Zajatie Nakladačkou a presvedčenie (v11.4), Konflikt oboma smermi a Podpora (v11.3), Schopnosť väzňa (v11.2), Vzbura obráti kartu (v11.1) a Strach a reči (Michal 2026-11-02, docs/napady/strach-reci.html,
 verzia 2) na v10.4
 (Hádka v10 — Michal 2026-11-01, docs/napady/hadka.html, verzia 4; v9 zmrazené 2026-10-30, krok 2
 revízie starších, docs/napady/starsi-krok2-zadanie.html; dávky v9.1 Chuť, v9.2 ponuka a NA EX naraz,
@@ -8,6 +8,14 @@ v9.3 Výtržník prebíja Úplatok; v10.1 zajatie pred ponukou; v10.2 Nástroj n
 Forsáž, Úplatok zrušený; v10.4 pojem Spáliť, Autority). Sada kariet: Vypálená hrá zverejnenú sadu v51 (v11.18), Zrejúca rozpracovaný stav tvorcu nad ňou (`cards.json` v master). Pravidlá sa
 menia len v dávkach; celá dávka dostane ďalšiu verziu (značka partií `v11`; presnú verziu ukazuje
 stránka Pravidlá — `VERZIA_PRAVIDIEL_PRESNA`).
+
+**Zmeny v12.4 oproti v12.3** (Michal 2026-11-12: „aby bolo výpalné vyplatené z banky, nie od hráča“; playtest
+20261111-221937, návrh `vypalne-z-vrecka-porazeneho`, možnosť A):
+
+- **Výpalné z banky** (§9 krok 6c, §10): za každého staršieho s tvojím červeným strachom (aj väzňa) ti po bitke dá
+  1 cigaretu **banka**, súper nič neplatí. Predtým (v11.9–v12.3) platil súper zo svojich cigariet, koľko mal — porazený
+  tak odovzdal víťazovi aj cigaretu za prehru a cigarety z pasov a na ponuku mu neostalo nič. Platí sa ako doteraz po
+  každej bitke okrem finále, aj porazenému a pri sekere, so strachom po Nakladačke tejto bitky.
 
 **Zmeny v12.3 oproti v12.2** (Michal 2026-11-11: „Treba nejakým spôsobom vrátiť cigarety za pas. Keď hráč pasne, dostane toľko cigariet, koľko má nevypitých poldeci.“ K poldeci: ostanú plné — cigarety sú odmena za šetrenie, poldeci ostávajú na NA EX a ďalšie Zhromaždenie; kto pasuje aj v ďalšom Zhromaždení toho kola, dostane cigarety znova; staré znenie v `docs/pravidla-historia.md`, sekcia v12.3):
 
@@ -1350,7 +1358,7 @@ Bitka sa vyhodnotí po poslednej Pitke kola, v tomto poradí (v11 Strach a reči
 | 4e | **Nakladačka** — víťaz bitky ju rozdelí na svoj strach a smie **zajímať** (5 bodov za staršieho na červenom strachu už pred touto Nakladačkou, v11.6; väzeň, krádež, výhra väzňami hneď); potom **hádka** — víťaz hádky ju rozdelí na svoje reči na teplomeroch súpera a smie **presviedčať** (3 body pri rečiach na celom teplomere, v11.12) — voľne medzi starších, 1 / 2 / 3 za stupeň, zvyšok prepadne; vo finále sa nerozdeľujú — špaky 1 : 1 dostali v kroku 4a | §9.1, §9.4, §10 |
 | 5 | Poldeci | §9.5 |
 | 5b | Veštica: výmena kariet balíčkov — len stará sada (dnes má Veštica Spoločník: Pamätník, §16) | §9.5b |
-| 6c | **Porazený dostane 1 cigaretu** (pri sekere a po finále nikto), priazne Kmotra (Dlhy súperovi) a Fajčiara (cigarety, v9), **výpalné** (v11.9, §10; po finále nie), efekty Výhra a Prehra (Recidivista, Dievčina), Krokodíl | §9.4, §10, §16 |
+| 6c | **Porazený dostane 1 cigaretu** (pri sekere a po finále nikto), priazne Kmotra (Dlhy súperovi) a Fajčiara (cigarety, v9), **výpalné** z banky (v11.9, v12.4, §10; po finále nie), efekty Výhra a Prehra (Recidivista, Dievčina), Krokodíl | §9.4, §10, §16 |
 | 7 | Návrat kariet | §9.7 |
 | 7a | Cintorín (porazený si smie vziať do ruky 1 kartu zo svojho odhadzovacieho balíčka, už aj s kartami z tejto línie; v11.13) | §15 |
 | 7b | Nepriznaná Cirhóza a Absťák z ruky do odhadzovacieho balíčka | §9.7 |
@@ -1599,13 +1607,13 @@ Očumovateľ), Abstinent `LAKOMEC`.
 Efekty kariet uvádzajú pevné čísla — číslo nezávisí od iného staršieho. Čísla sú
 v kóde v `KONSTANTY` (`KONSTANTY.EFEKT`).
 
-### Výpalné (v11.9, krok 6c)
+### Výpalné (v11.9, krok 6c; z banky od v12.4)
 
-Michal 2026-11-06: **hneď po vyhodnotení bitky** ti súper dá **1 cigaretu** (`KONSTANTY.VYPALNE_ZA_CERVENU`) za každého
-staršieho, pri ktorom máš **červený strach**. Väzeň sa ráta ako červená držiteľa, reči nie. Platí sa po každej bitke
-okrem finále, aj keď si ju prehral a aj pri sekere, a počíta sa so strachom po Nakladačke tejto bitky. Súper dá, koľko
-má; čo nemá, nedlhuje. Platia obaja naraz zo stavu po cigarete porazenému a Fajčiarovi, takže prijaté výpalné sa v tom
-istom kroku neodovzdá ďalej (výklad, Michal potvrdil 2026-11-10). Obmedzenie výpalné neuberá a nie je to nerest.
+Michal 2026-11-06: **hneď po vyhodnotení bitky** ti **banka** dá **1 cigaretu** (`KONSTANTY.VYPALNE_ZA_CERVENU`) za
+každého staršieho, pri ktorom máš **červený strach**. Väzeň sa ráta ako červená držiteľa, reči nie. Platí sa po každej
+bitke okrem finále, aj keď si ju prehral a aj pri sekere, a počíta sa so strachom po Nakladačke tejto bitky. Súper nič
+neplatí a nič nestráca (v12.4, Michal 2026-11-12; do v12.3 platil súper zo svojich cigariet, koľko mal, a porazený tak
+ostával bez cigariet na ponuku). Červené majú obaja, každý dostane za svoje. Obmedzenie výpalné neuberá a nie je to nerest.
 
 ### Bodovanie po bitke (krok 4b)
 
@@ -2335,7 +2343,7 @@ Kôň v kroku Exekútora. Michal ich potvrdí.
 | Efekt s vedľajšou akciou | efekt Občana s akciami navyše v pečati (§6, §16) |
 | Textový efekt | efekt Občana slovami — nepreškoľuje ani nepridáva akcie (§16) |
 | Dobratie po bitke | na začiatku každého ďalšieho kola 2 karty bez ohľadu na ruku (v11.21); limit ruky nie je, nič sa neodhadzuje (§4) |
-| Výpalné | hneď po bitke 1 cigareta od súpera za každého staršieho s tvojím červeným strachom, koľko má (v11.9, §10) |
+| Výpalné | hneď po bitke 1 cigareta z banky za každého staršieho s tvojím červeným strachom (v11.9, v12.4, §10) |
 | Konflikt | spúšťač (v11.3): efekt karty, keď sa priložením ocitne vedľa súperovej karty — prikladáš ty alebo súper; podloženie Nástroja, NA EX, zrážka ani presun ho nespúšťajú (§6, §16) |
 | Podpora | spúšťač (v11.3): zrkadlo Konfliktu — efekt karty, keď sa priložením stretne s inou kartou toho istého hráča (§6, §16) |
 | Vyvolať Konflikt | priložiť kartu k súperovej ležiacej karte so spúšťačom Konflikt (§16) |

@@ -144,34 +144,34 @@ describe("dobratie 2 karty po bitke (v11.21, §4)", () => {
   });
 });
 
-describe("výpalné (v11.9, §10, krok 6c)", () => {
-  it("súper platí 1 cigaretu za každú červenú hneď po bitke, pred šenkom ďalšieho kola", () => {
+describe("výpalné (v11.9, §10, krok 6c; v12.4 z banky)", () => {
+  it("banka dá 1 cigaretu za každú červenú hneď po bitke, súper nič nestratí", () => {
     // Víťaz 0 má 2 červené; súper má 5 cigariet a ako porazený dostane 1.
     const po = poBitke(predKoncomBitky((s) => sCigaretami(sCervenymi(s, 0, 2), [0, 5])));
     expect(po.faza).toBe("volbaCiela");
     expect(po.hraci[0].cigarety).toBe(2 * KONSTANTY.VYPALNE_ZA_CERVENU);
-    expect(po.hraci[1].cigarety).toBe(5 + KONSTANTY.CIGARETY_PORAZENEMU - 2);
+    expect(po.hraci[1].cigarety).toBe(5 + KONSTANTY.CIGARETY_PORAZENEMU);
   });
 
-  it("súper dá len toľko, koľko má; cigareta porazenému sa ráta a nič nedlhuje", () => {
+  it("banka platí, aj keď súper nemá ani cigaretu", () => {
     const po = poBitke(predKoncomBitky((s) => sCigaretami(sCervenymi(s, 0, 3), [0, 0])));
-    expect(po.hraci[0].cigarety).toBe(KONSTANTY.CIGARETY_PORAZENEMU);
-    expect(po.hraci[1].cigarety).toBe(0);
+    expect(po.hraci[0].cigarety).toBe(3 * KONSTANTY.VYPALNE_ZA_CERVENU);
+    expect(po.hraci[1].cigarety).toBe(KONSTANTY.CIGARETY_PORAZENEMU);
   });
 
-  it("platí aj tomu, kto bitku prehral", () => {
+  it("dostane ho aj ten, kto bitku prehral", () => {
     const po = poBitke(predKoncomBitky((s) => sCigaretami(sCervenymi(s, 1, 2), [4, 0]), 0));
-    expect(po.hraci[0].cigarety).toBe(2);
+    expect(po.hraci[0].cigarety).toBe(4);
     expect(po.hraci[1].cigarety).toBe(KONSTANTY.CIGARETY_PORAZENEMU + 2);
   });
 
-  it("platí aj pri sekere, keď porazený nie je", () => {
+  it("platí sa aj pri sekere, keď porazený nie je", () => {
     const po = poBitke(predKoncomBitky((s) => sCigaretami(sCervenymi(s, 0, 1), [0, 3]), null));
     expect(po.hraci[0].cigarety).toBe(1);
-    expect(po.hraci[1].cigarety).toBe(2);
+    expect(po.hraci[1].cigarety).toBe(3);
   });
 
-  it("obaja platia naraz, poradie nerozhoduje", () => {
+  it("obaja dostanú každý za svoje červené", () => {
     // Starší 0–1 červení u hráča 0, starší 2 u hráča 1.
     const s = predKoncomBitky((st) => sCigaretami(sCervenymi(st, 0, 2), [0, 1]));
     const sTretim: GameState = {
@@ -181,9 +181,9 @@ describe("výpalné (v11.9, §10, krok 6c)", () => {
     expect(cervenychHraca(sTretim, 0)).toBe(2);
     expect(cervenychHraca(sTretim, 1)).toBe(1);
     const po = poBitke(sTretim);
-    // Hráč 1 má 1 + 1 za prehru a platí 2; hráč 0 nemal nič, takže neplatí nič.
+    // Hráč 1 má 1 + 1 za prehru + 1 za svoju červenú; hráč 0 dostane 2.
     expect(po.hraci[0].cigarety).toBe(2);
-    expect(po.hraci[1].cigarety).toBe(0);
+    expect(po.hraci[1].cigarety).toBe(1 + KONSTANTY.CIGARETY_PORAZENEMU + 1);
   });
 
   it("väzeň sa ráta ako červená držiteľa", () => {
@@ -196,6 +196,7 @@ describe("výpalné (v11.9, §10, krok 6c)", () => {
 
   it("po finále sa neplatí", () => {
     const po = poBitke(predKoncomBitky((s) => sCigaretami(sCervenymi(s, 0, 2), [0, 5]), 0, true));
+    expect(po.hraci[0].cigarety).toBe(0);
     expect(po.hraci[1].cigarety).toBe(5);
   });
 });

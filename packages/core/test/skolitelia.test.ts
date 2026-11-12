@@ -565,12 +565,12 @@ describe("Traktorista: Bitka: S prevahou v jeho kraji {Pecka} (v12, Michal 2026-
 // --- Výučba a boti na budúcej sade ---------------------------------------------------------
 
 describe("budúca sada v hre", () => {
-  it("výučba Prvá hra prejde aj na budúcej sade — koniec 47 : 14 ako na dnešnej (v12.3 cigarety za pas; v12.2 45 : 11, v12 44 : 16, do v11.22 49 : 17, v11.20 57 : 16)", () => {
+  it("výučba Prvá hra prejde aj na budúcej sade — koniec 47 : 15 ako na dnešnej (v12.4 výpalné z banky; v12.3 47 : 14, v12.2 45 : 11, v12 44 : 16, do v11.22 49 : 17, v11.20 57 : 16)", () => {
     const scenar = scenarJson as unknown as ScenarVyucby;
     expect(overScenar(buduca, scenar)).toBeNull();
     const koniec = prehrajVyucbu(buduca, scenar, scenar.kroky.length).koniec;
     expect(koniec?.vitaz).toBe(0);
-    expect(koniec?.body).toEqual([47, 14]);
+    expect(koniec?.body).toEqual([47, 15]);
   });
 
   it("partia dvoch botov na budúcej sade dobehne do konca", () => {

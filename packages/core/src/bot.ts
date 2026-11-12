@@ -901,9 +901,8 @@ function hodnotaVydesenia(s: GameState, p: PlayerId): number {
     else if (cervene === KONSTANTY.CERVENYCH_NA_VYHRU - 1) v += CERVENE_PRED_VYHROU;
     v += 1.5 * ciele + 0.4 * s.starsi.filter((e) => strachZ(e, p) === 2).length;
   }
-  // Výpalné (v11.9): súper platí za každú červenú (aj väzňa) v každej bitke pred finále, koľko má.
-  const bitkyVypalneho = kolPoTomto(s);
-  v += CENA_VYPALNEHO * Math.min(cervene * KONSTANTY.VYPALNE_ZA_CERVENU * bitkyVypalneho, s.hraci[opponentOf(p)].cigarety + bitkyVypalneho);
+  // Výpalné (v12.4): banka platí za každú červenú (aj väzňa) v každej bitke pred finále.
+  v += CENA_VYPALNEHO * cervene * KONSTANTY.VYPALNE_ZA_CERVENU * kolPoTomto(s);
   // Presvedčený starší (v11.4): jeho karta je natrvalo v mojom balíčku a súper ho už nepresvedčí.
   v += s.starsi.filter((e) => e.presvedcil === p).length * (PRESVEDCENY + PRESVEDCENY_ZA_BITKU * Math.min(zostava, 3));
   return v;
