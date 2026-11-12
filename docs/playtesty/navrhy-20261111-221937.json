@@ -1,0 +1,316 @@
+{
+  "davka": "20261111-221937",
+  "podklady": [
+    "20261111-221937.html",
+    "strategia-20261111-221937.html",
+    "navrhy-20261111-221937.html"
+  ],
+  "navrhy": [
+    {
+      "kluc": "hadka-pred-nakladackou",
+      "nazov": "Víťaz hádky obsadí rečami čerstvý strach víťaza bitky; reči nemajú proti strachu žiadnu protihru",
+      "kritickost": "kriticka",
+      "oblast": "pravidlá",
+      "problem": "Po bitke najprv víťaz bitky rozdelí Nakladačku na strach a až potom víťaz hádky rozdelí hádku na reči. Víťaz hádky tak vidí nový strach a obsadí ho rečami, ktoré mu potom bodujú v každej bitke, vyhratej aj prehratej. Víťaz bitky tým súperovi „vyrába miesto“. Naopak politik, ktorý vyhráva hádky, nemôže súperov strach v tej istej bitke ani spomaliť, takže proti výhre strachom nemá nástroj.\n\nDve meny bodov (strach a reči) tak nemajú protihru jedna proti druhej a kto prvý rozbehne svoju, vyhrá.",
+      "pricina": "Pravidlo §9 krok 4e (poradie: Nakladačka, potom hádka), §9.1 Rozdelenie hádky na reči a §10 Poradie obsadzovania rečí (od vrchu súperovho strachu nadol), Spomalenie (+1 za stupeň s rečami). Kód: pokracujBitku v packages/core/src/engine.ts, blok „Nakladačka“ pred blokom „reci“.",
+      "prejav": "P1: Hela vyhrala 4. bitku a dala Nakladačku 2 na Poštárku a Veterinára. Eva hneď hádkou 7 zaplnila presne tieto dve (reči 6 + 1) a od tej chvíle dostávala 10, 15 a 28 špakov za bitku. Starší dali Eve 46 z 82 špakov, Hele 4. To isté v 1. kole naopak (Eva Nakladačka 2, Hela hádka 2 na tie isté). P3: Šimon vyhral 4 hádky, ale Jano rozdelil Nakladačku 12 skôr, dostal sa na štyri červené a vyhral strachom.\n\nTri hráči (Eva, Hela, Šimon) to opísali nezávisle a z oboch strán. Všetci šiesti tvrdia, že partia bola rozhodnutá po 3. alebo 4. kole.",
+      "dokazy": [
+        "playtest 20261111-221937-1, Eva Stratégová: „moja Nakladačka 2 → dve žlté, Hela hádkou 2 obsadila presne tie → jej 4 špaky v K2–K3, mne 0“",
+        "playtest 20261111-221937-1, Hazardná Hela, K4: hádka 0 : 7, reči na Poštárku (plný teplomer) a Veterinára → 10 špakov za bitku „bez ohľadu na výsledok“; finále 18 : 82",
+        "playtest 20261111-221937-3, Šimon Starešina: „súper rozdelil Nakladačku 12 skôr a moje reči jeho strach v tej bitke nespomalili“; „Politik nemá žiadnu obranu proti výhre strachom.“",
+        "stratég 20261111, variant V1 (hádka pred Nakladačkou): rozdiel skóre 31,1 → 24,1, víťaz bitky vyhrá aj ďalšiu 55 → 45 %, vedúci po kole 1–5 vyhrá 57 / 54 / 65 / 76 / 73 % (dnes 69 / 58 / 67 / 67 / 65 %)",
+        "stratég, posudok 12. 11.: hádka pred Nakladačkou spolu s výpalným z banky sa nesčítajú — rozdiel v zrkadle sa vráti na 31,3, rebrík pri ε = 0,25 klesne na 71 %; zavádzať po jednom, najprv toto"
+      ],
+      "moznosti": [
+        {
+          "kluc": "A",
+          "nazov": "Hádka sa rozdelí pred Nakladačkou",
+          "popis": "V kroku 4e sa otočí poradie: najprv víťaz hádky rozdelí hádku na reči (a smie presviedčať), potom víťaz bitky rozdelí Nakladačku na strach (a smie zajímať). Ceny, spomalenie +1 za stupeň s rečami, bodovanie, krádež ani výhra strachom sa nemenia. Vo finále bez zmeny (špaky 1 : 1).\n\nZmena: §9 tabuľka krokov (4e), §9.1, §9.4, §10; poradie dvoch blokov v pokracujBitku; poradie v rozhraní a vo výučbe.",
+          "dopad": "Reči prestanú byť istý zisk z cudzieho ťahu a stanú sa obranou: politik ich dá tam, kam čaká súperovu Nakladačku, a súper tam zaplatí o 1 viac za stupeň. Stratég (V1, boti): rozdiel skóre 31,1 → 24,1 (zrkadlo), partie nad 30 špakov 41 → 32 %, predurčenosť 0,47 → 0,40, otočky po polovici kôl 45 → 55 %, rebrík 63 / 78 → 69 / 73 % (v šume). Riziko: výhodu poslednej informácie dostane víťaz bitky (vidí čerstvé reči a vyhne sa im) a zajatím ukradne aj reči z tej istej bitky. To je však lacnejšie ako dnes. Stratég (posudok): spolu s výpalným z banky by sa zlepšenie stratilo (rozdiel 31,3, bitka po bitke 52 %), preto zaviesť samostatne. V náhľade Nakladačky treba ukázať, že zajatím víťaz bitky ukradne aj reči, ktoré súper práve položil.",
+          "narocnost": "malá",
+          "odporucana": true
+        },
+        {
+          "kluc": "B",
+          "nazov": "Obaja rozdelia naraz a skryto",
+          "popis": "Víťaz bitky (Nakladačka) a víťaz hádky (hádka) zapíšu rozdelenie súčasne a skryto, ako pri stavbe ponuky; odkryje sa naraz. Pri tom istom staršom sa najprv dvíha strach, potom reči (dnešné poradie obsadzovania). Zajatie a presvedčenie sa vyhodnotia po odkrytí, v tomto poradí. Ak vyhrá bitku aj hádku ten istý hráč, rozdeľuje ako dnes.\n\nZmena: §9 krok 4e, nový súčasný krok v rozhraní a v botovi.",
+          "dopad": "Odstráni výhodu poslednej informácie úplne a pridá čítanie súpera (kam pôjde jeho hádka). Evin návrh. Bot ani stratég to nezmerajú bez novej logiky bota. Nový súčasný krok spomalí bitku a vyžaduje čakanie na súpera.",
+          "narocnost": "stredná",
+          "odporucana": false
+        },
+        {
+          "kluc": "C",
+          "nazov": "A a k tomu plný teplomer rečí chráni pred výhrou strachom",
+          "popis": "Ako A. Navyše: starší, pri ktorom máš reči na celom súperovom teplomere (podmienka presvedčenia), sa súperovi neráta do štyroch červených na výhru strachom. Zajať ho môže ďalej; strach neklesá.\n\nZmena: ako A a k tomu výnimka v §1 a §10 a značka na staršom.",
+          "dopad": "Politik dostane priamu obranu proti výhre strachom s jasnou cenou (6 bodov hádky). Šimonov návrh #3. Nemerané: boti strachom nevyhrávajú (0 zo 120). Stratég varuje, že spolu s A by sa politik bránil dvakrát, preto až po overení A. Výhra strachom bude zriedkavejšia a partie sa môžu predĺžiť. Stratég: pri C dať pozor, aby presvedčenie a ochrana (rovnaká podmienka „reči na celom teplomere“) neboli jeden ťah s dvomi odmenami.",
+          "narocnost": "stredná",
+          "odporucana": false
+        }
+      ],
+      "odporucanie": "A ako prvá zmena tejto dávky. Je to len poradie dvoch krokov, nič nové na stole, a je to jediný zmeraný variant, ktorý zároveň zmenší rozdiely a zlomí reťaz „vyhral bitku, vyhrá aj ďalšiu“. Stratég súhlasí a nameral, že spolu s výpalným z banky sa účinky rušia, preto ho zaviesť samostatne a výpalné až po ďalšom playteste. Ak hráči po A budú opisovať to isté parazitovanie, len otočené, prejsť na B. C nechať ako ďalší krok, ak výhra strachom ostane bez protihry.\n\nSúvisí s návrhom renta-starsich zo 7. 11. (strach boduje len nad súperovým strachom), ktorý do v12.3 nevošiel; jeho stav som na webe nevidel. Reči 1 / 1 / 2 neodporúčam: stratég nameral tesnejšie partie, ale skoršie rozhodnutie (vedúci po 2. kole 64 → 71 %).",
+      "otazky": [
+        "Otočiť poradie v kroku 4e: hádka pred Nakladačkou (A)? Áno / nie, alebo B.",
+        "Má mať politik priamu obranu proti výhre strachom (C) už teraz, alebo až keď sa ukáže, či stačí A?"
+      ],
+      "overenie": [
+        "Pri rozdeľovaní hádky žiadny hráč nepíše, že rečami obsadil súperov strach z tej istej bitky (dnes P1 2×).",
+        "Podiel špakov od starších na skóre víťaza je v každej partii najviac 45 % (dnes P1 56 %, P3 59 %).",
+        "Aspoň v jednej z troch partií sa vedenie po 3. kole otočí, alebo rozdiel pred finále je pod 15 špakov."
+      ],
+      "zdroj": "playtest"
+    },
+    {
+      "kluc": "vypalne-z-vrecka-porazeneho",
+      "nazov": "Výpalné berie porazenému cigarety na ponuku a z prvej výhry robí sériu výhier",
+      "kritickost": "kriticka",
+      "oblast": "pravidlá",
+      "problem": "Kto vyhrá prvú bitku s červeným strachom, berie súperovi po každej ďalšej bitke cigarety (výpalné). Porazený potom nemá čím brať z ponuky, nemá nové karty a prehrá znova. Lepšia hra už v tej chvíli nemení víťaza, len skóre.\n\nV tomto turnuse to štyria zo šiestich hráčov opísali ako hlavný dôvod, prečo bola partia rozhodnutá po 3. až 4. kole. Rovnováha (4,5) a napätie (3,8) sú najnižšie z dvanástich kritérií.",
+      "pricina": "Pravidlo §10 Výpalné (v11.9), krok 6c: po každej bitke ti súper dá 1 cigaretu za každého staršieho s tvojím červeným strachom (väzeň sa ráta), koľko má. Platí sa aj z cigariet, ktoré porazený práve dostal za pas (v12.3) a ako porazený (1), a to tesne pred ďalším braním z ponuky. K tomu víťaz bitky je v ďalšom kole obranca a z ponuky berie prvý (§5, v9.2).\n\nVýpalné zaviedol Michal 2026-11-06 (docs/napady/agresivna-hra.html, návrh E), aby agresor mal cigarety na ponuku a aby šetrenie nebolo bez rizika. Prvé má ostať, druhé dnes rieši aj pas za cigarety (v12.3).",
+      "prejav": "P3: Šimon zaplatil výpalné 2, 2 a 4 cigarety (8 z 10, ktoré dostal za pas) a v kolách 2 až 5 mal pri braní z ponuky vždy 0 cigariet. Jano bral ponuku sám a vyhral strachom v 5. kole. P2: po 2. kole mal Fero 1 cigaretu a Vilo 9, Vilo vzal v 3. kole 4 karty vrátane Energeťáka, ktorý rozhodol bitku 15 : 6. Vilo vyhral všetkých 6 bitiek.\n\nTo isté hlásili štyria hráči už v turnuse 20261109-115955 (Zrejúca v11.14): „strach → výpalné → celý šenok → ďalšia bitka“. Problém sa teda opakuje cez dve verzie pravidiel.\n\nBoti to nevidia: výpalné u nich dá 3,4 cigarety za partiu a útočník je pri drafte bez cigarety len v 2–6 % kôl, lebo bot nehrá na štyri červené (výhra strachom 0 zo 120 partií).",
+      "dokazy": [
+        "playtest 20261111-221937-3, Šimon Starešina: výpalné 2 + 2 + 4 = 8 cigariet, pri braní z ponuky v K2–K5 vždy 0; „Pas za cigarety je dobrá zmena, ale porazeného ju výpalné hneď vyčistí.“",
+        "playtest 20261111-221937-3, Jano Bitkár (víťaz): „Prvá vyhratá bitka → strach → výpalné → súper bez cigariet → bez kariet → ďalšia prehra.“",
+        "playtest 20261111-221937-2, Fero Šenkár: po K2 cigarety 1 : 9, v ponuke K3 karty 1 : 4; Vilo vyhral 6 zo 6 bitiek",
+        "stratég, posudok 12. 11.: pri banke silnejší bot vyhráva rovnako často (66,5 %), menej je rozdaní, v ktorých hráč prehrá oba stolce (18 → 6 %); bot „agresor“ štyri červené nepostaví, takže účinok na hráča typu Jano ostáva nezmeraný"
+      ],
+      "moznosti": [
+        {
+          "kluc": "A",
+          "nazov": "Výpalné platí banka",
+          "popis": "Po každej bitke okrem finále dostane každý hráč z banky 1 cigaretu za každého staršieho, pri ktorom má červený strach (väzeň sa ráta). Súper nič neplatí. Inak sa nemení nič: platí aj pri prehre a pri sekere, po finále nie, ráta sa strach po Nakladačke tejto bitky.\n\nZmena: §10 Výpalné, §9 krok 6c, text v rozhraní („výpalné od starších“ namiesto „od súpera“), odhad bota.",
+          "dopad": "Agresor dostane rovnako veľa cigariet ako dnes, porazený si nechá svoje na ponuku. Do hry príde viac cigariet (u hráčov odhadom 5–8 za partiu, časť skončí vo výkupnom). Stratég (boti): rozdiel skóre 31,1 → 29,5, predurčenosť rozdania 0,47 → 0,27, rebrík 63 / 78 → 65 / 81 %. Delené rozdania pri malej chybe 33 → 55 % (overené na 80 rozdaniach, nie šum ani výhoda miesta): hra bude zhovievavejšia — horší hráč sa ľahšie zotaví —, nie náhodnejšia; silnejší bot vyhráva rovnako často. Boti výpalné takmer neplatia a ani bot „agresor“ nepostaví štyri červené, takže hlavný účinok na hráčov čísla nezachytia. Stráca sa „šetrenie má riziko“ z návrhu E, to už však rieši pas za cigarety.",
+          "narocnost": "malá",
+          "odporucana": true
+        },
+        {
+          "kluc": "B",
+          "nazov": "Výpalné len za červené navyše",
+          "popis": "Súper ďalej platí, ale len za toľko červených, koľko ich máš viac ako on: výpalné = max(0, tvoje červené − súperove červené) cigariet, koľko má. Ostatné ako dnes.",
+          "dopad": "Najmenší zásah, zachová „platí súper“. Pomôže len pri vyrovnanom strachu. V P3 by sa nezmenilo nič (Šimon nemal ani jednu červenú, platil by rovnako 8). Stratég: variant V2b vyšiel u botov do posledného čísla ako dnešné pravidlá.",
+          "narocnost": "malá",
+          "odporucana": false
+        },
+        {
+          "kluc": "C",
+          "nazov": "Karta z ponuky za plný poldeci",
+          "popis": "Výpalné ostane. Navyše: kto pri braní z ponuky nemá cigaretu, smie si na svojom ťahu vziať 1 kartu za 1 plný poldeci (otočí ho na vypitý). Ten mu chýba v prvom Zhromaždení kola (limit vykladania je o 1 nižší, pas dá o 1 cigaretu menej); doleje sa po Pitke ako každý vypitý.\n\nZmena: §5 Branie z ponuky, jedna nová voľba v rozhraní.",
+          "dopad": "Porazený nikdy nestojí v drafte s prázdnymi rukami a vznikne voľba „karta teraz, alebo vykladanie a NA EX v tomto kole“ (Šimonov návrh #5). Tok cigariet k víťazovi ostane, takže lavínu len zmierni. Nové použitie poldeci, nie strop. Nemerané. Stratég: bot túto voľbu bez naučenia nepoužije. Od v12.3 hráč kartu zaplatí dvakrát (o 1 nižší limit aj o 1 cigaretu menej za pas) — dobrá záloha, nie náhrada A.",
+          "narocnost": "stredná",
+          "odporucana": false
+        }
+      ],
+      "odporucanie": "A, ale v druhom kroku: až po playteste so zmenou hadka-pred-nakladackou. Rieši príčinu, ktorú hráči opisujú: porazený prestane financovať víťaza. Odmena za strach agresorovi ostáva celá. B v partii, ktorá sa najviac zosypala (P3), nezmení nič. C je záloha, ak by A nestačilo.\n\nStratég podporuje A s rovnakým poradím: spolu s hádkou pred Nakladačkou sa účinky rušia (hra sa stane priveľmi zhovievavou), preto jedna zmena za playtest. Odporúča ešte naučiť bota štýl agresora (naex-bot-trener: Nakladačka na 4 starších, zajatie), inak sa výpalné a výhra strachom nedajú zmerať. Ak by po hádke pred Nakladačkou hráči lavínu cez výpalné už nehlásili, návrh stačí zatvoriť.",
+      "otazky": [
+        "Má výpalné (po ďalšom playteste) platiť banka namiesto porazeného (A)? Áno / nie, alebo B / C.",
+        "Je ešte zámer, aby výpalné trestalo šetrenie cigariet (návrh E z 6. 11.), alebo to už stačí riešiť pasom za cigarety?"
+      ],
+      "overenie": [
+        "Porazený má pri braní z ponuky aspoň 1 cigaretu v aspoň 3 z 5 kôl každej partie.",
+        "Aspoň v 2 z 3 partií vyhrá hráč, ktorý prehral 1. bitku s červeným strachom súpera, aspoň jednu z ďalších troch bitiek.",
+        "Žiadny hráč neoznačí výpalné ani nedostatok cigariet za dôvod, prečo bola partia rozhodnutá."
+      ],
+      "zdroj": "playtest"
+    },
+    {
+      "kluc": "pijan-sejf-pri-lokalite",
+      "nazov": "Pijan pri lokalite: NA EX na vlastnú kartu, na ktoré súper nemôže odpovedať",
+      "kritickost": "stredna",
+      "oblast": "pravidlá",
+      "problem": "Karta položená hneď pri lokalite má akcie na vnútornej strane spárované s hranou lokality. Kde hrana lokality na danom mieste nič nemá, akcia karty ostane neaktívna natrvalo. NA EX ju v každej Pitke zdvojí a odpoveď na NA EX ju spárovať nemôže, lebo sa kladie len na koniec línie. Vznikne istých 10–12 tuhých za kolo bez rizika a bez protiťahu, často zo štartovej karty (Pijan).",
+      "pricina": "§6 Spoj a aktivácia (akcia bez partnera nerobí nič; hrana lokality je partner karty pri lokalite), §6 Prevaha a akcie lokality, §7 NA EX (zdvojí neaktívne akcie) a §7 Odpoveď na NA EX (len na koniec línie). Každé pravidlo samo dáva zmysel; spolu robia z miesta pri lokalite „sejf“. Kartové prejavy: Pijan (Bitka: za každé tvoje NA EX v kole Rana), Finančná poradkyňa (Dlhy z nej dostáva súper).",
+      "prejav": "P3: Janov Pijan pri lokalite s Ranami oproti prázdnemu miestu hrany: hrozba 10 tuhých v 1. kole (zastavila ju len Degustátorka), v 2. kole 12 : 0, Nakladačka 12 = dve červené, čo spustilo lavínu z návrhu vypalne-z-vrecka-porazeneho. Šimon ten istý trik chystal v 3. kole. P2: Finančná poradkyňa pri lokalite bola trvalý cieľ NA EX s hrozbou „Dlh +9 za kolo“, Dlhy išli súperovi.\n\nNahlásili traja hráči z dvoch partií (Jano, Šimon, Vilo). Fero hlásil príbuzný prípad s Energeťákom, ten však vychádza z v12.1, ktoré Michal potvrdil 11. 11., preto ho sem neberiem.\n\nStratég u botov všeobecný sejf nenašiel: NA EX na vlastnú kartu pri lokalite hrá bot 0,55-krát za partiu a pohne bitkou o 2,1 tuhého, menej ako NA EX na vlastnú kartu inde (3,0). Prípad 12 : 0 je kombinácia s Pijanom („za každé tvoje NA EX v kole Rana“), ktorého má každý v štartovej ruke.",
+      "dokazy": [
+        "playtest 20261111-221937-3, Jano Bitkár: NA EX na vlastného Pijana pri lokalite 12 : 0 v K2; „odpoveď ich nikdy nespáruje“",
+        "playtest 20261111-221937-3, Šimon Starešina: „Rany pri lokalite sa nedajú spárovať, preto 10–12 tuhých bez možnosti odpovede“",
+        "playtest 20261111-221937-2, Paragrafista Vilo: Finančná poradkyňa pri lokalite = trvalý cieľ NA EX, hrozba „Dlh +9“",
+        "turnus 20261109-115955: návrh obmedziť NA EX na krajné karty všade bol posúdený ako kolízia s identitou NA EX (spolocne-5, spolocne-22) — preto tu užší zásah",
+        "stratég, posudok 12. 11.: NA EX na vlastnú kartu pri lokalite 0,55× za partiu, švih 2,1 tuhého (inde 3,0); varianty „×1 pri lokalite“ (rebrík 65 / 86 %) a „akcia mŕtva“ (71 / 80 %) sú v šume"
+      ],
+      "moznosti": [
+        {
+          "kluc": "A",
+          "nazov": "Opraviť len Pijana",
+          "popis": "Pijan: „Bitka: Za každé tvoje NA EX na súperovu kartu {Rana}.“ (dnes: za každé NA EX, ktoré si v tomto kole dal). Pravidlá sa nemenia. Úprava karty v tvorcovi pre Zrejúcu.",
+          "dopad": "Zasiahne presne doložený prípad (Janov 12 : 0, Šimonov pokus v K3). Štartový Pijan prestane odmeňovať NA EX na vlastnú kartu pri lokalite a NA EX na súpera získa váhu. Pravidlá §7 ostanú bez novej výnimky. Finančná poradkyňa (Vilo) a iné karty pri lokalite ostanú ako dnes — ak sa sejf ukáže aj bez Pijana, nasleduje B. Šimonov návrh #7, stratég ho odporúča.",
+          "narocnost": "malá",
+          "odporucana": true
+        },
+        {
+          "kluc": "B",
+          "nazov": "Pri lokalite NA EX len aktivuje",
+          "popis": "Neaktívna akcia karty na strane priloženej k lokalite, oproti ktorej hrana lokality na tom mieste nemá akciu, sa po NA EX počíta raz (aktivuje sa), nie dvakrát. Ostatné neaktívne akcie tej karty NA EX zdvojí ako dnes. Platí pre NA EX na vlastnú aj súperovu kartu.\n\nZmena: jedna veta v §7 NA EX, výpočet NA EX v jadre, náhľad NA EX v rozhraní.",
+          "dopad": "Všeobecné riešenie pre Pijana aj Finančnú poradkyňu: miesto pri lokalite ostane cenné, len stratí istotu dvojnásobku. Stratég: u botov v šume (vlastná pri lokalite 0,37× za partiu, švih 2,36; rebrík 65 / 86 %), lebo bot sejf sám nevyhľadáva. Cena: ďalšia výnimka v §7, ktorý je už dnes najhustejšou kapitolou.",
+          "narocnost": "malá",
+          "odporucana": false
+        },
+        {
+          "kluc": "C",
+          "nazov": "Akcia oproti prázdnej hrane je mŕtva",
+          "popis": "Akcia karty na strane priloženej k lokalite, oproti ktorej hrana lokality nemá akciu, nie je ani aktívna, ani neaktívna — ako akcia zrušená Odporom (§7). NA EX ju nezdvojí ani nezruší a nepočíta sa do podmienky NA EX (aspoň jedna aktívna a jedna neaktívna).\n\nZmena: §6 Spoj, §7 NA EX (podmienka), jadro, náhľady.",
+          "dopad": "Sejf zmizne úplne a využije sa existujúci pojem namiesto novej výnimky. Silnejší zásah: miesto pri lokalite stratí časť hodnoty a Finančná poradkyňa pri lokalite prestane byť cieľom NA EX, ak nemá inú neaktívnu akciu. Stratég: v šume (švih 1,89, rebrík 71 / 80 %, delené 48 %).",
+          "narocnost": "stredná",
+          "odporucana": false
+        }
+      ],
+      "odporucanie": "A (oprava Pijana). Pôvodne som odporúčal všeobecné pravidlo (dnes B), ale stratég nameral, že u botov NA EX na kartu pri lokalite nevyčnieva a varianty pravidla nič merateľné nezmenia. Doložený je len prípad s Pijanom, ktorého má každý. Zmena jednej karty je lacnejšia ako výnimka v §7. Ak ďalší playtest ukáže sejf aj bez Pijana (napríklad Finančná poradkyňa), prejsť na B. Zaviesť ako zmenu kariet spolu s Vdovou, nie s pravidlami bitky.",
+      "otazky": [
+        "Upraviť Pijana na „Rana za každé tvoje NA EX na súperovu kartu“ (A)? Áno / nie, alebo všeobecné pravidlo B / C."
+      ],
+      "overenie": [
+        "Žiadny hráč neopíše NA EX na vlastnú kartu pri lokalite ako istotu bez možnosti odpovede.",
+        "NA EX na vlastnú kartu pri lokalite nedá v žiadnej Pitke viac ako 8 tuhých."
+      ],
+      "zdroj": "playtest"
+    },
+    {
+      "kluc": "bzdocha-ci-nie-kam",
+      "nazov": "Bzdocha jednostranne ruší skryté NA EX — vidí, kam súper dal NA EX, a zrazí ho",
+      "kritickost": "stredna",
+      "oblast": "karty",
+      "problem": "Kto má v línii Bzdochu, hrá Pitku po súperovi a vidí jeho NA EX vrátane cieľa. Môže ho zraziť alebo sa mu vyhnúť, takže skrytý výber NA EX — jadro blafu — prestane platiť pre jedného hráča. Súper potom NA EX radšej nedá vôbec. Hráči to žiadajú zmeniť druhý turnus po sebe.",
+      "pricina": "Karta Bzdocha „Pitka: Súper hrá Pitku pred tebou; vidíš jeho NA EX.“ (§16) proti §7 Poradie: Pitka naraz, NA EX skryto (v9.2). Zrážka na tej istej karte (§7 Odkrytie NA EX a Výtržník).",
+      "prejav": "P2, 4. kolo: Vilo cez Bzdochu videl Ferovo NA EX na Veterána (12 : 5) a zrazil ho na Výtržníka (7 : 5), potom NA EX na vlastného Miňištranta a výhra na Absťáky. Fero pri Vilovej Bzdoche v 6. kole NA EX nedal ani raz. V P1 a P3 Bzdocha v línii nebola (Šimon ju dvakrát zakopal v stavbe ponuky).\n\nV turnuse 20261107 to hlásili štyria hráči a vznikol návrh bzdocha-bez-zrazky (odporúčaná možnosť „Bzdocha bez zrážky“). V pravidlách v12.3 ani v karte sa neprejavil; jeho stav na webe som nevidel. Tento návrh ho dopĺňa o nový dôkaz a o miernejšiu možnosť.",
+      "dokazy": [
+        "playtest 20261111-221937-2, Fero Šenkár: „Skrytý výber NA EX je jadro blafovania a Bzdocha ho úplne ruší.“ K4 zrážka 12 : 5 → 7 : 5",
+        "playtest 20261111-221937-2, Paragrafista Vilo: zrážka cez Bzdochu ako kľúčový moment K4; navrhuje zmeniť odkrývanie NA EX",
+        "návrhy 20261107-005858, bzdocha-bez-zrazky (vysoká): štyria hráči, odporúčaná „Bzdocha bez zrážky“",
+        "stratég 20261111 (N3): vyskúšať „či, nie kam“; nemerateľné, bot cez Bzdochu takmer nezráža (0,1 za partiu)"
+      ],
+      "moznosti": [
+        {
+          "kluc": "A",
+          "nazov": "Vidíš, či dal NA EX, nie kam",
+          "popis": "Bzdocha: „Pitka: Súper hrá Pitku pred tebou; vidíš, či dal NA EX.“ Cieľ súperovho NA EX ostane skrytý až do odkrytia; server pošle majiteľovi Bzdochy len „dal / nedal“ (viewFor). Zrážka je možná, ale je to tip, nie istota. Úprava karty v tvorcovi a filtra vo viewFor, dva testy.",
+          "dopad": "Informácia ostane cenná (vieš pripraviť odpoveď alebo NA EX nedať), ale jedna karta už nevypne súperovo NA EX na celé kolo. Bzdocha zoslabne. Nemerané.",
+          "narocnost": "malá",
+          "odporucana": true
+        },
+        {
+          "kluc": "B",
+          "nazov": "Vidíš aj cieľ, ale bez zrážky",
+          "popis": "Bzdocha: „Pitka: Súper hrá Pitku pred tebou; vidíš jeho NA EX. Na tú istú kartu NA EX dať nesmieš.“ (možnosť A z návrhu bzdocha-bez-zrazky zo 7. 11.)",
+          "dopad": "Zruší zrážku cez Bzdochu, ktorá rozhodovala bitky, ale súper stále vie, kam si dal NA EX, a môže sa mu vyhnúť alebo ho vyvážiť. Blaf sa nevráti.",
+          "narocnost": "malá",
+          "odporucana": false
+        },
+        {
+          "kluc": "C",
+          "nazov": "Nechať",
+          "popis": "Bez zmeny. Bzdocha ostane najsilnejšou informačnou kartou.",
+          "dopad": "Problém sa prejaví len tam, kde Bzdocha leží v línii (tento turnus 1 z 3 partií), ale keď leží, rozhoduje NA EX celého kola.",
+          "narocnost": "malá",
+          "odporucana": false
+        }
+      ],
+      "odporucanie": "A. Zachová skrytý výber NA EX a blaf, len mu odoberie istotu, a je to jedna veta na karte a jeden filter na serveri. Ak Michal o návrhu bzdocha-bez-zrazky zo 7. 11. už rozhodol, berte tento ako jeho doplnenie: nový dôkaz z P2 a miernejšiu možnosť A. Stratég pripomenul, že v koncepte chýbala, a podporuje „či, nie kam“. Zaviesť so zmenami kariet (Pijan, Vdova).",
+      "otazky": [
+        "Zmeniť Bzdochu na „vidíš, či dal NA EX, nie kam“ (A)? Áno / nie, alebo B (bez zrážky) / C."
+      ],
+      "overenie": [
+        "V partii s Bzdochou v línii dá jej súper aspoň raz NA EX v Pitke, kde Bzdocha platí.",
+        "Žiadny hráč neopíše zrážku cez Bzdochu ako istotu."
+      ],
+      "zdroj": "playtest"
+    },
+    {
+      "kluc": "vdova-vyber-z-dvoch",
+      "nazov": "Veľmi smútiaca vdova a Noviny odhodia náhodnú kartu z ruky — lotéria po rozhodnutí",
+      "kritickost": "stredna",
+      "oblast": "karty",
+      "problem": "Konflikt Vdovy (a výhra hádky s Novinami) odhodí súperovi náhodnú kartu z ruky. Obeť nemá protiťah a o tom, či stratí kľúčovú kartu alebo zbytočnú, rozhodne žreb až po všetkých rozhodnutiach. Hráči to označujú za najhorší druh náhody v hre.",
+      "pricina": "Karta Veľmi smútiaca vdova „Konflikt: Súper odhodí 1 náhodnú kartu z ruky.“ (§16, Michal 2026-11-08 výslovne: vyberie náhoda, nie súper; ktorú, vie len on). Noviny „Hádka: Ak vyhráš hádku, súper odhodí 1 náhodnú kartu z ruky.“ Od v12.2 (limit = plné poldeci) zahrá hráč za kolo menej kariet, takže jedna náhodná strata váži viac — to je novšie ako rozhodnutie z 8. 11.",
+      "prejav": "Turnus: 9 odhozov Vdovou (Hela → Eva 3, Eva → Hela 2, Jano → Šimon 4), z toho 2 zmenili výsledok bitky alebo hádky, oba u Hely: v 1. kole Čierna mačka zo 6 kariet (≈ −5 tuhých, bitka 6 : 8), v 5. kole Dievčina, jej jediná odpoveď (hádka). Šimon stratil Degustátorku a 2× Vínko. Partiu to nerozhodlo, rozhodlo to jednotlivé bitky. Nahlásili dvaja (Hela, Šimon), Vdovu za jednu z najsilnejších kariet považujú štyria.",
+      "dokazy": [
+        "playtest 20261111-221937-1, Hazardná Hela: „Je to čistá lotéria s veľkým dopadom: výsledok nevidím pred rozhodnutím a nedá sa naň reagovať.“ K1 Mačka, K5 Dievčina",
+        "playtest 20261111-221937-3, Šimon Starešina: 4 odhozy (Degustátorka, Vínko 2×), náhoda „Vdova 4×“",
+        "stratég 20261111: 9 odhozov, 2 zmenili výsledok bitky alebo hádky; odporúča verziu „náhoda vyberie 2, obeť 1“",
+        "stratég, posudok 12. 11.: podporuje A — rozptyl klesne, sila a skrytosť z 8. 11. ostanú; pri B by obeť odhodila Absťák a Vdova by jej pomohla"
+      ],
+      "moznosti": [
+        {
+          "kluc": "A",
+          "nazov": "Náhoda vyberie dve, obeť odhodí jednu",
+          "popis": "Vdova: „Konflikt: Súper si náhodne vytiahne 2 karty z ruky a 1 z nich odhodí.“ Druhú vráti do ruky. Súper sa nedozvie ani jednu (skrytosť z 8. 11. ostáva). S 1 kartou v ruke ju odhodí. Rovnako Noviny. Zmena textu dvoch kariet v tvorcovi a nová voľba v rozhraní (vzor: Hasič). Medzi ťahanými kartami sú aj kliatby v ruke (Absťák, Cirhóza), ako dnes, aby sa sila karty nemenila.",
+          "dopad": "Sila karty ostáva takmer rovnaká (súper stále stráca kartu), rozptyl sa zmenší: obeť stratí kľúčovú kartu len vtedy, keď sú vytiahnuté dve kľúčové. Nemerané (bot potrebuje novú voľbu).",
+          "narocnost": "malá",
+          "odporucana": true
+        },
+        {
+          "kluc": "B",
+          "nazov": "Obeť si vyberie",
+          "popis": "Vdova: „Konflikt: Súper odhodí 1 kartu z ruky podľa svojho výberu.“ Nikomu ju neukáže. Rovnako Noviny.",
+          "dopad": "Náhoda zmizne celkom. Vdova výrazne zoslabne (obeť odhodí najslabšiu kartu, napríklad Absťák, ak smie), možno bude potrebovať akciu navyše. Helin a Šimonov návrh.",
+          "narocnost": "malá",
+          "odporucana": false
+        },
+        {
+          "kluc": "C",
+          "nazov": "Nechať náhodu",
+          "popis": "Bez zmeny, ako Michal rozhodol 8. 11.",
+          "dopad": "Ostane zámerná výstupná náhoda v hre, ktorej hlavným cieľom je strategickosť. Dnes rozhoduje jednotlivé bitky, nie partie.",
+          "narocnost": "malá",
+          "odporucana": false
+        }
+      ],
+      "odporucanie": "A. Zmenší náhodu po rozhodnutí bez toho, aby Vdova oslabla, a zachová, že súper nevie, čo obeť stratila. Michal 8. 11. zvolil náhodu zámerne, preto je to otázka na neho; nové je, že od v12.2 má hráč v ruke menej kariet, ktoré stihne zahrať. Vyskúšať v playteste spolu s inými zmenami kariet, nie so zmenou pravidiel bitky. Stratég súhlasí; nedá sa to zmerať bez novej voľby bota.",
+      "otazky": [
+        "Platí rozhodnutie z 8. 11. (čistá náhoda, C), alebo skúsiť „náhoda vyberie 2, obeť odhodí 1“ (A)? Prípadne B."
+      ],
+      "overenie": [
+        "Žiadny hráč neoznačí odhoz Vdovy alebo Novín za náhodu, ktorá rozhodla bitku alebo hádku.",
+        "Vdovu stále aspoň jeden hráč turnusu zahrá a označí za silnú kartu."
+      ],
+      "zdroj": "playtest"
+    },
+    {
+      "kluc": "trvaly-poldeci-vinko",
+      "nazov": "Trvalý poldeci navyše zosilňuje vedúceho a Vínko ho dáva lacnejšie ako barter",
+      "kritickost": "stredna",
+      "oblast": "karty",
+      "problem": "Od v12.2 je limit vykladania rovný plným poldeci a od v12.3 dáva pas cigaretu za každý plný poldeci. Každý poldeci navyše je tak v každom Zhromaždení o kartu a o cigaretu z pasu viac. Kto ho získa skôr (Vínko z ponuky, zajatá Krčmárka), nabaľuje sa. Vínko stojí v ponuke 1 cigaretu a do Dedičstva 1–3, teda 2–4 spolu, barter za ten istý efekt 5 a kto Vínko uvidí v ponuke, je vec náhody.",
+      "pricina": "§6 Limit vykladania (v12.2), §6 Pas (v12.3), §7 Stokársky barter (5 cigariet, maximum +1), §16 Vínko „Dedičstvo: Tvoje maximum poldeci je o 1 vyššie“ (Michal 2026-11-11), §12 cena Dedičstva 1 / 2 / 3 spoločne, §10 väzeň Krčmárka.",
+      "prejav": "P2: Vilo mal od 3. kola 4 poldeci (Vínko do Dedičstva za 1), od 4. kola 5 (Krčmárka), Fero 3. Vilo dostal za pas 14 cigariet, Fero 5. Fero: „Vínko je oproti barteru 5× lacnejšie“ — po započítaní ceny karty v ponuke je to 2 proti 5 cigaretám, nie 5×.\n\nPodobne v starších turnusoch: 20261108 Jano „súper s limitom 5 a 10 cigaretami prevalcuje oba kraje“, 20261109 Vilo „barter v 2. kole (limit 4 proti môjmu 2)“. U botov rozdiel nevzniká (na konci 3,1 : 3,1).",
+      "dokazy": [
+        "playtest 20261111-221937-2, Fero Šenkár: maximum poldeci 5 : 3 od K4; cigarety za pas 5 : 14; „skutočná mena v12.3 je maximum poldeci“",
+        "playtest 20261111-221937-2, Paragrafista Vilo: „hráč s viac poldeci dostáva za pas viac — leader má viac cigariet aj kariet“",
+        "turnusy 20261108-165501 (Jano) a 20261109-115955 (Vilo): limit 4–5 proti 2–3 opísaný ako lavína",
+        "stratég 20261111: boti 3,1 : 3,1 poldeci na konci (zrkadlo), N6 nemerané"
+      ],
+      "moznosti": [
+        {
+          "kluc": "A",
+          "nazov": "Vínko zlacní barter",
+          "popis": "Vínko: „Dedičstvo: Stokársky barter ťa stojí o 2 cigarety menej.“ (dnes maximum +1). Druhá hodnota na výber: o 1 cigaretu menej. Úprava v tvorcovi pre Zrejúcu, pravidlá bez zmeny.",
+          "dopad": "Trvalý poldeci ostane investíciou cigariet, ktorú plánuje každý, a Vínko len zlacní cestu. Pri „o 2 menej“ stojí poldeci 3 cigarety (Vínko sa vyplatí od druhého barteru), pri „o 1 menej“ 4 (slabšia karta). Nemerané. Ide proti zneniu z 11. 11. Stratég: nie v jednom kroku s výpalným z banky — viac cigariet v hre a lacnejší barter by zrýchlili poldeci obom.",
+          "narocnost": "malá",
+          "odporucana": false
+        },
+        {
+          "kluc": "B",
+          "nazov": "Barter s rastúcou cenou",
+          "popis": "Stokársky barter stojí 3 cigarety, každý ďalší barter toho istého hráča o 1 viac (3 / 4 / 5 …). Vínko ostáva.",
+          "dopad": "Ferov návrh. Prvý poldeci zlacnie obom, rastúca cena brzdí hromadenie bez stropu. Mení celú ekonomiku poldeci a s výpalným z banky (návrh vypalne-z-vrecka-porazeneho, A) by bol poldeci lacnejší pre toho, kto má viac cigariet. Nemerané.",
+          "narocnost": "malá",
+          "odporucana": false
+        },
+        {
+          "kluc": "C",
+          "nazov": "Nechať a sledovať",
+          "popis": "Bez zmeny. V ďalších playtestoch sledovať rozdiel maxima poldeci v 4. kole a cigarety za pas víťaza a porazeného.",
+          "dopad": "Vínko je v tejto podobe len jeden deň; dôkaz je z jednej partie (P2) a zo starších pravidiel. Ak návrhy 1 a 2 lavínu zlomia, rozdiel poldeci môže prestať rozhodovať. Stratég odporúča C teraz: u botov rozdiel maxima poldeci nevzniká (3,1 : 3,1), takže čísla nebudú.",
+          "narocnost": "malá",
+          "odporucana": true
+        }
+      ],
+      "odporucanie": "C teraz, A ako ďalší krok, ak sa rozdiel potvrdí. Dôkaz je z jednej partie a Vínko má toto znenie jeden deň; stratég rovnako. Do ďalšieho playtestu pridať otázku na maximum poldeci v 4. kole a cigarety za pas víťaza a porazeného. A je dobrá, lebo z trvalého zdroja urobí zľavu, ktorú plánuje každý, ale nie v rovnakom kroku ako výpalné z banky. B mení celú ekonomiku poldeci, neodporúčam.",
+      "otazky": [
+        "Nechať Vínko a sledovať (C), alebo hneď zmeniť na zľavu na barter (A, o 2 alebo o 1 cigaretu)?"
+      ],
+      "overenie": [
+        "V 4. kole sa maximum poldeci hráčov nelíši o viac ako 1 v žiadnej partii.",
+        "Žiadny hráč neoznačí Vínko alebo maximum poldeci za rozhodujúcu nerovnováhu."
+      ],
+      "zdroj": "playtest"
+    }
+  ]
+}

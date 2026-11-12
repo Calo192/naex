@@ -331,15 +331,16 @@ export function vazniNaVyhru(lokalitCelkom: number): number {
 // sa obnovia, po Pitke 1 zadarmo a akcie Poldeci; doliatie za cigarety a cigarety za pas zanikli.
 // v12.3 (Michal 2026-11-11) bez novej značky: pas znova dáva cigarety — toľko, koľko má hráč plných
 // poldeci, a tie ostanú plné; Vychovávateľka: súper za ten pas cigarety nedostane.
+// v12.4 (Michal 2026-11-12) bez novej značky: výpalné platí banka, nie súper (playtest 20261111-221937).
 export const VERZIA_PRAVIDIEL = "v12";
 /**
  * Presná verzia pravidiel vrátane dávky — hráč ju vidí na stránke Pravidlá, ktorá má
  * vždy odzrkadľovať správanie nasadenej hry (Michal 2026-10-31). Značka partií
  * (VERZIA_PRAVIDIEL) sa pri dávke nemení, táto áno.
  */
-export const VERZIA_PRAVIDIEL_PRESNA = "v12.3";
+export const VERZIA_PRAVIDIEL_PRESNA = "v12.4";
 /** Odkedy platí VERZIA_PRAVIDIEL_PRESNA — hráč ho vidí na stránke Pravidlá. */
-export const PRAVIDLA_PLATNE_OD = "2026-11-11";
+export const PRAVIDLA_PLATNE_OD = "2026-11-12";
 export type DlzkaHry = keyof typeof DLZKY_HRY;
 export const ALL_DLZKY: readonly DlzkaHry[] = ["kratka", "stredna", "dlha"];
 export const PREDVOLENA_DLZKA: DlzkaHry = "stredna";

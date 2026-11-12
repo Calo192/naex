@@ -1,0 +1,329 @@
+<!doctype html>
+<html lang="sk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Náhoda vs. zručnosť na v12.3 — stratég, turnus 20261111-221937</title>
+<style>
+  :root { --pozadie:#f6f1e7; --plocha:#fffaf1; --plocha-2:#f0e7d6; --okraj:#dccdb3; --text:#2a2016; --tlmeny:#5e4f3b;
+    --akcent:#8f5609; --cervena:#a3392c; --zelena:#2f6b3a; --modra:#22646e; color-scheme: light; }
+  * { box-sizing: border-box; }
+  body { margin:0; background:var(--pozadie); color:var(--text); font:16px/1.6 system-ui,"Segoe UI",Roboto,sans-serif; }
+  main { max-width:1040px; margin:0 auto; padding:24px max(14px, env(safe-area-inset-right, 0px)) 90px max(14px, env(safe-area-inset-left, 0px)); }
+  h1,h2,h3 { font-family:Georgia,"Times New Roman",serif; line-height:1.2; text-wrap:balance; }
+  h1 { font-size:clamp(1.5rem,5vw,2.1rem); margin:0 0 6px; }
+  h2 { font-size:1.35rem; margin:40px 0 12px; padding-bottom:6px; border-bottom:1px solid var(--okraj); }
+  h3 { font-size:1.08rem; margin:0 0 6px; }
+  p { margin:0 0 10px; max-width:84ch; }
+  ul, ol { max-width:84ch; padding-left:22px; }
+  li { margin-bottom:5px; }
+  a { color:var(--modra); }
+  :focus-visible { outline:2px solid var(--akcent); outline-offset:2px; }
+  .pod { color:var(--tlmeny); }
+  .pozn { font-size:.9rem; color:var(--tlmeny); }
+  .verdikt { border:1px solid var(--akcent); background:var(--plocha); border-radius:14px; padding:14px 18px; margin:16px 0; }
+  .verdikt h2 { margin-top:0; border:0; padding:0; font-size:1.2rem; }
+  .dlazdice { display:grid; grid-template-columns:repeat(auto-fit,minmax(210px,1fr)); gap:10px; margin:12px 0; }
+  .dlazdica { background:var(--plocha); border:1px solid var(--okraj); border-radius:12px; padding:10px 12px; min-width:0; }
+  .dlazdica b { display:block; font-size:.82rem; color:var(--tlmeny); font-weight:600; }
+  .dlazdica .velke { display:block; font-size:1.5rem; font-weight:700; font-variant-numeric:tabular-nums; color:var(--akcent); }
+  .dlazdica p { font-size:.86rem; margin:4px 0 0; }
+  .tab { overflow-x:auto; background:var(--plocha); border:1px solid var(--okraj); border-radius:12px; margin:10px 0; }
+  table { border-collapse:collapse; width:100%; font-size:.85rem; min-width:760px; font-variant-numeric:tabular-nums; }
+  caption { text-align:left; caption-side:bottom; padding:6px 10px; font-size:.82rem; color:var(--tlmeny); }
+  th,td { padding:7px 8px; border-bottom:1px solid var(--okraj); text-align:right; vertical-align:top; }
+  th:first-child,td:first-child { text-align:left; }
+  tbody th { text-align:left; font-weight:600; color:var(--text); font-size:.85rem; }
+  th { color:var(--tlmeny); font-size:.75rem; letter-spacing:.02em; }
+  tr.base th, tr.base td { background:color-mix(in srgb,var(--modra) 9%,transparent); }
+  table.mapa { min-width:860px; }
+  table.mapa td { text-align:left; }
+  .zle { color:var(--cervena); font-weight:600; } .dobre { color:var(--zelena); font-weight:600; }
+  .graf { background:var(--plocha); border:1px solid var(--okraj); border-radius:12px; padding:12px 14px; margin:10px 0; }
+  .riadok { display:grid; grid-template-columns:minmax(150px,1.3fr) 1fr 1fr; gap:8px; align-items:center; margin:6px 0; font-size:.86rem; }
+  .riadok.hlava { font-size:.78rem; color:var(--tlmeny); font-weight:600; }
+  .pruh { position:relative; height:18px; background:var(--plocha-2); border-radius:4px; }
+  .pruh i { position:absolute; left:0; top:0; bottom:0; border-radius:4px; background:var(--akcent); }
+  .pruh.b i { background:var(--modra); }
+  .pruh em { position:absolute; right:6px; top:0; font-style:normal; font-size:.76rem; line-height:18px; }
+  .pruh .ciara { position:absolute; top:-3px; bottom:-3px; width:2px; background:var(--text); left:50%; opacity:.55; }
+  .filtre { display:flex; flex-wrap:wrap; gap:8px; margin:10px 0 14px; }
+  .filtre button { font:inherit; font-size:.9rem; padding:6px 12px; border-radius:999px; border:1px solid var(--okraj); background:var(--plocha); color:var(--text); cursor:pointer; min-height:36px; }
+  .filtre button[aria-pressed="true"] { background:var(--akcent); color:#fff; border-color:var(--akcent); }
+  .navrh { background:var(--plocha); border:1px solid var(--okraj); border-radius:14px; padding:14px 18px; margin:12px 0; }
+  .navrh h3 { display:flex; flex-wrap:wrap; gap:8px; align-items:baseline; }
+  .navrh dl { display:grid; grid-template-columns:minmax(110px,150px) 1fr; gap:4px 12px; margin:8px 0 0; font-size:.93rem; }
+  .navrh dt { color:var(--tlmeny); font-weight:600; }
+  .navrh dd { margin:0; max-width:none; }
+  .navrh[hidden] { display:none; }
+  .stit { display:inline-block; font-size:.74rem; font-weight:700; letter-spacing:.03em; padding:2px 9px; border-radius:999px; border:1px solid currentColor; font-family:system-ui,sans-serif; }
+  .stit.zaviest { color:var(--zelena); } .stit.vyskusat { color:var(--akcent); } .stit.zamietnut { color:var(--cervena); } .stit.narocnost { color:var(--modra); }
+  blockquote { margin:6px 0 10px; padding:4px 12px; border-left:3px solid var(--okraj); color:var(--tlmeny); font-size:.92rem; }
+  nav.obsah { font-size:.92rem; }
+  footer { margin-top:40px; font-size:.86rem; color:var(--tlmeny); border-top:1px solid var(--okraj); padding-top:12px; }
+  @media (max-width:640px) { .riadok { grid-template-columns:1fr; gap:4px; } .navrh dl { grid-template-columns:1fr; } }
+</style>
+</head>
+<body>
+<main>
+<h1>Náhoda vs. zručnosť na pravidlách v12.3</h1>
+<p class="pod">Rozbor stratéga · turnus <b>20261111-221937</b> (3 partie Druhej ligy, stredná dĺžka, Vypálená v12.3 „Cigarety za pas“ na <code>41e27d7</code>) · 12. 11. 2026 · pre Michala · nadväzuje na rozbor v11.12 zo 7. 11. (<code>strategia-20261107-005858</code>). Meralo sa na tom istom jadre, na ktorom sa hralo, vo vlastnom worktree. Priebeh partií, známky (priemer 6,6) a nezrovnalosti sú v reporte spisovateľa <a href="20261111-221937.html">20261111-221937</a>. Tu ich neopakujem.</p>
+<p class="pod">Partia 1: Eva Stratégová 82 : 18 Hazardná Hela. Do K4 bolo vyrovnané (19 : 17), potom hádka 7 : 0 a reči dali Eve 15 a 28 špakov za bitku. Partia 2: Paragrafista Vilo 80 : 28 Fero Šenkár. Vilo vyhral všetkých 6 bitiek, Fero mal v K3 1 cigaretu a Vilo 9. Partia 3: Jano Bitkár vyhral strachom v K5 (64 : 33) proti Šimonovi Starešinovi. Šimon zaplatil 8 cigariet výpalného a v štyroch kolách za sebou nemal pri braní z ponuky ani jednu.</p>
+
+<section class="verdikt" aria-labelledby="verdikt">
+<h2 id="verdikt">Verdikt</h2>
+<p>Od 7. 11. sa hra u botov výrazne upokojila. Priemerný rozdiel skóre klesol z 51 na 31 špakov, predurčenosť rozdania z 0,59 na 0,47 a otočky stúpli do pásma 33–45 %. Malá chyba (ε = 0,1) sa trestá stále mierne: 63 % výhier na 80 partiách. Hráči odhadujú zručnosť na 65–70 % (priemer 68 %, minule 61 %). Zo 148 rozhodovacích záznamov v denníkoch označili 143 ako „voľba“, náhodu spomína 10 a skrytú informáciu 7.</p>
+<p>Partie hráčov však vyzerali inak ako partie botov: 82 : 18, 80 : 28 a výhra strachom v K5. Napätie (kritérium 11) dostalo priemer 3,8 z 10. Nerozhoduje to náhoda, ale <b>dva zosilňovače, ktoré bot nehrá</b>. Prvý je <b>výpalné</b>: porazený platí víťazovi z vlastného vrecka, takže agresor mu po prvej červenej vezme ponuku. Šimon zaplatil 8 z 10 cigariet, ktoré dostal za pas, Fero 5. U botov ide výpalným 3,4 cigarety za partiu a útočník je pri drafte bez cigarety len v 2–6 % kôl. Druhý je <b>poradie v kroku 4e</b>: víťaz hádky rozdeľuje až po Nakladačke, vidí čerstvý strach a obsadí ho rečami. Eva aj Hela to opísali na tom istom ťahu.</p>
+<p>Ako prvú zmenu odporúčam vyskúšať <b>hádku rozdeliť pred Nakladačkou</b>. Je to len poradie dvoch krokov. U botov klesne rozdiel v zrkadle z 31 na 24 špakov, víťaz bitky vyhrá aj ďalšiu bitku v 45 % namiesto 55 % a krivka „vedúci vyhrá“ stúpa postupne. Hneď za tým navrhujem vyskúšať <b>výpalné z banky</b>. Bot jeho účinok nezmeria, ale je to priama odpoveď na najčastejšiu sťažnosť turnusu.</p>
+</section>
+
+<nav class="obsah" aria-label="Obsah"><a href="#cisla">Čísla</a> · <a href="#mapa">Mapa náhody</a> · <a href="#zrucnost">Mapa zručnosti</a> · <a href="#navrhy">Návrhy</a> · <a href="#sledovat">Čo sledovať</a> · <a href="#meranie">Ako sa meralo</a></nav>
+
+<h2 id="cisla">Čísla</h2>
+<p>Východisko je HEAD <code>41e27d7</code> (v12.3, zverejnená sada) vo vlastnom worktree. V zátvorke je hodnota z rozboru v11.12 zo 7. 11. Z = zrkadlo (Igor proti Igorovi), M = zmes štyroch povách. Každé z nich má 60 partií z vlastného skriptu <code>metriky.ts</code>. Rebrík je 16 rozdaní × 2 miesta ako minule a navyše 40 rozdaní × 2 miesta, aby bol šum menší (± 5 bodov namiesto ± 9).</p>
+<div class="dlazdice">
+  <div class="dlazdica"><b>Rebrík ε = 0,1 / 0,25 (40 rozdaní)</b><span class="velke">63 % · 78 %</span><p>(56 % / 91 % na 16 rozdaniach, dnes 56 % / 84 %.) Malú chybu hra trestá mierne, veľkú jasne.</p></div>
+  <div class="dlazdica"><b>Delené rozdania ε = 0,1 / 0,25</b><span class="velke">35 % · 35 %</span><p>(50 % / 6 %.) V tretine rozdaní rozhodlo miesto alebo rozdanie, nie chyba. Pri ε = 0,25 je to viac ako minule.</p></div>
+  <div class="dlazdica"><b>Výhoda hráča 1</b><span class="velke">44 %</span><p>(≈ 49 %.) 32 partií zrkadla zo strategickost. To je v šume, miesto nie je výhodou.</p></div>
+  <div class="dlazdica"><b>Otočky (vedúci po K3 prehrá)</b><span class="velke">33 % Z · 40 % M</span><p>(31 % / 36 %.) Po polovici kôl (strategickost) 45 % (minule 17 %). Dobiehanie u botov funguje.</p></div>
+  <div class="dlazdica"><b>Predurčenosť rozdania</b><span class="velke">0,47</span><p>(0,59.) Čistý šum je ≈ 0,31. Rozdanie určuje víťaza menej ako 7. 11.</p></div>
+  <div class="dlazdica"><b>Rozdiel skóre / nad 30</b><span class="velke">31 · 41 %</span><p>Z (51 a 68 %). M 30,5 a 47 % (39 a 48 %). Hráči 64, 52 a 31 (výhra strachom). Boti sa už nedrvia, hráči áno.</p></div>
+  <div class="dlazdica"><b>Starší v príjme víťaza</b><span class="velke">40 % Z · 43 % M</span><p>(44 % / 40 %.) U hráčov Eva 46 z 82, Vilo 26 z 80, Jano 38 zo 64. Porazení 4, 13 a 26.</p></div>
+  <div class="dlazdica"><b>Víťaz bitky vyhrá aj ďalšiu</b><span class="velke">55 % Z · 52 % M</span><p>Nové meranie. Bitky na seba u botov takmer nenadväzujú. U hráčov Vilo 6 zo 6 a Jano 4 zo 4 rozhodnutých.</p></div>
+  <div class="dlazdica"><b>Útočník pri drafte bez cigarety</b><span class="velke">6 % Z · 2 % M</span><p>Nové meranie. U hráčov Šimon 4 z 4 kôl, Fero mal v K3 1 cigaretu proti 9. Výpalné u botov 3,4 cigarety za partiu, u Šimona 8.</p></div>
+  <div class="dlazdica"><b>Vedúci pred finále vyhrá</b><span class="velke">65 % Z · 58 % M</span><p>(86 % / 75 %.) Finále dnes u botov dobieha veľa. U hráčov sa finále v P1 a P2 nedalo dobehnúť (42 : 16 a 46 : 26) a P3 sa skončila skôr.</p></div>
+  <div class="dlazdica"><b>Výhra strachom / väzňami</b><span class="velke">0 % · 7–8 %</span><p>Boti strachom nevyhrávajú nikdy (minule 12 %). Jano vyhral strachom v K5. To, čo hráč agresor robí najlepšie, bot nerobí.</p></div>
+  <div class="dlazdica"><b>Vynútené ťahy</b><span class="velke">0 %</span><p>Priemerne 12,1 možností na ťah (8,7). Hráči však opisujú Pitky s 0 plnými poldeci, v ktorých je jediný zmysluplný ťah „hotovo“.</p></div>
+</div>
+<p class="pozn">Vedúci po kole k vyhrá (K1–K5). Z: 69 / 58 / 67 / 67 / 65 %. M: 65 / 64 / 60 / 56 / 58 %. Strategickost (32 partií): 57 / 60 / 55 / 69 / 78 %. Krivka je takmer plochá. Bot nevie premeniť vedenie na istotu a hra sa u neho rozhoduje až vo finále. U hráčov to bolo opačne: P2 viedol víťaz od K1, P3 od K2, P1 od K4.</p>
+
+<h3>Rebrík zručnosti</h3>
+<p class="pozn">Výhry plného Igora proti Igorovi s ε náhodnými ťahmi, 40 rozdaní × 2 miesta (80 partií na stĺpec). Jantárová farba je ε = 0,1, modrá ε = 0,25, čiara je 50 % (náhoda). Strmší rebrík znamená, že sa chyba viac trestá.</p>
+<div class="graf" role="img" aria-label="Rebrík zručnosti pre východisko a varianty">
+  <div class="riadok hlava"><span>variant</span><span>ε = 0,1</span><span>ε = 0,25</span></div>
+  <div class="riadok"><span>východisko v12.3</span><span class="pruh"><i style="width:63%"></i><span class="ciara"></span><em>63 %</em></span><span class="pruh b"><i style="width:78%"></i><span class="ciara"></span><em>78 %</em></span></div>
+  <div class="riadok"><span>v11.12 (7. 11., 16 rozdaní)</span><span class="pruh"><i style="width:56%"></i><span class="ciara"></span><em>56 %</em></span><span class="pruh b"><i style="width:91%"></i><span class="ciara"></span><em>91 %</em></span></div>
+  <div class="riadok"><span>V1 hádka pred Nakladačkou</span><span class="pruh"><i style="width:69%"></i><span class="ciara"></span><em>69 %</em></span><span class="pruh b"><i style="width:73%"></i><span class="ciara"></span><em>73 %</em></span></div>
+  <div class="riadok"><span>V2 výpalné z banky</span><span class="pruh"><i style="width:65%"></i><span class="ciara"></span><em>65 %</em></span><span class="pruh b"><i style="width:81%"></i><span class="ciara"></span><em>81 %</em></span></div>
+  <div class="riadok"><span>V2b výpalné za červené navyše</span><span class="pruh"><i style="width:63%"></i><span class="ciara"></span><em>63 %</em></span><span class="pruh b"><i style="width:78%"></i><span class="ciara"></span><em>78 %</em></span></div>
+  <div class="riadok"><span>V3 reči 1 / 1 / 2</span><span class="pruh"><i style="width:59%"></i><span class="ciara"></span><em>59 %</em></span><span class="pruh b"><i style="width:80%"></i><span class="ciara"></span><em>80 %</em></span></div>
+</div>
+
+<h3>Východisko a varianty v jednej tabuľke</h3>
+<div class="tab">
+<table>
+<caption>Rozdiel = priemerný rozdiel konečných špakov (pri výhre strachom či väzňami stav v tej chvíli). Nad 30 = podiel partií s rozdielom nad 30. Vedúci K2 / K5 = vedúci po 2. kole a pred finále vyhrá. Otočky = vedúci po K3 prehrá. Bitka po bitke = víťaz bitky vyhrá aj nasledujúcu. Starší W : L = špaky od starších víťaza a porazeného za partiu (M). Z / M sú vlastné merania (60 partií), rebrík (40 rozdaní × 2), delené a predurčenosť sú zo strategickost.ts. Bot sa variantom neprispôsobuje (výnimka: pri výpalnom mu je upravený odhad), čísla sú náznak smeru.</caption>
+<thead><tr><th scope="col">variant</th><th scope="col">rozdiel Z / M</th><th scope="col">nad 30 Z / M</th><th scope="col">vedúci K2 Z / M</th><th scope="col">vedúci K5 Z / M</th><th scope="col">otočky Z / M</th><th scope="col">bitka po bitke Z / M</th><th scope="col">starší W : L</th><th scope="col">rebrík 0,1 / 0,25</th><th scope="col">delené 0,1</th><th scope="col">predurč.</th></tr></thead>
+<tbody>
+<tr class="base"><th scope="row">východisko v12.3</th><td>31,1 / 30,5</td><td>41 / 47 %</td><td>58 / 64 %</td><td>65 / 58 %</td><td>33 / 40 %</td><td>55 / 52 %</td><td>29,5 : 10,7</td><td>63 / 78 %</td><td>35 %</td><td>0,47</td></tr>
+<tr><th scope="row">V1 hádka pred Nakladačkou</th><td class="dobre">24,1 / 29,3</td><td class="dobre">32 / 41 %</td><td>54 / 61 %</td><td>73 / 67 %</td><td>35 / 42 %</td><td class="dobre">45 / 47 %</td><td>26,9 : 13,9</td><td>69 / 73 %</td><td>38 %</td><td class="dobre">0,40</td></tr>
+<tr><th scope="row">V2 výpalné z banky</th><td>29,5 / 30,6</td><td>34 / 43 %</td><td>57 / 67 %</td><td>77 / 68 %</td><td>36 / 38 %</td><td>53 / 51 %</td><td>26,8 : 13,1</td><td>65 / 81 %</td><td>60 %</td><td>0,27</td></tr>
+<tr><th scope="row">V2b výpalné len za červené navyše</th><td>31,1 / 30,5</td><td>41 / 45 %</td><td>58 / 62 %</td><td>65 / 60 %</td><td>33 / 42 %</td><td>55 / 52 %</td><td>29,5 : 10,4</td><td>63 / 78 %</td><td>35 %</td><td>0,47</td></tr>
+<tr><th scope="row">V3 reči 1 / 1 / 2, strach 1 / 2 / 3</th><td class="dobre">28,1 / 25,7</td><td class="dobre">36 / 33 %</td><td>63 / 71 %</td><td>62 / 56 %</td><td>36 / 43 %</td><td>52 / 55 %</td><td>23,8 : 11,1</td><td>59 / 80 %</td><td>43 %</td><td class="zle">0,53</td></tr>
+</tbody>
+</table>
+</div>
+<p class="pozn">Vedúci po kole k vyhrá v zrkadle (K1–K5). Východisko 69 / 58 / 67 / 67 / 65 %, V1 57 / 54 / 65 / 76 / 73 %, V2 60 / 57 / 64 / 67 / 77 %, V3 67 / 63 / 64 / 53 / 62 %. Strategickost (32 partií): V1 otočky po polovici kôl 55 % (východisko 45 %), V2 39 %, V3 45 %. Rebrík na 16 rozdaniach (ako minule): východisko 56 / 84 %, V1 66 / 66 %, V2 66 / 72 %, V2b 56 / 84 %, V3 50 / 84 %. Na 16 rozdaniach je šum ± 9 bodov, preto rozhoduje stĺpec so 40 rozdaniami.</p>
+<p><b>Čo z toho plynie.</b> V1 je jediný variant, ktorý zmenší rozdiely a zároveň zlomí reťaz „vyhral bitku, vyhrá aj ďalšiu“ (55 → 45 %). Krivka vedúceho stúpa postupne (57 → 73 %), ako má. Dnes je u botov plochá a rozhoduje finále. Porazený dostane od starších o 2–3 špaky viac, lebo jeho reči už nekončia pod súperovým novým strachom, ale ho spomalia. Rebrík sa pohol len v šume (63 / 78 → 69 / 73 %): malú chybu trestá hra o trochu viac, väčšiu o trochu menej. V3 zmenší rozdiely najviac v zmesi povách (30,5 → 25,7), ale vedenie po K2 vyhrá častejšie (64 → 71 %) a predurčenosť stúpne. Bot len menej boduje, ale hrá rovnako. V2 a V2b bot nezmeria, lebo výpalné u neho takmer nevzniká: V2b vyšlo do posledného čísla ako východisko. Pri V2 sa pohli dve čísla opačným smerom: predurčenosť klesla (0,47 → 0,27), ale podiel delených rozdaní pri ε = 0,1 stúpol (35 → 60 %). Silný bot častejšie prehrá na zlom mieste a menej často prehrá oba stolce. Bez bota, ktorý hrá na výpalné, sa to nedá vyložiť ako zlepšenie ani zhoršenie.</p>
+
+<p class="pozn"><b>Doplnok z posudku návrhov (12. 11.).</b> Na žiadosť navrhára som zmeral ďalšie veci. <b>V1 + V2 naraz</b>: rozdiel Z / M 31,3 / 31,3, nad 30 46 / 37 %, bitka po bitke 52 / 48 %, rebrík 68 / 71 %, delené 40 %. Účinky sa nesčítajú: s bankou zmizne zlepšenie, ktoré V1 dáva v zrkadle, a väčšia chyba sa trestá najmenej zo všetkého. Zavádzať po jednom, najprv V1. <b>Delené pri V2</b>: na nových semienkach (40 rozdaní) 30 → 50 %, spolu 33 → 55 %. Nejde o miesto (oba stolce vyhral hráč 1 v 21 a hráč 2 v 23 rozdaniach). Výhry silného bota sa nezmenili (66,5 %), menej je však rozdaní, v ktorých prehrá oba stolce (18 → 6 %). Banka chyby zmierni. <b>Bot agresor</b> (+7 za červenú) štyri červené aj tak nepostaví (výhra strachom 0, výpalné 3,9 cigarety), takže hlavný účinok banky ostáva nezmeraný. <b>NA EX na vlastnú kartu pri lokalite</b> hrá bot 0,55-krát za partiu a pohne bitkou o 2,1 tuhého (inde 3,0). Varianty „×1 pri lokalite“ (rebrík 65 / 86 %) a „akcia mŕtva“ (71 / 80 %) sú v šume. Prípad 12 : 0 z P3 je kombinácia s Pijanom, preto odporúčam upraviť Pijana, nie pravidlo. Posudok: <code>playtest/navrhy/20261111-221937/posudok-stratega.md</code>.</p>
+
+<h2 id="mapa">Mapa náhody</h2>
+<p>Denníky: 148 rozhodovacích záznamov (Eva 53, Hela 30, Šimon 25, Jano 23, Fero 9, Vilo 8). „Voľba“ je v 143 z nich, náhodu spomína 10 a skrytú informáciu 7. Odhady zručnosť : náhoda: Hela, Vilo, Jano a Šimon 70 : 30, Eva a Fero 65 : 35 (7. 11.: 55–70 %). Všetci šiesti sa zhodli, že bitky rozhodli voľby. Partiu však rozhodlo, kto prvý dostal zosilňovač: reči po veľkej hádke (P1), alebo strach s výpalným (P2, P3).</p>
+<div class="tab">
+<table class="mapa">
+<caption>„Pred“ = hráč na náhodu reaguje, „po“ = náhoda mu zmarí rozhodnutie. Závažnosť je môj odhad z playtestu aj z meraní.</caption>
+<thead><tr><th scope="col">zdroj</th><th scope="col">kedy vstupuje</th><th scope="col">rozptyl</th><th scope="col">čím sa dnes tlmí</th><th scope="col">závažnosť</th><th scope="col">dôkaz</th></tr></thead>
+<tbody>
+<tr><th scope="row">Výpalné z vrecka porazeného (zosilňovač)</th><td>nie je náhoda, ale z prvej výhry spraví niekoľko ďalších</td><td>2–4 cigarety za bitku, teda celá ponuka</td><td>cigareta porazenému (1), cigarety za pas, ktoré však hneď odídu na výpalné</td><td class="zle">vysoká</td><td>Jano: „Prvá vyhratá bitka → strach → výpalné → súper bez cigariet → bez kariet → ďalšia prehra.“ Šimon: 0 cigariet pri braní v K2–K5. Fero K3: 1 : 9 cigariet, Vilo vzal 4 karty.</td></tr>
+<tr><th scope="row">Poradie 4e: reči až po Nakladačke (zosilňovač)</th><td>skrytá výhoda poradia: víťaz hádky rozhoduje s poslednou informáciou</td><td>Hela K4: 7 bodov hádky → 7 špakov za každú ďalšiu bitku</td><td>porazený v Nakladačke nedvíha strach pri prázdnych starších (Helino poučenie)</td><td class="zle">vysoká</td><td>Eva: „moja Nakladačka 2 → dve žlté, Hela hádkou 2 obsadila presne tie.“ Hela K4: Nakladačka na Poštárku a Veterinára, Eva ich hneď zaplnila rečami (6 + 1).</td></tr>
+<tr><th scope="row">Stavba ponuky (8 kariet z balíčkov)</th><td>pred (vidíš 8, ponúkaš 4)</td><td>jedna karta (Vandal, Energeťák, Vínko) rozhodla kolo</td><td>zakopanie naspodok, poradie brania</td><td>stredná</td><td>Fero: „náhoda (čo príde do ponuky, kto má v kole cigarety) rozhodla, ktoré kombá mohol zložiť.“ Fero: „trvalý poldeci je lotéria, kto uvidí Vínko v ponuke.“</td></tr>
+<tr><th scope="row">Vdova a Noviny: náhodná karta z ruky</th><td>po (vyložíš kartu, náhoda vyberie, čo stratíš)</td><td>Hela K1: −5 tuhé a prehratá bitka</td><td>nič, okrem toho, že v ruke držíš len potrebné karty</td><td>stredná</td><td>Hela: „Je to čistá lotéria s veľkým dopadom.“ Šimon: Vdova mu 4× vzala kartu (Degustátorka, 2× Vínko). Od 8. 11. je to zámer (§16).</td></tr>
+<tr><th scope="row">Fajčenie naslepo</th><td>po</td><td>jedna karta za 1–3 cigarety</td><td>verejný odhadzovací balíček (poznáš zloženie)</td><td>nízka</td><td>Hela: 2 pokusy, oba zlé (Dievčina namiesto Mačky, Absťák 1 zo 4).</td></tr>
+<tr><th scope="row">Bzdocha (jednostranne zruší skryté NA EX)</th><td>pred (kto ju má), v Pitke informačná výhoda</td><td>Vilo K4: zrážka 12 : 5 → 7 : 5</td><td>NA EX nedať (Fero K6 nedal vôbec)</td><td>stredná, keď je v hre</td><td>Fero: „Skrytý výber NA EX je jadro blafovania a Bzdocha ho úplne ruší.“ V P1 a P3 nebola.</td></tr>
+<tr><th scope="row">Cirhóza v odhadzovacom balíčku</th><td>po (či sa vráti do ruky na priznanie)</td><td>−3 špaky za kus, Eva −12</td><td>Vízia, Veterinár, priznanie z ruky</td><td>stredná</td><td>Vilo: „priznaj, alebo riskuj je v skutočnosti čakaj na zamiešanie.“ Eva: 3 Cirhózy z jedného NA EX pri 0 plných poldeci.</td></tr>
+<tr><th scope="row">Remíza v tuhom: Absťáky, Dlhy, sekera</th><td>pred (Absťáky aj Dlhy sú verejné)</td><td>celá bitka</td><td>hráč ju vie vyrobiť alebo odvrátiť</td><td>nízka</td><td>Vilo K4 5 : 5 „zámerne, lebo som vedel, že súper má Absťák“. Šimon K1 sekera zámerne Vínkom.</td></tr>
+<tr><th scope="row">Rozdanie scorecardov (priazne)</th><td>pred (verejné)</td><td>sila 1–3 jednej priazne</td><td>výber staršieho pri Nakladačke</td><td>nízka</td><td>Šimon: „Dostal som nanič priazne sily 3“ (Advokát, Abstinent), ale vybral mu ich súper. Je to voľba súpera, nie náhoda.</td></tr>
+<tr><th scope="row">Dobratie 2 kariet</th><td>pred (začiatok kola)</td><td>malý</td><td>ponuka, fajčenie</td><td>nízka</td><td>Hela K3: 2 karty a 1 cigareta proti 5 a 4. Pôvod je však v cigaretách, nie v dobratí.</td></tr>
+<tr><th scope="row">Skrytá ruka, NA EX, odpoveď lícom dole</th><td>interakcia, nie náhoda</td><td>± 5–12 tuhých</td><td>čítanie súpera, náhľad</td><td>žiadúca</td><td>Hela: „NA EX s náhľadom je najlepší hazard v hre“, náhľad Cirhóz sedel presne. Jano: kúpy z ponuky sú verejné, Degustátorku sa dalo spočítať.</td></tr>
+</tbody>
+</table>
+</div>
+
+<h2 id="zrucnost">Mapa zručnosti</h2>
+<p><b>Plán na viac kôl funguje a hráči ho opisujú presne.</b> Eva postavila blok rečí na Farárovi v K3 a ten bodoval do konca. Jano od K3 plánoval štyri červené cez dve Nakladačky a starších vyberal podľa priazne, ktorú súperovi dajú („Advokát, Abstinent, Robota a Ohováračka mu bitku nepomôžu, Veriaci áno“). Vilo sledoval verejnú Chuť a Absťáky a remízu 5 : 5 vyrobil zámerne. V12.2 a v12.3 pridali novú vrstvu: plné poldeci sú zároveň limit, poistka na NA EX či odpoveď a cigarety za pas. Hela sa v nej dvakrát prepočítala a prišla o NA EX. To je zručnosť, nie náhoda, ale výpis by mal ukázať, koľko plných poldeci po ťahu ostane.</p>
+<p><b>Problém nie je, že sa dá plánovať, ale že prvý zrealizovaný plán berie súperovi nástroje.</b> Po prvej červenej má porazený menej cigariet (výpalné), takže aj menej kariet. Po prvej veľkej hádke súperov nový strach automaticky zaplnia reči. Zaostávajúci potom nemá čím odpovedať. Jano: „Súper bez cigariet nemal žiadne [zmiernenie smoly] — to je problém návrhu, nie smola.“</p>
+<p><b>Zdanlivé voľby:</b> Pitky s 0 plnými poldeci (všetci šiesti, spolu asi 20 Pitiek). Stavba ponuky bez cigariet, kde porazený len vyberá, čo súperovi daruje (Šimon 4×). Vízia na konci hry. Finále pri rozdiele 20 a viac. Rozdelenie malej hádky (2 body, dve rovnocenné možnosti).</p>
+<p><b>Karty, pri ktorých rozhoduje, kto ich dobral:</b> Vínko (trvalý poldeci za 1–3 cigarety, kým barter stojí 5), Telefón (za 1 cigaretu vyhral Eve 2 remízy hádky), Vdova (náhodný odhoz), Vandal (otočenie lokality po súperovom záväzku) a Energeťák pod vlastnou kartou s NA EX (Vilo K3 Rany ×4 bez rizika, Fero navrhuje zmenu). Ľudí na živom webe som neporovnal: <code>karty-v-partiach --zivy --ludia</code> nebeží, lebo v tomto prostredí chýba <code>deploy/.env.produkcia</code>.</p>
+<p><b>Prečo bot zosilňovače nevidí.</b> Bot hrá „všetko trochu“: bitku, starších aj zdroje. Do štyroch červených systematicky nejde (výhra strachom 0 % v 120 partiách), výpalného zaplatí za partiu 3,4 cigarety (Šimon 8) a reči neparazituje na súperovom čerstvom strachu. Snehová guľa v12.3 je preto <b>dôsledok stratégie</b>, ktorú hrá agresor (Jano, Vilo) alebo politik (Eva), nie automatika pravidiel. Čísla botov ju podceňujú. Ak má Michal chcieť čísla, treba botovi naučiť štýl agresora (<code>naex-bot-trener</code>, povaha „ide na 4 červené“).</p>
+
+<h2 id="navrhy">Návrhy</h2>
+<p>Kandidáti pochádzajú zo šiestich spätných väzieb. Snehovú guľu cez výpalné a cigarety opisujú štyria (Jano, Šimon, Fero, Vilo), reči po čerstvom strachu traja (Eva, Hela, Šimon), chýbajúcu obranu proti výhre strachom dvaja (Jano, Šimon), náhodný odhoz Vdovy dvaja (Hela, Šimon). Remízu hádkou navrhol Fero, minule ju navrhol Jano. Bzdochu „či, nie kam“ navrhol Fero, minule štyria. Štyri varianty som zmeral vo worktree. Diffy sú v <code>playtest/strategia/20261111-221937/</code>. Návrhy sú zoradené podľa pomeru prínosu a ceny.</p>
+<div class="filtre" role="group" aria-label="Filter návrhov">
+  <button type="button" data-f="vsetky" aria-pressed="true">Všetky</button>
+  <button type="button" data-f="zaviest" aria-pressed="false">Zaviesť</button>
+  <button type="button" data-f="vyskusat" aria-pressed="false">Vyskúšať v playteste</button>
+  <button type="button" data-f="zamietnut" aria-pressed="false">Zamietnuť</button>
+</div>
+
+<article class="navrh" data-odp="vyskusat">
+<h3>N1 · Hádka sa rozdelí pred Nakladačkou <span class="stit vyskusat">vyskúšať v playteste</span> <span class="stit narocnost">malá</span></h3>
+<dl>
+<dt>Problém</dt><dd>V kroku 4e rozdeľuje víťaz bitky Nakladačku na strach a až potom víťaz hádky hádku na reči. Víťaz hádky tak vidí čerstvý strach a obsadí ho rečami, ktoré mu potom bodujú v každej bitke. Eva K1: „moja Nakladačka 2 → dve žlté, Hela hádkou 2 obsadila presne tie → jej 4 špaky v K2–K3, mne 0.“ Hela K4: Nakladačka 2 na Poštárku a Veterinára, Eva ich hneď zaplnila (6 + 1) a od toho bola partia rozhodnutá. Šimon to vidí z druhej strany: „súper rozdelil Nakladačku 12 skôr a moje reči jeho strach v tej bitke nespomalili.“</dd>
+<dt>Zmena</dt><dd>Poradie v kroku 4e sa otočí: najprv víťaz hádky rozdelí hádku na reči (a smie presviedčať), potom víťaz bitky Nakladačku na strach (a smie zajímať). Ceny, spomalenie +1 a bodovanie sa nemenia. Druhá hodnota (Evin návrh): obaja rozdelia naraz a skryto, ako pri stavbe ponuky. Pri tom istom staršom sa najprv dvíha strach, potom reči. Skrytá verzia odstráni výhodu poslednej informácie úplne, ale potrebuje súčasný krok v rozhraní a bot ju nezmeria.</dd>
+<dt>Prečo zručnosť</dt><dd>Reči prestanú byť istý zisk z cudzieho ťahu a stanú sa obranou: politik dá reči tam, kam čaká súperovu Nakladačku, a súper tam zaplatí +1 za stupeň. Víťaz bitky musí čítať, kam by šli reči, a nie naopak. Hádka dostane druhý účel (spomaliť strach), o ktorý žiada Šimon.</dd>
+<dt>Čísla variantu</dt><dd>Rozdiel Z 31,1 → <b>24,1</b>, M 30,5 → 29,3. Nad 30 Z 41 → 32 %, M 47 → 41 %. Víťaz bitky vyhrá aj ďalšiu 55 → <b>45 %</b> (M 52 → 47 %). Vedúci po K1–K5 v zrkadle 57 / 54 / 65 / 76 / 73 % (východisko 69 / 58 / 67 / 67 / 65 %), teda krivka stúpa postupne a hru nerozhodne skoro. Starší porazeného 10,7 → 13,9 za partiu (M). Predurčenosť 0,47 → 0,40. Rebrík (40 rozdaní) 63 / 78 → 69 / 73 %. Otočky po polovici kôl 45 → 55 %.</dd>
+<dt>Cena a riziko</dt><dd>Poradie dvoch blokov v <code>pokracujBitku</code> a jedna veta v §9.4 a §10, k tomu poradie v rozhraní a výučbe. Riziko: výhoda poslednej informácie prejde na víťaza bitky, ktorý teraz vidí čerstvé reči a vyhne sa im. To je však lacnejšie (platí +1 za stupeň s rečami, a ak sa vyhne, reči ho nespomalia). Zajatie po novom vezme aj reči, ktoré víťaz hádky dal v tom istom kroku (krádež). Bot nemal žiadnu úpravu.</dd>
+<dt>Náročnosť</dt><dd>malá</dd>
+<dt>Odporúčanie</dt><dd><b>Vyskúšať v playteste</b> verziu „hádka pred Nakladačkou“. Ak hráči budú stále opisovať parazitovanie, len otočené, skúsiť skrytú súčasnú verziu.</dd>
+</dl>
+</article>
+
+<article class="navrh" data-odp="vyskusat">
+<h3>N2 · Výpalné platí banka, nie porazený <span class="stit vyskusat">vyskúšať v playteste</span> <span class="stit narocnost">malá</span></h3>
+<dl>
+<dt>Problém</dt><dd>Výpalné (v11.9) má podľa Michala „financovať šenok“ tomu, kto desí. Dnes však peniaze berie porazenému. Šimon zaplatil 8 cigariet, čo je 8 z 10, ktoré dostal za pas, a pri braní z ponuky mal 4 kolá za sebou 0. Fero mal v K3 1 cigaretu, Vilo 9, a Vilo vzal 4 karty. Jano (víťaz): „výpalné ho prebilo“. Šimon: „Pas za cigarety je dobrá zmena, ale porazeného ju výpalné hneď vyčistí.“ Navrhli to dvaja (Jano, Šimon), Fero navrhol miernejšiu verziu.</dd>
+<dt>Zmena</dt><dd>Hráč dostane po bitke 1 cigaretu za každú svoju červenú (väzeň sa ráta) <b>z banky</b>. Súper nič neplatí. Ostatné sa nemení (po finále nie, aj pri prehre a sekere). Druhá hodnota (Fero): súper platí, ale len za červené, ktoré máš navyše oproti nemu (max(0, tvoje − jeho)). Tá ostáva bližšie dnešnému „platí súper“, ale rieši len prípad, keď červené má jeden hráč.</dd>
+<dt>Prečo zručnosť</dt><dd>Odmena za strach ostane, ale prestane brať porazenému možnosť rozhodovať v ponuke. Štyri mŕtve stavby ponuky (Šimon) sa zmenia na kolá, v ktorých porazený vyberá. Prvá výhra prestane automaticky rozhodovať ďalšiu.</dd>
+<dt>Čísla variantu</dt><dd>Bot to nezmeria: výpalné u neho dá 3,4 cigarety za partiu (2,1 platby) a útočník je pri drafte bez cigarety v 2–6 % kôl. Banka: rozdiel Z 31,1 → 29,5, M bez zmeny (30,6). Predurčenosť 0,47 → 0,27, rebrík (40 rozdaní) 63 / 78 → 65 / 81 %, ale delené pri ε = 0,1 35 → <b>60 %</b>, teda výsledok viac závisí od miesta. Ide o jediné číslo, ktoré sa pri V2 pohlo mimo šumu, a nemám preň vysvetlenie. Treba ho sledovať. Verzia „len za červené navyše“ vyšla ako východisko do posledného čísla. Botovi som v odhade zrušil strop „koľko má súper“, inak bez úpravy.</dd>
+<dt>Cena a riziko</dt><dd>Jeden riadok v <code>vyplatVypalne</code> a v odhade bota, jedna veta v §10. Do hry príde viac cigariet (u hráčov asi 5–8 za partiu), časť skončí vo výkupnom. Agresor bude mať stále viac cigariet ako porazený, len ich nebude brať súperovi. Riziko: výhra strachom bude o niečo ľahšia, lebo porazený už nemá výpalné ako brzdu. Brzdou však nikdy nebol, lebo platil, koľko mal.</dd>
+<dt>Náročnosť</dt><dd>malá</dd>
+<dt>Odporúčanie</dt><dd><b>Vyskúšať v playteste</b> s bankou, ale nie v tom istom kroku ako N1 (spolu sa ich účinky nesčítajú, pozri doplnok vyššie). Sledovať cigarety porazeného pri braní (dnes u Šimona 0 v 4 z 4 kôl, cieľ: vždy aspoň 1–2) a počet bitiek, ktoré víťaz vyhrá za sebou.</dd>
+</dl>
+</article>
+
+<article class="navrh" data-odp="vyskusat">
+<h3>N3 · Bzdocha ukáže, či súper dal NA EX, nie kam <span class="stit vyskusat">vyskúšať v playteste</span> <span class="stit narocnost">malá</span></h3>
+<dl>
+<dt>Problém</dt><dd>Opakuje sa z minulého turnusu (vtedy štyria hráči, dnes Fero). Vilo v K4 videl cez Bzdochu Ferovo NA EX na Veterána a zrazil ho (12 : 5 → 7 : 5). Fero v K6 pri jeho Bzdoche NA EX nedal vôbec. Fero: „Skrytý výber NA EX je jadro blafovania a Bzdocha ho úplne ruší.“ Návrh N2 zo 7. 11. (Bzdocha bez zrážky) sa nezaviedol.</dd>
+<dt>Zmena</dt><dd>„Pitka: Súper hrá Pitku pred tebou; vidíš, či dal NA EX.“ Cieľ ostane skrytý, zrážka je tip, nie istota. Druhá hodnota zo 7. 11.: vidí aj cieľ, ale nesmie dať NA EX na tú istú kartu.</dd>
+<dt>Prečo zručnosť</dt><dd>Informácia ostane cenná (môžeš pripraviť odpoveď, nedať NA EX), ale jedna karta už nevypne súperovo NA EX na celé kolo.</dd>
+<dt>Čísla variantu</dt><dd>Nemerané. Bot cez Bzdochu zrážky takmer nerobí (minule 0,1 za partiu), takže meranie by vyšlo ako východisko. Platí svedectvo: P2 jedna bitka rozhodnutá zrážkou a jedna Pitka bez NA EX.</dd>
+<dt>Cena a riziko</dt><dd>Podmienka v <code>viewFor</code> (posiela sa len „dal / nedal“), text karty, dva testy. Bzdocha zoslabne a hazardný štýl stratí silný ťah.</dd>
+<dt>Náročnosť</dt><dd>malá</dd>
+<dt>Odporúčanie</dt><dd><b>Vyskúšať v playteste.</b> Je to druhý turnus za sebou, keď ju hráči žiadajú.</dd>
+</dl>
+</article>
+
+<article class="navrh" data-odp="vyskusat">
+<h3>N4 · Vdova a Noviny: náhoda vyberie dve karty, odhodenú volí hráč <span class="stit vyskusat">vyskúšať v playteste</span> <span class="stit narocnost">malá</span></h3>
+<dl>
+<dt>Problém</dt><dd>Náhodný odhoz z ruky je náhoda po rozhodnutí. Hela K1: Vdova jej zo 6 kariet vzala práve Čiernu mačku (−5 tuhé, prehra 6 : 8), v K5 Dievčinu, jej jedinú odpoveď. Šimon: 4 odhozy, z toho Degustátorka a 2× Vínko. Navrhli to dvaja (Hela, Šimon). Michal 8. 11. výslovne rozhodol, že kartu vyberie náhoda a súper sa nedozvie, ktorú. Nové je, že s limitom = plné poldeci (v12.2) má hráč v ruke menej kariet, ktoré stihne zahrať, takže jedna náhodná strata váži viac.</dd>
+<dt>Zmena</dt><dd>Dve hodnoty. (a) Obeť si vyberie, ktorú kartu odhodí, a nikomu ju neukáže. Zachová Michalovu skrytosť, Vdova však zoslabne. (b) Náhoda vyberie 2 karty z ruky obete, obeť z nich jednu odhodí. Sila ostáva skoro rovnaká, rozptyl sa zmenší.</dd>
+<dt>Prečo zručnosť</dt><dd>Strata karty ostane, ale prestane rozhodovať, ktorá to bude. Hráč, ktorý drží záložnú kartu, je odmenený.</dd>
+<dt>Čísla variantu</dt><dd>Nemerané (bot by potreboval novú voľbu). U hráčov 9 odhozov (Hela → Eva 3, Eva → Hela 2, Jano → Šimon 4), z toho 2 zmenili výsledok bitky alebo hádky (oba u Hely).</dd>
+<dt>Cena a riziko</dt><dd>Nová voľba v rozhraní a botovi (vzor: Hasič), text dvoch kariet. Pri (a) Vdova potrebuje akciu navyše.</dd>
+<dt>Náročnosť</dt><dd>malá</dd>
+<dt>Odporúčanie</dt><dd><b>Vyskúšať v playteste</b> verziu (b), lebo nemení silu karty. Rozhoduje Michal, keďže 8. 11. zvolil náhodu zámerne.</dd>
+</dl>
+</article>
+
+<article class="navrh" data-odp="vyskusat">
+<h3>N5 · Plný teplomer rečí chráni staršieho pred výhrou strachom súpera <span class="stit vyskusat">vyskúšať v playteste</span> <span class="stit narocnost">stredná</span></h3>
+<dl>
+<dt>Problém</dt><dd>Šimon vyhral 4 hádky zo 4, Jano 0, a aj tak Jano vyhral strachom v K5. Proti štyrom červeným nemá politik žiadny nástroj okrem výhry bitky. Šimon: „Politik nemá žiadnu obranu proti výhre strachom.“ Jano navrhuje, aby víťaz hádky smel za 4 body znížiť súperov strach o stupeň. Šimon navrhuje, aby plný teplomer rečí staršieho chránil.</dd>
+<dt>Zmena</dt><dd>Starší, pri ktorom máš reči na celom súperovom teplomere (to je dnes podmienka presvedčenia), sa súperovi nepočíta do štyroch červených na výhru strachom. Zajať ho ide ďalej. Druhá hodnota (Jano): za 4 body hádky klesne súperov strach o stupeň, nie však pri červenej, ktorá trvá od minulého kola.</dd>
+<dt>Prečo zručnosť</dt><dd>Vznikne súboj „súper dvíha strach, ja ho zakrývam rečami“ s jasnou cenou (6 bodov hádky). Agresor musí výhru strachom dotiahnuť rýchlejšie alebo vybrať iných starších. Dobiehanie tak bude rozhodnutie, nie bonus.</dd>
+<dt>Čísla variantu</dt><dd>Nemerané: boti strachom nevyhrávajú (0 zo 120 partií), meranie by nič neukázalo. U hráčov 1 výhra strachom z 3 partií (minule 0 z 3).</dd>
+<dt>Cena a riziko</dt><dd>Jedna výnimka v §1 a §10, ukazovateľ na stole. Riziko: s N1 by sa politik bránil dvakrát (reči pred Nakladačkou aj ochrana), preto N5 skúšať až po N1. Jánova verzia je silnejšia (strach klesá), ale ruší „strach neklesá“ (v11.4).</dd>
+<dt>Náročnosť</dt><dd>stredná</dd>
+<dt>Odporúčanie</dt><dd><b>Vyskúšať v playteste</b> až po N1, a len ak výhra strachom ostane bez protihry.</dd>
+</dl>
+</article>
+
+<article class="navrh" data-odp="vyskusat">
+<h3>N6 · Vínko: zľava na barter namiesto trvalého poldeci <span class="stit vyskusat">vyskúšať v playteste</span> <span class="stit narocnost">malá</span></h3>
+<dl>
+<dt>Problém</dt><dd>Trvalý poldeci navyše je od v12.2 trvalý limit aj trvalá cigareta za pas navyše v každom Zhromaždení. Barter stojí 5 cigariet, Vínko do Dedičstva 1–3. Vilo mal od K3 o 1 poldeci viac a od K4 o 2 (Vínko a Krčmárka). Fero: „trvalý poldeci sa stane investičným rozhodnutím s rovnakou cenou pre oboch, nie lotériou, kto uvidí Vínko v ponuke.“</dd>
+<dt>Zmena</dt><dd>Dve hodnoty. (a) Vínko: „Dedičstvo: Stokársky barter ťa stojí o 2 cigarety menej.“ (b) Fero: barter 3 cigarety, každý ďalší toho hráča o 1 drahší (3 / 4 / 5…), Vínko ostane. Verzia (a) mení jednu kartu, (b) celú ekonomiku poldeci.</dd>
+<dt>Prečo zručnosť</dt><dd>Poldeci navyše bude vždy investícia cigariet, ktorú plánuje každý, a nie karta, ktorú náhodou uvidí jeden.</dd>
+<dt>Čísla variantu</dt><dd>Nemerané. U botov majú víťaz a porazený na konci 3,1 : 3,1 (Z) a 3,9 : 3,7 (M) poldeci, rozdiel teda nevzniká. U hráčov 5 : 3 (Vilo : Fero v K4).</dd>
+<dt>Cena a riziko</dt><dd>Text karty a jedna podmienka pri barteri. Riziko: s N2 bude v hre viac cigariet a lacnejší barter môže zrýchliť poldeci obom.</dd>
+<dt>Náročnosť</dt><dd>malá</dd>
+<dt>Odporúčanie</dt><dd><b>Vyskúšať v playteste</b> verziu (a), ale až v druhom kroku po N1 a N2, aby sa účinky nemiešali.</dd>
+</dl>
+</article>
+
+<article class="navrh" data-odp="zamietnut">
+<h3>N7 · Reči majú hodnotu 1 / 1 / 2, strach ostane 1 / 2 / 3 <span class="stit zamietnut">zamietnuť (záloha)</span> <span class="stit narocnost">malá</span></h3>
+<dl>
+<dt>Problém</dt><dd>Eva: „reči bodujú v každej bitke bez rizika, strach len vo vyhratej; pri rovnakej cene sú reči dominantné.“ Hádka 7 v K4 jej dala 22 špakov v dvoch bitkách. Hela navrhuje miernejšiu podobu: pri jednej hádke najviac 1 stupeň rečí na staršieho.</dd>
+<dt>Zmena</dt><dd>Reči sa bodujú 1 / 1 / 2 (plný teplomer 4), strach ostane 1 / 2 / 3 (6). Ceny dvíhania ostanú.</dd>
+<dt>Prečo zručnosť (málo)</dt><dd>Voľba „istá reč vs. riskantný strach“ by sa vyrovnala. Lenže problém z turnusu nie je výška renty, ale to, že reči idú na súperov čerstvý strach (N1).</dd>
+<dt>Čísla variantu</dt><dd>Rozdiel M 30,5 → <b>25,7</b>, Z 31,1 → 28,1. Nad 30 M 47 → 33 %. Starší víťaza 29,5 → 23,8 za partiu. Lenže vedúci po K2 vyhrá častejšie (M 64 → 71 %), predurčenosť stúpne (0,47 → 0,53) a rebrík (40 rozdaní) 59 / 80 %. Partie sú tesnejšie, ale nie strategickejšie.</dd>
+<dt>Cena a riziko</dt><dd>Dve tabuľky hodnôt namiesto jednej, výpočet krádeže pri zajatí, texty. Michal 10. 11. zjednotil hodnotu na 1 / 2 / 3 (v11.20). Moje 1 / 1 / 2 pre oboje zo 7. 11. sa nezaviedlo.</dd>
+<dt>Náročnosť</dt><dd>malá</dd>
+<dt>Odporúčanie</dt><dd><b>Zamietnuť</b> teraz. Je to záloha, ak by po N1 ostali reči stále dominantné.</dd>
+</dl>
+</article>
+
+<article class="navrh" data-odp="zamietnut">
+<h3>N8 · Remízu v tuhom rozhodne hádka <span class="stit zamietnut">zamietnuť</span> <span class="stit narocnost">malá</span></h3>
+<dl>
+<dt>Problém</dt><dd>Fero: „K4 5 : 5 rozhodol Absťák z K3, teda vlastne nedostatok cigariet o kolo skôr.“ Navrhol to aj Jano 7. 11. (vtedy N5, nemerané). Hela chce remízu hádky rozhodovať Pohoršeniami, nie Telefónom.</dd>
+<dt>Zmena</dt><dd>Pri rovnakom tuhom by vyhral víťaz hádky, až potom Absťáky, Dlhy a sekera.</dd>
+<dt>Prečo zručnosť (nepridá)</dt><dd>Dnešný tiebreak je verejný a hráči ho používajú ako nástroj: Vilo remízu 5 : 5 vyrobil zámerne („vedel som, že súper má Absťák“), Šimon v K1 zámerne vyrobil sekeru Vínkom. Je to plánovanie, nie náhoda. Hádka už dnes dáva reči, natočenie lokality a špaky za vlastné karty. Štvrtá odmena by z nej spravila hlavnú os a s N1 by bola ešte silnejšia.</dd>
+<dt>Čísla variantu</dt><dd>Nemerané. U hráčov 2 remízy v tuhom v 17 bitkách, obe vedome vyrobené.</dd>
+<dt>Cena a riziko</dt><dd>Malá cena. Riziko je, že hádka bude príliš silná.</dd>
+<dt>Náročnosť</dt><dd>malá</dd>
+<dt>Odporúčanie</dt><dd><b>Zamietnuť.</b> Telefón (výhra remízy hádky za 1 cigaretu) sledovať. Ak bude rozhodovať ďalej, riešiť kartou, nie pravidlom.</dd>
+</dl>
+</article>
+
+<article class="navrh" data-odp="zamietnut">
+<h3>N9 · Porazený berie z ponuky prvý <span class="stit zamietnut">zamietnuť</span> <span class="stit narocnost">malá</span></h3>
+<dl>
+<dt>Problém</dt><dd>Vilo (víťaz): „víťaz je obranca, berie prvý, a súper býval na 0–1 cigarete.“ Navrhuje vrátiť prvý výber porazenému alebo mu dať 1 cigaretu za každé 3 karty v línii.</dd>
+<dt>Zmena</dt><dd>Útočník by bral prvý, obranca na prvom ťahu 2 karty.</dd>
+<dt>Prečo zručnosť (nepridá)</dt><dd>Michal 30. 10. (v9.2) dal prvý výber obrancovi, lebo útočník mal priveľa výhod naraz. Problém z tohto turnusu nie je poradie, ale to, že porazený nemá cigarety (výpalné). N2 rieši príčinu. U botov berie obranca 1,6–1,7 karty za kolo a útočník 1,4–1,5, rozdiel je malý.</dd>
+<dt>Čísla variantu</dt><dd>Nemerané.</dd>
+<dt>Cena a riziko</dt><dd>Vráti problém, kvôli ktorému vznikla v9.2.</dd>
+<dt>Náročnosť</dt><dd>malá</dd>
+<dt>Odporúčanie</dt><dd><b>Zamietnuť</b> v prospech N2.</dd>
+</dl>
+</article>
+
+<article class="navrh" data-odp="zamietnut">
+<h3>N10 · Fajčenie: pozri 2, jednu si vezmi <span class="stit zamietnut">zamietnuť</span> <span class="stit narocnost">malá</span></h3>
+<dl>
+<dt>Problém</dt><dd>Hela: „fajčenie je hod kockou.“ Dva pokusy jej nevyšli.</dd>
+<dt>Zmena</dt><dd>Pozrieš 2 vrchné karty, jednu si vezmeš, druhú dáš naspodok.</dd>
+<dt>Prečo zručnosť (nepridá)</dt><dd>Náhoda by sa presunula pred rozhodnutie, ale fajčenie by výrazne zosilnelo. Od v12.3 je cigariet viac (pas). Kto ich má viac, a to je víťaz, by z nich dostal lepšie karty. To zosilní práve snehovú guľu, ktorú riešia N1 a N2. Odhadzovací balíček je verejný, takže pravdepodobnosť hráč pozná už dnes.</dd>
+<dt>Čísla variantu</dt><dd>Nemerané.</dd>
+<dt>Cena a riziko</dt><dd>Zmena ekonomiky kariet.</dd>
+<dt>Náročnosť</dt><dd>malá</dd>
+<dt>Odporúčanie</dt><dd><b>Zamietnuť</b>, kým sa nevyrieši tok cigariet k víťazovi.</dd>
+</dl>
+</article>
+
+<p class="pozn">Ďalšie návrhy z turnusu, ktoré tu nerozoberám, lebo sa netýkajú náhody ani zručnosti, alebo patria inam: náhľad Nakladačky s okamžitým účinkom priazne (Eva, ako minule N6), náhľad tiebreaku a Exekútora (Vilo), výpis „po ťahu ostanú X plné poldeci“ (Hela), náhľad Nástupu Vandala (Hela). Sú to rozhranie a náhľady, ktoré pomôžu zručnosti a odporúčam ich. Ďalej NA EX na vlastnú kartu pri lokalite ako sejf (Jano, Šimon, Fero cez Energeťák), priznanie Cirhózy z odhadzovacieho balíčka za cigaretu (Vilo, podobné N4 zo 7. 11.) a rovnosť tiel v kraji (Eva, Jano). Tie sú pre dizajn kariet.</p>
+
+<h2 id="sledovat">Čo sledovať v ďalšom playteste</h2>
+<ol>
+<li><b>Cigarety porazeného:</b> koľko cigariet si mal pri braní z ponuky v každom kole a koľko z nich ti vzalo výpalné? Bolo kolo, v ktorom si z ponuky nemohol vziať nič? (Ak platí N2: zmenilo sa to?)</li>
+<li><b>Reči a čerstvý strach:</b> keď si rozdeľoval hádku, videl si už súperov nový strach z tejto bitky? Dal si reči tam? (Ak platí N1: dal si reči tam, kam čakáš súperovu Nakladačku, a zaplatil súper za strach viac?)</li>
+<li><b>Kedy bolo rozhodnuté:</b> v ktorom kole si prvý raz cítil, že partia je rozhodnutá, a čo to spôsobilo (bitka, výpalné, reči, väzeň)? Koľko bitiek za sebou vyhral víťaz?</li>
+<li><b>Výhra strachom:</b> keď súper mal 3 červené, mal si nejaký ťah, ktorým si mu štvrtú zabránil (okrem výhry bitky)? Aký?</li>
+<li><b>Náhodná strata karty:</b> koľkokrát ti Vdova či Noviny vzali kartu a zmenilo to výsledok bitky alebo hádky?</li>
+</ol>
+
+<footer id="meranie">
+<p><b>Ako sa meralo.</b> Jadro <code>41e27d7</code> (Vypálená v12.3, zverejnená sada) vo worktree <code>playtest/varianty/vychodisko</code>, každý variant vo vlastnom worktree z toho istého HEAD. <code>tools/bot/strategickost.ts</code> s predvolenými parametrami: rebrík 16 rozdaní × 2 miesta proti Igorovi s ε = 0,1 / 0,25 / 0,5, chamtivému a náhodnému. Zrkadlo 32 partií, predurčenosť 10 rozdaní × 6 behov. Povaha bota je Igor, dĺžka stredná (5 lokalít + finále). Navyše rebrík 40 rozdaní × 2 miesta pre ε = 0,1 a 0,25 (kópia nástroja <code>rebrik2.ts</code>) a vlastný skript <code>playtest/strategia/20261111-221937/metriky.ts</code>: 60 partií Igor proti Igorovi a 60 partií v zmesi povách Igor, Rudo, Božena a Darina s pevnými semienkami. Z nástenky ráta zdroje špakov, reči a strach, cigarety pri drafte, karty zo šenku a výpalné.</p>
+<p>Bot je ladený na súčasné pravidlá a variantom sa neprispôsobuje. Výnimky: pri V2 a V2b má upravený odhad výpalného. Čísla variantov sú náznak smeru, nie dôkaz. Bot navyše nehrá štýl agresora (4 červené, výpalné), preto snehovú guľu, ktorú hráči zažili, podceňuje. Testy jadra (1370): východisko 2 padnuté už v HEAD (dobratie-vypalne-v119, naex-limit), varianty 3 (V2b), 13 (V2), 16 (V1, V3). Ide o testy na staré poradie kroku 4e, staré hodnoty rečí a výpalného a scenár výučby, výnimky v jadre žiadne. Všetky partie botov sa dohrali. Diffy: <code>playtest/strategia/20261111-221937/*.diff</code>. Živé štatistiky kariet ľudí (<code>karty-v-partiach --zivy --ludia</code>) som nemal k dispozícii.</p>
+</footer>
+</main>
+<script>
+(function () {
+  var tlacidla = document.querySelectorAll(".filtre button");
+  var navrhy = document.querySelectorAll(".navrh");
+  tlacidla.forEach(function (b) {
+    b.addEventListener("click", function () {
+      var f = b.getAttribute("data-f");
+      tlacidla.forEach(function (x) { x.setAttribute("aria-pressed", x === b ? "true" : "false"); });
+      navrhy.forEach(function (n) { n.hidden = f !== "vsetky" && n.getAttribute("data-odp") !== f; });
+    });
+  });
+})();
+</script>
+</body>
+</html>

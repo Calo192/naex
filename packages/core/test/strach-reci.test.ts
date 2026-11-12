@@ -128,7 +128,7 @@ describe("§10 strach, reči a priazeň (v11)", () => {
 });
 
 describe("§9 bodovanie, sekera, finále a cigareta (v11)", () => {
-  it("sekera: obaja bodujú len reči, cigaretu porazenému nedostane nikto, výpalné sa platí (v11.9)", () => {
+  it("sekera: obaja bodujú len reči, cigaretu porazenému nedostane nikto, výpalné z banky (v11.9, v12.4)", () => {
     // Boris drží rečami Aninu červenú (3), Ana Borisovu oranžovú (2) — hodnota stupňa 1 / 2 / 3 (v11.20).
     const s = pred({ markery: { 0: [[3, 0], [0, 3]], 3: [[1, 2], [2, 0]] }, sums: [{ Rana: 1 }, { Rana: 1 }] });
     const t = dohraj(spustBitku(data, s).state);
@@ -136,8 +136,8 @@ describe("§9 bodovanie, sekera, finále a cigareta (v11)", () => {
     expect(z.vitaz).toBeNull();
     expect(z.zaStarsich).toEqual([spakyOdStarsieho(s.starsi[3]!, 0, false), spakyOdStarsieho(s.starsi[0]!, 1, false)]);
     expect(z.zaStarsich).toEqual([2, 3]);
-    // Hráč 0 má jednu červenú (starší 0), preto mu hráč 1 platí 1 cigaretu výpalného.
-    expect([t.hraci[0].cigarety, t.hraci[1].cigarety]).toEqual([s.hraci[0].cigarety + 1, s.hraci[1].cigarety - 1]);
+    // Hráč 0 má jednu červenú (starší 0), preto mu banka dá 1 cigaretu výpalného (v12.4); hráč 1 nič nestratí.
+    expect([t.hraci[0].cigarety, t.hraci[1].cigarety]).toEqual([s.hraci[0].cigarety + 1, s.hraci[1].cigarety]);
   });
 
   it("log bodovania rozpíše špaky víťaza za strach a za reči, nulové časti vynechá (playtest 20261108-165501)", () => {

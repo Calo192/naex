@@ -202,12 +202,12 @@ describe("čakajúci prísun a náhľad Pitky", () => {
 });
 
 describe("zdroje prísunu z jadra", () => {
-  it("výpalné ide oboma smermi ako dva riadky a sedí súčet", () => {
+  it("výpalné ide z banky — len kladné riadky, nikto ho neplatí (v12.4)", () => {
     const krok = KROKY.find((k) => k.events.some((e) => e.type === "zmenaCigariet" && e.zdroj === "vypalne"));
     expect(krok).toBeDefined();
     if (krok === undefined) return;
-    const dohromady = krok.events.reduce((a, e) => (e.type === "zmenaCigariet" && e.zdroj === "vypalne" ? a + e.suma : a), 0);
-    expect(dohromady).toBe(0);
+    const vypalne = krok.events.filter((e) => e.type === "zmenaCigariet" && e.zdroj === "vypalne");
+    expect(vypalne.every((e) => e.type === "zmenaCigariet" && e.suma > 0)).toBe(true);
   });
 
   it("porazený dostane cigaretu z knihy", () => {

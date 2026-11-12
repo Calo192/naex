@@ -267,7 +267,7 @@ export function UkazkaStupnice() {
       <div className="ukazka-vysledok" aria-live="polite">
         {sila === 0 ? "Priazeň nemá nikto." : <>Priazeň sily <strong>{sila}</strong> má {su > ja ? "ty" : "súper"}.</>} Pre teba je starší <strong>{STAV[ja]}</strong>
         {spaky > 0 ? <>: po vyhratej bitke ti dá <strong>{spakov(spaky)}</strong>.</> : "."}
-        {ja === 3 && " Súper ti po každej bitke okrem finále dá cigaretu (výpalné) a po vyhratej bitke ho smieš za 5 bodov Nakladačky zajať."}
+        {ja === 3 && " Banka ti po každej bitke okrem finále dá cigaretu (výpalné) a po vyhratej bitke ho smieš za 5 bodov Nakladačky zajať."}
         {su === 3 && " Ty platíš súperovi cigaretu po každej bitke okrem finále."}
       </div>
     </div>

@@ -7,13 +7,13 @@ vo feedback.md.
 ## Skúsenosti
 
 ### hela-1 · Keď hazardujem, vyberám hazard s vyčísliteľnou cenou (NA EX s náhľadom bitky pred a po, kliatb a Nakladačky), nie čistý žreb (Veľmi smútiaca vdova, fajčenie neskoro v kole), lebo skryté sú len súperove súbežné NA EX a odpoveď lícom dole; pečeň z NA EX stojí Cirhózy, ktoré sa v posledných Pitkách nedajú priznať (−3 za kus).
-- stav: neoverená
-- pravidlá: v11
-- potvrdenia: 3
+- stav: overená
+- pravidlá: v12
+- potvrdenia: 4
 - vyvrátenia: 0
-- dátum: 2026-11-09
-- partie: 20261027-131033-2, 20261030-115654-2, 20261109-115955-2
-- prečo: PRAVIDLA §16 Veľmi smútiaca vdova, Oslávenec, §14. 131033-2 K4 Hela: vdova — vrchná karta Šimonovho balíčka bol muž (Praudovravec), zahodila 2 Dlhy (~50 %, hodnota 2 Dlhy); finále: Šimonov Oslávenec +2 pečene v oboch Pitkách + ďalšie zdroje pečene (Pijan, Záhradkár cez Posilnenie) = 3 Cirhózy, −15 špakov. 115654-2 (v8, −3): Hela hazardovala len s náhľadom (K5 NA EX na Zámočník a Svokru vyšli na číslo, 16 : 3; K3 NA EX na Vdovu = 3 Dlhy Šimonovi za 1 poldeci) a vo finále priznala 6 Cirhóz Anonymným alkoholikom (+18); Oslávenec v sade v8 nie je, veta o ňom je mŕtva. 20261109-115955-2: K2 Pitka 2, K3 a K5 vyšli presne podľa náhľadu; zlyhalo súbežné skryté NA EX (K4 Pijan: 4 Cirhózy) a odpoveď lícom dole z dofajčenej karty (K2 hádka 4 : 4 → 2 : 4).
+- dátum: 2026-11-11
+- partie: 20261027-131033-2, 20261030-115654-2, 20261109-115955-2, 20261111-221937-1
+- prečo: PRAVIDLA §16 Veľmi smútiaca vdova, Oslávenec, §14. 131033-2 K4 Hela: vdova — vrchná karta Šimonovho balíčka bol muž (Praudovravec), zahodila 2 Dlhy (~50 %, hodnota 2 Dlhy); finále: Šimonov Oslávenec +2 pečene v oboch Pitkách + ďalšie zdroje pečene (Pijan, Záhradkár cez Posilnenie) = 3 Cirhózy, −15 špakov. 115654-2 (v8, −3): Hela hazardovala len s náhľadom (K5 NA EX na Zámočník a Svokru vyšli na číslo, 16 : 3; K3 NA EX na Vdovu = 3 Dlhy Šimonovi za 1 poldeci) a vo finále priznala 6 Cirhóz Anonymným alkoholikom (+18); Oslávenec v sade v8 nie je, veta o ňom je mŕtva. 20261109-115955-2: K2 Pitka 2, K3 a K5 vyšli presne podľa náhľadu; zlyhalo súbežné skryté NA EX (K4 Pijan: 4 Cirhózy) a odpoveď lícom dole z dofajčenej karty (K2 hádka 4 : 4 → 2 : 4). 20261111-221937-1: K5 NA EX na Evinho Záhradkára — náhľad „súper Cirhóza +3, −9“ vyšiel presne; čistý žreb ju stál K1 Čiernu mačku (Vdova, 1 zo 6 kariet) a K5 Dievčinu (Vdova) a fajčenie 2× minulo.
 
 - oprava: 2026-10-28 20261028-090549-3: číslo −5 bolo zo starého znenia, PRAVIDLA §14 v8 dávajú −3 za kus (výsledok 43 : 32 sedel na −3). Neoverená, kým ju nepotvrdí partia.
 - oprava: 2026-11-09 20261109-115955-2: veta o Oslávencovi bola mŕtva (v sade nie je) a Vdova dnes odhodí náhodnú kartu z ruky, nie z balíčka — nie je to vyčísliteľný hazard (K5 odhodila Hele Kočovníka, 1 z 3 kariet); Heline vlastné NA EX dopadli podľa náhľadu vždy, keď súper nemal ako odpovedať (K2 Pitka 2, K5 hádka 6 : 3); 6 Cirhóz, 3 nepriznané = −9 (§14).
@@ -37,11 +37,21 @@ vo feedback.md.
 - partie: 20261030-115654-2
 - prečo: PRAVIDLA §7 zrážka, Výtržník. 115654-2 K4: Hela dala NA EX na vlastné Dvojčatá (odhad 80 %, že Šimon zaútočí na ne cez Čiernu mačku), Šimon dal NA EX na vlastného Praudovravca (Pohoršenie ×2, Povera ×2, Viera ×2) → Pečeň ×2 + Poldeci hrany × 3 Pitky = 3 Cirhózy (−9) a bitka 0 : 6.
 
-### hela-6 · Keď súper hrozí NA EX na vlastnú kartu so zamknutou veľkou akciou alebo drží hádku cez Vzburu, podložím pod jeho kartu Nástroj, ktorý zmení jej Posilnenie či Odpor (Hrable: Odpor ↔ Posilnenie), a tým Vzburu vytvorím alebo zruším, lebo na kartu so Vzburou NA EX nejde; stojí 1 cigaretu a limit nemíňa.
+### hela-6 · Keď súper hrozí NA EX na vlastnú kartu so zamknutou veľkou akciou alebo drží hádku cez Vzburu, podložím Nástroj pod svoju kartu na tom istom spoji (Hrable: Odpor ↔ Posilnenie), a tým Vzburu vytvorím alebo zruším, lebo na kartu so Vzburou NA EX nejde; stojí cigaretu (cena Dedičstva) a limit nemíňa.
 - stav: neoverená
 - pravidlá: v11
 - potvrdenia: 1
 - vyvrátenia: 0
-- dátum: 2026-11-09
+- dátum: 2026-11-11
 - partie: 20261109-115955-2
 - prečo: §12 Podloženie, §6 Vzbura, §7. 20261109-115955-2 K3: Hrable (Posilnenie → Odpor) pod Evinho Hasiča: hrozba 8 : 8 zmizla, bitka 9 : 5 presne podľa výpočtu; K5 Hrable (Odpor → Posilnenie) pod Evinu Manželku: hádka 6 : 7 → 6 : 3. Eva ju navrhla aj z druhej strany (Hrable si treba pamätať, súper ich môže dať aj pod moju kartu).
+- oprava: 2026-11-11 20261111-221937-1: od v11.16 sa Nástroj podkladá len pod vlastné karty (§12 Podloženie) — pod súperovu kartu, ako radila skúsenosť, nejde (hlásila Hela). Prepísané na vlastnú kartu na tom istom spoji; neoverená, kým to partia neukáže.
+
+### hela-7 · Keď chcem ešte vyložiť kartu a v Pitke dať NA EX alebo odpovedať, najprv spočítam plné poldeci, ktoré mi po ťahu ostanú, a s posledným plným kartu nevykladám, lebo NA EX aj odpoveď stoja plný poldeci a s nulou ma hra pasuje sama bez cigariet.
+- stav: overená
+- pravidlá: v12
+- potvrdenia: 1
+- vyvrátenia: 0
+- dátum: 2026-11-11
+- partie: 20261111-221937-1
+- prečo: §6 Limit vykladania (v12.2: limit = plné poldeci), Pas (v12.3), §7. 20261111-221937-1 K1: Hela po Vdove nemala plný poldeci (rátala s 1) → „Hráč 1 pasuje do Pitky“ bez cigariet a plánované NA EX na Evinu Vdovu (−4 jej tuhé, +4 Dlhy) prepadlo; K2 to isté po Manželke. Navrhla ako spoločnú; spoločný zošit je plný silnejšie potvrdených položiek.
