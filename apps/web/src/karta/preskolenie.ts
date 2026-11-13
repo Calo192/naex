@@ -5,7 +5,7 @@
 // „Spúšťač: Preškolenie {X}→{Y}.“ (preskolenie.ts v jadre), nie z id karty — keď jadro dostane
 // všeobecné Preškolenie s vlastným rozborom, napojí sa tu.
 
-import type { Action, HranaNastroja, HranyNastroja } from "@naex/core";
+import type { Action, HranyNastroja } from "@naex/core";
 import { ZAPIS_PRESKOLENIA, akciaZTokenu, rozborHran, textBezHran } from "@naex/core";
 
 export interface PreskolenieVTexte {
