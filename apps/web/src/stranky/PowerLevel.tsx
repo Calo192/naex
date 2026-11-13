@@ -10,7 +10,7 @@ import { useTitulok } from "../lib/router.tsx";
 import { useSada, vzhladSady } from "../lib/sada.tsx";
 import { useUcet } from "../lib/ucet.tsx";
 import { useTelefonStranky } from "../hra/zariadenie.ts";
-import { Hlaska, Nacitavanie } from "../komponenty.tsx";
+import { Hlaska, Nacitavanie, type SpravaHlasky } from "../komponenty.tsx";
 import { HlavaStranky } from "../HlavaStranky.tsx";
 import { KartaLico } from "../karta/KartaLico.tsx";
 import { IkonaAkcie } from "../karta/IkonaAkcie.tsx";
@@ -210,7 +210,7 @@ export function PowerLevel() {
   const [upravyAkcii, setUpravyAkcii] = useState<Readonly<Record<string, number>>>({});
   const [upravyEfektov, setUpravyEfektov] = useState<Readonly<Record<string, number>>>({});
   const [uklada, setUklada] = useState(false);
-  const [hlaska, setHlaska] = useState<{ druh: "ok" | "chyba"; text: string } | null>(null);
+  const [hlaska, setHlaska] = useState<SpravaHlasky | null>(null);
   const [tag, setTag] = useState<string | null>(null);
   const [poradie, setPoradie] = useState<Poradie>("silne");
   const [hladat, setHladat] = useState("");

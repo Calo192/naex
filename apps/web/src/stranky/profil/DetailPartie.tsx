@@ -3,7 +3,7 @@
 // súperove skryté čísla server neposiela.
 
 import { useEffect, useMemo, useState } from "react";
-import { NAZOV_DLZKY, loadGameData, opponentOf, type DlzkaHry, type PlayerId } from "@naex/core";
+import { NAZOV_DLZKY, loadGameData, opponentOf, type PlayerId } from "@naex/core";
 import eldersJson from "@naex/core/data/elders.json";
 import scorecardsJson from "@naex/core/data/scorecards.json";
 import { api, textChyby } from "../../lib/api.ts";

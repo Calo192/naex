@@ -3,10 +3,10 @@
 
 import { useState } from "react";
 import type { Kategoria, Nastavenia as NastaveniaT } from "@naex/tvorba";
-import { pastelHex, rozlozOdtiene } from "@naex/tvorba";
+import { PREDVOLENE_NASTAVENIA, pastelHex, rozlozOdtiene } from "@naex/tvorba";
 import { textChyby } from "../lib/api.ts";
 import { useTitulok } from "../lib/router.tsx";
-import { Hlaska, Pole } from "../komponenty.tsx";
+import { Hlaska, Pole, type SpravaHlasky } from "../komponenty.tsx";
 import { useAdmin } from "./stav.tsx";
 import { AdminHlava } from "./spolocne.tsx";
 
@@ -21,9 +21,9 @@ export function Nastavenia() {
     }
     return z;
   });
-  const [n, setN] = useState<NastaveniaT>(() => obsah?.nastavenia ?? { sirkaMm: 54, vyskaMm: 80, mierkaTextu: 1.1, mierkaIkon: 1.3 });
+  const [n, setN] = useState<NastaveniaT>(() => obsah?.nastavenia ?? PREDVOLENE_NASTAVENIA);
   const [hromadne, setHromadne] = useState({ rozmer: false, text: false, ikony: false });
-  const [sprava, setSprava] = useState<{ druh: "ok" | "chyba"; text: string } | null>(null);
+  const [sprava, setSprava] = useState<SpravaHlasky | null>(null);
   const [caka, setCaka] = useState(false);
   if (obsah === null) return null;
 

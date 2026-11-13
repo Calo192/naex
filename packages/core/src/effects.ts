@@ -9,7 +9,7 @@ import type { Action, CardDef, Format, PlayerId, Tag } from "./types.ts";
 import type { HraPata } from "./pata.ts";
 import { opponentOf } from "./types.ts";
 import type { GameData } from "./data.ts";
-import { defOf, printedSides } from "./data.ts";
+import { defOf } from "./data.ts";
 import type { GameState, KseftyKola } from "./engine.ts";
 import type { ElderState } from "./elders.ts";
 import type { CardInstance } from "./types.ts";

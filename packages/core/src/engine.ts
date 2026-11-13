@@ -44,7 +44,7 @@ import { dlhyPoslednejPitky, dlhyZDedicstva, evaluateLine, okolieVLinii, prevaha
 import { efektyNavyse, podmienkySpoja, splnaTag } from "./navyse.ts";
 import type { KtoraHrana } from "./naradie.ts";
 import { KTORE_HRANY, hranyNastroja, ucinkyNastrojov } from "./naradie.ts";
-import { dovodNepodlozenia, hranaMaCoRobit, popisPodlozenych, ponukaPodlozenia } from "./podlozenie.ts";
+import { dovodNepodlozenia, popisPodlozenych, ponukaPodlozenia } from "./podlozenie.ts";
 import { krajeStran } from "./hrany.ts";
 import type { PlayerState } from "./player.ts";
 import {
@@ -4606,11 +4606,6 @@ function volbyNastupu(data: GameData, state: GameState): Command[] {
   return [{ type: "hasic", nechat: true }, { type: "hasic", nechat: false }];
 }
 
-/** Pečeň z pitia počas Pitky (Kar) — rekapitulácia ju ráta ako pitie zo Zhromaždenia. */
-function pitieVPitke(s: MutState, p: PlayerId, n: number): void {
-  if (s.zaciatokPitky != null) s.zaciatokPitky.pecen[p] += n;
-}
-
 // ---------------------------------------------------------------------------
 // Schopnosť väzňa (v11.2, Michal 2026-11-02, §10): nahradila Kšeft väzňa. Hráč, ktorý staršieho
 // má v pivnici, smie jeho schopnosť použiť raz za hru, kedy chce — vo svojom ťahu (branie zo
@@ -5322,7 +5317,7 @@ function pokracujBitku(s: MutState, data: GameData, events: Event[]): void {
       hd.prepadlo += hd.zostava;
       hd.zostava = 0;
     }
-    vypiPoldeci(s, data, events);
+    vypiPoldeci(s, events);
     b.krok = "vestica";
   }
 
@@ -6168,7 +6163,7 @@ function vyplatSpaky(s: MutState, outcome: BattleOutcome, events: Event[]): void
 }
 
 /** Krok 5 — poldeci: NA EX sa vypijú, potom sa všetky obnovia (v12.2; akcie Poldeci dolievajú po Pitke). */
-function vypiPoldeci(s: MutState, data: GameData, events: Event[]): void {
+function vypiPoldeci(s: MutState, events: Event[]): void {
   const b = s.bitkaStav;
   if (b === null) return;
   const vypiNaex = (q: PlayerId): void => {
@@ -6948,7 +6943,7 @@ function dokonciUtokPata(s: MutState, data: GameData, events: Event[]): void {
   const vitaz = vitazBitkyPata(stavBitky);
   bs.vitaz = vitaz;
   events.push({ type: "log", text: vitaz === null ? "Bitka skončila sekerou." : `Bitku vyhral hráč ${vitaz + 1}.` });
-  vypiPoldeci(s, data, events);
+  vypiPoldeci(s, events);
   manualEfekty(s, data, "Výhra", events);
   manualEfekty(s, data, "Prehra", events);
   h.krok = "vyzrat";

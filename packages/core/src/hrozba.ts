@@ -10,7 +10,7 @@ import type { GameData } from "./data.ts";
 import type { VerejnyStav } from "./effects.ts";
 import { naexZaPitku, vysledokHadkyStola } from "./effects.ts";
 import type { BitkaKrok, PitkaStav } from "./engine.ts";
-import { lineState, naexCieleVLinii, poskodenieBitky, stranyBitky, zablokovaneStrany } from "./engine.ts";
+import { lineState, naexCieleVLinii, poskodenieBitky, zablokovaneStrany } from "./engine.ts";
 import type { ActionSums } from "./partia.ts";
 import { evaluateLine } from "./partia.ts";
 import type { Phase, PlayerId } from "./types.ts";
