@@ -18,7 +18,7 @@ import {
   useUcet,
   type Pouzivatel,
 } from "../lib/ucet.tsx";
-import { Avatar, Hlaska, Pole } from "../komponenty.tsx";
+import { Avatar, Hlaska, Pole, type SpravaHlasky } from "../komponenty.tsx";
 import { HlavaStranky } from "../HlavaStranky.tsx";
 import type { Pohlavie } from "@naex/core";
 import { hlasitostZvuku, nacitajSkladby, urlSkladby } from "../hra/Hudba.tsx";
@@ -203,7 +203,7 @@ export function Profil() {
   const { ja, nastav, instancia } = useUcet();
   const jazyk = useJazyk();
   const [meno, setMeno] = useState(ja?.meno ?? "");
-  const [sprava, setSprava] = useState<{ druh: "ok" | "chyba"; text: string } | null>(null);
+  const [sprava, setSprava] = useState<SpravaHlasky | null>(null);
   const [nahrava, setNahrava] = useState(false);
   const [stare, setStare] = useState("");
   const [nove, setNove] = useState("");

@@ -6,7 +6,7 @@ import type { KlucoveSlovo } from "@naex/tvorba";
 import { formatujEfekt } from "@naex/tvorba";
 import { textChyby } from "../lib/api.ts";
 import { useTitulok } from "../lib/router.tsx";
-import { Hlaska } from "../komponenty.tsx";
+import { Hlaska, type SpravaHlasky } from "../komponenty.tsx";
 import { useAdmin } from "./stav.tsx";
 import { AdminHlava } from "./spolocne.tsx";
 
@@ -15,7 +15,7 @@ export function KlucoveSlova() {
   const { obsah, ulozKlucoveSlova } = useAdmin();
   const [zoznam, setZoznam] = useState<KlucoveSlovo[]>(() => [...(obsah?.klucoveSlova ?? [])]);
   const [skuska, setSkuska] = useState("Bitka: Zahoď 1 kartu. Furt: Preskúmaj 5 kariet.");
-  const [sprava, setSprava] = useState<{ druh: "ok" | "chyba"; text: string } | null>(null);
+  const [sprava, setSprava] = useState<SpravaHlasky | null>(null);
   const riadky = useMemo(() => formatujEfekt(skuska, zoznam), [skuska, zoznam]);
 
   const zmen = (i: number, z: Partial<KlucoveSlovo>) => setZoznam(zoznam.map((k, j) => (j === i ? { ...k, ...z } : k)));
