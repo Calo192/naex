@@ -33,3 +33,12 @@ vo feedback.md.
 - dátum: 2026-11-11
 - partie: 20261111-221937-3
 - prečo: §16 Degustátorka (výklad v12.2: porovnanie po zaplatení), §7. 20261111-221937-3 K1: Degustátorka ako posledná vyžrala Janovi jediný plný poldeci („limit mu klesá na 0“), hrozba NA EX na Pijana 10 : 0 zmizla, sekera 0 : 0; K2 Jano pasoval s 2 a NA EX mu ostalo (12 : 0). Navrhol ako spoločnú; z druhej strany to isté jano-8.
+
+### simon-12 · Keď vyhrám hádku, dám reči na jedného staršieho až na plný teplomer (6 špakov za bitku) a ak mám 3 body navyše, presvedčím ho, lebo presvedčenie stojí rovnaké 3 body ako reči (karta staršieho je zadarmo) a reči bodujú v každej ďalšej bitke.
+- stav: overená
+- pravidlá: v12
+- potvrdenia: 1
+- vyvrátenia: 0
+- dátum: 2026-11-14
+- partie: 20261114-003916-3
+- prečo: §9.1 hádka a presvedčenie (§10). 20261114-003916-3 (log): K2 Farár 6 za reči, K3 presvedčený Farár (3 body), K4 presvedčený Hrobár (3) + Hrobár 6, K5 starší dali 27 špakov (Farár 6, Hrobár 6, Krčmárka 6, Veterinár 6, Poštárka 1, Starosta 1, Autobusár 1), finále bez bitky (sekera) 16 špakov len za reči; starší spolu 63 z 90 špakov. Potvrdila aj Eva (hádku prehrávala 5 z 6 krát).

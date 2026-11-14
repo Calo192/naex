@@ -9,11 +9,11 @@ vo feedback.md.
 ### hela-1 · Keď hazardujem, vyberám hazard s vyčísliteľnou cenou (NA EX s náhľadom bitky pred a po, kliatb a Nakladačky), nie čistý žreb (Veľmi smútiaca vdova, fajčenie neskoro v kole), lebo skryté sú len súperove súbežné NA EX a odpoveď lícom dole; pečeň z NA EX stojí Cirhózy, ktoré sa v posledných Pitkách nedajú priznať (−3 za kus).
 - stav: overená
 - pravidlá: v12
-- potvrdenia: 4
+- potvrdenia: 5
 - vyvrátenia: 0
-- dátum: 2026-11-11
-- partie: 20261027-131033-2, 20261030-115654-2, 20261109-115955-2, 20261111-221937-1
-- prečo: PRAVIDLA §16 Veľmi smútiaca vdova, Oslávenec, §14. 131033-2 K4 Hela: vdova — vrchná karta Šimonovho balíčka bol muž (Praudovravec), zahodila 2 Dlhy (~50 %, hodnota 2 Dlhy); finále: Šimonov Oslávenec +2 pečene v oboch Pitkách + ďalšie zdroje pečene (Pijan, Záhradkár cez Posilnenie) = 3 Cirhózy, −15 špakov. 115654-2 (v8, −3): Hela hazardovala len s náhľadom (K5 NA EX na Zámočník a Svokru vyšli na číslo, 16 : 3; K3 NA EX na Vdovu = 3 Dlhy Šimonovi za 1 poldeci) a vo finále priznala 6 Cirhóz Anonymným alkoholikom (+18); Oslávenec v sade v8 nie je, veta o ňom je mŕtva. 20261109-115955-2: K2 Pitka 2, K3 a K5 vyšli presne podľa náhľadu; zlyhalo súbežné skryté NA EX (K4 Pijan: 4 Cirhózy) a odpoveď lícom dole z dofajčenej karty (K2 hádka 4 : 4 → 2 : 4). 20261111-221937-1: K5 NA EX na Evinho Záhradkára — náhľad „súper Cirhóza +3, −9“ vyšiel presne; čistý žreb ju stál K1 Čiernu mačku (Vdova, 1 zo 6 kariet) a K5 Dievčinu (Vdova) a fajčenie 2× minulo.
+- dátum: 2026-11-14
+- partie: 20261027-131033-2, 20261030-115654-2, 20261109-115955-2, 20261111-221937-1, 20261114-003916-2
+- prečo: PRAVIDLA §16 Veľmi smútiaca vdova, Oslávenec, §14. 131033-2 K4 Hela: vdova — vrchná karta Šimonovho balíčka bol muž (Praudovravec), zahodila 2 Dlhy (~50 %, hodnota 2 Dlhy); finále: Šimonov Oslávenec +2 pečene v oboch Pitkách + ďalšie zdroje pečene (Pijan, Záhradkár cez Posilnenie) = 3 Cirhózy, −15 špakov. 115654-2 (v8, −3): Hela hazardovala len s náhľadom (K5 NA EX na Zámočník a Svokru vyšli na číslo, 16 : 3; K3 NA EX na Vdovu = 3 Dlhy Šimonovi za 1 poldeci) a vo finále priznala 6 Cirhóz Anonymným alkoholikom (+18); Oslávenec v sade v8 nie je, veta o ňom je mŕtva. 20261109-115955-2: K2 Pitka 2, K3 a K5 vyšli presne podľa náhľadu; zlyhalo súbežné skryté NA EX (K4 Pijan: 4 Cirhózy) a odpoveď lícom dole z dofajčenej karty (K2 hádka 4 : 4 → 2 : 4). 20261111-221937-1: K5 NA EX na Evinho Záhradkára — náhľad „súper Cirhóza +3, −9“ vyšiel presne; čistý žreb ju stál K1 Čiernu mačku (Vdova, 1 zo 6 kariet) a K5 Dievčinu (Vdova) a fajčenie 2× minulo. 20261114-003916-2: NA EX s náhľadom sa vyplatil (K2 Dvojčatá 16 : 6, K4 odpoveď Manželkou zrušila 3 Cirhózy), čistý žreb nie (K5 2 fajčenia na Dvojčatá s Odporom nevyšli); K4 Dvojčatá za Miňištrantom proti výhľadu = Cirhóza −3.
 
 - oprava: 2026-10-28 20261028-090549-3: číslo −5 bolo zo starého znenia, PRAVIDLA §14 v8 dávajú −3 za kus (výsledok 43 : 32 sedel na −3). Neoverená, kým ju nepotvrdí partia.
 - oprava: 2026-11-09 20261109-115955-2: veta o Oslávencovi bola mŕtva (v sade nie je) a Vdova dnes odhodí náhodnú kartu z ruky, nie z balíčka — nie je to vyčísliteľný hazard (K5 odhodila Hele Kočovníka, 1 z 3 kariet); Heline vlastné NA EX dopadli podľa náhľadu vždy, keď súper nemal ako odpovedať (K2 Pitka 2, K5 hádka 6 : 3); 6 Cirhóz, 3 nepriznané = −9 (§14).
@@ -50,8 +50,26 @@ vo feedback.md.
 ### hela-7 · Keď chcem ešte vyložiť kartu a v Pitke dať NA EX alebo odpovedať, najprv spočítam plné poldeci, ktoré mi po ťahu ostanú, a s posledným plným kartu nevykladám, lebo NA EX aj odpoveď stoja plný poldeci a s nulou ma hra pasuje sama bez cigariet.
 - stav: overená
 - pravidlá: v12
+- potvrdenia: 2
+- vyvrátenia: 0
+- dátum: 2026-11-14
+- partie: 20261111-221937-1, 20261114-003916-2
+- prečo: §6 Limit vykladania (v12.2: limit = plné poldeci), Pas (v12.3), §7. 20261111-221937-1 K1: Hela po Vdove nemala plný poldeci (rátala s 1) → „Hráč 1 pasuje do Pitky“ bez cigariet a plánované NA EX na Evinu Vdovu (−4 jej tuhé, +4 Dlhy) prepadlo; K2 to isté po Manželke. Navrhla ako spoločnú; spoločný zošit je plný silnejšie potvrdených položiek. 20261114-003916-2 K1–K3: Hela pasovala s posledným plným poldeci (+1 cigareta), v K2 jej to dalo odpoveď; Jano opak v K1–K3 s 2 cigaretami a 0 poldeci neodpovedal.
+
+### hela-8 · Keď súper po mojom pase drží presne 1 plný poldeci a 0 cigariet, čakám jeho NA EX na vlastnú kartu s veľkou neaktívnou akciou (Hasič, Mäsiar) a držím si poldeci a kartu, ktorá spáruje tú akciu, lebo to urobil v každom kole, kde mal takú kartu.
+- stav: overená
+- pravidlá: v12
 - potvrdenia: 1
 - vyvrátenia: 0
-- dátum: 2026-11-11
-- partie: 20261111-221937-1
-- prečo: §6 Limit vykladania (v12.2: limit = plné poldeci), Pas (v12.3), §7. 20261111-221937-1 K1: Hela po Vdove nemala plný poldeci (rátala s 1) → „Hráč 1 pasuje do Pitky“ bez cigariet a plánované NA EX na Evinu Vdovu (−4 jej tuhé, +4 Dlhy) prepadlo; K2 to isté po Manželke. Navrhla ako spoločnú; spoločný zošit je plný silnejšie potvrdených položiek.
+- dátum: 2026-11-14
+- partie: 20261114-003916-2
+- prečo: §7 NA EX (aj na vlastnú kartu), odpoveď lícom dole. 20261114-003916-2: K2 Janov NA EX na vlastný Hasič (Petelica ×2) 16 : 6 → 14 : 11, K3 NA EX na Mäsiara 7 : 6 → 7 : 12 → po Helinej odpovedi Viera ×2 7 : 8, v K4 Hela pripravila Manželku (odpoveď) a zrušila 3 Cirhózy. Potvrdila aj Jano (denník: „NA EX trik +4 až +6“).
+
+### hela-9 · Keď prehrávam bitku, hľadám hádku (mäkké akcie Pohoršenie ×2), lebo víťaz hádky dostane 1 špak za každú svoju kartu v línii aj po prehratej bitke a Viera ruší len Povery.
+- stav: overená
+- pravidlá: v12
+- potvrdenia: 1
+- vyvrátenia: 0
+- dátum: 2026-11-14
+- partie: 20261114-003916-2
+- prečo: §9.1 hádka, v11.11 špaky za karty víťaza hádky. 20261114-003916-2 K5: bitka 19 : 26 pre Jana, ale Hela vyhrala hádku 2 : 0 → 6 špakov za 6 kariet (log „Vyhraná hádka: porazený hráč 2 dostáva 6 špakov“) a reči; finále hádka 2 → 2 špaky. (Potvrdzuje aj K4 v partii 3: Šimon prehrala bitku 4 : 12 a hádkou 14 : 4 zarobila 10.)
