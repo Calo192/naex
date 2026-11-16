@@ -8,6 +8,7 @@
 //
 // --zrejuca (Michal 2026-11-02): partie idú na pokusnú Zrejúcu (rozpracovaná sada, AI účty postáv),
 // nie na dočasné lokálne servery.
+// --zivy (Michal 2026-11-16): partie idú na Vypálenú (živý web, zverejnená sada), tiež pod AI účtami postáv.
 //
 // Vypíše turnus (playtest/turnus-<id>/turnus.json) a pre každú partiu reláciu,
 // port a oboch hráčov so štýlom. Servery zastaví tools/playtest/ukonci.ts <relacia>.
@@ -28,7 +29,12 @@ const { hraci } = JSON.parse(readFileSync("tools/playtest/hraci.json", "utf8")) 
 const MAX_PARTII = Math.floor(hraci.length / 2);
 
 const naZrejucej = process.argv.includes("--zrejuca");
-const [pocetArg = "1", dlzka = "stredna"] = process.argv.slice(2).filter((a) => a !== "--zrejuca");
+const naZivom = process.argv.includes("--zivy");
+if (naZrejucej && naZivom) {
+  console.error("Buď --zivy (Vypálená), alebo --zrejuca — nie oboje.");
+  process.exit(1);
+}
+const [pocetArg = "1", dlzka = "stredna"] = process.argv.slice(2).filter((a) => a !== "--zrejuca" && a !== "--zivy");
 const pocet = Number(pocetArg);
 if (!Number.isInteger(pocet) || pocet < 1 || pocet > MAX_PARTII) {
   console.error(`Počet partií musí byť 1 až ${MAX_PARTII} (${hraci.length} playtesterov, v partii dvaja).`);
@@ -54,7 +60,7 @@ for (let n = 1; n <= pocet; n++) {
   const hrac2 = poradie[2 * n - 1] as Postava;
   const r = spawnSync(
     process.execPath,
-    ["--experimental-strip-types", "--no-warnings", "tools/playtest/zaloz.ts", hrac1.meno, hrac2.meno, dlzka, "--id", `${id}-${n}`, ...(naZrejucej ? ["--zrejuca"] : [])],
+    ["--experimental-strip-types", "--no-warnings", "tools/playtest/zaloz.ts", hrac1.meno, hrac2.meno, dlzka, "--id", `${id}-${n}`, ...(naZrejucej ? ["--zrejuca"] : []), ...(naZivom ? ["--zivy"] : [])],
     { encoding: "utf8" },
   );
   if (r.status !== 0) {
