@@ -9,11 +9,11 @@ vo feedback.md.
 ### fero-1 · Keď mám pred finále 8 alebo viac cigariet, minem ich radšej za karty v ponuke (1 cigareta = 1 karta), barter (5 cigariet = plný poldeci: výkupné ostane rovnaké a pribudne limit) či fajčenie, než ich nechám na výkupné, lebo výkupné dá len 1 špak za 5 cigariet.
 - stav: overená
 - pravidlá: v12
-- potvrdenia: 7
+- potvrdenia: 8
 - vyvrátenia: 0
-- dátum: 2026-11-11
-- partie: 20261027-105422-1, 20261028-090549-1, 20261030-115654-1, 20261031-004030-1, 20261101-084841-1, 20261108-165501-1, 20261111-221937-2
-- prečo: PRAVIDLA §14 Výkupné (+1 špak za každých 5 cigariet, plný poldeci +1). 131033-1: Fero v K4 za 5 cigariet kúpil 3 karty a vyhral 13 : 12, v K5 za 3 cig. Hasiča + Recidivistu (11 : 6); koncové výkupné z 5 cigariet bolo +1 špak, z Janových 6 cig. a poldeci +2 — pri skóre 35 : 1 bezvýznamné. 090549: Fero pred finále 2× barter (10 cig.: limit 4 → 6, výkupné za plný poldeci +1 ostalo rovnaké ako za 5 cigariet) a z 15 cigariet výkupné +3; barter je pred finále lacnejší než šetrenie. 115654-1: pred finále dal 4 cig za 3 karty (Veštica, Živnostník, Strýko — výkupné by dalo 0), vo finále naopak nechal 6 cig nedotknutých, Strýkove 2 Cigarety doplnili päťku → +1 špak; Kšeft Strýka (2 cig → Rana) vedome nekúpil. 004030-1 (v9): pred finále 11 cigariet — na karty minul len 4 (šenok mal málo vhodných kariet), Kšeft Predsedovej vily za 2 cig zmazal Šimonovi 2 špaky strachu zadarmo (výkupné 8 → 6 cig. ostalo 1 špak); koniec: 2 poldeci + 6 cig. = 3 špaky. 084841-1 (v10): K2 barter 5 cig. → 3. plný poldeci (limit 4 : 3, posledný ťah, bitka 13 : 0), K4 druhý barter (limit 5); šenok bol v K5 a finále prázdny (Šimon stopol bez braní), takže ostalo 15 cig. a koniec dal výkupné +6 (3 poldeci + 3 špaky z cigariet) — kurz 5 : 1 potvrdený, barter bol jediný sink bez straty. 165501-1: K2 a K5 barter (poldeci 3 → 4, limit 5), finále 6 cig. vyfajčených na vile (+5 špakov zo stupňov rečí); na konci 4 cig. = 0 špakov výkupného. 20261111-221937-2 finále: Fero barteroval 5 cig. → plný poldeci (výkupne rovnaké, limit +1) a zvyšné cigarety vyfajčil za kartu; doliatie za cigarety od v12.2 neexistuje.
+- dátum: 2026-11-14
+- partie: 20261027-105422-1, 20261028-090549-1, 20261030-115654-1, 20261031-004030-1, 20261101-084841-1, 20261108-165501-1, 20261111-221937-2, 20261114-003916-1
+- prečo: PRAVIDLA §14 Výkupné (+1 špak za každých 5 cigariet, plný poldeci +1). 131033-1: Fero v K4 za 5 cigariet kúpil 3 karty a vyhral 13 : 12, v K5 za 3 cig. Hasiča + Recidivistu (11 : 6); koncové výkupné z 5 cigariet bolo +1 špak, z Janových 6 cig. a poldeci +2 — pri skóre 35 : 1 bezvýznamné. 090549: Fero pred finále 2× barter (10 cig.: limit 4 → 6, výkupné za plný poldeci +1 ostalo rovnaké ako za 5 cigariet) a z 15 cigariet výkupné +3; barter je pred finále lacnejší než šetrenie. 115654-1: pred finále dal 4 cig za 3 karty (Veštica, Živnostník, Strýko — výkupné by dalo 0), vo finále naopak nechal 6 cig nedotknutých, Strýkove 2 Cigarety doplnili päťku → +1 špak; Kšeft Strýka (2 cig → Rana) vedome nekúpil. 004030-1 (v9): pred finále 11 cigariet — na karty minul len 4 (šenok mal málo vhodných kariet), Kšeft Predsedovej vily za 2 cig zmazal Šimonovi 2 špaky strachu zadarmo (výkupné 8 → 6 cig. ostalo 1 špak); koniec: 2 poldeci + 6 cig. = 3 špaky. 084841-1 (v10): K2 barter 5 cig. → 3. plný poldeci (limit 4 : 3, posledný ťah, bitka 13 : 0), K4 druhý barter (limit 5); šenok bol v K5 a finále prázdny (Šimon stopol bez braní), takže ostalo 15 cig. a koniec dal výkupné +6 (3 poldeci + 3 špaky z cigariet) — kurz 5 : 1 potvrdený, barter bol jediný sink bez straty. 165501-1: K2 a K5 barter (poldeci 3 → 4, limit 5), finále 6 cig. vyfajčených na vile (+5 špakov zo stupňov rečí); na konci 4 cig. = 0 špakov výkupného. 20261111-221937-2 finále: Fero barteroval 5 cig. → plný poldeci (výkupne rovnaké, limit +1) a zvyšné cigarety vyfajčil za kartu; doliatie za cigarety od v12.2 neexistuje. 20261114-003916-1 finále: Fero začal s 9 cigaretami a minul ich na ponuku, Vypiť, Záverečnú a barter; na výkupné 2 špaky (Vilo s 13 cigaretami a 7 poldeci vyhral závod o posledné slovo).
 - oprava: 2026-10-27 20261027-131033-1: pôvodné znenie („cigarety po finále nemajú žiadnu hodnotu“) odporovalo PRAVIDLA §14 (výkupné 5 : 1, Michal 2026-10-27) — platilo už vo v6.1, nielen vo v7; premisa prepísaná na kurz výkupné 5 : 1 voči šenku 1 : 1.
 - oprava: 2026-11-11 20261111-221937-2: vypustené „doliatie poldeci“ — doliatie za cigarety zaniklo vo v12.2 (§7 Fajčenie, barter a doliatie po Pitke; hlásil Fero); zvyšok partia potvrdila.
 
@@ -88,9 +88,9 @@ vo feedback.md.
 - pravidlá: v12
 - potvrdenia: 1
 - vyvrátenia: 0
-- dátum: 2026-11-11
+- dátum: 2026-11-14
 - partie: 20261111-221937-2
-- prečo: §13 Záverečná, §6 Prevaha. 20261111-221937-2 K3 Z2: Podvodník ako Záverečná vľavo (log „Záverečná hráča 2 sa otáča: Podvodník“) — ľavý kraj 3 : 3 ostal Ferov (prvá karta pri lokalite), tuhé 3 : 9 → 6 : 6; potvrdil aj Vilo („v tajnosti vyrovnala prevahu“). Bitku Fero aj tak prehral 6 : 15 (Energeťák + NA EX), Záverečná však kraj udržala. Záverečná nedáva cigarety za pas (v12.3).
+- prečo: §13 Záverečná, §6 Prevaha. 20261111-221937-2 K3 Z2: Podvodník ako Záverečná vľavo (log „Záverečná hráča 2 sa otáča: Podvodník“) — ľavý kraj 3 : 3 ostal Ferov (prvá karta pri lokalite), tuhé 3 : 9 → 6 : 6; potvrdil aj Vilo („v tajnosti vyrovnala prevahu“). Bitku Fero aj tak prehral 6 : 15 (Energeťák + NA EX), Záverečná však kraj udržala. Záverečná nedáva cigarety za pas (v12.3). Obmedzenie 20261114-003916-1 finále Z1: Záverečná (Predavačka) zamkla pravý koniec len do konca Pitky 1, v Z2 Vilo pridal Sypača a Krokodíla — pri viacerých Pitkách zámok drží len jednu Pitku (zodpovedá §13; skúsenosť sa nevyvrátila).
 
 ### fero-12 · Keď mi do Chuti chýbajú neresti a v kole nemám plánované NA EX, Vypiť ani odpoveď, nechám si na Pitku toľko cigariet, koľko nerestí chýba (každá zaplatená cigareta pri fajčení je nerest), lebo Absťák rozhoduje remízu v tuhom ako prvý a berie tuhé v každej bitke.
 - stav: overená
@@ -100,3 +100,12 @@ vo feedback.md.
 - dátum: 2026-11-11
 - partie: 20261111-221937-2
 - prečo: §8 Nerest, Chuť a Absťák, §9.4. 20261111-221937-2 K3: Chuť 2, Fero bez cigariet → log „Hráč 2 dostáva Absťák: Chuť 2, v kole vypije a vyfajčí 0 nerestí“ → K4 remíza 5 : 5 prehratá na Absťáky 1 : 0; v K5 si fajčenie zaplatil a Absťák neprišiel. Fero navrhoval „1 cigaretu pri Chuti ≥ 1“ — pri Chuti 2 jedna nestačí, preto počet podľa chýbajúcich nerestí.
+
+### fero-13 · Keď v jednej Pitke plánujem barter, Záverečnú aj odpoveď, nechám si aspoň 1 plný poldeci a 2 cigarety na posledné Zhromaždenie finále, lebo súper s viac poldeci a cigaretami sa vždy vráti telom či NA EX a s nulou nemám čím dorovnať.
+- stav: overená
+- pravidlá: v12
+- potvrdenia: 1
+- vyvrátenia: 0
+- dátum: 2026-11-14
+- partie: 20261114-003916-1
+- prečo: §6 limit = plné poldeci, §13 Vypiť. 20261114-003916-1 finále: Fero po Záverečnej, barteri a odpovedi mal v Z2–Z3 0 poldeci a 0 cigariet, Vilo (7 poldeci, 13 cigariet) položil jedným ťahom Snúbenicu + Krokodíla, 16 : 18 → 23 : 16; bitka 23 : 21. Potvrdil Vilo aj Fero.
