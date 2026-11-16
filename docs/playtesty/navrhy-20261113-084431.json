@@ -1,0 +1,262 @@
+{
+  "davka": "20261113-084431",
+  "podklady": [
+    "20261113-084431.html",
+    "strategia-20261113-084431.html",
+    "strategia-riesenia-20261116.html",
+    "navrhy-20261113-084431.html"
+  ],
+  "navrhy": [
+    {
+      "kluc": "cirhozy-z-balicka",
+      "nazov": "O nepriznaných Cirhózach rozhoduje poradie balíčka, nie hráč — jedno rozhodnutie namiesto #46 a #55",
+      "kritickost": "kriticka",
+      "oblast": "pravidlá",
+      "problem": "Nepriznaná Cirhóza stojí na konci hry 3 špaky. Priznať sa dá len z ruky, ale nová Cirhóza ide rovno do odhadzovacieho balíčka a nepriznaná z ruky sa tam po bitke vráti. Či sa k nej hráč ešte dostane, teda rozhoduje poradie balíčka. V tomto turnuse to otočilo víťaza jednej partie a je to tretí turnus po sebe, v ktorom hráči túto lotériu menujú ako najväčšiu náhodu hry.\n\nNa webe sú k tej istej veci dva otvorené návrhy: #46 (výkup Cirhóz na konci) a #55 (priznanie z balíčka za cigaretu a celý ťah). Stratég teraz zmeral nové varianty na pravidlách v12.5. Tento bod ich zhŕňa, aby si rozhodoval raz. Po rozhodnutí sa #46 a #55 uzavrú s odkazom sem.\n\nPodobný návrh N3 si zamietol 6. 11. s tým, že parkovanie Cirhózy je zámer. Vraciam ho, lebo parkovanie ostane voľbou (Cirhózu nemusíš priznať), odpadne len žreb, a po v12.5 bude Cirhóza jedna z mála vecí, ktoré ešte menia víťaza náhodou.",
+      "pricina": "§11 Priznanie: priznať sa dá len karta v ruke. §8 a §11: nová Cirhóza ide do odhadzovacieho balíčka a do ruky príde až po zamiešaní. §9.7: nepriznaná Cirhóza z ruky ide po bitke do odhadzovacieho balíčka. §14: −3 špaky za kus na konci (ruka aj oba balíčky). Odhadzovací balíček je verejný (§10, jadro ho posiela obom), takže priznanie z neho neprezradí nič skryté.",
+      "prejav": "P2: Eva mala na konci 5 nepriznaných Cirhóz (−15), do ruky sa jej z nich vrátila jediná. Hele prišli obe do ruky v poslednom kole a priznala ich. Partia skončila 72 : 66 pre Helu, bez trestu by vyhrala Eva 81 : 72.\n\nP3: Vilo mal 6 Cirhóz a priznal 2 (obe si dofajčil vo finále), −12. Šimon si Cirhózu dofajčil v poslednej Pitke 5. kola, priznať sa dá len v Zhromaždení, po bitke odišla do balíčka a stála 3 špaky.\n\n14. 11. mal Fero na konci 9 nepriznaných (−27). Štyria zo šiestich hráčov tohto turnusu navrhli nezávisle priznanie z balíčka (Hela za 1 cigaretu, Eva a Vilo za 2, Šimon hneď v Pitke). Kritérium Náhoda vs. zručnosť kleslo na 6,2 (−0,5) a všetci šiesti menujú Cirhózy medzi tromi zdrojmi náhody.",
+      "dokazy": [
+        "playtest 20261113-084431-2, Hazardná Hela (web #190): „O víťazovi rozhodli Cirhózy v balíčku, nie hra… Súperka mala rovnaké nástroje, len jej sa nevrátili.“",
+        "playtest 20261113-084431-2, Eva Stratégová (web #194): „Do ruky sa mi z nich na priznanie vrátila jediná, ostatné ležali v balíčku… Či sa Cirhóza vráti do ruky, nerozhoduje hráč, ale poradie balíčka.“",
+        "stratég 16. 11.: Cirhóza zmení víťaza v 8,8 % partií botov na v12.4 a v 15,2 % na jadre v12.5 (zrkadlo Igor–Igor, 120 partií); nepriznané na konci 2,7 na hráča, najviac 13",
+        "playtest 20261114-003916-1: Fero 9 nepriznaných Cirhóz (−27); návrh #55 z toho turnusu je stále otvorený",
+        "posudok stratéga 16. 11.: s A a botom, ktorý drží rezervu cigariet, Cirhóza zmení víťaza v 7,3 % partií (bez A 12,6 %), výhry bohatšieho hráča sa nezmenia (62 %)"
+      ],
+      "moznosti": [
+        {
+          "kluc": "A",
+          "nazov": "Priznanie z odhadzovacieho balíčka za 1 cigaretu",
+          "popis": "Nové pravidlo v §11: V Zhromaždení, keď je hráč na ťahu, smie priznať Cirhózu zo svojho odhadzovacieho balíčka za 1 cigaretu za kus. Ako priznanie z ruky nemíňa poldeci, neodovzdá ťah a smie sa aj bez plného poldeci, kým hráč nepasuje. Priznaná Cirhóza platí ako dnes: súper má za ňu v každej ďalšej bitke +1 tuhé. Z doberacieho balíčka sa priznať nedá (je skrytý). Priznanie z ruky ostáva zadarmo.\n\nNa stole pribudne pri odhadzovacom balíčku tlačidlo „Priznať Cirhózu z balíčka (1 cig.)“ s počtom Cirhóz v balíčku. Ťahák a výpis klienta agentov dostanú ten istý ťah. Bot sa ho naučí podľa toho istého odhadu ako priznanie z ruky.",
+          "dopad": "Stratég (jadro v12.5, bot naučený minimálne): bot prizná z balíčka 1,1 (zrkadlo) a 1,9 (zmes povách) Cirhózy za partiu, nepriznané na konci klesnú z 2,7 na 1,8 a z 2,3 na 1,3, Cirhóza zmení víťaza v 10,7 % namiesto 15,2 % (zrkadlo) a 4,4 % namiesto 5,4 % (zmes). Rebrík 66 / 76 → 66 / 78 % (bez zmeny v šume), predurčenosť rozdania bez zmeny.\n\nĽudia majú viac cigariet ako boti (Fero v K4 13), takže budú priznávať viac. Zlepší: žreb sa zmení na voľbu „cigareta teraz a +1 tuhé súperovi v každej bitke, alebo −3 na konci“; nahromadené cigarety dostanú použitie (zásada „prebytok treba vedieť minúť“). Zhorší: bohatší hráč sa vyčistí ľahšie.\n\nPosudok stratéga (bot „rezerva“, ktorý ako ľudia drží od 3. kola aspoň 3 cigarety, 120 partií): Cirhóza zmení víťaza v 7,3 % partií namiesto 12,6 %. Bohatší hráč prizná z balíčka viac (1,5 proti 1,0 za partiu), lebo má aj viac Cirhóz, ale na konci nie je čistejší (1,6 : 1,4 nepriznaných) a nevyhráva častejšie (62 → 62 %). Cena rastúca s každou priznanou Cirhózou (1, 2, 3…) by vrátila tretinu lotérie (10,7 %), preto ju netreba.",
+          "narocnost": "stredná",
+          "odporucana": true
+        },
+        {
+          "kluc": "B",
+          "nazov": "Cirhóza, ktorú si mal v ruke, ostane v ruke",
+          "popis": "Zmena §9.7: po bitke ide z ruky do odhadzovacieho balíčka len Absťák. Nepriznaná Cirhóza ostáva v ruke, kým ju hráč neprizná. Nová Cirhóza ide ako dnes do odhadzovacieho balíčka. Limit ruky nie je, takže ruka nič nestráca. Parkovanie v balíčku ostane presne ako dnes pri Cirhóze, ktorá do ruky ešte neprišla.",
+          "dopad": "Stratég (jadro v12.5, zmenu bot hrá sám): nepriznané na konci 2,7 → 2,1 (zrkadlo) a 2,3 → 1,9 (zmes), Cirhóza zmení víťaza 15,2 → 13,3 % (zrkadlo) a 5,4 → 2,7 % (zmes). Rebrík pri ε = 0,1 66 → 59 % (−7, na hrane šumu), pri ε = 0,25 76 → 79 %.\n\nRieši Šimonov prípad (Cirhóza dofajčená v poslednej Pitke), ale nie Evin: jej Cirhózy z NA EX šli rovno do balíčka a do ruky nikdy neprišli. Najmenší zásah do Tvojho „parkovanie je zámer“.",
+          "narocnost": "malá",
+          "odporucana": false
+        },
+        {
+          "kluc": "C",
+          "nazov": "Priznanie z balíčka za 2 cigarety a celý ťah",
+          "popis": "Ako A, ale priznanie jednej Cirhózy z odhadzovacieho balíčka stojí 2 cigarety a je to celý ťah Zhromaždenia (hráč potom nevykladá; odovzdá ťah súperovi). Návrh Evy a Vila, zodpovedá #55 B.",
+          "dopad": "Stratég: bot prizná z balíčka 0,7 (zrkadlo) a 1,4 (zmes) za partiu, nepriznané 2,1 a 1,6, Cirhóza zmení víťaza 10,9 % a 3,6 %. Rebrík 64 / 82 %. Drahšie, menej sa vyčistí a priznanie stojí aj tempo, takže je to väčšia obeta než A.",
+          "narocnost": "stredná",
+          "odporucana": false
+        },
+        {
+          "kluc": "D",
+          "nazov": "Nechať tak a uzavrieť #46 a #55",
+          "popis": "Pravidlá sa nemenia, platí rozhodnutie zo 6. 11. (parkovanie je zámer). Návrhy #46 a #55 sa zamietnu s odkazom na toto rozhodnutie.",
+          "dopad": "Lotéria ostane. Po v12.5 jej váha u botov stúpne (Cirhóza zmení víťaza v 15 % partií v zrkadle), lebo keď ubudne renta rečí, rozhoduje viac to, čo ostalo náhodné.",
+          "narocnost": "malá",
+          "odporucana": false
+        }
+      ],
+      "odporucanie": "A s pevnou cenou 1 cigareta, najprv vyskúšať v playteste Zrejúcej. Stratég ju zmeral aj s botom, ktorý si drží cigarety ako ľudia, a obstála: lotéria klesla takmer na polovicu a bohatší hráč z toho nemá výhodu na výsledku. Je to najväčšia čistá náhoda konca hry, ktorú v12.5 nerieši, a A ju mení na rozhodnutie bez straty parkovania: kto chce Cirhózu držať mimo hry, nemusí ju priznať, len už nehrá o žreb. Rebrík sa nepohne, takže hra nezačne trestať chyby menej.\n\nB je záloha, ak chceš parkovanie zachovať celé. Rieši menšiu časť problému (len Cirhózy, ktoré už prešli rukou) a rebrík pri malej chybe vyšiel o 7 bodov nižšie. A a B spolu neodporúčam, priznávalo by sa takmer všetko. C je drahšia verzia A, ktorej cena (celý ťah) ubúda rozhodovanie, nie pridáva.\n\nA nahrádza aj #46 B (výkup na konci): výkup by bol len prevod na konci hry, kým A necháva počas hry cenu +1 tuhé súperovi, a tým aj rozhodnutie, kedy priznať.\n\nSúvis: ak by sa raz zaviedlo finále B z bodu o váhe finále, Cirhóza by bez A menila víťaza ešte častejšie (stratég: 15 → 19 %). A je preto aj predpoklad pre B. Od v12.5 platí „Dopijem za teba“, ktoré časť Cirhóz z NA EX zníži; A rieši tie, ktoré aj tak vzniknú.",
+      "otazky": [
+        "Vraciaš sa k zamietnutému N3 (6. 11.) a pustíš priznanie Cirhózy z odhadzovacieho balíčka za 1 cigaretu (A) do skúšky v Zrejúcej?",
+        "Ak nie: má aspoň Cirhóza, ktorú hráč už mal v ruke, ostať v ruke (B)?",
+        "Smú sa #46 a #55 po tomto rozhodnutí uzavrieť s odkazom na tento bod?"
+      ],
+      "overenie": [
+        "Na konci partie nemá žiadny hráč, ktorý mal v poslednom Zhromaždení aspoň 3 cigarety, viac ako 2 nepriznané Cirhózy.",
+        "Aspoň jeden hráč turnusu prizná Cirhózu z odhadzovacieho balíčka a v denníku zdôvodní, prečo vtedy (cigareta a +1 tuhé súperovi proti −3 na konci).",
+        "Žiadny hráč neoznačí nepriznané Cirhózy za náhodu, ktorá rozhodla partiu."
+      ]
+    },
+    {
+      "kluc": "nahlad-vylozenia-nastup",
+      "nazov": "Náhľad vyloženia neráta Nástup, Konflikt a súperove „Nepriateľ“ a hra potichu zapasuje po poslednom poldeci",
+      "kritickost": "vysoka",
+      "oblast": "rozhranie",
+      "problem": "Pred vyložením karty ukazuje hra náhľad spoja. Neráta však s tým, čo karta urobí hneď pri vyložení: Nástup (Vandal otočí lokalitu), Konflikt a Podporu (Vdova, Dohadzovačka, Poľovník, Stryná) ani so súperovou akciou „Nepriateľ: tag“, ktorú karta svojím tagom zapne. Hráč sa rozhodne podľa náhľadu, ktorý nesedí, a prehru potom pripíše náhode.\n\nK tomu: kto vyloží kartu za posledný plný poldeci, toho hra v Pitke bez slova zapasuje, lebo nemá na NA EX ani na odpoveď. Výstraha pred ťahom nie je. Pravidlá aj výpočet bitky sú správne, chýba to len v rozhraní.",
+      "pricina": "Rozhranie. Jadro po vyložení počíta správne (stav po priložení vrátane Nástupu a otočenia lokality). Náhľad vyloženia (packages/core/src/hrany.ts, nahladVylozenia) však dostane len strany línie a web (apps/web/src/hra/HernaPlocha.tsx, nahladVylozeniaNa) mu stav po priložení ani otočenie lokality neodovzdá. Klient AI hráčov (tools/playtest/hrac.ts) robí to isté. Akcie „Nepriateľ“ a „Spoločník“, ktoré karta zapne na súperových či vlastných kartách, náhľad nehlási vôbec. Výstraha pred minutím posledného plného poldeca nie je nikde.",
+      "prejav": "Päť zo šiestich hráčov to hlási ako hlavnú chybu čitateľnosti (Jano, Fero, Hela, Eva, Vilo). Jano K4: Ferov Vandal otočil Vínnu pivnicu, náhľad písal „súper bez zmeny“, tuhé 0 : 3 → 3 : 0 a Janova hádka 9 → 5. Hela K5: náhľad pri Vandalovi sľuboval Ranu a Pečeň, po otočení vznikla Vzbura (8 tuhých); Vandal je Kriminál a zapol Evinej Policajtke Petelicu, Hela tú bitku prehrala. Fero K4: Pes k vlastnej Manželke jej zapol Pohoršenia, z karty sa stal cieľ NA EX (6 Dlhov a 3 Cirhózy). Jano K3: Konflikt Vdovy sa spustil pri jeho vlastnom priložení Krokodíla a vzal mu poslednú kartu. Eva v K3 a K4 a Vilo v K4 minuli posledný poldeci a ostali v Pitke bez NA EX aj odpovede.\n\nKritérium Zrozumiteľnosť je 5,7 a dlhodobo medzi najnižšími (5,0–5,8), Hĺbka kleslo na 6,2 („hĺbka v kombináciách, ktoré treba ručne prepočítať“, Hela).",
+      "dokazy": [
+        "playtest 20261113-084431-2, Hazardná Hela (web #193): „Náhľad vyloženia Vandala klame: počíta spoj s lokalitou ešte pred jej otočením… Vandal je Kriminál, takže súperkinej Policajtke zapol Petelicu navyše — ani to náhľad nehlási, a stálo ma to bitku.“",
+        "playtest 20261113-084431-1, Fero (N6) a Jano K4: náhľad „súper bez zmeny“, po vyložení Vandala tuhé 0 : 3 → 3 : 0; spisovateľ potvrdil chybu v náhľade (report 20261113-084431, Nezrovnalosti)",
+        "playtest 20261113-084431-2, Eva: „Počítanie poldeci a Chuti je ľahké prehliadnuť; hra ma dvakrát zapasovala.“ Vilo: „hra ma často sama ukončila v Pitke (0 plných)“",
+        "stratég (S3): „Zaviesť ako súčasť #61“; odhad z denníkov: Hela +8 špakov, Vilo +20 z prehliadnutí verejnej informácie"
+      ],
+      "moznosti": [
+        {
+          "kluc": "A",
+          "nazov": "Náhľad po vyložení, riadok „súperovi zapneš“ a výstraha posledného poldeca",
+          "popis": "Pravidlá sa nemenia. (1) Náhľad vyloženia na stole (pri ťahaní karty aj pri návrhu ťahu) aj vo výpise klienta AI hráčov počíta líniu tak, ako ju zloží jadro po priložení: Nástup vrátane otočenia lokality, Konflikt a Podpora oboch kariet, Miňištrant, Šarlatán. (2) Keď karta svojím tagom zapne alebo vypne akciu „Nepriateľ: tag“ či „Spoločník: tag“ na inej karte, náhľad to napíše riadkom, napríklad „Súperovi zapneš: Policajtka +Petelica“. (3) Keď Konflikt postihne ruku vyloženého hráča, náhľad napíše „Konflikt Vdovy: odhodíš 1 kartu z ruky“ (ktorú, nepovie; po schválenom #52 si ju obeť vyberie, text zladiť s ním). (4) Keď ťah minie posledný plný poldeci a v kole ešte príde Pitka, pri potvrdení ťahu je výstraha „V Pitke nebudeš mať plný poldeci: žiadne NA EX ani odpoveď.“ Ťah nezablokuje. Náhľad nesmie prezradiť nič skryté (súperovu ruku, NA EX lícom dole).",
+          "dopad": "Hráč sa rozhoduje z úplnej verejnej informácie a trest dostane za rozhodnutie, nie za nepozornosť. Skúsený počtár stratí časť náskoku, čo je zámer: pamäť a aritmetika nemajú byť zručnosť, ktorú hra odmeňuje. Botom sa to merať nedá (bot vidí stav celý). Odhad z denníkov: Hela by ušetrila asi 8 špakov, Vilo asi 20.",
+          "narocnost": "stredná",
+          "odporucana": true
+        },
+        {
+          "kluc": "B",
+          "nazov": "Len oprava chyby náhľadu",
+          "popis": "Iba bod (1) z A: náhľad vyloženia na stole aj v klientovi AI hráčov počíta stav po Nástupe, Konflikte, Podpore a otočení lokality. Bez nových riadkov a bez výstrahy pri poslednom poldeci.",
+          "dopad": "Odstráni potvrdenú chybu (Vandal). Prípady „Nepriateľ“ (Hela K5) a potichu zapasovaného hráča (Eva, Vilo) ostanú.",
+          "narocnost": "malá",
+          "odporucana": false
+        },
+        {
+          "kluc": "C",
+          "nazov": "A a výstrahy pre podstrčenie",
+          "popis": "A a k tomu: (5) pri karte, ktorú kladieš na koniec línie s neaktívnou Pečeňou, Poldeci či Dlhom na vonkajšej hrane, náhľad napíše „podstrčením ti súper môže túto akciu spárovať“ (Vilo); (6) pri karte, ktorej spoj spraví z inej karty platný cieľ NA EX (aspoň 1 aktívna a 1 neaktívna akcia), náhľad napíše „z Manželky robíš cieľ NA EX“ (Fero K4).",
+          "dopad": "Pokryje aj Ferov a Vilov prípad. Stôl dostane viac textu, čo ide proti „čistému stolu“, a výstrahy (5) a (6) sú odhady súperových možností, nie istota.",
+          "narocnost": "veľká",
+          "odporucana": false
+        }
+      ],
+      "odporucanie": "A zaviesť hneď, bez playtestu: pravidlá sa nemenia a bod (1) je oprava potvrdenej chyby. Dá sa robiť spolu s #61 (výsledný stav akcie na karte), ktorý rieši čitateľnosť spoja, kým tento bod rieši to, čo karta spustí pri vyložení. Výstrahu (4) som dal ako nezáväznú, lebo minúť posledný poldeci je niekedy správny ťah.\n\nStratég súhlasí: body (1) až (3) ukazujú len verejnú informáciu a nič nepresúvajú do náhody ani do skrytej informácie. Výstraha (4) má byť len upozornenie, nie potvrdenie ťahu (minúť posledný poldeci je často správne a dialóg by spomalil každý ťah). C nepodporuje: výstrahy (5) a (6) sú odhady súperových možností a zahltili by stôl.",
+      "otazky": [
+        "Zaviesť A hneď ako opravu rozhrania (pravidlá sa nemenia), s výstrahou pri poslednom plnom poldeci len ako upozornením?"
+      ],
+      "overenie": [
+        "Žiadny hráč nenahlási, že výsledok vyloženia (Nástup, otočenie lokality, Konflikt, súperov „Nepriateľ“) nesedel s náhľadom.",
+        "Pri každom ťahu, ktorý pred Pitkou minie posledný plný poldeci, stôl aj výpis klienta ukážu výstrahu, a aspoň jeden hráč ju v denníku spomenie pri rozhodnutí."
+      ]
+    },
+    {
+      "kluc": "injekcia-vytrznik",
+      "nazov": "Injekcia pod kartou s mnohými akciami (a s Vidlami) dá 10–14 tuhých bez protiťahu",
+      "kritickost": "stredna",
+      "oblast": "pravidlá",
+      "problem": "Injekcia podložená pod kartu urobí z nej Výtržníka: všetky akcie karty sú aktívne Rany pre jej majiteľa, aj tie bez partnera. NA EX na takú kartu dať nejde a Odpor priložený k nej ju nezastaví. S Vidlami v Dedičstve (každá Rana +1) dá jedna karta s piatimi či šiestimi akciami 10–14 tuhých. Bitku tak rozhodne jedno kombo, ktoré prišlo v stavbe ponuky, a súper proti nemu nemá ťah.",
+      "pricina": "§7 Výtržník: karta sa spáruje so susedmi s pôvodnými akciami, potom sa všetky akcie na jej hranách zmenia na aktívnu Ranu. „Rany Výtržníka platia vždy ×1“ (6. 11.) vylučuje násobky (Silná žena), ale Vidly nie sú násobok, sú +1 k Rane, takže platia. §12 Injekcia „Hore: Výtržník“, Vidly „Dedičstvo: Tvoje Rany udeľujú o 1 poškodenie viac“. §7 nehovorí, či Odpor suseda zruší akciu Výtržníka na spoji; jadro ju nezruší a Odpor len zhasne (Vilo P3 K3 a K5), hoci inak Odpor na spoji ruší prepojenú akciu (§6).",
+      "prejav": "P3 K3: Šimonovi prišli Vidly aj Injekcia v jednej stavbe ponuky, Injekciu podložil pod Recidivistu a vyhral 13 : 4; Vilo: „Neexistoval protiťah, hral som už len o hádku.“ P3 K5: Kočovník s Injekciou 14 tuhých. 9. 11. (Vypálená v12.3) P3 K4: Fero Injekciu pod Dvojčatá 24 : 3 a Nakladačka 21, „najlepšia investícia partie“. Vilo a Šimon navrhli obmedzenie nezávisle. U botov je kombo zriedkavé a ľudia na webe majú len 3 partie (Kočovník raz 14 tuhých), čísla sú teda len náznak.",
+      "dokazy": [
+        "playtest 20261113-084431-3, Paragrafista Vilo (web #197): „Za jednu cigaretu z toho bolo päť Rán, každá za 2, a s hranou lokality 13 tuhých… NA EX na kartu s Injekciou dať nejde a môj Odpor priložený k nej nič nezrušil ani nevytvoril Vzburu.“",
+        "playtest 20261113-084431-3, Šimon Starešina: Injekcia „Výtržník: z Recidivistu/Kočovníka 5–6 Rán, s Vidlami 10–12 tuhých, NA EX naň nejde — rozhodla K3 aj finále“",
+        "playtest 20261109-115955-3, Fero K4: Injekcia pod Dvojčatá 24 : 3, „2 cigarety ≈ +9 tuhých“",
+        "živý web, 3 partie ľudí: Kočovník raz 14 tuhých v bitke (len náznak)",
+        "posudok stratéga 16. 11., scenár na jadre: Recidivista / Kočovník s Injekciou a Vidlami 10 / 12 tuhých, pri A 5 / 6, pri B 4 / 5; Odpor suseda dnes Výtržníkovi nerobí nič"
+      ],
+      "moznosti": [
+        {
+          "kluc": "A",
+          "nazov": "Rany Výtržníka bez bonusu Vidiel",
+          "popis": "§7 a §12, jedna veta: „Rany Výtržníka (zrážka aj Injekcia) platia vždy ×1 a nedostávajú bonusy Dedičstva (Vidly).“ Text Vidiel ani Injekcie sa nemení.",
+          "dopad": "Stratég (scenár na jadre, 1944 rozložení suseda pre každého hostiteľa): Recidivista s Injekciou a Vidlami dnes 10 tuhých, pri A 5; Kočovník a Dvojčatá 12 → 6. Samotné A splní overenie „najviac 9 tuhých z jednej karty“ (najviac 6 plus hrana lokality). Injekcia ostane silná, Vidly ostanú dobré pre bežné Rany. Prípad z 9. 11. (Dvojčatá bez Vidiel, 6 Rán) nemení.",
+          "narocnost": "malá",
+          "odporucana": false
+        },
+        {
+          "kluc": "B",
+          "nazov": "A a Odpor suseda zruší akciu Výtržníka na spoji",
+          "popis": "A a k tomu do §7: „Odpor suseda na spoji s Výtržníkom zruší akciu Výtržníka na tom spoji ako každú inú (Rana tam nevznikne) a zhasne; Vzbura nevznikne.“ Platí pre oba druhy Výtržníka (zrážka aj Injekcia) a v §7 sa napíše pre oba naraz; je to to isté, čo dnes platí pre Odpor na spoji s hocijakou akciou (§6).",
+          "dopad": "Stratég: dnes Odpor suseda Výtržníkovi nerobí nič vo všetkých 1944 rozloženiach (sedí s Vilom). Pri B zruší 1 Ranu na svojom spoji: Recidivista 5 → 4, Kočovník a Dvojčatá 6 → 5 (pri dvoch Odporoch o 2). Protiťah je malý, ale existuje, Vilo ho presne hľadal, a Odpor sa zjednotí s §6 bez výnimky. Zrážka (obaja NA EX na tú istú kartu) tým tiež stratí 1 tuhé, čo je v poriadku.",
+          "narocnost": "malá",
+          "odporucana": true
+        },
+        {
+          "kluc": "C",
+          "nazov": "Injekcia mení na Rany len spárované akcie",
+          "popis": "Návrh Vila. §7 a text Injekcie: „Výtržník z Injekcie: aktívnymi Ranami sa stanú len akcie karty, ktoré sú na spoji spárované; nespárované ostanú neaktívne.“ NA EX na kartu s Injekciou stále nejde. Zrážka (obaja NA EX na tú istú kartu) ostáva ako dnes.",
+          "dopad": "Stratég: z jedného suseda by sa spárovalo v priemere len 2,3–2,6 akcie z 5–6 (Recidivista s Vidlami ⌀ 4,5 namiesto 10, Kočovník ⌀ 5,2 namiesto 12). Najsilnejší zásah: Injekcia by závisela od susedov a správala by sa inak ako zrážka, čo je ďalšia výnimka na spoji (#61). Netreba, kým sa neukáže, že A a B nestačia.",
+          "narocnost": "stredná",
+          "odporucana": false
+        }
+      ],
+      "odporucanie": "B vyskúšať v playteste; stratég súhlasí. A samo stlačí kombo zhruba na polovicu a zapadá do pravidla „Rany Výtržníka ×1“ zo 6. 11. B k tomu pridá protiťah, ktorý hráči hľadali (Vilo skúsil podstrčiť Odpor), za jednu vetu a bez výnimky: Odpor robí na spoji s Výtržníkom to isté, čo s každou inou akciou. C nechať na neskôr, ak by Injekcia ostala silná aj po B.\n\nZmena je v jadre (Rany Výtržníka sa rátajú zvlášť), karty v tvorcovi sa meniť nemusia.",
+      "otazky": [
+        "Majú Rany Výtržníka prestať dostávať bonus Vidiel (A)?",
+        "Má Odpor suseda rušiť akciu Výtržníka na spoji ako každú inú akciu (B), alebo potvrdiť dnešnú hru (Výtržník je voči Odporu imúnny) a len ju dopísať do §7?"
+      ],
+      "overenie": [
+        "Žiadna karta s Injekciou nedá v jednej bitke viac ako 9 tuhých.",
+        "Žiadny hráč neopíše Injekciu ani Výtržníka ako kombo bez protiťahu, a ak súper Výtržníka v línii mal, aspoň raz proti nemu niekto položí Odpor alebo to v denníku zváži."
+      ]
+    },
+    {
+      "kluc": "vaha-finale",
+      "nazov": "Finále váži viac ako dve až tri bitky pred ním a po v12.5 bude vážiť ešte viac",
+      "kritickost": "stredna",
+      "oblast": "pravidlá",
+      "problem": "Vo finále sa vyloží všetko a víťaz dostane špak za každú kartu v celej línii, za každý bod Nakladačky a ešte bodujú starší. Jedna bitka tak prinesie viac ako dve či tri kolá pred ňou. Dvaja hráči to tento raz nazvali „partia je predohra finále“ a tá istá sťažnosť je na webe od začiatku (názor #69 s troma cigaretami).\n\nFinále je pritom Tvoja brzda snehovej gule (v9.1) a cesta šetrných štýlov. Po v12.5, keď zmizne renta rečí, bude podľa botov vážiť ešte viac. Otázka je, kde je hranica, za ktorou z brzdy začne byť lotéria jednej bitky.",
+      "pricina": "§14b Finále a §14: víťaz finále dostane 1 špak za každú kartu v celej línii, 1 špak za každý bod Nakladačky (v9.1), víťaz hádky 1 za bod hádky a starší bodujú po finále ako po každej bitke. Do finále sa vykladá celá ruka, preto je línia najdlhšia. Nakladačka vo finále 1 : 1 sa vrátila vo v9.1 zámerne, lebo vedúci pred finále vyhrával 76 % partií (cieľ „okolo polovice“).",
+      "prejav": "P3: Šimon prehrával pred finále 37 : 54, finále vyhral 19 : 0 a dostal 44 špakov (6 za karty, 19 Nakladačka, 19 starší), skončil 80 : 55. P2: Hela prehrávala 39 : 58, finále jej dalo 31 a vyhrala 72 : 66. Vedúci pred finále prehral 2 z 2 (14. 11. vyhral 2 z 3). Napätie hodnotili hráči P2 a P3 vysoko (9, 8, 7, 9) práve pre finále.\n\nStratég u botov: finále dáva víťazovi 50–55 % jeho špakov (v12.4) a po v12.5 57–73 %; víťaz finále vyhrá partiu v 59–70 %, po v12.5 v 71–80 %. Vedúci pred finále po v12.5 prehrá 41–52 %, teda cieľ v9.1 „okolo polovice“ sa po v12.5 plní. Najväčšia zložka finále sú karty v línii (14,6 špaku), potom Nakladačka (11,7) a starší (7,4).",
+      "dokazy": [
+        "playtest 20261113-084431-3, Paragrafista Vilo: „54 : 37 pred finále a aj tak prehra o 25 — finále (Nakladačka 1 : 1 + starší) váži viac než 2–3 bitky.“",
+        "playtest 20261113-084431-3, Šimon Starešina (víťaz): „Celá partia je predohra finále.“",
+        "stratég 16. 11. (jadro v12.5): podiel finále na špakoch víťaza 57 % (zrkadlo) a 73 % (zmes), víťaz finále vyhrá 71 / 80 %; Nakladačka vo finále 1 : 2 (vrátený N8) to zníži len na 56 / 67 % a predurčenosť rozdania stúpne z 0,44 na 0,55",
+        "web #69 (Jano, 3 cigarety, potvrdili Hela, Eva, Fero; Admin 16. 11. znovu otvoril): „Celé finále bolo teda o jednom čísle.“",
+        "posudok stratéga 16. 11.: B (finále ako Kultúrny dom) zníži výhry víťaza finále v zmesi povách z 80 na 72 % a výpraskov nad 30 špakov zo 44 na 33 %, otočky ostanú; predurčenosť 0,44 → 0,52"
+      ],
+      "moznosti": [
+        {
+          "kluc": "A",
+          "nazov": "Nechať finále a stanoviť hranicu",
+          "popis": "Pravidlá sa nemenia. Ako meradlo platí cieľ z v9.1: vedúci pred finále vyhrá partiu okolo polovice. K finále sa vrátime, keď v playteste dá finále víťazovi partie viac ako polovicu jeho špakov v dvoch z troch partií, a to v dvoch turnusoch po sebe. Vtedy príde na rad páka B. Hranica je viazaná na partie playtestu, nie na botov: u botov (zmes povách) vyhrá víťaz finále na v12.5 už 79,8 % partií, takže hranica z botov by nič nerozlíšila.",
+          "dopad": "Brzda snehovej gule a cesta „všetko na finále“ ostanú. Podľa stratéga po v12.5 prehrá vedúci pred finále v 41–52 % partií botov, čo je cieľ v9.1. U AI hráčov je podiel finále nižší ako u botov (Šimon 55 %, Hela 43 %), lebo v kolách 1–5 bodujú viac.",
+          "narocnost": "malá",
+          "odporucana": true
+        },
+        {
+          "kluc": "B",
+          "nazov": "Finále ako Kultúrny dom: každý za svoje karty",
+          "popis": "Zmena §14b: vo finále dostane víťaz aj porazený 1 špak za každú svoju kartu v línii (víťaz aspoň 1), tak ako dnes na Kultúrnom dome, namiesto toho, aby víťaz dostal špak za každú kartu v celej línii. Nakladačka vo finále 1 : 1, hádka a starší sa nemenia.",
+          "dopad": "Stratég zmeral na jadre v12.5 (zrkadlo / zmes, 120 partií): víťaz finále vyhrá partiu 71 / 80 → 67 / 72 %, partie s rozdielom nad 30 špakov 35 / 44 → 31 / 33 %, podiel finále na špakoch víťaza 57 / 73 → 54 / 66 %, porazený si z finále odnesie 6 → 8 špakov (zmes), otočky po 3. kole ostanú (40 %). Nakladačka, Tvoj nástroj dobiehania, ostáva celá. Rebrík 64 / 79 % (v šume).\n\nCena: predurčenosť rozdania stúpne z 0,44 na 0,52 (keď finále prestane prekrývať všetko, viac rozhodne rozdanie) a Cirhóza mení víťaza častejšie (15 → 19 % v zrkadle), preto patrí až po Cirhózach A. Menej drámy vo finále. V jadre je to jedna podmienka (finále sa ráta ako Kultúrny dom) a bot sa prispôsobí sám.",
+          "narocnost": "malá",
+          "odporucana": false
+        },
+        {
+          "kluc": "C",
+          "nazov": "Nakladačka a hádka vo finále 1 špak za 2 body (vrátený N8)",
+          "popis": "Zmena §14b: víťaz finále dostane 1 špak za každé 2 body Nakladačky a víťaz hádky 1 za každé 2 body hádky (nahor). Návrh Vila a Šimona, zamietnutý 6. 11. ako N8.",
+          "dopad": "Stratég zmeral: podiel finále 57 → 56 % (zrkadlo) a 73 → 67 % (zmes), víťaz finále vyhrá stále 74 / 79 %, otočky po 3. kole klesnú (39 / 44 → 36 / 33 %), predurčenosť rozdania stúpne z 0,44 na 0,55. Oproti B zabral menej a berie porazenému hlavný nástroj dobiehania, presne to, prečo si N8 zamietol.",
+          "narocnost": "malá",
+          "odporucana": false
+        }
+      ],
+      "odporucanie": "A, s B ako pripravenou pákou. Finále robí, čo má: v P2 aj P3 dobehol zaostávajúci, napätie bolo vysoké a po v12.5 sa u botov plní Tvoj cieľ z v9.1. B je podľa stratéga najlepšia páka zo všetkého, čo meral: ubudne výpraskov, víťaz finále nerozhoduje tak často a Nakladačka ostane. Má však cenu (rozdanie začne vážiť viac, Cirhózy viac otáčajú), preto ho dávam ako ďalší krok po Cirhózach A, nie hneď. Ak chceš rýchlejšie, B je lacné a dá sa pridať do najbližšej skúšky v Zrejúcej spolu s A z bodu o Cirhózach. Vrátený N8 (C) neodporúčam ani po meraní.",
+      "otazky": [
+        "Platí ako meradlo váhy finále Tvoj cieľ z v9.1 „vedúci pred finále vyhrá okolo polovice partií“?",
+        "Súhlasíš s hranicou z A (finále dá víťazovi viac ako polovicu špakov v 2 z 3 partií dvoch turnusov po sebe), alebo dať B (finále ako Kultúrny dom) rovno do najbližšej skúšky v Zrejúcej?"
+      ],
+      "overenie": [
+        "Finále dá víťazovi partie najviac 55 % jeho konečných špakov v aspoň dvoch z troch partií, ktoré sa do finále dohrajú.",
+        "Vedúci pred finále vyhrá aspoň jednu a prehrá aspoň jednu z partií turnusu, ktoré sa do finále dohrajú (ak sú aspoň dve)."
+      ]
+    },
+    {
+      "kluc": "texty-pravidiel-turnusu",
+      "nazov": "Hra počíta správne, ale text pravidiel, ťaháka a jedno hlásenie v hre jej opakovane odporujú",
+      "kritickost": "nizka",
+      "oblast": "pravidlá",
+      "problem": "Hráči opakovane hlásia tie isté rozpory medzi pravidlami, ťahákom a hrou. Hra sa správa rozumne, ale text hovorí niečo iné, a tak sa hráči mýlia alebo strácajú čas overovaním. Hlásenie o natáčaní finálovej lokality je v reporte tretí turnus po sebe, lebo k nemu nikdy nebol návrh. Jeden z rozporov potrebuje Tvoje slovo: Pakt na hrane Kostola.",
+      "pricina": "(1) Hlásenie hry pri prechode do finále je napevno „hráč X vyberá a natáča pinnacle lokalitu“ (packages/core/src/engine.ts, r. 6465 vo v12.5), hoci od v11.11 natáča víťaz poslednej hádky; správanie je správne. (2) §2 „Na hranách lokalít Pakt nie je“, ale Kostol má na hrane „pri vchode“ Pakt, Poveru a Pohoršenie; jadro ho hrá ako kopírovanie akcie karty pri lokalite. (3) Ťahák AI hráčov má Cintorín pred návratom kariet, §9 ho má po ňom (krok 7a). (4) §7 a ťahák píšu, že v Pitke sa „dolieva“, hoci doliatie za cigarety zaniklo vo v12.2. (5) §15 Kostol „V ťahu sa smie vyložiť len 1 karta“ má výnimku pre Nástroj len v zátvorke o starom znení.\n\nUž opravené vo v12.5 (preto tu nie sú): veta „Odpoveď limit vykladania nemíňa“ a výpalné v ťaháku. Most je v §15 jasný („aj odpoveď na NA EX“).",
+      "prejav": "Vilo a Šimon (web #202) hlásili hlásenie finále; rovnako reporty 20261111-221937 a 20261114-003916. Pakt na Kostole: Hela (web #192), Vilo v zhodenej partii. Poradie v ťaháku: Jano, Hela, Šimon a obe zhodené partie. „Dolieva“: Fero, Vilo, Šimon. Šimon zistil až z výpisu, že Injekciu musí na Kostole podložiť samostatným ťahom. Zrozumiteľnosť pravidiel je 5,7, dlhodobo medzi tromi najnižšími kritériami.",
+      "dokazy": [
+        "playtest 20261113-084431-3, Šimon (web #202): log „Finále (54 : 37 špakov): útočí hráč 2, hráč 1 vyberá a natáča pinnacle lokalitu“, natáčal správne hráč 2",
+        "playtest 20261113-084431-2, Hazardná Hela (web #192): „Kostol má na hrane lokality Pakt, hoci pravidlá hovoria, že na hranách lokalít Pakt nie je.“",
+        "report 20261113-084431, Nezrovnalosti: všetky položky overené v PRAVIDLA.md a v jadre"
+      ],
+      "moznosti": [
+        {
+          "kluc": "A",
+          "nazov": "Zapísať, ako hra hrá",
+          "popis": "(1) Hlásenie finále: „Finále (X : Y špakov): útočí hráč A, hráč B vyberá pinnacle lokalitu, natočí ju hráč C (víťaz poslednej hádky).“ (2) §2 Pakt: „Na hranách lokalít Pakt nie je, okrem Kostola; Pakt hrany kopíruje akciu karty, s ktorou je v páre, pre toho, kto má v kraji prevahu.“ (3) Ťahák: Cintorín až po návrate kariet, ako §9 krok 7a. (4) Vyškrtnúť „dolieva“ z §7 a ťaháka. (5) §15 Kostol: „Podloženie Nástroja je na Kostole samostatný ťah.“",
+          "dopad": "Zmiznú štyri opakujúce sa hlásenia, hra sa nemení a odtlačok hry ostane.",
+          "narocnost": "malá",
+          "odporucana": true
+        },
+        {
+          "kluc": "B",
+          "nazov": "Texty opraviť a Pakt z Kostola vymeniť",
+          "popis": "Body (1) a (3) až (5) ako v A. Namiesto výnimky v §2 sa v tvorcovi (rozpracovaný stav pre Zrejúcu) na hrane Kostola „pri vchode“ vymení Pakt za Vieru alebo Poveru (vyberieš v tvorcovi).",
+          "dopad": "§2 ostane bez výnimky. Kostol sa zmení: Viera navyše ho urobí ešte obrannejším, Povera navyše mäkším. Zmena hrany lokality mení balans a bez merania sa nedá povedať o koľko.",
+          "narocnost": "malá",
+          "odporucana": false
+        }
+      ],
+      "odporucanie": "A; stratég súhlasí a B nepodporuje (zmena hrany obrannej lokality bez merania). Pakt na Kostole sa hrá rozumne a dáva lokalite charakter, stačí ho popísať. Ostatné sú opravy textu bez rozhodnutia. Veta pri Veľmi smútiacej vdove („ktorú, vie len on“) sa opraví pri implementácii schváleného #52 a výnimka Predsedovej vily vo finále patrí k #59.",
+      "otazky": [
+        "Má Pakt na hrane Kostola ostať a dopísať sa do §2 ako výnimka (A), alebo ho v tvorcovi vymeniť (B)?"
+      ],
+      "overenie": [
+        "Žiadny hráč nenahlási rozpor k Paktu na Kostole, k natáčaniu finálovej lokality, k „dolievaniu“ ani k poradiu konca bitky v ťaháku."
+      ]
+    }
+  ]
+}
