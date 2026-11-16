@@ -20,7 +20,9 @@
     "prevod": "Pri stupnici 7 polí (v6) leží pri každej zóne strachu na každej polovici žetón Špak: prvý vstup markera do žltej dá vydesujúcemu 1 špak, do oranžovej 1, do červenej 2 (čísla na zmeranie), žetón ide preč. Po bitke sa už nevypláca „každý starší, ktorý sa ťa bojí“; strach sa zaráta raz po finále podľa polohy (1/2/3). Popolník dostane ohorky pri udalosti, nie každé kolo. Scorecard: na stupnici natlačené tri žetóny na stranu. Výučba: „Kto prvý vystraší, berie špak. Kto ho udrží do konca, berie znova.“",
     "rizika": "Zabudnuté žetóny = viac evidencie (web to rieši sám). Ak je korisť príliš malá, strach prestane byť os a hra sa zúži na bitky. Pohoršenie bez limitu (v6) môže v jednej bitke pobrať tri žetóny naraz — treba strop alebo zachovať limit hraníc zón.",
     "merat": "Podiel špakov zo starších vs. z bitiek pri dnešnej v6 a pri koristi; korelácia vedenia po 2. bitke s výhrou partie (snowball); počet žetónov koristi za partiu; frekvencia vydesenia a kolo, v ktorom príde.",
-    "temy": ["posledna-bitka-a-vplyv"],
+    "temy": [
+      "posledna-bitka-a-vplyv"
+    ],
     "pridane": "2026-10-26"
   },
   {
@@ -54,7 +56,9 @@
     "prevod": "Popolník (trvalé) a stôl starších (dočasné). Trvalé špaky: vyhratá bitka (odohrané Pitky). Kemet navyše odmeňuje len útok: v NA EX je útočník hráč, ktorý prehral minulú bitku, takže „+1 trvalý špak za bitku vyhratú ako útočník“ je zabudovaný návrat do hry bez darčeka. Dočasné: strach starších sa nepripisuje po každej bitke, ukazuje sa ako živý stav a do popolníka padne raz, po finále. Most ako pri dvoch chrámoch: kto má na konci kola aspoň 3 starších v strachu, dostane 1 trvalý špak. Hanamikoji poučenie: pri remíze v posune marker ostáva, nikto ho nevynuluje.",
     "rizika": "Ak sa strach ráta len na konci, posledná bitka (prebytok) zase rozhoduje veľa — preto len spolu s koristou za hranicu alebo s medzibodovaním. Dva druhy špakov treba vo výučbe ukázať farbou (ohorok vs. horiaca cigareta). Bonus útočníka môže motivovať úmyselnú prehru (overiť).",
     "merat": "Podiel výhier, keď vedúci po 3. bitke vyhrá partiu (dnes / variant); priemerný rozdiel skóre pred finále; či hráči úmyselne prehrávajú kvôli útočníkovi (bitky prehraté s veľkou rezervou kariet).",
-    "temy": ["posledna-bitka-a-vplyv"],
+    "temy": [
+      "posledna-bitka-a-vplyv"
+    ],
     "pridane": "2026-10-26"
   },
   {
@@ -83,7 +87,9 @@
     "prevod": "Strach starších sa v6 nevyplatí po každej bitke, ale len pri zúčtovaní. Dve podoby: (a) pevne — po 2. bitke, po 4. bitke a po finále (stredná hra), rovnakou váhou; (b) cez lokality — každá lokalita má na karte 1–2 starších, ktorých sa v kole o ňu zúčtuje (Kostol → Farár, Krčma → Krčmárka, Obecný úrad → Starosta…). Obranca, ktorý volí cieľ (§5), tak volí aj to, čí strach sa dnes ráta; útočník vie dopredu, kam tlačiť Pohoršenie. Finále zúčtuje všetkých raz. Na kartách lokalít pribudne ikona staršieho; vo výučbe „Na Kare sa ukáže, kto sa koho bojí.“",
     "rizika": "Väzba lokalita → starší je nová dátová vrstva (scorecardy sa rozdávajú náhodne, starší sú pevní, takže väzba ide na kartu staršieho, nie na scorecard). Pri krátkej hre (3 lokality) niektorí starší nemusia prísť na rad — treba finále, ktoré zúčtuje všetkých. Obranca dostane ďalšiu výhodu (už volí cieľ).",
     "merat": "Koľko špakov za strach dá jedno zúčtovanie vs. jedna bitka; či obranca volí cieľ podľa starších (bot aj ľudia); podiel výhier obrancu po zmene; rozptyl výsledku poslednej bitky.",
-    "temy": ["posledna-bitka-a-vplyv"],
+    "temy": [
+      "posledna-bitka-a-vplyv"
+    ],
     "pridane": "2026-10-26"
   },
   {
@@ -107,7 +113,9 @@
     "prevod": "Dva popolníky pri mene hráča: Krčma (špaky za bitky) a Dedina (špaky za starších). Vyhrá, kto má väčší menší popolník; pri rovnosti rozhodne väčší. Mierku „19 vs. 4“ netreba ladiť, lebo sa nesčítajú — kto má 19 v Dedine a 4 v Krčme, má 4. Mäkká verzia na meranie: skóre = 2 × menší + väčší. Téma: „V dedine ťa rešpektujú, len keď si chlap v krčme aj pán u fary.“ Výučba: Melichar ukazuje kratší popolník.",
     "rizika": "Nováčik nepochopí, prečo nevedie, hoci má viac špakov — web musí ukazovať „platí menší“. Hráč so zlou rukou na bitky stratí nádej skôr (minimum trestá jednu slabinu tvrdo). Ak jedna os dáva vždy oveľa viac, hrá sa len o druhú — rozhodnutia sa zúžia.",
     "merat": "Rozdelenie (Krčma, Dedina) u víťaza a porazeného; ako často rozhodne menší popolník iné víťazstvo než súčet; počet partií, kde porazený mal vyšší súčet; dĺžka rozhodovania bota.",
-    "temy": ["posledna-bitka-a-vplyv"],
+    "temy": [
+      "posledna-bitka-a-vplyv"
+    ],
     "pridane": "2026-10-26"
   },
   {
@@ -146,7 +154,9 @@
     "prevod": "NA EX! to čiastočne už má: v6 dáva víťazovi toľko špakov, koľko Pitiek sa odohralo, a počet Pitiek drží menšia strana (§7 Počet Pitiek) — kto vidí prehru, neaktivuje lokalitu a bitku zlacní. Cigarety za prebytok (§9.4) sú odškodné ako v Cosmic. Chýba výslovný ústup: „Platím a idem“ — pred ďalšou Pitkou smie hráč zaplatiť rundu (napr. 1 cigareta) a odísť; súper vyhrá bitku s doteraz odohranými Pitkami (nie s plánovanými), prebytok sa nerozdeľuje, odchádzajúci si vezme svoje karty z línie späť do ruky (Blood Rage). Vo finále (3 Pitky) by ústup po 1. Pitke dal súperovi 1 špak namiesto 3. Výučba: Melichar „Kto platí, ten ide.“",
     "rizika": "Viac krokov v Pitke (tempo, roadmapa #9). Ak je ústup lacný, bitky sa prestanú dohrávať a NA EX stratí javisko. Karty späť do ruky môžu zrýchliť ďalšie kolo porazeného (preveriť snowball naopak). Tón: odchod z krčmy je satiricky silný, ale nesmie vyzerať ako zbabelosť bez ceny.",
     "merat": "Ako často bot ustúpi a v ktorej Pitke; rozdiel špakov z poslednej bitky (dnes vs. s ústupom); podiel partií, kde finále otočí poradie; dĺžka partie.",
-    "temy": ["posledna-bitka-a-vplyv"],
+    "temy": [
+      "posledna-bitka-a-vplyv"
+    ],
     "pridane": "2026-10-26"
   },
   {
@@ -180,7 +190,9 @@
     "prevod": "NA EX! má ohlásené vydesenie (§1: polovica starších, udržať do konca ďalšieho kola, odpoveď patronátom). V6 ruší zamknutie a limit Pohoršenia, takže vydesenie zrýchli (spaky.html, časť 4). Poučky: (a) Inis — vydesenie si treba nárokovať ťahom (napr. namiesto patronátu, verejne) a súper ho zablokuje, ak má rovnako vydesených starších; (b) Root — kto ohlási vydesenie, prestane zbierať špaky za bitky (stavia všetko na jednu kartu); (c) Twilight Struggle — ukazovať skóre ako jedno číslo rozdielu (popolník vs. popolník) s ryskou náhlej výhry. Scorecard sa nemení; na stole pribudne žetón Ohlásenie.",
     "rizika": "Ďalší pojem a krok; ak je nárok drahý, vydesenie zmizne z hry (dnes je aj tak zriedkavé). Blokovanie rovnosťou môže viesť k pretláčaniu markerov tam a späť (dĺžka).",
     "merat": "Frekvencia ohláseného vydesenia v v6 (bez zamknutia) a kolo, v ktorom príde; podiel ohlásení, ktoré súper odvráti; či hráči vydesenie hrajú zámerne alebo vznikne náhodou.",
-    "temy": ["posledna-bitka-a-vplyv"],
+    "temy": [
+      "posledna-bitka-a-vplyv"
+    ],
     "pridane": "2026-10-26"
   },
   {
@@ -224,7 +236,9 @@
     "prevod": "Strana (kraj línie, prevaha, markery starších, nástenka bitiek, popolník so špakmi) patrí tímu; hospodárstvo (ruka, balíček, poldeci, cigarety, pečeň, kliatby, neresti, Dedičstvo) hráčovi — rovnako ako navrh-2v2.html. V8 to robí ľahším: exekúcia ani malý balíček už prehru nespôsobujú (PRAVIDLA §1, §11), takže otázka „prehrá celý tím za cudzie dlhy“ odpadá; ostáva len „čie špaky zhoria“. Ako pri 2HG: účinok sa deje hráčovi (exekúcia, nepriznaná Cirhóza −3, výkupné), výsledok v špakoch ide do tímového popolníka. Výkupné rátať každému zvlášť (5 cigariet = 1 špak u hráča, nie súčet tímu), aby sa cigarety nepresúvali kvôli zaokrúhleniu. Scorecard netreba meniť (od v6 nesie len priazeň). Výučba: „Popolník máte spoločný, poldeci si pije každý sám.“",
     "rizika": "Tímový popolník skryje, kto partiu ťahal — rebríček a achievementy potrebujú osobnú stopu (koľko špakov kto priniesol). Ak sa zdroje dajú voľne presúvať (Hydra), osobné riziko pitia a fajčenia, jadro témy, sa rozplynie. Spoločné limity (Gundam: 6 jednotiek tímu) narážajú na zásadu bez umelých stropov — ako limit sa dá použiť len existujúce pravidlo (limit vykladania), nie nový strop.",
     "merat": "Rozdiel príspevku do popolníka medzi partnermi (kto nosí špaky); koľko špakov stratí tím na exekúcii a nepriznanej Cirhóze jedného hráča; či sa v tíme hromadia cigarety u jedného (pri povolenom podávaní).",
-    "temy": ["hra-2-na-2"],
+    "temy": [
+      "hra-2-na-2"
+    ],
     "pridane": "2026-10-28"
   },
   {
@@ -268,7 +282,9 @@
     "prevod": "NA EX! má tri fázy so striedaním a jednu súbežnú. Pitka je už dnes súbežná (PRAVIDLA §7, Michal 2026-10-27) — pre štyroch sa dá rozšíriť bez nového pravidla: všetci štyria fajčia, dolievajú a skryto dávajú NA EX naraz, odkrytie najprv obranný tím, potom útočný (posledné slovo). Zhromaždenie (§6) a branie zo šenku (§5) striedajú: A · krížom U1 → O1 → U2 → O2 (navrh-2v2.html), každý so svojím limitom vykladania; B · tímový ťah: útočný tím vyloží obe svoje karty (každý jednu, v poradí podľa dohody), potom obranný — počet „výmen“ ostane ako v 1 na 1, ale pribudne porada. Pas (§6) platí za hráča, partner hrá ďalej. Patronát (§10) je dnes postupný (útočník, potom obranca): v tímovom ťahu sa rozhoduje za tím. C · podľa Wavelength: obranný tím počas cudzieho Zhromaždenia nemá rozhodnutie; mohol by tipovať, na ktorú kartu súper dá NA EX — to je už nová mechanika na posúdenie.",
     "rizika": "Krížom: kolo s 3 Zhromaždeniami a limitom 3 má až 36 ťahov namiesto 18 — stredná hra (5 bitiek + finále) sa môže natiahnuť na dvojnásobok. Tímový ťah: porada pred každou kartou natiahne čas viac, ako ušetrí, a otvára quarterbacking. Útočník má dnes výhodu „vykladá prvý“ — pri krížom má prvý ťah len U1; treba overiť, či sa útočník–obranca nerozbije.",
     "merat": "Turnaj botov 2 na 2: počet ťahov a čas na kolo pri A a B vs. 1 na 1; podiel výhier útočného tímu pri A a B; pri ľuďoch čas čakania na jedného hráča (sekundy medzi jeho ťahmi).",
-    "temy": ["hra-2-na-2"],
+    "temy": [
+      "hra-2-na-2"
+    ],
     "pridane": "2026-10-28"
   },
   {
@@ -322,7 +338,9 @@
     "prevod": "Dve cesty: (1) Otvorené karty v tíme (2HG): viewFor(seat) pošle ruku partnera, tímový chat je voľný — férové online, nič sa neschováva pred podvodníkom. (2) Skrytá ruka a pevné signály v štýle The Crew a Canasty: „ukazovák“ na kartu v línii; jeden žetón „Pozri sem“ za kolo, ktorým hráč odkryje partnerovi jednu kartu z ruky; záväzná otázka „Dáme NA EX?“ — partner odpovie áno/nie a ak áno, musí v tejto Pitke NA EX dať (Canasta „may I go out?“). Bridžová zásada pre web: tímový chat si po partii prečíta aj súper (dohody sú verejné). Skrytý výber NA EX (§7) ostáva skrytý aj pred partnerom, kým ho hráč sám neukáže — inak by NA EX tímu bolo jedno rozhodnutie.",
     "rizika": "Skrytá ruka pri ľuďoch na hlasovom hovore znevýhodní poctivých; dá sa vynútiť len v hodnotených partiách s náhodnými partnermi. Otvorená ruka urobí z NA EX! s dvoma rukami jedného hráča — slabší partner len kliká. Signály sú ďalšie tlačidlá na stole pre štyroch, ktorý sám o sebe pridá panely hráčov.",
     "merat": "Pri botoch: rozdiel výkonu tímu s otvorenou a skrytou rukou (koľko stojí neinformovanosť). Pri ľuďoch: koľko ťahov slabšieho hráča zodpovedá návrhu partnera (pri otvorenom chate); koľkokrát za partiu sa použije signál; či hráči v anketách cítia „hral som ja“.",
-    "temy": ["hra-2-na-2"],
+    "temy": [
+      "hra-2-na-2"
+    ],
     "pridane": "2026-10-28"
   },
   {
@@ -356,7 +374,9 @@
     "prevod": "Dve podoby, obe s pojmami NA EX!: (a) „Na moju päsť“ — pred Zhromaždením hráč ohlási, že bitku vyhrá jeho kraj: ak tím bitku vyhrá a v jeho kraji leží viac jeho kariet než partnerových, tím dostane navyše 1 špak za každú jeho kartu v línii; ak tím prehrá, toľko špakov stratí. (b) „Idem sám“ (Euchre): hráč ohlási pred Zhromaždením; partner v tomto kole nevykladá, nepije a nedáva NA EX (šetrí poldeci, pečeň aj neresti) a za pas dostane cigarety ako dnes (§6); tím za výhru dostane dvojnásobok špakov za bitku, za prehru nič navyše. Ako slepá nula len pre zaostávajúci tím — zodpovedá zásade „odmena za väčšiu výzvu“ (memory: zasada-odmena-za-vyzvu). Krčmový tón: „Fero platí rundu sám, Jano len drží pohár.“",
     "rizika": "Ďalšie ohlásenie pred kolom = dlhšia príprava a ťažšia výučba. Dvojnásobné špaky za bitku môžu prebiť strach starších (mierka z témy posledna-bitka-a-vplyv). „Idem sám“ vylúči partnera z kola — pri ľuďoch nuda, pri botoch bez problému. Stávka podporí presne silnejšieho hráča, ak sa nedá ohlásiť aj na slabší kraj.",
     "merat": "Ako často bot ohlási stávku a s akou úspešnosťou; podiel výhier tímu, ktorý stávku použil zo zaostávania; či sa stávkou dobieha vedenie (korelácia vedenia pred finále s výhrou); rozdelenie ohlásení medzi silnejšieho a slabšieho partnera.",
-    "temy": ["hra-2-na-2"],
+    "temy": [
+      "hra-2-na-2"
+    ],
     "pridane": "2026-10-28"
   },
   {
@@ -390,7 +410,9 @@
     "prevod": "Navrh-2v2.html už má „podanie pod stolom“ (raz za kolo namiesto vyloženia: 1 karta alebo 2 cigarety, cena = ťah). Tichu ponúka inú cenu, ktorá sedí na stavbu šenku (§5): pri stavbe hráč namiesto „polovica do šenku, polovica naspodok“ smie jednu kartu podať partnerovi lícom dole, ale vtedy jednu musí podstrčiť protivníkovi — a NA EX! má na podstrčenie tému aj pravidlá (Kliatby, §11; Podstrčenie, §13). Railroading sedí na „Idem sám“: partner, ktorý sedí, smie hráčovi pred Zhromaždením podať jednu kartu. Zásada bez umelých stropov: podanie nesmie byť „najviac X cigariet“ — cenou je ťah alebo karta pre súpera, nie číslo stropu.",
     "rizika": "Podstrčenie kliatby súperovi je silné a zlomyseľné — tón áno, balans neistý. Viac skrytých presunov = viac testov viewFor (pravidlo č. 2 v CLAUDE.md). Pri otvorených rukách v tíme sa podanie stane mechanickým optimalizovaním jedného hráča.",
     "merat": "Koľkokrát za partiu sa podáva a čo (karta/cigarety); či podanie mení rozdiel cigariet medzi partnermi; pri Tichu verzii: aké karty idú súperovi (kliatby?) a ako to mení počet Dlhov a Cirhóz.",
-    "temy": ["hra-2-na-2"],
+    "temy": [
+      "hra-2-na-2"
+    ],
     "pridane": "2026-10-28"
   },
   {
@@ -429,7 +451,9 @@
     "prevod": "Pravidlo palca z navrh-2v2.html je zmes A a C: „súper“ = protivník, keď ide o ruku, balíček, cigarety či kliatby jedného človeka; = súperský tím, keď ide o líniu, bitku alebo markery. Gundam ukazuje, ako to napísať do jedného odseku pravidiel namiesto 29 prepisov: „tvoj / tvoja partia“ = tím (ako „friendly“), „ty“ = majiteľ karty, „súper“ pri osobných zdrojoch = protivník, ktorého … (A pevný oproti / B voľba pri zahraní). Zásada „nepísať interakcie iných kariet“ (memory) ostáva — výklad patrí do PRAVIDLA §16 a do §„Formát 2 na 2“, nie na karty. Kritické karty: Svokra (cigarety pri NA EX súpera), Finančná poradkyňa, Vychovávateľka (Dlh do balíčka súpera), Policajtka, Krčmárka (súper nesmie odpovedať), Kočovník, Veštica.",
     "rizika": "B s 29 kartami vytvorí „hon na slabšieho“ — online s náhodnými partnermi frustrujúce. A zdvojnásobí silu kariet ako Svokra (dve NA EX súperov = dvojnásobok cigariet). C vyžaduje, aby UI jasne ukázalo, kto je čí protivník (dva páry farieb?). Každá voľba je ďalší ťah klikom, ktorý bot musí vedieť.",
     "merat": "Pre každú z 29 kariet: hodnota karty pre bota v 1 na 1 vs. 2 na 2 pri A, B, C (výhry s kartou v línii); koľko negatívnych účinkov skončí na slabšom hráčovi pri B.",
-    "temy": ["hra-2-na-2"],
+    "temy": [
+      "hra-2-na-2"
+    ],
     "pridane": "2026-10-28"
   },
   {
@@ -478,7 +502,9 @@
     "prevod": "Má dosť = deathrattle staršieho. (1) Spustí sa, keď pečeň staršieho klesne na 0. Odporúčanie: vyhodnotiť až po všetkom poškodení bitky, všetky Má dosť naraz (najprv obranca, potom útočník), aby nevznikali reťaze. (2) Rozpočet: Má dosť má mať menšiu hodnotu, než akú starší dá živý za 1–2 kolá. Starší so silnými akciami v rade dostane slabší Má dosť a naopak. Útočník potom pri rozdeľovaní tuhého volí, koho podraziť prvého. (3) Posledný starší svoj Má dosť nikdy nespustí, lebo partia skončí. Útočník si preto na koniec nechá toho, koho Má dosť je najsilnejší (ako rada z Hearthstonu „not killing“). (4) Vlastná obeta: v NA EX! je takou cestou exekúcia vlastných Dlhov (Hazardy v rade a v línii). Odporúčanie: keď staršieho zrazí exekúcia, Má dosť sa nespustí („zložil sa sám, len odpadne“), alebo sa Má dosť dimenzuje tak, aby sa vlastný pád nikdy nevyplatil. (5) Odpoveď pre Vymyselníka: jedna vzácna karta, ktorá staršieho podrazí bez Má dosť („zložil sa potichu“). Karta staršieho: text Má dosť namiesto Kšeftu väzňa. Výučba: Má dosť sa vysvetlí až pri prvom páde.",
     "rizika": "Ak Má dosť pomáha majiteľovi priveľmi, režim má zabudovaný rubber band, vedúci hráč nechce podrážať a partia sa predĺži. Trvalé účinky, ktoré rastú s počtom padlých starších, vedú k patu. Pre nováčika je to 8 rôznych účinkov a 4 súperove treba mať v hlave, preto treba stručný text na karte. Tón: Má dosť je silný satirický moment, preto jedna veta v hlase postavy.",
     "merat": "(a) Úspešnosť hráča, ktorý prišiel o staršieho prvý (cieľ asi 35–45 %: pád má byť strata, nie katastrofa). (b) Pri každom staršom rozdiel úspešnosti, keď padne prvý a keď padne posledný. (c) Či bot pri voľnej voľbe niekedy pustí vlastného staršieho na smrť (Hazard v rade, bez liečenia) — malo by to byť takmer nikdy. (d) Koho boti podrážajú prvého; ak vždy toho istého, účinky nie sú vyvážené.",
-    "temy": ["pata-laket-otocka"],
+    "temy": [
+      "pata-laket-otocka"
+    ],
     "pridane": "2026-11-01"
   },
   {
@@ -512,7 +538,9 @@
     "prevod": "Povera uberie 1 každému stojacemu staršiemu súpera, podrazeným nie. Povera má teda podľa počtu stojacich hodnotu 4/3/2/1, a to je prirodzená brzda: kto podrazil dvoch, má Povery polovičné, zaostávajúci plné. Viera: odporúčanie ako v hádke v10 (§9.1). Najprv ruší Povery 1 : 1, takže jedna Viera ušetrí 1 pečeň každému chránenému, teda až 4. Až zvyšok Viery tlmí súperovo tuhé z celkového súčtu pred rozdelením, nie zvlášť pri každom staršom. Horoskop (Povery sila 2) dá v tomto režime −2 každému, teda 8 pečene za jednu akciu pri 4 stojacich, preto ho treba pre režim prečíslovať. Tuhé rozdeľuje útočník voľne, čo je focus fire. Karty sa nemenia, stôl ukáže pri rade „Povery −N každému“. Výučba: „Povera je krupobitie na celý rad, Pecka je facka jednému.“",
     "rizika": "Mierka: v sade je 25–28 Povier (PRAVIDLA §9.1), plošné môže zatieniť tuhé. Rad s Poštárkou a Vychovávateľkou má 2–3 Povery (výpočet z mocku: priemer 1,16, najviac 3). Viera má štvornásobnú cenu, takže Farár a Veterinár sa v drafte nadhodnotia. Pre nováčika je pravidlo jednoduché.",
     "merat": "Podiel poškodenia podľa kanála (tuhé / Povery / jed / exekúcia) za partiu a podľa počtu stojacich starších. Úspešnosť tímov s 2 a viac Poverami v rade. Či existuje dominantná stratégia „len Povery“. Úspešnosť s Horoskopom v Dedičstve.",
-    "temy": ["pata-laket-otocka"],
+    "temy": [
+      "pata-laket-otocka"
+    ],
     "pridane": "2026-11-01"
   },
   {
@@ -541,7 +569,9 @@
     "prevod": "Pohoršenie = jed na staršieho podľa voľby toho, kto ho dal. Na konci bitky uberie toľko pečene, koľko je jedu, potom jed −1. Príklad: 2 Pohoršenia každé kolo na toho istého staršieho dajú jed 2, 3, 4, 5… a za 4 kolá 14 pečene, proti čomu Viera nepomáha. Je to prirodzený liek na pato. Prevody: (a) „Klebeta ide ďalej“: keď otrávený starší padne a jed mu ostane, zvyšok jedu prejde na jeho stojaceho suseda v rade (vyberie ten, kto jed dal). Bez suseda jed prepadne, lebo cieľ zmizol, nie je to strop zdroja. Susedstvo v rade tak dostane aj obrannú stránku. (b) Jed blokuje liečenie (mechanika protiliecenie). Stôl: odznak jedu so šípkou poklesu. Výučba: „Pohoršenie je klebeta: bolí, kým sa nezabudne.“",
     "rizika": "Sústredený jed rastie kvadraticky, takže hra sa môže zúžiť na „všetko Pohoršenie na jedného“ (aj tak je to prirodzený focus fire). Evidencia: pri každom staršom treba sledovať číslo jedu, stôl ho musí ukázať. Telefón (Pohoršenia nemožno zrušiť) jed ešte zosilní. Tón: klebeta ako jed sedí výborne.",
     "merat": "Podiel jedu na celkovom poškodení. Za koľko kôl jed zabije staršieho pri 1, 2 a 3 Pohoršeniach za kolo. Dĺžka partie s prenosom jedu a bez neho.",
-    "temy": ["pata-laket-otocka"],
+    "temy": [
+      "pata-laket-otocka"
+    ],
     "pridane": "2026-11-01"
   },
   {
@@ -570,7 +600,9 @@
     "prevod": "„Kto má jed, nehojí sa“: Robota na staršom s jedom najprv zníži jed o svoju hodnotu, až zvyšok vylieči pečeň. Hráč volí, či vylieči zdravšieho staršieho naplno, alebo zmyje jed otrávenému. Liečenie nad maximum pečene: odporúčanie nie, lebo maximum je vlastnosť staršieho, nie strop zdroja. Ak Michal chce liečenie bez maxima, musí mať prebytok zmysel. Oživenie podrazeného: nie, partia musí smerovať ku koncu. Karty sa nemenia, vo výučbe stačí jedna veta pri Robote.",
     "rizika": "Robota v režime lieči namiesto pálenia Dlhov, takže Dlhy sa môžu hromadiť a exekúcia zrazí všetkých starších naraz. To pôsobí proti patu, ale môže to byť príliš prudké. Robota je na staršom len u Autobusára, väčšina Robôt je na kartách.",
     "merat": "Počet partií, kde súčet pečene oboch neklesne 3 kolá po sebe (pato). Priemerné liečenie za kolo oproti poškodeniu. Dĺžka partie s pravidlom a bez neho.",
-    "temy": ["pata-laket-otocka"],
+    "temy": [
+      "pata-laket-otocka"
+    ],
     "pridane": "2026-11-01"
   },
   {
@@ -604,7 +636,9 @@
     "prevod": "„Fajront“: od kola K (návrh K = 7, zmerať) stratí na konci bitky každý stojaci starší oboch hráčov 1, potom 2, 3… pečene. Viera ani Robota proti tomu nepomáhajú, lebo je to kocovina, nie úder. Nie je to limit zdroja ani kôl, len rastúci tlak. Alternatíva B: od kola K sa z trojice lokalít vyradí úroveň 1 a ponúkne sa 2/3/4 (pinnacle). Viac Pitiek a akcií dá viac poškodenia a „vždy 3 rôzne úrovne“ ostane. Stôl ukáže počítadlo „do fajrontu X kôl“. Výučba: „O polnoci krčmárka zhasína — kto ešte stojí, pije na vlastné riziko.“",
     "rizika": "Rovnaké poškodenie obom zvýhodní toho, kto má viac pečene (vedúceho), a pôsobí proti dobiehaniu. Mierni to, že Fajront zasiahne len stojacich, takže zaostávajúci s menším počtom stojacich stratí menej. Tón je výborný, zložitosť nízka.",
     "merat": "Rozdelenie dĺžky partie bez Fajrontu (medián, 90. a 99. percentil). K zvoliť tak, aby Fajront nastal najviac v 20 % partií. Úspešnosť hráča, ktorý pri začiatku Fajrontu vedie v pečeni.",
-    "temy": ["pata-laket-otocka"],
+    "temy": [
+      "pata-laket-otocka"
+    ],
     "pridane": "2026-11-01"
   },
   {
@@ -643,7 +677,9 @@
     "prevod": "(1) Ponechať had, ale druhý v drafte (B) je v 1. kole obranca: volí lokalitu a berie zo šenku prvý (navrhol to už mock). (2) Ak boti ukážu, že prvý v drafte vyhráva viac ako 55 %, prejsť na Thue–Morse ABBABAAB (A berie 1., 4., 6. a 7., B 2., 3., 5. a 8.). Súčet poradí 18 : 18 má aj had, Thue–Morse vyrovná aj súčet druhých mocnín (102 : 102, had 106 : 98). (3) Pre pokročilých „Krčmárka rozlieva“: jeden rozdelí 8 starších na dve štvorice, druhý si vyberie, a kto delil, je v 1. kole obranca. Typy hrán (akcie vľavo hore alebo vľavo dole) tvoria synergiu: starší rôznych typov sa spoja na 3 miestach, rovnakého typu na 2. Draft preto má synergiu aj hate-draft. Výučba: draft až v druhej partii, prvá partia s pevnými štvoricami.",
     "rizika": "Pri pevných 8 starších sa draft časom vyrieši (vždy najprv Veterinár). Výpočet z mocku: so Veterinárom dá rad v priemere 12,3 tuhého, s Vychovávateľkou 9,8 (Povery nerátam). Riešením je ladenie pečene a Má dosť, nie poradie draftu.",
     "merat": "Úspešnosť podľa pozície v drafte (A/B), s kompenzáciou obrancu a bez nej. Ktorý starší ide u botov prvý (ak ten istý vo viac ako 50 % partií, starší nie sú vyvážení). Rozptyl úspešnosti štvoríc.",
-    "temy": ["pata-laket-otocka"],
+    "temy": [
+      "pata-laket-otocka"
+    ],
     "pridane": "2026-11-01"
   },
   {
@@ -682,7 +718,9 @@
     "prevod": "Výpočet z mocku (8 starších, akcie na hranách z mocku, rad 4, 24 poradí): rozdiel tuhého z radu medzi najlepším a najhorším poradím je v priemere 7 (pri ukážkovej štvorici súpera 5 až 13). Rad dá 12–18 aktívnych akcií. V poradí najlepšom pre tuhé má rad v priemere 1,46 Hazardu na Pitku, dá sa však poskladať aj na 0,40 za cenu tuhého. Keď lokalita sľubuje 3 Pitky, Hazard z radu sa ráta trikrát. Preskladanie je teda voľba „sila v bitke alebo dlhy v Pitkách“ a mení sa s úrovňou lokality, čo je dobre. Padnutý ako spojka (Darkest Dungeon): susedia na spoji s ním svoje akcie dostanú, takže padnutý v strede drží dva spoje, na kraji jeden. Po páde má preskladanie zmysel. Strata tuhého z radu s preskladaním: 10,7 (4 stoja) → 8,2 (3) → 5,2 (2). Návrh: ponechať voľné preskladanie naraz a skryto. Stôl ukáže pri zvolenom poradí súčty tuhé / Hazard / Poškodenie pečene, nielen tlačidlo „najlepšie“, ktoré by rozhodnutie zrušilo.",
     "rizika": "Dlhé premýšľanie nad 24 poradiami. Tlačidlo „navrhni“ zruší rozhodnutie. Skryté preskladanie bez informácie o súperovom rade je hádanie, teda len polovičné rozhodnutie. Otáčanie (Michal zamietol) by počet možností zdvojnásobilo.",
     "merat": "Ako často sa najlepšie poradie bota mení medzi kolami (pod 20 % je preskladanie šum). Priemerný zisk z preskladania (tuhé, Hazard). Čas ťahu ľudí pri prestavbe. Podiel tuhého z radu a z línie (ak má rad viac ako 60 %, Zhromaždenie stráca váhu).",
-    "temy": ["pata-laket-otocka"],
+    "temy": [
+      "pata-laket-otocka"
+    ],
     "pridane": "2026-11-01"
   },
   {
@@ -721,7 +759,10 @@
     "prevod": "Režim už má tri vstavané brzdy: (1) súperove Povery slabnú s počtom tvojich padlých (4 → 3 → 2), (2) padnutý ostáva ako spojka, takže zmiznú len jeho vlastné akcie, (3) útočník (porazený v bitke) vykladá prvý a odpovedá prvý (PRAVIDLA §4). Štvrtou je Má dosť, ak sedí rozpočet. Čísla z mocku: rad stratí 23 % tuhého po prvom páde a ďalších 37 % po druhom, takže po druhom páde snowball zosilnie. Návrh: nepridávať darčeky. Ak meranie ukáže snowball, posilniť štruktúru: víťaz bitky nedostane okrem roly obrancu nič navyše a Fajront zasiahne len stojacich (vedúci so 4 stojacimi stratí viac).",
     "rizika": "Priveľa bŕzd vedie k patu, primálo k tomu, že partiu rozhodne prvý pád. Brzdy sa navzájom násobia, takže ich treba merať spolu, nie po jednej.",
     "merat": "Úspešnosť hráča, ktorý prvý podrazil staršieho (cieľ najviac 65 %). Úspešnosť pri stave 4 : 2 stojacich. Počet zmien vedenia v súčte pečene za partiu.",
-    "temy": ["pata-laket-otocka", "ekonomicka-lavina"],
+    "temy": [
+      "pata-laket-otocka",
+      "ekonomicka-lavina"
+    ],
     "pridane": "2026-11-01"
   },
   {
@@ -750,7 +791,9 @@
     "prevod": "V šenku (PRAVIDLA §5, Branie zo šenku) pribudne namiesto brania ťah „Vyhodiť z krčmy“: zaplať cigarety a jednu kartu z ruky spáľ (navždy z hry, ako Dievčina pri prehre). Cena je osobná: 1, 2, 3… cigarety (rovnaká stupnica ako Dedičstvo §12, ale pre každého zvlášť, aby si hráči nezdražovali navzájom). Nejde o strop — každé ďalšie vyhodenie je len drahšie. Rieši naraz dve témy roadmapy: štartovky aj nahromadené cigarety z pasu (návrh „Cigarety: pas ich nahrnie, minúť sa nedajú“, docs/playtesty/navrhy-20261031-004030.json); zodpovedá pokynu Michala 2026-10-27 dať prebytku spôsob, ako ho minúť. Karty: žiadna zmena, len nový ťah v šenku; vo výučbe jedna veta pri šenku. Tón: Melichar „vyhodí z krčmy“ Pijana — satira sedí.",
     "rizika": "Spáliť sa dá aj kúpená karta (napr. Absťák alebo nepriznaná Cirhóza, ak by to pravidlá dovolili — treba rozhodnúť, či áno). Bez rastu ceny hra skĺzne k minimálnemu balíčku. Pre nováčika ďalšia voľba v šenku, kde už rozhoduje o cigaretách. Ak vyhodenie stojí ťah v braní, súper si medzitým vezme lepšiu kartu — to je zámer, ale treba ho vysvetliť.",
     "merat": "(a) Kedy a koľkokrát boti vyhadzujú pri cenách 1/2/3… a pri cenách 2/3/4… (b) Podiel štartoviek v balíčku na konci partie (dnes 55–60 % podľa roadmapy) — cieľ pod 35 %. (c) Priemerná zásoba cigariet po 3. kole (má klesnúť). (d) Úspešnosť hráča, ktorý vyhodil aspoň 2 štartovky do 3. kola, proti tomu, kto nie — ak nad 65 %, je vyhodenie povinné, nie rozhodnutie.",
-    "temy": ["startovky"],
+    "temy": [
+      "startovky"
+    ],
     "pridane": "2026-11-03"
   },
   {
@@ -789,7 +832,9 @@
     "prevod": "Každá zo 4 štartoviek dostane v texte efektu druhú vetu „Odchod: …“ — po vyhodnotení bitky ju majiteľ smie spáliť (namiesto návratu §9.7) a dostane malú odmenu. Príklady (čísla len na meranie): Pijan — „Odchod: udeľ súperovi 1 Ranu navyše“ (posledný drink); Milujúca manželka — „Odchod: zníž si poškodenie pečene o 1“ alebo +1 priazeň Pamätníka (odíde domov); Miňištrant — „Odchod: +1 cigareta“ (odnesie z kostola sviečky); Dievčina na vydaj už odchod má, ale ako trest pri prehre (súper dostane Dlhy) — dalo by sa doplniť aj „vydá sa“ pri výhre: spáli sa a majiteľ dostane 1 špak. Na kartách: nová veta efektu (tvorca, admin); engine: nový spúšťač Odchod po kroku 9.7. Výučba: Melichar raz ukáže odchod Pijana.",
     "rizika": "Štyri nové texty na prvých kartách, ktoré nováčik vidí — viac čítania na začiatku. Odmena za odchod v poslednej bitke môže zvýšiť váhu posledného kola (téma roadmapy „Posledná bitka nerozhoduje celú partiu“) — odchod nepovoliť vo finále, alebo dávať odmenu nezávislú od bitky. Dievčina by mala dva odlišné odchody — zmätok.",
     "merat": "(a) V ktorom kole boti štartovky spália (cieľ: rozptyl, nie vždy v 1. kole). (b) Podiel štartoviek v balíčku v 3. a 5. kole. (c) Vplyv odchodu na posledné kolo: či sa odmeny kumulujú do finále. (d) Úspešnosť hráča, ktorý spálil 0, 1–2 a 3–4 štartovky.",
-    "temy": ["startovky"],
+    "temy": [
+      "startovky"
+    ],
     "pridane": "2026-11-03"
   },
   {
@@ -818,7 +863,9 @@
     "prevod": "V NA EX! by odchod štartovky dal priazeň alebo špaky, nie víťazné body (tie dnes dávajú špaky, PRAVIDLA §14). Návrh na meranie: Milujúca manželka má tag Pamätník — keď ju hráč spáli (napr. platným vyhodením alebo Odchodom), dostane +1 špak „za pamiatku“; Miňištrant pri odchode posunie jedného staršieho o 1 smerom k sebe (Farár ho poslal do seminára). Odmena za odchod viaže štartovky na os starších a špakov, nie na bitku. Karty: veta efektu; scorecardy bez zmeny.",
     "rizika": "Ďalší prameň špakov zväčší rozptyl skóre. Ak sa odchod viaže na priazeň starších, prepojí sa s témou zajatia a strachu (§10) — zložité pre nováčika. Body za odchod v poslednom kole posilnia posledné kolo.",
     "merat": "(a) Koľko špakov dá odchod štartoviek priemerne za partiu (cieľ do 5 % celkového skóre). (b) Či boti odkladajú štartovky až v posledných kolách (zlé — odchod má prečistiť balíček skôr).",
-    "temy": ["startovky"],
+    "temy": [
+      "startovky"
+    ],
     "pridane": "2026-11-03"
   },
   {
@@ -842,7 +889,9 @@
     "prevod": "Štartovka sa po výhre v bitke, v ktorej bola v línii s aktívnou akciou, smie „zlepšiť“: Miňištrant → Kostolník, Pijan → Štamgast, Milujúca manželka → Gazdiná, Dievčina na vydaj → Nevesta (mená len ako príklad pre Vymyselníka). Vyššie verzie nie sú v Občanoch ani v šenku (§3), ležia bokom ako štartovky. Web tu má výhodu: stav karty vie ukázať bez obalov. Na kartách: 4 nové karty v tvorcovi s tagom štartovky; engine: výmena v kroku 9.7 namiesto návratu.",
     "rizika": "4–8 nových kariet a nový pojem pre nováčika. Víťaz bitky by sa ešte posilnil (snowball) — preto viazať vylepšenie radšej na prehru alebo na cigarety, nie na výhru. Hráči chcú hlavne menej štartoviek v balíčku; vylepšenie balíček nezmenší.",
     "merat": "(a) Úspešnosť víťaza 1. bitky so zapnutým a vypnutým rastom (snowball). (b) Podiel zahraných štartoviek v 1.–3. kole. (c) Dĺžka partie.",
-    "temy": ["startovky"],
+    "temy": [
+      "startovky"
+    ],
     "pridane": "2026-11-03"
   },
   {
@@ -871,7 +920,9 @@
     "prevod": "V NA EX! majú štartovky akcie, ktoré majú aj Občania (Dlh, Viera, Odpor, Pecka, Cigareta, Vízia…). Úlohu by im dala viazanosť na systém, ktorý kúpené karty nemajú: napr. štartovky ako jediné smú ísť „pod stôl“ (Podstrčenie §13) zadarmo, alebo sú jediné karty, ktoré v Zhromaždení nemíňajú limit vykladania (§6). Miňištrant už má nástroj na úlohu (Konflikt → Viera ako Pecka); Dievčina má Víziu (karta navyše). Vymyselník by mal hľadať pre každú štartovku jednu situáciu, kde je lepšia ako ktorýkoľvek Občan.",
     "rizika": "Ťažko navrhnúť úlohu, ktorá je užitočná a zároveň nie povinná. Výnimka „štartovky nemíňajú limit“ je ďalšie pravidlo, ktoré si nováčik musí pamätať.",
     "merat": "(a) Ako často boti vykladajú štartovky v 5.+ kole, keď majú v ruke aj Občanov (dnes vs. s úlohou). (b) Či sa úloha nestala povinnou: úspešnosť hráča, ktorý štartovku v kole nemal.",
-    "temy": ["startovky"],
+    "temy": [
+      "startovky"
+    ],
     "pridane": "2026-11-03"
   },
   {
@@ -900,7 +951,9 @@
     "prevod": "V NA EX! je štartová ruka celá v ruke (doberací balíček je prázdny, §3), takže pri rovnakých variantoch by bol štart úplne symetrický a náhodu by niesol len šenok a voľba útočníka. Dve cesty: (1) obaja dostanú tie isté varianty štartoviek (losované raz pre partiu), (2) varianty sú pevné v sade (jeden variant každej štartovky). Karty: v cards.json štartovky s jedným variantom alebo pravidlo prípravy; tvorca nemusí meniť text. Výučba: bez zmeny.",
     "rizika": "Menej rozmanitosti v prvom kole. Variant, ktorý dostanú obaja, môže byť lepší pre útočníka alebo obrancu — treba merať s pevným útočníkom.",
     "merat": "(a) Duplikátne rozdania (tools/bot/strategickost.ts): zmena podielu náhody v prvých dvoch kolách pri rovnakých variantoch. (b) Úspešnosť útočníka 1. kola pri symetrickom štarte.",
-    "temy": ["startovky"],
+    "temy": [
+      "startovky"
+    ],
     "pridane": "2026-11-03"
   },
   {
@@ -954,7 +1007,9 @@
     "prevod": "Nový spúšťač Kumpán (tag): „Kumpán Kriminál: <efekt>.“ Efekt platí, kým máš v partii (karty natočené k tebe, na ktorejkoľvek strane línie) ďalšiu odkrytú kartu s týmto tagom. Primárny účinok karty sú jej akcie na hranách, Kumpán je riadok efektu, presne ako hlavný účinok a spojenec v Star Realms. Vyhodnocuje sa ako Furt, skrytá Záverečná sa neráta a karta s dvoma tagmi ráta za oba (Liberál už ráta za Ženu aj Chlapa, §16). Podstrčený kumpán na súperovej strane sa ráta, lebo je v tvojej partii, takže podstrčenie dostane druhý účel. NA EX kumpána neodstráni; odstráni ho spálenie (Poľovník, Krokodíl). Stavba šenku (§5: každý tajne dá 4 z 8 kariet do šenku a 4 naspodok) sa stane frakčným draftom: súperovho kumpána môžeš poslať naspodok. Karty: začať tagmi, ktoré dnes nič nečíta. V balíčku Občanov je Pracujúci 8 druhov, Influencer 7, Autorita 7, Kriminál 6, Zahraničný 5 a Závislý 4 (každý druh v 2 kópiách). Scorecard sa nemení. Výučba: jedna veta pri prvej karte s Kumpánom a zvýraznenie tagu na karte, keď je kumpán v línii.",
     "rizika": "Závislý je v štartovom balíčku trikrát (Miňištrant, Pijan, Dievčina na vydaj), takže Kumpán Závislý by platil skoro vždy; Pamätník raz (Milujúca manželka). Tag so 4 druhmi sa zíde zriedka, Chlap (23 druhov) skoro vždy, takže Kumpán treba písať na tagy s 5 až 8 druhmi. Lineárnosť: balíček „všetko Kriminál“ sa môže stať jedinou správnou stratégiou a priniesť stomp (Michal chce výsledky okolo 15 : 13, nie 88 : 10). Náhoda šenku: frakcia, ktorá nepríde, je mŕtva. Dlhší text na karte (Michal: efekty stroho). Bot musí vedieť ohodnotiť kartu podľa budúcich kumpánov.",
     "merat": "Ako často sa Kumpán zapne na zahratú kartu s Kumpánom, po tagoch. Úspešnosť hráča s aspoň 3 kartami jedného tagu v balíčku oproti hráčovi bez nich. Koľko súperových kumpánov hráči pri stavbe šenku pošlú naspodok. Či boti podstrkujú kumpánov na súperovu stranu.",
-    "temy": ["deckbuilding"],
+    "temy": [
+      "deckbuilding"
+    ],
     "pridane": "2026-11-08"
   },
   {
@@ -988,7 +1043,9 @@
     "prevod": "Dve úrovne. (a) Lacná: Podpora a Konflikt s tagom. Spúšťače už existujú (§6, §16), efekt len pomenuje tag: „Podpora (Kriminál): …“ sa spustí, keď sa priložením stretne s tvojím Kriminálom, „Konflikt (Kriminál): …“ keď sa stretne so súperovým Kriminálom. Sypač a Snúbenica to robia s Chlapom, Policajtka to do v10.3 robila s Kriminálom. Pribudne dôvod sledovať tagy na súperovom konci strany. (b) Banda: efekt rastie s dĺžkou nepretržitého radu tvojich kariet s tým istým tagom (bez cudzej karty medzi nimi). Keďže sa kladie len na vonkajší koniec, súper bandu zastaví podstrčením karty na koniec tvojej strany. Stojí ho to kartu z limitu, spustí tvoj Konflikt a jeho karta tam boduje pre neho. Zladená reťaz (#88) meria akcie, banda tagy; dajú sa zlúčiť do jedného pojmu „rad“.",
     "rizika": "Banda potrebuje novú definíciu (nepretržitý rad) v §6 a výpočet v engine; nováčik musí čítať tagy suseda (UI: zvýrazniť tagy v náhľade spoja). Zablokovanie konca môže byť silnejšie ako banda sama. Podpora a Konflikt s tagom nemenia pravidlá, len pridajú text na kartu.",
     "merat": "Priemerná a najdlhšia banda (rad rovnakého tagu) v línii. Koľkokrát súper koniec strany zablokoval podstrčením. Ako často sa spustí Podpora a Konflikt s tagom na kartu za partiu.",
-    "temy": ["deckbuilding"],
+    "temy": [
+      "deckbuilding"
+    ],
     "pridane": "2026-11-08"
   },
   {
@@ -1032,7 +1089,9 @@
     "prevod": "Spúšťač Obeta: „Obeta: <účinok>.“ Hráč ho použije v Pitke ako Kšeft (raz, kým Pitku neskončil, nie počas odpovede na NA EX, §7), ale namiesto ceny kartu spáli z línie (navždy z hry). Medzera sa uzavrie a spoje sa prepočítajú ako po Poľovníkovi (§16). Cena je vstavaná: karta prestane dávať akcie, jej partner na spoji stratí pár a v línii je o kartu menej, teda víťaz dostane o 1 špak menej (§14). Variant z ruky: Obeta karty z ruky ako ťah v Zhromaždení. Cirhózu Obeta spáliť nesmie, lebo parkovanie Cirhózy je zámer (zamietnuté N3, Spoveď). Kšeft karty sa platí cigaretami, Obeta kartou, takže nevzniká karta, ktorá si vyrába vlastnú menu.",
     "rizika": "Nový druh ťahu v Pitke (engine, klient, bot, ťahák). Ak je účinok obete silnejší ako karta v balíčku, hráči kupujú karty len na spálenie (vzor Aristocrats z témy Päta, Lakeť, Otočka). Menší balíček s dobratím do troch (v11.9) častejšie ťahá najlepšie karty, čo zrýchli snowball. Satira: obeta musí mať príbeh (strýko odíde späť do Ameriky, hasič vyhorí), nie abstraktné „zošrotuj“.",
     "merat": "Veľkosť balíčka na konci partie s obetou a bez nej. V ktorom kole sa obeta používa. Úspešnosť hráča, ktorý obetoval aspoň 2 karty. Koľko Absťákov a štartoviek ostane v balíčku na konci.",
-    "temy": ["deckbuilding"],
+    "temy": [
+      "deckbuilding"
+    ],
     "pridane": "2026-11-08"
   },
   {
@@ -1056,7 +1115,9 @@
     "prevod": "Efekt ráta tag v celom balíčku hráča (ruka, doberací, odhadzovací a línia), rovnaký dosah ako Absťák (§8), takže engine takéto počítanie pozná. Príklad: Vymáhač „Bitka: 1 Rana navyše za každého Kriminála v tvojom balíčku.“ Bez stropu (CLAUDE.md); brzdou je riedenie, lebo každý Kriminál navyše je karta, ktorá zaberá miesto v ruke a v línii. Verejnosť: kúpy zo šenku sú verejné, ale spálenie Víziou a odhodenie Vdovou nie úplne. Klient smie ukázať len počet, ktorý súper mohol odvodiť, a server nesmie poslať zloženie balíčka (CLAUDE.md, pravidlo 2).",
     "rizika": "Hromadenie jedného tagu vedie k stompu a snowballu za kúpy. Odhad sily pre bota je ťažší (hodnota karty závisí od budúcich kúp). Počítadlo tagov v rozhraní pridá na stôl ďalšie číslo.",
     "merat": "Počet kariet jedného tagu v balíčku na konci partie (medián, maximum). Podiel tuhého alebo cigariet z takýchto efektov. Súvislosť s výhrou a s rozdielom špakov.",
-    "temy": ["deckbuilding"],
+    "temy": [
+      "deckbuilding"
+    ],
     "pridane": "2026-11-08"
   },
   {
@@ -1080,7 +1141,9 @@
     "prevod": "Furt efekt s dosahom „tvoje karty v tomto kraji“ (kraj = polovica línie podľa hrany lokality, §6). Mierna verzia (Morale Boost): „+1 Rana za každú ďalšiu tvoju kartu s tagom X v jej kraji.“ Silná verzia (Horn): „aktívne akcie tvojich X v tomto kraji sa rátajú dvakrát“, čo je Forsáž pre celý kraj. Michal chce Forsáž v 15 až 20 % bitiek, takže len s podmienkou tagu a len na jednu druhú akcie. Súvis s prevahou: sústredenie do kraja dá aj prevahu nad hranou, rozloženie ju oslabí. Odpovede už existujú: Vandal otočí lokalitu (kraje si vymenia hrany), NA EX ruší aktívne akcie, Mäsiar umlčí efekty Zvierat.",
     "rizika": "Násobok na celý kraj ľahko prerastie (tuhé v desiatkach). Nováčik musí vedieť, kde kraj začína a končí (dnes ho ukazuje lokalita). Prekrytie s prevahou: kto sústredí, má oboje.",
     "merat": "Podiel kariet hráča v jednom kraji. Rozptyl tuhého v bitke pred zavedením a po ňom. Ako často je víťaz bitky ten, kto sústredil.",
-    "temy": ["deckbuilding"],
+    "temy": [
+      "deckbuilding"
+    ],
     "pridane": "2026-11-08"
   },
   {
@@ -1104,7 +1167,9 @@
     "prevod": "Nástup: „Ak ju vyložíš na súperovu stranu, doberieš si 2 karty; jej akcie sa rátajú súperovi.“ Výnimka z pravidla „akcie sa rátajú majiteľovi“ je v §16 už pri Kočovníkovi. Pasuje ku kartám s tagom Kriminál alebo Influencer (udavač, bonzák, klebetnica). Najviac sa oplatí v kole, ktoré hráč aj tak púšťa. Treba určiť, či sa ráta do prevahy majiteľovi, alebo súperovi (dnes podstrčená karta je v partii majiteľa).",
     "rizika": "Karty navyše sú výhoda v ďalších kolách. Michal chce, aby hráč vyhrával veľkosťou výhry, nie striedaním rolí (v9.2). Ak 2 karty prevážia stratu bitky, hráči budú bitky púšťať zámerne. Špaky za karty v línii (§14) idú víťazovi aj za špióna.",
     "merat": "Ako často sa špión hrá v kole, ktoré jeho majiteľ prehral. Rozdiel v počte kariet v ruke pred finále. Úspešnosť hráča so špiónom v balíčku.",
-    "temy": ["deckbuilding"],
+    "temy": [
+      "deckbuilding"
+    ],
     "pridane": "2026-11-08"
   },
   {
@@ -1138,7 +1203,9 @@
     "prevod": "Dnes: obranca (víťaz bitky) berie zo šenku prvý, na prvom ťahu len 1 kartu (§5). Prevod A (najmenší zásah): zo šenku berie prvý ten, kto má **menej cigariet** po kroku 6c (výpalné, cigareta porazenému, Fajčiar); pri rovnosti útočník. Obranca si nechá voľbu cieľa (§5) — výhra ostane výhodou, len nedá aj prvý výber. Prevod B: berie prvý útočník (porazený) vždy — jednoduchšie, ale ignoruje cigarety. Prevod C (7 Wonders Duel): porazený v bitke rozhodne, kto berie prvý — niekedy chce, aby súper minul cigarety skôr. Výučba: jedna veta v kroku Šenok. Karty netreba meniť; Autobusár (väzeň, §10) mení branie a treba ho prečítať nanovo.",
     "rizika": "Ruší rozhodnutie Michala v9.2 (obranca berie prvý, 2026-10-30). Útočník už vykladá prvý (§4) — spolu s prvým výberom zo šenku môže byť prehra výhodnejšia než výhra pri tesnej bitke (zámerná prehra kvôli šenku). Prvý ťah len 1 karta (§5) treba ponechať, inak chudobnejší s 1 cigaretou nevykradne nič a bohatý aj tak vezme zvyšok — prevod sám nestačí, ak šenok míňa len bohatý.",
     "merat": "Turnaj botov na Zrejúcej s rovnakými semienkami: podiel kariet zo šenku, ktoré vezme porazený z poslednej bitky (dnes vs. prevod A); pravdepodobnosť, že víťaz K1 vyhrá partiu; rozdiel cigariet po K3; počet kôl, v ktorých jeden hráč nevezme zo šenku nič.",
-    "temy": ["ekonomicka-lavina"],
+    "temy": [
+      "ekonomicka-lavina"
+    ],
     "pridane": "2026-11-10"
   },
   {
@@ -1162,7 +1229,9 @@
     "prevod": "Po braní (§5) dostane každá nevzatá karta šenku 1 cigaretu z banky položenú na ňu a pri ďalšej stavbe **neide naspodok**, ale ostane v šenku aj s cigaretami; stavba doplní šenok len do 8 (každý dá do šenku o toľko menej, koľko nevzatých ostalo, zaokrúhlené tak, aby šenok mal 8). Kto kartu vezme, berie aj cigarety — za 1 cigaretu môže dostať kartu aj 2 cigarety späť. Chudobnejší si vyberá „zhnité ovocie“ šenku a vracia sa do ekonomiky. Krčmová téma: tovar, ktorý nikto nechce, krčmár predáva so zľavou — „k tomu ešte jednu na účet podniku“. Karty sa nemenia; Zastávka, Sklad, Predavačka a Živnostník (§15, §16) by brali aj cigarety — treba rozhodnúť.",
     "rizika": "Do hry pribudnú cigarety z banky (inflácia), čo zväčší barter a výkupné na konci (§14). Stavba šenku sa skomplikuje (koľko kariet dá každý). Bohatý môže kartu s cigaretami vziať tiež — dobieha len vtedy, keď chudobnejší berie prvý (kombinovať s chudobnejsi-berie-prvy). Nevzaté karty bývajú slabé; prémia 1 cigareta nemusí stačiť a 2 už môže zahltiť.",
     "merat": "Koľko cigariet z banky pribudne za partiu; koľko nevzatých kariet vezme hráč s menej cigaretami; či klesne počet drafov s 0 kúpenými kartami (Hela 4 drafty v 20261109-115955).",
-    "temy": ["ekonomicka-lavina"],
+    "temy": [
+      "ekonomicka-lavina"
+    ],
     "pridane": "2026-11-10"
   },
   {
@@ -1196,7 +1265,9 @@
     "prevod": "Šenok ako rad 8 kariet (odkrytie po stavbe, §5 — poradie určí, kto kartu dal: najprv 4 karty útočníka, potom 4 obrancu, každý si svoje 4 zoradí sám, čím rozhodne, čo dá na lacné miesta). Branie: karta na 1. mieste stojí 0 cigariet, na n-tom mieste n−1 cigariet položených po jednej na preskočené karty. Kto vezme kartu s cigaretami, berie ich. Nahrádza „1 za 1 / 2 za 3“. Výučba: obrázok radu s cigaretami. Zastávka a Sklad (§15) berú z radu — rozhodnúť, či platia cenu pozície.",
     "rizika": "Mení Michalovo „nič zo šenku nie je zadarmo“ a celý cenník šenku; bot (bot.ts) a ťahák AI hráčov sa prepíšu. Stavba radu pridá rozhodnutie navyše (zložitosť pre nováčika, kritérium Hĺbka vs. zložitosť už 6,0). Bohatý môže zobrať všetko drahé a nechať chudobnému len „1. miesto“ — dobiehanie pomalé. Dĺžka brania sa predĺži.",
     "merat": "Tok cigariet medzi hráčmi v šenku (koľko cigariet bohatšieho skončí u chudobnejšieho); počet kôl s 0 kartami zo šenku; či víťaz K1 vyhráva partiu menej často; dĺžka draftu v ťahoch.",
-    "temy": ["ekonomicka-lavina"],
+    "temy": [
+      "ekonomicka-lavina"
+    ],
     "pridane": "2026-11-10"
   },
   {
@@ -1220,7 +1291,9 @@
     "prevod": "Kto vezme zo šenku kartu, ktorú doň dal **súper** (odkryté, §5), zaplatí cigarety **súperovi**; za vlastnú kartu platí banke ako dnes. Bohatý, ktorý berie veľa súperových kariet, tak vracia cigarety chudobnému, a stavba šenku dostane nové rozhodnutie: dať do šenku silnú kartu (súper ju kúpi a ja zarobím), alebo slabú (nič nezarobím, ale nič mu nedám). Krčma: „platíš tomu, kto to doniesol na pult“. Karty a výučba: jedna veta pri šenku, šenok musí ukazovať, kto kartu dal (dnes sa odkrýva naraz).",
     "rizika": "Ak súper berie len vlastné karty, nezmení sa nič; ak hráči dajú do šenku samý odpad, šenok sa zhorší pre oboch (tempo). Prevod mení §5 len v adresátovi platby, kód aj UI malé. Pre víťaza bitky môže byť stále výhodné brať, takže brzda je mierna — skôr ventil než oprava.",
     "merat": "Koľko cigariet sa za partiu presunie od bohatšieho k chudobnejšiemu; zmena kvality kariet v šenku (priemerná sila podľa power-level-efekty); podiel kariet zo šenku pre porazeného.",
-    "temy": ["ekonomicka-lavina"],
+    "temy": [
+      "ekonomicka-lavina"
+    ],
     "pridane": "2026-11-10"
   },
   {
@@ -1249,7 +1322,260 @@
     "prevod": "Kto v jednom ťahu vezme zo šenku **2 karty za 3 cigarety**, súper dostane „rundu“: cigaretu z banky (alebo od berúceho, ak chceme presun bez inflácie). Variant bližší NA EX! a Ferovmu návrhu: cena v jednom braní rastie ako fajčenie (prvá karta 1, druhá 2, tretia 3… za kolo a hráča, počítadlo verejné) — „nie je to strop, len drahšie“ (Michal 2026-10-27, žiadne stropy). Výučba: rovnaká logika ako fajčenie, nováčik ju už pozná. Karty sa nemenia; Autobusár (väzeň) treba prečítať.",
     "rizika": "Rastúca cena zdraží šenok aj chudobnému (prvá karta ostáva 1, takže jeho sa netýka). Runda súperovi z banky pridá cigarety (inflácia, výkupné §14). Ak hráči prestanú brať po dvoch, draft sa predĺži o ťahy. Brzdí míňanie, nie príjem — výpalné a Fajčiar ostávajú.",
     "merat": "Rozdiel v počte kariet zo šenku medzi hráčmi za kolo (dnes 5 : 2, 6 : 2); cigarety nevyužité na konci partie (výkupné); korelácia cigariet po K2 s výsledkom.",
-    "temy": ["ekonomicka-lavina"],
+    "temy": [
+      "ekonomicka-lavina"
+    ],
     "pridane": "2026-11-10"
+  },
+  {
+    "id": "zaklad-a-dve-nahle-smrti",
+    "nazov": "Body ako základ, popri nich dve náhle výhry, ktoré treba strážiť",
+    "problem": "NA EX! má dnes jednu reálnu cestu: motor na cigarety a Vízie, ktorý zbiera vo finále. Výhra tretím väzňom padla 0-krát zo 60 partií botov (Druhá liga, 2026-11-01). Keď vedľajšia výhra nehrozí, súper ju nemusí strážiť a hra sa zúži na jednu os.",
+    "ako": "1. Hra má základné skóre (body na konci). 2. Popri ňom má 1–2 podmienky okamžitej výhry na iných osiach (vojsko a veda; gejše a šarm; korunky a farba). 3. Každá podmienka má verejné meradlo, ktoré sa dá spočítať (stopa, počet symbolov). 4. Hráč, ktorý ide na body, musí priebežne platiť za obranu (vojsko na vyrovnanie, zobratý symbol, zablokovaná karta) a tie platby mu potom chýbajú v bodoch. 5. Náhle výhry tvoria menšinu výsledkov, ale ich hrozba formuje každú partiu.",
+    "hry": [
+      {
+        "nazov": "7 Wonders Duel (Bauza, Cathala, 2015, 2 hráči)",
+        "preco": "Tri cesty: vojenská prevaha (pešiak v hlavnom meste súpera), vedecká prevaha (6 rôznych symbolov z 7), inak body. Recenzent: kto ignoruje súperov vojenský ťah, takmer iste prehrá. Hráč rozhoduje, koľko kariet obetuje na brzdenie súpera namiesto vlastných bodov.",
+        "zdroj": "https://opinionatedgamers.com/2016/01/22/7-wonders-duel-game-review/"
+      },
+      {
+        "nazov": "7 Wonders Duel — ako často padne náhla výhra",
+        "preco": "Tipy na BGA uvádzajú podľa dát BGA zhruba 20 % partií vojenskou a 20 % vedeckou prevahou; analýza na fóre BGA má pre základnú hru civil 58 %, vedu 25,6 %, vojsko 16,4 % (veľkosť vzorky neuvádza). Pre NA EX! to dáva hrubý cieľ: náhle výhry v 20 až 40 % partií.",
+        "zdroj": "https://be.doc.boardgamearena.com/Tips_sevenwondersduel"
+      },
+      {
+        "nazov": "7WD in Numbers (fórum BGA)",
+        "preco": "Rozpis 58 / 25,6 / 16,4 % a poznámka, že politická výhra z rozšírenia Agora je takmer dominantná. To je varovanie, že novú cestu treba merať, lebo ľahko prevalcuje ostatné.",
+        "zdroj": "https://forum.boardgamearena.com/viewtopic.php?p=112104"
+      },
+      {
+        "nazov": "Splendor Duel (Andre, Cathala, 2022, 2 hráči)",
+        "preco": "Výhra pri 20 bodoch prestíže, 10 korunkách alebo 10 bodoch v jednej farbe, kontroluje sa po každom ťahu. Návod radí počítať súperove korunky a farby. Typická prehra: hráč počíta len body a súper medzitým potichu nazbiera 10 koruniek.",
+        "zdroj": "https://rules.dized.com/game/W-CkaRFlR36L6fiDQiWcHQ/jDfcPfeeQJm94NVijGRTYA/victory-conditions"
+      },
+      {
+        "nazov": "Splendor Duel — ktorá cesta vyhráva",
+        "preco": "Tipy na BGA: väčšina partií sa vyhrá na 20 bodov, ale kto si drží otvorené všetky tri cesty, toho sa ťažšie blokuje. Náhle výhry tu slúžia hlavne ako tlak, ktorý núti súpera rozložiť pozornosť.",
+        "zdroj": "https://es.boardgamearena.com/doc/Tips_splendorduel"
+      },
+      {
+        "nazov": "Twilight Struggle (Gupta, Matthews, 2005, 2 hráči)",
+        "preco": "Jedna spoločná stopa VP od −20 do +20, pri 20 je okamžitá výhra; kontrola Európy pri vyhodnotení Európy je tiež okamžitá výhra; DEFCON 1 končí partiu (zdroje sa rozchádzajú, kto prehrá). Hrozby sú viditeľné celú hru.",
+        "zdroj": "https://rulespal.com/twilight-struggle/rulebook"
+      },
+      {
+        "nazov": "Watergate (Cramer, 2019, 2 hráči, asymetrická)",
+        "preco": "Nixon vyhrá, keď získa 5 žetónov momentu. Redaktor vyhrá, keď spojí aspoň 2 informátorov reťazou odkrytých dôkazov s Nixonovým portrétom. Každá strana preťahuje oba ciele naraz: obe hrozby sú verejné a každá karta je voľba, ktorú z nich tlačiť a ktorú brzdiť.",
+        "zdroj": "https://officialgamerules.org/game-rules/watergate/"
+      }
+    ],
+    "kritika": "BGDF: jedna podmienka výhry je pre hráča zrozumiteľnejšia, pri viacerých sa mu cieľ rozmazáva. Kritika „point salad“ (body odvšadiaľ): hráč nevidí, ako ďaleko je od výhry. Náhla smrť môže pôsobiť ako antiklimax („zabudol som sa brániť“; z vlastných vedomostí, neoverené). Čísla 7WD sa podľa zdroja líšia (20+20 % vs. 25,6+16,4 %).",
+    "prevod": "Krčma (špaky po finále, §14, §14b) ostáva základom. Dve náhle výhry: Strach (väzni, §10; dnes tretí väzeň, návrh Michala ⌊L/2⌋: Tretia liga 1, Druhá 2, Prvá 3) a Reči (spojenci, návrh z rozhovoru, tiež ⌊L/2⌋). Obe merané verejne pri staršom: marker strachu a žetóny rečí. Obe ohlásené vopred: pokus o zajatie je už dnes verejný a boss ide do ruky (§5, §10). Pri popolníku pribudne počítadlo „väzni 0/2 · spojenci 0/2“. Výučba: jedna veta v Rýchlom štarte (§1): „Vyhráš aj skôr, keď máš ⌊L/2⌋ väzňov alebo spojencov.“",
+    "rizika": "Náhla výhra nesmie byť nedosiahnuteľná (dnes 0/60) ani lacná. Nováčik môže prehrať náhlou smrťou bez toho, aby ju videl prichádzať, preto treba nápovedu Melichara pri prvom staršom na červenej. V Tretej lige (⌊3/2⌋ = 1) môže jedna úspešná bitka s pokusom ukončiť partiu po 2. lokalite. Tón hry neutrpí, väzeň aj spojenec sú krčmové.",
+    "merat": "Podiel výhier podľa cesty (cieľ hrubo 20–40 % partií mimo špakov), P(výhra | vyhrané finále) dnes 85 % s cieľom pod 70 %, P(výhra | vedenie pred finále) dnes 63 %, medián kola náhlej výhry, koľko cigariet a kariet minie obranca na brzdenie (odtlačenie, Viera).",
+    "temy": [
+      "trojuholnik-cielov"
+    ],
+    "pridane": "2026-11-01"
+  },
+  {
+    "id": "vidlicka-sirka-hlbka",
+    "nazov": "Vidlička: šírka alebo hĺbka z tých istých ťahov",
+    "problem": "Nakladačku rozdeľuje porazený (§9.4 bod 2), preto staršieho nikdy nepustí na červenú a zajatie nevznikne (0 zo 60). Keď hrozí len hĺbka (jeden starší na stupni 3), obranca sa jej vyhne tým, že Nakladačku rozloží.",
+    "ako": "1. Dve podmienky výhry vyplývajú z toho istého súboja. Hĺbka: 3 susedné kamene, 10 bodov v jednej farbe, väčšina v pár veľkých cieľoch. Šírka: 5 kameňov hocikde, 4 gejše, 20 bodov. 2. Obranca nemôže strážiť obe naraz: keď obranu sústredí, prehrá na šírku, keď ju rozloží, prehrá na hĺbku. 3. Obe sa kontrolujú po každom kroku a hra končí hneď.",
+    "hry": [
+      {
+        "nazov": "Schotten Totten (Knizia, 1999, 2 hráči)",
+        "preco": "Vyhráš 5 kameňov z 9 alebo 3 susedné. Obrana jedného kameňa môže otvoriť susedný rad a hráč sa musí rozhodnúť, kde prehrá menej. Hra končí hneď, ako niekto splní niektorú podmienku.",
+        "zdroj": "https://en.doc.boardgamearena.com/Gamehelpschottentotten"
+      },
+      {
+        "nazov": "Schotten Totten — pravidlá",
+        "preco": "Oficiálne pravidlá: obe podmienky (5 kameňov alebo 3 susedné) a okamžitý koniec.",
+        "zdroj": "https://cs.uwaterloo.ca/~dtompkin/archive/dtlib/base/Schotten%20Totten.pdf"
+      },
+      {
+        "nazov": "Hanamikoji (Nakayama, 2013, 2 hráči)",
+        "preco": "Vyhráš 4 gejše zo 7 (šírka) alebo 11 bodov šarmu (hĺbka; gejše majú hodnotu 2 až 5). Malé gejše sa oplatí brať na počet, veľké na body. Keď v tom istom kole splní každý inú podmienku, podľa FAQ na BGG vyhráva 11 bodov.",
+        "zdroj": "https://boardgamegeek.com/wiki/page/Hanamikoji_FAQ"
+      },
+      {
+        "nazov": "Splendor Duel (2022, 2 hráči)",
+        "preco": "20 bodov (šírka), 10 bodov v jednej farbe (hĺbka) a 10 koruniek (tretia os). Tie isté nákupy z jedného trhu ťahajú k rôznym kartám, takže obranca, ktorý berie kartu len preto, aby ju nemal súper, sa vzdáva vlastného postupu.",
+        "zdroj": "https://en.doc.boardgamearena.com/Gamehelpsplendorduel"
+      }
+    ],
+    "kritika": "Keď je jedna podmienka výrazne lacnejšia, druhá je mŕtva (Splendor Duel: väčšina partií končí na 20 bodoch, tipy BGA). Bez ohlásenia môže výhra prísť nečakane. V Schotten Totten veľa rozhodne ťahanie kariet (z vlastných vedomostí, neoverené).",
+    "prevod": "Hĺbka je dnešný väzeň (starší sa ťa bojí na stupni 3, §10). Šírka je nová podmienka: na konci kola (krok 8, §9) sa ťa na udržaných stupňoch bojí aspoň N starších. N treba zmerať (napr. 5 z 8) a rozhodnúť, či sa väzni rátajú. Porazený musí rozdeliť celú Nakladačku (§9.4 bod 5). Keď ju sústredí, hrozí červená a pokus o zajatie, keď ju rozloží, hrozí šírka. Dnešný vzorec motora (prehrať, rozložiť Nakladačku a zobrať cigaretu za každého posunutého staršieho, §9.4) tak priamo kŕmi súperovu šírku. Karty sa nemenia. Na ploche pribudne počítadlo „boja sa ťa: 3/5“, vo výučbe obrázok stupníc s piatimi žltými.",
+    "rizika": "Šírka sa ťažko vracia: marker k stredu posúva zas len Nakladačka, ktorú rozdeľuje ohrozený hráč. Ten si vyberie iných starších, takže odpoveďou je hlavne vyhrávať bitky. Nízke N znamená rýchly koniec v Tretej lige. Výhra by mohla zatieniť špaky za udržaný strach (§14). Pojem „udržaný stupeň“ je pre nováčika ťažký.",
+    "merat": "Na koľkých starších sa dnes Nakladačka rozdeľuje (priemer, rozptyl) a ako po zavedení vidličky. Podiel výhier šírkou a hĺbkou pre N = 4, 5, 6. Kolo, v ktorom niekto prvýkrát dosiahne N. Či porazený začne Nakladačku sústreďovať (počet starších na červenej za partiu).",
+    "temy": [
+      "trojuholnik-cielov"
+    ],
+    "pridane": "2026-11-01"
+  },
+  {
+    "id": "utocnik-ovlada-hodiny",
+    "nazov": "Kto je beatdown: útočník ovláda dĺžku partie (rush, „Platiť!“)",
+    "problem": "Partia má pevný počet L lokalít a po nich finále, ktoré je najväčším kolom (oba hráči spolu 21 špakov, Nakladačka 1 : 1 ≈ 11,7). Rýchly útok nemá ako zinkasovať vedenie: finále ho zmaže a vedúci pred finále vyhrá len 63 %.",
+    "ako": "1. Flores sa pýta: keby partia bežala ďalej bez zmeny, kto vyhrá? Ten druhý musí byť útočník (beatdown) a tlačiť na koniec. 2. Útočník potrebuje páku na hodiny. V Dominione rush vyprázdni tri kôpky a ukončí hru skôr, než engine začne platiť. 3. Obranca odpovedá tým, že drží krok (vlastné tempo), alebo koniec zbrzdí. 4. Motor (engine) vyhrá, keď partia trvá dosť dlho.",
+    "hry": [
+      {
+        "nazov": "Magic: The Gathering — „Who's the Beatdown?“ (Flores, 1999)",
+        "preco": "Základný článok teórie Magicu: rola hráča (útočník alebo kontrola) nie je daná balíčkom, ale zápasom. Kto vyhrá dlhú hru, nech brzdí, ten druhý musí útočiť. Hráč, ktorý rolu prečíta zle, prehrá aj s lepšími kartami.",
+        "zdroj": "https://mtg.wiki/page/Mike_Flores"
+      },
+      {
+        "nazov": "Who's the Beatdown — dnešný pohľad",
+        "preco": "Článok z roku 2023: princíp stále pomáha hráčom určiť rolu v partii.",
+        "zdroj": "https://themanabase.com/?p=9464"
+      },
+      {
+        "nazov": "Dominion — Rush (DominionStrategy wiki)",
+        "preco": "Rush je stratégia, ktorá sa snaží hru ukončiť čo najskôr, typicky vyprázdnením troch kôpok. Proti engine je to podľa wiki dobrý zápas, lebo engine ešte nestihol začať platiť. Opak je Slog, ktorý chce hru čo najdlhšiu.",
+        "zdroj": "https://wiki.dominionstrategy.com/index.php/Rush_(strategy)"
+      },
+      {
+        "nazov": "Dominion — päť základných typov balíčka",
+        "preco": "Big Money ako základ, engine, rush a slog sú odlíšené tým, ako dlhú hru chcú. Hráč volí podľa toho, čo hrá súper: proti dlhému balíčku viac rushu, proti rýchlemu Big Money viac slogu.",
+        "zdroj": "https://dominionstrategy.com/2013/01/21/the-five-fundamental-deck-types-introduction/"
+      },
+      {
+        "nazov": "StarCraft — rush trestá chamtivú expanziu",
+        "preco": "Liquipedia opisuje skoré útoky ako trest za príliš chamtivé rozširovanie. Kto rush ubráni bez veľkej straty, vyhrá na ekonomike.",
+        "zdroj": "https://liquipedia.net/starcraft2/7_Roach_Rush_(vs._Terran)"
+      }
+    ],
+    "kritika": "Flores sám hovorí, že si článok pamätajú, lebo bol prvý, nie najlepší. Návod k StarCraftu: trojuholník rush / turtle / boom v praxi čisto neplatí a dobre bránená expanzia porazí oba. V Dominione rush závisí od kariet na stole a v niektorých hrách vôbec neexistuje.",
+    "prevod": "„Platiť!“: na začiatku kola (pred voľbou cieľa, §4, §5) smie hráč, ktorý vedie o aspoň X špakov (alebo má viac väzňov), zavolať „Platiť!“. Toto kolo je potom finále na pinnacle (§14b) a zvyšné lokality sa nehrajú. Útočí zaostávajúci ako vo finále. Motor tak nedostane všetky kolá na stavbu a jeho najväčšie kolo príde skôr, keď je slabší. Variant bez prahu: „Platiť!“ smie zavolať ktokoľvek, ale za cenu (súper si vyberie pinnacle, alebo dostane kartu zadarmo ako pri pokuse o zajatie, §5). Karty sa nemenia. Na ploche pribudne tlačidlo „Platiť!“ s ukazovateľom, kedy je dostupné. Výučba: hláška „Pán hostinský, platiť!“. Názov Fajront je v knižnici už obsadený (eskalacia-fajront, režim Päta, Lakeť, Otočka).",
+    "rizika": "Kratšie partie, stôl uvidí menej kariet. Snowball z náhodného prvého útočníka (§3). Prah X je podmienka konca, nie strop zdroja, takže CLAUDE.md porušený nie je. Tón sedí výborne. Prvá liga (7 lokalít) môže stratiť zmysel, keď sa dá ukončiť skôr.",
+    "merat": "Ako často zaznie „Platiť!“ a v ktorom kole. Výhra toho, kto volal (cieľ 55–65 %, nie 85 %). Priemerná dĺžka partie. P(výhra | vedenie pred finále), dnes 63 %. Či motor začne skôr hrať na bitky (podiel pasov za cigarety v 1.–2. kole).",
+    "temy": [
+      "trojuholnik-cielov"
+    ],
+    "pridane": "2026-11-01"
+  },
+  {
+    "id": "trojuholnik-archetypov",
+    "nazov": "Trojuholník archetypov (aggro – control – combo, rush – boom – turtle): smer šípok určujú ceny odpovedí",
+    "problem": "Michal chce viac rovnocenných štýlov. Rovnocennosť nevznikne tým, že každý štýl dostane vlastné body. Vznikne, keď každý štýl má korisť, proti ktorej vyhráva, aj predátora, proti ktorému prehráva.",
+    "ako": "1. Tri štýly sa líšia tempom a odpoveďami: rýchly útok (lacné hrozby, skorý tlak), kontrola alebo obrana (lacné odpovede, neskorá prevaha) a motor alebo combo (najprv investícia, potom výbuch alebo iná výhra). 2. Útok bije motor (motor ešte nestihol), obrana bije útok (odpovede sú lacnejšie ako hrozby), motor bije obranu (obrana nemá čím zastaviť neskorý výbuch). 3. Smer šípok neurčujú mená štýlov. Magic aj Hearthstone majú tie isté archetypy, no šípku medzi aggro a control opačne, podľa toho, koľko stoja odpovede. 4. Metahra: keď sa jeden štýl rozmnoží, pribudne aj jeho predátorov.",
+    "hry": [
+      {
+        "nazov": "Magic: The Gathering — archetypy",
+        "preco": "Bežný opis cyklu: combo bije aggro, aggro bije control, control bije combo a midrange je „strýko, ktorého všetci tolerujú“. Combo dokončí kombináciu, kým sa aggro ešte preteká. Aggro získa náskok skôr, než control nájde odpovede. Control má rušenie, na ktoré combo dopláca.",
+        "zdroj": "https://gametyrantindustries.squarespace.com/news/determining-your-decks-archetype-in-magic-the-gathering?format=amp"
+      },
+      {
+        "nazov": "Magic — Archetype (mtg.wiki)",
+        "preco": "Definície archetypov a hybridov. Aggro bije control, lebo vybuduje výhodu skôr, než control nájde potrebné karty.",
+        "zdroj": "https://mtg.wiki/page/Archetype"
+      },
+      {
+        "nazov": "Hearthstone — aggro, midrange, control",
+        "preco": "Tu je control zvyčajne odpoveďou na aggro (vymazanie stola, liečenie, viac zdrojov na konci), aggro bije midrange a midrange bije control. Je to opačná šípka ako v Magicu, lebo pravidlá dávajú odpovediam inú cenu. Podiel archetypov sa mení s patchmi: keď je jeden obľúbený, rastú jeho protivníci.",
+        "zdroj": "https://www.keengamer.com/articles/guides/hearthstones-3-major-deck-types-explained-aggro-midrange-and-control/"
+      },
+      {
+        "nazov": "Android: Netrunner — štyri korporácie",
+        "preco": "Korporácia vyhrá 7 bodmi agend alebo zabitím (flatline) runnera. Archetypy: glacier (veľa ICE, dlhá hra), rush (skoro skórovať), fast advance (skórovať z ruky, málo ICE) a kill. Runner musí prečítať, ktorý z nich hrá súper, lebo každý chce inú obranu.",
+        "zdroj": "https://stimhack.com/the-four-corps-you-meet-in-netrunner-by-erinrockabitch/"
+      },
+      {
+        "nazov": "Star Realms — frakcie ako štýly (2 hráči)",
+        "preco": "Blob je agresívny, Trade Federation dáva ekonomiku a ako jediná vracia životy (autoritu), Machine Cult preriedi balíček, Star Empire ťahá karty a núti súpera odhadzovať. Hráč sa podľa trhu a súpera rozhodne pre 1–2 frakcie.",
+        "zdroj": "https://www.starrealms.com/a-colony-wars-strategy-primer-from-darwin-kastle/"
+      },
+      {
+        "nazov": "Sirlin — Designing Yomi",
+        "preco": "Kameň–papier–nožnice nie je plytký, keď majú možnosti rôzne výplaty a pribudne riadenie rizika. V StarCrafte sa rovnako navzájom porážajú skorý rush, silná ekonomika a stredná stavba. V Yomi: útok bije hod, hod bije blok, blok bije útok.",
+        "zdroj": "https://sirlin.net/articles/designing-yomi"
+      },
+      {
+        "nazov": "Schreiber a Romero — Game Balance: netranzitívne mechaniky",
+        "preco": "Netranzitívne mechaniky (nijaká voľba nedominuje, každú niečo porazí) sú pre PvP zaujímavejšie ako tranzitívne, lebo hráč smie počas partie meniť stratégiu a blafovať. Rozbor sa robí maticou výplat.",
+        "zdroj": "https://bowling-bash.blogspot.com/2011/03/literature-game-balance-ch3-transitive.html"
+      }
+    ],
+    "kritika": "Holý kameň–papier–nožnice je hádanie. Sirlin pridáva rôzne výplaty a riziko, inak voľba nie je rozhodnutím. Kde sa balíček stavia pred partiou, často rozhodne už párovanie („zlý matchup“). Tier listy v Hearthstone ukazujú, že jeden archetyp občas dominuje celé obdobie. Trojuholník v StarCrafte je podľa komunity voľnejší, než sa hovorí.",
+    "prevod": "Útok = tuhé (Rana, Pecka, Petelica, Bitkár, §9.3) a cez Nakladačku strach a väzni (§10). Reči alebo obrana = Viera, Povera, Pohoršenie a hádka (§9.1): berie súperovi Bitkára na jedno kolo, tlmí tuhé a podľa návrhu robí spojencov. Krčma = Cigareta, Vízia, Poldeci, pas za cigarety (§6) a z toho finále (§14b). Šípky: Útok > Krčma (motor prehráva skoro), Reči > Útok (Viera tlmí tuhé, hádka berie Bitkára, spojenec mimo stupnice sa nedá zajať), Krčma > Reči (priazne z hádky platia len do konca kola, kým karty motora ostávajú natrvalo, a vo finále má motor až 5 Pitiek). Balíček sa v NA EX! stavia počas partie zo šenku, takže hráč na súpera reaguje (scouting); trojuholník je tým mäkší a viac o čítaní súpera. Pre botov treba tri povahy podľa vrcholov (bot.ts POVAHY).",
+    "rizika": "Karty NA EX! miešajú akcie (jedna karta má Ranu aj Vieru), takže štýly sa zlievajú. Viera slúži proti Poverám aj proti tuhému, môže teda byť odpoveďou na dva vrcholy naraz. Nováčik potrebuje tri vysvetlenia. Balans sa dá ladiť len meraním matice.",
+    "merat": "Matica 3 × 3 výhier povahy proti povahe: každý vrchol nad 55 % proti svojej koristi a pod 45 % proti svojmu predátorovi. Podiel povahy v rebríčku botov. Korelácia víťaza hádky a víťaza bitky (dnes 80 %, cieľ ≤ 60 %). Či existuje povaha, ktorá je nad 50 % proti obom ostatným (dominantná stratégia).",
+    "temy": [
+      "trojuholnik-cielov"
+    ],
+    "pridane": "2026-11-01"
+  },
+  {
+    "id": "utok-na-ekonomiku-vedlajsim-ucinkom",
+    "nazov": "Útok na ekonomiku ako vedľajší účinok vlastného plánu (rabovanie, kliatby)",
+    "problem": "Motor v NA EX! nič nestojí. Kto prehráva, dostane cigarety za pas (§6) aj za Nakladačku (§9.4) a sám si vyberá, ktoré priazne dostane. Nikto mu počas stavby nevezme cigarety ani karty, a preto motor nemá predátora.",
+    "ako": "1. Postup na jednej osi (vojsko, kliatby) zároveň berie súperovi zdroje, z ktorých žije jeho ekonomika. 2. V 7 Wonders Duel sa žetóny rabovania vyhodnotia pri prvom vstupe do zóny: súper stratí 2 alebo 5 mincí. 3. V Dominione Witch dá sebe +2 karty a súperovi Curse (mŕtva karta, −1 VP). Útočník nehrá čistú nenávisť, hrá dobrú kartu, ktorá navyše škodí. 4. Aj odpoveď je vedľajší účinok: vlastná Witch alebo vyhadzovanie kariet z balíčka (trashing).",
+    "hry": [
+      {
+        "nazov": "7 Wonders Duel — rabovanie na vojenskej stope",
+        "preco": "Vojenský postup súčasne hrozí náhlou výhrou a berie súperovi mince na budovy. Hráč na body musí odpovedať, inak stratí ekonomiku aj partiu.",
+        "zdroj": "https://rulespal.com/7-wonders-duel/rulebook"
+      },
+      {
+        "nazov": "Dominion — Witch",
+        "preco": "Terminálne dobratie +2 karty a Curse každému súperovi. Kliatby sa rozdávajú v poradí ťahov. Keď dôjdu, Witch ďalej ťahá karty.",
+        "zdroj": "https://wiki.dominionstrategy.com/index.php/Witch"
+      },
+      {
+        "nazov": "Dominion — Curse a obrana",
+        "preco": "Curse je kôpka, ktorá sa ráta do konca hry, takže hra s prekliatím sa skráti. Starší článok radí odpovedať vlastnou Witch (každá kliatba rozdaná súperovi je kliatba, ktorú nedostaneš ty) a kliatby vyhadzovať (Chapel, Remodel).",
+        "zdroj": "https://wiki.dominionstrategy.com/index.php/Curse"
+      },
+      {
+        "nazov": "Star Realms — Star Empire a Blob",
+        "preco": "Star Empire ťahá karty a núti súpera odhadzovať, teda bije jeho ďalšie kolo. Blob je agresívny. Útok aj škoda na ekonomike súpera vychádzajú z tých istých kariet.",
+        "zdroj": "https://www.starrealms.com/a-colony-wars-strategy-primer-from-darwin-kastle/"
+      }
+    ],
+    "kritika": "Witch v základnej sade Dominionu sa považuje za veľmi silnú. Údaj o 60–65 % výhier prvého hráča s Witch je z neoverenej stránky dood.gg. Prekliatia frustrujú a bez spôsobu, ako ich vyhodiť, z nich je snowball.",
+    "prevod": "Dve možnosti. (a) Rabovanie z hádky: víťaz hádky (§9.1) popri priazniach alebo namiesto nich vezme súperovi cigarety podľa veľkosti hádky, čím motor platí za to, že hrá bez mäkkého. Variant ako korisť pri prvom vstupe (knižnica: korist-za-hranicu). (b) Klebeta: karta s tagom Kliatba (ako Absťák, §8, §11) do súperovho odhadzovacieho balíčka za vyhratú hádku. Dá sa priznať (§11) za cenu, alebo zahodiť Víziou (§2), takže motor sa bráni vlastným nástrojom, ale Víziu minie na čistenie namiesto karty. Tón: klebety a ohováranie sedia do krčmy presne. Žiadny strop: klebiet môže byť koľko chce, zbaviť sa ich dá priznaním.",
+    "rizika": "Absťák a Cirhóza už sú mŕtve karty v balíčku a tretí druh ich preplní (aj výučbu). Rabovanie cigariet zasiahne aj pokus o zajatie (1 cigareta, §10) a šenok, čím ešte pridá prehrávajúcemu (snowball). Mení výstup hádky, o ktorom Michal rozhodol 2026-11-01 (v10), preto ide len ako doplnok, nie náhrada priazní.",
+    "merat": "Cigarety motora po 3. kole s rabovaním a bez neho. Podiel výhier povahy Krčma. Počet klebiet v balíčku a koľko Vízií motor minie na čistenie. Dĺžka ťahu a partie.",
+    "temy": [
+      "trojuholnik-cielov"
+    ],
+    "pridane": "2026-11-01"
+  },
+  {
+    "id": "spolocny-bazen-dvoch-ciest",
+    "nazov": "Spoločný bazén, o ktorý súperia dve víťazné cesty (strach a presvedčenie o tých istých starších)",
+    "problem": "Keď má každá cesta k výhre vlastné ciele, hráči sa míňajú a každý hrá svoje („multiplayer solitaire“). Keď dve cesty berú z toho istého obmedzeného bazéna, každý krok na jednej ceste zároveň bráni súperovi na druhej.",
+    "ako": "1. Obe cesty potrebujú tie isté objekty (štáty, gejše, kamene, starší). 2. Objekt, ktorý získa jedna cesta, druhej chýba. 3. Hráč vidí, koľko objektov ešte ostáva a kto ich kam ťahá. 4. Watergate: Nixon vyhrá 5 žetónmi momentu, redaktor spojením 2 informátorov s Nixonom. Obe strany sa bijú o žetóny, ktoré ležia na tých istých kartách udalostí.",
+    "hry": [
+      {
+        "nazov": "Watergate (Cramer, 2019, 2 hráči)",
+        "preco": "Asymetrické ciele na tom istom stole. Nixon tlačí moment a redaktor dôkazy, no každá karta posúva oboje. Hráč stále volí, či postúpi k svojmu cieľu, alebo vezme súperovi žetón. Hra získala Golden Geek za najlepšiu hru pre 2 hráčov 2019 (podľa recenzie).",
+        "zdroj": "https://www.boardgamequest.com/watergate-review/"
+      },
+      {
+        "nazov": "Twilight Struggle (2 hráči)",
+        "preco": "Bojiskové štáty sa rátajú do bodovania regiónov aj do kontroly Európy (okamžitá výhra) a VP sú jedna spoločná stopa od −20 do +20. Každý vplyv je zároveň útokom aj obranou.",
+        "zdroj": "https://rulespal.com/twilight-struggle/rulebook"
+      },
+      {
+        "nazov": "Hanamikoji (2 hráči)",
+        "preco": "Sedem gejší je bazén pre obe podmienky (4 gejše alebo 11 šarmu). Gejša, ktorú vyhrá súper, chýba v oboch tvojich cestách.",
+        "zdroj": "https://en.doc.boardgamearena.com/Gamehelphanamikoji"
+      },
+      {
+        "nazov": "Dune: Imperium (Dennis, 2020)",
+        "preco": "Body z konfliktov aj z vplyvu vo frakciách. Spojenectvo frakcie drží hráč s najvyšším vplyvom a súper mu ho môže prebrať. Detail o prebratí je z vlastných vedomostí, neoverené. Hra je pre 1–4 hráčov, pri dvoch hrá tretí automatický protivník (z vlastných vedomostí, neoverené).",
+        "zdroj": "https://www.meeplemountain.com/reviews/dune-imperium/"
+      }
+    ],
+    "kritika": "Pri priveľkom bazéne sa cesty nestretnú, pri malom rozhodne prvé získanie (snowball). Watergate sa vyčíta mierna výhoda jednej strany (z vlastných vedomostí, neoverené).",
+    "prevod": "8 starších je spoločný bazén pre väzňov (strach, §10) aj spojencov (návrh z rozhovoru: reči z hádky → výpožička staršieho → spojenec). Väzeň aj spojenec odchádzajú zo stupnice (prázdne miesto ako dnes pri väzňovi). Pri ⌊L/2⌋ (Druhá liga 2 + 2 z 8) súperia obaja o tých istých starších. Kto si spraví spojenca zo staršieho, ktorý sa súpera bojí na oranžovej, vezme súperovi budúceho väzňa. Reči ležia na staršom ako verejné žetóny (ako dnešné klebety, §9.1), strach ostáva markerom. Starší nesmie byť naraz zajatý aj presvedčený: buď sa reči na staršom v ohrození nerátajú, alebo pokus o zajatie reči zruší (na rozhodnutie).",
+    "rizika": "Na jednom staršom sú dva ukazovatele (marker strachu a reči), čítanie je ťažšie. Keď väzeň aj spojenec vyžadujú vyhratú bitku, cesty splynú: dnes hádku v 80 % vyhrá ten, kto vyhrá aj bitku. Efekt výpožičky (karta bossa so 6 akciami, §10) môže byť silnejší než samotná cesta.",
+    "merat": "Koľko starších skončí ako väzeň, spojenec alebo ostane na stupnici. Či hráči berú súperovi cieľ (spojenec zo staršieho, ktorý sa súpera bojí na stupni 2+). Korelácia víťaza hádky a víťaza bitky v kole výpožičky. Podiel výhier spojencami a väzňami.",
+    "temy": [
+      "trojuholnik-cielov"
+    ],
+    "pridane": "2026-11-01"
   }
 ]
