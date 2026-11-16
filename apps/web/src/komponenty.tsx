@@ -51,6 +51,12 @@ export function Nacitavanie({ text = "Načítavam…" }: { readonly text?: strin
   );
 }
 
+/** Výsledok akcie na stránke (uložené / chyba), ktorý sa ukáže v Hlaske. */
+export interface SpravaHlasky {
+  readonly druh: "ok" | "chyba";
+  readonly text: string;
+}
+
 export function Hlaska({ druh = "chyba", children }: { readonly druh?: "chyba" | "ok" | "info"; readonly children: ReactNode }) {
   return <div className={`hlaska hlaska-${druh}`}>{children}</div>;
 }

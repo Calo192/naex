@@ -14,7 +14,7 @@
 import type { Action, CardInstance, PlayerId, Slot } from "./types.ts";
 import { opponentOf } from "./types.ts";
 import type { GameData } from "./data.ts";
-import { defOf, printedSides } from "./data.ts";
+import { printedSides } from "./data.ts";
 import type { ActionSums, LineEval, LineState, PlacedCard } from "./partia.ts";
 import { evaluateLine, premenyVLinii } from "./partia.ts";
 import type { KartaSNastrojmi } from "./naradie.ts";

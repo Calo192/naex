@@ -4,13 +4,14 @@ import { useEffect, useState } from "react";
 import { kontrolaTextov, variantyKarty } from "@naex/tvorba";
 import eldersJson from "@naex/core/data/elders.json";
 import { api, textChyby } from "../lib/api.ts";
+import { tvar } from "../lib/jazyk.ts";
 import { Odkaz, useTitulok } from "../lib/router.tsx";
 import { useSada } from "../lib/sada.tsx";
-import { Hlaska } from "../komponenty.tsx";
+import { Hlaska, type SpravaHlasky } from "../komponenty.tsx";
 import { doplnNahlady, problemyNavrhov, useAdmin, zmeneneOdZverejnenia } from "./stav.tsx";
 import { AdminHlava, Ikona } from "./spolocne.tsx";
 
-const kariet = (n: number) => (n === 1 ? "karta" : n >= 2 && n <= 4 ? "karty" : "kariet");
+const kariet = (n: number): string => tvar(n, "karta", "karty", "kariet");
 
 /**
  * Náhľady veľkých obrázkov (Michal 2026-10-22): pozadia scorecardov a staré
@@ -55,7 +56,7 @@ export function Prehlad() {
   useTitulok("Tvorba kariet");
   const { obsah, sady, obnovSady, zverejni, obnov: obnovObsah } = useAdmin();
   const { sada, obnov: obnovSadu } = useSada();
-  const [sprava, setSprava] = useState<{ druh: "ok" | "chyba"; text: string } | null>(null);
+  const [sprava, setSprava] = useState<SpravaHlasky | null>(null);
   const [caka, setCaka] = useState(false);
 
   if (obsah === null) return null;
@@ -134,7 +135,7 @@ export function Prehlad() {
           <div>
             <h2 id="zverejnenie-titul">
               {stav === "blokovane"
-                ? `Zverejnenie blokuje ${problemy.length} ${problemy.length === 1 ? "problém" : problemy.length <= 4 ? "problémy" : "problémov"}`
+                ? `Zverejnenie blokuje ${problemy.length} ${tvar(problemy.length, "problém", "problémy", "problémov")}`
                 : stav === "pripravene"
                   ? `${zmenene.length} ${kariet(zmenene.length)} ${zmenene.length === 1 ? "čaká" : "čakajú"} na zverejnenie`
                   : "Návrhy sú totožné so zverejnenou sadou"}
@@ -179,7 +180,7 @@ export function Prehlad() {
         {texty.length > 0 && (
           <details className="zverejnenie-texty" open={chybyTextov > 0}>
             <summary>
-              Texty efektov: {texty.length} {texty.length === 1 ? "upozornenie" : texty.length <= 4 ? "upozornenia" : "upozornení"}
+              Texty efektov: {texty.length} {tvar(texty.length, "upozornenie", "upozornenia", "upozornení")}
               {chybyTextov > 0 && <span className="admin-znacka zla">{chybyTextov} chýb</span>}
             </summary>
             <ul className="zverejnenie-zoznam">

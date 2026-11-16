@@ -26,7 +26,7 @@ import { KartaLico } from "../karta/KartaLico.tsx";
 import { IkonaAkcie } from "../karta/IkonaAkcie.tsx";
 import { textChyby } from "../lib/api.ts";
 import { Odkaz, chod, useTitulok } from "../lib/router.tsx";
-import { Hlaska, Pole } from "../komponenty.tsx";
+import { Hlaska, Pole, type SpravaHlasky } from "../komponenty.tsx";
 import { useAdmin } from "./stav.tsx";
 import { VyberObrazka } from "./VyberObrazka.tsx";
 
@@ -92,6 +92,7 @@ function StranaEditor({
   const volne = volnePozicie(strana).length;
   const pocet = pocetAkcii(strana);
   const rozlozeni = rozlozeniaStrany(strana).length;
+  const nazovAkcie = (kluc: string): string => akcie.find((a) => a.kluc === kluc)?.nazov ?? kluc;
   const ikona = (kluc: string) => (
     <span className="mini-slot" style={{ background: farba }}>
       <IkonaAkcie kluc={kluc} akcia={akcie.find((a) => a.kluc === kluc)} />
@@ -152,7 +153,7 @@ function StranaEditor({
         {pouzite.map(([kluc, n]) => (
           <div key={kluc} className="strana-akcia">
             {ikona(kluc)}
-            <span className="strana-akcia-meno">{akcie.find((a) => a.kluc === kluc)?.nazov ?? kluc}</span>
+            <span className="strana-akcia-meno">{nazovAkcie(kluc)}</span>
             <span className="pocitadlo-ovladanie">
               <button type="button" className="tlacidlo-male" onClick={() => nastavPocet(kluc, n - 1)} aria-label="Menej">
                 −
@@ -199,7 +200,7 @@ function StranaEditor({
                       key={kluc}
                       className={povolene.includes(kluc) ? "povolena aktivna" : "povolena"}
                       onClick={() => prepniPovolenu(p, kluc)}
-                      title={`${akcie.find((a) => a.kluc === kluc)?.nazov ?? kluc} — ${povolene.length === 0 ? "povolené všetky" : povolene.includes(kluc) ? "povolená" : "zakázaná"}`}
+                      title={`${nazovAkcie(kluc)} — ${povolene.length === 0 ? "povolené všetky" : povolene.includes(kluc) ? "povolená" : "zakázaná"}`}
                     >
                       {ikona(kluc)}
                     </button>
@@ -226,7 +227,7 @@ export function Tvorca({ id }: { readonly id: string }) {
   const [k, setK] = useState<KartaNavrh | null>(null);
   const [v, setV] = useState(0);
   const [vyberObrazka, setVyberObrazka] = useState(false);
-  const [sprava, setSprava] = useState<{ druh: "ok" | "chyba"; text: string } | null>(null);
+  const [sprava, setSprava] = useState<SpravaHlasky | null>(null);
   const [uklada, setUklada] = useState(false);
   useTitulok(k === null ? "Tvorca" : `${k.nazov || "Nová karta"} — tvorca`);
 
@@ -362,7 +363,6 @@ export function Tvorca({ id }: { readonly id: string }) {
 
       <div className="tvorca">
         <div className="tvorca-formular">
-
           <section className="panel">
             <Pole label="Názov">
               <input value={k.nazov} onChange={(e) => nastav("nazov", e.target.value)} maxLength={80} autoFocus={nova} />

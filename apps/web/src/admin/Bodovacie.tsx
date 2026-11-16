@@ -10,11 +10,8 @@ import { nacitajObrazok, stvorec } from "../lib/obrazky.ts";
 import { useTitulok } from "../lib/router.tsx";
 import { Hlaska, Pole } from "../komponenty.tsx";
 import { nahrajMedia, nahrajNahlad, noveId, useAdmin } from "./stav.tsx";
-import { AdminHlava } from "./spolocne.tsx";
-
 import { BodovaciaSvg } from "../karta/BodovaciaSvg.tsx";
-
-export { BodovaciaSvg };
+import { AdminHlava } from "./spolocne.tsx";
 
 function Editor({ povodna, zavri }: { readonly povodna: BodovaciaKarta; readonly zavri: () => void }) {
   const { obsah, ulozBodovaciu, zmazBodovaciu } = useAdmin();

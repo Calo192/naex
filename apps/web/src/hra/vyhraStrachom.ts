@@ -4,7 +4,7 @@
 // „4/4“ pri troch červených stĺpčekoch mýlilo, preto ho text menuje zvlášť.
 
 import type { BitkaNaNastenke, ClientState, PlayerId, StavVyhier } from "@naex/core";
-import { KONSTANTY, pocet } from "@naex/core";
+import { KONSTANTY } from "@naex/core";
 import { t } from "../i18n/jazyk.tsx";
 
 /**

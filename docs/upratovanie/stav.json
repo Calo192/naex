@@ -10,7 +10,7 @@
     "apps/web/src (ostatné: lib, karta, dielna, playtest, achievementy, App, Layout)",
     "tools"
   ],
-  "dalsia": 4,
+  "dalsia": 5,
   "behy": [
     {
       "datum": "2026-10-26",
@@ -75,6 +75,17 @@
       "poznamka": "Prejdené: stranky — mŕtve CSS .nazor, Statistiky.tsx bez kópií formátovania z profil/typy.ts, tvar() do lib/jazyk.ts, datum()/kratkyDen() do lib/datum.ts, textChyby() v celom klientovi (55×), Glosar (typ medzi importmi, odsadenie), importy za kódom v Ucet a HernaPlocha; v hra nepoužité importy a premenné (tsc --noUnusedLocals). Nechané: exporty používané len vo vlastnom súbore (Seria, SERIE, rozsahOsi, slotyZEval, Cast), stav správy {druh, text} opakovaný v 5 súboroch admin/Ucet (patrí ku komponentu Hlaska — kandidát na spoločný typ), Statistiky.tsx a Profil.tsx kreslia súperov dvakrát inak (rozbaľovacie počítadlá vs. prehľad — zmena by bola vzhľadová), kedy() v SpatnaVazba/dielna/Reporty (rôzne texty), core pocet() vs. klientsky tvar() (iný výstup). Ucet.tsx, Roadmapa.tsx, Vyvoj.tsx a Heatmapa.tsx len zbežne. Nestabilný test packages/server/test/bot.test.ts (padá aj na čistom master). Ďalej packages/tvorba/src a apps/web/src/admin.",
       "zmenenychRiadkov": 423,
       "odtlacok": "2fccb7d87900186a056a3c94f7ee13a067a179b735928cba588ebeaa551137c3"
+    },
+    {
+      "datum": "2026-11-13",
+      "vetva": "upratovanie/2026-11-13",
+      "casti": [
+        "packages/tvorba/src a apps/web/src/admin",
+        "čerstvé súbory master: packages/core/src (engine, effects, hrany, hrozba) a apps/web/src/hra, karta, stranky/profil (nepoužité importy)"
+      ],
+      "poznamka": "Prejdené: celé packages/tvorba/src (čisté; texty.ts — rozbor akcií navyše a Preškolenia raz), apps/web/src/admin (nahradAleboPridaj v stav.tsx, PREDVOLENE_NASTAVENIA namiesto kópie čísel v Nastavenia.tsx, tvar() v Prehlad.tsx, BodovaciaSvg priamo z karta/ bez reexportu cez Bodovacie.tsx, nazovAkcie v StranaEditor), spoločný typ SpravaHlasky v komponenty.tsx (admin aj Ucet, PowerLevel); v jadre nepoužité importy, mŕtva pitieVPitke a parameter data vo vypiPoldeci; v klientovi nepoužité importy (tsc --noUnusedLocals). Admin.css bez mŕtvych tried. Nechané: bot.ts (otvorená vetva bot-agresor), nepoužitý parameter data vo verejnom vplyvyNaAkcie, nepoužité importy v testoch jadra (testy sa menia len pri presune), PT_NA_MM v Tlac.tsx (1/MM_NA_PT by pohol posledné desatinné miesta rozmerov tlače), Akcie.tsx „2 kariet“ a Navrhy.tsx „0 varianty“ (zmena textu — kandidát pre programátora), kľúč vlastnej akcie v Akcie.tsx (podobný slug(), ale iný výsledok), exporty používané len vo vlastnom súbore. Ďalej apps/web/src (ostatné: lib, karta, dielna, playtest, achievementy, App, Layout).",
+      "zmenenychRiadkov": 124,
+      "odtlacok": "e74e2f6714720d6b952a21395a3b89baa86d639b98deff3bad90705201ff45e0"
     }
   ]
 }

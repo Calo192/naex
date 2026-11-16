@@ -46,6 +46,11 @@ interface AdminKontext {
 
 const Kontext = createContext<AdminKontext | null>(null);
 
+/** Uložený záznam nahradí ten s rovnakým kľúčom, inak pribudne na koniec. */
+function nahradAleboPridaj<T>(zoznam: readonly T[], ulozeny: T, jeTen: (x: T) => boolean): T[] {
+  return zoznam.some(jeTen) ? zoznam.map((x) => (jeTen(x) ? ulozeny : x)) : [...zoznam, ulozeny];
+}
+
 export function AdminProvider({ children }: { readonly children: ReactNode }) {
   const [obsah, setObsah] = useState<AdminObsah | null>(null);
   const [chyba, setChyba] = useState<string | null>(null);
@@ -84,10 +89,7 @@ export function AdminProvider({ children }: { readonly children: ReactNode }) {
       obnovSady,
       ulozKartu: async (k) => {
         const ulozena = await api.put<KartaNavrh>(`/admin/karty/${k.id}`, k);
-        zmen((o) => ({
-          ...o,
-          karty: o.karty.some((x) => x.id === k.id) ? o.karty.map((x) => (x.id === k.id ? ulozena : x)) : [...o.karty, ulozena],
-        }));
+        zmen((o) => ({ ...o, karty: nahradAleboPridaj(o.karty, ulozena, (x) => x.id === k.id) }));
         return ulozena;
       },
       zmazKartu: async (id) => {
@@ -96,12 +98,7 @@ export function AdminProvider({ children }: { readonly children: ReactNode }) {
       },
       ulozAkciu: async (a) => {
         const ulozena = await api.put<AkciaDef>(`/admin/akcie/${encodeURIComponent(a.kluc)}`, a);
-        zmen((o) => ({
-          ...o,
-          akcie: (o.akcie.some((x) => x.kluc === a.kluc) ? o.akcie.map((x) => (x.kluc === a.kluc ? ulozena : x)) : [...o.akcie, ulozena]).sort(
-            (x, y) => x.poradie - y.poradie,
-          ),
-        }));
+        zmen((o) => ({ ...o, akcie: nahradAleboPridaj(o.akcie, ulozena, (x) => x.kluc === a.kluc).sort((x, y) => x.poradie - y.poradie) }));
       },
       zmazAkciu: async (kluc) => {
         await api.del(`/admin/akcie/${encodeURIComponent(kluc)}`);
@@ -121,10 +118,7 @@ export function AdminProvider({ children }: { readonly children: ReactNode }) {
       },
       ulozBodovaciu: async (b) => {
         const ulozena = await api.put<BodovaciaKarta>(`/admin/bodovacie/${b.id}`, b);
-        zmen((o) => ({
-          ...o,
-          bodovacie: o.bodovacie.some((x) => x.id === b.id) ? o.bodovacie.map((x) => (x.id === b.id ? ulozena : x)) : [...o.bodovacie, ulozena],
-        }));
+        zmen((o) => ({ ...o, bodovacie: nahradAleboPridaj(o.bodovacie, ulozena, (x) => x.id === b.id) }));
       },
       zmazBodovaciu: async (id) => {
         await api.del(`/admin/bodovacie/${id}`);

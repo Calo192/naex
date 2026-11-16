@@ -8,7 +8,7 @@
 
 import type { BitkaNaNastenke, ElderState, Favour, GameData, PlayerId, StavVyhier, Stupen, Vazen, ZmenaMarkera } from "@naex/core";
 import { spakov } from "../i18n/pocty.ts";
-import { KONSTANTY, NAZVY_ZON, favourStarsieho, blokReci, kradezZaZajatie, opponentOf, priazenHraca, priazenSila, spakyOdStarsieho as spakyOdStarsiehoJadra, spakyZaStupen, vydesil } from "@naex/core";
+import { KONSTANTY, NAZVY_ZON, favourStarsieho, blokReci, kradezZaZajatie, opponentOf, priazenHraca, priazenSila, spakyOdStarsieho as spakyOdStarsiehoJadra, vydesil } from "@naex/core";
 import { UCINOK_KRATKO, UCINOK_PRIAZNE } from "./Scorecard.tsx";
 import { rodStarsieho, slovoStupna, type Rod } from "./textyStarsich.ts";
 import { t, tZoServera } from "../i18n/jazyk.tsx";

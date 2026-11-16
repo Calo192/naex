@@ -11,10 +11,10 @@
 import { useMemo, useState, type CSSProperties, type ReactNode } from "react";
 import type { KartaNavrh, RozlozenieStrany } from "@naex/tvorba";
 import { PRESAH_MM, ZNACKA_MM, geometriaBodovacej, variantyKarty } from "@naex/tvorba";
+import { BodovaciaSvg } from "../karta/BodovaciaSvg.tsx";
 import { KartaLico } from "../karta/KartaLico.tsx";
 import { useTitulok } from "../lib/router.tsx";
 import { Hlaska } from "../komponenty.tsx";
-import { BodovaciaSvg } from "./Bodovacie.tsx";
 import { useAdmin } from "./stav.tsx";
 
 type Rezim = "subor" | "a4";

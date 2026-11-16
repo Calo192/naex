@@ -79,9 +79,11 @@ export function kontrolaTextov(karty: readonly KartaNavrh[], podklady: PodkladyT
     }
     for (const m of t.matchAll(/:\s*([\p{Ll}])/gu)) problem("upozornenie", `Za dvojbodkou malé písmeno „${m[1] ?? ""}…“ — veta začína veľkým.`);
     // Akcie navyše (frakcie 2026-11-08): „Spoločník: Tag {Akcia}.“ — preklep by hra pri načítaní odmietla.
-    for (const ch of rozborNavyse(t).chyby) problem("chyba", ch);
+    const navyse = rozborNavyse(t);
+    for (const ch of navyse.chyby) problem("chyba", ch);
     // Školitelia (2026-11-08): „Furt: Preškolenie {Robota}→{Pecka}.“ — preklep by hra pri načítaní odmietla.
-    for (const ch of rozborPreskoleniKarty(t).chyby) problem("chyba", ch);
+    const preskolenie = rozborPreskoleniKarty(t);
+    for (const ch of preskolenie.chyby) problem("chyba", ch);
     if (!/[.!?]\s*$/u.test(t)) problem("upozornenie", "Text nekončí bodkou.");
     if (/ {2,}/.test(t) || t !== t.trim()) problem("upozornenie", "Dvojitá medzera alebo medzera na začiatku či konci.");
 
@@ -96,9 +98,9 @@ export function kontrolaTextov(karty: readonly KartaNavrh[], podklady: PodkladyT
 
     // Efekt „Spúšťač: Tag {Akcia}.“ vyhodnocuje jadro zo samotného textu — zmena textu je zmena správania.
     // Preškolenie Školiteľa vyhodnocuje jadro tiež zo samotného textu.
-    const navyse = rozborNavyse(t).efekty.length > 0 || rozborPreskoleniKarty(t).efekty.length > 0;
+    const efektZTextu = navyse.efekty.length > 0 || preskolenie.efekty.length > 0;
     // Skryté akcie (2026-11-08): podmienku slovami („Bitka: Ak … {Pecka}“) vyhodnocuje jadro podľa karty.
-    if (rozborNavyse(t).efekty.some((e) => e.podmienka !== undefined) && !PODMIENKY_SLOVAMI.includes(k.id)) {
+    if (navyse.efekty.some((e) => e.podmienka !== undefined) && !PODMIENKY_SLOVAMI.includes(k.id)) {
       problem("chyba", "Podmienku slovami pred piktogramom akcie hra pri tejto karte nepozná — akcia navyše by nikdy neplatila, kým ju nenaprogramuje vývoj.");
     }
     const stav = REGISTER[k.id];
@@ -116,12 +118,12 @@ export function kontrolaTextov(karty: readonly KartaNavrh[], podklady: PodkladyT
       zverejneny !== undefined &&
       // Hrany Nástroja číta jadro z textu — ich zmena kód nepotrebuje; porovnáva sa zvyšok (Dedičstvo).
       textBezHran(zverejneny.efekt).trim() !== bezHran.trim() &&
-      !navyse &&
+      !efektZTextu &&
       (stav === "impl" || stav === "native")
     ) {
       problem("chyba", "Zmenený text efektu, ktorý hra vyhodnocuje kódom — správanie sa nezmení, kým sa neupraví jadro (effects.ts).");
     }
-    if (zverejneny === undefined && stav === undefined && !navyse && bezHran.trim() !== "") {
+    if (zverejneny === undefined && stav === undefined && !efektZTextu && bezHran.trim() !== "") {
       problem("upozornenie", "Nová karta s efektom — hra ho nevyhodnotí (manual), len pripomenie v logu, kým ho vývoj nenaprogramuje.");
     }
   }
