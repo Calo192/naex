@@ -1,0 +1,266 @@
+{
+  "davka": "20261116-160751",
+  "podklady": [
+    "navrhy-zjednodusenie-20261116.html",
+    "20261114-003916.html",
+    "strategia-20261114-003916.html",
+    "20261111-221937.html",
+    "20261109-115955.html",
+    "20261108-165501.html",
+    "vyucba-20261030-184959.html"
+  ],
+  "navrhy": [
+    {
+      "kluc": "priazen-bez-ucinku",
+      "nazov": "Tri priazne v polovici partií nerobia nič, a tak strach na takom staršom nič nestojí",
+      "kritickost": "vysoka",
+      "oblast": "pravidlá",
+      "problem": "Abstinent pôsobí len na Absťáky, Advokát len pri exekúcii a Kmotor len vtedy, keď má jeho držiteľ Dlhy. Keď súper Absťáky ani Dlhy nemá, tá priazeň mu nedá nič. Víťaz bitky preto kladie strach práve na takých starších a hráči to už majú ako spísanú skúsenosť.\n\nPravidlo „tvoj strach je súperova priazeň“ má dať cenu každému stupňu strachu. Pri troch z ôsmich priazní sa však v polovici partií neuplatní, takže hráč sa ich učí zbytočne a voľba „kam dám strach“ je pri nich zadarmo.",
+      "pricina": "PRAVIDLA §10 Priazeň, tabuľka: Abstinent „v bitke sa ti neráta toľko Absťákov“, Advokát „exekúcia ti odpočíta o toľko špakov menej“, Kmotor „bez Dlhu nič“. Robota mala ten istý problém a od v8.4 má náhradu „za Dlh, ktorý nemá čo spáliť, 1 špak“ (O5), preto dnes mŕtva nie je.\n\nAbsťák je zriedkavý: v logoch 12 partií AI z 6.–13. 11. (aj playtest štýlov) vznikol v 5 partiách, po 1–2 kartách. Scorecardy sa rozdávajú náhodne (§3), takže to, či má hráč „neškodných“ starších, rozhodne rozdanie v 1. kole.",
+      "prejav": "Skúsenosť spolocne-29 v zošite playtesterov radí pred rozdelením Nakladačky pozrieť priazeň a dať strach tam, kde súperovi nič nedá. V turnusoch 9. a 13. 11. ju potvrdili traja hráči (Jano, Vilo, Fero) a Eva hrala rovnako: kládla červené na Abstinenta, Advokáta a Kmotra, lebo Hela nemala Absťáky ani Dlhy. Šimon mal Abstinenta sily 3 pri nule Absťákov.\n\nRovnako to hlásili starší playtesty (1. 11. Šimon, 27. 10. Šimon, 28. 10. Vilo) a dva názory na webe (#178 Eva, #167 Šimon, 2 cigarety). Stratég (14. 11.): „neškodné dvojice zlacnia strach“. Je to priamo proti hlavnému cieľu, strategickosti, lebo cenu politiky z veľkej časti určí náhoda pri rozdaní.",
+      "dokazy": [
+        "playtest 20261109-115955-2, Eva Stratégová: „K2–K5 som dala strach na Autobusára (Abstinent), Hrobára (Advokát), Starostu (Kmotor) — súper bez Absťákov a Dlhov z toho nemal nič. Pravidlo „tvoj strach = súperova priazeň“ potom nič nestojí a voľba je triviálna.“",
+        "playtest 20261109-115955-1, Šimon Starešina: „Jano dal Nakladačku na Autobusára (Abstinent — mal som 0 Absťákov, priazeň 3 bola bezcenná)“; to isté v názore #167.",
+        "playtest 20261113-084431-1, Fero Šenkár, skúsenosť spolocne-29 potvrdená: „červená na Hrobárovi (Abstinent) Janovi nedala nič, nemal Absťáky“; potvrdili ju aj Jano (20261109-115955-1) a Vilo (20261109-115955-3).",
+        "stratég 20261114-003916: rozdanie scorecardov „neškodné dvojice zlacnia strach“; Šimon: „cena politiky je z veľkej časti vylosovaná v K1“."
+      ],
+      "moznosti": [
+        {
+          "kluc": "A",
+          "nazov": "Náhrada ako pri Robote: špaky, keď priazeň nemá čo urobiť",
+          "popis": "§10, tabuľka priazní, nový stĺpec „inak“ pri troch priazniach. Abstinent: keď v bitke nemáš ani jeden Absťák, dostaneš po bitke toľko špakov, aká je sila priazne (1 / 2 / 3). Advokát: keď v kroku exekúcie nemáš ani jeden Dlh (Exekútor k tebe nepríde), dostaneš špaky rovné sile. Keď Dlh máš, platí Advokát ako dnes, aj keby exekúcia zobrala menej špakov, ako je jeho sila. Kmotor: keď po bitke nemáš Dlh na presun, dostaneš špaky rovné sile (1 / 2 / 3, nie 2 / 3 / 4 Dlhy).\n\nDruhá hodnota na meranie: 1 špak bez ohľadu na silu. Ráta sa v kroku, v ktorom priazeň pôsobí (Abstinent krok 3, Advokát 4d, Kmotor 6c), so silou zo strachu v tej chvíli. Na nástenke pri bitke riadok „priazeň bez cieľa“. Ťahák, výučba a zošit (spolocne-29) sa upravia.",
+          "dopad": "Každý stupeň strachu bude zas niečo stáť a skúsenosť spolocne-29 stratí zmysel. Priazeň dostáva hráč, ktorého sa starší bojí menej, teda väčšinou ten, kto prehráva v strachu, takže náhrada pomáha dobiehať (odhad, treba zmerať). Pri sile 3 je to 3 špaky za bitku, rovnako ako Robota bez Dlhov. Cena: jedna veta pri každej z troch priazní. Stratég zatiaľ nič nemeral.",
+          "narocnost": "malá",
+          "odporucana": true
+        },
+        {
+          "kluc": "B",
+          "nazov": "Náhrada v cigaretách (Evin návrh)",
+          "popis": "To isté ako A, ale namiesto špakov dostane držiteľ po bitke 1 cigaretu za každý stupeň sily (sila 3 = 3 cigarety). Ide z banky, Obmedzenie ju neuberá (ako pri Fajčiarovi).",
+          "dopad": "Voľba strachu dostane cenu rovnako ako pri A. Cigarety sa však od v12.4 hromadia (výpalné z banky, otvorený návrh #56: pas, barter a poldeci), takže táto náhrada by hromadenie ešte zosilnila. Tri priazne by sa navyše správali ako Fajčiar.",
+          "narocnost": "malá",
+          "odporucana": false
+        },
+        {
+          "kluc": "C",
+          "nazov": "Tri podmienené priazne zrušiť",
+          "popis": "Abstinent, Advokát a Kmotor prestanú byť priazňami. Ich scorecardy sa nahradia druhými kópiami priazní, ktoré pôsobia vždy (Bitkár, Veriaci, Fajčiar; Robota a Ohováračka ostanú po jednej), takže bude 8 scorecardov s 5 druhmi priazne. Úprava scorecards.json, §10, ťaháka, výučby a bota (odhad hodnoty priazne).",
+          "dopad": "Hráč sa učí o tri priazne menej a žiadna priazeň nie je mŕtva. Cena: menej pestré rozdanie a Dlh ani Absťák už nemajú väzbu na starších (exekúcia ostane, len bez Advokáta). Toto je najväčší zásah do priazní od v9.",
+          "narocnost": "stredná",
+          "odporucana": false
+        }
+      ],
+      "odporucanie": "A, a hodnotu nechať najprv zmerať stratéga: náhrada podľa sily (1 / 2 / 3) proti 1 špaku a proti dnešku. Merať rebrík, priemerný rozdiel a podiel otočiek. Je to tá istá oprava, ktorá v8.4 zachránila Robotu, a pravidlo sa ňou nezväčší, len dostane druhú polovicu vety.\n\nSúvisí s otvoreným návrhom #47 (riadok „súper po rozdelení získa“ pri Nakladačke): ten mŕtvu priazeň len ukáže, A ju oživí, a oba sa dajú zaviesť spolu. Súvisí aj s bodom o Chuti a Absťáku: keby sa Absťák zmenil na počítadlo, Abstinent treba prepísať v tom istom kroku.",
+      "otazky": [
+        "Má priazeň, ktorá v bitke nemá čo urobiť, dať náhradu (A v špakoch, B v cigaretách), majú tri podmienené priazne zmiznúť (C), alebo to nechať tak?",
+        "Ak A: náhrada podľa sily (1 / 2 / 3 špaky), alebo vždy 1 špak? Alebo nechať rozhodnúť meranie stratéga?"
+      ],
+      "overenie": [
+        "V každej partii turnusu sa aspoň raz vyplatí náhrada z Abstinenta, Advokáta alebo Kmotra a na nástenke pri bitke je vidieť, za čo.",
+        "Žiadny hráč neodporučí ani nepoužije dávanie strachu tam, kde súperovi priazeň nič nedá (spolocne-29 v starej podobe), a nikto nenazve voľbu strachu „zadarmo“ alebo „triviálnou“."
+      ]
+    },
+    {
+      "kluc": "vynimky-na-spoji",
+      "nazov": "Výsledok spoja (Vzbura, Forsáž, Výtržník, zrušenie) hráč bez náhľadu nevyráta a karta mu ho neukáže",
+      "kritickost": "vysoka",
+      "oblast": "rozhranie",
+      "problem": "Na spoji sa môže stať šesť rôznych vecí a k tomu ide poradie desiatich krokov premien. Hráči ich nevedia predpovedať a spoliehajú sa na náhľad. Keď náhľad alebo karta na stole niečo zamlčí, bitka dopadne inak, než čakali.\n\nTieto pravidlá na rozdiel od ostatných bodov rozhodnutia dávajú: hráči Vzburu a Forsáž cielene používajú ako útok aj sabotáž. Mŕtve teda nie sú. Problém je hlavne v tom, ako ich hra ukazuje, a v jednej výnimke času (dve Forsáže), ktorá žiadne rozhodnutie nepridáva.",
+      "pricina": "PRAVIDLA §6 Modifikátory na spoji: tabuľka šiestich dvojíc (Posilnenie, Odpor, Vzbura, Vzbura len karty s Odporom ×2, Forsáž) a poradie „preškolenie → spoje → Vzbura → Výherné žreby → Forsáž zo spoja… → NA EX → Forsáž Energeťáka a hrana posilnenia Nástroja → Dedičstvo Pušky → efekty kariet → Výtržník“. Forsáž zo spoja pôsobí pred NA EX a NA EX ju zruší. Forsáž z Energeťáka pôsobí po NA EX a NA EX ju nezruší (v11.21). Akcia má tri stavy: aktívna, neaktívna a zrušená Odporom, ktorú NA EX nezdvojí.\n\nRozhranie: Výtržník v línii ukazuje pôvodné akcie namiesto Rán (13. 11. Fero, N4), značka „✗ zrušená Odporom“ sa ukáže aj pri zrušení NA EX (N5) a náhľad vyloženia nepočíta Nástup Vandala (N6). Konflikt a Podporu v náhľade opravuje hotový názor #182. V §6 navyše ostala zastaraná veta „Policajtka za ňu zadĺženie nedá“, hoci Policajtka je dnes Nepriateľ: Kriminál {Petelica}.",
+      "prejav": "V novembri to v kritériách Zrozumiteľnosť a Hĺbka vs. zložitosť spomenulo 9 zo 14 hodnotení (turnusy 8., 9. a 13. 11.): Vilo, Fero, Eva, Hela, Jano aj Šimon (9. 11.), Jano (8. 11.), Fero a Jano (13. 11.) a v reporte 11. 11. Eva („Vzbura × Posilnenie × NA EX × Telefón“) a Fero („podržanie × Energeťák ×4“). Hĺbka vs. zložitosť klesla z 7,0 (do 24. 10.) na 6,3 (november).\n\nV denníku Hely (13. 11.) sú však Vzbura z Odporu proti Posilneniu (Vandal 8 : 2) aj Vzbura ako sabotáž (Hasič k súperovmu Recidivistovi) plánované ťahy. Odstrániť ich by znamenalo zobrať rozhodnutie.",
+      "dokazy": [
+        "playtest 20261109-115955-3, Paragrafista Vilo: „Veľa výnimiek: Vzbura otáča aktivitu, Výtržník páruje s pôvodnými akciami, zrušený Odpor ďalej ruší… Náhľady klienta to väčšinou zachránia.“ (Zrozumiteľnosť 5)",
+        "playtest 20261109-115955-3, Fero Šenkár: „Bez náhľadov klienta by som Vzburu, Spoločník/Nepriateľ a Preškolenie nevyrátal.“; 20261109-115955-2, Eva: „rovnakú hĺbku by dalo menej výnimiek“.",
+        "playtest 20261113-084431-1, Fero Šenkár: „kombinácie (Posilnenie pod NA EX podrží, Veterán, Výtržník, Školiteľ na akciu navyše) sú na hranici zvládnuteľnosti“; N4: Stryná po zrážke ukazovala Poldeci, Pečeň, Pohoršenie a Poveru, hoci to boli 4 Rany.",
+        "playtest 20261113-084431-2, Hazardná Hela, denník: „Vandalov Odpor × Posilnenie = Vzbura len Vandala (×2) … 8 tuhých“, a „Hasič k Recidivistovi: moje Posilnenie × jej Odpor = Vzbura len Recidivistu“ (Vzbura je plánovaný ťah)."
+      ],
+      "moznosti": [
+        {
+          "kluc": "A",
+          "nazov": "Ťahák spojov v pravidlách aj pri stole",
+          "popis": "Do §6 jedna tabuľka „čo sa stane s akciou“: riadky = šesť dvojíc a NA EX, stĺpce = aktívna / neaktívna / zrušená / ×2 / dá sa naň NA EX. Do §7 jeden rozpísaný príklad súbehu NA EX + neaktívne Posilnenie + Energeťák (Ferov návrh z 11. 11.). Pri stole otáznik pri spoji, ktorý tú tabuľku ukáže. Opraviť vetu o Policajtke v §6. Hra sa nemení.",
+          "dopad": "Pomôže tomu, kto si chce pravidlo dohľadať. Neodstráni však prekvapenie počas hry, lebo hráč počas partie tabuľku nečíta pri každom spoji.",
+          "narocnost": "malá",
+          "odporucana": false
+        },
+        {
+          "kluc": "B",
+          "nazov": "Výsledný stav každej akcie vidno priamo na karte",
+          "popis": "Na stole aj v náhľade vyloženia a NA EX ukazuje každá akcia stav po všetkých premenách: aktívna s násobkom ×1 / ×2 / ×4, neaktívna, zrušená Odporom a zrušená NA EX (dve rôzne značky), Rana z Výtržníka namiesto pôvodnej akcie. Karta so Vzburou dostane odznak „Vzbura — NA EX nie“ a karta chránená pred NA EX (nespárovaný Odpor, Pes či Zviera na konci, Kostol) odznak štítu. Náhľad vyloženia ráta aj Nástup (Vandal) a premeny Školiteľov.\n\nTextový klient AI dostane to isté v riadku línie. Výpočet ostáva v jadre (ten istý, ktorý dnes robí vyhodnotenie), klient ho len kreslí. Súčasťou je aj možnosť A.",
+          "dopad": "Opraví tri hlásené chyby zobrazenia (N4, N5, N6) a hráč uvidí výsledok spoja skôr, než ho prekvapí bitka. Pravidlá a hra sa nemenia, takže sa nemení ani strategickosť. Cena: hustejšia karta na stole, preto treba návrh dizajnu (naex-dizajn), ako značky zmestiť na kartu.",
+          "narocnost": "stredná",
+          "odporucana": true
+        },
+        {
+          "kluc": "C",
+          "nazov": "B a jedna Forsáž namiesto dvoch",
+          "popis": "Ako B, a k tomu sa zjednotí čas Forsáže: Forsáž z hrany Energeťáka a hrana posilnenia Nástroja sa uplatnia v tom istom kroku ako Forsáž zo spoja, teda pred NA EX. Dedičstvo Energeťáka („Tvoje Posilnenie nemožno zrušiť NA EX“) ostáva. Z poradia v §6 tak zmizne jeden krok a z §6 a §12 dve vety. Vracia sa tým časť v11.21 (posilnenie Nástrojom po NA EX).",
+          "dopad": "Menej o jeden krok poradia a o jednu výnimku. Energeťák však stratí ×4 na akcie, ktoré aktivovalo NA EX, takže zoslabne. Stratég to nemeral a Michal v11.21 schválil zámerne.",
+          "narocnost": "stredná",
+          "odporucana": false
+        }
+      ],
+      "odporucanie": "B. Vzbura, Forsáž aj Odpor dávajú rozhodnutia, ktoré hráči plánujú, takže ich netreba rušiť, len ukázať. Tri chyby zobrazenia z 13. 11. sú presne tie miesta, kde hráča výsledok zaskočil.\n\nNajprv mock od dizajnu (značky na karte), potom implementácia. C len vtedy, ak chce Michal skrátiť poradie krokov. Predtým nech stratég spočíta, koľkokrát za partiu sa každá dvojica z tabuľky §6 a Forsáž Energeťáka vôbec vyskytnú.",
+      "otazky": [
+        "Ukazovať výsledný stav akcie (×2, zrušená, Vzbura, štít) priamo na karte (B)? Najprv mock od dizajnu?",
+        "Zjednotiť čas Forsáže z Energeťáka s Forsážou zo spoja (C), aj keď to vracia časť v11.21? Áno / nie / najprv zmerať."
+      ],
+      "overenie": [
+        "Žiadny hráč nenapíše, že ho výsledok spoja (Vzbura, Forsáž, Výtržník, zrušenie Odporom či NA EX) prekvapil oproti tomu, čo ukazovala karta alebo náhľad.",
+        "Výtržník po zrážke ukazuje na stole Rany a značky zrušenia Odporom a NA EX sa líšia (snímka stola a výpis klienta AI).",
+        "Aspoň jeden hráč v denníku plánuje Vzburu alebo Forsáž podľa značky na karte, nie podľa náhľadu po ťahu."
+      ]
+    },
+    {
+      "kluc": "kroky-bez-rozhodnutia",
+      "nazov": "Pitky a kroky, v ktorých hráč nemá čo rozhodnúť, naťahujú partiu",
+      "kritickost": "vysoka",
+      "oblast": "rozhranie",
+      "problem": "Kolo má 1 až 5 Pitiek a pred každou je Zhromaždenie. Hráč bez plného poldeci, s prázdnou rukou alebo pri rozhodnutom finále prejde Pitku aj Zhromaždenie len klikaním „hotovo“ a „pas“. Hra také ťahy odohrá sama len vtedy, keď je ťah jediný možný. Stačí však jedna cigareta na fajčenie a hráč musí klikať znova.\n\nTo isté platí pri natočení lokality, keď obe natočenia dávajú to isté. Výsledok partie to nemení, ale toto je presne to, čo podľa zadania „len zdržuje“.",
+      "pricina": "PRAVIDLA §7 Počet Pitiek: 1 + menší počet aktivovaných akcií lokality, najviac 5, aj vo finále. Pred každou Pitkou je Zhromaždenie. Jadro (engine.ts, dohrajNevyhnutne) odohrá samo len pas, „hotovo“ bez NA EX, „bez odpovede“ a koniec brania z ponuky, a to len vtedy, keď je to jediný legálny ťah. Fajčenie (§7) a barter sú legálne, kým má hráč cigarety, takže Pitka s nulou plných poldeci sa sama neskončí. Natočenie lokality (v11.11) je vždy ťah víťaza hádky.\n\nZnížiť počet Pitiek pevným stropom Michal zamietol (najviac 2 Pitky, #9 C), preto tu nie je.",
+      "prejav": "Tempo patrí dlhodobo k najnižším kritériám: 6,2 do 24. 10., 5,9 koncom októbra, 5,5 začiatkom novembra a 5,9 od 11. 11. Stratég (14. 11.) zaradil medzi zdanlivé voľby Pitky s nulou plných poldeci u všetkých šiestich hráčov (spolu asi 20 Pitiek), finále po dvoch pasoch pri rozdiele nad 20 (sekera 0 : 0, tri Pitky bez karty) a natočenie lokality vo finále, keď sú obe strany rovnaké. Partia 1 z 14. 11. trvala asi 73 minút a mala viac ako 300 ťahov.\n\nTo isté píšu hráči naprieč verziami: Jano (8. 11.), Fero (1. 11. a 27. 10.), Vilo (27. 10.), Hela (30. 10.) a Eva (30. 10., „až 5 Pitiek a 3 Zhromaždenia na kolo“).",
+      "dokazy": [
+        "stratég 20261114-003916, zdanlivé voľby: „Pitka s 0 plnými poldeci (Eva K1, Fero vo finále). Finále po pase pri rozdiele nad 20 (Eva aj Šimon pasovali, sekera 0 : 0). … Natočenie lokality vo finále (Hela: obe orientácie rovnaké).“",
+        "playtest 20261108-165501-1, Jano Bitkár, Tempo 5: „3 Pitky na kolo s 0 kartami v ruke = veľa pasov a čakania; finále bolo pre mňa rozhodnuté pred prvou kartou.“",
+        "playtest 20261101-084841-1, Fero Šenkár, Tempo 5: „3–4 Pitky (K4) s mojím pasom a pasujúcim súperom sú prázdne.“; 20261027-105422-1, Fero: „vo finále Pitka 2/3 a 3/3 už len skipujem“.",
+        "report 20261114-003916: P3 K1 Eva po poslednom poldeci prešla Pitku 1 bez jediného ťahu; prázdne finále P3 trvalo 3 Pitky bez karty."
+      ],
+      "moznosti": [
+        {
+          "kluc": "A",
+          "nazov": "Zámer „Končím kolo“",
+          "popis": "Nový príkaz hráča (zámer, server ho drží v stave, takže ho má web aj klient AI): „Do konca kola už nič.“ Kým platí, hra za hráča v každom ďalšom Zhromaždení kola pasuje (cigarety za plné poldeci dostane ako pri ručnom pase, §6) a každú ďalšiu Pitku ukončí „hotovo“ bez NA EX a bez fajčenia.\n\nZámer sa sám zruší, keď súper dá NA EX na hráčovu kartu a hráč má plný poldeci na odpoveď (odpoveď sa vždy pýta), a hráč ho môže kedykoľvek zrušiť tlačidlom „Ešte hrám“. Súper vidí len to isté ako pri ručnom pase a „hotovo“ (pravidlo 2). Pravidlá sa nemenia.",
+          "dopad": "Hráč, ktorý kolo vzdal alebo nemá čo hrať, ho odklikne jedným ťahom namiesto 4–8 (odhad). Výsledok partie sa nemení. Cena: jedno tlačidlo na stole a jedna podmienka v jadre.",
+          "narocnost": "malá",
+          "odporucana": true
+        },
+        {
+          "kluc": "B",
+          "nazov": "Viac ťahov bez voľby odohrá hra sama",
+          "popis": "Doplniť do nevyhnutných ťahov v jadre: (1) natočenie lokality, keď obe natočenia dávajú pri oboch krajoch tie isté hrany; (2) Víziu po poslednej bitke hry, keď vrchná karta nie je Cirhóza („do ruky“ a „spáliť“ vtedy dávajú to isté); (3) finále, v ktorom obaja v Zhromaždení pasovali a v línii nie je ani jedna karta: zvyšné Pitky sa nehrajú, lebo nie je na čo dať NA EX ani čo vyhodnotiť, a bitka je sekera ako dnes. Každý takýto krok hra zapíše do logu („obe natočenia sú rovnaké“).",
+          "dopad": "Zmiznú tri zdanlivé voľby, ktoré našiel stratég. Bod 3 je drobná zmena pravidla (vo finále s prázdnou líniou sa už nedá fajčiť ani barterovať), všetko ostatné je len automatika.",
+          "narocnost": "malá",
+          "odporucana": false
+        },
+        {
+          "kluc": "C",
+          "nazov": "Pitka bez plného poldeci sa vyhodnotí hneď",
+          "popis": "§7 doplniť: „Keď po Zhromaždení nemá plný poldeci ani jeden hráč, Pitka sa vyhodnotí hneď bez ťahov (kroky 2–9); fajčiť ani barterovať sa v nej nedá.“ Bez plného poldeci sa nedá dať NA EX ani odpovedať, takže zmiznú len fajčenie a barter v tej Pitke.",
+          "dopad": "Odstráni najčastejšie prázdne Pitky (asi 20 v turnuse 14. 11.). Cena: hráč stratí fajčenie (karta, nerest pre Chuť) a barter v tej Pitke. Barter pritom dáva plný poldeci, s ktorým by NA EX dať mohol, takže to mení ekonomiku. Treba zmerať.",
+          "narocnost": "stredná",
+          "odporucana": false
+        }
+      ],
+      "odporucanie": "A spolu s bodmi (1) a (2) z B, lebo ani jedno nemení pravidlá. Bod (3) z B a možnosť C mení pravidlá. Pred nimi nech stratég zmeria, koľko ťahov za partiu ubudne a či sa zmení rebrík a podiel otočiek (barter a fajčenie v prázdnych Pitkách).",
+      "otazky": [
+        "Zaviesť zámer „Končím kolo“ (A)?",
+        "Má hra sama odohrať natočenie lokality pri rovnakých hranách a Víziu po poslednej bitke (B 1–2)? A finále s prázdnou líniou po dvoch pasoch ukončiť bez Pitiek (B 3)?",
+        "Dať stratégovi zmerať C (Pitka bez plného poldeci bez fajčenia a barteru)?"
+      ],
+      "overenie": [
+        "Aspoň jeden hráč v turnuse použije „Končím kolo“ a nikto nenahlási, že tým prišiel o odpoveď na NA EX.",
+        "Žiadny hráč neuvedie prázdne Pitky ani preklikávanie ako dôvod známky Tempa a priemer Tempa turnusu je aspoň 6,0."
+      ]
+    },
+    {
+      "kluc": "pravidla-pre-jednu-kartu",
+      "nazov": "Pravidlá, ktoré platia pre jednu kartu alebo pre žiadnu: zadĺženie, priznanie s kartou, „priznaný“ Dlh",
+      "kritickost": "stredna",
+      "oblast": "pravidlá",
+      "problem": "V pravidlách a v jadre ostali mechaniky, ktoré sa týkajú jedinej karty alebo už žiadnej. Najväčšia je zadĺženie: druhé počítadlo dlhu s vlastným prahom, ktoré existuje len kvôli Výhernému automatu, a ten v ponuke nikto neberie. K tomu patrí „priznanie dá kartu“ (nespustí ho žiadna karta v sade), slovo „priznaný Dlh“ (nepriznaný Dlh od v8.2 neexistuje), prázdne kroky bitky 0 a 5b a vety o starej sade.\n\nHráči na ne narážajú, pýtajú sa na ne a hra im za to nič nedáva.",
+      "pricina": "PRAVIDLA §8 Hazard a Dlh: „Výherný automat v Dedičstve je jediná výnimka: tvoj prah Dlhu je 2, takže Hazard a efekty kariet plnia zadĺženie … zvyšok ostáva na účte do ďalšej Pitky aj kola.“ V kóde je počítadlo zadlzenie v stave každého hráča a 29 miest v engine.ts.\n\n§11 Priznanie: tabuľka „Kedy priznanie dá kartu“ (všetky riadky nie) a veta „Jadro dá pri priznaní kartu za každú inú kartu s tagom Kliatba — v sade taká karta nie je“. V jadre je vetva, ktorá pri priznaní inej kliatby ako Cirhóza dobere kartu, a mapa rozhodcu ešte uvádza „Za priznanú Milujúcu manželku si hráč hneď dobere kartu“.\n\n§9, tabuľka krokov: krok 0 („od 2026-11-08 žiadne“) a 5b Veštica („len stará sada“). §6: „Odpor Praudovravca ako Posilnenie (Dezinformátor, v7) má len stará sada“ a „Policajtka za ňu zadĺženie nedá“. Slovo „priznané Dlhy“ je v §9–§11 aj v textoch klienta.",
+      "prejav": "Report 9. 11.: päť zo šiestich hráčov našlo zvyšky starších pravidiel (čísla sád, slovník, Veriaci, Vychovávateľka, Starosta v §5) a traja ťahák „Kočovník (len stará sada)“. Zastaraný text priznania („hneď si dobereš kartu (za Cirhózu nie; Dlh sa prizná sám…)“) hlásili štyria: Ekonóm Ďuro a Klebetná Mara (playtest štýlov 6. 11.), Šimon (9. 11.) a Eva (#179). Text klienta je už opravený, pravidlo a kód ostali.\n\nVýherný automat nikto nechcel: Jano, Hela, Eva a Šimon (14. 11.), predtým 12., 16., 21. a 22. 10. Nováčička Katka vo výučbe (24. 10.) uviedla zadĺženie medzi pojmami, ktoré sa „menia na obrazovke bez vysvetlenia“. Zrozumiteľnosť nebola nikdy nad 5,6 (od 11. 11. 5,4).",
+      "dokazy": [
+        "report 20261109-115955: „Päť hráčov našlo zvyšky starších pravidiel (v48/v53/v55, slovník, Veriaci, Vychovávateľka, Starosta v §5, ťahák Kočovník)“; Zrozumiteľnosť 5,2.",
+        "playtest štýlov 20261106-173331-1 (Ekonóm Ďuro aj Klebetná Mara) a 20261109-115955-1, Šimon Starešina: text priznania „a hneď si dobereš kartu (za Cirhózu nie; Dlh sa prizná sám, keď si ho dobereš)“ — „zastarané, mätie“; to isté web #179 (Eva).",
+        "report 20261114-003916: „Krištáľová guľa, Jogurt a Výherný automat nikto nechcel (Jano, Hela, Eva, Šimon)“; Výherný automat ako „navyše“ aj 20261012-173832, 20261016-134912, 20261021-143600-1, 20261022-065959-1.",
+        "výučba 20261024-122133, Katka: „Vedľajšie systémy sa menia na obrazovke bez vysvetlenia (Zadĺženie, Dlh, Absťák, Patronát, Povera).“"
+      ],
+      "moznosti": [
+        {
+          "kluc": "A",
+          "nazov": "Upratať dokument a mŕtvu vetvu kódu",
+          "popis": "Hra sa nemení. §11: tabuľku „Kedy priznanie dá kartu“ a vetu o jadre vymazať a priznanie opísať len ako priznanie Cirhózy. V jadre odstrániť vetvu, ktorá pri priznaní dobere kartu (priznať smie len Cirhózu), a opraviť mapu rozhodcu. „Priznaný Dlh“ / „priznané Dlhy“ všade zmeniť na „Dlh“ / „Dlhy“ (pravidlá, ťahák, texty stola a klienta AI).\n\nZ tabuľky krokov bitky vypustiť kroky 0 a 5b. Vety o starej sade (Praudovravec Dezinformátor, Veštica výmena, Kočovník v ťaháku) presunúť do pravidla-historia.md. Opraviť vetu o Policajtke v §6.",
+          "dopad": "O jeden pojem a o dve tabuľky menej a bez rizika. Odtlačok hry (odtlacok.ts) sa nezmení, lebo mŕtva vetva sa nikdy nespustí.",
+          "narocnost": "malá",
+          "odporucana": true
+        },
+        {
+          "kluc": "B",
+          "nazov": "A a Výherný automat bez zadĺženia",
+          "popis": "Ako A a k tomu nový text automatu v tvorcovi (rozpracovaný stav pre Zrejúcu): „Dedičstvo: Z Hazardov dostaneš v každej Pitke len polovicu Dlhov (nadol).“ Napríklad 5 Hazardov dá 2 Dlhy, zvyšok prepadne (dnes ostáva na účte do ďalšej Pitky). „Pitka: {Dlh}“ a obe hrany ostanú.\n\nPočítadlo zadĺženie a prah Dlhu zmiznú z pravidiel (§8 bude: každý aktívny Hazard = 1 Dlh), zo stavu hráča, z výhľadov a z rekapitulácie.",
+          "dopad": "Hráč nemusí sledovať druhé počítadlo dlhu cez Pitky a kolá. Automat sa zmení nanajvýš o 1 Dlh za Pitku (zvyšok prepadne namiesto prenosu). Cena: zmena karty a jadra, testy prahu Dlhu, výučba.",
+          "narocnost": "stredná",
+          "odporucana": false
+        },
+        {
+          "kluc": "C",
+          "nazov": "A a Výherný automat zo sady von",
+          "popis": "Ako A a Výherný automat sa vyradí z rozpracovanej sady (ostane 21 Nástrojov). Zadĺženie a prah Dlhu zmiznú ako pri B.",
+          "dopad": "Najväčšie zjednodušenie: o kartu a o počítadlo menej. Cena: hráč na Hazardy (Hazardná Hela) stratí jednu kartu a Vymáhač s Herňou jeden zdroj Dlhov.",
+          "narocnost": "malá",
+          "odporucana": false
+        }
+      ],
+      "odporucanie": "A hneď, lebo nemení hru, len odoberá to, čo sa nikdy nestane. Výherný automat podľa toho, či ho Michal chce v sade: ak áno, tak B v najbližšej dávke kariet pre Zrejúcu, ak nie, tak C. Merať netreba, stačí odtlačok hry pri A.",
+      "otazky": [
+        "Upratať pravidlá, ťahák a mŕtvu vetvu kódu podľa A?",
+        "Výherný automat: nový text bez zadĺženia (B), von zo sady (C), alebo nechať tak?"
+      ],
+      "overenie": [
+        "Žiadny hráč nenahlási nezrovnalosť ani otázku k priznaniu, k „priznanému“ Dlhu, k zadĺženiu, ku kroku 5b ani k starej sade.",
+        "V pravidlách, ťaháku ani vo výpise klienta sa nevyskytuje „priznaný Dlh“ ani „zadĺženie“ (pri B a C)."
+      ]
+    },
+    {
+      "kluc": "chut-a-abstak",
+      "nazov": "Chuť núti k ťahom len kvôli počítadlu a Absťák je karta, ktorá skoro nevznikne",
+      "kritickost": "stredna",
+      "oblast": "pravidlá",
+      "problem": "Chuť je verejná latka nerestí. Kto ju v kole nedosiahne, dostane kartu Absťák. Hráči ju chápu ako plánovanie a tematicky ju chvália, ale v praxi robia ťahy len kvôli počítadlu: fajčia, aby mali nerest, alebo dajú zlé NA EX. Dopad NA EX na Chuť v ďalšom kole navyše uvidia až v ďalšom kole.\n\nSamotný Absťák vznikne zriedka a je to karta s tromi účinkami (−1 tuhé za kartu kdekoľvek v balíčku, remíza v tuhom, návrat do odhadzovacieho balíčka). Hráči poznajú len prvý a nováčikovia vo výučbe nepochopili ani ten.",
+      "pricina": "PRAVIDLA §8 Nerest, Chuť a Absťák: NA EX = 2 neresti, Chuť = väčšie z (Chuť, neresti kola) − 1, Absťák ide ako karta do odhadzovacieho balíčka a spáli ho len Vízia. K tomu §9.4 (remíza) a §10 Abstinent. Výhľad v klientovi ukazuje len stav kola („Chuť 3 · dnes 1 · chýba 2“), nie to, akú Chuť bude mať hráč po NA EX v ďalšom kole. Vypiť len kvôli nerestiam uzavrela v12.2 („na konci ťahu ani navyše nie“).",
+      "prejav": "Ťahy len kvôli Chuti hlásia Fero (9. 11.: „K2/K3 som fajčil len kvôli Chuti“), Vilo (9. 11.: „v 3. kole som kvôli Chuti 3 musel dať NA EX na súperovho Pijana. Dostal som Cirhózu“), Fero (8. 11.: „musel vyfajčiť 1 + 2 cigarety len kvôli Chuti“) a Fero (13. 11.: „skrytá daň za NA EX“, Chuť 0 → 2 → 1 → 4 → 7). Jano (8. 11.) súvis dvoch NA EX, Chuti a limitu „pochopil až v K2“ a chyba ho stála 2–3 kolá. Hela (9. 11.) navrhla prognózu Chuti.\n\nKladne ju hodnotí Fero (9. 11.: „plánovanie Chuti dopredu je dobrý ekonomický prvok“) a Vilo (téma 8). Absťák vznikol v 5 z 12 partií AI (6.–13. 11.), po 1–2 kartách. Vo výučbe ho 24. 10. nepochopili všetci traja nováčikovia a z prvej časti výučby bol vyradený.",
+      "dokazy": [
+        "playtest 20261109-115955-3, Paragrafista Vilo: „v 3. kole som kvôli Chuti 3 musel dať NA EX na súperovho Pijana. Dostal som Cirhózu a limit v ďalšom kole −1“.",
+        "playtest 20261113-084431-1, Fero Šenkár: „Chuť je skrytá daň za NA EX… Dve NA EX v K3 ma v K4 nútili k 4 nerestiam, inak Absťák.“",
+        "playtest 20261108-165501-1, Fero Šenkár: „musel som vyfajčiť 1 + 2 cigarety len kvôli Chuti. Absťák však stojí len −1 tuhé za bitku, takže v posledných kolách sa Chuť dá ignorovať.“",
+        "playtest 20261109-115955-2, Hazardná Hela: „Pri Chuti ukazovať aj prognózu ‚po tomto NA EX bude Chuť v ďalšom kole X‘ — hazardér si dlh na budúce kolá nevšimne.“"
+      ],
+      "moznosti": [
+        {
+          "kluc": "A",
+          "nazov": "Výhľad Chuti pri NA EX, odpovedi a fajčení",
+          "popis": "Rozhranie, pravidlá bez zmeny. V náhľade NA EX, odpovede a fajčenia pribudne riadok „Chuť po kole: X → v ďalšom kole potrebuješ Y nerestí, inak Absťák“. Pred poslednou Pitkou kola sa hráčovi zobrazí upozornenie „do Chuti ti chýba N nerestí“ (dnes je to len v riadku stavu). Výpočet ostáva v jadre (stavZavislosti), klient ho len kreslí.",
+          "dopad": "Hráč uvidí cenu NA EX na dve kolá dopredu v tom istom okamihu, keď sa rozhoduje. Chuť ostane rozhodnutím, ktoré hráči chvália, len prestane byť skrytá. Fajčenie len kvôli Chuti to neodstráni, ale bude to vedomá voľba.",
+          "narocnost": "malá",
+          "odporucana": true
+        },
+        {
+          "kluc": "B",
+          "nazov": "Absťák ako počítadlo (ako Dlh od v8.2)",
+          "popis": "Absťák prestane byť kartou a bude verejné počítadlo hráča. V bitke −1 tuhé za každý (ako dnes), pri remíze v tuhom prehráva, kto ich má viac (ako dnes), a Abstinent ich neráta (ako dnes). Namiesto spálenia Víziou: kto v kole skonzumuje aspoň toľko nerestí, koľko je jeho Chuť, tomu na konci kola ubudne 1 Absťák. Kliatba v balíčku a v ruke zmizne (§8, §9.7 krok 7b, §11).",
+          "dopad": "O jednu kartu s tromi pravidlami menej a ruka sa nezanáša. Cena: Absťák stratí účinok „ťaháš ho namiesto užitočnej karty“, takže zoslabne, a pribudne jedna veta o úbytku. Stratég by mal zmerať, či ho niekto ešte dostáva a či Chuť ostane tlakom.",
+          "narocnost": "stredná",
+          "odporucana": false
+        },
+        {
+          "kluc": "C",
+          "nazov": "NA EX je 1 nerest (Ferov návrh)",
+          "popis": "V tabuľke nerestí §8 bude NA EX za 1 nerest (dnes 2). Odpoveď, Vypiť a fajčenie ostávajú.",
+          "dopad": "Po agresívnom kole Chuť rastie pomalšie a NA EX „len kvôli Chuti“ ubudne. Cena: NA EX zlacnie a Absťák bude ešte zriedkavejší (Abstinent ešte mŕtvejší). Cenu a silu NA EX však rieši súbežne Vymyselník, preto to tu neodporúčam.",
+          "narocnost": "malá",
+          "odporucana": false
+        }
+      ],
+      "odporucanie": "A, lebo pravidlo dáva rozhodnutia a chýba mu len výhľad v okamihu voľby. B dať stratégovi zmerať spolu s bodom o priazniach (Abstinent závisí od Absťákov). Ak B zabere, oba body sa zjednodušia naraz. C nie, kým nie je jasné, kam pôjde cena NA EX.",
+      "otazky": [
+        "Pridať výhľad Chuti do náhľadu NA EX, odpovede a fajčenia (A)?",
+        "Dať stratégovi zmerať Absťák ako počítadlo (B)?"
+      ],
+      "overenie": [
+        "Žiadny hráč nenapíše, že ho Chuť alebo Absťák v nasledujúcom kole prekvapili.",
+        "Aspoň jeden hráč pred NA EX v denníku uvedie, akú Chuť bude mať v ďalšom kole, a podľa toho ťah urobí alebo neurobí."
+      ]
+    }
+  ]
+}
