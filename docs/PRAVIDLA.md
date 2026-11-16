@@ -51,7 +51,7 @@ sekcie R1, E2, V1, N1; staré znenia v `docs/pravidla-historia.md`, sekcia v12.5
   ju zdvojí), Obmedzenie ju neuberá — dá ju motor rovno ako jeho Dlh. (15) Policajtka a Podvodník: „získa Dlh“
   namiesto „zadĺženie“, 1 : 1. (16) Abstinent platí pre prah Cirhózy v každom vyhodnotení (Pitka aj náhľady),
   priazeň sa ráta zo strachov v tej chvíli. (17) Záznamy starších bitiek s remízou podľa Absťákov stôl ukazuje ďalej.
-- **Výučba Prvá hra** sa po tejto dávke prestaví až pri vypálení (testy výučby sú dovtedy vypnuté).
+- **Výučba Prvá hra** je prestavená na v12.5 (docs/napady/vyucba-v12-5.html: reči Štamgasta pred tvojou Nakladačkou, koniec 44 : 14); testy výučby znova bežia.
 - **Výklady Developera, Michal zatiaľ nepotvrdil:**
   (1) **Dopiť stojí presne 1 plný poldeci a 1 nerest, bez pečene** — znenie návrhu; Michal sa k otázke „aj +1 pečeň ako pri
   odpovedi?“ nevyjadril. (2) **„Svoja karta“** = karta, ktorú hráč zahral (jeho partia), na ktoromkoľvek kraji línie, aj

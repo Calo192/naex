@@ -747,6 +747,30 @@
       "melichar": "Strach pri staršom má stupne: sivá 0, žltá 1, oranžová 2, červená 3. Strach neklesá a platí ti po každej vyhratej bitke: žltá 1 špak, oranžová 3, červená 6. Ja sa s nimi momentálne nestretávam, ale to sem nepatrí."
     }
   },
+  "i-bodovanie2": {
+    "melichar": "De az elöljárók fizetnek neked, az Elpáholás előtti állás szerint: a Plébános 3-at a narancs félelemért. A Törzsvendégnek nem volt pletykája, az elöljáróktól nem kapott semmit.",
+    "sk": {
+      "melichar": "Ale starší ti platia, podľa stavu pred Nakladačkou: Farár 3 za oranžový strach. Štamgast reči nemal, od starších nedostal nič."
+    }
+  },
+  "i-body": {
+    "melichar": "A verekedés után jött a végrehajtó is: akinek Adóssága van, annak elégeti az Adósságai felét, felfelé kerekítve, és ugyanannyi csikket. A Törzsvendégnek kettő volt: egy elégett, egy maradt. Csikket viszont nem veszített – hogy miért, mindjárt.",
+    "sk": {
+      "melichar": "Po bitke prišiel aj exekútor: kto má Dlh, tomu spáli polovicu Dlhov, zaokrúhlene nahor, a rovnako veľa špakov. Štamgast mal dva: jeden mu zhorel, jeden mu ostal. Špak ale nestratil – prečo, hneď."
+    }
+  },
+  "i-priazen": {
+    "melichar": "Aki tőled fél, annak segít. A Plébános 2-vel jobban félt tőled, mint a Törzsvendégtől, és ez a különbség a Törzsvendég kegye. A Plébánosé az Ügyvéd: a végrehajtó két csikkel kevesebbet vitt el tőle, vagyis semmit.",
+    "sk": {
+      "melichar": "Kto sa bojí teba, pomáha jemu. Farár sa ťa bál o 2 viac ako Štamgasta, a ten rozdiel je Štamgastova priazeň. Farárova je Advokát: exekútor mu vzal o dva špaky menej, teda nič."
+    }
+  },
+  "k-reci-bot": {
+    "melichar": "A veszekedést a Törzsvendég nyerte, és pletykára költötte – rágalomra. A pletyka fokokat foglal el a te hőmérődön, és ugyanannyiba kerül, mint a félelem: a Kocsmárosnénál és a Buszsofőrnél is elfoglalta a sárgádat, 1 + 1-ért. Az a fok most az övé: a sárgáért mindkettő minden verekedés után 1-et ad neki, akár nyer, akár nem, neked pedig semmit.",
+    "sk": {
+      "melichar": "Hádku vyhral Štamgast a minul ju na reči – ohováranie. Reči obsadzujú stupne na tvojom teplomere a stoja rovnako ako strach: pri Krčmárke aj pri Autobusárovi obsadil tvoju žltú, za 1 + 1. Ten stupeň je teraz jeho: za žltú mu každý z nich dá po každej bitke 1, nech vyhrá, či nie, a tebe nedajú nič."
+    }
+  },
   "k-nakladacka2": {
     "melichar": "Győzelem 5-tel. A különbséget Elpáholásnak hívják, és a félelemre költöd, mint múltkor. A Plébános narancson fél tőled, és a pirosig pont 3 hiányzik: emeld a félelmét pirosra. A maradék 2-t add a Kocsmárosnénak és a Buszsofőrnek, mindkettőnek sárgára – mindent el kell osztani, amit lehet –, és hagyd jóvá.",
     "sk": {
@@ -771,30 +795,6 @@
       "vysvetlenie.1": "Áno. Strach ti platí, ale súperovi dáva priazeň. Nič nie je zadarmo.",
       "moznost.2": "Porazený, na svoje priazne.",
       "vysvetlenie.2": "Porazený nedelí nič. Priazeň mu dá tvoj strach sám."
-    }
-  },
-  "i-bodovanie2": {
-    "melichar": "De az elöljárók fizetnek neked, az Elpáholás előtti állás szerint: a Plébános 3-at a narancs félelemért. A Törzsvendégnek nem volt pletykája, az elöljáróktól nem kapott semmit.",
-    "sk": {
-      "melichar": "Ale starší ti platia, podľa stavu pred Nakladačkou: Farár 3 za oranžový strach. Štamgast reči nemal, od starších nedostal nič."
-    }
-  },
-  "i-body": {
-    "melichar": "A verekedés után jött a végrehajtó is: akinek Adóssága van, annak elégeti az Adósságai felét, felfelé kerekítve, és ugyanannyi csikket. A Törzsvendégnek kettő volt: egy elégett, egy maradt. Csikket viszont nem veszített – hogy miért, mindjárt.",
-    "sk": {
-      "melichar": "Po bitke prišiel aj exekútor: kto má Dlh, tomu spáli polovicu Dlhov, zaokrúhlene nahor, a rovnako veľa špakov. Štamgast mal dva: jeden mu zhorel, jeden mu ostal. Špak ale nestratil – prečo, hneď."
-    }
-  },
-  "i-priazen": {
-    "melichar": "Aki tőled fél, annak segít. A Plébános 2-vel jobban félt tőled, mint a Törzsvendégtől, és ez a különbség a Törzsvendég kegye. A Plébánosé az Ügyvéd: a végrehajtó két csikkel kevesebbet vitt el tőle, vagyis semmit.",
-    "sk": {
-      "melichar": "Kto sa bojí teba, pomáha jemu. Farár sa ťa bál o 2 viac ako Štamgasta, a ten rozdiel je Štamgastova priazeň. Farárova je Advokát: exekútor mu vzal o dva špaky menej, teda nič."
-    }
-  },
-  "k-reci-bot": {
-    "melichar": "A veszekedést a Törzsvendég nyerte, és pletykára költötte – rágalomra. A pletyka fokokat foglal el a te hőmérődön, és ugyanannyiba kerül, mint a félelem: a Kocsmárosnénál és a Buszsofőrnél is elfoglalta a sárgádat, 1 + 1-ért. Az a fok most az övé: a sárgáért mindkettő minden verekedés után 1-et ad neki, akár nyer, akár nem, neked pedig semmit.",
-    "sk": {
-      "melichar": "Hádku vyhral Štamgast a minul ju na reči – ohováranie. Reči obsadzujú stupne na tvojom teplomere a stoja rovnako ako strach: pri Krčmárke aj pri Autobusárovi obsadil tvoju žltú, za 1 + 1. Ten stupeň je teraz jeho: za žltú mu každý z nich dá po každej bitke 1, nech vyhrá, či nie, a tebe nedajú nič."
     }
   },
   "q-makke": {
@@ -1059,12 +1059,6 @@
       "vysvetlenie.2": "Exekútor príde vždy, keď máš aspoň jeden Dlh. Neskrývaj sa, nájde ťa."
     }
   },
-  "k-nakladacka3": {
-    "melichar": "A 7-es Elpáholást én osztottam el helyetted, hogy ne üljünk itt reggelig. A Plébános az előző kör óta piroson fél tőled, ezért 5-ért elfogtam – ő a foglyod, és a pincében ül. A Törzsvendégnek nála nem volt pletykája, így nem volt mit adnia neked; a pletykája a Kocsmárosnénál és a Buszsofőrnél az elvesztett veszekedés után alulról csökkent és megszűnt. A Plébános képességét – levenni az ellenfél egyik NA EX-ét egy kártyáról – játékonként egyszer használhatod, amikor akarod. A maradék 2: a Buszsofőr sárgáról narancsra.",
-    "sk": {
-      "melichar": "Nakladačku 7 som ti rozdelil ja, nech tu nesedíme do rána. Farár sa ťa bojí na červenej od minulého kola, tak som ho za 5 zajal – je tvoj väzeň a sedí v pivnici. Reči pri ňom Štamgast nemal, tak ti nemal čo dať; jeho reči pri Krčmárke a Autobusárovi po prehratej hádke klesli zospodu a zanikli. Farárovu schopnosť – zhodiť jedno súperovo NA EX z karty – smieš raz za hru použiť, kedy chceš. Zvyšné 2: Autobusár zo žltej na oranžovú."
-    }
-  },
   "k-reci3": {
     "melichar": "A 3-as veszekedést te költöd el, a Törzsvendég hőmérőjére. Ő sehol sem fél, ezért a pletyka alulról megy: az Állatorvosnál sárga és narancs, 1 + 2-ért. Az Állatorvos aztán 3-at ad neked, akár nyersz, akár vesztesz, amíg el nem veszíted a veszekedést. Kattints rá, és hagyd jóvá.",
     "zle.1": "A Buszsofőr már narancson fél tőled, pletykálj máshol. Állatorvos, sárga és narancs, 3-ért.",
@@ -1073,6 +1067,12 @@
       "melichar": "Hádku 3 minieš ty, na Štamgastov teplomer. Ten sa nebojí nikde, tak reči idú odspodu: Veterinárovi žltú a oranžovú, za 1 + 2. Veterinár ti potom dá 3, vyhráš či prehráš, kým neprehráš hádku. Klikni na neho a potvrď.",
       "zle.1": "Autobusár sa ťa už bojí na oranžovej, ohováraj inde. Veterinár, žltá a oranžová, za 3.",
       "inak": "Veterinár, reči na žltú a oranžovú, za 1 + 2."
+    }
+  },
+  "k-nakladacka3": {
+    "melichar": "A 7-es Elpáholást én osztottam el helyetted, hogy ne üljünk itt reggelig. A Plébános az előző kör óta piroson fél tőled, ezért 5-ért elfogtam – ő a foglyod, és a pincében ül. A Törzsvendégnek nála nem volt pletykája, így nem volt mit adnia neked; a pletykája a Kocsmárosnénál és a Buszsofőrnél az elvesztett veszekedés után alulról csökkent és megszűnt. A Plébános képességét – levenni az ellenfél egyik NA EX-ét egy kártyáról – játékonként egyszer használhatod, amikor akarod. A maradék 2: a Buszsofőr sárgáról narancsra.",
+    "sk": {
+      "melichar": "Nakladačku 7 som ti rozdelil ja, nech tu nesedíme do rána. Farár sa ťa bojí na červenej od minulého kola, tak som ho za 5 zajal – je tvoj väzeň a sedí v pivnici. Reči pri ňom Štamgast nemal, tak ti nemal čo dať; jeho reči pri Krčmárke a Autobusárovi po prehratej hádke klesli zospodu a zanikli. Farárovu schopnosť – zhodiť jedno súperovo NA EX z karty – smieš raz za hru použiť, kedy chceš. Zvyšné 2: Autobusár zo žltej na oranžovú."
     }
   },
   "i-po-bitke3": {

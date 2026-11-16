@@ -418,8 +418,7 @@ describe("návrat Nástroja a hra s podkladaním", () => {
     expect(podSuperovu).toBe(0);
   }, 240000);
 
-  // Výučba Prvá hra sa prestavuje až pri vypálení v12.5 (CLAUDE.md) — dovtedy vypnuté ako testy výučby.
-  it.skip("výučba prejde aj so sadou s hranami (Nástroje bez slotov, varianty 0/0)", () => {
+  it("výučba prejde aj so sadou s hranami (Nástroje bez slotov, varianty 0/0)", () => {
     const scenar = scenarJson as unknown as ScenarVyucby;
     expect(prehrajVyucbu(dataH, scenar, scenar.kroky.length).koniec?.vitaz).toBe(0);
   });

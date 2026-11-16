@@ -605,11 +605,14 @@ describe("výučba Prvá hra — presunuté kroky 1. časti v 2. časti (Michal 
   });
 
   it("strach a Nakladačka v 2. časti: stupne, cena posunu, exekútor a priazeň vysvetlené pri 2. bitke", () => {
-    expect(index("i-stupne")).toBe(index("k-nakladacka2") - 1);
-    expect(index("i-cena-posunu")).toBe(index("k-nakladacka2") + 1);
-    expect(index("q-prebytok")).toBe(index("i-cena-posunu") + 1);
+    // v12.5 (hádka pred Nakladačkou): bodovanie, exekútor a priazeň, potom reči Štamgasta, až potom tvoja Nakladačka.
+    expect(index("i-bodovanie2")).toBe(index("i-stupne") + 1);
     expect(index("i-body")).toBe(index("i-bodovanie2") + 1);
     expect(index("i-priazen")).toBe(index("i-body") + 1);
+    expect(index("k-reci-bot")).toBe(index("i-priazen") + 1);
+    expect(index("k-nakladacka2")).toBe(index("k-reci-bot") + 1);
+    expect(index("i-cena-posunu")).toBe(index("k-nakladacka2") + 1);
+    expect(index("q-prebytok")).toBe(index("i-cena-posunu") + 1);
     // v11.20: hodnota stupňa 1 / 2 / 3 — žltá 1, oranžová 3, červená 6.
     expect(krok("i-stupne").melichar).toContain("žltá 1 špak, oranžová 3, červená 6");
   });
@@ -709,9 +712,13 @@ describe("výučba Prvá hra — 2. a 3. časť (pravidlá v8, exekúcia po poš
     // v12.3 (cigarety za pas za plné poldeci): ťahy ostali, hráč končí s 11 cigaretami, Štamgast s 18 (väčšinou z pasov) —
     // vykúpenie hráč 2 + 2 = 4, Štamgast 2 + 3 = 5: 49 + 4 − 6 = 47, 12 + 5 − 3 = 14.
     // v12.4 (výpalné z banky): Štamgast si cigarety za prehru nechá — končí s 20, vykúpenie 2 + 4 = 6: 12 + 6 − 3 = 15.
-    expect(koniec.koniec?.body).toEqual([47, 15]);
-    expect([koniec.hraci[0].cigarety, koniec.hraci[1].cigarety]).toEqual([11, 20]);
-    expect(cela.kroky[i("i-koniec")]?.melichar).toContain("47 : 15");
+    // v12.5: Štamgastove reči pred Nakladačkou predražia Krčmárku aj Autobusára — Nakladačka 2. kola ide Farárovi a Krčmárke
+    // (bez Autobusára a Kmotra), reči bodujú len na súperovom strachu (Veterinár hráčovi nič, Autobusár Štamgastovi nič),
+    // Vidly a Recidivistu platí hráč Štamgastovi a krok 6c platí aj po finále. Hráč 46 + vykúpenie 2 + 2 − 6 = 44,
+    // Štamgast (23 cigariet) 11 + 4 + 2 − 3 = 14.
+    expect(koniec.koniec?.body).toEqual([44, 14]);
+    expect([koniec.hraci[0].cigarety, koniec.hraci[1].cigarety]).toEqual([12, 23]);
+    expect(cela.kroky[i("i-koniec")]?.melichar).toContain("44 : 14");
     expect(koniec.vazni.map((v) => [v.elderId, v.hrac])).toEqual([["farar", 0]]);
     // Nepriznané Cirhózy: hráčova z 2. kola a z finále (i-koniec, q-koniec), Štamgastova z 2. kola.
     expect(koniec.koniec?.cirhozy).toEqual([2, 1]);
@@ -763,7 +770,8 @@ describe("výučba Prvá hra — 2. a 3. časť (pravidlá v8, exekúcia po poš
     // bitka je hráčova, Nakladačka 4.
     const bitka = pri("k-povera3");
     // v12.2: bez druhého Alkoholika nemá Štamgast Vieru — hráčove Povery ostanú: mäkké 4 : 6, hádka jeho o 2; tuhé 5 : 0.
-    expect(bitka.bitkaStav).toMatchObject({ krok: "prebytok", caka: 0, vitaz: 0, prebytokZostava: 5, damage: { tuhe: [5, 0] }, hadka: { makke: [4, 6], vitaz: 1, velkost: 2, zostava: 2 } });
+    // v12.5: hádka sa rozdelí pred Nakladačkou — bitka čaká na reči Štamgasta.
+    expect(bitka.bitkaStav).toMatchObject({ krok: "reci", caka: 1, vitaz: 0, prebytokZostava: 5, damage: { tuhe: [5, 0] }, hadka: { makke: [4, 6], vitaz: 1, velkost: 2, zostava: 2 } });
     expect(bitka.nastenka.at(-1)).toMatchObject({ kolo: 2, vitaz: 0, rozhodlo: "tuhe", exekutor: [0, 0] });
     // Bodovanie (krok 4b, i-bodovanie2): Farár strach oranžový 3 (v12 nikto iný sa po 1. kole nebojí).
     // Štamgast bez rečí 0, za svoje karty ako víťaz hádky 6 (v11.11).
@@ -772,29 +780,35 @@ describe("výučba Prvá hra — 2. a 3. časť (pravidlá v8, exekúcia po poš
     expect(bitka.starsi.find((e) => e.elderId === "veterinar")).toMatchObject({ strach: [0, 0], reci: [0, 0] });
     // Nakladačka 4 (hráč): Farár z oranžovej na červenú — vydesený, v 3. kole ho smie zajať; zvyšok 1 Autobusárovi na žltú
     // (v12 má Autobusár scorecard Kmotor — Farár 3 + Vychovávateľka 1 jadro medzi legálnymi zámermi nevymenúva).
+    // v12.5: Štamgastove reči na hráčovej žltej pri Krčmárke a Autobusárovi idú pred Nakladačku — žltá tam stojí 2;
+    // Farár 3 + Krčmárka 2 (Farár 3 + Autobusár 2 jadro medzi legálnymi zámermi nevymenúva).
     expect(cela.kroky[i("k-nakladacka2")]).toMatchObject({
       kto: "hrac",
-      prikaz: { type: "prebytok", zdvihy: [{ elderId: "farar", na: 3 }, { elderId: "krcmarka", na: 1 }, { elderId: "autobusar", na: 1 }] },
+      prikaz: { type: "prebytok", zdvihy: [{ elderId: "farar", na: 3 }, { elderId: "krcmarka", na: 1 }] },
     });
+    expect(i("k-reci-bot")).toBeLessThan(i("k-nakladacka2"));
+    const reci2 = po("k-reci-bot");
+    expect(reci2.starsi.find((e) => e.elderId === "krcmarka")).toMatchObject({ strach: [0, 0], reci: [0, 1], reciOd: [0, 1] });
+    expect(reci2.starsi.find((e) => e.elderId === "autobusar")).toMatchObject({ strach: [0, 0], reci: [0, 1], reciOd: [0, 1] });
     expect(pri("k-nakladacka2").starsi.find((e) => e.elderId === "autobusar")?.scorecard).toBe("zberatel");
     expect(po("k-nakladacka2").starsi.find((e) => e.elderId === "farar")).toMatchObject({ strach: [3, 0] });
-    // Hádka 4 na Štamgastove reči na hráčovom teplomere (v11.12): Farár červená za 3, Krčmárka žltá za 1.
+    // Hádka 2 na Štamgastove reči na hráčovom teplomere (v11.12): Krčmárka a Autobusár žltá za 1 + 1; Farár bez rečí.
     expect(cela.kroky[i("k-reci-bot")]).toMatchObject({ kto: "bot", prikaz: { type: "reci" } });
-    const kolo3 = po("k-reci-bot");
+    const kolo3 = po("k-nakladacka2");
     expect(kolo3).toMatchObject({ kolo: 3, faza: "volbaCiela" });
-    // v12.2: hádka 2 — Krčmárka a Autobusár žltá za 1 + 1; Farár bez rečí.
     expect(kolo3.starsi.find((e) => e.elderId === "farar")).toMatchObject({ strach: [3, 0], reci: [0, 0] });
     expect(kolo3.starsi.find((e) => e.elderId === "krcmarka")).toMatchObject({ strach: [1, 0], reci: [0, 1], reciOd: [0, 1] });
-    expect(kolo3.starsi.find((e) => e.elderId === "autobusar")).toMatchObject({ strach: [1, 0], reci: [0, 1], reciOd: [0, 1] });
+    // v12.5 (R1): Autobusár sa hráča nebojí — Štamgastove reči pri ňom čakajú.
+    expect(kolo3.starsi.find((e) => e.elderId === "autobusar")).toMatchObject({ strach: [0, 0], reci: [0, 1], reciOd: [0, 1] });
     // 10 za karty v línii, starší 3, exekútor 0 : 0 (hráč Dlh nemal; Štamgastovi z troch dva, Advokát 2, i-body);
     // Štamgast 6 za svoje karty ako víťaz hádky — 19 : 6 (i-spaky2).
     expect(body(kolo3)).toEqual([17, 5]);
     expect(cela.kroky[i("i-spaky2")]?.melichar).toContain("17 : 5");
     expect(kolo3.hraci[0].poldeciPlne).toBe(3);
     expect(kolo3.nastenka.at(-1)?.lokalita?.defId).toBe("ihrisko");
-    // Autobusár dal Štamgastovi Kmotra: jeho Dlh, ktorý exekútor nespálil, prešiel na hráča (i-spaky2).
-    expect(kolo3.hraci[0].dlhy).toBe(1);
-    expect(kolo3.hraci[1].dlhy).toBe(0);
+    // v12.5: Autobusár sa hráča nebojí, Kmotor Štamgastovi nič nedá — Dlh, ktorý exekútor nespálil, mu ostal.
+    expect(kolo3.hraci[0].dlhy).toBe(0);
+    expect(kolo3.hraci[1].dlhy).toBe(1);
     // Výpalné (v11.9, v12.4 z banky): Farár je po Nakladačke na červenej — hráč dostane cigaretu z banky,
     // Štamgast si cigaretu za prehru nechá (v12 bez Fajčiara).
     expect(kolo3.hraci[1].cigarety).toBe(bitka.hraci[1].cigarety + KONSTANTY.CIGARETY_PORAZENEMU);
@@ -830,43 +844,46 @@ describe("výučba Prvá hra — 2. a 3. časť (pravidlá v8, exekúcia po poš
     expect(body(pri("k-hotovo6-bot"))).toEqual([17, 5]);
     // Hádka o 3 (Pohoršenie domu 2 + Povera 1), tuhé 7 : 0 — bitka čaká na Nakladačku 7.
     const vyhra = po("k-hotovo6-bot");
-    expect(vyhra.bitkaStav).toMatchObject({ krok: "prebytok", caka: 0, vitaz: 0, prebytokZostava: 7, damage: { tuhe: [7, 0] }, hadka: { makke: [3, 0], vitaz: 0, zostava: 3 } });
+    // v12.5: najprv hráč rozdelí hádku (k-reci3), potom Nakladačku (k-nakladacka3).
+    expect(vyhra.bitkaStav).toMatchObject({ krok: "reci", caka: 0, vitaz: 0, prebytokZostava: 7, damage: { tuhe: [7, 0] }, hadka: { makke: [3, 0], vitaz: 0, zostava: 3 } });
     // Kultúrny dom (v11.13): každý len za svoje karty — hráč 3, Štamgast 1. Starší (v11.12): Farár hráčovi 5 − 2
     // za Štamgastove reči na červenej, Autobusár a Vychovávateľka po 1; Krčmárkinu žltú drží Štamgast. Štamgast:
     // Farár 2, Krčmárka 1 (porazený boduje reči); exekútor hráčovi 2 (aj Hazardy Recidivistu) — 27 : 9 (i-vyhra3).
     expect(vyhra.nastenka.at(-1)?.zaBitku).toEqual([3, 1]);
     // v12: hráčovi Farár 3 a Autobusár 1 (Vychovávateľka sa nebojí).
     // v12.2: hráčovi Farár 6 (reči pri ňom Štamgast nemá), Štamgastovi Krčmárka a Autobusár po 1 za reči na hráčovej žltej.
-    expect(vyhra.nastenka.at(-1)?.zaStarsich).toEqual([6, 2]);
-    expect(vyhra.nastenka.at(-1)?.exekutor).toEqual([2, 0]);
+    // v12.5 (R1): Štamgastovi len Krčmárka 1 — Autobusár sa hráča nebojí, reči pri ňom čakajú. Hráč mal 2 Dlhy
+    // z Hazardov Recidivistu (Kmotor mu v 2. kole nič neprepísal) — exekútor 1.
+    expect(vyhra.nastenka.at(-1)?.zaStarsich).toEqual([6, 1]);
+    expect(vyhra.nastenka.at(-1)?.exekutor).toEqual([1, 0]);
     // v11.20: Farár Štamgastovi 3 za reči na červenej (hráčovi 6 − 3 = 3 ako predtým 5 − 2) — 27 : 11 (prvé kolo bez Dlhu).
-    expect(body(vyhra)).toEqual([24, 8]);
-    expect(cela.kroky[i("i-vyhra3")]?.melichar).toContain("24 : 8");
+    expect(body(vyhra)).toEqual([25, 7]);
+    expect(cela.kroky[i("i-vyhra3")]?.melichar).toContain("25 : 7");
     expect(cela.kroky[i("i-vyhra3")]?.melichar).toContain("Farár ti za červený strach dal 6");
     // Štamgast prehral hádku: jeho reči klesli zospodu a zanikli (jediný stupeň).
     expect(vyhra.starsi.find((e) => e.elderId === "farar")).toMatchObject({ reci: [0, 0] });
-    // Nakladačka 7 (auto, Melichar): zajatie Farára za 5 (krádež 0 — reči zanikli), Autobusár 1 → 2 (v12; predtým Krčmárka).
-    expect(cela.kroky[i("k-nakladacka3")]?.kto).toBe("auto");
-    const nakl = po("k-nakladacka3");
-    expect(nakl.vazni.map((v) => [v.elderId, v.hrac])).toEqual([["farar", 0]]);
-    expect(nakl.starsi.some((e) => e.elderId === "farar")).toBe(false);
-    expect(nakl.starsi.find((e) => e.elderId === "autobusar")).toMatchObject({ strach: [2, 0] });
-    expect(nakl.starsi.find((e) => e.elderId === "starosta")).toMatchObject({ strach: [0, 0] });
-    expect(body(nakl)).toEqual([24, 8]);
-    // Hádka 3 (hráč): reči na Štamgastovom teplomere zospodu, Veterinár žltá a oranžová za 1 + 2.
+    // Hádka 3 (hráč, v12.5 pred Nakladačkou): reči na Štamgastovom teplomere zospodu, Veterinár žltá a oranžová za 1 + 2.
+    // Štamgast sa nebojí nikde — reči čakajú (R1), vo finále hráčovi nebodujú.
+    expect(i("k-reci3")).toBe(i("k-nakladacka3") - 1);
     expect(cela.kroky[i("k-reci3")]).toMatchObject({ kto: "hrac", prikaz: { type: "reci", zdvihy: [{ elderId: "veterinar", na: 2 }] } });
-    const kolo4 = po("k-reci3");
+    expect(po("k-reci3").starsi.find((e) => e.elderId === "veterinar")).toMatchObject({ strach: [0, 0], reci: [2, 0], reciOd: [1, 0] });
+    // Nakladačka 7 (auto, Melichar): zajatie Farára za 5 (krádež 0 — reči zanikli), Krčmárka 1 → 2 (v12.5; v12–v12.4 Autobusár).
+    expect(cela.kroky[i("k-nakladacka3")]?.kto).toBe("auto");
+    const kolo4 = po("k-nakladacka3");
     expect(kolo4.kolo).toBe(4);
-    expect(kolo4.starsi.find((e) => e.elderId === "veterinar")).toMatchObject({ strach: [0, 0], reci: [2, 0], reciOd: [1, 0] });
-    // Priazne Štamgasta z rozdielu strachov (v12): Kmotor 2 (Autobusár na oranžovej); Krčmárka, Starosta a Vychovávateľka bez strachu.
-    // v12.2: Krčmárka sa hráča bojí na žltej (Nakladačka 2. kola) — Abstinent 1.
-    expect(silaPriazne(data, kolo4, "LAKOMEC", 1)).toBe(1);
+    expect(kolo4.vazni.map((v) => [v.elderId, v.hrac])).toEqual([["farar", 0]]);
+    expect(kolo4.starsi.some((e) => e.elderId === "farar")).toBe(false);
+    expect(kolo4.starsi.find((e) => e.elderId === "krcmarka")).toMatchObject({ strach: [2, 0], reci: [0, 0] });
+    expect(kolo4.starsi.find((e) => e.elderId === "autobusar")).toMatchObject({ strach: [0, 0], reci: [0, 0] });
+    expect(kolo4.starsi.find((e) => e.elderId === "starosta")).toMatchObject({ strach: [0, 0] });
+    // Priazne Štamgasta z rozdielu strachov: Abstinent 2 (Krčmárka na oranžovej); Autobusár, Starosta a Vychovávateľka bez strachu.
+    expect(silaPriazne(data, kolo4, "LAKOMEC", 1)).toBe(2);
     expect(silaPriazne(data, kolo4, "BITKAR", 1)).toBe(0);
     expect(silaPriazne(data, kolo4, "FAJCIAR", 1)).toBe(0);
-    expect(silaPriazne(data, kolo4, "UZERNIK", 1)).toBe(2);
+    expect(silaPriazne(data, kolo4, "UZERNIK", 1)).toBe(0);
     // Výpalné (v11.9) za väzňa: Farár sa ráta ako červený strach držiteľa; platí banka (v12.4), Štamgast si cigaretu za prehru nechá.
     expect(kolo4.hraci[1].cigarety).toBe(vyhra.hraci[1].cigarety + KONSTANTY.CIGARETY_PORAZENEMU);
-    expect(body(kolo4)).toEqual([24, 8]);
+    expect(body(kolo4)).toEqual([25, 7]);
     // Do finále má hráč 8 cigariet (v12.3: v 2. kole 2 pasy, v 3. kole pas za hráča po doliatí — po cigarete; v12.2 mal 4).
     expect(kolo4.hraci[0].cigarety).toBe(8);
     expect(pocetAbstakov(kolo4.hraci[0])).toBe(0);
@@ -922,8 +939,9 @@ describe("výučba Prvá hra — 2. a 3. časť (pravidlá v8, exekúcia po poš
     // Finále (i-bitka-finale): 5 za karty v línii, Nakladačka 16 na špaky 1 : 1, starší 3 + 3 (Veterinár reči po
     // oranžovú, Autobusár oranžový strach — v12); Štamgast 3 za hádku a 2 za svoje karty ako víťaz hádky
     // (i-hadka-finale); exekútor hráčovi 3, Štamgastovi 1.
-    // v12.2: aj Krčmárka 1 za žltý strach.
-    expect(koniec.nastenka.at(-1)).toMatchObject({ vitaz: 0, finale: true, karty: 5, zaBitku: [5, 2], prebytok: [16, 0], hadkaSpaky: [0, 3], zaStarsich: [7, 0], exekutor: [3, 1], spakyPo: [49, 12] });
+    // v12.2: aj Krčmárka 1 za žltý strach. v12.5: starší len Krčmárka 3 za oranžový strach — Veterinár za reči nič
+    // (Štamgast sa ho nebojí, R1), Autobusár sa hráča nebojí.
+    expect(koniec.nastenka.at(-1)).toMatchObject({ vitaz: 0, finale: true, karty: 5, zaBitku: [5, 2], prebytok: [16, 0], hadkaSpaky: [0, 3], zaStarsich: [3, 0], exekutor: [3, 1], spakyPo: [46, 11] });
     // Vo finále sa nezajíma (v11.4) — väzeň je len Farár z 3. kola.
     expect(koniec.vazni).toHaveLength(1);
     expect(cela.kroky[i("i-bitka-finale")]?.melichar).toContain("nezajíma");
