@@ -1,0 +1,263 @@
+<!doctype html>
+<html lang="sk"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Riešenia najväčších problémov hry — Zrejúca v12.4</title>
+<style>
+:root{--bg:#f6f1e7;--karta:#fffdf8;--ink:#2b2118;--muted:#7a6a58;--akc:#8a3b12;--ok:#2e7d32;--zle:#c62828;--poz:#f9a825}
+*{box-sizing:border-box}body{margin:0;font:16px/1.5 system-ui,-apple-system,"Segoe UI",sans-serif;background:var(--bg);color:var(--ink)}
+main{max-width:900px;margin:0 auto;padding:14px}
+h1{font-size:1.4rem;margin:.2em 0}h2{font-size:1.18rem;margin:1.8em 0 .5em;color:var(--akc)}h3{font-size:1.02rem;margin:.2em 0 .4em}
+.lead{color:var(--muted);font-size:.93rem}
+.box{background:var(--karta);border-radius:10px;padding:12px 14px;margin:10px 0;box-shadow:0 1px 3px #0002}
+.odpor{border-left:5px solid var(--ok)}.pozor{border-left:5px solid var(--poz)}
+table{border-collapse:collapse;width:100%;background:var(--karta);font-size:.88rem}
+th,td{padding:6px 7px;border-bottom:1px solid #eadfcd;text-align:left;vertical-align:top}th{background:#efe3cf}
+code{font-size:.8rem;background:#efe3cf;border-radius:4px;padding:0 4px}
+.navrh{background:var(--karta);border-radius:10px;padding:10px 14px;margin:12px 0;box-shadow:0 1px 3px #0002;border-left:5px solid #c9b79c}
+.navrh.top{border-left-color:var(--ok)}.navrh.riz{border-left-color:var(--zle)}
+.navrh h3{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.stit{display:inline-block;border-radius:6px;padding:0 7px;font-size:.74rem;font-weight:700;color:#fff;background:#6b5a43}
+.stit.odp{background:#2e7d32}.stit.n{background:#6a3d9a}.stit.k{background:#1f5f8a}.stit.varuj{background:#c62828}
+.znenie{font-style:italic;background:#fff6ec;border:1px solid #e3cfae;border-radius:8px;padding:6px 10px;margin:6px 0}
+dl{margin:.4em 0;display:grid;grid-template-columns:7.5em 1fr;gap:2px 8px;font-size:.92rem}
+dt{color:var(--muted);font-weight:600}dd{margin:0}
+.uz{font-size:.88rem;color:var(--muted);border-left:3px solid #c9b79c;padding-left:8px;margin:6px 0}
+ul li,ol li{margin:.3em 0}
+@media(max-width:560px){dl{grid-template-columns:1fr}dt{margin-top:.4em}.tabm,.tabm thead,.tabm tbody,.tabm tr,.tabm th,.tabm td{display:block}.tabm thead{display:none}.tabm td{border:0;padding:2px 8px}.tabm tr{border-bottom:1px solid #eadfcd;padding:6px 0}.tabm td:first-child{font-weight:700}}
+</style></head><body><main>
+
+<h1>Riešenia najväčších problémov hry</h1>
+<p class="lead">2026-11-16 · Vymyselník pre Michala · Zrejúca, pravidlá v12.4 (master, výpalné platí banka) · podklady:
+<code>docs/playtesty/20261114-003916.html</code> + <code>navrhy-20261114-003916.json</code> (#54–#59),
+<code>20261111-221937.html</code> + <code>rozhodnutia-20261111-221937.md</code>, partia <code>playtest/20261113-084431-1</code> (Jano proti Ferovi),
+návrhy #44–#47 (<code>navrhy-20261107-005858.json</code>), knižnica <code>docs/kniznica/</code>. Nič z toho nie je naprogramované, ide len o návrhy na rozhodnutie. Nič som nemeral, merania robí stratég paralelne.</p>
+
+<div class="box odpor">
+<b>V skratke.</b> Všetky štyri problémy sú tvárou toho istého: <b>prvý náskok sa sám zúročí a súper nemá protiťah</b>.
+Zrozumiteľnosť a tempo majú tiež nízke známky (5,5), lenže Rovnováha (5,5, minule 4,5) a Napätie (6,0, minule 3,8; od porazených 3–5) majú
+rovnakú príčinu: partia je rozhodnutá po 3. kole (14. 11. P3 po K3, P2 po K5, 13. 11. po K3, 11. 11. vo všetkých troch partiách do K4).
+<ol>
+<li><b>Renta starších</b>, hlavne rečí. Najsilnejší nápad: <b>R1 Reči sa držia strachu</b>. Reči bodujú len na stupňoch, na ktorých má súper strach.</li>
+<li><b>Lavína poldeci a cigariet</b>. Najsilnejší nápad: <b>E4 „Napíš mi to!“</b>. Kto nemá plný poldeci, smie vyložiť kartu na dlh, takže poldeci prestanú byť jediný kľúč k ťahu.</li>
+<li><b>Koniec jednou Nakladačkou</b> (tri zajatia naraz). Najsilnejší nápad: <b>V1 Pivnica plná</b>. Výhra väzňami sa overuje ako výhra strachom, až v ďalšej vyhratej bitke.</li>
+<li><b>NA EX bez protiťahu</b> (jedno NA EX stojí do −13 špakov). Najsilnejší nápad: <b>N1 Dopijem za teba</b>. Majiteľ zloží súperovo NA EX zo svojej karty za plný poldeci.</li>
+</ol>
+</div>
+
+<h2>1. Prečo práve tieto štyri</h2>
+<table class="tabm"><thead><tr><th>Problém</th><th>Kde sa ukázal</th><th>Kto ho hlási</th><th>Už v návrhoch</th></tr></thead><tbody>
+<tr><td>1 Renta starších</td><td>14. 11. P3: Šimon 63 z 90 špakov od starších (70 %), v K5 27 špakov za bitku vyhratú 2 : 1, Eva od starších 0, skóre 90 : 3. 11. 11. P1: Eve dali starší 46 z 82.</td><td>všetci šiesti (14. 11.), tri turnusy po sebe</td><td>#44, #54 (reči klesnú obom), #57 (Nakladačka smie prepadnúť), schválená hádka pred Nakladačkou</td></tr>
+<tr><td>2 Lavína poldeci a cigariet</td><td>13. 11.: Fero mal 6 poldeci (Vínko + 2 bartery), Jano 3, cigarety pri braní v K4 13 : 3, Fero vyhral 3 bitky po sebe. 14. 11.: Vilo 7 poldeci + 13 cigariet proti 6 + 9 (v poslednom Zhromaždení 13 : 0), Šimon 7 + 16 proti 5 + 10.</td><td>Fero, Vilo, Eva, Jano (14. 11.), Jano a Fero (13. 11.), 11. 11. návrhy 1 a 8</td><td>#56 (barter 5 / 7 / 9), 11. 11. Vínko „sledovať“</td></tr>
+<tr><td>3 Koniec jednou Nakladačkou</td><td>13. 11. K4: Nakladačka 16 = tri zajatia naraz = výhra väzňami, finále sa nehralo, Napätie od Jana 4. 11. 11. P3: výhra strachom v K5. Na webe názor #166.</td><td>Jano, Fero (13. 11.), Šimon (#166)</td><td>nič (ochrana politika pred výhrou strachom je odložená)</td></tr>
+<tr><td>4 NA EX bez protiťahu</td><td>14. 11. P1 K5: NA EX na Dvojčatá = 3 Cirhózy + 6 Dlhov ≈ −13 špakov. 13. 11. K4: NA EX na Manželku = 6 Dlhov + 3 Cirhózy, Mäsiar −12 tuhých.</td><td>5 zo 6 (14. 11. návrh 4), Jano a Fero (13. 11.), 11. 11. návrh 2</td><td>nič (#58 Veterán rieši len jednu kartu)</td></tr>
+</tbody></table>
+
+<div class="box pozor">
+<b>Čo medzi najväčšie nedávam</b>
+<ul>
+<li><b>Cirhózy podľa poradia balíčka</b> (Fero −27). Je to skutočná náhoda, ale dvakrát si rozhodol, že parkovanie Cirhózy je zámer (Spoveď 10-24, N3 11-06), a #55 to otvára znova. Väčšina Ferových Cirhóz navyše vznikla z NA EX × Pitky, takže sa ich zdroja dotkne problém 4 (N1–N3).</li>
+<li><b>Tempo</b> (5,5). Najviac 2 Pitky si zamietol. Časť sťažností ide na dlhé výpisy textového klienta, nie na pravidlá. E4 a N1 ubudnú prázdne ťahy.</li>
+<li><b>Veterán, Predsedova vila, Vdova</b> sú už v návrhoch #58 a #59, resp. rozhodnuté 12. 11.</li>
+<li><b>Výhrada k dôkazom.</b> Všetko sú partie AI hráčov. Štatistiku „vedúci vyhrá“ si 11-06 odmietol ako dôkaz. Tu však nejde o hromadenie (Fero 13 cigariet minul na barter a 5 kariet), ide o premenu náskoku na ďalší náskok. Otázku 5 som preto dal na koniec.</li>
+</ul>
+</div>
+
+<!-- ============================================================ -->
+<h2>2. Problém 1 — Renta starších</h2>
+<p>Každý stupeň strachu a rečí boduje <b>po každej bitke až do konca</b> (PRAVIDLA.md:1622–1633). Stupeň získaný v K1 tak zaplatí 5×, stupeň z K5 raz. Reči
+bodujú aj na <b>prázdnom</b> súperovom teplomere („zo sivej zdola nahor“, PRAVIDLA.md:1566), takže od súpera nezávisia vôbec. Kto vyhrá prvé dve hádky,
+ťahá body z oboch strán. Na to, že to môže byť „až príliš dobré“, upozorňoval už prepočet v <code>docs/napady/reci-na-teplomere.html</code>. Kód: <code>spakyZaReci</code>
+v <code>packages/core/src/elders.ts:160</code>.</p>
+<p class="uz">Už v návrhoch: <b>#54</b> (A reči klesnú obom, B 1 špak za stupeň, C reči bodujú len víťazovi hádky), <b>#57</b> (časť Nakladačky smie prepadnúť), schválené <b>hádka pred Nakladačkou</b>.
+Návrhy nižšie ich nekopírujú. Neskracujú, ako dlho reči trvajú, menia, <b>od čoho</b> ich hodnota závisí.</p>
+
+<div class="navrh top">
+<h3>R1 · Reči sa držia strachu <span class="stit odp">odporúčam</span><span class="stit k">pravidlo</span></h3>
+<div class="znenie">§10 Bodovanie, druhá odrážka: „Každý hráč pri každej bitke dostane hodnotu stupňov, ktoré obsadil rečami <b>a na ktorých má súper strach</b>.
+Reči nad súperovým strachom nebodujú, čakajú. Keď do nich súperov strach dorastie, bodujú od najbližšej bitky.“</div>
+<dl>
+<dt>Čo ostáva</dt><dd>Poradie obsadzovania, cena 1 / 2 / 3, spomalenie +1 (súper platí za strach na stupni s tvojimi rečami viac, platí to aj pri čakajúcich rečiach), posun, klesanie, presvedčenie (plný teplomer), krádež pri zajatí.</dd>
+<dt>Čo rieši</dt><dd>Reči prestanú byť samostatnou rentou a stanú sa <b>protihrou proti strachu</b>, presne ako chýbalo v 11. 11. (návrh 3: „dve meny bez vzájomnej protihry“). Kto prehráva bitky, nemá u starších strach, takže víťazove reči na jeho teplomere nebodujú a vedúci už neťahá body z oboch strán. Odmena za väčšiu výzvu: čím viac sa starší bojí súpera, tým viac ti reči vynesú. Čakajúce reči na prázdnom staršom sú obrana vopred (zdražia súperovi červenú).</dd>
+<dt>P3, 14. 11.</dt><dd>Strach dvíha len vlastná Nakladačka a Eva vyhrala pred finále jedinú bitku (K4, Nakladačka 8). Šimonove reči pri ostatných starších by preto nebodovali. Z jeho asi 45 špakov za reči (odhad stratéga) by ostala len časť na stupňoch s Eviným strachom. Presne to spočíta stratég z logu stupňov.</dd>
+<dt>Riziká</dt><dd>Klebetník proti hráčovi, ktorý nedesí (ekonóm), zoslabne, preto treba overiť playtestom štýlov, že vie vyhrať. Hlavnou cestou, ako speňažiť čakajúce reči, sa môže stať presvedčenie. S #54 A by sa reči oslabili dvakrát, odporúčam teda jedno z nich, nie obe naraz.</dd>
+<dt>Pravidlá a kód</dt><dd>§10 Bodovanie, tabuľka §14, ťahák, výučba časti o rečiach. V kóde jedna podmienka: blok rečí orezať po súperov strach (<code>min(b.vrch, e.strach[súper])</code>) v <code>spakyZaReci</code>. Z tej istej funkcie berú hodnoty aj náhľady a „keby skončila teraz“.</dd>
+<dt>Overenie</dt><dd>Starší dajú víťazovi v každej partii najviac 50 % jeho špakov (dnes 70 %). Reči jednému hráčovi v K4–K5 najviac 8 za bitku (dnes 14). V playteste štýlov vyhrá klebetník aspoň jednu partiu.</dd>
+</dl></div>
+
+<div class="navrh">
+<h3>R2 · Ohováraný má priazeň <span class="stit k">pravidlo</span></h3>
+<div class="znenie">§10 Priazeň: „Priazeň pre teba = max(0, strach súpera − tvoj strach) <b>+ počet stupňov súperových rečí na tvojom teplomere pri tomto staršom</b>; sila najviac 3 ako doteraz.“ (Starší ľutuje toho, koho ohovárajú.)</div>
+<dl>
+<dt>Čo rieši</dt><dd>Reči dostanú tú istú brzdu, akú má strach. Strach dáva súperovi priazeň, reči dnes nedávajú nič (PRAVIDLA.md:1585). Kto stavia rentu rečí, dáva súperovi Bitkára, Veriaceho či Ohováračku, a tým aj šancu vyhrať ďalšiu bitku a hádku. Renta ostáva, len už nie je zadarmo.</dd>
+<dt>Riziká</dt><dd>Priazeň je automatická, obeť nič nerozhoduje. Mení sa veta z v11.12 „Reči nedávajú priazeň“ (tvoje pravidlo). V hre pribudne priazní, a tým výpočtov aj prepočtov v náhľadoch. Pri plnom teplomere rečí dostane súper silu 3 aj tam, kde sa ťa starší nebojí.</dd>
+<dt>Pravidlá a kód</dt><dd>§10 Priazeň a Strach a reči. <code>priazenPre</code>, <code>priazenHraca</code> a <code>priazenSila</code> v <code>elders.ts:205–219</code>, hodnotenie bota.</dd>
+<dt>Overenie</dt><dd>Ako často vyhrá partiu víťaz hádky z K1 a K2 (dnes Šimon 5 hádok po sebe). Priazne porazeného v K3–K5.</dd>
+</dl></div>
+
+<div class="navrh">
+<h3>R3 · Otočená klebeta <span class="stit n">neobvyklé, moment</span><span class="stit k">pravidlo</span></h3>
+<div class="znenie">§9.1 Rozdelenie hádky, nový bod: „Pri rozdelení hádky smie víťaz hádky <b>otočiť klebetu</b> pri staršom, kde má súper reči: zaplatí bodmi hádky ich hodnotu (1 / 2 / 3 za stupeň). Súperove reči pri tom staršom zaniknú a víťaz hádky dostane rovnaký počet stupňov vlastných rečí na súperovom teplomere pri tom istom staršom, v bežnom poradí obsadzovania. Smie otočiť aj viac starších, každého za jeho cenu. Vo finále nie.“</div>
+<dl>
+<dt>Čo rieši</dt><dd>Rentu zlomí jedna vyhratá hádka. Dnes prehra hádky zníži súperovi reči len o stupeň a plný blok s 5 špakmi prežije dve prehry. Na stole pribudne pečiatka <b>OTOČENÁ KLEBETA</b> a Melicharova hláška. Je to zvrat, ktorý dobiehajúci pocíti: plný teplomer súpera (6 za bitku) sa zmení na jeho vlastných 6.</dd>
+<dt>Riziká</dt><dd>Hádka bude ešte viac „všetko alebo nič“. Kto vyhráva hádky sériovo, otočí aj súperove obranné reči. Treba rozhodnúť, či sa smie otočiť pri presvedčenom staršom. Nová voľba pri rozdelení pribudne v rozhraní aj u bota.</dd>
+<dt>Pravidlá a kód</dt><dd>§9.1, §10 (klesanie a posun). Nová akcia rozdelenia vedľa zajatia a presvedčenia v <code>packages/core/src/rozdelenie.ts</code> (pečiatka „OTOČIŤ −X“), moment v <code>momenty.ts</code>, bot.</dd>
+<dt>Overenie</dt><dd>Aspoň raz za turnus padne otočená klebeta a hráč ju popíše. Porazený po K3 vyhrá aspoň jednu ďalšiu hádku a z nej postaví reči.</dd>
+</dl></div>
+
+<!-- ============================================================ -->
+<h2>3. Problém 2 — Lavína poldeci a cigariet</h2>
+<p>Od v12.2 a v12.3 sú poldeci zároveň limit kariet (PRAVIDLA.md:975), príjem z pasu (:1005), NA EX aj odpoveď. Kto má viac poldeci, vyloží viac kariet,
+má posledné slovo v kraji, dostane viac cigariet a za ne si kúpi ďalšie poldeci (barter za 5 cigariet, :1189; Vínko, Krčmárka). Víťaz s červenými
+k tomu dostáva výpalné z banky (v12.4, :1614). Jano 13. 11.: „agresia ako veľa tuhého je slabá, agresia ako veľa poldeci a posledné slovo je príliš silná.“
+Kód: <code>barterCena</code> v <code>engine.ts:4290</code> (pevných 5; parametre stavu a hráča už má, len ich nepoužíva), výpalné <code>engine.ts:6417</code>.</p>
+<p class="uz">Už v návrhoch: <b>#56</b> (barter zdražie s každým barterom hráča 5 / 7 / 9 alebo 5 / 6 / 7, C pas za poldeci − 1, ktorý stratég odmietol). Pas za plné poldeci si vrátil vedome (v12.3), preto sa ho nižšie nedotýkam.</p>
+
+<div class="navrh">
+<h3>E1 · Stokár predáva drahšie tomu, kto už má <span class="stit k">pravidlo</span></h3>
+<div class="znenie">§7 Stokársky barter: „Barter stojí <b>5 cigariet a k tomu 2 za každý poldeci, o ktorý je tvoje maximum vyššie než súperovo</b>. Kto má maximum rovnaké, platí 5. Kto zaostáva, platí o 1 menej za každý poldeci rozdielu, najmenej 3.“</div>
+<dl>
+<dt>Rozdiel proti #56</dt><dd>Cena nezávisí od toho, koľkokrát si barteroval, ale od <b>náskoku</b>. Zaostávajúci nikdy nezdražie, dokonca zlacnie. Vedúci zdražie hneď pri prvom barteri, ak má Vínko alebo Krčmárku, pretože tie sa rátajú do maxima.</dd>
+<dt>13. 11.</dt><dd>Fero (Vínko, 4 proti 3) by v K2 platil 7 a v K4 (5 proti 3) 9. Jano by mal barter za 3–4 cigarety a pri braní mal 3.</dd>
+<dt>Riziká</dt><dd>Cenu treba ukazovať priamo na tlačidle. Zaostávajúci s barterom za 3 sa môže preklopiť dopredu, čo je dobiehanie, nie darček, lebo cigarety musí mať. Bot barteruje zriedka (0,3–1,4 za partiu), čísla dajú len ľudia.</dd>
+<dt>Pravidlá a kód</dt><dd>§7, ťahák. V <code>barterCena(data, s, p)</code> stačí použiť už prítomné parametre, k tomu odhad bota (<code>cenaCigariet</code> v <code>bot.ts:1631</code>).</dd>
+<dt>Overenie</dt><dd>Vo finále sa maximum poldeci líši najviac o 1 (dnes 7 : 5). Zaostávajúci barteruje aspoň raz za partiu.</dd>
+</dl></div>
+
+<div class="navrh">
+<h3>E2 · Platíš tomu, kto kartu priniesol <span class="stit k">pravidlo</span></h3>
+<div class="znenie">§5 Branie z ponuky: „Kartu, ktorú do ponuky dal <b>súper</b>, platíš <b>súperovi</b>. Kartu, ktorú si do ponuky dal sám, platíš banke ako doteraz. Pri 2 kartách za 3 cigarety dostane súper 1 cigaretu za každú svoju kartu z tých dvoch, zvyšok ide banke.“ (Autobusár platí rovnako.)</div>
+<dl>
+<dt>Čo rieši</dt><dd>Bohatý, ktorý vezme 5 kariet (Fero v K4), vráti súperovi asi 2–3 cigarety, takže cigarety neodtekajú len do banky. Stavba ponuky dostane nové rozhodnutie: lákavá karta znamená príjem, lenže aj silnú kartu pre súpera. Nemení pas, barter ani výpalné, teda ani tvoje rozhodnutia v12.3 a v12.4. Zdroj: knižnica <code>2026-11-10-ekonomicka-lavina.html</code> (Modern Art).</dd>
+<dt>Riziká</dt><dd>Brzda je mierna, skôr ventil. Hráči môžu dávať do ponuky odpad, a tá sa zhorší obom. Jadro si dnes nepamätá, kto kartu do ponuky dal (<code>CardInstance</code> nemá vlastníka), preto treba nové pole v stave ponuky a jeho zobrazenie.</dd>
+<dt>Pravidlá a kód</dt><dd>§5, ťahák, ponuka v klientovi (pôvod karty). Jadro: branie a Autobusár (<code>engine.ts:4805</code>), bot.</dd>
+<dt>Overenie</dt><dd>Koľko cigariet prejde za partiu k zaostávajúcemu. Rozdiel kariet z ponuky za kolo (dnes 5 : 2).</dd>
+</dl></div>
+
+<div class="navrh">
+<h3>E3 · Výpalné ako poistka <span class="stit k">pravidlo</span></h3>
+<div class="znenie">§10 Výpalné: „Banka ti dá 1 cigaretu za každého staršieho, pri ktorom máš červený strach, <b>len ak si bitku prehral alebo bola sekera</b>.“ (Ferov návrh z 13. 11.)</div>
+<dl>
+<dt>Čo rieši</dt><dd>Zruší príjem víťaza z banky (13. 11. K3 +3 Ferovi, 14. 11. Šimon +2 v K3–K5) a cieľ v12.4 ostane: porazený neplatí nič. Červená sa stane poistkou pre prehru, takže je dôvod desiť aj s horšou rukou. Odmena ide tomu, kto práve prehral.</dd>
+<dt>Riziká</dt><dd>Mení sa v12.4 tesne po tom, čo ju playtest označil za „zabralo“. Do hry pritečie menej cigariet, preto treba sledovať, či nepribudnú kolá s 0 cigaretami pri braní. Bot si musí prerátať cenu červenej (<code>CENA_VYPALNEHO</code>, <code>bot.ts:905</code>).</dd>
+<dt>Pravidlá a kód</dt><dd>§9 krok 6c, §10. Jedna podmienka v <code>engine.ts:6417</code>.</dd>
+<dt>Overenie</dt><dd>Cigarety pri braní v K3–K5 v pomere najviac 2 : 1 (dnes 13 : 3).</dd>
+</dl></div>
+
+<div class="navrh top">
+<h3>E4 · „Napíš mi to!“ — karta na dlh <span class="stit odp">najsilnejší</span><span class="stit n">neobvyklé, nový ťah</span></h3>
+<div class="znenie">§6 nový odsek: „<b>Napíš mi to.</b> Kto nemá plný poldeci, smie v Zhromaždení vyložiť kartu <b>na dlh</b>: namiesto poldeca získa Dlh. Prvá karta na dlh v kole stojí 1 Dlh, druhá 2, tretia 3 atď. (počítadlo hráča za kolo, verejné). Na dlh sa kladie po jednej karte, nie cez Vypiť. Rovnako smie na dlh odpovedať na NA EX: Dlh namiesto poldeca, +1 pečeň a 1 nerest ako dnes.“</div>
+<dl>
+<dt>Čo rieši</dt><dd>Poldeci prestanú byť jediným kľúčom k ťahu. Chudobnejší má odpoveď na posledné slovo bohatšieho aj na NA EX, platí za ňu však neskôr špakmi (Exekútor). Ubudnú prázdne Pitky (14. 11. ich bolo 11, napríklad Eva s 0 poldeci celú Pitku bez ťahu). Dlh vznikne z rozhodnutia, a nie len zo súperovho NA EX, čo je tvoja požiadavka z 10-27 („mechanika, ktorá nevzniká, sa rieši tak, aby vznikala“). Rastúca cena nie je strop.</dd>
+<dt>Riziká</dt><dd>Smie to aj bohatý, keď minie poldeci. Väčšiu váhu dostanú Kmotor, Herňa, Vymáhač, Záhradkár aj remíza podľa Dlhov. Exekútor (polovica Dlhov nahor v každej bitke) môže byť pri 1 Dlhu priveľmi lacný a rastúca cena to len čiastočne vyrovná. Zhromaždenie sa predĺži o ťahy.</dd>
+<dt>Pravidlá a kód</dt><dd>§6 (Limit, Pas: „kto nemá čo vyložiť“ sa zmení), §7 Odpoveď, §8 Dlh, ťahák, výučba. Jadro: nový ťah s podmienkou 0 plných poldeci a počítadlo za kolo. K tomu náhľady a bot.</dd>
+<dt>Overenie</dt><dd>Prázdne Pitky za turnus (dnes 11). Koľko kariet na dlh zahrá zaostávajúci a či aspoň raz otočí prevahu v kraji. Exekútor spolu za partiu.</dd>
+</dl></div>
+
+<!-- ============================================================ -->
+<h2>4. Problém 3 — Koniec jednou Nakladačkou</h2>
+<p>Zajať sa dá staršieho, pri ktorom máš červený strach už od minulého kola, za 5 bodov Nakladačky, aj viac naraz (PRAVIDLA.md:1672). Výhra väzňami
+príde hneď po zajatí v kroku 4e (:1688). 13. 11.: Fero mal od K3 tri červené, v K4 vyhral 21 : 5, zajal troch naraz (3 × 5 z Nakladačky 16) a hra skončila.
+Jano hrozbu videl („3 červené = 15 Nakladačky na koniec“), obrániť sa však dalo jedine tak, že udrží rozdiel tuhého pod 15. To pri rozdiele zdrojov
+(problém 2) nešlo. Nesúmernosť: výhra strachom potrebuje 4 červené <b>už pred</b> bitkou a výhru v nej (krok 4c), výhra väzňami príde v tom istom kroku, v ktorom sa zajíma.</p>
+<p class="uz">Zásady: rýchla výhra má ostať platným štýlom (trojuholník 2026-11-01), preto návrhy dávajú jedno kolo protihry a výhru nerušia. N5 „výhra strachom hneď po Nakladačke“ si zamietol, tu idem opačným smerom. Ochrana politika pred výhrou strachom je odložená do overenia hádky pred Nakladačkou a nič nižšie s ňou nekoliduje.</p>
+
+<div class="navrh top">
+<h3>V1 · Pivnica plná <span class="stit odp">odporúčam</span><span class="stit n">moment</span><span class="stit k">pravidlo</span></h3>
+<div class="znenie">§1 a §10 Výhra väzňami: „Kto <b>vyhrá bitku</b> a <b>už pred ňou</b> má väzňov aspoň (lokality + finále) / 2, vyhráva hneď (krok 4c, spolu s výhrou strachom). Zajatie v kroku 4e výhru ešte nedá: stôl ohlási <b>PIVNICA PLNÁ</b> a ďalšia vyhratá bitka rozhodne.“ Platí aj pre finále: kto má pred finále väzňov na výhru a finále vyhrá, vyhráva bez ohľadu na špaky.</div>
+<dl>
+<dt>Čo rieši</dt><dd>Žiadna partia neskončí jednou Nakladačkou bez kola na odpoveď. Výhra väzňami sa vyhodnocuje rovnako ako výhra strachom, takže pravidlo je súmernejšie a jednoduchšie. Väzeň sa aj tak ráta ako červená, takže 3 väzni + 1 červená už dnes znamenajú výhru strachom v ďalšej vyhratej bitke. Agresor ostáva hrozbou, stačí mu jedna ďalšia výhra. Obranca dostane kolo na Viery, NA EX, presvedčenie a hádku. „Posledná bitka o obec“ je moment s pečiatkou a Melicharom.</dd>
+<dt>13. 11.</dt><dd>Fero by po K4 mal troch väzňov pri skóre 68 : 14 a musel by vyhrať K5. Pravdepodobne by vyhral, ale Jano by mal kolo.</dd>
+<dt>Riziká</dt><dd>Rýchla výhra príde o kolo neskôr. V Tretej lige (2 väzni, 3 lokality) sa môže presunúť až do finále. Ak obranca vyhrá všetky zvyšné bitky, hrá sa finále na špaky a väzni pritom nedávajú nič. Mení sa tvoje „hneď po rozdelení“ z v11.4.</dd>
+<dt>Pravidlá a kód</dt><dd>§1 tabuľka, §9 kroky 4c a 4e, §10, ťahák, výučba zajatia. Volanie <code>vyhraVaznami</code> (<code>engine.ts:2667</code>, dnes z kroku 4e) presunúť ku kroku 4c (<code>engine.ts:5952</code>) a rátať väzňov pred Nakladačkou. K tomu moment v <code>momenty.ts</code>.</dd>
+<dt>Overenie</dt><dd>Podiel partií s finále. Kolo, v ktorom končí výhra väzňami (dnes K4). Napätie od porazeného aspoň 6.</dd>
+</dl></div>
+
+<div class="navrh">
+<h3>V2 · Ďalšie zajatie v tom istom rozdelení je drahšie <span class="stit k">pravidlo</span></h3>
+<div class="znenie">§10 Zajatie: „Prvé zajatie v jednom rozdelení Nakladačky stojí 5 bodov, každé ďalšie v tom istom rozdelení o 3 viac (5, 8, 11…).“ (Jano 13. 11.; Fero navrhol rast podľa všetkých tvojich väzňov, 5 / 7 / 9.)</div>
+<dl>
+<dt>Čo rieši</dt><dd>Tri zajatia naraz stoja 24 namiesto 15, teda výnimočnú Nakladačku. Bežne vyjde 2 + 1 v ďalšom kole, a tým kolo na odpoveď. Je to rastúca cena ako pri fajčení, nie strop. Na rozdiel od Ferovho variantu nezdražie prvé zajatie v neskoršom kole.</dd>
+<dt>Riziká</dt><dd>Oslabí aj partie, v ktorých hromadné zajatie problémom nebolo. Je to len číslo, takže hrozba ostáva rovnako neviditeľná ako dnes (len vzdialenejšia).</dd>
+<dt>Pravidlá a kód</dt><dd>§9.4 bod 6, §10. <code>cenaAkcieRozdelenia</code> v <code>rozdelenie.ts:67</code> podľa poradia akcie v pláne, pečiatka ZAJAŤ ukáže cenu.</dd>
+<dt>Overenie</dt><dd>Výhra väzňami najskôr v K5 alebo vo finále.</dd>
+</dl></div>
+
+<div class="navrh">
+<h3>V3 · Kto je v ohrození, vyberá bojisko <span class="stit k">pravidlo</span></h3>
+<div class="znenie">§5 Voľba cieľa: „Keď súper pred kolom <b>môže v tomto kole vyhrať</b> (má väzňov a červených od minulého kola aspoň toľko, koľko treba väzňov na výhru, alebo má 4 červené), lokalitu vyberá a natáča <b>útočník</b>.“</div>
+<dl>
+<dt>Čo rieši</dt><dd>Ohrozený dostane do ruky štruktúru, nie darček: vyberie lokalitu s málo Pitkami či hranou, ktorá mu sedí, a zmenší tak šancu na veľkú Nakladačku. Hrozba sa ukáže na stole (spúšťač je verejný). Zdroj: knižnica Ekonomická lavína, „kto je pozadu, vyberá prvý“ (Power Grid, 7 Wonders Duel).</dd>
+<dt>Riziká</dt><dd>Spúšťač je ďalšie pravidlo, ktoré si treba pamätať. Útočník už vykladá aj odpovedá prvý, takže výhod sa mu môže nahromadiť priveľa (to bol dôvod v9.2). Účinok je menší ako pri V1.</dd>
+<dt>Pravidlá a kód</dt><dd>§4, §5, výučba. Voľba cieľa v jadre plus značka „hrozí výhra“ v náhľade (spočítať sa dá z verejného stavu).</dd>
+<dt>Overenie</dt><dd>Koľkokrát spúšťač padol a ohrozený potom vyhral bitku.</dd>
+</dl></div>
+
+<div class="navrh">
+<h3>V4 · Pilník (nový Nástroj) <span class="stit n">neobvyklé, karta</span><span class="stit k">karta</span></h3>
+<div class="znenie">Nástroj <b>Pilník</b>, Dedičstvo: „Súper potrebuje na výhru väzňami o 1 väzňa viac a na výhru strachom o 1 červenú viac.“ Hrany navrhne admin v tvorcovi (TODO).</div>
+<dl>
+<dt>Čo rieši</dt><dd>Ohrozený dostane obranu, ktorú si kúpi cigaretami (Dedičstvo 1 / 2 / 3…), takže prebytok sa dá minúť. Pilník leží verejne v ponuke, preto ho súper môže vziať prvý alebo zakopať pri stavbe ponuky, a z toho vzniká hra o kartu. Nikoho nevyslobodí, takže „nikto ho nevyslobodí“ (§10) ostáva.</dd>
+<dt>Riziká</dt><dd>Kým nehrozí výhra, je to mŕtva karta, a teda riziko „smetiska“ ako pri Krabičke či Vidliach. Karta na stole hrozbu len posunie, aktívnu protihru nedá. Treba ho zaradiť do Náradia, ktoré má jeden Nástroj na akciu, alebo k Dedičstvám mimo neho (Noviny, Pasca).</dd>
+<dt>Pravidlá a kód</dt><dd>§12 Dedičstvo, §16, nová karta v tvorcovi (rozpracovaný stav pre Zrejúcu). <code>vazniNaVyhru</code> (<code>constants.ts:256</code>) a <code>CERVENYCH_NA_VYHRU</code> sa budú rátať za hráča.</dd>
+<dt>Overenie</dt><dd>Kúpi niekto Pilník, keď súper má 2 a viac červených od minulého kola? Ako často je Pilník v ponuke nevzatý?</dd>
+</dl></div>
+
+<!-- ============================================================ -->
+<h2>5. Problém 4 — NA EX bez protiťahu</h2>
+<p>NA EX leží na karte do bitky a vyhodnotí sa v <b>každej</b> Pitke (PRAVIDLA.md:1108). Na súperovej karte s neaktívnym Dlhom či Pečeňou tak zdvojí
+kliatby v každej Pitke kola. Obrana dnes existuje len tri: spárovať neaktívne akcie (odpoveď ide len na koniec línie, :1149, takže vnútorný slot medzi
+kartami alebo oproti prázdnej pozícii hrany sa spárovať nedá), štít z Odporu a zrážka, ktorá je stávka. Hráči NA EX inak chvália (Interakcia 8,3), chýba len
+<b>protiťah po odkrytí</b>. Väčšina Ferových 9 Cirhóz (−27) vznikla práve takto.</p>
+<p class="uz">Rozhodnuté 12. 11.: „pijan-sejf-pri-lokalite“ nechať, ako je. Nič nižšie nemení, kam smie NA EX ísť. Návrh 4 v reporte 14. 11. (a–e) je podobný, N2 je jeho užšia verzia.</p>
+
+<div class="navrh top">
+<h3>N1 · Dopijem za teba <span class="stit odp">odporúčam</span><span class="stit n">nový ťah, moment</span></h3>
+<div class="znenie">§6 nový ťah: „V Zhromaždení smie hráč namiesto vyloženia karty <b>dopiť</b> súperovo NA EX zo svojej karty: otočí jeden svoj plný poldeci na vypitý a ráta sa mu 1 nerest. Súperovo NA EX z karty zíde a jeho poldeci ostáva vypitý (ako pri Farárovi). Je to ťah a potom hrá súper.“</div>
+<dl>
+<dt>Čo rieši</dt><dd>Súperovo NA EX zasiahne naplno len v Pitke, v ktorej sa odkrylo. Potom má majiteľ na výber: zahrať o kartu viac, alebo zachrániť kartu. Z obrany je rozhodnutie, nie stávka. Vilovo NA EX na Dvojčatá (Pitka 1 z 3) by namiesto 3 Cirhóz a 6 Dlhov dalo 1 Cirhózu a 2 Dlhy, keby Fero v Zhromaždení 2 dopil. V poslednej Pitke sa dopiť nedá, takže NA EX ostáva zbraňou, len sa jeho najlepší čas posunie a násobok Pitkami ubudne. Pečiatka <b>DOPIL ZA TEBA</b>.</dd>
+<dt>Riziká</dt><dd>Farár (väzeň) stratí výnimočnosť, lebo zadarmo a v Pitke robí to isté. Hráč s viac poldeci sa bráni ľahšie (smer problému 2), E4 to čiastočne vyrovná. NA EX, ktoré zíde, sa v bitke neráta pre Svokru, Pijana ani Šoféra, rovnako ako pri Farárovi. Dávajúcemu ostáva pečeň aj nerest.</dd>
+<dt>Pravidlá a kód</dt><dd>§6, §7 NA EX, ťahák. V jadre už je <code>zlozNaex</code> (<code>engine.ts:3194</code>, používa ho Farár v <code>engine.ts:4765</code>). Nový príkaz Zhromaždenia, náhľad a bot.</dd>
+<dt>Overenie</dt><dd>Priemerná škoda jedného NA EX na súperovej karte (dnes až −13, cieľ najviac −6). Hráč aspoň raz dopije a zdôvodní, prečo nedal radšej kartu.</dd>
+</dl></div>
+
+<div class="navrh">
+<h3>N2 · Kliatby vytriezvejú <span class="stit k">pravidlo</span></h3>
+<div class="znenie">§7 NA EX: „Hazard a Poškodenie pečene, ktoré NA EX zdvojilo, platia len v Pitke, v ktorej sa NA EX odkrylo. V ďalších Pitkách kola ostanú neaktívne a nedajú nič. Ostatné akcie karty (bitkové, Poldeci, Cigareta, Vízia, Obmedzenie) ako dnes.“</div>
+<dl>
+<dt>Rozdiel proti reportu</dt><dd>Návrh 4a v reporte 14. 11. obmedzuje na jednu Pitku aj Poldeci a Obmedzenie. Tento sa týka <b>len kliatob</b>, teda presne toho, čo robí −13.</dd>
+<dt>Čo rieši</dt><dd>Jedno NA EX dá najviac jednu dávku Dlhov a Cirhóz, nie tri. Bitková sila NA EX (zrušiť tuhé, zdvojiť Pecky) ostáva celá a skoré NA EX prestane byť automaticky najlepšie.</dd>
+<dt>Riziká</dt><dd>Menej Dlhov v hre (Exekútor, Herňa, Kmotor slabnú). Pribudne výnimka do pravidla, ktoré je dnes jedna veta, a hráči sa sťažujú práve na zrozumiteľnosť (5,5). Žiadne rozhodnutie nepribudne, len menšia škoda.</dd>
+<dt>Pravidlá a kód</dt><dd>§7 NA EX a Vyhodnotenie Pitky, kroky 2–3 (pri NA EX si zapamätať Pitku odkrytia), <code>nahladPitky</code>, bot.</dd>
+<dt>Overenie</dt><dd>Cirhózy a Dlhy z jedného NA EX (dnes 3 + 6). Podiel NA EX v prvej Pitke kola.</dd>
+</dl></div>
+
+<div class="navrh">
+<h3>N3 · Kyslá uhorka (nový Nástroj) <span class="stit n">karta, minúť prebytok</span></h3>
+<div class="znenie">Nástroj <b>Kyslá uhorka</b>, Dedičstvo: „Súperovo NA EX na tvojej karte zdvojí jej Hazard a Poškodenie pečene len v Pitke, v ktorej sa odkrylo.“ Hrany navrhne admin v tvorcovi (TODO).</div>
+<dl>
+<dt>Čo rieši</dt><dd>Je to N2 ako voľba hráča: kto sa bojí NA EX na svoje karty s Dlhom a Pečeňou, kúpi si ju do Dedičstva za cigarety. Prebytok cigariet (Šimon 16, Vilo 13) tak dostane zmysluplný výdavok. Jano 13. 11. žiadal „Nástroj, ktorý dá karte štít“. Mení len tvoje karty, ako Zapaľovač a Energeťák.</dd>
+<dt>Riziká</dt><dd>Bez súperovho NA EX na kliatbové karty je mŕtva. Pomôže len tomu, kto ju má, takže lavínu zdrojov (problém 2) nerieši.</dd>
+<dt>Pravidlá a kód</dt><dd>§12, §16, nová karta v tvorcovi (Zrejúca). Jadro: podmienka v zdvojení pri vyhodnotení Pitky.</dd>
+<dt>Overenie</dt><dd>Kúpi ju hráč, ktorý má v balíčku Dvojčatá, Manželku či Degustátorku? Škoda z NA EX u jej majiteľa.</dd>
+</dl></div>
+
+<!-- ============================================================ -->
+<h2>6. Ako ich skladať a čo zmerať</h2>
+<ul>
+<li><b>Prvá dávka (malé zásahy, jasný cieľ):</b> R1 + V1 + N1, spolu s už schválenou hádkou pred Nakladačkou. Každý sa dotýka iného problému a v kóde sú to malé zmeny (jedna podmienka, presun volania, existujúca funkcia).</li>
+<li><b>Druhá dávka:</b> E4, prípadne E1 alebo #56 (jeden z dvoch, nie oba). E2 a E3 ako záloha, ak cigarety budú ďalej tiecť víťazovi.</li>
+<li><b>Botom sa dá zmerať:</b> R1, R2, V1, V2 a N2 (bez nového ťahu). E1 až E4 a N1 potrebujú ľudí alebo nové ťahy bota, lebo bot barteruje zriedka.</li>
+<li><b>Platí všade?</b> Kalamita áno. V 2 na 2 platí podľa §18 (tím ako celok). Päta, Lakeť, Otočka (§19) má vlastný rad starších a bez ponuky v tejto podobe, takže sa jej R1–R3, E2, V1–V4 netýkajú.</li>
+<li><b>Zásady:</b> žiadny strop zdroja (rastúce ceny E1, E4, V2 sú ako fajčenie), žiadna akcia neplatí sama sebe, „strana línie“ nikde, zamietnuté nápady sa nevracajú (N5, N11, max 2 Pitky, Spoveď, výkupné 3 : 1, pijan-sejf).</li>
+</ul>
+
+<h2>7. Otázky pre Michala</h2>
+<ol>
+<li>R1 (reči bodujú len na súperovom strachu): skúsiť <b>namiesto</b> #54 A, alebo až po ňom?</li>
+<li>V1: smie výhra väzňami prísť až v ďalšej vyhratej bitke (mení tvoje „hneď“ z v11.4)?</li>
+<li>E4 „Napíš mi to!“: áno alebo nie? Ak áno, aj pri odpovedi na NA EX?</li>
+<li>N1 „Dopijem za teba“: stačí cena 1 plný poldeci + 1 nerest, alebo aj +1 pečeň ako pri odpovedi?</li>
+<li>Vidíš lavínu poldeci (6 proti 3) aj v partiách s ľuďmi, alebo ju považuješ za správanie AI ako 10-28?</li>
+</ol>
+
+<p class="lead">Vymyselník · vetva <code>napady/riesenia-20261116</code> · kód hry sa nemenil.</p>
+</main></body></html>
