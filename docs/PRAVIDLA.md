@@ -1949,7 +1949,7 @@ Vedúcko, Kapybara).
 - **Podloženie je ťah v Zhromaždení a stojí 1 cigaretu** (P4). Nástroj z ruky zasunieš
   pod **svoju** kartu s tagom **Občan alebo Starešina** v línii — **pod súperovu nie** (v11.16,
   Michal 2026-11-09: „hráč nesmie podkladať náradie pod súperove karty, len pod svoje“), natočený
-  tak, aby zvolená hrana pretŕčala. Do limitu vykladania sa neráta, v striedaní je to ťah
+  tak, aby zvolená hrana pretŕčala. Poldeci nestojí, v striedaní je to ťah
   (aj ďalší krok ťahu po Vypiť, §13).
 - **Platí len pretŕčajúca hrana.** Druhá je skrytá a nerobí nič. Natočenie sa po
   podložení nemení.
