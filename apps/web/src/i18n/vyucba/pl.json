@@ -747,6 +747,30 @@
       "melichar": "Strach pri staršom má stupne: sivá 0, žltá 1, oranžová 2, červená 3. Strach neklesá a platí ti po každej vyhratej bitke: žltá 1 špak, oranžová 3, červená 6. Ja sa s nimi momentálne nestretávam, ale to sem nepatrí."
     }
   },
+  "i-bodovanie2": {
+    "melichar": "Ale starsi ci płacą, według stanu sprzed Łomotu: Proboszcz 3 za pomarańczowy strach. Stały bywalec plotek nie miał, od starszych nie dostał nic.",
+    "sk": {
+      "melichar": "Ale starší ti platia, podľa stavu pred Nakladačkou: Farár 3 za oranžový strach. Štamgast reči nemal, od starších nedostal nič."
+    }
+  },
+  "i-body": {
+    "melichar": "Po bójce przyszedł też komornik: kto ma Dług, temu spala połowę Długów, zaokrąglając w górę, i tyle samo petów. Stały bywalec miał dwa: jeden mu spłonął, jeden mu został. Peta jednak nie stracił – czemu, zaraz.",
+    "sk": {
+      "melichar": "Po bitke prišiel aj exekútor: kto má Dlh, tomu spáli polovicu Dlhov, zaokrúhlene nahor, a rovnako veľa špakov. Štamgast mal dva: jeden mu zhorel, jeden mu ostal. Špak ale nestratil – prečo, hneď."
+    }
+  },
+  "i-priazen": {
+    "melichar": "Kto boi się ciebie, pomaga jemu. Proboszcz bał się ciebie o 2 bardziej niż Stałego bywalca, i ta różnica to przychylność Stałego bywalca. Przychylność Proboszcza to Adwokat: komornik zabrał mu o dwa pety mniej, czyli nic.",
+    "sk": {
+      "melichar": "Kto sa bojí teba, pomáha jemu. Farár sa ťa bál o 2 viac ako Štamgasta, a ten rozdiel je Štamgastova priazeň. Farárova je Advokát: exekútor mu vzal o dva špaky menej, teda nič."
+    }
+  },
+  "k-reci-bot": {
+    "melichar": "Kłótnię wygrał Stały bywalec i wydał ją na plotki – obgadywanie. Plotki zajmują stopnie na twoim termometrze i kosztują tyle samo co strach: u Bufetowej i u Autobusiarza zajął twój żółty, za 1 + 1. Ten stopień jest teraz jego: za żółty każde z nich da mu po każdej bójce 1, czy wygra, czy nie, a tobie nie dadzą nic.",
+    "sk": {
+      "melichar": "Hádku vyhral Štamgast a minul ju na reči – ohováranie. Reči obsadzujú stupne na tvojom teplomere a stoja rovnako ako strach: pri Krčmárke aj pri Autobusárovi obsadil tvoju žltú, za 1 + 1. Ten stupeň je teraz jeho: za žltú mu každý z nich dá po každej bitke 1, nech vyhrá, či nie, a tebe nedajú nič."
+    }
+  },
   "k-nakladacka2": {
     "melichar": "Wygrana o 5. Różnica nazywa się Łomot i wydajesz ją na strach, jak ostatnio. Proboszcz boi się ciebie na pomarańczowym, a do czerwonego są dokładnie 3: podnieś mu strach na czerwony. Pozostałe 2 daj Bufetowej i Autobusiarzowi, każdemu na żółty – rozdzielić trzeba wszystko, co się da – i potwierdź.",
     "sk": {
@@ -771,30 +795,6 @@
       "vysvetlenie.1": "Áno. Strach ti platí, ale súperovi dáva priazeň. Nič nie je zadarmo.",
       "moznost.2": "Porazený, na svoje priazne.",
       "vysvetlenie.2": "Porazený nedelí nič. Priazeň mu dá tvoj strach sám."
-    }
-  },
-  "i-bodovanie2": {
-    "melichar": "Ale starsi ci płacą, według stanu sprzed Łomotu: Proboszcz 3 za pomarańczowy strach. Stały bywalec plotek nie miał, od starszych nie dostał nic.",
-    "sk": {
-      "melichar": "Ale starší ti platia, podľa stavu pred Nakladačkou: Farár 3 za oranžový strach. Štamgast reči nemal, od starších nedostal nič."
-    }
-  },
-  "i-body": {
-    "melichar": "Po bójce przyszedł też komornik: kto ma Dług, temu spala połowę Długów, zaokrąglając w górę, i tyle samo petów. Stały bywalec miał dwa: jeden mu spłonął, jeden mu został. Peta jednak nie stracił – czemu, zaraz.",
-    "sk": {
-      "melichar": "Po bitke prišiel aj exekútor: kto má Dlh, tomu spáli polovicu Dlhov, zaokrúhlene nahor, a rovnako veľa špakov. Štamgast mal dva: jeden mu zhorel, jeden mu ostal. Špak ale nestratil – prečo, hneď."
-    }
-  },
-  "i-priazen": {
-    "melichar": "Kto boi się ciebie, pomaga jemu. Proboszcz bał się ciebie o 2 bardziej niż Stałego bywalca, i ta różnica to przychylność Stałego bywalca. Przychylność Proboszcza to Adwokat: komornik zabrał mu o dwa pety mniej, czyli nic.",
-    "sk": {
-      "melichar": "Kto sa bojí teba, pomáha jemu. Farár sa ťa bál o 2 viac ako Štamgasta, a ten rozdiel je Štamgastova priazeň. Farárova je Advokát: exekútor mu vzal o dva špaky menej, teda nič."
-    }
-  },
-  "k-reci-bot": {
-    "melichar": "Kłótnię wygrał Stały bywalec i wydał ją na plotki – obgadywanie. Plotki zajmują stopnie na twoim termometrze i kosztują tyle samo co strach: u Bufetowej i u Autobusiarza zajął twój żółty, za 1 + 1. Ten stopień jest teraz jego: za żółty każde z nich da mu po każdej bójce 1, czy wygra, czy nie, a tobie nie dadzą nic.",
-    "sk": {
-      "melichar": "Hádku vyhral Štamgast a minul ju na reči – ohováranie. Reči obsadzujú stupne na tvojom teplomere a stoja rovnako ako strach: pri Krčmárke aj pri Autobusárovi obsadil tvoju žltú, za 1 + 1. Ten stupeň je teraz jeho: za žltú mu každý z nich dá po každej bitke 1, nech vyhrá, či nie, a tebe nedajú nič."
     }
   },
   "q-makke": {
@@ -1059,12 +1059,6 @@
       "vysvetlenie.2": "Exekútor príde vždy, keď máš aspoň jeden Dlh. Neskrývaj sa, nájde ťa."
     }
   },
-  "k-nakladacka3": {
-    "melichar": "Łomot 7 rozdzieliłem ci ja, żebyśmy tu nie siedzieli do rana. Proboszcz boi się ciebie na czerwonym od poprzedniej rundy, więc pojmałem go za 5 – jest twoim jeńcem i siedzi w piwnicy. Plotek u niego Stały bywalec nie miał, więc nie miał ci co dać; jego plotki u Bufetowej i Autobusiarza po przegranej kłótni opadły od dołu i przepadły. Zdolności Proboszcza – zrzucić jedno NA EX przeciwnika z karty – możesz raz na grę użyć, kiedy chcesz. Pozostałe 2: Autobusiarz z żółtego na pomarańczowy.",
-    "sk": {
-      "melichar": "Nakladačku 7 som ti rozdelil ja, nech tu nesedíme do rána. Farár sa ťa bojí na červenej od minulého kola, tak som ho za 5 zajal – je tvoj väzeň a sedí v pivnici. Reči pri ňom Štamgast nemal, tak ti nemal čo dať; jeho reči pri Krčmárke a Autobusárovi po prehratej hádke klesli zospodu a zanikli. Farárovu schopnosť – zhodiť jedno súperovo NA EX z karty – smieš raz za hru použiť, kedy chceš. Zvyšné 2: Autobusár zo žltej na oranžovú."
-    }
-  },
   "k-reci3": {
     "melichar": "Kłótnię 3 wydajesz ty, na termometr Stałego bywalca. Ten nigdzie się nie boi, więc plotki idą od dołu: Weterynarzowi żółty i pomarańczowy, za 1 + 2. Weterynarz da ci potem 3, wygrasz czy przegrasz, dopóki nie przegrasz kłótni. Kliknij go i potwierdź.",
     "zle.1": "Autobusiarz boi się ciebie już na pomarańczowym, obgaduj gdzie indziej. Weterynarz, żółty i pomarańczowy, za 3.",
@@ -1073,6 +1067,12 @@
       "melichar": "Hádku 3 minieš ty, na Štamgastov teplomer. Ten sa nebojí nikde, tak reči idú odspodu: Veterinárovi žltú a oranžovú, za 1 + 2. Veterinár ti potom dá 3, vyhráš či prehráš, kým neprehráš hádku. Klikni na neho a potvrď.",
       "zle.1": "Autobusár sa ťa už bojí na oranžovej, ohováraj inde. Veterinár, žltá a oranžová, za 3.",
       "inak": "Veterinár, reči na žltú a oranžovú, za 1 + 2."
+    }
+  },
+  "k-nakladacka3": {
+    "melichar": "Łomot 7 rozdzieliłem ci ja, żebyśmy tu nie siedzieli do rana. Proboszcz boi się ciebie na czerwonym od poprzedniej rundy, więc pojmałem go za 5 – jest twoim jeńcem i siedzi w piwnicy. Plotek u niego Stały bywalec nie miał, więc nie miał ci co dać; jego plotki u Bufetowej i Autobusiarza po przegranej kłótni opadły od dołu i przepadły. Zdolności Proboszcza – zrzucić jedno NA EX przeciwnika z karty – możesz raz na grę użyć, kiedy chcesz. Pozostałe 2: Autobusiarz z żółtego na pomarańczowy.",
+    "sk": {
+      "melichar": "Nakladačku 7 som ti rozdelil ja, nech tu nesedíme do rána. Farár sa ťa bojí na červenej od minulého kola, tak som ho za 5 zajal – je tvoj väzeň a sedí v pivnici. Reči pri ňom Štamgast nemal, tak ti nemal čo dať; jeho reči pri Krčmárke a Autobusárovi po prehratej hádke klesli zospodu a zanikli. Farárovu schopnosť – zhodiť jedno súperovo NA EX z karty – smieš raz za hru použiť, kedy chceš. Zvyšné 2: Autobusár zo žltej na oranžovú."
     }
   },
   "i-po-bitke3": {

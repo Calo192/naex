@@ -747,6 +747,30 @@
       "melichar": "Strach pri staršom má stupne: sivá 0, žltá 1, oranžová 2, červená 3. Strach neklesá a platí ti po každej vyhratej bitke: žltá 1 špak, oranžová 3, červená 6. Ja sa s nimi momentálne nestretávam, ale to sem nepatrí."
     }
   },
+  "i-bodovanie2": {
+    "melichar": "Ale starší ti platí, podle stavu před Nakládačkou: Farář 3 za oranžový strach. Štamgast řeči neměl, od starších nedostal nic.",
+    "sk": {
+      "melichar": "Ale starší ti platia, podľa stavu pred Nakladačkou: Farár 3 za oranžový strach. Štamgast reči nemal, od starších nedostal nič."
+    }
+  },
+  "i-body": {
+    "melichar": "Po rvačce přišel i exekutor: kdo má Dluh, tomu spálí polovinu Dluhů, zaokrouhleno nahoru, a stejně vajglů. Štamgast měl dva: jeden mu shořel, jeden mu zůstal. Vajgl ale neztratil – proč, hned uvidíš.",
+    "sk": {
+      "melichar": "Po bitke prišiel aj exekútor: kto má Dlh, tomu spáli polovicu Dlhov, zaokrúhlene nahor, a rovnako veľa špakov. Štamgast mal dva: jeden mu zhorel, jeden mu ostal. Špak ale nestratil – prečo, hneď."
+    }
+  },
+  "i-priazen": {
+    "melichar": "Kdo se bojí tebe, pomáhá jemu. Farář se tě bál o 2 víc než Štamgasta, a ten rozdíl je Štamgastova přízeň. Farářova je Advokát: exekutor mu vzal o dva vajgly méně, tedy nic.",
+    "sk": {
+      "melichar": "Kto sa bojí teba, pomáha jemu. Farár sa ťa bál o 2 viac ako Štamgasta, a ten rozdiel je Štamgastova priazeň. Farárova je Advokát: exekútor mu vzal o dva špaky menej, teda nič."
+    }
+  },
+  "k-reci-bot": {
+    "melichar": "Hádku vyhrál Štamgast a utratil ji za řeči – pomluvy. Řeči obsazují stupně na tvém teploměru a stojí stejně jako strach: u Hospodské i u Autobusáka obsadil tvou žlutou, za 1 + 1. Ten stupeň je teď jeho: za žlutou mu každý z nich dá po každé rvačce 1, ať vyhraje, nebo ne, a tobě nedají nic.",
+    "sk": {
+      "melichar": "Hádku vyhral Štamgast a minul ju na reči – ohováranie. Reči obsadzujú stupne na tvojom teplomere a stoja rovnako ako strach: pri Krčmárke aj pri Autobusárovi obsadil tvoju žltú, za 1 + 1. Ten stupeň je teraz jeho: za žltú mu každý z nich dá po každej bitke 1, nech vyhrá, či nie, a tebe nedajú nič."
+    }
+  },
   "k-nakladacka2": {
     "melichar": "Výhra o 5. Rozdíl se jmenuje Nakládačka a utratíš ji za strach, jako minule. Farář se tě bojí na oranžové a do červené jsou to přesně 3: zvedni mu strach na červenou. Zbylé 2 dej Hospodské a Autobusákovi, každému na žlutou – rozdělit se musí všechno, co jde – a potvrď.",
     "sk": {
@@ -771,30 +795,6 @@
       "vysvetlenie.1": "Áno. Strach ti platí, ale súperovi dáva priazeň. Nič nie je zadarmo.",
       "moznost.2": "Porazený, na svoje priazne.",
       "vysvetlenie.2": "Porazený nedelí nič. Priazeň mu dá tvoj strach sám."
-    }
-  },
-  "i-bodovanie2": {
-    "melichar": "Ale starší ti platí, podle stavu před Nakládačkou: Farář 3 za oranžový strach. Štamgast řeči neměl, od starších nedostal nic.",
-    "sk": {
-      "melichar": "Ale starší ti platia, podľa stavu pred Nakladačkou: Farár 3 za oranžový strach. Štamgast reči nemal, od starších nedostal nič."
-    }
-  },
-  "i-body": {
-    "melichar": "Po rvačce přišel i exekutor: kdo má Dluh, tomu spálí polovinu Dluhů, zaokrouhleno nahoru, a stejně vajglů. Štamgast měl dva: jeden mu shořel, jeden mu zůstal. Vajgl ale neztratil – proč, hned uvidíš.",
-    "sk": {
-      "melichar": "Po bitke prišiel aj exekútor: kto má Dlh, tomu spáli polovicu Dlhov, zaokrúhlene nahor, a rovnako veľa špakov. Štamgast mal dva: jeden mu zhorel, jeden mu ostal. Špak ale nestratil – prečo, hneď."
-    }
-  },
-  "i-priazen": {
-    "melichar": "Kdo se bojí tebe, pomáhá jemu. Farář se tě bál o 2 víc než Štamgasta, a ten rozdíl je Štamgastova přízeň. Farářova je Advokát: exekutor mu vzal o dva vajgly méně, tedy nic.",
-    "sk": {
-      "melichar": "Kto sa bojí teba, pomáha jemu. Farár sa ťa bál o 2 viac ako Štamgasta, a ten rozdiel je Štamgastova priazeň. Farárova je Advokát: exekútor mu vzal o dva špaky menej, teda nič."
-    }
-  },
-  "k-reci-bot": {
-    "melichar": "Hádku vyhrál Štamgast a utratil ji za řeči – pomluvy. Řeči obsazují stupně na tvém teploměru a stojí stejně jako strach: u Hospodské i u Autobusáka obsadil tvou žlutou, za 1 + 1. Ten stupeň je teď jeho: za žlutou mu každý z nich dá po každé rvačce 1, ať vyhraje, nebo ne, a tobě nedají nic.",
-    "sk": {
-      "melichar": "Hádku vyhral Štamgast a minul ju na reči – ohováranie. Reči obsadzujú stupne na tvojom teplomere a stoja rovnako ako strach: pri Krčmárke aj pri Autobusárovi obsadil tvoju žltú, za 1 + 1. Ten stupeň je teraz jeho: za žltú mu každý z nich dá po každej bitke 1, nech vyhrá, či nie, a tebe nedajú nič."
     }
   },
   "q-makke": {
@@ -1059,12 +1059,6 @@
       "vysvetlenie.2": "Exekútor príde vždy, keď máš aspoň jeden Dlh. Neskrývaj sa, nájde ťa."
     }
   },
-  "k-nakladacka3": {
-    "melichar": "Nakládačku 7 jsem ti rozdělil já, ať tu nesedíme do rána. Farář se tě bojí na červené od minulého kola, tak jsem ho za 5 zajal – je tvůj zajatec a sedí ve sklepě. Řeči u něj Štamgast neměl, tak ti neměl co dát; jeho řeči u Hospodské a Autobusáka po prohrané hádce klesly zespodu a zanikly. Farářovu schopnost – shodit jedno soupeřovo NA EX z karty – smíš jednou za hru použít, kdy chceš. Zbylé 2: Autobusák ze žluté na oranžovou.",
-    "sk": {
-      "melichar": "Nakladačku 7 som ti rozdelil ja, nech tu nesedíme do rána. Farár sa ťa bojí na červenej od minulého kola, tak som ho za 5 zajal – je tvoj väzeň a sedí v pivnici. Reči pri ňom Štamgast nemal, tak ti nemal čo dať; jeho reči pri Krčmárke a Autobusárovi po prehratej hádke klesli zospodu a zanikli. Farárovu schopnosť – zhodiť jedno súperovo NA EX z karty – smieš raz za hru použiť, kedy chceš. Zvyšné 2: Autobusár zo žltej na oranžovú."
-    }
-  },
   "k-reci3": {
     "melichar": "Hádku 3 utratíš ty, na Štamgastův teploměr. Ten se nebojí nikde, tak řeči jdou odspodu: Veterináři žlutou a oranžovou, za 1 + 2. Veterinář ti pak dá 3, vyhraješ či prohraješ, dokud neprohraješ hádku. Klikni na něj a potvrď.",
     "zle.1": "Autobusák se tě už bojí na oranžové, pomlouvej jinde. Veterinář, žlutá a oranžová, za 3.",
@@ -1073,6 +1067,12 @@
       "melichar": "Hádku 3 minieš ty, na Štamgastov teplomer. Ten sa nebojí nikde, tak reči idú odspodu: Veterinárovi žltú a oranžovú, za 1 + 2. Veterinár ti potom dá 3, vyhráš či prehráš, kým neprehráš hádku. Klikni na neho a potvrď.",
       "zle.1": "Autobusár sa ťa už bojí na oranžovej, ohováraj inde. Veterinár, žltá a oranžová, za 3.",
       "inak": "Veterinár, reči na žltú a oranžovú, za 1 + 2."
+    }
+  },
+  "k-nakladacka3": {
+    "melichar": "Nakládačku 7 jsem ti rozdělil já, ať tu nesedíme do rána. Farář se tě bojí na červené od minulého kola, tak jsem ho za 5 zajal – je tvůj zajatec a sedí ve sklepě. Řeči u něj Štamgast neměl, tak ti neměl co dát; jeho řeči u Hospodské a Autobusáka po prohrané hádce klesly zespodu a zanikly. Farářovu schopnost – shodit jedno soupeřovo NA EX z karty – smíš jednou za hru použít, kdy chceš. Zbylé 2: Autobusák ze žluté na oranžovou.",
+    "sk": {
+      "melichar": "Nakladačku 7 som ti rozdelil ja, nech tu nesedíme do rána. Farár sa ťa bojí na červenej od minulého kola, tak som ho za 5 zajal – je tvoj väzeň a sedí v pivnici. Reči pri ňom Štamgast nemal, tak ti nemal čo dať; jeho reči pri Krčmárke a Autobusárovi po prehratej hádke klesli zospodu a zanikli. Farárovu schopnosť – zhodiť jedno súperovo NA EX z karty – smieš raz za hru použiť, kedy chceš. Zvyšné 2: Autobusár zo žltej na oranžovú."
     }
   },
   "i-po-bitke3": {

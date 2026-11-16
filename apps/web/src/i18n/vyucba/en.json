@@ -747,6 +747,30 @@
       "melichar": "Strach pri staršom má stupne: sivá 0, žltá 1, oranžová 2, červená 3. Strach neklesá a platí ti po každej vyhratej bitke: žltá 1 špak, oranžová 3, červená 6. Ja sa s nimi momentálne nestretávam, ale to sem nepatrí."
     }
   },
+  "i-bodovanie2": {
+    "melichar": "But the elders pay you, by how things stood before the Thrashing: the Priest 3 for orange fear. The Regular had no rumours, so he got nothing from the elders.",
+    "sk": {
+      "melichar": "Ale starší ti platia, podľa stavu pred Nakladačkou: Farár 3 za oranžový strach. Štamgast reči nemal, od starších nedostal nič."
+    }
+  },
+  "i-body": {
+    "melichar": "After the brawl the bailiff came too: whoever has a Debt gets half their Debts burnt, rounded up, and as many butts with them. The Regular had two: one burnt, one stayed. But he didn't lose a butt – why, in a moment.",
+    "sk": {
+      "melichar": "Po bitke prišiel aj exekútor: kto má Dlh, tomu spáli polovicu Dlhov, zaokrúhlene nahor, a rovnako veľa špakov. Štamgast mal dva: jeden mu zhorel, jeden mu ostal. Špak ale nestratil – prečo, hneď."
+    }
+  },
+  "i-priazen": {
+    "melichar": "Whoever fears you helps him. The Priest feared you 2 more than the Regular, and that difference is the Regular's favour. The Priest's is the Lawyer: the bailiff took two fewer butts off him, so none.",
+    "sk": {
+      "melichar": "Kto sa bojí teba, pomáha jemu. Farár sa ťa bál o 2 viac ako Štamgasta, a ten rozdiel je Štamgastova priazeň. Farárova je Advokát: exekútor mu vzal o dva špaky menej, teda nič."
+    }
+  },
+  "k-reci-bot": {
+    "melichar": "The Regular won the argument and spent it on rumours – gossip. Rumours take up notches on your thermometer and cost the same as fear: at the Landlady and at the Bus Driver he took your yellow, for 1 + 1. That notch is his now: for the yellow each of them gives him 1 after every brawl, win or not, and you get nothing.",
+    "sk": {
+      "melichar": "Hádku vyhral Štamgast a minul ju na reči – ohováranie. Reči obsadzujú stupne na tvojom teplomere a stoja rovnako ako strach: pri Krčmárke aj pri Autobusárovi obsadil tvoju žltú, za 1 + 1. Ten stupeň je teraz jeho: za žltú mu každý z nich dá po každej bitke 1, nech vyhrá, či nie, a tebe nedajú nič."
+    }
+  },
   "k-nakladacka2": {
     "melichar": "A win by 5. The difference is called the Thrashing and you spend it on fear, like last time. The Priest fears you in the orange, and it's exactly 3 to red: raise his fear to red. Give the remaining 2 to the Landlady and the Bus Driver, each one up to yellow – you have to split everything you can – and confirm.",
     "sk": {
@@ -771,30 +795,6 @@
       "vysvetlenie.1": "Áno. Strach ti platí, ale súperovi dáva priazeň. Nič nie je zadarmo.",
       "moznost.2": "Porazený, na svoje priazne.",
       "vysvetlenie.2": "Porazený nedelí nič. Priazeň mu dá tvoj strach sám."
-    }
-  },
-  "i-bodovanie2": {
-    "melichar": "But the elders pay you, by how things stood before the Thrashing: the Priest 3 for orange fear. The Regular had no rumours, so he got nothing from the elders.",
-    "sk": {
-      "melichar": "Ale starší ti platia, podľa stavu pred Nakladačkou: Farár 3 za oranžový strach. Štamgast reči nemal, od starších nedostal nič."
-    }
-  },
-  "i-body": {
-    "melichar": "After the brawl the bailiff came too: whoever has a Debt gets half their Debts burnt, rounded up, and as many butts with them. The Regular had two: one burnt, one stayed. But he didn't lose a butt – why, in a moment.",
-    "sk": {
-      "melichar": "Po bitke prišiel aj exekútor: kto má Dlh, tomu spáli polovicu Dlhov, zaokrúhlene nahor, a rovnako veľa špakov. Štamgast mal dva: jeden mu zhorel, jeden mu ostal. Špak ale nestratil – prečo, hneď."
-    }
-  },
-  "i-priazen": {
-    "melichar": "Whoever fears you helps him. The Priest feared you 2 more than the Regular, and that difference is the Regular's favour. The Priest's is the Lawyer: the bailiff took two fewer butts off him, so none.",
-    "sk": {
-      "melichar": "Kto sa bojí teba, pomáha jemu. Farár sa ťa bál o 2 viac ako Štamgasta, a ten rozdiel je Štamgastova priazeň. Farárova je Advokát: exekútor mu vzal o dva špaky menej, teda nič."
-    }
-  },
-  "k-reci-bot": {
-    "melichar": "The Regular won the argument and spent it on rumours – gossip. Rumours take up notches on your thermometer and cost the same as fear: at the Landlady and at the Bus Driver he took your yellow, for 1 + 1. That notch is his now: for the yellow each of them gives him 1 after every brawl, win or not, and you get nothing.",
-    "sk": {
-      "melichar": "Hádku vyhral Štamgast a minul ju na reči – ohováranie. Reči obsadzujú stupne na tvojom teplomere a stoja rovnako ako strach: pri Krčmárke aj pri Autobusárovi obsadil tvoju žltú, za 1 + 1. Ten stupeň je teraz jeho: za žltú mu každý z nich dá po každej bitke 1, nech vyhrá, či nie, a tebe nedajú nič."
     }
   },
   "q-makke": {
@@ -1059,12 +1059,6 @@
       "vysvetlenie.2": "Exekútor príde vždy, keď máš aspoň jeden Dlh. Neskrývaj sa, nájde ťa."
     }
   },
-  "k-nakladacka3": {
-    "melichar": "I split the Thrashing of 7 for you, so we're not sitting here till morning. The Priest has feared you in the red since last round, so I captured him for 5 – he's your prisoner and he's sitting in the cellar. The Regular had no rumours at him, so he had nothing to hand over to you; his rumours at the Landlady and the Bus Driver dropped from the bottom after the lost argument and vanished. The Priest's ability – knocking one of your opponent's NA EX off a card – you may use once per game, whenever you like. The remaining 2: the Bus Driver from yellow to orange.",
-    "sk": {
-      "melichar": "Nakladačku 7 som ti rozdelil ja, nech tu nesedíme do rána. Farár sa ťa bojí na červenej od minulého kola, tak som ho za 5 zajal – je tvoj väzeň a sedí v pivnici. Reči pri ňom Štamgast nemal, tak ti nemal čo dať; jeho reči pri Krčmárke a Autobusárovi po prehratej hádke klesli zospodu a zanikli. Farárovu schopnosť – zhodiť jedno súperovo NA EX z karty – smieš raz za hru použiť, kedy chceš. Zvyšné 2: Autobusár zo žltej na oranžovú."
-    }
-  },
   "k-reci3": {
     "melichar": "You spend the argument of 3 on the Regular's thermometer. He's not feared anywhere, so the rumours go in from the bottom: the Vet, yellow and orange, for 1 + 2. The Vet will then give you 3, win or lose, until you lose an argument. Click him and confirm.",
     "zle.1": "The Bus Driver already fears you in the orange; gossip somewhere else. The Vet, yellow and orange, for 3.",
@@ -1073,6 +1067,12 @@
       "melichar": "Hádku 3 minieš ty, na Štamgastov teplomer. Ten sa nebojí nikde, tak reči idú odspodu: Veterinárovi žltú a oranžovú, za 1 + 2. Veterinár ti potom dá 3, vyhráš či prehráš, kým neprehráš hádku. Klikni na neho a potvrď.",
       "zle.1": "Autobusár sa ťa už bojí na oranžovej, ohováraj inde. Veterinár, žltá a oranžová, za 3.",
       "inak": "Veterinár, reči na žltú a oranžovú, za 1 + 2."
+    }
+  },
+  "k-nakladacka3": {
+    "melichar": "I split the Thrashing of 7 for you, so we're not sitting here till morning. The Priest has feared you in the red since last round, so I captured him for 5 – he's your prisoner and he's sitting in the cellar. The Regular had no rumours at him, so he had nothing to hand over to you; his rumours at the Landlady and the Bus Driver dropped from the bottom after the lost argument and vanished. The Priest's ability – knocking one of your opponent's NA EX off a card – you may use once per game, whenever you like. The remaining 2: the Bus Driver from yellow to orange.",
+    "sk": {
+      "melichar": "Nakladačku 7 som ti rozdelil ja, nech tu nesedíme do rána. Farár sa ťa bojí na červenej od minulého kola, tak som ho za 5 zajal – je tvoj väzeň a sedí v pivnici. Reči pri ňom Štamgast nemal, tak ti nemal čo dať; jeho reči pri Krčmárke a Autobusárovi po prehratej hádke klesli zospodu a zanikli. Farárovu schopnosť – zhodiť jedno súperovo NA EX z karty – smieš raz za hru použiť, kedy chceš. Zvyšné 2: Autobusár zo žltej na oranžovú."
     }
   },
   "i-po-bitke3": {
