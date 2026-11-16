@@ -781,6 +781,54 @@
         "porazen\\w*[^.!?]{0,30}plati\\w*[^.!?]{0,20}vitaz\\w*[^.!?]{0,20}vypaln"
       ],
       "pozn": "v12.4 (Michal 2026-11-12): výpalné dá banka, súper nič neplatí ani nestráca; do v12.3 platil súper zo svojich cigariet"
+    },
+    {
+      "pojem": "limit vykladania",
+      "vzory": [
+        "limitw* vyklad",
+        "vykladacw* limit",
+        "limitw* na vyklad"
+      ],
+      "pozn": "v12.5 (mŕtve pravidlá 1): pojem zanikol — §6 Vykladanie za poldeci, každá karta do línie (aj Záverečná, podstrčená a odpoveď na NA EX) stojí plný poldeci (vo Vypálenej od vypálenia v12.5 2026-11-16)"
+    },
+    {
+      "pojem": "priznaný Dlh",
+      "vzory": [
+        "priznanw* dlh",
+        "dlhw* (?:w+ ){0,2}priznan",
+        "nepriznanw* dlh"
+      ],
+      "pozn": "v12.5 (mŕtve pravidlá 2): „priznaný“ pri Dlhu vypadol, nepriznaný Dlh od v8.2 neexistuje; tabuľky priznania Dlhu zanikli (vo Vypálenej od vypálenia v12.5 2026-11-16)"
+    },
+    {
+      "pojem": "zadĺženie a prah Dlhu",
+      "vzory": [
+        "zadlzen",
+        "ciarkw* (?:w+ ){0,2}na ucte",
+        "prahw* dlh",
+        "dlhw* za kazdw* (?:2|dve|druh)",
+        "(?:2|dva|dve) hazardw* (?:w+ ){0,2}(?:=|na|za|dajw*|je) (?:1 |jeden )?dlh"
+      ],
+      "pozn": "v12.5 (mŕtve pravidlá 7): zadĺženie a čiarky na účte zanikli, Hazard dá Dlh vždy 1 : 1; Výherný automat — „Dedičstvo: Pitka: {Cigareta} {Dlh}.“ (vo Vypálenej od vypálenia v12.5 2026-11-16)"
+    },
+    {
+      "pojem": "remíza v tuhom podľa Absťákov",
+      "vzory": [
+        "remizw*[^.!?]{0,80}abstak",
+        "abstakw*[^.!?]{0,80}remiz",
+        "menej abstak",
+        "viac abstakw*[^.!?]{0,40}prehr"
+      ],
+      "pozn": "v12.5 (mŕtve pravidlá 4): remízu v tuhom rozhoduje len menej Dlhov, inak sekera (vo Vypálenej od vypálenia v12.5 2026-11-16)"
+    },
+    {
+      "pojem": "Abstinent ruší Absťáky",
+      "vzory": [
+        "abstinentw*[^.!?]{0,80}abstak",
+        "abstakw*[^.!?]{0,80}abstinent",
+        "odpustw*[^.!?]{0,30}abstak"
+      ],
+      "pozn": "v12.5 (mŕtve pravidlá 5): Abstinent zvyšuje prah Cirhózy o 1 / 2 / 3, Absťáky uberajú tuhé vždy (vo Vypálenej od vypálenia v12.5 2026-11-16)"
     }
   ],
   "karty": [
