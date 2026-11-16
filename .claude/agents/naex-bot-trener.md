@@ -49,7 +49,7 @@ $S --len rebrik --partii 16 --json playtest/bot/<id>/rebrik.json
 ```
 
 `turnaj.ts` na konci vypíše **„Ťahy bota podľa typu“** — ťah, ktorý bot
-používa zriedka alebo nikdy (napr. `barter`, `refillPoldeci`, `vizia`,
+používa zriedka alebo nikdy (napr. `barter`, `vizia`,
 `pokus`, `place:superova`, `cintorin`), je prvý kandidát na slabinu.
 Semienka sú pevné (rozdanie `1000 + i`), takže nový a starý bot hrajú tie
 isté rozdania a striedajú miesta.

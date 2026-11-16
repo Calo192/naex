@@ -109,7 +109,7 @@ import {
   zablokovaneStrany,
   maxZoSenku,
 } from "@naex/core";
-import { bzdochaText, prehraNaexText, prehraText, stavkaText, superoveSkryteNaex, sVidenymiSkrytymiNaex, vystrahaPeceneText } from "./texty-hraca.ts";
+import { bzdochaText, hasicTexty, plnePoldeciTeraz, prehraNaexText, prehraText, stavkaText, superoveSkryteNaex, sVidenymiSkrytymiNaex, vystrahaPeceneText } from "./texty-hraca.ts";
 
 interface Relacia {
   /** Server dočasnej partie (playtest dvoch agentov). */
@@ -415,7 +415,7 @@ function vykresli(v: ClientState, mena: readonly string[]): string {
     out.push(`KONIEC HRY: vyhral ${kto(v.koniec.vitaz)}. ${rozlozRod(v.koniec.dovod, rodyHracov)}${v.koniec.body ? ` Špaky: ty ${v.koniec.body[ja]}, súper ${v.koniec.body[su]}.` : ""}`);
   }
   out.push(
-    `Ty si ${mena[ja]} (${v.utocnik === ja ? "útočník — z ponuky berieš druhý, vykladáš prvý a na NA EX odpovedáš prvý (lícom dole)" : "obranca — vyberáš cieľ kola, natáča ho víťaz minulej hádky, z ponuky berieš prvý (na prvom ťahu len 1 kartu), vykladáš druhý a na NA EX odpovedáš druhý (na druhý kraj línie)"}), súper ${mena[su]}. Hrá sa o ${v.lokalitCelkom} ${v.lokalitCelkom <= 4 ? "lokality" : "lokalít"} a potom FINÁLE${v.rozpis !== undefined ? ` (úrovne lokalít po kolách ${v.rozpis.map((u) => (u === 4 ? "P" : String(u))).join(" · ")}; úroveň = počet akcií na hrane lokality; obranca vyberá zo všetkých neodohraných lokalít úrovne kola; finále je bitka o pinnacle lokalitu ako o každú inú, vyberá a natáča ju obranca — vedúci; útočí zaostávajúci (menej špakov, pri rovnosti porazený poslednej bitky); Pitky podľa spojov s lokalitou, 1–5)` : ""}${v.ciel?.typ === "finale" ? " — TERAZ JE FINÁLE na pinnacle lokalite" : ""}; odohraných bitiek ${v.nastenka.length}. ŠPAKY (víťazné body): ty ${v.spaky[ja]}, súper ${v.spaky[su]}${v.spakyNaSekere > 0 ? `, na sekere ${v.spakyNaSekere}` : ""}. Limit ruky nie je; na začiatku kola si každý dobere ${KONSTANTY.DOBRATIE_PO_BITKE} karty, nech má v ruke koľkokoľvek. Ďalší Nástroj do Dedičstva stojí ${v.cenaDedicstva} cig. (cena rastie pre oboch). Pitiek v bitke = 1 + menší počet aktivovaných akcií karty v strede (z dvoch strán).`,
+    `Ty si ${mena[ja]} (${v.utocnik === ja ? "útočník — z ponuky berieš druhý, vykladáš prvý a na NA EX odpovedáš prvý (lícom dole)" : "obranca — vyberáš cieľ kola, natáča ho víťaz minulej hádky, z ponuky berieš prvý (na prvom ťahu len 1 kartu), vykladáš druhý a na NA EX odpovedáš druhý (na druhý kraj línie)"}), súper ${mena[su]}. Hrá sa o ${v.lokalitCelkom} ${v.lokalitCelkom <= 4 ? "lokality" : "lokalít"} a potom FINÁLE${v.rozpis !== undefined ? ` (úrovne lokalít po kolách ${v.rozpis.map((u) => (u === 4 ? "P" : String(u))).join(" · ")}; úroveň = počet akcií na hrane lokality; obranca vyberá zo všetkých neodohraných lokalít úrovne kola; finále je bitka o pinnacle lokalitu ako o každú inú, vyberá ju obranca — vedúci, natáča ju víťaz poslednej hádky (po remíze v hádke obranca); útočí zaostávajúci (menej špakov, pri rovnosti porazený poslednej bitky); Pitky podľa spojov s lokalitou, 1–5)` : ""}${v.ciel?.typ === "finale" ? " — TERAZ JE FINÁLE na pinnacle lokalite" : ""}; odohraných bitiek ${v.nastenka.length}. ŠPAKY (víťazné body): ty ${v.spaky[ja]}, súper ${v.spaky[su]}${v.spakyNaSekere > 0 ? `, na sekere ${v.spakyNaSekere}` : ""}. Limit ruky nie je; na začiatku kola si každý dobere ${KONSTANTY.DOBRATIE_PO_BITKE} karty, nech má v ruke koľkokoľvek. Ďalší Nástroj do Dedičstva stojí ${v.cenaDedicstva} cig. (cena rastie pre oboch). Pitiek v bitke = 1 + menší počet aktivovaných akcií karty v strede (z dvoch strán).`,
   );
 
   // Stôl po prípadnom vyhodnotení — rovnako ako klient. V strede leží lokalita.
@@ -438,12 +438,14 @@ function vykresli(v: ClientState, mena: readonly string[]): string {
       p === ja && mojeSkryteNaex.length > 0
         ? ` | po odkrytí tvojho skrytého NA EX: poldeci plné ${poOdkryti.poldeciPlne}, pečeň ${poOdkryti.pecen}, cigarety ${poOdkryti.cigarety}`
         : "";
+    const { plne, podSkrytym } = plnePoldeciTeraz(v, p);
+    const naSkrytom = podSkrytym === 0 ? "" : ` (ďalší ${podSkrytym} už leží pod ${p === ja ? "tvojím" : "jeho"} skrytým NA EX)`;
     out.push(
-      `${p === ja ? "TVOJE ZDROJE" : "SÚPEROVE ZDROJE"}: poldeci plné ${h.poldeciPlne}, vypité ${h.poldeciVypite} (každá karta do línie stojí plný poldeci; plné ${plneVZhromazdeni(v, p)}, po bitke ${plneBuduceKolo(vs, p, false, DATA)}) | cigarety ${h.cigarety} | pečeň ${h.pecen}/${pr.cirhoza} | pečeň žije len počas Pitky | Dlhy ${pr.priznaneDlhy} (Exekútor v každej bitke: zhorí polovica nahor a rovnako veľa špakov — teraz ${pr.exekucia}${pr.priznaneDlhy > 0 && pr.exekucia === 0 ? ", Záhradkár ťa obíde" : ""}; pri remíze v bitke prehráva viac Dlhov) | Absťáky ${h.abstaky} v balíčku (karty, počet verejný) | nepriznané Cirhózy ${v.nepriznaneKliatby[p].cirhoza} (verejný počet) | ruka ${h.rukaPocet}, balíček ${h.doberaciPocet}, odhodené ${h.odhadzovaci.length}${poSkrytom}`,
+      `${p === ja ? "TVOJE ZDROJE" : "SÚPEROVE ZDROJE"}: poldeci plné ${plne}${naSkrytom}, vypité ${h.poldeciVypite} (každá karta do línie stojí plný poldeci; plné ${plneVZhromazdeni(v, p)}, po bitke ${plneBuduceKolo(vs, p, false, DATA)}) | cigarety ${h.cigarety} | pečeň ${h.pecen}/${pr.cirhoza} | pečeň žije len počas Pitky | Dlhy ${pr.priznaneDlhy} (Exekútor v každej bitke: zhorí polovica nahor a rovnako veľa špakov — teraz ${pr.exekucia}${pr.priznaneDlhy > 0 && pr.exekucia === 0 ? ", Záhradkár ťa obíde" : ""}; pri remíze v bitke prehráva viac Dlhov) | Absťáky ${h.abstaky} v balíčku (karty, počet verejný) | nepriznané Cirhózy ${v.nepriznaneKliatby[p].cirhoza} (verejný počet) | ruka ${h.rukaPocet}, balíček ${h.doberaciPocet}, odhodené ${h.odhadzovaci.length}${poSkrytom}`,
     );
     const vyhladP = vyhladPitkyText(vs, p);
     if (vyhladP !== null) out.push(`  VÝHĽAD PITKY: ${vyhladP}`);
-    const z = stavZavislosti(DATA, { ...stol, kolo: v.kolo, hraci: v.hraci }, p);
+    const z = stavZavislosti(DATA, { ...stol, kolo: v.kolo, hraci: v.hraci, lokalitCelkom: v.lokalitCelkom, ...(v.rozpis === undefined ? {} : { rozpis: v.rozpis }) }, p);
     const vyhlad =
       v.bezChuti === true
         ? "výučba bez Chuti — Absťák nepríde"
@@ -661,7 +663,7 @@ function vykresli(v: ClientState, mena: readonly string[]): string {
   out.push(
     `  STRACH (0 sivá, 1 žltá, 2 oranžová, 3 červená) — ako veľmi sa starší bojí hráča; neklesá. REČI — súvislý blok stupňov na SÚPEROVOM teplomere: obsadzujú sa od vrchu jeho strachu nadol, potom nad neho (zo sivej zdola nahor); keď jeho strach reči prekoná, blok sa posunie nahor a počet stupňov ostáva (spodný zanikne). Reči priazeň, strach, výhru strachom ani zajatie nemenia. ` +
       `PRIAZEŇ pre teba = súperov strach − tvoj strach (najmenej 0; reči sa nerátajú) — vyšší strach ti teda dáva body, ale súperovi priazeň. Stav staršieho podľa vyššieho strachu: ${STAV_STARSIEHO.map((x, i) => `${i} ${x}`).join(", ")}. ` +
-      `PO KAŽDEJ BITKE starší bodujú (stav pred zdvihnutím): stupne majú hodnotu ${HODNOTY_STUPNOV} (spolu ${[1, 2, 3].map((st) => KONSTANTY.SPAKY_ZA_STUPEN[st]).join(" / ")}) a dostane ich ten, kto stupeň drží, reči majú prednosť — víťaz bitky za svoj strach bez stupňov, ktoré obsadil súper rečami, KAŽDÝ hráč (vyhral, prehral aj pri sekere) za stupne, ktoré obsadil rečami. Potom klesnú reči zospodu o stupeň tomu, kto prehral hádku (pri remíze v hádke nikomu). ` +
+      `PO KAŽDEJ BITKE starší bodujú (stav pred zdvihnutím): stupne majú hodnotu ${HODNOTY_STUPNOV} (spolu ${[1, 2, 3].map((st) => KONSTANTY.SPAKY_ZA_STUPEN[st]).join(" / ")}) a dostane ich ten, kto stupeň drží, reči majú prednosť — víťaz bitky za svoj strach bez stupňov, ktoré obsadil súper rečami, KAŽDÝ hráč (vyhral, prehral aj pri sekere) za stupne, ktoré obsadil rečami, ale LEN na stupňoch, kde má súper strach (v12.5, R1) — reči nad súperovým strachom nebodujú, čakajú. Potom klesnú reči zospodu o stupeň tomu, kto prehral hádku (pri remíze v hádke nikomu). ` +
       `DVÍHANIE (v12.5 najprv hádka, potom Nakladačka): víťaz hádky rozdelí hádku na svoje reči na SÚPEROVOM teplomere, potom víťaz bitky Nakladačku na svoj strach, Predsedova vila za každé 2 cigarety vyfajčené v Pitke pridá tvoje reči o stupeň. Stupeň stojí ${CENY_STUPNOV} (napr. strach zo sivej na červenú ${cenaDvihnutia(0, CERVENA)}), strach na stupeň so súperovými rečami o ${KONSTANTY.REC_PRIRAZKA} viac. ` +
       `ZAJATIE (v11.4, v11.6): pri rozdelení Nakladačky zajmeš za ${KONSTANTY.CENA_ZAJATIA} staršieho, pri ktorom je tvoj strach na červenej UŽ PRED touto Nakladačkou (väzeň; súper ti odovzdá toľko špakov, koľko bodov hádky má v rečiach pri ňom, najviac koľko má). PRESVEDČENIE (v11.12): pri rozdelení hádky za ${KONSTANTY.CENA_PRESVEDCENIA} ktoréhokoľvek staršieho, pri ktorom máš reči na celom súperovom teplomere (smieš ich dotiahnuť v tom istom rozdelení) — reči, strach oboch aj priazeň ostanú, jeho karta ide tebe do ruky a natrvalo do tvojho balíčka. Vo finále ani jedno.`,
   );
@@ -798,8 +800,9 @@ function popisVylozenia(v: ClientState, k: CardInstance, kam: "vlastna" | "super
   const su = (v.ja === 0 ? 1 : 0) as PlayerId;
   const line = lineState(v);
   // Konflikt a Podpora pri priložení (playtest 2026-11-09, Hela N4) — línia, akú zloží motor.
-  const stranyPo = sPrilozenou(DATA, v, kam === "vlastna" ? v.ja : su, k, v.ja).strany;
-  const n = nahladVylozenia(DATA, line, v.ja, k, kam, v.naexVKole, stranyPo);
+  // Aj otočenie lokality (Vandal) — report 20261113-084431.
+  const po = sPrilozenou(DATA, v, kam === "vlastna" ? v.ja : su, k, v.ja);
+  const n = nahladVylozenia(DATA, line, v.ja, k, kam, v.naexVKole, po.strany, po.lokalitaOtocena);
   const s = n.sused;
   const spoj =
     s === null
@@ -858,8 +861,9 @@ function moznosti(v: ClientState): string[] {
       c({ type: "hasic", nechat: false }, "HASIČ: vytiahnutá karta už v odhadzovacom balíčku nie je — pokračuj");
       return out;
     }
-    c({ type: "hasic", nechat: true }, `HASIČ: kartu ${popisKarty(k)} z tvojho odhadzovacieho balíčka si nechaj v ruke (Dlh sa sám prizná a ťaháš kartu)`);
-    c({ type: "hasic", nechat: false }, `HASIČ: kartu ${meno(k.defId)} vráť do odhadzovacieho balíčka (kliatba, slabá karta)`);
+    const t = hasicTexty(k.defId, popisKarty(k), meno(k.defId));
+    c({ type: "hasic", nechat: true }, t.nechat);
+    c({ type: "hasic", nechat: false }, t.vratit);
     return out;
   }
   switch (v.faza) {

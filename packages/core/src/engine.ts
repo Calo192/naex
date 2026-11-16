@@ -725,7 +725,7 @@ export type Event =
       readonly damage: DamageResult;
       /** Súčty aktívnych akcií oboch partií (línia je verejná) — štatistiky. */
       readonly sums: readonly [ActionSums, ActionSums];
-      /** null = sekera: remíza v tuhom aj v Absťákoch aj v Dlhoch. */
+      /** null = sekera: remíza v tuhom aj v Dlhoch (v12.5; do v12.4 aj v Absťákoch). */
       readonly vitaz: PlayerId | null;
       readonly rozhodlo: RozhodnutieBitky;
       readonly prebytok: number;
@@ -3651,12 +3651,8 @@ function nastupEfekt(
       if (s.hraci[opp].poldeciPlne > s.hraci[p].poldeciPlne) {
         zmenPoldeci(s, opp, "degustatorka", -1, events);
         hrac(s, opp).poldeciVypite += 1;
-        // v11.16 (Michal 2026-11-09): súperov zostávajúci limit klesne hneď, ako pri Vypiť a Vínku.
-        const z = s.zhromazdenieStav;
-        events.push({
-          type: "log",
-          text: `Degustátorka: hráčovi ${opp + 1} vyžerie plný poldeci — je vypitý${s.faza === "zhromazdenie" && z !== null ? `, limit mu klesá na ${z.zostavaLimit[opp]}` : ""}.`,
-        });
+        // Limit vykladania od v12.5 nie je — log hovorí len o poldeci (karta: „vyžerie súperovi plný poldeci“).
+        events.push({ type: "log", text: `Degustátorka: hráčovi ${opp + 1} vyžerie plný poldeci — je vypitý.` });
       } else events.push({ type: "log", text: `Degustátorka: hráč ${opp + 1} nemá viac plných poldeci — nič nevyžerie.` });
       break;
     }
@@ -6219,7 +6215,7 @@ function vyplatSpaky(s: MutState, outcome: BattleOutcome, events: Event[]): void
     events.push({ type: "log", text: `Finále skončilo sekerou — ${spakov(prepadlo)} za bitku prepadá.` });
   } else if (vitaz === null) {
     s.spakyNaSekere += karty.spolu;
-    events.push({ type: "log", text: `Sekera: remíza v tuhom, v Absťákoch aj v Dlhoch — ${spakov(karty.spolu)} za karty v línii ide na sekeru (spolu ${s.spakyNaSekere}), vezme ich víťaz ďalšej bitky.` });
+    events.push({ type: "log", text: `Sekera: remíza v tuhom aj v Dlhoch — ${spakov(karty.spolu)} za karty v línii ide na sekeru (spolu ${s.spakyNaSekere}), vezme ich víťaz ďalšej bitky.` });
   }
   const lokalita = cielLokalita(s as GameState);
   s.nastenka.push({
@@ -6456,14 +6452,18 @@ function koniecBitkyPoNavrate(s: MutState, data: GameData, events: Event[], vita
   if (s.rozpis !== undefined && s.kolo > s.lokalitCelkom) {
     // Finále na pinnacle (v7, Michal 2026-10-27): útočí zaostávajúci (menej špakov),
     // pri rovnosti porazený poslednej bitky, po sekere ostáva útočník. Obranca —
-    // ten, kto vedie — vyberie a natočí pinnacle lokalitu ako každý cieľ.
+    // ten, kto vedie — vyberie pinnacle lokalitu, natočí ju víťaz poslednej hádky
+    // (v11.11, §14b; po remíze v hádke obranca) ako každý cieľ.
     s.utocnik = utocnikFinale(s.spaky, vitaz, s.utocnik);
     s.faza = "volbaCiela";
     events.push({ type: "faza", faza: "volbaCiela" });
-    events.push({
-      type: "log",
-      text: `Finále (${s.spaky[0]} : ${s.spaky[1]} špakov): útočí hráč ${s.utocnik + 1}, hráč ${opponentOf(s.utocnik) + 1} vyberá a natáča pinnacle lokalitu.`,
-    });
+    const vybera = ktoVyberaCiel(s as GameState);
+    const nataca = ktoNatacaLokalitu(s as GameState);
+    const kto =
+      nataca === vybera
+        ? `hráč ${vybera + 1} vyberá a natáča pinnacle lokalitu`
+        : `hráč ${vybera + 1} vyberá pinnacle lokalitu, natáča ju hráč ${nataca + 1} ako víťaz poslednej hádky`;
+    events.push({ type: "log", text: `Finále (${s.spaky[0]} : ${s.spaky[1]} špakov): útočí hráč ${s.utocnik + 1}, ${kto}.` });
     doberPoBitke(s, events);
     return;
   }

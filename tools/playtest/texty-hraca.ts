@@ -30,6 +30,35 @@ export function superoveSkryteNaex(v: ClientState): readonly { readonly hrac: Pl
 }
 
 /**
+ * Plné poldeci hráča `p`, ktoré ešte môže minúť: zásoba bez tých pod jeho skrytými NA EX.
+ * Motor ich odpíše až pri odkrytí, no druhé NA EX už odmietne (cmdNaex) — výpis ukazoval
+ * „plné 1“ a server povedal „Nemáš plný poldeci“ (playtest 20261116-173731-1, Hela).
+ * Ako web (tabula.ts poldeciNaStole). Súperove skryté NA EX ráta len s Bzdochou (inak ich nevidí).
+ */
+export function plnePoldeciTeraz(v: ClientState, p: PlayerId): { readonly plne: number; readonly podSkrytym: number } {
+  const podSkrytym = (v.pitkaStav?.skryteNaex ?? []).filter((x) => x.hrac === p).length;
+  return { plne: Math.max(0, v.hraci[p].poldeciPlne - podSkrytym), podSkrytym };
+}
+
+/**
+ * Voľba pri Hasičovi (§11 tabuľka): karta z odhadzovacieho balíčka do ruky, alebo späť.
+ * Dlh je od v8.2 počítadlo, nie karta — starý text „Dlh sa sám prizná“ a „(kliatba, slabá karta)“
+ * pri každej karte mýlil (playtest 20261116-173731-1, Hela). `popis` = karta s akciami, `meno` = názov.
+ */
+export function hasicTexty(defId: string, popis: string, meno: string): { readonly nechat: string; readonly vratit: string } {
+  const doRuky =
+    defId === "cirhoza"
+      ? " (Cirhózu v ruke môžeš priznať; nepriznaná ide po bitke späť do odhadzovacieho balíčka)"
+      : defId === "abstak"
+        ? " (Absťák sa priznať nedá — po bitke ide späť do odhadzovacieho balíčka)"
+        : "";
+  return {
+    nechat: `HASIČ: kartu ${popis} z tvojho odhadzovacieho balíčka si vezmi do ruky${doRuky}`,
+    vratit: `HASIČ: kartu ${meno} vráť do odhadzovacieho balíčka (ostane tam)`,
+  };
+}
+
+/**
  * Starší, pri ktorých smie víťaz Nakladačkou zdvihnúť svoj strach (v11) — ten istý filter ako
  * server (cenaDalsiehoStupna): strach na červenej nie. Mimo kroku Nakladačky prázdne.
  */

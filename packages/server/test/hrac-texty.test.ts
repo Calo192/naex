@@ -3,10 +3,13 @@
 // „kolo 7“ pri vydesení vo finále, Dievčina na vydaj mimo náhľadu NA EX.
 // Čísla sa porovnávajú s jadrom (stavkaBitky, motor), nie s pevnými hodnotami.
 
+import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 import {
   bzdochaText,
   efektyPrehry,
+  hasicTexty,
+  plnePoldeciTeraz,
   prehraNaexText,
   starsiNaNakladacku,
   stavkaText,
@@ -354,5 +357,41 @@ describe("náhľad vyloženia: Šofér po NA EX (playtest 20261030-184957, Šimo
     expect(po.tuhe[0]).toBe(0);
     // Bez NA EX v stave náhľad ráta, že v kole ešte nikto NA EX nedal.
     expect(nahladVylozenia(data, lineState({ ...s0, ciel: { typ: "lokalita", lokalita: s0.lokalityVHre[0]! } }), 0, sofer, "superova")).toEqual(bez);
+  });
+});
+
+describe("klient AI hráčov: opravy z playtestu 20261116-173731", () => {
+  it("plné poldeci vo výpise nerátajú poldeci pod vlastným skrytým NA EX — ako server (Vínna pivnica, Hela)", () => {
+    const { s, lavy } = doPitky(309, [], (x) => ({ ...x, ciel: { typ: "lokalita", lokalita: { uid: 889001, defId: "vinna_pivnica", leftLayout: 0, rightLayout: 0 } } }));
+    const t = apply(sada, s, { type: "naex", uid: lavy }, 0).state;
+    const v = viewFor(sada, t, 0);
+    // Motor poldeci odpíše až pri odkrytí — pohľad nesie celú zásobu, výpis nie.
+    expect(v.hraci[0].poldeciPlne).toBe(1);
+    expect(plnePoldeciTeraz(v, 0)).toEqual({ plne: 0, podSkrytym: 1 });
+    // Vínna pivnica dovolí druhé NA EX, ale plný poldeci už niet — server to povie rovnako.
+    expect(() => apply(sada, t, { type: "naex", uid: lavy }, 0)).toThrow("Nemáš plný poldeci.");
+    // Súper bez Bzdochy skryté NA EX nevidí — jeho výpis nič neprezradí.
+    expect(plnePoldeciTeraz(viewFor(sada, t, 1), 0)).toEqual({ plne: 1, podSkrytym: 0 });
+  });
+
+  it("Hasič: voľba bez Dlhu ako karty (od v8.2 počítadlo) a bez „kliatby“ pri bežnej karte", () => {
+    const pijan = hasicTexty("pijan", "Pijan [1]", "Pijan");
+    for (const text of [pijan.nechat, pijan.vratit]) {
+      expect(text).not.toMatch(/Dlh/);
+      expect(text).not.toMatch(/kliatba/);
+    }
+    expect(pijan.nechat).toBe("HASIČ: kartu Pijan [1] z tvojho odhadzovacieho balíčka si vezmi do ruky");
+    expect(pijan.vratit).toBe("HASIČ: kartu Pijan vráť do odhadzovacieho balíčka (ostane tam)");
+    expect(hasicTexty("cirhoza", "Cirhóza", "Cirhóza").nechat).toContain("Cirhózu v ruke môžeš priznať");
+    expect(hasicTexty("abstak", "Absťák", "Absťák").nechat).toContain("Absťák sa priznať nedá");
+  });
+
+  it("vysvetlivka bodovania starších hovorí, že reči bodujú len na súperovom strachu (R1, v12.5; Eva)", () => {
+    const hrac = readFileSync(new URL("../../../tools/playtest/hrac.ts", import.meta.url), "utf8");
+    expect(hrac).toContain("ale LEN na stupňoch, kde má súper strach (v12.5, R1) — reči nad súperovým strachom nebodujú, čakajú.");
+    // Hasič a plné poldeci idú cez otestované funkcie, nie vlastný text.
+    expect(hrac).toContain("hasicTexty(k.defId, popisKarty(k), meno(k.defId))");
+    expect(hrac).toContain("plnePoldeciTeraz(v, p)");
+    expect(hrac).not.toContain("Dlh sa sám prizná");
   });
 });

@@ -133,6 +133,11 @@ export function nahladVylozenia(
    * Miňištrant, Šarlatán) — bez nej sa karta len priloží a spúšťače spoja náhľad nevidí.
    */
   stranyPo?: LineState["strany"],
+  /**
+   * Otočenie lokality po vyložení (sPrilozenou: Nástup Vandala) — bez neho náhľad ráta
+   * spoje aj súčty s lokalitou natočenou ako pred vyložením (report 20261113-084431).
+   */
+  lokalitaOtocenaPo: boolean = line.lokalitaOtocena,
 ): NahladVylozenia {
   const p = kam === "vlastna" ? ja : opponentOf(ja);
   const naMojej = kam === "vlastna";
@@ -153,7 +158,8 @@ export function nahladVylozenia(
     const h = hranyZPohladu(data, krajna.card, krajna.playedBy !== ja, krajna, premenyPo.get(krajna.card.uid)?.hrany);
     sused = { karta: krajna.card, stred: false, majitel: krajna.playedBy, hrana: naMojej ? h.lava : h.prava };
   } else if (line.lokalita !== null) {
-    const s = stranyLokality(data, line.lokalita, line.lokalitaOtocena, ja);
+    // Karta sa stretne s hranou lokality, ktorá k nej bude obrátená po jej Nástupe.
+    const s = stranyLokality(data, line.lokalita, lokalitaOtocenaPo, ja);
     sused = { karta: line.lokalita, stred: true, majitel: null, hrana: naMojej ? s.kTebe : s.kSuperovi };
   }
 
@@ -172,7 +178,7 @@ export function nahladVylozenia(
     return [{ ...ev.sums[0], Dlh: z[0] }, { ...ev.sums[1], Dlh: z[1] }];
   };
   const pred = sumy(line.strany, evaluateLine(data, line));
-  const po = sumy(strany, evaluateLine(data, { ...line, strany }));
+  const po = sumy(strany, evaluateLine(data, { ...line, strany, lokalitaOtocena: lokalitaOtocenaPo }));
   const tuhePred = tuheZLinie(data, line, line.strany, naexVKole);
   const tuhePo = tuheZLinie(data, line, strany, naexVKole);
 

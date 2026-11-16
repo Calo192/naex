@@ -10,7 +10,7 @@ import type { GameData } from "./data.ts";
 import type { VerejnyHrac, VerejnyStav } from "./effects.ts";
 import type { PlayerState } from "./player.ts";
 import { KONSTANTY } from "./constants.ts";
-import { chutPoKole, verejneAbstaky } from "./engine.ts";
+import { chutPoKole, jeFinale, verejneAbstaky } from "./engine.ts";
 
 type HracZavislosti = VerejnyHrac & Pick<PlayerState, "nerestiTotoKolo" | "chut">;
 
@@ -19,6 +19,17 @@ export interface StavPreZavislost extends VerejnyStav {
   readonly kolo: number;
   readonly hraci: readonly [HracZavislosti, HracZavislosti];
   readonly bezChuti?: true;
+  /** S rozpisom sa finále pozná už pred voľbou pinnacle (kolo za poslednou lokalitou). */
+  readonly lokalitCelkom?: number;
+  readonly rozpis?: readonly number[];
+}
+
+/**
+ * Po finále sa Chuť nerieši (§8, §14b; motor koniecBitkyPoNavrate) — výhľad by hrozil
+ * Absťákom, ktorý nepríde, a hráč by zbytočne minul poldeci a cigarety (playtest 20261116-173731-1, Eva).
+ */
+function finale(s: StavPreZavislost): boolean {
+  return jeFinale(s) || (s.rozpis !== undefined && s.lokalitCelkom !== undefined && s.kolo > s.lokalitCelkom);
 }
 
 /**
@@ -58,7 +69,8 @@ export function stavZavislosti(_data: GameData, s: StavPreZavislost, p: PlayerId
   const teraz = s.hraci[p].nerestiTotoKolo + naex * KONSTANTY.NEREST_NAEX;
   const chut = s.hraci[p].chut;
   const abstaky = verejneAbstaky(s, p);
-  const vyhlad: VyhladZavislosti = s.bezChuti !== true && teraz < chut ? "ziska" : "nic";
+  const bezChuti = s.bezChuti === true || finale(s);
+  const vyhlad: VyhladZavislosti = !bezChuti && teraz < chut ? "ziska" : "nic";
   return {
     chut,
     teraz,
@@ -67,6 +79,6 @@ export function stavZavislosti(_data: GameData, s: StavPreZavislost, p: PlayerId
     ubera: abstaky,
     vyhlad,
     doBezpecia: vyhlad === "ziska" ? chut - teraz : 0,
-    chutPo: s.bezChuti === true ? chut : chutPoKole(chut, teraz),
+    chutPo: bezChuti ? chut : chutPoKole(chut, teraz),
   };
 }
