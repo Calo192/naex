@@ -1,0 +1,215 @@
+<!doctype html>
+<html lang="sk"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mŕtve a otravné pravidlá — audit v12.4</title>
+<style>
+:root{--bg:#f6f1e7;--karta:#fffdf8;--ink:#2b2118;--muted:#7a6a58;--akc:#8a3b12;--ok:#2e7d32;--zle:#c62828;--poz:#f9a825}
+*{box-sizing:border-box}body{margin:0;font:16px/1.5 system-ui,-apple-system,"Segoe UI",sans-serif;background:var(--bg);color:var(--ink)}
+main{max-width:900px;margin:0 auto;padding:14px}
+h1{font-size:1.4rem;margin:.2em 0}h2{font-size:1.18rem;margin:1.8em 0 .5em;color:var(--akc)}h3{font-size:1.02rem;margin:.2em 0 .4em}
+.lead{color:var(--muted);font-size:.93rem}
+.box{background:var(--karta);border-radius:10px;padding:12px 14px;margin:10px 0;box-shadow:0 1px 3px #0002}
+.odpor{border-left:5px solid var(--ok)}.pozor{border-left:5px solid var(--poz)}
+table{border-collapse:collapse;width:100%;background:var(--karta);font-size:.88rem}
+th,td{padding:6px 7px;border-bottom:1px solid #eadfcd;text-align:left;vertical-align:top}th{background:#efe3cf}
+code{font-size:.8rem;background:#efe3cf;border-radius:4px;padding:0 4px;overflow-wrap:anywhere}
+.navrh{background:var(--karta);border-radius:10px;padding:10px 14px;margin:12px 0;box-shadow:0 1px 3px #0002;border-left:5px solid #c9b79c}
+.navrh.top{border-left-color:var(--ok)}.navrh.nech{border-left-color:#9a8f80}
+.navrh h3{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.stit{display:inline-block;border-radius:6px;padding:0 7px;font-size:.74rem;font-weight:700;color:#fff;background:#6b5a43}
+.stit.odstr{background:#c62828}.stit.zjed{background:#1f5f8a}.stit.nech{background:#7a6a58}.stit.mich{background:#6a3d9a}
+.znenie{font-style:italic;background:#fff6ec;border:1px solid #e3cfae;border-radius:8px;padding:6px 10px;margin:6px 0}
+dl{margin:.4em 0;display:grid;grid-template-columns:7.5em 1fr;gap:2px 8px;font-size:.92rem}
+dt{color:var(--muted);font-weight:600}dd{margin:0}
+ul li,ol li{margin:.3em 0}
+.cislo{font-variant-numeric:tabular-nums;white-space:nowrap}
+@media(max-width:560px){dl{grid-template-columns:1fr}dt{margin-top:.4em}.tabm,.tabm thead,.tabm tbody,.tabm tr,.tabm th,.tabm td{display:block}.tabm thead{display:none}.tabm td{border:0;padding:2px 8px}.tabm tr{border-bottom:1px solid #eadfcd;padding:6px 0}.tabm td:first-child{font-weight:700}}
+</style></head><body><main>
+
+<h1>Mŕtve a otravné pravidlá</h1>
+<p class="lead">2026-11-16 · Vymyselník pre Michala cez Leadera · audit <code>docs/PRAVIDLA.md</code> v12.4 (Zrejúca, master 3727f210) proti jadru a partiám. Zmeny v12.5, ktoré práve zavádza Developer (hádka pred Nakladačkou, reči len na súperovom strachu, platba za kartu z ponuky, výhra väzňami v ďalšej bitke, Dopijem za teba), som neauditoval. Nič som nenaprogramoval. Spätnú väzbu hráčov rozoberá paralelne Navrhár. Ja vychádzam z textu pravidiel a z meraní.</p>
+
+<div class="box odpor">
+<p><b>V skratke.</b> Časť pravidiel sa v hre takmer nestane, alebo opisuje tú istú vec druhým slovom. Najlacnejšie úspory sú tri, všetky bez dopadu na hru: zrušiť pojem <b>limit vykladania</b> (od v12.2 je to presne počet plných poldeci), slovo <b>„priznaný“ pri Dlhu</b> (od v8.2 iný Dlh neexistuje) a <b>mŕtve odseky</b> špecifikácie (Veštica 5b, krok 0, Kohút, tabuľka „kedy priznanie dá kartu“…).</p>
+<p>Z herných pravidiel sú takmer mŕtve štyri: <b>remízu v Absťákoch</b> (rozhodla 2 z 213 bitiek), <b>priazeň Abstinent</b> (účinok má v 20 % bitiek, hráči ju dávajú súperovi ako neškodnú), <b>Kmotor po finále</b> (21-krát bez účinku, lebo Dlhy po finále nič nestoja) a <b>zadĺženie Výherného automatu</b> (automat do Dedičstva nedal nikto ani raz). Ostatné kandidáty sú živé a navrhujem ich nechať.</p>
+</div>
+
+<h2>Z čoho vychádzam</h2>
+<ul>
+<li><b>Rozsah:</b> §1–§17 PRAVIDLA.md má <b>23 800 slov</b> (bez zoznamu zmien v hlavičke), ťahák AI hráčov <code>tools/playtest/tahak.md</code> 383 riadkov. Hráči sa sťažujú na dĺžku: Hela „ťahák má viac než 300 riadkov“, Vilo a Jano „2 600 riadkov“.</li>
+<li><b>Zrozumiteľnosť</b> v posledných troch turnusoch: 5,3 (11. 11.), 6 a 6 (13. 11., Jano a Fero), 5,5 (14. 11.). Hĺbka 5,8 až 6. Všetci šiesti hráči 11. 11. spomínajú hustotu pravidiel. Návrh z reportu 11. 11.: „pri každej ďalšej zmene uprednostniť zrušenie výnimky pred pridaním“.</li>
+<li><b>Meranie:</b> 36 partií bot proti botovi, Druhá liga, zmes povah Igor, Rudo, Božena a Darina, master v12.4, spolu 213 bitiek. Skript je v scratchpade a do repa nejde. Ráta, ako často sa pravidlo naozaj spustilo (príkazy, udalosti, vyhodnotenie línie pri každej bitke). Boti hrajú inak ako ľudia, takže čísla ukazujú, či sa pravidlo vôbec stane, nie či je silné.</li>
+<li><b>Nočná kontrola zdravia</b> (<code>origin/noc/zdravie:docs/zdravie/2026-11-16.md</code>) hlási nevyužité typy ťahov <code>patronat, bezPatronatu, uplatok, hadka, vestica, kseftVazna, spravaVazna</code>. Všetky sú to zaniknuté mechaniky, ktoré jadro drží kvôli starým uloženiam. Pre hráča sú mŕtve už dnes. Zo živých pravidiel nehlási nič, preto som meral sám.</li>
+<li><b>Nadväzujem</b> na <code>docs/napady/zjednodusenie.html</code> (Navrhár, 26. 10., v6). Z jeho ôsmich návrhov sa vyriešili štyri: Exekútor je od v8 bez prahu, Absťák má od v9.1 Chuť a Vypiť a doliatie prestaval v12.2. Barter dnes ľudia používajú 3 až 9-krát za partiu, takže už nie je mŕtvy. Vzburu z Odporu proti Posilneniu si 2. 11. potvrdil a parkovanie Cirhózy je podľa teba zámer. Otvorené ostali dva. Návrh 2 (akcia Poldeci dáva aj pečeň) platí dodnes, ale od v12.2 sa obe jej úlohy dejú v Pitke, takže hlavný zdroj omylu zmizol a nechávam ho. Návrh 4, jedno slovo pre každý pojem, ostáva otvorený a nadväzujú naň nálezy 1 a 2.</li>
+</ul>
+
+<h2>Poradie — ušetrená náročnosť proti stratenej hĺbke</h2>
+<div class="box"><table class="tabm">
+<thead><tr><th>#</th><th>Pravidlo</th><th>Ako často</th><th>Návrh</th><th>Hĺbka, ktorá sa stratí</th></tr></thead>
+<tbody>
+<tr><td>1</td><td>Pojem „limit vykladania“</td><td>je to len iné meno pre plné poldeci</td><td>odstrániť pojem</td><td>žiadna</td></tr>
+<tr><td>2</td><td>„Priznaný“ Dlh, tabuľky priznania</td><td>nepriznaný Dlh neexistuje od v8.2</td><td>odstrániť slovo, skrátiť §11</td><td>žiadna</td></tr>
+<tr><td>3</td><td>Mŕtve odseky (5b, krok 0, Kohút…)</td><td>0 (stará sada)</td><td>odstrániť</td><td>žiadna</td></tr>
+<tr><td>4</td><td>Remíza v tuhom → Absťáky</td><td>2 z 213 bitiek</td><td>odstrániť úroveň</td><td>jeden majstrovský trik (Vilo)</td></tr>
+<tr><td>5</td><td>Priazeň Abstinent</td><td>účinok v 20 z 101 bitiek, kde ju niekto mal</td><td>zjednodušiť (nový účinok)</td><td>žiadna, priazeň skôr pribudne</td></tr>
+<tr><td>6</td><td>Krok 6c po finále</td><td>Kmotor po finále 21× a vždy bez účinku</td><td>zjednotiť, otázka 1</td><td>žiadna</td></tr>
+<tr><td>7</td><td>Zadĺženie a čiarky na účte (Výherný automat)</td><td>0× v Dedičstve z 95 Dedičstiev</td><td>odstrániť pojem, kartu prerobiť</td><td>žiadna</td></tr>
+<tr><td>8</td><td>Odpor „zahasí“ NA EX</td><td>0 zo 144 NA EX na kartách</td><td>zlúčiť so štítom</td><td>žiadna</td></tr>
+<tr><td>9</td><td>Reťaz premien</td><td>5 kariet z 1 363 (0,4 %)</td><td>nechať v jadre, z hráčskych pravidiel presunúť do výkladu</td><td>žiadna (rozhoduje náhľad)</td></tr>
+<tr><td>10</td><td>Ponuka „2 karty za 3“ a prvý ťah 1 karta</td><td>17 % brania u botov, ľudia skoro nikdy</td><td>otázka, nie odporúčanie</td><td>stredná (tempo pri braní)</td></tr>
+</tbody></table></div>
+
+<h2>Nálezy</h2>
+
+<div class="navrh top">
+<h3>1 · Pojem „limit vykladania“ <span class="stit odstr">odstrániť pojem</span></h3>
+<dl>
+<dt>Pravidlo</dt><dd>§6 <code>PRAVIDLA.md:975–999</code>: „limit vykladania = plné poldeci (v12.2)“. Pojem sa v texte vyskytuje 34-krát (r. 987, 994, 1167, 1250, 1805, 1989, 2074, 2102, 2188, 2311, 2362, 2434, 2482…). V kóde je to <code>limitVykladania()</code> v <code>packages/core/src/player.ts:105</code>, ktorá vracia <code>poldeciPlne</code>.</dd>
+<dt>Dôkaz</dt><dd>Od v12.2 je to to isté číslo pod druhým menom. Druhé meno už plodí omyly. Jano (13. 11., <code>playtest/20261113-084431-1/hrac1/nezrovnalosti.md</code>, N2): „odpoveď na NA EX ‚limit nemíňa‘, ale stojí plný poldeci = limit … musel som prepočítať, či odpoveď teraz alebo karta v ďalšom Zhromaždení stojí rovnako (stojí)“. Veta „Odpoveď limit vykladania nemíňa“ (<code>PRAVIDLA.md:1167</code>, aj slovník r. 2370 „mimo limitu“) je dnes v podstate nepravdivá. Hela 11. 11. limit dvakrát prepočítala. Výučba to učí vetou „koľko máš plných, toľko kariet“ a slovo limit použije len raz, pri Družstve. Tá veta funguje lepšie.</dd>
+<dt>Stratí sa</dt><dd>Nič. Výnimky ostávajú, len sa povedia cez poldeci: Družstvo (Robota nestojí poldeci), priznanie a Nástroj (nestoja poldeci).</dd>
+<dt>Kód</dt><dd>Jadro sa nemení. Treba prepísať texty UI, ťaháka a nápovied (<code>napovedy.json</code> „§6 Limit vykladania“) a v kóde premenovať 21 výskytov <code>limitVykladania</code>, ktoré na hru nemajú vplyv.</dd>
+</dl>
+<p>Nové znenie §6 (nadpis „Vykladanie za poldeci“ namiesto „Limit vykladania“):</p>
+<div class="znenie">Každá karta do línie — aj Záverečná, podstrčená a odpoveď na NA EX — stojí plný poldeci: otočíš ho na vypitý. Bez plného poldeci nevykladáš; kto nemá čo vyložiť, za toho hra pasuje. Priznanie a Nástroj (podloženie aj Dedičstvo) poldeci nestoja, na Družstve ani karty s akciou Robota. Ďalšia karta v tom istom ťahu stojí navyše cigaretu (Vypiť, §13).</div>
+<p>V §7 r. 1167 sa veta „Odpoveď limit vykladania nemíňa“ vypustí. Degustátorka: „súperovi vyleje plný poldeci“ (namiesto „zníži limit“).</p>
+</div>
+
+<div class="navrh top">
+<h3>2 · „Priznaný“ Dlh a tabuľky priznania <span class="stit odstr">odstrániť slovo</span></h3>
+<dl>
+<dt>Pravidlo</dt><dd>§11 <code>PRAVIDLA.md:1769, 1773–1775, 1808, 1812–1826</code>. Dlh „vzniká hneď priznaný“. K tomu dve tabuľky: „Kedy priznanie dá kartu“ (všade „nie“) a „Nepriznaná / Priznaná“ s riadkom Dlh „— (vzniká priznaný)“. Exekútor podľa r. 1843 chodí „ku každému hráčovi s aspoň 1 <b>priznaným</b> Dlhom (nepriznané sa nerátajú)“. Slovo „priznaný“ pri Dlhu sa opakuje v §9.4, §10, §14, §15 aj v §17.</dd>
+<dt>Dôkaz</dt><dd>Od v8.2 je Dlh len počítadlo a nepriznaný Dlh neexistuje. Výnimka „nepriznané sa nerátajú“ teda chráni pred stavom, ktorý nemôže nastať. Priznať sa dá jediná karta, Cirhóza. Absťák sa priznať nedá, Dlh netreba. Jadro má ešte pravidlo „pri priznaní kartu za každú inú Kliatbu“ (r. 1820) a samo pri ňom píše, že taká karta v sade nie je. Log 1 341-krát hlási „Hráč # získava Dlh — hneď sa priznáva“, teda jednu udalosť dvoma slovami.</dd>
+<dt>Stratí sa</dt><dd>Nič. Cirhóza (priznaná alebo nepriznaná) ostáva, je to živé rozhodnutie: 138 priznaní a 396 nových Cirhóz v 36 partiách.</dd>
+<dt>Kód</dt><dd>Jadro sa nemení. Mení sa log, UI („priznané dlhy N“ → „Dlhy N“), tri texty kariet v tvorcovi (Jednota, Vymáhač, Herňa: „priznaných Dlhov“ → „Dlhov“) a výučba (10 výskytov v <code>prva-hra.json</code>). Výučbu prepisuje Vymyselník až pri prechode do Vypálenej.</dd>
+</dl>
+<div class="znenie">§11 Priznanie (celé): Cirhózu z ruky smieš priznať — vyložiť ju mimo línie natrvalo. Priznanie nestojí poldeci ani ťah; priznávať smieš, kým nepasuješ. Priznaná Cirhóza sa nevracia do balíčka, na konci hry nič nestojí a súper za ňu dostane v každej bitke +1 tuhé. Absťák priznať nemožno. Dlh je počítadlo — nikdy nie je v ruke ani v balíčku.</div>
+</div>
+
+<div class="navrh top">
+<h3>3 · Mŕtve odseky špecifikácie <span class="stit odstr">odstrániť</span></h3>
+<p>Žiadny z týchto textov dnes na hru nepôsobí. Hráča, AI aj agentov však stojí čítanie.</p>
+<ul>
+<li><b>§9.5b Veštica</b> (<code>PRAVIDLA.md:1531–1538</code> a riadok 5b tabuľky r. 1360): „len stará sada … krok sa preskočí“. Typ ťahu <code>vestica</code> sa v zdraví nikdy nevyskytne.</li>
+<li><b>§9.0 Efekty na začiatku bitky</b> (r. 1367–1372 a riadok 0 tabuľky r. 1350): „od 2026-11-08 žiadne“. Krok, ktorý nič nerobí, zbytočne pridáva poradové číslo (tabuľka ide 0, 1, 3, 4, 4a–4e, 5, 5b, 6c, 7, 7a, 7b, 8). Navrhujem kroky prečíslovať na 1–10 bez dier.</li>
+<li><b>Kohút</b> (r. 1031–1032, 2281): karta je vyradená v sade v51 a v jadre „nemá účinok (TODO)“.</li>
+<li><b>Úplatok</b> (r. 2261): „zanikol vo v10.3“. Je už v <code>tools/admin/zastarane.json</code>.</li>
+<li><b>Tabuľka „Kedy priznanie dá kartu“</b> a pravidlo „kartu za každú inú Kliatbu“ (r. 1812–1821). Rieši ich nález 2.</li>
+<li><b>Slovník „Od seba / k sebe“</b> (r. 2393): „od seba staršieho desí, k sebe upokojuje“. Strach od v11.4 neklesá a marker sa k sebe nehýbe. Pojem je mŕtvy.</li>
+<li><b>Staré kľúče priazní</b> (r. 1606–1609) a <b>bodovacie podmienky v6</b> (r. 2118–2120). Je to história, patrí do <code>docs/pravidla-historia.md</code>.</li>
+<li><b>Poradie exekúcie po hráčoch</b> (r. 1834–1835: „obranca Robota a Exekútor, potom útočník“). Robota aj Exekútor sa týkajú len vlastných Dlhov hráča, takže poradie nemení nič.</li>
+<li><b>Protokol Vypiť</b> (§13 r. 2033–2039: „Vypiť, karta, karta; karta, Vypiť, karta nejde“) opisuje poradie príkazov klienta, nie pravidlo pre hráča, ktorý len vyloží viac kariet. Patrí do ťaháka AI hráčov.</li>
+</ul>
+<p><b>Kód:</b> nič. Mení sa len dokument a pri protokole Vypiť ťahák.</p>
+</div>
+
+<div class="navrh top">
+<h3>4 · Remíza v tuhom: Absťáky sa rátajú dvakrát <span class="stit odstr">odstrániť úroveň</span></h3>
+<dl>
+<dt>Pravidlo</dt><dd>§9.4 <code>PRAVIDLA.md:1462–1468</code>: pri rovnakom tuhom vyhrá, kto má menej Absťákov (znížené o Abstinenta). Pri ich rovnosti vyhrá, kto má menej Dlhov, inak je sekera. Kód: <code>packages/core/src/battle.ts:163–176</code>.</dd>
+<dt>Dôkaz</dt><dd>Z 213 bitiek skončilo 56 remízou v tuhom. Absťáky rozhodli <b>2</b> (0,9 %), Dlhy 11 (5 %) a 43 skončilo sekerou. Väčšina týchto remíz sú prázdne línie botov: v kontrolnej vzorke (8 partií, 46 bitiek) bolo 10 z 12 remíz 0 : 0 bez jedinej karty. Remíza s kartami v línii nastane asi v 4 % bitiek. Každý Absťák už hráčovi v tej istej bitke ubral 1 tuhé (§9.3). Remíza v tuhom teda už Absťáky zahŕňa a druhé rátanie ich trestá ešte raz. Výučba túto úroveň vynecháva (Prvá hra je bez Chuti) a hráč sa o nej dozvie až z pravidiel.</dd>
+<dt>Stratí sa</dt><dd>Jeden trik experta. Vilo (11. 11.) „remízu v tuhom zámerne vyrobil, lebo vedel, že Fero má Absťák“. Ostane mu rovnaký trik s Dlhmi, ktorý je živý (5 % bitiek).</dd>
+<dt>Kód</dt><dd>Malý zásah: <code>battle.ts</code> (vypadne vetva <code>zAbstakov</code> a <code>"abstak"</code> z typu <code>RozhodnutieBitky</code>), náhľady, rekapitulácia a texty logu. Odtlačok hry sa zmení (rozhodnú 2 bitky z 213), preto by šlo o dávku pravidiel, nie o refaktor.</dd>
+</dl>
+<div class="znenie">§9.4: Víťaz = vyššie tuhé. Pri rovnosti vyhrá, kto má menej Dlhov; aj pri ich rovnosti nevyhrá nikto — sekera. Nakladačka pri remíze v tuhom nie je.</div>
+</div>
+
+<div class="navrh top">
+<h3>5 · Priazeň Abstinent je mŕtva priazeň <span class="stit zjed">zjednodušiť</span></h3>
+<dl>
+<dt>Pravidlo</dt><dd>§10 <code>PRAVIDLA.md:1595</code>: „v bitke sa ti neráta toľko Absťákov“. S ňou idú aj <code>max(0, absťáky − sila_Abstinenta)</code> vo vzorci tuhého (r. 1445) a „znížené o silu Abstinenta“ pri remíze (r. 1464). Kód <code>battle.ts:82</code> <code>abstakyVBitke</code>, <code>engine.ts:1451</code>.</dd>
+<dt>Dôkaz</dt><dd>Zo všetkých priazní ju niekto mal najčastejšie: v 101 bitkách z 397 prípadov, keď niekto priazeň držal (25 %). Účinok mala len v <b>20</b> z nich, lebo inokedy jej držiteľ Absťák nemal. Boti ju pustia súperovi najradšej, Bitkára len raz. Ľudia ju vidia rovnako. Eva (14. 11.): „Abstinent na Hrobárovi = bezpečná červená“. Šimon: „vyšli neškodné Abstinent a Ohováračka“. Ty si 24. 10. povedal, že nechceš mŕtve priazne a pridelenie priazne má byť ťažké rozhodnutie. Táto priazeň ho robí ľahkým.</dd>
+<dt>Stratí sa</dt><dd>Nič, čo by sa hralo. Absťák ostane škodiť rovnako (−1 tuhé za kus).</dd>
+<dt>Kód</dt><dd>Kľúč <code>LAKOMEC</code> ostáva. Mení sa účinok (<code>battle.ts</code>, <code>engine.ts</code>), hodnota priazne v <code>bot.ts:862</code>, tabuľka §10 a scorecard v tvorcovi.</dd>
+</dl>
+<div class="znenie">Abstinent — tvoj prah Cirhózy je o silu vyšší (+1 / +2 / +3).</div>
+<p>Prečo tento účinok: platí v každej Pitke (v 36 partiách pribudlo 396 Cirhóz) a funguje ako Nealko alebo Krčma, takže nepribudne nový mechanizmus. Téma sedí: abstinent znesie viac. Zo vzorca bitky zmizne <code>max(0, …)</code>. Číslo nie je overené, treba ho zmerať, preto je to otázka 2.</p>
+</div>
+
+<div class="navrh">
+<h3>6 · Krok 6c po finále: tri rôzne odpovede na jednu otázku <span class="stit zjed">zjednotiť</span> <span class="stit mich">tvoje rozhodnutie</span></h3>
+<dl>
+<dt>Pravidlo</dt><dd>Po finále hráč nedostane cigaretu za prehru (r. 1517–1518, rozhodnuté 2026-11-02: „cigareta by mu len pridala výkupné“) ani výpalné (r. 1618). Fajčiar a Kmotor však po finále platia (r. 1598–1604, potvrdené 12. 11. „áno, ako dnes“). Kód: <code>engine.ts:6221</code> a <code>6248</code> majú <code>!jeFinale</code>, Kmotor (<code>6226</code>) a Fajčiar ho nemajú.</dd>
+<dt>Dôkaz</dt><dd><b>Kmotor po finále nemá nikdy účinok.</b> Presúva Dlhy až v kroku 6c, po Exekútorovi (4d), a Dlhy na konci hry „nestoja nič“ (§11 r. 1861). V meraní ho niekto držal v 21 z 34 finále a ani raz to nič nezmenilo. Fajčiar, porazený aj výpalné po finále prinášajú len cigarety do výkupného, teda 1 špak za 5 cigariet. Hráč si tak musí pamätať tri výnimky, ktoré takmer nikdy nerozhodnú.</dd>
+<dt>Stratí sa</dt><dd>Nanajvýš 1 špak z výkupného.</dd>
+</dl>
+<div class="znenie">Možnosť A (odporúčam): Krok 6c platí po každej bitke rovnako, aj po finále — cigareta porazenému, Kmotor, Fajčiar aj výpalné; cigarety sa potom vykúpia. · Možnosť B: Po finále sa krok 6c nerobí, nasleduje rovno výkupné.</div>
+<p>A drží tvoje potvrdenie z 12. 11. a len zruší dve výnimky. B je kratšia, ale zmení to, čo si potvrdil. V oboch prípadoch zmizne veta „aj po finále“ pri Fajčiarovi a Kmotrovi.</p>
+</div>
+
+<div class="navrh">
+<h3>7 · Zadĺženie a „čiarky na účte“ existujú len kvôli jednej karte <span class="stit odstr">odstrániť pojem</span></h3>
+<dl>
+<dt>Pravidlo</dt><dd>§8 <code>PRAVIDLA.md:1268–1276</code>: s Výherným automatom v Dedičstve je prah Dlhu 2, „zvyšok ostáva na účte do ďalšej Pitky aj kola“. K tomu §15 Obecný úrad („zdvojnásobí sa zadĺženie, prah ostáva 2“), §16 r. 2325 a v slovníku dva pojmy, „Zadĺženie“ a „Čiarky na účte“ (r. 2341, 2360). V kóde pole <code>zadlzenie</code> v <code>player.ts:41</code> a prah v <code>engine.ts:1218–1221</code>.</dd>
+<dt>Dôkaz</dt><dd>V 36 partiách a 95 Dedičstvách nedal Výherný automat do Dedičstva nikto. Ľudia ho tiež obchádzajú: 14. 11. „Krištáľová guľa, Jogurt a Výherný automat nikto nechcel“ (Jano, Hela, Eva, Šimon). Pre jednu nevybranú kartu tak hra nesie dva pojmy a výnimku jednej lokality. Rovnako dopadli ďalšie Dedičstvá s dlhými výnimkami: Puška (výklad r. 2321, asi 120 slov) aj Zrkadlo boli v Dedičstve 0-krát.</dd>
+<dt>Stratí sa</dt><dd>Nič, čo sa hrá.</dd>
+<dt>Kód</dt><dd>Pole <code>zadlzenie</code> a prah v jadre (Admin a Developer), text karty v tvorcovi. Pojmy z PRAVIDLA.md vypadnú.</dd>
+</dl>
+<div class="znenie">Návrh textu na Výherný automat pre Admina: „Dedičstvo: Pitka: {Cigareta} {Dlh}.“ — v každej Pitke cigareta aj Dlh (akcie navyše v pečati, ako dnes jeho Hazard; Obecný úrad zdvojí obe).</div>
+<p>Hazard by potom dával Dlh vždy 1 : 1 a §8 by sa skrátil na jednu vetu. Text karty je len ponuka, rozhoduje Admin a ty (otázka 3).</p>
+</div>
+
+<div class="navrh">
+<h3>8 · Odpor „zahasí“ NA EX: vetva, ktorá nenastane <span class="stit zjed">zlúčiť so štítom</span></h3>
+<dl>
+<dt>Pravidlo</dt><dd>§7 <code>PRAVIDLA.md:1058–1060</code> hovorí, že na kartu s aktívnym Odporom NA EX nedáš (štít). <code>PRAVIDLA.md:1093–1107</code> potom ešte zvlášť opisuje, že „aktívny Odpor NA EX zahasí … poldeci sa aj tak vypije … keď sa Odpor neskôr spáruje, štít padne a NA EX platí“. K tomu prípady Veterána, Vínka a Vzbury.</dd>
+<dt>Dôkaz</dt><dd>Od v12.1 sa NA EX na kartu so štítom dať nedá. Zahasenie preto nastane len pri súperovej skrytej Záverečnej alebo pri Vínku. V meraní ležalo NA EX na kartách 144-krát a zahasené nebolo ani raz. Podržanie Posilnením nastalo 3-krát a je živé (Fero ho 11. 11. použil s Energeťákom), to ostáva.</dd>
+<dt>Stratí sa</dt><dd>Nič, jadro ostáva rovnaké. Mení sa len text pre hráča.</dd>
+</dl>
+<div class="znenie">§7 Štít a podržanie: Na kartu s aktívnym (nespárovaným) Odporom NA EX nedáš; keď na nej predsa leží (súperova skrytá Záverečná, Vínko), nerobí nič — poldeci sa vypije a NA EX sa ráta ako dané. Neaktívne Posilnenie karty s NA EX ho podrží: aktívne akcie nezruší, neaktívne zdvojí.</div>
+<p>Prípady neskoršieho spárovania, Veterána a Vzbury sa presunú do §16 Výklad, kde ich nájde agent a hráč ich vidí v náhľade.</p>
+</div>
+
+<div class="navrh nech">
+<h3>9 · Reťaz premien <span class="stit nech">nechať v jadre</span> <span class="stit mich">tvoje rozhodnutie</span></h3>
+<dl>
+<dt>Pravidlo</dt><dd>§6 <code>PRAVIDLA.md:850–859</code> a §12 r. 1932–1937: premeny sa reťazia (najprv Školitelia v poradí spustenia, potom Furt podľa vzdialenosti a nakoniec Nástroje v poradí podloženia). Rozhodol si 10. 11.: „Áno, reťazí sa všetko.“</dd>
+<dt>Dôkaz</dt><dd>Dve a viac premien na jednej karte malo 5 kariet z 1 363 (0,4 %) v 4 bitkách z 213. Fero 14. 11. medzi „ťažko preniknuteľné“ menuje aj reťaz premien.</dd>
+<dt>Návrh</dt><dd>Pravidlo nerušiť. Z hráčskeho textu §6 a §12 by som ho presunul do §16 Výklad a v §6 nechal jednu vetu: „Keď na karte platí viac premien, reťazia sa — náhľad ukáže celú reťaz.“ Náhľad podloženia ju už dnes ukazuje („Rana → Pecka → Petelica“).</dd>
+</dl>
+</div>
+
+<div class="navrh nech">
+<h3>10 · Ponuka „2 karty za 3 cigarety“ <span class="stit nech">otázka, nie odporúčanie</span></h3>
+<dl>
+<dt>Pravidlo</dt><dd>§5 <code>PRAVIDLA.md:746–750</code>: 1 karta za 1 cigaretu, alebo 2 za 3. Kvôli dvom kartám v jednom ťahu existuje pravidlo „kto berie prvý, na prvom ťahu vezme len 1“ (<code>KONSTANTY.SENOK_PRVY_TAH</code>) a pri Autobusárovi výnimka „bez stropu 1–2 kariet a bez obmedzenia prvého ťahu“.</dd>
+<dt>Dôkaz</dt><dd>Boti brali po dve karty v 113 z 664 ťahov (17 %). Ľudia takmer nikdy. Fero (13. 11.): „Branie 2 za 3 má zmysel len pri poslednej šanci.“ Melichar musí vysvetľovať, že „dve naraz by stáli tri, po jednej dve“.</dd>
+<dt>Stratí sa</dt><dd>Rozhodnutie o tempe: vziať dve sporné karty skôr ako súper. Je živé u botov a pri poslednej šanci.</dd>
+<dt>Keby áno</dt><dd>„Na svojom ťahu vezmeš 1 kartu za 1 cigaretu.“ Tým zmiznú aj pravidlo o prvom ťahu a výnimka Autobusára. Zásah je však do ekonomiky, o ktorej teraz rozhodujú návrhy v12.5, preto ho dávam len ako otázku 4.</dd>
+</dl>
+</div>
+
+<h2>Preverené a živé — nechať</h2>
+<div class="box"><table class="tabm">
+<thead><tr><th>Pravidlo</th><th>Ako často (213 bitiek, 36 partií)</th><th>Prečo nechať</th></tr></thead>
+<tbody>
+<tr><td>Sekera a jej špaky</td><td class="cislo">43 bitiek (20 %), väčšinou prázdna línia</td><td>Ľudia ju majú zriedka, ale rozhodla finále 14. 11. (Šimon prišiel o 16). Výučba ju neučí a hráč ju potrebuje, len keď nastane. Úroveň Dlhov pred ňou rozhodla 11 bitiek (5 %).</td></tr>
+<tr><td>Víťaz hádky v prehratej bitke berie špaky za svoje karty</td><td class="cislo">73 bitiek (34 %)</td><td>Živé. Eva ho len ťažko našla v texte, stačí príklad v §9.4.</td></tr>
+<tr><td>Lokalitu natáča víťaz minulej hádky</td><td class="cislo">55 z 213 kôl (26 %) natáčal iný hráč ako obranca</td><td>Živé a nikto sa naň nesťažuje.</td></tr>
+<tr><td>Vzbura / Forsáž</td><td class="cislo">29 / 31 bitiek (14 / 15 %)</td><td>Živé. Vzburu z Odporu proti Posilneniu si potvrdil 2. 11. Zjednodušenie z 26. 10. (návrh 6) je preto uzavreté.</td></tr>
+<tr><td>Výtržník (zrážka NA EX)</td><td class="cislo">6 bitiek (2,8 %)</td><td>Je zriedkavý, ale prirodzene vyplýva zo skrytého NA EX a Melichar ho učí vo finále výučby. Bez neho by zrážka potrebovala iné pravidlo.</td></tr>
+<tr><td>Záverečná</td><td class="cislo">194 (5,4 za partiu)</td><td>Živá. Výnimka „bez cigariet za pas“ je jej cena.</td></tr>
+<tr><td>Vypiť (viac kariet v ťahu)</td><td class="cislo">78 (2,2 za partiu)</td><td>Živé. Mení sa len text protokolu (nález 3).</td></tr>
+<tr><td>Chuť a Absťák</td><td class="cislo">Absťák dostalo 28 zo 72 hráčov, v 48 bitkách (23 %) mal niekto Absťák</td><td>Tvoj zámer (abstak-3.html). Absťák s pevnou latkou si zamietol 23. 10. Výučba ho neučí. Zjednodušujem len okolie (nálezy 4 a 5).</td></tr>
+<tr><td>Počet Pitiek</td><td class="cislo">1 Pitka 37 %, 2 20 %, 3 40 %, 4 4 %</td><td>Jadro hry (2026-10-19), všetky hodnoty sa vyskytujú. Návrh „najviac 2 Pitky“ si zamietol.</td></tr>
+<tr><td>Podmienka NA EX (aktívna aj neaktívna akcia)</td><td class="cislo">191 NA EX</td><td>Robí z NA EX dvojsečnú zbraň. Hela si raz nevšimla, že NA EX dať nesmie, to však rieši zobrazenie dôvodu v UI, nie zmena pravidla.</td></tr>
+<tr><td>Prevaha pri rovnosti (karta pri lokalite)</td><td>—</td><td>Stratég 14. 11. zmeral variant „rovnosť nikomu“ (VC) a vo všetkom vyšiel horšie.</td></tr>
+<tr><td>Barter, Advokát, Kmotor (mimo finále), Exekútor</td><td class="cislo">barter 59, Advokát účinok 49/71, Kmotor 54/74, Exekútor 200+ zásahov</td><td>Živé. Ekonomiku poldeci rieši <code>riesenia-problemov-20261116.html</code>.</td></tr>
+</tbody></table></div>
+
+<h2>Otázky pre Michala</h2>
+<ol>
+<li><b>Krok 6c po finále</b> (nález 6): A, teda všetko aj po finále, ako si potvrdil 12. 11., alebo B, po finále nič?</li>
+<li><b>Abstinent</b> (nález 5): smie dostať nový účinok „prah Cirhózy +1 / +2 / +3“? Stratég by ho zmeral pred zavedením.</li>
+<li><b>Výherný automat</b> (nález 7): mám Adminovi poslať návrh nového Dedičstva, aby z hry zmizlo zadĺženie?</li>
+<li><b>Ponuka</b> (nález 10): chceš zvážiť len „1 karta za 1 cigaretu“, alebo „2 za 3“ ostáva?</li>
+</ol>
+<p class="lead">Nálezy 1–3 a 8 sú len texty a jadro nemenia. Developer ich môže urobiť naraz s dávkou v12.5. Nálezy 4–7 a 10 menia hru, idú teda cez playtest. Nálezy 4 a 6 zmenia odtlačok hry.</p>
+
+<h2>Podklady</h2>
+<ul>
+<li>Meranie: 36 partií <code>tahBota</code> proti <code>tahBota</code> (povahy po dvojiciach, semienka 5000–5035), Druhá liga, master 3727f210, 213 bitiek (34 finále). Ráta príkazy, udalosti <code>bitkaVysledok</code> (<code>rozhodlo</code>, mäkké, tuhé) a <code>evaluateLine</code> línie pri každej bitke (<code>vzbura</code>, <code>forsaz</code>, <code>naexStit</code>, <code>preskolena</code>, <code>vytrznik</code>). Priazeň má „účinok“, ak ju držiteľ mohol použiť: Abstinent pri Absťáku, Advokát a Kmotor pri Dlhu, ostatné vždy. Kontrolná vzorka 8 partií (46 bitiek) zaznamenala aj hodnotu remíz.</li>
+<li><b>Vedľajší nález o botoch</b>, nie o pravidlách: boti občas odohrajú bitku s prázdnou líniou. Obaja pasujú bez karty, lebo za pas dostanú cigarety (v12.3). Výsledok je 0 : 0 a sekera, prípadne „výhra“ na menej Dlhov. Ľudia to nerobia, nafukuje to však štatistiku sekier a remíz. Je to podnet pre naex-bot-trener.</li>
+<li>Playtesty: <code>docs/playtesty/20261111-221937.html</code>, <code>20261114-003916.html</code>, <code>strategia-20261114-003916.html</code>, partia <code>playtest/20261113-084431-1</code> (feedback a nezrovnalosti Jana a Fera).</li>
+<li>Rozhodnutia: <code>docs/playtesty/rozhodnutia-20261111-221937.md</code>, <code>tools/admin/zastarane.json</code>, staršie návrhy <code>docs/napady/zjednodusenie.html</code> (vetva <code>napady/zjednodusenie</code>), <code>abstak-3.html</code>.</li>
+<li>Výučba: <code>packages/core/data/vyucba/prva-hra.json</code> (176 krokov). Slovo limit má len raz (Družstvo), Absťák neučí, remízu učí len cez Dlhy.</li>
+</ul>
+</main></body></html>
