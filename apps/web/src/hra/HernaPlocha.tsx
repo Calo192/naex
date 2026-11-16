@@ -1564,8 +1564,11 @@ export function HernaPlocha({
 
   // Náhľad vyloženia na koniec strany (playtest 20261017-164450: ktorá hrana
   // sa spáruje, hráči zisťovali skúškou) — počas ťahania aj v návrhu.
+  // Hrana lokality, s ktorou sa karta stretne, je tá po jej Nástupe (Vandal lokalitu otočí).
+  const otocenaPo = (k: CardInstance, kam: "vlastna" | "superova", strany: ClientState["strany"]): boolean =>
+    sPrilozenou(data, { ...view, strany }, kam === "vlastna" ? ja : super_, k, ja).lokalitaOtocena;
   const nahladVylozeniaNa = (k: CardInstance, kam: "vlastna" | "superova"): NahladVylozenia =>
-    nahladVylozenia(data, { ...lineState(view), strany: stol.strany }, ja, k, kam, view.naexVKole);
+    nahladVylozenia(data, { ...lineState(view), strany: stol.strany }, ja, k, kam, view.naexVKole, undefined, otocenaPo(k, kam, stol.strany));
   // Výstraha pečene pred vyložením (Michal 2026-11-06): Cirhózy karty ešte skôr, než ide na stôl.
   // Na požiadanie a s pamäťou do zmeny stola — hrozba NA EX skúša celú líniu a ťahanie prekresľuje často.
   const { vystrahaVylozenia, vystrahaNavrhu } = useMemo(() => {
@@ -1648,8 +1651,9 @@ export function HernaPlocha({
       strany = kam === 0 ? [nova, strany[1]] : [strany[0], nova];
     }
     // Konflikt a Podpora pri priložení ukáže náhľad tak, ako ich zloží motor (sPrilozenou).
-    const stranyPo = sPrilozenou(data, { ...view, strany }, posledna.ciel === "vlastna" ? ja : super_, posledna.karta, ja).strany;
-    const n = nahladVylozenia(data, { ...lineState(view), strany }, ja, posledna.karta, posledna.ciel === "vlastna" ? "vlastna" : "superova", view.naexVKole, stranyPo);
+    // Aj otočenie lokality po Nástupe (Vandal, report 20261113-084431).
+    const po = sPrilozenou(data, { ...view, strany }, posledna.ciel === "vlastna" ? ja : super_, posledna.karta, ja);
+    const n = nahladVylozenia(data, { ...lineState(view), strany }, ja, posledna.karta, posledna.ciel === "vlastna" ? "vlastna" : "superova", view.naexVKole, po.strany, po.lokalitaOtocena);
     return { n, uid: posledna.karta.uid, spoj: textSpoja(n), ja: textZmienVylozenia(n, ja), su: textZmienVylozenia(n, super_) };
     // vylozenia sú odvodené z navrh a view.
   }, [data, view, navrh, ja, super_, sada]);
@@ -5262,7 +5266,8 @@ export function HernaPlocha({
         }
       : undefined;
   const prahy = (p: PlayerId) => prahyHraca(data, stol, p);
-  const zavislost = (p: PlayerId) => stavZavislosti(data, { ...stol, kolo: view.kolo, hraci: view.hraci }, p);
+  // Rozpis a počet lokalít: vo finále Absťák nehrozí (§14b), výhľad to musí vedieť už pred voľbou pinnacle.
+  const zavislost = (p: PlayerId) => stavZavislosti(data, { ...stol, kolo: view.kolo, hraci: view.hraci, lokalitCelkom: view.lokalitCelkom, ...(view.rozpis === undefined ? {} : { rozpis: view.rozpis }) }, p);
   const b = view.bitkaStav;
   // Hrozba na stole do riadku bitky: súperova prvá (to je to prekvapenie z posledného slova, #35).
   const najdiVLinii = (uid: number) => view.strany.flat().find((pl) => pl.card.uid === uid);

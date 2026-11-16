@@ -82,7 +82,7 @@ Pred prvým ťahom (súper sa pripravuje tiež, na teba počká):
 | draft — stavba šenku | `stavbaSenku` (2 z Náradia + 6 z Občanov: 4 do šenku, 4 naspodok; obaja naraz, bez podávania) |
 | draft — branie | `draftBer` s 1 kartou (1 cigareta) alebo 2 kartami (3 cigarety), `draftStop` |
 | Zhromaždenie | `place` (`vlastna`, `superova`, `priznanie` Cirhózy (za ňu sa nedoberá ani nedostaneš kartu; Dlh je počítadlo), `dedicstvo` pre Nástroj za rastúcu cenu), `podloz` (Nástroj pod kartu v línii, zvolená hrana), `tah` (viac kariet naraz, každá ďalšia za plný poldeci), `vypit`, `zaverecna`, `pass` (do Pitky už nevykladáš; cigareta za každú kartu, ktorú si ešte smel vyložiť); Nástup s voľbou `kapybara`, `hasic`; `schopnostVazna` (raz za hru) |
-| Pitka | `naex`, odpoveď na NA EX (`place` / `bezReakcie`), `smoke`, `barter` (cigarety → nový poldeci), `refillPoldeci` (2 cigarety), `senok` (karta zo šenku: Zastávka po Pitke, Podpora Predavačky či Živnostníka hneď po vyložení), `vila` (Predsedova vila), `skipNaex`; na konci Pitky `spal` (Zberný dvor) |
+| Pitka | `naex`, odpoveď na NA EX (`place` / `bezReakcie`), `smoke`, `barter` (cigarety → nový poldeci; dolievanie za 2 cigarety zaniklo vo v12.2), `senok` (karta zo šenku: Zastávka po Pitke, Podpora Predavačky či Živnostníka hneď po vyložení), `vila` (Predsedova vila), `skipNaex`; na konci Pitky `spal` (Zberný dvor) |
 | koniec Pitky | `vizia` (vrchná karta do ruky / spáliť) — za každú aktívnu Víziu |
 | bitka | `prebytok` (Nakladačka na tvoj strach), `reci` (hádka na tvoje reči), `vestica`, `cintorin` |
 
@@ -356,7 +356,7 @@ dôležitosti, každý s dôvodom.
 ### Použité skúsenosti
 Každá skúsenosť zo zošitov, ktorú si v pláne alebo v partii zvažoval:
 `<id>` → **potvrdená / vyvrátená / nedotkla sa** a 1 veta s kolom a číslami
-(„K3 som si dolial poldeci za 2 cigarety, v Pitke som odpovedal na NA EX,
+(„K3 som si barterom kúpil plný poldeci, v Pitke som odpovedal na NA EX,
 bitka 6 : 5“). Pri vyvrátenej napíš, či zlyhal úsudok, alebo skúsenosť
 odporuje pravidlám (paragraf).
 ### Nové
