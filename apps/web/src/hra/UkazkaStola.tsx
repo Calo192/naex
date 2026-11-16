@@ -21,6 +21,9 @@
 //                  súper 3, hádka aspoň 10 — pečiatka PRESVEDČIŤ; &presvedceny=1 dá druhého staršieho
 //                  presvedčeného súperom (značka pri staršom)
 //   &stop=kolo     začiatok kola &i=k
+//   &stop=branie   branie z ponuky od kola &i=k (predvolene 2), hráč ?ja je na ťahu — pôvod kariet ponuky (v12.5, E2)
+//   &stop=dopit    Zhromaždenie pred 2. Pitkou od kola &i=k (predvolene 1), hráč ?ja na ťahu: na jeho poslednej karte
+//                  v línii leží súperovo NA EX — tlačidlo Dopiť pod kartou (v12.5, N1)
 //   &stop=draft    stavba šenku od kola &i=k (predvolene 2), hráč ?ja vyberá — po bitke s posunmi
 //                  z prebytku (stopa v línii starších)
 //   &stop=posuny   súper posúva starších po bitke, dohrá sa po stavbu šenku ďalšieho kola (hráč ?ja vyberá)
@@ -566,6 +569,18 @@ function odohrajSeed(data: GameData, seed: number): { readonly odohrane: Odohran
     if (stop === "kolo" && s.kolo === i && s.faza === "volbaCiela") return najdene({ zaciatok: s, dohraj: [] });
     if (stop === "draft" && s.kolo >= (p.get("i") === null ? 2 : i) && s.faza === "draft" && s.draftStav?.krok === "stavba" && s.draftStav.vyber[ja] === null)
       return najdene({ zaciatok: s, dohraj: [] });
+    if (stop === "branie" && s.kolo >= (p.get("i") === null ? 2 : i) && s.faza === "draft" && s.draftStav?.krok === "beranie" && naTahu(s) === ja && s.senok.length >= 6)
+      return najdene({ zaciatok: s, dohraj: [] });
+    if (stop === "dopit" && s.kolo >= (p.get("i") === null ? 1 : i) && s.faza === "zhromazdenie" && s.pitkaCislo >= 1 && naTahu(s) === ja && s.zhromazdenieStav?.pasoval[ja] === false) {
+      const strana = s.strany[ja];
+      const k = [...strana].reverse().findIndex((pl) => pl.playedBy === ja && pl.naexBy === undefined && pl.zaverecna !== true);
+      if (k !== -1 && s.hraci[ja].poldeciPlne > 0) {
+        const idx = strana.length - 1 - k;
+        const nova = strana.map((pl, j) => (j === idx ? { ...pl, naexBy: opponentOf(ja) } : pl));
+        const strany = (ja === 0 ? [nova, s.strany[1]] : [s.strany[0], nova]) as unknown as GameState["strany"];
+        return najdene({ zaciatok: { ...s, strany }, dohraj: [] });
+      }
+    }
     // Posledná Pitka kola: hráč ?ja dá NA EX, súper odpovie a hráč nemá čím (prázdna ruka) —
     // celé vyhodnotenie aj bitka prídu v jednom súperovom ťahu (hlásenie Michala 2026-10-28).
     if (

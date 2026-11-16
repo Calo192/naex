@@ -1,6 +1,6 @@
 // Súhrn po bitke krok po kroku na doske (Michal 2026-11-02, docs/napady/suhrn-po-bitke-mocky.html,
 // návrh c): žiadne okno — na línii starších sa prejde v poradí pravidiel (§10, krok 4b → 4e)
-// 1 starší bodujú, 2 reči klesnú, 3 Nakladačka, 4 hádka, 5 priazeň a ďalšie kolo. Kroky bez zmeny
+// 1 starší bodujú, 2 reči klesnú, 3 hádka, 4 Nakladačka (od v12.5 hádka pred Nakladačkou), 5 priazeň a ďalšie kolo. Kroky bez zmeny
 // sa preskočia, posledný ukáže stav po bitke s hladinami pred ňou. Bez Reactu, aby sa dalo otestovať.
 //
 // Stav pred bitkou sa ráta spätne zo zmien markerov: tie sa mažú až na začiatku ďalšej Pitky, takže
@@ -38,7 +38,7 @@ export function zaciatokKola(view: Pick<ClientState, "kolo" | "starsi" | "vazni"
 }
 
 /** Krok súhrnu v poradí pravidiel; koniec = priazeň a ďalšie kolo (vždy posledný). */
-export type KrokSuhrnu = "bodovanie" | "reci" | "nakladacka" | "hadka" | "koniec";
+export type KrokSuhrnu = "bodovanie" | "reci" | "hadka" | "nakladacka" | "koniec";
 
 // Gettery: názov sa číta v jazyku hráča pri vykreslení.
 export const NAZOV_KROKU: Readonly<Record<KrokSuhrnu, string>> = {
@@ -59,7 +59,7 @@ export const NAZOV_KROKU: Readonly<Record<KrokSuhrnu, string>> = {
   },
 };
 
-const PORADIE: readonly KrokSuhrnu[] = ["bodovanie", "reci", "nakladacka", "hadka", "koniec"];
+const PORADIE: readonly KrokSuhrnu[] = ["bodovanie", "reci", "hadka", "nakladacka", "koniec"];
 
 /** Priazeň: komu (null = nikto) a akú silnú. */
 export interface PriazenSuhrnu {
@@ -71,7 +71,7 @@ export interface StarsiVSuhrne {
   readonly elderId: string;
   readonly defId: string;
   readonly scorecard: string;
-  /** Teplomery po fázach: 0 pred bitkou, 1 po poklese rečí, 2 po Nakladačke, 3 po hádke. */
+  /** Teplomery po fázach: 0 pred bitkou, 1 po poklese rečí, 2 po hádke, 3 po Nakladačke (v12.5). */
   readonly fazy: readonly [Markery, Markery, Markery, Markery];
   /** Zajatý v tejto bitke — kto ho má v pivnici. */
   readonly vazen: PlayerId | null;
@@ -150,8 +150,8 @@ export function suhrnBitky(zaciatok: ZaciatokKola, view: Pick<ClientState, "star
       return m;
     };
     const f1 = dalej(f0, ["bodovanie"]);
-    const f2 = dalej(f1, ["nakladacka", "posun"]);
-    const f3 = dalej(f2, ["hadka"]);
+    const f2 = dalej(f1, ["hadka"]);
+    const f3 = dalej(f2, ["nakladacka", "posun"]);
 
     const zaznam = bitka.bodovanie?.find((x) => x.elderId === a.elderId);
     const bodStupen: [Stupen, Stupen] = zaznam !== undefined ? [zaznam.stupen[0], zaznam.stupen[1]] : [0, 1].map((p) => stupenNaBodovanie(f0, p as PlayerId, bitka.vitaz === p)) as [Stupen, Stupen];
@@ -172,8 +172,8 @@ export function suhrnBitky(zaciatok: ZaciatokKola, view: Pick<ClientState, "star
       bodStupen,
       bodZaReci,
       pokles: jeho.filter((z) => z.zdroj === "bodovanie").map((z) => ({ hrac: z.hrac, z: z.z, na: z.na })),
-      nakladacka: nakl === undefined ? null : { hrac: nakl.hrac, z: nakl.z, na: nakl.na, cena: cenaZdvihu(f1, nakl.hrac, "strach", nakl.na) ?? 0 },
-      hadka: hadka === undefined ? null : { hrac: hadka.hrac, z: najvyssiMarker(f2, hadka.hrac), na: hadka.na, cena: investovaneReci(f3, hadka.hrac) - investovaneReci(f2, hadka.hrac) },
+      nakladacka: nakl === undefined ? null : { hrac: nakl.hrac, z: nakl.z, na: nakl.na, cena: cenaZdvihu(f2, nakl.hrac, "strach", nakl.na) ?? 0 },
+      hadka: hadka === undefined ? null : { hrac: hadka.hrac, z: najvyssiMarker(f1, hadka.hrac), na: hadka.na, cena: investovaneReci(f2, hadka.hrac) - investovaneReci(f1, hadka.hrac) },
       priazen: { od, na, zmena: !rovnakaPriazen(od, na) },
       ohrozenie: vazen !== undefined ? [] : ([0, 1] as const).filter((p) => f3.strach[p] === 3).map((p) => ({ hrac: p, kradez: kradezZaZajatie(f3, p) })),
     });
@@ -238,8 +238,8 @@ export function dotknuty(e: StarsiVSuhrne, k: KrokSuhrnu): boolean {
 export function fazaKroku(k: KrokSuhrnu): { readonly stav: number; readonly od: number | null; readonly duch: boolean } {
   if (k === "bodovanie") return { stav: 0, od: null, duch: false };
   if (k === "reci") return { stav: 1, od: 0, duch: false };
-  if (k === "nakladacka") return { stav: 2, od: 1, duch: false };
-  if (k === "hadka") return { stav: 3, od: 2, duch: false };
+  if (k === "hadka") return { stav: 2, od: 1, duch: false };
+  if (k === "nakladacka") return { stav: 3, od: 2, duch: false };
   return { stav: 3, od: 0, duch: true };
 }
 
@@ -305,8 +305,8 @@ export function riadkyKroku(e: StarsiVSuhrne, k: KrokSuhrnu, c: KontextSuhrnu): 
   if (e.vazen !== null) return [t("suhrn.vPivnici", { meno: m[e.vazen] })];
   const pr = (p: PriazenSuhrnu): string => (p.hrac === null ? t("stol.nikto") : `${m[p.hrac]} +${p.sila}`);
   return [
-    ...nakl(),
     ...hadka(),
+    ...nakl(),
     ...(e.priazen.zmena ? [t("suhrn.priazenZmena", { od: pr(e.priazen.od), na: pr(e.priazen.na) })] : []),
     ...pokles(),
     ...e.ohrozenie.map((z) => t("suhrn.mozeZajat", { meno: m[z.hrac] })),

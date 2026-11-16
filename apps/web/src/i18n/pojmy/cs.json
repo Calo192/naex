@@ -127,14 +127,6 @@
       "popis": "Akcia, ktorá ti v Pitke dá 1 Dlh."
     }
   },
-  "zadlzenie": {
-    "pojem": "Zadlužení",
-    "popis": "Co dává Hazard a efekty karet: 1 zadlužení je hned 1 Dluh. Jen s Výherním automatem v Dědictví je Dluh až za každá 2 a zbytek zůstává na účtu.",
-    "sk": {
-      "pojem": "Zadĺženie",
-      "popis": "Čo dáva Hazard a efekty kariet: 1 zadĺženie je hneď 1 Dlh. Len s Výherným automatom v Dedičstve je Dlh až za každé 2 a zvyšok ostáva na účte; automat sám dá v každej Pitke 1 Dlh."
-    }
-  },
   "exekutor": {
     "pojem": "Exekutor",
     "popis": "Přijde v každé rvačce, dokud máš přiznaný Dluh: shoří ti polovina Dluhů (zaokrouhleno nahoru) a stejně vajglů; tvoje přízeň Advokáta je sníží o 1 / 2 / 3. Zahrádkář ve tvé partě tě v tom kole ochrání.",
@@ -253,14 +245,6 @@
     "sk": {
       "pojem": "Kraj",
       "popis": "Polovica línie podľa hrany lokality; každá lokalita má vlastné mená krajov (Krčma: pri výčape a pri dverách). Nepatrí nikomu."
-    }
-  },
-  "limit": {
-    "pojem": "Limit vykládání",
-    "popis": "Kolik karet vyložíš: tolik, kolik máš plných panáků — každá karta jednoho otočí na vypitého.",
-    "sk": {
-      "pojem": "Limit vykladania",
-      "popis": "Koľko kariet vyložíš: toľko, koľko máš plných poldeci — každá karta jeden otočí na vypitý."
     }
   },
   "linia": {

@@ -194,9 +194,10 @@ describe("výpalné (v11.9, §10, krok 6c; v12.4 z banky)", () => {
     expect(po.hraci[0].cigarety).toBe(1);
   });
 
-  it("po finále sa neplatí", () => {
+  it("aj po finále sa platí (v12.5, krok 6c) — cigarety sa potom vykúpia", () => {
     const po = poBitke(predKoncomBitky((s) => sCigaretami(sCervenymi(s, 0, 2), [0, 5]), 0, true));
-    expect(po.hraci[0].cigarety).toBe(0);
-    expect(po.hraci[1].cigarety).toBe(5);
+    expect(po.koniec).not.toBeNull();
+    expect(po.hraci[0].cigarety).toBe(2);
+    expect(po.hraci[1].cigarety).toBe(5 + KONSTANTY.CIGARETY_PORAZENEMU);
   });
 });

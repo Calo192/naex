@@ -41,7 +41,7 @@ describe("riadky pri staršom", () => {
     expect(cenaPola()).toBe("stupeň stojí 1 / 2 / 3 (žltá / oranžová / červená)");
     expect(pravidloStrachu()).toContain("hodnotu 1 / 2 / 3 a dostane ju, kto ho drží");
     expect(pravidloStrachu()).toMatch(/Stupeň staršieho pre hráča je jeho strach/);
-    expect(pravidloStrachu()).toMatch(/reči obaja, strach len víťaz/);
+    expect(pravidloStrachu()).toMatch(/reči obaja, ale len na súperovom strachu \(nad ním čakajú\), strach len víťaz/);
   });
 });
 

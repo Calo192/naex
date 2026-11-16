@@ -385,22 +385,22 @@ describe("koniec partie a prečerpanie", () => {
     expect(v.vitazPartie).toBe(1);
   });
 
-  it("zhoda prečerpania: vyššie tuhé, potom Absťáky, Dlhy, nakoniec útočník", () => {
+  it("zhoda prečerpania: vyššie tuhé, potom Dlhy, nakoniec útočník (v12.5 bez Absťákov)", () => {
     const s = stav(poslednych(3), posledni2(3));
     const koniec = (a: VstupBitkyPata, b: VstupBitkyPata, utocnik: PlayerId = 0): PlayerId | null =>
       vyhodnotBitkuPata(s, [a, b], utocnik).vitazPartie;
     expect(koniec(uder("vychovavatelka", 5), uder("postarka", 3, { povery: 2 }))).toBe(0);
-    expect(koniec(uder("vychovavatelka", 3, { abstaky: 1 }), uder("postarka", 3))).toBe(1);
+    expect(koniec(uder("vychovavatelka", 3, { abstaky: 1 }), uder("postarka", 3))).toBe(0);
     expect(koniec(uder("vychovavatelka", 3), uder("postarka", 3, { dlhy: 1, bezExekucie: true }))).toBe(0);
     expect(koniec(uder("vychovavatelka", 3), uder("postarka", 3), 1)).toBe(1);
     expect(koniec(uder("vychovavatelka", 3), uder("postarka", 3), 0)).toBe(0);
   });
 
-  it("víťaz bitky: tuhé, Absťáky, Dlhy, inak sekera", () => {
-    expect(vitazBitkyPata({ tuhe: [5, 3], abstaky: [0, 0], dlhy: [0, 0] })).toBe(0);
-    expect(vitazBitkyPata({ tuhe: [3, 3], abstaky: [2, 1], dlhy: [0, 0] })).toBe(1);
-    expect(vitazBitkyPata({ tuhe: [3, 3], abstaky: [1, 1], dlhy: [0, 4] })).toBe(0);
-    expect(vitazBitkyPata({ tuhe: [3, 3], abstaky: [1, 1], dlhy: [2, 2] })).toBeNull();
+  it("víťaz bitky: tuhé, Dlhy, inak sekera (v12.5 bez Absťákov)", () => {
+    expect(vitazBitkyPata({ tuhe: [5, 3], dlhy: [0, 0] })).toBe(0);
+    expect(vitazBitkyPata({ tuhe: [3, 3], dlhy: [0, 0] })).toBeNull();
+    expect(vitazBitkyPata({ tuhe: [3, 3], dlhy: [0, 4] })).toBe(0);
+    expect(vitazBitkyPata({ tuhe: [3, 3], dlhy: [2, 2] })).toBeNull();
   });
 
   it("tuhé strany: Rana 1, Pecka 2, Petelica 3, bonusy a Absťáky; Viera nie", () => {

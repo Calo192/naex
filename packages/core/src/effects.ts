@@ -12,11 +12,12 @@ import type { GameData } from "./data.ts";
 import { defOf } from "./data.ts";
 import type { GameState, KseftyKola } from "./engine.ts";
 import type { ElderState } from "./elders.ts";
+import { favourStarsieho, priazenPre } from "./elders.ts";
 import type { CardInstance } from "./types.ts";
 import type { ActionSums, LineEval, PlacedCard, ZdrojAkcie, ZdrojeAkcii } from "./partia.ts";
 import { evaluateLine, prevahaStran, silaVKraji, zvieratAUmlcane } from "./partia.ts";
 import type { PlayerState } from "./player.ts";
-import { limitVykladania, maximumPoldeci } from "./player.ts";
+import { plneHraca, maximumPoldeci } from "./player.ts";
 import { KONSTANTY } from "./constants.ts";
 import { efektyNavyse } from "./navyse.ts";
 import type { VysledokHadky } from "./battle.ts";
@@ -109,7 +110,7 @@ export const REGISTER: Readonly<Record<string, EfektStatus>> = {
   vestica: "impl", // Spoločník: Pamätník {Povera} {Povera} (navyse.ts); stará Prehra — výmena kariet v balíčkoch (krok bitky 5b) — len stará sada
   vychovavatelka: "impl", // Schopnosť väzňa: súper v tomto Zhromaždení hneď pasuje a za pas nedostane cigarety (v12.3)
   vinko: "impl", // Dedičstvo (v12.2): maximum poldeci +1 — pri vyložení nový plný poldeci (cmdPlace)
-  vyherny_automat: "impl", // Dedičstvo: prah Dlhu +1; Pitka: {Dlh} v každej Pitke (v12, engine vyhodnotPitku; stará sada v poslednej Pitke kola)
+  vyherny_automat: "impl", // Dedičstvo: Pitka: {Cigareta} {Dlh} v každej Pitke (v12.5, engine vyhodnotPitku; stará sada Dlh v poslednej Pitke kola)
   zastavka: "impl", // Pitka (v9.1): po prvej Pitke kola každý 1 karta z ponuky zadarmo, najprv útočník (engine dokonciPitku)
   // Náradie (Michal 2026-10-30, docs/napady/naradie-akcie.html): Nástroje do Dedičstva a Tipér.
   zapalovac: "impl", // Dedičstvo: tvoje aktívne Cigarety nemožno zrušiť NA EX (partia.ts applyNaex)
@@ -302,11 +303,11 @@ export function sDlhmiPoradkyne(data: GameData, state: Pick<VerejnyStav, "strany
 }
 
 /**
- * Zadĺženie z aktívnych akcií Dlh v línii, [hráč 0, hráč 1], s Dlhom Finančnej poradkyne
+ * Dlhy z aktívnych akcií Hazard (kľúč Dlh) v línii, [hráč 0, hráč 1], s Dlhom Finančnej poradkyne
  * u súpera (sDlhmiPoradkyne). Jeden výpočet pre Pitku (prirastkyPitky) aj náhľady —
  * náhľad ho predtým pripísal majiteľovi (playtest 2026-10-22).
  */
-export function zadlzenieZLinie(data: GameData, state: Pick<VerejnyStav, "strany">, vyhodnotenie: LineEval): readonly [number, number] {
+export function hazardZLinie(data: GameData, state: Pick<VerejnyStav, "strany">, vyhodnotenie: LineEval): readonly [number, number] {
   const sums = sDlhmiPoradkyne(data, state, vyhodnotenie).sums;
   return [sums[0].Dlh ?? 0, sums[1].Dlh ?? 0];
 }
@@ -314,8 +315,8 @@ export function zadlzenieZLinie(data: GameData, state: Pick<VerejnyStav, "strany
 
 /**
  * Policajtka (Pitka, „Pokutový blok“, Michal 2026-11-02): za každú súperovu akciu, ktorú v tejto
- * Pitke zruší tvoj Odpor, získa súper 1 zadĺženie — každá tvoja odkrytá Policajtka zvlášť.
- * Vráti zadĺženie pre [hráča 0, hráča 1]. Policajtka so starým Konfliktom (sada do v10.3) tu nie je.
+ * Pitke zruší tvoj Odpor, získa súper 1 Dlh — každá tvoja odkrytá Policajtka zvlášť.
+ * Vráti Dlhy pre [hráča 0, hráča 1]. Policajtka so starým Konfliktom (sada do v10.3) tu nie je.
  */
 export function pokutaPolicajtky(data: GameData, s: Pick<VerejnyStav, "strany">, vyhodnotenie: LineEval): [number, number] {
   const out: [number, number] = [0, 0];
@@ -328,12 +329,12 @@ export function pokutaPolicajtky(data: GameData, s: Pick<VerejnyStav, "strany">,
 }
 
 /**
- * Celé zadĺženie, ktoré Pitka pripíše z kariet v línii: Dlh (aj presmerovaný Finančnou
+ * Všetky Dlhy, ktoré Pitka pripíše z kariet v línii: Hazard (aj presmerovaný Finančnou
  * poradkyňou) a pokuta Policajtky. Jeden výpočet pre Pitku (prirastkyPitky) aj náhľad
  * vyloženia — náhľad predtým pokutu Policajtky vynechal (vymyselník 2026-11-02).
  */
-export function zadlzeniePitkyZLinie(data: GameData, state: Pick<VerejnyStav, "strany">, vyhodnotenie: LineEval): [number, number] {
-  const zLinie = zadlzenieZLinie(data, state, vyhodnotenie);
+export function hazardPitkyZLinie(data: GameData, state: Pick<VerejnyStav, "strany">, vyhodnotenie: LineEval): [number, number] {
+  const zLinie = hazardZLinie(data, state, vyhodnotenie);
   const pokuta = pokutaPolicajtky(data, state, vyhodnotenie);
   return [zLinie[0] + pokuta[0], zLinie[1] + pokuta[1]];
 }
@@ -341,7 +342,7 @@ export function zadlzeniePitkyZLinie(data: GameData, state: Pick<VerejnyStav, "s
 // ---------------------------------------------------------------------------
 // Háčiky — motor ich volá na presne určených miestach
 
-/** Prah Dlhu aj Cirhózy je v 2 na 2 o 1 vyšší (Michal 2026-10-28) — kliatby sú spoločné tímu. */
+/** Prah Cirhózy je v 2 na 2 o 1 vyšší (Michal 2026-10-28) — kliatby sú spoločné tímu; prah Dlhu zanikol v12.5. */
 function prahNavyseFormatu(state: Pick<VerejnyStav, "format">): number {
   return state.format === "2na2" ? KONSTANTY.DVA_NA_DVA.PRAH_NAVYSE : 0;
 }
@@ -350,9 +351,10 @@ function prahNavyseFormatu(state: Pick<VerejnyStav, "format">): number {
  * Prah Cirhózy navyše: nealko v Dedičstve hráča p (+2) a Krčma ako cieľ kola
  * (+2 obom — povinné NA EX tam už neznamená istú Cirhózu, Michal 2026-10-22).
  */
-export function prahCirhozyBonus(state: VerejnyStav, p: PlayerId): number {
+export function prahCirhozyBonus(state: VerejnyStav, p: PlayerId, data?: GameData): number {
   return (
     prahNavyseFormatu(state) +
+    (data === undefined ? 0 : silaAbstinenta(data, state, p)) +
     (vDedicstve(state, p, "nealko") ? KONSTANTY.EFEKT.NEALKO_PRAH_CIRHOZY : 0) +
     (jeCielLokalita(state, "krcma") ? KONSTANTY.EFEKT.KRCMA_PRAH_CIRHOZY : 0)
   );
@@ -371,7 +373,7 @@ export function naexLenNaKonci(line: { readonly lokalita: CardInstance | null })
   return line.lokalita?.defId === "kostol";
 }
 
-/** Prečo hráč p teraz nesmie fajčiť, null = smie. Jednota: kto má viac priznaných Dlhov. */
+/** Prečo hráč p teraz nesmie fajčiť, null = smie. Jednota: kto má viac Dlhov. */
 export function dovodZakazuFajcit(_data: GameData, state: VerejnyStav, p: PlayerId): string | null {
   if (jednotaZakazuje(state, p)) return JEDNOTA_ZAKAZ;
   return null;
@@ -391,7 +393,7 @@ export function nasobokPitky(state: Pick<VerejnyStav, "ciel">): number {
 }
 
 /** Dôvod zákazu Jednoty pre server aj klienta. */
-export const JEDNOTA_ZAKAZ = "Jednota: máš viac priznaných Dlhov — nesmieš fajčiť ani barterovať.";
+export const JEDNOTA_ZAKAZ = "Jednota: máš viac Dlhov — nesmieš fajčiť ani barterovať.";
 
 /** Jednota (Pitka, v7): hráč s viac priznanými Dlhmi ako súper nesmie fajčiť ani barterovať (v12.2, predtým dolievať). */
 export function jednotaZakazuje(state: VerejnyStav, p: PlayerId): boolean {
@@ -440,8 +442,8 @@ interface PoldeciHraca {
  * Limit vykladania = plné poldeci (PRAVIDLA §6, v12.2) — pre náhľad „limit po tomto ťahu“.
  * `zmenaPoldeci` mení plné poldeci.
  */
-export function limitZhromazdenia(state: StavPoldeci, p: PlayerId, zmenaPoldeci = 0): number {
-  return limitVykladania({ poldeciPlne: Math.max(0, state.hraci[p].poldeciPlne + zmenaPoldeci) });
+export function plneVZhromazdeni(state: StavPoldeci, p: PlayerId, zmenaPoldeci = 0): number {
+  return plneHraca({ poldeciPlne: Math.max(0, state.hraci[p].poldeciPlne + zmenaPoldeci) });
 }
 
 /**
@@ -458,7 +460,7 @@ export function poldeciZadarmoPoPitke(state: Pick<VerejnyStav, "hraci" | "format
  * Poldeci (dolejPoPitke). Bez dát sady ráta len doliatie zadarmo. Skryté NA EX musí mať
  * `state` už odpísané (sMojimiSkrytymiNaex).
  */
-export function limitPoPitke(state: StavPoldeci & { readonly lokalitaOtocena?: boolean }, p: PlayerId, data?: GameData): number {
+export function plnePoPitke(state: StavPoldeci & { readonly lokalitaOtocena?: boolean }, p: PlayerId, data?: GameData): number {
   const h = state.hraci[p];
   const akcie = data === undefined || state.lokalitaOtocena === undefined ? 0 : akciePoldeci(data, state, state.lokalitaOtocena)[p];
   return h.poldeciPlne + Math.min(h.poldeciVypite, poldeciZadarmoPoPitke(state, p) + akcie);
@@ -469,7 +471,7 @@ export function limitPoPitke(state: StavPoldeci & { readonly lokalitaOtocena?: b
  * ležiace na kartách cez NA EX. NA EX teraz (`naex`) maximum nemení. `data` ostáva kvôli
  * volajúcim spred v12.2, keď sa rátali akcie Poldeci v bitke.
  */
-export function limitBuduceKolo(state: StavPoldeci & { readonly lokalitaOtocena?: boolean }, p: PlayerId, _naex = false, _data?: GameData): number {
+export function plneBuduceKolo(state: StavPoldeci & { readonly lokalitaOtocena?: boolean }, p: PlayerId, _naex = false, _data?: GameData): number {
   // Zrážka NA EX (v5, Výtržník): druhý poldeci na karte je toho druhého hráča.
   const naStole = state.strany.flat().filter((pl) => pl.naexBy === p || pl.naexBy2 === p).length;
   return maximumPoldeci(state.hraci[p], naStole);
@@ -650,4 +652,17 @@ export function nastrojeTuhe(state: VerejnyStav, p: PlayerId, sums: { readonly R
     if (tuhe > 0) out.push({ zdroj: v.zdroj, tuhe });
   }
   return out;
+}
+
+/**
+ * Sila priazne Abstinenta (kľúč LAKOMEC) pre hráča p: o toľko je jeho prah Cirhózy vyšší (v12.5,
+ * Michal 2026-11-16; do v12.4 mu v bitke toľko Absťákov neodpustil). Prvý starší s touto priazňou.
+ */
+export function silaAbstinenta(data: GameData, state: Pick<VerejnyStav, "starsi">, p: PlayerId): number {
+  for (const e of state.starsi) {
+    if (favourStarsieho(data, e) !== "LAKOMEC") continue;
+    const sila = priazenPre(e, p);
+    if (sila > 0) return sila;
+  }
+  return 0;
 }

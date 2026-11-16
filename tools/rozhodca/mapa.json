@@ -2440,13 +2440,13 @@
       "id": "1.koniec.treti-vazen",
       "paragraf": "1. Cieľ a koniec hry › Podmienky konca",
       "pravidlo": "Tretí väzeň jedného hráča = výhra hneď (po bitke v kroku 6d, vo finále pred konečnými špakmi); vydesenie ako výhra zaniklo (v9).",
-      "stav": "pokryte",
+      "stav": "na-overenie",
       "testy": [
         "packages/core/test/vazen.test.ts › tretí väzeň jedného hráča = výhra hneď, bez konečných špakov",
         "packages/core/test/pravidla-bitka.test.ts › §1 (v9): vydesenie ako výhra zaniklo — ani 8 z 8 starších na stupni 3 hru neukončí",
         "packages/core/test/dobiehanie.test.ts › polovica starších na stupni 3 hru neukončí ani na konci kola — vyhráva sa tretím väzňom"
       ],
-      "poznamka": "v9 (krok 2 revízie starších, Michal 2026-10-30) — Developer, na prejdenie rozhodcom."
+      "poznamka": "v9 (krok 2 revízie starších, Michal 2026-10-30) — Developer, na prejdenie rozhodcom. v12.5: výhra väzňami až v ďalšej vyhratej bitke (Pivnica plná) — pozri 10.vazni.pivnica-plna."
     },
     {
       "id": "10.zajatie.podmienka",
@@ -2577,6 +2577,109 @@
         "packages/core/test/frakcie.test.ts"
       ],
       "poznamka": "Frakcie (Michal 2026-11-08), programátor — na prejdenie rozhodcom."
+    },
+    {
+      "id": "9.krok4e.hadka-pred-nakladackou",
+      "paragraf": "9. Bitka › tabuľka krokov (4e), 9.1, 9.4",
+      "pravidlo": "v12.5 (návrh #48 A): v kroku 4e najprv víťaz hádky rozdelí hádku na reči (smie presviedčať), potom víťaz bitky Nakladačku na strach (smie zajímať); spomalenie +1 platí aj na čerstvé reči. Partia rozohraná pred v12.5 rozdelí hádku po Nakladačke.",
+      "stav": "pokryte",
+      "testy": [
+        "packages/core/test/strach-reci.test.ts › víťaz hádky rozdelí hádku na svoje reči po bodovaní a pred Nakladačkou (v12.5, návrh #48 A); strach dvíha víťaz bitky",
+        "packages/core/test/pravidla-v12-5.test.ts › partia rozohraná pred v12.5 (čaká na Nakladačku, hádka nerozdelená): po Nakladačke sa rozdelí hádka",
+        "apps/web/test/krokySuhrnu.test.ts › kroky v poradí pravidiel, koniec posledný; v kroku sa teplomer hýbe z predošlej fázy"
+      ],
+      "poznamka": "v12.5 (Michal 2026-11-16)."
+    },
+    {
+      "id": "10.bodovanie.reci-na-strachu",
+      "paragraf": "10. Starší › Bodovanie po bitke (krok 4b)",
+      "pravidlo": "v12.5 (R1): reči bodujú len na stupňoch, na ktorých má súper strach; nad ním čakajú a bodujú od bitky, keď doň jeho strach dorastie.",
+      "stav": "pokryte",
+      "testy": [
+        "packages/core/test/reci-teplomer.test.ts › R1 (v12.5): bodujú len stupne na jeho strachu, nad ním čakajú — keď strach dorastie, bodujú (do v12.4 aj nad ním 1 / 3 / 6)",
+        "packages/core/test/reci-teplomer.test.ts › tabuľka z mocku: strach a reči, špaky jemu a mne",
+        "packages/core/test/pravidla-v12-5.test.ts › bodovanie po bitke: reči nad súperovým strachom nedajú nič, na strachu áno"
+      ],
+      "poznamka": "v12.5 (Michal 2026-11-16)."
+    },
+    {
+      "id": "5.branie.platba-povodu",
+      "paragraf": "5. Cieľ a draft › Branie z ponuky",
+      "pravidlo": "v12.5 (E2): súperovu kartu z ponuky platíš súperovi, svoju banke; pri 2 kartách za 3 dostane súper 1 cigaretu za každú svoju. Autobusár rovnako. Pôvod je verejný.",
+      "stav": "pokryte",
+      "testy": [
+        "packages/core/test/draft.test.ts › E2 (v12.5, §5): súperovu kartu platíš súperovi, svoju banke; pri 2 kartách za 3 dostane súper 1 za každú svoju",
+        "packages/core/test/pravidla-v12-5.test.ts › pôvod sa ukáže až po odhalení stavby — pred ním súper nevidí, čo hráč do ponuky dal",
+        "packages/core/test/pravidla-v12-5.test.ts › Autobusár platí rovnako: každú súperovu kartu súperovi, svoju banke"
+      ],
+      "poznamka": "v12.5 (Michal 2026-11-16)."
+    },
+    {
+      "id": "10.vazni.pivnica-plna",
+      "paragraf": "1. Cieľ a koniec hry › Podmienky konca; 10. Starší › Výhra väzňami",
+      "pravidlo": "v12.5 (V1): kto vyhrá bitku a už pred ňou má väzňov na výhru podľa ligy, vyhráva (krok 4c, aj vo finále); zajatie v kroku 4e výhru nedá — pivnica plná.",
+      "stav": "pokryte",
+      "testy": [
+        "packages/core/test/vazen.test.ts › väzni na výhru (Druhá liga 3) — po zajatí pivnica plná, hra pokračuje (V1, v12.5)",
+        "packages/core/test/vazen.test.ts › plná pivnica: ďalšia vyhratá bitka je výhra väzňami (krok 4c, pred exekúciou); prehratá nie",
+        "packages/core/test/strach-reci.test.ts › krádež najviac toľko, koľko súper má; väzni na výhru v Tretej lige 2 — pivnica plná, výhra až v ďalšej vyhratej bitke (v12.5)"
+      ],
+      "poznamka": "v12.5 (Michal 2026-11-16). Nahrádza 1.koniec.treti-vazen."
+    },
+    {
+      "id": "6.dopit-za-teba",
+      "paragraf": "6. Zhromaždenie › Dopiť za teba",
+      "pravidlo": "v12.5 (N1): v Zhromaždení namiesto karty dopiť súperovo NA EX zo svojej karty za plný poldeci a 1 nerest; NA EX zíde, súperov poldeci ostáva vypitý; je to ťah.",
+      "stav": "pokryte",
+      "testy": [
+        "packages/core/test/pravidla-v12-5.test.ts › namiesto karty dopije súperovo NA EX zo svojej karty: svoj plný poldeci na vypitý, 1 nerest; súperovo NA EX zíde, jeho poldeci vypitý",
+        "packages/core/test/pravidla-v12-5.test.ts › len vlastná karta so súperovým NA EX, len s plným poldeci, nie po Vypiť ani mimo Zhromaždenia",
+        "packages/core/test/pravidla-v12-5.test.ts › Výtržník (zrážka na mojej karte): dopijem súperovo NA EX, moje ostáva a karta prestane byť Výtržníkom"
+      ],
+      "poznamka": "v12.5 (Michal 2026-11-16)."
+    },
+    {
+      "id": "9.vysledok.remiza-dlhy",
+      "paragraf": "9. Bitka › 9.4 Výsledok",
+      "pravidlo": "v12.5 (nález 4): remízu v tuhom rozhoduje len menej Dlhov, inak sekera; Absťáky nie.",
+      "stav": "pokryte",
+      "testy": [
+        "packages/core/test/battle.test.ts › remízu v tuhom vyhrá menej Dlhov (v12.5 bez Absťákov), inak sekera",
+        "packages/core/test/abstak-chut.test.ts › remízu v tuhom Absťáky nerozhodujú (v12.5) — bez rozdielu Dlhov je sekera"
+      ],
+      "poznamka": "v12.5 (Michal 2026-11-16, mŕtve pravidlá)."
+    },
+    {
+      "id": "10.priazne.abstinent-prah-cirhozy",
+      "paragraf": "10. Starší › Priazeň",
+      "pravidlo": "v12.5 (nález 5): Abstinent zvyšuje prah Cirhózy o silu (+1/+2/+3); Absťáky uberajú tuhé vždy.",
+      "stav": "pokryte",
+      "testy": [
+        "packages/core/test/pravidla-v12-5.test.ts › sila priazne 1 / 2 / 3 zvýši prah Cirhózy hráča, súperovi nie; Absťáky v bitke uberajú tuhé ďalej",
+        "packages/core/test/hadka-v10.test.ts › Absťáky uberajú tuhé vždy (v12.5: Abstinent ich neodpúšťa, zvyšuje prah Cirhózy)"
+      ],
+      "poznamka": "v12.5 (Michal 2026-11-16, mŕtve pravidlá)."
+    },
+    {
+      "id": "9.krok6c.aj-po-finale",
+      "paragraf": "9. Bitka › krok 6c",
+      "pravidlo": "v12.5 (nález 6 A): cigareta porazenému, Kmotor, Fajčiar aj výpalné aj po finále; cigarety sa potom vykúpia.",
+      "stav": "pokryte",
+      "testy": [
+        "packages/core/test/pravidla-v12-5.test.ts › porazený finále dostane cigaretu a výpalné sa vyplatí, potom sa vykúpia"
+      ],
+      "poznamka": "v12.5 (Michal 2026-11-16, mŕtve pravidlá)."
+    },
+    {
+      "id": "8.hazard-dlh-1-1",
+      "paragraf": "8. Pečeň, Dlh › Hazard a Dlh",
+      "pravidlo": "v12.5 (nález 7): Hazard dá Dlh vždy 1 : 1, zadĺženie a prah Dlhu zanikli; Výherný automat: Pitka: {Cigareta} {Dlh}.",
+      "stav": "pokryte",
+      "testy": [
+        "packages/core/test/dlh-bez-prahu-v118.test.ts › 5 Hazardov = 5 Dlhov aj s automatom v Dedičstve; výhľad hovorí to isté",
+        "packages/core/test/pravidla-v12-5.test.ts › v každej Pitke cigareta aj Dlh, bez prahu Dlhu"
+      ],
+      "poznamka": "v12.5 (Michal 2026-11-16, mŕtve pravidlá)."
     }
   ]
 }

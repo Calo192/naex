@@ -7,7 +7,7 @@ import cardsJson from "../data/cards.json";
 import eldersJson from "../data/elders.json";
 import scorecardsJson from "../data/scorecards.json";
 import type { BitkaStav, CardInstance, GameState, PlacedCard, PlayerId } from "../src/index.ts";
-import { KONSTANTY, apply, limitBuduceKolo, limitZhromazdenia, loadGameData, setupGame, viewFor } from "../src/index.ts";
+import { KONSTANTY, apply, plneBuduceKolo, plneVZhromazdeni, loadGameData, setupGame, viewFor } from "../src/index.ts";
 
 const data = loadGameData(cardsJson, eldersJson, scorecardsJson);
 
@@ -67,37 +67,37 @@ describe("A1: začiatok kola už nedolieva (v12.2)", () => {
 });
 
 describe("E1: limit vykladania pred a po ťahu", () => {
-  it("limitZhromazdenia = plné (v12.2; NA EX na stole sa neráta), zmena plných ho posunie", () => {
+  it("plneVZhromazdeni = plné (v12.2; NA EX na stole sa neráta), zmena plných ho posunie", () => {
     const s0 = setupGame(data, 22);
     const s: GameState = {
       ...s0,
       strany: [[lezi(inst("pijan"), 0, 0)], []],
       hraci: [{ ...s0.hraci[0], poldeciPlne: 1, poldeciVypite: 0 }, s0.hraci[1]],
     };
-    expect(limitZhromazdenia(s, 0)).toBe(1);
-    expect(limitZhromazdenia(s, 0, -1)).toBe(0);
+    expect(plneVZhromazdeni(s, 0)).toBe(1);
+    expect(plneVZhromazdeni(s, 0, -1)).toBe(0);
     // Plné poldeci nejdú pod nulu.
-    expect(limitZhromazdenia(s, 0, -5)).toBe(0);
+    expect(plneVZhromazdeni(s, 0, -5)).toBe(0);
   });
 
   it("Zastávka limit nemení (v9.1); Vínko v Dedičstve ho samo nemení — pridá plný poldeci pri vyložení (v12.2)", () => {
     const s0 = setupGame(data, 23);
     const zastavka: GameState = { ...s0, ciel: { typ: "lokalita", lokalita: inst("zastavka") } };
     const jeden = KONSTANTY.START_POLDECI;
-    expect(limitZhromazdenia(zastavka, 0)).toBe(jeden);
-    expect(limitZhromazdenia(zastavka, 0, -1)).toBe(jeden - 1);
+    expect(plneVZhromazdeni(zastavka, 0)).toBe(jeden);
+    expect(plneVZhromazdeni(zastavka, 0, -1)).toBe(jeden - 1);
     const vinko: GameState = { ...s0, hraci: [{ ...s0.hraci[0], dedicstvo: [inst("vinko")] }, s0.hraci[1]] };
-    expect(limitZhromazdenia(vinko, 0)).toBe(KONSTANTY.START_POLDECI);
+    expect(plneVZhromazdeni(vinko, 0)).toBe(KONSTANTY.START_POLDECI);
   });
 
-  it("limitBuduceKolo: po bitke sa obnoví maximum — plné, vypité aj poldeci na stole (v12.2)", () => {
+  it("plneBuduceKolo: po bitke sa obnoví maximum — plné, vypité aj poldeci na stole (v12.2)", () => {
     const s0 = setupGame(data, 24);
     const s: GameState = { ...s0, hraci: [{ ...s0.hraci[0], poldeciPlne: 1, poldeciVypite: 1 }, s0.hraci[1]] };
-    expect(limitBuduceKolo(s, 0)).toBe(2);
+    expect(plneBuduceKolo(s, 0)).toBe(2);
     // NA EX maximum nemení — poldeci sa v bitke vypije a obnoví ako ostatné.
-    expect(limitBuduceKolo(s, 0, true)).toBe(2);
+    expect(plneBuduceKolo(s, 0, true)).toBe(2);
     const naStole: GameState = { ...s, strany: [[lezi(inst("pijan"), 0, 0)], []], hraci: [{ ...s.hraci[0], poldeciVypite: 0 }, s.hraci[1]] };
-    expect(limitBuduceKolo(naStole, 0)).toBe(2);
+    expect(plneBuduceKolo(naStole, 0)).toBe(2);
   });
 
   it("pohľad klienta dáva rovnaké limity ako stav servera", () => {
@@ -110,8 +110,8 @@ describe("E1: limit vykladania pred a po ťahu", () => {
     for (const pozorovatel of [0, 1] as const) {
       const v = viewFor(data, s, pozorovatel);
       for (const p of [0, 1] as const) {
-        expect(limitZhromazdenia(v, p)).toBe(limitZhromazdenia(s, p));
-        expect(limitBuduceKolo(v, p, true)).toBe(limitBuduceKolo(s, p, true));
+        expect(plneVZhromazdeni(v, p)).toBe(plneVZhromazdeni(s, p));
+        expect(plneBuduceKolo(v, p, true)).toBe(plneBuduceKolo(s, p, true));
       }
     }
   });

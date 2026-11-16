@@ -1,6 +1,7 @@
 // Súhrn po bitke krok po kroku na doske (Michal 2026-11-02, návrh c): stav pred bitkou sa ráta
-// spätne zo zmien markerov, kroky idú v poradí pravidiel (bodovanie → reči klesnú → Nakladačka →
-// hádka → priazeň a ďalšie kolo), kroky bez zmeny sa preskočia a koniec je vždy posledný.
+// spätne zo zmien markerov, kroky idú v poradí pravidiel (bodovanie → reči klesnú → hádka →
+// Nakladačka → priazeň a ďalšie kolo; od v12.5 hádka pred Nakladačkou), kroky bez zmeny sa preskočia
+// a koniec je vždy posledný.
 
 import { describe, expect, it } from "vitest";
 import cardsJson from "../../../packages/core/data/cards.json";
@@ -35,7 +36,7 @@ const po = (starsi: readonly ElderState[], zmeny: readonly ZmenaMarkera[], extra
 const K: KontextSuhrnu = { mena: ["Jano", "Fero"], menoStarsieho: (d) => d, rod: () => "m", nazovPriazne: () => "Bitkár" };
 
 describe("súhrn po bitke: fázy teplomerov", () => {
-  // a: Jano reči 2 bodujú a klesnú na 1, Fero Nakladačkou strach 0 → 2, Jano hádkou reči 1 → 3.
+  // a: Jano reči 2 bodujú a klesnú na 1, Jano hádkou reči 1 → 3, potom Fero Nakladačkou strach 0 → 2 (v12.5).
   // b: Kšeft vily z Pitky (pred bitkou) ostane v stave „pred“; reči 1 bodujú a zaniknú.
   // c: Fero ho zajal; Janove reči pred tým klesli.
   const zmeny: ZmenaMarkera[] = [
@@ -43,9 +44,9 @@ describe("súhrn po bitke: fázy teplomerov", () => {
     z(a, { hrac: 0, marker: "reci", z: 2, na: 1, zdroj: "bodovanie" }),
     z(b, { hrac: 0, marker: "reci", z: 1, na: 0, zdroj: "bodovanie" }),
     z(c, { hrac: 0, marker: "reci", z: 2, na: 1, zdroj: "bodovanie" }),
-    z(a, { hrac: 1, marker: "strach", z: 0, na: 2, zdroj: "nakladacka" }),
     // Hádka dopĺňa blok nad žltou (v11.12): žltá až červená, spodok ostáva — 2 + 3.
     z(a, { hrac: 0, marker: "reci", z: 1, na: 3, odZ: 1, odNa: 1, zdroj: "hadka" }),
+    z(a, { hrac: 1, marker: "strach", z: 0, na: 2, zdroj: "nakladacka" }),
   ];
   const vazen: Vazen = { elderId: c.elderId, hrac: 1, poradie: 1, karta: c.karta, scorecard: c.scorecard, miesto: 2 };
   const bod = [
@@ -63,7 +64,7 @@ describe("súhrn po bitke: fázy teplomerov", () => {
     expect(ea!.fazy.map((f) => [f.strach, f.reci])).toEqual([
       [[0, 0], [2, 0]],
       [[0, 0], [1, 0]],
-      [[0, 2], [1, 0]],
+      [[0, 0], [3, 0]],
       [[0, 2], [3, 0]],
     ]);
     // Kšeft vily je pred bitkou — reči 1 sú už v stave „pred“.
@@ -76,32 +77,33 @@ describe("súhrn po bitke: fázy teplomerov", () => {
   });
 
   it("Nakladačka a hádka s cenou; priazeň po bitke z rozdielu strachov", () => {
-    // Žltú drží Jano rečami — strach na ňu stojí o 1 viac (v11.12): 2 + 2.
-    expect(ea!.nakladacka).toEqual({ hrac: 1, z: 0, na: 2, cena: 4 });
+    // Žltú aj oranžovú drží Jano rečami z hádky tejto bitky — strach na ne stojí o 1 viac (v11.12, v12.5): 2 + 3.
+    expect(ea!.nakladacka).toEqual({ hrac: 1, z: 0, na: 2, cena: 5 });
     expect(ea!.hadka).toEqual({ hrac: 0, z: 1, na: 3, cena: 5 });
     expect(ea!.priazen).toEqual({ od: { hrac: null, sila: 0 }, na: { hrac: 0, sila: 2 }, zmena: true });
-    expect(x.nakladacka).toEqual({ hrac: 1, cena: 4 });
+    expect(x.nakladacka).toEqual({ hrac: 1, cena: 5 });
     expect(x.hadka).toEqual({ hrac: 0, cena: 5 });
     expect(x.spolu).toEqual([7, 5]);
   });
 
   it("kroky v poradí pravidiel, koniec posledný; v kroku sa teplomer hýbe z predošlej fázy", () => {
-    expect(x.kroky).toEqual(["bodovanie", "reci", "nakladacka", "hadka", "koniec"]);
+    expect(x.kroky).toEqual(["bodovanie", "reci", "hadka", "nakladacka", "koniec"]);
     expect(fazaKroku("bodovanie")).toEqual({ stav: 0, od: null, duch: false });
-    expect(fazaKroku("nakladacka")).toEqual({ stav: 2, od: 1, duch: false });
+    expect(fazaKroku("hadka")).toEqual({ stav: 2, od: 1, duch: false });
+    expect(fazaKroku("nakladacka")).toEqual({ stav: 3, od: 2, duch: false });
     expect(fazaKroku("koniec")).toEqual({ stav: 3, od: 0, duch: true });
   });
 
   it("štítky, riadky a vety menom hráča, stupne slovami", () => {
     expect(stitkyKroku(ea!, "bodovanie", 0, K)).toEqual([{ text: "+3 špaky", kratko: "+3", trieda: "chip-ja" }]);
-    expect(stitkyKroku(ea!, "nakladacka", 0, K)).toEqual([{ text: "▲ strach vystrašený · za 4", kratko: "▲ strach vystrašený", trieda: "su" }]);
+    expect(stitkyKroku(ea!, "nakladacka", 0, K)).toEqual([{ text: "▲ strach vystrašený · za 5", kratko: "▲ strach vystrašený", trieda: "su" }]);
     expect(stitkyKroku(eb!, "reci", 0, K)[0]?.text).toBe("▼ reči zanikli");
     expect(stitkyKroku(ea!, "koniec", 0, K)[0]?.text).toBe("Bitkár → Jano +2");
     expect(riadkyKroku(ea!, "bodovanie", K)).toEqual(["Jano +3 (vystrašený — reči)"]);
     expect(riadkyKroku(ea!, "hadka", K)).toEqual(["▲ Jano reči → vydesený · za 5"]);
     expect(riadkyKroku(ec!, "koniec", K)).toEqual(["⛓ v pivnici u Fero"]);
     expect(opisKroku(x, "bodovanie", K)).toContain("Spolu Jano +7, Fero +5.");
-    expect(opisKroku(x, "nakladacka", K)).toBe(`Fero dvíha Nakladačkou (4) svoj strach: ${a.karta.defId} (4). Plná časť rastie a hladina ide hore.`);
+    expect(opisKroku(x, "nakladacka", K)).toBe(`Fero dvíha Nakladačkou (5) svoj strach: ${a.karta.defId} (5). Plná časť rastie a hladina ide hore.`);
     expect(opisKroku(x, "koniec", K)).toContain(`${c.karta.defId} je v pivnici u Fero.`);
   });
 });

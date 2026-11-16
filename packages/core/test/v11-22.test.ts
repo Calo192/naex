@@ -156,7 +156,6 @@ describe("Výherný automat: Tvoj prah Dlhu je o 1 vyšší. Pitka: {Dlh}.", () 
     const vysledok = events.find((e) => e.type === "pitkaVysledok");
     expect(vysledok).toMatchObject({ dlhy: [1, 0] });
     expect(po.hraci[0].dlhy + po.nastenka.reduce((n, x) => n + x.exekutor[0], 0)).toBe(s.hraci[0].dlhy + 1);
-    expect(po.hraci[0].zadlzenie).toBe(s.hraci[0].zadlzenie);
     const urad = vPitke("obecny_urad", [[], []], [inst("vyherny_automat")]);
     expect(dohrajPitku(urad).events.find((e) => e.type === "pitkaVysledok")).toMatchObject({ dlhy: [2, 0] });
   });

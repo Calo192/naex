@@ -8,7 +8,7 @@ import { opponentOf } from "./types.ts";
 import type { GameData } from "./data.ts";
 import type { ActionSums, LineEval, LineState, PlacedCard } from "./partia.ts";
 import { evaluateLine } from "./partia.ts";
-import { abstakyVBitke } from "./battle.ts";
+
 
 export type RezimHry = "kalamita" | "pata";
 
@@ -220,7 +220,7 @@ export function tuheStrany(s: {
   readonly tuheZlava?: number;
 }): number {
   const base = (s.sums.Rana ?? 0) + (s.sums.Pecka ?? 0) * 2 + (s.sums.Petelica ?? 0) * 3 + s.cirhozaBonus + s.tuheBonus;
-  return Math.max(0, base - abstakyVBitke(s.abstaky) - (s.tuheZlava ?? 0));
+  return Math.max(0, base - s.abstaky - (s.tuheZlava ?? 0));
 }
 
 /** Rozdelenie bodov na starších: id staršieho → body. */
@@ -296,10 +296,12 @@ export function palenePriExekucii(dlhy: number): number {
   return Math.ceil(dlhy / 2);
 }
 
-/** Víťaz bitky ako v Kalamite (§9.4); Viera doň nezasahuje, je to štít pri staršom. Null = sekera. */
-export function vitazBitkyPata(b: Pick<StavBitkyPata, "tuhe" | "abstaky" | "dlhy">): PlayerId | null {
+/**
+ * Víťaz bitky ako v Kalamite (§9.4): vyššie tuhé, pri zhode menej Dlhov (v12.5 bez Absťákov — výklad
+ * Developera pre §19); Viera doň nezasahuje, je to štít pri staršom. Null = sekera.
+ */
+export function vitazBitkyPata(b: Pick<StavBitkyPata, "tuhe" | "dlhy">): PlayerId | null {
   if (b.tuhe[0] !== b.tuhe[1]) return b.tuhe[0] > b.tuhe[1] ? 0 : 1;
-  if (b.abstaky[0] !== b.abstaky[1]) return b.abstaky[0] < b.abstaky[1] ? 0 : 1;
   if (b.dlhy[0] !== b.dlhy[1]) return b.dlhy[0] < b.dlhy[1] ? 0 : 1;
   return null;
 }

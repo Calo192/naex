@@ -21,9 +21,9 @@ export const AKCIE_20261019: readonly { readonly kluc: string; readonly nazov: s
     kluc: "Dlh",
     nazov: "Hazard",
     popis:
-      "V Pitke získaš 1 Dlh — je hneď priznaný (počítadlo, nie karta). " +
-      "Za priznané Dlhy príde v každej bitke Exekútor: spáli ti polovicu priznaných Dlhov (zaokrúhlene nahor) a rovnako veľa špakov " +
-      "(tvoja priazeň Advokáta špaky uberie). Pri remíze v tuhom aj v Absťákoch prehráva, kto má viac priznaných Dlhov.",
+      "V Pitke získaš 1 Dlh (počítadlo, nie karta). " +
+      "Za Dlhy príde v každej bitke Exekútor: spáli ti polovicu Dlhov (zaokrúhlene nahor) a rovnako veľa špakov " +
+      "(tvoja priazeň Advokáta špaky uberie). Pri remíze v tuhom prehráva, kto má viac Dlhov.",
   },
   {
     kluc: "PoškodeniePečene",
@@ -64,7 +64,7 @@ export const PREDVOLENE_AKCIE: readonly AkciaDef[] = [
   ...AKCIE_20261019.map((a) => A(a.kluc, a.nazov, a.popis)),
   A("Posilnenie", "Posilnenie", "Zdvojnásobí prepojenú akciu — priaznivú aj nepriaznivú. Posilnenie proti Posilneniu = Forsáž: obe karty majú všetky aktívne akcie posilnené."),
   A("Odpor", "Odpor", "Odpor je aktívny len bez spoja a dáva karte štít proti NA EX. Na spoji zruší akciu, s ktorou sa spojí, aj seba. Odpor s Odporom = Vzbura."),
-  A("Robota", "Robota", "V bitke v kroku exekúcie, pred Exekútorom, spáli 1 tvoj priznaný Dlh (z hry). Za každý Dlh, ktorý by spálila, no nemáš ho, ti dá 1 špak."),
+  A("Robota", "Robota", "V bitke v kroku exekúcie, pred Exekútorom, spáli 1 tvoj Dlh (z hry). Za Dlh, ktorý nemá čo spáliť, ti dá 1 špak."),
   A("Pakt", "Pakt", "Na spoji sa správa ako akcia, s ktorou je v páre. Pakt s Paktom nerobí nič; Odpor ho zruší."),
 ].map((a, poradie) => ({ ...a, poradie }));
 
@@ -96,9 +96,9 @@ export const PREDVOLENE_KLUCOVE_SLOVA: readonly KlucoveSlovo[] = [
     "Dedičstvo",
     "Pasívny bonus Nástroja, kým leží v tvojej hracej oblasti. Vyloženie do Dedičstva stojí cigarety — cena rastie spoločne pre oboch: prvý Nástroj v hre 1 cigaretu, druhý 2, tretí 3…",
   ),
-  // Remízu v tuhom rozhodujú Absťáky, potom priznané Dlhy (battleOutcome, §9.4); sekera až keď nerozhodne nič.
-  S("Výhra", "Uplatní sa, keď vyhráš bitku o lokalitu: máš vyššie tuhé poškodenie, pri rovnakom tuhom menej Absťákov a pri ich rovnosti menej priznaných Dlhov. Keď nerozhodne ani to, nevyhrá nikto — špaky kola idú na sekeru."),
-  S("Prehra", "Uplatní sa, keď prehráš bitku o lokalitu: máš nižšie tuhé poškodenie, pri rovnakom tuhom viac Absťákov a pri ich rovnosti viac priznaných Dlhov. Keď nerozhodne ani to, neprehrá nikto — špaky kola idú na sekeru."),
+  // Remízu v tuhom rozhodujú Dlhy (battleOutcome, §9.4); sekera až keď nerozhodne nič.
+  S("Výhra", "Uplatní sa, keď vyhráš bitku o lokalitu: máš vyššie tuhé poškodenie, pri rovnakom tuhom menej Dlhov. Keď nerozhodne ani to, nevyhrá nikto — špaky kola idú na sekeru."),
+  S("Prehra", "Uplatní sa, keď prehráš bitku o lokalitu: máš nižšie tuhé poškodenie, pri rovnakom tuhom viac Dlhov. Keď nerozhodne ani to, neprehrá nikto — špaky kola idú na sekeru."),
   // Kšeft zanikol (frakcie, Michal 2026-11-08); Kšeft väzňa nahradila v11.2 schopnosť väzňa (PRAVIDLA §10).
   // Spoločník a Nepriateľ (frakcie): akcie navyše, kým je v partii karta s tagom; zápis v texte
   // efektu „Spoločník: Tag {Akcia}.“ — piktogram v zložených zátvorkách (@naex/core navyse.ts).
@@ -110,7 +110,7 @@ export const PREDVOLENE_KLUCOVE_SLOVA: readonly KlucoveSlovo[] = [
   S("Podpora", "Spustí sa, keď sa táto karta priložením stretne s inou tvojou kartou — či prikladáš ju, alebo inú svoju k nej; s tagom za dvojbodkou len pri karte s tým tagom. Pri každom stretnutí, do konca kola. Nástroj, NA EX, zrážka ani presun karty ju nespúšťajú."),
   // Hádka (v11.5, Noviny, Michal 2026-11-03).
   S("Hádka", "Uplatní sa v bitke, keď sa rozhodne hádka — kto má viac mäkkého poškodenia (Pohoršenie, Povera), hádku vyhral."),
-  S("Exekúcia", "Uplatní sa v bitke v kroku exekúcie (po poškodení a špakoch za bitku), keď Exekútor prichádza ku každému hráčovi s priznaným Dlhom."),
+  S("Exekúcia", "Uplatní sa v bitke v kroku exekúcie (po poškodení a špakoch za bitku), keď Exekútor prichádza ku každému hráčovi s Dlhom."),
   P("zahoď", ["zahodiť", "zahodí", "zahodia"], "Zahodenie — kartu odstrániš z hry (spáliš)."),
   P("odhoď", ["odhodiť", "odhodí", "odhodia"], "Odhodenie — karta ide do odhadzovacieho balíčka hráča, ktorý ju zahral."),
   P("preskúmaj", ["preskúmať", "preskúma"], "Preskúmanie — prezrieš si karty, ktoré efekt určí (napr. celý doberací balíček), a vrátiš ich."),

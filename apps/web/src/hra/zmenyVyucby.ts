@@ -36,7 +36,6 @@ const DLAZDICE: readonly (readonly [string, (v: ClientState, p: PlayerId) => num
   ["poldeci", (v, p) => `${v.hraci[p].poldeciPlne}/${v.hraci[p].poldeciVypite}`],
   ["cigarety", (v, p) => v.hraci[p].cigarety],
   ["pecen", (v, p) => v.hraci[p].pecen],
-  ["zadlzenie", (v, p) => v.hraci[p].zadlzenie],
   ["dlhy", (v, p) => v.hraci[p].dlhy],
   ["karty", (v, p) => `${v.hraci[p].rukaPocet}/${v.hraci[p].doberaciPocet}/${v.hraci[p].odhadzovaci.length}`],
 ];

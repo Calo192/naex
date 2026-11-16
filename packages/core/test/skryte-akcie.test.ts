@@ -218,8 +218,6 @@ describe("pečať: sivá, kým spúšťač neplatí, výrazná, keď platí", ()
     expect(evPitka.navyseDedicstva?.get(automat)?.[0]?.krat).toBe(1);
     // Dlh dáva motor na konci poslednej Pitky ako doteraz — súčet Hazardu sa nemení.
     expect(evPitka.sums[0].Dlh ?? 0).toBe(evaluateLine(stara, lineState(stol(stara, { strany: s.strany, dedicstvo: [["pasca", "vyherny_automat"], []] }))).sums[0].Dlh ?? 0);
-    // Prah Dlhu o 1 vyšší platí ďalej.
-    expect(prahyHraca(nova, s, 0).dlh).toBe(prahyHraca(stara, stol(stara, { strany: s.strany, dedicstvo: [["vyherny_automat"], []] }), 0).dlh);
   });
 
   it("Pasca v línii (nie v Dedičstve) akciu navyše nedá", () => {

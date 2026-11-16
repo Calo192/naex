@@ -34,7 +34,8 @@ const CIGARETY_NAVYSE = 4;
  * ho smie po vyhratej bitke Nakladačkou zajať), druhý sa na červenej bojí bota (zajať smie bot).
  * Predposledný sa bota bojí viac než človeka (3 : 2 — človek ho smie presvedčiť hádkou),
  * posledný naopak (presvedčiť smie bot). Obaja dostanú cigarety navyše. „zajatie-vyhra“ dá človeku o jedného väzňa menej, než treba na
- * výhru (v11 podľa ligy) — ďalší zajatý vyhráva a schopnosť väzňa sa dá skúsiť hneď v prvom ťahu.
+ * výhru (v11 podľa ligy) — ďalší zajatý naplní pivnicu (v12.5: výhru dá ďalšia vyhratá bitka) a schopnosť väzňa sa dá skúsiť hneď
+ * v prvom ťahu.
  */
 export function pouziScenar(state: GameState, scenar: Scenar, clovek: PlayerId): GameState {
   const bot = opponentOf(clovek);

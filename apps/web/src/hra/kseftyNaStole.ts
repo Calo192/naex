@@ -5,6 +5,7 @@
 
 import {
   KONSTANTY,
+  moznostiDopitia,
   opponentOf,
   ponukaSchopnostiVazna,
   schopnostBezUcinku,
@@ -19,8 +20,11 @@ import { nazovKarty, prelozHlasku, t, tZoServera } from "../i18n/jazyk.tsx";
 
 const prelozBezUcinku = (s: string | null): string | null => (s === null ? null : prelozHlasku(s));
 
-/** Čím sa Kšeft platí: cigarety (karty, lokality); schopnosť väzňa nestojí nič, je raz za hru (v11.2). */
-export type CenaKseftu = { readonly cigarety: number } | { readonly raz: true };
+/**
+ * Čím sa Kšeft platí: cigarety (karty, lokality); schopnosť väzňa nestojí nič, je raz za hru (v11.2);
+ * Dopiť za teba plným poldeci (v12.5).
+ */
+export type CenaKseftu = { readonly cigarety: number } | { readonly raz: true } | { readonly poldeci: number };
 
 /** Tlačidlo v ponuke Kšeftu — jeden presný príkaz. */
 export interface TlacidloVolby {
@@ -56,7 +60,7 @@ export type AkciaKseftu =
 export interface KseftNaStole {
   /** Karta, pod ktorou tlačidlo leží (pri väzňovi karta staršieho). */
   readonly uid: number;
-  readonly druh: "karta" | "lokalita" | "vazen";
+  readonly druh: "karta" | "lokalita" | "vazen" | "dopitie";
   readonly defId: string;
   /** Meno karty, ktorá Kšeft ponúka — nadpis nápovedy. */
   readonly nazov: string;
@@ -79,7 +83,31 @@ const cigariet = (n: number): string => t("pocet.cigariet", { n });
  * 2026-11-08) a schopnosti jeho väzňov. Kšeft zanikol (frakcie 2026-11-08).
  */
 export function kseftyNaStole(data: GameData, view: ClientState): KseftNaStole[] {
-  return [...efektyLokality(data, view), ...schopnostiVaznov(data, view)];
+  return [...efektyLokality(data, view), ...schopnostiVaznov(data, view), ...dopitia(data, view)];
+}
+
+/**
+ * Dopiť za teba (v12.5, N1): pod mojou kartou so súperovým NA EX v Zhromaždení na mojom ťahu —
+ * tie isté karty ako v legalCommands (moznostiDopitia).
+ */
+function dopitia(data: GameData, view: ClientState): KseftNaStole[] {
+  if (!view.mozemHrat) return [];
+  const meno = (defId: string): string => nazovKarty(data.cards.get(defId)?.name ?? defId);
+  return moznostiDopitia(view, view.miesto ?? view.ja).map((uid) => {
+    const defId = view.strany.flat().find((pl) => pl.card.uid === uid)?.card.defId ?? "";
+    return {
+      uid,
+      druh: "dopitie",
+      defId,
+      nazov: meno(defId),
+      cena: { poldeci: KONSTANTY.CENA_DOPITIA_POLDECI },
+      zisk: t("kseft.dopit.zisk"),
+      tip: t("kseft.dopit.tip", { nerest: KONSTANTY.NEREST_DOPITIA }),
+      dovod: null,
+      pouzity: false,
+      akcia: { typ: "prikaz", prikaz: { type: "dopit", uid } },
+    };
+  });
 }
 
 /** Sklad: Nástroj zo šenku rovno do Dedičstva za cenu Dedičstva — v Zhromaždení na mojom ťahu. */

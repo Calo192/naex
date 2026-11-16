@@ -15,7 +15,7 @@ export const UCINOK_PRIAZNE: Readonly<Record<Favour, (sila: number) => string>> 
   // Priazne v5 (Michal 2026-10-24/25): účinok = sila 1 / 2 / 3, bez dvojnásobku.
   // Priazne v9 (Michal 2026-10-30): Kmotor 2 / 3 / 4, Fajčiar po bitke, Advokát a Robota namiesto Exekútora a Výpalníka.
   UZERNIK: (s) => t("ucinok.uzernik", { n: s + 1 }),
-  // Abstinent v10 (Michal 2026-11-01): Absťáky v bitke neškodia — predtým Pohoršenia navyše.
+  // Abstinent v12.5 (Michal 2026-11-16): prah Cirhózy o silu vyšší — v10–v12.4 Absťáky v bitke neškodili.
   LAKOMEC: (s) => t("ucinok.lakomec", { n: s }),
   ROBOTA: (s) => t("ucinok.robota", { n: s }),
   BITKAR: (s) => t("ucinok.bitkar", { n: s }),

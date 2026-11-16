@@ -39,11 +39,16 @@ describe("nápoveda nad staršom", () => {
 
   it("R3: strach a reči oboch menom hráča, špaky vetou s dôvodom, stupne slovami, nikdy farbou", () => {
     // Janove reči na Ferovom teplomere žltá až oranžová (1 + 2), Ferove na Janovej žltej (1), ktorú Jano drží strachom.
+    // R1 (v12.5): Fero pri ňom strach nemá — Janove reči čakajú a nebodujú; Ferove ležia na Janovom strachu a bodujú.
     const o = obsahNapovedy({ data, elder: { ...s([1, 0], [2, 1]), reciOd: [1, 1], karta: { ...e0.karta, defId: "farar" } }, meno: "Farár", ja: 0, mena: ["Jano", FERO] });
     expect(o.priazen).toEqual({ komu: "su", hrac: 1, sila: 1 });
-    expect(o.hraci[0]).toMatchObject({ komu: "ja", kto: "Jano", strach: 1, reci: 2, reciOd: 1, vyhra: 3, prehra: 3 });
-    expect(o.hraci[1]).toMatchObject({ komu: "su", kto: "Fero", strach: 0, reci: 1, reciOd: 1, vyhra: 1, prehra: 1 });
-    expect(vetaSpakov(o.hraci[0])).toBe("pri výhre +3, pri prehre +3 (reči; keď prehráš hádku, klesnú zospodu)");
+    expect(o.hraci[0]).toMatchObject({ komu: "ja", kto: "Jano", strach: 1, reci: 2, reciOd: 1, vyhra: 0, prehra: 0, reciCakaju: true });
+    expect(o.hraci[1]).toMatchObject({ komu: "su", kto: "Fero", strach: 0, reci: 1, reciOd: 1, vyhra: 1, prehra: 1, reciCakaju: false });
+    expect(vetaSpakov(o.hraci[0])).toBe("pri výhre 0, pri prehre 0 (reči; keď prehráš hádku, klesnú zospodu) — reči nad súperovým strachom čakajú, bodujú, až keď doň jeho strach dorastie");
+    // Keď Fero pri ňom má oranžový strach, Janove reči bodujú celé (1 + 2).
+    const o2 = obsahNapovedy({ data, elder: { ...s([1, 2], [2, 1]), reciOd: [1, 1], karta: { ...e0.karta, defId: "farar" } }, meno: "Farár", ja: 0, mena: ["Jano", FERO] });
+    expect(o2.hraci[0]).toMatchObject({ vyhra: 3, prehra: 3, reciCakaju: false });
+    expect(vetaSpakov(o2.hraci[0])).toBe("pri výhre +3, pri prehre +3 (reči; keď prehráš hádku, klesnú zospodu)");
     expect(vetaSpakov({ reci: 0, vyhra: 3, prehra: 0 })).toBe("pri výhre +3, pri prehre 0");
     const t = text(renderToStaticMarkup(createElement(ObsahNapovedyStarsieho, { o })));
     expect(t).toContain("Jano znepokojený znepokojený až vystrašený");

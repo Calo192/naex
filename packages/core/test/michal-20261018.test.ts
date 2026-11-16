@@ -40,8 +40,8 @@ describe("štartovacie karty", () => {
   });
 });
 
-describe("priznanie kliatby dá kartu (okrem Cirhózy; Dlh a Absťák sú od v8.2 počítadlá)", () => {
-  // Sada v8.2 kliatbu s kartou za priznanie nemá — pravidlo jadra stráži testovacia kliatba.
+describe("priznanie kliatby kartu nedá (v12.5: vetva „kartu za každú inú Kliatbu“ zanikla)", () => {
+  // Sada kliatbu okrem Cirhózy nemá — testovacia kliatba stráži, že sa za priznanie nič nedoberá.
   const sKliatbou = buildGameData(new Map([...data.cards, ["kliatba_test", makeDef("kliatba_test", EMPTY, EMPTY, { tags: ["Kliatba"] })]]), data.elders, parseScorecards(scorecardsJson));
   function sDlhom(doberaci: CardInstance[], odhadzovaci: CardInstance[]): { s: GameState; dlh: CardInstance } {
     const s0 = setupGame(data, 3);
@@ -56,19 +56,15 @@ describe("priznanie kliatby dá kartu (okrem Cirhózy; Dlh a Absťák sú od v8.
     return { s, dlh };
   }
 
-  it("z doberacieho balíčka", () => {
+  it("doberací ani odhadzovací balíček sa nepohne", () => {
     const vrch = inst("ministrant");
-    const { s, dlh } = sDlhom([vrch], []);
-    const po = apply(sKliatbou, s, { type: "place", uid: dlh.uid, target: "priznanie" }, 0);
-    expect(po.state.hraci[0].ruka.map((k) => k.uid)).toContain(vrch.uid);
-    expect(po.events.some((e) => e.type === "log" && e.text.includes("a doberá si kartu"))).toBe(true);
-  });
-
-  it("aj keď je doberací prázdny — zamieša sa odhadzovací", () => {
     const odhodena = inst("ministrant");
-    const { s, dlh } = sDlhom([], [odhodena]);
+    const { s, dlh } = sDlhom([vrch], [odhodena]);
     const po = apply(sKliatbou, s, { type: "place", uid: dlh.uid, target: "priznanie" }, 0);
-    expect(po.state.hraci[0].ruka.map((k) => k.uid)).toContain(odhodena.uid);
+    expect(po.state.hraci[0].ruka.map((k) => k.uid)).not.toContain(vrch.uid);
+    expect(po.state.hraci[0].doberaci).toHaveLength(1);
+    expect(po.state.hraci[0].odhadzovaci).toHaveLength(1);
+    expect(po.state.hraci[0].priznane.map((k) => k.uid)).toContain(dlh.uid);
   });
 });
 

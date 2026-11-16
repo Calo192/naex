@@ -13,7 +13,7 @@ import { IkonaMrezi } from "./ikonyZdrojov.tsx";
 import { PeciatkaZdroja, type PrisunDlazdice } from "./PeciatkaZdroja.tsx";
 import { IkonaSpaku } from "./IkonaSpaku.tsx";
 import type { HracInfo } from "./useHra.ts";
-import { detailZdroja, riadkyTabule, ukazZadlzenie, type CislaHraca, type ZdrojStlpca } from "./tabula.ts";
+import { detailZdroja, riadkyTabule, type CislaHraca, type ZdrojStlpca } from "./tabula.ts";
 import { Medziobrazovka } from "./Medziobrazovka.tsx";
 import { t } from "../i18n/jazyk.tsx";
 
@@ -86,7 +86,7 @@ export function StlpecHraca({ view, p, info, meno, cisla, naTahu, karty, detail,
       {cip("poldeci", <IkonaPoldeci />, cisla.poldeci, t("pultHraca.poldeci", { plne: cisla.poldeci, vypite: cisla.vypite + cisla.naStole, naStole: cisla.naStole > 0 ? t("pultHraca.naStole", { n: cisla.naStole }) : "", limit: cisla.limit }), false, prisunPoldeci !== undefined && <PeciatkaZdroja prisun={prisunPoldeci} />)}
       {cisla.chut !== null && cip("chut", <IkonaAbstak />, cisla.chut, t("pultHraca.chut", { chut: cisla.chut, neresti: cisla.nerestiDnes }), cisla.chutHrozi)}
       {cip("pecen", <Pikto kluc="PoškodeniePečene" />, cisla.pecen, t("pultHraca.pecen", { pecen: cisla.pecen, prah: cisla.prahPecene }), cisla.pecen >= cisla.prahPecene - 1)}
-      {cip("dlhy", <Pikto kluc="Dlh" />, cisla.dlhy, t("pultHraca.dlhy", { n: cisla.dlhy, zadlzenie: ukazZadlzenie(cisla.zadlzenie, cisla.prahDlhu) ? t("pultHraca.zadlzenie", { z: cisla.zadlzenie, prah: cisla.prahDlhu }) : "" }), cisla.exekucia > 0)}
+      {cip("dlhy", <Pikto kluc="Dlh" />, cisla.dlhy, t("pultHraca.dlhy", { n: cisla.dlhy }), cisla.exekucia > 0)}
       {cip("cigarety", <IkonaCigareta />, cisla.cigarety, t("pultHraca.cigarety", { n: cisla.cigarety }), false, prisunCigariet !== undefined && <PeciatkaZdroja prisun={prisunCigariet} />)}
       {cip("spaky", <IkonaSpaku />, cisla.spaky, t("pultHraca.spaky", { n: cisla.spaky }))}
       <button type="button" className={`stlpec-cip stlpec-starsi${starsi.stlacene ? " stlacene" : ""}`} aria-pressed={starsi.stlacene} aria-label={t("pultHraca.starsiAria", { n: cisla.priazen })} title={t("pultHraca.starsiTitul")} onClick={starsi.prepni}>

@@ -171,15 +171,15 @@ describe("§9.3 a §9.4 Absťák v bitke (v9.1)", () => {
     expect(poskodenieBitky(data, s0, [{ Rana: 5 }, {}]).tuhe[0]).toBe(5);
   });
 
-  it("remízu v tuhom prehráva, kto má viac Absťákov — v partii z kariet v balíčku", () => {
-    expect(battleOutcome(poskodenieBitky(data, setupGame(data, 1), [{}, {}]), { abstaky: [2, 1], dlhy: [0, 0] })).toMatchObject({ vitaz: 1, rozhodlo: "abstak" });
-    // Prázdna línia 0 : 0, hráč 1 má Absťák v doberacom balíčku → bitku vyhrá súper.
+  it("remízu v tuhom Absťáky nerozhodujú (v12.5) — bez rozdielu Dlhov je sekera", () => {
+    expect(battleOutcome(poskodenieBitky(data, setupGame(data, 1), [{}, {}]), { dlhy: [0, 0] })).toMatchObject({ vitaz: null, rozhodlo: "sekera" });
+    // Prázdna línia 0 : 0, hráč 1 má Absťák v doberacom balíčku → sekera, nie výhra súpera.
     const s0 = setupSBalickom(data, 14);
     let s: GameState = sHracom({ ...s0, faza: "pitka", utocnik: 0, strany: [[], []], ciel: { typ: "lokalita", lokalita: s0.lokalityVHre[0]! }, lokalityVHre: s0.lokalityVHre.slice(1), pitkyCelkom: 1, pitkaCislo: 1, pitkaStav: pitkaStav(1) }, 0, {
       doberaci: [...s0.hraci[0].doberaci, inst("abstak")],
     });
     for (let i = 0; i < 4 && s.faza === "pitka"; i++) s = apply(data, s, { type: "skipNaex" }, naTahu(s)!).state;
-    expect(s.nastenka.at(-1)).toMatchObject({ vitaz: 1, rozhodlo: "abstak" });
+    expect(s.nastenka.at(-1)).toMatchObject({ vitaz: null, rozhodlo: "sekera" });
   });
 });
 

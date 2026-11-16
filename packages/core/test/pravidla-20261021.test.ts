@@ -138,7 +138,7 @@ describe("verejný dlh (Michal 2026-10-21) a nová Cirhóza do odhadzovacieho ba
     s = apply(sada, s, { type: "skipNaex" }, zaciatok).state;
     const { state, events } = apply(sada, s, { type: "skipNaex" }, naTahu(s)!);
     // Bitka po Pitke sa rozbehne v tom istom ťahu (Robota by Dlh spálila) — rátaj z logu.
-    const priznaneDlhy = events.filter((e) => e.type === "log" && e.text.startsWith("Hráč 1 získava Dlh — hneď sa priznáva")).length;
+    const priznaneDlhy = events.filter((e) => e.type === "log" && e.text.startsWith("Hráč 1 získava Dlh (v bitke ho páli Exekútor)")).length;
     expect(nahlad[0].dlhy).toBeGreaterThan(0);
     expect(priznaneDlhy).toBe(nahlad[0].dlhy);
     expect(nahlad[0].cirhozy).toBeGreaterThan(0);
@@ -150,14 +150,14 @@ describe("verejný dlh (Michal 2026-10-21) a nová Cirhóza do odhadzovacieho ba
     expect(state.hraci[0].ruka.some((k) => k.defId === "cirhoza")).toBe(false);
   });
 
-  it("exekúcia bez prahu (Michal 2026-10-28): už pri 2 priznaných Dlhoch zhorí polovica nahor — 1 Dlh a 1 špak", () => {
+  it("exekúcia bez prahu (Michal 2026-10-28): už pri 2 Dlhoch zhorí polovica nahor — 1 Dlh a 1 špak", () => {
     const s0 = setupSBalickom(sada, 77);
     const sDlhmi: GameState = { ...s0, hraci: [{ ...s0.hraci[0], dlhy: 2 }, s0.hraci[1]] };
     let s = vPitke(sDlhmi, [[{ card: instanceFor(sada, "piticka", P4, P4), playedBy: 0 }], []]);
     s = apply(sada, s, { type: "skipNaex" }, naTahu(s)!).state;
     const spaky = s.spaky[0];
     const { state, events } = apply(sada, s, { type: "skipNaex" }, naTahu(s)!);
-    expect(events.some((e) => e.type === "log" && e.text.startsWith("Exekútor: hráčovi 1 zhorí 1 priznaný Dlh a 1 špak"))).toBe(true);
+    expect(events.some((e) => e.type === "log" && e.text.startsWith("Exekútor: hráčovi 1 zhorí 1 Dlh a 1 špak"))).toBe(true);
     expect(state.hraci[0].dlhy).toBe(1);
     expect(state.nastenka.at(-1)?.exekutor).toEqual([1, 0]);
     expect(state.spaky[0] - spaky).toBe((state.nastenka.at(-1)?.zaBitku[0] ?? 0) + (state.nastenka.at(-1)?.zaStarsich[0] ?? 0) - 1);
@@ -197,7 +197,7 @@ describe("náhľad Pitky = vyhodnotenie (Michal 2026-10-21)", () => {
         const nahlad = nahladPitky(data, pred);
         for (const p of [0, 1] as const) {
           expect(nahlad[p].pecenZoStola).toBe(0);
-          expect(nahlad[p].zadlzenieZoStola).toBe(0);
+          expect(nahlad[p].hazardZoStola).toBe(0);
           expect(nahlad[p].cirhozy).toBe(0);
           expect(nahlad[p].dlhy).toBe(0);
         }

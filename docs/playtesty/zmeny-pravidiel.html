@@ -86,6 +86,26 @@
   <div id="zmeny">
 
     <details class="zmena" data-oblast="pravidla">
+      <summary><h3>Pravidlá v12.5: hádka pred Nakladačkou, reči na súperovom strachu, platba tomu, kto kartu priniesol, Pivnica plná, Dopiť za teba</h3><span class="stav">skúšobné</span>
+        <span class="meta"><span class="stitok pravidla">pravidlá</span><span class="stitok">2026-11-16</span><span class="stitok">rozhodnutie Michala</span><span class="stitok">playtest 20261111-221937, 20261114-003916</span><span class="stitok">Zrejúca</span></span></summary>
+      <div class="telo">
+        <div class="blok"><h4>Prečo</h4><p>Partie sa rozhodovali po 3. kole: prvý náskok sa sám zúročil a súper nemal protiťah. Víťaz hádky obsadzoval rečami čerstvý strach víťaza bitky a reči bodovali aj na prázdnom teplomere (renta — Šimon 63 z 90 špakov od starších); cigarety z ponuky tiekli len do banky; jedna Nakladačka 16 zajala troch starších naraz a hra skončila bez finále; NA EX na súperovu kartu s kliatbami stálo až −13 špakov bez obrany. Michal 2026-11-16: „Implementovať nasledovne: Hádka pred bitkou, R1, E2, V1, N1.“ Návrhy v sekcii Playtest: <a href="/playtest">#48 A</a> (hádka pred Nakladačkou) a riešenia Vymyselníka (docs/napady/riesenia-problemov-20261116.html).</p></div>
+        <div class="blok"><h4>Čo sa zmenilo</h4><ul>
+          <li><strong>Hádka pred Nakladačkou</strong> (§9 krok 4e, návrh #48 A): najprv víťaz hádky rozdelí hádku na reči (a smie presviedčať), potom víťaz bitky Nakladačku na strach (a smie zajímať). Ceny, spomalenie +1, bodovanie, krádež ani výhra strachom sa nemenia; vo finále bez zmeny.</li>
+          <li><strong>Reči sa držia strachu</strong> (R1, §10): reči bodujú len na stupňoch, na ktorých má súper strach. Nad jeho strachom čakajú a bodujú od bitky, keď doň jeho strach dorastie.</li>
+          <li><strong>Platíš tomu, kto kartu priniesol</strong> (E2, §5): súperovu kartu z ponuky platíš súperovi, svoju banke; pri 2 kartách za 3 dostane súper 1 cigaretu za každú svoju. Autobusár rovnako. Stôl pri každej karte ponuky ukáže, od koho je.</li>
+          <li><strong>Pivnica plná</strong> (V1, §1, §10): zajatie výhru ešte nedá — stôl ohlási PIVNICA PLNÁ a výhru väzňami dá ďalšia bitka, ktorú hráč vyhrá (krok 4c spolu s výhrou strachom), aj finále bez ohľadu na špaky.</li>
+          <li><strong>Dopiť za teba</strong> (N1, §6, nový ťah): v Zhromaždení namiesto karty dopiješ súperovo NA EX zo svojej karty za plný poldeci a 1 nerest; NA EX zíde, súperov poldeci ostáva vypitý. Tlačidlo Dopiť pod kartou, pečiatka DOPIL ZA TEBA. V poslednej Pitke kola sa už dopiť nedá.</li>
+          <li>Bot: reči hodnotí podľa R1 (tá istá funkcia), plnú pivnicu ráta ako 4 červené (výhra v ďalšej bitke), pri braní ráta cigaretu, ktorú dostane súper, a pozná ťah Dopiť. Turnaj (20 partií Igor proti chamtivému, Druhá liga): 20 výhier pred aj po, body 1177 : 67 → 286 : 4 (výhier strachom 9 → 16, finále 11 → 4), Dopiť 1×, všetky partie dohrané.</li>
+          <li><strong>Mŕtve a otravné pravidlá</strong> (Michal: „Z Mŕtve a otravné pravidlá implementovať 1–7.“, docs/napady/mrtve-pravidla-20261116.html): pojem limit vykladania zanikol (§6 Vykladanie za poldeci); Dlh bez slova „priznaný“ a §11 kratší; mŕtve odseky (krok 0, 5b Veštica, Kohút, Úplatok, „Od seba / k sebe“, staré kľúče priazní, podmienky v6, poradie exekúcie) preč, čísla krokov ostali; remízu v tuhom rozhodujú len Dlhy; Abstinent = prah Cirhózy +1 / +2 / +3; krok 6c (cigareta porazenému, Kmotor, Fajčiar, výpalné) aj po finále; zadĺženie a čiarky na účte zanikli, Hazard je Dlh 1 : 1 a Výherný automat dáva v každej Pitke cigaretu a Dlh.</li>
+          <li>Výklady na potvrdenie (PRAVIDLA.md, Zmeny v12.5): Dopiť bez pečene, len na začiatku ťahu; karty ponuky bez pôvodu (doplnenie z balíčkov) sú banky; 2 na 2 (aj prah Dlhu 1 : 1) a Päta, Lakeť, Otočka (remíza bez Absťákov).</li>
+          <li>Výučba Prvá hra sa prestaví až pri vypálení — jej testy sú dovtedy vypnuté.</li>
+        </ul></div>
+        <div class="blok sledovat"><h4>Čo sledovať</h4><p>Či niekto pri rozdeľovaní hádky ešte obsadí rečami súperov strach z tej istej bitky (návrh #48 hovorí: nie); koľko špakov dali víťazovi starší (cieľ najviac 45–50 %, reči jednému hráčovi v K4–K5 najviac 8 za bitku) a či klebetník vie vyhrať; koľko cigariet prešlo cez ponuku k súperovi a či hráči dávajú do ponuky odpad; v ktorom kole končí výhra väzňami a koľko partií dôjde do finále (Napätie porazeného aspoň 6); priemerná škoda jedného NA EX na súperovej karte (dnes až −13) a či hráč aspoň raz dopije a povie, prečo nedal radšej kartu. Pri mŕtvych pravidlách: či sa hráči prestanú pýtať na limit a „priznaný“ Dlh, ako často rozhodnú remízu Dlhy a či niekto vezme Výherného automata do Dedičstva a Abstinenta už nedáva súperovi ako neškodného.</p></div>
+      </div>
+    </details>
+
+    <details class="zmena" data-oblast="pravidla">
       <summary><h3>Pravidlá v12.4: výpalné platí banka, nie porazený</h3><span class="stav">skúšobné</span>
         <span class="meta"><span class="stitok pravidla">pravidlá</span><span class="stitok">2026-11-12</span><span class="stitok">rozhodnutie Michala</span><span class="stitok">playtest 20261111-221937</span></span></summary>
       <div class="telo">

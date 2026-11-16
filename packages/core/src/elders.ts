@@ -156,10 +156,22 @@ function hodnotaStupnov(od: number, vrch: number): number {
   return n;
 }
 
-/** Špaky, ktoré dajú reči hráča p po každej bitke: hodnota stupňov, ktoré drží (v11.12). */
-export function spakyZaReci(e: Pick<ElderState, "reci" | "reciOd">, p: PlayerId): number {
+/**
+ * Vrch rečí hráča p, ktoré bodujú (v12.5, R1): len stupne, na ktorých má súper strach. Reči nad
+ * súperovým strachom čakajú, kým doň strach dorastie. 0 = nebodujú žiadne.
+ */
+export function vrchBodujucichReci(e: Markery, p: PlayerId): Stupen {
   const b = blokReci(e, p);
-  return b === null ? 0 : hodnotaStupnov(b.od, b.vrch);
+  if (b === null) return 0;
+  const vrch = Math.min(b.vrch, e.strach[opponentOf(p)]);
+  return vrch >= b.od ? (vrch as Stupen) : 0;
+}
+
+/** Špaky, ktoré dajú reči hráča p po každej bitke: hodnota stupňov na súperovom strachu (v11.12, R1 v12.5). */
+export function spakyZaReci(e: Markery, p: PlayerId): number {
+  const b = blokReci(e, p);
+  const vrch = vrchBodujucichReci(e, p);
+  return b === null || vrch === 0 ? 0 : hodnotaStupnov(b.od, vrch);
 }
 
 /** Špaky víťaza bitky za strach: jeho stupne bez tých, ktoré drží súper rečami (v11.12). */
@@ -227,11 +239,12 @@ export function najvyssiMarker(elder: Markery, p: PlayerId): Stupen {
 }
 
 /**
- * Stupeň, za ktorý starší po bitke boduje hráčovi p (v11.12): vrch rečí, ak ich má, inak víťazov
- * strach (popis v súhrne, špaky ráta spakyOdStarsieho).
+ * Stupeň, za ktorý starší po bitke boduje hráčovi p (v11.12): vrch rečí, ktoré bodujú (R1, v12.5),
+ * inak víťazov strach (popis v súhrne, špaky ráta spakyOdStarsieho).
  */
 export function stupenNaBodovanie(elder: Markery, p: PlayerId, vyhral: boolean): Stupen {
-  return elder.reci[p] > 0 ? elder.reci[p] : vyhral ? elder.strach[p] : 0;
+  const reci = vrchBodujucichReci(elder, p);
+  return reci > 0 ? reci : vyhral ? elder.strach[p] : 0;
 }
 
 /** Špaky za marker na stupni (žltá 1, oranžová 3, červená 6 — v11.20). */
@@ -241,7 +254,8 @@ export function spakyZaStupen(stupen: number): number {
 
 /**
  * Špaky, ktoré starší dá hráčovi p po bitke, ktorú p vyhral (vyhral = true), alebo nie.
- * v11.12: reči bodujú vždy, strach len víťazovi a bez stupňov, ktoré drží súper rečami.
+ * v11.12: reči bodujú vždy (od v12.5 len na súperovom strachu), strach len víťazovi a bez stupňov,
+ * ktoré drží súper rečami.
  * Nahrádza krátenie z v11.11.
  */
 export function spakyOdStarsieho(elder: Markery, p: PlayerId, vyhral: boolean): number {

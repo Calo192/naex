@@ -118,9 +118,10 @@ describe("scorecardy v5 na serveri", () => {
 });
 
 describe("popis akcie Dlh v tvorcovi (v5)", () => {
-  it("Hazard dá v Pitke Dlh (v11.8); Exekútor bez prahu (2026-10-28) páli Dlhy aj špaky", () => {
+  it("Hazard dá v Pitke Dlh 1 : 1 (v12.5 bez prahu Dlhu); Exekútor bez prahu (2026-10-28) páli Dlhy aj špaky", () => {
     const dlh = AKCIE_20261019.find((a) => a.kluc === "Dlh")?.popis ?? "";
-    expect(KONSTANTY.PRAH_DLHU_ZAKLAD).toBe(1);
+    expect("PRAH_DLHU_ZAKLAD" in KONSTANTY).toBe(false);
+    expect(dlh).not.toContain("priznan");
     expect(dlh).toContain("V Pitke získaš 1 Dlh");
     expect(dlh).not.toContain("zadĺženi");
     expect(dlh).toContain("príde v každej bitke Exekútor");

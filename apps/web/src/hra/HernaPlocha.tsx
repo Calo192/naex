@@ -49,7 +49,7 @@ import type {
   ZobrataVerejne,
   Zdvih,
 } from "@naex/core";
-import { BEZ_PECIATKY, cigaretyZaPas, prveFajcenieZadarmo, sRadom, odhadSpakovKola, type StavOdhadu, riadkyCakajuceho, riadkyCakajucichPoldeci, KONSTANTY, jeCoTahat, jeFinaleNaNastenke, efektyPrehry, hrozbaKliatob, mozeEsteNaex, textHrozbyKliatob, textyEfektovPrehry, cenaKliatby, battleOutcome, prebytokNaRozdelenie, nahladPitky, vyhladDlhov, evaluateLine, efektyNavyse, pocitadloBitky, pitkaPredBitkou, hrozbaNaex, krokStavby, planVykladania, barterCena, limitBuduceKolo, limitPoPitke, limitZhromazdenia, lineState, nahladZajatia, prevahaStran, krajeStran, dovodZakazuFajcit, defOf, ponukaSenku, cenaFajceniaHraca, naexLimitMinuty as naexLimitMinutyHraca, sMojimiSkrytymiNaex, sPrilozenou, vystrahaPecene, nahladNaexNaKartu, najhorsiaOdpovedNaNaex, cenaTahu, nahladVylozenia, moznostiNaexVPohlade, zablokovaneStrany, NASTROJ_DO_LINIE, favourStarsieho, krokRozdelenia, cieleOdpovede, maxZoSenku, bodyRozdelenia, printedSides, poskodenieBitky, rozpisPoskodenia, prahyHraca, scorecardStarsieho, stavKraja, stavkaBitky, stavZavislosti, stranyLokality, vidiVolbuSupera, hraVPitke, cakaSBzdochou, opponentOf, majitelPresvedcenej, moznostiAkcie, cenaAkcieUplna, zdvihyPreAkcie, navrhRozdelenia, pohladPoRozdeleni, priazenHraca, priazenSila, pultStarsich, spakyTeraz, vazniNaVyhru } from "@naex/core";
+import { BEZ_PECIATKY, cigaretyZaPas, prveFajcenieZadarmo, sRadom, odhadSpakovKola, type StavOdhadu, riadkyCakajuceho, riadkyCakajucichPoldeci, KONSTANTY, jeCoTahat, jeFinaleNaNastenke, efektyPrehry, hrozbaKliatob, mozeEsteNaex, textHrozbyKliatob, textyEfektovPrehry, cenaKliatby, battleOutcome, prebytokNaRozdelenie, platbaZaSenok, povodKartySenku, nahladPitky, vyhladDlhov, evaluateLine, efektyNavyse, pocitadloBitky, pitkaPredBitkou, hrozbaNaex, krokStavby, planVykladania, barterCena, plneBuduceKolo, plnePoPitke, plneVZhromazdeni, lineState, nahladZajatia, prevahaStran, krajeStran, dovodZakazuFajcit, defOf, ponukaSenku, cenaFajceniaHraca, naexLimitMinuty as naexLimitMinutyHraca, sMojimiSkrytymiNaex, sPrilozenou, vystrahaPecene, nahladNaexNaKartu, najhorsiaOdpovedNaNaex, cenaTahu, nahladVylozenia, moznostiNaexVPohlade, zablokovaneStrany, NASTROJ_DO_LINIE, favourStarsieho, krokRozdelenia, cieleOdpovede, maxZoSenku, bodyRozdelenia, printedSides, poskodenieBitky, rozpisPoskodenia, prahyHraca, scorecardStarsieho, stavKraja, stavkaBitky, stavZavislosti, stranyLokality, vidiVolbuSupera, hraVPitke, cakaSBzdochou, opponentOf, majitelPresvedcenej, moznostiAkcie, cenaAkcieUplna, zdvihyPreAkcie, navrhRozdelenia, pohladPoRozdeleni, priazenHraca, priazenSila, pultStarsich, spakyTeraz, vazniNaVyhru } from "@naex/core";
 import type { Moment, ActionSums, DopadyNahladu, KliatbyNahladu, NahladNaexNaKartu, PrebytokNahladu, NahladVylozenia, PolozkaVykladania, Rod, Slot, StranaLinie, VystrahaPecene } from "@naex/core";
 import type { KtoraHrana, MoznostPodlozenia, PodlozenyNastroj } from "@naex/core";
 import { aktivnaHrana, dovodNepodlozenia, hranyNastroja, ponukaPodlozenia } from "@naex/core";
@@ -1210,7 +1210,7 @@ export function HernaPlocha({
   const dovodJednejKarty = prvyTahSenku ? t("plocha.jednaKarta", { cig: cigariet(KONSTANTY.CENA_SENKU[2] ?? 3) }) : null;
   const mozemBrat = kolkoMozemBrat > 0;
   const hJa = view.hraci[ja];
-  const limitTeraz = limitZhromazdenia(view, ja);
+  const limitTeraz = plneVZhromazdeni(view, ja);
   const zoSenkuLimit = kolkoMozemBrat;
   const mojaVolbaSenku = view.volbaNastupu?.typ === "senok" && view.volbaNastupu.hrac === ja ? view.volbaNastupu : null;
   // Keď hráč má vyberať Vešticu, vrstva sa otvorí sama. Raz za fázu — ak ju zavrie,
@@ -3690,6 +3690,21 @@ export function HernaPlocha({
   );
   const pravidloBrania =
     t("plocha.pravidloBrania");
+  // E2 (v12.5): súperovu kartu platím súperovi — pilulka povie, koľko z ceny ide jemu.
+  const komuCenaBrania = (cena: number): string => {
+    const superovi = platbaZaSenok(view, ja, zoSenku.map((k) => k.uid), cena).superovi;
+    return superovi === 0 ? "" : ` ${t("plocha.cenaSuperovi", { cig: cigariet(superovi), meno: menoHraca(super_) })}`;
+  };
+  /** Štítok pôvodu karty v ponuke (v12.5, E2): od koho prišla — tomu ide jej cena. */
+  const stitokPovodu = (k: CardInstance): ReactNode => {
+    const p = povodKartySenku(view, k.uid);
+    if (p === null) return undefined;
+    return (
+      <span className={`senok-povod-stitok ${p === ja ? "moja" : "superova"}`} title={p === ja ? t("plocha.povodMojaTitul") : t("plocha.povodSuperaTitul", { meno: menoHraca(super_) })}>
+        {p === ja ? t("plocha.povodMoja") : t("plocha.povodSupera", { meno: menoHraca(super_) })}
+      </span>
+    );
+  };
   const potvrdBranie = (): void => {
     const uids = zoSenku.map((k) => k.uid);
     setNoveZoSenku((n) => ({ kolo: view.kolo, uids: [...(n.kolo === view.kolo ? n.uids : []), ...uids] }));
@@ -4349,6 +4364,7 @@ export function HernaPlocha({
                 {zoSenku.length === 1
                   ? tr("plocha.beriesJednu", { karty: menoKarty(zoSenku[0]?.defId ?? ""), cig: cigariet(cenaBrania), vratit: mobil ? `„${t("plocha.vratit")}“` : "✕" })
                   : tr("plocha.beriesViac", { karty: zoSenku.map((k) => menoKarty(k.defId)).join(t("plocha.a")), cig: cigariet(cenaBrania), vratit: mobil ? `„${t("plocha.vratit")}“` : "✕" })}
+                {komuCenaBrania(cenaBrania)}
               </>
             ) : mozemBrat ? (
               <>
@@ -4657,10 +4673,10 @@ export function HernaPlocha({
         // v12.2: NA EX vezme plný poldeci do bitky — chýba v ďalšom Zhromaždení kola; po bitke sa obnoví.
         const dalsieZhrom = view.pitkaCislo < view.pitkyCelkom;
         const limitDalej = (s: ClientState, naex: boolean): number => {
-          if (!dalsieZhrom) return limitBuduceKolo(s, ja, false, data);
+          if (!dalsieZhrom) return plneBuduceKolo(s, ja, false, data);
           const h = s.hraci[ja];
           const po: ClientState = naex ? { ...s, hraci: (ja === 0 ? [{ ...h, poldeciPlne: Math.max(0, h.poldeciPlne - 1) }, s.hraci[1]] : [s.hraci[0], { ...h, poldeciPlne: Math.max(0, h.poldeciPlne - 1) }]) as ClientState["hraci"] } : s;
-          return limitPoPitke(po, ja, data);
+          return plnePoPitke(po, ja, data);
         };
         const limitPo = limitDalej(zaklad, true);
         const limitBez = limitDalej(zaklad, false);
@@ -5161,7 +5177,7 @@ export function HernaPlocha({
     const meno = menoKarty(e.karta.defId);
     const n = nahladZajatia(view, e.elderId);
     const nahlad = zajatie
-      ? t("plocha.zajatNahlad", { meno, cena, vazni: n.mojichVaznov, prah: n.vazniNaVyhru, vyhra: n.vyhra ? t("plocha.vyhrasHned") : "", super: menoHraca(super_), spaky: spakov(n.kradez) })
+      ? t("plocha.zajatNahlad", { meno, cena, vazni: n.mojichVaznov, prah: n.vazniNaVyhru, vyhra: n.pivnicaPlna ? t("plocha.pivnicaPlnaZajatim") : "", super: menoHraca(super_), spaky: spakov(n.kradez) })
       : t("plocha.presvedcitNahlad", { meno, cena, teplomer: cena > KONSTANTY.CENA_PRESVEDCENIA ? t("plocha.celyTeplomer") : "" });
     return { druh: zajatie ? "zajat" : "presvedcit", cena, zapnuta: akcieDelenia.includes(e.elderId), nahlad, klik: () => prepniAkciuDelenia(e.elderId) };
   };
@@ -5316,7 +5332,7 @@ export function HernaPlocha({
     const su = kratkeMeno(menoHraca(super_));
     return view.starsi.flatMap((e) => {
       const fav = favourStarsieho(data, e);
-      if (fav !== "BITKAR" && fav !== "VERIACI" && fav !== "OHOVARACKA" && fav !== "LAKOMEC" && fav !== "ROBOTA") return [];
+      if (fav !== "BITKAR" && fav !== "VERIACI" && fav !== "OHOVARACKA" && fav !== "ROBOTA") return [];
       const pk = priazenKola(e, ja);
       if (pk.komu === null) return [];
       const meno = menoKarty(e.karta.defId);
@@ -5711,7 +5727,8 @@ export function HernaPlocha({
                 const z: Zdroj = { karta: k, odkial: "senok", navrh: false };
                 // Klik vezme kartu do ruky ako návrh (bez ťahania, UX N4) — „hotovo“ ju potvrdí.
                 const props = { karta: k, sirka: sirkaDraftu, ...(mozemBrat ? { onClick: () => prepniZoSenku(k.uid) } : {}) };
-                return mozemBrat ? sLupou(props, { obsah: tahatelna(z, karta(props)), zdroj: z }) : sLupou(props);
+                const stitok = stitokPovodu(k);
+                return mozemBrat ? sLupou(props, { obsah: tahatelna(z, karta(props)), zdroj: z, stitok }) : sLupou(props, { stitok });
               },
               sirkaDraftu,
             )}
@@ -5830,11 +5847,11 @@ export function HernaPlocha({
     const vyloz = p === ja ? t("plocha.vylozis") : t("plocha.vylozi");
     if (view.faza === "zhromazdenie" && zs !== null) return { cislo: zs.zostavaLimit[p], popis: vyloz, tip: t("plocha.esteVylozi", { vyloz, karty: kariet(zs.zostavaLimit[p]) }) };
     if (view.faza === "volbaCiela" || view.faza === "natocenieCiela" || view.faza === "draft") {
-      const n = limitZhromazdenia(view, p);
+      const n = plneVZhromazdeni(view, p);
       return { cislo: n, popis: vyloz, tip: t("plocha.vZhromazdeniVylozi", { vyloz, karty: kariet(n) }) };
     }
     const dalsiaPitka = view.faza === "pitka" && view.pitkaCislo < view.pitkyCelkom;
-    const n = dalsiaPitka ? limitPoPitke(view, p, data) : limitBuduceKolo(view, p, false, data);
+    const n = dalsiaPitka ? plnePoPitke(view, p, data) : plneBuduceKolo(view, p, false, data);
     return { cislo: n, popis: t("plocha.dalej"), tip: `${dalsiaPitka ? t("plocha.dalsieZhromazdenie") : t("plocha.dalsieKolo")}: ${kariet(n)}` };
   };
   const kartyDlazdica = (p: PlayerId): KartyDlazdica => ({
@@ -6070,7 +6087,7 @@ export function HernaPlocha({
       else if (ps.hotovy[p]) pozn("stav", `✓ ${tRod("plocha.skoncil", rodHracaP(p))}${naex || skryte ? ` ${t("plocha.poNaex")}` : odkryte ? ` ${t("plocha.bezNaex")}` : ""}`);
       else if (skryte) pozn("stav", t("plocha.naexSkrytoKratko"), t("plocha.superNevidi2"));
       else if (naex) pozn("stav", t("plocha.naexDal"));
-      if (view.pitkaCislo < view.pitkyCelkom) pozn("limit", `${t("plocha.dalsieZhromazdenie")}: ${limitPoPitke(view, p, data)}`, t("plocha.limitDalsieho"));
+      if (view.pitkaCislo < view.pitkyCelkom) pozn("limit", `${t("plocha.dalsieZhromazdenie")}: ${plnePoPitke(view, p, data)}`, t("plocha.limitDalsieho"));
     } else if (view.faza === "draft" && draft !== null) {
       casti.push(rukaPocet(p));
       if (draft.krok === "stavba") pozn("stav", draft.vybral[p] ? `✓ ${tRod("plocha.vybral", rodHracaP(p))}` : t("plocha.staviaPonuku"));
@@ -6777,6 +6794,7 @@ export function HernaPlocha({
                 obsah: vybrana ? karta(props) : tahatelna(z, karta(props)),
                 zdroj: z,
                 odstran: vybrana ? () => prepniZoSenku(k.uid) : undefined,
+                ...(view.faza === "draft" ? { stitok: stitokPovodu(k) } : {}),
               });
             }, SIRKA_VO_VRSTVE)}
           </div>

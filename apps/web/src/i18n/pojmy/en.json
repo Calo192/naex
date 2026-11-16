@@ -127,14 +127,6 @@
       "popis": "Akcia, ktorá ti v Pitke dá 1 Dlh."
     }
   },
-  "zadlzenie": {
-    "pojem": "Indebtedness",
-    "popis": "What Gamble and card effects give: 1 indebtedness is 1 Debt straight away. Only with the Fruit Machine in your Heirloom is it a Debt for every 2, and the rest stays on the account.",
-    "sk": {
-      "pojem": "Zadĺženie",
-      "popis": "Čo dáva Hazard a efekty kariet: 1 zadĺženie je hneď 1 Dlh. Len s Výherným automatom v Dedičstve je Dlh až za každé 2 a zvyšok ostáva na účte; automat sám dá v každej Pitke 1 Dlh."
-    }
-  },
   "exekutor": {
     "pojem": "Bailiff",
     "popis": "Turns up in every brawl while you have a confessed Debt: half your Debts burn (rounded up) and as many butts with them; your favour with the Lawyer cuts that by 1 / 2 / 3. The Allotment Man in your crew protects you that round.",
@@ -253,14 +245,6 @@
     "sk": {
       "pojem": "Kraj",
       "popis": "Polovica línie podľa hrany lokality; každá lokalita má vlastné mená krajov (Krčma: pri výčape a pri dverách). Nepatrí nikomu."
-    }
-  },
-  "limit": {
-    "pojem": "Play limit",
-    "popis": "How many cards you play: as many as you have full shots — every card turns one to empty.",
-    "sk": {
-      "pojem": "Limit vykladania",
-      "popis": "Koľko kariet vyložíš: toľko, koľko máš plných poldeci — každá karta jeden otočí na vypitý."
     }
   },
   "linia": {

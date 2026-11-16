@@ -127,14 +127,6 @@
       "popis": "Akcia, ktorá ti v Pitke dá 1 Dlh."
     }
   },
-  "zadlzenie": {
-    "pojem": "Zadłużenie",
-    "popis": "To, co dają Hazard i efekty kart: 1 zadłużenie to od razu 1 Dług. Tylko z Jednorękim bandytą w Dziedzictwie Dług przychodzi dopiero za każde 2, a reszta zostaje na koncie.",
-    "sk": {
-      "pojem": "Zadĺženie",
-      "popis": "Čo dáva Hazard a efekty kariet: 1 zadĺženie je hneď 1 Dlh. Len s Výherným automatom v Dedičstve je Dlh až za každé 2 a zvyšok ostáva na účte; automat sám dá v každej Pitke 1 Dlh."
-    }
-  },
   "exekutor": {
     "pojem": "Komornik",
     "popis": "Przychodzi w każdej bójce, dopóki masz przyznany Dług: spala ci połowę Długów (zaokrąglając w górę) i tyle samo petów; twoja przychylność Adwokata zmniejsza to o 1 / 2 / 3. Działkowiec w twojej ekipie chroni cię w tej rundzie.",
@@ -253,14 +245,6 @@
     "sk": {
       "pojem": "Kraj",
       "popis": "Polovica línie podľa hrany lokality; každá lokalita má vlastné mená krajov (Krčma: pri výčape a pri dverách). Nepatrí nikomu."
-    }
-  },
-  "limit": {
-    "pojem": "Limit wykładania",
-    "popis": "Ile kart wyłożysz: tyle, ile masz pełnych kieliszków — każda karta odwraca jeden na wypity.",
-    "sk": {
-      "pojem": "Limit vykladania",
-      "popis": "Koľko kariet vyložíš: toľko, koľko máš plných poldeci — každá karta jeden otočí na vypitý."
     }
   },
   "linia": {

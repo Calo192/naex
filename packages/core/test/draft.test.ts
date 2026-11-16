@@ -18,6 +18,8 @@ import {
   loadGameData,
   mozeHrat,
   naTahu,
+  platbaZaSenok,
+  povodKartySenku,
   setupGame,
   velkostStavby,
   viewFor,
@@ -176,9 +178,10 @@ describe("stavba šenku", () => {
 describe("branie zo šenku (Michal 2026-10-19: 1 karta za cigaretu, 2 karty za 3 cigarety)", () => {
   it("striedavo, začína obranca (v9.2); 1 karta = 1 cigareta, 2 karty = 3 cigarety, nič zadarmo, poldeci sa neplatí", () => {
     let s = postavSenok(doDraftu(5));
-    // v9.2: prvý berie obranca, útočník druhý.
+    // v9.2: prvý berie obranca, útočník druhý. Každý berie svoje karty — tie platí banke (E2, v12.5).
     const u = obrancaOf(s);
     const o = s.utocnik;
+    const vlastne = (t: GameState, p: PlayerId): number[] => t.senok.filter((k) => povodKartySenku(t, k.uid) === p).map((k) => k.uid);
     s = sCigaretami(sCigaretami(s, u, 4), o, 2);
     const poldeci = s.hraci[o].poldeciPlne;
     expect(() => apply(data, s, { type: "draftBer", uids: [s.senok[0]!.uid] }, o)).toThrow(IllegalCommandError);
@@ -187,21 +190,56 @@ describe("branie zo šenku (Michal 2026-10-19: 1 karta za cigaretu, 2 karty za 3
     // v9.2: kto berie prvý, na prvom ťahu vezme len 1 kartu — ponuka aj server.
     expect(legalCommands(data, s, u).some((c) => c.type === "draftBer" && c.uids.length === 2)).toBe(false);
     expect(() => apply(data, s, { type: "draftBer", uids: [s.senok[0]!.uid, s.senok[1]!.uid] }, u)).toThrow(/prvom ťahu/);
-    s = apply(data, s, { type: "draftBer", uids: [s.senok[0]!.uid] }, u).state;
+    s = apply(data, s, { type: "draftBer", uids: [vlastne(s, u)[0]!] }, u).state;
     expect(s.hraci[u].cigarety).toBe(3);
+    expect(s.hraci[o].cigarety).toBe(2);
     expect(s.draftStav?.noveKarty[u]).toBe(1);
     expect(naTahu(s)).toBe(o);
     // Útočník s 2 cigaretami nemá na dve karty — len na jednu.
     expect(legalCommands(data, s, o).some((c) => c.type === "draftBer" && c.uids.length === 2)).toBe(false);
     expect(() => apply(data, s, { type: "draftBer", uids: [s.senok[0]!.uid, s.senok[1]!.uid] }, o)).toThrow(/3 cigarety/);
-    s = apply(data, s, { type: "draftBer", uids: [s.senok[0]!.uid] }, o).state;
+    s = apply(data, s, { type: "draftBer", uids: [vlastne(s, o)[0]!] }, o).state;
     expect(s.hraci[o].cigarety).toBe(1);
+    expect(s.hraci[u].cigarety).toBe(3);
     expect(s.hraci[o].poldeciPlne).toBe(poldeci);
     expect(naTahu(s)).toBe(u);
     // Na ďalšom ťahu už aj 2 karty za 3 cigarety; limit kariet nie je — berie sa, kým je čím platiť.
-    s = apply(data, s, { type: "draftBer", uids: [s.senok[0]!.uid, s.senok[1]!.uid] }, u).state;
+    s = apply(data, s, { type: "draftBer", uids: vlastne(s, u).slice(0, 2) }, u).state;
     expect(s.hraci[u].cigarety).toBe(0);
+    expect(s.hraci[o].cigarety).toBe(1);
     expect(s.draftStav?.noveKarty[u]).toBe(3);
+  });
+
+  it("E2 (v12.5, §5): súperovu kartu platíš súperovi, svoju banke; pri 2 kartách za 3 dostane súper 1 za každú svoju", () => {
+    let s = postavSenok(doDraftu(5));
+    const u = obrancaOf(s);
+    const o = s.utocnik;
+    // Ponuka si pamätá, kto ktorú kartu priniesol — polovica od každého.
+    expect(s.senok.filter((k) => povodKartySenku(s, k.uid) === u)).toHaveLength(4);
+    expect(s.senok.filter((k) => povodKartySenku(s, k.uid) === o)).toHaveLength(4);
+    const jeho = (t: GameState, p: PlayerId): number[] => t.senok.filter((k) => povodKartySenku(t, k.uid) === (p === 0 ? 1 : 0)).map((k) => k.uid);
+    const moje = (t: GameState, p: PlayerId): number[] => t.senok.filter((k) => povodKartySenku(t, k.uid) === p).map((k) => k.uid);
+    s = sCigaretami(sCigaretami(s, u, 10), o, 10);
+    // 1 súperova karta za 1: cigareta ide súperovi.
+    expect(platbaZaSenok(s, u, [jeho(s, u)[0]!], 1)).toEqual({ superovi: 1, banke: 0 });
+    s = apply(data, s, { type: "draftBer", uids: [jeho(s, u)[0]!] }, u).state;
+    expect([s.hraci[u].cigarety, s.hraci[o].cigarety]).toEqual([9, 11]);
+    // 2 súperove za 3: súper 2, banka 1.
+    const dveJeho = jeho(s, o).slice(0, 2);
+    expect(platbaZaSenok(s, o, dveJeho, 3)).toEqual({ superovi: 2, banke: 1 });
+    s = apply(data, s, { type: "draftBer", uids: dveJeho }, o).state;
+    expect([s.hraci[u].cigarety, s.hraci[o].cigarety]).toEqual([11, 8]);
+    // Jedna moja a jedna súperova za 3: súper 1, banka 2.
+    const mix = [moje(s, u)[0]!, jeho(s, u)[0]!];
+    expect(platbaZaSenok(s, u, mix, 3)).toEqual({ superovi: 1, banke: 2 });
+    s = apply(data, s, { type: "draftBer", uids: mix }, u).state;
+    expect([s.hraci[u].cigarety, s.hraci[o].cigarety]).toEqual([8, 9]);
+    // Pôvod je verejný: obaja ho vidia v pohľade, len pre karty, ktoré v ponuke ešte ležia.
+    for (const p of [0, 1] as const) {
+      const v = viewFor(data, s, p);
+      expect(v.povodSenku.map((x) => x.uid).sort()).toEqual(s.senok.map((k) => k.uid).sort());
+      expect(v.povodSenku).toEqual(viewFor(data, s, p === 0 ? 1 : 0).povodSenku);
+    }
   });
 
   it("bez cigariet sa zo šenku nedá brať — hra za hráča branie ukončí", () => {

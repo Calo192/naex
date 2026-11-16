@@ -192,17 +192,6 @@ describe("Nástup (v7)", () => {
 
 });
 
-describe("D6: zadĺženie neprepadá", () => {
-  it("zvyšok zadĺženia ostane na účte a s ďalšou Pitkou dá Dlh", () => {
-    // Zvyšok pod prahom má od v11.8 len majiteľ Výherného automatu (prah 2).
-    const s = sHracom(vPitke("zastavka", [[], []]), 0, { zadlzenie: 1, dedicstvo: [inst("vyherny_automat")] });
-    let st = s;
-    for (let i = 0; i < 2 && st.faza === "pitka"; i++) st = apply(data, st, { type: "skipNaex" }, st.pitkaStav!.naTahu).state;
-    expect(st.hraci[0].zadlzenie).toBe(1);
-    // Line stále bez Dlhov: Pakt ani karty nič nepridajú, účet čaká.
-    expect(evaluateLine(data, lineState(st)).sums[0].Dlh ?? 0).toBe(0);
-  });
-});
 
 describe("limit NA EX v7", () => {
   it("po minutom limite nejde NA EX ani na vlastného Anonymného alkoholika (placatka vypadla)", () => {

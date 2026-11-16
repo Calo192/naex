@@ -1623,24 +1623,29 @@ export function dlhyPoslednejPitky(data: GameData, line: LineState): DlhPosledne
 }
 
 /**
- * Dlhy, ktoré dáva motor rovno z Nástrojov v Dedičstve (Výherný automat, v12, Michal 2026-11-11:
- * „prah o 1 vyšší, ale každú Pitku 1 Dlh“) — za Pitku so spúšťačom `spustac`: „Pitka“ v každej,
- * „Posledná Pitka kola“ (staré sady) len v poslednej. Obecný úrad násobí volajúci.
+ * Akcie `akcia`, ktoré dáva motor rovno z Nástrojov v Dedičstve (Výherný automat, v12.5: „Pitka:
+ * {Cigareta} {Dlh}“; v12 len Dlh) — za Pitku so spúšťačom `spustac`: „Pitka“ v každej, „Posledná
+ * Pitka kola“ (staré sady) len v poslednej. Obecný úrad násobí volajúci.
  */
-export function dlhyZDedicstva(data: GameData, dedicstvo: readonly { readonly defId: string }[], spustac: "Pitka" | "Posledná Pitka kola"): number {
+export function akcieZDedicstva(data: GameData, dedicstvo: readonly { readonly defId: string }[], spustac: "Pitka" | "Posledná Pitka kola", akcia: Action): number {
   let n = 0;
   for (const k of dedicstvo) {
     const efekty = efektyNavyse(defOf(data, k));
     // Sada spred skrytých akcií (v7: „V poslednej Pitke kola získaš 1 Dlh.“) zápis nemá.
     if (k.defId === "vyherny_automat" && efekty.length === 0) {
-      if (spustac === "Posledná Pitka kola") n += 1;
+      if (spustac === "Posledná Pitka kola" && akcia === "Dlh") n += 1;
       continue;
     }
     for (const e of efekty) {
-      if (e.dedicstvo === true && e.spustac === spustac && e.podmienka === undefined) n += e.akcie.filter((a) => a === "Dlh").length;
+      if (e.dedicstvo === true && e.spustac === spustac && e.podmienka === undefined) n += e.akcie.filter((a) => a === akcia).length;
     }
   }
   return n;
+}
+
+/** Dlhy z Dedičstva (Výherný automat) — akcieZDedicstva pre Dlh. */
+export function dlhyZDedicstva(data: GameData, dedicstvo: readonly { readonly defId: string }[], spustac: "Pitka" | "Posledná Pitka kola"): number {
+  return akcieZDedicstva(data, dedicstvo, spustac, "Dlh");
 }
 
 /** Koľkokrát platí efekt navyše Nástroja v Dedičstve hráča p (Pasca, Výherný automat, Telefón). */

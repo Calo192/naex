@@ -146,14 +146,13 @@ describe("Pečeň a zadĺženie len počas Pitky (Michal 2026-10-16)", () => {
     expect(p.hraci[0].pecen).toBe(0);
   });
 
-  it("po Pitke sa zvyšok pečene pod prahom vynuluje, zadĺženie ostáva na účte (D6, v7)", () => {
+  it("po Pitke sa zvyšok pečene pod prahom vynuluje (zadĺženie zaniklo v12.5)", () => {
     let s = vPitke([[], []]);
-    // Zvyšok pod prahom má od v11.8 len majiteľ Výherného automatu (prah 2).
-    s = { ...s, hraci: [{ ...s.hraci[0], pecen: 2, zadlzenie: 1, dedicstvo: [inst("vyherny_automat")] }, { ...s.hraci[1], pecen: 1 }] } as GameState;
+    s = { ...s, hraci: [{ ...s.hraci[0], pecen: 2 }, { ...s.hraci[1], pecen: 1 }] } as GameState;
     const pred = [cirhozy(s, 0), cirhozy(s, 1)];
     s = dohrajPitku(s);
     expect(s.faza).not.toBe("pitka");
-    expect([s.hraci[0].pecen, s.hraci[0].zadlzenie, s.hraci[1].pecen, s.hraci[1].zadlzenie]).toEqual([0, 1, 0, 0]);
+    expect([s.hraci[0].pecen, s.hraci[1].pecen]).toEqual([0, 0]);
     expect([cirhozy(s, 0), cirhozy(s, 1)]).toEqual(pred);
   });
 });

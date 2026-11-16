@@ -80,10 +80,10 @@ const SPUSTACE: Readonly<Record<string, Spustac>> = {
   zadlzenie: (d, v, ja) => {
     if ((v.faza !== "zhromazdenie" && v.faza !== "pitka") || v.ciel === null) return null;
     const n = nahladPitky(d, v)[ja];
-    return n.zadlzenie + n.zadlzenieZoStola > 0 ? ANO : null;
+    return n.hazardZoStola > 0 ? ANO : null;
   },
 
-  // Dlh je hneď priznaný (počítadlo) — prvý je prvý Dlh hráča.
+  // Dlh je počítadlo — prvý je prvý Dlh hráča.
   dlh: (_d, v, ja) => (v.hraci[ja].dlhy > 0 ? ANO : null),
 
   // v12.3: limit za poldeci a pas za cigaretu na každý plný poldeci. Hráč, ktorý už kartu vyložil a plný

@@ -90,16 +90,11 @@ describe("§9 krok Hádka — mäkké poškodenie (computeDamage)", () => {
     expect(vzala.tuhe[0]).toBe(5);
   });
 
-  it("Abstinent: v bitke sa neráta 1 / 2 / 3 Absťákov — v poškodení aj pri remíze v tuhom", () => {
-    expect(computeDamage([side({ sums: { Rana: 4 }, abstaky: 3, silaAbstinenta: 2 }), side()]).tuhe[0]).toBe(3);
-    expect(computeDamage([side({ sums: { Rana: 4 }, abstaky: 1, silaAbstinenta: 3 }), side()]).tuhe[0]).toBe(4);
-    // Remíza 2 : 2: hráč 0 má 3 Absťáky (Abstinent 3 → 0), hráč 1 má 1 → vyhrá hráč 0.
-    const d = computeDamage([side({ sums: { Rana: 5 }, abstaky: 3, silaAbstinenta: 3 }), side({ sums: { Rana: 3 }, abstaky: 1 })]);
-    expect(d.tuhe).toEqual([5, 2]);
-    const remiza = computeDamage([side({ sums: { Rana: 2 }, abstaky: 3, silaAbstinenta: 3 }), side({ sums: { Rana: 3 }, abstaky: 1 })]);
+  it("Absťáky uberajú tuhé vždy (v12.5: Abstinent ich neodpúšťa, zvyšuje prah Cirhózy)", () => {
+    expect(computeDamage([side({ sums: { Rana: 4 }, abstaky: 3 }), side()]).tuhe[0]).toBe(1);
+    const remiza = computeDamage([side({ sums: { Rana: 5 }, abstaky: 3 }), side({ sums: { Rana: 3 }, abstaky: 1 })]);
     expect(remiza.tuhe).toEqual([2, 2]);
-    expect(battleOutcome(remiza, { abstaky: [3, 1], dlhy: [0, 0] })).toMatchObject({ vitaz: 0, rozhodlo: "abstak" });
-    // Abstinent do hádky nevstupuje (Pohoršenia navyše nedáva).
+    expect(battleOutcome(remiza, { dlhy: [0, 0] })).toMatchObject({ vitaz: null, rozhodlo: "sekera" });
     expect(remiza.makke).toEqual([0, 0]);
   });
 });

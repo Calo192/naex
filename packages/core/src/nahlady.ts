@@ -59,7 +59,7 @@ export interface DlhyDoBitky {
  */
 export function vyhladDlhov(data: GameData, stol: StolNahladu, dalsiePitky: number): readonly [DlhyDoBitky, DlhyDoBitky] {
   const nahlad = nahladPitky(data, stol);
-  // D6 (v7): zvyšok zadĺženia sa medzi Pitkami nemaže — sčíta sa za všetky Pitky.
+  // Hazard dá Dlh 1 : 1 v tejto aj každej ďalšej Pitke kola (v12.5 bez prahu a zvyšku na účte).
   // Výherný automat (Dedičstvo, v12): Dlh v tejto aj každej ďalšej Pitke (engine vyhodnotPitku);
   // „Posledná Pitka kola“ starých sád (automat, Traktorista bez prevahy) raz (engine pokracujPoPitke).
   const zLinie = dlhyPoslednejPitky(data, lineState(stol));
@@ -68,7 +68,7 @@ export function vyhladDlhov(data: GameData, stol: StolNahladu, dalsiePitky: numb
       dlhyZDedicstva(data, stol.hraci[p].dedicstvo, "Posledná Pitka kola") +
       zLinie.reduce((n, d) => n + (d.hrac === p ? d.dlhy : 0), 0)) *
     nasobokPitky(stol);
-  const noveDlhy = ([0, 1] as const).map((p) => Math.floor((nahlad[p].zadlzenie + nahlad[p].zadlzenieZoStola * (1 + dalsiePitky)) / nahlad[p].prahDlhu) + automat(p)) as [number, number];
+  const noveDlhy = ([0, 1] as const).map((p) => nahlad[p].hazardZoStola * (1 + dalsiePitky) + automat(p)) as [number, number];
   const kapacita = paleneDlhyVBitke(data, stol);
   const pre = (p: PlayerId): DlhyDoBitky => {
     const nove = noveDlhy[p];

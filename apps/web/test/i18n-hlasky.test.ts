@@ -17,14 +17,14 @@ describe("vzory hlášok motora", () => {
 
   it("hláška sedí na vzor celá, čísla vyberajú tvar, meno je ľubovoľný text", () => {
     expect(najdiVzor("Fero z dolného konca už nemá čo vyložiť.", vzory)).toEqual({ kluc: "motor.nemaCoVylozit", p: { meno: "Fero z dolného konca" } });
-    expect(najdiVzor("Exekútor: hráčovi 2 zhorí 3 priznané Dlhy a 3 špaky.", vzory)).toEqual({ kluc: "motor.exekutorDlhy", p: { hrac: "2", n2: 3, n: 3 } });
-    expect(najdiVzor("Exekútor: hráčovi 1 zhorí 5 priznaných Dlhov a 0 špakov.", vzory)?.kluc).toBe("motor.exekutorDlhov");
+    expect(najdiVzor("Exekútor: hráčovi 2 zhorí 3 Dlhy a 3 špaky.", vzory)).toEqual({ kluc: "motor.exekutorDlhy", p: { hrac: "2", n2: 3, n: 3 } });
+    expect(najdiVzor("Exekútor: hráčovi 1 zhorí 5 Dlhov a 0 špakov.", vzory)?.kluc).toBe("motor.exekutorDlhov");
     expect(najdiVzor("Niečo, čo vzor nemá.", vzory)).toBeNull();
     // S Advokátom je to iný vzor; ušetrené špaky sú časť, ktorá je sama vzorom (prelozHlasku ju preloží tiež).
-    expect(najdiVzor("Exekútor: hráčovi 1 zhorí 1 priznaný Dlh a 1 špak (Advokát ušetril 2 špaky).", vzory)).toEqual({ kluc: "motor.exekutorAdvokatDlh", p: { hrac: "1", n2: 1, n: 1, usetril: "2 špaky" } });
+    expect(najdiVzor("Exekútor: hráčovi 1 zhorí 1 Dlh a 1 špak (Advokát ušetril 2 špaky).", vzory)).toEqual({ kluc: "motor.exekutorAdvokatDlh", p: { hrac: "1", n2: 1, n: 1, usetril: "2 špaky" } });
     expect(najdiVzor("2 špaky", vzory)).toEqual({ kluc: "motor.spakov", p: { n: 2 } });
     // Dlhší text za vzorom = iná hláška — ostane po slovensky.
-    expect(najdiVzor("Exekútor: hráčovi 1 zhorí 1 priznaný Dlh a 1 špak (a ešte niečo).", vzory)).toBeNull();
+    expect(najdiVzor("Exekútor: hráčovi 1 zhorí 1 Dlh a 1 špak (a ešte niečo).", vzory)).toBeNull();
   });
 
   it("vzor hlášky s číslom berie len číslo — iná hláška s „získava“ naň nesedí", () => {
@@ -34,7 +34,7 @@ describe("vzory hlášok motora", () => {
 
   it("preklad vzoru dosadí časti hlášky a tvar podľa čísla", () => {
     const en: Slovnik = { "motor.exekutorDlhy": { "1": "Bailiff: player {hrac} burns {n2} Debts and {n} butt.", "5": "Bailiff: player {hrac} burns {n2} Debts and {n} butts." } };
-    const z = najdiVzor("Exekútor: hráčovi 2 zhorí 3 priznané Dlhy a 3 špaky.", vzory);
+    const z = najdiVzor("Exekútor: hráčovi 2 zhorí 3 Dlhy a 3 špaky.", vzory);
     expect(z).not.toBeNull();
     if (z !== null) expect(preloz("en", en, {}, z.kluc, z.p)).toBe("Bailiff: player 2 burns 3 Debts and 3 butts.");
   });

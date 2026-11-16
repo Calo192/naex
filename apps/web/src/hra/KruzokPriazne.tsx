@@ -24,19 +24,13 @@ export const IKONA_PRIAZNE: Readonly<Record<Favour, Action>> = {
   ROBOTA: "Robota",
   FAJCIAR: "Cigareta",
   OHOVARACKA: "Povera",
-  // Abstinent (v10) Pohoršenie nedáva — krúžok kreslí prázdny pohárik Absťáku (IkonaPriazneKruzku).
-  LAKOMEC: "Poldeci",
+  // Abstinent (v12.5): prah Cirhózy o silu vyšší — pečeň (do v12.4 prázdny pohárik Absťáku).
+  LAKOMEC: "PoškodeniePečene",
 };
 
-/** Ikona v krúžku priazne: akcia priazne, pri Abstinentovi (v10) Absťák — prázdny pohárik. */
+/** Ikona v krúžku priazne: akcia priazne. */
 export function IkonaPriazneKruzku({ fav }: { readonly fav: Favour }) {
-  if (fav !== "LAKOMEC") return <IkonaAkcie akcia={IKONA_PRIAZNE[fav]} />;
-  return (
-    <svg className="kr-ikona" viewBox="0 0 100 100" aria-hidden="true">
-      <path d="M28 10h44l-7 80H35zM36 18l5 64h18l5-64z" fillRule="evenodd" />
-      <path d="M50 40c-6 8-8 12-8 16a8 8 0 0 0 16 0c0-4-2-8-8-16z" />
-    </svg>
-  );
+  return <IkonaAkcie akcia={IKONA_PRIAZNE[fav]} />;
 }
 
 export function IkonaAkcie({ akcia, trieda = "kr-ikona" }: { readonly akcia: Action; readonly trieda?: string }) {

@@ -200,7 +200,10 @@ describe("Kostol: NA EX len na poslednú kartu línie (v11.7)", () => {
     expect(poOdpovedi.strany[1][1]?.naexBy).toBe(0);
     // Ďalšia Pitka kola: novým koncom je odpoveď, karta s NA EX pred ňou ostáva a cieľom nie je.
     expect(poOdpovedi.faza).toBe("zhromazdenie");
-    const druhaPitka = apply(data, poOdpovedi, { type: "pass" }, 0).state;
+    // Hráč 2 má na svojej karte NA EX hráča 1 — smie ho dopiť (v12.5), tak sa za neho nepasuje.
+    expect(legalCommands(data, poOdpovedi, 1)).toContainEqual({ type: "dopit", uid: uid(b2) });
+    const poPase = apply(data, poOdpovedi, { type: "pass" }, 1).state;
+    const druhaPitka = poPase.faza === "pitka" ? poPase : apply(data, poPase, { type: "pass" }, 0).state;
     expect(druhaPitka.faza).toBe("pitka");
     expect(druhaPitka.strany[1][1]?.naexBy).toBe(0);
     expect(ciele(druhaPitka, 0)).toEqual(zoradene([uid(a2), odpoved.uid]));

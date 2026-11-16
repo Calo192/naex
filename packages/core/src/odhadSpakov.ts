@@ -69,7 +69,7 @@ function rozpisVysledku(data: GameData, s: StavOdhadu, linia: LineEval, makke: r
 
 /** Odhad výplaty kola z línie a poškodenia, ktoré hráč práve vidí. */
 export function odhadSpakovKola(data: GameData, s: StavOdhadu, linia: LineEval, damage: DamageResult): OdhadSpakov {
-  const vysledok = battleOutcome(damage, { abstaky: [verejneAbstaky(s, 0), verejneAbstaky(s, 1)], dlhy: [s.hraci[0].dlhy, s.hraci[1].dlhy] });
+  const vysledok = battleOutcome(damage, { dlhy: [s.hraci[0].dlhy, s.hraci[1].dlhy] });
   const makke: readonly [number, number] = [damage.makke[0], damage.makke[1]];
   const hraci = rozpisVysledku(data, s, linia, makke, vysledok.vitaz, vysledok.prebytokDrzi === vysledok.vitaz ? vysledok.prebytok : 0);
   const karty = kartyBitky(s).spolu;

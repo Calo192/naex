@@ -180,8 +180,8 @@ export function UkazkaBitky() {
     hodnotaViery: 1,
   });
   const d = computeDamage([strana(s[0]), strana(s[1])]);
-  // v6: remízu v tuhom rozhodnú Absťáky, potom priznané Dlhy (PRAVIDLA.md §9.4).
-  const o = battleOutcome(d, { abstaky: [s[0].abstaky, s[1].abstaky], dlhy: [s[0].dlhy, s[1].dlhy] });
+  // v12.5: remízu v tuhom rozhodnú Dlhy (PRAVIDLA.md §9.4).
+  const o = battleOutcome(d, { dlhy: [s[0].dlhy, s[1].dlhy] });
   const MENA = ["Ty", "Súper"];
 
   return (
@@ -224,7 +224,7 @@ export function UkazkaBitky() {
         ) : (
           <>
             Vyhráva <strong>{MENA[o.vitaz]}</strong>
-            {o.rozhodlo === "abstak" ? " — remízu v tuhom rozhodlo menej Absťákov" : o.rozhodlo === "dlhy" ? " — remízu v tuhom rozhodlo menej priznaných Dlhov" : ""}.
+            {o.rozhodlo === "dlhy" ? " — remízu v tuhom rozhodlo menej Dlhov" : ""}.
           </>
         )}{" "}
         {o.prebytokDrzi === null

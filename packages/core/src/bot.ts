@@ -36,7 +36,7 @@ import { efektyNavyse, jeSlovami } from "./navyse.ts";
 import { hranyNastroja } from "./naradie.ts";
 import { hranaMaCoRobit } from "./podlozenie.ts";
 import { KONSTANTY, vazniNaVyhru } from "./constants.ts";
-import { abstakyVBitke, spakyPriExekucii, zhoriPriExekucii } from "./battle.ts";
+import { spakyPriExekucii, zhoriPriExekucii } from "./battle.ts";
 import type { ElderState } from "./elders.ts";
 import { kradezZaZajatie, priazenPre, spakyOdStarsieho, spakyZaReci, spakyZaStrach, spakyZaStupen, strachZ, vydesil } from "./elders.ts";
 import { jeCielLokalita, nasobokPitky, partiaHraca, sDlhmiPoradkyne } from "./effects.ts";
@@ -70,6 +70,7 @@ import {
   cenaFajceniaHraca,
   ktoNatacaLokalitu,
   ponukaSenku,
+  platbaZaSenok,
 } from "./engine.ts";
 
 /**
@@ -697,8 +698,9 @@ function stavkaBitky(s: GameState): number {
   }
   let starsi = 0;
   for (const e of s.starsi) for (const q of [0, 1] as const) starsi += spakyOdStarsieho(e, q, true) - spakyOdStarsieho(e, q, false);
+  // Výhra väzňami (v12.5, V1) sa overí ako výhra strachom: väzni už pred bitkou.
   let strach = 0;
-  for (const q of [0, 1] as const) if (cervenychHraca(s, q) >= KONSTANTY.CERVENYCH_NA_VYHRU) strach += VYHRA_HNED;
+  for (const q of [0, 1] as const) if (cervenychHraca(s, q) >= KONSTANTY.CERVENYCH_NA_VYHRU || vazniHraca(s, q).length >= vazniNaVyhru(s.lokalitCelkom)) strach += VYHRA_HNED;
   return 2 * s.spakyNaSekere + zajatia + starsi + strach;
 }
 
@@ -728,13 +730,11 @@ function hodnotaBitky(k: Kontext, s: GameState, q: PlayerId, ostrost: number): n
   // Dlh Finančnej poradkyne zadlžuje súpera, nie jej majiteľa.
   const sums = sDlhmiPoradkyne(data, s, evaluateLine(data, lineState(s))).sums;
   const dmg = poskodenieBitky(data, s, sums);
-  // Remíza v tuhom (v6): vyhrá menej Absťákov, potom menej priznaných Dlhov, inak sekera (šanca ½).
-  // Abstinent (v10) Absťáky odpustí aj pri remíze.
-  const remiza = (p: PlayerId): [number, number] => [abstakyVBitke(verejneAbstaky(s, p), dmg.abstinent?.[p]), prahyHraca(data, s, p).priznaneDlhy];
-  const [aq, dq] = remiza(q);
-  const [ao, dO] = remiza(o);
+  // Remíza v tuhom (v12.5): vyhrá menej Dlhov, inak sekera (šanca ½).
+  const dq = s.hraci[q].dlhy;
+  const dO = s.hraci[o].dlhy;
   const tuhe = dmg.tuhe[q] - dmg.tuhe[o];
-  const m = tuhe !== 0 ? tuhe : aq !== ao ? 0.5 * Math.sign(ao - aq) : 0.5 * Math.sign(dO - dq);
+  const m = tuhe !== 0 ? tuhe : 0.5 * Math.sign(dO - dq);
   const celk = dmg.celkove[q] - dmg.celkove[o];
   const sanca = 1 / (1 + Math.exp(-ostrost * m));
   // Vo finále je Nakladačka priamo špaky (v9.1) — bez stropu, každý bod rozdielu sa ráta.
@@ -860,8 +860,8 @@ function hodnotaSilyPriazne(k: Kontext, s: GameState, p: PlayerId, fav: Favour, 
     case "VERIACI":
       return sila * PRIAZEN_ZA_BITKU.VERIACI * pv.bitka;
     case "LAKOMEC":
-      // Abstinent (v10): odpustí najviac toľko Absťákov, koľko ich hráč má — bez Absťáku nič.
-      return Math.min(sila, verejneAbstaky(s, p)) * PRIAZEN_ZA_BITKU.LAKOMEC * pv.bitka;
+      // Abstinent (v12.5): prah Cirhózy o silu vyšší — v každej Pitke kola o toľko pečene ďalej od Cirhózy.
+      return sila * PRIAZEN_ZA_BITKU.LAKOMEC * nasobokKliatieb(k, p);
     case "FAJCIAR":
       return sila * PRIAZEN_ZA_BITKU.FAJCIAR * pv.zdroje;
     case "ROBOTA":
@@ -897,7 +897,8 @@ function hodnotaVydesenia(s: GameState, p: PlayerId): number {
   let v = vazni * (2 + 1.5 * Math.min(zostava, 3));
   if (zostava > 0) {
     if (vazni >= naVyhru - 1) v += VAZEN_PRED_VYHROU + (ciele > 0 ? 10 : 0);
-    if (cervene >= KONSTANTY.CERVENYCH_NA_VYHRU) v += CERVENE_NA_VYHRU;
+    // Plná pivnica (v12.5, V1) je ako 4 červené: ďalšia vyhratá bitka končí hru.
+    if (cervene >= KONSTANTY.CERVENYCH_NA_VYHRU || vazni >= naVyhru) v += CERVENE_NA_VYHRU;
     else if (cervene === KONSTANTY.CERVENYCH_NA_VYHRU - 1) v += CERVENE_PRED_VYHROU;
     v += 1.5 * ciele + 0.4 * s.starsi.filter((e) => strachZ(e, p) === 2).length;
   }
@@ -926,15 +927,16 @@ const CERVENE_PRED_VYHROU = 12;
 
 /**
  * Čo hráčovi q prinesie väzeň, ak ho zajme (v11.4 Nakladačkou) — pre stávku bitky:
- * krádež súperových špakov za jeho reči, schopnosť a výhra väzňami. Že starší
- * zmizne zo stupnice (priazeň, bodovanie), ráta volajúci zo stavu bez neho.
+ * krádež súperových špakov za jeho reči, schopnosť a plná pivnica (v12.5: výhra až v ďalšej
+ * vyhratej bitke, preto ako 4 červené, nie výhra hneď). Že starší zmizne zo stupnice
+ * (priazeň, bodovanie), ráta volajúci zo stavu bez neho.
  */
 function hodnotaVazna(s: Pick<GameState, "vazni" | "starsi" | "spaky" | "lokalitCelkom">, q: PlayerId, elderId: string): number {
   const su = opponentOf(q);
   const elder = s.starsi.find((e) => e.elderId === elderId);
   const kradez = elder === undefined ? 0 : Math.max(0, Math.min(kradezZaZajatie(elder, q), s.spaky[su]));
-  const vyhra = vazniHraca(s, q).length + 1 >= vazniNaVyhru(s.lokalitCelkom);
-  return 2 * kradez + 4 + (vyhra ? VYHRA_HNED : 0);
+  const plna = vazniHraca(s, q).length + 1 >= vazniNaVyhru(s.lokalitCelkom);
+  return 2 * kradez + 4 + (plna ? CERVENE_NA_VYHRU : 0);
 }
 
 /** Koľko bitiek príde po tejto (v6 aj finále). */
@@ -1417,8 +1419,17 @@ function draft(v: Volba): Command | null {
     v.legal.find((c) => c.type === "draftBer" && c.uids.length === uids.length && uids.every((u) => c.uids.includes(u))) ?? null;
   const jedna = mozne([najlepsia.uid]);
   const dve = druha === undefined ? null : mozne([najlepsia.uid, druha.uid]);
-  const zaJednu = zisk(najlepsia, 0) - cenaCigariet(k, state, ja, KONSTANTY.CENA_SENKU[1] ?? 1);
-  const zaDve = zisk(najlepsia, 0) + zisk(druha, 1) - cenaCigariet(k, state, ja, KONSTANTY.CENA_SENKU[2] ?? 3);
+  // E2 (v12.5): súperovu kartu platím súperovi — jeho cigareta navyše je moja strata.
+  const su = opponentOf(ja);
+  const darSuperovi = (uids: readonly number[], cena: number): number => {
+    const n = platbaZaSenok(state, ja, uids, cena).superovi;
+    const c = state.hraci[su].cigarety;
+    return k.povaha.zdroje * (uzitokCigariet(state, c + n) - uzitokCigariet(state, c));
+  };
+  const cenaJednej = KONSTANTY.CENA_SENKU[1] ?? 1;
+  const cenaDvoch = KONSTANTY.CENA_SENKU[2] ?? 3;
+  const zaJednu = zisk(najlepsia, 0) - cenaCigariet(k, state, ja, cenaJednej) - darSuperovi([najlepsia.uid], cenaJednej);
+  const zaDve = druha === undefined ? Number.NEGATIVE_INFINITY : zisk(najlepsia, 0) + zisk(druha, 1) - cenaCigariet(k, state, ja, cenaDvoch) - darSuperovi([najlepsia.uid, druha.uid], cenaDvoch);
   // Keď súper prestal, je to posledný ťah brania — po jednej by už nebolo kedy.
   const posledny = d.hotovo[opponentOf(ja)];
   if (dve !== null && zaDve > 0 && (posledny || zaDve > zaJednu)) return dve;
@@ -1464,7 +1475,8 @@ function zhromazdenie(v: Volba): Command | null {
   const moznosti: Command[] = [];
   const vylozenia: Command[] = [];
   for (const cmd of v.legal) {
-    if (cmd.type === "pass" || cmd.type === "vypit") {
+    // Dopiť za teba (v12.5, N1): výpočet dopredu porovná kartu navyše so zachránenou kartou.
+    if (cmd.type === "pass" || cmd.type === "vypit" || cmd.type === "dopit") {
       moznosti.push(cmd);
       continue;
     }

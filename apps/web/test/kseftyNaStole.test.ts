@@ -83,7 +83,10 @@ describe("Kšefty pod kartou", () => {
   });
 
   it("po „Skončiť Pitku“ Kšefty nie sú a schopnosť väzňa čaká na môj ťah (ikona nesvieti)", () => {
-    const { s } = sKseftami(zaklad, { lok: "sklad", vazni: ["postarka"] });
+    const { s: s0 } = sKseftami(zaklad, { lok: "sklad", vazni: ["postarka"] });
+    // Súper Pitku ešte hrá (môže fajčiť) — inak by po mojom „hotovo“ prišlo ďalšie Zhromaždenie a v ňom Sklad na mojom ťahu.
+    const karta: CardInstance = { uid: 99700, defId: "pijan", leftLayout: 0, rightLayout: 0 };
+    const s: GameState = { ...s0, pitkaStav: { ...s0.pitkaStav!, hotovy: [false, false] }, hraci: [s0.hraci[ja], { ...s0.hraci[su], cigarety: 9, doberaci: [karta] }] };
     expect(kseftyNaStole(data, viewFor(data, s, ja)).filter((k) => k.druh === "vazen" && k.dovod === null)).toHaveLength(1);
     const po = apply(data, s, { type: "skipNaex" }, ja).state;
     const ksefty = kseftyNaStole(data, viewFor(data, po, ja));

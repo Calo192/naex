@@ -42,7 +42,7 @@ function sSarlatanom(naTahuPitky: PlayerId): { readonly s: GameState; readonly s
   const s0 = setupGame(data, 7);
   const lokalita = s0.lokalityVHre.find((k) => k.defId === "zastavka")!;
   const sar = inst("sarlatan");
-  const hraci = s0.hraci.map((h) => ({ ...h, cigarety: 5, zadlzenie: 0, dlhy: 0, ruka: [inst("masiar")], doberaci: [inst("vandal"), inst("hasic")] })) as unknown as GameState["hraci"];
+  const hraci = s0.hraci.map((h) => ({ ...h, cigarety: 5, dlhy: 0, ruka: [inst("masiar")], doberaci: [inst("vandal"), inst("hasic")] })) as unknown as GameState["hraci"];
   const s: GameState = {
     ...s0,
     hraci,
@@ -78,7 +78,7 @@ function dohrajPitku(s: GameState, vyber: (cmds: readonly Command[], q: PlayerId
 }
 
 /** Zadĺženie hráča 1 z Pitky (prah 1: každé je Dlh). */
-const zadlzenieHraca1 = (t: GameState): number => dlhyZPitky1 + t.hraci[1].zadlzenie;
+const zadlzenieHraca1 = (t: GameState): number => dlhyZPitky1;
 
 describe("§16 Šarlatán: Hazard premenený Konfliktom nedáva zadĺženie", () => {
   it("odpoveď na NA EX vyvolá Konflikt pred vyhodnotením Pitky — Hazard ×2 je Viera, zadĺženie 0", () => {
@@ -96,7 +96,6 @@ describe("§16 Šarlatán: Hazard premenený Konfliktom nedáva zadĺženie", ()
     const t = dohrajPitku(poNaex, (cmds, q) => (q === 0 ? cmds.find((c) => c.type === "place" && c.target === "vlastna") : undefined));
     expect(t.strany[1].find((pl) => pl.card.uid === sar.uid)?.premena).toBeUndefined();
     expect(zadlzenieHraca1(t)).toBe(2);
-    expect(t.hraci[1].zadlzenie).toBe(0);
   });
 
   it("Záverečná vyvolá Konflikt až po vyhodnotení Pitky — v nej sa Hazard ešte ráta, v bitke už Viera", () => {

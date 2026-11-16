@@ -212,31 +212,59 @@ describe("§10 zajatie pri rozdelení Nakladačky (v11.4)", () => {
     expect(bez.starsi).toHaveLength(3);
   });
 
-  it("väzni na výhru (Druhá liga 3) — výhra väzňami hneď po rozdelení Nakladačky", () => {
-    const s = vRozdeleni("prebytok", 0, 5, { 0: { strach: [3, 0] } }, (x) => {
-      const vazni: Vazen[] = [5, 6].map((j, i) => ({ elderId: x.starsi[j]!.elderId, hrac: 0, poradie: i + 1, karta: x.starsi[j]!.karta, scorecard: x.starsi[j]!.scorecard, miesto: j }));
-      return { ...x, vazni, starsi: x.starsi.filter((_, j) => j !== 5 && j !== 6) };
-    });
-    const t = apply(data, s, { type: "prebytok", zdvihy: [], zajatia: [id(0)] }, 0).state;
-    expect(t.koniec?.vitaz).toBe(0);
-    expect(t.koniec?.body).toBeNull();
-    expect(t.koniec?.dovod).toMatch(/výhra väzňami/);
+  // V1 Pivnica plná (v12.5, Michal 2026-11-16): zajatie výhru nedá — rozhodne ďalšia vyhratá bitka (krok 4c).
+  const sDvomaVaznami = (x: GameState): GameState => {
+    const vazni: Vazen[] = [5, 6].map((j, i) => ({ elderId: x.starsi[j]!.elderId, hrac: 0, poradie: i + 1, karta: x.starsi[j]!.karta, scorecard: x.starsi[j]!.scorecard, miesto: j }));
+    return { ...x, vazni, starsi: x.starsi.filter((_, j) => j !== 5 && j !== 6) };
+  };
+
+  it("väzni na výhru (Druhá liga 3) — po zajatí pivnica plná, hra pokračuje (V1, v12.5)", () => {
+    const s = vRozdeleni("prebytok", 0, 5, { 0: { strach: [3, 0] } }, sDvomaVaznami);
+    const { state: t, events } = apply(data, s, { type: "prebytok", zdvihy: [], zajatia: [id(0)] }, 0);
+    expect(t.koniec).toBeNull();
+    expect(t.vazni.filter((v) => v.hrac === 0)).toHaveLength(3);
+    expect(events.some((e) => e.type === "log" && /^Pivnica plná: hráč 1 má 3 väzňov/.test(e.text))).toBe(true);
+    // Stôl to ohlási pečiatkou PIVNICA PLNÁ (mimo stropu) namiesto ZAJATIA.
+    const m = momenty(data, s, t, events);
+    expect(m.map((x) => x.typ)).toContain("pivnicaPlna");
+    expect(m.map((x) => x.typ)).not.toContain("zajatie");
+    expect(MOMENTY.pivnicaPlna.nazov).toBe("PIVNICA PLNÁ");
   });
 
-  it("výhra väzňami so zdvihom v tom istom rozdelení: priazeň zo zdvihu je v logu pred koncom hry, koniec je posledný", () => {
-    const s = vRozdeleni("prebytok", 0, 6, { 0: { strach: [3, 0] }, 1: { strach: [0, 0] } }, (x) => {
-      const vazni: Vazen[] = [5, 6].map((j, i) => ({ elderId: x.starsi[j]!.elderId, hrac: 0, poradie: i + 1, karta: x.starsi[j]!.karta, scorecard: x.starsi[j]!.scorecard, miesto: j }));
-      return { ...x, vazni, starsi: x.starsi.filter((_, j) => j !== 5 && j !== 6) };
-    });
+  it("plná pivnica: ďalšia vyhratá bitka je výhra väzňami (krok 4c, pred exekúciou); prehratá nie", () => {
+    const vBitke = (sums: BitkaStav["sums"]): GameState =>
+      vRozdeleni("prebytok", 0, 0, {}, (x) => {
+        const y = sDvomaVaznami(x);
+        const treti: Vazen = { elderId: y.starsi[0]!.elderId, hrac: 0, poradie: 3, karta: y.starsi[0]!.karta, scorecard: y.starsi[0]!.scorecard, miesto: 0 };
+        return {
+          ...y,
+          vazni: [...y.vazni, treti],
+          starsi: y.starsi.slice(1),
+          bitkaStav: bitka({ krok: "hadka", caka: null, vitaz: null, sums, exekutorHotovy: [false, false], hadka: { makke: [0, 0], vitaz: null, velkost: 0, zostava: 0, prepadlo: 0, zdvihy: [] } }),
+        };
+      });
+    const vyhra = spustBitku(data, vBitke([{ Rana: 3 }, {}])).state;
+    expect(vyhra.koniec?.vitaz).toBe(0);
+    expect(vyhra.koniec?.body).toBeNull();
+    expect(vyhra.koniec?.dovod).toMatch(/výhra väzňami/);
+    const prehra = spustBitku(data, vBitke([{}, { Rana: 3 }])).state;
+    expect(prehra.koniec).toBeNull();
+    // Aj vo finále: kto má pred finále väzňov na výhru a finále vyhrá, vyhráva bez ohľadu na špaky.
+    const f = vBitke([{ Rana: 3 }, {}]);
+    const finale = spustBitku(data, { ...f, ciel: { typ: "finale", lokalita: f.ciel!.lokalita! }, spaky: [0, 90] }).state;
+    expect(finale.koniec?.vitaz).toBe(0);
+    expect(finale.koniec?.dovod).toMatch(/výhra väzňami/);
+  });
+
+  it("zajatie do plnej pivnice so zdvihom v tom istom rozdelení: priazeň zo zdvihu je v logu, hra beží ďalej", () => {
+    const s = vRozdeleni("prebytok", 0, 6, { 0: { strach: [3, 0] }, 1: { strach: [0, 0] } }, sDvomaVaznami);
     const { state: t, events } = apply(data, s, { type: "prebytok", zdvihy: [{ elderId: id(1), na: 1 }], zajatia: [id(0)] }, 0);
-    expect(t.koniec?.dovod).toMatch(/výhra väzňami/);
-    expect(events.at(-1)?.type).toBe("koniec");
-    const priazen = events.findIndex((e) => e.type === "log" && /^Priazeň .+ dostáva Hráč 2\.$/.test(e.text));
-    expect(priazen).toBeGreaterThan(-1);
-    expect(priazen).toBeLessThan(events.findIndex((e) => e.type === "koniec"));
+    expect(t.koniec).toBeNull();
+    expect(events.some((e) => e.type === "koniec")).toBe(false);
+    expect(events.findIndex((e) => e.type === "log" && /^Priazeň .+ dostáva Hráč 2\.$/.test(e.text))).toBeGreaterThan(-1);
   });
 
-  it("návrh rozdelenia pridá zajatia, ktoré dajú výhru väzňami (aj dve naraz); keď na výhru nestačia, nezajíma", () => {
+  it("návrh rozdelenia pridá zajatia, ktoré naplnia pivnicu (aj dve naraz); keď nestačia, nezajíma", () => {
     const sVaznom = (body: number): GameState =>
       vRozdeleni("prebytok", 0, body, { 0: { strach: [3, 0] }, 1: { strach: [3, 0] } }, (x) => {
         const vazni: Vazen[] = [{ elderId: x.starsi[6]!.elderId, hrac: 0, poradie: 1, karta: x.starsi[6]!.karta, scorecard: x.starsi[6]!.scorecard, miesto: 6 }];
@@ -246,7 +274,8 @@ describe("§10 zajatie pri rozdelení Nakladačky (v11.4)", () => {
     const navrh = navrhRozdelenia(viewFor(data, s, 0));
     expect([...(navrh?.akcie ?? [])].sort()).toEqual([id(0), id(1)].sort());
     const t = apply(data, s, navrh!.prikaz, 0).state;
-    expect(t.koniec?.dovod).toMatch(/výhra väzňami/);
+    expect(t.koniec).toBeNull();
+    expect(t.vazni.filter((v) => v.hrac === 0)).toHaveLength(3);
     expect(navrhRozdelenia(viewFor(data, sVaznom(9), 0))?.akcie).toEqual([]);
   });
 

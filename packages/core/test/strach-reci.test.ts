@@ -149,18 +149,23 @@ describe("§9 bodovanie, sekera, finále a cigareta (v11)", () => {
     expect(log).toEqual([`Starší po bitke: hráč 1 (víťaz) dostáva 9 špakov — ${meno(0)} 6 za strach; ${meno(3)} 1 za strach, 2 za reči.`]);
   });
 
-  it("víťaz hádky rozdelí hádku na svoje reči až po bodovaní; strach dvíha víťaz bitky", () => {
+  it("víťaz hádky rozdelí hádku na svoje reči po bodovaní a pred Nakladačkou (v12.5, návrh #48 A); strach dvíha víťaz bitky", () => {
     const s = pred({ sums: [{ Rana: 1 }, {}], hadka: { vitaz: 1, velkost: 3 } });
     let t = spustBitku(data, s).state;
-    expect(t.bitkaStav).toMatchObject({ krok: "prebytok", caka: 0, prebytokZostava: 1 });
-    expect(() => apply(data, t, { type: "reci", zdvihy: [{ elderId: id(0), na: 2 }] }, 1)).toThrow();
-    t = apply(data, t, { type: "prebytok", zdvihy: [{ elderId: id(0), na: 1 }] }, 0).state;
-    expect(elder(t, 0)!.strach).toEqual([1, 0]);
-    expect(t.bitkaStav).toMatchObject({ krok: "reci", caka: 1 });
+    expect(t.bitkaStav).toMatchObject({ krok: "reci", caka: 1, prebytokZostava: 1 });
+    expect(() => apply(data, t, { type: "prebytok", zdvihy: [{ elderId: id(0), na: 1 }] }, 0)).toThrow();
+    // Pri prázdnom teplomere reči zo sivej zdola nahor: žltá 1, oranžová 2.
     t = apply(data, t, { type: "reci", zdvihy: [{ elderId: id(0), na: 2 }] }, 1).state;
-    expect(elder(t, 0)).toMatchObject({ strach: [1, 0], reci: [0, 2] });
-    // Reči priazeň nedávajú: priazeň má Boris z rozdielu strachov (1 : 0).
-    expect(priazenHraca(elder(t, 0)!)).toBe(1);
+    expect(elder(t, 0)).toMatchObject({ strach: [0, 0], reci: [0, 2] });
+    expect(t.bitkaStav).toMatchObject({ krok: "prebytok", caka: 0 });
+    // Nakladačka potom platí za stupeň s čerstvými rečami o 1 viac: žltá pri staršom 0 stojí 2, na to 1 bod
+    // nestačí — ide na iného staršieho.
+    expect(() => apply(data, t, { type: "prebytok", zdvihy: [{ elderId: id(0), na: 1 }] }, 0)).toThrow();
+    t = apply(data, t, { type: "prebytok", zdvihy: [{ elderId: id(1), na: 1 }] }, 0).state;
+    expect(elder(t, 0)).toMatchObject({ strach: [0, 0], reci: [0, 2] });
+    expect(elder(t, 1)!.strach).toEqual([1, 0]);
+    // Reči priazeň nedávajú: priazeň pri staršom 1 má Boris z rozdielu strachov (1 : 0).
+    expect(priazenHraca(elder(t, 1)!)).toBe(1);
   });
 
   it("finále: markery sa nedvíhajú — Nakladačka aj hádka idú 1 : 1 na špaky", () => {
@@ -173,25 +178,26 @@ describe("§9 bodovanie, sekera, finále a cigareta (v11)", () => {
     expect(t.starsi.every((e) => e.strach[0] === 0 && e.strach[1] === 0 && e.reci[0] === 0 && e.reci[1] === 0)).toBe(true);
   });
 
-  it("porazený dostane cigaretu po bitke o lokalitu, po finále nie (Michal 2026-11-02)", () => {
+  it("porazený dostane cigaretu po bitke o lokalitu aj po finále (v12.5, krok 6c)", () => {
     const s0 = pred({ sums: [{ Rana: 2 }, {}] });
     const lokalita = dohraj(spustBitku(data, s0).state);
     expect(lokalita.hraci[1].cigarety).toBe(s0.hraci[1].cigarety + KONSTANTY.CIGARETY_PORAZENEMU);
     const s: GameState = { ...s0, ciel: { typ: "finale", lokalita: s0.ciel!.lokalita! } };
     const finale = dohraj(spustBitku(data, s).state);
     expect(finale.koniec).not.toBeNull();
-    expect(finale.hraci[1].cigarety).toBe(s.hraci[1].cigarety);
+    expect(finale.hraci[1].cigarety).toBe(s.hraci[1].cigarety + KONSTANTY.CIGARETY_PORAZENEMU);
   });
 });
 
 describe("§10 zajatie v11: krádež, väzni podľa ligy, Predsedova vila", () => {
-  it("krádež najviac toľko, koľko súper má; väzni na výhru v Tretej lige 2 — hneď po rozdelení Nakladačky", () => {
+  it("krádež najviac toľko, koľko súper má; väzni na výhru v Tretej lige 2 — pivnica plná, výhra až v ďalšej vyhratej bitke (v12.5)", () => {
     const s0 = pred({ markery: { 0: [[3, 0], [3, 3]], 4: "vazen-boris" }, sums: [{ Rana: 5 }, {}], spaky: [0, -1] });
     // Väzeň Borisa prejde Ane — v Tretej lige stačia na výhru dvaja.
     const s: GameState = { ...s0, lokalitCelkom: 3, vazni: s0.vazni.map((v) => ({ ...v, hrac: 0 })) };
     const t = dohraj(spustBitku(data, s).state, (x, p) => (p === 0 && x.bitkaStav?.krok === "prebytok" ? apply(data, x, { type: "prebytok", zdvihy: [], zajatia: [id(0)] }, 0).state : null));
-    expect(t.koniec).toMatchObject({ vitaz: 0, body: null });
-    expect(t.koniec?.dovod).toMatch(/výhra väzňami/);
+    // V1 Pivnica plná: zajatie výhru ešte nedá.
+    expect(t.koniec).toBeNull();
+    expect(t.vazni.filter((v) => v.hrac === 0)).toHaveLength(2);
     // Borisove reči pri ňom sú na červenej (3 investované); má len 2 (−1 a 3 z ich bodovania) — ukradnú sa 2.
     expect(t.nastenka.at(-1)?.kradez).toEqual([2, -2]);
     expect(t.spaky[1]).toBe(0);

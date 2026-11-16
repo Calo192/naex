@@ -1,7 +1,7 @@
 // Playtest 2026-10-22: náhľad vyloženia pripísal Dlh Finančnej poradkyne jej
 // majiteľovi, hoci Pitka ho pripíše súperovi. Vymyselník 2026-11-02: náhľad
 // vynechal pokutu Policajtky (Pitka, v10.4). Náhľad a Pitka rátajú zadĺženie
-// tou istou funkciou (zadlzeniePitkyZLinie).
+// tou istou funkciou (hazardPitkyZLinie).
 
 import { describe, expect, it } from "vitest";
 import cardsJson from "../data/cards.json";
@@ -47,8 +47,8 @@ function porovnaj(d: GameData, novaId: string, susedId: string, kam: "vlastna" |
     strany: strana === 0 ? [[sused, { card: nova, playedBy: 0 }], []] : [[], [sused, { card: nova, playedBy: 0 }]],
   };
   const n = nahladVylozenia(d, lineState(s), 0, nova, kam);
-  const a = prirastkyPitky(d, s).zadlzenie;
-  const b = prirastkyPitky(d, po).zadlzenie;
+  const a = prirastkyPitky(d, s).hazard;
+  const b = prirastkyPitky(d, po).hazard;
   const zmena = [b[0] - a[0], b[1] - a[1]] as const;
   expect([n.zmeny[0].Dlh ?? 0, n.zmeny[1].Dlh ?? 0], `${novaId} k ${susedId} ${kam}`).toEqual(zmena);
   return zmena;
@@ -100,7 +100,7 @@ describe("Policajtka (Pitka, v10.4) v náhľade vyloženia", () => {
       const pokuta = pokutaPolicajtky(data, l, evaluateLine(data, l));
       if (pokuta[1] === 0) continue;
       const n = nahladVylozenia(data, lineState(s), 0, pol, "superova");
-      expect(n.zmeny[1].Dlh ?? 0, def.id).toBe(prirastkyPitky(data, { ...s, strany: l.strany }).zadlzenie[1] - prirastkyPitky(data, s).zadlzenie[1]);
+      expect(n.zmeny[1].Dlh ?? 0, def.id).toBe(prirastkyPitky(data, { ...s, strany: l.strany }).hazard[1] - prirastkyPitky(data, s).hazard[1]);
       expect(n.zmeny[1].Dlh ?? 0, def.id).toBeGreaterThanOrEqual(pokuta[1]);
       return;
     }

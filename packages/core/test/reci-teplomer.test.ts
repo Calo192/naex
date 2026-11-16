@@ -88,10 +88,11 @@ describe("§10 bodovanie: stupne 1 / 2 / 3 (v11.20) dostane, kto ich drží", ()
       [3, [1, 3], 0, 6],
       [2, [2, 2], 1, 2],
       [2, [1, 2], 0, 3],
-      [2, [1, 3], 0, 6],
-      [0, [1, 1], 0, 1],
-      [0, [1, 2], 0, 3],
-      [0, [1, 3], 0, 6],
+      // R1 (v12.5): reči nad súperovým strachom čakajú a nebodujú.
+      [2, [1, 3], 0, 3],
+      [0, [1, 1], 0, 0],
+      [0, [1, 2], 0, 0],
+      [0, [1, 3], 0, 0],
     ];
     for (const [s, b, on, ja] of pripady) {
       const e = st(s, b);
@@ -100,13 +101,18 @@ describe("§10 bodovanie: stupne 1 / 2 / 3 (v11.20) dostane, kto ich drží", ()
     }
   });
 
-  it("nad jeho strachom bodujú 1 / 3 / 6 (v11.20), po klesnutí podľa stupňov, ktoré ešte drží", () => {
-    expect(spakyZaReci(st(1, [1, 2]), 1)).toBe(3);
-    expect(spakyZaReci(st(0, [2, 3]), 1)).toBe(5);
-    expect(spakyZaReci(st(0, [3, 3]), 1)).toBe(3);
+  it("R1 (v12.5): bodujú len stupne na jeho strachu, nad ním čakajú — keď strach dorastie, bodujú (do v12.4 aj nad ním 1 / 3 / 6)", () => {
+    expect(spakyZaReci(st(1, [1, 2]), 1)).toBe(1);
+    expect(spakyZaReci(st(0, [2, 3]), 1)).toBe(0);
+    expect(spakyZaReci(st(0, [3, 3]), 1)).toBe(0);
+    expect(spakyZaReci(st(2, [2, 3]), 1)).toBe(2);
+    expect(spakyZaReci(st(3, [2, 3]), 1)).toBe(5);
+    // Súperov strach dorastie do čakajúcich rečí (posun bloku pri zdvihu) — od najbližšej bitky bodujú.
+    expect(spakyZaReci(sMarkerom(st(0, [1, 1]), 0, "strach", 1), 1)).toBe(1);
+    expect(spakyZaReci(sMarkerom(st(1, [1, 3]), 0, "strach", 2), 1)).toBe(3);
   });
 
-  it("reči bodujú pri výhre, prehre aj bez súperovho strachu; strach len víťazovi", () => {
+  it("reči na súperovom strachu bodujú pri výhre aj prehre; strach len víťazovi", () => {
     const e = st(2, [1, 2]);
     expect(spakyOdStarsieho(e, 1, true)).toBe(3);
     expect(spakyOdStarsieho(e, 1, false)).toBe(3);
@@ -224,7 +230,8 @@ describe("§10 presvedčenie (v11.12)", () => {
     const e = t.starsi[0]!;
     expect(e.presvedcil).toBe(1);
     expect(plnyTeplomer(e, 1)).toBe(true);
-    expect(spakyZaReci(e, 1)).toBe(6);
+    // R1 (v12.5): súper (hráč 1) pri ňom strach nemá — reči čakajú a nebodujú.
+    expect(spakyZaReci(e, 1)).toBe(0);
     expect(t.hraci[1].ruka.some((k) => k.uid === e.karta.uid)).toBe(true);
   });
 
