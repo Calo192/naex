@@ -1014,7 +1014,7 @@ podrobne:
   (rozhoduje stav v okamihu výberu, §7) — potom pôsobí ako vždy: aktívne po obrátení zruší,
   neaktívne zdvojí.
 - Pri lokalite sa obráti len hrana pri tom kraji. Odpor
-  Praudovravca ako Posilnenie (Dezinformátor, v7) má len stará sada. Posilnenie a Odpor **Výtržníka** sú Rany — Vzburu nevyvolajú (§7).
+  Posilnenie a Odpor **Výtržníka** sú Rany — Vzburu nevyvolajú (§7).
 - **Vzbura z Vidiel** (podložený Nástroj, §12) je tá istá Vzbura: karta sa obráti ako pri Odpore
   proti Odporu; keď má Vzburu aj zo spoja, obráti sa raz.
 
