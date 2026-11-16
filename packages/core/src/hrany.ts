@@ -19,7 +19,7 @@ import type { ActionSums, LineEval, LineState, PlacedCard } from "./partia.ts";
 import { evaluateLine, premenyVLinii } from "./partia.ts";
 import type { KartaSNastrojmi } from "./naradie.ts";
 import { preskolenaStrana, preskoleniaHostitela } from "./naradie.ts";
-import { bitkaMody, zadlzeniePitkyZLinie } from "./effects.ts";
+import { bitkaMody, hazardPitkyZLinie } from "./effects.ts";
 import type { VerejnyStav } from "./effects.ts";
 
 export interface HranyZPohladu {
@@ -166,9 +166,9 @@ export function nahladVylozenia(
     }
   }
 
-  // Zadĺženie tak, ako ho pripíše Pitka — Finančná poradkyňa posiela Dlh súperovi, Policajtka pridá pokutu.
+  // Dlhy z Hazardu tak, ako ich pripíše Pitka — Finančná poradkyňa posiela Dlh súperovi, Policajtka pridá pokutu.
   const sumy = (s: LineState["strany"], ev: LineEval): readonly [ActionSums, ActionSums] => {
-    const z = zadlzeniePitkyZLinie(data, { strany: s }, ev);
+    const z = hazardPitkyZLinie(data, { strany: s }, ev);
     return [{ ...ev.sums[0], Dlh: z[0] }, { ...ev.sums[1], Dlh: z[1] }];
   };
   const pred = sumy(line.strany, evaluateLine(data, line));

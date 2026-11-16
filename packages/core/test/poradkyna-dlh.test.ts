@@ -21,7 +21,7 @@ import {
   sDlhmiPoradkyne,
   setupGame,
   viewFor,
-  zadlzenieZLinie,
+  hazardZLinie,
 } from "../src/index.ts";
 
 const HOROSKOP_DO_V1116 = "Dedičstvo: Tvoje Povery majú silu 2. Hore: {Hazard}→{Povera}. Dole: {Povera}→{Hazard}.";
@@ -93,8 +93,8 @@ describe("Finančná poradkyňa: Dlh jej karty patrí súperovi všade", () => {
       expect(dlhKarty(linia, 0, uid)).toBe(0);
       expect(dlhKarty(linia, 1, uid)).toBe(jej);
       for (const z of (linia.zdroje[1].Dlh ?? []).filter((x) => x.uid === uid)) expect(z.dovody).toContain(DOVOD_PORADKYNE);
-      expect(zadlzenieZLinie(data, s, raw)).toEqual([linia.sums[0].Dlh ?? 0, linia.sums[1].Dlh ?? 0]);
-      expect(zadlzenieZLinie(data, s, linia)).toEqual([linia.sums[0].Dlh ?? 0, linia.sums[1].Dlh ?? 0]);
+      expect(hazardZLinie(data, s, raw)).toEqual([linia.sums[0].Dlh ?? 0, linia.sums[1].Dlh ?? 0]);
+      expect(hazardZLinie(data, s, linia)).toEqual([linia.sums[0].Dlh ?? 0, linia.sums[1].Dlh ?? 0]);
       expect(sDlhmiPoradkyne(data, s, linia)).toEqual(linia);
       if (jej === 0) continue;
       pokrytie.dlh++;
@@ -137,14 +137,14 @@ describe("Finančná poradkyňa: Dlh jej karty patrí súperovi všade", () => {
     if (sDlhom === undefined) throw new Error("bez Dlhu");
     const { s } = sDlhom;
     const linia = sDlhmiPoradkyne(data, s, evaluateLine(data, lineState(s)));
-    expect(prirastkyPitky(data, s).zadlzenie).toEqual([linia.sums[0].Dlh ?? 0, linia.sums[1].Dlh ?? 0]);
+    expect(prirastkyPitky(data, s).hazard).toEqual([linia.sums[0].Dlh ?? 0, linia.sums[1].Dlh ?? 0]);
   });
 
   it("rekapitulácia Pitky dá jej Dlh súperovi a nič „mimo línie“ nedorovnáva", () => {
     if (sDlhom === undefined) throw new Error("bez Dlhu");
     const { s, uid } = sDlhom;
     const raw = evaluateLine(data, lineState(s));
-    const zad = prirastkyPitky(data, s).zadlzenie;
+    const zad = prirastkyPitky(data, s).hazard;
     const nula: [number, number] = [0, 0];
     const r = rekapitulaciaPitky(data, {
       pitka: 1,

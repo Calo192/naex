@@ -78,7 +78,7 @@ function SuhrnLokalityObsah({ b, zaznam, ja, mena, avatary, menoKarty, piktogram
   const { spolu } = rozpisLokality(b, menoKarty);
   const bitka = zaznam?.bitka ?? null;
   const vysledok = b.vitaz === null ? t("suhrnLokality.sekera") : b.vitaz === ja ? t("suhrnLokality.tvojaVyhra") : t("suhrnLokality.vyhra", { meno: mena[b.vitaz] });
-  const rozhodlo = b.rozhodlo === "abstak" ? t("suhrnLokality.rozhodloAbstak") : b.rozhodlo === "dlhy" ? t("suhrnLokality.rozhodloDlhy") : "";
+  const rozhodlo = (b.rozhodlo as string) === "abstak" ? t("suhrnLokality.rozhodloAbstak") : b.rozhodlo === "dlhy" ? t("suhrnLokality.rozhodloDlhy") : "";
   const riadky = zaznam === null ? [] : riadkySuhrnuLokality(zaznam);
   const pitkyCelkom = zaznam?.pitky[0]?.rekap.pitkyCelkom ?? zaznam?.pitky.length ?? 0;
   const cipy = (xs: RiadokZmien, p: PlayerId): ReactNode =>

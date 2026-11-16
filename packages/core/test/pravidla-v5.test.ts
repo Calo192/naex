@@ -224,11 +224,10 @@ describe("v5 bod 6: priazne v5 (sila 1 / 2 / 3)", () => {
     expect(prahyHraca(data, s, 0).exekucia).toBe(3);
   });
 
-  it("Kmotor prahy Cirhózy a Dlhu nemení, Robota Povery nemení", () => {
+  it("Kmotor prah Cirhózy nemení, Robota Povery nemení", () => {
     let s = setupSBalickom(data, 94);
     s = sPriaznou(sPriaznou(s, "UZERNIK", 0, 3), "ROBOTA", 0, 3);
     expect(prahyHraca(data, s, 0).cirhoza).toBe(KONSTANTY.PRAH_CIRHOZY_ZAKLAD);
-    expect(prahyHraca(data, s, 0).dlh).toBe(KONSTANTY.PRAH_DLHU_ZAKLAD);
     expect(rozpisPoskodenia(data, s, [{}, {}])[0].zvysnaPovera).toBe(0);
   });
 

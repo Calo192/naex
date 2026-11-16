@@ -89,5 +89,6 @@ describe("scenár zajatia — tok v jadre (§10, v11.4)", () => {
     let najdene = false;
     for (let rozdanie = 1; rozdanie <= 30 && !najdene; rozdanie++) najdene = zajatie(rozdanie) === true;
     expect(najdene).toBe(true);
-  }, 30_000);
+    // v12.5 (bot hrá podľa nových pravidiel): zajatie príde až v 4. rozdaní, každé trvá okolo 10 s.
+  }, 120_000);
 });

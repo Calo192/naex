@@ -20,7 +20,7 @@ import {
   evaluateLine,
   favourStarsieho,
   legalCommands,
-  limitBuduceKolo,
+  plneBuduceKolo,
   lineState,
   loadGameData,
   moznostiNaex,
@@ -110,7 +110,8 @@ function naOdpoved(s0: GameState, p: PlayerId, uid: number): GameState | null {
 }
 
 describe("najhoršia odpoveď na NA EX: žiadna skutočná odpoveď nedopadne horšie (playtest 20261026-173610-3 N5)", () => {
-  const vzorky = stavy(Array.from({ length: 60 }, (_, i) => 4000 + i), predNaex, 1);
+  // v12.5: nový ťah Dopiť mení náhodné partie — 60 semienok už presnú najhoršiu odpoveď netrafilo.
+  const vzorky = stavy(Array.from({ length: 120 }, (_, i) => 4000 + i), predNaex, 1);
 
   it("každá legálna odpoveď súpera z jeho skutočnej ruky je nanajvýš taká zlá ako náhľad", () => {
     let odpovede = 0;
@@ -202,7 +203,7 @@ describe("limit ďalšieho kola po NA EX ráta akciu Poldeci (playtest 20261026-
         const t = doDalsiehoKola(apply(data, s, { type: "naex", uid }, p).state);
         if (t.koniec !== null || t.kolo === s.kolo || t.faza === "draft") continue;
         // v12.2: po bitke sa poldeci obnovia na maximum — akcie Poldeci ani NA EX ho nemenia.
-        const ocakavane = limitBuduceKolo(n.odkrytie.view, p, false, data);
+        const ocakavane = plneBuduceKolo(n.odkrytie.view, p, false, data);
         expect(t.hraci[p].poldeciPlne, `seed ${seed}: NA EX na ${uid}`).toBe(ocakavane);
         porovnane++;
         if ((evaluateLine(data, lineState(n.odkrytie.view)).sums[p].Poldeci ?? 0) > 0) sAkciou++;

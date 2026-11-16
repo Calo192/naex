@@ -69,15 +69,7 @@ export const KONSTANTY = {
    * naťahovali (tempo 5,5).
    */
   PRAH_CIRHOZY_ZAKLAD: 3,
-  /**
-   * Prah Dlhu: akcie Hazard (kľúč Dlh, v8.2) plnia zadĺženie a Dlh (od v8.2
-   * počítadlo) hráč dostane pri tomto prahu. Michal 2026-10-18 znížil z 2 na 1
-   * (Dlh v playteste nevznikol), 2026-10-20 vrátil na 2 s priazňou Úžerníka (v5
-   * priazeň prah nemení), 2026-11-06 (v11.8) znova 1: „hráči majú strašne málo
-   * Dlhov“ — každý Hazard je hneď Dlh. Prah nad 1 má len Výherný automat
-   * (prahDlhuBonus); len vtedy má hráč zvyšok zadĺženia na účte.
-   */
-  PRAH_DLHU_ZAKLAD: 1,
+
   /**
    * Ďalšia karta v tom istom ťahu (v12.2, Michal 2026-11-11): okrem plného poldeci stojí
    * toľkoto cigariet — dve karty 1, tri karty 2.
@@ -213,6 +205,14 @@ export const KONSTANTY = {
   POSTARKA_CIGARETY: 4,
   /** Schopnosť väzňa Autobusára (v11.2): každá karta zo šenku za toľko cigariet. */
   AUTOBUSAR_CENA: 1,
+  /**
+   * Platíš tomu, kto kartu priniesol (v12.5, E2): za každú súperovu kartu z ponuky dostane súper
+   * toľkoto cigariet z ceny, zvyšok ide banke — pri 2 kartách za 3 cigarety najviac 2 súperovi.
+   */
+  SENOK_SUPEROVI_ZA_KARTU: 1,
+  /** Dopiť za teba (v12.5, N1): plné poldeci, ktoré sa otočia na vypité, a neresti za tento ťah. */
+  CENA_DOPITIA_POLDECI: 1,
+  NEREST_DOPITIA: 1,
 
   /** Stokársky barter: cigarety → nový plný poldeci, maximum +1 natrvalo (PRAVIDLA §7). */
   BARTER_CENA: 5,
@@ -332,15 +332,18 @@ export function vazniNaVyhru(lokalitCelkom: number): number {
 // v12.3 (Michal 2026-11-11) bez novej značky: pas znova dáva cigarety — toľko, koľko má hráč plných
 // poldeci, a tie ostanú plné; Vychovávateľka: súper za ten pas cigarety nedostane.
 // v12.4 (Michal 2026-11-12) bez novej značky: výpalné platí banka, nie súper (playtest 20261111-221937).
+// v12.5 (Michal 2026-11-16) bez novej značky: hádka sa rozdelí pred Nakladačkou (návrh #48 A), reči bodujú
+// len na súperovom strachu (R1), kartu z ponuky platíš tomu, kto ju priniesol (E2), výhra väzňami až
+// v ďalšej vyhratej bitke (V1, Pivnica plná) a nový ťah Dopiť za teba (N1).
 export const VERZIA_PRAVIDIEL = "v12";
 /**
  * Presná verzia pravidiel vrátane dávky — hráč ju vidí na stránke Pravidlá, ktorá má
  * vždy odzrkadľovať správanie nasadenej hry (Michal 2026-10-31). Značka partií
  * (VERZIA_PRAVIDIEL) sa pri dávke nemení, táto áno.
  */
-export const VERZIA_PRAVIDIEL_PRESNA = "v12.4";
+export const VERZIA_PRAVIDIEL_PRESNA = "v12.5";
 /** Odkedy platí VERZIA_PRAVIDIEL_PRESNA — hráč ho vidí na stránke Pravidlá. */
-export const PRAVIDLA_PLATNE_OD = "2026-11-12";
+export const PRAVIDLA_PLATNE_OD = "2026-11-16";
 export type DlzkaHry = keyof typeof DLZKY_HRY;
 export const ALL_DLZKY: readonly DlzkaHry[] = ["kratka", "stredna", "dlha"];
 export const PREDVOLENA_DLZKA: DlzkaHry = "stredna";

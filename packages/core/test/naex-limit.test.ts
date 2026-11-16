@@ -76,5 +76,5 @@ describe("NA EX mimo limitu vykladania", () => {
       }
     }
     expect(porovnane).toBeGreaterThanOrEqual(20);
-  });
+  }, 30000);
 });

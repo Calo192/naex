@@ -1640,6 +1640,13 @@ body:not(.tahanie-aktivne) .hra.mobil-sirka:not(.stol-scroll) .poradie-koniec {
   display: none;
 }
 
+/* Pôvod karty v ponuke (v12.5) na malej karte telefónu. */
+.hra.mobil-sirka:not(.stol-scroll) .senok-povod-stitok {
+  padding: 0 4px;
+  font-size: 8px;
+  line-height: 1.2;
+}
+
 /* Tieň karty, ktorú vzal súper zo šenku: štítok v dvoch riadkoch, nie „vza…“. */
 .hra.mobil-sirka:not(.stol-scroll) .senok-tien-stitok {
   max-width: 100%;

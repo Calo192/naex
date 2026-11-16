@@ -1,7 +1,7 @@
 // Čísla pultu a tabule ty | súper na šírku telefónu (PultHraca.tsx) — čisté funkcie bez DOM.
 
 import type { ClientState, PlayerId, RiadokPrisunu, StavZavislosti } from "@naex/core";
-import { KONSTANTY, cenaFajceniaHraca, limitZhromazdenia, sumaPrisunu } from "@naex/core";
+import { KONSTANTY, cenaFajceniaHraca, plneVZhromazdeni, sumaPrisunu } from "@naex/core";
 import { nazovZdrojaPrisunu, spakov } from "../i18n/pocty.ts";
 import type { PrisunDlazdice } from "./PeciatkaZdroja.tsx";
 import type { SpakyTeraz } from "@naex/core";
@@ -11,7 +11,6 @@ import { t } from "../i18n/jazyk.tsx";
 /** Prahy hráča (prahyHraca) — to, čo z nich pult a tabuľa ukazujú. */
 export interface PrahyPultu {
   readonly cirhoza: number;
-  readonly dlh: number;
   readonly exekucia: number;
   readonly priznaneDlhy: number;
 }
@@ -35,8 +34,6 @@ export interface CislaHraca {
   readonly exekucia: number;
   /** Niekto má dosť červených — pri výhre strachom sa exekúcia nekoná (krok 4c pred 4d). */
   readonly bezExekucie: boolean;
-  readonly zadlzenie: number;
-  readonly prahDlhu: number;
   readonly cigarety: number;
   readonly pecen: number;
   readonly prahPecene: number;
@@ -105,7 +102,7 @@ export function cislaHraca(
     poldeci: Math.max(0, h.poldeciPlne - skryte),
     vypite: h.poldeciVypite,
     naStole,
-    limit: limitZhromazdenia(view, p),
+    limit: plneVZhromazdeni(view, p),
     chut: view.bezChuti === true ? null : z.chut,
     nerestiDnes: z.teraz,
     chutHrozi: z.vyhlad === "ziska",
@@ -113,8 +110,6 @@ export function cislaHraca(
     dlhy: prahy.priznaneDlhy,
     exekucia: prahy.exekucia,
     bezExekucie: prahy.exekucia > 0 && view.pata === undefined && hroziVyhraStrachom(view.vyhry),
-    zadlzenie: h.zadlzenie,
-    prahDlhu: prahy.dlh,
     cigarety: h.cigarety,
     pecen: h.pecen,
     prahPecene: prahy.cirhoza,
@@ -133,19 +128,6 @@ export function cislaHraca(
     cenaDedicstva: view.cenaDedicstva,
     priazen: ine.priazen,
   };
-}
-
-/**
- * Zadĺženie je samostatné číslo len pri prahu nad 1 (Výherný automat); pri prahu 1 je každý
- * Hazard hneď Dlh a „0/1“ by bol falošný počet (v11.8). Zvyšok z rozohranej partie sa ukáže.
- */
-export function ukazZadlzenie(zadlzenie: number, prah: number): boolean {
-  return prah > 1 || zadlzenie > 0;
-}
-
-/** Ďalší Hazard dá Dlh a zadĺženie k nemu už rastie — pri prahu 1 nie je k čomu rásť. */
-export function zadlzenieHrozi(zadlzenie: number, prah: number): boolean {
-  return prah > 1 && zadlzenie >= prah - 1;
 }
 
 /** Riadok tabule: popis a hodnoty oboch; `zle` = hodnota, ktorá hráčovi škodí. */
@@ -170,7 +152,6 @@ export function riadkyTabule(ja: CislaHraca, su: CislaHraca): RiadokTabule[] {
   const riadky: RiadokTabule[] = [
     r("karty", t("tabula.kartyVRuke"), (c) => String(c.karty)),
     r("poldeci", t("tabula.poldeciPlneVypite"), (c) => `${c.poldeci} · ${c.vypite + c.naStole}`),
-    r("limit", t("tabula.limitKariet"), (c) => String(c.limit)),
     r("cigarety", t("pult.cigarety"), (c) => String(c.cigarety)),
     r("spaky", t("pult.spaky"), (c) => String(c.spaky)),
     r("zaStarsich", t("tabula.zaStarsich"), (c) => `+${c.zaStarsich} · +${c.zaStarsichPrehra}`),
@@ -181,9 +162,7 @@ export function riadkyTabule(ja: CislaHraca, su: CislaHraca): RiadokTabule[] {
   riadky.push(
     r("abstaky", t("tabula.abstakyVBalicku"), (c) => String(c.abstaky), (c) => c.abstaky > 0),
     r("dlhy", t("pult.dlhy"), (c) => (c.exekucia > 0 ? t("tabula.dlhyExekucia", { dlhy: c.dlhy, n: c.exekucia }) : String(c.dlhy)), (c) => c.exekucia > 0),
-    ...(ukazZadlzenie(ja.zadlzenie, ja.prahDlhu) || ukazZadlzenie(su.zadlzenie, su.prahDlhu)
-      ? [r("zadlzenie", t("tabula.zadlzenie"), (c) => (ukazZadlzenie(c.zadlzenie, c.prahDlhu) ? `${c.zadlzenie}/${c.prahDlhu}` : "–"), (c) => zadlzenieHrozi(c.zadlzenie, c.prahDlhu))]
-      : []),
+
     r("pecen", t("pult.pecen"), (c) => `${c.pecen}/${c.prahPecene}`, (c) => c.pecen >= c.prahPecene - 1),
     r("cirhozy", t("tabula.nepriznanaCirhoza"), (c) => String(c.cirhozyNepriznane), (c) => c.cirhozyNepriznane > 0),
     r("balicek", t("tabula.balicekOdhodene"), (c) => `${c.balicek} · ${c.odhodene}`),
@@ -241,7 +220,6 @@ export function detailZdroja(zdroj: ZdrojStlpca, c: CislaHraca, ja: boolean, pri
           [t("tabula.plne"), String(c.poldeci)],
           [t("tabula.vypite"), String(c.vypite + c.naStole)],
           ...(c.naStole > 0 ? [[t("tabula.zTohoNaStole"), String(c.naStole)] as const] : []),
-          [t("tabula.limitKarietMale"), String(c.limit)],
           ...riadkyPrisunu(prisun),
           [t("tabula.kartaNavyse"), cig(KONSTANTY.CENA_KARTY_NAVYSE)],
           [t("tabula.novyPoldeci"), cig(c.cenaBarteru)],
@@ -271,12 +249,12 @@ export function detailZdroja(zdroj: ZdrojStlpca, c: CislaHraca, ja: boolean, pri
       return {
         nadpis: t("pult.dlhy"),
         text:
-          (c.prahDlhu > 1 ? t("tabula.dlhyPrah", { n: c.prahDlhu }) : t("tabula.dlhyHazard")) +
+          t("tabula.dlhyHazard") +
           t("tabula.dlhyExekutor") +
           (c.bezExekucie ? ` ${titulBezExekucie()}` : ""),
         riadky: [
           [t("tabula.priznaneDlhy"), String(c.dlhy)],
-          ...(ukazZadlzenie(c.zadlzenie, c.prahDlhu) ? [[t("tabula.zadlzenieMale"), t("tabula.zPrahu", { a: c.zadlzenie, b: c.prahDlhu })] as const] : []),
+
           [
             t("tabula.exekuciaVBitke"),
             c.exekucia > 0 ? `−${spakov(c.exekucia)}${c.bezExekucie ? t("tabula.niePriVyhreStrachom") : ""}` : t("tabula.nie"),

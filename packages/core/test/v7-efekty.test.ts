@@ -127,7 +127,7 @@ describe("Konflikt (v7, plan.md 13.1)", () => {
     const ev = evaluateLine(data, lineState(s));
     expect(ev.zruseneOdporom).toEqual([1, 0]);
     expect(pokutaPolicajtky(data, s, ev)).toEqual([0, 1]);
-    expect(prirastkyPitky(data, s).zadlzenie).toEqual([0, 1]);
+    expect(prirastkyPitky(data, s).hazard).toEqual([0, 1]);
   });
 
   // Mechaniku Konfliktu skúša Šarlatán (premena po Konflikte); Snúbenica má od v11.3 Podporu
@@ -453,8 +453,9 @@ describe("Bitka a po bitke (v7)", () => {
       for (const e of r.events) if (e.type === "pitkaRekap") rekap = e.rekap;
       u = r.state;
     }
-    expect(rekap?.zadlzenie.prah).toEqual([prahyHraca(data, s, 0).dlh, prahyHraca(data, s, 1).dlh]);
-    expect(prahDlhuPitky(rekap!, 0)).toBe(prahDlhuPitky(rekap!, 1) + 1);
+    // Prah Dlhu zanikol v12.5 — rekapitulácia nesie 1 : 1.
+    expect(rekap?.zadlzenie.prah).toEqual([1, 1]);
+    expect(prahDlhuPitky(rekap!, 0)).toBe(1);
     // Rozohraná partia spred opravy má v stave jedno číslo.
     expect(prahDlhuPitky({ ...rekap!, zadlzenie: { ...rekap!.zadlzenie, prah: 3 as unknown as readonly [number, number] } }, 0)).toBe(3);
   });

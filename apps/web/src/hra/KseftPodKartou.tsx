@@ -11,7 +11,7 @@ import { createPortal } from "react-dom";
 import type { Command } from "@naex/core";
 import type { KseftNaStole, TlacidloVolby } from "./kseftyNaStole.ts";
 import { useTip, type TipObsah } from "../karta/Tip.tsx";
-import { CenaCigariet, Vymena } from "./ikonyZdrojov.tsx";
+import { CenaCigariet, CenaPoldeci, Vymena } from "./ikonyZdrojov.tsx";
 import { t } from "../i18n/jazyk.tsx";
 
 export interface KseftPodKartouProps {
@@ -43,9 +43,9 @@ function Detail({ k }: { readonly k: KseftNaStole }) {
   );
 }
 
-/** Pri väzňovi „Schopnosť“ (v11.2), pod lokalitou jej meno (Sklad). */
+/** Pri väzňovi „Schopnosť“ (v11.2), pod lokalitou jej meno (Sklad), pod kartou s NA EX „Dopiť“ (v12.5). */
 function druhNazov(k: Pick<KseftNaStole, "druh" | "nazov">): string {
-  return k.druh === "vazen" ? t("kseft.schopnost") : k.nazov;
+  return k.druh === "vazen" ? t("kseft.schopnost") : k.druh === "dopitie" ? t("kseft.dopit.nazov") : k.nazov;
 }
 
 export function obsahNapovedy(k: KseftNaStole): TipObsah {
@@ -55,6 +55,8 @@ export function obsahNapovedy(k: KseftNaStole): TipObsah {
 function Cena({ k }: { readonly k: KseftNaStole }) {
   return "cigarety" in k.cena ? (
     <CenaCigariet n={k.cena.cigarety} />
+  ) : "poldeci" in k.cena ? (
+    <CenaPoldeci n={k.cena.poldeci} />
   ) : (
     <span className="cena-raz" title={t("kseft.razZaHruTitul")}>
       {t("kseft.razZaHru")}

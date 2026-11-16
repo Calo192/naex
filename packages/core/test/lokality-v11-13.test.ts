@@ -32,7 +32,7 @@ import {
   tahBota,
   viewFor,
   vyhladDlhov,
-  zadlzeniePitkyZLinie,
+  hazardPitkyZLinie,
   dopadyNahladu,
 } from "../src/index.ts";
 import { spustBitku } from "./helpers.ts";
@@ -211,20 +211,18 @@ describe("Obecný úrad (v11.13)", () => {
     expect(porovnane).toBeGreaterThan(0);
   });
 
-  it("Dlhy z Hazardu sa zdvojnásobia v náhľade, zadĺžení aj výhľade do bitky; Výherný automat: prah ostáva", () => {
+  it("Dlhy z Hazardu sa zdvojnásobia v náhľade aj výhľade do bitky; Výherný automat prah nemení (v12.5)", () => {
     const hazard = vPitkeSHazardom();
     const n = nahladPitky(data, hazard.s)[0];
-    expect(n.zadlzenieZoStola).toBe(hazard.dlh * 2);
-    expect(n.prahDlhu).toBe(1);
+    expect(n.hazardZoStola).toBe(hazard.dlh * 2);
     expect(n.dlhy).toBe(hazard.dlh * 2);
     const sAutomatom = sHracom(hazard.s, 0, { dedicstvo: [inst("vyherny_automat")] });
     const a = nahladPitky(data, sAutomatom)[0];
-    expect(a.prahDlhu).toBe(2);
-    expect(a.zadlzenieZoStola).toBe(hazard.dlh * 2);
-    expect(a.dlhy).toBe(hazard.dlh);
+    expect(a.hazardZoStola).toBe(hazard.dlh * 2);
+    expect(a.dlhy).toBe(hazard.dlh * 2);
     // Výhľad do bitky: Automat v poslednej Pitke kola dá Dlh, na Úrade dvakrát.
     const vyhlad = vyhladDlhov(data, viewFor(data, sAutomatom, 0), 0)[0];
-    expect(vyhlad.nove).toBe(hazard.dlh + 2);
+    expect(vyhlad.nove).toBe(hazard.dlh * 2 + 2);
   });
 
   it("Výherný automat: Dlh v poslednej Pitke kola sa ráta dvakrát", () => {
@@ -448,7 +446,7 @@ describe("Obecný úrad (v11.13): Konflikt a Pitka kariet", () => {
     expect(inde.slice(j + 1).find((e) => e.type === "zmenaCigariet" && e.hrac === 0 && e.zdroj === "obecnyUrad")).toBeUndefined();
   });
 
-  it("Podvodník proti súperovi bez cigariet: 2 zadĺženia, pri prahu 1 dva Dlhy; s Výherným automatom 1 Dlh", () => {
+  it("Podvodník proti súperovi bez cigariet: 2 Dlhy na Obecnom úrade, inde 1; Výherný automat to nemení (v12.5: prah Dlhu zanikol)", () => {
     const dlhy = (lok: string, h: Partial<GameState["hraci"][number]>): number => {
       const { events } = konfliktVOdpovedi(lok, { cigarety: 0, ...h });
       const zKonfliktu = events.findIndex((e) => e.type === "log" && /Konflikt — Podvodník/.test(e.text));
@@ -458,7 +456,7 @@ describe("Obecný úrad (v11.13): Konflikt a Pitka kariet", () => {
     };
     expect(dlhy("obecny_urad", {})).toBe(2);
     expect(dlhy("lesna_cesta", {})).toBe(1);
-    expect(dlhy("obecny_urad", { dedicstvo: [inst("vyherny_automat")] })).toBe(1);
+    expect(dlhy("obecny_urad", { dedicstvo: [inst("vyherny_automat")] })).toBe(2);
   });
 
   it("Policajtka: pokutový blok za zrušené akcie sa ráta dvakrát", () => {
@@ -475,12 +473,12 @@ describe("Obecný úrad (v11.13): Konflikt a Pitka kariet", () => {
           const ev = evaluateLine(data, lineState(s));
           const pokuta = pokutaPolicajtky(data, s, ev);
           if (pokuta[1] === 0) continue;
-          const zoStola = zadlzeniePitkyZLinie(data, s, ev)[1];
-          expect(nahladPitky(data, s)[1].zadlzenieZoStola).toBe(zoStola * 2);
+          const zoStola = hazardPitkyZLinie(data, s, ev)[1];
+          expect(nahladPitky(data, s)[1].hazardZoStola).toBe(zoStola * 2);
           const pred = s.hraci[1].dlhyZiskane ?? 0;
           const { state: po, events } = applySPrisunom(data, apply(data, s, { type: "skipNaex" }, 0).state, { type: "skipNaex" }, 1);
           expect((po.hraci[1].dlhyZiskane ?? 0) - pred).toBe(zoStola * 2);
-          expect(events.some((e) => e.type === "log" && e.text.includes(`získava ${pokuta[1] * 2} zadĺžen`))).toBe(true);
+          expect(events.some((e) => e.type === "log" && e.text.includes(`píše pokutový blok: hráč 2 získava ${pokuta[1] * 2} Dlh`))).toBe(true);
           najdene++;
           }
         }

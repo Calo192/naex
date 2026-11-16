@@ -5,7 +5,7 @@
   },
   "abstak": {
     "pojem": "Absťák",
-    "popis": "Karta s tagom Kliatba za menej nerestí v kole, než je tvoja Chuť: ide do odhadzovacieho balíčka, nedá sa priznať; každý v tvojom balíčku ti v bitke uberie 1 tuhé. Rozhoduje remízu v tuhom. Spáli ho Vízia."
+    "popis": "Karta s tagom Kliatba za menej nerestí v kole, než je tvoja Chuť: ide do odhadzovacieho balíčka, nedá sa priznať; každý v tvojom balíčku ti v bitke uberie 1 tuhé. Spáli ho Vízia."
   },
   "chut": {
     "pojem": "Chuť",
@@ -23,7 +23,7 @@
   },
   "bitka": {
     "pojem": "Bitka",
-    "popis": "Koniec kola: viac tuhého poškodenia vyhráva a dostane špaky, starší bodujú, víťaz rozdelí Nakladačku na svoj strach a víťaz hádky hádku na svoje reči na teplomeroch súpera.",
+    "popis": "Koniec kola: viac tuhého poškodenia vyhráva a dostane špaky, starší bodujú, víťaz hádky rozdelí hádku na svoje reči na teplomeroch súpera a potom víťaz bitky Nakladačku na svoj strach.",
     "kratko": "Koniec kola: sčítajú sa údery z kariet pri lokalite. Kto má viac, vyhral a berie špak za každú kartu v línii.",
     "tvary": "bitka, bitky, bitke, bitku, bitkou, bitiek, bitkách"
   },
@@ -43,7 +43,7 @@
   },
   "dlh": {
     "pojem": "Dlh",
-    "popis": "Kliatba z Hazardu — počítadlo, nie karta: každá akcia Hazard v Pitke = 1 Dlh, hneď priznaný; za priznané Dlhy príde v každej bitke Exekútor a pri remíze v bitke prehrá, kto ich má viac."
+    "popis": "Kliatba z Hazardu — počítadlo, nie karta: každá akcia Hazard v Pitke = 1 Dlh; za Dlhy príde v každej bitke Exekútor a pri remíze v bitke prehrá, kto ich má viac."
   },
   "dobratie": {
     "pojem": "Dobratie",
@@ -65,13 +65,9 @@
     "pojem": "Hazard",
     "popis": "Akcia, ktorá ti v Pitke dá 1 Dlh."
   },
-  "zadlzenie": {
-    "pojem": "Zadĺženie",
-    "popis": "Čo dáva Hazard a efekty kariet: 1 zadĺženie je hneď 1 Dlh. Len s Výherným automatom v Dedičstve je Dlh až za každé 2 a zvyšok ostáva na účte; automat sám dá v každej Pitke 1 Dlh."
-  },
   "exekutor": {
     "pojem": "Exekútor",
-    "popis": "Príde v každej bitke, kým máš priznaný Dlh: zhorí ti polovica Dlhov (zaokrúhlene nahor) a rovnako veľa špakov; tvoja priazeň Advokáta ich uberie o 1 / 2 / 3. Záhradkár v tvojej partii ťa v tom kole ochráni."
+    "popis": "Príde v každej bitke, kým máš Dlh: zhorí ti polovica Dlhov (zaokrúhlene nahor) a rovnako veľa špakov; tvoja priazeň Advokáta ich uberie o 1 / 2 / 3. Záhradkár v tvojej partii ťa v tom kole ochráni."
   },
   "finale": {
     "pojem": "Finále",
@@ -115,7 +111,7 @@
   },
   "kliatba": {
     "pojem": "Kliatba",
-    "popis": "Čo škodí majiteľovi: karty Cirhóza a Absťák a počítadlo Dlh (hneď priznaný). Priznať sa dá len Cirhóza."
+    "popis": "Čo škodí majiteľovi: karty Cirhóza a Absťák a počítadlo Dlh. Priznať sa dá len Cirhóza."
   },
   "kolo": {
     "pojem": "Kolo",
@@ -128,10 +124,6 @@
   "kraj": {
     "pojem": "Kraj",
     "popis": "Polovica línie podľa hrany lokality; každá lokalita má vlastné mená krajov (Krčma: pri výčape a pri dverách). Nepatrí nikomu."
-  },
-  "limit": {
-    "pojem": "Limit vykladania",
-    "popis": "Koľko kariet vyložíš: toľko, koľko máš plných poldeci — každá karta jeden otočí na vypitý."
   },
   "linia": {
     "pojem": "Línia",
@@ -147,11 +139,11 @@
   },
   "reci": {
     "pojem": "Reči",
-    "popis": "Blok stupňov na teplomere súpera (na stole šrafa v tvojej farbe); dvíha ich hádka, od vrchu jeho strachu nadol, potom nad neho. Stupne 1 / 2 / 3 bodujú tebe pri každej bitke namiesto súpera, klesajú zospodu len po prehratej hádke. Súperovu priazeň, výhru strachom ani zajatie nemenia."
+    "popis": "Blok stupňov na teplomere súpera (na stole šrafa v tvojej farbe); dvíha ich hádka, od vrchu jeho strachu nadol, potom nad neho. Stupne 1 / 2 / 3 bodujú tebe pri každej bitke namiesto súpera — len tie, na ktorých má súper strach; nad ním čakajú. Klesajú zospodu len po prehratej hádke. Súperovu priazeň, výhru strachom ani zajatie nemenia."
   },
   "hadka": {
     "pojem": "Hádka",
-    "popis": "Krok bitky: kto má viac mäkkého poškodenia, vyhral hádku o rozdiel („Ana vyhrala hádku o 3“) a po bodovaní ho rozdelí na svoje reči na teplomeroch súpera — stupeň stojí 1 / 2 / 3, zvyšok prepadne. Pri rovnosti nikto; vo finále ide hádka na špaky."
+    "popis": "Krok bitky: kto má viac mäkkého poškodenia, vyhral hádku o rozdiel („Ana vyhrala hádku o 3“) a po bodovaní ho rozdelí na svoje reči na teplomeroch súpera, ešte pred Nakladačkou — stupeň stojí 1 / 2 / 3, zvyšok prepadne. Pri rovnosti nikto; vo finále ide hádka na špaky."
   },
   "makke": {
     "pojem": "Mäkké poškodenie",
@@ -217,7 +209,7 @@
   },
   "vazen": {
     "pojem": "Väzeň",
-    "popis": "Zajatý starší medzi tvojimi priznanými kartami („v pivnici“): nedáva priazeň, ráta sa ako tvoj červený strach, máš jeho schopnosť (raz za hru). Pri zajatí ti súper odovzdá toľko špakov, koľko bodov hádky má pri ňom v rečiach; väzni na výhru podľa ligy (2 / 3 / 4)."
+    "popis": "Zajatý starší medzi tvojimi priznanými kartami („v pivnici“): nedáva priazeň, ráta sa ako tvoj červený strach, máš jeho schopnosť (raz za hru). Pri zajatí ti súper odovzdá toľko špakov, koľko bodov hádky má pri ňom v rečiach. S väzňami na výhru podľa ligy (2 / 3 / 4) máš plnú pivnicu — vyhráš ďalšiu bitku, ktorú vyhráš."
   },
   "schopnost-vazna": {
     "pojem": "Schopnosť väzňa",
@@ -277,11 +269,11 @@
   },
   "priznanie": {
     "pojem": "Priznanie",
-    "popis": "Kliatbu vyložíš mimo línie do svojej hracej oblasti — natrvalo z balíčka."
+    "popis": "Cirhózu z ruky vyložíš mimo línie natrvalo — nestojí poldeci ani ťah; priznaná dá súperovi v každej bitke +1 tuhé."
   },
   "sekera": {
     "pojem": "Na sekeru",
-    "popis": "Bitka bez víťaza (remíza v tuhom, Absťákoch aj Dlhoch): jej špaky vezme víťaz najbližšej bitky, vo finále prepadnú."
+    "popis": "Bitka bez víťaza (remíza v tuhom aj v Dlhoch): jej špaky vezme víťaz najbližšej bitky, vo finále prepadnú."
   },
   "senok": {
     "pojem": "Ponuka",

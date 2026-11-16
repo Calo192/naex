@@ -52,7 +52,7 @@ describe("poldeci na stole", () => {
     const jeho = viewFor(data, s, su);
     expect(poldeciNaStole(jeho, ja).naStole).toBe(0);
     expect(jeho.hraci[ja].poldeciPlne).toBe(moj.hraci[ja].poldeciPlne);
-  });
+  }, 30000); // celá partia do skrytého NA EX — pri plnom behu testov nad 5 s
 
   it("ráta NA EX v línii, oba poldeci na Výtržníkovi aj NA EX na rube súperovej Záverečnej", () => {
     const pl = (uid: number, naexBy?: PlayerId, naexBy2?: PlayerId) => ({ card: { uid }, playedBy: ja, ...(naexBy === undefined ? {} : { naexBy }), ...(naexBy2 === undefined ? {} : { naexBy2 }) });

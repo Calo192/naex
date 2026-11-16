@@ -81,7 +81,7 @@ describe("M4 — výsledok", () => {
 
   it("pri remíze v tuhom nevyhrá nikto a Nakladačku nedrží nikto (v8.3: Nakladačka = rozdiel tuhého)", () => {
     const d = { tuhe: [2, 2], makke: [0, 0], celkove: [2, 2], zvysnaViera: [0, 0], zvysnaPovera: [0, 3] } as const;
-    const o = battleOutcome(d, { abstaky: [1, 0], dlhy: [0, 0] });
+    const o = battleOutcome(d, { dlhy: [1, 0] });
     expect(o.vitaz).toBe(1);
     expect(o.prebytokDrzi).toBeNull();
     expect(o.prebytok).toBe(0);
@@ -127,13 +127,13 @@ describe("M4 — Exekútor", () => {
 describe("v6 — výsledok bitky a špaky za bitku (Michal 2026-10-26)", () => {
   const remiza = { tuhe: [3, 3], makke: [0, 2], celkove: [3, 5], zvysnaViera: [0, 0], zvysnaPovera: [0, 0] } as const;
 
-  it("remízu v tuhom vyhrá menej Absťákov, potom menej priznaných Dlhov, inak sekera", () => {
-    expect(battleOutcome(remiza, { abstaky: [1, 0], dlhy: [0, 0] })).toMatchObject({ vitaz: 1, rozhodlo: "abstak", prebytokDrzi: null });
-    expect(battleOutcome(remiza, { abstaky: [1, 1], dlhy: [2, 3] })).toMatchObject({ vitaz: 0, rozhodlo: "dlhy" });
-    expect(battleOutcome(remiza, { abstaky: [0, 0], dlhy: [1, 1] })).toMatchObject({ vitaz: null, rozhodlo: "sekera" });
+  it("remízu v tuhom vyhrá menej Dlhov (v12.5 bez Absťákov), inak sekera", () => {
+    expect(battleOutcome(remiza, { dlhy: [0, 0] })).toMatchObject({ vitaz: null, rozhodlo: "sekera", prebytokDrzi: null });
+    expect(battleOutcome(remiza, { dlhy: [2, 3] })).toMatchObject({ vitaz: 0, rozhodlo: "dlhy", prebytokDrzi: null });
+    expect(battleOutcome(remiza, { dlhy: [1, 1] })).toMatchObject({ vitaz: null, rozhodlo: "sekera" });
     // Rozhoduje tuhé — Absťáky ani Dlhy nič nemenia.
     const tuhe = { ...remiza, tuhe: [4, 3] } as const;
-    expect(battleOutcome(tuhe, { abstaky: [5, 0], dlhy: [9, 0] })).toMatchObject({ vitaz: 0, rozhodlo: "tuhe" });
+    expect(battleOutcome(tuhe, { dlhy: [9, 0] })).toMatchObject({ vitaz: 0, rozhodlo: "tuhe" });
   });
 
   it("víťaz dostane 1 špak za kartu v línii, aspoň 1 — Absťáky od v8.1 nič nezrážajú (Nervák)", () => {

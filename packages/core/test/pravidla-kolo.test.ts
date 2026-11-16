@@ -299,7 +299,6 @@ describe("§7 Pitka — poradie vyhodnotenia", () => {
     expect(vysledokPitky(events).dlhy).toEqual([5, 0]);
     // Jediná Pitka — hneď príde bitka a Exekútor (bez prahu, 2026-10-28) zhorí polovicu nahor.
     expect(state.hraci[0].dlhy).toBe(5 - (state.nastenka.at(-1)?.exekutor[0] ?? 0));
-    expect(state.hraci[0].zadlzenie).toBe(0);
   });
 
   it("§10 Fajčiar (v5): v Pitke cigarety navyše nedáva — dáva ich po šenku", () => {

@@ -198,7 +198,7 @@ describe("Policajtka — pokutový blok (Pitka, v10.4)", () => {
     expect(ev.zruseneOdporom).toEqual([2, 0]);
     expect(pokutaPolicajtky(d, line, ev)).toEqual([0, 2]);
     const stav = { ciel: null, strany: line.strany, starsi: [], hraci: [{ priznane: [], dlhy: 0, dedicstvo: [], abstaky: 0 }, { priznane: [], dlhy: 0, dedicstvo: [], abstaky: 0 }], lokalitaOtocena: false } as const;
-    expect(prirastkyPitky(d, stav, ev).zadlzenie).toEqual([0, 2]);
+    expect(prirastkyPitky(d, stav, ev).hazard).toEqual([0, 2]);
   });
 
   it("Policajtka so starým Konfliktom (sada do v10.3) pokutu nedáva", () => {

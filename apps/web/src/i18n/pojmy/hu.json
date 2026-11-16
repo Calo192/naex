@@ -127,14 +127,6 @@
       "popis": "Akcia, ktorá ti v Pitke dá 1 Dlh."
     }
   },
-  "zadlzenie": {
-    "pojem": "Eladósodás",
-    "popis": "Amit a Hazárd és a kártyahatások adnak: 1 eladósodás rögtön 1 Adósság. Csak a Félkarú rablóval az Örökségben jön Adósság minden 2 után, a maradék a számlán marad.",
-    "sk": {
-      "pojem": "Zadĺženie",
-      "popis": "Čo dáva Hazard a efekty kariet: 1 zadĺženie je hneď 1 Dlh. Len s Výherným automatom v Dedičstve je Dlh až za každé 2 a zvyšok ostáva na účte; automat sám dá v každej Pitke 1 Dlh."
-    }
-  },
   "exekutor": {
     "pojem": "Végrehajtó",
     "popis": "Minden verekedésben eljön, amíg van bevallott Adósságod: elég az Adósságaid fele (felfelé kerekítve) és ugyanannyi csikk; az Ügyvéd kegye 1 / 2 / 3-mal csökkenti. A bandádban lévő Hobbikertész abban a körben megvéd tőle.",
@@ -253,14 +245,6 @@
     "sk": {
       "pojem": "Kraj",
       "popis": "Polovica línie podľa hrany lokality; každá lokalita má vlastné mená krajov (Krčma: pri výčape a pri dverách). Nepatrí nikomu."
-    }
-  },
-  "limit": {
-    "pojem": "Kijátszási korlát",
-    "popis": "Hány kártyát játszol ki: ahány teli feles van nálad — minden kártya egyet üresre fordít.",
-    "sk": {
-      "pojem": "Limit vykladania",
-      "popis": "Koľko kariet vyložíš: toľko, koľko máš plných poldeci — každá karta jeden otočí na vypitý."
     }
   },
   "linia": {

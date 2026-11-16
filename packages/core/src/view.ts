@@ -31,6 +31,7 @@ import type {
   KoniecHry,
   KseftyKola,
   PitkaStav,
+  PovodKartySenku,
   StavSchopnostiVazna,
   StavHadky,
   ZdvihVBitke,
@@ -72,7 +73,6 @@ export interface HracVerejne {
   readonly poldeciVypite: number;
   readonly cigarety: number;
   readonly pecen: number;
-  readonly zadlzenie: number;
   /**
    * Neresti tohto kola (v9.1: porovnajú sa s Chuťou). Verejné — pitie,
    * fajčenie aj NA EX vidí každý pri stole.
@@ -168,7 +168,7 @@ export interface StarsiVerejne extends ElderState {
 /**
  * Okamžité výhry (v11, Michal 2026-11-02), obe len vo vyhratej bitke: červené strachy
  * (väzni držiteľa sa rátajú) aspoň cervenychNaVyhru, alebo väzni aspoň vazniNaVyhru (podľa
- * ligy). Verejné — odvodené z markerov a väzňov.
+ * ligy; od v12.5 väzni už pred bitkou — Pivnica plná). Verejné — odvodené z markerov a väzňov.
  */
 export interface StavVyhier {
   readonly cervene: readonly [number, number];
@@ -228,6 +228,8 @@ export interface ClientState {
   readonly naradiePocet: number;
   readonly obcaniaPocet: number;
   readonly senok: readonly CardInstance[];
+  /** Kto ktorú kartu šenku priniesol (v12.5, E2) — verejné; karta bez záznamu je banky. */
+  readonly povodSenku: readonly PovodKartySenku[];
   /**
    * Lokality, z ktorých sa vyberá cieľ: v7 neodohrané lokality úrovne tohto
    * (vo Voľbe cieľa) alebo ďalšieho kola, vo finále žiadne; bez rozpisu všetky
@@ -369,7 +371,6 @@ export function viewFor(data: GameData, state: GameState, miesto: Miesto): Clien
       poldeciVypite: hrac.poldeciVypite,
       cigarety: hrac.cigarety,
       pecen: hrac.pecen,
-      zadlzenie: hrac.zadlzenie,
       nerestiTotoKolo: hrac.nerestiTotoKolo,
       abstakyZiskane: hrac.abstakyZiskane ?? 0,
     };
@@ -412,6 +413,7 @@ export function viewFor(data: GameData, state: GameState, miesto: Miesto): Clien
     naradiePocet: state.naradie.length,
     obcaniaPocet: state.obcania.length,
     senok: state.senok,
+    povodSenku: (state.povodSenku ?? []).filter((x) => state.senok.some((k) => k.uid === x.uid)),
     lokalityVHre: lokalityNaVyber(data, state),
     lokalitCelkom: state.lokalitCelkom,
     ...(state.rozpis !== undefined ? { rozpis: state.rozpis } : {}),
@@ -715,10 +717,11 @@ export interface NahladZajatia {
   readonly poradie: number;
   /** Krádež: špaky, ktoré súper odovzdá za reči pri tomto staršom teraz (v11.12), najviac toľko, koľko má. */
   readonly kradez: number;
-  /** Koľkého väzňa by mal hráč — vazniNaVyhru = výhra hneď. */
+  /** Koľkého väzňa by mal hráč — vazniNaVyhru = pivnica plná. */
   readonly mojichVaznov: number;
   readonly vazniNaVyhru: number;
-  readonly vyhra: boolean;
+  /** Pivnica plná (v12.5, V1): výhru väzňami dá až ďalšia vyhratá bitka, nie toto zajatie. */
+  readonly pivnicaPlna: boolean;
 }
 
 export function nahladZajatia(view: Pick<ClientState, "vazni" | "ja" | "starsi" | "spaky" | "lokalitCelkom">, elderId?: string): NahladZajatia {
@@ -728,7 +731,7 @@ export function nahladZajatia(view: Pick<ClientState, "vazni" | "ja" | "starsi" 
   const su = opponentOf(view.ja);
   const elder = elderId === undefined ? undefined : view.starsi.find((e) => e.elderId === elderId);
   const kradez = elder === undefined ? 0 : Math.max(0, Math.min(kradezZaZajatie(elder, view.ja), view.spaky[su]));
-  return { poradie, kradez, mojichVaznov, vazniNaVyhru: naVyhru, vyhra: mojichVaznov >= naVyhru };
+  return { poradie, kradez, mojichVaznov, vazniNaVyhru: naVyhru, pivnicaPlna: mojichVaznov >= naVyhru };
 }
 
 /** Pohľad po rozdelení (v11): markery hráča p zdvihnuté podľa zdvihov — náhľad pred potvrdením. */
@@ -760,9 +763,9 @@ function hodnotaPohladu(view: Pick<ClientState, "starsi" | "vazni">, p: PlayerId
  * Nakladačku alebo hádku, dostane úplné rozdelenie — z ponuky úplných rozdelení
  * (kandidatiRozdelenia) to, po ktorom má najlepšiu hodnotu markerov. null, keď nerozdeľuje.
  * Akcie (zajatia / presvedčenia, v11.4) vyberá hráč sám — návrh rozdelí zvyšok popri nich.
- * Výnimka: keď hráč žiadne nevybral a zajatia na body stačia na výhru väzňami, návrh ich
- * pridá (`akcie`) — hodnota markerov väzňov nepozná a hráč, ktorý návrhu verí, by okamžitú
- * výhru prehliadol (playtest 2026-11-09).
+ * Výnimka: keď hráč žiadne nevybral a zajatia na body stačia na plnú pivnicu, návrh ich
+ * pridá (`akcie`) — hodnota markerov väzňov nepozná a hráč, ktorý návrhu verí, by výhru
+ * väzňami prehliadol (playtest 2026-11-09; od v12.5 ju dá až ďalšia vyhratá bitka).
  */
 export function navrhRozdelenia(
   view: ClientState,
@@ -783,8 +786,8 @@ export function navrhRozdelenia(
 }
 
 /**
- * Najmenej zajatí, ktoré na body Nakladačky dajú výhru väzňami (pri rovnosti tie s najväčšou
- * krádežou); null, keď na výhru nestačia.
+ * Najmenej zajatí, ktoré na body Nakladačky naplnia pivnicu — väzňov na výhru (pri rovnosti tie
+ * s najväčšou krádežou); null, keď nestačia.
  */
 export function zajatiaNaVyhru(view: ClientState, body: number): readonly string[] | null {
   const chyba = vazniNaVyhru(view.lokalitCelkom) - view.vazni.filter((v) => v.hrac === view.ja).length;

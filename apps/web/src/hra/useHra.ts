@@ -310,7 +310,7 @@ export function textUdalosti(e: Event, mena: readonly string[], rody: readonly [
       return t("log.bitka", { a: e.damage.tuhe[0], b: e.damage.tuhe[1], vysledok:
         e.vitaz === null
           ? t("log.sekera")
-          : t("log.vyhrava", { meno: meno(e.vitaz) }) + (e.rozhodlo === "abstak" ? t("log.remizaAbstaky") : e.rozhodlo === "dlhy" ? t("log.remizaDlhy") : ""), nakladacka: e.prebytok > 0 ? t("log.nakladacka", { n: e.prebytok }) : "" });
+          : t("log.vyhrava", { meno: meno(e.vitaz) }) + ((e.rozhodlo as string) === "abstak" ? t("log.remizaAbstaky") : e.rozhodlo === "dlhy" ? t("log.remizaDlhy") : ""), nakladacka: e.prebytok > 0 ? t("log.nakladacka", { n: e.prebytok }) : "" });
     case "koniec":
       return e.body === null
         ? t("log.koniec", { dovod: textHlasky(e.dovod, mena, rody) })

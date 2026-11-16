@@ -16,6 +16,7 @@ import type { Event, GameState } from "./engine.ts";
 import { bitkyNaSekere, lineState, poskodenieBitky } from "./engine.ts";
 import type { LineEval, LineState } from "./partia.ts";
 import { evaluateLine } from "./partia.ts";
+import { vazniNaVyhru } from "./constants.ts";
 
 export type StupenMomentu = "bronz" | "striebro" | "zlato";
 
@@ -34,7 +35,11 @@ export type TypMomentu =
   | "bitkaOVsetko"
   | "vyprask"
   // Schopnosť väzňa (v11.2): pečiatka pri každom použití (Michal 2026-11-02), mimo stropu.
-  | "schopnostVazna";
+  | "schopnostVazna"
+  // Pivnica plná (v12.5, V1): zajatím má hráč väzňov na výhru — rozhodne ďalšia vyhratá bitka; mimo stropu.
+  | "pivnicaPlna"
+  // Dopiť za teba (v12.5, N1): hráč dopil súperovo NA EX zo svojej karty.
+  | "dopitie";
 
 export interface Moment {
   readonly typ: TypMomentu;
@@ -63,6 +68,8 @@ export const MOMENTY: Readonly<Record<TypMomentu, { readonly stupen: StupenMomen
   bitkaOVsetko: { stupen: "striebro", nazov: "BITKA O VŠETKO" },
   vyprask: { stupen: "bronz", nazov: "VÝPRASK" },
   schopnostVazna: { stupen: "striebro", nazov: "SCHOPNOSŤ VÄZŇA" },
+  pivnicaPlna: { stupen: "zlato", nazov: "PIVNICA PLNÁ" },
+  dopitie: { stupen: "bronz", nazov: "DOPIL ZA TEBA" },
 };
 
 /** Čo schopnosť väzňa urobila — druhá časť textu pečiatky („FARÁR · zrušil NA EX“). */
@@ -103,6 +110,8 @@ export const NALADY_MOMENTOV: Readonly<Record<TypMomentu, { readonly pre: Nalada
   bitkaOVsetko: { pre: "udiv", proti: "udiv" },
   vyprask: { pre: "pohoda", proti: "smola" },
   schopnostVazna: { pre: "pohoda", proti: "smola" },
+  pivnicaPlna: { pre: "pohoda", proti: "smola" },
+  dopitie: { pre: "pohoda", proti: "smola" },
 };
 
 /** Nálada momentu pre hráča ja. */
@@ -217,11 +226,23 @@ export function momenty(data: GameData, pred: GameState, po: GameState, udalosti
     out.push({ typ: "forsaz", ...MOMENTY.forsaz, hrac: null, popis: "Forsáž — Posilnenie narazilo na Posilnenie a obe karty idú dvojnásobne." });
   }
 
-  // Zajatie (v9; v11.4 pri rozdelení Nakladačky): hráčovi pribudol väzeň.
+  // Zajatie (v9; v11.4 pri rozdelení Nakladačky): hráčovi pribudol väzeň. Keď ním má väzňov na výhru
+  // a hra pokračuje, je to Pivnica plná (v12.5, V1) — rozhodne ďalšia vyhratá bitka.
   for (const p of [0, 1] as const) {
     const pocet = (st: GameState): number => (st.vazni ?? []).filter((v) => v.hrac === p).length;
     if (pocet(po) <= pocet(pred)) continue;
+    const naVyhru = vazniNaVyhru(po.lokalitCelkom);
+    if (po.koniec === null && pocet(po) >= naVyhru && pocet(pred) < naVyhru) {
+      out.push({ typ: "pivnicaPlna", ...MOMENTY.pivnicaPlna, hrac: p, popis: `Pivnica plná — Hráč ${p + 1} má ${pocet(po)} väzňov. Ďalšia bitka, ktorú vyhrá, rozhodne partiu.` });
+      continue;
+    }
     out.push({ typ: "zajatie", ...MOMENTY.zajatie, hrac: p, popis: `Zajatie — Hráč ${p + 1} má v pivnici ${pocet(po)}. väzňa.` });
+  }
+
+  // Dopiť za teba (v12.5, N1).
+  for (const e of udalosti) {
+    if (e.type !== "dopitie") continue;
+    out.push({ typ: "dopitie", ...MOMENTY.dopitie, hrac: e.hrac, popis: `Dopil za teba — Hráč ${e.hrac + 1} dopil súperovo NA EX zo svojej karty.` });
   }
 
   // Presvedčenie (v11.4): hráčovi pribudol presvedčený starší.
@@ -286,9 +307,11 @@ function usekKola(s: GameState): string {
  * najviac ZLATO_ZA_PARTIU za partiu — ďalšie zlato sa nepečiatkuje.
  */
 export function obmedzMomenty(kandidati: readonly Moment[], stav: StavMomentov, po: GameState): { vybrane: Moment[]; stav: StavMomentov } {
-  // Schopnosť väzňa padne vždy (Michal 2026-11-02) a strop úseku nemíňa.
-  const vzdy = kandidati.filter((m) => m.typ === "schopnostVazna");
-  const ostatne = kandidati.filter((m) => m.typ !== "schopnostVazna" && !BEZ_PECIATKY.has(m.typ));
+  // Schopnosť väzňa padne vždy (Michal 2026-11-02) a strop úseku nemíňa; Pivnica plná tiež (v12.5) —
+  // stôl ju ohlási vždy, aj po dvoch zlatých.
+  const mimoStropu = (m: Moment): boolean => m.typ === "schopnostVazna" || m.typ === "pivnicaPlna";
+  const vzdy = kandidati.filter(mimoStropu);
+  const ostatne = kandidati.filter((m) => !mimoStropu(m) && !BEZ_PECIATKY.has(m.typ));
   const usek = usekKola(po);
   if (stav.usek === usek) return { vybrane: vzdy, stav };
   const povolene = ostatne.filter((m) => m.stupen !== "zlato" || stav.zlate < ZLATO_ZA_PARTIU);

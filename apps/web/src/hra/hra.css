@@ -9425,6 +9425,33 @@ button.auto-hotovo-odkaz {
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
 }
 
+/* Pôvod karty v ponuke (v12.5, E2): komu ide jej cena — súperovi, alebo banke. */
+.senok-povod-stitok {
+  position: absolute;
+  left: 50%;
+  bottom: 4%;
+  transform: translateX(-50%);
+  max-width: 94%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  padding: 1px 7px;
+  border-radius: 999px;
+  font-size: 0.66rem;
+  font-weight: 800;
+  white-space: nowrap;
+  pointer-events: none;
+  color: var(--pozadie);
+  box-shadow: 0 1px 5px rgba(0, 0, 0, 0.45);
+}
+
+.senok-povod-stitok.superova {
+  background: var(--su);
+}
+
+.senok-povod-stitok.moja {
+  background: var(--ja);
+}
+
 @keyframes senok-tien-prichod {
   from {
     opacity: 1;

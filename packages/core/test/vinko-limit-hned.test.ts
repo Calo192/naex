@@ -6,7 +6,7 @@ import cardsJson from "../data/cards.json";
 import eldersJson from "../data/elders.json";
 import scorecardsJson from "../data/scorecards.json";
 import type { CardInstance, GameState } from "../src/index.ts";
-import { apply, limitBuduceKolo, limitZhromazdenia, loadGameData, planVykladania } from "../src/index.ts";
+import { apply, plneBuduceKolo, plneVZhromazdeni, loadGameData, planVykladania } from "../src/index.ts";
 import { setupSBalickom } from "./helpers.ts";
 
 const data = loadGameData(cardsJson, eldersJson, scorecardsJson);
@@ -30,8 +30,8 @@ describe("§16 Vínko: maximum poldeci +1 (v12.2)", () => {
     const po = apply(data, pred, { type: "place", uid: vinko.uid, target: "dedicstvo" }, 0).state;
     expect(po.hraci[0].poldeciPlne).toBe(3);
     expect(po.zhromazdenieStav?.zostavaLimit[0]).toBe(3);
-    expect(limitZhromazdenia(po, 0)).toBe(limitZhromazdenia(pred, 0) + 1);
-    expect(limitBuduceKolo(po, 0)).toBe(limitBuduceKolo(pred, 0) + 1);
+    expect(plneVZhromazdeni(po, 0)).toBe(plneVZhromazdeni(pred, 0) + 1);
+    expect(plneBuduceKolo(po, 0)).toBe(plneBuduceKolo(pred, 0) + 1);
   });
 
   it("druhé Vínko maximum nezvýši — o 1 vyššie je raz", () => {

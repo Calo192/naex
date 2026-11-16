@@ -6,7 +6,7 @@
 
 import { Fragment, useEffect, useRef, useState, type ReactNode, type RefObject } from "react";
 import type { Action, ActionSums, ClientState, DamageResult, Favour, GameData, NahladPitkyHraca, OdhadSpakov, PlayerId, RozpisPoskodenia, StavZavislosti, StavkaBitky as StavkaBitkyCisla, ZdrojeAkcii } from "@naex/core";
-import { KONSTANTY, barterCena, battleOutcome, cenaFajceniaHraca, hraVPitke, jeCielLokalita, limitBuduceKolo, limitZhromazdenia, lokalitNevybranych, vidiVolbuSupera, opponentOf } from "@naex/core";
+import { KONSTANTY, barterCena, battleOutcome, cenaFajceniaHraca, hraVPitke, jeCielLokalita, plneBuduceKolo, plneVZhromazdeni, lokalitNevybranych, vidiVolbuSupera, opponentOf } from "@naex/core";
 import { ZMENA_SVIETI_MS, klikKrokuOsi, krokPartie, minSek, textZmeny } from "./stitokPartie.ts";
 import type { Rod } from "@naex/core";
 import type { Sada } from "@naex/tvorba";
@@ -24,7 +24,7 @@ import type { HracInfo } from "./useHra.ts";
 import { PocetSpakov } from "./Spaky.tsx";
 import { IkonaSpaku } from "./IkonaSpaku.tsx";
 import { cenaPola, HODNOTA_POLA } from "./textyStarsich.ts";
-import { naStoleVysvetlenie, poldeciNaStole, ukazZadlzenie, zadlzenieHrozi } from "./tabula.ts";
+import { naStoleVysvetlenie, poldeciNaStole } from "./tabula.ts";
 import { titulBezExekucie, hroziVyhraStrachom } from "./vyhraStrachom.ts";
 import type { SpakyTeraz } from "@naex/core";
 import { t, tr, tRod } from "../i18n/jazyk.tsx";
@@ -377,7 +377,7 @@ export interface HracDoskaProps {
   readonly data: GameData;
   readonly p: PlayerId;
   readonly info: HracInfo | null;
-  readonly prahy: { readonly cirhoza: number; readonly dlh: number; readonly exekucia: number; readonly priznaneDlhy: number };
+  readonly prahy: { readonly cirhoza: number; readonly exekucia: number; readonly priznaneDlhy: number };
   /** Absťáky, neresti kola a výhľad na koniec kola (stavZavislosti). */
   readonly zavislost: StavZavislosti;
   readonly menoKarty: (defId: string) => string;
@@ -500,8 +500,8 @@ export function HracDoska({
   const plne = Math.max(0, hrac.poldeciPlne - skryteNaex);
   const vypiteSoStolom = hrac.poldeciVypite + naexNaStole;
   // Limit, s ktorým hráč vstupuje do Zhromaždenia (so Zastávkou a Vínkom; NA EX na stole sa neráta).
-  const limit = limitZhromazdenia(view, p);
-  const buduci = limitBuduceKolo(view, p, false, data);
+  const limit = plneVZhromazdeni(view, p);
+  const buduci = plneBuduceKolo(view, p, false, data);
   const kto = ja ? t("panel.mas") : t("panel.ma");
   const cenaNovehoPoldeci = barterCena(data, view, p);
   const doNovehoPoldeci = hrac.cigarety >= cenaNovehoPoldeci ? t("panel.staciNaPoldeci") : t("panel.doNovehoPoldeci", { n: cenaNovehoPoldeci - hrac.cigarety });
@@ -510,7 +510,7 @@ export function HracDoska({
   const bezExekucie = prahy.exekucia > 0 && view.pata === undefined && hroziVyhraStrachom(view.vyhry);
   const v = vyhlad?.nahlad ?? null;
   const pecenPo = v === null ? hrac.pecen : v.pecen + v.pecenZoStola;
-  const zadlzeniePo = v === null ? hrac.zadlzenie : v.zadlzenie + v.zadlzenieZoStola;
+
   const vyhladPecene: VstupVyhladu | null =
     vyhlad === null || v === null
       ? null
@@ -529,7 +529,7 @@ export function HracDoska({
           kliatby: v.dlhy,
           meno: t("panel.dlh"),
           cena: vyhlad.cenaDlhu,
-          opakovane: Math.floor(v.zadlzenieZoStola / v.prahDlhu),
+          opakovane: v.hazardZoStola,
           dalsiePitky: vyhlad.dalsiePitky,
           vPitke: vyhlad.vPitke,
           bitka: vyhlad.dlhyBitka,
@@ -700,13 +700,11 @@ export function HracDoska({
             ),
           }}
         />
-        {/* Dlhy a Zadĺženie v jednej dlaždici (Michal 2026-10-27): číslo = priznané Dlhy k Exekútorovi, pod ním
-            koľko Dlhov prinesie stôl; riadok zadĺženia len s Výherným automatom (prah 2, v11.8). Vyučba zvýrazňuje časti zvlášť (bar:dlhy, bar:zadlzenie). */}
+        {/* Dlhy v dlaždici (Michal 2026-10-27): číslo = Dlhy k Exekútorovi, pod ním koľko Dlhov prinesie stôl.
+            Zadĺženie (riadok s Výherným automatom) zaniklo v12.5. Vyučba zvýrazňuje bar:dlhy. */}
         <Zdroj
           nazov={t("pult.dlhy")}
-          trieda={`zdroj-dlhy ${
-            (v?.dlhy ?? 0) > 0 || prahy.exekucia > 0 ? "hrozi" : zadlzenieHrozi(zadlzeniePo, prahy.dlh) ? "varovanie" : ""
-          }`}
+          trieda={`zdroj-dlhy ${(v?.dlhy ?? 0) > 0 || prahy.exekucia > 0 ? "hrozi" : ""}`}
           hodnota={
             <span className="velke-cislo">
               {prahy.priznaneDlhy}
@@ -715,12 +713,6 @@ export function HracDoska({
           }
           pod={
             <>
-              {ukazZadlzenie(hrac.zadlzenie, prahy.dlh) && (
-                <span className={`dlhy-zadlzenie ${zadlzenieHrozi(zadlzeniePo, prahy.dlh) ? "zly" : ""}`} data-vyucba-prvok="zadlzenie">
-                  {t("panel.zadlzenieN", { n: hrac.zadlzenie })}
-                  {v !== null && v.zadlzenieZoStola > 0 && <span className="projekcia"> ▸ {zadlzeniePo}</span>}/{prahy.dlh}
-                </span>
-              )}
               {vyhladZadlzenia !== null ? (
                 <TextVyhladu x={vyhladZadlzenia} />
               ) : prahy.exekucia > 0 ? (
@@ -745,10 +737,9 @@ export function HracDoska({
                     : prahy.priznaneDlhy > 0
                       ? ` · ${t("panel.zahradkar")}`
                       : ""}
-                  {ukazZadlzenie(hrac.zadlzenie, prahy.dlh) && t("panel.zadlzenieZ", { n: hrac.zadlzenie, po: v !== null && v.zadlzenieZoStola > 0 ? ` ▸ ${zadlzeniePo}` : "", prah: prahy.dlh })}
                   {vyhladZadlzenia !== null && ` · ${vyhladPitky(vyhladZadlzenia).cele.join(" · ")}`}
                 </span>
-                {prahy.dlh > 1 ? t("panel.dlhPrah", { n: prahy.dlh }) : t("tabula.dlhyHazard")}{" "}
+                {t("tabula.dlhyHazard")}{" "}
                 {view.pata === undefined
                   ? t("panel.dlhyExekutor")
                   : t("panel.dlhyExekuciaPata")}

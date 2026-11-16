@@ -8,7 +8,7 @@
 
 import type { BitkaNaNastenke, ElderState, Favour, GameData, PlayerId, StavVyhier, Stupen, Vazen, ZmenaMarkera } from "@naex/core";
 import { spakov } from "../i18n/pocty.ts";
-import { KONSTANTY, NAZVY_ZON, favourStarsieho, blokReci, kradezZaZajatie, opponentOf, priazenHraca, priazenSila, spakyOdStarsieho as spakyOdStarsiehoJadra, vydesil } from "@naex/core";
+import { KONSTANTY, NAZVY_ZON, favourStarsieho, blokReci, kradezZaZajatie, opponentOf, priazenHraca, priazenSila, spakyOdStarsieho as spakyOdStarsiehoJadra, vrchBodujucichReci, vydesil } from "@naex/core";
 import { UCINOK_KRATKO, UCINOK_PRIAZNE } from "./Scorecard.tsx";
 import { rodStarsieho, slovoStupna, type Rod } from "./textyStarsich.ts";
 import { t, tZoServera } from "../i18n/jazyk.tsx";
@@ -60,6 +60,8 @@ export interface RiadokHraca {
   readonly reciOd: Stupen;
   readonly vyhra: number;
   readonly prehra: number;
+  /** Časť rečí leží nad súperovým strachom a čaká (v12.5, R1) — nebodujú, kým doň strach nedorastie. */
+  readonly reciCakaju: boolean;
 }
 
 /** Zajatie, ktoré by hráč smel pri vyhratej bitke Nakladačkou urobiť (jeho strach je 3, v11.4): koľko by mu súper odovzdal. */
@@ -171,6 +173,7 @@ export function obsahNapovedy(v: VstupNapovedy): ObsahNapovedy {
       reciOd: blokReci(v.elder, h)?.od ?? 0,
       vyhra: spakyOdStarsiehoJadra(v.elder, h, true),
       prehra: spakyOdStarsiehoJadra(v.elder, h, false),
+      reciCakaju: reci > 0 && vrchBodujucichReci(v.elder, h) < reci,
     };
   };
   const zajatie = ([v.ja, su] as const).flatMap((h): ZajatieVNapovede[] =>
@@ -196,9 +199,9 @@ export function obsahNapovedy(v: VstupNapovedy): ObsahNapovedy {
  * Špaky hráča po bitke celou vetou (v11.12): „pri výhre +5, pri prehre +2 (reči; keď prehráš hádku,
  * klesnú zospodu)“; bez rečí „pri prehre 0“.
  */
-export function vetaSpakov(r: Pick<RiadokHraca, "reci" | "vyhra" | "prehra">): string {
+export function vetaSpakov(r: Pick<RiadokHraca, "reci" | "vyhra" | "prehra"> & { readonly reciCakaju?: boolean }): string {
   const plus = (n: number): string => (n > 0 ? `+${n}` : "0");
-  return t("priazen.vetaSpakov", { vyhra: plus(r.vyhra), prehra: plus(r.prehra) }) + (r.reci > 0 ? t("priazen.vetaSpakovReci") : "");
+  return t("priazen.vetaSpakov", { vyhra: plus(r.vyhra), prehra: plus(r.prehra) }) + (r.reci > 0 ? t("priazen.vetaSpakovReci") : "") + (r.reciCakaju === true ? t("priazen.vetaSpakovCakaju") : "");
 }
 
 /** Komu priazeň patrí a prečo — celou vetou, menami hráčov. */

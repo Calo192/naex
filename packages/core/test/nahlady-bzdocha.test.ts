@@ -77,7 +77,8 @@ describe("zrážka v náhľade: odkryje sa aj súperovo NA EX na tej karte (play
         if (s.faza === "pitka") {
           const view = viewFor(data, s, q);
           const su: PlayerId = q === 0 ? 1 : 0;
-          const ciel = moznostiNaexVPohlade(data, view)[0];
+          // Súperova skrytá Záverečná (zástupné uid) do zrážky nejde — súper na ňu svoje NA EX z pohľadu hráča nedá.
+          const ciel = moznostiNaexVPohlade(data, view).find((uid) => view.strany.flat().some((x) => x.card.uid === uid));
           if (ciel !== undefined && view.pitkaStav !== null && (view.pitkaStav.skryteNaex ?? []).length === 0 && view.hraci[su].poldeciPlne > 0) {
             const obaja: ClientState = { ...view, pitkaStav: { ...view.pitkaStav, skryteNaex: [{ hrac: q, uid: ciel }, { hrac: su, uid: ciel }] } };
             const po = sMojimiSkrytymiNaex(data, obaja);

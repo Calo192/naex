@@ -38,8 +38,6 @@ export interface PlayerState {
    * pripíše pečeň dopredu a vyhodnotí sa v najbližšej Pitke.
    */
   readonly pecen: number;
-  /** Zadĺženie z akcií Hazard (kľúč Dlh): pri prahu vzniká Dlh, zvyšok ostáva (v7). */
-  readonly zadlzenie: number;
   /** Neresti v tomto kole — na konci kola ich porovnanie s Chuťou dáva Absťák (v9.1). */
   readonly nerestiTotoKolo: number;
   /**
@@ -71,7 +69,6 @@ export function freshPlayer(format: Format = "1na1"): PlayerState {
     poldeciVypite: 0,
     cigarety: dva ? KONSTANTY.DVA_NA_DVA.START_CIGARETY : KONSTANTY.START_CIGARETY,
     pecen: 0,
-    zadlzenie: 0,
     nerestiTotoKolo: 0,
     abstakyZiskane: 0,
   };
@@ -102,7 +99,7 @@ export function pocetAbstakov(player: Pick<PlayerState, "ruka" | "rukaDruheho" |
  * presne počtu poldeci“; do v12.1 plné + 1). Vypité poldeci a poldeci ležiace na kartách
  * cez NA EX sa nerátajú (PRAVIDLA §6).
  */
-export function limitVykladania(player: Pick<PlayerState, "poldeciPlne">): number {
+export function plneHraca(player: Pick<PlayerState, "poldeciPlne">): number {
   return player.poldeciPlne;
 }
 
@@ -121,9 +118,7 @@ export function prahCirhozy(): number {
   return KONSTANTY.PRAH_CIRHOZY_ZAKLAD;
 }
 
-export function prahDlhu(): number {
-  return KONSTANTY.PRAH_DLHU_ZAKLAD;
-}
+
 
 /** Hodnota jednej Viery; Veriaci od 2026-10-20 dáva Vieru navyše, nie vyššiu hodnotu. */
 export function hodnotaViery(): number {

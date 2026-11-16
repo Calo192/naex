@@ -7,7 +7,7 @@ import cardsJson from "../data/cards.json";
 import eldersJson from "../data/elders.json";
 import scorecardsJson from "../data/scorecards.json";
 import type { CardInstance, Command, GameState, PlayerId } from "../src/index.ts";
-import { apply, legalCommands, limitZhromazdenia, loadGameData, mozeHrat, naTahu, opponentOf, setupGame } from "../src/index.ts";
+import { apply, legalCommands, plneVZhromazdeni, loadGameData, mozeHrat, naTahu, opponentOf, setupGame } from "../src/index.ts";
 
 const data = loadGameData(cardsJson, eldersJson, scorecardsJson);
 
@@ -44,7 +44,7 @@ describe("§15 Zastávka (v9.1): po prvej Pitke kola karta zo šenku zadarmo", (
   it("limit vykladania nie je spoločný — každý má svoj", () => {
     const s = naZastavke(3);
     expect(s.faza).toBe("zhromazdenie");
-    expect(s.zhromazdenieStav!.zostavaLimit).toEqual([limitZhromazdenia(s, 0), limitZhromazdenia(s, 1)]);
+    expect(s.zhromazdenieStav!.zostavaLimit).toEqual([plneVZhromazdeni(s, 0), plneVZhromazdeni(s, 1)]);
   });
 
   it("najprv útočník, potom obranca; každý 1 kartu zadarmo, šenok sa medzi nimi nedopĺňa", () => {

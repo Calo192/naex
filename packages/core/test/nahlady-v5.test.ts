@@ -13,8 +13,8 @@ import {
   buildGameData,
   favourStarsieho,
   legalCommands,
-  limitBuduceKolo,
-  limitZhromazdenia,
+  plneBuduceKolo,
+  plneVZhromazdeni,
   loadGameData,
   naTahu,
   parseScorecards,
@@ -106,9 +106,9 @@ describe("náhľad NA EX v5 = zúčtovanie motora", () => {
 
   it("limit ďalšieho kola v náhľade = limit, s ktorým hráč naozaj vojde do Zhromaždenia", () => {
     const { s, ciel } = pitka(203, 5, false);
-    const nahlad = limitBuduceKolo(viewFor(sada, s, 1), 1, true, sada);
+    const nahlad = plneBuduceKolo(viewFor(sada, s, 1), 1, true, sada);
     const po = dohraj(apply(sada, s, { type: "naex", uid: ciel }, 1).state);
     expect(po.kolo).toBe(3);
-    expect(limitZhromazdenia(viewFor(sada, po, 1), 1)).toBe(nahlad);
+    expect(plneVZhromazdeni(viewFor(sada, po, 1), 1)).toBe(nahlad);
   });
 });

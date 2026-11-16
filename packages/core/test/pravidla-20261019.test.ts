@@ -174,8 +174,8 @@ describe("Úžerník (Michal 2026-10-20): prah Dlhu bez sily, Zberateľ zanikol"
     const uzernik = s0.starsi.find((e) => favourStarsieho(data, e) === "UZERNIK")!;
     // Marker na 1 = priazeň hráča 0, sila 2.
     const s: GameState = { ...s0, starsi: s0.starsi.map((e) => (e === uzernik ? { ...e, ...zPolohy(1) } : e)) };
-    expect(prahyHraca(data, s, 0).dlh).toBe(1);
-    expect(prahyHraca(data, s, 1).dlh).toBe(1);
+    // Prah Dlhu zanikol v12.5 — Hazard je Dlh 1 : 1; priazeň mení len prah Cirhózy (Abstinent).
+    expect(prahyHraca(data, s, 0).cirhoza).toBe(prahyHraca(data, s, 1).cirhoza);
   });
 
   it("po bitke sa už nič neprezerá — po Cintoríne ide hra rovno do ďalšieho kola", () => {
@@ -409,7 +409,7 @@ describe("kliatba do línie nepatrí (Michal 2026-10-20)", () => {
 });
 
 describe("Cirhóza bez dobratia (Michal 2026-10-20; Dlh od v8.2 len počítadlo)", () => {
-  it("priznaná Cirhóza kartu nedá, Milujúca manželka áno", () => {
+  it("priznaná Cirhóza kartu nedá, ani iná Kliatba (v12.5: vetva „kartu za každú inú Kliatbu“ zanikla)", () => {
     const cirhoza = inst("cirhoza");
     const manzelka = inst("milujuca_manzelka");
     let s = vZhromazdeniHrac0(48, { ruka: [cirhoza, manzelka] });
@@ -418,7 +418,8 @@ describe("Cirhóza bez dobratia (Michal 2026-10-20; Dlh od v8.2 len počítadlo)
     expect(s.hraci[0].ruka).toHaveLength(1);
     expect(s.hraci[0].doberaci).toHaveLength(balicek);
     s = apply(data, s, { type: "place", uid: manzelka.uid, target: "priznanie" }, 0).state;
-    expect(s.hraci[0].ruka).toHaveLength(1);
+    expect(s.hraci[0].ruka).toHaveLength(0);
+    expect(s.hraci[0].doberaci).toHaveLength(balicek);
   });
 });
 

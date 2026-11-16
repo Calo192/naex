@@ -39,8 +39,6 @@ export interface BattleSide {
   readonly poveryOhovaracky?: number;
   /** Koľko mäkkého dá jedna moja zvyšná Povera: 1, s Horoskopom 2 (v10). Chýba = 1. */
   readonly silaPovery?: number;
-  /** Sila priazne Abstinenta po hádke — v bitke sa mi toľko Absťákov neráta (v10). Chýba = 0. */
-  readonly silaAbstinenta?: number;
 }
 
 export interface DamageResult {
@@ -58,8 +56,6 @@ export interface DamageResult {
   readonly zrusenePovery?: readonly [number, number];
   /** Moja Viera minutá na rušenie súperových Povier (v10). Chýba v archíve. */
   readonly vieraNaPovery?: readonly [number, number];
-  /** Sila Abstinenta — o toľko menej Absťákov sa ráta v poškodení aj pri remíze (v10). Chýba = 0. */
-  readonly abstinent?: readonly [number, number];
 }
 
 function n(v: number | undefined): number {
@@ -79,10 +75,6 @@ export function vysledokHadky(makke: readonly [number, number]): VysledokHadky {
   return { vitaz: makke[0] > makke[1] ? 0 : 1, velkost: Math.abs(makke[0] - makke[1]) };
 }
 
-/** Absťáky, ktoré sa v bitke rátajú: Abstinent ich toľko odpustí, najmenej 0 (v10). */
-export function abstakyVBitke(abstaky: number, silaAbstinenta = 0): number {
-  return Math.max(0, abstaky - silaAbstinenta);
-}
 export function computeDamage(sides: readonly [BattleSide, BattleSide]): DamageResult {
   // 1. Hádka (v10, docs/napady/hadka.html): Viera a Povery sa vyrušia 1 : 1 na kusy — jedna
   //    akcia Viera zruší jednu akciu Povera, aj vylepšenú Horoskopom; Svätý text rušenie
@@ -114,7 +106,8 @@ export function computeDamage(sides: readonly [BattleSide, BattleSide]): DamageR
       me.cirhozaBonus +
       me.tuheBonus +
       me.priazenBitkara;
-    return Math.max(0, base - oppViera * opp.hodnotaViery - abstakyVBitke(me.abstaky, me.silaAbstinenta) - (me.tuheZlava ?? 0));
+    // Každý Absťák uberie 1 tuhé (v9.1); Abstinent od v12.5 zvyšuje prah Cirhózy, Absťáky neodpúšťa.
+    return Math.max(0, base - oppViera * opp.hodnotaViery - me.abstaky - (me.tuheZlava ?? 0));
   }) as [number, number];
 
   return {
@@ -125,33 +118,33 @@ export function computeDamage(sides: readonly [BattleSide, BattleSide]): DamageR
     zvysnaPovera: [...zvysnaPovera] as [number, number],
     zrusenePovery: zrusene,
     vieraNaPovery,
-    abstinent: [n(sides[0].silaAbstinenta), n(sides[1].silaAbstinenta)],
   };
 }
 
-/** Čím sa rozhodla bitka (v6): tuhé, pri remíze menej Absťákov, potom menej priznaných Dlhov, inak sekera. */
-export type RozhodnutieBitky = "tuhe" | "abstak" | "dlhy" | "sekera";
+/**
+ * Čím sa rozhodla bitka: tuhé, pri remíze menej Dlhov, inak sekera. Remíza podľa Absťákov
+ * (v6–v12.4, „abstak“) zanikla v12.5 — staré záznamy nástenky ju ešte nesú.
+ */
+export type RozhodnutieBitky = "tuhe" | "dlhy" | "sekera";
 
 export interface BattleOutcome {
   /**
-   * Víťaz bitky: vyššie TUHÉ poškodenie. Pri remíze v tuhom (v6, Michal
-   * 2026-10-26) vyhrá, kto má menej Absťákov, potom kto má menej priznaných
-   * Dlhov; inak nikto — špaky kola idú na sekeru. Bez údajov o remíze
-   * (náhľady) je remíza v tuhom vždy sekera.
+   * Víťaz bitky: vyššie TUHÉ poškodenie. Pri remíze v tuhom vyhrá, kto má menej
+   * Dlhov (v12.5; v6–v12.4 najprv menej Absťákov); inak nikto — špaky kola idú
+   * na sekeru. Bez údajov o remíze (náhľady) je remíza v tuhom vždy sekera.
    */
   readonly vitaz: PlayerId | null;
   readonly rozhodlo: RozhodnutieBitky;
   /**
    * Nakladačka (v8.3): rozdiel tuhého, drží ju hráč s vyšším tuhým (víťaz);
-   * pri remíze v tuhom nikto — aj keď remízu rozhodnú Absťáky či Dlhy.
+   * pri remíze v tuhom nikto — aj keď remízu rozhodnú Dlhy.
    */
   readonly prebytokDrzi: PlayerId | null;
   readonly prebytok: number;
 }
 
-/** Čo rozhoduje remízu v tuhom: Absťáky, ktoré hráči práve majú, a ich priznané Dlhy. */
+/** Čo rozhoduje remízu v tuhom: Dlhy hráčov (v12.5). */
 export interface RemizaBitky {
-  readonly abstaky: readonly [number, number];
   readonly dlhy: readonly [number, number];
 }
 
@@ -160,18 +153,10 @@ function menej(x: readonly [number, number]): PlayerId | null {
   return x[0] === x[1] ? null : x[0] < x[1] ? 0 : 1;
 }
 
-export function battleOutcome(damage: DamageResult, remizaVstup?: RemizaBitky): BattleOutcome {
-  // Abstinent (v10): pri remíze v tuhom sa porovnáva počet Absťákov znížený o jeho silu.
-  const a = damage.abstinent;
-  const remiza =
-    remizaVstup === undefined || a === undefined
-      ? remizaVstup
-      : { ...remizaVstup, abstaky: [abstakyVBitke(remizaVstup.abstaky[0], a[0]), abstakyVBitke(remizaVstup.abstaky[1], a[1])] as const };
+export function battleOutcome(damage: DamageResult, remiza?: RemizaBitky): BattleOutcome {
   const prebytokDrzi: PlayerId | null = damage.tuhe[0] === damage.tuhe[1] ? null : damage.tuhe[0] > damage.tuhe[1] ? 0 : 1;
   const prebytok = Math.abs(damage.tuhe[0] - damage.tuhe[1]);
   if (damage.tuhe[0] !== damage.tuhe[1]) return { vitaz: damage.tuhe[0] > damage.tuhe[1] ? 0 : 1, rozhodlo: "tuhe", prebytokDrzi, prebytok };
-  const zAbstakov = remiza === undefined ? null : menej(remiza.abstaky);
-  if (zAbstakov !== null) return { vitaz: zAbstakov, rozhodlo: "abstak", prebytokDrzi, prebytok };
   const zDlhov = remiza === undefined ? null : menej(remiza.dlhy);
   if (zDlhov !== null) return { vitaz: zDlhov, rozhodlo: "dlhy", prebytokDrzi, prebytok };
   return { vitaz: null, rozhodlo: "sekera", prebytokDrzi, prebytok };
@@ -179,20 +164,20 @@ export function battleOutcome(damage: DamageResult, remizaVstup?: RemizaBitky): 
 
 /**
  * Exekúcia bez prahu (Michal 2026-10-28): Exekútor príde v každej bitke ku každému
- * hráčovi s aspoň 1 priznaným Dlhom a zhorí polovica jeho priznaných Dlhov
- * zaokrúhlene NAHOR a rovnaký počet špakov. Priazeň Exekútora zanikla v9.
+ * hráčovi s aspoň 1 Dlhom a zhorí polovica jeho Dlhov zaokrúhlene NAHOR a rovnaký
+ * počet špakov. Priazeň Exekútora zanikla v9.
  */
-export function zhoriPriExekucii(priznaneDlhy: number): number {
-  if (priznaneDlhy <= 0) return 0;
-  return Math.ceil(priznaneDlhy / 2);
+export function zhoriPriExekucii(dlhy: number): number {
+  if (dlhy <= 0) return 0;
+  return Math.ceil(dlhy / 2);
 }
 
 /**
  * Špaky, o ktoré hráča exekúcia pripraví (v9, priazeň Advokát, Michal 2026-10-30):
  * zhorené Dlhy mínus sila jeho priazne Advokáta, najmenej 0.
  */
-export function spakyPriExekucii(priznaneDlhy: number, silaAdvokata = 0): number {
-  return Math.max(0, zhoriPriExekucii(priznaneDlhy) - silaAdvokata);
+export function spakyPriExekucii(dlhy: number, silaAdvokata = 0): number {
+  return Math.max(0, zhoriPriExekucii(dlhy) - silaAdvokata);
 }
 
 /**
