@@ -9,10 +9,10 @@ vo feedback.md.
 ### jano-1 · Keď súper v Zhromaždení spasuje a ja ešte mám karty, položím všetko v poradí, ktoré chráni koniec línie, lebo po pase už nemôže zablokovať hranu ani doložiť telo.
 - stav: overená
 - pravidlá: v12
-- potvrdenia: 6
+- potvrdenia: 7
 - vyvrátenia: 0
-- dátum: 2026-11-14
-- partie: 20261027-131033-1, 20261027-161907-1, 20261028-090549-2, 20261109-115955-1, 20261111-221937-3, 20261114-003916-2
+- dátum: 2026-11-16
+- partie: 20261027-131033-1, 20261027-161907-1, 20261028-090549-2, 20261109-115955-1, 20261111-221937-3, 20261114-003916-2, 20261113-084431-1
 - prečo: PRAVIDLA §6 (Pas a koniec Zhromaždenia). 131033-1 K3 Jano: Fero spasoval s 2 kartami v ruke, Jano položil Veterána a vyhral 9 : 5; K4 po Ferovom pase Dievčina + Veterán (+3, +3), 11 : 13 → 13 : 13 (denník Jana K3/K4). 161907 K4: po Evinom pase (Zh 2/3) Jano položil Praudovravca (Mäsiar +4 tuhé) a Policajtku, 2 : 3 → 8 : 1 (Eva potvrdila, 1 : 8). 090549: P2 K3 Eva spasovala s 2 kartami hneď po Janovej prvej karte, Jano doložil Kulturistu, Dvojčatá a Hasiča a vyhral 6 : 0. 20261109-115955-1 K2 Zh2 a K4 Zh2: Šimon spasoval, Jano doložil Pijana + Manželku a Manželku bez jeho reakcie (K2 12 : 7, K4 12 : 5). 20261111-221937-3 K4 a K5: po Šimonovom pase Jano doložil karty tak, aby na koncoch ležali karty so štítom (Vdova, Recidivista s Odporom) — K5 14 : 2. 20261114-003916-2 K6 (finále): Hela spasovala s 3 plnými poldeci a 1 Pitkou, Jano doložila Pijana a Poľovníka 5 : 6 → 9 : 6, konečne 10 : 6; ľavý kraj nespárovala, aby nepribudla druhá Pitka (Pitiek = 1 + menší počet aktivovaných akcií hrán; denník Jany). Pozor: po pase súper ešte smie NA EX a odpovedať — Helin NA EX na Pijana dal +1 tuhé a 2 Cirhózy.
 
 ### jano-2 · Keď je bitka tesne prehraná alebo remízová v tuhom, skontrolujem pred bitkou Absťáky a priznané Dlhy oboch, lebo remízu v tuhom rozhoduje menej Absťákov, potom menej Dlhov.
@@ -84,10 +84,10 @@ vo feedback.md.
 ### jano-10 · Keď súper položí k lokalite kartu, ktorej hrana mu dáva tuhé alebo mu pripravuje NA EX na vnútornú hranu, a mám Vandala, priložím ho tak, aby po otočení lokality súperova vnútorná hrana nemala partnera, lebo otočenie mu vezme akcie hrany aj „bezpečné“ NA EX.
 - stav: overená
 - pravidlá: v12
-- potvrdenia: 1
+- potvrdenia: 2
 - vyvrátenia: 0
-- dátum: 2026-11-11
-- partie: 20261111-221937-3
+- dátum: 2026-11-16
+- partie: 20261111-221937-3, 20261113-084431-1
 - prečo: §16 Vandal, §6 Spoj a aktivácia akcií. 20261111-221937-3 K3 Ihrisko: log „Vandal: hráč 1 otáča lokalitu o 180°“ — Šimonov Pijan stratil Pecku + Ranu hrany aj hrozbu NA EX za 10 tuhých, bitka 11 : 5 a zajatie Krčmárky. To isté Vilo v 20261111-221937-2 (finále) a Hela v 20261111-221937-1.
 
 ### jano-11 · Keď mám Silnú nezávislú ženu a dve karty s aktívnymi akciami na vnútornej hrane, položím Silnú medzi ne a koniec línie zakončím Zvieraťom alebo kartou s nespárovaným Odporom, lebo Silná zdvojí oboch susedov a koniec je v Kostole imúnny voči NA EX.
@@ -98,3 +98,21 @@ vo feedback.md.
 - dátum: 2026-11-14
 - partie: 20261114-003916-2
 - prečo: §16 Silná nezávislá žena, §7 (NA EX nejde na Zviera bez Injekcie ani na kartu s aktívnym Odporom), §15 Kostol. 20261114-003916-2 K5: Mäsiar–Vdova–Silná–Kočovník–Sypač–Pes, 8 : 10 → 26 : 19 (log: tuhé 19:26 z Helinho pohľadu; potvrdila Hela, „Silná + Vdova + Kočovník“).
+
+### jano-12 · Keď mám Šoféra a Valašku, podložím Valašku dolnou hranou (Rana → Petelica) pod Šoféra v tom istom ťahu a NA EX v tom kole nedám, lebo premena platí aj na Šoférovu Ranu navyše a karta dá Pecku, Petelicu a akcie navyše bez párovania; súperovo NA EX na ňu ho stojí bonus jeho vlastného Šoféra.
+- stav: overená
+- pravidlá: v12
+- potvrdenia: 1
+- vyvrátenia: 0
+- dátum: 2026-11-16
+- partie: 20261113-084431-1
+- prečo: §16 Šofér (Pecka a Rana navyše, ak si v kole nedal NA EX; Valaška ich zosilní), §6 a §12 (akcie navyše mení celý Nástroj, v12). 20261113-084431-1 K1 Zastávka: ťah [Šofér, podloz Valaška dolna] → log „podkladá Valaška (Rana → Petelica) pod kartu Šofér za 1 cigaretu“, odhad 4 → 10 tuhých; Ferovo NA EX na Šoféra zrušilo 6, jeho Šofér prišiel o 3 → bitka 7 : 4 pre Jana.
+
+### jano-13 · Keď má súper vyššie maximum poldeci (Vínko, barter) a jeho karta leží v kraji hneď pri lokalite, nebojujem s ním o prevahu v tom kraji telami a karty dávam do kraja, kde je pri lokalite moja karta, alebo na Viery, lebo pri rovnosti berie hranu prvá karta pri lokalite a posledné telo doloží ten, kto má viac poldeci.
+- stav: overená
+- pravidlá: v12
+- potvrdenia: 1
+- vyvrátenia: 0
+- dátum: 2026-11-16
+- partie: 20261113-084431-1
+- prečo: §6 Prevaha (pri rovnosti karta pri lokalite), §6 limit vykladania = plné poldeci (v12.2). 20261113-084431-1 K2 Ihrisko: vľavo 3 : 2 → Ferova Manželka 3 : 3 → Janova Silná 4 : 3 → Ferova Dievčina 4 : 4 (rovnosť, jeho Šofér pri lokalite), bitka 3 : 13; Fero mal 5 plných poldeci, Jano 3. Rovnaký vzor Vilo 20261113-084431-3 K5 Kostol (2 : 1, 3 : 2, 4 : 3 a súper zakaždým vyrovnal).

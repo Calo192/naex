@@ -65,13 +65,13 @@ vo feedback.md.
 - prečo: PRAVIDLA §12 Podloženie (Vínko — NA EX bez poldeca, bez nerestu a pečene). 165501-1 finále: Vínko (z Hasiča) pod Vdovu za 1 cig. 11 : 12 → 16 : 12; skutočné NA EX na tú istú Vdovu by dalo 13 : 12 a Cirhózu. Či sa podložené Vínko ráta ako „dal NA EX" pre Šoféra, pravidlá nehovoria (otázka autorovi v reporte).
 
 ### fero-9 · Keď mám v ruke Injekciu (Výtržník), podložím ju za 1 cigaretu pod vlastnú kartu s najviac akciami (Dvojčatá 6), lebo všetky jej akcie sú potom Rany a NA EX sa na ňu dať nedá.
-- stav: neoverená
-- pravidlá: v11
-- potvrdenia: 1
+- stav: overená
+- pravidlá: v12
+- potvrdenia: 2
 - vyvrátenia: 0
-- dátum: 2026-11-09
-- partie: 20261109-115955-3
-- prečo: §12 Podloženie (Injekcia — Výtržník), §7. 20261109-115955-3 K4 Kostol: Injekcia pod Dvojčatá za 1 cig. dala 3 → 7 tuhých a karta vypadla z hrozieb NA EX; spolu s Energeťákom pod Vymáhača (Forsáž) ~+9 tuhých za 2 cigarety, bitka 24 : 3. Vilo to potvrdil z druhej strany (Injekcia pod Dvojčatá = 6 Rán a imunita).
+- dátum: 2026-11-16
+- partie: 20261109-115955-3, 20261113-084431-3
+- prečo: §12 Podloženie (Injekcia — Výtržník), §7. 20261109-115955-3 K4 Kostol: Injekcia pod Dvojčatá za 1 cig. dala 3 → 7 tuhých a karta vypadla z hrozieb NA EX; spolu s Energeťákom pod Vymáhača (Forsáž) ~+9 tuhých za 2 cigarety, bitka 24 : 3. Vilo to potvrdil z druhej strany (Injekcia pod Dvojčatá = 6 Rán a imunita). 20261113-084431-3 K3 (v12.4): Šimon podložil Injekciu pod Recidivistu za 1 cigaretu (log „podkladá Injekcia (Výtržník) pod kartu Recidivista“), s Vidlami v Dedičstve bitka 13 : 4; Vilo potvrdil, že NA EX na kartu s Injekciou sa dať nedá.
 
 ### fero-10 · Keď chcem dať NA EX na súperovu kartu kvôli zdvojeným Dlhom a súper má cigaretu a Nástroj s Robotou (Fúrik), počítam, že po odkrytí ho podloží pod tú kartu a zdvojené Hazardy v ďalších Pitkách sa zmenia na jeho Roboty; Dlhy z Pitky, v ktorej NA EX padlo, ale už vznikli.
 - stav: neoverená
@@ -95,10 +95,10 @@ vo feedback.md.
 ### fero-12 · Keď mi do Chuti chýbajú neresti a v kole nemám plánované NA EX, Vypiť ani odpoveď, nechám si na Pitku toľko cigariet, koľko nerestí chýba (každá zaplatená cigareta pri fajčení je nerest), lebo Absťák rozhoduje remízu v tuhom ako prvý a berie tuhé v každej bitke.
 - stav: overená
 - pravidlá: v12
-- potvrdenia: 1
+- potvrdenia: 2
 - vyvrátenia: 0
-- dátum: 2026-11-11
-- partie: 20261111-221937-2
+- dátum: 2026-11-16
+- partie: 20261111-221937-2, 20261113-084431-1
 - prečo: §8 Nerest, Chuť a Absťák, §9.4. 20261111-221937-2 K3: Chuť 2, Fero bez cigariet → log „Hráč 2 dostáva Absťák: Chuť 2, v kole vypije a vyfajčí 0 nerestí“ → K4 remíza 5 : 5 prehratá na Absťáky 1 : 0; v K5 si fajčenie zaplatil a Absťák neprišiel. Fero navrhoval „1 cigaretu pri Chuti ≥ 1“ — pri Chuti 2 jedna nestačí, preto počet podľa chýbajúcich nerestí.
 
 ### fero-13 · Keď v jednej Pitke plánujem barter, Záverečnú aj odpoveď, nechám si aspoň 1 plný poldeci a 2 cigarety na posledné Zhromaždenie finále, lebo súper s viac poldeci a cigaretami sa vždy vráti telom či NA EX a s nulou nemám čím dorovnať.
@@ -109,3 +109,12 @@ vo feedback.md.
 - dátum: 2026-11-14
 - partie: 20261114-003916-1
 - prečo: §6 limit = plné poldeci, §13 Vypiť. 20261114-003916-1 finále: Fero po Záverečnej, barteri a odpovedi mal v Z2–Z3 0 poldeci a 0 cigariet, Vilo (7 poldeci, 13 cigariet) položil jedným ťahom Snúbenicu + Krokodíla, 16 : 18 → 23 : 16; bitka 23 : 21. Potvrdil Vilo aj Fero.
+
+### fero-14 · Keď mám v Pitke aspoň 5 cigariet a kolo či partia má ešte viac Zhromaždení, urobím stokársky barter (5 cigariet → plný poldeci natrvalo), lebo každý plný poldeci navyše je karta navyše v každom Zhromaždení a cigareta pri každom pase, takže sa vráti za dve Zhromaždenia.
+- stav: overená
+- pravidlá: v12
+- potvrdenia: 1
+- vyvrátenia: 0
+- dátum: 2026-11-16
+- partie: 20261113-084431-1
+- prečo: §7 Stokársky barter (maximum +1 natrvalo), §6 limit = plné poldeci (v12.2), pas za plné poldeci (v12.3). 20261113-084431-1: barter v K2 a K4 (log „robí stokársky barter za 5 cigariet — nový plný poldeci“ 2×), s Vínkom maximum 3 → 6 proti Janovým 3; pasy po barteri dali 2 + 2 a 1 + 2 cigarety, v K4 mal Fero 10 kariet v ruke a v každom Zhromaždení vyložil o 2–3 karty viac.

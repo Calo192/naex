@@ -9,10 +9,10 @@ vo feedback.md.
 ### simon-9 · Keď má súper červený strach pri starších a vyhráva bitky, nedávam reči na tie červené, lebo pri zajatí ich ukradne podľa ceny stupňov a presvedčenú kartu zničí; reči dávam na jeho nižší strach alebo prázdne teplomery a plné teplomery presviedčam.
 - stav: overená
 - pravidlá: v12
-- potvrdenia: 2
+- potvrdenia: 3
 - vyvrátenia: 0
-- dátum: 2026-11-11
-- partie: 20261109-115955-1, 20261111-221937-3
+- dátum: 2026-11-16
+- partie: 20261109-115955-1, 20261111-221937-3, 20261113-084431-3
 - prečo: §10 Zajatie (krádež: cena stupňov 1 / 2 / 3, nie ich bodová hodnota), Presvedčenie. 20261109-115955-1: K3 Autobusár (reči oranžová 2 + červená 3) → krádež 5; K5 Hrobár (1 + 2 + 3) → krádež 6 a presvedčený Hrobár z Šimonovho balíčka zmizol; Šimon mal hádky 5 : 0, a aj tak prehral. Farár (súperova oranžová) a Krčmárka dali Šimonovi 5 a 4 špaky za bitku bez rizika. 20261111-221937-3: Šimon reči na Janove červené nedával, pri zajatí Krčmárky v K3 log „Hráč 2 mu odovzdáva 0 špakov“.
 
 ### simon-10 · Keď súper dá NA EX na vlastnú kartu, využijem odpoveď lícom dole (jedna karta za plný poldeci, limit vykladania nemíňa) a položím kartu, ktorá spáruje jeho zdvojené neaktívne akcie na vonkajšej hrane (alebo mi zruší pečeň či Poldeci), lebo NA EX ruší len aktívne akcie a spárované sa nezdvoja; plný poldeci si preto na Pitku nechávam.
@@ -42,3 +42,12 @@ vo feedback.md.
 - dátum: 2026-11-14
 - partie: 20261114-003916-3
 - prečo: §9.1 hádka a presvedčenie (§10). 20261114-003916-3 (log): K2 Farár 6 za reči, K3 presvedčený Farár (3 body), K4 presvedčený Hrobár (3) + Hrobár 6, K5 starší dali 27 špakov (Farár 6, Hrobár 6, Krčmárka 6, Veterinár 6, Poštárka 1, Starosta 1, Autobusár 1), finále bez bitky (sekera) 16 špakov len za reči; starší spolu 63 z 90 špakov. Potvrdila aj Eva (hádku prehrávala 5 z 6 krát).
+
+### simon-13 · Keď rozdeľujem reči naposledy pred finále, dám ich aj na súperove červené, lebo vo finále sa nezajíma, takže ich súper neukradne, a každý môj stupeň na jeho strachu boduje mne a jeho výhre ho zoberie.
+- stav: overená
+- pravidlá: v12
+- potvrdenia: 1
+- vyvrátenia: 0
+- dátum: 2026-11-16
+- partie: 20261113-084431-3
+- prečo: §10 Zajatie („vo finále nie“), §10 Bodovanie (reči majú prednosť, víťaz za strach bez obsadených stupňov), §14b. 20261113-084431-3 K5: hádka 7 → „Krčmárka nič → červená (3), Veterinár nič → červená (3)“ na Vilových červených; vo finále Šimon za ne dostal Krčmárka 3 a Veterinár 3 za reči (spolu 19 od starších). Výnimka k simon-9, ktorá platí pre ostatné kolá.
