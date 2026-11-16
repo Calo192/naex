@@ -1587,6 +1587,7 @@
   "plocha.klikni": "kattints",
   "plocha.tukni": "koppints",
   "plocha.naStupen": "egy fokra a hőmérőn",
+  "plocha.pivnicaPlnaZajatim": "",
   "plocha.celyTeplomer": " (pletykával az egész hőmérőn)",
   "plocha.krokNezrusi": "A lépést nem vonja vissza — kattintással vagy Esc-pel tér vissza",
   "plocha.svojuKartu": "a saját kártyád: {meno}",
@@ -2886,5 +2887,15 @@
     "5": "{meno} {n} cigarettáért az Örökségbe teszi: {karta} (a következő Örökség ára {n2})."
   },
   "motor.podpora.predavacka": "Támogatás — {hrac} játékos Eladónője: húzz 1 kártyát.",
-  "motor.pocetPitiek": "Válasz a NA EX-re: a körben {n} Ivászat lesz {n2} helyett."
+  "motor.pocetPitiek": "Válasz a NA EX-re: a körben {n} Ivászat lesz {n2} helyett.",
+  "plocha.cenaSuperovi": "",
+  "plocha.povodMoja": "",
+  "plocha.povodMojaTitul": "",
+  "plocha.povodSupera": "",
+  "plocha.povodSuperaTitul": "",
+  "prisun.ponuka": "",
+  "kseft.dopit.nazov": "",
+  "kseft.dopit.zisk": "",
+  "kseft.dopit.tip": "",
+  "priazen.vetaSpakovCakaju": ""
 }

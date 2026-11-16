@@ -1587,6 +1587,7 @@
   "plocha.klikni": "click",
   "plocha.tukni": "tap",
   "plocha.naStupen": "a notch on the thermometer",
+  "plocha.pivnicaPlnaZajatim": "",
   "plocha.celyTeplomer": " (with rumours over the whole thermometer)",
   "plocha.krokNezrusi": "Doesn't undo the step — click or Esc to go back",
   "plocha.svojuKartu": "their own card {meno}",
@@ -2886,5 +2887,15 @@
     "5": "{meno} puts {karta} into the Heirloom for {n} cigarettes (the next Heirloom costs {n2})."
   },
   "motor.podpora.predavacka": "Support — player {hrac}'s Shop Assistant: draw 1 card.",
-  "motor.pocetPitiek": "Answer to NA EX: {n} booze-ups this round instead of {n2}."
+  "motor.pocetPitiek": "Answer to NA EX: {n} booze-ups this round instead of {n2}.",
+  "plocha.cenaSuperovi": "",
+  "plocha.povodMoja": "",
+  "plocha.povodMojaTitul": "",
+  "plocha.povodSupera": "",
+  "plocha.povodSuperaTitul": "",
+  "prisun.ponuka": "",
+  "kseft.dopit.nazov": "",
+  "kseft.dopit.zisk": "",
+  "kseft.dopit.tip": "",
+  "priazen.vetaSpakovCakaju": ""
 }
