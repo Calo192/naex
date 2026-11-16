@@ -139,7 +139,7 @@
       "nazov": "Výherný automat",
       "hore": "{Hazard}→{Poldeci}",
       "dole": "{Hazard}→{Pecka}",
-      "effect_text": "Dedičstvo: Tvoj prah Dlhu je o 1 vyšší. Pitka: {Dlh}. Hore: {Hazard}→{Poldeci}. Dole: {Hazard}→{Pecka}."
+      "effect_text": "Dedičstvo: Pitka: {Cigareta} {Dlh}. Hore: {Hazard}→{Poldeci}. Dole: {Hazard}→{Pecka}."
     },
     {
       "id": "zapalovac",
