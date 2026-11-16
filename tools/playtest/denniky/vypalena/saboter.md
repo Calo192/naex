@@ -2,142 +2,119 @@
 
 Charakter štýlu: `../../styly.json` (kľúč `saboter`). Formát: `../README.md`.
 Denník vedie hráč štýlu sám; sudca len pripisuje poznámky k chybám v pravidlách.
-Pravidlá: **v11.11** (2026-11-06), sada v55. Sedem partií: Klebetná 66:8, Agresívny 4:69, Ekonóm 30:−12 (v11.6), Klebetná 120:22, Agresívny 2:60 väzňami, Ekonóm 45:17 (v11.10), Klebetná **48:45, moja výhra väzňami v K5** (v11.11). Proti agresorovi 0 z 2, proti ostatným 5 z 5.
+Pravidlá: **v12.5** (2026-11-16), sada v57. Deväť partií: Klebetná 66:8, Agresívny 4:69, Ekonóm 30:−12 (v11.6), Klebetná 120:22, Agresívny 2:60 väzňami, Ekonóm 45:17 (v11.10), Klebetná 48:45 väzňami v K5 (v11.11), Klebetná 78:16 po finále (v12.5), **Agresívny 23:74 po finále (v12.5)**. Proti agresorovi 0 z 3, proti ostatným 6 z 6.
 
-## Aktuálna stratégia (v11.11)
-Sabotér zarába na súperových kliatbách, spálených kartách a suchých cigaretách. **Keď je súper zadusený, vyhraj silou a skoro:** výhra väzňami alebo strachom ruší celý súčet špakov, aj moje Dlhy a Cirhózy. Nečakaj na finále, ak sa dá skončiť v K5.
+## Aktuálna stratégia (v12.5)
+Sabotér vyhráva na **Dlhoch a zrušených ťahoch súpera**, kým súper nemá vysoký strach. Proti Klebetnej (bitky slabé, hádka silná) to stačí: remízy na Dlhy, exekúcia, Herňa. **Proti agresorovi to nestačí**: od chvíle, keď má 2 červené strachy, mu každá vyhratá bitka dáva 12–14 špakov za starších (20261116-190638-2: K4 10, K5 12, F 14) a sabotér nemá čím strach znížiť. Proti agresorovi preto platí: **nedovoliť mu prvú červenú** (K1–K3) — teda bitky K1–K3 hrať na tuhé, nie na kliatby.
 
-1. **Plán troch stupňov:** K1–K2 škody a výhra bitky, K3 Nakladačka 13 = **tri červené naraz** (zo žltých 5 + 5, z oranžovej 3), K4 a K5 **Nakladačka ≥ 15 = zajmem všetky tri = výhra väzňami** (20261106-185402-1: K5 20:2). Pri ≥ 6 aspoň štvrtá červená a výhra strachom v ďalšej výhre.
-2. **Záhradkár vždy v línii, keď mám Dlhy:** ušetril 8 + 8 + 10 = 26 špakov (K2, K3, K4). Exekúcia ide až po bodoch, on ju obíde celú. Bez neho K5 −9. Hľadaj ho Víziou.
-3. **Krokodíl za jej Občana je najlepšia lacná sabotáž:** spálené Bzdocha K1, Poradkyňa K2, Vdova K3 natrvalo, karta ide aj ako odpoveď zadarmo. Vedľa neho nikdy nedávaj vlastnú dobrú kartu.
-4. **Hodiny súpera v šenku:** Výpalné 3 cig + Obmedzenia + Fajčiar mi: K4 ona 2 cig, K5 po dvoch kartách 0. Mňa 7–11. Kto má 0, neberie zo šenku a nedolieva: mám celý šenok.
-5. **Vízia ako spaľovňa:** Poradkyňa k vlastnej hrane s Víziou + podstrčené alebo moje karty = 3–4 Vízie za Pitku (K4). 3 moje Cirhózy spálené, našiel som Záhradkára. **Pri Vízii kontroluj každú kartu, Cirhózu nikdy neber.**
-6. **Pečeňová bomba na konci jej línie:** Kostol, Kar a jej podstrčené karty: rátaj VÝHĽAD. Stačí +1 pečeň nad násobok troch (K4 Policajtka a Miňištrant za jej koniec: pečeň 9 = 3 Cirhózy v jednej Pitke; K4 NA EX na jej Miňištranta = Cirhóza za každú Pitku). Spolu 11 jej Cirhóz, 9 nepriznaných na konci.
-7. **Priazeň:** môj strach dáva priazeň jej. Tri červené mi vzali Advokáta (Dlhy jej skoro nebolia, −3 za exekúciu) a Fajčiara (+3 cig jej). Výpalné to vyrovná, ale **červené voľ tak, aby Advokát nebol medzi nimi, keď chcem hrať cez Dlhy**.
-8. **Reťaz Petelica × Posilnenie:** moja karta s Posilnením na slote, za ňu Petelica na tom istom slote (Sypač L3 + Vdova R3 alebo Recidivista R3 = 6 tuhé). **Sypač za Chlapa:** Rany ako Pecky. Vypiť a dve karty jedným ťahom, aby medzi ne nevložila kartu.
-9. **Karta navyše na jej stranu = prevaha v jej kraji:** dve moje telá proti jej jednému a jej hrana je moja (K5 Pohoršenie, Povera: hádka 1:7 → 4:4). Tiež Krokodíl a ďalšia karta za ním. Rátaj telá po každom jej ťahu.
-10. **NA EX proti Klebetnej:** **nikdy na jej kartu, keď má Bzdochu** (K1: Výtržník jej, z 6:1 na 6:6 a prehra). **Nechaj nespárované Pohoršenia len tam, kde ich viem spárovať:** po mojom Vandalovi K3 si dala NA EX na vlastnú Manželku: 4 Pohoršenia, 0:10. Jej vlastné NA EX na kartu so zlými akciami smerom ku mne je jej hlavná zbraň (K2 Poradkyňa 4 Dlhy za Pitku, spolu 15). **Keď dá NA EX na svoju kartu, odpoveďou za ňu spáruj, čo sa dá** (K4 Strýko: −2 Povera, −2 Viera).
-11. **Keď vediem o ≥ 15, NA EX nedávaj:** moje NA EX jej dáva odpoveď zadarmo (K4 Vymáhač: 11:3 → 5:10). Bez NA EX jej ostáva len jedno NA EX na mňa, na to drž svoju odpoveď (K5 Vandal +4).
+### Proti každému súperovi
+1. **Dlhy sú hlavná zbraň, nie Cirhózy.** Zdroje: moja **Finančná poradkyňa** (Dlhy jej/jemu), **NA EX na jeho kartu s neaktívnym Hazardom** v poslednej Pitke (dopiť sa už nedá), **Profesionálny tipér** priložený k jeho karte s Cigaretou (Cigareta → Hazard; s mojím Posilnením na spoji ×2 — finále 190638-2: +6 Dlhov), **Obecný úrad** (Dlhy z Pitky ×2), Kmotor (moje Dlhy jemu po bitke).
+2. **Remíza v tuhom = výhra bez strachu** (v12.5 rozhoduje len menej Dlhov). Proti Klebetnej 3× (173930-2). Proti agresorovi 0× — rozdiely boli 2–11.
+3. **Degustátorka ako prvá karta kola** (alebo keď mám o poldeci menej): zaplatím a on má viac plných → vyleje mu ho. Dvakrát (K2, K3 190638-2) mu tým zobrala NA EX aj odpoveď v Pitke 1. Najlacnejší sabotérsky ťah v sade.
+4. **Prvá karta pri bojovej hrane bez páru** (spolocne-1) — K2 Ihrisko: Degustátorka zablokovala Pecku hrany. **Pozor na jeho Vandala**: kto ho má v ruke, otočí lokalitu po mojej prvej karte (190638-2 K4 aj finále). Keď súper Vandala kúpil, prvú kartu nedávaj k bojovej hrane — daj ju do druhého kraja a čakaj, či otočí.
+5. **Odňať protijedy aj zbrane z ponuky** (1 cig jemu za kus): Vymáhač, Záhradkár, Pasca, Vidly, Valaška, Hasič, Energeťák, Sypač — proti agresorovi berieme jeho bojové karty, nie len protijedy. Do ponuky sám **nedávaj Vandala, Dohadzovačku ani Dvojčatá** (190638-2: Vandal a Dohadzovačka mi kúpil a obrátil proti mne).
+6. **NA EX na vlastnú kartu na konci línie** (Kostol, alebo keď je moja karta koncom): hrozba núti súpera minúť posledný poldeci na blok (priložiť kartu) → v Pitke potom nemá NA EX. K5 190638-2: 2× zablokoval, Nakladačka len 2 → nezajal.
+7. **Vidly hore pod vlastnú kartu = Vzbura**: spojený Hazard zhasne, nespojené Rany/Petelica bijú a NA EX na kartu nejde (Bzdocha mi nemá čo pokaziť). Vonkajší koniec potom zatvor vlastnou kartou bez páru na tých pozíciách (K4: Manželka).
+8. **Reči na súperov strach** (R1): proti agresorovi s vysokým strachom 4 špaky za bitku (Hrobár žltá+oranžová, Poštárka žltá) aj v prehratej bitke. Na staršieho, ktorého môže zajať, nie (krádež).
+9. **Strach, ktorý mi naloží Nakladačka, daj tam, kde súper nemá reči a kde mu priazeň neškodí mne** — nie Advokát, keď mu robím Dlhy (190638-2 K2: Hrobár oranžová → Advokát mu v K3 ušetril 1 špak), nie Kmotor, nie Bitkár. A **nikdy pod jeho čakajúce reči** (R1: posunú sa na môj strach a začnú mu bodovať).
+10. **Pečeň vo finále rátaj s Forsážou a s hranou Pečene, ktorú drží prevaha**: Energeťák (Forsáž) zdvojí aj vlastnú Pečeň; 190638-2 F: pečeň 6 = prah → Cirhóza. NA EX na vlastnú kartu s aktívnou Pečeňou ju zruší (−2 pečeň, +1 za NA EX) a zachráni −3.
+11. **Vo finále vyhraná hádka pri prehratej bitke = 1 špak za každú moju kartu + body hádky** (Stryná s Konfliktom Pohoršenie, 190638-2 F: +6). Vo finále plný poldeci = 1 špak.
+12. **Chuť**: po NA EX (2 neresti) je Chuť ≥ 1 → ďalšie kolo aspoň 1 nerest (fajčenie 1 cig stačí, K5).
+
+### Proti Klebetnej (overené 173930-2)
+Hrať do finále na Dlhy: exekúcia jej −37, remízy na Dlhy, finále na Herni (+ jej Dlhy). Strach drž nízko (jej reči bodujú len na mojom strachu). Pas v Z1, Jogurt v K1, Poradkyňa prvá z ponuky.
+
+### Proti agresorovi (0 z 3; 190638-2 je najbližší pokus)
+K1–K3 bojovať o bitky (Degustátorka, Vdova, prvá karta pri hrane, odňať mu Sypač/Vidly/Valašku), lebo jeho prvá červená v K3 = 6 špakov každú ďalšiu bitku. Kliatby mu stoja ≈ 13 špakov za partiu, strach mu dal 39. Ak má 2 červené pred K4, partia je stratená na špaky — vtedy hrať na Nakladačku < 5 (žiadne zajatie) a na hádku.
+
 > Sudca 2026-11-06: Dôkaz je len K4 (vedenie 33 : 15). V K5 si NA EX nedal pri stave 33 : 37, teda bez vedenia, a výhru dala Nakladačka 18. Na pravidlo „pri vedení“ je to 1 partia (20261106-185402-1).
-12. **Dlhy súperke sú zbraň aj pre ňu:** jej Vymáhač za každé 2 Dlhy Rana (K4 +4 tuhé z mojich Dlhov). Sleduj jej odhadzovací. Bez Vymáhača a bez Advokáta dávať.
-13. **Pas v Z1 pri istote 2–3 Pitiek** (+3 cig, K4; K5 Z2): limit sa v každom Zhromaždení ráta nanovo, karty neprepadnú. Silné karty dávaj v poslednom Zhromaždení, keď už nemá ako reagovať (ona robí to isté: pozri poradie pasov).
-14. **Natočenie po vyhranej hádke:** K2 som jej dal Poldeci na hranu a sebe Pohoršenie a Poveru: jej pečeň 3 za Pitku. Keď natáča ona, voľ lokalitu, ktorej hrany jej nedajú tuhé: Benzínka (K3), Kostol (K4).
-15. **Doliatie a barter, keď mám prebytok cigariet:** 2 cig = plný poldeci = limit a 1 špak; lepšie než 5 cig = 1 špak.
-16. Staré a platné: **hodiny väzňov proti agresorovi** (Nakladačka < 5 × jeho červené), **bomba na vnútorný Hazard vedľa jeho Silnej**, **NA EX v poslednej Pitke**, **Pečať odpoveďou**, **Vandal: pred ním spočítaj, čo aktivuje**, **šenkový zásah** (zakop Bzdochu, Poradkyňu, Vdovu), **Vínna pivnica proti Bzdoche nie**, **Priznaj Cirhózy pred finále**.
 > Sudca 2026-11-06: Zvlášť zmeraj, či zajatie Vychovávateľky pred finále je cesta štýlu: vynútený pas v 20261106-123023-2 prišiel pri vedení 87 : 13, takže partiu nerozhodol. Cena pre súperku bola 25 Nakladačky navyše (§14b).
-
 > Sudca 2026-11-06: V partii 20261106-024710-1 spálila tvoja Vízia Cirhózu 2× (priebeh.log), nie 3×; ďalšie Vízie si brali kartu do ruky. Na konci si mal 8 nepriznaných (−24).
 > Sudca 2026-11-06: Priazeň nie je vlastnosť staršieho — nesie ju scorecard, ktorý sa rozdáva náhodne každú partiu (§3, §10 Priazeň). „Hrobár/Abstinent, Starosta (Bitkár), Autobusár (Kmotor)“ platilo len v jednej partii; pred rozdelením čítaj scorecard.
 
 ## Nástroje
-- **Krokodíl podstrčený** — stav: overený · dôkaz: Bzdocha K1, Poradkyňa K2 (odpoveďou), Vdova K3; K5 Svokra a Kôň čakali (185402-1) · v11.11.
-- **Záhradkár** — stav: overený · dôkaz: −26 špakov ušetrených pri 15–20 Dlhoch (185402-1) · v11.11.
-- **Tri červené a Nakladačka ≥ 15** — stav: overený raz · dôkaz: K3 13, K5 18 (185402-1) · v11.11. Súperka to videla a brzdila NA EX.
-- **Výpalné ako dusenie šenku** — stav: sľubný · dôkaz: K4 a K5 po 3 cig, ona 0–2 (185402-1) · v11.11. V11.10 pri tesných výhrach nevyšlo (E25).
-- **Vízia ako spaľovňa (Poradkyňa, Strýko)** — stav: sľubný · dôkaz: K4 4 Vízie, 3 Cirhózy spálené, Záhradkár (185402-1) · v11.11.
-- **Pečeňová bomba** — stav: overený, podmienený (hodnota len s finále, inak len upcháva balíček) · dôkaz: 9 nepriznaných (185402-1); 6, 7 (v11.10) · v11.11.
-- **Poradkyňa u mňa, Dlhy jej** — stav: podmienený (nie pri jej Vymáhači a Advokáte) · dôkaz: K4 +6 Dlhov, Vymáhač +4 tuhé (185402-1); K6 (144117-1) · v11.11.
-- **Sypač + Petelica cez Posilnenie** — stav: sľubný · dôkaz: K4 +6, K5 +8, zrušené jej NA EX (185402-1) · v11.11.
-- **Prevaha v jej kraji druhou kartou** — stav: sľubný · dôkaz: K5 mäkké 1:7 → 4:4 (185402-1) · v11.11.
-- **Natočenie po hádke** — stav: sľubný · dôkaz: K2 Kar (185402-1) · v11.11.
-- **Vandal proti hádke** — stav: podmienený · dôkaz: K3 0 mäkké jej, potom 0:10 po jej NA EX (185402-1) · v11.11. Ak má NA EX, nerob; K5 ako koniec bez NA EX.
-- **Pas v Z1** — stav: sľubný · dôkaz: K4, K5 (185402-1); 144117-1 · v11.11.
-- **Bomba na vnútorný Hazard vedľa Silnej** — stav: overený, podmienený bez Fúrika · dôkaz: K1 +10 Dlhov (133718-2) · v11.10. **Súper mi to robí tiež** (Poradkyňa K2).
-- **NA EX v poslednej Pitke** — stav: sľubný · v11.10. **Krčma proti šetričovi** — sľubný · **Pečať odpoveďou** — sľubný · **Odpoveď, ktorá páruje jeho NA EX** — overený (7×) · **Prvá karta pri lokalite** — overený oboma smermi · **Dievčina ako mína** — overený oboma smermi: K1 mne 3 Dlhy jej, K3 jej 4 Dlhy mne · v11.11.
-- **Degustátorka** — overený · **Policajtka** — sľubný (K4 Rana, Obm, jej pečeň +2) · **Bzdocha** — overený oboma smermi, súperovu zakop · **Svokra** — sľubný: Petelica a Rana za NA EX · **Kar** — overený · v11.11.
-- Staré, neoverené vo v11.11: Viera ×9, Vzbura ako zbraň, Predsedova vila Kšeft, Sklad, Kapybara (K1–K5 neprišla).
-- Zavrhnuté: Noviny (nevyhrávam hádku), NA EX na jej kartu pri Bzdoche, Čierna mačka, Dievčina naschvál, dvojitá bomba viditeľná cez Bzdochu, NA EX na vlastnú kartu s vonkajšou hranou ako továreň na cigarety, **Sklad skoro v kole**, **Herňa, keď nemám finále vyhrať**.
+- **Degustátorka** — stav: **overený** · dôkaz: 190638-2 K2 (3→2 mu, Pitka 1 bez jeho NA EX/odpovede, bitka vyhratá 9:6), K3 (1→0) · v12.5. Hraj ju, keď po zaplatení mám menej plných než on. Slabina: jeho Krokodíl ju spáli (K3).
+- **Profesionálny tipér** — stav: sľubný · dôkaz: 190638-2 F: k jeho Veteránovi (Cigareta → Hazard, môj Posilnenie ×2) = +6 Dlhov za 3 Pitky, exekúcia mu zobrala 5 · v12.5. Pozor: jeho Pakt alebo môj Pakt na spoji skopíruje Hazard aj mne (K5 náhľad).
+- **Vidly → Vzbura pod vlastnú kartu** — stav: sľubný · dôkaz: 190638-2 K4 Vdova: Dlh zhasol, 4 tuhé, štít proti NA EX · v12.5.
+- **Valaška dole pod Pijana + NA EX na konci línie** — stav: podmienený · dôkaz: 190638-2 K5 hrozba 20:6; súper ju zablokoval Krokodílom (Pijan zhorel) a potom Miňištrantom za svoje posledné poldeci → Nakladačka 2, nezajal · v12.5.
+- **Reči na súperov strach (R1)** — stav: sľubný · dôkaz: 190638-2 9 špakov (K3 1, K5 4, F 4) proti agresorovi · v12.5.
+- **NA EX na vlastnú kartu proti Cirhóze** — stav: overený raz · dôkaz: 190638-2 F Stryná: pečeň 6 → 5, −3 ušetrené · v12.5.
+- **NA EX na súperovu kartu na Kare** — stav: sľubný · dôkaz: 190638-2 K3 Manželka (Odpor zhasol priloženou Dievčinou): Dlh +2, Cirhóza +1, jeho hádka 6 → 2 · v12.5.
+- **Finančná poradkyňa** — stav: overený · dôkaz: 173930-2 (Dlhy jej 3/Pitku, Herňa) · v12.5. V 190638-2 neprišla.
+- **Remíza v tuhom na Dlhy** — stav: overený proti Klebetnej (3×), proti agresorovi nedosiahnuteľný (0×, rozdiely 2–11) · v12.5.
+- **Herňa vo finále** — stav: overený raz (+19) · v12.5. Vyberá ju len obranca (vedúci).
+- **Odňatie protijedov a zbraní z ponuky** — stav: overený · dôkaz: 173930-2 (4 karty), 190638-2 (Sypač, Vymáhač, Vidly, Valaška, Hasič, Energeťák = 6 cig jemu) · v12.5.
+- **Vdova** — stav: overený · dôkaz: 190638-2 K2 odhod 1 karty; 173930-2 K2, K4 · v12.5. Pozor: Kriminál → súperova Policajtka Petelica (190638-2 K4).
+- **Záhradkár, Vymáhač s mojimi Dlhmi, Pasca vo finále, Jogurt v K1, Obecný úrad** — stav: sľubné/overené z 173930-2, v 190638-2 neprišli.
+- **Pečeňová bomba / NA EX na Cirhózu** — stav: podmienený, proti súperovi s Víziou zavrhnutý (173930-2).
+- **Dopiť za teba** — stav: kandidát, **0 príležitostí v dvoch partiách** (súper mi nedal NA EX v ne-poslednej Pitke; agresor dával NA EX len na vlastné karty).
+- Staré z v11.11, neoverené vo v12.5: Krokodíl (u mňa), Sypač + Petelica, prevaha druhou kartou, Policajtka, natočenie po hádke.
+- Zavrhnuté: Noviny, NA EX na jeho kartu pri Bzoche a jeho plnom poldeci, Čierna mačka, Dievčina naschvál, NA EX na vlastnú kartu ako továreň na cigarety, Sklad skoro, Herňa bez výhry finále, úplne spárovať kartu pre NA EX, Starosta na červenú pod jej rečami, **prvá karta pri bojovej hrane, keď má súper Vandala** (190638-2 K4, F), **dávať do ponuky Vandala/Dohadzovačku/Dvojčatá**, **môj strach na Advokáta, keď mu robím Dlhy**.
 
 ## Experimenty
-### E1–E36 (v11.6 a v11.10, partie 1–6, skrátené)
-- E1 NA EX → Cirhóza/Dlh: overené. E4 Bzdocha + zrážka: overené. E5 podstrčenie: overené. E6 Viera ×5+: proti agresorovi. E7 prehratá bitka naschvál: nikdy. E8 pečeňová bomba: 5:2 do K3. E9 Dlhy ako hlavná zbraň: nie pri Advokátovi. E12 šenkový zásah: funguje. E13 Vínna pivnica: proti Bzdoche nie. E15 zajatie Vychovávateľky: funguje. E16 Vandal: swing 6. E18 bomba proti agresorovi: nezbrzdilo. E19 továreň na cigarety: nie. E21 Pečať: funguje. E25 Výpalné: pri tesných výhrach nie. E28 Krčma proti Vínku: funguje. E30 Sklad: nie skoro. E31 Dievčina ako mína: funguje. E33 Vzbura + Vandal: čiastočne. E34 Krokodíl: funguje. E36 Herňa: len keď finále viem vyhrať.
-### E32 · Finančná poradkyňa
+### E1–E50 (v11.6–v12.5, partie 1–8, skrátené)
+E1 NA EX → Dlh: overené. E4 Bzdocha + zrážka: overené. E5 podstrčenie: overené. E7 prehratá bitka naschvál: nikdy. E8 pečeňová bomba: vyvrátené proti Víziám (E48). E9/E48 Dlhy ako hlavná zbraň: proti Klebetnej áno (−37 exekúcia). E12 šenkový zásah, E15 zajatie Vychovávateľky, E21 Pečať, E31 Dievčina ako mína, E34 Krokodíl, E39 natočenie, E42 Vízia-spaľovňa, E43 pas v Z1, E44 Sypač + Petelica, E47 druhá karta = prevaha: fungujú. E16 Vandal: swing 6. E18 bomba proti agresorovi: nezbrzdilo. E25/E45 Výpalné: zaniklo (v12.4). E36 Herňa: len keď finále viem vyhrať. E46 Nakladačka ≥ 15 na väzňov: v12.5 o kolo neskôr. E49 Dopiť: súperka 0 z 5. E50 otrávený darček: Šarlatán áno, Poradkyňa nie.
 > Sudca 2026-11-06: Čísla preceňujú kartu. V 20261106-144117-1 F dala Poradkyňa 8 z 22 nových Dlhov súpera; zvyšok sú jeho vlastné karty a Herňa (pitkaRekap). Exekútor zobral 11 Dlhov a 10 špakov (Advokát −1), bez Poradkyne asi 7 Dlhov a 6 špakov. Karta má cenu ≈ −4 špaky, zvyšných −6 si súper spravil sám. Spolu s −18 za Cirhózy to stále rozhodlo o výške výhry, nie o víťazovi: pred finále si viedol 48 : 11.
-- partie: 20261106-144117-1
-- výsledok: funguje, cena podľa sudcu ≈ −4 špaky
-- pravidlá: v11.10
-### E37 · Keď má Pohoršenia v línii, zruším jej hádku (Odpor, NA EX, prevaha), čakám ≥ 2 vyhraté hádky a ≤ 10 jej špakov za karty
-- partie: 20261106-185402-1
+
+### E51 · Reči na strachu agresora (R1)
+- partie: 20261116-190638-2
 - výsledok: čiastočne
-- čísla: hádky K1 ja, K2 2:4, K3 0:10, K4 2:4, K5 4:4. Jej špaky za karty 5 + 4 = 9, moje 6.
-- čo ďalej: najlepšie brať hrany (Dievčina s Paktom K1, prevaha K5). NA EX na jej Pohoršenia je pasca, ona si ich zdvojí sama.
-- pravidlá: v11.11
-### E38 · Kapybara a Degustátorka ako obmedzenie klebiet
-- partie: 20261106-185402-1
-- výsledok: neoverené, Kapybara neprišla, Degustátorku vzala ona
-- pravidlá: v11.11
-### E39 · Natočenie po vyhranej hádke
-- partie: 20261106-185402-1
+- čísla: reči 9 špakov (K3 1, K5 4, F 4); súper za strach 39. Krádež 0 (nezajal). Spomalenie: jeho K5 Nakladačka 2 išla mimo mojich rečí.
+- čo ďalej: áno, ale na víťazstvo to nestačí — reči berú len stupne, ktoré obsadím; jeho dve červené dali 12/bitku.
+- pravidlá: v12.5
+### E52 · Dopiť za teba
+- partie: 20261116-190638-2
+- výsledok: neoverené (0 príležitostí)
+- čísla: agresor dal NA EX len na vlastné karty (K4 Policajtka); moje NA EX na jeho karty som dával len v poslednej Pitke (K3 Manželka), aby ich nemohol dopiť → ani on nedopil nič.
+- čo ďalej: NA EX na súperovu kartu v poslednej Pitke kola je proti Dopiť imúnne — to je samo o sebe záver.
+- pravidlá: v12.5
+### E53 · Remíza na Dlhy proti agresorovi
+- partie: 20261116-190638-2
+- výsledok: nefunguje
+- čísla: 0 remíz; rozdiely tuhého 4, (výhra 3), 6, 6, 2, 11. Jediná príležitosť K2 (6:6 pred mojou poslednou kartou) — hral som radšej na výhru 9:6.
+- pravidlá: v12.5
+### E54 · Vidly hore pod vlastnú kartu (Vzbura) — nové
+- partie: 20261116-190638-2
 - výsledok: funguje
-- čísla: K2 Kar: hádková hrana mne, Poldeci jej, jej pečeň 3 za Pitku.
-- pravidlá: v11.11
-### E40 · Tri červené naraz, potom štvrtá
-- partie: 20261106-185402-1
+- čísla: K4 Vdova: Dlh zhasol, Rana + Petelica + Pečeň aktívne = 4 tuhé, NA EX na ňu nešiel; 1 cig, 0 poldeci.
+- pravidlá: v12.5
+### E55 · Valaška pod Pijana + NA EX na konci línie (Kostol) — nové
+- partie: 20261116-190638-2
+- výsledok: čiastočne (ako hrozba)
+- čísla: hrozba 20:6; súper ju zablokoval Krokodílom (a spálil Pijana), potom Miňištrantom — minul na to oba poldeci, v Pitkách nemal NA EX (jeho hrozba na Mäsiara 6 → 10 sa nekonala), Nakladačka 2 → nezajal.
+- pravidlá: v12.5
+### E56 · Profesionálny tipér na jeho kartu s Cigaretou — nové
+- partie: 20261116-190638-2
 - výsledok: funguje
-- čísla: K3 Nakladačka 13; výpalné 3 cig K3, K4; +10 K5.
-- čo ďalej: cena: jej Advokát 3 a Fajčiar 3. Voliť bez Advokáta.
-- pravidlá: v11.11
-### E41 · Kostol proti jej NA EX na vlastné karty
-- partie: 20261106-185402-1
-- výsledok: čiastočne
-- čísla: K4 žiadna bomba na hádku ani na Dlhy; ona NA EX na koniec (moja Vdova) a odpoveď Vymáhač 11:3 → 5:10.
-- čo ďalej: koniec línie je mina: posledná moja karta nesmie držať tuhé.
-- pravidlá: v11.11
-### E42 · Vízia ako spaľovňa Cirhóz
-- partie: 20261106-185402-1
-- výsledok: funguje
-- čísla: K4 3 spálené Cirhózy, Záhradkár, Vandal, Krokodíl, Veterán, Svokra, Pijan v ruke. Jednu som omylom vzal (−3).
-- pravidlá: v11.11
-### E43 · Pas v Z1 pri 3 Pitkách
-- partie: 20261106-185402-1
-- výsledok: funguje
-- čísla: K4 +3 cig, K5 +3 cig, všetky karty sa zmestili do Z2, Z3.
-- pravidlá: v11.11
-### E44 · Reťaz Sypač + Petelica
-- partie: 20261106-185402-1
-- výsledok: funguje, ale drží to jeden Občan
-- čísla: K4 Vdova +6 → NA EX; K5 Recidivista +8 → NA EX, Vypiť a dve karty naraz.
-- pravidlá: v11.11
-### E45 · Výpalné dusí šenok
-- partie: 20261106-185402-1
-- výsledok: funguje
-- čísla: ona K4 po šenku 2, K5 0; ja 11 pred K5. K5 som bral, čo chcel.
-- pravidlá: v11.11
-### E46 · Nakladačka ≥ 15 na výhru väzňami
-- partie: 20261106-185402-1
-- výsledok: funguje
-- čísla: K5 20:2, Nakladačka 18, zajatie 3 + 3 na Autobusára. Bez NA EX, aby nemala odpoveď; odpoveď Vandal +4 na jej NA EX.
-- pravidlá: v11.11
-### E47 · Druhá karta na jej stranu = prevaha v jej kraji
-- partie: 20261106-185402-1
-- výsledok: funguje
-- čísla: K5 1:7 → 4:4, ona musela dať Manželku proti tomu, Šofér prevahu vrátil.
-- pravidlá: v11.11
+- čísla: finále Veterán: Cigareta → Hazard, môj Posilnenie ×2 → 2 Dlhy/Pitku × 3 = 6; jeho Dlhy spolu 9 → exekúcia −5 špakov.
+- pravidlá: v12.5
 
 ## Nápady na vyskúšanie
-1. **Proti agresorovi** tento plán neplatí, on Nakladačku berie sám. Skúsiť Záhradkára + Krokodíla za jeho silný kus v K1–K2, Viera a Miňištrant na tuhé.
-2. **Zámer skončiť v K4:** tri červené už v K2, ak K1 a K2 vyjdú s veľkým rozdielom.
-3. **Kapybara** proti jej rečiam pri mojich červených, krátenie −5 v K5, −9 hrozilo v K4.
-4. **Poradkyňa ku jej Hazardom len po spálení jej Vymáhača** Krokodílom.
-5. **Veštica vlastná:** Cirhózu jej prehodiť pred finále.
-6. **Podvodník pri jej 0 cigaretách:** rovno Dlh a pri výpalnom hladovanie. K3 som ho nekúpil.
-7. **Hrable v Dedičstve + Policajtka**: Odpor kradne a pokutuje.
-8. Izolačka + Obmedzenie proti pass-farmingu. Kapybara proti červeným rečiam.
+1. **Proti agresorovi zabrániť prvej červenej**: v K1–K3 všetky zdroje do tuhého a Nakladačky súpera < 3; zmeraj, či bez červenej v K3 vydrží sabotér do finále v dosahu.
+2. **Vandal u mňa**: kúpiť ho skôr ako súper a otočiť lokalitu po jeho prvej karte pri bojovej hrane (obrátiť jeho trik).
+3. **Mäsiar u mňa proti Krokodílovi** (efekty Zvierat v okolí neplatia) — Krokodíl mi spálil 2 karty.
+4. **Poľovník proti Krokodílovi**: Nástup spáli jeho najvzdialenejšie Zviera v druhom kraji — položiť ho, keď Krokodíl leží oproti.
+5. **Tipér + Obecný úrad**: Cigarety → Hazard a Dlhy ×2.
+6. **Dopiť za teba sám**, keď mi súper dá NA EX v ne-poslednej Pitke (stále 0 príležitostí).
+7. **Kapybara** proti jeho Vieram; **Policajtka/Podvodník** (Obmedzenia).
 
 ## Čo štýlu chýba v hre
-- **Kliatby nestoja nič pri výhre väzňami alebo strachom:** platí oboma smermi, K5 som skončil s 3 Cirhózami a 9 Dlhmi zadarmo. Sabotér nemá čo sabotovať na hodinách väzňov (agresor).
-- **Priame zrušenie jej NA EX** (len Farár ako väzeň, Snúbenica pri Chlapovi). Jej NA EX na vlastnú kartu je silnejšie ako moje: dáva jej Dlhy na mňa aj mäkké a stojí 2 neresti.
-- **Fúrik + Robota** ruší Dlhy celkom; chýba karta, ktorá by Roboty zrušila inak než NA EX.
-- **Výpis odhadzovacieho balíčka** (Sklad, Hrobár, Hasič sa plánujú naslepo).
-- Dlhodobá zbraň proti **Nealku** okrem viacerých zdrojov pečene.
+- **Žiadna cesta znížiť súperov strach.** Strach neklesá; agresor s 2 červenými berie 12–14 špakov za každú vyhratú bitku (190638-2: 36 z 74). Sabotér vie ničiť Dlhy, Cirhózy, poldeci, karty — ale bodovací motor súpera (strach) je nedotknuteľný.
+- **Kliatby stoja súpera málo**: 17 Dlhov = −10 špakov, 1 Cirhóza = −3 (190638-2), kým jeho strach dal 39. Exekúcia polovicu nahor bez trvalého účinku; zvyšné Dlhy na konci nič.
+- **Cirhóza nemá proti Vízii váhu** (173930-2).
+- **Povinná Nakladačka kŕmi súperove reči / priazne** (173930-2 K3, 190638-2 K2 Advokát).
+- **Proti presvedčeným Starešinom** nemám nástroj; **výpis odhadzovacieho balíčka** chýba.
+- **Most (K1)**: prázdna fáza — kraje sa nestretnú, podstrčiť ani Konflikt nejde.
 
 ## Partie
 | Dátum | Relácia | Súper | Výsledok | Zhrnutie |
 |---|---|---|---|---|
 | 2026-11-06 | 20261106-010635-2 | Klebetná Mara | výhra 66 : 8 | K1 7:0, K2 14:4; súper 7 Cirhóz (−21). 41 % špakov z finále+výkupné. |
 | 2026-11-06 | 20261106-015313-2 | Bitkár Rudo | prehra 4 : 69 | Rudova Záverečná v K1, Hasič+Pijan K3, finále 16:18; súper 7 Cirhóz, ja 2. ~30 % z finále+výkupné. |
-| 2026-11-06 | 20261106-024710-1 | Ekonóm Ďuro | výhra 30 : −12 (v11.6) | K1 1:0, K2 4:3, K3 1:3, K4 3:5, K5 10:6 (zrážka), finále 12:0. Cirhózy on 14, ja 8. 44 % z finále+výkupné. |
-| 2026-11-06 | 20261106-123023-2 | Klebetná Mara | **výhra 120 : 22** (finále, v11.10) | K1 9:2, K2 8:6, K3 10:0, K4 13:12, K5 9:0, finále 25:0. Cirhózy 7 : 1. Finále+výkupné 36 % mojich hrubých, 39 % jej. E8–E15. |
-| 2026-11-06 | 20261106-133718-2 | Bitkár Rudo | **prehra 2 : 60, výhra väzňami v K4** (v11.10) | K1 9:12, K2 7:15, K3 0:10, K4 2:20. Spôsobené 7 Cirhóz (0 špakov ceny), 18 špakov exekúcie. Finále ani výkupné: 0 %. E16–E24. |
-| 2026-11-06 | 20261106-144117-1 | Ekonóm Ďuro | **výhra 45 : 17** (finále, v11.10) | K1 4:3, K2 9:5, K3 prehra, K4 7:6, K5 6:3, finále 7:18. Cirhózy on 6 (−18), ja 1. Exekútor on −14, ja −5. Finále+výkupné 2 % mojich hrubých, 69 % jeho. E25–E36. |
-| 2026-11-06 | 20261106-185402-1 | Klebetná Mara | **výhra väzňami v K5, 48 : 45** (v11.11) | K1 6:6 prehra, K2 12:7, K3 16:3, K4 5:10, K5 20:2, Nakladačka 18. Cirhózy jej 9 nepriznaných (−27 by platilo), moje 3. Exekútor ja −10 (Záhradkár ušetril 26), ona −9. Finále ani výkupné 0 %. E37–E47. |
+| 2026-11-06 | 20261106-024710-1 | Ekonóm Ďuro | výhra 30 : −12 (v11.6) | Cirhózy on 14, ja 8. 44 % z finále+výkupné. |
+| 2026-11-06 | 20261106-123023-2 | Klebetná Mara | výhra 120 : 22 (v11.10) | Cirhózy 7 : 1. E8–E15. |
+| 2026-11-06 | 20261106-133718-2 | Bitkár Rudo | prehra 2 : 60, väzňami v K4 (v11.10) | 7 Cirhóz bez ceny, 18 špakov exekúcie. E16–E24. |
+| 2026-11-06 | 20261106-144117-1 | Ekonóm Ďuro | výhra 45 : 17 (v11.10) | Cirhózy on 6 (−18). E25–E36. |
+| 2026-11-06 | 20261106-185402-1 | Klebetná Mara | výhra väzňami v K5, 48 : 45 (v11.11) | Nakladačka 18. E37–E47. |
+| 2026-11-16 | 20261116-173930-2 | Klebetná Mara | výhra 78 : 16 po finále (v12.5) | 6 bitiek, 3 remízy na Dlhy, Herňa +19, jej exekúcia −37. E48–E50. |
+| 2026-11-16 | 20261116-190638-2 | Bitkár Rudo | **prehra 23 : 74 po finále** (v12.5) | Vyhral som len K2 9:6 (Degustátorka, Vdova, prvá karta pri Ihrisku). K3 0:6 → jeho prvá červená (Veterinár), K4 9:15 (jeho Vandal otočil Vínnu pivnicu) → Starosta červená; potom 12–14 špakov za starších každú bitku (39 spolu). Jeho kliatby: 17 Dlhov (−10), 1 Cirhóza (−3). Moje reči +9, hádky +8. Pred finále 14 : 47 — finále nerozhodlo. Finále+výkupné 36 % jeho čistých špakov. E51–E56. |
