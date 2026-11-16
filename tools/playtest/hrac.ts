@@ -382,7 +382,9 @@ function cenaNaexText(v: ClientState, uid: number): string {
     o.kar ? "Kar: pečeň za toto NA EX dostane súper, nie ty" : "",
   ].filter((x) => x !== "");
   // Najhoršia verejne možná odpoveď (playtest 20261026-173610-3 N5) a limit po NA EX na túto kartu (akcie Poldeci).
-  const odp = najhorsiaOdpovedNaNaex(DATA, n);
+  // Odpoveď stojí plný poldeci (§7): kto ho nemá, neodpovie — náhľad ju vtedy nesmie rátať (playtest 20261113-084431, 4 hráči).
+  const superMozeOdpovedat = v.hraci[su].poldeciPlne > 0;
+  const odp = superMozeOdpovedat ? najhorsiaOdpovedNaNaex(DATA, n) : null;
   const odpoved =
     odp === null
       ? ""
@@ -395,7 +397,7 @@ function cenaNaexText(v: ClientState, uid: number): string {
   const limit = `; ${dalsie ? "v ďalšom Zhromaždení" : "v ďalšom kole"} plných poldeci ${limitPo === limitBez ? `ostane ${limitBez}` : `${limitPo} namiesto ${limitBez}`}`;
   // Efekty Prehra (Dievčina na vydaj) náhľad jadra nemodeluje — playtest 20261028-090549-2, Eva.
   const prehra = prehraNaexText(DATA, sVidenymiSkrytymiNaex(DATA, v), sVidenymiSkrytymiNaex(DATA, n.odkrytie.view), uid);
-  return `; bitka (tuhé) ${n.pred.tuhe[ja]}:${n.pred.tuhe[su]} → ${n.po.tuhe[ja]}:${n.po.tuhe[su]}${odpoved}${limit}, Nakladačka ${prebytok(n.prebytokPred)} → ${prebytok(n.prebytokPo)}; kliatby z tejto a ďalších Pitiek kola (NA EX leží do bitky): ty ${pre(ja)}, súper ${pre(su)}${dopady}${prehra}${navyse.length > 0 ? `; ${navyse.join("; ")}` : ""}; súper má v ruke ${kariet(v.hraci[su].rukaPocet)} a smie odpovedať jednou`;
+  return `; bitka (tuhé) ${n.pred.tuhe[ja]}:${n.pred.tuhe[su]} → ${n.po.tuhe[ja]}:${n.po.tuhe[su]}${odpoved}${limit}, Nakladačka ${prebytok(n.prebytokPred)} → ${prebytok(n.prebytokPo)}; kliatby z tejto a ďalších Pitiek kola (NA EX leží do bitky): ty ${pre(ja)}, súper ${pre(su)}${dopady}${prehra}${navyse.length > 0 ? `; ${navyse.join("; ")}` : ""}; súper má v ruke ${kariet(v.hraci[su].rukaPocet)} ${superMozeOdpovedat ? "a smie odpovedať jednou" : "a teraz nemá plný poldeci — odpovedať môže, len ak si ho do odkrytia kúpi barterom (§7)"}`;
 }
 
 function vykresli(v: ClientState, mena: readonly string[]): string {
