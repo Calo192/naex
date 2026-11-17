@@ -141,12 +141,13 @@ describe("§9 bodovanie, sekera, finále a cigareta (v11)", () => {
   });
 
   it("log bodovania rozpíše špaky víťaza za strach a za reči, nulové časti vynechá (playtest 20261108-165501)", () => {
-    // Ana vyhrá: pri staršom 0 má červený strach (6), pri staršom 3 žltý strach (1) a reči na Borisovej oranžovej (2).
+    // Ana vyhrá: pri staršom 0 má červený strach (3 — v12.6 najvyšší stupeň, do v12.5 6), pri staršom 3 žltý strach (1)
+    // a reči na Borisovej oranžovej (2).
     const s = pred({ markery: { 0: [[3, 0], [0, 0]], 3: [[1, 2], [2, 0]] }, sums: [{ Rana: 2 }, {}] });
     const { events } = spustBitku(data, s);
     const log = events.flatMap((e) => (e.type === "log" && e.text.startsWith("Starší po bitke") ? [e.text] : []));
     const meno = (i: number): string => data.cards.get(s.starsi[i]!.karta.defId)!.name;
-    expect(log).toEqual([`Starší po bitke: hráč 1 (víťaz) dostáva 9 špakov — ${meno(0)} 6 za strach; ${meno(3)} 1 za strach, 2 za reči.`]);
+    expect(log).toEqual([`Starší po bitke: hráč 1 (víťaz) dostáva 6 špakov — ${meno(0)} 3 za strach; ${meno(3)} 1 za strach, 2 za reči.`]);
   });
 
   it("víťaz hádky rozdelí hádku na svoje reči po bodovaní a pred Nakladačkou (v12.5, návrh #48 A); strach dvíha víťaz bitky", () => {

@@ -20,7 +20,8 @@ describe("ťahák AI hráčov sedí s constants.ts", () => {
     ],
     ["štart", `${KONSTANTY.START_POLDECI} plné poldeci, ${KONSTANTY.START_CIGARETY} cigarety`],
     ["špaky za bitku (v8)", "1 špak za každú kartu v línii"],
-    ["starší po bitke (v11.12, v11.20)", `**žltá ${KONSTANTY.HODNOTA_STUPNA[1]}, oranžová ${KONSTANTY.HODNOTA_STUPNA[2]}, červená ${KONSTANTY.HODNOTA_STUPNA[3]}** (spolu ${[1, 2, 3].map((st) => KONSTANTY.SPAKY_ZA_STUPEN[st]).join(" / ")})`],
+    ["starší po bitke (v11.12, v11.20)", `**žltá ${KONSTANTY.HODNOTA_STUPNA[1]}, oranžová ${KONSTANTY.HODNOTA_STUPNA[2]}, červená ${KONSTANTY.HODNOTA_STUPNA[3]}** a dostane ich ten,`],
+    ["strach najvyšším stupňom (v12.6, #70 A)", `**len hodnotu svojho najvyššieho stupňa** (žltá ${KONSTANTY.SPAKY_ZA_STUPEN[1]}, oranžová ${KONSTANTY.SPAKY_ZA_STUPEN[2]},`],
     [
       "finále bez dvíhania (v11)",
       `víťaz bitky dostane za každý bod Nakladačky ${pocet(KONSTANTY.SPAKY_ZA_NAKLADACKU_VO_FINALE, "špak", "špaky", "špakov")}, víťaz hádky za každý bod hádky ${pocet(KONSTANTY.SPAKY_ZA_HADKU_VO_FINALE, "špak", "špaky", "špakov")}`,

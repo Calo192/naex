@@ -1004,8 +1004,8 @@ function cenaBoduHadky(s: GameState): number {
 }
 
 /**
- * Bod Nakladačky na jednu ďalšiu bitku: plný strach (SPAKY_ZA_STUPEN, 1 / 3 / 6 od v11.20) za súčet cien
- * stupňov (1 + 2 + 3 bodov), polovičná šanca na výhru — 0,5 (do v11.19 natvrdo 0,4 pri 1 / 3 / 5).
+ * Bod Nakladačky na jednu ďalšiu bitku: červený strach (SPAKY_ZA_STUPEN, od v12.6 najvyšší stupeň 3; v11.20–v12.5
+ * súčet 6) za súčet cien stupňov (1 + 2 + 3 bodov), polovičná šanca na výhru — 0,25 (v11.20–v12.5 0,5).
  */
 const ZA_BOD_NAKLADACKY =
   (0.5 * (KONSTANTY.SPAKY_ZA_STUPEN[3] ?? 0)) / KONSTANTY.CENA_STUPNA.reduce((a, b) => a + b, 0);

@@ -2618,6 +2618,19 @@
       "poznamka": "v12.5 (Michal 2026-11-16)."
     },
     {
+      "id": "10.bodovanie.strach-najvyssi-stupen",
+      "paragraf": "10. Starší › Bodovanie po bitke (krok 4b)",
+      "pravidlo": "v12.6 (#70 A): víťaz bitky dostane za strach pri staršom hodnotu svojho najvyššieho stupňa strachu (žltá 1, oranžová 2, červená 3); keď ten stupeň drží súper rečami, za strach pri tom staršom nič.",
+      "stav": "pokryte",
+      "testy": [
+        "packages/core/test/reci-teplomer.test.ts › §10 bodovanie: stupne 1 / 2 / 3 (v11.20) dostane, kto ich drží › §10 (v12.6, #70 A): víťaz dostane za strach hodnotu najvyššieho stupňa — žltá 1, oranžová 2, červená 3 — nie súčet",
+        "packages/core/test/reci-teplomer.test.ts › §10 bodovanie: stupne 1 / 2 / 3 (v11.20) dostane, kto ich drží › príklad Michala: červený strach, reči na červenej a oranžovej — on 0 (v12.6, #70 A; v11.20–v12.5 1), ja 5",
+        "packages/core/test/reci-teplomer.test.ts › §10 bodovanie: stupne 1 / 2 / 3 (v11.20) dostane, kto ich drží › tabuľka z mocku: strach a reči, špaky jemu a mne",
+        "packages/core/test/strach-reci.test.ts › §9 bodovanie, sekera, finále a cigareta (v11) › log bodovania rozpíše špaky víťaza za strach a za reči, nulové časti vynechá (playtest 20261108-165501)"
+      ],
+      "poznamka": "v12.6 (Michal 2026-11-17); v11.20–v12.5 súčet 1 / 3 / 6."
+    },
+    {
       "id": "5.branie.platba-povodu",
       "paragraf": "5. Cieľ a draft › Branie z ponuky",
       "pravidlo": "v12.5 (E2): súperovu kartu z ponuky platíš súperovi, svoju banke; pri 2 kartách za 3 dostane súper 1 cigaretu za každú svoju. Autobusár rovnako. Pôvod je verejný.",

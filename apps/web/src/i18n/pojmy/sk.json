@@ -299,7 +299,7 @@
   },
   "stupen": {
     "pojem": "Stupeň",
-    "popis": "Poloha na stupnici staršieho: 0 pokojný, 1 znepokojený, 2 vystrašený, 3 vydesený. Stupeň staršieho pre hráča je jeho strach; reči súpera ležia na tej istej stupnici. Vstup stojí 1 / 2 / 3, po bitke dá 1 / 3 / 6 špakov, stupne môže držať súper."
+    "popis": "Poloha na stupnici staršieho: 0 pokojný, 1 znepokojený, 2 vystrašený, 3 vydesený. Stupeň staršieho pre hráča je jeho strach; reči súpera ležia na tej istej stupnici. Vstup stojí 1 / 2 / 3; víťazovi dá po bitke za strach hodnotu najvyššieho stupňa (1 / 2 / 3), reči bodujú súčtom stupňov; stupne môže držať súper."
   },
   "strach": {
     "pojem": "Strach",

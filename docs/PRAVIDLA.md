@@ -1,6 +1,6 @@
 # NA EX! — pravidlá (špecifikácia)
 
-**Pravidlá v12.6 (platné od 2026-11-17)** — Kto skončí Zhromaždenie prvý, otvára ďalšie, remízu v tuhom rozhodne hádka (v12.6), Hádka pred Nakladačkou, reči na súperovom strachu, platíš tomu, kto kartu priniesol, Pivnica plná, Dopiť za teba a mŕtve pravidlá preč (v12.5), Výpalné z banky (v12.4), Cigarety za pas (v12.3), Vykladanie za poldeci (v12.2), Odpor aktívny len bez spoja, podmienka NA EX a Hrable (v12.1), Akcie navyše mení celý Nástroj, Traktorista, Pasca, Výherný automat, Kapybara a Predavačka (v12), Dobratie 2 karty po bitke a posilnenie Nástrojom po NA EX (v11.21), Hodnota stupňa 1 / 2 / 3 a reťaz premien (v11.20), Dohadzovačka len z konca kraja (v11.19), Vedúcko Podporou, Snúbenica, Traktorista a Miňištrant (v11.18), NA EX × Odpor a Posilnenie, Kapybara, Telefón, Krokodíl a hrany Náradia (v11.17), Vypiť, pas, Degustátorka, odpoveď na NA EX za poldeci, Nástroj len pod vlastné karty, Školiteľ aj Zviera (v11.16), Benzínka o cigaretu lacnejšie (v11.15), Frakcie, Občania v troch kategóriách, Náradie a karta z ponuky (v11.14), Lokality (v11.13), Reči na súperovom teplomere (v11.12), Hádka platí (v11.11), Ohováračka namiesto Alkoholika (v11.10), Dobratie do troch a výpalné (v11.9), Každý Hazard je Dlh (v11.8), Kostol a koniec línie (v11.7), Zajatie od minulého kola (v11.6), Identita kariet (v11.5), Zajatie Nakladačkou a presvedčenie (v11.4), Konflikt oboma smermi a Podpora (v11.3), Schopnosť väzňa (v11.2), Vzbura obráti kartu (v11.1) a Strach a reči (Michal 2026-11-02, docs/napady/strach-reci.html,
+**Pravidlá v12.6 (platné od 2026-11-17)** — Kto skončí Zhromaždenie prvý, otvára ďalšie, remízu v tuhom rozhodne hádka, strach boduje najvyšším stupňom (v12.6), Hádka pred Nakladačkou, reči na súperovom strachu, platíš tomu, kto kartu priniesol, Pivnica plná, Dopiť za teba a mŕtve pravidlá preč (v12.5), Výpalné z banky (v12.4), Cigarety za pas (v12.3), Vykladanie za poldeci (v12.2), Odpor aktívny len bez spoja, podmienka NA EX a Hrable (v12.1), Akcie navyše mení celý Nástroj, Traktorista, Pasca, Výherný automat, Kapybara a Predavačka (v12), Dobratie 2 karty po bitke a posilnenie Nástrojom po NA EX (v11.21), Hodnota stupňa 1 / 2 / 3 a reťaz premien (v11.20), Dohadzovačka len z konca kraja (v11.19), Vedúcko Podporou, Snúbenica, Traktorista a Miňištrant (v11.18), NA EX × Odpor a Posilnenie, Kapybara, Telefón, Krokodíl a hrany Náradia (v11.17), Vypiť, pas, Degustátorka, odpoveď na NA EX za poldeci, Nástroj len pod vlastné karty, Školiteľ aj Zviera (v11.16), Benzínka o cigaretu lacnejšie (v11.15), Frakcie, Občania v troch kategóriách, Náradie a karta z ponuky (v11.14), Lokality (v11.13), Reči na súperovom teplomere (v11.12), Hádka platí (v11.11), Ohováračka namiesto Alkoholika (v11.10), Dobratie do troch a výpalné (v11.9), Každý Hazard je Dlh (v11.8), Kostol a koniec línie (v11.7), Zajatie od minulého kola (v11.6), Identita kariet (v11.5), Zajatie Nakladačkou a presvedčenie (v11.4), Konflikt oboma smermi a Podpora (v11.3), Schopnosť väzňa (v11.2), Vzbura obráti kartu (v11.1) a Strach a reči (Michal 2026-11-02, docs/napady/strach-reci.html,
 verzia 2) na v10.4
 (Hádka v10 — Michal 2026-11-01, docs/napady/hadka.html, verzia 4; v9 zmrazené 2026-10-30, krok 2
 revízie starších, docs/napady/starsi-krok2-zadanie.html; dávky v9.1 Chuť, v9.2 ponuka a NA EX naraz,
@@ -25,6 +25,13 @@ stránka Pravidlá — `VERZIA_PRAVIDIEL_PRESNA`).
   **menej Dlhov**; aj tu rovnosť = sekera. Nakladačka pri remíze v tuhom ostáva 0 — nezíska ju nikto. Platí aj vo finále
   a v 2 na 2 (hádka tímov). Päta, Lakeť, Otočka hádku nemá — remízu tam rozhodujú Dlhy ako doteraz. Predtým (v12.5)
   rozhodovalo len menej Dlhov (výklad (4) v Zmenách v12.5). Log a nástenka píšu „remíza v tuhom, rozhodla hádka“.
+- **Strach boduje najvyšším stupňom** (§10 Bodovanie po bitke; návrh #70 z playtestu 20261116-173731, možnosť A, Michal
+  2026-11-17: „mal by sa bodovať len najvyšší stupeň“): „Víťaz bitky dostane za strach pri staršom hodnotu svojho
+  najvyššieho stupňa strachu: žltá 1, oranžová 2, červená 3. Keď ten stupeň drží súper rečami, za strach pri tom staršom
+  nedostane nič.“ Predtým (v11.20–v12.5) súčet stupňov bez tých so súperovými rečami (1 / 3 / 6). Hodnoty stupňov,
+  bodovanie rečí (súčet stupňov na súperovom strachu, R1), ceny, spomalenie, posun, priazeň, výpalné, výhra strachom
+  aj zajatie sa nemenia; vo finále rovnako, v 2 na 2 pre strach tímu (`KONSTANTY.SPAKY_ZA_STUPEN` = 1 / 2 / 3,
+  `spakyZaStrach`). Výučba Prvá hra: čísla v textoch (Farár 2 a 3, Krčmárka 2, koniec 39 : 14).
 
 **Zmeny v12.5 oproti v12.4** (Michal 2026-11-16: „Implementovať nasledovne: Hádka pred bitkou, R1, E2, V1, N1.“;
 playtest 20261111-221937, návrh #48 `hadka-pred-nakladackou`, možnosť A, a docs/napady/riesenia-problemov-20261116.html,
@@ -1454,7 +1461,7 @@ Bitka sa vyhodnotí po poslednej Pitke kola, v tomto poradí (v11 Strach a reči
 | 3 | Poškodenie — tuhé; zvyšná Viera, Bitkár a Veriaci podľa priazní z rozdielu strachov; každý Absťák −1 | §9.3 |
 | 4 | Výsledok (pri remíze v tuhom víťaz hádky z kroku 1, bez neho Dlhy — pred exekúciou —, inak sekera; v12.6) | §9.4 |
 | 4a | Špaky za bitku (karty v línii) víťazovi, vo finále aj Nakladačka a hádka 1 : 1, na Kultúrnom dome každému len za svoje karty; víťaz hádky, ktorý bitku prehral alebo je sekera, za svoje karty (v11.11); Herňa podľa Dlhov pred exekúciou; lokalita ide na krčmovú nástenku | §9.4, §14 |
-| 4b | **Starší bodujú** (stav pred zdvihnutím): stupne 1 / 2 / 3 dostane, kto ich drží — víťaz za svoj strach bez stupňov, ktoré obsadil súper, obaja pri každej bitke za svoje reči **na súperovom strachu** (v12.5, R1; reči nad ním čakajú); kto prehral hádku, tomu reči potom klesnú zospodu o stupeň | §10, §14 |
+| 4b | **Starší bodujú** (stav pred zdvihnutím): stupne 1 / 2 / 3 dostane, kto ich drží — víťaz za strach len hodnotu najvyššieho stupňa, ak ho nedrží súper rečami (v12.6), obaja pri každej bitke za svoje reči **na súperovom strachu** (v12.5, R1; reči nad ním čakajú); kto prehral hádku, tomu reči potom klesnú zospodu o stupeň | §10, §14 |
 | 4c | **Výhra strachom:** víťaz s červeným strachom u aspoň 4 starších (väzni sa rátajú) vyhráva — hra končí. **Výhra väzňami** (v12.5, Pivnica plná): víťaz, ktorý už pred bitkou má väzňov na výhru podľa ligy, vyhráva tiež — aj vo finále | §1, §10 |
 | 4d | Exekúcia (Michal 2026-10-28): Robota (aj z priazne Robota, v9), potom Exekútor každému s Dlhom — Dlhy a špaky (Advokát ich uberie); Záhradkár ju obíde | §11 |
 | 4e | **Hádka** (v12.5 pred Nakladačkou, návrh #48 A) — víťaz hádky ju rozdelí na svoje reči na teplomeroch súpera a smie **presviedčať** (3 body pri rečiach na celom teplomere, v11.12); potom **Nakladačka** — víťaz bitky ju rozdelí na svoj strach (stupeň s rečami o 1 viac, aj s čerstvými) a smie **zajímať** (5 bodov za staršieho na červenom strachu už pred touto Nakladačkou, v11.6; väzeň, krádež — aj za reči z tejto hádky; s väzňami na výhru **pivnica plná**, výhru dá ďalšia vyhratá bitka) — voľne medzi starších, 1 / 2 / 3 za stupeň, zvyšok prepadne; vo finále sa nerozdeľujú — špaky 1 : 1 dostali v kroku 4a | §9.1, §9.4, §10 |
@@ -1708,10 +1715,13 @@ ostával bez cigariet na ponuku). Červené majú obaja, každý dostane za svoj
 
 Po každej bitke (aj vo finále) dá každý starší špaky — **podľa stavu pred zdvihnutím** Nakladačkou a hádkou
 (v11.12, Michal 2026-11-06). Stupne strachu majú hodnotu **žltá 1, oranžová 2, červená 3** (`KONSTANTY.HODNOTA_STUPNA`,
-spolu 1 / 3 / 6; v11.20, Michal 2026-11-10, do v11.19 červená 2) a špaky za stupeň dostane **ten, kto ho drží**, reči majú prednosť:
+v11.20, Michal 2026-11-10, do v11.19 červená 2) a špaky za stupeň dostane **ten, kto ho drží**, reči majú prednosť:
 
-- **Víťaz bitky** dostane za svoj strach bez stupňov, ktoré obsadil súper rečami. Červený strach 6, súperove reči na
-  červenej a oranžovej: víťaz 1, súper 5.
+- **Víťaz bitky** dostane za strach pri staršom **hodnotu svojho najvyššieho stupňa strachu: žltá 1, oranžová 2,
+  červená 3. Keď ten stupeň drží súper rečami, za strach pri tom staršom nedostane nič** (v12.6, návrh #70 A, Michal
+  2026-11-17; v11.20–v12.5 súčet stupňov bez tých so súperovými rečami, 1 / 3 / 6). Príklady: červený strach bez rečí
+  súpera 3; červený strach, súperove reči na žltej: víťaz 3, súper 1; súperove reči na červenej a oranžovej: víťaz 0,
+  súper 5.
 - **Každý hráč pri každej bitke** (vyhratej, prehratej aj pri sekere) dostane hodnotu stupňov, ktoré obsadil rečami
   **a na ktorých má súper strach** (v12.5, R1, Michal 2026-11-16). **Reči nad súperovým strachom nebodujú, čakajú.**
   Keď do nich súperov strach dorastie, bodujú od najbližšej bitky. Plný teplomer pri súperovom červenom strachu 6, pri
@@ -2140,7 +2150,7 @@ verejné. Vyhrá, kto má na konci hry (po finále) viac špakov; rovnosť je re
 | Vyhratá bitka | 1 za každú kartu v celej línii (v8; aj finále), **aspoň 1** (od v8.1 bez zrážky za Absťáky); plus špaky zo sekery | krok 4a (§9.4) |
 | Bitka o Kultúrny dom (v11.13) | víťaz aj porazený 1 za každú svoju kartu v línii (víťaz aspoň 1, plus sekera) | krok 4a (§15) |
 | Vyhraná hádka pri prehratej bitke alebo sekere (v11.11) | 1 za každú svoju kartu v línii; na Kultúrnom dome pri prehratej bitke nie druhýkrát | krok 4a (§9.4) |
-| Starší po bitke (v11.12, v11.20, v12.5) | stupne žltá **1**, oranžová **2**, červená **3** dostane, kto ich drží: víťaz za svoj strach bez stupňov, ktoré obsadil súper, obaja pri každej bitke za svoje reči na súperovom strachu (nad ním čakajú) | krok 4b (§10) |
+| Starší po bitke (v11.12, v11.20, v12.5, v12.6) | stupne žltá **1**, oranžová **2**, červená **3** dostane, kto ich drží: víťaz za strach len hodnotu najvyššieho stupňa (ak ho nedrží súper rečami), obaja pri každej bitke za svoje reči na súperovom strachu (nad ním čakajú) | krok 4b (§10) |
 | Finále: Nakladačka a hádka (v9.1, v11) | víťaz bitky 1 za bod Nakladačky, víťaz hádky 1 za bod hádky | krok 4a (§14b) |
 | Krádež pri zajatí (v11, v11.4) | zlodej dostane, okradnutý stratí toľko špakov, koľko bodov hádky má okradnutý v rečiach pri zajatom staršom v čase zajatia (v11.12), najviac koľko má | krok 4e (§10) |
 | Exekútor | **−** polovica Dlhov nahor, mínus sila tvojej priazne Advokáta (najmenej 0) — v každej bitke, kým má hráč Dlhy (Záhradkár v partii ju v tom kole obíde) | krok 4d (§11) |
@@ -2435,7 +2445,7 @@ Kôň v kroku Exekútora. Michal ich potvrdí.
 | Priznanie | vyloženie kliatby mimo línie natrvalo; nemíňa poldeci ani neodovzdá ťah (§11) |
 | Sekera | bitka bez víťaza (remíza v tuhom, hádku nevyhral nikto a Dlhov rovnako); jej špaky (karty v línii) berie víťaz najbližšej bitky, vo finále prepadnú (§9.4) |
 | Špak | za bitku (karty v línii), za strach a reči pri starších v každej bitke (krok 4b), krádež pri zajatí, výkupné zvyšných poldeci a cigariet; mínus Exekútor a nepriznaná Cirhóza; po finále vyhrá, kto má viac (§14) |
-| Stupeň | poloha markera (strachu či rečí) na stupnici staršieho: 0 sivá, 1 žltá, 2 oranžová, 3 červená; cena vstupu 1 / 2 / 3, špaky po bitke 1 / 3 / 6 (§10, v11; v11.20) |
+| Stupeň | poloha markera (strachu či rečí) na stupnici staršieho: 0 sivá, 1 žltá, 2 oranžová, 3 červená; cena vstupu 1 / 2 / 3, hodnota 1 / 2 / 3 — víťazovi za strach len najvyšší stupeň, reči súčtom (§10, v11; v11.20; v12.6) |
 | Stav staršieho | stupeň staršieho pre hráča: pokojný (0), znepokojený (1), vystrašený (2), vydesený (3) — jeho strach; do priazne, výhry strachom a zajatia sa ráta celý, aj obsadený rečami (§10, v11.12) |
 | poldeci (plné, vypité, na NA EX) | karta zo stavby ponuky |
 | Ponuka | ponuka kariet lícom nahor; obaja vidia, čo berú (§5) |

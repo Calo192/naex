@@ -181,12 +181,13 @@ export const KONSTANTY = {
   /**
    * Strach a reči (v11, Michal 2026-11-02, docs/napady/strach-reci.html): vstup na stupeň
    * 1 / 2 / 3 (žltá, oranžová, červená) stojí pri dvíhaní toľko bodov Nakladačky či hádky,
-   * koľko je číslo stupňa; po bitke marker na ňom dá SPAKY_ZA_STUPEN špakov — súčet hodnôt
-   * stupňov po neho (1 / 3 / 6). Kto vyhrá bitku a má červený strach u CERVENYCH_NA_VYHRU
+   * koľko je číslo stupňa. Víťaz bitky dostane za strach SPAKY_ZA_STUPEN jeho najvyššieho stupňa —
+   * hodnotu toho stupňa (1 / 2 / 3, v12.6 návrh #70 A; v11.20–v12.5 súčet 1 / 3 / 6). Reči bodujú
+   * súčtom hodnôt stupňov (spakyZaReci). Kto vyhrá bitku a má červený strach u CERVENYCH_NA_VYHRU
    * starších (väzni sa rátajú), vyhráva hneď.
    */
   CENA_STUPNA: [0, 1, 2, 3] as readonly number[],
-  SPAKY_ZA_STUPEN: HODNOTA_STUPNA.map((_, st) => HODNOTA_STUPNA.slice(1, st + 1).reduce((a, b) => a + b, 0)) as readonly number[],
+  SPAKY_ZA_STUPEN: HODNOTA_STUPNA,
   /**
    * Reči na súperovom teplomere (v11.12, Michal 2026-11-06): špaky za stupeň dostane ten, kto ho
    * drží (1 / 2 / 3, v11.20). Súper platí za stupeň s rečami o REC_PRIRAZKA viac.
@@ -336,7 +337,8 @@ export function vazniNaVyhru(lokalitCelkom: number): number {
 // len na súperovom strachu (R1), kartu z ponuky platíš tomu, kto ju priniesol (E2), výhra väzňami až
 // v ďalšej vyhratej bitke (V1, Pivnica plná) a nový ťah Dopiť za teba (N1).
 // v12.6 (Michal 2026-11-17, Zrejúca) bez novej značky: ďalšie Zhromaždenie kola otvára, kto v predošlom
-// skončil vykladanie prvý (návrh #73 A); remízu v tuhom rozhodne víťaz hádky, až potom menej Dlhov.
+// skončil vykladanie prvý (návrh #73 A); remízu v tuhom rozhodne víťaz hádky, až potom menej Dlhov;
+// strach víťaza boduje len najvyšším stupňom 1 / 2 / 3 (návrh #70 A).
 export const VERZIA_PRAVIDIEL = "v12";
 /**
  * Presná verzia pravidiel vrátane dávky — hráč ju vidí na stránke Pravidlá, ktorá má

@@ -4053,3 +4053,14 @@ Staré znenie §9.4 (v12.5):
 
 Slovník: „Sekera — bitka bez víťaza (remíza v tuhom aj v Dlhoch)“; „Dlh — … rozhoduje remízu v tuhom“; „Absťák — …
 remízu v tuhom prehráva, kto ich má viac“ / „rozhoduje remízu“ (to platilo do v12.4, v12.5 to v slovníku ostalo omylom).
+
+## v12.6 — Strach boduje najvyšším stupňom (Michal 2026-11-17, návrh #70 A)
+
+Návrh `renta-strachu` z playtestu 20261116-173731: raz kúpená červená dávala 6 špakov v každej ďalšej vyhratej bitke.
+Staré znenie §10 Bodovanie po bitke (v11.20–v12.5):
+
+> Stupne strachu majú hodnotu **žltá 1, oranžová 2, červená 3** (`KONSTANTY.HODNOTA_STUPNA`, spolu 1 / 3 / 6; …)
+> - **Víťaz bitky** dostane za svoj strach bez stupňov, ktoré obsadil súper rečami. Červený strach 6, súperove reči na
+>   červenej a oranžovej: víťaz 1, súper 5.
+
+Slovník: „Stupeň — … cena vstupu 1 / 2 / 3, špaky po bitke 1 / 3 / 6“.

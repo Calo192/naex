@@ -28,7 +28,7 @@ export function radStarsich(starsi: readonly StarsiVerejne[], vazni: readonly Va
   return out;
 }
 
-/** Špaky za stupeň (žltá 1, oranžová 3, červená 6 — v11.20) — číslo v bubline rečí. */
+/** Špaky víťaza za strach na stupni (najvyšší stupeň: žltá 1, oranžová 2, červená 3 — v12.6). */
 export const spakyStupna = (s: number): number => KONSTANTY.SPAKY_ZA_STUPEN[s] ?? 0;
 
 // ---------------------------------------------------------------------------

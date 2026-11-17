@@ -193,9 +193,10 @@ describe("línia starších", () => {
     const html = linia("pult");
     expect(html).toContain('class="tp-pult"');
     expect(html).toContain("ty výhra · prehra");
-    // Moje reči na jeho červenej: výhra 3 + 1 za môj strach, prehra 3; jeho strach 6 bez červenej, ktorú držím rečami: 3 (v11.20).
+    // Moje reči na jeho červenej: výhra 3 + 1 za môj strach, prehra 3; jeho najvyšší stupeň strachu (červenú) držím
+    // rečami — za strach nič (v12.6, #70 A; v11.20–v12.5 6 − 3 = 3).
     expect(html).toMatch(/tp-bd ja"><b>4<\/b> · 3/);
-    expect(html).toMatch(/tp-bd su"><b>3<\/b> · 0/);
+    expect(html).toMatch(/tp-bd su"><b>0<\/b> · 0/);
     expect(html).toContain("⛓ v pivnici u Fero");
     expect(html).toContain("červené 1 + 1 väzeň = 2/4");
   });

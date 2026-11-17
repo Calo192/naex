@@ -174,12 +174,16 @@ export function spakyZaReci(e: Markery, p: PlayerId): number {
   return b === null || vrch === 0 ? 0 : hodnotaStupnov(b.od, vrch);
 }
 
-/** Špaky víťaza bitky za strach: jeho stupne bez tých, ktoré drží súper rečami (v11.12). */
+/**
+ * Špaky víťaza bitky za strach (v12.6, návrh #70 A): hodnota jeho najvyššieho stupňa strachu — žltá 1,
+ * oranžová 2, červená 3. Keď ten stupeň drží súper rečami, nič. Do v12.5 súčet stupňov bez tých so
+ * súperovými rečami (1 / 3 / 6) — raz kúpená červená bola renta, ktorá rozhodla partiu.
+ */
 export function spakyZaStrach(e: Markery, p: PlayerId): number {
+  const vrch = e.strach[p];
   const b = blokReci(e, opponentOf(p));
-  const zaStrach = spakyZaStupen(e.strach[p]);
-  if (b === null) return zaStrach;
-  return Math.max(0, zaStrach - hodnotaStupnov(b.od, Math.min(b.vrch, e.strach[p])));
+  if (b !== null && b.od <= vrch && vrch <= b.vrch) return 0;
+  return spakyZaStupen(vrch);
 }
 
 /** Koľko bodov hádky je v rečiach hráča p pri staršom — krádež pri zajatí (v11.12). */
@@ -247,7 +251,7 @@ export function stupenNaBodovanie(elder: Markery, p: PlayerId, vyhral: boolean):
   return reci > 0 ? reci : vyhral ? elder.strach[p] : 0;
 }
 
-/** Špaky za marker na stupni (žltá 1, oranžová 3, červená 6 — v11.20). */
+/** Špaky víťaza za strach na stupni (žltá 1, oranžová 2, červená 3 — v12.6; v11.20–v12.5 1 / 3 / 6). */
 export function spakyZaStupen(stupen: number): number {
   return KONSTANTY.SPAKY_ZA_STUPEN[stupen] ?? 0;
 }

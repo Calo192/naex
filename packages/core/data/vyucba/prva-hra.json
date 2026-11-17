@@ -1595,7 +1595,7 @@
     {
       "id": "i-stupne",
       "kto": "info",
-      "melichar": "Strach pri staršom má stupne: sivá 0, žltá 1, oranžová 2, červená 3. Strach neklesá a platí ti po každej vyhratej bitke: žltá 1 špak, oranžová 3, červená 6. Ja sa s nimi momentálne nestretávam, ale to sem nepatrí.",
+      "melichar": "Strach pri staršom má stupne: sivá 0, žltá 1, oranžová 2, červená 3. Strach neklesá a po každej vyhratej bitke ti platí jeho najvyšší stupeň: žltá 1 špak, oranžová 2, červená 3. Ja sa s nimi momentálne nestretávam, ale to sem nepatrí.",
       "zvyraznit": [
         "linia-starsich",
         "starsi-stupnica"
@@ -1604,7 +1604,7 @@
     {
       "id": "i-bodovanie2",
       "kto": "info",
-      "melichar": "Starší ti platia hneď po bitke, podľa stavu pred Nakladačkou: Farár 3 za oranžový strach. Štamgast reči nemal, od starších nedostal nič.",
+      "melichar": "Starší ti platia hneď po bitke, podľa stavu pred Nakladačkou: Farár 2 za oranžový strach. Štamgast reči nemal, od starších nedostal nič.",
       "zvyraznit": [
         "linia-starsich",
         "bar:body",
@@ -1753,7 +1753,7 @@
     {
       "id": "i-spaky2",
       "kto": "info",
-      "melichar": "Špaky: 9 za karty v línii, aj za jeho, a 3 od starších. Štamgast vyhral hádku, tak dostal špak za každú svoju kartu v línii, päť, hoci bitku prehral. 17 : 5. Za prehru dostal cigaretu, aby sa neutrápil – a ty si dostal z banky jednu ako výpalné: po každej bitke ti banka dá cigaretu za každého staršieho, ktorý sa ťa bojí na červenej.",
+      "melichar": "Špaky: 9 za karty v línii, aj za jeho, a 2 od starších. Štamgast vyhral hádku, tak dostal špak za každú svoju kartu v línii, päť, hoci bitku prehral. 16 : 5. Za prehru dostal cigaretu, aby sa neutrápil – a ty si dostal z banky jednu ako výpalné: po každej bitke ti banka dá cigaretu za každého staršieho, ktorý sa ťa bojí na červenej.",
       "zvyraznit": [
         "bar:body",
         "bar-supera:body",
@@ -2220,7 +2220,7 @@
     {
       "id": "i-vyhra3",
       "kto": "info",
-      "melichar": "Bitka je tvoja, 7 : 0. Na Kultúrnom dome máš špaky len za svoje karty, tri, a Štamgast za svojho Mäsiara jeden. Farár ti za červený strach dal 6. Krčmárka zaplatila Štamgastovi 1 za reči na tvojej žltej; pri Autobusárovi jeho reči čakali, ten sa ťa nebojí. Exekútor ti spálil jeden z dvoch Dlhov aj so špakom. 25 : 7.",
+      "melichar": "Bitka je tvoja, 7 : 0. Na Kultúrnom dome máš špaky len za svoje karty, tri, a Štamgast za svojho Mäsiara jeden. Farár ti za červený strach dal 3. Krčmárka zaplatila Štamgastovi 1 za reči na tvojej žltej; pri Autobusárovi jeho reči čakali, ten sa ťa nebojí. Exekútor ti spálil jeden z dvoch Dlhov aj so špakom. 21 : 7.",
       "zvyraznit": [
         "bar:body",
         "bar-supera:body",
@@ -2325,7 +2325,7 @@
           "vysvetlenie": "Áno. Porazenému platia len reči."
         },
         {
-          "text": "3, je na oranžovej.",
+          "text": "2, je na oranžovej.",
           "spravna": false,
           "vysvetlenie": "Len keď vyhráš. Porazenému platia len reči.",
           "hlaska": "bieda/a_furt_nic_nema"
@@ -2740,7 +2740,7 @@
     {
       "id": "i-bitka-finale",
       "kto": "info",
-      "melichar": "Finále je tvoje, 21 : 5. Špaky: päť za karty v línii a Nakladačka 16 sa vo finále mení na špaky jedna ku jednej. Starší: Krčmárka 3 za oranžový strach; Veterinár za tvoje reči nič – Štamgasta sa nebojí, tak čakajú. Exekútor ti zobral tri, Štamgastovi jeden. Vo finále sa nezajíma ani nepresviedča.",
+      "melichar": "Finále je tvoje, 21 : 5. Špaky: päť za karty v línii a Nakladačka 16 sa vo finále mení na špaky jedna ku jednej. Starší: Krčmárka 2 za oranžový strach; Veterinár za tvoje reči nič – Štamgasta sa nebojí, tak čakajú. Exekútor ti zobral tri, Štamgastovi jeden. Vo finále sa nezajíma ani nepresviedča.",
       "zvyraznit": [
         "bitka-ucet",
         "bar:body",
@@ -2750,7 +2750,7 @@
     {
       "id": "i-koniec",
       "kto": "info",
-      "melichar": "Koniec hry. Zvyšné plné poldeci a cigarety sa vykúpia: plný poldeci 1 špak, päť cigariet 1 špak. Tebe dva plné poldeci a dvanásť cigariet – aj s výpalným za Farára po finále – dali 4, Štamgastovi dva poldeci a dvadsaťtri cigariet, väčšinou z pasov, 6. A dve Cirhózy – z druhého kola a z finále – ti ležia v balíčku nepriznané a stoja ťa 6 špakov; Štamgasta jeho jedna 3. 44 : 14.",
+      "melichar": "Koniec hry. Zvyšné plné poldeci a cigarety sa vykúpia: plný poldeci 1 špak, päť cigariet 1 špak. Tebe dva plné poldeci a dvanásť cigariet – aj s výpalným za Farára po finále – dali 4, Štamgastovi dva poldeci a dvadsaťtri cigariet, väčšinou z pasov, 6. A dve Cirhózy – z druhého kola a z finále – ti ležia v balíčku nepriznané a stoja ťa 6 špakov; Štamgasta jeho jedna 3. 39 : 14.",
       "zvyraznit": [
         "bar:body",
         "nastenka"

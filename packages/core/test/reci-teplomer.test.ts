@@ -73,21 +73,36 @@ describe("§10 poradie obsadzovania a cena", () => {
 });
 
 describe("§10 bodovanie: stupne 1 / 2 / 3 (v11.20) dostane, kto ich drží", () => {
-  it("príklad Michala: červený strach, reči na červenej a oranžovej — on 1, ja 5 (do v11.19 4)", () => {
+  it("príklad Michala: červený strach, reči na červenej a oranžovej — on 0 (v12.6, #70 A; v11.20–v12.5 1), ja 5", () => {
     const e = st(3, [2, 3]);
-    expect(spakyZaStrach(e, 0)).toBe(1);
+    // Najvyšší stupeň jeho strachu (červenú) drží súper rečami — za strach pri tom staršom nič.
+    expect(spakyZaStrach(e, 0)).toBe(0);
     expect(spakyZaReci(e, 1)).toBe(5);
-    expect(spakyOdStarsieho(e, 0, true)).toBe(1);
+    expect(spakyOdStarsieho(e, 0, true)).toBe(0);
     expect(spakyOdStarsieho(e, 1, false)).toBe(5);
+  });
+
+  it("§10 (v12.6, #70 A): víťaz dostane za strach hodnotu najvyššieho stupňa — žltá 1, oranžová 2, červená 3 — nie súčet", () => {
+    expect([0, 1, 2, 3].map((s) => spakyZaStrach(st(s as Stupen), 0))).toEqual([0, 1, 2, 3]);
+    // Súperove reči pod jeho vrchom stupeň nevezmú: červený strach, reči na žltej — víťaz 3, súper 1.
+    expect(spakyZaStrach(st(3, [1, 1]), 0)).toBe(3);
+    expect(spakyZaReci(st(3, [1, 1]), 1)).toBe(1);
+    expect(spakyZaStrach(st(3, [1, 2]), 0)).toBe(3);
+    // Vrch drží súper rečami: nič.
+    expect(spakyZaStrach(st(2, [2, 2]), 0)).toBe(0);
+    expect(spakyZaStrach(st(1, [1, 3]), 0)).toBe(0);
   });
 
   it("tabuľka z mocku: strach a reči, špaky jemu a mne", () => {
     const pripady: readonly (readonly [Stupen, Bl, number, number])[] = [
-      [3, [3, 3], 3, 3],
-      [3, [2, 3], 1, 5],
+      // v12.6 (#70 A): víťaz len za najvyšší stupeň — keď ho drží súper rečami, nič (do v12.5 3, 1, 0, 1, 0).
+      [3, [3, 3], 0, 3],
+      [3, [2, 3], 0, 5],
       [3, [1, 3], 0, 6],
-      [2, [2, 2], 1, 2],
+      [3, [1, 2], 3, 3],
+      [2, [2, 2], 0, 2],
       [2, [1, 2], 0, 3],
+      [2, [1, 1], 2, 1],
       // R1 (v12.5): reči nad súperovým strachom čakajú a nebodujú.
       [2, [1, 3], 0, 3],
       [0, [1, 1], 0, 0],
@@ -117,7 +132,7 @@ describe("§10 bodovanie: stupne 1 / 2 / 3 (v11.20) dostane, kto ich drží", ()
     expect(spakyOdStarsieho(e, 1, true)).toBe(3);
     expect(spakyOdStarsieho(e, 1, false)).toBe(3);
     expect(spakyOdStarsieho(st(3), 0, false)).toBe(0);
-    expect(spakyOdStarsieho(st(3), 0, true)).toBe(6);
+    expect(spakyOdStarsieho(st(3), 0, true)).toBe(3);
   });
 });
 
@@ -133,11 +148,11 @@ describe("§10 spomalenie a posun", () => {
     expect(cenaZdvihu(st(1, [2, 3]), 0, "strach", 2)).toBe(3);
   });
 
-  it("príklad Michala: reči žltá + oranžová, strach oranžová → červená: oranžová + červená; on 1, ja 5 (v11.20)", () => {
+  it("príklad Michala: reči žltá + oranžová, strach oranžová → červená: oranžová + červená; on 0 (v12.6; v11.20 1), ja 5", () => {
     const po = sMarkerom(st(2, [1, 2]), 0, "strach", 3);
     expect(blokReci(po, 1)).toEqual({ od: 2, vrch: 3 });
     expect(po.strach[0]).toBe(3);
-    expect(spakyOdStarsieho(po, 0, true)).toBe(1);
+    expect(spakyOdStarsieho(po, 0, true)).toBe(0);
     expect(spakyOdStarsieho(po, 1, false)).toBe(5);
   });
 
