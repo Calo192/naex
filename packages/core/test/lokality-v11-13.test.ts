@@ -349,10 +349,18 @@ describe("Kultúrny dom (v11.13)", () => {
     expect(zaznam(naKulturnom([3, 0], null, 4)).zaBitku).toEqual([3 + 4, 2]);
   });
 
-  it("sekera: špaky kola ako inde čakajú celé, víťaz hádky hneď za svoje karty raz", () => {
+  it("remíza v tuhom s víťazom hádky (v12.6): bitku vyhrá víťaz hádky, každý len za svoje karty, na sekeru nič", () => {
+    // Do v12.5 tu bola sekera (víťaz hádky hneď za svoje karty, 5 na sekeru); od v12.6 remízu rozhodne hádka.
     const s = naKulturnom([2, 2], 1);
     const po = spustBitku(data, s).state;
-    expect(po.nastenka.at(-1)).toMatchObject({ vitaz: null, zaBitku: [0, 2] });
+    expect(po.nastenka.at(-1)).toMatchObject({ vitaz: 1, rozhodlo: "hadka", zaBitku: [3, 2] });
+    expect(po.spakyNaSekere).toBe(0);
+  });
+
+  it("sekera (hádku nevyhral nikto, Dlhov rovnako): špaky kola čakajú celé", () => {
+    const s = naKulturnom([2, 2], null);
+    const po = spustBitku(data, s).state;
+    expect(po.nastenka.at(-1)).toMatchObject({ vitaz: null, zaBitku: [0, 0] });
     expect(po.spakyNaSekere).toBe(5);
   });
 

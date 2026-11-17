@@ -69,6 +69,7 @@ export function poznamkaBitky(b: BitkaNaNastenke, kto: (p: PlayerId) => string):
   if (porazenemu > 0 && b.vitaz !== null) out.push(t("spaky.poznKulturak", { kto: kto(opponentOf(b.vitaz)), n: porazenemu }));
   if ((b.noviny ?? 0) > 0 && b.vitaz !== null) out.push(t("spaky.poznNoviny", { kto: kto(opponentOf(b.vitaz)), n: b.noviny ?? 0 }));
   if ((b.rozhodlo as string) === "abstak") out.push(t("spaky.remizaAbstaky"));
+  if (b.rozhodlo === "hadka") out.push(t("spaky.remizaHadka"));
   if (b.rozhodlo === "dlhy") out.push(t("spaky.remizaDlhy"));
   if (b.abstakZrazka > 0) out.push(t("spaky.poznAbstak", { n: b.abstakZrazka }));
   const herna = spakyZaHernu(b);

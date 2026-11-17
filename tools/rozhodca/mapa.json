@@ -1160,13 +1160,18 @@
     {
       "id": "9.vysledok.vitaz",
       "paragraf": "9. Bitka › 9.4 Výsledok",
-      "pravidlo": "Víťaz má vyššie tuhé; pri remíze v tuhom vyhrá menej Absťákov (kariet v balíčku, v9.1), potom menej priznaných Dlhov, inak sekera.",
+      "pravidlo": "Víťaz má vyššie tuhé; pri remíze v tuhom vyhrá víťaz hádky (aj Telefónom), keď hádku nevyhral nikto, menej Dlhov, inak sekera; Nakladačka pri remíze v tuhom nie je (v12.6, Michal 2026-11-17).",
       "stav": "pokryte",
       "testy": [
-        "packages/core/test/battle.test.ts › remízu v tuhom vyhrá menej Absťákov, potom menej priznaných Dlhov, inak sekera",
-        "packages/core/test/pravidla-20261021.test.ts › remízu v tuhom rozhodnú Absťáky, potom Dlhy; sekera odloží špaky kola víťazovi ďalšej bitky",
-        "packages/core/test/abstak-chut.test.ts › remízu v tuhom prehráva, kto má viac Absťákov — v partii z kariet v balíčku"
-      ]
+        "packages/core/test/remiza-hadka-v12-6.test.ts › §9.4 remíza v tuhom: najprv hádka, potom Dlhy (v12.6) › víťaz hádky vyhrá remízu v tuhom aj s viac Dlhmi; Nakladačku nemá nikto",
+        "packages/core/test/remiza-hadka-v12-6.test.ts › §9.4 remíza v tuhom: najprv hádka, potom Dlhy (v12.6) › hádku nevyhral nikto → menej Dlhov; aj Dlhy rovnako → sekera",
+        "packages/core/test/remiza-hadka-v12-6.test.ts › §9.4 remíza v tuhom: najprv hádka, potom Dlhy (v12.6) › v bitke: remíza v tuhom, hádku vyhral hráč 2 → bitku vyhráva on (aj s viac Dlhmi), log povie prečo",
+        "packages/core/test/remiza-hadka-v12-6.test.ts › §9.4 remíza v tuhom: najprv hádka, potom Dlhy (v12.6) › remíza v hádke vyhraná Telefónom (o 0) je víťazstvo v hádke — rozhodne remízu v tuhom",
+        "packages/core/test/remiza-hadka-v12-6.test.ts › §9.4 remíza v tuhom: najprv hádka, potom Dlhy (v12.6) › hádku nevyhral nikto: rozhodnú Dlhy; aj rovnako Dlhov → sekera, log to povie",
+        "packages/core/test/remiza-hadka-v12-6.test.ts › §9.4 remíza v tuhom: najprv hádka, potom Dlhy (v12.6) › odhad špakov kola ráta remízu v tuhom rovnako ako bitka (hádka pred Dlhmi)",
+        "packages/core/test/remiza-hadka-v12-6.test.ts › §9.4 remíza v tuhom: najprv hádka, potom Dlhy (v12.6) › Päta, Lakeť, Otočka hádku nemá — remízu v tuhom ďalej rozhodujú Dlhy"
+      ],
+      "poznamka": "v12.6: predtým (v12.5) len menej Dlhov, do v12.4 najprv menej Absťákov."
     },
     {
       "id": "9.vysledok.sekera",

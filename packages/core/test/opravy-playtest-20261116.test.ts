@@ -146,12 +146,12 @@ describe("hlásenie finále a sekery v partiách botov", () => {
     }
   });
 
-  it("sekera: o remíze rozhodujú len Dlhy (v12.5) — v hlásení ani v zdroji motora Absťáky nie sú", () => {
+  it("sekera: o remíze rozhoduje hádka a Dlhy (v12.6; v12.5 len Dlhy) — v hlásení ani v zdroji motora Absťáky nie sú", () => {
     expect(sekery.length).toBeGreaterThan(0);
     for (const t of sekery) expect(t).not.toMatch(/Absť/);
     const engine = readFileSync(new URL("../src/engine.ts", import.meta.url), "utf8");
     expect(engine).not.toContain("v Absťákoch aj v Dlhoch —");
-    expect(engine).toContain("Sekera: remíza v tuhom aj v Dlhoch —");
+    expect(engine).toContain("Sekera: remíza v tuhom, hádku nevyhral nikto a Dlhov rovnako —");
   });
 });
 

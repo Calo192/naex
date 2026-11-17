@@ -39,7 +39,7 @@ import { KONSTANTY, vazniNaVyhru } from "./constants.ts";
 import { spakyPriExekucii, zhoriPriExekucii } from "./battle.ts";
 import type { ElderState } from "./elders.ts";
 import { kradezZaZajatie, priazenPre, spakyOdStarsieho, spakyZaReci, spakyZaStrach, spakyZaStupen, strachZ, vydesil } from "./elders.ts";
-import { jeCielLokalita, nasobokPitky, partiaHraca, sDlhmiPoradkyne } from "./effects.ts";
+import { jeCielLokalita, nasobokPitky, partiaHraca, sDlhmiPoradkyne, vysledokHadkyStola } from "./effects.ts";
 import { stranyLokality } from "./hrany.ts";
 import { stavZavislosti } from "./zavislost.ts";
 import { maximumPoldeci } from "./player.ts";
@@ -730,11 +730,12 @@ function hodnotaBitky(k: Kontext, s: GameState, q: PlayerId, ostrost: number): n
   // Dlh Finančnej poradkyne zadlžuje súpera, nie jej majiteľa.
   const sums = sDlhmiPoradkyne(data, s, evaluateLine(data, lineState(s))).sums;
   const dmg = poskodenieBitky(data, s, sums);
-  // Remíza v tuhom (v12.5): vyhrá menej Dlhov, inak sekera (šanca ½).
+  // Remíza v tuhom (v12.6): vyhrá víťaz hádky, keď ju nevyhral nikto, menej Dlhov, inak sekera (šanca ½).
   const dq = s.hraci[q].dlhy;
   const dO = s.hraci[o].dlhy;
   const tuhe = dmg.tuhe[q] - dmg.tuhe[o];
-  const m = tuhe !== 0 ? tuhe : 0.5 * Math.sign(dO - dq);
+  const hadka = tuhe !== 0 ? null : vysledokHadkyStola(data, s, dmg.makke).vitaz;
+  const m = tuhe !== 0 ? tuhe : hadka !== null ? (hadka === q ? 0.5 : -0.5) : 0.5 * Math.sign(dO - dq);
   const celk = dmg.celkove[q] - dmg.celkove[o];
   const sanca = 1 / (1 + Math.exp(-ostrost * m));
   // Vo finále je Nakladačka priamo špaky (v9.1) — bez stropu, každý bod rozdielu sa ráta.

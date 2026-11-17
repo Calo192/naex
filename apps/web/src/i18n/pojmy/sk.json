@@ -43,7 +43,7 @@
   },
   "dlh": {
     "pojem": "Dlh",
-    "popis": "Kliatba z Hazardu — počítadlo, nie karta: každá akcia Hazard v Pitke = 1 Dlh; za Dlhy príde v každej bitke Exekútor a pri remíze v bitke prehrá, kto ich má viac."
+    "popis": "Kliatba z Hazardu — počítadlo, nie karta: každá akcia Hazard v Pitke = 1 Dlh; za Dlhy príde v každej bitke Exekútor a pri remíze v tuhom, keď hádku nevyhral nikto, prehrá, kto ich má viac."
   },
   "dobratie": {
     "pojem": "Dobratie",
@@ -273,7 +273,7 @@
   },
   "sekera": {
     "pojem": "Na sekeru",
-    "popis": "Bitka bez víťaza (remíza v tuhom aj v Dlhoch): jej špaky vezme víťaz najbližšej bitky, vo finále prepadnú."
+    "popis": "Bitka bez víťaza (remíza v tuhom, hádku nevyhral nikto a Dlhov rovnako): jej špaky vezme víťaz najbližšej bitky, vo finále prepadnú."
   },
   "senok": {
     "pojem": "Ponuka",

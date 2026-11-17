@@ -4040,3 +4040,16 @@ každé Zhromaždenie začínal útočník, takže pri rovnakom počte poldeci k
 §7 Počet Pitiek:
 
 > Pred každou Pitkou je Zhromaždenie (limit sa ráta nanovo, začína útočník).
+
+## v12.6 — Remíza v tuhom: najprv hádka, potom Dlhy (Michal 2026-11-17, session)
+
+Staré znenie §9.4 (v12.5):
+
+> víťaz          = vyššie TUHÉ poškodenie
+>   remíza v tuhom: vyhrá, kto má MENEJ DLHOV  (v12.5; do v12.4 najprv menej Absťákov)
+>   aj tu rovnosť:  nevyhrá nikto — SEKERA
+
+> **Sekera:** keď nerozhodne ani tuhé, ani Dlhy, bitku nevyhrá nikto …
+
+Slovník: „Sekera — bitka bez víťaza (remíza v tuhom aj v Dlhoch)“; „Dlh — … rozhoduje remízu v tuhom“; „Absťák — …
+remízu v tuhom prehráva, kto ich má viac“ / „rozhoduje remízu“ (to platilo do v12.4, v12.5 to v slovníku ostalo omylom).

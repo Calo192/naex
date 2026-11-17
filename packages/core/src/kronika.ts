@@ -27,7 +27,7 @@ export interface KoloKroniky {
   readonly pitky: number;
   readonly tuhe: readonly [number, number];
   readonly makke: readonly [number, number];
-  /** null = sekera (remíza v tuhom aj v Dlhoch) alebo bitka sa neodohrala. */
+  /** null = sekera (remíza v tuhom, hádku nevyhral nikto a rovnako Dlhov) alebo bitka sa neodohrala. */
   readonly vitaz: PlayerId | null;
   readonly sekera: boolean;
   readonly prebytok: { readonly drzi: PlayerId; readonly kolko: number } | null;

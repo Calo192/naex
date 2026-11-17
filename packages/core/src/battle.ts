@@ -122,16 +122,17 @@ export function computeDamage(sides: readonly [BattleSide, BattleSide]): DamageR
 }
 
 /**
- * Čím sa rozhodla bitka: tuhé, pri remíze menej Dlhov, inak sekera. Remíza podľa Absťákov
- * (v6–v12.4, „abstak“) zanikla v12.5 — staré záznamy nástenky ju ešte nesú.
+ * Čím sa rozhodla bitka: tuhé, pri remíze víťaz hádky (v12.6), potom menej Dlhov, inak sekera.
+ * Remíza podľa Absťákov (v6–v12.4, „abstak“) zanikla v12.5 — staré záznamy nástenky ju ešte nesú.
  */
-export type RozhodnutieBitky = "tuhe" | "dlhy" | "sekera";
+export type RozhodnutieBitky = "tuhe" | "hadka" | "dlhy" | "sekera";
 
 export interface BattleOutcome {
   /**
-   * Víťaz bitky: vyššie TUHÉ poškodenie. Pri remíze v tuhom vyhrá, kto má menej
-   * Dlhov (v12.5; v6–v12.4 najprv menej Absťákov); inak nikto — špaky kola idú
-   * na sekeru. Bez údajov o remíze (náhľady) je remíza v tuhom vždy sekera.
+   * Víťaz bitky: vyššie TUHÉ poškodenie. Pri remíze v tuhom vyhrá víťaz hádky (v12.6, aj
+   * Telefónom), keď hádku nevyhral nikto, kto má menej Dlhov (v12.5; v6–v12.4 najprv menej
+   * Absťákov); inak nikto — špaky kola idú na sekeru. Bez údajov o remíze (náhľady) je remíza
+   * v tuhom vždy sekera.
    */
   readonly vitaz: PlayerId | null;
   readonly rozhodlo: RozhodnutieBitky;
@@ -143,9 +144,11 @@ export interface BattleOutcome {
   readonly prebytok: number;
 }
 
-/** Čo rozhoduje remízu v tuhom: Dlhy hráčov (v12.5). */
+/** Čo rozhoduje remízu v tuhom: víťaz hádky (v12.6), potom Dlhy hráčov (v12.5). */
 export interface RemizaBitky {
   readonly dlhy: readonly [number, number];
+  /** Víťaz hádky vrátane remízy vyhranej Telefónom; null = hádku nevyhral nikto. */
+  readonly hadka?: PlayerId | null;
 }
 
 /** Hráč s menším číslom, pri rovnosti null. */
@@ -157,6 +160,9 @@ export function battleOutcome(damage: DamageResult, remiza?: RemizaBitky): Battl
   const prebytokDrzi: PlayerId | null = damage.tuhe[0] === damage.tuhe[1] ? null : damage.tuhe[0] > damage.tuhe[1] ? 0 : 1;
   const prebytok = Math.abs(damage.tuhe[0] - damage.tuhe[1]);
   if (damage.tuhe[0] !== damage.tuhe[1]) return { vitaz: damage.tuhe[0] > damage.tuhe[1] ? 0 : 1, rozhodlo: "tuhe", prebytokDrzi, prebytok };
+  // v12.6 (Michal 2026-11-17): remízu v tuhom najprv rozhodne hádka, až potom Dlhy.
+  const zHadky = remiza?.hadka ?? null;
+  if (zHadky !== null) return { vitaz: zHadky, rozhodlo: "hadka", prebytokDrzi, prebytok };
   const zDlhov = remiza === undefined ? null : menej(remiza.dlhy);
   if (zDlhov !== null) return { vitaz: zDlhov, rozhodlo: "dlhy", prebytokDrzi, prebytok };
   return { vitaz: null, rozhodlo: "sekera", prebytokDrzi, prebytok };

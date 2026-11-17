@@ -336,7 +336,7 @@ export function vazniNaVyhru(lokalitCelkom: number): number {
 // len na súperovom strachu (R1), kartu z ponuky platíš tomu, kto ju priniesol (E2), výhra väzňami až
 // v ďalšej vyhratej bitke (V1, Pivnica plná) a nový ťah Dopiť za teba (N1).
 // v12.6 (Michal 2026-11-17, Zrejúca) bez novej značky: ďalšie Zhromaždenie kola otvára, kto v predošlom
-// skončil vykladanie prvý (návrh #73 A).
+// skončil vykladanie prvý (návrh #73 A); remízu v tuhom rozhodne víťaz hádky, až potom menej Dlhov.
 export const VERZIA_PRAVIDIEL = "v12";
 /**
  * Presná verzia pravidiel vrátane dávky — hráč ju vidí na stránke Pravidlá, ktorá má

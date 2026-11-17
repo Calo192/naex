@@ -733,7 +733,7 @@ export type Event =
       readonly damage: DamageResult;
       /** Súčty aktívnych akcií oboch partií (línia je verejná) — štatistiky. */
       readonly sums: readonly [ActionSums, ActionSums];
-      /** null = sekera: remíza v tuhom aj v Dlhoch (v12.5; do v12.4 aj v Absťákoch). */
+      /** null = sekera: remíza v tuhom, hádku nevyhral nikto a rovnako Dlhov (v12.6; do v12.4 aj v Absťákoch). */
       readonly vitaz: PlayerId | null;
       readonly rozhodlo: RozhodnutieBitky;
       readonly prebytok: number;
@@ -6040,9 +6040,9 @@ function vyhodnotPoskodenie(s: MutState, data: GameData, events: Event[]): void 
   const b = s.bitkaStav;
   if (b === null) return;
   const damage = poskodenieBitky(data, s as GameState, b.sums as readonly [ActionSums, ActionSums]);
-  // Remízu v tuhom rozhodnú Dlhy (v12.5; do v12.4 najprv Absťáky).
+  // Remízu v tuhom rozhodne víťaz hádky (v12.6, aj Telefónom), potom Dlhy (v12.5; do v12.4 najprv Absťáky).
   const dlhy: [number, number] = [s.hraci[0].dlhy, s.hraci[1].dlhy];
-  const outcome = battleOutcome(damage, { dlhy });
+  const outcome = battleOutcome(damage, { dlhy, hadka: b.hadka?.vitaz ?? null });
   b.damage = damage as DeepMutable<DamageResult>;
   b.vitaz = outcome.vitaz;
   b.prebytokDrzi = outcome.prebytokDrzi;
@@ -6233,7 +6233,7 @@ function vyplatSpaky(s: MutState, outcome: BattleOutcome, events: Event[]): void
     s.spakyNaSekere = 0;
     s.spaky[vitaz] += spolu;
     s.spaky[porazeny] += porazenemu;
-    const preco = outcome.rozhodlo === "dlhy" ? " (remíza v tuhom, menej Dlhov)" : "";
+    const preco = outcome.rozhodlo === "hadka" ? " (remíza v tuhom, rozhodla hádka)" : outcome.rozhodlo === "dlhy" ? " (remíza v tuhom, hádku nevyhral nikto, menej Dlhov)" : "";
     events.push({
       type: "log",
       // Zložky zvlášť (Michal 2026-10-27): karty v línii, Herňa za Dlhy porazeného, sekera.
@@ -6276,7 +6276,7 @@ function vyplatSpaky(s: MutState, outcome: BattleOutcome, events: Event[]): void
     events.push({ type: "log", text: `Finále skončilo sekerou — ${spakov(prepadlo)} za bitku prepadá.` });
   } else if (vitaz === null) {
     s.spakyNaSekere += karty.spolu;
-    events.push({ type: "log", text: `Sekera: remíza v tuhom aj v Dlhoch — ${spakov(karty.spolu)} za karty v línii ide na sekeru (spolu ${s.spakyNaSekere}), vezme ich víťaz ďalšej bitky.` });
+    events.push({ type: "log", text: `Sekera: remíza v tuhom, hádku nevyhral nikto a Dlhov rovnako — ${spakov(karty.spolu)} za karty v línii ide na sekeru (spolu ${s.spakyNaSekere}), vezme ich víťaz ďalšej bitky.` });
   }
   const lokalita = cielLokalita(s as GameState);
   s.nastenka.push({

@@ -1168,7 +1168,7 @@ function RiadkyHrozby({
 /** Verdikt a prebytok bitky — spoločné pre panel aj jeho jednoriadkový súhrn. */
 function verdiktBitky({ damage, ja, vysledok, poslednaBitka, rodJa = null }: BitkaPanelProps) {
   const su = opponentOf(ja);
-  // Remíza v tuhom (v12.5): rozhodnú Dlhy, inak sekera — tu len odhad z tuhého (PRAVIDLA §9.4).
+  // Remíza v tuhom (v12.6): rozhodne hádka, potom Dlhy, inak sekera — tu len odhad z tuhého (PRAVIDLA §9.4).
   const { vitaz, prebytok, prebytokDrzi } = battleOutcome(damage);
   const rozdiel = Math.abs(damage.tuhe[ja] - damage.tuhe[su]);
   const vyhravam = vitaz === ja;

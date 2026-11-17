@@ -3,7 +3,7 @@
 
 import { useLayoutEffect, useMemo, useRef, useState } from "react";
 import type { CardInstance, GameData, LineEval } from "@naex/core";
-import { KONSTANTY, battleOutcome, computeDamage, evaluateLine, kariet, loadGameData, spakov } from "@naex/core";
+import { KONSTANTY, battleOutcome, computeDamage, evaluateLine, kariet, loadGameData, spakov, vysledokHadky } from "@naex/core";
 import eldersJson from "@naex/core/data/elders.json";
 import scorecardsJson from "@naex/core/data/scorecards.json";
 import type { KartaNavrh, RozlozenieStrany, Sada, Vzhlad } from "@naex/tvorba";
@@ -181,7 +181,7 @@ export function UkazkaBitky() {
   });
   const d = computeDamage([strana(s[0]), strana(s[1])]);
   // v12.5: remízu v tuhom rozhodnú Dlhy (PRAVIDLA.md §9.4).
-  const o = battleOutcome(d, { dlhy: [s[0].dlhy, s[1].dlhy] });
+  const o = battleOutcome(d, { dlhy: [s[0].dlhy, s[1].dlhy], hadka: vysledokHadky(d.makke).vitaz });
   const MENA = ["Ty", "Súper"];
 
   return (
@@ -224,7 +224,7 @@ export function UkazkaBitky() {
         ) : (
           <>
             Vyhráva <strong>{MENA[o.vitaz]}</strong>
-            {o.rozhodlo === "dlhy" ? " — remízu v tuhom rozhodlo menej Dlhov" : ""}.
+            {o.rozhodlo === "hadka" ? " — remízu v tuhom rozhodla hádka" : o.rozhodlo === "dlhy" ? " — remízu v tuhom rozhodlo menej Dlhov (hádku nevyhral nikto)" : ""}.
           </>
         )}{" "}
         {o.prebytokDrzi === null

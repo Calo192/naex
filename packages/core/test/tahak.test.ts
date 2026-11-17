@@ -108,6 +108,7 @@ describe("ťahák AI hráčov sedí s constants.ts", () => {
     ["pivnica plná (v12.5, V1)", "**Pivnica plná**: zajatie výhru ešte nedá, rozhodne ďalšia bitka, ktorú vyhráš"],
     ["Dopiť za teba (v12.5, N1)", `tvoj plný poldeci sa otočí na vypitý a ráta sa ti ${pocet(KONSTANTY.NEREST_DOPITIA, "nerest", "neresti", "nerestí")} (pečeň nie)`],
     ["kto otvára ďalšie Zhromaždenie (v12.6, #73 A)", "**Kto skončí vykladanie prvý, otvorí ďalšie Zhromaždenie kola (v12.6)**"],
+    ["remíza v tuhom: najprv hádka (v12.6)", "pri rovnakom tuhom vyhrá **víťaz hádky** (aj remízu v hádke vyhranú Telefónom); keď hádku nevyhral nikto, vyhrá, kto má **menej Dlhov**"],
     ["Benzínka (v11.15)", `Benzínka (v11.15: každé fajčenie o ${KONSTANTY.EFEKT.BENZINKA_ZLAVA} cigaretu lacnejšie — prvé v Pitke zadarmo, ďalšie ${cenaFajcenia(1, 1, true)}, ${cenaFajcenia(2, 1, true)}…`],
   ])("%s", (_, ocakavane) => {
     expect(tahak).toContain(ocakavane);

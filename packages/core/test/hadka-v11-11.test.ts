@@ -119,12 +119,13 @@ describe("§9.4 víťaz hádky dostane špaky za svoje karty (v11.11)", () => {
     expect(za(pred([3, 0], null))).toEqual([5, 0]);
   });
 
-  it("sekera: víťaz hádky dostane za svoje karty hneď, všetky karty ďalej čakajú na sekere", () => {
+  it("remíza v tuhom s víťazom hádky už nie je sekera (v12.6): bitku vyhrá víťaz hádky, za všetky karty", () => {
+    // Do v12.5 tu bola sekera a víťaz hádky dostal 2 za svoje karty; od v12.6 remízu v tuhom rozhodne hádka.
     const s = pred([2, 2], 1);
     const po = spustBitku(data, s).state;
-    expect(po.nastenka.at(-1)!.vitaz).toBeNull();
-    expect(po.nastenka.at(-1)!.zaBitku).toEqual([0, 2]);
-    expect(po.spakyNaSekere).toBe(5);
+    expect(po.nastenka.at(-1)!.vitaz).toBe(1);
+    expect(po.nastenka.at(-1)!.zaBitku).toEqual([0, 5]);
+    expect(po.spakyNaSekere).toBe(0);
   });
 
   it("Kultúrny dom (v11.13): každý len za svoje karty, výhra hádky nepridá druhýkrát", () => {
