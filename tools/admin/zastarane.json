@@ -829,6 +829,23 @@
         "odpustw*[^.!?]{0,30}abstak"
       ],
       "pozn": "v12.5 (mŕtve pravidlá 5): Abstinent zvyšuje prah Cirhózy o 1 / 2 / 3, Absťáky uberajú tuhé vždy (vo Vypálenej od vypálenia v12.5 2026-11-16)"
+    },
+    {
+      "pojem": "cigarety za pas",
+      "vzory": [
+        "cigaretw* za pas",
+        "za pasw* (?:w+ ){0,3}cigaret",
+        "pasw* (?:w+ ){0,3}cigaretw* za (?:kazdy|plny)"
+      ],
+      "pozn": "v12.6: pas dobere kartu za každý plný poldeci namiesto cigarety (#71)"
+    },
+    {
+      "pojem": "strach 1 / 3 / 6",
+      "vzory": [
+        "strachw* (?:w+ ){0,3}1 ?/ ?3 ?/ ?6",
+        "cervenw* strachw* (?:w+ ){0,2}6 spak"
+      ],
+      "pozn": "v12.6: strach víťaza boduje len najvyšším stupňom 1 / 2 / 3 (#70)"
     }
   ],
   "karty": [
