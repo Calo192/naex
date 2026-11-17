@@ -91,7 +91,7 @@ describe("ťahák AI hráčov sedí s constants.ts", () => {
     ["doliatie po Pitke (v12.2)", `doleje **${KONSTANTY.POLDECI_PO_PITKE} vypitý poldeci zadarmo**`],
     ["karty navyše v ťahu (v12.2)", `**n kariet = n plných poldeci a n − 1 cigariet**`],
     ["Vypiť stojí cigaretu (v12.2)", `${KONSTANTY.CENA_KARTY_NAVYSE} cigareta, pečeň +1, 1 nerest`],
-    ["pas (v12.3)", `dostaneš **${KONSTANTY.CIGARETY_ZA_PAS_NA_POLDECI} cigaretu za každý plný poldeci**`],
+    ["pas za karty (v12.6, #71)", `**doberieš si zo svojho balíčka ${KONSTANTY.KARTY_ZA_PAS_NA_POLDECI} kartu za každý plný`],
     [
       "fajčenie (2026-10-27)",
       `prvé fajčenie v Pitke ${cenaFajcenia(0)} cigareta, druhé ${cenaFajcenia(1)}, tretie ${cenaFajcenia(2)}…`,

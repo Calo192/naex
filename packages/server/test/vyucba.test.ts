@@ -383,8 +383,8 @@ describe("výučba — cigareta pre Melichara (Michal 2026-10-25)", () => {
       if (st === null) break;
       pred = st as unknown as StavMsg;
     }
-    // v12.3: 10 − 1 Melichar − 1 Hasič + 1 za pas s plným poldeci.
-    expect(pred?.view.hraci[0]?.cigarety ?? -1).toBe(9);
+    // v12.6: 10 − 1 Melichar − 1 Hasič; pas s plným poldeci dá kartu, nie cigaretu (v12.3–v12.5 + 1).
+    expect(pred?.view.hraci[0]?.cigarety ?? -1).toBe(8);
     k.posli({ type: "vyucbaDalej" });
     expect((await k.cakaj("vyucba")).krok).toMatchObject({ id: "k-nakladacka1" });
     k.zavri();

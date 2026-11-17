@@ -108,7 +108,7 @@ export const REGISTER: Readonly<Record<string, EfektStatus>> = {
   veteran: "impl", // Furt: NA EX naňho aktívne akcie zdvojí (nezruší), neaktívne nezdvojí (partia.ts, Michal 2026-10-23)
   velmi_smutiaca_vdova: "impl", // Konflikt: súper odhodí 1 náhodnú kartu z ruky, pri ktorejkoľvek jeho karte (2026-11-08 bez tagu, predtým Chlap); staré znenie z balíčka za Chlapov (konflikt)
   vestica: "impl", // Spoločník: Pamätník {Povera} {Povera} (navyse.ts); stará Prehra — výmena kariet v balíčkoch (krok bitky 5b) — len stará sada
-  vychovavatelka: "impl", // Schopnosť väzňa: súper v tomto Zhromaždení hneď pasuje a za pas nedostane cigarety (v12.3)
+  vychovavatelka: "impl", // Schopnosť väzňa: súper v tomto Zhromaždení hneď pasuje a za pas nič nedostane (v12.3 bez cigariet, v12.6 bez kariet)
   vinko: "impl", // Dedičstvo (v12.2): maximum poldeci +1 — pri vyložení nový plný poldeci (cmdPlace)
   vyherny_automat: "impl", // Dedičstvo: Pitka: {Cigareta} {Dlh} v každej Pitke (v12.5, engine vyhodnotPitku; stará sada Dlh v poslednej Pitke kola)
   zastavka: "impl", // Pitka (v9.1): po prvej Pitke kola každý 1 karta z ponuky zadarmo, najprv útočník (engine dokonciPitku)

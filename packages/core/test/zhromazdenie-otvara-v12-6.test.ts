@@ -139,9 +139,10 @@ describe("§4 a §6 kto otvára ďalšie Zhromaždenie kola (v12.6, #73 A)", () 
   it("prvé Zhromaždenie kola začína útočník — pamäť sa zmaže pred bitkou a starú hodnotu nové kolo nepoužije", () => {
     // Posledná Pitka kola: po nej bitka, pamäť zmizne.
     let s = vZhromazdeni({ naTahuZhrom: 1, pitkaCislo: 1, pitkyCelkom: 2 });
-    s = pas(pas(s, 1), 0);
+    s = pas(s, 1);
     expect(s.zhromazdenieOtvara).toBe(1);
-    const t = dohrajPitku(s);
+    // Pitku bez voľby (bez balíčka na fajčenie) hra dohrá sama — preto sa dohráva tu, nie v teste.
+    const t = dohrajPitku(pas(s, 0));
     expect(t.faza).not.toBe("zhromazdenie");
     expect(t.zhromazdenieOtvara).toBeUndefined();
   });

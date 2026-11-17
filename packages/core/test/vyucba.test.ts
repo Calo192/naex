@@ -356,15 +356,15 @@ describe("výučba — cigareta pre Melichara (Michal 2026-10-25; len raz, prero
   it("hráč začína s 10 a cigaretu dá Melicharovi len v úvode; po 1. časti má 9, Štamgast 7", () => {
     // Playtest výučby 20261030-184959: žiadanie cigarety 3× unavovalo — ostalo jediné, v úvode.
     expect(celyScenar.kroky.filter((k) => k.odovzdaCigaretu === true).map((k) => k.id)).toEqual(["i-vitaj"]);
-    // v12.3: hráč vyloží dve karty a za pas s jedným plným poldeci dostane cigaretu — 10 − 1 Melichar − 1 Hasič + 1 = 9.
+    // v12.6: hráč vyloží dve karty a za pas s jedným plným poldeci si dobere kartu (v12.3–v12.5 cigaretu) — 10 − 1 Melichar − 1 Hasič = 8.
     expect(zacniVyucbu(data, scenar).hraci[0].cigarety).toBe(10);
     expect(prehrajVyucbu(data, scenar, iVitaj + 1).hraci[0].cigarety).toBe(9);
-    expect(prehrajVyucbu(data, scenar, iStarsi).hraci[0].cigarety).toBe(9);
-    expect(prehrajVyucbu(data, scenar, iStarsi + 1).hraci[0].cigarety).toBe(9);
+    expect(prehrajVyucbu(data, scenar, iStarsi).hraci[0].cigarety).toBe(8);
+    expect(prehrajVyucbu(data, scenar, iStarsi + 1).hraci[0].cigarety).toBe(8);
     const koniec = prehrajVyucbu(data, scenar, scenar.kroky.length);
     // Štamgast: 5 − 1 Traktorista + 2 zo zdvojenej Cigarety Traktoristu + 1 za prehru (v12 bez Fajčiara: Nakladačka 3
     // ide celá na Farára, Autobusár sa v 1. kole nebojí).
-    expect([koniec.hraci[0].cigarety, koniec.hraci[1].cigarety]).toEqual([9, 7]);
+    expect([koniec.hraci[0].cigarety, koniec.hraci[1].cigarety]).toEqual([8, 7]);
   });
 
   it("úvod ponúkne preskočenie a tlačidlá majú nápis zo scenára; posledný krok uzavrie časť", () => {
@@ -513,8 +513,8 @@ describe("výučba Prvá hra — 1. časť „Prvé kolo“ (docs/napady/prvy-do
     expect(s.koniec).toBeNull();
     expect(s).toMatchObject({ kolo: 2, faza: "volbaCiela" });
     expect(naTahu(s)).toBe(0);
-    // Dobratie do troch (v11.9, i-vitaj2): hráč mal dve karty a dobral Pijana, Štamgast má štyri a nedobral nič.
-    expect(s.hraci[0].ruka.map((k) => k.defId)).toEqual(["pijan", "ministrant", "pijan"]);
+    // Dobratie po bitke 2 karty (v11.21): Miňištrant a Pijan; Kocovníka si hráč dobral za pas (v12.6).
+    expect(s.hraci[0].ruka.map((k) => k.defId)).toEqual(["pijan", "kocovnik", "ministrant", "pijan"]);
     expect(s.hraci[1].ruka.map((k) => k.defId)).toEqual(["cierna_macka", "pijan", "anonymny_alkoholik", "anonymny_alkoholik"]);
     // v12.2: po bitke sa všetky poldeci obnovili na maximum, 3.
     expect(s.hraci[0]).toMatchObject({ poldeciPlne: 3, poldeciVypite: 0 });
@@ -717,9 +717,11 @@ describe("výučba Prvá hra — 2. a 3. časť (pravidlá v8, exekúcia po poš
     // Vidly a Recidivistu platí hráč Štamgastovi a krok 6c platí aj po finále. Hráč 46 + vykúpenie 2 + 2 − 6 = 44,
     // Štamgast (23 cigariet) 11 + 4 + 2 − 3 = 14.
     // v12.6 (#70 A): strach víťaza boduje len najvyšším stupňom — Farár 2 a 3 namiesto 3 a 6, Krčmárka 2 namiesto 3: 39 : 14.
-    expect(koniec.koniec?.body).toEqual([39, 14]);
-    expect([koniec.hraci[0].cigarety, koniec.hraci[1].cigarety]).toEqual([12, 23]);
-    expect(cela.kroky[i("i-koniec")]?.melichar).toContain("39 : 14");
+    // v12.6 (#71): pas dáva karty, nie cigarety — hráč končí s 2 cigaretami, Štamgast s 9; vykúpenie hráč 2 + 0,
+    // Štamgast 2 + 1: 41 + 2 − 6 = 37, 11 + 3 − 3 = 11.
+    expect(koniec.koniec?.body).toEqual([37, 11]);
+    expect([koniec.hraci[0].cigarety, koniec.hraci[1].cigarety]).toEqual([2, 9]);
+    expect(cela.kroky[i("i-koniec")]?.melichar).toContain("37 : 11");
     expect(koniec.vazni.map((v) => [v.elderId, v.hrac])).toEqual([["farar", 0]]);
     // Nepriznané Cirhózy: hráčova z 2. kola a z finále (i-koniec, q-koniec), Štamgastova z 2. kola.
     expect(koniec.koniec?.cirhozy).toEqual([2, 1]);
@@ -887,8 +889,8 @@ describe("výučba Prvá hra — 2. a 3. časť (pravidlá v8, exekúcia po poš
     // Výpalné (v11.9) za väzňa: Farár sa ráta ako červený strach držiteľa; platí banka (v12.4), Štamgast si cigaretu za prehru nechá.
     expect(kolo4.hraci[1].cigarety).toBe(vyhra.hraci[1].cigarety + KONSTANTY.CIGARETY_PORAZENEMU);
     expect(body(kolo4)).toEqual([21, 7]);
-    // Do finále má hráč 8 cigariet (v12.3: v 2. kole 2 pasy, v 3. kole pas za hráča po doliatí — po cigarete; v12.2 mal 4).
-    expect(kolo4.hraci[0].cigarety).toBe(8);
+    // Do finále má hráč 4 cigarety (v12.6 pas dáva karty: o 4 menej ako v12.3–v12.5, keď za 4 pasy dostal po cigarete).
+    expect(kolo4.hraci[0].cigarety).toBe(4);
     expect(pocetAbstakov(kolo4.hraci[0])).toBe(0);
     expect(pocetAbstakov(kolo4.hraci[1])).toBe(0);
   });
@@ -906,11 +908,11 @@ describe("výučba Prvá hra — 2. a 3. časť (pravidlá v8, exekúcia po poš
     expect(odhad(po("k-zh-finale-bot"))).toEqual([0, 5]);
     expect(odhad(po("k-pijan-finale"))).toEqual([6, 5]);
     expect(po("k-pijan-finale").pitkyCelkom).toBe(3);
-    // Dobratie po bitke (v11.21, i-po-bitke3): 2 karty, Pijan a Mäsiar z 1. kola. Praudovravca z 2. kola si hráč
-    // dofajčí v druhej Pitke finále s prázdnou rukou — nechá si ho ako možnú odpoveď.
-    expect(pri("k-kup-finale").hraci[0].ruka.map((k) => k.defId)).toEqual(["pijan", "masiar"]);
-    expect(pri("k-fajcit-finale").hraci[0].ruka).toEqual([]);
-    expect(po("k-fajcit-finale").hraci[0].ruka.map((k) => k.defId)).toEqual(["praudovravec"]);
+    // v12.6 (pas za karty): Kocovníci z pasov 1. a 2. kola, Pijan za pas v 3. kole; dobratie po bitke (v11.21,
+    // i-po-bitke3) 2 karty, Mäsiar a Praudovravec — toho si nechá ako možnú odpoveď. Vo finále fajčí Cirhózu.
+    expect(pri("k-kup-finale").hraci[0].ruka.map((k) => k.defId)).toEqual(["kocovnik", "kocovnik", "kocovnik", "pijan", "masiar", "praudovravec"]);
+    expect(po("k-fajcit-finale").hraci[0].ruka.length).toBe(pri("k-fajcit-finale").hraci[0].ruka.length + 1);
+    expect(po("k-fajcit-finale").hraci[0].ruka.at(-1)?.defId).toBe("cirhoza");
     expect(po("k-fajcit-finale").hraci[0].cigarety).toBe(pri("k-fajcit-finale").hraci[0].cigarety - 1);
     expect(cela.kroky[i("k-fajcit-finale")]?.kto).toBe("hrac");
     expect(cela.kroky.some((k) => k.id === "k-kseft")).toBe(false);

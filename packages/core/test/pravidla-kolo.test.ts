@@ -114,11 +114,14 @@ describe("§4 Priebeh kola — kto volí cieľ a kto útočí", () => {
 
 describe("§7 Pitka — obranca začína, útočník má posledné slovo (Michal 2026-10-21)", () => {
   it("§7 (v9.2): obranca začína; NA EX oboch sa odkryjú naraz, až keď obaja skončia; odpovedá najprv útočník, potom obranca", () => {
-    const s0 = setupSBalickom(data, 5);
+    // Balíček na 6 kariet a cigarety, aby Pitku hra nedohrala za útočníka sama: v12.6 pas cigarety nedáva a jeho karty
+    // ťahá z balíčka — bez cigariet a balíčka je jediný ťah skipNaex.
+    const s0 = setupSBalickom(data, 5, undefined, 6);
     const pijan0 = inst("pijan");
     const pijan1 = inst("pijan");
     let s: GameState = {
       ...s0,
+      hraci: [{ ...s0.hraci[0], cigarety: 3 }, s0.hraci[1]],
       faza: "zhromazdenie",
       utocnik: 0,
       // Pijani vo dvojiciach — NA EX len na kartu s aktívnou aj neaktívnou akciou (2026-10-23).

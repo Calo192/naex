@@ -237,18 +237,32 @@ export function skoncilVykladanie(z: Pick<ZhromazdenieStav, "pasoval" | "skoncil
 }
 
 /**
- * Cigarety, ktoré miesto `kto` dostane, keď teraz pasuje (v12.3, §6) — jeden výpočet pre motor,
- * náhľad pasu aj bota: cigareta za každý plný poldeci, len skutočné poldeci (Vínko ich pridá ako
- * poldeci, nie ako limit). V 2 na 2 dostane tím cigarety až za pas druhého člena (Michal 2026-11-02, Q1).
+ * Cigarety, ktoré miesto `kto` dostane, keď teraz pasuje (v12.3, §18.6) — len v 2 na 2: tím dostane
+ * cigaretu za každý plný poldeci až za pas druhého člena (Michal 2026-11-02, Q1). V 1 na 1 od v12.6 karty
+ * (kartyZaPas). Jeden výpočet pre motor, náhľad pasu aj bota.
  */
 export function cigaretyZaPas(
   s: { readonly hraci: readonly Pick<PlayerState, "poldeciPlne">[]; readonly zhromazdenieStav: Pick<ZhromazdenieStav, "skoncili"> | null },
   kto: Miesto,
 ): number {
   const z = s.zhromazdenieStav;
-  if (z === null) return 0;
-  if (z.skoncili !== undefined && !z.skoncili[partnerMiesta(kto)]) return 0;
+  if (z === null || z.skoncili === undefined) return 0;
+  if (!z.skoncili[partnerMiesta(kto)]) return 0;
   return Math.max(0, s.hraci[timMiesta(kto)]?.poldeciPlne ?? 0) * KONSTANTY.CIGARETY_ZA_PAS_NA_POLDECI;
+}
+
+/**
+ * Karty, ktoré si miesto `kto` dobere, keď teraz pasuje (v12.6, §6, návrh #71 — namiesto cigariet): karta za
+ * každý plný poldeci v okamihu pasu, aj keď pasuje hra za hráča; Vínko len cez poldeci, ktorý pridá. 1 na 1
+ * (aj Päta); v 2 na 2 0 — tam ostávajú cigarety tímu. Koľko sa naozaj dá dobrať, rozhodne balíček.
+ */
+export function kartyZaPas(
+  s: { readonly hraci: readonly Pick<PlayerState, "poldeciPlne">[]; readonly zhromazdenieStav: Pick<ZhromazdenieStav, "skoncili"> | null },
+  kto: Miesto,
+): number {
+  const z = s.zhromazdenieStav;
+  if (z === null || z.skoncili !== undefined) return 0;
+  return Math.max(0, s.hraci[timMiesta(kto)]?.poldeciPlne ?? 0) * KONSTANTY.KARTY_ZA_PAS_NA_POLDECI;
 }
 
 export interface PitkaStav {
@@ -3752,19 +3766,24 @@ function cmdPass(s: MutState, data: GameData, kto: Miesto, events: Event[]): voi
       return;
     }
   }
-  // Pas (v12.3, Michal 2026-11-11): cigareta za každý plný poldeci — aj keď pasuje hra za hráča. Poldeci
-  // ostanú plné na NA EX a ďalšie Zhromaždenie (odmena za šetrenie). Pitka ich nezdvojuje (Obecný úrad).
-  // Súper vykladá sám.
+  // Pas (v12.6, návrh #71, Michal 2026-11-17): karta z vlastného balíčka za každý plný poldeci — aj keď pasuje
+  // hra za hráča; namiesto cigariet z v12.3 (tie ostávajú len tímu v 2 na 2). Poldeci ostanú plné na NA EX
+  // a ďalšie Zhromaždenie. Pitka ich nezdvojuje (Obecný úrad). Súper vykladá sám.
   const ziska = cigaretyZaPas(s as GameState, kto);
+  const karty = kartyZaPas(s as GameState, kto);
+  const plne = pocet(s.hraci[p].poldeciPlne, "plný poldeci", "plné poldeci", "plných poldeci");
   zapisKoniecVykladania(s, p);
   z.pasoval[p] = true;
   zmenCigarety(s, p, "pas", ziska, events);
+  const dobral = karty > 0 ? tahaj(s, kto, karty, events).length : 0;
   events.push({
     type: "log",
     text:
-      ziska > 0
-        ? `Hráč ${p + 1} pasuje do Pitky a za ${pocet(s.hraci[p].poldeciPlne, "plný poldeci", "plné poldeci", "plných poldeci")} dostáva ${cigariet(ziska)}.`
-        : `Hráč ${p + 1} pasuje do Pitky.`,
+      dobral > 0
+        ? `Hráč ${p + 1} pasuje do Pitky a za ${plne} doberá ${kariet(dobral)}.`
+        : ziska > 0
+          ? `Hráč ${p + 1} pasuje do Pitky a za ${plne} dostáva ${cigariet(ziska)}.`
+          : `Hráč ${p + 1} pasuje do Pitky.`,
   });
   posunTahZhromazdenia(s, data, p, events);
 }
@@ -4909,11 +4928,11 @@ function cmdSchopnostVazna(s: MutState, data: GameData, cmd: { elderId: string; 
     }
     case "vychovavatelka": {
       const z = s.zhromazdenieStav as DeepMutable<ZhromazdenieStav>;
-      // Nútený pas bez cigariet (v12.3, Michal 2026-11-11) — plné poldeci súperovi ostanú.
+      // Nútený pas bez kariet aj cigariet (v12.3, v12.6) — plné poldeci súperovi ostanú.
       zapisKoniecVykladania(s, opp);
       z.pasoval[opp] = true;
       z.navyse[opp] = 0;
-      events.push({ type: "log", text: `${kto} — hráč ${opp + 1} v tomto Zhromaždení hneď pasuje a za pas nedostane cigarety.` });
+      events.push({ type: "log", text: `${kto} — hráč ${opp + 1} v tomto Zhromaždení hneď pasuje a za pas nič nedostane.` });
       break;
     }
     case "autobusar": {

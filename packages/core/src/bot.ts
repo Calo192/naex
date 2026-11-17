@@ -44,6 +44,7 @@ import { stranyLokality } from "./hrany.ts";
 import { stavZavislosti } from "./zavislost.ts";
 import { maximumPoldeci } from "./player.ts";
 import type { Command, GameState } from "./engine.ts";
+import type { PlayerState } from "./player.ts";
 import {
   apply,
   cieleVykladania,
@@ -1046,10 +1047,13 @@ function sKartou(data: GameData, s: GameState, q: PlayerId, v: Vylozenie): GameS
 /** Najlepšie vyloženie hráča q podľa odhadu bitky, alebo null, keď žiadne nepomôže. */
 function najlepsieVylozenie(k: Kontext, s: GameState, ruka: readonly CardInstance[], q: PlayerId, limit: number): Vylozenie | null {
   const pred = hodnotaBitky(k, s, q, 0.9);
-  // Karta z ruky a plný poldeci, ktorý za ňu hráč vypije (v12.2), aj cigareta, ktorú by za ten
-  // poldeci dal pas (v12.3).
+  // Karta z ruky a plný poldeci, ktorý za ňu hráč vypije (v12.2), aj karta, ktorú by za ten poldeci
+  // dal pas (v12.6; v 2 na 2 cigareta tímu).
   const c = s.hraci[q].cigarety;
-  const zaPas = uzitokCigariet(s, c + KONSTANTY.CIGARETY_ZA_PAS_NA_POLDECI) - uzitokCigariet(s, c);
+  const zaPas =
+    s.format === "2na2"
+      ? uzitokCigariet(s, c + KONSTANTY.CIGARETY_ZA_PAS_NA_POLDECI) - uzitokCigariet(s, c)
+      : uzitokRuky(s, q, ruka.length + KONSTANTY.KARTY_ZA_PAS_NA_POLDECI) - uzitokRuky(s, q, ruka.length);
   const cenaKarty = k.povaha.zdroje * (uzitokRuky(s, q, ruka.length) - uzitokRuky(s, q, ruka.length - 1) + (limit > 0 ? cenaPlnehoPoldeci(s, s.hraci[q].poldeciPlne) + zaPas : 0));
   let najlepsie: Vylozenie | null = null;
   let najlepsiaHodnota = pred + 0.05;
@@ -1089,9 +1093,10 @@ function dohrajZhromazdenie(k: Kontext, s: GameState): GameState {
   const navyse: [number, number] = [z.navyse[0], z.navyse[1]];
   // Každá vyložená karta otočí plný poldeci (v12.2) — nanečisto dohrané Zhromaždenie ich vypije tiež.
   const vypite: [number, number] = [0, 0];
-  // Pas dáva cigaretu za každý plný poldeci (v12.3). Bez nej by skutočný pas (s cigaretami) vyzeral
-  // lepšie než vykladanie, po ktorom sa v nanečisto dohranom Zhromaždení pasuje zadarmo.
+  // Pas dáva kartu za každý plný poldeci (v12.6; v 2 na 2 cigaretu tímu, v12.3). Bez nej by skutočný pas
+  // vyzeral lepšie než vykladanie, po ktorom sa v nanečisto dohranom Zhromaždení pasuje zadarmo.
   const cigarety: [number, number] = [s.hraci[0].cigarety, s.hraci[1].cigarety];
+  const dobrate: [number, number] = [0, 0];
   let naTahu = timMiesta(z.naTahu);
   for (let krok = 0; krok < 30 && !(pasoval[0] && pasoval[1]); krok++) {
     const q = naTahu;
@@ -1099,7 +1104,9 @@ function dohrajZhromazdenie(k: Kontext, s: GameState): GameState {
     if (v === null) {
       pasoval[q] = true;
       navyse[q] = 0;
-      cigarety[q] += Math.max(0, s.hraci[q].poldeciPlne - vypite[q]) * KONSTANTY.CIGARETY_ZA_PAS_NA_POLDECI;
+      const plne = Math.max(0, s.hraci[q].poldeciPlne - vypite[q]);
+      if (s.format === "2na2") cigarety[q] += plne * KONSTANTY.CIGARETY_ZA_PAS_NA_POLDECI;
+      else dobrate[q] += plne * KONSTANTY.KARTY_ZA_PAS_NA_POLDECI;
     } else {
       strany = sKartou(k.data, { ...s, strany }, q, v).strany;
       ruky[q] = ruky[q].filter((x) => x.uid !== v.karta.uid);
@@ -1114,12 +1121,20 @@ function dohrajZhromazdenie(k: Kontext, s: GameState): GameState {
     }
     if (!pasoval[opponentOf(q)]) naTahu = opponentOf(q);
   }
+  // Karty za pas zo vzorky balíčka (skryté poradie je vo vzorke zamiešané); odhadzovací sa pri ťahaní zamieša — nanečisto
+  // stačí vziať, čo v ňom je.
+  const poPase = (q: PlayerId): Pick<PlayerState, "ruka" | "doberaci" | "odhadzovaci"> => {
+    const h = s.hraci[q];
+    const zDoberacieho = h.doberaci.slice(0, dobrate[q]);
+    const zOdhadzovacieho = h.odhadzovaci.slice(0, Math.max(0, dobrate[q] - zDoberacieho.length));
+    return { ruka: [...ruky[q], ...zDoberacieho, ...zOdhadzovacieho], doberaci: h.doberaci.slice(zDoberacieho.length), odhadzovaci: h.odhadzovaci.slice(zOdhadzovacieho.length) };
+  };
   return {
     ...s,
     strany,
     hraci: [
-      { ...s.hraci[0], ruka: ruky[0], cigarety: cigarety[0], poldeciPlne: s.hraci[0].poldeciPlne - vypite[0], poldeciVypite: s.hraci[0].poldeciVypite + vypite[0] },
-      { ...s.hraci[1], ruka: ruky[1], cigarety: cigarety[1], poldeciPlne: s.hraci[1].poldeciPlne - vypite[1], poldeciVypite: s.hraci[1].poldeciVypite + vypite[1] },
+      { ...s.hraci[0], ...poPase(0), cigarety: cigarety[0], poldeciPlne: s.hraci[0].poldeciPlne - vypite[0], poldeciVypite: s.hraci[0].poldeciVypite + vypite[0] },
+      { ...s.hraci[1], ...poPase(1), cigarety: cigarety[1], poldeciPlne: s.hraci[1].poldeciPlne - vypite[1], poldeciVypite: s.hraci[1].poldeciVypite + vypite[1] },
     ],
     zhromazdenieStav: { ...z, naTahu, zostavaLimit: limit, pasoval, navyse },
   };

@@ -69,10 +69,12 @@ describe("§3 štart a §6 limit (v12.2)", () => {
     expect(() => apply(data, { ...s, hraci: [{ ...s.hraci[0], poldeciPlne: 0 }, s.hraci[1]] }, { type: "place", uid: a.uid, target: "vlastna" }, 0)).toThrow(/plný poldeci/);
   });
 
-  it("plné poldeci po pase ostávajú (v12.3 za ne aj cigareta za každý)", () => {
+  it("plné poldeci po pase ostávajú (v12.3–v12.5 za ne cigareta, od v12.6 karta za každý)", () => {
     const s = vZhromazdeni([inst("pijan")], { plne: 3, cigarety: 0 });
-    const po = apply(data, s, { type: "pass" }, 0).state;
-    expect(po.hraci[0].cigarety).toBe(3);
+    const r = apply(data, s, { type: "pass" }, 0);
+    const po = r.state;
+    expect(po.hraci[0].cigarety).toBe(0);
+    expect(r.events.filter((e) => e.type === "kartyTahane" && e.hrac === 0).reduce((a, e) => a + (e.type === "kartyTahane" ? e.karty.length : 0), 0)).toBe(Math.min(3, s.hraci[0].doberaci.length + s.hraci[0].odhadzovaci.length));
     expect(po.hraci[0].poldeciPlne).toBe(3);
   });
 });

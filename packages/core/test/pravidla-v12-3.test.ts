@@ -1,13 +1,14 @@
-// Pravidlá v12.3 (Michal 2026-11-11: „Keď hráč pasne, dostane toľko cigariet, koľko má nevypitých
-// poldeci.“): cigareta za každý plný poldeci v okamihu pasu, poldeci ostanú plné; aj pas za hráča.
-// Záverečná a Vychovávateľka sú bez cigariet, Obecný úrad ich nezdvojuje, Vínko sa ráta cez poldeci.
+// Pas za plné poldeci: v12.3 (Michal 2026-11-11) cigareta, od v12.6 (návrh #71, Michal 2026-11-17: „Keď hráč pasuje,
+// doberie si z balíčka toľko kariet, koľko má ešte nevypitých poldeci.“) karta za každý plný poldeci v okamihu pasu,
+// namiesto cigariet; poldeci ostanú plné; aj pas za hráča. Záverečná a Vychovávateľka nedajú nič, Obecný úrad nič
+// nezdvojuje, Vínko sa ráta cez poldeci. V 2 na 2 tím dostane cigarety ako vo v12.3 (view-2na2.test.ts).
 
 import { describe, expect, it } from "vitest";
 import cardsJson from "../data/cards.json";
 import eldersJson from "../data/elders.json";
 import scorecardsJson from "../data/scorecards.json";
 import type { CardInstance, Event, GameState, PlayerId } from "../src/index.ts";
-import { KONSTANTY, apply, applySPrisunom, cigaretyZaPas, loadGameData, prisunZUdalosti, setupGame, viewFor } from "../src/index.ts";
+import { KONSTANTY, apply, applySPrisunom, cigaretyZaPas, eventsFor, kartyZaPas, loadGameData, setupGame, viewFor } from "../src/index.ts";
 
 const data = loadGameData(cardsJson, eldersJson, scorecardsJson);
 
@@ -27,25 +28,51 @@ function vZhromazdeni(ruka: CardInstance[], o: { plne?: number; cigarety?: numbe
     strany: [[], []],
     pitkyCelkom: 2,
     pitkaCislo: o.pitkaCislo ?? 0,
-    hraci: [{ ...s0.hraci[0], ruka, poldeciPlne: plne, poldeciVypite: Math.max(0, 3 - plne), cigarety: o.cigarety ?? 0 }, { ...s0.hraci[1], cigarety: 0 }],
+    // Doberací balíček, aby pas mal z čoho dávať karty (setupGame ho má na začiatku prázdny).
+    hraci: [
+      { ...s0.hraci[0], ruka, doberaci: [inst("pijan"), inst("pijan"), inst("pijan"), inst("pijan"), inst("pijan")], poldeciPlne: plne, poldeciVypite: Math.max(0, 3 - plne), cigarety: o.cigarety ?? 0 },
+      { ...s0.hraci[1], doberaci: [inst("pijan"), inst("pijan"), inst("pijan"), inst("pijan"), inst("pijan")], cigarety: 0 },
+    ],
     zhromazdenieStav: { naTahu: 0, zostavaLimit: [plne, s0.hraci[1].poldeciPlne], pasoval: [false, false], navyse: [0, 0] },
   };
 }
 
 const kniha = (events: readonly Event[], p: PlayerId): number => events.reduce((a, e) => (e.type === "zmenaCigariet" && e.hrac === p ? a + e.suma : a), 0);
 
-describe("§6 pas dáva cigaretu za každý plný poldeci (v12.3)", () => {
-  it.each([0, 1, 2, 3])("%i plných poldeci = toľko cigariet; poldeci ostanú plné, náhľad sedí s motorom", (plne) => {
+describe("§6 pas dáva kartu za každý plný poldeci (v12.6, návrh #71; v12.3–v12.5 cigaretu)", () => {
+  /** Karty, ktoré hráč p dobral (súkromná udalosť len pre neho). */
+  const dobral = (events: readonly Event[], p: PlayerId): number => events.reduce((a, e) => (e.type === "kartyTahane" && e.hrac === p ? a + e.karty.length : a), 0);
+
+  it.each([0, 1, 2, 3])("%i plných poldeci = toľko kariet z balíčka, žiadne cigarety; poldeci ostanú plné, náhľad sedí s motorom", (plne) => {
     const s = vZhromazdeni([inst("pijan")], { plne });
-    expect(cigaretyZaPas(viewFor(data, s, 0), 0)).toBe(plne * KONSTANTY.CIGARETY_ZA_PAS_NA_POLDECI);
+    expect(kartyZaPas(viewFor(data, s, 0), 0)).toBe(plne * KONSTANTY.KARTY_ZA_PAS_NA_POLDECI);
+    expect(cigaretyZaPas(viewFor(data, s, 0), 0)).toBe(0);
     const { state: po, events } = applySPrisunom(data, s, { type: "pass" }, 0);
-    expect(po.hraci[0].cigarety).toBe(plne);
+    expect(po.hraci[0].cigarety).toBe(0);
+    expect(po.hraci[0].ruka).toHaveLength(1 + plne);
+    expect(po.hraci[0].doberaci).toHaveLength(s.hraci[0].doberaci.length - plne);
+    expect(dobral(events, 0)).toBe(plne);
     expect([po.hraci[0].poldeciPlne, po.hraci[0].poldeciVypite]).toEqual([s.hraci[0].poldeciPlne, s.hraci[0].poldeciVypite]);
-    expect(kniha(events, 0)).toBe(plne);
-    // Prísun ukáže zdroj „Za pas“ — nie je to platba ani akcia.
-    if (plne > 0) expect(prisunZUdalosti(events)[0]?.riadky).toEqual([{ zdroj: "pas", suma: plne }]);
+    expect(kniha(events, 0)).toBe(0);
     const log = events.flatMap((e) => (e.type === "log" ? [e.text] : []));
-    expect(log).toContain(plne > 0 ? `Hráč 1 pasuje do Pitky a za ${plne === 1 ? "1 plný poldeci" : `${plne} ${plne < 5 ? "plné" : "plných"} poldeci`} dostáva ${plne === 1 ? "1 cigaretu" : `${plne} cigarety`}.` : "Hráč 1 pasuje do Pitky.");
+    expect(log).toContain(plne > 0 ? `Hráč 1 pasuje do Pitky a za ${plne === 1 ? "1 plný poldeci" : `${plne} plné poldeci`} doberá ${plne === 1 ? "1 kartu" : `${plne} karty`}.` : "Hráč 1 pasuje do Pitky.");
+  });
+
+  it("súper vidí len počet dobratých kariet, nie ktoré to sú", () => {
+    const s = vZhromazdeni([inst("pijan")], { plne: 3 });
+    const { state: po, events } = apply(data, s, { type: "pass" }, 0);
+    const nove = po.hraci[0].ruka.filter((k) => !s.hraci[0].ruka.some((x) => x.uid === k.uid));
+    expect(nove).toHaveLength(3);
+    const pohlad = JSON.stringify(viewFor(data, po, 1));
+    const udalosti = JSON.stringify(eventsFor(events, 1));
+    for (const k of nove) {
+      expect(pohlad).not.toContain(`"uid":${k.uid}`);
+      expect(udalosti).not.toContain(`"uid":${k.uid}`);
+    }
+    expect(viewFor(data, po, 1).hraci[0].rukaPocet).toBe(4);
+    expect(eventsFor(events, 1)).toContainEqual({ type: "tahal", hrac: 0, pocet: 3 });
+    // Vlastník svoje karty vidí.
+    expect(eventsFor(events, 0).some((e) => e.type === "kartyTahane" && e.karty.length === 3)).toBe(true);
   });
 
   it("ráta sa v okamihu pasu — po vyložení karty o poldeci menej", () => {
@@ -55,32 +82,49 @@ describe("§6 pas dáva cigaretu za každý plný poldeci (v12.3)", () => {
     s = apply(data, s, { type: "place", uid: pijan.uid, target: "vlastna" }, 0).state;
     expect(s.hraci[0].poldeciPlne).toBe(2);
     const po = apply(data, s, { type: "pass" }, 0).state;
-    expect(po.hraci[0].cigarety).toBe(2);
+    expect(po.hraci[0].ruka).toHaveLength(1 + 2);
+    expect(po.hraci[0].cigarety).toBe(0);
   });
 
-  it("pas, ktorý urobí hra za hráča (prázdna ruka), dáva cigarety tiež", () => {
+  it("pas, ktorý urobí hra za hráča (prázdna ruka), dáva karty tiež; bez plného poldeci nič", () => {
     let s = vZhromazdeni([], { plne: 2 });
     s = { ...s, zhromazdenieStav: { ...s.zhromazdenieStav!, naTahu: 1 } };
     // Súper pasuje, hráč 0 nemá čo vyložiť — hra za neho pasuje a Zhromaždenie skončí.
-    // Zhromaždenie sa dohrá aj s Pitkou a bitkou (nik nemá čo hrať) — cigarety za pas ukáže kniha.
     const { events } = applySPrisunom(data, s, { type: "pass" }, 1);
-    expect(events.some((e) => e.type === "autoPas" && e.hrac === 0)).toBe(true);
-    expect(events.filter((e) => e.type === "zmenaCigariet" && e.zdroj === "pas").map((e) => (e.type === "zmenaCigariet" ? [e.hrac, e.suma] : []))).toEqual([
-      [1, s.hraci[1].poldeciPlne],
-      [0, 2],
-    ]);
+    const i = events.findIndex((e) => e.type === "autoPas" && e.hrac === 0);
+    expect(i).toBeGreaterThanOrEqual(0);
+    // Prvé ťahanie hráča 0 po pase za neho: 2 karty za 2 plné (hra potom môže dohrať aj ďalšie nevyhnutné ťahy).
+    expect(events.slice(i).find((e) => e.type === "kartyTahane" && e.hrac === 0)).toMatchObject({ karty: { length: 2 } });
+    expect(events.find((e) => e.type === "kartyTahane" && e.hrac === 1)).toMatchObject({ karty: { length: s.hraci[1].poldeciPlne } });
+    expect(events.some((e) => e.type === "zmenaCigariet" && e.zdroj === "pas")).toBe(false);
+    // Bez plného poldeci pas nedá nič.
+    const prazdny = vZhromazdeni([inst("pijan")], { plne: 0 });
+    const r = apply(data, { ...prazdny, zhromazdenieStav: { ...prazdny.zhromazdenieStav!, zostavaLimit: [0, 3] } }, { type: "pass" }, 0);
+    expect(dobral(r.events, 0)).toBe(0);
   });
 
-  it("pas v ďalšom Zhromaždení toho istého kola dá cigarety znova", () => {
+  it("pas v ďalšom Zhromaždení toho istého kola dá karty znova", () => {
     const prve = apply(data, vZhromazdeni([inst("pijan")], { plne: 2, cigarety: 0 }), { type: "pass" }, 0).state;
-    const druhe = vZhromazdeni([inst("pijan")], { plne: prve.hraci[0].poldeciPlne, cigarety: prve.hraci[0].cigarety, pitkaCislo: 1 });
-    expect(apply(data, druhe, { type: "pass" }, 0).state.hraci[0].cigarety).toBe(4);
+    expect(prve.hraci[0].ruka).toHaveLength(3);
+    const druhe: GameState = { ...vZhromazdeni([], { plne: prve.hraci[0].poldeciPlne, pitkaCislo: 1 }), hraci: [{ ...prve.hraci[0] }, prve.hraci[1]] };
+    expect(apply(data, druhe, { type: "pass" }, 0).state.hraci[0].ruka).toHaveLength(5);
   });
 
-  it("Obecný úrad cigarety za pas nezdvojuje — nie sú z Pitky", () => {
+  it("prázdny doberací sa doplní zamiešaním odhadzovacieho; keď nie je z čoho, dobere sa, koľko sa dá", () => {
+    const s0 = vZhromazdeni([inst("pijan")], { plne: 3 });
+    const s: GameState = { ...s0, hraci: [{ ...s0.hraci[0], doberaci: [inst("pijan")], odhadzovaci: [inst("masiar"), inst("vandal")] }, s0.hraci[1]] };
+    const po = apply(data, s, { type: "pass" }, 0).state;
+    expect(po.hraci[0].ruka).toHaveLength(4);
+    expect([po.hraci[0].doberaci.length, po.hraci[0].odhadzovaci.length]).toEqual([0, 0]);
+    const chudobny: GameState = { ...s0, hraci: [{ ...s0.hraci[0], doberaci: [inst("pijan")], odhadzovaci: [] }, s0.hraci[1]] };
+    expect(apply(data, chudobny, { type: "pass" }, 0).state.hraci[0].ruka).toHaveLength(2);
+  });
+
+  it("Obecný úrad karty za pas nezdvojuje — nie sú z Pitky", () => {
     const s = vZhromazdeni([inst("pijan")], { plne: 3, lokalita: "obecny_urad" });
     const { state: po, events } = applySPrisunom(data, s, { type: "pass" }, 0);
-    expect(po.hraci[0].cigarety).toBe(3);
+    expect(po.hraci[0].ruka).toHaveLength(4);
+    expect(po.hraci[0].cigarety).toBe(0);
     expect(events.some((e) => e.type === "zmenaCigariet" && e.zdroj === "obecnyUrad")).toBe(false);
   });
 
@@ -90,12 +134,12 @@ describe("§6 pas dáva cigaretu za každý plný poldeci (v12.3)", () => {
     s = { ...s, zhromazdenieStav: { ...s.zhromazdenieStav!, pasoval: [false, true] } };
     s = apply(data, s, { type: "place", uid: vinko.uid, target: "dedicstvo" }, 0).state;
     expect(s.hraci[0].poldeciPlne).toBe(3);
-    const cigarety = s.hraci[0].cigarety;
-    expect(apply(data, s, { type: "pass" }, 0).state.hraci[0].cigarety).toBe(cigarety + 3);
+    const ruka = s.hraci[0].ruka.length;
+    expect(apply(data, s, { type: "pass" }, 0).state.hraci[0].ruka).toHaveLength(ruka + 3);
   });
 });
 
-describe("§6 bez cigariet: Záverečná a Vychovávateľka (v12.3)", () => {
+describe("§6 bez kariet aj cigariet: Záverečná a Vychovávateľka (v12.3, v12.6)", () => {
   it("Záverečná ukončí vykladanie ako pas, ale cigarety za zvyšné poldeci nedá", () => {
     const pijan = inst("pijan");
     const s = vZhromazdeni([pijan, inst("pijan")], { plne: 3, cigarety: 1 });
@@ -103,9 +147,11 @@ describe("§6 bez cigariet: Záverečná a Vychovávateľka (v12.3)", () => {
     expect(po.zhromazdenieStav?.pasoval[0] ?? true).toBe(true);
     expect(po.hraci[0].poldeciPlne).toBe(2);
     expect(po.hraci[0].cigarety).toBe(1 - KONSTANTY.CENA_ZAVERECNEJ);
+    // Ani karty (v12.6): v ruke ostala len druhá karta.
+    expect(po.hraci[0].ruka).toHaveLength(1);
   });
 
-  it("Vychovávateľka: súper hneď pasuje a za pas nedostane cigarety — plné poldeci mu ostanú; log to povie", () => {
+  it("Vychovávateľka: súper hneď pasuje a za pas nič nedostane (ani karty) — plné poldeci mu ostanú; log to povie", () => {
     const s0 = vZhromazdeni([inst("pijan")], { plne: 3 });
     const e = s0.starsi.find((x) => x.elderId === "vychovavatelka");
     if (e === undefined) throw new Error("Vychovávateľka v hre nie je.");
@@ -118,9 +164,10 @@ describe("§6 bez cigariet: Záverečná a Vychovávateľka (v12.3)", () => {
     const { state: po, events } = applySPrisunom(data, s, { type: "schopnostVazna", elderId: "vychovavatelka" }, 0);
     expect(po.zhromazdenieStav?.pasoval).toEqual([false, true]);
     expect(po.hraci[1].cigarety).toBe(0);
+    expect(po.hraci[1].ruka).toHaveLength(s.hraci[1].ruka.length);
     expect(po.hraci[1].poldeciPlne).toBe(3);
     expect(kniha(events, 1)).toBe(0);
-    expect(events.some((x) => x.type === "log" && x.text.endsWith("hráč 2 v tomto Zhromaždení hneď pasuje a za pas nedostane cigarety."))).toBe(true);
-    expect(data.elders.get("vychovavatelka")?.schopnost).toBe("Súper v tomto Zhromaždení hneď pasuje a za pas nedostane cigarety.");
+    expect(events.some((x) => x.type === "log" && x.text.endsWith("hráč 2 v tomto Zhromaždení hneď pasuje a za pas nič nedostane."))).toBe(true);
+    expect(data.elders.get("vychovavatelka")?.schopnost).toBe("Súper v tomto Zhromaždení hneď pasuje a za pas nič nedostane.");
   });
 });

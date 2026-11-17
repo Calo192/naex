@@ -36,8 +36,8 @@ function vZhromazdeni(seed: number): GameState {
   return s;
 }
 
-describe("§6 pas (v12.3): cigareta za každý plný poldeci, nech má v ruke čokoľvek", () => {
-  it("s prázdnou rukou aj s jednou kartou pas dá toľko cigariet, koľko má plných poldeci", () => {
+describe("§6 pas (v12.6; v12.3–v12.5 cigareta): karta za každý plný poldeci, nech má v ruke čokoľvek", () => {
+  it("s prázdnou rukou aj s jednou kartou pas dá toľko kariet, koľko má plných poldeci (koľko balíček dovolí)", () => {
     const s = vZhromazdeni(4);
     expect(s.faza).toBe("zhromazdenie");
     const p = naTahu(s)!;
@@ -46,11 +46,18 @@ describe("§6 pas (v12.3): cigareta za každý plný poldeci, nech má v ruke č
       ...s,
       hraci: s.hraci.map((h, i) => (i === p ? { ...h, ruka } : h)) as unknown as GameState["hraci"],
     });
-    const zisk = (t: GameState): number => apply(data, t, { type: "pass" }, p).state.hraci[p].cigarety - t.hraci[p].cigarety;
+    // Prvé ťahanie hráča p v ťahu je jeho pas (hra potom smie dohrať ďalšie nevyhnutné ťahy).
+    const zisk = (t: GameState): number => {
+      const r = apply(data, t, { type: "pass" }, p);
+      const e = r.events.find((x) => x.type === "kartyTahane" && x.hrac === p);
+      expect(r.state.hraci[p].cigarety).toBeGreaterThanOrEqual(t.hraci[p].cigarety);
+      return e?.type === "kartyTahane" ? e.karty.length : 0;
+    };
     const plne = s.hraci[p].poldeciPlne;
     expect(plne).toBeGreaterThanOrEqual(2);
-    expect(zisk(sRukou([]))).toBe(plne);
-    expect(zisk(sRukou(s.hraci[p].ruka.slice(0, 1)))).toBe(plne);
+    const balicek = s.hraci[p].doberaci.length + s.hraci[p].odhadzovaci.length;
+    expect(zisk(sRukou([]))).toBe(Math.min(plne, balicek));
+    expect(zisk(sRukou(s.hraci[p].ruka.slice(0, 1)))).toBe(Math.min(plne, balicek));
   });
 });
 

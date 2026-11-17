@@ -18,6 +18,7 @@ import type { ActionSums, CardInstance, CenyKliatob, ClientState, DopadyNahladu,
 import {
   cigaretyZaPas,
   dalsieZhromazdenieOtvara,
+  kartyZaPas,
   pasomOtvoriZhromazdenie,
   naexZaPitku,
   stavZavislosti,
@@ -920,7 +921,7 @@ function moznosti(v: ClientState): string[] {
     }
     case "zhromazdenie": {
       const z = v.zhromazdenieStav;
-      c({ type: "pass" }, `pasovať (do Pitky už nevykladáš, súper vykladá sám; dostaneš ${cigaretyZaPas(v, ja)} cig. — cigaretu za každý plný poldeci; plné poldeci ti ostanú na NA EX a ďalšie Zhromaždenie${pasomOtvoriZhromazdenie(v, ja) ? "; ďalšie Zhromaždenie začneš ty — posledné slovo v ňom bude mať súper" : ""})`);
+      c({ type: "pass" }, `pasovať (do Pitky už nevykladáš, súper vykladá sám; ${kartyZaPas(v, ja) > 0 ? `doberieš si ${kariet(kartyZaPas(v, ja))} — kartu za každý plný poldeci` : cigaretyZaPas(v, ja) > 0 ? `dostaneš ${cigaretyZaPas(v, ja)} cig. — tímu cigaretu za každý plný poldeci` : "nič nedostaneš — nemáš plný poldeci"}; plné poldeci ti ostanú na NA EX a ďalšie Zhromaždenie${pasomOtvoriZhromazdenie(v, ja) ? "; ďalšie Zhromaždenie začneš ty — posledné slovo v ňom bude mať súper" : ""})`);
       // V Zhromaždení sa nefajčí (§7) — motor smoke odmietne, preto ho ani neponúkať.
       if (zakazVypit(v)) out.push("(Kostol: v ťahu sa smie vyložiť len 1 karta)");
       // v12.2: Vypiť = ďalšia karta v ťahu — treba plný poldeci na túto aj ďalšiu kartu a cigaretu.

@@ -53,6 +53,16 @@ export function CenaCigariet({ n, znamienko = "−" }: { readonly n: number; rea
   );
 }
 
+/** Karty, ktoré hráč dostane (pas za karty, v12.6): „+2“ a malá karta. */
+export function ZiskKariet({ n }: { readonly n: number }) {
+  return (
+    <span className="cena-cig">
+      +{n}
+      <IkonaKarty />
+    </span>
+  );
+}
+
 /** Cena v plných poldeci (odpoveď na NA EX, v11.16): „−1“ a malý poldeci, ktorý sa vypije. */
 export function CenaPoldeci({ n }: { readonly n: number }) {
   return (

@@ -388,7 +388,8 @@ describe("návrat Nástroja a hra s podkladaním", () => {
   it("boti podkladajú len pod vlastné karty (v11.16) a po každej bitke je každý Nástroj u svojho majiteľa", () => {
     let podlozeni = 0;
     let podSuperovu = 0;
-    for (const seed of [3, 4]) {
+    // Semienka s podložením: v12.6 (pas dá karty, nie cigarety) 2 a 4; do v12.5 3 a 4.
+    for (const seed of [2, 4]) {
       let s = setupGame(dataH, seed);
       for (let krok = 0; s.koniec === null && krok < 3000; krok++) {
         const p = ([0, 1] as const).find((q) => legalCommands(dataH, s, q).length > 0);

@@ -84,8 +84,8 @@ describe("§13 Vypiť len s plným poldeci aj na ďalšiu kartu (v11.16, v12.2)"
   });
 });
 
-describe("§6 pas za hráča dáva cigarety (v12.3)", () => {
-  it("3 plné, jedna karta vyložená, ruka prázdna — pas za hráča dá 2 cigarety, 2 plné ostávajú", () => {
+describe("§6 pas za hráča dáva karty (v12.6; v12.3–v12.5 cigarety)", () => {
+  it("3 plné, jedna karta vyložená, ruka prázdna — pas za hráča dá 2 karty z balíčka, 2 plné ostávajú", () => {
     const pijan = inst("pijan");
     let s = vZhromazdeni(data, { ruka: [pijan], limit: [3, 3], plne: [3, 3] });
     const cig = s.hraci[0].cigarety;
@@ -93,9 +93,12 @@ describe("§6 pas za hráča dáva cigarety (v12.3)", () => {
     expect(s.hraci[0].ruka).toEqual([]);
     expect(s.zhromazdenieStav?.zostavaLimit[0]).toBe(2);
     // Súper pasuje; hráč 0 s prázdnou rukou nemá čo vyložiť — pasuje za neho hra.
-    s = apply(data, s, { type: "pass" }, 1).state;
-    expect(s.hraci[0].cigarety).toBe(cig + 2);
-    expect(s.hraci[0].poldeciPlne).toBe(2);
+    const r = apply(data, s, { type: "pass" }, 1);
+    // Prvé ťahanie hráča 0 je jeho pas za hráča (potom hra smie dohrať ďalšie nevyhnutné ťahy).
+    expect(r.events.find((e) => e.type === "kartyTahane" && e.hrac === 0)).toMatchObject({ karty: { length: 2 } });
+    expect(r.events.some((e) => e.type === "zmenaCigariet" && e.zdroj === "pas")).toBe(false);
+    expect(r.state.hraci[0].cigarety).toBeGreaterThanOrEqual(cig);
+    expect(r.state.hraci[0].poldeciPlne).toBeGreaterThanOrEqual(2);
   });
 });
 

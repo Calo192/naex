@@ -4064,3 +4064,17 @@ Staré znenie §10 Bodovanie po bitke (v11.20–v12.5):
 >   červenej a oranžovej: víťaz 1, súper 5.
 
 Slovník: „Stupeň — … cena vstupu 1 / 2 / 3, špaky po bitke 1 / 3 / 6“.
+
+## v12.6 — Pas za karty (Michal 2026-11-17, návrh #71, vlastné riešenie)
+
+Staré znenie §6 Pas (v12.3–v12.5):
+
+> **Pas:** kto pasuje, do najbližšej Pitky už nevykladá (súper vykladá sám) a dostane **1 cigaretu za každý
+> plný poldeci** (v12.3, Michal 2026-11-11: „Keď hráč pasne, dostane toľko cigariet, koľko má nevypitých
+> poldeci.“). Poldeci sa tým nevypijú — ostanú plné na NA EX a ďalšie Zhromaždenie kola; kto pasuje aj v ňom,
+> dostane cigarety znova. … Cigarety za pas nie sú z Pitky — Obecný úrad ich nezdvojuje (§15). … za toho hra
+> pasuje a cigarety za plné poldeci dostane tiež … **Záverečná** (§13) ukončí vykladanie ako pas, ale
+> cigarety za ňu nedá; vynútený pas **Vychovávateľky** (§10) tiež nie.
+
+§16 Vychovávateľka: „… za tento pas **nedostane cigarety** (v12.3 …). Ďalšie Zhromaždenie … — pas v ňom cigarety dáva.“
+§13 Záverečná: „(ako pas, ale **bez cigariet za pas**, v12.3)“. Achievement Pas za groš sa vo v12.3–v12.5 ponúkal.

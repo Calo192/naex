@@ -32,7 +32,7 @@ import { spakov } from "../i18n/pocty.ts";
 
 // Ikony zdrojov a výmena „cena → zisk“ sú v ikonyZdrojov.tsx — bez ťažkých závislostí Panelov,
 // aby ich mohli použiť aj malé komponenty testované bez prehliadača (KseftPodKartou).
-export { CenaCigariet, CenaPoldeci, IkonaCigareta, IkonaKarty, IkonaPoldeci, Vymena } from "./ikonyZdrojov.tsx";
+export { CenaCigariet, CenaPoldeci, IkonaCigareta, IkonaKarty, IkonaPoldeci, Vymena, ZiskKariet } from "./ikonyZdrojov.tsx";
 
 /** Absťák: prázdny pohárik v trasúcej sa ruke. */
 export function IkonaAbstak() {

@@ -49,8 +49,8 @@ function nahodnaPartia(seed: number): { readonly pred: GameState; readonly cmd: 
 describe("odpoveď na NA EX", () => {
   // Semienka s odpoveďou lícom dole cez ťah (v11.1; bot po dobratí do ruky, v11.9: 7 a 8; v12.2: 16). V12.3 boti
   // na NA EX odpovedajú oba naraz zriedka (v 70 partiách ani raz) — odpoveď lícom dole cez ťah dá náhodná partia 5,
-  // od v12.5 (nový ťah Dopiť mení náhodné partie) 15, od v12.6 (remízu v tuhom rozhodne hádka) 37.
-  const partie = [...[3, 7, 8, 16, 21].map(partia), nahodnaPartia(37)];
+  // od v12.5 (nový ťah Dopiť mení náhodné partie) 15, od v12.6 (remízu v tuhom rozhodne hádka) 37, s pasom za karty 13.
+  const partie = [...[3, 7, 8, 16, 21].map(partia), nahodnaPartia(13)];
   const tahy = partie.flat();
 
   it("každá odpoveď sa ohlási udalosťou — vynechanie hneď, karta lícom dole až pri otočení (v9.2)", () => {

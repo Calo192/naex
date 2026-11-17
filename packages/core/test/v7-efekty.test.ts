@@ -366,8 +366,9 @@ describe("Zhromaždenie a Nástup (v7)", () => {
     const s = vZhromazdeni("zastavka", [[], [lezi(inst("autobusar"), 1)]], [inst("masiar"), inst("vandal")]);
     const z = { ...s, zhromazdenieStav: { ...s.zhromazdenieStav!, pasoval: [false, true] as [boolean, boolean] } };
     const po = apply(data, z, { type: "pass" }, 0).state;
-    // Pas dáva cigaretu za každý plný poldeci (v12.3) — Autobusár z nich neberie nič.
-    expect(po.hraci[0].cigarety).toBe(s.hraci[0].cigarety + s.hraci[0].poldeciPlne);
+    // Pas dáva kartu za každý plný poldeci (v12.6; v12.3–v12.5 cigaretu) — Autobusár nič neberie.
+    expect(po.hraci[0].cigarety).toBe(s.hraci[0].cigarety);
+    expect(po.hraci[0].ruka).toHaveLength(s.hraci[0].ruka.length + Math.min(s.hraci[0].poldeciPlne, s.hraci[0].doberaci.length));
   });
 
   it("Starosta v línii od v9 Nástup nemá; Živnostník Nástup nemá ani v starej sade (Nástroj pod neho zanikol 2026-11-09); Anonymný alkoholik od v11.5 Nástup nemá", () => {
@@ -526,7 +527,8 @@ describe("Cintorín — Pozostalosť (Michal 2026-10-27, Pohreb zrušený)", () 
     const pijan = inst("pijan");
     const cudzia = inst("vidly");
     const base = vPitke("cintorin", [[lezi(inst("zamocnik"), 0)], silna(3)]);
-    const s = poCintorin(sHracom(sHracom({ ...base, senok: [...base.senok, cudzia] }, 0, { odhadzovaci: [pijan] }), 1, { odhadzovaci: [] }));
+    // Väčší balíček: pas v ďalšom Zhromaždení dá karty (v12.6) a dobratie po bitke by inak zamiešalo odhadzovací.
+    const s = poCintorin(sHracom(sHracom({ ...base, senok: [...base.senok, cudzia] }, 0, { odhadzovaci: [pijan], doberaci: Array.from({ length: 8 }, () => inst("masiar")) }), 1, { odhadzovaci: [] }));
     expect(s.bitkaStav?.caka).toBe(0);
     expect(() => apply(data, s, { type: "cintorin", uid: cudzia.uid }, 0)).toThrow(/odhadzovacom/);
     const po = apply(data, s, { type: "cintorin", uid: null }, 0).state;
@@ -568,7 +570,8 @@ describe("Cintorín — Pozostalosť (Michal 2026-10-27, Pohreb zrušený)", () 
 
   it("Cirhóza vzatá Cintorínom sa ako každá nepriznaná vráti do balíčka; porazený dostane cigaretu raz", () => {
     const cirhoza = inst("cirhoza");
-    const s = poCintorin(sHracom(vPitke("cintorin", [[lezi(inst("zamocnik"), 0)], silna(3)]), 0, { odhadzovaci: [cirhoza] }));
+    // Väčší balíček: pas v ďalšom Zhromaždení dá karty (v12.6) a dobratie po bitke by inak zamiešalo odhadzovací.
+    const s = poCintorin(sHracom(vPitke("cintorin", [[lezi(inst("zamocnik"), 0)], silna(3)]), 0, { odhadzovaci: [cirhoza], doberaci: Array.from({ length: 8 }, () => inst("masiar")) }));
     expect(s.bitkaStav?.caka).toBe(0);
     const cigarety = s.hraci[0].cigarety;
     const po = apply(data, s, { type: "cintorin", uid: cirhoza.uid }, 0).state;

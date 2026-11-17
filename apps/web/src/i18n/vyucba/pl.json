@@ -1027,6 +1027,12 @@
       "melichar": "Pitka sa vyhodnotila – tabuľka ukazuje, čo komu pribudlo: tebe Dlh z Hazardu Recidivistu, pečeň, tá sa vynulovala, a jeden dolievaný [Poldeci] poldeci; Štamgastovi cigareta zo vchodu. Druhé Zhromaždenie, Štamgast začína."
     }
   },
+  "k-pas3c": {
+    "melichar": "",
+    "sk": {
+      "melichar": "Druhé Zhromaždenie: v ruke máš len Kocovníkov z pasov, tých si nechaj. Pasuj (P) – za plný [Poldeci] poldeci si doberieš kartu."
+    }
+  },
   "k-hotovo6": {
     "melichar": "Drugie Zebranie spasowała za ciebie gra, ręki nie masz – a za pas nic nie dostaniesz. Druga Popijawa, ostatnia: kończę (K).",
     "sk": {
@@ -1169,6 +1175,12 @@
     "sk": {
       "melichar": "Vypi a polož Mäsiara za Pijana a Policajtku za neho, v jednom ťahu. Policajtka má Nepriateľa: kým leží v línii Štamgastov Kriminál – Recidivista –, má navyše [Petelica] Petelicu. 13 : 5, zatiaľ. Štamgast ešte nevie, čo ho čaká.",
       "inak": "Vypi, Mäsiar za Pijana, Policajtka za neho. Jeden ťah."
+    }
+  },
+  "k-finale-pas2": {
+    "melichar": "",
+    "sk": {
+      "melichar": "Mäsiar a Policajtka ležia, Štamgast pasoval. Pasuj aj ty (P) – za plný [Poldeci] poldeci si doberieš kartu."
     }
   },
   "k-fajcit-finale": {

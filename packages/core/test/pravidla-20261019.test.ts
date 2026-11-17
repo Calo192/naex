@@ -119,7 +119,9 @@ describe("Pitky = 1 + menší počet aktivovaných akcií lokality (Michal 2026-
   });
 
   it("po prvej Pitke ide ďalšie Zhromaždenie a druhá Pitka, potom bitka", () => {
+    // Cigarety, aby Pitku hra neodohrala sama (bez nich je jediný ťah skipNaex — v12.6 pas cigarety nedáva).
     let s = vZhromazdeni([[kartaTri()], [kartaJeden()]]);
+    s = { ...s, hraci: [{ ...s.hraci[0], cigarety: 5 }, { ...s.hraci[1], cigarety: 5 }] };
     const skus = (typ: "pass" | "skipNaex"): void => {
       s = apply(sadaP, s, { type: typ }, naTahu(s)!).state;
     };
@@ -367,11 +369,12 @@ describe("Vízia: vrchnú kartu balíčka do ruky, alebo zahodiť (Michal 2026-1
 
 
 
-describe("pas (Michal 2026-10-20): do Pitky; v12.3 cigareta za každý plný poldeci", () => {
-  it("pasujúci dostane cigaretu za každý plný poldeci, tie ostanú plné, a súper vykladá sám", () => {
+describe("pas (Michal 2026-10-20): do Pitky; v12.6 karta za každý plný poldeci (v12.3–v12.5 cigareta)", () => {
+  it("pasujúci si dobere kartu za každý plný poldeci, tie ostanú plné, a súper vykladá sám", () => {
     let s = vZhromazdeniHrac0(44, { ruka: [inst("pijan"), inst("pijan")], cigarety: 0, poldeciPlne: 3, poldeciVypite: 0 });
     s = apply(data, s, { type: "pass" }, 0).state;
-    expect(s.hraci[0].cigarety).toBe(3);
+    expect(s.hraci[0].cigarety).toBe(0);
+    expect(s.hraci[0].ruka).toHaveLength(5);
     expect(s.hraci[0].poldeciPlne).toBe(3);
     expect(s.zhromazdenieStav?.pasoval).toEqual([true, false]);
     expect(naTahu(s)).toBe(1);
@@ -381,10 +384,12 @@ describe("pas (Michal 2026-10-20): do Pitky; v12.3 cigareta za každý plný pol
     s = apply(data, s, { type: "place", uid: karta.uid, target: "vlastna" }, 1).state;
     expect(naTahu(s)).toBe(1);
     const cigarety = s.hraci[1].cigarety;
+    const ruka = s.hraci[1].ruka.length;
     const plne = s.hraci[1].poldeciPlne;
     expect(plne).toBeGreaterThan(0);
     s = apply(data, s, { type: "pass" }, 1).state;
-    expect(s.hraci[1].cigarety).toBe(cigarety + plne);
+    expect(s.hraci[1].cigarety).toBe(cigarety);
+    expect(s.hraci[1].ruka).toHaveLength(ruka + plne);
     expect(s.faza).toBe("pitka");
   });
 
@@ -393,6 +398,7 @@ describe("pas (Michal 2026-10-20): do Pitky; v12.3 cigareta za každý plný pol
     s = { ...s, zhromazdenieStav: { ...s.zhromazdenieStav!, zostavaLimit: [0, 2] } };
     s = apply(data, s, { type: "pass" }, 0).state;
     expect(s.hraci[0].cigarety).toBe(0);
+    expect(s.hraci[0].ruka).toHaveLength(1);
   });
 });
 
@@ -412,7 +418,8 @@ describe("Cirhóza bez dobratia (Michal 2026-10-20; Dlh od v8.2 len počítadlo)
   it("priznaná Cirhóza kartu nedá, ani iná Kliatba (v12.5: vetva „kartu za každú inú Kliatbu“ zanikla)", () => {
     const cirhoza = inst("cirhoza");
     const manzelka = inst("milujuca_manzelka");
-    let s = vZhromazdeniHrac0(48, { ruka: [cirhoza, manzelka] });
+    // Bez plného poldeci: pas za hráča s prázdnou rukou (v12.6) by inak dobral karty za plné poldeci.
+    let s = vZhromazdeniHrac0(48, { ruka: [cirhoza, manzelka], poldeciPlne: 0, poldeciVypite: 3 });
     const balicek = s.hraci[0].doberaci.length;
     s = apply(data, s, { type: "place", uid: cirhoza.uid, target: "priznanie" }, 0).state;
     expect(s.hraci[0].ruka).toHaveLength(1);

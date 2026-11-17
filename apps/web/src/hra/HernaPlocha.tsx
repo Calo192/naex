@@ -49,7 +49,7 @@ import type {
   ZobrataVerejne,
   Zdvih,
 } from "@naex/core";
-import { BEZ_PECIATKY, cigaretyZaPas, pasomOtvoriZhromazdenie, prveFajcenieZadarmo, sRadom, odhadSpakovKola, type StavOdhadu, riadkyCakajuceho, riadkyCakajucichPoldeci, KONSTANTY, jeCoTahat, jeFinaleNaNastenke, efektyPrehry, hrozbaKliatob, mozeEsteNaex, textHrozbyKliatob, textyEfektovPrehry, cenaKliatby, battleOutcome, prebytokNaRozdelenie, platbaZaSenok, povodKartySenku, nahladPitky, vyhladDlhov, evaluateLine, efektyNavyse, pocitadloBitky, pitkaPredBitkou, hrozbaNaex, krokStavby, planVykladania, barterCena, plneBuduceKolo, plnePoPitke, plneVZhromazdeni, lineState, nahladZajatia, prevahaStran, krajeStran, dovodZakazuFajcit, defOf, ponukaSenku, cenaFajceniaHraca, naexLimitMinuty as naexLimitMinutyHraca, sMojimiSkrytymiNaex, sPrilozenou, vystrahaPecene, nahladNaexNaKartu, najhorsiaOdpovedNaNaex, cenaTahu, nahladVylozenia, moznostiNaexVPohlade, zablokovaneStrany, NASTROJ_DO_LINIE, favourStarsieho, krokRozdelenia, cieleOdpovede, maxZoSenku, bodyRozdelenia, printedSides, poskodenieBitky, rozpisPoskodenia, prahyHraca, scorecardStarsieho, stavKraja, stavkaBitky, stavZavislosti, stranyLokality, vidiVolbuSupera, hraVPitke, cakaSBzdochou, opponentOf, majitelPresvedcenej, moznostiAkcie, cenaAkcieUplna, zdvihyPreAkcie, navrhRozdelenia, pohladPoRozdeleni, priazenHraca, priazenSila, pultStarsich, spakyTeraz, vazniNaVyhru } from "@naex/core";
+import { BEZ_PECIATKY, cigaretyZaPas, kartyZaPas, pasomOtvoriZhromazdenie, prveFajcenieZadarmo, sRadom, odhadSpakovKola, type StavOdhadu, riadkyCakajuceho, riadkyCakajucichPoldeci, KONSTANTY, jeCoTahat, jeFinaleNaNastenke, efektyPrehry, hrozbaKliatob, mozeEsteNaex, textHrozbyKliatob, textyEfektovPrehry, cenaKliatby, battleOutcome, prebytokNaRozdelenie, platbaZaSenok, povodKartySenku, nahladPitky, vyhladDlhov, evaluateLine, efektyNavyse, pocitadloBitky, pitkaPredBitkou, hrozbaNaex, krokStavby, planVykladania, barterCena, plneBuduceKolo, plnePoPitke, plneVZhromazdeni, lineState, nahladZajatia, prevahaStran, krajeStran, dovodZakazuFajcit, defOf, ponukaSenku, cenaFajceniaHraca, naexLimitMinuty as naexLimitMinutyHraca, sMojimiSkrytymiNaex, sPrilozenou, vystrahaPecene, nahladNaexNaKartu, najhorsiaOdpovedNaNaex, cenaTahu, nahladVylozenia, moznostiNaexVPohlade, zablokovaneStrany, NASTROJ_DO_LINIE, favourStarsieho, krokRozdelenia, cieleOdpovede, maxZoSenku, bodyRozdelenia, printedSides, poskodenieBitky, rozpisPoskodenia, prahyHraca, scorecardStarsieho, stavKraja, stavkaBitky, stavZavislosti, stranyLokality, vidiVolbuSupera, hraVPitke, cakaSBzdochou, opponentOf, majitelPresvedcenej, moznostiAkcie, cenaAkcieUplna, zdvihyPreAkcie, navrhRozdelenia, pohladPoRozdeleni, priazenHraca, priazenSila, pultStarsich, spakyTeraz, vazniNaVyhru } from "@naex/core";
 import type { Moment, ActionSums, DopadyNahladu, KliatbyNahladu, NahladNaexNaKartu, PrebytokNahladu, NahladVylozenia, PolozkaVykladania, Rod, Slot, StranaLinie, VystrahaPecene } from "@naex/core";
 import type { KtoraHrana, MoznostPodlozenia, PodlozenyNastroj } from "@naex/core";
 import { aktivnaHrana, dovodNepodlozenia, hranyNastroja, ponukaPodlozenia } from "@naex/core";
@@ -110,6 +110,7 @@ import {
   Vymena,
   HracDoska,
   IkonaKarty,
+  ZiskKariet,
   IkonaPoldeci,
   OdhadBaru,
   OdhadKola,
@@ -4431,8 +4432,9 @@ export function HernaPlocha({
             );
           // Pas je nevratný: potvrdenie len keď ešte niečo vyložiť môžem (UX N1, U10).
           const mozemVylozit = zostava > 0 && [...moznostiMiesta.values()].some((m) => m.karty.size > 0);
-          // v12.3: pas dáva cigaretu za každý plný poldeci — hráč vidí, koľko dostane, ešte pred kliknutím.
+          // v12.6: pas dáva kartu za každý plný poldeci (v 2 na 2 cigaretu tímu, v12.3) — hráč vidí, koľko dostane, ešte pred kliknutím.
           const zaPas = cigaretyZaPas(view, ja);
+          const kartyPas = kartyZaPas(view, ja);
           // v12.6 (#73): kto pasuje prvý, otvorí ďalšie Zhromaždenie kola — posledné slovo v ňom dostane súper.
           const otvoris = pasomOtvoriZhromazdenie(view, ja);
           if (odlozenyPas.caka !== null) {
@@ -4440,7 +4442,11 @@ export function HernaPlocha({
               nadpis,
               text: (
                 <>
-                  <strong>{t("zhrom.pasujesOdlozene", { cigarety: cigariet(zaPas), meno: menoHraca(super_), s: odlozenyPas.zostavaS })}</strong>
+                  <strong>
+                    {kartyPas > 0
+                      ? t("zhrom.pasujesOdlozeneKarty", { karty: kariet(kartyPas), meno: menoHraca(super_), s: odlozenyPas.zostavaS })
+                      : t("zhrom.pasujesOdlozene", { cigarety: cigariet(zaPas), meno: menoHraca(super_), s: odlozenyPas.zostavaS })}
+                  </strong>
                   {otvoris && (
                     <>
                       <br />
@@ -4469,7 +4475,7 @@ export function HernaPlocha({
             text: textNahladuTahania ?? textVolbyMiesta ?? (![...moznostiMiesta.values()].some((m) => m.karty.size > 0) ? (
               // Pri vyčerpanom limite pokyn „potiahni kartu“ zavádzal (playtest výučby 20261025, K11).
               <>
-                {zaPas > 0 ? tr("zhrom.nicNevylozisZaPas", { cigarety: cigariet(zaPas) }) : tr("zhrom.nicNevylozis")}{" "}
+                {kartyPas > 0 ? tr("zhrom.nicNevylozisZaPasKarty", { karty: kariet(kartyPas) }) : zaPas > 0 ? tr("zhrom.nicNevylozisZaPas", { cigarety: cigariet(zaPas) }) : tr("zhrom.nicNevylozis")}{" "}
                 {otvoris && <span className="tlmene">{t("zhrom.pasomOtvoris")} </span>}
                 {pokynNaradia}
                 <span className="tlmene">{[...moznostiMiesta.values()].find((m) => m.dovod !== null)?.dovod ?? ""}</span>
@@ -4488,10 +4494,10 @@ export function HernaPlocha({
                   className="pecat pecat-koncim"
                   data-skratka="p"
                   data-vyucba="tlacidlo:pas"
-                  title={otvoris ? `${t("zhrom.pasTip")} ${t("zhrom.pasomOtvoris")}` : t("zhrom.pasTip")}
+                  title={`${t(kartyPas > 0 || zaPas === 0 ? "zhrom.pasTipKarty" : "zhrom.pasTip")}${otvoris ? ` ${t("zhrom.pasomOtvoris")}` : ""}`}
                   onClick={() => (mozemVylozit && vyucba !== true ? odlozenyPas.spusti({ type: "pass" }) : posli({ type: "pass" }))}
                 >
-                  {zaPas > 0 ? <Vymena das={t("zhrom.pasovat")} dostanes={<CenaCigariet n={zaPas} znamienko="+" />} /> : t("zhrom.pasovat")}
+                  {kartyPas > 0 ? <Vymena das={t("zhrom.pasovat")} dostanes={<ZiskKariet n={kartyPas} />} /> : zaPas > 0 ? <Vymena das={t("zhrom.pasovat")} dostanes={<CenaCigariet n={zaPas} znamienko="+" />} /> : t("zhrom.pasovat")}
                 </button>
               );
               // Na telefóne je pas hlavná akcia pruhu pokynu, záverečná a odkaz idú do ▾.

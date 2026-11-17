@@ -76,11 +76,18 @@ export const KONSTANTY = {
    */
   CENA_KARTY_NAVYSE: 1,
   /**
-   * Pas (v12.3, Michal 2026-11-11: „Keď hráč pasne, dostane toľko cigariet, koľko má nevypitých
-   * poldeci.“): toľkoto cigariet za každý plný poldeci v okamihu pasu; poldeci ostanú plné.
-   * Od 2026-10-20 do v12.1 sa rátal zvyšok limitu, v12.2 pas nedával nič.
+   * Pas v 2 na 2 (v12.3, Michal 2026-11-11: „Keď hráč pasne, dostane toľko cigariet, koľko má nevypitých
+   * poldeci.“): toľkoto cigariet tímu za každý plný poldeci, keď pasuje druhý člen; poldeci ostanú plné.
+   * V 1 na 1 od v12.6 karty (KARTY_ZA_PAS_NA_POLDECI). Od 2026-10-20 do v12.1 sa rátal zvyšok limitu,
+   * v12.2 pas nedával nič.
    */
   CIGARETY_ZA_PAS_NA_POLDECI: 1,
+  /**
+   * Pas v 1 na 1 (v12.6, návrh #71, Michal 2026-11-17: „Keď hráč pasuje, doberie si z balíčka toľko kariet,
+   * koľko má ešte nevypitých poldeci.“): toľkoto kariet za každý plný poldeci v okamihu pasu, namiesto cigariet;
+   * poldeci ostanú plné.
+   */
+  KARTY_ZA_PAS_NA_POLDECI: 1,
   /** Podloženie Nástroja pod kartu v línii (Náradie, Michal 2026-11-08, P4). */
   CENA_PODLOZENIA: 1,
   /** Záverečná (roadmapa #83, Michal 2026-10-23): karta lícom dole za cigaretu. */
@@ -338,7 +345,8 @@ export function vazniNaVyhru(lokalitCelkom: number): number {
 // v ďalšej vyhratej bitke (V1, Pivnica plná) a nový ťah Dopiť za teba (N1).
 // v12.6 (Michal 2026-11-17, Zrejúca) bez novej značky: ďalšie Zhromaždenie kola otvára, kto v predošlom
 // skončil vykladanie prvý (návrh #73 A); remízu v tuhom rozhodne víťaz hádky, až potom menej Dlhov;
-// strach víťaza boduje len najvyšším stupňom 1 / 2 / 3 (návrh #70 A).
+// strach víťaza boduje len najvyšším stupňom 1 / 2 / 3 (návrh #70 A); pas dá kartu za každý plný poldeci
+// namiesto cigarety (návrh #71, vlastné riešenie Michala).
 export const VERZIA_PRAVIDIEL = "v12";
 /**
  * Presná verzia pravidiel vrátane dávky — hráč ju vidí na stránke Pravidlá, ktorá má
