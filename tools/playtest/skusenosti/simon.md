@@ -9,10 +9,10 @@ vo feedback.md.
 ### simon-9 · Keď má súper červený strach pri starších a vyhráva bitky, nedávam reči na tie červené, lebo od v12.5 sa hádka rozdeľuje pred jeho Nakladačkou a pri zajatí ukradne aj čerstvé reči podľa ceny stupňov a presvedčenú kartu zničí; reči dávam na jeho nižší strach a po žltej nad ním k starším, kam pôjde jeho Nakladačka, lebo tam sa vyvezú na jeho nový vrchný stupeň.
 - stav: overená
 - pravidlá: v12
-- potvrdenia: 4
+- potvrdenia: 5
 - vyvrátenia: 0
-- dátum: 2026-11-16
-- partie: 20261109-115955-1, 20261111-221937-3, 20261113-084431-3, 20261116-173731-3
+- dátum: 2026-11-17
+- partie: 20261109-115955-1, 20261111-221937-3, 20261113-084431-3, 20261116-173731-3, 20261117-140948-3
 - prečo: §10 Zajatie (krádež: cena stupňov 1 / 2 / 3, nie ich bodová hodnota), Presvedčenie. 20261109-115955-1: K3 Autobusár (reči oranžová 2 + červená 3) → krádež 5; K5 Hrobár (1 + 2 + 3) → krádež 6 a presvedčený Hrobár z Šimonovho balíčka zmizol; Šimon mal hádky 5 : 0, a aj tak prehral. Farár (súperova oranžová) a Krčmárka dali Šimonovi 5 a 4 špaky za bitku bez rizika. 20261111-221937-3: Šimon reči na Janove červené nedával, pri zajatí Krčmárky v K3 log „Hráč 2 mu odovzdáva 0 špakov“. 20261116-173731-3: K4 Vilo zajal Starostu, na ktorom ležali Šimonove reči z K2 (oranžová + červená) → krádež 5; K1 žltá na prázdnej Poštárke sa Vilovou Nakladačkou vyviezla na červenú (K3 3 špaky), K5 žltá na Krčmárke tiež (finále 3); NÁVRH jadra v K5 (6 bodov na Vilovu červenú Poštárku) Šimon odmietol.
 - oprava: 2026-11-16 20261116-173731-3: od v12.5 reči na prázdnych teplomeroch nebodujú (R1), preto vypadlo „prázdne teplomery, plné teplomery presviedčam“; krádež berie aj reči z hádky tej istej bitky (§9 krok 4e). Opravené znenie partia potvrdila.
 
@@ -49,8 +49,35 @@ vo feedback.md.
 ### simon-14 · Keď má súperova karta s vysokou spárovanou akciou (Petelica, Pecka) na vonkajšej hrane nespárovaný Odpor, priložím k nej kartu s Odporom na tej istej pozícii, lebo Odpor + Odpor = Vzbura obom kartám: jej spárované akcie zhasnú, nespárované (aj Dlhy) sa zapnú a NA EX na ňu už nejde.
 - stav: overená
 - pravidlá: v12
+- potvrdenia: 2
+- vyvrátenia: 0
+- dátum: 2026-11-17
+- partie: 20261116-173731-3, 20261117-140948-3
+- prečo: §6 Modifikátory na spoji (Vzbura), §7 (na kartu so Vzburou NA EX nemožno dať). 20261116-173731-3: K2 Praudovravec k Vilovmu Recidivistovi 3 : 5 → 3 : 1 (Petelica a Rana zhasli), K5 to isté 5 → 0 tuhých a Vilovi 7 Dlhov (Exekútor −4); finále Vilov Kočovník k Šimonovej Policajtke (jej Petelica zhasla). Na Výtržníka (Injekcia, zrážka) to neplatí. Navrhol ako spoločnú; spoločný zošit je plný.
+
+### simon-15 · Keď má súper väzňa Vychovávateľku s nepoužitou schopnosťou a kolo má len 1 Pitku, prvým ťahom položím dve najdôležitejšie karty jedným Vypiť (alebo Záverečnú), lebo vynútený pas môže prísť hneď po mojom prvom ťahu a v tom kole už nič nevyložím.
+- stav: overená
+- pravidlá: v12
 - potvrdenia: 1
 - vyvrátenia: 0
-- dátum: 2026-11-16
-- partie: 20261116-173731-3
-- prečo: §6 Modifikátory na spoji (Vzbura), §7 (na kartu so Vzburou NA EX nemožno dať). 20261116-173731-3: K2 Praudovravec k Vilovmu Recidivistovi 3 : 5 → 3 : 1 (Petelica a Rana zhasli), K5 to isté 5 → 0 tuhých a Vilovi 7 Dlhov (Exekútor −4); finále Vilov Kočovník k Šimonovej Policajtke (jej Petelica zhasla). Na Výtržníka (Injekcia, zrážka) to neplatí. Navrhol ako spoločnú; spoločný zošit je plný.
+- dátum: 2026-11-17
+- partie: 20261117-140948-3
+- prečo: §10 Schopnosť väzňa (Vychovávateľka: súper v tomto Zhromaždení hneď pasuje a za pas nič nedostane), §7 Počet Pitiek, §13 Vypiť. 20261117-140948-3 K5 Vínna pivnica: Šimon zahral len Manželku, Vilo použil Vychovávateľku (log „hráč 1 v tomto Zhromaždení hneď pasuje a za pas nič nedostane“) a druhú hranu nespároval → 1 Pitka, Šimon celé kolo s 1 kartou na stole a 8 v ruke, bitka 2 : 4. Navrhol ako spoločnú; spoločný zošit je plný.
+
+### simon-16 · Keď je finále na Predsedovej vile, nechám si naň aspoň 3 cigarety (lepšie 6), lebo každé 2 vyfajčené v Pitke dajú stupeň rečí na súperov vrchný strach — od v12.6 súper za takého staršieho pri výhre nedostane nič a reči bodujú mne aj pri prehre.
+- stav: overená
+- pravidlá: v12
+- potvrdenia: 1
+- vyvrátenia: 0
+- dátum: 2026-11-17
+- partie: 20261117-140948-3
+- prečo: §15 Predsedova vila, §10 Bodovanie (v12.6 víťaz za strach len najvyšší stupeň, a keď ho drží súper rečami, nič). 20261117-140948-3 finále: Vilo 1 + 2 + 3 cigarety → log „reči o 1 stupeň“ a „reči o 2 stupne“ na Šimonovej oranžovej Krčmárke, Hrobárovi a Veterinárovi; starší po bitke Vilovi 13 (6 za reči); Šimon s 2 cigaretami nemal ani jeden stupeň.
+
+### simon-17 · Keď dám v kole 2 a viac NA EX (Chuť po kole stúpne), ešte v tom kole si spočítam Chuť na ďalšie kolo a naplánujem v ňom aspoň toľko nerestí (NA EX v poslednej Pitke, fajčenie, Vypiť), lebo krátke kolo či vynútený pas ma nechá bez nerestí a Absťák berie 1 tuhé v každej ďalšej bitke.
+- stav: overená
+- pravidlá: v12
+- potvrdenia: 1
+- vyvrátenia: 0
+- dátum: 2026-11-17
+- partie: 20261117-140948-3
+- prečo: §8 Chuť a Absťák. 20261117-140948-3: K4 2× NA EX → log „Chuť hráča 1: 0 → 3“; K5 (1 Pitka, vynútený pas Vychovávateľkou) 0 nerestí → „Absťák do odhadzovacieho balíčka: Chuť 3, v kole vypil a vyfajčil 0 nerestí“, vo finále −1 tuhé.

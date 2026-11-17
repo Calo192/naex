@@ -9,22 +9,23 @@ vo feedback.md.
 ### jano-1 · Keď súper v Zhromaždení spasuje a ja ešte mám karty, položím všetko v poradí, ktoré chráni koniec línie, lebo po pase už nemôže zablokovať hranu ani doložiť telo.
 - stav: overená
 - pravidlá: v12
-- potvrdenia: 8
+- potvrdenia: 9
 - vyvrátenia: 0
-- dátum: 2026-11-16
-- partie: 20261027-131033-1, 20261027-161907-1, 20261028-090549-2, 20261109-115955-1, 20261111-221937-3, 20261114-003916-2, 20261113-084431-1, 20261116-173731-2
+- dátum: 2026-11-17
+- partie: 20261027-131033-1, 20261027-161907-1, 20261028-090549-2, 20261109-115955-1, 20261111-221937-3, 20261114-003916-2, 20261113-084431-1, 20261116-173731-2, 20261117-140948-2
 - prečo: PRAVIDLA §6 (Pas a koniec Zhromaždenia). 131033-1 K3 Jano: Fero spasoval s 2 kartami v ruke, Jano položil Veterána a vyhral 9 : 5; K4 po Ferovom pase Dievčina + Veterán (+3, +3), 11 : 13 → 13 : 13 (denník Jana K3/K4). 161907 K4: po Evinom pase (Zh 2/3) Jano položil Praudovravca (Mäsiar +4 tuhé) a Policajtku, 2 : 3 → 8 : 1 (Eva potvrdila, 1 : 8). 090549: P2 K3 Eva spasovala s 2 kartami hneď po Janovej prvej karte, Jano doložil Kulturistu, Dvojčatá a Hasiča a vyhral 6 : 0. 20261109-115955-1 K2 Zh2 a K4 Zh2: Šimon spasoval, Jano doložil Pijana + Manželku a Manželku bez jeho reakcie (K2 12 : 7, K4 12 : 5). 20261111-221937-3 K4 a K5: po Šimonovom pase Jano doložil karty tak, aby na koncoch ležali karty so štítom (Vdova, Recidivista s Odporom) — K5 14 : 2. 20261114-003916-2 K6 (finále): Hela spasovala s 3 plnými poldeci a 1 Pitkou, Jano doložila Pijana a Poľovníka 5 : 6 → 9 : 6, konečne 10 : 6; ľavý kraj nespárovala, aby nepribudla druhá Pitka (Pitiek = 1 + menší počet aktivovaných akcií hrán; denník Jany). Pozor: po pase súper ešte smie NA EX a odpovedať — Helin NA EX na Pijana dal +1 tuhé a 2 Cirhózy. 20261116-173731-2 finále Zhromaždenie 2: Fero pasoval s 10 plnými, Jano dopil a doložil Pijana bez jeho reakcie; finále 6 : 1.
 
-### jano-2 · Keď je bitka tesne prehraná alebo remízová v tuhom, spočítam pred bitkou Dlhy oboch aj tie, ktoré mi ešte pridá vlastná karta s Hazardom (Vzbura ich zdvojí), lebo remízu v tuhom vyhrá, kto má menej Dlhov (Absťáky od v12.5 nerozhodujú).
-- stav: overená
+### jano-2 · Keď je bitka tesne prehraná alebo remízová v tuhom, spočítam pred bitkou hádku a Dlhy oboch aj tie, ktoré mi ešte pridá vlastná karta s Hazardom (Vzbura ich zdvojí), lebo remízu v tuhom vyhrá víťaz hádky a až keď hádku nevyhral nikto, ten s menej Dlhmi (v12.6).
+- stav: neoverená
 - pravidlá: v12
 - potvrdenia: 3
 - vyvrátenia: 0
-- dátum: 2026-11-16
+- dátum: 2026-11-17
 - partie: 20261027-161907-1, 20261111-221937-3, 20261116-173731-2
 - prečo: PRAVIDLA §9.2 (priazeň platí hneď), §9.4 (remíza: Absťáky, potom Dlhy). 161907 K5: 3 : 5 → 5 : 5 po 2 Pohoršeniach na Autobusára; Eva mala Absťák 1, Jano 0, remízu vyhral Jano (Eva: „prehrala som na Absťák“). 20261111-221937-3 K1: 0 : 0 → Absťáky 0 : 0 → Dlhy 0 : 0 → sekera; Manželka k Šimonovej Dievčine by mu dala Dlh a remízu by Jano vyhral — kontrolu tiebreaku vynechal a stálo ho to (porušenie potvrdzuje). 20261116-173731-2 K5: 14 : 14 prehra na Dlhy 4 : 2 — Dlhy si Jano vzal s Recidivistovou Vzburou (nespojený Dlh ×2) a tiebreak pred bitkou nerátal.
 - oprava: 2026-11-08 20261108-165501-1: časť „Pohoršenia na Bitkára“ odporuje §9.1 (hádka priazne nemení, Pohoršenie je v hádke); ostala len remíza (§9.4). Stav neoverená.
 - oprava: 2026-11-16 20261116-173731-2: vypustené Absťáky — §9.4 v12.5 rozhoduje remízu v tuhom len menej Dlhov; opravené znenie partia potvrdila (K5).
+- oprava: 2026-11-17 20261117-140948-2: v12.6 rozhoduje remízu v tuhom najprv hádka, Dlhy až potom (§9.4) — prepísané; remíza v partii nenastala (K4 hádka 2 : 2 pri tuhom 19 : 7), stav neoverená.
 
 ### jano-3 · Keď sa blíži finále, nechávam si aspoň 3 cigarety a 3 karty v ruke (neminiem všetko na zajatie či Záverečnú v predposlednom kole), lebo vo finále víťaz dostane 1 špak za každý bod Nakladačky (§9.4, §14b) a hráč bez cigariet a kariet nemá čím položiť prvé karty ani zamknúť kraj.
 - stav: overená
@@ -77,20 +78,20 @@ vo feedback.md.
 ### jano-9 · Keď mám aspoň 2 červené (väzni sa rátajú) a vyhrám bitku s Nakladačkou 11 a viac, dvíham ďalších starších na červenú do súčtu 4 namiesto drahých zajatí a vyberám tých, ktorých priazeň súperovi v bitke nepomôže, lebo výhra strachom príde pri ďalšej akejkoľvek výhre ešte pred rozdelením.
 - stav: overená
 - pravidlá: v12
-- potvrdenia: 1
+- potvrdenia: 2
 - vyvrátenia: 0
-- dátum: 2026-11-11
-- partie: 20261111-221937-3
+- dátum: 2026-11-17
+- partie: 20261111-221937-3, 20261117-140948-2
 - prečo: §10 Výhra strachom (krok 4c), Priazeň. 20261111-221937-3 K4: Nakladačka 12 → Vychovávateľka žltá → červená (5) + Veterinár sivá → červená (6) + Hrobár žltá (1), s Autobusárom a väzňom Krčmárkou 4 „červené“; Starostu (Veriaci) vynechal; K5 14 : 2 → „výhra strachom“ (log).
 
 ### jano-10 · Keď súper položí k lokalite kartu, ktorej hrana mu dáva tuhé alebo mu pripravuje NA EX na vnútornú hranu, a mám Vandala, priložím ho tak, aby po otočení lokality súperova vnútorná hrana nemala partnera, lebo otočenie mu vezme akcie hrany aj „bezpečné“ NA EX.
 - stav: overená
 - pravidlá: v12
-- potvrdenia: 2
+- potvrdenia: 3
 - vyvrátenia: 0
-- dátum: 2026-11-16
-- partie: 20261111-221937-3, 20261113-084431-1
-- prečo: §16 Vandal, §6 Spoj a aktivácia akcií. 20261111-221937-3 K3 Ihrisko: log „Vandal: hráč 1 otáča lokalitu o 180°“ — Šimonov Pijan stratil Pecku + Ranu hrany aj hrozbu NA EX za 10 tuhých, bitka 11 : 5 a zajatie Krčmárky. To isté Vilo v 20261111-221937-2 (finále) a Hela v 20261111-221937-1.
+- dátum: 2026-11-17
+- partie: 20261111-221937-3, 20261113-084431-1, 20261117-140948-2
+- prečo: §16 Vandal, §6 Spoj a aktivácia akcií. 20261111-221937-3 K3 Ihrisko: log „Vandal: hráč 1 otáča lokalitu o 180°“ — Šimonov Pijan stratil Pecku + Ranu hrany aj hrozbu NA EX za 10 tuhých, bitka 11 : 5 a zajatie Krčmárky. To isté Vilo v 20261111-221937-2 (finále) a Hela v 20261111-221937-1. 20261117-140948-2 K4 Vínna pivnica: Ferov Kočovník stratil hranu Pecka + Rana (0 : 5 → 9 : 2); Vandalov vnútorný Odpor proti Posilneniu hrany = Vzbura posilnená (§6), ktorú Fero zahasil podstrčenou Manželkou (−6), Janova Pasca vrátila Ranu; bitka 19 : 7 a výhra strachom.
 
 ### jano-11 · Keď mám Silnú nezávislú ženu a dve karty s aktívnymi akciami na vnútornej hrane, položím Silnú medzi ne a koniec línie zakončím Zvieraťom alebo kartou s nespárovaným Odporom, lebo Silná zdvojí oboch susedov a koniec je v Kostole imúnny voči NA EX.
 - stav: overená
@@ -110,14 +111,15 @@ vo feedback.md.
 - partie: 20261113-084431-1
 - prečo: §16 Šofér (Pecka a Rana navyše, ak si v kole nedal NA EX; Valaška ich zosilní), §6 a §12 (akcie navyše mení celý Nástroj, v12). 20261113-084431-1 K1 Zastávka: ťah [Šofér, podloz Valaška dolna] → log „podkladá Valaška (Rana → Petelica) pod kartu Šofér za 1 cigaretu“, odhad 4 → 10 tuhých; Ferovo NA EX na Šoféra zrušilo 6, jeho Šofér prišiel o 3 → bitka 7 : 4 pre Jana.
 
-### jano-13 · Keď má súper vyššie maximum poldeci (Vínko, barter) a jeho karta leží v kraji hneď pri lokalite, nebojujem s ním o prevahu v tom kraji telami a karty dávam do kraja, kde je pri lokalite moja karta, alebo na Viery, lebo pri rovnosti berie hranu prvá karta pri lokalite a posledné telo doloží ten, kto má viac poldeci.
+### jano-13 · Keď má súper vyššie maximum poldeci (Vínko, barter) a jeho karta leží v kraji hneď pri lokalite, nebojujem s ním o prevahu v tom kraji telami a karty dávam do kraja, kde je pri lokalite moja karta, alebo na Viery, lebo pri rovnosti berie hranu prvá karta pri lokalite a posledné telo doloží ten, kto má viac poldeci; keď mám viac plných poldeci ja, o kraj bojujem telami po jednom.
 - stav: overená
 - pravidlá: v12
-- potvrdenia: 2
+- potvrdenia: 3
 - vyvrátenia: 0
-- dátum: 2026-11-16
-- partie: 20261113-084431-1, 20261116-173731-2
-- prečo: §6 Prevaha (pri rovnosti karta pri lokalite), §6 limit vykladania = plné poldeci (v12.2). 20261113-084431-1 K2 Ihrisko: vľavo 3 : 2 → Ferova Manželka 3 : 3 → Janova Silná 4 : 3 → Ferova Dievčina 4 : 4 (rovnosť, jeho Šofér pri lokalite), bitka 3 : 13; Fero mal 5 plných poldeci, Jano 3. Rovnaký vzor Vilo 20261113-084431-3 K5 Kostol (2 : 1, 3 : 2, 4 : 3 a súper zakaždým vyrovnal). 20261116-173731-2 K5 Kostol: Traktoristom prebral pravý kraj (3 : 2), Fero so 6 plnými ho vrátil Hasičom a Mäsiarom; vo finále 13 : 5 poldeci.
+- dátum: 2026-11-17
+- partie: 20261113-084431-1, 20261116-173731-2, 20261117-140948-2
+- prečo: §6 Prevaha (pri rovnosti karta pri lokalite), §6 limit vykladania = plné poldeci (v12.2). 20261113-084431-1 K2 Ihrisko: vľavo 3 : 2 → Ferova Manželka 3 : 3 → Janova Silná 4 : 3 → Ferova Dievčina 4 : 4 (rovnosť, jeho Šofér pri lokalite), bitka 3 : 13; Fero mal 5 plných poldeci, Jano 3. Rovnaký vzor Vilo 20261113-084431-3 K5 Kostol (2 : 1, 3 : 2, 4 : 3 a súper zakaždým vyrovnal). 20261116-173731-2 K5 Kostol: Traktoristom prebral pravý kraj (3 : 2), Fero so 6 plnými ho vrátil Hasičom a Mäsiarom; vo finále 13 : 5 poldeci. 20261117-140948-2 K3 (Janov návrh): po barteri 4 : 1 plných poldeci súboj o pravý kraj 4 : 3 → 4 : 4 → Svokra 5 : 4, bitka 15 : 3.
+- oprava: 2026-11-17 20261117-140948-2: doplnené zrkadlo (Janov návrh): keď má viac plných poldeci on, bojuje o kraj telami po jednom — K3 4 : 1 poldeci → pravý kraj 5 : 4 a bitka 15 : 3.
 
 ### jano-14 · Keď má súperova karta na konci línie nespárované Posilnenie na pozícii, kde moja karta má Odpor na vnútornej strane a veľké akcie na vonkajšej (Recidivista), priložím ju tam, lebo Vzbura posilnená dá jej nespojeným akciám ×2; vonkajší koniec potom zamknem Záverečnou bez akcií na tých pozíciách a rátam, že ×2 dostanú aj jej Dlhy.
 - stav: overená
@@ -136,3 +138,12 @@ vo feedback.md.
 - dátum: 2026-11-16
 - partie: 20261116-173731-2
 - prečo: §15 Kostol, §8 Chuť a Absťák. 20261116-173731-2 K5 Kostol: Chuť 3, cigarety minuté na barter, na koncoch línie žiadny cieľ NA EX → log „Hráč 1 dostáva Absťák … Chuť 3, v kole vypil a vyfajčil 0 nerestí“ (−1 tuhé v každej ďalšej bitke). Navrhol ako spoločnú; spoločný zošit je plný a skúsenosť má zatiaľ jeden dôkaz.
+
+### jano-16 · Keď v 1. kole vyložím do línie len 1–2 karty, rátam, že v 2. kole budem mať po dobratí prázdny doberací aj odhadzovací balíček — pas kartu nedá a fajčiť sa nedá —, preto pri Chuti 3 a viac plánujem neresti v 2. kole cez NA EX a Vypiť (alebo v 1. kole vyložím viac kariet), lebo inak príde Absťák.
+- stav: overená
+- pravidlá: v12
+- potvrdenia: 1
+- vyvrátenia: 0
+- dátum: 2026-11-17
+- partie: 20261117-140948-2
+- prečo: §4 (kým hráč nemá ani odhadzovací balíček, ťahanie nedá nič), §7 Fajčenie (pri prázdnych balíčkoch sa fajčiť nedá), §8 Chuť. 20261117-140948-2: v K1 dal Jano do línie 2 karty → v K2 balíček 0/0, pas 0 kariet, fajčenie neponúknuté → log „Absťák do odhadzovacieho balíčka: Chuť 4, v kole vypil a vyfajčil 2 neresti“. Navrhol ako spoločnú; spoločný zošit je plný.

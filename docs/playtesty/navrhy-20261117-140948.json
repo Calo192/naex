@@ -1,0 +1,268 @@
+{
+  "davka": "20261117-140948",
+  "podklady": [
+    "20261117-140948.html",
+    "strategia-20261117-140948.html",
+    "navrhy-20261117-140948.html"
+  ],
+  "navrhy": [
+    {
+      "kluc": "lavina-po-nakladacke",
+      "nazov": "Jedna-dve veľké Nakladačky ďalej rozhodujú partiu: červené, výpalné a posledné slovo idú víťazovi, porazený dostane 1 cigaretu (návrat #70)",
+      "kritickost": "kriticka",
+      "oblast": "pravidlá",
+      "problem": "#70 A zastavil rentu za strach, ale nie lavínu. Kto vyhrá bitku s veľkou Nakladačkou, dostane naraz dve červené, z nich výpalné každú ďalšiu bitku a za cigarety barter. Viac poldeci mu potom dá posledné slovo v ďalšom kole. Porazený dostane 1 cigaretu, či prehral o 1, alebo o 15. Od v12.6 mu cigarety nedáva ani pas, takže nemá za čo podložiť, zahrať Záverečnú či barterovať.\n\nPlaytest preto #70 označil ako nezabralo: body zo strachu sú v cieli, no partiu P2 ukončili dve Nakladačky po 12 a P3 rozhodla Nakladačka 14 so zajatím.",
+      "pricina": "§10 Cena stupňa: vstup do červenej stojí vždy 3, nech už máš červených koľkokoľvek, takže Nakladačka 12 kúpi dve červené zo sivej. §10 Výhra strachom: 4 červené (KONSTANTY.CERVENYCH_NA_VYHRU). §10 Výpalné: banka dá víťazovi 1 cigaretu za každú červenú po každej bitke. §9.4 krok 6c: porazený dostane 1 cigaretu bez ohľadu na veľkosť prehry. §6 Pas (v12.6): pas dáva karty, nie cigarety. Posledné slovo dnes určuje počet plných poldeci (stratég), a ten sa kupuje barterom za cigarety.",
+      "prejav": "P2 (Jano – Fero): K2 12 : 0, Nakladačka 12 = Veterinár a Starosta na červenú. K3 presne 12 = ďalšie dve červené. K4 19 : 7 a výhra strachom pri 42 : 8, finále sa nehralo. Cigarety na začiatku K3 Fero 1 : Jano 8, v K4 5 : 11. Napätie dali obaja 4 a rovnováhu 5 a 4. P3: Nakladačka 14 v K4 zajala Vychovávateľku a jej schopnosť v K5 dala Vilovi +13 (pozri bod o Vychovávateľke). P1: priazeň Fajčiar dala Hele, ktorá potom vyhrala tri bitky po sebe, 12 cigariet.\n\nNa druhej strane P1 a P3 sa otočili až vo finále a víťaz bitky vyhral aj ďalšiu len v 7 z 13 prípadov (54 %). Rovnováha je ďalej najnižšie kritérium (5,3).",
+      "dokazy": [
+        "playtest 20261117-140948-2, Jano Bitkár (#226): „Z bitky 12 : 0 v 2. kole som mal dve červené, cigarety z výpalného, barterom štvrtý poldeci a tým aj posledné slovo v kraji. Súper mal odvtedy 0–1 cigaretu… Dobiehanie pôsobí až po bitke, takže proti lavíne nepomohlo.“",
+        "playtest 20261117-140948-2, Fero Šenkár (#221): cigarety na začiatku kola 1 : 8, potom 5 : 11, „nemal som za čo podložiť ani Energeťák“; navrhuje ⌈Nakladačka / 3⌉ cigariet porazenému.",
+        "web #175 (3 cigarety): cena červenej rastie s počtom červených; potvrdili ju Fero (#252) aj Jano (#255) z v12.6: „Body za strach v12.6 znížila, ale cesta k výhre strachom ostala rovnako krátka.“",
+        "stratég: výhra strachom u botov v 5 % partií a v 10 z 12 víťaz už viedol. U botov má porazený na začiatku ďalšej ponuky viac cigariet ako víťaz (4,7 : 3,9), takže lavína P2 vznikla z jedného kola s veľkou Nakladačkou a z Benzínky, nie z celej ekonomiky.",
+        "stratég, posudok konceptu (A, B, C a Ferov návrh zmerané na rovnakých semienkach): jedine A zreteľne ubrala výprasky (nad 30 špakov −7 bodov v zrkadle aj v zmesi povách) bez straty rebríka. Bot „zajímač“ (Janov hon na červené) vyhráva pri A 46,9 → 41,4 % partií, pri B 49,2 %."
+      ],
+      "moznosti": [
+        {
+          "kluc": "A",
+          "nazov": "Porazený dostane cigarety podľa Nakladačky",
+          "popis": "§9.4 krok 6c, nové znenie: „Porazený dostane po bitke toľko cigariet, koľko je tretina Nakladačky víťaza, zaokrúhlená nahor, najmenej 1. Pri sekere nikto.“ Príklady: 0 : 12 → 4, 3 : 15 → 4, 7 : 10 → 1, 8 : 2 → 2. Druhá hodnota na výber: štvrtina (0 : 12 → 3), ak by tretina dobiehala priveľa. Vo finále, kde Nakladačka ide na špaky, ostáva 1 cigareta ako dnes. V 2 na 2 dostane cigarety tím. Nástenka pri porazenom ukáže „+N cigariet (Nakladačka X)“ a náhľad bitky ich ukáže vopred. Pri remíze v tuhom, ktorú rozhodla hádka, je Nakladačka 0, takže porazený dostane 1 cigaretu.",
+          "dopad": "Stratég (VP, 320 partií rebríka): rebrík 60,7 → 61,0 % (sady 58,8 a 63,1), partie nad 30 špakov 34,5 / 41 → 27,7 / 34 %, rozdiel skóre 25,4 / 27,3 → 23,1 / 25,4, vedúci pred finále vyhrá 66 / 62 → 60 / 57 %. Otočky po K3 50 / 38 % sa rozišli podľa povahy, takže to nie je plošne priveľa dobiehania. Porazený má na začiatku ďalšej ponuky 4,7 → 5,6 cigarety. Bot, ktorý dáva Nakladačku vedome na červené a zajatia (Janov štýl), vyhráva 46,9 → 41,4 % partií. Výprasky ubudnú najviac zo všetkých variantov a rebrík sa nezhorší. Výhru strachom A priamo nemení (zmena je v šume).\n\nPozor, je to blízko zamietnutého #30 (cigarety pre porazeného, 28. 10.: AI vtedy hromadili cigarety). Dnes je situácia iná: pas cigarety nedáva (vtedy bol hlavným zdrojom hromadenia), porazený v P2 mal 0–1 cigaretu a návrh neplatí za každú prehru rovnako, len za veľkú.",
+          "narocnost": "malá",
+          "odporucana": true
+        },
+        {
+          "kluc": "B",
+          "nazov": "Každá ďalšia červená je drahšia",
+          "popis": "§10 Cena stupňa (len strach z Nakladačky): „Vstup do červenej stojí 3 + počet starších, pri ktorých už máš červený strach alebo ich držíš ako väzňa.“ Prvá červená 3, druhá 4, tretia 5, štvrtá 6. Ráta sa v okamihu platby, takže pri dvoch červených v jednej Nakladačke je druhá o 1 drahšia. Žltá 1, oranžová 2 a spomalenie +1 za súperove reči ostávajú. Reči z hádky stoja 1 / 2 / 3 ako dnes. Cenník pri rozdelení ukáže cenu ďalšej červenej a s ním návrh rozdelenia, odhady bota a výučba. Nie je to strop, len rastúca cena (ako fajčenie 1 / 2 / 3).",
+          "dopad": "Stratég (V175): výhra strachom u botov 5 → 0 % (0 z 240 partií), rebrík 61,6 % (sady 63,1 a 60,0), nad 30 špakov 34,5 / 41 → 30 / 38 %, vedúci pred finále 66 / 62 → 62 / 66 %. Štyri červené od nuly stoja 6 + 7 + 8 + 9 = 30 bodov Nakladačky, takže výhra strachom a s ňou aj zajatia sa z hry prakticky stratia. Víťazov to nezmení, rozhodnuté partie len predĺži a bot „zajímač“ vyhráva dokonca o niečo viac (49,2 %). Stratég nesúhlasí: je to väčší zásah do cieľa hry, než lavína potrebuje.",
+          "narocnost": "stredná",
+          "odporucana": false
+        },
+        {
+          "kluc": "C",
+          "nazov": "Fajčiar dáva cigarety len po prehratej bitke (môže ísť s A)",
+          "popis": "Tabuľka priazní v §10: „Fajčiar — po bitke, ktorú si prehral (krok 6c): cigarety navyše +1 / +2 / +3.“ Po vyhratej bitke a pri sekere nedá nič. Ostatné priazne sa nemenia.",
+          "dopad": "Stratég (VFAJ): u botov neutrálne (rebrík 61,0 %, nad 30 špakov 33,6 / 39 %, porazený má na začiatku ponuky 4,6 cigarety ako dnes), lebo Fajčiar je u botov zriedkavý. Vecne však mieri na P1 (Hela dostala 12 cigariet, kým viedla) a od v12.6 je Fajčiar najcennejšou priazňou. S A sa nebije: A dáva cigarety za veľkú prehru, C ich berie víťazovi. Stratég: „neškodí, môže ísť s A“.",
+          "narocnost": "malá",
+          "odporucana": false
+        },
+        {
+          "kluc": "D",
+          "nazov": "Bez zmeny, #70 uzavrieť podľa bodovej časti",
+          "popis": "Pravidlá sa nemenia. #70 sa uzavrie ako zabraté, lebo renta za strach zmizla (starší dali víťazom 12 / 43 / 43 % špakov, rozdiel pred finále 12 a 12). Lavína sa sleduje ďalej otázkou do playtestu (cigarety porazeného po prehre o 10 a viac, kto vyhral ďalšiu bitku).",
+          "dopad": "Bez nákladov. Opiera sa o to, že výhra strachom u botov v 10 z 12 prípadov len ukončí rozhodnutú partiu a P2 bola jedna z troch partií. Stratég: na botoch obhájiteľné, ale rovnováha je najnižšie kritérium turnusu (5,3) a A je lacná.",
+          "narocnost": "malá",
+          "odporucana": false
+        }
+      ],
+      "odporucanie": "A, vyskúšať v playteste. Najlepšie v playteste štýlov (agresor proti ekonómovi), kde sa lavína ukazuje najviac. Stratég súhlasí: je to jediná zmeraná páka, ktorá ubrala výprasky bez straty rebríka. Porazenému nepridáva body, ale prostriedky na protiťah, takže sa rozhoduje, na čo cigarety minie. Víťaz zas zvažuje, či hnať Nakladačku do výšky. Výslovne vraciam smer #30: dôvod zamietnutia (hromadenie cigariet z pasov) vo v12.6 už neplatí.\n\nAk chceš riešiť aj Fajčiara z P1, C môže ísť s A ako voliteľný doplnok. B neodporúčame, lebo by výhru strachom a zajatia z hry takmer vymazala a víťazov nezmenila. Ferov návrh „výhra strachom nenastane, keď porazený vyhral hádku tej bitky“ stratég zmeral: výhra strachom 5 → 2,5 / 3,3 %, inak bez zmeny. Lavínu z P2 by nezastavil (hádka v K4 bola 2 : 2), preto ho tu neponúkam. Štvrtinu namiesto tretiny má zmysel skúsiť až vtedy, keď ľudia ukážu, že tretina otáča priveľa.",
+      "otazky": [
+        "Lavínu riešiť cigaretami porazenému podľa Nakladačky (A, blízko zamietnutého #30), drahšou červenou (B), Fajčiarom len pre porazeného (C), alebo #70 uzavrieť bez zmeny (D)?",
+        "Ak A, pridať k nej aj C (Fajčiar len po prehratej bitke)?",
+        "Pri A tretina Nakladačky (odporúčané), alebo štvrtina?"
+      ],
+      "overenie": [
+        "Porazený po bitke s Nakladačkou aspoň 10 má na začiatku ďalšej ponuky aspoň 3 cigarety (dnes Fero 1) a aspoň raz v turnuse ich minie na protiťah (podloženie, Záverečná, barter).",
+        "Víťaz bitky vyhrá aj nasledujúcu najviac v 60 % prípadov turnusu (dnes 54 %, v P2 2 z 3).",
+        "Žiadny porazený neopíše partiu ako rozhodnutú po jednej-dvoch bitkách a napätie (kritérium 11) dá každý hráč aspoň 5 (dnes Jano 4, Fero 4)."
+      ]
+    },
+    {
+      "kluc": "reci-na-vrchu-nulu-strach",
+      "nazov": "Jeden stupeň súperových rečí na vrchu vynuluje víťazovi celý strach pri staršom (vedľajší účinok #70, uzatvára #72)",
+      "kritickost": "vysoka",
+      "oblast": "pravidlá",
+      "problem": "Od v12.6 dostane víťaz bitky za strach pri staršom hodnotu svojho najvyššieho stupňa. Ak ten stupeň drží súper rečami, nedostane nič. Posun rečí pritom vyvezie aj jediný súperov stupeň na vrch víťazovho strachu. Za 1 bod hádky (žltá) tak súper natrvalo vypne celé bodovanie strachu pri tom staršom.\n\nVíťaz bitky k takému staršiemu strach nedá vôbec, takže voľba je triviálna a starší je pre neho mŕtvy. Navrhár pri #70 túto obavu mal, boti ju 16. 11. nepotvrdili, ľudia teraz áno.",
+      "pricina": "§10 Bodovanie po bitke (v12.6, #70 A): „Keď ten stupeň drží súper rečami, za strach pri tom staršom nedostane nič.“ §10 Posun: blok rečí ide so zdvihnutým strachom hore. V jadre funkcia spakyZaStrach vráti 0, keď blok súperových rečí siaha na vrchný stupeň. Do v12.5 (súčet 1 / 3 / 6) brali reči víťazovi len tie stupne, ktoré držali.",
+      "prejav": "P3 K2: Vilo vidí „Krčmárka zo sivej na červenú za 7 → pri výhre 0“. Vo finále sám za 6 cigariet na vile zrazil Šimonov zisk z 9 na 3. P1: Eva po Heliných rečiach v K2 vyškrtla 4 z 8 starších („Vychovávateľka bola pre mňa mŕtva“). P2: Jano pri Nakladačke aktívne obchádzal Krčmárku a Vychovávateľku. Šimon to hral zámerne a chváli: „reči riadili, kam pôjde súperov strach“. Nahlásili to štyria hráči zo šiestich.",
+      "dokazy": [
+        "playtest 20261117-140948-3, Paragrafista Vilo (#229): „Jeden stupeň súperových rečí na mojom najvyššom strachu mi u toho staršieho vypne celé bodovanie… strach k staršiemu so súperovými rečami sa odvtedy vôbec neoplatí dvíhať.“",
+        "playtest 20261117-140948-1, Eva Stratégová (#261): „keby som strach zdvihla, jej reči by sa len posunuli na vyšší stupeň a bodovali jej viac. Nakladačku 6 som tak mohla dať len k štyrom starším.“",
+        "playtest 20261117-140948-3, Šimon Starešina: Vilo dal Nakladačku 9 presne k dvom starším bez jeho rečí, „najčistejšia politika partie“, takže páka je silná aj žiadaná.",
+        "stratég S2 a posudok: zmena „reči vezmú len svoje stupne“ (VR) je u botov neutrálna (rebrík 60,3 %). Boti „jeden stupeň na vrch“ zámerne nehrajú, takže prínos sa ukáže v ľudských partiách. Stratég odporúča #72 uzavrieť týmto bodom."
+      ],
+      "moznosti": [
+        {
+          "kluc": "A",
+          "nazov": "Víťaz dostane najvyšší stupeň, ktorý súper nedrží",
+          "popis": "§10 Bodovanie po bitke, nové znenie odseku o víťazovi: „Víťaz bitky dostane za strach pri staršom hodnotu svojho najvyššieho stupňa strachu, ktorý nedrží súper rečami: žltá 1, oranžová 2, červená 3. Keď súper drží rečami všetky stupne jeho strachu, nedostane nič.“ Príklady: červený strach a súperove reči na červenej → 2. Na červenej a oranžovej → 1. Na všetkých troch → 0. Reči na žltej pod červeným strachom → 3. Reči, posun, spomalenie +1, bodovanie rečí (R1), klesanie a krádež sa nemenia. V jadre spakyZaStrach vráti hodnotu stupňa tesne pod blokom súperových rečí namiesto 0. Náhľad „pri výhre X“, cenník strachu, odhady bota, ťahák a výučba podľa toho. Vo finále a v 2 na 2 rovnako. Je to Vilov návrh a stratégova S2, v #72 by to bola možnosť D a #72 sa týmto bodom uzavrie.",
+          "dopad": "Stratég (VR): rebrík 60,7 → 60,3 % (sady 60,6 a 60,0), pri ε = 0,25 76 → 78 %, strach víťaza 5,4 → 6,1 špaku za partiu, reči porazeného 3,2 → 3,9, otočky 43,5 / 45 → 42 / 46 %, nad 30 špakov 34 / 40 %. U botov neutrálne, nič sa nerozbije. Prínos sa ukáže až u ľudí: jeden bod hádky prestane vážiť toľko ako tri body Nakladačky a cena aj účinok rečí budú úmerné počtu stupňov. Politik príde o najlacnejšiu páku (1 bod hádky vypne červenú) a vila slabne (pozri bod o vile).",
+          "narocnost": "malá",
+          "odporucana": true
+        },
+        {
+          "kluc": "B",
+          "nazov": "Reči bez posunu (#72 B)",
+          "popis": "§10 Posun zanikne: keď strach prekoná súperove reči, reči ostanú na stupňoch, kam ich položili, a bodujú ich hodnotu. Najvyšší stupeň strachu nad nimi patrí víťazovi. Spomalenie +1 len za stupne s rečami z minulých bitiek. Je to Vilov #215 a Evin návrh č. 2, rovnaké ako #72 B. Ak sa vyberie tu, rozhodne sa tým aj #72.",
+          "dopad": "Stratég (VBP): rebrík 61,9 % (sady 60,6 a 63,1), ale otočky v zmesi povách 45 → 38 % a vedúci pred finále vyhrá 66 / 62 → 68 / 65 %. Porazenému berie viac (jeho reči ostanú dole a víťaz za ne nič nestratí). Stratég ju neodporúča. Mení dlhšie pravidlo aj obrázok na stole.",
+          "narocnost": "stredná",
+          "odporucana": false
+        },
+        {
+          "kluc": "C",
+          "nazov": "Bez zmeny: zámok je politika",
+          "popis": "Pravidlá sa nemenia. Jeden stupeň rečí na súperovom vrchu ostane plným zámkom staršieho. Ťahák a §10 doplnia príklad „súperova žltá reč, tvoj strach zo žltej na červenú → pri výhre 0“, aby to hráč vedel vopred.",
+          "dopad": "Politik si nechá najsilnejšiu páku, ktorú chváli Šimon. Voľba víťaza ostane triviálna (k takému staršiemu nejde) a 1 bod hádky bude ďalej vážiť toľko ako 3 body Nakladačky.",
+          "narocnost": "malá",
+          "odporucana": false
+        }
+      ],
+      "odporucanie": "A, vyskúšať v playteste. Stratég súhlasí. Je to najmenší zásah: jeden riadok v jednej funkcii a veta v §10. Rozhodnutie sa vráti víťazovi bitky a politik si nechá páku za primeranú cenu.\n\n#72 navrhujeme uzavrieť týmto bodom. Jeho B (reči bez posunu) je tu možnosť B a neodporúčame ju. Nová možnosť D z #72 je toto A. Krádež len za staré reči (#72 A) turnus neoveril (jedno zajatie, krádež 0). S týmto bodom nekoliduje a ak chceš, dá sa zaviesť naraz ako samostatná poistka (otázka nižšie).",
+      "otazky": [
+        "Má súperova reč vziať víťazovi len stupeň, ktorý drží (A), majú reči prestať jazdiť so strachom hore (B = #72 B), alebo ostane plný zámok (C)?",
+        "Uzavrieť #72 týmto bodom? A zaviesť pritom aj #72 A (pri zajatí sa kradnú len reči z minulých bitiek) ako poistku?"
+      ],
+      "overenie": [
+        "Aspoň raz v turnuse víťaz bitky zdvihne strach pri staršom so súperovými rečami a v denníku to zdôvodní výpočtom (dnes nikto).",
+        "Žiadny hráč nenapíše, že mu jeden stupeň súperových rečí vyradil staršieho (mŕtvy, zamknutý starší).",
+        "Hráč, ktorý vyhral aspoň 2 hádky, dostane z rečí aspoň 8 špakov za partiu, takže politika ostane pákou."
+      ]
+    },
+    {
+      "kluc": "vila-reci-za-cigarety",
+      "nazov": "Predsedova vila predáva reči za 2 cigarety, lacnejšie ako hádka, a rozhoduje finále",
+      "kritickost": "stredna",
+      "oblast": "karty",
+      "problem": "Na Predsedovej vile stojí stupeň rečí vždy 2 cigarety, či je žltý, oranžový alebo červený. V hádke stojí 1 / 2 / 3 body, ktoré treba vybojovať kartami. Reči z vily idú rovno na vrch súperovho strachu. Od v12.6 tam vypnú celé jeho bodovanie (predošlý bod), takže vila je najlacnejší bodový obrat finále.",
+      "pricina": "Text lokality (§15, karta Predsedova vila): „Pitka: Za každé 2 cigarety, ktoré v tejto Pitke vyfajčíš, zdvihni svoje reči pri jednom staršom o stupeň.“ Fajčenie v Pitke stojí 1 / 2 / 3 cigarety (§7). §10 Poradie obsadzovania: reči sa kladú od vrchu súperovho strachu nadol, teda na najcennejší stupeň. Vila je pinnacle, takže hrá len vo finále. Na webe je otvorený #59 (vila vo finále proti §9.1 a §14b).",
+      "prejav": "Obe finále tohto turnusu sa hrali na vile a obe ovplyvnila. P3: Vilo vyfajčil 1 + 2 + 3 cigarety a dal 3 stupne rečí na Šimonove oranžové strachy, jeho zisk pri výhre klesol z 9 na 3 a Vilo si pripísal 6. P1: Eva za 3 cigarety položila reč na Helinu oranžovú Poštárku, výkyv 4 špaky. V Zrejúcej to isté (Eva #196, Vilo 9 cigariet = +8 / −7).",
+      "dokazy": [
+        "web #196 (3 cigarety, Eva v Zrejúcej): „obrat 10 špakov za 6 cigariet, viac než celá bitka o Most“, potvrdili Vilo, Šimon (#256) a Hela (#259) z Vypálenej v12.6.",
+        "playtest 20261117-140948-3, Šimon Starešina, návrh č. 3: „6 cigariet = 3 oranžové stupne rečí na mojich strachoch = obrat 12 špakov… vila je politika za cigarety a je lacnejšia ako hádka.“",
+        "playtest 20261117-140948-1, Hazardná Hela (#259): za 3 cigarety reč na jej oranžovú Poštárku, „moje 2 body za strach prešli na ňu“."
+      ],
+      "moznosti": [
+        {
+          "kluc": "A",
+          "nazov": "Vila dáva body rečí podľa cenníka hádky",
+          "popis": "Nový text vily: „Pitka: Každé 2 cigarety, ktoré v tejto Pitke vyfajčíš, ti dajú 1 bod rečí. Po Pitke ich rozdelíš medzi starších ako body hádky (žltá 1, oranžová 2, červená 3, v bežnom poradí od vrchu súperovho strachu). Čo na stupeň nestačí, prepadne.“ To isté do §15. Oranžová teda stojí 4 cigarety, červená 6. Prvé reči idú na vrch súperovho strachu. Zvyšný 1 bod sa preto dá minúť len pri staršom, kde má súper strach najviac na žltej (alebo žiadny), inak prepadne. Rozdelenie použije ten istý ovládač ako hádka. Príklad P3: 6 cigariet = 3 body, teda oranžová pri jednom staršom a 1 bod na žltú inde, nie tri oranžové. Je to Šimonov návrh a stratégova S6.",
+          "dopad": "Nemerané (boti na vile cielene nefajčia), stratég prepočítal P3. Dnes 6 cigariet: Šimon 9 → 3, Vilo +6, obrat 12. Len vila A: Šimon 9 → 7, Vilo +2 až +3, obrat 4–5. Vila A spolu s bodom o rečiach na vrchu (A): Šimon 9 → 8, obrat 3–4. Vila ostane politickou lokalitou s rovnakými cenami ako hádka. Obranca, ktorý vedie a vyberá finále, ju nebude brať len kvôli cigaretám.",
+          "narocnost": "stredná",
+          "odporucana": true
+        },
+        {
+          "kluc": "B",
+          "nazov": "Stupeň za 3 cigarety (#59 B)",
+          "popis": "Nový text vily: „Za každé 3 cigarety, ktoré v tejto Pitke vyfajčíš, zdvihni svoje reči pri jednom staršom o stupeň.“ Cenník stupňov sa na vilu ďalej nevzťahuje. Je to možnosť B otvoreného #59.",
+          "dopad": "Nemerané. Jednoduchšie ako A, no zníži len množstvo, nie mieru: oranžová a červená ostanú za cenu žltej, takže reči z vily pôjdu ďalej rovno na súperov najcennejší stupeň. Pri fajčení 1 + 2 + 3 v jednej Pitke = 2 stupne namiesto 3.",
+          "narocnost": "malá",
+          "odporucana": false
+        },
+        {
+          "kluc": "C",
+          "nazov": "Bez zmeny, ak prejde bod o rečiach na vrchu",
+          "popis": "Text vily sa nemení. Ak sa zavedie A z bodu o rečiach na vrchu (víťaz dostane najvyšší stupeň, ktorý súper nedrží), reč z vily vezme súperovi len jeden stupeň. Do §9.1 a §14b sa doplní výnimka podľa #59 A.",
+          "dopad": "Stratég prepočítal P3: len s bodom o rečiach na vrchu je Šimon 9 → 6 a Vilo +6, obrat 9 špakov za 6 cigariet. To je stále viac, než dá hádka za rovnakú námahu, takže samo to nestačí.",
+          "narocnost": "malá",
+          "odporucana": false
+        }
+      ],
+      "odporucanie": "A, vyskúšať v playteste spolu s bodom o rečiach na vrchu. Stratég súhlasí, aj keby ten bod prešiel: sám by obrat z P3 znížil len z 12 na 9 špakov, vila A na 4–5. Prevod na cenník hádky nepridáva nové pravidlo, len zjednotí cenu. #59 tým z väčšej časti odpadne. Ostane z neho A: vila platí aj vo finále a výnimka sa doplní do §9.1 a §14b.",
+      "otazky": [
+        "Majú reči z vily stáť ako v hádke, 2 cigarety za bod (A), 3 cigarety za stupeň (B = #59 B), alebo ostať, ak prejde bod o rečiach na vrchu (C)?"
+      ],
+      "overenie": [
+        "Obrat z rečí z vily (zisk hráča plus strata súpera) je v každom finále na vile najviac 6 špakov (dnes 12 a 4).",
+        "Žiadny hráč nenazve vilu lacnejšou cestou k rečiam ako hádku.",
+        "Hráč na vile v denníku porovná cigarety na reči s inou voľbou (výkupné, barter, podloženie)."
+      ]
+    },
+    {
+      "kluc": "vychovavatelka-cele-kolo",
+      "nazov": "Väzeň Vychovávateľka v kole s jedným Zhromaždením ukončí súperovi celé kolo po jednej karte",
+      "kritickost": "stredna",
+      "oblast": "karty",
+      "problem": "Schopnosť väzňa Vychovávateľky („Súper v tomto Zhromaždení hneď pasuje a za pas nič nedostane“) je silná vždy. Keď ju držiteľ použije v kole s jedným Zhromaždením hneď po súperovej prvej karte a druhú hranu lokality nespáruje, súper má celé kolo jednu kartu na stole. Väzeň má byť výhodou na jedno kolo, nie istou výhrou bitky. Obe strany tej istej partie sa zhodli, že to je ťah bez odpovede.",
+      "pricina": "Schopnosť staršieho Vychovávateľka (elders.json). §6 Pas: vynútený pas Vychovávateľky sa ráta ako koniec vykladania, takže obeť otvára aj ďalšie Zhromaždenie (#73). §7 Počet Pitiek: kolo má jednu Pitku, keď jeden kraj nemá spárovanú hranu lokality, a o tom rozhoduje držiteľ, keď obeť už vykladať nesmie.",
+      "prejav": "P3 K5 Vínna pivnica: Šimon položil prvú kartu, Vilo hneď použil Vychovávateľku a druhú hranu nespároval. Šimon mal na stole jednu kartu a v ruke osem, bitka 2 : 4, Vilo +13 špakov od starších. Vilo si to zapísal ako skúsenosť (vilo-19), takže to zopakuje. Šimon si zapísal protiťah (simon-15: prvým ťahom dve karty cez Vypiť), ten však funguje, len ak hráč o väzňovi vie a Vypiť má.",
+      "dokazy": [
+        "playtest 20261117-140948-3, Šimon Starešina (#228): „Za celé kolo som teda vyložil jedinú kartu… Proti tomu nemá obranu ani dobrý hráč, lebo neviem, kedy príde.“",
+        "playtest 20261117-140948-3, Paragrafista Vilo (#232), ktorý ju použil: „Pravidlá to robia presne podľa textu, len súper nemal žiadny protiťah“, vo feedbacku „tlačidlo ‚vyhraj bitku‘“.",
+        "stratég S5: nemerané, bot zajíma 0,2–0,3-krát za partiu a Vychovávateľka je jedna z ôsmich starších."
+      ],
+      "moznosti": [
+        {
+          "kluc": "A",
+          "nazov": "Súper vyloží ešte jednu kartu, potom pasuje",
+          "popis": "Nová schopnosť Vychovávateľky: „Súper v tomto Zhromaždení vyloží ešte najviac 1 kartu (jedným ťahom, bez Vypiť a bez Dopiť za teba), potom za neho hra pasuje a za pas nič nedostane.“ Ak súper nemá plný poldeci alebo kartu, pasuje hneď ako dnes. Okamih použitia a „za pas nič“ sa nemenia. Vynútený pas sa ďalej ráta ako „skončil prvý“ (#73), takže obeť po svojej karte otvára ďalšie Zhromaždenie. Je to Šimonov návrh a stratégova S5. Zákaz Dopiť za teba doplnil stratég, lebo Dopiť je ťah namiesto karty a obeť by inak mohla dopiť a potom ešte vyložiť.",
+          "dopad": "Nemerané. Obeť má stále jednu voľbu (ktorú kartu a kam, napríklad spárovať druhú hranu a vyrobiť druhé Zhromaždenie). Schopnosť ostane silným nástrojom tempa (súper skončí prvý), ale nie istou výhrou. Pri Pivnici plnej (výhra väzňami) slabší väzeň nevadí.",
+          "narocnost": "malá",
+          "odporucana": true
+        },
+        {
+          "kluc": "B",
+          "nazov": "Len keď kolo bude mať ďalšie Zhromaždenie",
+          "popis": "Schopnosť smie držiteľ použiť len vtedy, keď kolo podľa stavu línie v tej chvíli má aspoň 2 Pitky (§7 Počet Pitiek), teda po tomto Zhromaždení príde ďalšie. Text: „Ak kolo má aspoň 2 Pitky: súper v tomto Zhromaždení hneď pasuje a za pas nič nedostane.“ Je to Vilov návrh.",
+          "dopad": "Nemerané. Zachová plný účinok v dlhších kolách. Počet Pitiek sa však mení s líniou, takže podmienka sa dá obísť (najprv spárovať, použiť, potom hranu zrušiť) a hráč ju ťažko číta. Stratég ju neodporúča.",
+          "narocnost": "malá",
+          "odporucana": false
+        },
+        {
+          "kluc": "C",
+          "nazov": "Bez zmeny, protiťah do ťaháka",
+          "popis": "Schopnosť sa nemení. Do ťaháka a výpisu pri súperovom väzňovi Vychovávateľka pribudne: „Súper ti môže kedykoľvek ukončiť Zhromaždenie. V kole s jednou Pitkou polož kľúčové karty hneď (Vypiť).“",
+          "dopad": "Žiadna zmena hry, len pomoc obeti, ktorá Vypiť a karty má. Šimon ani tak nevedel, kedy schopnosť príde.",
+          "narocnost": "malá",
+          "odporucana": false
+        }
+      ],
+      "odporucanie": "A, vyskúšať v playteste. Stratég súhlasí a doplnil zákaz Dopiť za teba. Je to najmenšia zmena: schopnosť ostane silná (súper ďalej skončí prvý) a obeť dostane späť jedno rozhodnutie, napríklad spárovať druhú hranu a vyrobiť druhé Zhromaždenie. Text je jednoznačný a nezávisí od počtu Pitiek, ktorý sa počas kola mení. Súvisí s bodom o kole s jedným Zhromaždením: Vychovávateľka je jeho najostrejší prípad. Bot zajíma 0,2–0,3-krát za partiu, preto sa to dá overiť len v playteste.",
+      "otazky": [
+        "Zmeniť schopnosť Vychovávateľky na „súper vyloží ešte najviac 1 kartu, potom pasuje“ (A), povoliť ju len v kole s aspoň 2 Pitkami (B), alebo nechať (C)?"
+      ],
+      "overenie": [
+        "Pri každom použití Vychovávateľky v turnuse obeť vyloží ešte kartu a v denníku uvedie, ktorú a prečo.",
+        "Žiadny hráč nenazve Vychovávateľku ťahom bez protiťahu ani tlačidlom „vyhraj bitku“."
+      ]
+    },
+    {
+      "kluc": "jedno-zhromazdenie-posledne-slovo",
+      "nazov": "V kole s jedným Zhromaždením útočník posledné slovo vybojovať nemôže",
+      "kritickost": "stredna",
+      "oblast": "pravidlá",
+      "problem": "Po #73 sa posledné slovo dá vybojovať tempom (kto skončí prvý, otvára ďalšie Zhromaždenie), ale len vo viacerých Zhromaždeniach. Keď má kolo jediné Zhromaždenie, začína ho vždy útočník. Pri rovnakom počte plných poldeci kladie poslednú kartu obranca a útočník s tým nič nespraví. Posledná karta pritom v takých kolách skoro vždy rozhodne bitku. Obranca navyše vyberá lokalitu, takže si krátke kolo vie pripraviť.",
+      "pricina": "§4 a §6: prvé Zhromaždenie kola začína útočník, #73 mení len ďalšie. §7 Počet Pitiek: 1 + menší z počtov aktivovaných akcií lokality v dvoch krajoch, takže kraj bez spárovanej hrany dá kolo s jednou Pitkou. §5: lokalitu vyberá obranca.",
+      "prejav": "P1 K2 Ihrisko: Hela ako útočníčka v jedinom Zhromaždení bez posledného slova, prehra 2 : 8 „bez protiťahu“. P2 K4: Jano ako obranca vyhral jediné Zhromaždenie posledným slovom pri 3 : 3 poldeci. P3 K5: Vilo urobil z kola s jednou Pitkou istú výhru Vychovávateľkou. U botov má jedno Zhromaždenie 25 / 17 % kôl (zrkadlo / zmes povách).",
+      "dokazy": [
+        "playtest 20261117-140948-1, Hazardná Hela (#234): „v kole s jedinou Pitkou útočníkovi nepomôže… ako útočníčka som posledné slovo nemala nijako: jej posledná karta mi vzala kraj aj hranu a skončilo to 2 : 8.“",
+        "stratég, boti v12.6: útočník vyhrá v kolách s jedným Zhromaždením 39 / 46 % bitiek, v kolách s 3 a viac 59 / 49 %. Posledná karta rozhodne bitku v 77 / 92 % kôl s jedným Zhromaždením.",
+        "stratég, variant VO (prvé Zhromaždenie otvára obranca): útočník v týchto kolách 50 / 55 %, ale celkovo 50 / 47 → 48 / 44 % a otočky po K3 43,5 → 31 %.",
+        "stratég, posudok: dočasný pas (VDP) zmeraný, rebrík 60,7 → 56,3 % na oboch sadách semienok, lebo predčasný pas prestane trestať."
+      ],
+      "moznosti": [
+        {
+          "kluc": "A",
+          "nazov": "Bez zmeny, zbierať kolá s jedným Zhromaždením",
+          "popis": "Pravidlá sa nemenia. Ďalší playtest dostane otázku: koľko kôl malo jedno Zhromaždenie, kto v nich položil poslednú kartu a kto vyhral. K tomu, či útočník skúsil kolo predĺžiť spárovaním druhej hrany a či sa mu to podarilo.",
+          "dopad": "Bez nákladov. U ľudí je zatiaľ jeden čistý prípad (Hela K2) a celkovo útočník vyhral 8 zo 16 bitiek (50 %). Počet Pitiek sa ráta podľa krajov, nie podľa hráčov (§7), takže útočník smie aktivovať aj hranu v kraji, kde obranca nehrá, a kolo predĺžiť. Obranca to však vie zrušiť Odporom alebo nechať hranu mŕtvu (Hela K2).",
+          "narocnost": "malá",
+          "odporucana": true
+        },
+        {
+          "kluc": "B",
+          "nazov": "Dočasný pas",
+          "popis": "§6 Pas, nové znenie: „Kto pasoval, smie po súperovej ďalšej karte znova vykladať, kým má plný poldeci. Karty za pas dostane len za prvý pas v Zhromaždení. Zhromaždenie končí, keď obaja pasujú za sebou bez karty medzi pasmi. Ďalšie Zhromaždenie otvára, kto v tej poslednej dvojici pasoval prvý.“ Na stole pribudne stav „pasoval, smie sa vrátiť“. Je to Helin návrh. Vynútený pas Vychovávateľky a Záverečná ostávajú konečné.",
+          "dopad": "Stratég ho v posudku naprogramoval a zmeral (VDP): rebrík klesne z 60,7 na 56,3 % (sady 54,4 a 58,1). Zlý alebo predčasný pas už nie je konečný, takže hra prestane trestať chybu tempa, teda presne voľbu, ktorú v12.6 urobila hlavnou. Výprasky síce ubudnú (nad 30 špakov 34,5 / 41 → 30 / 26 %) a útočník v kolách s jedným Zhromaždením stúpne 39 → 48 % (v zmesi povách ostane 46 %), no za cenu zručnosti. K tomu sa pas skomplikuje práve vtedy, keď ho hráči pochopili. Stratég svoju voľbu dočasného pasu ako druhého kandidáta sťahuje.",
+          "narocnost": "stredná",
+          "odporucana": false
+        },
+        {
+          "kluc": "C",
+          "nazov": "Prvé Zhromaždenie kola otvára obranca",
+          "popis": "§4 a §6: „Prvé Zhromaždenie kola začína obranca. Každé ďalšie začína hráč, ktorý v predošlom skončil vykladanie prvý.“ Výučba Prvá hra sa musí upraviť (scenár ráta s tým, že otvára útočník).",
+          "dopad": "Stratég (VO): útočník v kolách s jedným Zhromaždením 39 / 46 → 50 / 55 %, rebrík 60,7 → 63,5 % (sady 65,0 a 61,9). Útočník však stratí prvú kartu pri lokalite a celkovo vyhráva menej (50 / 47 → 48 / 44 %). Otočky po K3 klesnú 43,5 / 45 → 31 / 42 %, vedúci pred finále vyhrá 66 / 62 → 74 / 66 % a výprasky stúpnu 34,5 / 41 → 40 / 47 %. Vráti časť zisku v12.6, preto ju neodporúčame.",
+          "narocnost": "malá",
+          "odporucana": false
+        }
+      ],
+      "odporucanie": "A: zatiaľ nič nemeniť a zbierať kolá s jedným Zhromaždením. Stratég súhlasí. Obe zmerané zmeny škodia. Dočasný pas (B) sploští zručnosť (rebrík 56,3 %) a obranca otvárajúci prvé Zhromaždenie (C) vymení jednu výhodu obrancu za horšiu snehovú guľu. U ľudí je zatiaľ jeden čistý prípad a celkový podiel útočníka (50 %) je v cieli. Najostrejší prípad, Vychovávateľku, rieši predošlý bod. K téme sa vrátime, keď playtesty ukážu, že ľudia kolá s jedným Zhromaždením cielene vyrábajú a útočník ich nevie predĺžiť.",
+      "otazky": [
+        "Nechať kolo s jedným Zhromaždením tak a zbierať dáta (A), skúsiť dočasný pas (B), alebo otvárať prvé Zhromaždenie obrancom (C)?"
+      ],
+      "overenie": [
+        "V turnuse sa zaznamenajú všetky kolá s jedným Zhromaždením. Útočník vyhrá aspoň jedno z nich, alebo aspoň raz skúsi kolo predĺžiť spárovaním druhej hrany (s výsledkom v denníku).",
+        "Žiadny útočník neopíše prehru v kole s jedným Zhromaždením ako „bez protiťahu“."
+      ]
+    }
+  ]
+}
