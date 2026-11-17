@@ -1,5 +1,5 @@
 {
- "source": "tvorca kariet 2026-11-16T17:28:44.462Z",
+ "source": "tvorca kariet 2026-11-17T14:01:26.431Z",
  "actions": [
   "Cigareta",
   "Dlh",
@@ -1332,7 +1332,7 @@
     "Starešina",
     "Žena"
    ],
-   "effect_text": "Väzeň — raz za hru: Súper v tomto Zhromaždení hneď pasuje a za pas nedostane cigarety.",
+   "effect_text": "Väzeň — raz za hru: Súper v tomto Zhromaždení hneď pasuje a za pas nič nedostane.",
    "triggers": [
     "Väzeň"
    ],
