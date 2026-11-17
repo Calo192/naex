@@ -42,6 +42,8 @@ describe("NA EX mimo limitu vykladania", () => {
           pitka !== null &&
           s.vizia === null &&
           pitka.reakcia === null &&
+          // Čakajúca voľba (Predsedova vila, Zastávka) má prednosť pred NA EX.
+          (s.hasicVolby ?? []).length === 0 &&
           s.pitkaCislo < s.pitkyCelkom &&
           s.ciel?.lokalita?.defId !== "krcma" &&
           (pitka.skryteNaex ?? []).length === 0 &&
@@ -52,8 +54,9 @@ describe("NA EX mimo limitu vykladania", () => {
           if (uid !== undefined) {
             const bez = poPitke(s);
             const sNaex = poPitke(apply(data, s, { type: "naex", uid }, p).state);
-            // Po Pitke dolievajú aj akcie Poldeci (v12.2) — NA EX ich na karte mení; také prípady sa nerátajú.
-            const poldeci = (t: GameState): readonly number[] => evaluateLine(data, lineState(t)).sums.map((x) => x.Poldeci ?? 0);
+            // Po Pitke dolievajú aj akcie Poldeci (v12.2) a Izolačka uberá za súperove Obmedzenia — NA EX
+            // ich na karte mení; také prípady sa nerátajú.
+            const poldeci = (t: GameState): readonly number[] => evaluateLine(data, lineState(t)).sums.flatMap((x) => [x.Poldeci ?? 0, x.Obmedzenie ?? 0]);
             const rovnakePoldeci = poldeci(bez).join() === poldeci(sNaex).join();
             if (bez.faza === "zhromazdenie" && sNaex.faza === "zhromazdenie" && rovnakePoldeci) {
               const su: PlayerId = p === 0 ? 1 : 0;

@@ -868,12 +868,22 @@
     {
       "id": "6.zacina-utocnik",
       "paragraf": "6. Zhromaždenie",
-      "pravidlo": "Vykladať začína útočník (aj v Zhromaždení pred ďalšou Pitkou).",
+      "pravidlo": "Prvé Zhromaždenie kola začína útočník. Každé ďalšie Zhromaždenie toho kola začína hráč, ktorý v predošlom Zhromaždení skončil vykladanie prvý (pas, pas, ktorý urobí hra, vynútený pas Vychovávateľky aj Záverečná); vo finále rovnako, 2 na 2 a Päta, Lakeť, Otočka bez zmeny (v12.6, návrh #73 A).",
       "stav": "pokryte",
       "testy": [
-        "packages/core/test/pravidla-kolo.test.ts › §6: limit vykladania sa počíta nanovo na začiatku každého Zhromaždenia (aj medzi Pitkami)",
-        "packages/core/test/vazen.test.ts › pokus len na staršieho, ktorý sa ťa bojí na stupni 3; cigareta prepadne a boss ide pokúšajúcemu do ruky (v10.1)"
-      ]
+        "packages/core/test/zhromazdenie-otvara-v12-6.test.ts › §4 a §6 kto otvára ďalšie Zhromaždenie kola (v12.6, #73 A) › obranca pasuje prvý → ďalšie Zhromaždenie kola otvára obranca; log to povie",
+        "packages/core/test/zhromazdenie-otvara-v12-6.test.ts › §4 a §6 kto otvára ďalšie Zhromaždenie kola (v12.6, #73 A) › útočník pasuje prvý → ďalšie Zhromaždenie otvára znova útočník",
+        "packages/core/test/zhromazdenie-otvara-v12-6.test.ts › §4 a §6 kto otvára ďalšie Zhromaždenie kola (v12.6, #73 A) › Záverečná ukončí vykladanie — kto ju zahrá prvý, otvára ďalšie Zhromaždenie",
+        "packages/core/test/zhromazdenie-otvara-v12-6.test.ts › §4 a §6 kto otvára ďalšie Zhromaždenie kola (v12.6, #73 A) › pas, ktorý urobí hra (prázdna ruka), sa ráta ako skončenie vykladania",
+        "packages/core/test/zhromazdenie-otvara-v12-6.test.ts › §4 a §6 kto otvára ďalšie Zhromaždenie kola (v12.6, #73 A) › nútený pas Vychovávateľky: súper skončil prvý, otvára ďalšie Zhromaždenie",
+        "packages/core/test/zhromazdenie-otvara-v12-6.test.ts › §4 a §6 kto otvára ďalšie Zhromaždenie kola (v12.6, #73 A) › vo finále rovnako",
+        "packages/core/test/zhromazdenie-otvara-v12-6.test.ts › §4 a §6 kto otvára ďalšie Zhromaždenie kola (v12.6, #73 A) › prvé Zhromaždenie kola začína útočník — pamäť sa zmaže pred bitkou a starú hodnotu nové kolo nepoužije",
+        "packages/core/test/zhromazdenie-otvara-v12-6.test.ts › §4 a §6 kto otvára ďalšie Zhromaždenie kola (v12.6, #73 A) › aj keby pamäť ostala, prvé Zhromaždenie kola (po ponuke, pitkaCislo 0) začína útočník",
+        "packages/core/test/zhromazdenie-otvara-v12-6.test.ts › §4 a §6 kto otvára ďalšie Zhromaždenie kola (v12.6, #73 A) › 2 na 2 sa nemení — pas člena ani tímu si nezapamätá, kto otvára",
+        "packages/core/test/zhromazdenie-otvara-v12-6.test.ts › §4 a §6 kto otvára ďalšie Zhromaždenie kola (v12.6, #73 A) › Päta, Lakeť, Otočka sa nemení — pas si nezapamätá, kto otvára",
+        "packages/core/test/pravidla-kolo.test.ts › §6: limit vykladania sa počíta nanovo na začiatku každého Zhromaždenia (aj medzi Pitkami)"
+      ],
+      "poznamka": "v12.6 (2026-11-17): predtým začínal každé Zhromaždenie útočník."
     },
     {
       "id": "6.pas",

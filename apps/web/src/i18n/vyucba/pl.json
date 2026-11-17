@@ -583,28 +583,28 @@
       "vysvetlenie.2": "Nevynuluje. Pečeň áno, Dlh čaká na exekútora."
     }
   },
-  "k-zh2-bot3": {
-    "melichar": "Po Popijawie dolewa się jeden [Poldeci] kieliszek i kolejny za każdy twój połączony Kieliszek – dzięki Pijakowi znowu masz trzy pełne. Drugie Zebranie, Stały bywalec zaczyna: Anonimowy alkoholik przy jego Pijaku.",
-    "sk": {
-      "melichar": "Po Pitke sa doleje jeden [Poldeci] poldeci a ďalší za každé tvoje spojené Poldeci – vďaka Pijanovi máš zas tri plné. Druhé Zhromaždenie, Štamgast začína: Anonymný alkoholik k jeho Pijanovi."
-    }
-  },
   "k-prevaha": {
     "melichar": "Odbij sobie murawę: połóż Prafdomówcę na koniec linii, za Liberałem, i potwierdź. Na murawie będzie 3 : 3, a przy remisie decyduje karta przy lokacji – twój Pijak.",
     "sk": {
       "melichar": "Vráť si trávnik: polož Praudovravca na koniec línie, za Liberála, a potvrď. Na trávniku bude 3 : 3 a pri rovnosti rozhoduje karta pri lokalite – tvoj Pijan."
     }
   },
-  "k-pas2-bot": {
-    "melichar": "Stały bywalec spasował. Za pas nic nie dostał, ale dwa pełne [Poldeci] kieliszki mu zostały. Na co, zobaczysz w Popijawie.",
+  "k-zh2-bot3": {
+    "melichar": "Po Popijawie dolewa się jeden [Poldeci] kieliszek i kolejny za każdy twój połączony Kieliszek – dzięki Pijakowi znowu masz trzy pełne. Drugie Zebranie, Stały bywalec zaczyna: Anonimowy alkoholik przy jego Pijaku.",
     "sk": {
-      "melichar": "Štamgast pasoval. Za pas nedostal nič, ale dva plné [Poldeci] poldeci mu ostali. Na čo, uvidíš v Pitke."
+      "melichar": "Po Pitke sa doleje jeden [Poldeci] poldeci a ďalší za každé tvoje spojené Poldeci – vďaka Pijanovi máš zas tri plné. Druhé Zhromaždenie, Štamgast začína: Anonymný alkoholik k jeho Pijanovi."
     }
   },
   "k-prevaha2": {
     "melichar": "Teraz Anonimowy alkoholik za Prafdomówcą. Na murawie będziesz miał czterech na trzech: przewaga jest twoja i 2 twarde z Boiska wrócą.",
     "sk": {
       "melichar": "Teraz Anonymného alkoholika za Praudovravca. Na trávniku budeš mať štyroch proti trom: prevaha je tvoja a 2 tuhé z Ihriska sa vrátia."
+    }
+  },
+  "k-pas2-bot": {
+    "melichar": "Stały bywalec spasował. Za pas nic nie dostał, ale dwa pełne [Poldeci] kieliszki mu zostały. Na co, zobaczysz w Popijawie.",
+    "sk": {
+      "melichar": "Štamgast pasoval. Za pas nedostal nič, ale dva plné [Poldeci] poldeci mu ostali. Na čo, uvidíš v Pitke."
     }
   },
   "k-pas3": {

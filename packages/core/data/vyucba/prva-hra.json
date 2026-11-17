@@ -1302,21 +1302,6 @@
       ]
     },
     {
-      "id": "k-zh2-bot3",
-      "kto": "bot",
-      "prikaz": {
-        "type": "tah",
-        "kroky": [
-          {
-            "type": "place",
-            "uid": "ruka:anonymny_alkoholik",
-            "target": "vlastna"
-          }
-        ]
-      },
-      "melichar": "Po Pitke sa doleje jeden [Poldeci] poldeci a ďalší za každé tvoje spojené Poldeci – vďaka Pijanovi máš zas tri plné. Druhé Zhromaždenie, Štamgast začína: Anonymný alkoholik k jeho Pijanovi."
-    },
-    {
       "id": "k-prevaha",
       "kto": "hrac",
       "prikaz": {
@@ -1329,7 +1314,7 @@
           }
         ]
       },
-      "melichar": "Vráť si trávnik: polož Praudovravca na koniec línie, za Liberála, a potvrď. Na trávniku bude 3 : 3 a pri rovnosti rozhoduje karta pri lokalite – tvoj Pijan.",
+      "melichar": "Po Pitke sa doleje jeden [Poldeci] poldeci a ďalší za každé tvoje spojené Poldeci – vďaka Pijanovi máš zas tri plné. Druhé Zhromaždenie začínaš ty: v prvom si pasoval skôr ako Štamgast. Vráť si trávnik: polož Praudovravca na koniec línie, za Liberála, a potvrď. Na trávniku bude 3 : 3 a pri rovnosti rozhoduje karta pri lokalite – tvoj Pijan.",
       "hlaskaChyby": "urazky/ty_marha",
       "zvyraznit": [
         "ruka:praudovravec",
@@ -1337,15 +1322,19 @@
       ]
     },
     {
-      "id": "k-pas2-bot",
+      "id": "k-zh2-bot3",
       "kto": "bot",
       "prikaz": {
-        "type": "pass"
+        "type": "tah",
+        "kroky": [
+          {
+            "type": "place",
+            "uid": "ruka:anonymny_alkoholik",
+            "target": "vlastna"
+          }
+        ]
       },
-      "melichar": "Štamgast pasoval: za dva plné [Poldeci] poldeci dostal dve [Cigareta] cigarety a poldeci mu ostali. Na čo, uvidíš v Pitke.",
-      "zvyraznit": [
-        "bar-supera:cigarety"
-      ]
+      "melichar": "Štamgast: Anonymný alkoholik k jeho Pijanovi."
     },
     {
       "id": "k-prevaha2",
@@ -1365,6 +1354,17 @@
       "zvyraznit": [
         "ruka:anonymny_alkoholik",
         "prevaha"
+      ]
+    },
+    {
+      "id": "k-pas2-bot",
+      "kto": "bot",
+      "prikaz": {
+        "type": "pass"
+      },
+      "melichar": "Štamgast pasoval: za dva plné [Poldeci] poldeci dostal dve [Cigareta] cigarety a poldeci mu ostali. Na čo, uvidíš v Pitke.",
+      "zvyraznit": [
+        "bar-supera:cigarety"
       ]
     },
     {

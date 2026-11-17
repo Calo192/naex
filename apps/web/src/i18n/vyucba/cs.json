@@ -583,28 +583,28 @@
       "vysvetlenie.2": "Nevynuluje. Pečeň áno, Dlh čaká na exekútora."
     }
   },
-  "k-zh2-bot3": {
-    "melichar": "Po Pitce se dolije jeden [Poldeci] panák a další za každý tvůj spojený Panák – díky Pijanovi máš zase tři plné. Druhé Shromáždění, Štamgast začíná: Anonymní alkoholik k jeho Pijanovi.",
-    "sk": {
-      "melichar": "Po Pitke sa doleje jeden [Poldeci] poldeci a ďalší za každé tvoje spojené Poldeci – vďaka Pijanovi máš zas tri plné. Druhé Zhromaždenie, Štamgast začína: Anonymný alkoholik k jeho Pijanovi."
-    }
-  },
   "k-prevaha": {
     "melichar": "Vrať si trávník: polož Šiřitele pravdi na konec linie, za Liberála, a potvrď. Na trávníku bude 3 : 3 a při rovnosti rozhoduje karta u lokality – tvůj Pijan.",
     "sk": {
       "melichar": "Vráť si trávnik: polož Praudovravca na koniec línie, za Liberála, a potvrď. Na trávniku bude 3 : 3 a pri rovnosti rozhoduje karta pri lokalite – tvoj Pijan."
     }
   },
-  "k-pas2-bot": {
-    "melichar": "Štamgast pasoval. Za pas nedostal nic, ale dva plné [Poldeci] panáky mu zůstaly. Na co, uvidíš v Pitce.",
+  "k-zh2-bot3": {
+    "melichar": "Po Pitce se dolije jeden [Poldeci] panák a další za každý tvůj spojený Panák – díky Pijanovi máš zase tři plné. Druhé Shromáždění, Štamgast začíná: Anonymní alkoholik k jeho Pijanovi.",
     "sk": {
-      "melichar": "Štamgast pasoval. Za pas nedostal nič, ale dva plné [Poldeci] poldeci mu ostali. Na čo, uvidíš v Pitke."
+      "melichar": "Po Pitke sa doleje jeden [Poldeci] poldeci a ďalší za každé tvoje spojené Poldeci – vďaka Pijanovi máš zas tri plné. Druhé Zhromaždenie, Štamgast začína: Anonymný alkoholik k jeho Pijanovi."
     }
   },
   "k-prevaha2": {
     "melichar": "Teď Anonymního alkoholika za Šiřitele pravdi. Na trávníku budeš mít čtyři proti třem: převaha je tvoje a 2 tvrdé z Hřiště se vrátí.",
     "sk": {
       "melichar": "Teraz Anonymného alkoholika za Praudovravca. Na trávniku budeš mať štyroch proti trom: prevaha je tvoja a 2 tuhé z Ihriska sa vrátia."
+    }
+  },
+  "k-pas2-bot": {
+    "melichar": "Štamgast pasoval. Za pas nedostal nic, ale dva plné [Poldeci] panáky mu zůstaly. Na co, uvidíš v Pitce.",
+    "sk": {
+      "melichar": "Štamgast pasoval. Za pas nedostal nič, ale dva plné [Poldeci] poldeci mu ostali. Na čo, uvidíš v Pitke."
     }
   },
   "k-pas3": {

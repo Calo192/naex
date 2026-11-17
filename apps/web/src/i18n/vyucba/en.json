@@ -583,28 +583,28 @@
       "vysvetlenie.2": "Nevynuluje. Pečeň áno, Dlh čaká na exekútora."
     }
   },
-  "k-zh2-bot3": {
-    "melichar": "After the Booze-up one [Poldeci] shot gets refilled, plus one more for each of your linked Shots – thanks to the Drunk you've got three full again. Second Assembly, the Regular starts: the Anonymous Alcoholic next to his Drunk.",
-    "sk": {
-      "melichar": "Po Pitke sa doleje jeden [Poldeci] poldeci a ďalší za každé tvoje spojené Poldeci – vďaka Pijanovi máš zas tri plné. Druhé Zhromaždenie, Štamgast začína: Anonymný alkoholik k jeho Pijanovi."
-    }
-  },
   "k-prevaha": {
     "melichar": "Take the grass back: put the Troof Teller on the end of the line, after the Liberal, and confirm. On the grass it'll be 3 : 3, and on a tie the card next to the location decides – your Drunk.",
     "sk": {
       "melichar": "Vráť si trávnik: polož Praudovravca na koniec línie, za Liberála, a potvrď. Na trávniku bude 3 : 3 a pri rovnosti rozhoduje karta pri lokalite – tvoj Pijan."
     }
   },
-  "k-pas2-bot": {
-    "melichar": "The Regular passed. He got nothing for it, but he kept two full [Poldeci] shots. What for, you'll see in the Booze-up.",
+  "k-zh2-bot3": {
+    "melichar": "After the Booze-up one [Poldeci] shot gets refilled, plus one more for each of your linked Shots – thanks to the Drunk you've got three full again. Second Assembly, the Regular starts: the Anonymous Alcoholic next to his Drunk.",
     "sk": {
-      "melichar": "Štamgast pasoval. Za pas nedostal nič, ale dva plné [Poldeci] poldeci mu ostali. Na čo, uvidíš v Pitke."
+      "melichar": "Po Pitke sa doleje jeden [Poldeci] poldeci a ďalší za každé tvoje spojené Poldeci – vďaka Pijanovi máš zas tri plné. Druhé Zhromaždenie, Štamgast začína: Anonymný alkoholik k jeho Pijanovi."
     }
   },
   "k-prevaha2": {
     "melichar": "Now the Anonymous Alcoholic after the Troof Teller. On the grass you'll have four against three: the upper hand is yours and the Football Pitch's 2 hard come back.",
     "sk": {
       "melichar": "Teraz Anonymného alkoholika za Praudovravca. Na trávniku budeš mať štyroch proti trom: prevaha je tvoja a 2 tuhé z Ihriska sa vrátia."
+    }
+  },
+  "k-pas2-bot": {
+    "melichar": "The Regular passed. He got nothing for it, but he kept two full [Poldeci] shots. What for, you'll see in the Booze-up.",
+    "sk": {
+      "melichar": "Štamgast pasoval. Za pas nedostal nič, ale dva plné [Poldeci] poldeci mu ostali. Na čo, uvidíš v Pitke."
     }
   },
   "k-pas3": {

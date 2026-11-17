@@ -583,28 +583,28 @@
       "vysvetlenie.2": "Nevynuluje. Pečeň áno, Dlh čaká na exekútora."
     }
   },
-  "k-zh2-bot3": {
-    "melichar": "Az Ivászat után újratöltődik egy [Poldeci] feles, és még egy minden összekötött Feles akciódért – az Iszákosnak hála megint három teli van. Második Gyűlés, a Törzsvendég kezd: Anonim alkoholista az Iszákosa mellé.",
-    "sk": {
-      "melichar": "Po Pitke sa doleje jeden [Poldeci] poldeci a ďalší za každé tvoje spojené Poldeci – vďaka Pijanovi máš zas tri plné. Druhé Zhromaždenie, Štamgast začína: Anonymný alkoholik k jeho Pijanovi."
-    }
-  },
   "k-prevaha": {
     "melichar": "Szerezd vissza a gyepet: tedd az Igasságharcost a sor végére, a Liberális mögé, és hagyd jóvá. A gyepen 3 : 3 lesz, és egyenlőségnél a helyszín melletti kártya dönt – a te Iszákosod.",
     "sk": {
       "melichar": "Vráť si trávnik: polož Praudovravca na koniec línie, za Liberála, a potvrď. Na trávniku bude 3 : 3 a pri rovnosti rozhoduje karta pri lokalite – tvoj Pijan."
     }
   },
-  "k-pas2-bot": {
-    "melichar": "A Törzsvendég passzolt. A passzért semmit sem kapott, de két teli [Poldeci] felese megmaradt. Hogy mire, meglátod az Ivászaton.",
+  "k-zh2-bot3": {
+    "melichar": "Az Ivászat után újratöltődik egy [Poldeci] feles, és még egy minden összekötött Feles akciódért – az Iszákosnak hála megint három teli van. Második Gyűlés, a Törzsvendég kezd: Anonim alkoholista az Iszákosa mellé.",
     "sk": {
-      "melichar": "Štamgast pasoval. Za pas nedostal nič, ale dva plné [Poldeci] poldeci mu ostali. Na čo, uvidíš v Pitke."
+      "melichar": "Po Pitke sa doleje jeden [Poldeci] poldeci a ďalší za každé tvoje spojené Poldeci – vďaka Pijanovi máš zas tri plné. Druhé Zhromaždenie, Štamgast začína: Anonymný alkoholik k jeho Pijanovi."
     }
   },
   "k-prevaha2": {
     "melichar": "Most az Anonim alkoholistát az Igasságharcos mögé. A gyepen négyen lesztek három ellen: a fölény a tiéd, és visszajön a Focipálya 2 keménye.",
     "sk": {
       "melichar": "Teraz Anonymného alkoholika za Praudovravca. Na trávniku budeš mať štyroch proti trom: prevaha je tvoja a 2 tuhé z Ihriska sa vrátia."
+    }
+  },
+  "k-pas2-bot": {
+    "melichar": "A Törzsvendég passzolt. A passzért semmit sem kapott, de két teli [Poldeci] felese megmaradt. Hogy mire, meglátod az Ivászaton.",
+    "sk": {
+      "melichar": "Štamgast pasoval. Za pas nedostal nič, ale dva plné [Poldeci] poldeci mu ostali. Na čo, uvidíš v Pitke."
     }
   },
   "k-pas3": {

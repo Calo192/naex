@@ -36,6 +36,7 @@ export function medziobrazovka(
   view: Pick<ClientState, "kolo" | "faza" | "utocnik" | "pitkaCislo" | "pitkyCelkom" | "lokalitCelkom" | "rozpis" | "bitkaStav" | "koniec" | "ciel" | "spaky" | "vitazPoslednejHadky"> & {
     readonly pitkaStav?: { readonly bzdocha?: PlayerId | null } | null;
     readonly draftStav?: { readonly krok: string } | null;
+    readonly zhromazdenieStav?: { readonly zacal?: PlayerId } | null;
   },
   ja: PlayerId,
   menoSupera: string,
@@ -139,8 +140,9 @@ export function medziobrazovka(
         kluc: `${view.kolo}|zhromazdenie|${n}`,
         nadnadpis: poradie(n),
         nadpis: t("os.zhromazdenie"),
+        // v12.6 (#73): ďalšie Zhromaždenie kola otvára, kto v predošlom skončil vykladanie prvý.
         text:
-          (obranca ? t("prechod.superVykladaPrvy", { meno: S }) : t("prechod.vykladasPrvy")) +
+          ((view.zhromazdenieStav?.zacal ?? view.utocnik) !== ja ? t("prechod.superVykladaPrvy", { meno: S }) : t("prechod.vykladasPrvy")) +
           t("prechod.kladies"),
       };
     }

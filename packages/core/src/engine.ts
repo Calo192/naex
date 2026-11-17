@@ -208,6 +208,8 @@ export interface ZhromazdenieStav {
   readonly navyse: readonly [number, number];
   /** 2 na 2: ktoré miesta už nevykladajú (pas, Záverečná tímu). V 1 na 1 chýba. */
   readonly skoncili?: readonly [boolean, boolean, boolean, boolean];
+  /** v12.6 (#73): Zhromaždenie otvoril obranca, lebo v predošlom skončil vykladanie prvý. Chýba = začal útočník. */
+  readonly zacal?: PlayerId;
 }
 
 /** Partner miesta v tíme. */
@@ -539,6 +541,12 @@ export interface GameState {
   readonly lokalitaOtocena: boolean;
   /** v11.11: víťaz hádky minulého kola; natáča ďalšiu lokalitu. Pri remíze null, v K1 chýba. */
   readonly vitazPoslednejHadky?: PlayerId | null;
+  /**
+   * Kto otvára ďalšie Zhromaždenie kola (v12.6, #73): v Kalamite 1 na 1 hráč, ktorý v práve hranom
+   * (alebo poslednom) Zhromaždení skončil vykladanie prvý. Chýba, kým nikto neskončil, v bitke a mimo
+   * Kalamity 1 na 1. Verejné — pas aj Záverečná sú na stole.
+   */
+  readonly zhromazdenieOtvara?: PlayerId;
   readonly strany: readonly [readonly PlacedCard[], readonly PlacedCard[]];
   /**
    * Pitiek v bitke (Michal 2026-10-19): 1 + menší z počtov aktivovaných
@@ -2753,12 +2761,16 @@ function pivnicaPlna(s: MutState, p: PlayerId, zajatych: number, events: Event[]
 // Zhromaždenie
 
 /**
- * Vykladať začína útočník (Michal 2026-10-20) — natočenie lokality už neurčuje,
- * kto kam vykladá, a cieľ vyberá obranca.
+ * Prvé Zhromaždenie kola začína útočník (Michal 2026-10-20) — natočenie lokality už neurčuje,
+ * kto kam vykladá, a cieľ vyberá obranca. Ďalšie Zhromaždenia kola v Kalamite 1 na 1 (v12.6, #73)
+ * otvára, kto v predošlom skončil vykladanie prvý: posledné slovo si hráč vyberá pasom, nedostáva ho za rolu.
  */
-function zacniZhromazdenie(s: MutState, data: GameData, events: Event[], zacina: PlayerId = s.utocnik): void {
+function zacniZhromazdenie(s: MutState, data: GameData, events: Event[]): void {
+  const zacina = (s.pitkaCislo > 0 ? s.zhromazdenieOtvara : undefined) ?? s.utocnik;
+  delete s.zhromazdenieOtvara;
   s.faza = "zhromazdenie";
   events.push({ type: "faza", faza: "zhromazdenie" });
+  if (zacina !== s.utocnik) events.push({ type: "log", text: `Zhromaždenie otvára hráč ${zacina + 1} — v predošlom skončil vykladanie prvý.` });
   // Limit sa počíta nanovo na začiatku každého Zhromaždenia (PRAVIDLA §6); vinko pridáva poldeci navyše.
   s.zhromazdenieStav = {
     naTahu: kapitan(s, zacina),
@@ -2766,8 +2778,53 @@ function zacniZhromazdenie(s: MutState, data: GameData, events: Event[], zacina:
     pasoval: [false, false],
     navyse: [0, 0],
     ...(s.format === "2na2" ? { skoncili: [false, false, false, false] as [boolean, boolean, boolean, boolean] } : {}),
+    ...(zacina !== s.utocnik ? { zacal: zacina } : {}),
   };
   manualEfekty(s, data, "Zhromaždenie", events);
+}
+
+/**
+ * Hráč p končí vykladanie (pas, Záverečná, nútený pas Vychovávateľky): kto skončí prvý, otvorí ďalšie
+ * Zhromaždenie kola (v12.6, #73). Volať pred zápisom do pasoval. 2 na 2 a Päta, Lakeť, Otočka bez zmeny.
+ */
+function zapisKoniecVykladania(s: MutState, p: PlayerId): void {
+  const z = s.zhromazdenieStav;
+  if (z === null || z.skoncili !== undefined || s.format === "2na2" || s.pata !== undefined) return;
+  if (s.zhromazdenieOtvara !== undefined || z.pasoval[opponentOf(p)]) return;
+  s.zhromazdenieOtvara = p;
+}
+
+/** Stav, z ktorého sa dá povedať, kto otvorí ďalšie Zhromaždenie kola — plný stav aj pohľad hráča. */
+export interface StavOtvoreniaZhromazdenia {
+  readonly faza: GameState["faza"];
+  readonly pitkaCislo: number;
+  readonly pitkyCelkom: number;
+  readonly format?: GameState["format"];
+  readonly pata?: unknown;
+  readonly zhromazdenieOtvara?: PlayerId;
+  readonly zhromazdenieStav: Pick<ZhromazdenieStav, "pasoval"> | null;
+}
+
+/** Príde v tomto kole po práve hranom Zhromaždení či Pitke ešte ďalšie Zhromaždenie (podľa dnešnej línie)? */
+function dalsieZhromazdenieVKole(s: StavOtvoreniaZhromazdenia): boolean {
+  if (s.format === "2na2" || s.pata !== undefined) return false;
+  if (s.faza === "zhromazdenie") return s.pitkaCislo + 1 < s.pitkyCelkom;
+  if (s.faza === "pitka") return s.pitkaCislo < s.pitkyCelkom;
+  return false;
+}
+
+/**
+ * Kto otvorí ďalšie Zhromaždenie kola (v12.6, #73) — pre pás kola. null, keď ďalšie nepríde, ešte nikto
+ * neskončil vykladanie, alebo mimo Kalamity 1 na 1 (tam začína vždy útočník).
+ */
+export function dalsieZhromazdenieOtvara(s: StavOtvoreniaZhromazdenia): PlayerId | null {
+  return dalsieZhromazdenieVKole(s) ? (s.zhromazdenieOtvara ?? null) : null;
+}
+
+/** Otvorí hráč p pasom teraz ďalšie Zhromaždenie kola (v12.6)? Pre náhľad pasu. */
+export function pasomOtvoriZhromazdenie(s: StavOtvoreniaZhromazdenia, p: PlayerId): boolean {
+  const z = s.zhromazdenieStav;
+  return s.faza === "zhromazdenie" && z !== null && s.zhromazdenieOtvara === undefined && !z.pasoval[opponentOf(p)] && dalsieZhromazdenieVKole(s);
 }
 
 function posunTahZhromazdenia(s: MutState, data: GameData, p: PlayerId, events: Event[]): void {
@@ -2914,6 +2971,7 @@ function cmdZaverecna(
   }
   vylozDoLinie(s, data, kto, cmd.uid, cmd.target, events, true);
   zmenCigarety(s, p, "platba", -KONSTANTY.CENA_ZAVERECNEJ, events);
+  zapisKoniecVykladania(s, p);
   z.pasoval[p] = true;
   z.navyse[p] = 0;
   // 2 na 2: Záverečná (jedna za tím) ukončí vykladanie celého tímu (Michal 2026-10-28).
@@ -3698,6 +3756,7 @@ function cmdPass(s: MutState, data: GameData, kto: Miesto, events: Event[]): voi
   // ostanú plné na NA EX a ďalšie Zhromaždenie (odmena za šetrenie). Pitka ich nezdvojuje (Obecný úrad).
   // Súper vykladá sám.
   const ziska = cigaretyZaPas(s as GameState, kto);
+  zapisKoniecVykladania(s, p);
   z.pasoval[p] = true;
   zmenCigarety(s, p, "pas", ziska, events);
   events.push({
@@ -4851,6 +4910,7 @@ function cmdSchopnostVazna(s: MutState, data: GameData, cmd: { elderId: string; 
     case "vychovavatelka": {
       const z = s.zhromazdenieStav as DeepMutable<ZhromazdenieStav>;
       // Nútený pas bez cigariet (v12.3, Michal 2026-11-11) — plné poldeci súperovi ostanú.
+      zapisKoniecVykladania(s, opp);
       z.pasoval[opp] = true;
       z.navyse[opp] = 0;
       events.push({ type: "log", text: `${kto} — hráč ${opp + 1} v tomto Zhromaždení hneď pasuje a za pas nedostane cigarety.` });
@@ -5104,6 +5164,7 @@ function pokracujPoPitke(s: MutState, data: GameData, events: Event[]): void {
     zacniZhromazdenie(s, data, events);
     return;
   }
+  delete s.zhromazdenieOtvara;
   // Výherný automat zo sady v11.18–v11.21 („Posledná Pitka kola: {Hazard}“): Dlh len v poslednej
   // Pitke kola; je to Dlh z Pitky, takže ho Obecný úrad (v11.13) ráta dvakrát.
   for (const p of [0, 1] as const) {

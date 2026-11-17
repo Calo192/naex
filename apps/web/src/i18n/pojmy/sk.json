@@ -193,7 +193,7 @@
   },
   "pas": {
     "pojem": "Pas",
-    "popis": "Skončíš vykladanie v Zhromaždení a za každý plný poldeci dostaneš cigaretu; poldeci ti ostanú plné."
+    "popis": "Skončíš vykladanie v Zhromaždení a za každý plný poldeci dostaneš cigaretu; poldeci ti ostanú plné. Kto skončí prvý, otvára ďalšie Zhromaždenie kola."
   },
   "podlozenie": {
     "pojem": "Podloženie",
@@ -329,7 +329,7 @@
   },
   "utocnik": {
     "pojem": "Útočník a obranca",
-    "popis": "Útočník prehral poslednú bitku: vykladá prvý a na NA EX odpovedá prvý; obranca vyberá cieľ a berie z ponuky prvý (na prvom ťahu 1 kartu); Pitku hrajú obaja naraz; vo finále útočí, kto má menej špakov, a pinnacle vyberá vedúci."
+    "popis": "Útočník prehral poslednú bitku: začína prvé Zhromaždenie kola a na NA EX odpovedá prvý; obranca vyberá cieľ a berie z ponuky prvý (na prvom ťahu 1 kartu); Pitku hrajú obaja naraz; vo finále útočí, kto má menej špakov, a pinnacle vyberá vedúci."
   },
   "viera": {
     "pojem": "Viera",
@@ -369,7 +369,7 @@
   },
   "zhromazdenie": {
     "pojem": "Zhromaždenie",
-    "popis": "Fáza, v ktorej hráči striedavo vykladajú karty do línie; začína útočník.",
+    "popis": "Fáza, v ktorej hráči striedavo vykladajú karty do línie; prvú v kole začína útočník, ďalšiu ten, kto v predošlej skončil vykladanie prvý.",
     "kratko": "Fáza, v ktorej striedavo kladiete karty z ruky k lokalite do jedného radu — línie.",
     "tvary": "Zhromaždenie, Zhromaždenia, Zhromaždení, Zhromaždením"
   }

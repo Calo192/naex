@@ -17,6 +17,8 @@ import WebSocket from "ws";
 import type { ActionSums, CardInstance, CenyKliatob, ClientState, DopadyNahladu, Command, DruhMarkera, Event, GameData, PlacedCard, PlayerId, Pohlavie, Rod, Slot, StarsiVerejne, Stupen, VerejnyStav, Zdvih } from "@naex/core";
 import {
   cigaretyZaPas,
+  dalsieZhromazdenieOtvara,
+  pasomOtvoriZhromazdenie,
   naexZaPitku,
   stavZavislosti,
   textNeresti,
@@ -476,6 +478,9 @@ function vykresli(v: ClientState, mena: readonly string[]): string {
     const z = v.zhromazdenieStav;
     out.push(`Zhromaždenie: tebe zostáva vyložiť ${z.zostavaLimit[ja]}${z.navyse[ja] > 0 ? ` — po vypití ti ďalšia karta neukončí ťah` : ""}${z.pasoval[ja] ? " (pasoval si)" : ""}, súperovi ${z.zostavaLimit[su]}${z.pasoval[su] ? " (pasoval)" : ""}.`);
   }
+  // v12.6 (#73): ďalšie Zhromaždenie kola otvára, kto v predošlom skončil vykladanie prvý.
+  const otvara = dalsieZhromazdenieOtvara(v);
+  if (otvara !== null) out.push(`Ďalšie Zhromaždenie kola začína: ${otvara === ja ? "TY" : "súper"} (v tomto skončil vykladanie prvý; posledné slovo v kraji tam má ten druhý).`);
   // Pitka naraz (Michal 2026-10-27): obaja hrajú súčasne, Bzdocha čaká; poradie platí len pre odpovede na NA EX.
   if (v.pitkaStav !== null && v.faza === "pitka") {
     const ps = v.pitkaStav;
@@ -915,7 +920,7 @@ function moznosti(v: ClientState): string[] {
     }
     case "zhromazdenie": {
       const z = v.zhromazdenieStav;
-      c({ type: "pass" }, `pasovať (do Pitky už nevykladáš, súper vykladá sám; dostaneš ${cigaretyZaPas(v, ja)} cig. — cigaretu za každý plný poldeci; plné poldeci ti ostanú na NA EX a ďalšie Zhromaždenie)`);
+      c({ type: "pass" }, `pasovať (do Pitky už nevykladáš, súper vykladá sám; dostaneš ${cigaretyZaPas(v, ja)} cig. — cigaretu za každý plný poldeci; plné poldeci ti ostanú na NA EX a ďalšie Zhromaždenie${pasomOtvoriZhromazdenie(v, ja) ? "; ďalšie Zhromaždenie začneš ty — posledné slovo v ňom bude mať súper" : ""})`);
       // V Zhromaždení sa nefajčí (§7) — motor smoke odmietne, preto ho ani neponúkať.
       if (zakazVypit(v)) out.push("(Kostol: v ťahu sa smie vyložiť len 1 karta)");
       // v12.2: Vypiť = ďalšia karta v ťahu — treba plný poldeci na túto aj ďalšiu kartu a cigaretu.

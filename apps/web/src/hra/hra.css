@@ -124,6 +124,13 @@
   color: var(--akcent);
 }
 
+/* v12.6 (#73): kto otvorí ďalšie Zhromaždenie kola — pri jeho kroku na osi. */
+.priebeh-zacina {
+  margin-left: 0.3em;
+  color: var(--akcent);
+  white-space: nowrap;
+}
+
 /* Hlava osi „Bitka 2 z 6“ / „Finále“ (Michal 2026-10-27) — postup partie raz, jednotne. */
 .priebeh-kola li.priebeh-kolo.finale {
   color: var(--akcent);

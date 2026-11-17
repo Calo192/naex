@@ -6,7 +6,7 @@
 
 import { Fragment, useEffect, useRef, useState, type ReactNode, type RefObject } from "react";
 import type { Action, ActionSums, ClientState, DamageResult, Favour, GameData, NahladPitkyHraca, OdhadSpakov, PlayerId, RozpisPoskodenia, StavZavislosti, StavkaBitky as StavkaBitkyCisla, ZdrojeAkcii } from "@naex/core";
-import { KONSTANTY, barterCena, battleOutcome, cenaFajceniaHraca, hraVPitke, jeCielLokalita, plneBuduceKolo, plneVZhromazdeni, lokalitNevybranych, vidiVolbuSupera, opponentOf } from "@naex/core";
+import { KONSTANTY, barterCena, battleOutcome, cenaFajceniaHraca, dalsieZhromazdenieOtvara, hraVPitke, jeCielLokalita, plneBuduceKolo, plneVZhromazdeni, lokalitNevybranych, vidiVolbuSupera, opponentOf } from "@naex/core";
 import { ZMENA_SVIETI_MS, klikKrokuOsi, krokPartie, minSek, textZmeny } from "./stitokPartie.ts";
 import type { Rod } from "@naex/core";
 import type { Sada } from "@naex/tvorba";
@@ -1605,6 +1605,16 @@ export function PriebehKola({
     },
   });
 
+  // v12.6 (#73): ďalšie Zhromaždenie kola otvára, kto v predošlom skončil vykladanie prvý — os to ukáže pri jeho kroku.
+  const otvara = dalsieZhromazdenieOtvara(view);
+  const dalsieZhromId = `zhromazdenie-${(view.faza === "zhromazdenie" ? view.pitkaCislo + 1 : view.pitkaCislo) + 1}`;
+  const kto = otvara === null ? null : otvara === view.ja ? t("stol.ty") : t("stol.superKratko");
+  const zacina =
+    kto === null ? undefined : (
+      <span className="priebeh-zacina" title={t("os.dalsieZacinaTip", { kto })}>
+        {t("os.dalsieZacina", { kto })}
+      </span>
+    );
   const aktualneId =
     view.faza === "zhromazdenie"
       ? `zhromazdenie-${Math.min(pitiek, view.pitkaCislo + 1)}`
@@ -1671,6 +1681,7 @@ export function PriebehKola({
         }
         trieda={i === aktualny ? "aktualny" : i < aktualny ? "hotovy" : ""}
         {...(i === aktualny ? { refEl: aktualnyRef } : {})}
+        {...(k.id === dalsieZhromId && zacina !== undefined ? { pridavok: zacina } : {})}
         onKlik={{ ucetBitky: onBitka, senok: onDraft, nic: undefined }[klikKrokuOsi(k.id, view.faza) ?? "nic"]}
       />,
     );

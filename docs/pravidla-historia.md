@@ -4022,3 +4022,21 @@ Staré znenie §19 Päta — remíza:
 
 > Víťaz bitky: vyššie tuhé, pri zhode menej Absťákov, potom menej Dlhov, inak sekera.
 > tuhé, jed). Pri zhode: vyššie tuhé, menej Absťákov, menej Dlhov, nakoniec útočník.
+
+## v12.6 — Kto skončí Zhromaždenie prvý, otvára ďalšie (Michal 2026-11-17, návrh #73 A)
+
+Návrh `posledne-slovo-zhromazdenia` z playtestu 20261116-173731 (docs/playtesty/navrhy-20261116-173731.json):
+každé Zhromaždenie začínal útočník, takže pri rovnakom počte poldeci kládol poslednú kartu v kraji vždy obranca
+(víťaz minulej bitky). Staré znenia:
+
+§4 Priebeh kola:
+
+> **Útočník** = … **Vykladá prvý a na odkryté NA EX odpovedá prvý** (lícom dole, §7) — jeho výhody slúžia na dobiehanie.
+
+§6 Zhromaždenie:
+
+> Hráči striedavo vykladajú karty do línie, **začína útočník**.
+
+§7 Počet Pitiek:
+
+> Pred každou Pitkou je Zhromaždenie (limit sa ráta nanovo, začína útočník).

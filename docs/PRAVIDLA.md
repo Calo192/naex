@@ -1,6 +1,6 @@
 # NA EX! — pravidlá (špecifikácia)
 
-**Pravidlá v12.5 (platné od 2026-11-16)** — Hádka pred Nakladačkou, reči na súperovom strachu, platíš tomu, kto kartu priniesol, Pivnica plná, Dopiť za teba a mŕtve pravidlá preč (v12.5), Výpalné z banky (v12.4), Cigarety za pas (v12.3), Vykladanie za poldeci (v12.2), Odpor aktívny len bez spoja, podmienka NA EX a Hrable (v12.1), Akcie navyše mení celý Nástroj, Traktorista, Pasca, Výherný automat, Kapybara a Predavačka (v12), Dobratie 2 karty po bitke a posilnenie Nástrojom po NA EX (v11.21), Hodnota stupňa 1 / 2 / 3 a reťaz premien (v11.20), Dohadzovačka len z konca kraja (v11.19), Vedúcko Podporou, Snúbenica, Traktorista a Miňištrant (v11.18), NA EX × Odpor a Posilnenie, Kapybara, Telefón, Krokodíl a hrany Náradia (v11.17), Vypiť, pas, Degustátorka, odpoveď na NA EX za poldeci, Nástroj len pod vlastné karty, Školiteľ aj Zviera (v11.16), Benzínka o cigaretu lacnejšie (v11.15), Frakcie, Občania v troch kategóriách, Náradie a karta z ponuky (v11.14), Lokality (v11.13), Reči na súperovom teplomere (v11.12), Hádka platí (v11.11), Ohováračka namiesto Alkoholika (v11.10), Dobratie do troch a výpalné (v11.9), Každý Hazard je Dlh (v11.8), Kostol a koniec línie (v11.7), Zajatie od minulého kola (v11.6), Identita kariet (v11.5), Zajatie Nakladačkou a presvedčenie (v11.4), Konflikt oboma smermi a Podpora (v11.3), Schopnosť väzňa (v11.2), Vzbura obráti kartu (v11.1) a Strach a reči (Michal 2026-11-02, docs/napady/strach-reci.html,
+**Pravidlá v12.6 (platné od 2026-11-17)** — Kto skončí Zhromaždenie prvý, otvára ďalšie (v12.6), Hádka pred Nakladačkou, reči na súperovom strachu, platíš tomu, kto kartu priniesol, Pivnica plná, Dopiť za teba a mŕtve pravidlá preč (v12.5), Výpalné z banky (v12.4), Cigarety za pas (v12.3), Vykladanie za poldeci (v12.2), Odpor aktívny len bez spoja, podmienka NA EX a Hrable (v12.1), Akcie navyše mení celý Nástroj, Traktorista, Pasca, Výherný automat, Kapybara a Predavačka (v12), Dobratie 2 karty po bitke a posilnenie Nástrojom po NA EX (v11.21), Hodnota stupňa 1 / 2 / 3 a reťaz premien (v11.20), Dohadzovačka len z konca kraja (v11.19), Vedúcko Podporou, Snúbenica, Traktorista a Miňištrant (v11.18), NA EX × Odpor a Posilnenie, Kapybara, Telefón, Krokodíl a hrany Náradia (v11.17), Vypiť, pas, Degustátorka, odpoveď na NA EX za poldeci, Nástroj len pod vlastné karty, Školiteľ aj Zviera (v11.16), Benzínka o cigaretu lacnejšie (v11.15), Frakcie, Občania v troch kategóriách, Náradie a karta z ponuky (v11.14), Lokality (v11.13), Reči na súperovom teplomere (v11.12), Hádka platí (v11.11), Ohováračka namiesto Alkoholika (v11.10), Dobratie do troch a výpalné (v11.9), Každý Hazard je Dlh (v11.8), Kostol a koniec línie (v11.7), Zajatie od minulého kola (v11.6), Identita kariet (v11.5), Zajatie Nakladačkou a presvedčenie (v11.4), Konflikt oboma smermi a Podpora (v11.3), Schopnosť väzňa (v11.2), Vzbura obráti kartu (v11.1) a Strach a reči (Michal 2026-11-02, docs/napady/strach-reci.html,
 verzia 2) na v10.4
 (Hádka v10 — Michal 2026-11-01, docs/napady/hadka.html, verzia 4; v9 zmrazené 2026-10-30, krok 2
 revízie starších, docs/napady/starsi-krok2-zadanie.html; dávky v9.1 Chuť, v9.2 ponuka a NA EX naraz,
@@ -8,6 +8,18 @@ v9.3 Výtržník prebíja Úplatok; v10.1 zajatie pred ponukou; v10.2 Nástroj n
 Forsáž, Úplatok zrušený; v10.4 pojem Spáliť, Autority). Sada kariet: Vypálená hrá zverejnenú sadu v57 (v12.5), Zrejúca rozpracovaný stav tvorcu nad ňou (`cards.json` v master). Pravidlá sa
 menia len v dávkach; celá dávka dostane ďalšiu verziu (značka partií `v11`; presnú verziu ukazuje
 stránka Pravidlá — `VERZIA_PRAVIDIEL_PRESNA`).
+
+**Zmeny v12.6 oproti v12.5** (Zrejúca; staré znenia v `docs/pravidla-historia.md`, sekcia v12.6):
+
+- **Kto skončí Zhromaždenie prvý, otvára ďalšie** (§4, §6; návrh #73 z playtestu 20261116-173731, možnosť A, Michal
+  2026-11-17: „kto skončí Zhromaždenie prvý, otvára ďalšie … môžeme implementovať“): „Prvé Zhromaždenie kola začína
+  útočník. Každé ďalšie Zhromaždenie toho kola začína hráč, ktorý v predošlom Zhromaždení skončil vykladanie prvý (pas,
+  pas, ktorý urobí hra, vynútený pas Vychovávateľky aj Záverečná).“ Vo finále rovnako. Ponuka, Pitka a odpovede na NA EX
+  sa nemenia; 2 na 2 (§18) a Päta, Lakeť, Otočka (§19) ostávajú pri tom, že každé Zhromaždenie začína útočník. Predtým
+  (do v12.5) začínal každé Zhromaždenie útočník, takže pri rovnakom počte poldeci kládol poslednú kartu v kraji vždy
+  obranca. Veta §4 „jeho výhody slúžia na dobiehanie“ pri vykladaní vypadla — posledné slovo si hráč vyberá pasom.
+  Pás kola ukáže „ďalšie Zhromaždenie začína: X“, náhľad pasu „ďalšie Zhromaždenie začneš ty“. Výučba Prvá hra: v 2. časti
+  druhé Zhromaždenie kola začína hráč (v prvom pasoval skôr) — kroky prehodené, Melicharove texty dvoch krokov upravené.
 
 **Zmeny v12.5 oproti v12.4** (Michal 2026-11-16: „Implementovať nasledovne: Hádka pred bitkou, R1, E2, V1, N1.“;
 playtest 20261111-221937, návrh #48 `hadka-pred-nakladackou`, možnosť A, a docs/napady/riesenia-problemov-20261116.html,
@@ -748,8 +760,9 @@ finále: voľba pinnacle → draft → (Zhromaždenie → Pitka) × 1–5 → bi
 ```
 
 **Útočník** = hráč, ktorý **prehral poslednú bitku** (v prvom kole náhodne;
-pri sekere ostáva útočníkom; vo finále útočí, kto má menej špakov, §14b). **Vykladá prvý
-a na odkryté NA EX odpovedá prvý** (lícom dole, §7) — jeho výhody slúžia na dobiehanie.
+pri sekere ostáva útočníkom; vo finále útočí, kto má menej špakov, §14b). **Začína prvé Zhromaždenie kola
+a na odkryté NA EX odpovedá prvý** (lícom dole, §7). Každé ďalšie Zhromaždenie kola začína hráč, ktorý
+v predošlom skončil vykladanie prvý (v12.6, §6) — posledné slovo v kraji si hráč vyberá pasom, nedostáva ho za rolu.
 **Obranca** je víťaz poslednej bitky: **vyberá cieľ** kola (natáča ho víťaz minulej hádky, v11.11, §5), **berie z ponuky
 prvý** (v9.2, na prvom ťahu len 1 kartu, §5) a na odkryté NA EX odpovedá druhý — na
 druhý kraj línie. Pitku hrajú obaja naraz (§7).
@@ -849,7 +862,10 @@ Po braní začína Zhromaždenie (§6).
 
 ## 6. Zhromaždenie
 
-Hráči striedavo vykladajú karty do línie, **začína útočník**. Na svojom ťahu
+Hráči striedavo vykladajú karty do línie. **Prvé Zhromaždenie kola začína útočník. Každé ďalšie Zhromaždenie
+toho kola začína hráč, ktorý v predošlom Zhromaždení skončil vykladanie prvý** (pas, pas, ktorý urobí hra,
+vynútený pas Vychovávateľky aj Záverečná; v12.6, návrh #73 A). Vo finále rovnako. V 2 na 2 (§18) a v režime
+Päta, Lakeť, Otočka (§19) začína každé Zhromaždenie útočník. Na svojom ťahu
 hráč vyloží kartu na jeden z dvoch koncov línie (v jednom ťahu aj viac kariet,
 §13), prizná kliatby (§11), podloží Nástroj pod kartu v línii alebo ho vyloží
 do Dedičstva (§12). Podloženie aj vyloženie Nástroja do Dedičstva sa v striedaní
@@ -1082,7 +1098,9 @@ Cigarety za pas nie sú z Pitky — Obecný úrad ich nezdvojuje (§15). Pasovan
 navyše z Vypiť. Kto v Zhromaždení nemá čo vyložiť (nemá plný poldeci ani kartu, ktorú smie dať, kliatbu na
 priznanie, Nástroj, na ktorý má cigarety, ani súperovo NA EX na dopitie), za toho hra pasuje a cigarety za plné
 poldeci dostane tiež (fajčiť sa v Zhromaždení nedá, §7). **Záverečná** (§13) ukončí vykladanie ako pas, ale
-cigarety za ňu nedá; vynútený pas **Vychovávateľky** (§10) tiež nie.
+cigarety za ňu nedá; vynútený pas **Vychovávateľky** (§10) tiež nie. Kto z dvoch hráčov skončí vykladanie prvý
+(ktorýmkoľvek z týchto spôsobov), **otvorí ďalšie Zhromaždenie kola** (v12.6); v poslednom Zhromaždení kola na tom
+nezáleží — po ňom je bitka a ďalšie kolo začína útočník.
 
 ### Dopiť za teba (v12.5)
 
@@ -1336,7 +1354,7 @@ Príklad: v jednom kraji sú aktivované 3 akcie lokality, v druhom 1 →
 krajov, nie podľa hráčov**: nezáleží na tom, kto kartu zahral (aj súperova
 karta aktivuje hranu kraja, kde leží), ani kto má v kraji prevahu. Akcia
 hrany zdvojená Posilnením (×2) je stále **jedna** aktivovaná akcia. Pred každou Pitkou je Zhromaždenie
-(limit sa ráta nanovo, začína útočník). Počet sa prepočítava s líniou počas
+(limit sa ráta nanovo; prvé začína útočník, ďalšie ten, kto v predošlom skončil vykladanie prvý, §6). Počet sa prepočítava s líniou počas
 kola (vykladanie, odpoveď, NA EX); už začatá Pitka sa vždy dopije. Lokality
 majú na každej strane 1–4 akcie (úroveň), teda 1–5 Pitiek; aj finále na
 pinnacle.

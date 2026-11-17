@@ -259,6 +259,8 @@ export interface ClientState {
   readonly lokalitaOtocena: boolean;
   /** v11.11: víťaz hádky minulého kola; natáča ďalšiu lokalitu. Pri remíze null, v K1 chýba. */
   readonly vitazPoslednejHadky?: PlayerId | null;
+  /** v12.6 (#73): kto otvára ďalšie Zhromaždenie kola — skončil v ňom vykladanie prvý. Chýba, kým nikto neskončil. */
+  readonly zhromazdenieOtvara?: PlayerId;
   readonly strany: readonly [readonly PlacedCard[], readonly PlacedCard[]];
   /** Skryté Záverečné — najviac jedna na stranu; za ňu sa nedá priložiť (zablokovaneStrany). */
   readonly zaverecne: readonly ZaverecnaVerejna[];
@@ -429,6 +431,7 @@ export function viewFor(data: GameData, state: GameState, miesto: Miesto): Clien
     ciel: state.ciel,
     lokalitaOtocena: state.lokalitaOtocena,
     ...(state.vitazPoslednejHadky === undefined ? {} : { vitazPoslednejHadky: state.vitazPoslednejHadky }),
+    ...(state.zhromazdenieOtvara === undefined ? {} : { zhromazdenieOtvara: state.zhromazdenieOtvara }),
     strany: [skrySuperove(0), skrySuperove(1)],
     zaverecne,
     zaverecnaMozna:

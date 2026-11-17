@@ -11,6 +11,7 @@ import {
   KONSTANTY,
   apply,
   applySPrisunom,
+  bezLimituDruzstva,
   eventsFor,
   legalCommands,
   loadGameData,
@@ -268,7 +269,14 @@ describe("účtovná kniha poldeci", () => {
   });
 
   it("vyložená karta je platba poldeci, Vypiť len cigaretou (v12.2); nový poldeci z barteru je prísun", () => {
-    const karty = KROKY.filter((k) => k.cmd.type === "place" && (k.cmd.target === "vlastna" || k.cmd.target === "superova") && k.pred.faza === "zhromazdenie");
+    // Na Družstve karta s Robotou poldeci nestojí (v12.2) — tá platbou nie je.
+    const zadarmo = (k: Krok): boolean => {
+      const uid = k.cmd.type === "place" ? k.cmd.uid : -1;
+      const karta = k.pred.hraci[k.kto].ruka.find((x) => x.uid === uid);
+      const def = karta === undefined ? undefined : data.cards.get(karta.defId);
+      return def !== undefined && bezLimituDruzstva(k.pred.ciel?.lokalita?.defId ?? null, def);
+    };
+    const karty = KROKY.filter((k) => k.cmd.type === "place" && (k.cmd.target === "vlastna" || k.cmd.target === "superova") && k.pred.faza === "zhromazdenie" && !zadarmo(k));
     expect(karty.length).toBeGreaterThan(0);
     for (const { events, kto } of karty) expect(zdrojePoldeci(events, kto)[0]).toBe("platba");
     const vypit = KROKY.filter((k) => k.cmd.type === "vypit");

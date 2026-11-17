@@ -293,17 +293,17 @@
     "moznost.2": "Vynuluje sa ako pečeň.",
     "vysvetlenie.2": "Nevynuluje. Pečeň áno, Dlh čaká na exekútora."
   },
-  "k-zh2-bot3": {
-    "melichar": "Po Pitke sa doleje jeden [Poldeci] poldeci a ďalší za každé tvoje spojené Poldeci – vďaka Pijanovi máš zas tri plné. Druhé Zhromaždenie, Štamgast začína: Anonymný alkoholik k jeho Pijanovi."
-  },
   "k-prevaha": {
-    "melichar": "Vráť si trávnik: polož Praudovravca na koniec línie, za Liberála, a potvrď. Na trávniku bude 3 : 3 a pri rovnosti rozhoduje karta pri lokalite – tvoj Pijan."
+    "melichar": "Po Pitke sa doleje jeden [Poldeci] poldeci a ďalší za každé tvoje spojené Poldeci – vďaka Pijanovi máš zas tri plné. Druhé Zhromaždenie začínaš ty: v prvom si pasoval skôr ako Štamgast. Vráť si trávnik: polož Praudovravca na koniec línie, za Liberála, a potvrď. Na trávniku bude 3 : 3 a pri rovnosti rozhoduje karta pri lokalite – tvoj Pijan."
   },
-  "k-pas2-bot": {
-    "melichar": "Štamgast pasoval: za dva plné [Poldeci] poldeci dostal dve [Cigareta] cigarety a poldeci mu ostali. Na čo, uvidíš v Pitke."
+  "k-zh2-bot3": {
+    "melichar": "Štamgast: Anonymný alkoholik k jeho Pijanovi."
   },
   "k-prevaha2": {
     "melichar": "Teraz Anonymného alkoholika za Praudovravca. Na trávniku budeš mať štyroch proti trom: prevaha je tvoja a 2 tuhé z Ihriska sa vrátia."
+  },
+  "k-pas2-bot": {
+    "melichar": "Štamgast pasoval: za dva plné [Poldeci] poldeci dostal dve [Cigareta] cigarety a poldeci mu ostali. Na čo, uvidíš v Pitke."
   },
   "k-pas3": {
     "melichar": "Pijana si nechaj a pasuj (P). Za posledný plný [Poldeci] poldeci dostaneš [Cigareta] cigaretu a poldeci ti ostane na NA EX."
