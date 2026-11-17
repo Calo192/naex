@@ -287,9 +287,18 @@ const PARTIE = [
   { id: "20261113-084431-3", report: "20261113-084431.html", dlzka: "stredná (5 lokalít + finále), asi 97 min (Zrejúca v12.4, opakovaná 16. 11.)", vysledok: "Šimon 80 : 55 Vilo", mena: ["Vilo","Šimon"],
     jano: [7,7,5,6,9,6,6,7,8,8,7,9], eva: [8,8,6,6,9,6,6,6,8,7,9,9],
     zmenyPred: [] },
+  { id: "20261116-173731-1", report: "20261116-173731.html", dlzka: "stredná (5 lokalít + finále), asi 69 min (Vypálená v12.5)", vysledok: "Hela 65 : 53 Eva", mena: ["Hela","Eva"],
+    jano: [8,8,6,7,8,6,5,6,8,8,6,9], eva: [7,8,5,6,9,6,6,6,8,8,5,9],
+    zmenyPred: ["Pravidlá v12.5: hádka pred Nakladačkou (víťaz hádky rozdelí reči skôr, než víťaz bitky Nakladačku)","Pravidlá v12.5: reči bodujú len na stupňoch, kde má súper strach (R1)","Pravidlá v12.5: kartu z ponuky platíš tomu, kto ju do ponuky dal (E2)","Pravidlá v12.5: Pivnica plná — výhra väzňami až v ďalšej vyhratej bitke (V1)","Pravidlá v12.5: Dopiť za teba — v Zhromaždení zložíš súperovo NA EX zo svojej karty za plný poldeci (N1)","Pravidlá v12.5: mŕtve pravidlá preč — remíza v tuhom len na Dlhy, Abstinent zvyšuje prah Cirhózy, krok 6c aj po finále, Hazard dá Dlh 1 : 1, Výherný automat"] },
+  { id: "20261116-173731-2", report: "20261116-173731.html", dlzka: "stredná (5 lokalít + finále), asi 71 min (Vypálená v12.5)", vysledok: "Fero 59 : 45 Jano", mena: ["Jano","Fero"],
+    jano: [6,7,4,5,8,5,6,6,8,8,4,9], eva: [7,8,6,6,8,6,6,6,8,8,5,9],
+    zmenyPred: [] },
+  { id: "20261116-173731-3", report: "20261116-173731.html", dlzka: "stredná, výhra strachom vo finále, asi 72 min (Vypálená v12.5)", vysledok: "Vilo 99 : 49 Šimon", mena: ["Šimon","Vilo"],
+    jano: [7,8,5,6,9,6,5,6,8,8,7,9], eva: [8,8,6,7,9,6,5,7,8,7,7,9],
+    zmenyPred: [] },
 ];
 // Zmeny, ktoré ešte žiadna partia neoverila.
-const CAKAJUCE = ["Pravidlá v12.5: hádka pred Nakladačkou (víťaz hádky rozdelí reči skôr, než víťaz bitky Nakladačku)","Pravidlá v12.5: reči bodujú len na stupňoch, kde má súper strach (R1)","Pravidlá v12.5: kartu z ponuky platíš tomu, kto ju do ponuky dal (E2)","Pravidlá v12.5: Pivnica plná — výhra väzňami až v ďalšej vyhratej bitke (V1)","Pravidlá v12.5: Dopiť za teba — v Zhromaždení zložíš súperovo NA EX zo svojej karty za plný poldeci (N1)","Pravidlá v12.5: mŕtve pravidlá preč — remíza v tuhom len na Dlhy, Abstinent zvyšuje prah Cirhózy, krok 6c aj po finále, Hazard dá Dlh 1 : 1, Výherný automat"];
+const CAKAJUCE = [];
 
 const priemer = (a) => a.reduce((x, y) => x + y, 0) / a.length;
 const f1 = (x) => x.toFixed(1).replace(".", ",");
