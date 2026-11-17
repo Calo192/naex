@@ -1,5 +1,7 @@
 # Strategický denník — Ekonóm Ďuro (štýl ekonom) — Vypálená
 
+> **Pozor, v12.6 (vypálená 2026-11-17):** pas dobere kartu za každý plný poldeci namiesto cigarety; ďalšie Zhromaždenie kola otvára, kto v predošlom skončil prvý; remízu v tuhom rozhodne hádka, potom Dlhy; strach víťaza boduje len najvyšším stupňom (1 / 2 / 3, nie súčet 1 / 3 / 6). Zápisy nižšie sú z v12.5 — čo stojí na cigaretách za pas, sume strachu alebo poslednom slove, najprv over.
+
 Charakter štýlu: `../../styly.json` (kľúč `ekonom`). Formát: `../README.md`.
 Denník vedie hráč štýlu sám; sudca len pripisuje poznámky k chybám v pravidlách.
 Pri každej položke je verzia pravidiel. Partie 1–3: v11.6. Partie 4–6: v11.10. Partia 7: v11.11. **Partie 8–10: v12.5** (pas = cigareta za plný poldeci, vykladanie za poldeci, platíš súperovi za jeho kartu z ponuky, hádka pred Nakladačkou, reči bodujú len na súperovom strachu, Dopiť za teba, plná pivnica). Všetko z v11.x je v **Archíve** dole a na v12.5 neoverené, kým to nepotvrdí partia.

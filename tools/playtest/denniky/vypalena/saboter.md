@@ -1,5 +1,7 @@
 # Strategický denník — Sabotér Zdeno (štýl saboter) — Vypálená
 
+> **Pozor, v12.6 (vypálená 2026-11-17):** pas dobere kartu za každý plný poldeci namiesto cigarety; ďalšie Zhromaždenie kola otvára, kto v predošlom skončil prvý; remízu v tuhom rozhodne hádka, potom Dlhy; strach víťaza boduje len najvyšším stupňom (1 / 2 / 3, nie súčet 1 / 3 / 6). Zápisy nižšie sú z v12.5 — čo stojí na cigaretách za pas, sume strachu alebo poslednom slove, najprv over.
+
 Charakter štýlu: `../../styly.json` (kľúč `saboter`). Formát: `../README.md`.
 Denník vedie hráč štýlu sám; sudca len pripisuje poznámky k chybám v pravidlách.
 Pravidlá: **v12.5** (2026-11-16), sada v57. Desať partií: Klebetná 66:8, Agresívny 4:69, Ekonóm 30:−12 (v11.6), Klebetná 120:22, Agresívny 2:60 väzňami, Ekonóm 45:17 (v11.10), Klebetná 48:45 väzňami v K5 (v11.11), Klebetná 78:16 po finále (v12.5), Agresívny 23:74 po finále (v12.5), **Ekonóm 64:37 po finále (v12.5)**. Proti agresorovi 0 z 3, proti ostatným 7 z 7.

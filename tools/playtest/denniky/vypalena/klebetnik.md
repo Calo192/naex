@@ -1,5 +1,7 @@
 # Strategický denník — Klebetná Mara (štýl klebetnik) — Vypálená
 
+> **Pozor, v12.6 (vypálená 2026-11-17):** pas dobere kartu za každý plný poldeci namiesto cigarety; ďalšie Zhromaždenie kola otvára, kto v predošlom skončil prvý; remízu v tuhom rozhodne hádka, potom Dlhy; strach víťaza boduje len najvyšším stupňom (1 / 2 / 3, nie súčet 1 / 3 / 6). Zápisy nižšie sú z v12.5 — čo stojí na cigaretách za pas, sume strachu alebo poslednom slove, najprv over.
+
 Charakter štýlu: `../../styly.json` (kľúč `klebetnik`). Formát: `../README.md`.
 Denník vedie hráč štýlu sám; sudca len pripisuje poznámky k chybám v pravidlách.
 
