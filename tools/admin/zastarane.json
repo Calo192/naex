@@ -785,18 +785,18 @@
     {
       "pojem": "limit vykladania",
       "vzory": [
-        "limitw* vyklad",
-        "vykladacw* limit",
-        "limitw* na vyklad"
+        "limit\\w* vyklad",
+        "vykladac\\w* limit",
+        "limit\\w* na vyklad"
       ],
       "pozn": "v12.5 (mŕtve pravidlá 1): pojem zanikol — §6 Vykladanie za poldeci, každá karta do línie (aj Záverečná, podstrčená a odpoveď na NA EX) stojí plný poldeci (vo Vypálenej od vypálenia v12.5 2026-11-16)"
     },
     {
       "pojem": "priznaný Dlh",
       "vzory": [
-        "priznanw* dlh",
-        "dlhw* (?:w+ ){0,2}priznan",
-        "nepriznanw* dlh"
+        "priznan\\w* dlh",
+        "dlh\\w* (?:\\w+ ){0,2}priznan",
+        "nepriznan\\w* dlh"
       ],
       "pozn": "v12.5 (mŕtve pravidlá 2): „priznaný“ pri Dlhu vypadol, nepriznaný Dlh od v8.2 neexistuje; tabuľky priznania Dlhu zanikli (vo Vypálenej od vypálenia v12.5 2026-11-16)"
     },
@@ -804,48 +804,56 @@
       "pojem": "zadĺženie a prah Dlhu",
       "vzory": [
         "zadlzen",
-        "ciarkw* (?:w+ ){0,2}na ucte",
-        "prahw* dlh",
-        "dlhw* za kazdw* (?:2|dve|druh)",
-        "(?:2|dva|dve) hazardw* (?:w+ ){0,2}(?:=|na|za|dajw*|je) (?:1 |jeden )?dlh"
+        "ciark\\w* (?:\\w+ ){0,2}na ucte",
+        "prah\\w* dlh",
+        "dlh\\w* za kazd\\w* (?:2|dve|druh)",
+        "(?:2|dva|dve) hazard\\w* (?:\\w+ ){0,2}(?:=|na|za|daj\\w*|je) (?:1 |jeden )?dlh"
       ],
       "pozn": "v12.5 (mŕtve pravidlá 7): zadĺženie a čiarky na účte zanikli, Hazard dá Dlh vždy 1 : 1; Výherný automat — „Dedičstvo: Pitka: {Cigareta} {Dlh}.“ (vo Vypálenej od vypálenia v12.5 2026-11-16)"
     },
     {
       "pojem": "remíza v tuhom podľa Absťákov",
       "vzory": [
-        "remizw*[^.!?]{0,80}abstak",
-        "abstakw*[^.!?]{0,80}remiz",
+        "remiz\\w*[^.!?]{0,80}abstak",
+        "abstak\\w*[^.!?]{0,80}remiz",
         "menej abstak",
-        "viac abstakw*[^.!?]{0,40}prehr"
+        "viac abstak\\w*[^.!?]{0,40}prehr"
       ],
       "pozn": "v12.5 (mŕtve pravidlá 4): remízu v tuhom rozhoduje len menej Dlhov, inak sekera (vo Vypálenej od vypálenia v12.5 2026-11-16)"
     },
     {
       "pojem": "Abstinent ruší Absťáky",
       "vzory": [
-        "abstinentw*[^.!?]{0,80}abstak",
-        "abstakw*[^.!?]{0,80}abstinent",
-        "odpustw*[^.!?]{0,30}abstak"
+        "abstinent\\w*[^.!?]{0,80}abstak",
+        "abstak\\w*[^.!?]{0,80}abstinent",
+        "odpust\\w*[^.!?]{0,30}abstak"
       ],
       "pozn": "v12.5 (mŕtve pravidlá 5): Abstinent zvyšuje prah Cirhózy o 1 / 2 / 3, Absťáky uberajú tuhé vždy (vo Vypálenej od vypálenia v12.5 2026-11-16)"
     },
     {
       "pojem": "cigarety za pas",
       "vzory": [
-        "cigaretw* za pas",
-        "za pasw* (?:w+ ){0,3}cigaret",
-        "pasw* (?:w+ ){0,3}cigaretw* za (?:kazdy|plny)"
+        "cigaret\\w* za pas",
+        "za pas\\w* (?:\\w+ ){0,3}cigaret",
+        "pas\\w* (?:\\w+ ){0,3}cigaret\\w* za (?:kazdy|plny)"
       ],
       "pozn": "v12.6: pas dobere kartu za každý plný poldeci namiesto cigarety (#71)"
     },
     {
       "pojem": "strach 1 / 3 / 6",
       "vzory": [
-        "strachw* (?:w+ ){0,3}1 ?/ ?3 ?/ ?6",
-        "cervenw* strachw* (?:w+ ){0,2}6 spak"
+        "strach\\w* (?:\\w+ ){0,3}1 ?/ ?3 ?/ ?6",
+        "cerven\\w* strach\\w* (?:\\w+ ){0,2}6 spak"
       ],
       "pozn": "v12.6: strach víťaza boduje len najvyšším stupňom 1 / 2 / 3 (#70)"
+    },
+    {
+      "pojem": "remíza v tuhom len podľa Dlhov",
+      "vzory": [
+        "remiz\\w*[^.!?]{0,60}(?:len|iba|rozhoduj\\w*|rozhodn\\w*) (?:\\w+ ){0,2}dlh",
+        "rozhoduj\\w* len dlh"
+      ],
+      "pozn": "v12.6: remízu v tuhom rozhodne najprv víťaz hádky, až keď hádku nevyhral nikto, menej Dlhov (Michal 2026-11-17)"
     }
   ],
   "karty": [
