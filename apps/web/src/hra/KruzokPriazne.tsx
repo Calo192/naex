@@ -112,19 +112,6 @@ export function PriazenStarsiehoVRiadku({ fav, p, meno, prechod }: { readonly fa
   );
 }
 
-/**
- * Značka hádky: dve bubliny proti sebe (hádka dvoch). Zámerne iná ako piktogram Povery —
- * do hádky vstupuje aj Pohoršenie.
- */
-export function IkonaHadky({ trieda = "lst-ikona" }: { readonly trieda?: string }) {
-  return (
-    <svg className={trieda} viewBox="0 0 24 24" aria-hidden="true">
-      <path d="M2 4.5C2 3.1 3.1 2 4.5 2h8C13.9 2 15 3.1 15 4.5v4c0 1.4-1.1 2.5-2.5 2.5H8l-3.5 3v-3C3.1 11 2 9.9 2 8.5z" />
-      <path d="M22 11.5c0-1.4-1.1-2.5-2.5-2.5H17v1c0 2-1.6 3.5-3.5 3.5H10v1c0 1.4 1.1 2.5 2.5 2.5H16l3.5 3v-3c1.4 0 2.5-1.1 2.5-2.5z" opacity="0.7" />
-    </svg>
-  );
-}
-
 /** Farby stupňov pre nápovedu v portáli (mimo línie starších) — pevné ako na scorecarde. */
 const FARBY_NAPOVEDY = { "--tp-z1": FARBY_STUPNICE[2], "--tp-z2": FARBY_STUPNICE[1], "--tp-z3": FARBY_STUPNICE[0] } as CSSProperties;
 

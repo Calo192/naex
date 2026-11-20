@@ -80,12 +80,12 @@ describe("nápovedy — rozpoznanie z pohľadu hráča", () => {
   });
 
   it("pas-cigarety (v12.3, v12.6 karty): na ťahu v Zhromaždení, po vyloženej karte a s plným poldecim; inak nie", () => {
-    const zh = (o: { naTahu?: 0 | 1; plne?: number; mojaKarta?: boolean; pasoval?: boolean }): GameState =>
+    const zh = (o: { naTahu?: 0 | 1; plne?: number; mojaKarta?: boolean; pasoval?: boolean; balicek?: number }): GameState =>
       ({
         ...s0,
         faza: "zhromazdenie",
         ciel: { typ: "lokalita", lokalita: s0.lokalityVHre[0] },
-        hraci: s0.hraci.map((h) => ({ ...h, poldeciPlne: o.plne ?? 2 })),
+        hraci: s0.hraci.map((h) => ({ ...h, poldeciPlne: o.plne ?? 2, doberaci: Array.from({ length: o.balicek ?? 3 }, () => inst("pijan")), odhadzovaci: [] })),
         strany: [o.mojaKarta === false ? [] : [{ card: inst("pijan"), playedBy: 0 }], [{ card: inst("pijan"), playedBy: 1 }]],
         zhromazdenieStav: { naTahu: o.naTahu ?? 0, zostavaLimit: [2, 2], pasoval: [o.pasoval ?? false, false], navyse: [0, 0] },
       }) as unknown as GameState;
@@ -95,6 +95,8 @@ describe("nápovedy — rozpoznanie z pohľadu hráča", () => {
     expect(ids(zh({ naTahu: 1 }), 0)).not.toContain("pas-cigarety");
     expect(ids(zh({ mojaKarta: false }), 0)).not.toContain("pas-cigarety");
     expect(ids(zh({ plne: 0 }), 0)).not.toContain("pas-cigarety");
+    // Prázdny doberací aj odhadzovací balíček (K1): pas nedá nič (§4; playtest 20261117-140948).
+    expect(ids(zh({ balicek: 0 }), 0)).not.toContain("pas-cigarety");
     expect(ids(zh({ pasoval: true }), 0)).not.toContain("pas-cigarety");
     expect(ids({ ...zh({}), faza: "pitka" } as GameState, 0)).not.toContain("pas-cigarety");
   });

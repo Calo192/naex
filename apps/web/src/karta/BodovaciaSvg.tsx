@@ -80,6 +80,9 @@ export function BodovaciaSvg({
       );
     });
 
+  // Štítok s názvom: odhad šírky textu (0,6 em na znak) a okraje, najviac celý pás názvu.
+  const sirkaStitku = Math.min(g.nazov.w, karta.nazov.length * g.velkostNazvu * 0.6 + 1.4 * g.velkostNazvu);
+
   return (
     <svg
       className="bodovacia-svg"
@@ -118,9 +121,9 @@ export function BodovaciaSvg({
       {karta.nazov !== "" && (
         <>
           <rect
-            x={g.nazov.x + g.nazov.w / 2 - Math.min(g.nazov.w, karta.nazov.length * g.velkostNazvu * 0.6 + 1.4 * g.velkostNazvu) / 2}
+            x={g.nazov.x + g.nazov.w / 2 - sirkaStitku / 2}
             y={g.nazov.y - g.nazov.h * 0.075}
-            width={Math.min(g.nazov.w, karta.nazov.length * g.velkostNazvu * 0.6 + 1.4 * g.velkostNazvu)}
+            width={sirkaStitku}
             height={g.nazov.h * 1.15}
             rx={1.7}
             fill="#374151"

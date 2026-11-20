@@ -173,70 +173,70 @@ function Zoznam({ sada }: { readonly sada: Sada }) {
       />
 
       <div className="mriezka">
-      <aside className="st-bok dielna-bok">
-      <div className="dielna-filtre">
-        <div className="cipy" role="group" aria-label="Filter stavu">
-          {FILTRE.filter((f) => f.kluc !== "moje" || ja !== null).map((f) => (
-            <button key={f.kluc} type="button" className={`cip ${filter === f.kluc ? "aktivny" : ""}`} aria-pressed={filter === f.kluc} onClick={() => setFilter(f.kluc)}>
-              {f.nazov} <span className="dielna-pocet">{data?.navrhy.filter((n) => patri(n, f.kluc, ja?.id ?? null)).length ?? ""}</span>
+        <aside className="st-bok dielna-bok">
+          <div className="dielna-filtre">
+            <div className="cipy" role="group" aria-label="Filter stavu">
+              {FILTRE.filter((f) => f.kluc !== "moje" || ja !== null).map((f) => (
+                <button key={f.kluc} type="button" className={`cip ${filter === f.kluc ? "aktivny" : ""}`} aria-pressed={filter === f.kluc} onClick={() => setFilter(f.kluc)}>
+                  {f.nazov} <span className="dielna-pocet">{data?.navrhy.filter((n) => patri(n, f.kluc, ja?.id ?? null)).length ?? ""}</span>
+                </button>
+              ))}
+            </div>
+            <label className="dielna-triedenie">
+              <span className="tlmene">Zoradiť</span>
+              <select value={triedenie} onChange={(e) => setTriedenie(e.target.value as "nove" | "cigarety")}>
+                <option value="nove">najnovšie</option>
+                <option value="cigarety">najviac cigariet</option>
+              </select>
+            </label>
+          </div>
+        </aside>
+        <div className="st-obsah">
+          {chyba !== null && <Hlaska>{chyba}</Hlaska>}
+          {data !== null && data.noveRozhodnutia > 0 && (
+            <button type="button" className="cip dielna-nove-rozhodnutie" onClick={() => setFilter("moje")}>
+              Nové rozhodnutie o tvojom návrhu: {data.noveRozhodnutia}
             </button>
-          ))}
+          )}
+          {data === null ? (
+            chyba === null && <Nacitavanie />
+          ) : viditelne.length === 0 ? (
+            <p className="tlmene dielna-prazdne">
+              {data.navrhy.length === 0 ? "Dielňa je zatiaľ prázdna. Prvý návrh môže byť tvoj." : "V tomto filtri nič nie je."}
+            </p>
+          ) : (
+            <ul className="dielna-stol">
+              {viditelne.map((n) => (
+                <li key={n.id} className={`panel dielna-polozka pas-${n.stav}`}>
+                  <Odkaz href={`/karty/dielna/${n.id}`} className="dielna-polozka-karta" aria-label={`Otvoriť návrh ${n.obsah.nazov || "bez názvu"}`}>
+                    <NahladKarty karta={kartaZNavrhu(n.obsah, n.zakladKarta)} vzhlad={vzhlad} sirka={112} bezPopisov />
+                  </Odkaz>
+                  <div className="dielna-polozka-text">
+                    <div className="dielna-znacky">
+                      <StavCip stav={n.stav} />
+                      <span className="dielna-typ">{n.typ === "nova" ? "nová karta" : `úprava: ${n.zakladKarta?.nazov ?? n.zaklad ?? ""}`}</span>
+                      {n.skryty && <span className="odznak">skrytý</span>}
+                      {n.nahlaseni > 0 && <span className="odznak odznak-ai">nahlásený {n.nahlaseni}×</span>}
+                      {n.noveRozhodnutie && <span className="novinka-nova">nové rozhodnutie</span>}
+                    </div>
+                    <h2>
+                      <Odkaz href={`/karty/dielna/${n.id}`}>{n.obsah.nazov || "Bez názvu"}</Odkaz>
+                    </h2>
+                    {n.obsah.efekt !== "" && <p className="dielna-efekt">{n.obsah.efekt}</p>}
+                    <p className="tlmene dielna-meta">
+                      <Autor a={n.autor} /> · {kedy(n.odoslany ?? n.vytvoreny)} · {n.komentarov} {tvar(n.komentarov, "komentár", "komentáre", "komentárov")}
+                    </p>
+                  </div>
+                  <div className={`dielna-cigarety ${n.cigarety >= data.krabicka ? "krabicka" : ""}`} title={n.cigarety >= data.krabicka ? `Plná krabička — aspoň ${data.krabicka} cigariet` : undefined}>
+                    <strong>{n.cigarety}</strong>
+                    <span>{tvar(n.cigarety, "cigareta", "cigarety", "cigariet")}</span>
+                    {n.cigarety >= data.krabicka && <span className="dielna-krabicka">krabička</span>}
+                  </div>
+                </li>
+              ))}
+            </ul>
+          )}
         </div>
-        <label className="dielna-triedenie">
-          <span className="tlmene">Zoradiť</span>
-          <select value={triedenie} onChange={(e) => setTriedenie(e.target.value as "nove" | "cigarety")}>
-            <option value="nove">najnovšie</option>
-            <option value="cigarety">najviac cigariet</option>
-          </select>
-        </label>
-      </div>
-      </aside>
-      <div className="st-obsah">
-      {chyba !== null && <Hlaska>{chyba}</Hlaska>}
-      {data !== null && data.noveRozhodnutia > 0 && (
-        <button type="button" className="cip dielna-nove-rozhodnutie" onClick={() => setFilter("moje")}>
-          Nové rozhodnutie o tvojom návrhu: {data.noveRozhodnutia}
-        </button>
-      )}
-      {data === null ? (
-        chyba === null && <Nacitavanie />
-      ) : viditelne.length === 0 ? (
-        <p className="tlmene dielna-prazdne">
-          {data.navrhy.length === 0 ? "Dielňa je zatiaľ prázdna. Prvý návrh môže byť tvoj." : "V tomto filtri nič nie je."}
-        </p>
-      ) : (
-        <ul className="dielna-stol">
-          {viditelne.map((n) => (
-            <li key={n.id} className={`panel dielna-polozka pas-${n.stav}`}>
-              <Odkaz href={`/karty/dielna/${n.id}`} className="dielna-polozka-karta" aria-label={`Otvoriť návrh ${n.obsah.nazov || "bez názvu"}`}>
-                <NahladKarty karta={kartaZNavrhu(n.obsah, n.zakladKarta)} vzhlad={vzhlad} sirka={112} bezPopisov />
-              </Odkaz>
-              <div className="dielna-polozka-text">
-                <div className="dielna-znacky">
-                  <StavCip stav={n.stav} />
-                  <span className="dielna-typ">{n.typ === "nova" ? "nová karta" : `úprava: ${n.zakladKarta?.nazov ?? n.zaklad ?? ""}`}</span>
-                  {n.skryty && <span className="odznak">skrytý</span>}
-                  {n.nahlaseni > 0 && <span className="odznak odznak-ai">nahlásený {n.nahlaseni}×</span>}
-                  {n.noveRozhodnutie && <span className="novinka-nova">nové rozhodnutie</span>}
-                </div>
-                <h2>
-                  <Odkaz href={`/karty/dielna/${n.id}`}>{n.obsah.nazov || "Bez názvu"}</Odkaz>
-                </h2>
-                {n.obsah.efekt !== "" && <p className="dielna-efekt">{n.obsah.efekt}</p>}
-                <p className="tlmene dielna-meta">
-                  <Autor a={n.autor} /> · {kedy(n.odoslany ?? n.vytvoreny)} · {n.komentarov} {tvar(n.komentarov, "komentár", "komentáre", "komentárov")}
-                </p>
-              </div>
-              <div className={`dielna-cigarety ${n.cigarety >= data.krabicka ? "krabicka" : ""}`} title={n.cigarety >= data.krabicka ? `Plná krabička — aspoň ${data.krabicka} cigariet` : undefined}>
-                <strong>{n.cigarety}</strong>
-                <span>{tvar(n.cigarety, "cigareta", "cigarety", "cigariet")}</span>
-                {n.cigarety >= data.krabicka && <span className="dielna-krabicka">krabička</span>}
-              </div>
-            </li>
-          ))}
-        </ul>
-      )}
-      </div>
       </div>
     </div>
   );
@@ -258,8 +258,11 @@ function RozdielUpravy({ n, vzhlad }: { readonly n: NavrhDielne; readonly vzhlad
       .map(([k, c]) => `${vzhlad.akcie.find((a) => a.kluc === k)?.nazov ?? k}${c > 1 ? ` ×${c}` : ""}`)
       .join(", ") || "nič";
   const pozicie = (s: KartaNavrh["lava"]): string => JSON.stringify(poziciZoStrany(s));
-  if (pozicie(o.lava) !== pozicie(z.lava) || JSON.stringify(o.lava.akcie) !== JSON.stringify(z.lava.akcie)) zmeny.push(`Ľavá strana: ${akcie(z.lava)} → ${akcie(o.lava)}`);
-  if (pozicie(o.prava) !== pozicie(z.prava) || JSON.stringify(o.prava.akcie) !== JSON.stringify(z.prava.akcie)) zmeny.push(`Pravá strana: ${akcie(z.prava)} → ${akcie(o.prava)}`);
+  for (const [strana, nazov] of [["lava", "Ľavá"], ["prava", "Pravá"]] as const) {
+    const pred = z[strana];
+    const po = o[strana];
+    if (pozicie(po) !== pozicie(pred) || JSON.stringify(po.akcie) !== JSON.stringify(pred.akcie)) zmeny.push(`${nazov} strana: ${akcie(pred)} → ${akcie(po)}`);
+  }
   if (o.obrazok !== (z.obrazok?.plny ?? null)) zmeny.push("Iná ilustrácia");
   return (
     <section className="dielna-rozdiel">

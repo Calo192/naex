@@ -105,7 +105,7 @@ export function App() {
   const prehravac = /^\/partia\/(\d+)\/prehravac$/.exec(cesta);
   if (prehravac !== null) return <Layout stol>{chranene(<Prehravac id={Number(prehravac[1])} />)}</Layout>;
   if (cesta === "/profil") return <Layout>{chranene(<Profil />)}</Layout>;
-  // Ukážka UI achievementov na snímky a inšpekciu, kým nie je napojené API (len správca).
+  // Ukážka UI achievementov na snímky a inšpekciu bez partie (len správca).
   if (cesta === "/achievementy/ukazka") return <Layout>{chranene(<UkazkaAchievementov />, true)}</Layout>;
   // Rekapitulácia bitky a Pitky na skutočnej partii botov — snímky a inšpekcia bez živej partie.
   if (cesta === "/hra/ukazka-rekapitulacie") return <Layout>{chranene(<Suspense fallback={<Nacitavanie />}><UkazkaRekapitulacie /></Suspense>, true)}</Layout>;

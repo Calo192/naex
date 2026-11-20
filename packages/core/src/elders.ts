@@ -215,11 +215,6 @@ export function strachZ(elder: Strach, p: PlayerId): Stupen {
   return elder.strach[p];
 }
 
-/** Reči hráča p pri staršom (0 = žiadne). */
-export function reciZ(elder: Pick<ElderState, "reci">, p: PlayerId): Stupen {
-  return elder.reci[p];
-}
-
 /** Hráč p desí staršieho naplno — strach na červenej. */
 export function vydesil(elder: Strach, p: PlayerId): boolean {
   return elder.strach[p] === CERVENA;

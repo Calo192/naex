@@ -649,12 +649,6 @@ function premenyZKrokov(skol: readonly KrokPremeny[], nastroj: readonly KrokPrem
   return { hrany: mapaRetaze(kroky), kroky };
 }
 
-/** Premeny karty len z Nástrojov pod ňou — keď línia nie je po ruke (ponuka podloženia bez línie). */
-export function premenyNastrojov(data: GameData, pl: Pick<PlacedCard, "podlozene">): PremenyKarty {
-  const n = krokyNastrojov(data, pl);
-  return n.length === 0 ? BEZ_PREMIEN : premenyZKrokov([], n);
-}
-
 /**
  * Preškolenia kariet v línii (Michal 2026-11-08) podľa uid. Reťazí sa všetko (v11.20, Michal
  * 2026-11-10): najprv Školitelia — Podpora a Konflikt v poradí spustenia (PlacedCard.preskolenia),

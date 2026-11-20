@@ -254,15 +254,22 @@ export function cigaretyZaPas(
 /**
  * Karty, ktoré si miesto `kto` dobere, keď teraz pasuje (v12.6, §6, návrh #71 — namiesto cigariet): karta za
  * každý plný poldeci v okamihu pasu, aj keď pasuje hra za hráča; Vínko len cez poldeci, ktorý pridá. 1 na 1
- * (aj Päta); v 2 na 2 0 — tam ostávajú cigarety tímu. Koľko sa naozaj dá dobrať, rozhodne balíček.
+ * (aj Päta); v 2 na 2 0 — tam ostávajú cigarety tímu. Najviac toľko, koľko je v doberacom a odhadzovacom
+ * balíčku (§4): pri prázdnych nedá nič — náhľad pasu sľuboval karty, ktoré hra nedala (playtest 20261117-140948).
+ * Motor ťahá rovnako, tahaj sa pri prázdnych balíčkoch zastaví sám.
  */
 export function kartyZaPas(
-  s: { readonly hraci: readonly Pick<PlayerState, "poldeciPlne">[]; readonly zhromazdenieStav: Pick<ZhromazdenieStav, "skoncili"> | null },
+  s: {
+    readonly hraci: readonly (Pick<PlayerState, "poldeciPlne"> & { readonly odhadzovaci: readonly unknown[] } & ({ readonly doberaci: readonly unknown[] } | { readonly doberaciPocet: number }))[];
+    readonly zhromazdenieStav: Pick<ZhromazdenieStav, "skoncili"> | null;
+  },
   kto: Miesto,
 ): number {
   const z = s.zhromazdenieStav;
-  if (z === null || z.skoncili !== undefined) return 0;
-  return Math.max(0, s.hraci[timMiesta(kto)]?.poldeciPlne ?? 0) * KONSTANTY.KARTY_ZA_PAS_NA_POLDECI;
+  const h = s.hraci[timMiesta(kto)];
+  if (z === null || z.skoncili !== undefined || h === undefined) return 0;
+  const vBalickoch = ("doberaciPocet" in h ? h.doberaciPocet : h.doberaci.length) + h.odhadzovaci.length;
+  return Math.min(vBalickoch, Math.max(0, h.poldeciPlne) * KONSTANTY.KARTY_ZA_PAS_NA_POLDECI);
 }
 
 export interface PitkaStav {
@@ -3427,7 +3434,7 @@ function potlacenyPriPrilozeni(s: MutState, data: GameData, nositel: DeepMutable
  * Podpora či Konflikt s akciami navyše (frakcie): karta ich má do konca kola o jedno
  * stretnutie viac. Vráti true, keď to bol efekt navyše — iný efekt slovami karta nemá.
  */
-function pridajNavyse(data: GameData, spustac: "Konflikt" | "Podpora", nositel: DeepMutable<PlacedCard>, druha: DeepMutable<PlacedCard>, events: Event[]): boolean {
+function pridajNavyse(s: MutState, data: GameData, spustac: "Konflikt" | "Podpora", nositel: DeepMutable<PlacedCard>, druha: DeepMutable<PlacedCard>, events: Event[]): boolean {
   const navyse = navysePoSpoji(data, spustac, nositel as PlacedCard, druha as PlacedCard);
   if (navyse === null) return false;
   nositel.navyse = [...navyse.navyse];
@@ -3436,8 +3443,11 @@ function pridajNavyse(data: GameData, spustac: "Konflikt" | "Podpora", nositel: 
   const jeho = defOf(data, druha.card as CardInstance).name;
   const efekty = efektyNavyse(def).filter((e) => e.spustac === spustac);
   const akcie = efekty.flatMap((e) => e.akcie);
-  // Krokodíl (Konflikt: {Spálenie}, Michal 2026-11-09): spáli sa až na konci bitky (vratKartyPoBitke).
-  const co = [...(akcie.length > 0 ? [`do konca kola akcie navyše ${akcie.join(", ")}`] : []), ...(efekty.some((e) => e.ucinky !== undefined) ? [`${jeho} sa na konci bitky spáli`] : [])];
+  // Krokodíl (Konflikt: {Spálenie}, Michal 2026-11-09): spáli sa až na konci bitky (vratKartyPoBitke) — a nespáli
+  // nič, keď ho vtedy umlčí Mäsiar (§16); log to sľuboval aj vedľa Mäsiara (playtest 20261117-140948, Fero).
+  const umlcany = zvieratAUmlcane(data, lineState(s as GameState)).has(nositel.card.uid as number);
+  const spali = umlcany ? `${jeho} sa na konci bitky spáli, len ak ${def.name} vtedy nebude vedľa Mäsiara (teraz ho Mäsiar umlčí)` : `${jeho} sa na konci bitky spáli`;
+  const co = [...(akcie.length > 0 ? [`do konca kola akcie navyše ${akcie.join(", ")}`] : []), ...(efekty.some((e) => e.ucinky !== undefined) ? [spali] : [])];
   events.push({ type: "log", text: `${spustac} — ${def.name} hráča ${(nositel.playedBy as number) + 1} pri karte ${jeho}: ${co.join("; ")}.` });
   return true;
 }
@@ -3453,7 +3463,7 @@ function konflikt(s: MutState, data: GameData, nositel: DeepMutable<PlacedCard>,
   const def = defOf(data, nositel.card as CardInstance);
   const jeho = defOf(data, druha.card as CardInstance);
   const preskolil = preskolPriSpoji(s, data, "Konflikt", nositel, druha, events);
-  if (pridajNavyse(data, "Konflikt", nositel, druha, events) || preskolil) return;
+  if (pridajNavyse(s, data, "Konflikt", nositel, druha, events) || preskolil) return;
   switch (def.id) {
     case "velmi_smutiaca_vdova": {
       if (vdovaZRuky(def)) {
@@ -3528,7 +3538,7 @@ function podpora(s: MutState, data: GameData, nositel: DeepMutable<PlacedCard>, 
   const def = defOf(data, nositel.card as CardInstance);
   const jeho = defOf(data, druha.card as CardInstance);
   const preskolil = preskolPriSpoji(s, data, "Podpora", nositel, druha, events);
-  if (pridajNavyse(data, "Podpora", nositel, druha, events) || preskolil) return;
+  if (pridajNavyse(s, data, "Podpora", nositel, druha, events) || preskolil) return;
   switch (def.id) {
     case "snubenica":
       // Michal 2026-11-03: Snúbenica vráti súperovo NA EX z vlastného Chlapa — len stará sada; od 2026-11-09
@@ -5365,17 +5375,6 @@ function nastavSumy(s: MutState, data: GameData): void {
   const b = s.bitkaStav;
   if (b === null) return;
   b.sums = sRadom(data, s as GameState, evaluateLine(data, lineState(s as GameState))).sums as DeepMutable<BitkaStav["sums"]>;
-}
-
-/** Stav, z ktorého sa ráta, čo smie víťaz hádky (GameState aj ClientState). */
-export interface StavHadkyBitky {
-  readonly bitkaStav: { readonly krok?: BitkaKrok | null; readonly hadka?: Pick<StavHadky, "vitaz" | "zostava"> } | null;
-}
-
-/** Zvyšok hádky, ktorý hráč p ešte rozdeľuje na reči (0, keď hádku nevyhral alebo je rozdelená). */
-export function zvysokHadky(state: StavHadkyBitky, p: PlayerId): number {
-  const h = state.bitkaStav?.hadka;
-  return h === undefined || h.vitaz !== p ? 0 : h.zostava;
 }
 
 /**

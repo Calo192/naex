@@ -739,13 +739,6 @@ b.np-kto {
   font-weight: 400;
 }
 
-.lst .lst-ikona {
-  width: 1.25em;
-  height: 1.25em;
-  flex: none;
-  fill: currentColor;
-}
-
 /* Dlaždica s lístkom: meno uhne doľava, nech ho lístok v rohu nezakryje. */
 .starsi-dlazdica:has(> .lst-obal) .zdroj-nazov {
   padding-right: 22px;

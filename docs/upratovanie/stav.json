@@ -10,7 +10,7 @@
     "apps/web/src (ostatné: lib, karta, dielna, playtest, achievementy, App, Layout)",
     "tools"
   ],
-  "dalsia": 5,
+  "dalsia": 6,
   "behy": [
     {
       "datum": "2026-10-26",
@@ -86,6 +86,17 @@
       "poznamka": "Prejdené: celé packages/tvorba/src (čisté; texty.ts — rozbor akcií navyše a Preškolenia raz), apps/web/src/admin (nahradAleboPridaj v stav.tsx, PREDVOLENE_NASTAVENIA namiesto kópie čísel v Nastavenia.tsx, tvar() v Prehlad.tsx, BodovaciaSvg priamo z karta/ bez reexportu cez Bodovacie.tsx, nazovAkcie v StranaEditor), spoločný typ SpravaHlasky v komponenty.tsx (admin aj Ucet, PowerLevel); v jadre nepoužité importy, mŕtva pitieVPitke a parameter data vo vypiPoldeci; v klientovi nepoužité importy (tsc --noUnusedLocals). Admin.css bez mŕtvych tried. Nechané: bot.ts (otvorená vetva bot-agresor), nepoužitý parameter data vo verejnom vplyvyNaAkcie, nepoužité importy v testoch jadra (testy sa menia len pri presune), PT_NA_MM v Tlac.tsx (1/MM_NA_PT by pohol posledné desatinné miesta rozmerov tlače), Akcie.tsx „2 kariet“ a Navrhy.tsx „0 varianty“ (zmena textu — kandidát pre programátora), kľúč vlastnej akcie v Akcie.tsx (podobný slug(), ale iný výsledok), exporty používané len vo vlastnom súbore. Ďalej apps/web/src (ostatné: lib, karta, dielna, playtest, achievementy, App, Layout).",
       "zmenenychRiadkov": 124,
       "odtlacok": "e74e2f6714720d6b952a21395a3b89baa86d639b98deff3bad90705201ff45e0"
+    },
+    {
+      "datum": "2026-11-20",
+      "vetva": "upratovanie/2026-11-20",
+      "casti": [
+        "apps/web/src (ostatné: lib, karta, dielna, playtest, achievementy, App, Layout)",
+        "čerstvé súbory master: packages/core/src (mŕtve exporty), apps/web/src/hra (mŕtve komponenty), tools/playtest/hrac.ts (nepoužité importy)"
+      ],
+      "poznamka": "Prejdené: karta (mŕtvy variant vyhasnutej ikony smer minus a jeho CSS, spoločná šípka pečate v KartaLico, IKONY bez pretypovania v IkonaAkcie a Podtacok, šírka štítku BodovaciaSvg raz), lib (useOdber v odchod.ts, platnaSchema a platnyPar bez as), achievementy (hviezdy z HVIEZDY_RANKU, odsadenie Ukazka), playtest (filter stavov bez pretypovania), dielna (datum() v kedy, kartaZNavrhu bez as, rozdiel strán cyklom, odsadenie zoznamu), Layout (usePocetZoServera namiesto dvoch kópií, mŕtvy prop plna a CSS .obsah-plna/.paticka-skryta, odkaz() bez prázdnej triedy, doDevat); v jadre mŕtve reciZ, zvysokHadky, premenyNastrojov, preskoleniaVTexte; v hra mŕtve VykricnikyPeciatky, IkonaHadky, ucinokKola, spakyStupna. Nechané: bot.ts (rizikový súbor; nepoužité importy priazenPre, spakyZaStupen, priazen), ucinokPriazne v LiniaStarsich (mŕtve, ale nesie kľúče linia.priJedna/priazenSila/priazenNikoho v 5 slovníkoch — zmazať spolu s prekladateľom), krajLokality v i18n/jazyk.tsx (rozbehnutá lokalizácia), RezimEmailu v email.ts, nepoužitý parameter data vo vplyvyNaAkcie, Detail v Dielna.tsx (päť rovnakých volaní api…then(obnov).catch(ukaz) — čitateľné, nechané), exporty používané len vo vlastnom súbore. Ďalej tools.",
+      "zmenenychRiadkov": 567,
+      "odtlacok": "ec7fb98182e68e64d95d3fd2dbbc2fb126cc7f8604fefb97c3eaf39b34304c1a"
     }
   ]
 }
