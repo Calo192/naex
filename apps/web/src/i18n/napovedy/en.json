@@ -48,9 +48,9 @@
     }
   },
   "pas-cigarety": {
-    "melichar": "Every card costs you one [Poldeci] shot down the hatch: as many full ones as you have, that many cards you play. You may play more at once, but each extra one costs a [Cigareta] cigarette. Passing gets you nothing – your full shots just stay put, for NA EX and the next Assembly. I wouldn't leave them standing there.",
+    "melichar": "Every card costs you one [Poldeci] shot down the hatch: as many full ones as you have, that many cards you play. You may play more at once, but each extra one costs a [Cigareta] cigarette. When you pass, you draw a card for every full shot and it stays full – for NA EX and the next Assembly. Saving pays off, just saying.",
     "sk": {
-      "melichar": "Za každú kartu vypiješ jeden [Poldeci] poldeci: koľko máš plných, toľko kariet vyložíš. Viac kariet naraz smieš, ale každá navyše stojí [Cigareta] cigaretu. Za pas nedostaneš nič – plné poldeci ti len ostanú, na NA EX aj na ďalšie Zhromaždenie. Ja by som ich nenechal stáť."
+      "melichar": "Za každú kartu vypiješ jeden [Poldeci] poldeci: koľko máš plných, toľko kariet vyložíš. Viac kariet naraz smieš, ale každá navyše stojí [Cigareta] cigaretu. Keď pasneš, doberieš si kartu za každý plný poldeci a ten ti ostane plný – na NA EX aj na ďalšie Zhromaždenie. Šetriť sa oplatí, len tak spomínam."
     }
   },
   "lokalita-pravidlo": {
@@ -66,10 +66,10 @@
     }
   },
   "pohorsenie": {
-    "melichar.moje": "You won the argument: you have more soft damage, [Pohoršenie] Scandal 2, [Povera] Superstition 1. You spend the difference on your rumours at the elders – always above your fear; a notch into yellow costs 1, into orange 2, into red 3. Whatever isn't enough for the next notch is forfeited. Rumours pay you after every brawl, lost ones too, and then they fade. Enjoy it while you can.",
+    "melichar.moje": "You won the argument: you have more soft damage, [Pohoršenie] Scandal 2, [Povera] Superstition 1. You spend the difference on your rumours at the elders – on your opponent's thermometer, from the top of their fear downwards; a notch into yellow costs 1, into orange 2, into red 3. Whatever isn't enough for the next notch is forfeited. Rumours pay you after every brawl, lost ones too; they only drop if you lose the argument. Enjoy it while you can.",
     "melichar.superove": "Your opponent won the argument: they have more soft damage, [Pohoršenie] Scandal 2, [Povera] Superstition 1, and they'll spend the difference on their rumours at the elders. Those pay them after every brawl, lost ones too. Next time keep some Faith back for their Superstitions. Don't look at me like that — I didn't play it.",
     "sk": {
-      "melichar.moje": "Hádku si vyhral: máš viac mäkkého poškodenia, [Pohoršenie] Pohoršenie 2, [Povera] Povera 1. Rozdiel minieš na svoje reči pri starších – vždy nad tvojím strachom, stupeň do žltej 1, do oranžovej 2, do červenej 3. Čo na ďalší stupeň nestačí, prepadne. Reči ti platia po každej bitke, aj prehratej, a potom slabnú. Užívaj, kým môžeš.",
+      "melichar.moje": "Hádku si vyhral: máš viac mäkkého poškodenia, [Pohoršenie] Pohoršenie 2, [Povera] Povera 1. Rozdiel minieš na svoje reči pri starších – na súperovom teplomere, od vrchu jeho strachu nadol, stupeň do žltej 1, do oranžovej 2, do červenej 3. Čo na ďalší stupeň nestačí, prepadne. Reči ti platia po každej bitke, aj prehratej; klesnú ti, len keď hádku prehráš. Užívaj, kým môžeš.",
       "melichar.superove": "Hádku vyhral súper: má viac mäkkého poškodenia, [Pohoršenie] Pohoršenie 2, [Povera] Povera 1, a rozdiel minie na svoje reči pri starších. Tie mu platia po každej bitke, aj prehratej. Nabudúce si nechaj Vieru na jeho Povery. Nepozeraj tak na mňa, ja som ho nevyložil."
     }
   },
@@ -98,15 +98,15 @@
     }
   },
   "patronat": {
-    "melichar": "This elder fears you in the red. For five of the Thrashing you capture them – they go into your cellar and your opponent gives you butts for their marker on them. You don't have to, but why wouldn't you.",
+    "melichar": "This elder has feared you in the red since last round. For five of the Thrashing you capture them – they go into your cellar and your opponent gives you as many butts as their rumours on them are worth. You don't have to, but why wouldn't you.",
     "sk": {
-      "melichar": "Tento starší sa ťa bojí na červenej. Za päť z Nakladačky ho zajmeš – ide do tvojej pivnice a súper ti dá špaky za svoj marker pri ňom. Nemusíš, ale prečo by si nechcel."
+      "melichar": "Tento starší sa ťa bojí na červenej už od minulého kola. Za päť z Nakladačky ho zajmeš – ide do tvojej pivnice a súper ti dá toľko špakov, koľko sú hodné jeho reči pri ňom. Nemusíš, ale prečo by si nechcel."
     }
   },
   "presvedcenie": {
-    "melichar": "This elder fears your opponent more than you. Rumours up to red and five on top – and they're persuaded: their card goes into your hand and stays in your deck. Your rumours on them burn up; your favour stays.",
+    "melichar": "You may persuade this elder: take your rumours up the whole of your opponent's thermometer at them and add three points of the argument. Their card goes into your hand and stays in your deck. Your rumours on them and your favour both stay. Finally, somebody's listening to you.",
     "sk": {
-      "melichar": "Tento starší sa súpera bojí viac než teba. Reči na červenú a päť navrch – a je presvedčený: jeho karta ide tebe do ruky a ostáva v tvojom balíčku. Tvoje reči pri ňom zhoria, priazeň ti ostane."
+      "melichar": "Tohto staršieho smieš presvedčiť: dotiahni svoje reči na celý súperov teplomer pri ňom a pridaj tri body z hádky. Jeho karta ide tebe do ruky a ostáva v tvojom balíčku. Reči pri ňom aj priazeň ti ostanú. Konečne ťa niekto počúva."
     }
   },
   "vydesenie": {
@@ -124,9 +124,9 @@
     }
   },
   "exekutor": {
-    "melichar": "You've got a confessed Debt — I'm not saying anything. In every brawl the Bailiff comes: half your Debts burn, rounded up, and as many butts with them. I know him; I wouldn't recommend it.",
+    "melichar": "You've got a Debt — I'm not saying anything. In every brawl the Bailiff comes: half your Debts burn, rounded up, and as many butts with them. I know him; I wouldn't recommend it.",
     "sk": {
-      "melichar": "Máš priznaný Dlh, nechcem nič hovoriť. V každej bitke príde Exekútor: zhorí ti polovica Dlhov, zaokrúhlene nahor, a rovnako veľa špakov. Poznám ho, neodporúčam."
+      "melichar": "Máš Dlh, nechcem nič hovoriť. V každej bitke príde Exekútor: zhorí ti polovica Dlhov, zaokrúhlene nahor, a rovnako veľa špakov. Poznám ho, neodporúčam."
     }
   },
   "zaverecna": {
