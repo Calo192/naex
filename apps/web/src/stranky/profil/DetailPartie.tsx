@@ -17,6 +17,7 @@ import { Nastenka } from "../../hra/Spaky.tsx";
 import { datum } from "../../lib/datum.ts";
 import { nazovKarty, prelozHlasku, t } from "../../i18n/jazyk.tsx";
 import { TEXT_VYSLEDKU, trvanie, type DetailPartieApi } from "./typy.ts";
+import { dovodPartie } from "./dovod.ts";
 import "./profil.css";
 
 /** Body oboch po kolách ako dve čiary (ty a súper). */
@@ -123,7 +124,7 @@ export function DetailPartie({ id }: { readonly id: number }) {
           {d.dlzka !== null && ` · ${d.dlzka in NAZOV_DLZKY ? t(`liga.${d.dlzka}`) : d.dlzka}`}
           {!d.dohrata && t("detailPartie.nedohrana")}
           {d.verziaPravidiel !== null && t("detailPartie.pravidla", { verzia: d.verziaPravidiel })}
-          {` · ${prelozHlasku(d.dovod)}`}
+          {` · ${dovodPartie(d.dovod, [d.hraci[0].bot === undefined ? null : "bot", d.hraci[1].bot === undefined ? null : "bot"])}`}
         </p>
         {prehratelna !== null && (
           <div className="detail-prehrat">

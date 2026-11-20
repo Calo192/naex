@@ -23,10 +23,14 @@ export function VitrinaHraca({ vitrina, vlastna }: { readonly vitrina: VitrinaAp
   return <Vitrina polozky={polozky} kategorie={vitrina.kategorie} vlastna={vlastna} />;
 }
 
-/** Karta v Prehľade: počet a naposledy získané podtácky; klik vedie do záložky. */
-export function PoslednePodtacky({ vitrina, vlastna, vsetky }: { readonly vitrina: VitrinaApi; readonly vlastna: boolean; readonly vsetky: () => void }) {
+/**
+ * Karta v Prehľade: počet a naposledy získané podtácky; klik vedie do záložky. skrytPrazdnu:
+ * nový hráč bez partie nevidí panel „zatiaľ žiadny“ — získané sa ukážu vždy.
+ */
+export function PoslednePodtacky({ vitrina, vlastna, vsetky, skrytPrazdnu = false }: { readonly vitrina: VitrinaApi; readonly vlastna: boolean; readonly vsetky: () => void; readonly skrytPrazdnu?: boolean }) {
   const polozky = usePolozky(vitrina);
   const ziskane = polozky.filter((p) => p.rank !== null).sort((a, b) => (b.ziskane ?? 0) - (a.ziskane ?? 0));
+  if (skrytPrazdnu && ziskane.length === 0) return null;
   return (
     <section className="panel profil-karta podtacky-karta">
       <header className="profil-karta-hlava">
