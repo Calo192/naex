@@ -1,0 +1,360 @@
+{
+  "oblast": "stol-zataz",
+  "commit": "b5775de2",
+  "suhrn": {
+    "nalezov": 19,
+    "vyradeneAkoZamer": 12,
+    "akceptovaneVynimky": 0
+  },
+  "top": [
+    "Z-01",
+    "Z-02",
+    "Z-04",
+    "Z-03",
+    "Z-05",
+    "Z-07",
+    "Z-08",
+    "Z-10",
+    "Z-09",
+    "Z-12"
+  ],
+  "nalezy": [
+    {
+      "id": "Z-01",
+      "nazov": "Pokyn nad stolom je odsek, ktorý sa nezmestí",
+      "typ": "zataz",
+      "dopad": "vysoky",
+      "narocnost": "stredna",
+      "kde": [
+        "Branie z ponuky, 1600×1000 a 1366×650",
+        "Pitka, 1600×1000 a 1366×650",
+        "Pitka – náhľad NA EX, 1600×1000 a 1366×650"
+      ],
+      "zdroj": "apps/web/src/hra/HernaPlocha.tsx:4376",
+      "popis": "Jednoriadková pilulka nad stolom nesie pri braní z ponuky 43 slov, v Pitke 55 a pri náhľade NA EX 63 slov a 13 čísel. Nezmestí sa ani pri 1600 px a končí trojbodkou — v Pitke je odrezaný práve pokyn („Klikni na kartu so značkou NA EX…“), pri NA EX cena a riziko. Najdôležitejšie rozhodnutie hry sa číta z orezaného riadku.",
+      "navrh": "Pilulka = jeden pokyn do 8 slov. Ceny patria na pečiatku (už tam sú), stav súpera do baru (už tam je), zvyšok pod myš. Nulové údaje („kliatby — ty: nič“, „Bot Rudo: bez zmeny“) nevypisovať vôbec.",
+      "teraz": "ui-inspekcia-20261120-1324-stol-zataz/Z-01-teraz.jpg",
+      "mock": [
+        "ui-inspekcia-20261120-1324-stol-zataz/Z-01-navrh.jpg",
+        "ui-inspekcia-20261120-1324-stol-zataz/Z-01-navrh-2.jpg"
+      ]
+    },
+    {
+      "id": "Z-02",
+      "nazov": "Texty tvrdia pravidlo, ktoré už neplatí (pas, finále)",
+      "typ": "chyba",
+      "dopad": "vysoky",
+      "narocnost": "mala",
+      "kde": [
+        "Medziobrazovka Zhromaždenie, každé kolo",
+        "Tooltip dlaždice Poldeci",
+        "Medziobrazovka Bitka vo finále",
+        "Dlaždica Poldeci („na 1 kariet“), odložený pas („výhra +2 špakov“)"
+      ],
+      "zdroj": "apps/web/src/i18n/sk.json:2020",
+      "popis": "Od v12.6 si za pas doberieš kartu za každý plný poldeci. Medziobrazovka Zhromaždenia („za každý plný poldeci dostaneš cigaretu“) a tooltip Poldeci („Pas dá cigaretu za každý plný“) stále sľubujú cigaretu; pečiatka PASOVAŤ a nápoveda Melichara hovoria správne o karte. Medziobrazovka Bitka vo finále je nadpísaná „Kolo 4“ a tvrdí, že hádka sa rozdelí na reči a Nakladačka na strach — vo finále sa nerozdeľujú. K tomu chyby skloňovania: „na 1 kariet“, „na 3 kariet“, „výhra +2 špakov“.",
+      "navrh": "Opraviť tri reťazce o pase a dať finále vlastný text bitky. Počty skloňovať existujúcimi tvarmi (kartu / karty / kariet, špak / špaky / špakov).",
+      "teraz": "ui-inspekcia-20261120-1324-stol-zataz/Z-02-teraz.jpg",
+      "mock": [
+        "ui-inspekcia-20261120-1324-stol-zataz/Z-02-navrh.jpg"
+      ]
+    },
+    {
+      "id": "Z-03",
+      "nazov": "Vyhodnotenie Pitky ukazuje prázdne riadky a legendu k značkám, ktoré na ňom nie sú",
+      "typ": "zataz",
+      "dopad": "vysoky",
+      "narocnost": "mala",
+      "kde": [
+        "Vyhodnotenie Pitky, 1600×1000 (po každej Pitke)"
+      ],
+      "zdroj": "apps/web/src/hra/Rekapitulacia.tsx:1352",
+      "popis": "Po Pitke, v ktorej padlo jediné NA EX, má okno päť riadkov a štyri sú prázdne („– ✕ –“, „– Dlh –“, „+0 pečeň +0“, „+0 cigarety +0“). Legenda pod tabuľkou má vždy päť značiek, aj keď na obrazovke nie je ani jedna. Je to proti rozhodnutiu „nezmenené skryť“; režim TEXT už ukazuje len to, čo sa stalo.",
+      "navrh": "V režime SÚHRN kresliť len riadky, kde má aspoň jeden hráč nenulovú hodnotu, čipy „+0“ vynechať a legendu zostaviť z použitých značiek. Mená pod nadpisom a „Enter alebo Ďalej zavrie“ škrtnúť — sú v hlavičke tabuľky a na tlačidle.",
+      "teraz": "ui-inspekcia-20261120-1324-stol-zataz/Z-03-teraz-2.jpg",
+      "mock": [
+        "ui-inspekcia-20261120-1324-stol-zataz/Z-03-navrh.jpg"
+      ]
+    },
+    {
+      "id": "Z-04",
+      "nazov": "Dlaždice pultov a bar vypisujú nuly a „nič“",
+      "typ": "zataz",
+      "dopad": "vysoky",
+      "narocnost": "mala",
+      "kde": [
+        "Každá fáza, oba pulty a bar, 1600×1000 aj 1366×650"
+      ],
+      "zdroj": "apps/web/src/hra/Panely.tsx:725",
+      "popis": "Na začiatku partie má každý z dvoch pultov 30 slov a 19 čísel a väčšina sú nulové stavy: „bez Dlhov“, „dnes 0“, „po kole Chuť 0“, „plné · 0 vypité“, „v Pitke: nič“ (4×), „nikto sa ťa nebojí“, „červené 0/4 · väzni 0/2“, „0 priznané“. „na 3 kariet“ opakuje „3 vyložíš“ zo susednej dlaždice. Bar pridá 2× „žiadne aktívne akcie“, „cieľ: vyberá sa lokalita“ a pri prázdnej línii dvakrát „0 : 0 Remíza“.",
+      "navrh": "Podpis dlaždice ukázať, len keď nesie nenulovú hodnotu alebo výstrahu; „na N kariet“ zrušiť. Prázdny bar nechať prázdny. Celé znenie ostáva v tooltipe dlaždice.",
+      "teraz": "ui-inspekcia-20261120-1324-stol-zataz/Z-04-teraz.jpg",
+      "mock": [
+        "ui-inspekcia-20261120-1324-stol-zataz/Z-04-navrh.jpg",
+        "ui-inspekcia-20261120-1324-stol-zataz/Z-04-navrh-2.jpg",
+        "ui-inspekcia-20261120-1324-stol-zataz/Z-04-navrh-3.jpg"
+      ]
+    },
+    {
+      "id": "Z-05",
+      "nazov": "Šesť potvrdzovacích okien medzi koncom Pitky a ďalším rozhodnutím",
+      "typ": "vylepsenie",
+      "dopad": "vysoky",
+      "narocnost": "stredna",
+      "kde": [
+        "Koniec kola: od „Skončiť Pitku“ po výber lokality ďalšieho kola, všetky rozlíšenia"
+      ],
+      "zdroj": "apps/web/src/hra/HernaPlocha.tsx:4085",
+      "popis": "Po poslednej Pitke kola hráč odklikne: „Pitka skončila — pozri si stôl“ (Ďalej), „Pitka vyhodnotená“ (Ďalej), medziobrazovku Bitka (Rozumiem), počítadlo bitky (Ďalej), medziobrazovku Nakladačka (Rozumiem) a medziobrazovku O čo sa bijeme (Rozumiem). Šesť klikov bez jediného rozhodnutia, v každom kole znova. Keď lokalitu vyberá súper, idú dve medziobrazovky hneď po sebe (Lokalita → Ponuka).",
+      "navrh": "Odporúčam variant A: „pozri si stôl“ a vyhodnotenie Pitky spojiť do jedného zastavenia (rekapitulácia rovno pri stole s odkrytými NA EX) a text medziobrazovky Bitka presunúť do hlavičky počítadla — zo šiestich okien ostanú štyri. Variant B, menší zásah: Pitku, v ktorej sa nič nezmenilo, oknom nevyhodnocovať.",
+      "teraz": "ui-inspekcia-20261120-1324-stol-zataz/Z-05-krok1.jpg",
+      "mock": [
+        "ui-inspekcia-20261120-1324-stol-zataz/Z-05-navrh.png"
+      ]
+    },
+    {
+      "id": "Z-06",
+      "nazov": "Názov fázy trikrát, „otočiť“ trikrát, názvy krajov dvakrát",
+      "typ": "zataz",
+      "dopad": "stredny",
+      "narocnost": "mala",
+      "kde": [
+        "Výber lokality, 1600×1000 a 1366×650",
+        "Natočenie lokality",
+        "Zhromaždenie a Pitka (názvy krajov pod lokalitou)"
+      ],
+      "zdroj": "apps/web/src/hra/HernaPlocha.tsx:6713",
+      "popis": "Pri výbere lokality je „O čo sa bijeme“ naraz v osi hlavičky, v pilulke aj ako nadpis nástenky. Po výbere sa otočenie ponúka trikrát: v pilulke („klikom na kartu ju otočíš“), pod kartou („klik na kartu = otočiť ↻“) a tlačidlom „otočiť ↻“; pilulka navyše vypisuje hrany, ktoré sú na karte. Názvy krajov sú nad líniou aj pod lokalitou, nad lokalitou stojí „LOKALITA“ a prázdne miesta hlásia „prázdna“.",
+      "navrh": "Každú vec nechať raz: fázu v osi, pokyn v pilulke, názvy krajov nad líniou. Škrtnúť nadpis nástenky, riadok pod lokalitou, štítok „LOKALITA“, slovo „prázdna“, tip pod kartou a tlačidlo „otočiť“ (klik na kartu ostáva).",
+      "teraz": "ui-inspekcia-20261120-1324-stol-zataz/Z-06-teraz.jpg",
+      "mock": [
+        "ui-inspekcia-20261120-1324-stol-zataz/Z-06-navrh.jpg",
+        "ui-inspekcia-20261120-1324-stol-zataz/Z-06-navrh-2.jpg"
+      ]
+    },
+    {
+      "id": "Z-07",
+      "nazov": "Medziobrazovky opakujú ten istý odsek každé kolo a každú Pitku",
+      "typ": "zataz",
+      "dopad": "stredny",
+      "narocnost": "mala",
+      "kde": [
+        "Medziobrazovky Ponuka, Zhromaždenie, Pitka, Bitka, Nakladačka — od druhého výskytu v partii"
+      ],
+      "zdroj": "apps/web/src/hra/prechodFazy.ts:130",
+      "popis": "Okno medziobrazovky má 40 až 48 slov (Ponuka 46, Zhromaždenie 47, Pitka 46, Bitka 48, Nakladačka 40) a rovnaké znenie príde v každom kole; Pitka a Zhromaždenie pri dvoch Pitkách dvakrát za kolo. V krátkej partii je to vyše 20 okien s odsekom, ktorý hráč pozná od prvého kola. Pod každým stojí „Vypnúť ich môžeš v profile.“",
+      "navrh": "Plné znenie len pri prvom výskyte v partii. Potom veľký názov fázy a jedna veta o tom, čo je teraz inak (kto začína, kto odpovedá prvý); pri Bitke od 2. kola len názov. Poznámku o profile ukázať raz.",
+      "teraz": "ui-inspekcia-20261120-1324-stol-zataz/Z-07-teraz.jpg",
+      "mock": [
+        "ui-inspekcia-20261120-1324-stol-zataz/Z-07-navrh.jpg",
+        "ui-inspekcia-20261120-1324-stol-zataz/Z-07-navrh-2.jpg",
+        "ui-inspekcia-20261120-1324-stol-zataz/Z-07-navrh-3.jpg",
+        "ui-inspekcia-20261120-1324-stol-zataz/Z-07-navrh-4.jpg"
+      ]
+    },
+    {
+      "id": "Z-08",
+      "nazov": "Návrh ťahu: pokyn opakuje stôl, pečiatku aj bar",
+      "typ": "zataz",
+      "dopad": "stredny",
+      "narocnost": "mala",
+      "kde": [
+        "Zhromaždenie – karta položená pred potvrdením, 1600×1000 a 1366×650"
+      ],
+      "zdroj": "apps/web/src/hra/HernaPlocha.tsx:4545",
+      "popis": "Keď hráč položí kartu, pilulka povie, kam ju položil (vidno to), čo ťah stojí (je na pečiatke — slovom „−1 POLDECI“, hoci poldeci má byť všade piktogram), ktoré akcie sa spojili (svietia na kartách) a že súperovi sa nič nezmenilo. Pod názvom kraja je „na prebitie Bot Rudo potrebuje 2 karty · vyloží ešte: ty 3, Bot Rudo 2“ — počty sú v dlaždiciach Karty a veta ostáva, aj keď súper pasoval („Bot Rudo 0“ v 1. kole) a v Pitke, kde sa nevykladá.",
+      "navrh": "V pilulke nechať len dôsledok ťahu, cenu na pečiatke dať piktogramom. „Na prebitie…“ ukázať, len kým súper ešte môže vykladať, a bez počtov.",
+      "teraz": "ui-inspekcia-20261120-1324-stol-zataz/Z-08-teraz.jpg",
+      "mock": [
+        "ui-inspekcia-20261120-1324-stol-zataz/Z-08-navrh.jpg"
+      ]
+    },
+    {
+      "id": "Z-09",
+      "nazov": "Počítadlo bitky: skóre trikrát, prázdne riadky; pri 1600×1000 pretečie",
+      "typ": "zataz",
+      "dopad": "stredny",
+      "narocnost": "mala",
+      "kde": [
+        "Počítadlo bitky, 1600×1000 (pri plnej línii pretečie), 1366×650 sa zmestí"
+      ],
+      "zdroj": "apps/web/src/hra/PocitadloBitky.tsx:254",
+      "popis": "Výsledok bitky je v okne trikrát (veľké skóre, riadok „tuhé 3 : 7 · Nakladačka…“, „Prehrávaš o 4“) a mená „TY · BOT RUDO“ tiež trikrát. Ostávajú riadky bez hodnoty („Hazard – –“, „za starších (po bitke) — —“) a čipy „→ 0“. Pri plnej línii vo finále má okno pri 1600×1000 výšku 1107 px a hlavička so skóre odroluje nad okraj; pri 1366×650 sa vďaka dvom stĺpcom zmestí.",
+      "navrh": "Skóre len v hlavičke, mená len v hlavičke tabuľky, prázdne riadky a čipy „→ 0“ vynechať. Dvojstĺpcové rozloženie z notebooku použiť aj na veľkom okne, keď sa obsah nezmestí.",
+      "teraz": "ui-inspekcia-20261120-1324-stol-zataz/Z-09-teraz.jpg",
+      "mock": [
+        "ui-inspekcia-20261120-1324-stol-zataz/Z-09-navrh.jpg"
+      ]
+    },
+    {
+      "id": "Z-10",
+      "nazov": "Tooltip staršieho má 141 slov a pri rozdeľovaní zakrýva susedov",
+      "typ": "zataz",
+      "dopad": "stredny",
+      "narocnost": "stredna",
+      "kde": [
+        "Línia starších – myš nad starším (rozdeľovanie hádky a Nakladačky, súhrn po bitke)"
+      ],
+      "zdroj": "apps/web/src/hra/KruzokPriazne.tsx:154",
+      "popis": "Tooltip opakuje pri každom z ôsmich starších tie isté tri odseky pravidiel („plná = strach, šrafovaná = reči“, „Stupeň dá 1 / 2 / 3 tomu, kto ho drží…“, „Priazeň ráta len strach…“) a vypíše všetky tri sily priazne. Má 141 slov, je vysoký 443 px a počas rozdeľovania vyskočí pri kurzore cez dvoch susedných starších, na ktorých chce hráč klikať.",
+      "navrh": "V tooltipe nechať stav (strach, reči), špaky po bitke a priazeň: kto ju má a čo mu dáva práve teraz. Všeobecné pravidlá raz do Pravidiel a do „?“. Počas rozdeľovania ukázať tooltip až po dlhšom zotrvaní myši.",
+      "teraz": "ui-inspekcia-20261120-1324-stol-zataz/Z-10-teraz.jpg",
+      "mock": [
+        "ui-inspekcia-20261120-1324-stol-zataz/Z-10-navrh.jpg"
+      ]
+    },
+    {
+      "id": "Z-11",
+      "nazov": "Mená pri teplomeroch 16× a päťdielny pokyn rozdeľovania",
+      "typ": "zataz",
+      "dopad": "stredny",
+      "narocnost": "mala",
+      "kde": [
+        "Rozdeľovanie hádky a Nakladačky, súhrn po bitke, 1600×1000 a 1366×650"
+      ],
+      "zdroj": "apps/web/src/hra/LiniaStarsich.tsx:631",
+      "popis": "Pod každým zo 16 teplomerov je meno hráča, hoci teplomery sú vo farbách hráčov a legenda s menami je vpravo hore. Pilulka má päť častí: „Nakladačka → tvoj strach · zostáva 1 z 1 · stupeň 1 / 2 / 3 · stačí ešte pre 6 starších · klikni na stupeň v teplomeri“ — cena stupňa je na každom teplomeri a pokyn práve odznel v medziobrazovke.",
+      "navrh": "Mená pri hladinách vynechať (ostáva farba, poloha a legenda). Pilulka: čo sa rozdeľuje a koľko zostáva.",
+      "teraz": "ui-inspekcia-20261120-1324-stol-zataz/Z-11-teraz.jpg",
+      "mock": [
+        "ui-inspekcia-20261120-1324-stol-zataz/Z-11-navrh.jpg"
+      ]
+    },
+    {
+      "id": "Z-12",
+      "nazov": "Log sa otvorí na najstarších záznamoch, nemá členenie a mieša výklad pravidiel s udalosťami",
+      "typ": "ux",
+      "dopad": "stredny",
+      "narocnost": "stredna",
+      "kde": [
+        "Vrstva Log, 1600×1000"
+      ],
+      "zdroj": "apps/web/src/hra/hra.css:2049",
+      "popis": "Log je obrátený zoznam a po otvorení stojí na najstarších záznamoch: po prvom kole (45 riadkov) vidno výber prvej lokality a výsledok bitky je odrolovaný nad okraj — hoci odznak pri tlačidle hlási nové záznamy. Po dvoch kolách má 107 riadkov a 1020 slov. Riadky nie sú členené podľa kola a fázy. Časť sú vety pravidiel a duplicity („Ponuka je postavená (8 kariet). Berie sa striedavo…“, „Po skrytom NA EX už v Pitke nemáš čo urobiť…“, „ťahá 2 karty“ aj „si po bitke doberá 2 karty“) a hráč sa v nich volá raz menom, raz „Hráč 1“ a raz „ty“.",
+      "navrh": "Otvárať log na najnovšom zázname, zoskupiť ho nadpismi „Kolo · fáza“, mená písať farbou hráča a vety, ktoré len opakujú pravidlo, do logu nepísať.",
+      "teraz": "ui-inspekcia-20261120-1324-stol-zataz/Z-12-teraz.jpg",
+      "mock": [
+        "ui-inspekcia-20261120-1324-stol-zataz/Z-12-navrh.jpg"
+      ]
+    },
+    {
+      "id": "Z-13",
+      "nazov": "Pôvod kariet v ponuke: osem slovných štítkov cez text efektu",
+      "typ": "zataz",
+      "dopad": "stredny",
+      "narocnost": "mala",
+      "kde": [
+        "Branie z ponuky, 1600×1000 a 1366×650"
+      ],
+      "zdroj": "apps/web/src/hra/HernaPlocha.tsx:3708",
+      "popis": "Každá karta ponuky má štítok „tvoja“ alebo „od Bot Rudo“ položený cez text efektu, takže efekt sa bez lupy nedá prečítať. Informáciu hráč potrebuje len pri súperových kartách (cigareta ide súperovi); štyri štítky „tvoja“ rozhodnutie nemenia.",
+      "navrh": "Vlastné karty neoznačovať. Súperovu kartu označiť nad horným okrajom jeho avatarom a „+1 [cigareta]“; veta ostáva v tooltipe.",
+      "teraz": "ui-inspekcia-20261120-1324-stol-zataz/Z-13-teraz.jpg",
+      "mock": [
+        "ui-inspekcia-20261120-1324-stol-zataz/Z-13-navrh.jpg"
+      ]
+    },
+    {
+      "id": "Z-14",
+      "nazov": "Súhrn po bitke: každá veta kroku končí legendou",
+      "typ": "zataz",
+      "dopad": "stredny",
+      "narocnost": "mala",
+      "kde": [
+        "Súhrn po bitke (kroky Hádka, Nakladačka, Priazeň), 1600×1000"
+      ],
+      "zdroj": "apps/web/src/hra/krokySuhrnu.ts:333",
+      "popis": "Každý krok súhrnu končí vysvetlením kresby: „Šrafa rastie na teplomere súpera.“, „Plná časť rastie a hladina ide hore.“; tretí krok je už len legenda („Zátvorka medzi hladinami je priazeň, prerušovaná čiara je hladina pred bitkou.“). Číslo bitky je na obrazovke trikrát („Súhrn po bitke 2“, „po bitke 2“, „Bitka 2 · víťaz Rudo“) a pilulka dodáva „čo bitka urobila so staršími, krok po kroku“.",
+      "navrh": "Vety legendy z krokov vynechať (legenda patrí do „?“), „po bitke N“ a dovetok pilulky škrtnúť. Krok 3 ukázať, len keď sa priazeň naozaj presunula — a povedať komu.",
+      "teraz": "ui-inspekcia-20261120-1324-stol-zataz/Z-14-teraz.jpg",
+      "mock": [
+        "ui-inspekcia-20261120-1324-stol-zataz/Z-14-navrh.jpg"
+      ]
+    },
+    {
+      "id": "Z-15",
+      "nazov": "Koniec hry: skóre trikrát a dve vety, ktoré vysvetľujú tabuľku",
+      "typ": "zataz",
+      "dopad": "stredny",
+      "narocnost": "mala",
+      "kde": [
+        "Koniec hry, 1600×1000 a 1366×650"
+      ],
+      "zdroj": "apps/web/src/hra/KoniecHry.tsx:98",
+      "popis": "Pod nadpisom je veta „Odohralo sa finále, špaky 18 : 12.“, hneď pod ňou to isté skóre veľkým písmom a tretíkrát v riadku „spolu“. Lístky lokalít nesú čiastkové zisky (+2, +6, +5, +13), ktoré nesedia so súčtom — preto ich vysvetľuje veta nad tabuľkou; ďalšia veta pod tabuľkou rozpisuje výkupné. V hlavičke tabuľky je „JANO“, vo skóre „ty“.",
+      "navrh": "Dôvod konca písať, len keď nie je obyčajný (výhra strachom, väzňami). Lístky nechať ako prehľad, kto ktorú lokalitu vyhral, bez čiastkových čísel — tabuľka ich rozpisuje celé. Rozpis výkupného dať pod myš na riadok „výkupné“. V tabuľke písať „ty“ ako všade.",
+      "teraz": "ui-inspekcia-20261120-1324-stol-zataz/Z-15-teraz.jpg",
+      "mock": [
+        "ui-inspekcia-20261120-1324-stol-zataz/Z-15-navrh.jpg"
+      ]
+    },
+    {
+      "id": "Z-16",
+      "nazov": "Tooltip zdroja je odsek so 75 až 103 slovami",
+      "typ": "zataz",
+      "dopad": "nizky",
+      "narocnost": "mala",
+      "kde": [
+        "Myš nad dlaždicou Chuť a Poldeci (a ďalšími zdrojmi)"
+      ],
+      "zdroj": "apps/web/src/hra/Panely.tsx:113",
+      "popis": "Tooltip dlaždice Chuť má 103 slov v jednom odseku, Poldeci 75. Prvý riadok je stav („chýba 1 · inak +1 Absťák“) a pod ním súvislý výklad pravidla bez členenia. „Detail pod myšou“ je správny smer, ale odsek pod myšou sa číta rovnako ťažko ako na stole.",
+      "navrh": "Stav tučne, pod ním najviac tri krátke riadky: čo sa ráta, kedy sa vyhodnotí, čo hrozí. Okrajové prípady nechať Pravidlám.",
+      "teraz": "ui-inspekcia-20261120-1324-stol-zataz/Z-16-teraz.jpg",
+      "mock": [
+        "ui-inspekcia-20261120-1324-stol-zataz/Z-16-navrh.jpg"
+      ]
+    },
+    {
+      "id": "Z-17",
+      "nazov": "Nástenka opakuje rozpis špakov a od prvého kola ukazuje účet konca hry",
+      "typ": "zataz",
+      "dopad": "nizky",
+      "narocnost": "mala",
+      "kde": [
+        "Výber lokality (nástenka), 1600×1000 a 1366×650"
+      ],
+      "zdroj": "apps/web/src/hra/Spaky.tsx:380",
+      "popis": "Popolníky nad nástenkou („ty 2 · bitky +2 · starší 0“) opakujú dlaždicu Špaky; ten istý rozpis je po kliku na Špaky ešte raz v pultoch (Lokality, Starší, Koniec hry). Lístok „Koniec · po finále“ s výkupným a Cirhózou je na nástenke od prvého kola, keď o ničom nerozhoduje, a slovo „koniec“ je na ňom dvakrát.",
+      "navrh": "V popolníkoch nechať meno a špaky. Lístok Koniec ukázať až pri výbere vrcholovej lokality; dovtedy stačí riadok „Koniec hry“ v rozpise po kliku na Špaky.",
+      "teraz": "ui-inspekcia-20261120-1324-stol-zataz/Z-17-teraz.jpg",
+      "mock": [
+        "ui-inspekcia-20261120-1324-stol-zataz/Z-17-navrh.jpg"
+      ]
+    },
+    {
+      "id": "Z-18",
+      "nazov": "Okno súperovej lokality opisuje hrany trikrát",
+      "typ": "zataz",
+      "dopad": "nizky",
+      "narocnost": "mala",
+      "kde": [
+        "Medziobrazovka Lokalita (vybral súper)"
+      ],
+      "zdroj": "apps/web/src/hra/HernaPlocha.tsx:6439",
+      "popis": "Okno ukazuje kartu lokality vo veľkom, pod ňou názvy hrán („◀ vľavo na parkete · pred vchodom vpravo ▶“), pod nimi ešte riadok malých ikon tých istých akcií a v texte vetu „Vľavo je hrana „na parkete“, vpravo „pred vchodom“.“",
+      "navrh": "Nechať kartu a názvy hrán pod ňou; riadok malých ikon a druhú vetu škrtnúť.",
+      "teraz": "ui-inspekcia-20261120-1324-stol-zataz/Z-18-teraz.jpg",
+      "mock": [
+        "ui-inspekcia-20261120-1324-stol-zataz/Z-18-navrh.jpg"
+      ]
+    },
+    {
+      "id": "Z-19",
+      "nazov": "Tlačidlá Pitky majú vzorec aj názov; prázdna Pivnica je na stole stále",
+      "typ": "zataz",
+      "dopad": "nizky",
+      "narocnost": "mala",
+      "kde": [
+        "Pitka (tlačidlá FAJČIŤ a NOVÝ POLDECI), každá fáza (PIVNICA 0/2), branie z ponuky (počítadlo „ty 0 · Bot Rudo 0“)"
+      ],
+      "zdroj": "apps/web/src/hra/HernaPlocha.tsx:4013",
+      "popis": "Nákupy v Pitke majú piktogramový vzorec („−1 [cigareta] → [karta]“, „−5 [cigareta] → [poldeci]“) a pod ním ešte názov „FAJČIŤ“, „NOVÝ POLDECI“ — poldeci slovom. Tlačidlo „PIVNICA 0/2“ je na hrane stola od prvého ťahu, hoci je prázdne; „väzni 0/2“ je navyše v oboch dlaždiciach Starší a v legende línie starších. Počítadlo „ty 0 · Bot Rudo 0“ pri braní z ponuky nemá popis.",
+      "navrh": "Názvy tlačidiel nechať v tooltipe (už tam sú), Pivnicu ukázať s prvým väzňom alebo keď sa dá zajať, počítadlo nových kariet škrtnúť (počet je v bare: „+1 z ponuky“).",
+      "teraz": "ui-inspekcia-20261120-1324-stol-zataz/Z-19-teraz.jpg",
+      "mock": [
+        "ui-inspekcia-20261120-1324-stol-zataz/Z-19-navrh.jpg"
+      ]
+    }
+  ]
+}

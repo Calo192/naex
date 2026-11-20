@@ -1,0 +1,499 @@
+<!doctype html>
+<html lang="sk"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>UI/UX inšpekcia Vypálenej · 20261120-1324</title>
+<style>
+:root{--pozadie:#14110e;--plocha:#1e1914;--plocha-2:#28211a;--okraj:#3d3229;--okraj-svetly:#57483a;--text:#f1e8d8;--tlmeny:#b6a790;--slaby:#9d8f7b;--akcent:#e9ad45;--akcent-svetly:#ffd08a;--cervena:#e5735c;--zelena:#7cbf74;--info:#8fc3e0}
+*{box-sizing:border-box}body{margin:0;background:var(--pozadie);color:var(--text);font:16px/1.5 Roboto,"Segoe UI",system-ui,sans-serif}
+main{max-width:1280px;margin:0 auto;padding:32px 20px 80px}
+h1,h2,h3{font-family:Bitter,Georgia,serif;margin:0;text-wrap:balance}h1{font-size:34px}h2{font-size:24px;margin:48px 0 16px}h3{font-size:19px}
+a{color:var(--akcent-svetly);text-decoration:none}a:hover{text-decoration:underline}
+.uvod{color:var(--tlmeny);margin:8px 0 0;max-width:70ch}
+.spolu{display:flex;flex-wrap:wrap;gap:10px;margin:20px 0 0}
+.oblasti{display:grid;grid-template-columns:repeat(auto-fit,minmax(270px,1fr));gap:16px;margin-top:28px}
+.oblast{display:flex;flex-direction:column;gap:8px;background:var(--plocha);border:1px solid var(--okraj);border-radius:12px;padding:18px;color:var(--text)}
+a.oblast:hover{border-color:var(--akcent);text-decoration:none}.oblast p{margin:0;color:var(--tlmeny);font-size:14px}
+.oblast.chybna{border-style:dashed;color:var(--slaby)}
+.cislo{font:700 40px/1 Bitter,Georgia,serif;color:var(--akcent);font-variant-numeric:tabular-nums}.cislo small{font:400 14px Roboto,sans-serif;color:var(--tlmeny)}
+.dalej{margin-top:auto;padding-top:8px;color:var(--akcent-svetly);font-weight:500}
+.rad{display:flex;flex-wrap:wrap;gap:6px}
+.st{font-size:12px;line-height:1;padding:5px 8px;border-radius:999px;border:1px solid var(--okraj-svetly);color:var(--tlmeny);white-space:nowrap}
+.d-vysoky{border-color:var(--cervena);color:var(--cervena)}.d-stredny{border-color:var(--akcent);color:var(--akcent)}.d-nizky{color:var(--slaby)}
+.t-zataz{background:#3a2c14;color:var(--akcent-svetly);border-color:transparent}.t-chyba{background:#43261d;color:#ff9d88;border-color:transparent}
+.t-ux{background:#1d3b40;color:#9fe0ea;border-color:transparent}.t-nekonzistencia{background:#2a2f45;color:#b9c6f2;border-color:transparent}.t-vylepsenie{background:#22361f;color:#a5dc9d;border-color:transparent}
+.nalezy{display:grid;gap:16px}
+.nalez{background:var(--plocha);border:1px solid var(--okraj);border-radius:12px;padding:16px;min-width:0}
+.nalez header{display:flex;flex-direction:column;gap:8px}.nalez header a{color:var(--text);font:600 17px/1.3 Bitter,Georgia,serif}.nalez header b{color:var(--akcent)}
+.kde{color:var(--slaby);font-size:13px;margin:6px 0 0}
+.dvojica{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:12px}.dvojica.siroka{grid-template-columns:1fr}@media(max-width:720px){.dvojica{grid-template-columns:1fr}}
+figure{margin:0;min-width:0}figcaption{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--slaby);margin-bottom:4px}
+figure.po figcaption{color:var(--zelena)}
+figure img{display:block;width:auto;height:auto;max-width:100%;max-height:460px;background:#0b0907;border:1px solid var(--okraj);border-radius:8px}
+figure.po img{border-color:#3f5a3a}
+.navrh{margin:12px 0 0;color:var(--tlmeny);font-size:14px}
+.filtre{display:flex;flex-wrap:wrap;gap:14px;align-items:center;margin-bottom:12px;color:var(--tlmeny);font-size:14px}
+select{background:var(--plocha-2);color:var(--text);border:1px solid var(--okraj-svetly);border-radius:8px;padding:6px 8px;font:inherit}
+.tab{overflow-x:auto;border:1px solid var(--okraj);border-radius:12px}
+table{border-collapse:collapse;width:100%;font-size:14px}th,td{text-align:left;padding:9px 12px;border-bottom:1px solid var(--okraj);vertical-align:top}
+th{color:var(--slaby);font-weight:500;background:var(--plocha)}tr:last-child td{border-bottom:0}td:first-child{white-space:nowrap;font-variant-numeric:tabular-nums}
+td .kde{margin:2px 0 0}
+</style></head><body><main>
+<h1>UI/UX inšpekcia Vypálenej</h1>
+<p class="uvod">NA EX! v12.6, sada v58 (commit b5775de2), lokálny server, 20. 11. 2026. Štyria inšpektori prešli stôl, výučbu a web hráča pri 1920×1080, 1600×1000, 1512×860, 1440×800 a 1366×650. Každý návrh má mock.</p>
+<div class="spolu"><span class="st ">104 nálezov</span><span class="st d-vysoky">29× dopad vysoký</span><span class="st d-stredny">46× dopad stredný</span><span class="st d-nizky">29× dopad nízky</span></div>
+<section class="oblasti"><a class="oblast" href="ui-inspekcia-20261120-1324-stol-zataz.html"><h3>Stôl — záťaž a zbytočné texty</h3><p>Čo je na stole navyše, dvakrát alebo príliš dlhé; inventár fáz a „čistý stôl“.</p>
+    <div class="cislo">19<small> nálezov</small></div>
+    <div class="rad"><span class="st d-vysoky">5× vysoký</span><span class="st d-stredny">10× stredný</span><span class="st d-nizky">4× nízky</span></div>
+    <div class="rad"><span class="st t-chyba">1× Chyba</span><span class="st t-ux">1× UX</span><span class="st t-zataz">16× Záťaž</span><span class="st t-vylepsenie">1× Vylepšenie</span></div>
+    <span class="dalej">Otvoriť report →</span></a>
+<a class="oblast" href="ui-inspekcia-20261120-1324-stol-chyby.html"><h3>Stôl — chyby a nekonzistencie</h3><p>Zmerané UI chyby pri piatich rozlíšeniach, UX problémy a nejednotné prvky stola.</p>
+    <div class="cislo">22<small> nálezov</small></div>
+    <div class="rad"><span class="st d-vysoky">5× vysoký</span><span class="st d-stredny">11× stredný</span><span class="st d-nizky">6× nízky</span></div>
+    <div class="rad"><span class="st t-chyba">12× Chyba</span><span class="st t-ux">5× UX</span><span class="st t-nekonzistencia">5× Nekonzistencia</span></div>
+    <span class="dalej">Otvoriť report →</span></a>
+<a class="oblast" href="ui-inspekcia-20261120-1324-vyucba.html"><h3>Výučba „Prvá hra“</h3><p>Prvé minúty nového hráča: koľko textu, krokov a klikov, kde sa zasekne.</p>
+    <div class="cislo">28<small> nálezov</small></div>
+    <div class="rad"><span class="st d-vysoky">11× vysoký</span><span class="st d-stredny">12× stredný</span><span class="st d-nizky">5× nízky</span></div>
+    <div class="rad"><span class="st t-chyba">7× Chyba</span><span class="st t-ux">6× UX</span><span class="st t-nekonzistencia">4× Nekonzistencia</span><span class="st t-zataz">10× Záťaž</span><span class="st t-vylepsenie">1× Vylepšenie</span></div>
+    <span class="dalej">Otvoriť report →</span></a>
+<a class="oblast" href="ui-inspekcia-20261120-1324-web.html"><h3>Web hráča mimo stola</h3><p>Domov, Hrať, Pravidlá, Karty, Profil, Novinky, Vývoj, Spätná väzba, prihlásenie.</p>
+    <div class="cislo">35<small> nálezov</small></div>
+    <div class="rad"><span class="st d-vysoky">8× vysoký</span><span class="st d-stredny">13× stredný</span><span class="st d-nizky">14× nízky</span></div>
+    <div class="rad"><span class="st t-chyba">9× Chyba</span><span class="st t-ux">8× UX</span><span class="st t-nekonzistencia">5× Nekonzistencia</span><span class="st t-zataz">11× Záťaž</span><span class="st t-vylepsenie">2× Vylepšenie</span></div>
+    <span class="dalej">Otvoriť report →</span></a></section>
+<h2>Najdôležitejšie</h2><section class="nalezy"><article class="nalez">
+  <header><a href="ui-inspekcia-20261120-1324-stol-zataz.html#Z-01"><b>Z-01</b> Pokyn nad stolom je odsek, ktorý sa nezmestí</a><div class="rad"><span class="st t-zataz">Záťaž</span><span class="st d-vysoky">dopad vysoký</span><span class="st n">práca stredná</span></div></header>
+  <p class="kde">Branie z ponuky, 1600×1000 a 1366×650 · Pitka, 1600×1000 a 1366×650 · Pitka – náhľad NA EX, 1600×1000 a 1366×650</p>
+  <div class="dvojica">
+    <figure><figcaption>Teraz</figcaption><a href="ui-inspekcia-20261120-1324-stol-zataz/Z-01-teraz.jpg"><img loading="lazy" src="ui-inspekcia-20261120-1324-stol-zataz/Z-01-teraz.jpg" alt=""></a></figure>
+    <figure class="po"><figcaption>Návrh</figcaption><a href="ui-inspekcia-20261120-1324-stol-zataz/Z-01-navrh.jpg"><img loading="lazy" src="ui-inspekcia-20261120-1324-stol-zataz/Z-01-navrh.jpg" alt=""></a></figure>
+  </div>
+  <p class="navrh">Pilulka = jeden pokyn do 8 slov. Ceny patria na pečiatku (už tam sú), stav súpera do baru (už tam je), zvyšok pod myš. Nulové údaje („kliatby — ty: nič“, „Bot Rudo: bez zmeny“) nevypisovať vôbec.</p>
+</article>
+<article class="nalez">
+  <header><a href="ui-inspekcia-20261120-1324-stol-chyby.html#S-01"><b>S-01</b> Účet špakov na konci hry nesedí — chýba riadok „Hádka vo finále“</a><div class="rad"><span class="st t-chyba">Chyba</span><span class="st d-vysoky">dopad vysoký</span><span class="st n">práca malá</span></div></header>
+  <p class="kde">Dohraná partia proti botovi: Bot Igor 31 + 4 + 21 + 5 − 9 = 52, spolu 58 — chýba 6 za hádku vo finále · Koniec hry (okno Výhra / Prehra), všetky rozlíšenia · Detail partie — ten istý účet</p>
+  <div class="dvojica">
+    <figure><figcaption>Teraz</figcaption><a href="ui-inspekcia-20261120-1324-stol-chyby/S-01-teraz.png"><img loading="lazy" src="ui-inspekcia-20261120-1324-stol-chyby/S-01-teraz.png" alt=""></a></figure>
+    <figure class="po"><figcaption>Návrh</figcaption><a href="ui-inspekcia-20261120-1324-stol-chyby/S-01-navrh.png"><img loading="lazy" src="ui-inspekcia-20261120-1324-stol-chyby/S-01-navrh.png" alt=""></a></figure>
+  </div>
+  <p class="navrh">Do rozpisSpakov pridať súčet nastenka.hadkaSpaky a do účtu riadok „Hádka vo finále“ pod „Nakladačka vo finále“. Test: súčet riadkov = spolu.</p>
+</article>
+<article class="nalez">
+  <header><a href="ui-inspekcia-20261120-1324-vyucba.html#V-01"><b>V-01</b> Stránkovanie bubliny stráca a zdvojuje vety — pokyn ťahu zmizne</a><div class="rad"><span class="st t-chyba">Chyba</span><span class="st d-vysoky">dopad vysoký</span><span class="st n">práca stredná</span></div></header>
+  <p class="kde">#119, #129, #136, #161, #166 (ťah hráča), #47, #86, #148, #159 — 1366×650 · #56, #108, #159 — 1600×1000 · zdvojené: #20, #30, #31, #44, #97, #101, #132 (1600), #10, #81, #95, #104 (1366)</p>
+  <div class="dvojica">
+    <figure><figcaption>Teraz</figcaption><a href="ui-inspekcia-20261120-1324-vyucba/V-01-teraz-1.png"><img loading="lazy" src="ui-inspekcia-20261120-1324-vyucba/V-01-teraz-1.png" alt=""></a></figure>
+    <figure class="po"><figcaption>Návrh</figcaption><a href="ui-inspekcia-20261120-1324-vyucba/V-01-navrh.png"><img loading="lazy" src="ui-inspekcia-20261120-1324-vyucba/V-01-navrh.png" alt=""></a></figure>
+  </div>
+  <p class="navrh">Strany rozdeliť raz na krok pri pevnej šírke a výške (miesto pre ‹ a číslo strany rezervovať od 1. strany, výšku brať z baru, nie z obsahu). Po oprave sa krátky text ako #119 zmestí na jednu stranu.</p>
+</article>
+<article class="nalez">
+  <header><a href="ui-inspekcia-20261120-1324-web.html#W-01"><b>W-01</b> Registrácia: chybová hláška je mimo okna, tlačidlo pod zlomom</a><div class="rad"><span class="st t-chyba">Chyba</span><span class="st d-vysoky">dopad vysoký</span><span class="st n">práca malá</span></div></header>
+  <p class="kde">/registracia, 1366×650 (pri vyšších oknách je hláška aj tlačidlo vidno)</p>
+  <div class="dvojica">
+    <figure><figcaption>Teraz</figcaption><a href="ui-inspekcia-20261120-1324-web/W-01-teraz.jpg"><img loading="lazy" src="ui-inspekcia-20261120-1324-web/W-01-teraz.jpg" alt=""></a></figure>
+    <figure class="po"><figcaption>Návrh</figcaption><a href="ui-inspekcia-20261120-1324-web/W-01-navrh.jpg"><img loading="lazy" src="ui-inspekcia-20261120-1324-web/W-01-navrh.jpg" alt=""></a></figure>
+  </div>
+  <p class="navrh">Polia do dvoch stĺpcov (meno | herné meno, heslo | heslo znova), aby bol celý formulár aj s tlačidlom nad zlomom, a hlášku vykresliť tesne nad tlačidlom, kde sa hráč práve pozerá.</p>
+</article>
+<article class="nalez">
+  <header><a href="ui-inspekcia-20261120-1324-stol-zataz.html#Z-02"><b>Z-02</b> Texty tvrdia pravidlo, ktoré už neplatí (pas, finále)</a><div class="rad"><span class="st t-chyba">Chyba</span><span class="st d-vysoky">dopad vysoký</span><span class="st n">práca malá</span></div></header>
+  <p class="kde">Medziobrazovka Zhromaždenie, každé kolo · Tooltip dlaždice Poldeci · Medziobrazovka Bitka vo finále · Dlaždica Poldeci („na 1 kariet“), odložený pas („výhra +2 špakov“)</p>
+  <div class="dvojica">
+    <figure><figcaption>Teraz</figcaption><a href="ui-inspekcia-20261120-1324-stol-zataz/Z-02-teraz.jpg"><img loading="lazy" src="ui-inspekcia-20261120-1324-stol-zataz/Z-02-teraz.jpg" alt=""></a></figure>
+    <figure class="po"><figcaption>Návrh</figcaption><a href="ui-inspekcia-20261120-1324-stol-zataz/Z-02-navrh.jpg"><img loading="lazy" src="ui-inspekcia-20261120-1324-stol-zataz/Z-02-navrh.jpg" alt=""></a></figure>
+  </div>
+  <p class="navrh">Opraviť tri reťazce o pase a dať finále vlastný text bitky. Počty skloňovať existujúcimi tvarmi (kartu / karty / kariet, špak / špaky / špakov).</p>
+</article>
+<article class="nalez">
+  <header><a href="ui-inspekcia-20261120-1324-stol-chyby.html#S-02"><b>S-02</b> Pokyn nad stolom sa nezmestí ani pri 1920 px — čo mám urobiť, je za trojbodkou</a><div class="rad"><span class="st t-ux">UX</span><span class="st d-vysoky">dopad vysoký</span><span class="st n">práca malá</span></div></header>
+  <p class="kde">Pitka, čakám s NA EX — obsah 1938 px, miesto 930–1330 px, všetkých 5 rozlíšení · Pitka naraz od 2. kola (1665 px) · Branie z ponuky, prvý ťah (1598 px) · Náhľad NA EX na kartu</p>
+  <div class="dvojica">
+    <figure><figcaption>Teraz</figcaption><a href="ui-inspekcia-20261120-1324-stol-chyby/S-02-teraz.png"><img loading="lazy" src="ui-inspekcia-20261120-1324-stol-chyby/S-02-teraz.png" alt=""></a></figure>
+    <figure class="po"><figcaption>Návrh</figcaption><a href="ui-inspekcia-20261120-1324-stol-chyby/S-02-navrh.png"><img loading="lazy" src="ui-inspekcia-20261120-1324-stol-chyby/S-02-navrh.png" alt=""></a></figure>
+  </div>
+  <p class="navrh">Najprv čo mám urobiť, pravidlo pod myš. Pitka: „Klikni na svoju kartu a daj NA EX!, alebo skonči Pitku. Darina už vybrala — odkryje sa, keď skončíš.“ Branie: „Tvoj ťah — vezmi kartu z ponuky (1 = 1, 2 = 3 — cigareta piktogramom) alebo už neťahaj.“ Na prvom ťahu: „… vezmi 1 kartu alebo už neťahaj. Dve karty až v ďalšom ťahu.“</p>
+</article>
+<article class="nalez">
+  <header><a href="ui-inspekcia-20261120-1324-vyucba.html#V-03"><b>V-03</b> Prvá partia po výučbe začne starou „Pitka 3 skončila“ a tabuľkou z výučby</a><div class="rad"><span class="st t-chyba">Chyba</span><span class="st d-vysoky">dopad vysoký</span><span class="st n">práca stredná</span></div></header>
+  <p class="kde">koniec 3. časti → „Hrať proti počítaču“, 1600×1000</p>
+  <div class="dvojica">
+    <figure><figcaption>Teraz</figcaption><a href="ui-inspekcia-20261120-1324-vyucba/V-03-teraz-1.jpg"><img loading="lazy" src="ui-inspekcia-20261120-1324-vyucba/V-03-teraz-1.jpg" alt=""></a></figure>
+    <figure class="po"><figcaption>Návrh</figcaption><a href="ui-inspekcia-20261120-1324-vyucba/V-03-navrh.jpg"><img loading="lazy" src="ui-inspekcia-20261120-1324-vyucba/V-03-navrh.jpg" alt=""></a></figure>
+  </div>
+  <p class="navrh">Pri založení novej partie zahodiť čakajúce pauzy, vrstvy vyhodnotenia a momenty predošlej partie (stav hernej plochy viazať na id partie).</p>
+</article>
+<article class="nalez">
+  <header><a href="ui-inspekcia-20261120-1324-web.html#W-07"><b>W-07</b> Detail partie ukazuje surovú šablónu „{2:vyhral|vyhrala|vyhráva}“</a><div class="rad"><span class="st t-chyba">Chyba</span><span class="st d-vysoky">dopad vysoký</span><span class="st n">práca malá</span></div></header>
+  <p class="kde">/partia/:id, všetky rozlíšenia (partia dohraná výhrou strachom proti botovi)</p>
+  <div class="dvojica">
+    <figure><figcaption>Teraz</figcaption><a href="ui-inspekcia-20261120-1324-web/W-07-teraz.jpg"><img loading="lazy" src="ui-inspekcia-20261120-1324-web/W-07-teraz.jpg" alt=""></a></figure>
+    <figure class="po"><figcaption>Návrh</figcaption><a href="ui-inspekcia-20261120-1324-web/W-07-navrh.jpg"><img loading="lazy" src="ui-inspekcia-20261120-1324-web/W-07-navrh.jpg" alt=""></a></figure>
+  </div>
+  <p class="navrh">V detaile partie prehnať dôvod tou istou funkciou rozlozRod ako v zozname partií.</p>
+</article>
+<article class="nalez">
+  <header><a href="ui-inspekcia-20261120-1324-stol-zataz.html#Z-04"><b>Z-04</b> Dlaždice pultov a bar vypisujú nuly a „nič“</a><div class="rad"><span class="st t-zataz">Záťaž</span><span class="st d-vysoky">dopad vysoký</span><span class="st n">práca malá</span></div></header>
+  <p class="kde">Každá fáza, oba pulty a bar, 1600×1000 aj 1366×650</p>
+  <div class="dvojica">
+    <figure><figcaption>Teraz</figcaption><a href="ui-inspekcia-20261120-1324-stol-zataz/Z-04-teraz.jpg"><img loading="lazy" src="ui-inspekcia-20261120-1324-stol-zataz/Z-04-teraz.jpg" alt=""></a></figure>
+    <figure class="po"><figcaption>Návrh</figcaption><a href="ui-inspekcia-20261120-1324-stol-zataz/Z-04-navrh.jpg"><img loading="lazy" src="ui-inspekcia-20261120-1324-stol-zataz/Z-04-navrh.jpg" alt=""></a></figure>
+  </div>
+  <p class="navrh">Podpis dlaždice ukázať, len keď nesie nenulovú hodnotu alebo výstrahu; „na N kariet“ zrušiť. Prázdny bar nechať prázdny. Celé znenie ostáva v tooltipe dlaždice.</p>
+</article>
+<article class="nalez">
+  <header><a href="ui-inspekcia-20261120-1324-stol-chyby.html#S-03"><b>S-03</b> Pri troch Pitkách zmizne z hlavičky „Bitka 3 z 4“</a><div class="rad"><span class="st t-chyba">Chyba</span><span class="st d-vysoky">dopad vysoký</span><span class="st n">práca malá</span></div></header>
+  <p class="kde">Hlavička partie, bitka s 3 Pitkami (9 krokov), 1440×800 a 1600×1000, účet s dlhším menom · 1920, 1512 a 1366 px sú v poriadku</p>
+  <div class="dvojica">
+    <figure><figcaption>Teraz</figcaption><a href="ui-inspekcia-20261120-1324-stol-chyby/S-03-teraz.png"><img loading="lazy" src="ui-inspekcia-20261120-1324-stol-chyby/S-03-teraz.png" alt=""></a></figure>
+    <figure class="po"><figcaption>Návrh</figcaption><a href="ui-inspekcia-20261120-1324-stol-chyby/S-03-navrh.png"><img loading="lazy" src="ui-inspekcia-20261120-1324-stol-chyby/S-03-navrh.png" alt=""></a></figure>
+  </div>
+  <p class="navrh">Skracovať aj podľa počtu krokov: od 8 krokov stredné názvy („Zhrom. 1“). Odznak bitky nesmie ustúpiť krokom (flex: none pred osou).</p>
+</article>
+<article class="nalez">
+  <header><a href="ui-inspekcia-20261120-1324-vyucba.html#V-28"><b>V-28</b> Výučba učí staré pravidlo remízy: „rozhodujú Dlhy“ (od v12.6 najprv hádka)</a><div class="rad"><span class="st t-chyba">Chyba</span><span class="st d-vysoky">dopad vysoký</span><span class="st n">práca malá</span></div></header>
+  <p class="kde">#93 i-remiza2 a kvíz #94 q-remiza2</p>
+  <div class="dvojica">
+    <figure><figcaption>Teraz</figcaption><a href="ui-inspekcia-20261120-1324-vyucba/V-28-teraz-1.png"><img loading="lazy" src="ui-inspekcia-20261120-1324-vyucba/V-28-teraz-1.png" alt=""></a></figure>
+    <figure class="po"><figcaption>Návrh</figcaption><a href="ui-inspekcia-20261120-1324-vyucba/V-28-navrh.png"><img loading="lazy" src="ui-inspekcia-20261120-1324-vyucba/V-28-navrh.png" alt=""></a></figure>
+  </div>
+  <p class="navrh">Vetu aj kvíz #94 škrtnúť (hypotetická situácia, v partii nenastane); remízu nech vysvetlí hra, keď nastane. Ak ju Michal vo výučbe chce, treba nový text.</p>
+</article>
+<article class="nalez">
+  <header><a href="ui-inspekcia-20261120-1324-web.html#W-02"><b>W-02</b> Po registrácii skončí nový hráč v nastaveniach, nie pri hre</a><div class="rad"><span class="st t-ux">UX</span><span class="st d-vysoky">dopad vysoký</span><span class="st n">práca malá</span></div></header>
+  <p class="kde">/registracia → /profil?novy=1, všetky rozlíšenia</p>
+  <div class="dvojica">
+    <figure><figcaption>Teraz</figcaption><a href="ui-inspekcia-20261120-1324-web/W-02-teraz.jpg"><img loading="lazy" src="ui-inspekcia-20261120-1324-web/W-02-teraz.jpg" alt=""></a></figure>
+    <figure class="po"><figcaption>Návrh</figcaption><a href="ui-inspekcia-20261120-1324-web/W-02-navrh.jpg"><img loading="lazy" src="ui-inspekcia-20261120-1324-web/W-02-navrh.jpg" alt=""></a></figure>
+  </div>
+  <p class="navrh">Po registrácii rovno na /hra, kde je hore výučba. Hlášku skrátiť: „Účet je pripravený. Fotku a farby si kedykoľvek nastavíš v profile.“</p>
+</article></section>
+<h2>Všetky nálezy</h2>
+<div class="filtre">
+<label>Oblasť <select data-filter="oblast"><option value="">všetko</option><option value="stol-zataz">Stôl — záťaž a zbytočné texty</option><option value="stol-chyby">Stôl — chyby a nekonzistencie</option><option value="vyucba">Výučba „Prvá hra“</option><option value="web">Web hráča mimo stola</option></select></label>
+<label>Šošovka <select data-filter="typ"><option value="">všetko</option><option value="chyba">Chyba</option><option value="ux">UX</option><option value="nekonzistencia">Nekonzistencia</option><option value="zataz">Záťaž</option><option value="vylepsenie">Vylepšenie</option></select></label>
+<label>Dopad <select data-filter="dopad"><option value="">všetko</option><option value="vysoky">vysoký</option><option value="stredny">stredný</option><option value="nizky">nízky</option></select></label>
+<span id="pocet"></span></div>
+<div class="tab"><table><thead><tr><th>Id</th><th>Nález</th><th>Šošovka</th><th>Dopad</th><th>Práca</th></tr></thead><tbody>
+<tr data-oblast="stol-chyby" data-typ="chyba" data-dopad="vysoky">
+  <td><a href="ui-inspekcia-20261120-1324-stol-chyby.html#S-01">S-01</a></td><td>Účet špakov na konci hry nesedí — chýba riadok „Hádka vo finále“<div class="kde">Dohraná partia proti botovi: Bot Igor 31 + 4 + 21 + 5 − 9 = 52, spolu 58 — chýba 6 za hádku vo finále · Koniec hry (okno Výhra / Prehra), všetky rozlíšenia · Detail partie — ten istý účet</div></td>
+  <td><span class="st t-chyba">Chyba</span></td><td><span class="st d-vysoky">vysoký</span></td><td>malá</td></tr>
+<tr data-oblast="stol-chyby" data-typ="ux" data-dopad="vysoky">
+  <td><a href="ui-inspekcia-20261120-1324-stol-chyby.html#S-02">S-02</a></td><td>Pokyn nad stolom sa nezmestí ani pri 1920 px — čo mám urobiť, je za trojbodkou<div class="kde">Pitka, čakám s NA EX — obsah 1938 px, miesto 930–1330 px, všetkých 5 rozlíšení · Pitka naraz od 2. kola (1665 px) · Branie z ponuky, prvý ťah (1598 px) · Náhľad NA EX na kartu</div></td>
+  <td><span class="st t-ux">UX</span></td><td><span class="st d-vysoky">vysoký</span></td><td>malá</td></tr>
+<tr data-oblast="stol-chyby" data-typ="chyba" data-dopad="vysoky">
+  <td><a href="ui-inspekcia-20261120-1324-stol-chyby.html#S-03">S-03</a></td><td>Pri troch Pitkách zmizne z hlavičky „Bitka 3 z 4“<div class="kde">Hlavička partie, bitka s 3 Pitkami (9 krokov), 1440×800 a 1600×1000, účet s dlhším menom · 1920, 1512 a 1366 px sú v poriadku</div></td>
+  <td><span class="st t-chyba">Chyba</span></td><td><span class="st d-vysoky">vysoký</span></td><td>malá</td></tr>
+<tr data-oblast="stol-chyby" data-typ="ux" data-dopad="vysoky">
+  <td><a href="ui-inspekcia-20261120-1324-stol-chyby.html#S-04">S-04</a></td><td>Koniec hry na 1366×650: tlačidlá sú pod okrajom okna<div class="kde">Koniec hry, 1366×650 — obsah okna 721 px, vidno 613 px, tlačidlá od y = 679 · Potvrdené v dohranej partii (okno Prehra, 1366×650): riadok „spolu“ je napoly za okrajom, tlačidlá pod ním</div></td>
+  <td><span class="st t-ux">UX</span></td><td><span class="st d-vysoky">vysoký</span></td><td>malá</td></tr>
+<tr data-oblast="stol-chyby" data-typ="chyba" data-dopad="vysoky">
+  <td><a href="ui-inspekcia-20261120-1324-stol-chyby.html#S-08">S-08</a></td><td>Pečiatka momentu leží cez okno a rekapituláciu — zakryje aj skóre bitky<div class="kde">Rekapitulácia bitky v partii: „BOMBA ×4“ zakrýva súperovo skóre pri 1366×650, pás kariet pri 1920×1080 · Okno „Pasuješ“ po autopase — 1600×1000 aj 1366×650 · Rekapitulácia Pitky (ukážka): „PRESVEDČENIE“ cez nadpis, aj cez medziobrazovku Bitka</div></td>
+  <td><span class="st t-chyba">Chyba</span></td><td><span class="st d-vysoky">vysoký</span></td><td>malá</td></tr>
+<tr data-oblast="stol-zataz" data-typ="zataz" data-dopad="vysoky">
+  <td><a href="ui-inspekcia-20261120-1324-stol-zataz.html#Z-01">Z-01</a></td><td>Pokyn nad stolom je odsek, ktorý sa nezmestí<div class="kde">Branie z ponuky, 1600×1000 a 1366×650 · Pitka, 1600×1000 a 1366×650 · Pitka – náhľad NA EX, 1600×1000 a 1366×650</div></td>
+  <td><span class="st t-zataz">Záťaž</span></td><td><span class="st d-vysoky">vysoký</span></td><td>stredná</td></tr>
+<tr data-oblast="stol-zataz" data-typ="chyba" data-dopad="vysoky">
+  <td><a href="ui-inspekcia-20261120-1324-stol-zataz.html#Z-02">Z-02</a></td><td>Texty tvrdia pravidlo, ktoré už neplatí (pas, finále)<div class="kde">Medziobrazovka Zhromaždenie, každé kolo · Tooltip dlaždice Poldeci · Medziobrazovka Bitka vo finále · Dlaždica Poldeci („na 1 kariet“), odložený pas („výhra +2 špakov“)</div></td>
+  <td><span class="st t-chyba">Chyba</span></td><td><span class="st d-vysoky">vysoký</span></td><td>malá</td></tr>
+<tr data-oblast="stol-zataz" data-typ="zataz" data-dopad="vysoky">
+  <td><a href="ui-inspekcia-20261120-1324-stol-zataz.html#Z-03">Z-03</a></td><td>Vyhodnotenie Pitky ukazuje prázdne riadky a legendu k značkám, ktoré na ňom nie sú<div class="kde">Vyhodnotenie Pitky, 1600×1000 (po každej Pitke)</div></td>
+  <td><span class="st t-zataz">Záťaž</span></td><td><span class="st d-vysoky">vysoký</span></td><td>malá</td></tr>
+<tr data-oblast="stol-zataz" data-typ="zataz" data-dopad="vysoky">
+  <td><a href="ui-inspekcia-20261120-1324-stol-zataz.html#Z-04">Z-04</a></td><td>Dlaždice pultov a bar vypisujú nuly a „nič“<div class="kde">Každá fáza, oba pulty a bar, 1600×1000 aj 1366×650</div></td>
+  <td><span class="st t-zataz">Záťaž</span></td><td><span class="st d-vysoky">vysoký</span></td><td>malá</td></tr>
+<tr data-oblast="stol-zataz" data-typ="vylepsenie" data-dopad="vysoky">
+  <td><a href="ui-inspekcia-20261120-1324-stol-zataz.html#Z-05">Z-05</a></td><td>Šesť potvrdzovacích okien medzi koncom Pitky a ďalším rozhodnutím<div class="kde">Koniec kola: od „Skončiť Pitku“ po výber lokality ďalšieho kola, všetky rozlíšenia</div></td>
+  <td><span class="st t-vylepsenie">Vylepšenie</span></td><td><span class="st d-vysoky">vysoký</span></td><td>stredná</td></tr>
+<tr data-oblast="vyucba" data-typ="chyba" data-dopad="vysoky">
+  <td><a href="ui-inspekcia-20261120-1324-vyucba.html#V-01">V-01</a></td><td>Stránkovanie bubliny stráca a zdvojuje vety — pokyn ťahu zmizne<div class="kde">#119, #129, #136, #161, #166 (ťah hráča), #47, #86, #148, #159 — 1366×650 · #56, #108, #159 — 1600×1000 · zdvojené: #20, #30, #31, #44, #97, #101, #132 (1600), #10, #81, #95, #104 (1366)</div></td>
+  <td><span class="st t-chyba">Chyba</span></td><td><span class="st d-vysoky">vysoký</span></td><td>stredná</td></tr>
+<tr data-oblast="vyucba" data-typ="chyba" data-dopad="vysoky">
+  <td><a href="ui-inspekcia-20261120-1324-vyucba.html#V-02">V-02</a></td><td>Biely tip „Odhad bitky“ ostane visieť cez stôl desiatky krokov<div class="kde">2. časť, #88–#100, 1600×1000 (visel najmenej 13 krokov) · reprodukované na #53</div></td>
+  <td><span class="st t-chyba">Chyba</span></td><td><span class="st d-vysoky">vysoký</span></td><td>malá</td></tr>
+<tr data-oblast="vyucba" data-typ="chyba" data-dopad="vysoky">
+  <td><a href="ui-inspekcia-20261120-1324-vyucba.html#V-03">V-03</a></td><td>Prvá partia po výučbe začne starou „Pitka 3 skončila“ a tabuľkou z výučby<div class="kde">koniec 3. časti → „Hrať proti počítaču“, 1600×1000</div></td>
+  <td><span class="st t-chyba">Chyba</span></td><td><span class="st d-vysoky">vysoký</span></td><td>stredná</td></tr>
+<tr data-oblast="vyucba" data-typ="zataz" data-dopad="vysoky">
+  <td><a href="ui-inspekcia-20261120-1324-vyucba.html#V-04">V-04</a></td><td>Pás pokynov stola beží popri Melicharovi a protirečí mu<div class="kde">každý ťah hráča (50 krokov) a ťahy Štamgasta; príklady #12, #13, #19, #28, #29, #36, #56</div></td>
+  <td><span class="st t-zataz">Záťaž</span></td><td><span class="st d-vysoky">vysoký</span></td><td>malá</td></tr>
+<tr data-oblast="vyucba" data-typ="zataz" data-dopad="vysoky">
+  <td><a href="ui-inspekcia-20261120-1324-vyucba.html#V-05">V-05</a></td><td>Objem: 178 krokov, 5 070 slov, 205× „ďalej“ — čo škrtnúť a presunúť<div class="kde">scenár prva-hra.json; najhustejšia 2. časť (2 434 slov, 101× ďalej, sľub 15 min) · séria bez ťahu hráča #86–#99: 14 krokov, 564 slov, 32 klikov</div></td>
+  <td><span class="st t-zataz">Záťaž</span></td><td><span class="st d-vysoky">vysoký</span></td><td>stredná</td></tr>
+<tr data-oblast="vyucba" data-typ="ux" data-dopad="vysoky">
+  <td><a href="ui-inspekcia-20261120-1324-vyucba.html#V-06">V-06</a></td><td>Ťah hráča s výkladom na 2–3 strany: pokyn nie je na strane, ktorú hráč vidí<div class="kde">17 ťahov pri 1600×1000, 19 pri 1366×650: #43, #56, #75, #82, #100, #115, #126, #129, #131, #141, #148, #153, #155, #159, #166, #167…</div></td>
+  <td><span class="st t-ux">UX</span></td><td><span class="st d-vysoky">vysoký</span></td><td>stredná</td></tr>
+<tr data-oblast="vyucba" data-typ="ux" data-dopad="vysoky">
+  <td><a href="ui-inspekcia-20261120-1324-vyucba.html#V-07">V-07</a></td><td>Po chybe svieti zasa POTVRDIŤ; cieľ ťahu a cesta späť nesvietia<div class="kde">#19 (karta na opačnom konci), #56 (druhá karta ťahu), #82 (svieti 6 kariet), 1366×650 aj 1600×1000</div></td>
+  <td><span class="st t-ux">UX</span></td><td><span class="st d-vysoky">vysoký</span></td><td>stredná</td></tr>
+<tr data-oblast="vyucba" data-typ="ux" data-dopad="vysoky">
+  <td><a href="ui-inspekcia-20261120-1324-vyucba.html#V-08">V-08</a></td><td>Kroky #88–#93 komentujú odpovede a hádku, keď už je na stole niečo iné<div class="kde">2. časť, koniec druhej Pitky: #87 → okno Pitka 2/2 → okno Bitka 5 : 0 → #88–#93</div></td>
+  <td><span class="st t-ux">UX</span></td><td><span class="st d-vysoky">vysoký</span></td><td>veľká</td></tr>
+<tr data-oblast="vyucba" data-typ="zataz" data-dopad="vysoky">
+  <td><a href="ui-inspekcia-20261120-1324-vyucba.html#V-10">V-10</a></td><td>Lupa staršieho pri delení strachu: 130–170 slov cez susedov aj cez POTVRDIŤ<div class="kde">#36 (1. časť), #100, #141; pri 1366×650 zakryje štyroch starších, pečiatku POTVRDIŤ a pol baru</div></td>
+  <td><span class="st t-zataz">Záťaž</span></td><td><span class="st d-vysoky">vysoký</span></td><td>malá</td></tr>
+<tr data-oblast="vyucba" data-typ="ux" data-dopad="vysoky">
+  <td><a href="ui-inspekcia-20261120-1324-vyucba.html#V-24">V-24</a></td><td>Návštevník klikne „Nauč sa hrať“ a pristane na „Vitaj späť“ — prihlásenie<div class="kde">Domov → hlavné tlačidlo výučby, neprihlásený, 1366×650</div></td>
+  <td><span class="st t-ux">UX</span></td><td><span class="st d-vysoky">vysoký</span></td><td>stredná</td></tr>
+<tr data-oblast="vyucba" data-typ="chyba" data-dopad="vysoky">
+  <td><a href="ui-inspekcia-20261120-1324-vyucba.html#V-28">V-28</a></td><td>Výučba učí staré pravidlo remízy: „rozhodujú Dlhy“ (od v12.6 najprv hádka)<div class="kde">#93 i-remiza2 a kvíz #94 q-remiza2</div></td>
+  <td><span class="st t-chyba">Chyba</span></td><td><span class="st d-vysoky">vysoký</span></td><td>malá</td></tr>
+<tr data-oblast="web" data-typ="chyba" data-dopad="vysoky">
+  <td><a href="ui-inspekcia-20261120-1324-web.html#W-01">W-01</a></td><td>Registrácia: chybová hláška je mimo okna, tlačidlo pod zlomom<div class="kde">/registracia, 1366×650 (pri vyšších oknách je hláška aj tlačidlo vidno)</div></td>
+  <td><span class="st t-chyba">Chyba</span></td><td><span class="st d-vysoky">vysoký</span></td><td>malá</td></tr>
+<tr data-oblast="web" data-typ="ux" data-dopad="vysoky">
+  <td><a href="ui-inspekcia-20261120-1324-web.html#W-02">W-02</a></td><td>Po registrácii skončí nový hráč v nastaveniach, nie pri hre<div class="kde">/registracia → /profil?novy=1, všetky rozlíšenia</div></td>
+  <td><span class="st t-ux">UX</span></td><td><span class="st d-vysoky">vysoký</span></td><td>malá</td></tr>
+<tr data-oblast="web" data-typ="ux" data-dopad="vysoky">
+  <td><a href="ui-inspekcia-20261120-1324-web.html#W-03">W-03</a></td><td>Hlavná výzva Domova posiela nového návštevníka na „Vitaj späť“<div class="kde">/ → tlačidlo „Nauč sa hrať s Majstrom Melicharom“ (návštevník), všetky rozlíšenia · /pravidla → „Začať výučbu“ (návštevník)</div></td>
+  <td><span class="st t-ux">UX</span></td><td><span class="st d-vysoky">vysoký</span></td><td>malá</td></tr>
+<tr data-oblast="web" data-typ="ux" data-dopad="vysoky">
+  <td><a href="ui-inspekcia-20261120-1324-web.html#W-04">W-04</a></td><td>Pozvánka do hry nepovie, že je to pozvánka<div class="kde">/hra?kod=ABCD (návštevník), všetky rozlíšenia</div></td>
+  <td><span class="st t-ux">UX</span></td><td><span class="st d-vysoky">vysoký</span></td><td>malá</td></tr>
+<tr data-oblast="web" data-typ="zataz" data-dopad="vysoky">
+  <td><a href="ui-inspekcia-20261120-1324-web.html#W-05">W-05</a></td><td>Stránka Hrať: 153 slov a založenie hry pod zlomom<div class="kde">/hra (nový hráč), 1366×650 a 1440×800 — „Nová hra“ pod zlomom · /hra, 1920×1080 — zmestí sa, text rovnaký</div></td>
+  <td><span class="st t-zataz">Záťaž</span></td><td><span class="st d-vysoky">vysoký</span></td><td>stredná</td></tr>
+<tr data-oblast="web" data-typ="zataz" data-dopad="vysoky">
+  <td><a href="ui-inspekcia-20261120-1324-web.html#W-06">W-06</a></td><td>Môj profil: 619 slov a 3264 px nastavení na jednej stránke<div class="kde">/profil, všetky rozlíšenia (pri 1366×650 päť obrazoviek)</div></td>
+  <td><span class="st t-zataz">Záťaž</span></td><td><span class="st d-vysoky">vysoký</span></td><td>stredná</td></tr>
+<tr data-oblast="web" data-typ="chyba" data-dopad="vysoky">
+  <td><a href="ui-inspekcia-20261120-1324-web.html#W-07">W-07</a></td><td>Detail partie ukazuje surovú šablónu „{2:vyhral|vyhrala|vyhráva}“<div class="kde">/partia/:id, všetky rozlíšenia (partia dohraná výhrou strachom proti botovi)</div></td>
+  <td><span class="st t-chyba">Chyba</span></td><td><span class="st d-vysoky">vysoký</span></td><td>malá</td></tr>
+<tr data-oblast="web" data-typ="ux" data-dopad="vysoky">
+  <td><a href="ui-inspekcia-20261120-1324-web.html#W-08">W-08</a></td><td>Profil po prvej partii s botom vyzerá prázdny<div class="kde">/hrac/:id (vlastný profil po partii proti počítaču), všetky rozlíšenia</div></td>
+  <td><span class="st t-ux">UX</span></td><td><span class="st d-vysoky">vysoký</span></td><td>malá</td></tr>
+<tr data-oblast="stol-chyby" data-typ="chyba" data-dopad="stredny">
+  <td><a href="ui-inspekcia-20261120-1324-stol-chyby.html#S-05">S-05</a></td><td>Pečiatka „PASOVAŤ → +3“ nemá ikonu karty<div class="kde">Zhromaždenie, pečiatka pasu (v12.6: pas doberie karty), všetkých 5 rozlíšení</div></td>
+  <td><span class="st t-chyba">Chyba</span></td><td><span class="st d-stredny">stredný</span></td><td>malá</td></tr>
+<tr data-oblast="stol-chyby" data-typ="chyba" data-dopad="stredny">
+  <td><a href="ui-inspekcia-20261120-1324-stol-chyby.html#S-06">S-06</a></td><td>Popis koncov línie pod lokalitou sa rozpadne na dva riadky<div class="kde">Zhromaždenie s kartou v línii, Pitka, zastavený stôl po Pitke — 1440 až 1920 px (pri 1366×650 sa popis neukazuje)</div></td>
+  <td><span class="st t-chyba">Chyba</span></td><td><span class="st d-stredny">stredný</span></td><td>malá</td></tr>
+<tr data-oblast="stol-chyby" data-typ="chyba" data-dopad="stredny">
+  <td><a href="ui-inspekcia-20261120-1324-stol-chyby.html#S-07">S-07</a></td><td>Štítok pôvodu v ponuke zakrýva efekt karty, na Nástrojoch ho nevidno<div class="kde">Branie z ponuky, všetkých 5 rozlíšení</div></td>
+  <td><span class="st t-chyba">Chyba</span></td><td><span class="st d-stredny">stredný</span></td><td>malá</td></tr>
+<tr data-oblast="stol-chyby" data-typ="chyba" data-dopad="stredny">
+  <td><a href="ui-inspekcia-20261120-1324-stol-chyby.html#S-09">S-09</a></td><td>Dlaždica Špaky orezáva ikonu a odznak odhadu pri dvojcifernom počte<div class="kde">Pult hráča aj súpera, špaky ≥ 10 s odznakom „+15“ / „−1“ — 1366×650 aj 1600×1000</div></td>
+  <td><span class="st t-chyba">Chyba</span></td><td><span class="st d-stredny">stredný</span></td><td>malá</td></tr>
+<tr data-oblast="stol-chyby" data-typ="chyba" data-dopad="stredny">
+  <td><a href="ui-inspekcia-20261120-1324-stol-chyby.html#S-10">S-10</a></td><td>Hlavička predbieha: „Bitka 2 z 4“ a „Finále“ už počas vyhodnotenia predošlej bitky<div class="kde">Rozdeľovanie hádky a Nakladačky po 1. bitke: „Bitka 2 z 4“ — všetkých 5 rozlíšení · Zastavený stôl po poslednej Pitke 3. bitky: odznak už hlási „Finále“ · Súhrn po bitke 1</div></td>
+  <td><span class="st t-chyba">Chyba</span></td><td><span class="st d-stredny">stredný</span></td><td>malá</td></tr>
+<tr data-oblast="stol-chyby" data-typ="nekonzistencia" data-dopad="stredny">
+  <td><a href="ui-inspekcia-20261120-1324-stol-chyby.html#S-11">S-11</a></td><td>Cena na pečiatke: raz slovo, raz piktogram, tri rôzne poradia<div class="kde">Zhromaždenie: „POTVRDIŤ −1 POLDECI“ · Branie: „−1 [cigareta] → HOTOVO“; Zhromaždenie: „−1 [cigareta] → záverečná“, „PASOVAŤ → +3“; Pitka: dvojriadkové „−1 → karta / FAJČIŤ“</div></td>
+  <td><span class="st t-nekonzistencia">Nekonzistencia</span></td><td><span class="st d-stredny">stredný</span></td><td>malá</td></tr>
+<tr data-oblast="stol-chyby" data-typ="nekonzistencia" data-dopad="stredny">
+  <td><a href="ui-inspekcia-20261120-1324-stol-chyby.html#S-12">S-12</a></td><td>Súper je raz „Bot Darina“, raz „Darina“; ja raz „ty“, raz „inšpektor“<div class="kde">„Bot Darina“: horný bar, nástenka, štítky ponuky, pokyny, okno Koniec hry · „Darina“: pult súpera, teplomery, súhrn po bitke · „ty“ / „Jano“ / „inšpektor“: bar a nástenka / tabuľka konca hry / teplomery (pri 1366 px „inšpek…“) · Náhľad NA EX: v jednej vete „súper mäkké +2“ aj „Bot Igor: Hazard +2“</div></td>
+  <td><span class="st t-nekonzistencia">Nekonzistencia</span></td><td><span class="st d-stredny">stredný</span></td><td>stredná</td></tr>
+<tr data-oblast="stol-chyby" data-typ="nekonzistencia" data-dopad="stredny">
+  <td><a href="ui-inspekcia-20261120-1324-stol-chyby.html#S-13">S-13</a></td><td>Vrstva Starší nemá „← Späť na stôl“, rozpis bodov ho má<div class="kde">Vrstva Starší (dlaždica Starší ▾) oproti nástenke (dlaždica Špaky ▾), všetky rozlíšenia</div></td>
+  <td><span class="st t-nekonzistencia">Nekonzistencia</span></td><td><span class="st d-stredny">stredný</span></td><td>malá</td></tr>
+<tr data-oblast="stol-chyby" data-typ="ux" data-dopad="stredny">
+  <td><a href="ui-inspekcia-20261120-1324-stol-chyby.html#S-16">S-16</a></td><td>„Ďalšie Pitky tejto bitky bez NA EX“ sa ponúka aj v poslednej Pitke<div class="kde">Pitka 1/1 (kolo 1) a Pitka 3 z 3 (kolo 3) — všetkých 5 rozlíšení</div></td>
+  <td><span class="st t-ux">UX</span></td><td><span class="st d-stredny">stredný</span></td><td>malá</td></tr>
+<tr data-oblast="stol-chyby" data-typ="ux" data-dopad="stredny">
+  <td><a href="ui-inspekcia-20261120-1324-stol-chyby.html#S-18">S-18</a></td><td>Klik na „+“ zdvihne ruku a celý stôl skočí o 38 px<div class="kde">Zhromaždenie, výber miesta klikom na „+“ — všetkých 5 rozlíšení</div></td>
+  <td><span class="st t-ux">UX</span></td><td><span class="st d-stredny">stredný</span></td><td>malá</td></tr>
+<tr data-oblast="stol-chyby" data-typ="nekonzistencia" data-dopad="stredny">
+  <td><a href="ui-inspekcia-20261120-1324-stol-chyby.html#S-20">S-20</a></td><td>Ukončenie fázy je na dvoch miestach hrany<div class="kde">Branie z ponuky: „UŽ NEŤAHÁM“ v strede hrany · Zhromaždenie: „PASOVAŤ“ a Pitka: „SKONČIŤ PITKU“ v pravom rohu</div></td>
+  <td><span class="st t-nekonzistencia">Nekonzistencia</span></td><td><span class="st d-stredny">stredný</span></td><td>malá</td></tr>
+<tr data-oblast="stol-zataz" data-typ="zataz" data-dopad="stredny">
+  <td><a href="ui-inspekcia-20261120-1324-stol-zataz.html#Z-06">Z-06</a></td><td>Názov fázy trikrát, „otočiť“ trikrát, názvy krajov dvakrát<div class="kde">Výber lokality, 1600×1000 a 1366×650 · Natočenie lokality · Zhromaždenie a Pitka (názvy krajov pod lokalitou)</div></td>
+  <td><span class="st t-zataz">Záťaž</span></td><td><span class="st d-stredny">stredný</span></td><td>malá</td></tr>
+<tr data-oblast="stol-zataz" data-typ="zataz" data-dopad="stredny">
+  <td><a href="ui-inspekcia-20261120-1324-stol-zataz.html#Z-07">Z-07</a></td><td>Medziobrazovky opakujú ten istý odsek každé kolo a každú Pitku<div class="kde">Medziobrazovky Ponuka, Zhromaždenie, Pitka, Bitka, Nakladačka — od druhého výskytu v partii</div></td>
+  <td><span class="st t-zataz">Záťaž</span></td><td><span class="st d-stredny">stredný</span></td><td>malá</td></tr>
+<tr data-oblast="stol-zataz" data-typ="zataz" data-dopad="stredny">
+  <td><a href="ui-inspekcia-20261120-1324-stol-zataz.html#Z-08">Z-08</a></td><td>Návrh ťahu: pokyn opakuje stôl, pečiatku aj bar<div class="kde">Zhromaždenie – karta položená pred potvrdením, 1600×1000 a 1366×650</div></td>
+  <td><span class="st t-zataz">Záťaž</span></td><td><span class="st d-stredny">stredný</span></td><td>malá</td></tr>
+<tr data-oblast="stol-zataz" data-typ="zataz" data-dopad="stredny">
+  <td><a href="ui-inspekcia-20261120-1324-stol-zataz.html#Z-09">Z-09</a></td><td>Počítadlo bitky: skóre trikrát, prázdne riadky; pri 1600×1000 pretečie<div class="kde">Počítadlo bitky, 1600×1000 (pri plnej línii pretečie), 1366×650 sa zmestí</div></td>
+  <td><span class="st t-zataz">Záťaž</span></td><td><span class="st d-stredny">stredný</span></td><td>malá</td></tr>
+<tr data-oblast="stol-zataz" data-typ="zataz" data-dopad="stredny">
+  <td><a href="ui-inspekcia-20261120-1324-stol-zataz.html#Z-10">Z-10</a></td><td>Tooltip staršieho má 141 slov a pri rozdeľovaní zakrýva susedov<div class="kde">Línia starších – myš nad starším (rozdeľovanie hádky a Nakladačky, súhrn po bitke)</div></td>
+  <td><span class="st t-zataz">Záťaž</span></td><td><span class="st d-stredny">stredný</span></td><td>stredná</td></tr>
+<tr data-oblast="stol-zataz" data-typ="zataz" data-dopad="stredny">
+  <td><a href="ui-inspekcia-20261120-1324-stol-zataz.html#Z-11">Z-11</a></td><td>Mená pri teplomeroch 16× a päťdielny pokyn rozdeľovania<div class="kde">Rozdeľovanie hádky a Nakladačky, súhrn po bitke, 1600×1000 a 1366×650</div></td>
+  <td><span class="st t-zataz">Záťaž</span></td><td><span class="st d-stredny">stredný</span></td><td>malá</td></tr>
+<tr data-oblast="stol-zataz" data-typ="ux" data-dopad="stredny">
+  <td><a href="ui-inspekcia-20261120-1324-stol-zataz.html#Z-12">Z-12</a></td><td>Log sa otvorí na najstarších záznamoch, nemá členenie a mieša výklad pravidiel s udalosťami<div class="kde">Vrstva Log, 1600×1000</div></td>
+  <td><span class="st t-ux">UX</span></td><td><span class="st d-stredny">stredný</span></td><td>stredná</td></tr>
+<tr data-oblast="stol-zataz" data-typ="zataz" data-dopad="stredny">
+  <td><a href="ui-inspekcia-20261120-1324-stol-zataz.html#Z-13">Z-13</a></td><td>Pôvod kariet v ponuke: osem slovných štítkov cez text efektu<div class="kde">Branie z ponuky, 1600×1000 a 1366×650</div></td>
+  <td><span class="st t-zataz">Záťaž</span></td><td><span class="st d-stredny">stredný</span></td><td>malá</td></tr>
+<tr data-oblast="stol-zataz" data-typ="zataz" data-dopad="stredny">
+  <td><a href="ui-inspekcia-20261120-1324-stol-zataz.html#Z-14">Z-14</a></td><td>Súhrn po bitke: každá veta kroku končí legendou<div class="kde">Súhrn po bitke (kroky Hádka, Nakladačka, Priazeň), 1600×1000</div></td>
+  <td><span class="st t-zataz">Záťaž</span></td><td><span class="st d-stredny">stredný</span></td><td>malá</td></tr>
+<tr data-oblast="stol-zataz" data-typ="zataz" data-dopad="stredny">
+  <td><a href="ui-inspekcia-20261120-1324-stol-zataz.html#Z-15">Z-15</a></td><td>Koniec hry: skóre trikrát a dve vety, ktoré vysvetľujú tabuľku<div class="kde">Koniec hry, 1600×1000 a 1366×650</div></td>
+  <td><span class="st t-zataz">Záťaž</span></td><td><span class="st d-stredny">stredný</span></td><td>malá</td></tr>
+<tr data-oblast="vyucba" data-typ="zataz" data-dopad="stredny">
+  <td><a href="ui-inspekcia-20261120-1324-vyucba.html#V-09">V-09</a></td><td>V 1. časti dve modálne tabuľky s pojmami, ktoré ešte nezazneli<div class="kde">1. časť, #30–#31: okno Pitka 1/1 vyhodnotená a účet bitky; 1366×650 aj 1600×1000</div></td>
+  <td><span class="st t-zataz">Záťaž</span></td><td><span class="st d-stredny">stredný</span></td><td>stredná</td></tr>
+<tr data-oblast="vyucba" data-typ="zataz" data-dopad="stredny">
+  <td><a href="ui-inspekcia-20261120-1324-vyucba.html#V-11">V-11</a></td><td>Šedý stôl ukazuje od prvého kroku všetko — aj čo 1. časť neučí<div class="kde">1. časť: dlaždice Pečeň, Dlhy, Starší (červené 0/4 · väzni 0/2), lístok „Koniec · po finále“, v Pitke FAJČIŤ a NOVÝ POLDECI, v odhade riadok HÁDKA</div></td>
+  <td><span class="st t-zataz">Záťaž</span></td><td><span class="st d-stredny">stredný</span></td><td>malá</td></tr>
+<tr data-oblast="vyucba" data-typ="nekonzistencia" data-dopad="stredny">
+  <td><a href="ui-inspekcia-20261120-1324-vyucba.html#V-12">V-12</a></td><td>Melichar volá tlačidlá a fázy inak, než sú na stole<div class="kde">„klikni končím (K)“ × tlačidlo SKONČIŤ PITKU: #29, #70, #84, #132, #137, #156, #163, #168 · „Voľba cieľa“ × os kola „O čo sa bijeme“: #44 · „údery“ × účet bitky „TUHÉ“: 1. časť · „pole Dedičstvo“ × PUSTI SEM Dedičstvo / ODKAZUJEM: #126</div></td>
+  <td><span class="st t-nekonzistencia">Nekonzistencia</span></td><td><span class="st d-stredny">stredný</span></td><td>malá</td></tr>
+<tr data-oblast="vyucba" data-typ="nekonzistencia" data-dopad="stredny">
+  <td><a href="ui-inspekcia-20261120-1324-vyucba.html#V-14">V-14</a></td><td>Štítok ťahu pred vetou Melichara mení jej zmysel („Čaká sa na hráča 2.“)<div class="kde">#86: „Dodo Skipper končí svoju časť Pitky. Čaká sa na hráča 2.“ + „Obaja ste skončili…“ · #47: „Bot Štamgast vybral karty do ponuky.“ + „Prečo tak?“ · #53, #119, #129, #136, #148, #152, #155, #161, #166: „ťahá 2 karty“ = pas, „(spolu 1)“</div></td>
+  <td><span class="st t-nekonzistencia">Nekonzistencia</span></td><td><span class="st d-stredny">stredný</span></td><td>malá</td></tr>
+<tr data-oblast="vyucba" data-typ="zataz" data-dopad="stredny">
+  <td><a href="ui-inspekcia-20261120-1324-vyucba.html#V-15">V-15</a></td><td>Po chybe rada a za ňou znova celý pôvodný text<div class="kde">#6 (2 strany), #19, #56 (3 strany)</div></td>
+  <td><span class="st t-zataz">Záťaž</span></td><td><span class="st d-stredny">stredný</span></td><td>malá</td></tr>
+<tr data-oblast="vyucba" data-typ="chyba" data-dopad="stredny">
+  <td><a href="ui-inspekcia-20261120-1324-vyucba.html#V-16">V-16</a></td><td>1366×650: odpoveď kvízu rozsekaná na 3–5 strán uprostred vety<div class="kde">zlá odpoveď: #32, #48, #57 (5 strán), #63, #74, #80, #89, #92, #94, #140; správna: #57, #68, #74, #80, #89, #92, #94, #140 — len 1366×650</div></td>
+  <td><span class="st t-chyba">Chyba</span></td><td><span class="st d-stredny">stredný</span></td><td>malá</td></tr>
+<tr data-oblast="vyucba" data-typ="vylepsenie" data-dopad="stredny">
+  <td><a href="ui-inspekcia-20261120-1324-vyucba.html#V-17">V-17</a></td><td>Pri 1600 px a viac má bar jeden riadok — viac listovania než na notebooku<div class="kde">1600×1000 a 1920×1080: bar 52 px, jeden riadok písmom 16 px; 1366×650: bar 34 px, jeden riadok 13 px · #59: 3 strany pri 1600×1000, prvá má 7 slov</div></td>
+  <td><span class="st t-vylepsenie">Vylepšenie</span></td><td><span class="st d-stredny">stredný</span></td><td>malá</td></tr>
+<tr data-oblast="vyucba" data-typ="zataz" data-dopad="stredny">
+  <td><a href="ui-inspekcia-20261120-1324-vyucba.html#V-18">V-18</a></td><td>Koniec časti = štyri obrazovky rozlúčky, dve hovoria to isté<div class="kde">koniec 1., 2. aj 3. časti (#38–#39, #107, #178 + text klienta na 2 strany)</div></td>
+  <td><span class="st t-zataz">Záťaž</span></td><td><span class="st d-stredny">stredný</span></td><td>malá</td></tr>
+<tr data-oblast="vyucba" data-typ="zataz" data-dopad="stredny">
+  <td><a href="ui-inspekcia-20261120-1324-vyucba.html#V-19">V-19</a></td><td>Po celej výučbe prvá partia vysvetľuje to isté: medziobrazovka, nápoveda aj pás<div class="kde">prvá partia po 3. časti, hneď prvý ťah; 19 z 21 nápovied partie pokrýva látku výučby</div></td>
+  <td><span class="st t-zataz">Záťaž</span></td><td><span class="st d-stredny">stredný</span></td><td>malá</td></tr>
+<tr data-oblast="vyucba" data-typ="zataz" data-dopad="stredny">
+  <td><a href="ui-inspekcia-20261120-1324-vyucba.html#V-20">V-20</a></td><td>30 kvízov: šesť zbytočných, 29 bez zvýraznenia toho, na čo sa pýtajú<div class="kde">duplicitné: #80 = #74, #34 = veta #33; hneď za definíciou: #55; dva za sebou: #102 + #103; #68 má obe odpovede správne · bez zvýraznenia: všetky okrem #37</div></td>
+  <td><span class="st t-zataz">Záťaž</span></td><td><span class="st d-stredny">stredný</span></td><td>stredná</td></tr>
+<tr data-oblast="vyucba" data-typ="ux" data-dopad="stredny">
+  <td><a href="ui-inspekcia-20261120-1324-vyucba.html#V-22">V-22</a></td><td>Postup: „1. ČASŤ · 3 %“ nepovie, koľko častí je a koľko ostáva<div class="kde">hlavička bubliny, všetky kroky; v režime „os“ (#44, #59) menovka aj percentá zmiznú</div></td>
+  <td><span class="st t-ux">UX</span></td><td><span class="st d-stredny">stredný</span></td><td>malá</td></tr>
+<tr data-oblast="vyucba" data-typ="zataz" data-dopad="stredny">
+  <td><a href="ui-inspekcia-20261120-1324-vyucba.html#V-26">V-26</a></td><td>#7: stavba ponuky „nanečisto“ v 1. časti nič neučí<div class="kde">#7 i-senok: 8 kariet, „nástroje 23 · dedinčania 45“, pás „Skús si, ktoré karty by išli do ponuky…“</div></td>
+  <td><span class="st t-zataz">Záťaž</span></td><td><span class="st d-stredny">stredný</span></td><td>malá</td></tr>
+<tr data-oblast="web" data-typ="zataz" data-dopad="stredny">
+  <td><a href="ui-inspekcia-20261120-1324-web.html#W-09">W-09</a></td><td>Prázdny profil: šesť panelov, ktoré hovoria „zatiaľ nič“<div class="kde">/hrac/:id (účet bez partie), všetky rozlíšenia — 1995 px</div></td>
+  <td><span class="st t-zataz">Záťaž</span></td><td><span class="st d-stredny">stredný</span></td><td>malá</td></tr>
+<tr data-oblast="web" data-typ="nekonzistencia" data-dopad="stredny">
+  <td><a href="ui-inspekcia-20261120-1324-web.html#W-10">W-10</a></td><td>Dĺžka výučby: 34, 35 a „trikrát desať“ minút<div class="kde">/ („asi 34 minút“) · /hra a /pravidla („asi 35 minút“) · ponuka pri prvej hre („každá trvá asi desať minút“)</div></td>
+  <td><span class="st t-nekonzistencia">Nekonzistencia</span></td><td><span class="st d-stredny">stredný</span></td><td>malá</td></tr>
+<tr data-oblast="web" data-typ="nekonzistencia" data-dopad="stredny">
+  <td><a href="ui-inspekcia-20261120-1324-web.html#W-11">W-11</a></td><td>„Môj profil“ sú nastavenia, „profil hráča“ sú štatistiky<div class="kde">menu účtu v hlavičke · /profil (hlava, odkaz pod menom, panel Štatistiky) · /hrac/:id („Upraviť profil a nastavenia“)</div></td>
+  <td><span class="st t-nekonzistencia">Nekonzistencia</span></td><td><span class="st d-stredny">stredný</span></td><td>malá</td></tr>
+<tr data-oblast="web" data-typ="chyba" data-dopad="stredny">
+  <td><a href="ui-inspekcia-20261120-1324-web.html#W-12">W-12</a></td><td>Hlava stránky Môj profil je užšia než všade inde<div class="kde">/profil, 1920×1080 a 1600×1000 (1180 px oproti 1440) · /profil, 1512×860, 1440×800, 1366×650 (1180 oproti 1283–1440)</div></td>
+  <td><span class="st t-chyba">Chyba</span></td><td><span class="st d-stredny">stredný</span></td><td>malá</td></tr>
+<tr data-oblast="web" data-typ="zataz" data-dopad="stredny">
+  <td><a href="ui-inspekcia-20261120-1324-web.html#W-13">W-13</a></td><td>Domov: tri dlaždice opakujú navigáciu, vejár kariet je pod zlomom<div class="kde">/, 1366×650 (vejár orezaný, dlaždice pod zlomom) · /, všetky rozlíšenia (dlaždice)</div></td>
+  <td><span class="st t-zataz">Záťaž</span></td><td><span class="st d-stredny">stredný</span></td><td>malá</td></tr>
+<tr data-oblast="web" data-typ="nekonzistencia" data-dopad="stredny">
+  <td><a href="ui-inspekcia-20261120-1324-web.html#W-14">W-14</a></td><td>Prihlásenie a registrácia majú päť rôznych mien<div class="kde">hlavička („Prihlásiť“, „Registrovať“) · /hra návštevník („Vytvoriť účet“, „Prihlásiť sa“) · / („Prihlás sa a hraj“) · /prihlasenie („Zaregistruj sa“) · /registracia (nadpis „Nový účet“, tlačidlo „Vytvoriť účet“)</div></td>
+  <td><span class="st t-nekonzistencia">Nekonzistencia</span></td><td><span class="st d-stredny">stredný</span></td><td>malá</td></tr>
+<tr data-oblast="web" data-typ="ux" data-dopad="stredny">
+  <td><a href="ui-inspekcia-20261120-1324-web.html#W-15">W-15</a></td><td>Rebríček a Spätná väzba vedú návštevníka do slepej uličky<div class="kde">/rebricek a /spatna-vazba (návštevník), všetky rozlíšenia</div></td>
+  <td><span class="st t-ux">UX</span></td><td><span class="st d-stredny">stredný</span></td><td>malá</td></tr>
+<tr data-oblast="web" data-typ="zataz" data-dopad="stredny">
+  <td><a href="ui-inspekcia-20261120-1324-web.html#W-16">W-16</a></td><td>Rebríček: pri 1366 je vysvetlenie nad tabuľkou<div class="kde">/rebricek, 1366×650 (pod 1440 px šírky)</div></td>
+  <td><span class="st t-zataz">Záťaž</span></td><td><span class="st d-stredny">stredný</span></td><td>malá</td></tr>
+<tr data-oblast="web" data-typ="zataz" data-dopad="stredny">
+  <td><a href="ui-inspekcia-20261120-1324-web.html#W-17">W-17</a></td><td>Spätná väzba: panel „Ohodnoť hru“ a filtre pred názormi<div class="kde">/spatna-vazba, 1366×650 (panel nad zoznamom) · /spatna-vazba, všetky rozlíšenia (počítadlo v hlave, filtre nad prázdnym zoznamom)</div></td>
+  <td><span class="st t-zataz">Záťaž</span></td><td><span class="st d-stredny">stredný</span></td><td>malá</td></tr>
+<tr data-oblast="web" data-typ="ux" data-dopad="stredny">
+  <td><a href="ui-inspekcia-20261120-1324-web.html#W-18">W-18</a></td><td>Čakáreň: kopírovanie odkazu je malé a bez potvrdenia<div class="kde">/hra po založení súkromnej hry, všetky rozlíšenia</div></td>
+  <td><span class="st t-ux">UX</span></td><td><span class="st d-stredny">stredný</span></td><td>malá</td></tr>
+<tr data-oblast="web" data-typ="vylepsenie" data-dopad="stredny">
+  <td><a href="ui-inspekcia-20261120-1324-web.html#W-19">W-19</a></td><td>Výber súpera: označiť, potom ešte „Hrať“<div class="kde">/hra → Hrať proti počítaču, všetky rozlíšenia</div></td>
+  <td><span class="st t-vylepsenie">Vylepšenie</span></td><td><span class="st d-stredny">stredný</span></td><td>malá</td></tr>
+<tr data-oblast="web" data-typ="zataz" data-dopad="stredny">
+  <td><a href="ui-inspekcia-20261120-1324-web.html#W-21">W-21</a></td><td>Roadmapa ukazuje hráčovi interné štítky<div class="kde">/vyvoj a /vyvoj/roadmapa, všetky rozlíšenia</div></td>
+  <td><span class="st t-zataz">Záťaž</span></td><td><span class="st d-stredny">stredný</span></td><td>malá</td></tr>
+<tr data-oblast="web" data-typ="ux" data-dopad="stredny">
+  <td><a href="ui-inspekcia-20261120-1324-web.html#W-24">W-24</a></td><td>Registrácia sa nepýta na e-mail, obnova hesla ho vyžaduje<div class="kde">/registracia a /zabudnute-heslo, všetky rozlíšenia</div></td>
+  <td><span class="st t-ux">UX</span></td><td><span class="st d-stredny">stredný</span></td><td>malá</td></tr>
+<tr data-oblast="stol-chyby" data-typ="chyba" data-dopad="nizky">
+  <td><a href="ui-inspekcia-20261120-1324-stol-chyby.html#S-14">S-14</a></td><td>V pokyne návrhu je zvýraznená cena nalepená na predošlé slovo<div class="kde">Zhromaždenie s navrhnutou kartou, všetky rozlíšenia</div></td>
+  <td><span class="st t-chyba">Chyba</span></td><td><span class="st d-nizky">nízky</span></td><td>malá</td></tr>
+<tr data-oblast="stol-chyby" data-typ="chyba" data-dopad="nizky">
+  <td><a href="ui-inspekcia-20261120-1324-stol-chyby.html#S-15">S-15</a></td><td>Čip „nepriznané · Cirhóza ×1“ stráca počet za trojbodkou<div class="kde">Pult hráča, 1600×1000 a 1920×1080 (obsah 142 px, miesto 139 px); pri 1366–1512 px sa zmestí</div></td>
+  <td><span class="st t-chyba">Chyba</span></td><td><span class="st d-nizky">nízky</span></td><td>malá</td></tr>
+<tr data-oblast="stol-chyby" data-typ="chyba" data-dopad="nizky">
+  <td><a href="ui-inspekcia-20261120-1324-stol-chyby.html#S-17">S-17</a></td><td>Štítok „✓ VYBRANÁ“ leží na karte cez jej akcie<div class="kde">Pitka, karta vybraná na NA EX — všetky rozlíšenia; štítok je hore alebo dole podľa natočenia karty</div></td>
+  <td><span class="st t-chyba">Chyba</span></td><td><span class="st d-nizky">nízky</span></td><td>malá</td></tr>
+<tr data-oblast="stol-chyby" data-typ="ux" data-dopad="nizky">
+  <td><a href="ui-inspekcia-20261120-1324-stol-chyby.html#S-19">S-19</a></td><td>„spoj: 3“ na voľnom mieste sa číta ako tri spoje<div class="kde">Zhromaždenie, voľné miesta na koncoch línie — všetky rozlíšenia</div></td>
+  <td><span class="st t-ux">UX</span></td><td><span class="st d-nizky">nízky</span></td><td>malá</td></tr>
+<tr data-oblast="stol-chyby" data-typ="chyba" data-dopad="nizky">
+  <td><a href="ui-inspekcia-20261120-1324-stol-chyby.html#S-21">S-21</a></td><td>Prepínač Súhrn / Podrobne / Text v rekapitulácii má ciele vysoké 17 px<div class="kde">Rekapitulácia Pitky a bitky, všetkých 5 rozlíšení (53×17, 75×17, 44×17 px)</div></td>
+  <td><span class="st t-chyba">Chyba</span></td><td><span class="st d-nizky">nízky</span></td><td>malá</td></tr>
+<tr data-oblast="stol-chyby" data-typ="nekonzistencia" data-dopad="nizky">
+  <td><a href="ui-inspekcia-20261120-1324-stol-chyby.html#S-22">S-22</a></td><td>Obyčajné tlačidlá okien začínajú raz malým, raz veľkým písmenom<div class="kde">Koniec hry: „pozrieť stôl“, „ohodnotiť hru“, „späť do lobby“ · Medziobrazovky „Rozumiem“, rekapitulácia „Ďalej“, nápoveda Melichara „ďalej“</div></td>
+  <td><span class="st t-nekonzistencia">Nekonzistencia</span></td><td><span class="st d-nizky">nízky</span></td><td>malá</td></tr>
+<tr data-oblast="stol-zataz" data-typ="zataz" data-dopad="nizky">
+  <td><a href="ui-inspekcia-20261120-1324-stol-zataz.html#Z-16">Z-16</a></td><td>Tooltip zdroja je odsek so 75 až 103 slovami<div class="kde">Myš nad dlaždicou Chuť a Poldeci (a ďalšími zdrojmi)</div></td>
+  <td><span class="st t-zataz">Záťaž</span></td><td><span class="st d-nizky">nízky</span></td><td>malá</td></tr>
+<tr data-oblast="stol-zataz" data-typ="zataz" data-dopad="nizky">
+  <td><a href="ui-inspekcia-20261120-1324-stol-zataz.html#Z-17">Z-17</a></td><td>Nástenka opakuje rozpis špakov a od prvého kola ukazuje účet konca hry<div class="kde">Výber lokality (nástenka), 1600×1000 a 1366×650</div></td>
+  <td><span class="st t-zataz">Záťaž</span></td><td><span class="st d-nizky">nízky</span></td><td>malá</td></tr>
+<tr data-oblast="stol-zataz" data-typ="zataz" data-dopad="nizky">
+  <td><a href="ui-inspekcia-20261120-1324-stol-zataz.html#Z-18">Z-18</a></td><td>Okno súperovej lokality opisuje hrany trikrát<div class="kde">Medziobrazovka Lokalita (vybral súper)</div></td>
+  <td><span class="st t-zataz">Záťaž</span></td><td><span class="st d-nizky">nízky</span></td><td>malá</td></tr>
+<tr data-oblast="stol-zataz" data-typ="zataz" data-dopad="nizky">
+  <td><a href="ui-inspekcia-20261120-1324-stol-zataz.html#Z-19">Z-19</a></td><td>Tlačidlá Pitky majú vzorec aj názov; prázdna Pivnica je na stole stále<div class="kde">Pitka (tlačidlá FAJČIŤ a NOVÝ POLDECI), každá fáza (PIVNICA 0/2), branie z ponuky (počítadlo „ty 0 · Bot Rudo 0“)</div></td>
+  <td><span class="st t-zataz">Záťaž</span></td><td><span class="st d-nizky">nízky</span></td><td>malá</td></tr>
+<tr data-oblast="vyucba" data-typ="chyba" data-dopad="nizky">
+  <td><a href="ui-inspekcia-20261120-1324-vyucba.html#V-13">V-13</a></td><td>„ubudla mu dole pri ňom“ — Štamgastov bar je hore<div class="kde">#13 k-kupa-bot, všetky rozlíšenia</div></td>
+  <td><span class="st t-chyba">Chyba</span></td><td><span class="st d-nizky">nízky</span></td><td>malá</td></tr>
+<tr data-oblast="vyucba" data-typ="nekonzistencia" data-dopad="nizky">
+  <td><a href="ui-inspekcia-20261120-1324-vyucba.html#V-21">V-21</a></td><td>Tri rôzne sľuby dĺžky: 34 minút, 35 minút, „každá asi desať“<div class="kde">Domov: „spolu asi 34 minút“ · Hrať a banner v Pravidlách: „spolu asi 35 minút“ · ponuka „Najprv výučba?“: „každá trvá asi desať minút“ (časti majú 7, 15 a 12)</div></td>
+  <td><span class="st t-nekonzistencia">Nekonzistencia</span></td><td><span class="st d-nizky">nízky</span></td><td>malá</td></tr>
+<tr data-oblast="vyucba" data-typ="chyba" data-dopad="nizky">
+  <td><a href="ui-inspekcia-20261120-1324-vyucba.html#V-23">V-23</a></td><td>Rám zvýraznenia pretína popisok „klik na kartu = otočiť“<div class="kde">voľba lokality s návrhom: #6, #43, #109, #145; 1366×650 aj 1600×1000</div></td>
+  <td><span class="st t-chyba">Chyba</span></td><td><span class="st d-nizky">nízky</span></td><td>malá</td></tr>
+<tr data-oblast="vyucba" data-typ="nekonzistencia" data-dopad="nizky">
+  <td><a href="ui-inspekcia-20261120-1324-vyucba.html#V-25">V-25</a></td><td>„na tvojej strane“, „línia – tvoja vľavo, jeho vpravo“<div class="kde">#6 k-ciel, #17 k-zh-bot1; v 2. časti to #61–#63 sám vyvracia („Strana nie je partia“)</div></td>
+  <td><span class="st t-nekonzistencia">Nekonzistencia</span></td><td><span class="st d-nizky">nízky</span></td><td>malá</td></tr>
+<tr data-oblast="vyucba" data-typ="ux" data-dopad="nizky">
+  <td><a href="ui-inspekcia-20261120-1324-vyucba.html#V-27">V-27</a></td><td>„Klikni na neho a potvrď“ — treba kliknúť dvakrát<div class="kde">#141 k-reci3 (reči na žltú a oranžovú za 1 + 2)</div></td>
+  <td><span class="st t-ux">UX</span></td><td><span class="st d-nizky">nízky</span></td><td>malá</td></tr>
+<tr data-oblast="web" data-typ="nekonzistencia" data-dopad="nizky">
+  <td><a href="ui-inspekcia-20261120-1324-web.html#W-20">W-20</a></td><td>Hlavné tlačidlo je raz vľavo, raz vpravo<div class="kde">hlavné vľavo: ponuka výučby, výber súpera, Domov · hlavné vpravo: Napísať názor (Zrušiť | Zverejniť), Nová karta v Dielni, Odísť z partie?, /hra návštevník</div></td>
+  <td><span class="st t-nekonzistencia">Nekonzistencia</span></td><td><span class="st d-nizky">nízky</span></td><td>malá</td></tr>
+<tr data-oblast="web" data-typ="zataz" data-dopad="nizky">
+  <td><a href="ui-inspekcia-20261120-1324-web.html#W-22">W-22</a></td><td>Karty: rozbory sady medzi hlavnými záložkami<div class="kde">/karty, /karty/dielna, /karty/heatmapa, /karty/power-level, všetky rozlíšenia</div></td>
+  <td><span class="st t-zataz">Záťaž</span></td><td><span class="st d-nizky">nízky</span></td><td>malá</td></tr>
+<tr data-oblast="web" data-typ="chyba" data-dopad="nizky">
+  <td><a href="ui-inspekcia-20261120-1324-web.html#W-23">W-23</a></td><td>Nízky kontrast drobných čísel (Heatmapa, Power level, Spätná väzba)<div class="kde">/karty/heatmapa — „⊘ 22“ až „⊘ 43“ a percentá v bunkách, 1,9–3,8 : 1 (treba 4,5 : 1), všetky rozlíšenia · /karty/power-level — „Efekt“ 4,40 : 1 · /spatna-vazba — počet pri „Od ľudí“ 4,45 : 1</div></td>
+  <td><span class="st t-chyba">Chyba</span></td><td><span class="st d-nizky">nízky</span></td><td>malá</td></tr>
+<tr data-oblast="web" data-typ="chyba" data-dopad="nizky">
+  <td><a href="ui-inspekcia-20261120-1324-web.html#W-25">W-25</a></td><td>Štítok „bot“ v zozname partií je roztiahnutý<div class="kde">/hrac/:id → Partie a Posledné partie, všetky rozlíšenia</div></td>
+  <td><span class="st t-chyba">Chyba</span></td><td><span class="st d-nizky">nízky</span></td><td>malá</td></tr>
+<tr data-oblast="web" data-typ="zataz" data-dopad="nizky">
+  <td><a href="ui-inspekcia-20261120-1324-web.html#W-26">W-26</a></td><td>Detail partie: jedenásť stĺpcov, tri bez vysvetlenia<div class="kde">/partia/:id → Kolá, všetky rozlíšenia</div></td>
+  <td><span class="st t-zataz">Záťaž</span></td><td><span class="st d-nizky">nízky</span></td><td>malá</td></tr>
+<tr data-oblast="web" data-typ="nekonzistencia" data-dopad="nizky">
+  <td><a href="ui-inspekcia-20261120-1324-web.html#W-27">W-27</a></td><td>„Návštevník“ a „Nealko“ vedľa seba bez vysvetlenia<div class="kde">/hrac/:id (karta hráča), čakáreň („Frajerina 1200 · Návštevník“)</div></td>
+  <td><span class="st t-nekonzistencia">Nekonzistencia</span></td><td><span class="st d-nizky">nízky</span></td><td>malá</td></tr>
+<tr data-oblast="web" data-typ="ux" data-dopad="nizky">
+  <td><a href="ui-inspekcia-20261120-1324-web.html#W-28">W-28</a></td><td>Ligy: „zatiaľ voľná pre všetkých“ a „Na odomknutie“ naraz<div class="kde">/hrac/:id → Ligy, všetky rozlíšenia</div></td>
+  <td><span class="st t-ux">UX</span></td><td><span class="st d-nizky">nízky</span></td><td>malá</td></tr>
+<tr data-oblast="web" data-typ="chyba" data-dopad="nizky">
+  <td><a href="ui-inspekcia-20261120-1324-web.html#W-29">W-29</a></td><td>Novinky: odkaz na roadmapu je malý cieľ s iným menom<div class="kde">/novinky (hlava stránky), všetky rozlíšenia — 202×23 px</div></td>
+  <td><span class="st t-chyba">Chyba</span></td><td><span class="st d-nizky">nízky</span></td><td>malá</td></tr>
+<tr data-oblast="web" data-typ="chyba" data-dopad="nizky">
+  <td><a href="ui-inspekcia-20261120-1324-web.html#W-30">W-30</a></td><td>Power level sa načítava 4 až 6 sekúnd<div class="kde">/karty/power-level — 6,1 s (1920×1080), 4,3 s (1512×860), 11,7 s (1440×800); pri 1600×1000 a 1366×650 1,4 s · /karty — raz 4,6 s (1440×800)</div></td>
+  <td><span class="st t-chyba">Chyba</span></td><td><span class="st d-nizky">nízky</span></td><td>stredná</td></tr>
+<tr data-oblast="web" data-typ="zataz" data-dopad="nizky">
+  <td><a href="ui-inspekcia-20261120-1324-web.html#W-31">W-31</a></td><td>Dielňa: šesť filtrov a triedenie nad prázdnym zoznamom<div class="kde">/karty/dielna bez návrhov, všetky rozlíšenia</div></td>
+  <td><span class="st t-zataz">Záťaž</span></td><td><span class="st d-nizky">nízky</span></td><td>malá</td></tr>
+<tr data-oblast="web" data-typ="chyba" data-dopad="nizky">
+  <td><a href="ui-inspekcia-20261120-1324-web.html#W-32">W-32</a></td><td>Herné meno v hlavičke je orezané<div class="kde">hlavička, 1920×1080 a 1600×1000 („Fero z dolného ko…“)</div></td>
+  <td><span class="st t-chyba">Chyba</span></td><td><span class="st d-nizky">nízky</span></td><td>malá</td></tr>
+<tr data-oblast="web" data-typ="zataz" data-dopad="nizky">
+  <td><a href="ui-inspekcia-20261120-1324-web.html#W-33">W-33</a></td><td>Pravidlá, 1. kapitola: upozornenie o karikatúre trikrát<div class="kde">/pravidla → Čo je NA EX!, všetky rozlíšenia</div></td>
+  <td><span class="st t-zataz">Záťaž</span></td><td><span class="st d-nizky">nízky</span></td><td>malá</td></tr>
+<tr data-oblast="web" data-typ="chyba" data-dopad="nizky">
+  <td><a href="ui-inspekcia-20261120-1324-web.html#W-34">W-34</a></td><td>Jazyk v nastaveniach: popis rozbíja mriežku volieb<div class="kde">/profil → Preferencie, len kde je zapnutá voľba jazyka (lokálne a Zrejúca; živá Vypálená ju nemá)</div></td>
+  <td><span class="st t-chyba">Chyba</span></td><td><span class="st d-nizky">nízky</span></td><td>malá</td></tr>
+<tr data-oblast="web" data-typ="vylepsenie" data-dopad="nizky">
+  <td><a href="ui-inspekcia-20261120-1324-web.html#W-35">W-35</a></td><td>Achievementy: 101 dlaždíc podľa abecedy<div class="kde">/hrac/:id → Achievementy, všetky rozlíšenia (5293 px pri 1366)</div></td>
+  <td><span class="st t-vylepsenie">Vylepšenie</span></td><td><span class="st d-nizky">nízky</span></td><td>malá</td></tr>
+</tbody></table></div>
+</main>
+<script>
+const f = {}; const riadky = [...document.querySelectorAll("tbody tr")];
+const prekresli = () => { let n = 0; for (const r of riadky) { const ok = Object.entries(f).every(([k, v]) => !v || r.dataset[k] === v); r.hidden = !ok; if (ok) n++; } document.getElementById("pocet").textContent = n + " z " + riadky.length; };
+for (const s of document.querySelectorAll("select[data-filter]")) s.addEventListener("change", () => { f[s.dataset.filter] = s.value; prekresli(); });
+prekresli();
+// Nízke široké výrezy (pruh pokynov, hlavička) pod seba na celú šírku — vedľa seba by boli nečitateľné.
+for (const img of document.querySelectorAll(".dvojica img")) { const f = () => { if (img.naturalWidth > 3.2 * img.naturalHeight) img.closest(".dvojica").classList.add("siroka"); }; if (img.complete) f(); else img.addEventListener("load", f); }
+</script></body></html>

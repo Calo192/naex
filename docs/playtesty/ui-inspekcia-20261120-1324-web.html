@@ -1,0 +1,912 @@
+<!doctype html>
+<html lang="sk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>UI/UX inšpekcia 20261120-1324 — web hráča mimo stola</title>
+<style>
+:root {
+  --pozadie: #14110e; --plocha: #1e1914; --plocha-2: #28211a; --plocha-3: #332a21; --okraj: #3d3229; --okraj-svetly: #57483a;
+  --text: #f1e8d8; --tlmeny: #b6a790; --slaby: #9d8f7b; --akcent: #e9ad45; --akcent-svetly: #ffd08a; --na-akcente: #2b1b03;
+  --cervena: #d0563f; --cervena-text: #e5735c; --zelena: #7cbf74; --info: #8fc3e0;
+  --nadpis: "Bitter", Georgia, serif; --pismo: Roboto, "Segoe UI", system-ui, sans-serif;
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--pozadie); color: var(--text); font: 16px/1.55 var(--pismo); }
+main { max-width: 1480px; margin: 0 auto; padding: 24px clamp(14px, 2.4vw, 36px) 64px; }
+h1, h2, h3 { font-family: var(--nadpis); line-height: 1.2; margin: 0; }
+h1 { font-size: 2rem; }
+h2 { font-size: 1.35rem; margin: 36px 0 12px; }
+a { color: var(--akcent); }
+code { font: 0.86rem/1.4 ui-monospace, Consolas, monospace; background: var(--plocha-3); padding: 1px 6px; border-radius: 5px; color: var(--akcent-svetly); }
+.tabula { background: linear-gradient(180deg, #262b22, #1f231c); border: 8px solid #6b4e2c; border-radius: 8px; padding: 22px 28px; box-shadow: 0 6px 18px #0007; }
+.tabula p { margin: 6px 0 0; color: var(--tlmeny); }
+.meta { display: flex; flex-wrap: wrap; gap: 6px 22px; margin-top: 12px; font-size: 0.92rem; color: var(--tlmeny); }
+.meta b { color: var(--text); font-weight: 600; }
+.suhrn { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 16px; margin-top: 18px; }
+.panel { background: var(--plocha); border: 1px solid var(--okraj); border-radius: 14px; padding: 18px 22px; }
+.panel h2 { margin-top: 0; font-size: 1.1rem; }
+.cisla { display: flex; flex-wrap: wrap; gap: 8px; }
+.cislo { background: var(--plocha-2); border: 1px solid var(--okraj); border-radius: 10px; padding: 6px 12px; font-size: 0.9rem; color: var(--tlmeny); }
+.cislo b { color: var(--text); font: 700 1.15rem var(--nadpis); margin-right: 6px; }
+ol.top { margin: 0; padding-left: 1.4em; }
+ol.top li { margin: 3px 0; }
+ol.top a { color: var(--text); text-decoration-color: var(--okraj-svetly); }
+ol.top .mini { color: var(--slaby); font-size: 0.85rem; margin-left: 6px; }
+.cesta-hraca { color: var(--tlmeny); font-size: 0.95rem; }
+.cesta-hraca p { margin: 6px 0; }
+.cesta-hraca b { color: var(--text); }
+.filter { position: sticky; top: 0; z-index: 5; background: color-mix(in srgb, var(--pozadie) 94%, transparent); backdrop-filter: blur(4px); padding: 10px 0; margin: 26px 0 8px; border-bottom: 1px solid var(--okraj); display: flex; flex-wrap: wrap; gap: 8px 18px; align-items: center; }
+.filter .skupina { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+.filter .nazov { color: var(--slaby); font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.06em; margin-right: 2px; }
+.filter button, .filter select { font: 600 0.88rem var(--pismo); color: var(--text); background: var(--plocha-2); border: 1px solid var(--okraj-svetly); border-radius: 999px; padding: 5px 12px; cursor: pointer; }
+.filter button[aria-pressed="true"] { background: var(--text); color: #1b1510; border-color: var(--text); }
+.filter .pocet { margin-left: auto; color: var(--tlmeny); font-size: 0.9rem; }
+.nalez { background: var(--plocha); border: 1px solid var(--okraj); border-radius: 14px; padding: 18px 22px 16px; margin: 18px 0; scroll-margin-top: 70px; }
+.nalez:target { border-color: var(--akcent); }
+.nalez-hlava { display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px 10px; }
+.nalez-hlava h3 { font-size: 1.2rem; flex: 1 1 420px; }
+.nalez-id { font: 800 1rem var(--nadpis); color: var(--akcent); }
+.stitok { font-size: 0.78rem; font-weight: 600; padding: 2px 9px; border-radius: 999px; border: 1px solid var(--okraj-svetly); color: var(--tlmeny); white-space: nowrap; }
+.typ-chyba { color: var(--cervena-text); border-color: #7a3527; }
+.typ-ux { color: var(--info); border-color: #3b5a6b; }
+.typ-nekonzistencia { color: #d7a6e8; border-color: #5e4369; }
+.typ-zataz { color: var(--akcent); border-color: #7a5a22; }
+.typ-vylepsenie { color: var(--zelena); border-color: #3f6a3a; }
+.dopad-vysoky { background: #5a2218; color: #ffd9cf; border-color: #7a3527; }
+.dopad-stredny { background: #4a3a17; color: #ffe2a8; border-color: #7a5a22; }
+.kde { margin: 8px 0 12px; color: var(--tlmeny); font-size: 0.92rem; }
+.kde b, .text b { color: var(--text); }
+.dvojica { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; align-items: start; }
+.dvojica.jedna { grid-template-columns: 1fr; max-width: 760px; }
+.dalsie { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 16px; align-items: start; }
+figure { margin: 0; min-width: 0; }
+figcaption { font: 700 0.78rem var(--pismo); letter-spacing: 0.07em; text-transform: uppercase; color: var(--slaby); margin-bottom: 6px; }
+figure.navrh figcaption { color: var(--akcent); }
+.obr { display: block; border: 1px solid var(--okraj-svetly); border-radius: 8px; overflow: hidden; background: #0d0b09; line-height: 0; }
+.obr img { max-width: 100%; height: auto; }
+.obr.vysoke { max-height: 560px; overflow-y: auto; }
+figure.navrh .obr { border-color: #7a5a22; }
+.text { margin-top: 12px; max-width: 1100px; }
+.text p { margin: 6px 0; }
+.zdroj { color: var(--tlmeny); font-size: 0.92rem; }
+.zaver { color: var(--tlmeny); }
+.zaver li { margin: 4px 0; }
+.skryty { display: none; }
+@media (max-width: 900px) { .dvojica, .dalsie { grid-template-columns: 1fr; } h1 { font-size: 1.6rem; } }
+</style>
+</head>
+<body>
+<main>
+<header class="tabula">
+  <h1>UI/UX inšpekcia — web hráča mimo stola</h1>
+  <p>Všetko, čím hráč prechádza okrem partie a výučby: Domov, účet, Hrať, Pravidlá, Karty, Rebríček, Novinky, Vývoj, Spätná väzba, profil a partie.</p>
+  <div class="meta">
+    <span><b>Beh:</b> 20261120-1324 · 20. 11. 2026</span>
+    <span><b>Commit:</b> b5775de2 (Vypálená v12.6, sada v58)</span>
+    <span><b>Web:</b> http://localhost:8793</span>
+    <span><b>Rozlíšenia:</b> 1920×1080, 1600×1000, 1512×860, 1440×800, 1366×650</span>
+    <span><b>Zmerané:</b> 18 stránok × 5 rozlíšení + kostra; tri roly (návštevník, nový účet, účet s partiou)</span>
+  </div>
+</header>
+
+<div class="suhrn">
+  <section class="panel">
+    <h2>Súhrn: 35 nálezov, každý s mockom</h2>
+    <div class="cisla">
+      <span class="cislo"><b>8</b>dopad vysoký</span><span class="cislo"><b>13</b>dopad stredný</span><span class="cislo"><b>14</b>dopad nízky</span>
+    </div>
+    <div class="cisla" style="margin-top:8px">
+      <span class="cislo"><b>9</b>Chyba</span><span class="cislo"><b>8</b>UX</span><span class="cislo"><b>5</b>Nekonzistencia</span><span class="cislo"><b>11</b>Záťaž</span><span class="cislo"><b>2</b>Vylepšenie</span>
+    </div>
+    <div class="cesta-hraca" style="margin-top:14px">
+      <p><b>Cesta nového hráča teraz</b> — cez hlavnú výzvu: Domov → Prihlásenie („Vitaj späť“) → Zaregistruj sa → Registrácia → výučba. Cez „Registrovať“ v hlavičke: Domov → Registrácia → Môj profil (3264 px nastavení) → Hrať → Začať výučbu. V oboch je pri 1366×650 tlačidlo registrácie pod zlomom a chyba mimo okna.</p>
+      <p><b>Po W-01, W-02, W-03:</b> Domov → Registrácia (celá nad zlomom) → výučba, z hlavičky Domov → Registrácia → Hrať s výučbou hore.</p>
+    </div>
+  </section>
+  <section class="panel">
+    <h2>Najdôležitejších 10</h2>
+    <ol class="top">
+      <li><a href="#W-01">Registrácia: chybová hláška je mimo okna, tlačidlo pod zlomom</a><span class="mini">W-01 · Chyba</span></li>
+      <li><a href="#W-07">Detail partie ukazuje surovú šablónu „{2:vyhral|vyhrala|vyhráva}“</a><span class="mini">W-07 · Chyba</span></li>
+      <li><a href="#W-02">Po registrácii skončí nový hráč v nastaveniach, nie pri hre</a><span class="mini">W-02 · UX</span></li>
+      <li><a href="#W-03">Hlavná výzva Domova posiela nového návštevníka na „Vitaj späť“</a><span class="mini">W-03 · UX</span></li>
+      <li><a href="#W-05">Stránka Hrať: 153 slov a založenie hry pod zlomom</a><span class="mini">W-05 · Záťaž</span></li>
+      <li><a href="#W-06">Môj profil: 619 slov a 3264 px nastavení na jednej stránke</a><span class="mini">W-06 · Záťaž</span></li>
+      <li><a href="#W-08">Profil po prvej partii s botom vyzerá prázdny</a><span class="mini">W-08 · UX</span></li>
+      <li><a href="#W-04">Pozvánka do hry nepovie, že je to pozvánka</a><span class="mini">W-04 · UX</span></li>
+      <li><a href="#W-09">Prázdny profil: šesť panelov, ktoré hovoria „zatiaľ nič“</a><span class="mini">W-09 · Záťaž</span></li>
+      <li><a href="#W-14">Prihlásenie a registrácia majú päť rôznych mien</a><span class="mini">W-14 · Nekonzistencia</span></li>
+    </ol>
+  </section>
+</div>
+
+<div class="filter" id="filter">
+  <div class="skupina" data-os="typ"><span class="nazov">Šošovka</span><button type="button" data-h="" aria-pressed="true">všetko</button><button type="button" data-h="chyba" aria-pressed="false">Chyba 9</button><button type="button" data-h="ux" aria-pressed="false">UX 8</button><button type="button" data-h="nekonzistencia" aria-pressed="false">Nekonzistencia 5</button><button type="button" data-h="zataz" aria-pressed="false">Záťaž 11</button><button type="button" data-h="vylepsenie" aria-pressed="false">Vylepšenie 2</button></div>
+  <div class="skupina" data-os="dopad"><span class="nazov">Dopad</span><button type="button" data-h="" aria-pressed="true">všetko</button><button type="button" data-h="vysoky" aria-pressed="false">vysoký 8</button><button type="button" data-h="stredny" aria-pressed="false">stredný 13</button><button type="button" data-h="nizky" aria-pressed="false">nízky 14</button></div>
+  <div class="skupina"><span class="nazov">Miesto</span><select id="miesto"><option value="">všade</option><option>Účet</option><option>Profil a partie</option><option>Hrať</option><option>Domov a hlavička</option><option>Rebríček a Spätná väzba</option><option>Vývoj a Novinky</option><option>Karty</option><option>Pravidlá</option></select></div>
+  <span class="pocet" id="pocet"></span>
+</div>
+
+<section id="nalezy">
+
+<article class="nalez" id="W-01" data-typ="chyba" data-dopad="vysoky" data-miesto="Účet">
+  <header class="nalez-hlava">
+    <span class="nalez-id">W-01</span>
+    <h3>Registrácia: chybová hláška je mimo okna, tlačidlo pod zlomom</h3>
+    <span class="stitok typ-chyba">Chyba</span>
+    <span class="stitok dopad-vysoky">dopad vysoký</span>
+    <span class="stitok">náročnosť malá</span>
+  </header>
+  <p class="kde"><b>Kde:</b> /registracia, 1366×650 (pri vyšších oknách je hláška aj tlačidlo vidno)</p>
+  <div class="dvojica">
+    <figure><figcaption>Teraz</figcaption><a class="obr" href="ui-inspekcia-20261120-1324-web/W-01-teraz.jpg" target="_blank" rel="noopener"><img src="ui-inspekcia-20261120-1324-web/W-01-teraz.jpg" alt="W-01 teraz" loading="lazy"></a></figure>
+    <figure class="navrh"><figcaption>Návrh</figcaption><a class="obr" href="ui-inspekcia-20261120-1324-web/W-01-navrh.jpg" target="_blank" rel="noopener"><img src="ui-inspekcia-20261120-1324-web/W-01-navrh.jpg" alt="W-01 návrh" loading="lazy"></a></figure>
+  </div>
+  
+  <div class="text">
+    <p><b>Čo je zle:</b> Formulár má 4 polia pod sebou v stĺpci širokom 440 px, tlačidlo „Vytvoriť účet“ je pri 1366×650 pod zlomom. Keď hráč doroluje, klikne a heslá sa nezhodujú alebo je meno obsadené, hláška sa vykreslí hore vo formulári — 107 px nad oknom. Na obrazovke sa nezmení nič.</p>
+    <p><b>Návrh:</b> Polia do dvoch stĺpcov (meno | herné meno, heslo | heslo znova), aby bol celý formulár aj s tlačidlom nad zlomom, a hlášku vykresliť tesne nad tlačidlom, kde sa hráč práve pozerá.</p>
+    <p class="zdroj"><b>Zdroj:</b> <code>apps/web/src/stranky/Ucet.tsx:169</code></p>
+  </div>
+</article>
+
+<article class="nalez" id="W-07" data-typ="chyba" data-dopad="vysoky" data-miesto="Profil a partie">
+  <header class="nalez-hlava">
+    <span class="nalez-id">W-07</span>
+    <h3>Detail partie ukazuje surovú šablónu „{2:vyhral|vyhrala|vyhráva}“</h3>
+    <span class="stitok typ-chyba">Chyba</span>
+    <span class="stitok dopad-vysoky">dopad vysoký</span>
+    <span class="stitok">náročnosť malá</span>
+  </header>
+  <p class="kde"><b>Kde:</b> /partia/:id, všetky rozlíšenia (partia dohraná výhrou strachom proti botovi)</p>
+  <div class="dvojica">
+    <figure><figcaption>Teraz</figcaption><a class="obr" href="ui-inspekcia-20261120-1324-web/W-07-teraz.jpg" target="_blank" rel="noopener"><img src="ui-inspekcia-20261120-1324-web/W-07-teraz.jpg" alt="W-07 teraz" loading="lazy"></a></figure>
+    <figure class="navrh"><figcaption>Návrh</figcaption><a class="obr" href="ui-inspekcia-20261120-1324-web/W-07-navrh.jpg" target="_blank" rel="noopener"><img src="ui-inspekcia-20261120-1324-web/W-07-navrh.jpg" alt="W-07 návrh" loading="lazy"></a></figure>
+  </div>
+  
+  <div class="text">
+    <p><b>Čo je zle:</b> Dôvod konca partie sa v detaile vypíše aj so značkou rodu: „Igor {2:vyhral|vyhrala|vyhráva} bitku a desí naplno 4 starších…“. Zoznam partií tú istú vetu skloňuje správne (Statistiky.tsx:287 volá rozlozRod), detail nie.</p>
+    <p><b>Návrh:</b> V detaile partie prehnať dôvod tou istou funkciou rozlozRod ako v zozname partií.</p>
+    <p class="zdroj"><b>Zdroj:</b> <code>apps/web/src/stranky/profil/DetailPartie.tsx:126</code></p>
+  </div>
+</article>
+
+<article class="nalez" id="W-02" data-typ="ux" data-dopad="vysoky" data-miesto="Účet">
+  <header class="nalez-hlava">
+    <span class="nalez-id">W-02</span>
+    <h3>Po registrácii skončí nový hráč v nastaveniach, nie pri hre</h3>
+    <span class="stitok typ-ux">UX</span>
+    <span class="stitok dopad-vysoky">dopad vysoký</span>
+    <span class="stitok">náročnosť malá</span>
+  </header>
+  <p class="kde"><b>Kde:</b> /registracia → /profil?novy=1, všetky rozlíšenia</p>
+  <div class="dvojica">
+    <figure><figcaption>Teraz</figcaption><a class="obr" href="ui-inspekcia-20261120-1324-web/W-02-teraz.jpg" target="_blank" rel="noopener"><img src="ui-inspekcia-20261120-1324-web/W-02-teraz.jpg" alt="W-02 teraz" loading="lazy"></a></figure>
+    <figure class="navrh"><figcaption>Návrh</figcaption><a class="obr" href="ui-inspekcia-20261120-1324-web/W-02-navrh.jpg" target="_blank" rel="noopener"><img src="ui-inspekcia-20261120-1324-web/W-02-navrh.jpg" alt="W-02 návrh" loading="lazy"></a></figure>
+  </div>
+  
+  <div class="text">
+    <p><b>Čo je zle:</b> Nový účet pristane na stránke Môj profil (3264 px nastavení) s hláškou „Nastav si herné meno a fotku“ — herné meno pritom zadal o obrazovku skôr. Na stránke nie je tlačidlo Hrať ani výučba; k prvej partii vedie až návrat do navigácie.</p>
+    <p><b>Návrh:</b> Po registrácii rovno na /hra, kde je hore výučba. Hlášku skrátiť: „Účet je pripravený. Fotku a farby si kedykoľvek nastavíš v profile.“</p>
+    <p class="zdroj"><b>Zdroj:</b> <code>apps/web/src/stranky/Ucet.tsx:156</code></p>
+  </div>
+</article>
+
+<article class="nalez" id="W-03" data-typ="ux" data-dopad="vysoky" data-miesto="Účet">
+  <header class="nalez-hlava">
+    <span class="nalez-id">W-03</span>
+    <h3>Hlavná výzva Domova posiela nového návštevníka na „Vitaj späť“</h3>
+    <span class="stitok typ-ux">UX</span>
+    <span class="stitok dopad-vysoky">dopad vysoký</span>
+    <span class="stitok">náročnosť malá</span>
+  </header>
+  <p class="kde"><b>Kde:</b> / → tlačidlo „Nauč sa hrať s Majstrom Melicharom“ (návštevník), všetky rozlíšenia · /pravidla → „Začať výučbu“ (návštevník)</p>
+  <div class="dvojica">
+    <figure><figcaption>Teraz</figcaption><a class="obr" href="ui-inspekcia-20261120-1324-web/W-03-teraz.jpg" target="_blank" rel="noopener"><img src="ui-inspekcia-20261120-1324-web/W-03-teraz.jpg" alt="W-03 teraz" loading="lazy"></a></figure>
+    <figure class="navrh"><figcaption>Návrh</figcaption><a class="obr" href="ui-inspekcia-20261120-1324-web/W-03-navrh.jpg" target="_blank" rel="noopener"><img src="ui-inspekcia-20261120-1324-web/W-03-navrh.jpg" alt="W-03 návrh" loading="lazy"></a></figure>
+  </div>
+  
+  <div class="text">
+    <p><b>Čo je zle:</b> Najväčšie tlačidlo titulky vedie neprihláseného na prihlásenie s nadpisom „Vitaj späť — pokračuj tam, kde si prestal“. Kto účet nemá, musí pod formulárom nájsť drobný odkaz „Zaregistruj sa“ — obrazovka a rozhodnutie navyše presne na ceste nováčika.</p>
+    <p><b>Návrh:</b> Neprihláseného poslať z výzvy na registráciu (s návratom na výučbu), s úvodom „Ešte účet a majster Melichar ťa posadí k stolu.“ Kto účet má, má pod formulárom „Už máš účet? Prihlás sa“.</p>
+    <p class="zdroj"><b>Zdroj:</b> <code>apps/web/src/hra/Vyucba.tsx:91</code></p>
+  </div>
+</article>
+
+<article class="nalez" id="W-05" data-typ="zataz" data-dopad="vysoky" data-miesto="Hrať">
+  <header class="nalez-hlava">
+    <span class="nalez-id">W-05</span>
+    <h3>Stránka Hrať: 153 slov a založenie hry pod zlomom</h3>
+    <span class="stitok typ-zataz">Záťaž</span>
+    <span class="stitok dopad-vysoky">dopad vysoký</span>
+    <span class="stitok">náročnosť stredná</span>
+  </header>
+  <p class="kde"><b>Kde:</b> /hra (nový hráč), 1366×650 a 1440×800 — „Nová hra“ pod zlomom · /hra, 1920×1080 — zmestí sa, text rovnaký</p>
+  <div class="dvojica">
+    <figure><figcaption>Teraz</figcaption><a class="obr" href="ui-inspekcia-20261120-1324-web/W-05-teraz.jpg" target="_blank" rel="noopener"><img src="ui-inspekcia-20261120-1324-web/W-05-teraz.jpg" alt="W-05 teraz" loading="lazy"></a></figure>
+    <figure class="navrh"><figcaption>Návrh — Variant B (odporúčaný) — liga a „s kým“ v jednom paneli, pripojenie vpravo</figcaption><a class="obr" href="ui-inspekcia-20261120-1324-web/W-05-navrh-b.jpg" target="_blank" rel="noopener"><img src="ui-inspekcia-20261120-1324-web/W-05-navrh-b.jpg" alt="W-05 návrh" loading="lazy"></a></figure>
+  </div>
+  <div class="dalsie"><figure class="navrh"><figcaption>Návrh — Variant A — tri cesty ako tri panely, liga nad nimi</figcaption><a class="obr" href="ui-inspekcia-20261120-1324-web/W-05-navrh-a.jpg" target="_blank" rel="noopener"><img src="ui-inspekcia-20261120-1324-web/W-05-navrh-a.jpg" alt="W-05 návrh 2" loading="lazy"></a></figure></div>
+  <div class="text">
+    <p><b>Čo je zle:</b> Nad zlomom je len hlava a banner výučby so štyrmi riadkami textu. Voľba ligy patrí aj hre proti počítaču, no stojí len pod nadpisom „Nová hra“; popisy vysvetľujú, čo hovoria tlačidlá („Súkromná hra je len pre toho, komu pošleš kód“), a pravý panel je väčšinu času prázdny.</p>
+    <p><b>Návrh:</b> Výučbu zúžiť na jeden riadok a založenie postaviť ako jednu otázku. Variant B (odporúčaný): Nová hra = Liga + S kým (Počítač / Kamarát / Ktokoľvek), vpravo Pripojiť sa. Variant A: tri panely vedľa seba. Slová 153 → 72 (B) / 66 (A), stránka 1152 → 756 px.</p>
+    <p class="zdroj"><b>Zdroj:</b> <code>apps/web/src/hra/Hra.tsx:144</code></p>
+  </div>
+</article>
+
+<article class="nalez" id="W-06" data-typ="zataz" data-dopad="vysoky" data-miesto="Profil a partie">
+  <header class="nalez-hlava">
+    <span class="nalez-id">W-06</span>
+    <h3>Môj profil: 619 slov a 3264 px nastavení na jednej stránke</h3>
+    <span class="stitok typ-zataz">Záťaž</span>
+    <span class="stitok dopad-vysoky">dopad vysoký</span>
+    <span class="stitok">náročnosť stredná</span>
+  </header>
+  <p class="kde"><b>Kde:</b> /profil, všetky rozlíšenia (pri 1366×650 päť obrazoviek)</p>
+  <div class="dvojica">
+    <figure><figcaption>Teraz</figcaption><a class="obr vysoke" href="ui-inspekcia-20261120-1324-web/W-06-teraz.jpg" target="_blank" rel="noopener"><img src="ui-inspekcia-20261120-1324-web/W-06-teraz.jpg" alt="W-06 teraz" loading="lazy"></a></figure>
+    <figure class="navrh"><figcaption>Návrh — Variant B (odporúčaný) — záložka Hra a zvuk</figcaption><a class="obr vysoke" href="ui-inspekcia-20261120-1324-web/W-06-navrh-b-hra.jpg" target="_blank" rel="noopener"><img src="ui-inspekcia-20261120-1324-web/W-06-navrh-b-hra.jpg" alt="W-06 návrh" loading="lazy"></a></figure>
+  </div>
+  <div class="dalsie"><figure class="navrh"><figcaption>Návrh — Variant B — záložka Účet</figcaption><a class="obr vysoke" href="ui-inspekcia-20261120-1324-web/W-06-navrh-b-ucet.jpg" target="_blank" rel="noopener"><img src="ui-inspekcia-20261120-1324-web/W-06-navrh-b-ucet.jpg" alt="W-06 návrh 2" loading="lazy"></a></figure><figure class="navrh"><figcaption>Návrh — Variant B — záložka Vzhľad</figcaption><a class="obr vysoke" href="ui-inspekcia-20261120-1324-web/W-06-navrh-b-vzhlad.jpg" target="_blank" rel="noopener"><img src="ui-inspekcia-20261120-1324-web/W-06-navrh-b-vzhlad.jpg" alt="W-06 návrh 3" loading="lazy"></a></figure><figure class="navrh"><figcaption>Návrh — Variant A — jedna stránka, skrátené texty</figcaption><a class="obr vysoke" href="ui-inspekcia-20261120-1324-web/W-06-navrh-a.jpg" target="_blank" rel="noopener"><img src="ui-inspekcia-20261120-1324-web/W-06-navrh-a.jpg" alt="W-06 návrh 4" loading="lazy"></a></figure></div>
+  <div class="text">
+    <p><b>Čo je zle:</b> Účet, vzhľad, 28 farebných schém s popismi, preferencie hry a zvuk sú pod sebou. Odkaz na štatistiky je tu trikrát (hlava, pod menom, panel Štatistiky), „Ukladá sa samo.“ päťkrát a zaškrtávače nesú celé vety („K končím / hotovo / potvrdiť, P pasovať…“), ktoré hráč nájde v partii pod klávesom „?“.</p>
+    <p><b>Návrh:</b> Variant B (odporúčaný): tri záložky pod hlavou — Účet / Vzhľad / Hra a zvuk (84 / 107 / 135 slov na záložku). Variant A: ostať na jednej stránke, popisy schém pod myš, texty skrátiť, duplicity preč — 619 → 288 slov, 3264 → 2681 px. Nové znenia sú v mocku.</p>
+    <p class="zdroj"><b>Zdroj:</b> <code>apps/web/src/stranky/Ucet.tsx:452</code></p>
+  </div>
+</article>
+
+<article class="nalez" id="W-08" data-typ="ux" data-dopad="vysoky" data-miesto="Profil a partie">
+  <header class="nalez-hlava">
+    <span class="nalez-id">W-08</span>
+    <h3>Profil po prvej partii s botom vyzerá prázdny</h3>
+    <span class="stitok typ-ux">UX</span>
+    <span class="stitok dopad-vysoky">dopad vysoký</span>
+    <span class="stitok">náročnosť malá</span>
+  </header>
+  <p class="kde"><b>Kde:</b> /hrac/:id (vlastný profil po partii proti počítaču), všetky rozlíšenia</p>
+  <div class="dvojica">
+    <figure><figcaption>Teraz</figcaption><a class="obr vysoke" href="ui-inspekcia-20261120-1324-web/W-08-teraz.jpg" target="_blank" rel="noopener"><img src="ui-inspekcia-20261120-1324-web/W-08-teraz.jpg" alt="W-08 teraz" loading="lazy"></a></figure>
+    <figure class="navrh"><figcaption>Návrh</figcaption><a class="obr vysoke" href="ui-inspekcia-20261120-1324-web/W-08-navrh.jpg" target="_blank" rel="noopener"><img src="ui-inspekcia-20261120-1324-web/W-08-navrh.jpg" alt="W-08 návrh" loading="lazy"></a></figure>
+  </div>
+  
+  <div class="text">
+    <p><b>Čo je zle:</b> Filter partií je predvolene „S ľuďmi“. Nový hráč hrá najprv výučbu a boty, takže po prvej dohratej partii vidí „Zatiaľ žiadna dohratá partia“, štyri dlaždice „zatiaľ bez dát“ a prázdne Posledné partie — partia je až pod prepínačom „Spolu“.</p>
+    <p><b>Návrh:</b> Kým hráč nemá partiu s človekom, predvoliť „Spolu“ (alebo prvý neprázdny filter).</p>
+    <p class="zdroj"><b>Zdroj:</b> <code>apps/web/src/stranky/profil/Profil.tsx:287</code></p>
+  </div>
+</article>
+
+<article class="nalez" id="W-04" data-typ="ux" data-dopad="vysoky" data-miesto="Hrať">
+  <header class="nalez-hlava">
+    <span class="nalez-id">W-04</span>
+    <h3>Pozvánka do hry nepovie, že je to pozvánka</h3>
+    <span class="stitok typ-ux">UX</span>
+    <span class="stitok dopad-vysoky">dopad vysoký</span>
+    <span class="stitok">náročnosť malá</span>
+  </header>
+  <p class="kde"><b>Kde:</b> /hra?kod=ABCD (návštevník), všetky rozlíšenia</p>
+  <div class="dvojica">
+    <figure><figcaption>Teraz</figcaption><a class="obr" href="ui-inspekcia-20261120-1324-web/W-04-teraz.jpg" target="_blank" rel="noopener"><img src="ui-inspekcia-20261120-1324-web/W-04-teraz.jpg" alt="W-04 teraz" loading="lazy"></a></figure>
+    <figure class="navrh"><figcaption>Návrh</figcaption><a class="obr" href="ui-inspekcia-20261120-1324-web/W-04-navrh.jpg" target="_blank" rel="noopener"><img src="ui-inspekcia-20261120-1324-web/W-04-navrh.jpg" alt="W-04 návrh" loading="lazy"></a></figure>
+  </div>
+  
+  <div class="text">
+    <p><b>Čo je zle:</b> Kamarát, ktorý klikne na poslaný odkaz, vidí „Hrať môžu prihlásení — Súper ťa uvidí pod tvojím herným menom a s fotkou z profilu“. O pozvánke ani slovo a zvýraznené je „Prihlásiť sa“, hoci pozvaný účet spravidla nemá.</p>
+    <p><b>Návrh:</b> Pri odkaze s kódom nadpis „Pozvánka do hry ABCD“, úvod „Kamarát ťa čaká pri stole. Vytvor si účet a sadneš si rovno k nemu.“ a hlavné tlačidlo „Vytvoriť účet“.</p>
+    <p class="zdroj"><b>Zdroj:</b> <code>apps/web/src/hra/Hra.tsx:503</code></p>
+  </div>
+</article>
+
+<article class="nalez" id="W-09" data-typ="zataz" data-dopad="stredny" data-miesto="Profil a partie">
+  <header class="nalez-hlava">
+    <span class="nalez-id">W-09</span>
+    <h3>Prázdny profil: šesť panelov, ktoré hovoria „zatiaľ nič“</h3>
+    <span class="stitok typ-zataz">Záťaž</span>
+    <span class="stitok dopad-stredny">dopad stredný</span>
+    <span class="stitok">náročnosť malá</span>
+  </header>
+  <p class="kde"><b>Kde:</b> /hrac/:id (účet bez partie), všetky rozlíšenia — 1995 px</p>
+  <div class="dvojica">
+    <figure><figcaption>Teraz</figcaption><a class="obr vysoke" href="ui-inspekcia-20261120-1324-web/W-09-teraz.jpg" target="_blank" rel="noopener"><img src="ui-inspekcia-20261120-1324-web/W-09-teraz.jpg" alt="W-09 teraz" loading="lazy"></a></figure>
+    <figure class="navrh"><figcaption>Návrh</figcaption><a class="obr vysoke" href="ui-inspekcia-20261120-1324-web/W-09-navrh.jpg" target="_blank" rel="noopener"><img src="ui-inspekcia-20261120-1324-web/W-09-navrh.jpg" alt="W-09 návrh" loading="lazy"></a></figure>
+  </div>
+  
+  <div class="text">
+    <p><b>Čo je zle:</b> Nový hráč vidí pod výzvou „Prvých päť poldecí“ ešte Formu (0), V číslach (4× „zatiaľ bez dát“), Achievementy (žiadny), Silné a slabé stránky (od 5 partií), Bilanciu (0 · 0 V · 0 R · 0 P dvakrát) a Posledné partie (žiadna) — šesť panelov bez obsahu.</p>
+    <p><b>Návrh:</b> Bez partie ukázať len výzvu a Ligy; ostatné panely až keď majú čo ukázať. Prepínač S ľuďmi / S botmi / Spolu skryť, kým je všade 0. Stránka 1995 → 1077 px.</p>
+    <p class="zdroj"><b>Zdroj:</b> <code>apps/web/src/stranky/profil/Profil.tsx:404</code></p>
+  </div>
+</article>
+
+<article class="nalez" id="W-10" data-typ="nekonzistencia" data-dopad="stredny" data-miesto="Hrať">
+  <header class="nalez-hlava">
+    <span class="nalez-id">W-10</span>
+    <h3>Dĺžka výučby: 34, 35 a „trikrát desať“ minút</h3>
+    <span class="stitok typ-nekonzistencia">Nekonzistencia</span>
+    <span class="stitok dopad-stredny">dopad stredný</span>
+    <span class="stitok">náročnosť malá</span>
+  </header>
+  <p class="kde"><b>Kde:</b> / („asi 34 minút“) · /hra a /pravidla („asi 35 minút“) · ponuka pri prvej hre („každá trvá asi desať minút“)</p>
+  <div class="dvojica">
+    <figure><figcaption>Teraz</figcaption><a class="obr" href="ui-inspekcia-20261120-1324-web/W-10-teraz.jpg" target="_blank" rel="noopener"><img src="ui-inspekcia-20261120-1324-web/W-10-teraz.jpg" alt="W-10 teraz" loading="lazy"></a></figure>
+    <figure class="navrh"><figcaption>Návrh</figcaption><a class="obr" href="ui-inspekcia-20261120-1324-web/W-10-navrh.jpg" target="_blank" rel="noopener"><img src="ui-inspekcia-20261120-1324-web/W-10-navrh.jpg" alt="W-10 návrh" loading="lazy"></a></figure>
+  </div>
+  
+  <div class="text">
+    <p><b>Čo je zle:</b> Domov sľubuje „tri časti, spolu asi 34 minút“ (počíta sa zo scenára: 7 + 15 + 12), banner na Hrať a v Pravidlách má natvrdo 35 a Melicharova ponuka hovorí o troch častiach po desať minút, hoci druhá má 15.</p>
+    <p><b>Návrh:</b> Čas brať všade z jednej funkcie dlzkaVyucby (stranky/dlzkaVyucby.ts). V ponuke škrtnúť „každá trvá asi desať minút“ a nechať súčet — text je Michalov, ide len o škrt a číslo.</p>
+    <p class="zdroj"><b>Zdroj:</b> <code>apps/web/src/i18n/sk.json:423</code></p>
+  </div>
+</article>
+
+<article class="nalez" id="W-11" data-typ="nekonzistencia" data-dopad="stredny" data-miesto="Profil a partie">
+  <header class="nalez-hlava">
+    <span class="nalez-id">W-11</span>
+    <h3>„Môj profil“ sú nastavenia, „profil hráča“ sú štatistiky</h3>
+    <span class="stitok typ-nekonzistencia">Nekonzistencia</span>
+    <span class="stitok dopad-stredny">dopad stredný</span>
+    <span class="stitok">náročnosť malá</span>
+  </header>
+  <p class="kde"><b>Kde:</b> menu účtu v hlavičke · /profil (hlava, odkaz pod menom, panel Štatistiky) · /hrac/:id („Upraviť profil a nastavenia“)</p>
+  <div class="dvojica">
+    <figure><figcaption>Teraz</figcaption><a class="obr" href="ui-inspekcia-20261120-1324-web/W-11-teraz.jpg" target="_blank" rel="noopener"><img src="ui-inspekcia-20261120-1324-web/W-11-teraz.jpg" alt="W-11 teraz" loading="lazy"></a></figure>
+    <figure class="navrh"><figcaption>Návrh</figcaption><a class="obr" href="ui-inspekcia-20261120-1324-web/W-11-navrh.jpg" target="_blank" rel="noopener"><img src="ui-inspekcia-20261120-1324-web/W-11-navrh.jpg" alt="W-11 návrh" loading="lazy"></a></figure>
+  </div>
+  
+  <div class="text">
+    <p><b>Čo je zle:</b> Menu ponúka „Môj profil“ (nastavenia) a „Moje štatistiky“ (stránka, ktorej web hovorí „profil hráča“). Na tú istú stránku vedú štyri názvy: Moje štatistiky, Moje štatistiky a partie, Otvoriť profil hráča, profil.</p>
+    <p><b>Návrh:</b> Dve mená pre dve stránky: „Môj profil“ = /hrac/:id (štatistiky, partie, achievementy), „Nastavenia“ = /profil. V menu v tomto poradí; tlačidlá medzi nimi „Nastavenia“ a „Môj profil“.</p>
+    <p class="zdroj"><b>Zdroj:</b> <code>apps/web/src/i18n/sk.json:23</code></p>
+  </div>
+</article>
+
+<article class="nalez" id="W-12" data-typ="chyba" data-dopad="stredny" data-miesto="Profil a partie">
+  <header class="nalez-hlava">
+    <span class="nalez-id">W-12</span>
+    <h3>Hlava stránky Môj profil je užšia než všade inde</h3>
+    <span class="stitok typ-chyba">Chyba</span>
+    <span class="stitok dopad-stredny">dopad stredný</span>
+    <span class="stitok">náročnosť malá</span>
+  </header>
+  <p class="kde"><b>Kde:</b> /profil, 1920×1080 a 1600×1000 (1180 px oproti 1440) · /profil, 1512×860, 1440×800, 1366×650 (1180 oproti 1283–1440)</p>
+  <div class="dvojica">
+    <figure><figcaption>Teraz</figcaption><a class="obr" href="ui-inspekcia-20261120-1324-web/W-12-teraz.jpg" target="_blank" rel="noopener"><img src="ui-inspekcia-20261120-1324-web/W-12-teraz.jpg" alt="W-12 teraz" loading="lazy"></a></figure>
+    <figure class="navrh"><figcaption>Návrh</figcaption><a class="obr" href="ui-inspekcia-20261120-1324-web/W-12-navrh.jpg" target="_blank" rel="noopener"><img src="ui-inspekcia-20261120-1324-web/W-12-navrh.jpg" alt="W-12 návrh" loading="lazy"></a></figure>
+  </div>
+  
+  <div class="text">
+    <p><b>Čo je zle:</b> Obal stránky má max-width 1180 px a platí aj pre kriedovú tabuľu, takže pravá hrana hlavy pri prechode z inej stránky skočí o 103 až 260 px. Nástroj kostra.ts to nezachytí, meria len ľavé hrany.</p>
+    <p><b>Návrh:</b> Šírku obmedziť len obsahu pod hlavou (alebo vôbec) — hlava nech drží šírku kostry ako na ostatných stránkach.</p>
+    <p class="zdroj"><b>Zdroj:</b> <code>apps/web/src/stranky/statistiky.css:13</code></p>
+  </div>
+</article>
+
+<article class="nalez" id="W-13" data-typ="zataz" data-dopad="stredny" data-miesto="Domov a hlavička">
+  <header class="nalez-hlava">
+    <span class="nalez-id">W-13</span>
+    <h3>Domov: tri dlaždice opakujú navigáciu, vejár kariet je pod zlomom</h3>
+    <span class="stitok typ-zataz">Záťaž</span>
+    <span class="stitok dopad-stredny">dopad stredný</span>
+    <span class="stitok">náročnosť malá</span>
+  </header>
+  <p class="kde"><b>Kde:</b> /, 1366×650 (vejár orezaný, dlaždice pod zlomom) · /, všetky rozlíšenia (dlaždice)</p>
+  <div class="dvojica">
+    <figure><figcaption>Teraz</figcaption><a class="obr vysoke" href="ui-inspekcia-20261120-1324-web/W-13-teraz.jpg" target="_blank" rel="noopener"><img src="ui-inspekcia-20261120-1324-web/W-13-teraz.jpg" alt="W-13 teraz" loading="lazy"></a></figure>
+    <figure class="navrh"><figcaption>Návrh</figcaption><a class="obr vysoke" href="ui-inspekcia-20261120-1324-web/W-13-navrh.jpg" target="_blank" rel="noopener"><img src="ui-inspekcia-20261120-1324-web/W-13-navrh.jpg" alt="W-13 návrh" loading="lazy"></a></figure>
+  </div>
+  
+  <div class="text">
+    <p><b>Čo je zle:</b> Dlaždice Nauč sa hrať / Glosár kariet / Hraj proti kamarátovi vedú tam, kam Pravidlá, Karty a Hrať v navigácii nad nimi. „Nauč sa hrať“ je na stránke dvakrát a zakaždým vedie inam (tlačidlo na výučbu, dlaždica na pravidlá). Dve dlaždice majú emoji, tretia piktogram z hry.</p>
+    <p><b>Návrh:</b> Dlaždice odstrániť (45 slov) a text s tlačidlami zarovnať hore, aby bol vejár celý nad zlomom.</p>
+    <p class="zdroj"><b>Zdroj:</b> <code>apps/web/src/stranky/Domov.tsx:94</code></p>
+  </div>
+</article>
+
+<article class="nalez" id="W-14" data-typ="nekonzistencia" data-dopad="stredny" data-miesto="Účet">
+  <header class="nalez-hlava">
+    <span class="nalez-id">W-14</span>
+    <h3>Prihlásenie a registrácia majú päť rôznych mien</h3>
+    <span class="stitok typ-nekonzistencia">Nekonzistencia</span>
+    <span class="stitok dopad-stredny">dopad stredný</span>
+    <span class="stitok">náročnosť malá</span>
+  </header>
+  <p class="kde"><b>Kde:</b> hlavička („Prihlásiť“, „Registrovať“) · /hra návštevník („Vytvoriť účet“, „Prihlásiť sa“) · / („Prihlás sa a hraj“) · /prihlasenie („Zaregistruj sa“) · /registracia (nadpis „Nový účet“, tlačidlo „Vytvoriť účet“)</p>
+  <div class="dvojica">
+    <figure><figcaption>Teraz</figcaption><a class="obr" href="ui-inspekcia-20261120-1324-web/W-14-teraz.jpg" target="_blank" rel="noopener"><img src="ui-inspekcia-20261120-1324-web/W-14-teraz.jpg" alt="W-14 teraz" loading="lazy"></a></figure>
+    <figure class="navrh"><figcaption>Návrh</figcaption><a class="obr" href="ui-inspekcia-20261120-1324-web/W-14-navrh.jpg" target="_blank" rel="noopener"><img src="ui-inspekcia-20261120-1324-web/W-14-navrh.jpg" alt="W-14 návrh" loading="lazy"></a></figure>
+  </div>
+  
+  <div class="text">
+    <p><b>Čo je zle:</b> To isté sa volá Registrovať, Vytvoriť účet, Zaregistruj sa aj Nový účet; prihlásenie Prihlásiť aj Prihlásiť sa. V hlavičke je zvýraznená registrácia vpravo, na stránke Hrať prihlásenie vpravo.</p>
+    <p><b>Návrh:</b> Všade „Prihlásiť sa“ a „Vytvoriť účet“, v tom poradí, zvýraznené „Vytvoriť účet“ (neprihlásený je najčastejšie nový).</p>
+    <p class="zdroj"><b>Zdroj:</b> <code>apps/web/src/i18n/sk.json:40</code></p>
+  </div>
+</article>
+
+<article class="nalez" id="W-15" data-typ="ux" data-dopad="stredny" data-miesto="Domov a hlavička">
+  <header class="nalez-hlava">
+    <span class="nalez-id">W-15</span>
+    <h3>Rebríček a Spätná väzba vedú návštevníka do slepej uličky</h3>
+    <span class="stitok typ-ux">UX</span>
+    <span class="stitok dopad-stredny">dopad stredný</span>
+    <span class="stitok">náročnosť malá</span>
+  </header>
+  <p class="kde"><b>Kde:</b> /rebricek a /spatna-vazba (návštevník), všetky rozlíšenia</p>
+  <div class="dvojica">
+    <figure><figcaption>Teraz</figcaption><a class="obr" href="ui-inspekcia-20261120-1324-web/W-15-teraz.jpg" target="_blank" rel="noopener"><img src="ui-inspekcia-20261120-1324-web/W-15-teraz.jpg" alt="W-15 teraz" loading="lazy"></a></figure>
+    <figure class="navrh"><figcaption>Návrh</figcaption><a class="obr" href="ui-inspekcia-20261120-1324-web/W-15-navrh.jpg" target="_blank" rel="noopener"><img src="ui-inspekcia-20261120-1324-web/W-15-navrh.jpg" alt="W-15 návrh" loading="lazy"></a></figure>
+  </div>
+  
+  <div class="text">
+    <p><b>Čo je zle:</b> Obe položky sú v navigácii neprihláseného, ale ukážu len „Najprv sa prihlás — Táto stránka je len pre prihlásených hráčov“ s jediným tlačidlom Prihlásiť sa. Stránka nepovie, čo za ňou je, a nový návštevník nemá kam ísť.</p>
+    <p><b>Návrh:</b> Nechať nadpis stránky a povedať, čo po prihlásení uvidí („Poradie hráčov podľa Frajeriny uvidíš po prihlásení.“), s oboma tlačidlami. Alebo rebríček ukázať na čítanie aj neprihlásenému.</p>
+    <p class="zdroj"><b>Zdroj:</b> <code>apps/web/src/App.tsx:34</code></p>
+  </div>
+</article>
+
+<article class="nalez" id="W-16" data-typ="zataz" data-dopad="stredny" data-miesto="Rebríček a Spätná väzba">
+  <header class="nalez-hlava">
+    <span class="nalez-id">W-16</span>
+    <h3>Rebríček: pri 1366 je vysvetlenie nad tabuľkou</h3>
+    <span class="stitok typ-zataz">Záťaž</span>
+    <span class="stitok dopad-stredny">dopad stredný</span>
+    <span class="stitok">náročnosť malá</span>
+  </header>
+  <p class="kde"><b>Kde:</b> /rebricek, 1366×650 (pod 1440 px šírky)</p>
+  <div class="dvojica">
+    <figure><figcaption>Teraz</figcaption><a class="obr" href="ui-inspekcia-20261120-1324-web/W-16-teraz.jpg" target="_blank" rel="noopener"><img src="ui-inspekcia-20261120-1324-web/W-16-teraz.jpg" alt="W-16 teraz" loading="lazy"></a></figure>
+    <figure class="navrh"><figcaption>Návrh</figcaption><a class="obr" href="ui-inspekcia-20261120-1324-web/W-16-navrh.jpg" target="_blank" rel="noopener"><img src="ui-inspekcia-20261120-1324-web/W-16-navrh.jpg" alt="W-16 návrh" loading="lazy"></a></figure>
+  </div>
+  
+  <div class="text">
+    <p><b>Čo je zle:</b> Pravý stĺpec (Ako sa počíta Frajerina, hodnosti) sa v okne užšom než 1440 px presunie nad obsah. Pri 1366×650 tak 101 slov vysvetlenia (306 px) zaberie celú prvú obrazovku a poradie hráčov je pod zlomom pri každej návšteve.</p>
+    <p><b>Návrh:</b> V užšom okne dať bok rebríčka pod tabuľku (bez „order: -1“), prípadne ho zbaliť do „Ako sa počíta Frajerina? ▸“ pod hlavou, ako to robia Karty.</p>
+    <p class="zdroj"><b>Zdroj:</b> <code>apps/web/src/styles.css:415</code></p>
+  </div>
+</article>
+
+<article class="nalez" id="W-17" data-typ="zataz" data-dopad="stredny" data-miesto="Rebríček a Spätná väzba">
+  <header class="nalez-hlava">
+    <span class="nalez-id">W-17</span>
+    <h3>Spätná väzba: panel „Ohodnoť hru“ a filtre pred názormi</h3>
+    <span class="stitok typ-zataz">Záťaž</span>
+    <span class="stitok dopad-stredny">dopad stredný</span>
+    <span class="stitok">náročnosť malá</span>
+  </header>
+  <p class="kde"><b>Kde:</b> /spatna-vazba, 1366×650 (panel nad zoznamom) · /spatna-vazba, všetky rozlíšenia (počítadlo v hlave, filtre nad prázdnym zoznamom)</p>
+  <div class="dvojica">
+    <figure><figcaption>Teraz</figcaption><a class="obr" href="ui-inspekcia-20261120-1324-web/W-17-teraz.jpg" target="_blank" rel="noopener"><img src="ui-inspekcia-20261120-1324-web/W-17-teraz.jpg" alt="W-17 teraz" loading="lazy"></a></figure>
+    <figure class="navrh"><figcaption>Návrh</figcaption><a class="obr" href="ui-inspekcia-20261120-1324-web/W-17-navrh.jpg" target="_blank" rel="noopener"><img src="ui-inspekcia-20261120-1324-web/W-17-navrh.jpg" alt="W-17 návrh" loading="lazy"></a></figure>
+  </div>
+  
+  <div class="text">
+    <p><b>Čo je zle:</b> Pod 1440 px sa bočný panel „Ohodnoť hru“ dostane nad názory a odsunie ich pod zlom. V hlave je „0 názorov · 0 hotových“ — tie isté čísla, čo na záložkách o riadok nižšie. Kategória, Zoradiť a prepínač Od ľudí / Aj od AI playtesterov sú aj nad prázdnym zoznamom.</p>
+    <p><b>Návrh:</b> „Ohodnotiť hru“ ako druhé tlačidlo v hlave (dialóg ostáva), panel a počítadlo preč, filtre ukázať až pri prvom názore. O 18 slov a 200 px menej.</p>
+    <p class="zdroj"><b>Zdroj:</b> <code>apps/web/src/stranky/SpatnaVazba.tsx:902</code></p>
+  </div>
+</article>
+
+<article class="nalez" id="W-18" data-typ="ux" data-dopad="stredny" data-miesto="Hrať">
+  <header class="nalez-hlava">
+    <span class="nalez-id">W-18</span>
+    <h3>Čakáreň: kopírovanie odkazu je malé a bez potvrdenia</h3>
+    <span class="stitok typ-ux">UX</span>
+    <span class="stitok dopad-stredny">dopad stredný</span>
+    <span class="stitok">náročnosť malá</span>
+  </header>
+  <p class="kde"><b>Kde:</b> /hra po založení súkromnej hry, všetky rozlíšenia</p>
+  <div class="dvojica">
+    <figure><figcaption>Teraz</figcaption><a class="obr" href="ui-inspekcia-20261120-1324-web/W-18-teraz.jpg" target="_blank" rel="noopener"><img src="ui-inspekcia-20261120-1324-web/W-18-teraz.jpg" alt="W-18 teraz" loading="lazy"></a></figure>
+    <figure class="navrh"><figcaption>Návrh</figcaption><a class="obr" href="ui-inspekcia-20261120-1324-web/W-18-navrh.jpg" target="_blank" rel="noopener"><img src="ui-inspekcia-20261120-1324-web/W-18-navrh.jpg" alt="W-18 návrh" loading="lazy"></a></figure>
+  </div>
+  
+  <div class="text">
+    <p><b>Čo je zle:</b> Jediné, čo má hostiteľ urobiť, je poslať pozvánku — tlačidlo „Skopírovať odkaz“ je však najmenšie na obrazovke a po kliku sa nezmení, takže nevidno, či sa odkaz skopíroval. Úvod hovorí o kóde, tlačidlo o odkaze. Prázdne miesto súpera je o 16 px nižšie než avatar.</p>
+    <p><b>Návrh:</b> Kopírovanie ako hlavné tlačidlo, po kliku „Odkaz skopírovaný ✓“; úvod „Pošli súperovi odkaz alebo kód.“; obe miesta zarovnať hore.</p>
+    <p class="zdroj"><b>Zdroj:</b> <code>apps/web/src/hra/Hra.tsx:564</code></p>
+  </div>
+</article>
+
+<article class="nalez" id="W-21" data-typ="zataz" data-dopad="stredny" data-miesto="Vývoj a Novinky">
+  <header class="nalez-hlava">
+    <span class="nalez-id">W-21</span>
+    <h3>Roadmapa ukazuje hráčovi interné štítky</h3>
+    <span class="stitok typ-zataz">Záťaž</span>
+    <span class="stitok dopad-stredny">dopad stredný</span>
+    <span class="stitok">náročnosť malá</span>
+  </header>
+  <p class="kde"><b>Kde:</b> /vyvoj a /vyvoj/roadmapa, všetky rozlíšenia</p>
+  <div class="dvojica">
+    <figure><figcaption>Teraz</figcaption><a class="obr" href="ui-inspekcia-20261120-1324-web/W-21-teraz.jpg" target="_blank" rel="noopener"><img src="ui-inspekcia-20261120-1324-web/W-21-teraz.jpg" alt="W-21 teraz" loading="lazy"></a></figure>
+    <figure class="navrh"><figcaption>Návrh</figcaption><a class="obr" href="ui-inspekcia-20261120-1324-web/W-21-navrh.jpg" target="_blank" rel="noopener"><img src="ui-inspekcia-20261120-1324-web/W-21-navrh.jpg" alt="W-21 návrh" loading="lazy"></a></figure>
+  </div>
+  
+  <div class="text">
+    <p><b>Čo je zle:</b> Každá karta nesie náročnosť S/M/L, zdroj (Michal, Dizajn, Playtest), závislosť „↳ po 2“ a stĺpce „HORIZONT 1–4“ — údaje pre toho, kto roadmapu spravuje. Stránka sa v navigácii volá Vývoj, nadpis má „Kam hra smeruje“ a úvod 29 slov.</p>
+    <p><b>Návrh:</b> Hráčovi nechať oblasť, názov, jednu vetu a stav; náročnosť, zdroj a závislosti ukázať len správcovi (sú v detaile na klik). Nadpis „Vývoj hry“, úvod „Ako hru hodnotia hráči, čo sa na nej robí a čo je hotové.“ (29 → 13 slov).</p>
+    <p class="zdroj"><b>Zdroj:</b> <code>apps/web/src/stranky/Roadmapa.tsx:117</code></p>
+  </div>
+</article>
+
+<article class="nalez" id="W-24" data-typ="ux" data-dopad="stredny" data-miesto="Účet">
+  <header class="nalez-hlava">
+    <span class="nalez-id">W-24</span>
+    <h3>Registrácia sa nepýta na e-mail, obnova hesla ho vyžaduje</h3>
+    <span class="stitok typ-ux">UX</span>
+    <span class="stitok dopad-stredny">dopad stredný</span>
+    <span class="stitok">náročnosť malá</span>
+  </header>
+  <p class="kde"><b>Kde:</b> /registracia a /zabudnute-heslo, všetky rozlíšenia</p>
+  <div class="dvojica">
+    <figure><figcaption>Teraz</figcaption><a class="obr" href="ui-inspekcia-20261120-1324-web/W-24-teraz.jpg" target="_blank" rel="noopener"><img src="ui-inspekcia-20261120-1324-web/W-24-teraz.jpg" alt="W-24 teraz" loading="lazy"></a></figure>
+    <figure class="navrh"><figcaption>Návrh</figcaption><a class="obr" href="ui-inspekcia-20261120-1324-web/W-24-navrh.jpg" target="_blank" rel="noopener"><img src="ui-inspekcia-20261120-1324-web/W-24-navrh.jpg" alt="W-24 návrh" loading="lazy"></a></figure>
+  </div>
+  
+  <div class="text">
+    <p><b>Čo je zle:</b> Zabudnuté heslo sa dá obnoviť len cez e-mail uložený v profile („Bez e-mailu v profile sa heslo obnoviť nedá“). Registrácia e-mail nepýta a pole v profile je až na štvrtej obrazovke nastavení — kto heslo zabudne, o účet príde.</p>
+    <p><b>Návrh:</b> Do registrácie pridať nepovinné pole „E-mail — len na obnovu zabudnutého hesla“. S dvoma stĺpcami z W-01 sa formulár stále zmestí nad zlom.</p>
+    <p class="zdroj"><b>Zdroj:</b> <code>apps/web/src/stranky/Ucet.tsx:170</code></p>
+  </div>
+</article>
+
+<article class="nalez" id="W-19" data-typ="vylepsenie" data-dopad="stredny" data-miesto="Hrať">
+  <header class="nalez-hlava">
+    <span class="nalez-id">W-19</span>
+    <h3>Výber súpera: označiť, potom ešte „Hrať“</h3>
+    <span class="stitok typ-vylepsenie">Vylepšenie</span>
+    <span class="stitok dopad-stredny">dopad stredný</span>
+    <span class="stitok">náročnosť malá</span>
+  </header>
+  <p class="kde"><b>Kde:</b> /hra → Hrať proti počítaču, všetky rozlíšenia</p>
+  <div class="dvojica">
+    <figure><figcaption>Teraz</figcaption><a class="obr" href="ui-inspekcia-20261120-1324-web/W-19-teraz.jpg" target="_blank" rel="noopener"><img src="ui-inspekcia-20261120-1324-web/W-19-teraz.jpg" alt="W-19 teraz" loading="lazy"></a></figure>
+    <figure class="navrh"><figcaption>Návrh</figcaption><a class="obr" href="ui-inspekcia-20261120-1324-web/W-19-navrh.jpg" target="_blank" rel="noopener"><img src="ui-inspekcia-20261120-1324-web/W-19-navrh.jpg" alt="W-19 návrh" loading="lazy"></a></figure>
+  </div>
+  
+  <div class="text">
+    <p><b>Čo je zle:</b> Súper sa vyberá na dva kliky (dlaždica, potom Hrať) a náhodného súpera vysvetľuje veta pod dlaždicami: „Ak nikoho neoznačíš, dostaneš náhodného súpera.“</p>
+    <p><b>Návrh:</b> Klik na dlaždicu rovno začne partiu; náhodný súper je piata dlaždica. Veta aj tlačidlo Hrať odpadnú, ostane Späť.</p>
+    <p class="zdroj"><b>Zdroj:</b> <code>apps/web/src/hra/VyberBota.tsx:39</code></p>
+  </div>
+</article>
+
+<article class="nalez" id="W-20" data-typ="nekonzistencia" data-dopad="nizky" data-miesto="Domov a hlavička">
+  <header class="nalez-hlava">
+    <span class="nalez-id">W-20</span>
+    <h3>Hlavné tlačidlo je raz vľavo, raz vpravo</h3>
+    <span class="stitok typ-nekonzistencia">Nekonzistencia</span>
+    <span class="stitok dopad-nizky">dopad nízky</span>
+    <span class="stitok">náročnosť malá</span>
+  </header>
+  <p class="kde"><b>Kde:</b> hlavné vľavo: ponuka výučby, výber súpera, Domov · hlavné vpravo: Napísať názor (Zrušiť | Zverejniť), Nová karta v Dielni, Odísť z partie?, /hra návštevník</p>
+  <div class="dvojica">
+    <figure><figcaption>Teraz</figcaption><a class="obr" href="ui-inspekcia-20261120-1324-web/W-20-teraz.jpg" target="_blank" rel="noopener"><img src="ui-inspekcia-20261120-1324-web/W-20-teraz.jpg" alt="W-20 teraz" loading="lazy"></a></figure>
+    <figure class="navrh"><figcaption>Návrh</figcaption><a class="obr" href="ui-inspekcia-20261120-1324-web/W-20-navrh.jpg" target="_blank" rel="noopener"><img src="ui-inspekcia-20261120-1324-web/W-20-navrh.jpg" alt="W-20 návrh" loading="lazy"></a></figure>
+  </div>
+  
+  <div class="text">
+    <p><b>Čo je zle:</b> V dialógoch a formulároch stojí zvýraznené tlačidlo v troch prípadoch vľavo a v štyroch vpravo, takže hráč ho nemá kde čakať.</p>
+    <p><b>Návrh:</b> V dialógoch a formulároch hlavné tlačidlo vždy vpravo, vedľajšie (Späť, Zrušiť, Preskočiť) vľavo.</p>
+    <p class="zdroj"><b>Zdroj:</b> <code>apps/web/src/hra/VstupyVyucby.tsx:94</code></p>
+  </div>
+</article>
+
+<article class="nalez" id="W-27" data-typ="nekonzistencia" data-dopad="nizky" data-miesto="Profil a partie">
+  <header class="nalez-hlava">
+    <span class="nalez-id">W-27</span>
+    <h3>„Návštevník“ a „Nealko“ vedľa seba bez vysvetlenia</h3>
+    <span class="stitok typ-nekonzistencia">Nekonzistencia</span>
+    <span class="stitok dopad-nizky">dopad nízky</span>
+    <span class="stitok">náročnosť malá</span>
+  </header>
+  <p class="kde"><b>Kde:</b> /hrac/:id (karta hráča), čakáreň („Frajerina 1200 · Návštevník“)</p>
+  <div class="dvojica">
+    <figure><figcaption>Teraz</figcaption><a class="obr" href="ui-inspekcia-20261120-1324-web/W-27-teraz.jpg" target="_blank" rel="noopener"><img src="ui-inspekcia-20261120-1324-web/W-27-teraz.jpg" alt="W-27 teraz" loading="lazy"></a></figure>
+    <figure class="navrh"><figcaption>Návrh</figcaption><a class="obr" href="ui-inspekcia-20261120-1324-web/W-27-navrh.jpg" target="_blank" rel="noopener"><img src="ui-inspekcia-20261120-1324-web/W-27-navrh.jpg" alt="W-27 návrh" loading="lazy"></a></figure>
+  </div>
+  
+  <div class="text">
+    <p><b>Čo je zle:</b> Karta hráča má vedľa seba dva rovnaké štítky z dvoch rebríčkov — titul podľa Frajeriny (Návštevník) a rank účtu (Nealko). Nič nepovie, ktorý je ktorý, a nový hráč číta „Návštevník“ ako stav svojho účtu. Postup vedľa nich ukazuje „Deci: 0 / 106 ★“, hoci najbližší rank je Poldeci.</p>
+    <p><b>Návrh:</b> Titul Frajeriny presunúť k číslu Frajeriny, kam patrí; pri mene nechať len rank s predponou („rank Nealko“).</p>
+    <p class="zdroj"><b>Zdroj:</b> <code>apps/web/src/stranky/profil/Profil.tsx:335</code></p>
+  </div>
+</article>
+
+<article class="nalez" id="W-28" data-typ="ux" data-dopad="nizky" data-miesto="Profil a partie">
+  <header class="nalez-hlava">
+    <span class="nalez-id">W-28</span>
+    <h3>Ligy: „zatiaľ voľná pre všetkých“ a „Na odomknutie“ naraz</h3>
+    <span class="stitok typ-ux">UX</span>
+    <span class="stitok dopad-nizky">dopad nízky</span>
+    <span class="stitok">náročnosť malá</span>
+  </header>
+  <p class="kde"><b>Kde:</b> /hrac/:id → Ligy, všetky rozlíšenia</p>
+  <div class="dvojica">
+    <figure><figcaption>Teraz</figcaption><a class="obr" href="ui-inspekcia-20261120-1324-web/W-28-teraz.jpg" target="_blank" rel="noopener"><img src="ui-inspekcia-20261120-1324-web/W-28-teraz.jpg" alt="W-28 teraz" loading="lazy"></a></figure>
+    <figure class="navrh"><figcaption>Návrh</figcaption><a class="obr" href="ui-inspekcia-20261120-1324-web/W-28-navrh.jpg" target="_blank" rel="noopener"><img src="ui-inspekcia-20261120-1324-web/W-28-navrh.jpg" alt="W-28 návrh" loading="lazy"></a></figure>
+  </div>
+  
+  <div class="text">
+    <p><b>Čo je zle:</b> Druhá a Prvá liga sú označené ako voľné, hneď pod tým však stojí „Na odomknutie: Vyhraj 1 partiu Tretej ligy proti človeku (máš 0/1)“ a ukazovateľ postupu. Hráč nevie, či ligu hrať smie.</p>
+    <p><b>Návrh:</b> Štítok „voľná“ a podmienku povedať ako budúcnosť: „neskôr sa zamkne — bude treba 1 výhru v Tretej lige (0/1)“.</p>
+    <p class="zdroj"><b>Zdroj:</b> <code>apps/web/src/hra/ligy.ts:38</code></p>
+  </div>
+</article>
+
+<article class="nalez" id="W-22" data-typ="zataz" data-dopad="nizky" data-miesto="Karty">
+  <header class="nalez-hlava">
+    <span class="nalez-id">W-22</span>
+    <h3>Karty: rozbory sady medzi hlavnými záložkami</h3>
+    <span class="stitok typ-zataz">Záťaž</span>
+    <span class="stitok dopad-nizky">dopad nízky</span>
+    <span class="stitok">náročnosť malá</span>
+  </header>
+  <p class="kde"><b>Kde:</b> /karty, /karty/dielna, /karty/heatmapa, /karty/power-level, všetky rozlíšenia</p>
+  <div class="dvojica">
+    <figure><figcaption>Teraz</figcaption><a class="obr" href="ui-inspekcia-20261120-1324-web/W-22-teraz.jpg" target="_blank" rel="noopener"><img src="ui-inspekcia-20261120-1324-web/W-22-teraz.jpg" alt="W-22 teraz" loading="lazy"></a></figure>
+    <figure class="navrh"><figcaption>Návrh</figcaption><a class="obr" href="ui-inspekcia-20261120-1324-web/W-22-navrh.jpg" target="_blank" rel="noopener"><img src="ui-inspekcia-20261120-1324-web/W-22-navrh.jpg" alt="W-22 návrh" loading="lazy"></a></figure>
+  </div>
+  
+  <div class="text">
+    <p><b>Čo je zle:</b> Heatmapa akcií a Power level sú nástroje na vyvažovanie sady („Váhy akcií… Nastavuje ich admin“), no v záložkách majú rovnakú váhu ako Karty v hre. Dielňa má vlastný nadpis, Heatmapa a Power level nadpis „Karty“ s iným podnadpisom.</p>
+    <p><b>Návrh:</b> Hlavné záložky Karty v hre a Dielňa; Heatmapu a Power level odsunúť vpravo ako „Rozbor sady“. Nadpis stránky na každej záložke podľa záložky.</p>
+    <p class="zdroj"><b>Zdroj:</b> <code>apps/web/src/dielna/Dielna.tsx:25</code></p>
+  </div>
+</article>
+
+<article class="nalez" id="W-26" data-typ="zataz" data-dopad="nizky" data-miesto="Profil a partie">
+  <header class="nalez-hlava">
+    <span class="nalez-id">W-26</span>
+    <h3>Detail partie: jedenásť stĺpcov, tri bez vysvetlenia</h3>
+    <span class="stitok typ-zataz">Záťaž</span>
+    <span class="stitok dopad-nizky">dopad nízky</span>
+    <span class="stitok">náročnosť malá</span>
+  </header>
+  <p class="kde"><b>Kde:</b> /partia/:id → Kolá, všetky rozlíšenia</p>
+  <div class="dvojica">
+    <figure><figcaption>Teraz</figcaption><a class="obr" href="ui-inspekcia-20261120-1324-web/W-26-teraz.jpg" target="_blank" rel="noopener"><img src="ui-inspekcia-20261120-1324-web/W-26-teraz.jpg" alt="W-26 teraz" loading="lazy"></a></figure>
+    <figure class="navrh"><figcaption>Návrh</figcaption><a class="obr" href="ui-inspekcia-20261120-1324-web/W-26-navrh.jpg" target="_blank" rel="noopener"><img src="ui-inspekcia-20261120-1324-web/W-26-navrh.jpg" alt="W-26 návrh" loading="lazy"></a></figure>
+  </div>
+  
+  <div class="text">
+    <p><b>Čo je zle:</b> Tabuľka kôl má 11 stĺpcov. Pas („ty +0, ty +0“), Ponuka („5 : 3“) a Kliatby („0 : 8“) sú čísla bez popisu, čo znamenajú, a na otázku „ako sa lokalita vyhrala a odkiaľ sú špaky“ neodpovedajú.</p>
+    <p><b>Návrh:</b> Tieto tri stĺpce skryť pod rozbalenie „pas, ponuka, kliatby ▸“; v základe nechať kolo, lokalitu, útočníka, tuhé, víťaza, Nakladačku, NA EX a špaky.</p>
+    <p class="zdroj"><b>Zdroj:</b> <code>apps/web/src/stranky/profil/DetailPartie.tsx:157</code></p>
+  </div>
+</article>
+
+<article class="nalez" id="W-31" data-typ="zataz" data-dopad="nizky" data-miesto="Karty">
+  <header class="nalez-hlava">
+    <span class="nalez-id">W-31</span>
+    <h3>Dielňa: šesť filtrov a triedenie nad prázdnym zoznamom</h3>
+    <span class="stitok typ-zataz">Záťaž</span>
+    <span class="stitok dopad-nizky">dopad nízky</span>
+    <span class="stitok">náročnosť malá</span>
+  </header>
+  <p class="kde"><b>Kde:</b> /karty/dielna bez návrhov, všetky rozlíšenia</p>
+  <div class="dvojica">
+    <figure><figcaption>Teraz</figcaption><a class="obr" href="ui-inspekcia-20261120-1324-web/W-31-teraz.jpg" target="_blank" rel="noopener"><img src="ui-inspekcia-20261120-1324-web/W-31-teraz.jpg" alt="W-31 teraz" loading="lazy"></a></figure>
+    <figure class="navrh"><figcaption>Návrh</figcaption><a class="obr" href="ui-inspekcia-20261120-1324-web/W-31-navrh.jpg" target="_blank" rel="noopener"><img src="ui-inspekcia-20261120-1324-web/W-31-navrh.jpg" alt="W-31 návrh" loading="lazy"></a></figure>
+  </div>
+  
+  <div class="text">
+    <p><b>Čo je zle:</b> Keď v Dielni nič nie je, stále sú tu čipy Všetko 0, V hlasovaní 0, V tvorcovi a v hre 0, Vrátené a zamietnuté 0, Archív 0, Moje 0 a výber Zoradiť. Šesť núl nič neriadi.</p>
+    <p><b>Návrh:</b> Filtre a triedenie ukázať až s prvým návrhom.</p>
+    <p class="zdroj"><b>Zdroj:</b> <code>apps/web/src/dielna/Dielna.tsx:177</code></p>
+  </div>
+</article>
+
+<article class="nalez" id="W-33" data-typ="zataz" data-dopad="nizky" data-miesto="Pravidlá">
+  <header class="nalez-hlava">
+    <span class="nalez-id">W-33</span>
+    <h3>Pravidlá, 1. kapitola: upozornenie o karikatúre trikrát</h3>
+    <span class="stitok typ-zataz">Záťaž</span>
+    <span class="stitok dopad-nizky">dopad nízky</span>
+    <span class="stitok">náročnosť malá</span>
+  </header>
+  <p class="kde"><b>Kde:</b> /pravidla → Čo je NA EX!, všetky rozlíšenia</p>
+  <div class="dvojica">
+    <figure><figcaption>Teraz</figcaption><a class="obr" href="ui-inspekcia-20261120-1324-web/W-33-teraz.jpg" target="_blank" rel="noopener"><img src="ui-inspekcia-20261120-1324-web/W-33-teraz.jpg" alt="W-33 teraz" loading="lazy"></a></figure>
+    <figure class="navrh"><figcaption>Návrh</figcaption><a class="obr" href="ui-inspekcia-20261120-1324-web/W-33-navrh.jpg" target="_blank" rel="noopener"><img src="ui-inspekcia-20261120-1324-web/W-33-navrh.jpg" alt="W-33 návrh" loading="lazy"></a></figure>
+  </div>
+  
+  <div class="text">
+    <p><b>Čo je zle:</b> Na jednej obrazovke je „Hra je zámerne prehnaná karikatúra“ (V skratke), „Hra je fikcia a zámerne zveličená karikatúra. Alkohol, fajčenie, hazard ani dlhy…“ (odsek) a v pätičke každej stránky „Hra je fikcia a karikatúra. Alkohol, fajčenie a hazard škodia zdraviu.“</p>
+    <p><b>Návrh:</b> Škrtnúť drobný odsek pod textom kapitoly (17 slov) — bod v skratke a pätička ostávajú.</p>
+    <p class="zdroj"><b>Zdroj:</b> <code>apps/web/src/i18n/pravidla/sk.json:18</code></p>
+  </div>
+</article>
+
+<article class="nalez" id="W-23" data-typ="chyba" data-dopad="nizky" data-miesto="Karty">
+  <header class="nalez-hlava">
+    <span class="nalez-id">W-23</span>
+    <h3>Nízky kontrast drobných čísel (Heatmapa, Power level, Spätná väzba)</h3>
+    <span class="stitok typ-chyba">Chyba</span>
+    <span class="stitok dopad-nizky">dopad nízky</span>
+    <span class="stitok">náročnosť malá</span>
+  </header>
+  <p class="kde"><b>Kde:</b> /karty/heatmapa — „⊘ 22“ až „⊘ 43“ a percentá v bunkách, 1,9–3,8 : 1 (treba 4,5 : 1), všetky rozlíšenia · /karty/power-level — „Efekt“ 4,40 : 1 · /spatna-vazba — počet pri „Od ľudí“ 4,45 : 1</p>
+  <div class="dvojica">
+    <figure><figcaption>Teraz</figcaption><a class="obr" href="ui-inspekcia-20261120-1324-web/W-23-teraz.jpg" target="_blank" rel="noopener"><img src="ui-inspekcia-20261120-1324-web/W-23-teraz.jpg" alt="W-23 teraz" loading="lazy"></a></figure>
+    <figure class="navrh"><figcaption>Návrh</figcaption><a class="obr" href="ui-inspekcia-20261120-1324-web/W-23-navrh.jpg" target="_blank" rel="noopener"><img src="ui-inspekcia-20261120-1324-web/W-23-navrh.jpg" alt="W-23 návrh" loading="lazy"></a></figure>
+  </div>
+  
+  <div class="text">
+    <p><b>Čo je zle:</b> Percento a počet blokovaných pozícií sú v bunke heatmapy svetlé na jantárovom podklade; pri najsýtejších bunkách klesá kontrast na 1,9 : 1 pri písme 11 px. Dve ďalšie miesta sú tesne pod prahom.</p>
+    <p><b>Návrh:</b> Drobný text v bunke písať tou istou tmavou farbou ako hlavné číslo (--na-akcente); počítadlá na ostatných dvoch miestach o stupeň svetlejšie.</p>
+    <p class="zdroj"><b>Zdroj:</b> <code>apps/web/src/stranky/heatmapa.css:163</code></p>
+  </div>
+</article>
+
+<article class="nalez" id="W-25" data-typ="chyba" data-dopad="nizky" data-miesto="Profil a partie">
+  <header class="nalez-hlava">
+    <span class="nalez-id">W-25</span>
+    <h3>Štítok „bot“ v zozname partií je roztiahnutý</h3>
+    <span class="stitok typ-chyba">Chyba</span>
+    <span class="stitok dopad-nizky">dopad nízky</span>
+    <span class="stitok">náročnosť malá</span>
+  </header>
+  <p class="kde"><b>Kde:</b> /hrac/:id → Partie a Posledné partie, všetky rozlíšenia</p>
+  <div class="dvojica">
+    <figure><figcaption>Teraz</figcaption><a class="obr" href="ui-inspekcia-20261120-1324-web/W-25-teraz.jpg" target="_blank" rel="noopener"><img src="ui-inspekcia-20261120-1324-web/W-25-teraz.jpg" alt="W-25 teraz" loading="lazy"></a></figure>
+    <figure class="navrh"><figcaption>Návrh</figcaption><a class="obr" href="ui-inspekcia-20261120-1324-web/W-25-navrh.jpg" target="_blank" rel="noopener"><img src="ui-inspekcia-20261120-1324-web/W-25-navrh.jpg" alt="W-25 návrh" loading="lazy"></a></figure>
+  </div>
+  
+  <div class="text">
+    <p><b>Čo je zle:</b> Štítok „bot“ pod menom súpera má šírku celého stĺpca (163 px) namiesto šírky slova — stĺpec je flex so smerom nadol a deti sa naťahujú.</p>
+    <p><b>Návrh:</b> Stĺpcu pridať align-items: flex-start.</p>
+    <p class="zdroj"><b>Zdroj:</b> <code>apps/web/src/stranky/profil/profil.css:384</code></p>
+  </div>
+</article>
+
+<article class="nalez" id="W-29" data-typ="chyba" data-dopad="nizky" data-miesto="Vývoj a Novinky">
+  <header class="nalez-hlava">
+    <span class="nalez-id">W-29</span>
+    <h3>Novinky: odkaz na roadmapu je malý cieľ s iným menom</h3>
+    <span class="stitok typ-chyba">Chyba</span>
+    <span class="stitok dopad-nizky">dopad nízky</span>
+    <span class="stitok">náročnosť malá</span>
+  </header>
+  <p class="kde"><b>Kde:</b> /novinky (hlava stránky), všetky rozlíšenia — 202×23 px</p>
+  <div class="dvojica">
+    <figure><figcaption>Teraz</figcaption><a class="obr" href="ui-inspekcia-20261120-1324-web/W-29-teraz.jpg" target="_blank" rel="noopener"><img src="ui-inspekcia-20261120-1324-web/W-29-teraz.jpg" alt="W-29 teraz" loading="lazy"></a></figure>
+    <figure class="navrh"><figcaption>Návrh</figcaption><a class="obr" href="ui-inspekcia-20261120-1324-web/W-29-navrh.jpg" target="_blank" rel="noopener"><img src="ui-inspekcia-20261120-1324-web/W-29-navrh.jpg" alt="W-29 návrh" loading="lazy"></a></figure>
+  </div>
+  
+  <div class="text">
+    <p><b>Čo je zle:</b> Akcia v hlave je podčiarknutý text vysoký 23 px (WCAG 2.5.8 žiada 24), kým ostatné stránky tam majú tlačidlo. Volá sa „Kam hra smeruje → Roadmapa“ a vedie na stránku, ktorá sa v navigácii volá Vývoj.</p>
+    <p><b>Návrh:</b> Tlačidlo „Roadmapa →“ ako akcie v hlavách ostatných stránok.</p>
+    <p class="zdroj"><b>Zdroj:</b> <code>apps/web/src/stranky/Novinky.tsx:186</code></p>
+  </div>
+</article>
+
+<article class="nalez" id="W-32" data-typ="chyba" data-dopad="nizky" data-miesto="Domov a hlavička">
+  <header class="nalez-hlava">
+    <span class="nalez-id">W-32</span>
+    <h3>Herné meno v hlavičke je orezané</h3>
+    <span class="stitok typ-chyba">Chyba</span>
+    <span class="stitok dopad-nizky">dopad nízky</span>
+    <span class="stitok">náročnosť malá</span>
+  </header>
+  <p class="kde"><b>Kde:</b> hlavička, 1920×1080 a 1600×1000 („Fero z dolného ko…“)</p>
+  <div class="dvojica">
+    <figure><figcaption>Teraz</figcaption><a class="obr" href="ui-inspekcia-20261120-1324-web/W-32-teraz.jpg" target="_blank" rel="noopener"><img src="ui-inspekcia-20261120-1324-web/W-32-teraz.jpg" alt="W-32 teraz" loading="lazy"></a></figure>
+    <figure class="navrh"><figcaption>Návrh</figcaption><a class="obr" href="ui-inspekcia-20261120-1324-web/W-32-navrh.jpg" target="_blank" rel="noopener"><img src="ui-inspekcia-20261120-1324-web/W-32-navrh.jpg" alt="W-32 návrh" loading="lazy"></a></figure>
+  </div>
+  
+  <div class="text">
+    <p><b>Čo je zle:</b> Meno pri avatare má najviac 160 px, takže 20-znakové meno sa skráti trojbodkou, hoci herné meno smie mať 24 znakov a vpravo je voľné miesto.</p>
+    <p><b>Návrh:</b> Šírku zvýšiť na 240 px (24 znakov sa zmestí).</p>
+    <p class="zdroj"><b>Zdroj:</b> <code>apps/web/src/styles.css:799</code></p>
+  </div>
+</article>
+
+<article class="nalez" id="W-34" data-typ="chyba" data-dopad="nizky" data-miesto="Profil a partie">
+  <header class="nalez-hlava">
+    <span class="nalez-id">W-34</span>
+    <h3>Jazyk v nastaveniach: popis rozbíja mriežku volieb</h3>
+    <span class="stitok typ-chyba">Chyba</span>
+    <span class="stitok dopad-nizky">dopad nízky</span>
+    <span class="stitok">náročnosť malá</span>
+  </header>
+  <p class="kde"><b>Kde:</b> /profil → Preferencie, len kde je zapnutá voľba jazyka (lokálne a Zrejúca; živá Vypálená ju nemá)</p>
+  <div class="dvojica">
+    <figure><figcaption>Teraz</figcaption><a class="obr" href="ui-inspekcia-20261120-1324-web/W-34-teraz.jpg" target="_blank" rel="noopener"><img src="ui-inspekcia-20261120-1324-web/W-34-teraz.jpg" alt="W-34 teraz" loading="lazy"></a></figure>
+    <figure class="navrh"><figcaption>Návrh</figcaption><a class="obr" href="ui-inspekcia-20261120-1324-web/W-34-navrh.jpg" target="_blank" rel="noopener"><img src="ui-inspekcia-20261120-1324-web/W-34-navrh.jpg" alt="W-34 návrh" loading="lazy"></a></figure>
+  </div>
+  
+  <div class="text">
+    <p><b>Čo je zle:</b> Popis jazyka je odsek vnútri mriežky volieb, takže zaberie prvú bunku, natiahne dlaždice Slovenčina / English / Polski na 140 px výšky a Čeština s Magyar skončia v druhom rade pod textom.</p>
+    <p><b>Návrh:</b> Popis roztiahnuť cez celú šírku mriežky (grid-column: 1 / -1) alebo ho dať nad ňu.</p>
+    <p class="zdroj"><b>Zdroj:</b> <code>apps/web/src/stranky/Ucet.tsx:598</code></p>
+  </div>
+</article>
+
+<article class="nalez" id="W-35" data-typ="vylepsenie" data-dopad="nizky" data-miesto="Profil a partie">
+  <header class="nalez-hlava">
+    <span class="nalez-id">W-35</span>
+    <h3>Achievementy: 101 dlaždíc podľa abecedy</h3>
+    <span class="stitok typ-vylepsenie">Vylepšenie</span>
+    <span class="stitok dopad-nizky">dopad nízky</span>
+    <span class="stitok">náročnosť malá</span>
+  </header>
+  <p class="kde"><b>Kde:</b> /hrac/:id → Achievementy, všetky rozlíšenia (5293 px pri 1366)</p>
+  <div class="dvojica">
+    <figure><figcaption>Teraz</figcaption><a class="obr" href="ui-inspekcia-20261120-1324-web/W-35-teraz.jpg" target="_blank" rel="noopener"><img src="ui-inspekcia-20261120-1324-web/W-35-teraz.jpg" alt="W-35 teraz" loading="lazy"></a></figure>
+    <figure class="navrh"><figcaption>Návrh</figcaption><a class="obr" href="ui-inspekcia-20261120-1324-web/W-35-navrh.jpg" target="_blank" rel="noopener"><img src="ui-inspekcia-20261120-1324-web/W-35-navrh.jpg" alt="W-35 návrh" loading="lazy"></a></figure>
+  </div>
+  
+  <div class="text">
+    <p><b>Čo je zle:</b> Vitrína radí všetkých 101 podtáckov podľa abecedy. Tie, na ktorých hráč práve pracuje (1/3, 1/7), sú roztrúsené medzi šedými a treba ich hľadať posúvaním.</p>
+    <p><b>Návrh:</b> Hore skupina „Rozpracované“ zoradená podľa postupu, pod ňou ostatné.</p>
+    <p class="zdroj"><b>Zdroj:</b> <code>apps/web/src/achievementy/Vitrina.tsx:87</code></p>
+  </div>
+</article>
+
+<article class="nalez" id="W-30" data-typ="chyba" data-dopad="nizky" data-miesto="Karty">
+  <header class="nalez-hlava">
+    <span class="nalez-id">W-30</span>
+    <h3>Power level sa načítava 4 až 6 sekúnd</h3>
+    <span class="stitok typ-chyba">Chyba</span>
+    <span class="stitok dopad-nizky">dopad nízky</span>
+    <span class="stitok">náročnosť stredná</span>
+  </header>
+  <p class="kde"><b>Kde:</b> /karty/power-level — 6,1 s (1920×1080), 4,3 s (1512×860), 11,7 s (1440×800); pri 1600×1000 a 1366×650 1,4 s · /karty — raz 4,6 s (1440×800)</p>
+  <div class="dvojica jedna">
+    <figure><figcaption>Teraz</figcaption><a class="obr" href="ui-inspekcia-20261120-1324-web/W-30-teraz.jpg" target="_blank" rel="noopener"><img src="ui-inspekcia-20261120-1324-web/W-30-teraz.jpg" alt="W-30 teraz" loading="lazy"></a></figure>
+    
+  </div>
+  
+  <div class="text">
+    <p><b>Čo je zle:</b> Stránka vykreslí naraz 98 kariet s ilustráciami (17 700 px) a v troch z piatich meraní prekročila 4 s; ostatné stránky držali 1,3 s. Merané na stroji, kde naraz bežali štyria inšpektori — rozptyl je aj záťažou. Nevizuálny nález, bez mocku.</p>
+    <p><b>Návrh:</b> Karty pod zlomom kresliť až pri posune (lenivé načítanie obrázkov alebo stránkovanie po 20).</p>
+    <p class="zdroj"><b>Zdroj:</b> <code>apps/web/src/stranky/PowerLevel.tsx:154</code></p>
+  </div>
+</article>
+</section>
+
+<h2>Bez chýb</h2>
+<p class="zaver">/prihlasenie · /zabudnute-heslo · /neexistuje (404) · detail karty na /karty · dialóg Ohodnoť hru · kostra stránok (kostra.ts ✓ na 18 stránkach × 3 rozlíšenia)</p>
+
+<h2>Mimo mojej oblasti</h2>
+<ul class="zaver">
+  <li>Prehrávač partie (/partia/:id/prehravac) kreslí herný stôl; ovládanie v hlavičke má ikony bez popisov a „zavrieť“ ako textový odkaz — patrí inšpektorom stola.</li>
+  <li>Nový účet má v menu „Reporty playtestov“, lebo lokálne má právo reporty_playtestov každý rank — nastavenie práv, nie rozhranie.</li>
+  <li>Texty položiek roadmapy (názvy súborov a funkcií, „TODO v elders.json“) sú obsah, ktorý spravuje admin.</li>
+  <li>Prepínač jazyka v hlavičke a Jazyk v nastaveniach sú zapnuté len lokálne a v Zrejúcej; živá Vypálená ich nemá.</li>
+  <li>Nástroj inspekcia.ts nenastavuje jazyk webu — prvý beh zmeral stránky po anglicky (jazyk systému); pomohlo nastaviť jazyk v profile účtu UI inšpektor.</li>
+  <li>Kostra.ts meria len ľavé hrany a H1; užšiu hlavu na /profil (W-12) nezachytí.</li>
+</ul>
+
+<p class="zaver">Vyradené ako zámer: 14 (názvy Nástrojov v mriežke kariet a „NA EX“ na páse sú dizajn karty, trojbodky na kartách roadmapy majú detail na klik) · akceptované výnimky: 1754.</p>
+</main>
+<script>
+(() => {
+  const stav = { typ: "", dopad: "", miesto: "" };
+  const karty = [...document.querySelectorAll(".nalez")];
+  const pocet = document.getElementById("pocet");
+  const pouzi = () => {
+    let n = 0;
+    for (const k of karty) {
+      const ok = (!stav.typ || k.dataset.typ === stav.typ) && (!stav.dopad || k.dataset.dopad === stav.dopad) && (!stav.miesto || k.dataset.miesto === stav.miesto);
+      k.classList.toggle("skryty", !ok);
+      if (ok) n++;
+    }
+    pocet.textContent = n + " z " + karty.length;
+  };
+  for (const s of document.querySelectorAll("#filter .skupina[data-os]")) {
+    s.addEventListener("click", (ev) => {
+      const b = ev.target.closest("button");
+      if (!b) return;
+      stav[s.dataset.os] = b.dataset.h;
+      for (const x of s.querySelectorAll("button")) x.setAttribute("aria-pressed", String(x === b));
+      pouzi();
+    });
+  }
+  document.getElementById("miesto").addEventListener("change", (ev) => { stav.miesto = ev.target.value; pouzi(); });
+  pouzi();
+})();
+</script>
+</body>
+</html>

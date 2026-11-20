@@ -1,0 +1,637 @@
+{
+  "oblast": "web",
+  "commit": "b5775de2",
+  "suhrn": {
+    "nalezov": 35,
+    "vyradeneAkoZamer": 14,
+    "akceptovaneVynimky": 1754
+  },
+  "top": [
+    "W-01",
+    "W-07",
+    "W-02",
+    "W-03",
+    "W-05",
+    "W-06",
+    "W-08",
+    "W-04",
+    "W-09",
+    "W-14"
+  ],
+  "nalezy": [
+    {
+      "id": "W-01",
+      "nazov": "Registrácia: chybová hláška je mimo okna, tlačidlo pod zlomom",
+      "typ": "chyba",
+      "dopad": "vysoky",
+      "narocnost": "mala",
+      "kde": [
+        "/registracia, 1366×650 (pri vyšších oknách je hláška aj tlačidlo vidno)"
+      ],
+      "zdroj": "apps/web/src/stranky/Ucet.tsx:169",
+      "popis": "Formulár má 4 polia pod sebou v stĺpci širokom 440 px, tlačidlo „Vytvoriť účet“ je pri 1366×650 pod zlomom. Keď hráč doroluje, klikne a heslá sa nezhodujú alebo je meno obsadené, hláška sa vykreslí hore vo formulári — 107 px nad oknom. Na obrazovke sa nezmení nič.",
+      "navrh": "Polia do dvoch stĺpcov (meno | herné meno, heslo | heslo znova), aby bol celý formulár aj s tlačidlom nad zlomom, a hlášku vykresliť tesne nad tlačidlom, kde sa hráč práve pozerá.",
+      "teraz": "ui-inspekcia-20261120-1324-web/W-01-teraz.jpg",
+      "mock": [
+        "ui-inspekcia-20261120-1324-web/W-01-navrh.jpg"
+      ]
+    },
+    {
+      "id": "W-07",
+      "nazov": "Detail partie ukazuje surovú šablónu „{2:vyhral|vyhrala|vyhráva}“",
+      "typ": "chyba",
+      "dopad": "vysoky",
+      "narocnost": "mala",
+      "kde": [
+        "/partia/:id, všetky rozlíšenia (partia dohraná výhrou strachom proti botovi)"
+      ],
+      "zdroj": "apps/web/src/stranky/profil/DetailPartie.tsx:126",
+      "popis": "Dôvod konca partie sa v detaile vypíše aj so značkou rodu: „Igor {2:vyhral|vyhrala|vyhráva} bitku a desí naplno 4 starších…“. Zoznam partií tú istú vetu skloňuje správne (Statistiky.tsx:287 volá rozlozRod), detail nie.",
+      "navrh": "V detaile partie prehnať dôvod tou istou funkciou rozlozRod ako v zozname partií.",
+      "teraz": "ui-inspekcia-20261120-1324-web/W-07-teraz.jpg",
+      "mock": [
+        "ui-inspekcia-20261120-1324-web/W-07-navrh.jpg"
+      ]
+    },
+    {
+      "id": "W-02",
+      "nazov": "Po registrácii skončí nový hráč v nastaveniach, nie pri hre",
+      "typ": "ux",
+      "dopad": "vysoky",
+      "narocnost": "mala",
+      "kde": [
+        "/registracia → /profil?novy=1, všetky rozlíšenia"
+      ],
+      "zdroj": "apps/web/src/stranky/Ucet.tsx:156",
+      "popis": "Nový účet pristane na stránke Môj profil (3264 px nastavení) s hláškou „Nastav si herné meno a fotku“ — herné meno pritom zadal o obrazovku skôr. Na stránke nie je tlačidlo Hrať ani výučba; k prvej partii vedie až návrat do navigácie.",
+      "navrh": "Po registrácii rovno na /hra, kde je hore výučba. Hlášku skrátiť: „Účet je pripravený. Fotku a farby si kedykoľvek nastavíš v profile.“",
+      "teraz": "ui-inspekcia-20261120-1324-web/W-02-teraz.jpg",
+      "mock": [
+        "ui-inspekcia-20261120-1324-web/W-02-navrh.jpg"
+      ]
+    },
+    {
+      "id": "W-03",
+      "nazov": "Hlavná výzva Domova posiela nového návštevníka na „Vitaj späť“",
+      "typ": "ux",
+      "dopad": "vysoky",
+      "narocnost": "mala",
+      "kde": [
+        "/ → tlačidlo „Nauč sa hrať s Majstrom Melicharom“ (návštevník), všetky rozlíšenia",
+        "/pravidla → „Začať výučbu“ (návštevník)"
+      ],
+      "zdroj": "apps/web/src/hra/Vyucba.tsx:91",
+      "popis": "Najväčšie tlačidlo titulky vedie neprihláseného na prihlásenie s nadpisom „Vitaj späť — pokračuj tam, kde si prestal“. Kto účet nemá, musí pod formulárom nájsť drobný odkaz „Zaregistruj sa“ — obrazovka a rozhodnutie navyše presne na ceste nováčika.",
+      "navrh": "Neprihláseného poslať z výzvy na registráciu (s návratom na výučbu), s úvodom „Ešte účet a majster Melichar ťa posadí k stolu.“ Kto účet má, má pod formulárom „Už máš účet? Prihlás sa“.",
+      "teraz": "ui-inspekcia-20261120-1324-web/W-03-teraz.jpg",
+      "mock": [
+        "ui-inspekcia-20261120-1324-web/W-03-navrh.jpg"
+      ]
+    },
+    {
+      "id": "W-05",
+      "nazov": "Stránka Hrať: 153 slov a založenie hry pod zlomom",
+      "typ": "zataz",
+      "dopad": "vysoky",
+      "narocnost": "stredna",
+      "kde": [
+        "/hra (nový hráč), 1366×650 a 1440×800 — „Nová hra“ pod zlomom",
+        "/hra, 1920×1080 — zmestí sa, text rovnaký"
+      ],
+      "zdroj": "apps/web/src/hra/Hra.tsx:144",
+      "popis": "Nad zlomom je len hlava a banner výučby so štyrmi riadkami textu. Voľba ligy patrí aj hre proti počítaču, no stojí len pod nadpisom „Nová hra“; popisy vysvetľujú, čo hovoria tlačidlá („Súkromná hra je len pre toho, komu pošleš kód“), a pravý panel je väčšinu času prázdny.",
+      "navrh": "Výučbu zúžiť na jeden riadok a založenie postaviť ako jednu otázku. Variant B (odporúčaný): Nová hra = Liga + S kým (Počítač / Kamarát / Ktokoľvek), vpravo Pripojiť sa. Variant A: tri panely vedľa seba. Slová 153 → 72 (B) / 66 (A), stránka 1152 → 756 px.",
+      "teraz": "ui-inspekcia-20261120-1324-web/W-05-teraz.jpg",
+      "mock": [
+        "ui-inspekcia-20261120-1324-web/W-05-navrh-b.jpg",
+        "ui-inspekcia-20261120-1324-web/W-05-navrh-a.jpg"
+      ]
+    },
+    {
+      "id": "W-06",
+      "nazov": "Môj profil: 619 slov a 3264 px nastavení na jednej stránke",
+      "typ": "zataz",
+      "dopad": "vysoky",
+      "narocnost": "stredna",
+      "kde": [
+        "/profil, všetky rozlíšenia (pri 1366×650 päť obrazoviek)"
+      ],
+      "zdroj": "apps/web/src/stranky/Ucet.tsx:452",
+      "popis": "Účet, vzhľad, 28 farebných schém s popismi, preferencie hry a zvuk sú pod sebou. Odkaz na štatistiky je tu trikrát (hlava, pod menom, panel Štatistiky), „Ukladá sa samo.“ päťkrát a zaškrtávače nesú celé vety („K končím / hotovo / potvrdiť, P pasovať…“), ktoré hráč nájde v partii pod klávesom „?“.",
+      "navrh": "Variant B (odporúčaný): tri záložky pod hlavou — Účet / Vzhľad / Hra a zvuk (84 / 107 / 135 slov na záložku). Variant A: ostať na jednej stránke, popisy schém pod myš, texty skrátiť, duplicity preč — 619 → 288 slov, 3264 → 2681 px. Nové znenia sú v mocku.",
+      "teraz": "ui-inspekcia-20261120-1324-web/W-06-teraz.jpg",
+      "mock": [
+        "ui-inspekcia-20261120-1324-web/W-06-navrh-b-hra.jpg",
+        "ui-inspekcia-20261120-1324-web/W-06-navrh-b-ucet.jpg",
+        "ui-inspekcia-20261120-1324-web/W-06-navrh-b-vzhlad.jpg",
+        "ui-inspekcia-20261120-1324-web/W-06-navrh-a.jpg"
+      ]
+    },
+    {
+      "id": "W-08",
+      "nazov": "Profil po prvej partii s botom vyzerá prázdny",
+      "typ": "ux",
+      "dopad": "vysoky",
+      "narocnost": "mala",
+      "kde": [
+        "/hrac/:id (vlastný profil po partii proti počítaču), všetky rozlíšenia"
+      ],
+      "zdroj": "apps/web/src/stranky/profil/Profil.tsx:287",
+      "popis": "Filter partií je predvolene „S ľuďmi“. Nový hráč hrá najprv výučbu a boty, takže po prvej dohratej partii vidí „Zatiaľ žiadna dohratá partia“, štyri dlaždice „zatiaľ bez dát“ a prázdne Posledné partie — partia je až pod prepínačom „Spolu“.",
+      "navrh": "Kým hráč nemá partiu s človekom, predvoliť „Spolu“ (alebo prvý neprázdny filter).",
+      "teraz": "ui-inspekcia-20261120-1324-web/W-08-teraz.jpg",
+      "mock": [
+        "ui-inspekcia-20261120-1324-web/W-08-navrh.jpg"
+      ]
+    },
+    {
+      "id": "W-04",
+      "nazov": "Pozvánka do hry nepovie, že je to pozvánka",
+      "typ": "ux",
+      "dopad": "vysoky",
+      "narocnost": "mala",
+      "kde": [
+        "/hra?kod=ABCD (návštevník), všetky rozlíšenia"
+      ],
+      "zdroj": "apps/web/src/hra/Hra.tsx:503",
+      "popis": "Kamarát, ktorý klikne na poslaný odkaz, vidí „Hrať môžu prihlásení — Súper ťa uvidí pod tvojím herným menom a s fotkou z profilu“. O pozvánke ani slovo a zvýraznené je „Prihlásiť sa“, hoci pozvaný účet spravidla nemá.",
+      "navrh": "Pri odkaze s kódom nadpis „Pozvánka do hry ABCD“, úvod „Kamarát ťa čaká pri stole. Vytvor si účet a sadneš si rovno k nemu.“ a hlavné tlačidlo „Vytvoriť účet“.",
+      "teraz": "ui-inspekcia-20261120-1324-web/W-04-teraz.jpg",
+      "mock": [
+        "ui-inspekcia-20261120-1324-web/W-04-navrh.jpg"
+      ]
+    },
+    {
+      "id": "W-09",
+      "nazov": "Prázdny profil: šesť panelov, ktoré hovoria „zatiaľ nič“",
+      "typ": "zataz",
+      "dopad": "stredny",
+      "narocnost": "mala",
+      "kde": [
+        "/hrac/:id (účet bez partie), všetky rozlíšenia — 1995 px"
+      ],
+      "zdroj": "apps/web/src/stranky/profil/Profil.tsx:404",
+      "popis": "Nový hráč vidí pod výzvou „Prvých päť poldecí“ ešte Formu (0), V číslach (4× „zatiaľ bez dát“), Achievementy (žiadny), Silné a slabé stránky (od 5 partií), Bilanciu (0 · 0 V · 0 R · 0 P dvakrát) a Posledné partie (žiadna) — šesť panelov bez obsahu.",
+      "navrh": "Bez partie ukázať len výzvu a Ligy; ostatné panely až keď majú čo ukázať. Prepínač S ľuďmi / S botmi / Spolu skryť, kým je všade 0. Stránka 1995 → 1077 px.",
+      "teraz": "ui-inspekcia-20261120-1324-web/W-09-teraz.jpg",
+      "mock": [
+        "ui-inspekcia-20261120-1324-web/W-09-navrh.jpg"
+      ]
+    },
+    {
+      "id": "W-10",
+      "nazov": "Dĺžka výučby: 34, 35 a „trikrát desať“ minút",
+      "typ": "nekonzistencia",
+      "dopad": "stredny",
+      "narocnost": "mala",
+      "kde": [
+        "/ („asi 34 minút“)",
+        "/hra a /pravidla („asi 35 minút“)",
+        "ponuka pri prvej hre („každá trvá asi desať minút“)"
+      ],
+      "zdroj": "apps/web/src/i18n/sk.json:423",
+      "popis": "Domov sľubuje „tri časti, spolu asi 34 minút“ (počíta sa zo scenára: 7 + 15 + 12), banner na Hrať a v Pravidlách má natvrdo 35 a Melicharova ponuka hovorí o troch častiach po desať minút, hoci druhá má 15.",
+      "navrh": "Čas brať všade z jednej funkcie dlzkaVyucby (stranky/dlzkaVyucby.ts). V ponuke škrtnúť „každá trvá asi desať minút“ a nechať súčet — text je Michalov, ide len o škrt a číslo.",
+      "teraz": "ui-inspekcia-20261120-1324-web/W-10-teraz.jpg",
+      "mock": [
+        "ui-inspekcia-20261120-1324-web/W-10-navrh.jpg"
+      ]
+    },
+    {
+      "id": "W-11",
+      "nazov": "„Môj profil“ sú nastavenia, „profil hráča“ sú štatistiky",
+      "typ": "nekonzistencia",
+      "dopad": "stredny",
+      "narocnost": "mala",
+      "kde": [
+        "menu účtu v hlavičke",
+        "/profil (hlava, odkaz pod menom, panel Štatistiky)",
+        "/hrac/:id („Upraviť profil a nastavenia“)"
+      ],
+      "zdroj": "apps/web/src/i18n/sk.json:23",
+      "popis": "Menu ponúka „Môj profil“ (nastavenia) a „Moje štatistiky“ (stránka, ktorej web hovorí „profil hráča“). Na tú istú stránku vedú štyri názvy: Moje štatistiky, Moje štatistiky a partie, Otvoriť profil hráča, profil.",
+      "navrh": "Dve mená pre dve stránky: „Môj profil“ = /hrac/:id (štatistiky, partie, achievementy), „Nastavenia“ = /profil. V menu v tomto poradí; tlačidlá medzi nimi „Nastavenia“ a „Môj profil“.",
+      "teraz": "ui-inspekcia-20261120-1324-web/W-11-teraz.jpg",
+      "mock": [
+        "ui-inspekcia-20261120-1324-web/W-11-navrh.jpg"
+      ]
+    },
+    {
+      "id": "W-12",
+      "nazov": "Hlava stránky Môj profil je užšia než všade inde",
+      "typ": "chyba",
+      "dopad": "stredny",
+      "narocnost": "mala",
+      "kde": [
+        "/profil, 1920×1080 a 1600×1000 (1180 px oproti 1440)",
+        "/profil, 1512×860, 1440×800, 1366×650 (1180 oproti 1283–1440)"
+      ],
+      "zdroj": "apps/web/src/stranky/statistiky.css:13",
+      "popis": "Obal stránky má max-width 1180 px a platí aj pre kriedovú tabuľu, takže pravá hrana hlavy pri prechode z inej stránky skočí o 103 až 260 px. Nástroj kostra.ts to nezachytí, meria len ľavé hrany.",
+      "navrh": "Šírku obmedziť len obsahu pod hlavou (alebo vôbec) — hlava nech drží šírku kostry ako na ostatných stránkach.",
+      "teraz": "ui-inspekcia-20261120-1324-web/W-12-teraz.jpg",
+      "mock": [
+        "ui-inspekcia-20261120-1324-web/W-12-navrh.jpg"
+      ]
+    },
+    {
+      "id": "W-13",
+      "nazov": "Domov: tri dlaždice opakujú navigáciu, vejár kariet je pod zlomom",
+      "typ": "zataz",
+      "dopad": "stredny",
+      "narocnost": "mala",
+      "kde": [
+        "/, 1366×650 (vejár orezaný, dlaždice pod zlomom)",
+        "/, všetky rozlíšenia (dlaždice)"
+      ],
+      "zdroj": "apps/web/src/stranky/Domov.tsx:94",
+      "popis": "Dlaždice Nauč sa hrať / Glosár kariet / Hraj proti kamarátovi vedú tam, kam Pravidlá, Karty a Hrať v navigácii nad nimi. „Nauč sa hrať“ je na stránke dvakrát a zakaždým vedie inam (tlačidlo na výučbu, dlaždica na pravidlá). Dve dlaždice majú emoji, tretia piktogram z hry.",
+      "navrh": "Dlaždice odstrániť (45 slov) a text s tlačidlami zarovnať hore, aby bol vejár celý nad zlomom.",
+      "teraz": "ui-inspekcia-20261120-1324-web/W-13-teraz.jpg",
+      "mock": [
+        "ui-inspekcia-20261120-1324-web/W-13-navrh.jpg"
+      ]
+    },
+    {
+      "id": "W-14",
+      "nazov": "Prihlásenie a registrácia majú päť rôznych mien",
+      "typ": "nekonzistencia",
+      "dopad": "stredny",
+      "narocnost": "mala",
+      "kde": [
+        "hlavička („Prihlásiť“, „Registrovať“)",
+        "/hra návštevník („Vytvoriť účet“, „Prihlásiť sa“)",
+        "/ („Prihlás sa a hraj“)",
+        "/prihlasenie („Zaregistruj sa“)",
+        "/registracia (nadpis „Nový účet“, tlačidlo „Vytvoriť účet“)"
+      ],
+      "zdroj": "apps/web/src/i18n/sk.json:40",
+      "popis": "To isté sa volá Registrovať, Vytvoriť účet, Zaregistruj sa aj Nový účet; prihlásenie Prihlásiť aj Prihlásiť sa. V hlavičke je zvýraznená registrácia vpravo, na stránke Hrať prihlásenie vpravo.",
+      "navrh": "Všade „Prihlásiť sa“ a „Vytvoriť účet“, v tom poradí, zvýraznené „Vytvoriť účet“ (neprihlásený je najčastejšie nový).",
+      "teraz": "ui-inspekcia-20261120-1324-web/W-14-teraz.jpg",
+      "mock": [
+        "ui-inspekcia-20261120-1324-web/W-14-navrh.jpg"
+      ]
+    },
+    {
+      "id": "W-15",
+      "nazov": "Rebríček a Spätná väzba vedú návštevníka do slepej uličky",
+      "typ": "ux",
+      "dopad": "stredny",
+      "narocnost": "mala",
+      "kde": [
+        "/rebricek a /spatna-vazba (návštevník), všetky rozlíšenia"
+      ],
+      "zdroj": "apps/web/src/App.tsx:34",
+      "popis": "Obe položky sú v navigácii neprihláseného, ale ukážu len „Najprv sa prihlás — Táto stránka je len pre prihlásených hráčov“ s jediným tlačidlom Prihlásiť sa. Stránka nepovie, čo za ňou je, a nový návštevník nemá kam ísť.",
+      "navrh": "Nechať nadpis stránky a povedať, čo po prihlásení uvidí („Poradie hráčov podľa Frajeriny uvidíš po prihlásení.“), s oboma tlačidlami. Alebo rebríček ukázať na čítanie aj neprihlásenému.",
+      "teraz": "ui-inspekcia-20261120-1324-web/W-15-teraz.jpg",
+      "mock": [
+        "ui-inspekcia-20261120-1324-web/W-15-navrh.jpg"
+      ]
+    },
+    {
+      "id": "W-16",
+      "nazov": "Rebríček: pri 1366 je vysvetlenie nad tabuľkou",
+      "typ": "zataz",
+      "dopad": "stredny",
+      "narocnost": "mala",
+      "kde": [
+        "/rebricek, 1366×650 (pod 1440 px šírky)"
+      ],
+      "zdroj": "apps/web/src/styles.css:415",
+      "popis": "Pravý stĺpec (Ako sa počíta Frajerina, hodnosti) sa v okne užšom než 1440 px presunie nad obsah. Pri 1366×650 tak 101 slov vysvetlenia (306 px) zaberie celú prvú obrazovku a poradie hráčov je pod zlomom pri každej návšteve.",
+      "navrh": "V užšom okne dať bok rebríčka pod tabuľku (bez „order: -1“), prípadne ho zbaliť do „Ako sa počíta Frajerina? ▸“ pod hlavou, ako to robia Karty.",
+      "teraz": "ui-inspekcia-20261120-1324-web/W-16-teraz.jpg",
+      "mock": [
+        "ui-inspekcia-20261120-1324-web/W-16-navrh.jpg"
+      ]
+    },
+    {
+      "id": "W-17",
+      "nazov": "Spätná väzba: panel „Ohodnoť hru“ a filtre pred názormi",
+      "typ": "zataz",
+      "dopad": "stredny",
+      "narocnost": "mala",
+      "kde": [
+        "/spatna-vazba, 1366×650 (panel nad zoznamom)",
+        "/spatna-vazba, všetky rozlíšenia (počítadlo v hlave, filtre nad prázdnym zoznamom)"
+      ],
+      "zdroj": "apps/web/src/stranky/SpatnaVazba.tsx:902",
+      "popis": "Pod 1440 px sa bočný panel „Ohodnoť hru“ dostane nad názory a odsunie ich pod zlom. V hlave je „0 názorov · 0 hotových“ — tie isté čísla, čo na záložkách o riadok nižšie. Kategória, Zoradiť a prepínač Od ľudí / Aj od AI playtesterov sú aj nad prázdnym zoznamom.",
+      "navrh": "„Ohodnotiť hru“ ako druhé tlačidlo v hlave (dialóg ostáva), panel a počítadlo preč, filtre ukázať až pri prvom názore. O 18 slov a 200 px menej.",
+      "teraz": "ui-inspekcia-20261120-1324-web/W-17-teraz.jpg",
+      "mock": [
+        "ui-inspekcia-20261120-1324-web/W-17-navrh.jpg"
+      ]
+    },
+    {
+      "id": "W-18",
+      "nazov": "Čakáreň: kopírovanie odkazu je malé a bez potvrdenia",
+      "typ": "ux",
+      "dopad": "stredny",
+      "narocnost": "mala",
+      "kde": [
+        "/hra po založení súkromnej hry, všetky rozlíšenia"
+      ],
+      "zdroj": "apps/web/src/hra/Hra.tsx:564",
+      "popis": "Jediné, čo má hostiteľ urobiť, je poslať pozvánku — tlačidlo „Skopírovať odkaz“ je však najmenšie na obrazovke a po kliku sa nezmení, takže nevidno, či sa odkaz skopíroval. Úvod hovorí o kóde, tlačidlo o odkaze. Prázdne miesto súpera je o 16 px nižšie než avatar.",
+      "navrh": "Kopírovanie ako hlavné tlačidlo, po kliku „Odkaz skopírovaný ✓“; úvod „Pošli súperovi odkaz alebo kód.“; obe miesta zarovnať hore.",
+      "teraz": "ui-inspekcia-20261120-1324-web/W-18-teraz.jpg",
+      "mock": [
+        "ui-inspekcia-20261120-1324-web/W-18-navrh.jpg"
+      ]
+    },
+    {
+      "id": "W-21",
+      "nazov": "Roadmapa ukazuje hráčovi interné štítky",
+      "typ": "zataz",
+      "dopad": "stredny",
+      "narocnost": "mala",
+      "kde": [
+        "/vyvoj a /vyvoj/roadmapa, všetky rozlíšenia"
+      ],
+      "zdroj": "apps/web/src/stranky/Roadmapa.tsx:117",
+      "popis": "Každá karta nesie náročnosť S/M/L, zdroj (Michal, Dizajn, Playtest), závislosť „↳ po 2“ a stĺpce „HORIZONT 1–4“ — údaje pre toho, kto roadmapu spravuje. Stránka sa v navigácii volá Vývoj, nadpis má „Kam hra smeruje“ a úvod 29 slov.",
+      "navrh": "Hráčovi nechať oblasť, názov, jednu vetu a stav; náročnosť, zdroj a závislosti ukázať len správcovi (sú v detaile na klik). Nadpis „Vývoj hry“, úvod „Ako hru hodnotia hráči, čo sa na nej robí a čo je hotové.“ (29 → 13 slov).",
+      "teraz": "ui-inspekcia-20261120-1324-web/W-21-teraz.jpg",
+      "mock": [
+        "ui-inspekcia-20261120-1324-web/W-21-navrh.jpg"
+      ]
+    },
+    {
+      "id": "W-24",
+      "nazov": "Registrácia sa nepýta na e-mail, obnova hesla ho vyžaduje",
+      "typ": "ux",
+      "dopad": "stredny",
+      "narocnost": "mala",
+      "kde": [
+        "/registracia a /zabudnute-heslo, všetky rozlíšenia"
+      ],
+      "zdroj": "apps/web/src/stranky/Ucet.tsx:170",
+      "popis": "Zabudnuté heslo sa dá obnoviť len cez e-mail uložený v profile („Bez e-mailu v profile sa heslo obnoviť nedá“). Registrácia e-mail nepýta a pole v profile je až na štvrtej obrazovke nastavení — kto heslo zabudne, o účet príde.",
+      "navrh": "Do registrácie pridať nepovinné pole „E-mail — len na obnovu zabudnutého hesla“. S dvoma stĺpcami z W-01 sa formulár stále zmestí nad zlom.",
+      "teraz": "ui-inspekcia-20261120-1324-web/W-24-teraz.jpg",
+      "mock": [
+        "ui-inspekcia-20261120-1324-web/W-24-navrh.jpg"
+      ]
+    },
+    {
+      "id": "W-19",
+      "nazov": "Výber súpera: označiť, potom ešte „Hrať“",
+      "typ": "vylepsenie",
+      "dopad": "stredny",
+      "narocnost": "mala",
+      "kde": [
+        "/hra → Hrať proti počítaču, všetky rozlíšenia"
+      ],
+      "zdroj": "apps/web/src/hra/VyberBota.tsx:39",
+      "popis": "Súper sa vyberá na dva kliky (dlaždica, potom Hrať) a náhodného súpera vysvetľuje veta pod dlaždicami: „Ak nikoho neoznačíš, dostaneš náhodného súpera.“",
+      "navrh": "Klik na dlaždicu rovno začne partiu; náhodný súper je piata dlaždica. Veta aj tlačidlo Hrať odpadnú, ostane Späť.",
+      "teraz": "ui-inspekcia-20261120-1324-web/W-19-teraz.jpg",
+      "mock": [
+        "ui-inspekcia-20261120-1324-web/W-19-navrh.jpg"
+      ]
+    },
+    {
+      "id": "W-20",
+      "nazov": "Hlavné tlačidlo je raz vľavo, raz vpravo",
+      "typ": "nekonzistencia",
+      "dopad": "nizky",
+      "narocnost": "mala",
+      "kde": [
+        "hlavné vľavo: ponuka výučby, výber súpera, Domov",
+        "hlavné vpravo: Napísať názor (Zrušiť | Zverejniť), Nová karta v Dielni, Odísť z partie?, /hra návštevník"
+      ],
+      "zdroj": "apps/web/src/hra/VstupyVyucby.tsx:94",
+      "popis": "V dialógoch a formulároch stojí zvýraznené tlačidlo v troch prípadoch vľavo a v štyroch vpravo, takže hráč ho nemá kde čakať.",
+      "navrh": "V dialógoch a formulároch hlavné tlačidlo vždy vpravo, vedľajšie (Späť, Zrušiť, Preskočiť) vľavo.",
+      "teraz": "ui-inspekcia-20261120-1324-web/W-20-teraz.jpg",
+      "mock": [
+        "ui-inspekcia-20261120-1324-web/W-20-navrh.jpg"
+      ]
+    },
+    {
+      "id": "W-27",
+      "nazov": "„Návštevník“ a „Nealko“ vedľa seba bez vysvetlenia",
+      "typ": "nekonzistencia",
+      "dopad": "nizky",
+      "narocnost": "mala",
+      "kde": [
+        "/hrac/:id (karta hráča), čakáreň („Frajerina 1200 · Návštevník“)"
+      ],
+      "zdroj": "apps/web/src/stranky/profil/Profil.tsx:335",
+      "popis": "Karta hráča má vedľa seba dva rovnaké štítky z dvoch rebríčkov — titul podľa Frajeriny (Návštevník) a rank účtu (Nealko). Nič nepovie, ktorý je ktorý, a nový hráč číta „Návštevník“ ako stav svojho účtu. Postup vedľa nich ukazuje „Deci: 0 / 106 ★“, hoci najbližší rank je Poldeci.",
+      "navrh": "Titul Frajeriny presunúť k číslu Frajeriny, kam patrí; pri mene nechať len rank s predponou („rank Nealko“).",
+      "teraz": "ui-inspekcia-20261120-1324-web/W-27-teraz.jpg",
+      "mock": [
+        "ui-inspekcia-20261120-1324-web/W-27-navrh.jpg"
+      ]
+    },
+    {
+      "id": "W-28",
+      "nazov": "Ligy: „zatiaľ voľná pre všetkých“ a „Na odomknutie“ naraz",
+      "typ": "ux",
+      "dopad": "nizky",
+      "narocnost": "mala",
+      "kde": [
+        "/hrac/:id → Ligy, všetky rozlíšenia"
+      ],
+      "zdroj": "apps/web/src/hra/ligy.ts:38",
+      "popis": "Druhá a Prvá liga sú označené ako voľné, hneď pod tým však stojí „Na odomknutie: Vyhraj 1 partiu Tretej ligy proti človeku (máš 0/1)“ a ukazovateľ postupu. Hráč nevie, či ligu hrať smie.",
+      "navrh": "Štítok „voľná“ a podmienku povedať ako budúcnosť: „neskôr sa zamkne — bude treba 1 výhru v Tretej lige (0/1)“.",
+      "teraz": "ui-inspekcia-20261120-1324-web/W-28-teraz.jpg",
+      "mock": [
+        "ui-inspekcia-20261120-1324-web/W-28-navrh.jpg"
+      ]
+    },
+    {
+      "id": "W-22",
+      "nazov": "Karty: rozbory sady medzi hlavnými záložkami",
+      "typ": "zataz",
+      "dopad": "nizky",
+      "narocnost": "mala",
+      "kde": [
+        "/karty, /karty/dielna, /karty/heatmapa, /karty/power-level, všetky rozlíšenia"
+      ],
+      "zdroj": "apps/web/src/dielna/Dielna.tsx:25",
+      "popis": "Heatmapa akcií a Power level sú nástroje na vyvažovanie sady („Váhy akcií… Nastavuje ich admin“), no v záložkách majú rovnakú váhu ako Karty v hre. Dielňa má vlastný nadpis, Heatmapa a Power level nadpis „Karty“ s iným podnadpisom.",
+      "navrh": "Hlavné záložky Karty v hre a Dielňa; Heatmapu a Power level odsunúť vpravo ako „Rozbor sady“. Nadpis stránky na každej záložke podľa záložky.",
+      "teraz": "ui-inspekcia-20261120-1324-web/W-22-teraz.jpg",
+      "mock": [
+        "ui-inspekcia-20261120-1324-web/W-22-navrh.jpg"
+      ]
+    },
+    {
+      "id": "W-26",
+      "nazov": "Detail partie: jedenásť stĺpcov, tri bez vysvetlenia",
+      "typ": "zataz",
+      "dopad": "nizky",
+      "narocnost": "mala",
+      "kde": [
+        "/partia/:id → Kolá, všetky rozlíšenia"
+      ],
+      "zdroj": "apps/web/src/stranky/profil/DetailPartie.tsx:157",
+      "popis": "Tabuľka kôl má 11 stĺpcov. Pas („ty +0, ty +0“), Ponuka („5 : 3“) a Kliatby („0 : 8“) sú čísla bez popisu, čo znamenajú, a na otázku „ako sa lokalita vyhrala a odkiaľ sú špaky“ neodpovedajú.",
+      "navrh": "Tieto tri stĺpce skryť pod rozbalenie „pas, ponuka, kliatby ▸“; v základe nechať kolo, lokalitu, útočníka, tuhé, víťaza, Nakladačku, NA EX a špaky.",
+      "teraz": "ui-inspekcia-20261120-1324-web/W-26-teraz.jpg",
+      "mock": [
+        "ui-inspekcia-20261120-1324-web/W-26-navrh.jpg"
+      ]
+    },
+    {
+      "id": "W-31",
+      "nazov": "Dielňa: šesť filtrov a triedenie nad prázdnym zoznamom",
+      "typ": "zataz",
+      "dopad": "nizky",
+      "narocnost": "mala",
+      "kde": [
+        "/karty/dielna bez návrhov, všetky rozlíšenia"
+      ],
+      "zdroj": "apps/web/src/dielna/Dielna.tsx:177",
+      "popis": "Keď v Dielni nič nie je, stále sú tu čipy Všetko 0, V hlasovaní 0, V tvorcovi a v hre 0, Vrátené a zamietnuté 0, Archív 0, Moje 0 a výber Zoradiť. Šesť núl nič neriadi.",
+      "navrh": "Filtre a triedenie ukázať až s prvým návrhom.",
+      "teraz": "ui-inspekcia-20261120-1324-web/W-31-teraz.jpg",
+      "mock": [
+        "ui-inspekcia-20261120-1324-web/W-31-navrh.jpg"
+      ]
+    },
+    {
+      "id": "W-33",
+      "nazov": "Pravidlá, 1. kapitola: upozornenie o karikatúre trikrát",
+      "typ": "zataz",
+      "dopad": "nizky",
+      "narocnost": "mala",
+      "kde": [
+        "/pravidla → Čo je NA EX!, všetky rozlíšenia"
+      ],
+      "zdroj": "apps/web/src/i18n/pravidla/sk.json:18",
+      "popis": "Na jednej obrazovke je „Hra je zámerne prehnaná karikatúra“ (V skratke), „Hra je fikcia a zámerne zveličená karikatúra. Alkohol, fajčenie, hazard ani dlhy…“ (odsek) a v pätičke každej stránky „Hra je fikcia a karikatúra. Alkohol, fajčenie a hazard škodia zdraviu.“",
+      "navrh": "Škrtnúť drobný odsek pod textom kapitoly (17 slov) — bod v skratke a pätička ostávajú.",
+      "teraz": "ui-inspekcia-20261120-1324-web/W-33-teraz.jpg",
+      "mock": [
+        "ui-inspekcia-20261120-1324-web/W-33-navrh.jpg"
+      ]
+    },
+    {
+      "id": "W-23",
+      "nazov": "Nízky kontrast drobných čísel (Heatmapa, Power level, Spätná väzba)",
+      "typ": "chyba",
+      "dopad": "nizky",
+      "narocnost": "mala",
+      "kde": [
+        "/karty/heatmapa — „⊘ 22“ až „⊘ 43“ a percentá v bunkách, 1,9–3,8 : 1 (treba 4,5 : 1), všetky rozlíšenia",
+        "/karty/power-level — „Efekt“ 4,40 : 1",
+        "/spatna-vazba — počet pri „Od ľudí“ 4,45 : 1"
+      ],
+      "zdroj": "apps/web/src/stranky/heatmapa.css:163",
+      "popis": "Percento a počet blokovaných pozícií sú v bunke heatmapy svetlé na jantárovom podklade; pri najsýtejších bunkách klesá kontrast na 1,9 : 1 pri písme 11 px. Dve ďalšie miesta sú tesne pod prahom.",
+      "navrh": "Drobný text v bunke písať tou istou tmavou farbou ako hlavné číslo (--na-akcente); počítadlá na ostatných dvoch miestach o stupeň svetlejšie.",
+      "teraz": "ui-inspekcia-20261120-1324-web/W-23-teraz.jpg",
+      "mock": [
+        "ui-inspekcia-20261120-1324-web/W-23-navrh.jpg"
+      ]
+    },
+    {
+      "id": "W-25",
+      "nazov": "Štítok „bot“ v zozname partií je roztiahnutý",
+      "typ": "chyba",
+      "dopad": "nizky",
+      "narocnost": "mala",
+      "kde": [
+        "/hrac/:id → Partie a Posledné partie, všetky rozlíšenia"
+      ],
+      "zdroj": "apps/web/src/stranky/profil/profil.css:384",
+      "popis": "Štítok „bot“ pod menom súpera má šírku celého stĺpca (163 px) namiesto šírky slova — stĺpec je flex so smerom nadol a deti sa naťahujú.",
+      "navrh": "Stĺpcu pridať align-items: flex-start.",
+      "teraz": "ui-inspekcia-20261120-1324-web/W-25-teraz.jpg",
+      "mock": [
+        "ui-inspekcia-20261120-1324-web/W-25-navrh.jpg"
+      ]
+    },
+    {
+      "id": "W-29",
+      "nazov": "Novinky: odkaz na roadmapu je malý cieľ s iným menom",
+      "typ": "chyba",
+      "dopad": "nizky",
+      "narocnost": "mala",
+      "kde": [
+        "/novinky (hlava stránky), všetky rozlíšenia — 202×23 px"
+      ],
+      "zdroj": "apps/web/src/stranky/Novinky.tsx:186",
+      "popis": "Akcia v hlave je podčiarknutý text vysoký 23 px (WCAG 2.5.8 žiada 24), kým ostatné stránky tam majú tlačidlo. Volá sa „Kam hra smeruje → Roadmapa“ a vedie na stránku, ktorá sa v navigácii volá Vývoj.",
+      "navrh": "Tlačidlo „Roadmapa →“ ako akcie v hlavách ostatných stránok.",
+      "teraz": "ui-inspekcia-20261120-1324-web/W-29-teraz.jpg",
+      "mock": [
+        "ui-inspekcia-20261120-1324-web/W-29-navrh.jpg"
+      ]
+    },
+    {
+      "id": "W-32",
+      "nazov": "Herné meno v hlavičke je orezané",
+      "typ": "chyba",
+      "dopad": "nizky",
+      "narocnost": "mala",
+      "kde": [
+        "hlavička, 1920×1080 a 1600×1000 („Fero z dolného ko…“)"
+      ],
+      "zdroj": "apps/web/src/styles.css:799",
+      "popis": "Meno pri avatare má najviac 160 px, takže 20-znakové meno sa skráti trojbodkou, hoci herné meno smie mať 24 znakov a vpravo je voľné miesto.",
+      "navrh": "Šírku zvýšiť na 240 px (24 znakov sa zmestí).",
+      "teraz": "ui-inspekcia-20261120-1324-web/W-32-teraz.jpg",
+      "mock": [
+        "ui-inspekcia-20261120-1324-web/W-32-navrh.jpg"
+      ]
+    },
+    {
+      "id": "W-34",
+      "nazov": "Jazyk v nastaveniach: popis rozbíja mriežku volieb",
+      "typ": "chyba",
+      "dopad": "nizky",
+      "narocnost": "mala",
+      "kde": [
+        "/profil → Preferencie, len kde je zapnutá voľba jazyka (lokálne a Zrejúca; živá Vypálená ju nemá)"
+      ],
+      "zdroj": "apps/web/src/stranky/Ucet.tsx:598",
+      "popis": "Popis jazyka je odsek vnútri mriežky volieb, takže zaberie prvú bunku, natiahne dlaždice Slovenčina / English / Polski na 140 px výšky a Čeština s Magyar skončia v druhom rade pod textom.",
+      "navrh": "Popis roztiahnuť cez celú šírku mriežky (grid-column: 1 / -1) alebo ho dať nad ňu.",
+      "teraz": "ui-inspekcia-20261120-1324-web/W-34-teraz.jpg",
+      "mock": [
+        "ui-inspekcia-20261120-1324-web/W-34-navrh.jpg"
+      ]
+    },
+    {
+      "id": "W-35",
+      "nazov": "Achievementy: 101 dlaždíc podľa abecedy",
+      "typ": "vylepsenie",
+      "dopad": "nizky",
+      "narocnost": "mala",
+      "kde": [
+        "/hrac/:id → Achievementy, všetky rozlíšenia (5293 px pri 1366)"
+      ],
+      "zdroj": "apps/web/src/achievementy/Vitrina.tsx:87",
+      "popis": "Vitrína radí všetkých 101 podtáckov podľa abecedy. Tie, na ktorých hráč práve pracuje (1/3, 1/7), sú roztrúsené medzi šedými a treba ich hľadať posúvaním.",
+      "navrh": "Hore skupina „Rozpracované“ zoradená podľa postupu, pod ňou ostatné.",
+      "teraz": "ui-inspekcia-20261120-1324-web/W-35-teraz.jpg",
+      "mock": [
+        "ui-inspekcia-20261120-1324-web/W-35-navrh.jpg"
+      ]
+    },
+    {
+      "id": "W-30",
+      "nazov": "Power level sa načítava 4 až 6 sekúnd",
+      "typ": "chyba",
+      "dopad": "nizky",
+      "narocnost": "stredna",
+      "kde": [
+        "/karty/power-level — 6,1 s (1920×1080), 4,3 s (1512×860), 11,7 s (1440×800); pri 1600×1000 a 1366×650 1,4 s",
+        "/karty — raz 4,6 s (1440×800)"
+      ],
+      "zdroj": "apps/web/src/stranky/PowerLevel.tsx:154",
+      "popis": "Stránka vykreslí naraz 98 kariet s ilustráciami (17 700 px) a v troch z piatich meraní prekročila 4 s; ostatné stránky držali 1,3 s. Merané na stroji, kde naraz bežali štyria inšpektori — rozptyl je aj záťažou. Nevizuálny nález, bez mocku.",
+      "navrh": "Karty pod zlomom kresliť až pri posune (lenivé načítanie obrázkov alebo stránkovanie po 20).",
+      "teraz": "ui-inspekcia-20261120-1324-web/W-30-teraz.jpg",
+      "mock": []
+    }
+  ]
+}
