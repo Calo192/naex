@@ -4,6 +4,7 @@
 
 import type { DlzkaHry } from "@naex/core";
 import { ALL_DLZKY } from "@naex/core";
+import { t } from "../i18n/jazyk.tsx";
 
 /** Prečo hráč ligu smie: odomkol ju sám, smú ju všetci, smie vždy (správca, AI), alebo nesmie. */
 export type PristupKLige = "odomknuta" | "vsetci" | "vzdy" | "zamknuta";
@@ -35,9 +36,9 @@ export function popisZamku(ligy: readonly StavLigy[] | null, liga: DlzkaHry): st
 /** Riadok ligy v profile: stav a čo chýba (Michal 2026-10-28). */
 export function stavLigyVProfile(s: StavLigy): { readonly stav: string; readonly detail: string | null } {
   const pristup = s.pristup ?? (s.smie ? "odomknuta" : "zamknuta");
-  const stav = { odomknuta: "odomknutá", vsetci: "zatiaľ voľná pre všetkých", vzdy: "voľná vždy", zamknuta: "zamknutá" }[pristup];
-  // Kým smú všetci, podmienka ukazuje, čo bude treba, až ju admin zapne.
-  const detail = s.podmienka === null ? null : pristup === "vsetci" ? `Na odomknutie: ${s.podmienka}` : pristup === "zamknuta" ? s.podmienka : null;
+  const stav = t({ odomknuta: "ligy.odomknuta", vsetci: "ligy.volna", vzdy: "ligy.volnaVzdy", zamknuta: "ligy.zamknuta" }[pristup]);
+  // Kým smú všetci, podmienka je budúcnosť (až ju admin zapne) — nie „na odomknutie“ pri voľnej lige (W-28).
+  const detail = s.podmienka === null ? null : pristup === "vsetci" ? t("ligy.neskorSaZamkne", { podmienka: s.podmienka }) : pristup === "zamknuta" ? s.podmienka : null;
   return { stav, detail };
 }
 

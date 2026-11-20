@@ -1,9 +1,9 @@
-// Úvodná stránka — vejár kariet a rozcestník na tri časti webu.
+// Úvodná stránka — text, výzvy a vejár kariet. Rozcestník na časti webu je navigácia hore
+// (tri dlaždice ju len opakovali a tlačili vejár pod zlom — UI inšpekcia W-13).
 
 import type { CSSProperties } from "react";
 import { variant, variantyKarty } from "@naex/tvorba";
 import { KartaLico } from "../karta/KartaLico.tsx";
-import { IkonaPoldeci } from "../hra/Panely.tsx";
 import { Odkaz, useTitulok } from "../lib/router.tsx";
 import { sNavratom } from "../lib/navrat.ts";
 import { useSada, vzhladSady } from "../lib/sada.tsx";
@@ -92,26 +92,6 @@ export function Domov() {
               );
             })}
         </div>
-      </section>
-
-      <section className="tri-casti">
-        <Odkaz href="/pravidla" className="cast">
-          <span className="cast-znak" aria-hidden="true">📖</span>
-          <h2>{t("domov.naucSaHrat")}</h2>
-          <p>{t("domov.naucSaHratText")}</p>
-        </Odkaz>
-        <Odkaz href="/karty" className="cast">
-          <span className="cast-znak" aria-hidden="true">🃏</span>
-          <h2>{t("domov.glosar")}</h2>
-          <p>{t("domov.glosarText")}</p>
-        </Odkaz>
-        <Odkaz href="/hra" className="cast">
-          <span className="cast-znak" aria-hidden="true">
-            <IkonaPoldeci />
-          </span>
-          <h2>{t("domov.hrajProti")}</h2>
-          <p>{t("domov.hrajProtiText")}</p>
-        </Odkaz>
       </section>
     </>
   );

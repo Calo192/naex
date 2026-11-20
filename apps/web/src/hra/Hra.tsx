@@ -300,6 +300,29 @@ function Lobby({
   );
 }
 
+/**
+ * Jediné, čo hostiteľ v čakárni robí, je poslať pozvánku — kopírovanie je hlavné tlačidlo a povie,
+ * že sa podarilo (UI inšpekcia W-18). Bez schránky (nezabezpečená adresa) ostane kód na očiach.
+ */
+function KopirovatOdkaz({ kod }: { readonly kod: string }) {
+  const [skopirovane, setSkopirovane] = useState(false);
+  useEffect(() => {
+    if (!skopirovane) return;
+    const casovac = setTimeout(() => setSkopirovane(false), 4000);
+    return () => clearTimeout(casovac);
+  }, [skopirovane]);
+  return (
+    <button
+      type="button"
+      className="tlacidlo-hlavne"
+      aria-live="polite"
+      onClick={() => void navigator.clipboard?.writeText(`${location.origin}/hra?kod=${kod}`).then(() => setSkopirovane(true), () => undefined)}
+    >
+      {skopirovane ? t("cakaren.skopirovane") : t("cakaren.kopirovat")}
+    </button>
+  );
+}
+
 const NADPIS_NEPODPOROVANEHO: Readonly<Record<DovodNepodporovania, string>> = {
   otoc: "zariadenie.otoc",
   iphone: "zariadenie.iphone",
@@ -525,7 +548,8 @@ export function Hra() {
             <Odkaz href={sNavratom("/prihlasenie", cesta)} className="tlacidlo">
               {t("ucet.prihlasitSa")}
             </Odkaz>
-            <Odkaz href={kod !== null ? sNavratom("/registracia", cesta) : "/registracia"} className="tlacidlo tlacidlo-hlavne">
+            {/* S parametrami (pozvánka, výučba) späť na ne; holé /hra = Hrať s hláškou nového účtu (poRegistracii). */}
+            <Odkaz href={location.search !== "" ? sNavratom("/registracia", cesta) : "/registracia"} className="tlacidlo tlacidlo-hlavne">
               {t("ucet.vytvoritUcet")}
             </Odkaz>
           </>
@@ -578,12 +602,7 @@ export function Hra() {
       <div className="cakaren panel">
         <div className="cakaren-kod">{m.code}</div>
         <p className="tlmene" style={{ margin: 0 }}>{popisDlzky(m.dlzka)}</p>
-        <button
-          className="tlacidlo-male"
-          onClick={() => void navigator.clipboard?.writeText(`${location.origin}/hra?kod=${m.code}`)}
-        >
-          {t("cakaren.kopirovat")}
-        </button>
+        <KopirovatOdkaz kod={m.code} />
         <div className="cakaren-hraci">
           {[h0, h1].map((h, i) =>
             h === null ? (
