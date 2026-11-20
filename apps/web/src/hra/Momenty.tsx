@@ -32,8 +32,8 @@ const UKAZKA_MS = 60_000;
 /** Súhrn bitky či Pitky (PocitadloBitky, RekapitulaciaPitkyVrstva). */
 const SUHRN = ".pocitadlo-bitky";
 const PANEL_SUHRNU = ".pocitadlo-bitky .pocitadlo-panel";
-/** Okno cez celý stôl (medziobrazovka, autopas) — pečiatka počká, kým ho hráč zavrie (S-08). */
-const OKNO = ".medziobrazovka";
+/** Okno cez celý stôl (medziobrazovka, autopas, koniec hry) — pečiatka počká, kým ho hráč zavrie (S-08). */
+const OKNO = ".medziobrazovka, .koniec-vrstva";
 /** Zmenšenie pečiatky v rohu súhrnu (.moment-roh v hra.css). */
 const MIERKA_ROH = 0.36;
 

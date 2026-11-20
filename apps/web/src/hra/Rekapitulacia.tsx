@@ -590,6 +590,8 @@ export interface RekapBitkyProps {
   readonly priazne?: PriazneBitky | undefined;
   /** Bitka skončila hru výhrou strachom — pod špakmi riadok, že exekúcia nebola. */
   readonly vyhraStrachom?: VyhraStrachom | null | undefined;
+  /** Meno súpera v hlavičke stĺpca ako na pulte, bez „Bot“ (S-12); vo vetách ostáva meno z mena. */
+  readonly menoSuperaNaPulte?: string | undefined;
 }
 
 /**
@@ -664,7 +666,7 @@ export function riadkovRekapitulacieBitky(r: RekapitulaciaBitky, bezSpakov = fal
   return bezSpakov ? n : n + riadkovSpakovBitky(r, vyhraStrachom);
 }
 
-export function RekapBitky({ r, ja, menoSupera, menoKarty, piktogramy, vlna, hotovo, vlnaKarty, vlnaRusenia, vlnaUcinku, mena, odpovede = [], telefon = false, priazne, vyhraStrachom = null }: RekapBitkyProps) {
+export function RekapBitky({ r, ja, menoSupera, menoKarty, piktogramy, vlna, hotovo, vlnaKarty, vlnaRusenia, vlnaUcinku, mena, odpovede = [], telefon = false, priazne, vyhraStrachom = null, menoSuperaNaPulte }: RekapBitkyProps) {
   const su = opponentOf(ja);
   const { ikona, nazov } = piktogramy;
   const [rezim, setRezim] = useRezim(telefon);
@@ -715,7 +717,7 @@ export function RekapBitky({ r, ja, menoSupera, menoKarty, piktogramy, vlna, hot
 
   const tabulkaEl = (
       <div className={`rekap rz-${rezim}${rezim === "podrobne" ? " podrobne" : ""}`} role="table" aria-label={t("rekap.bitky")} style={{ "--rk-riadkov": riadkovRekapitulacieBitky(r, true) } as CSSProperties}>
-        <HlavickaRekapitulacie menoSupera={menoSupera} rezim={rezim} onRezim={setRezim} bezPrepinaca={telefon} />
+        <HlavickaRekapitulacie menoSupera={menoSuperaNaPulte ?? menoSupera} rezim={rezim} onRezim={setRezim} bezPrepinaca={telefon} />
         {rezim === "text" && !hotovo && (
           <div className="rk-text-caka" role="row">
             {t("rekap.pocitaSa")}
@@ -785,7 +787,7 @@ export function RekapBitky({ r, ja, menoSupera, menoKarty, piktogramy, vlna, hot
         {/* Špaky bitky (v6): za bitku, za starších, Exekútor; prebytok vo finále dopíše až nástenka. */}
         {hotovo && r.spaky !== undefined && (
           <div className="rk-spaky">
-            <SpakyBitky b={r.spaky} ja={ja} mena={ja === 0 ? [t("stol.ty"), menoSupera] : [menoSupera, t("stol.ty")]} menoKarty={menoKarty} vyhraStrachom={vyhraStrachom} />
+            <SpakyBitky b={r.spaky} ja={ja} mena={ja === 0 ? [t("stol.ty"), menoSuperaNaPulte ?? menoSupera] : [menoSuperaNaPulte ?? menoSupera, t("stol.ty")]} menoKarty={menoKarty} vyhraStrachom={vyhraStrachom} />
           </div>
         )}
         {telefon && !hotovo && <div className="rk-text-caka">{t("rekap.pocitaSa")}</div>}
@@ -1142,6 +1144,8 @@ export interface RekapitulaciaPitkyProps {
   readonly momenty?: readonly Moment[] | undefined;
   /** Tuhé bitky pred Pitkou a po nej (telefón: „bitka 0:5 → 2:5“). */
   readonly skore?: { readonly pred: readonly [number, number]; readonly po: readonly [number, number] } | null;
+  /** Meno súpera v hlavičke stĺpca ako na pulte, bez „Bot“ (S-12); vo vetách ostáva meno z mena. */
+  readonly menoSuperaNaPulte?: string | undefined;
 }
 
 /** Stred riadku Pitky: len ikona; názov a vysvetlenie v tooltipe (Michal 2026-10-30: popisy spod ikon preč). */
@@ -1165,7 +1169,7 @@ export function pitkaBezZmeny(r: RekapitulaciaPitky): boolean {
   );
 }
 
-export function RekapitulaciaPitkyVrstva({ r, ja, mena, nadpis, menoKarty, piktogramy, onKoniec, odpovede = [], naSirku = false, momenty = [], skore = null }: RekapitulaciaPitkyProps) {
+export function RekapitulaciaPitkyVrstva({ r, ja, mena, nadpis, menoKarty, piktogramy, onKoniec, odpovede = [], naSirku = false, momenty = [], skore = null, menoSuperaNaPulte }: RekapitulaciaPitkyProps) {
   const su = opponentOf(ja);
   const { ikona, nazov } = piktogramy;
   const [rezim, setRezim] = useRezim(naSirku);
@@ -1318,7 +1322,7 @@ export function RekapitulaciaPitkyVrstva({ r, ja, mena, nadpis, menoKarty, pikto
 
   const tabulkaEl = (
         <div className={`rekap rz-${rezim}${rezim === "podrobne" ? " podrobne" : ""}`} role="table" aria-label={t("rekap.pitky")}>
-          <HlavickaRekapitulacie menoSupera={mena[su]} rezim={rezim} onRezim={setRezim} bezPrepinaca={naSirku} />
+          <HlavickaRekapitulacie menoSupera={menoSuperaNaPulte ?? mena[su]} rezim={rezim} onRezim={setRezim} bezPrepinaca={naSirku} />
           {!tabulka && <TextRekapitulacie riadky={riadkyTextuPitky(r, odpovede, ja).filter((x) => vid(x.krok))} ja={ja} mena={mena} menoKarty={menoKarty} piktogramy={piktogramy} />}
           {tabulka && naex && vid(0) && (
             <>

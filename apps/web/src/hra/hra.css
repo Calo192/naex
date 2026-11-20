@@ -7296,8 +7296,8 @@ button.auto-hotovo-odkaz {
   z-index: 890;
 }
 
-/* Cez okno (medziobrazovka, autopas) pečiatky nepadajú — zakrývali nadpis a dôvod (S-08). */
-body:has(.medziobrazovka) .moment-vrstva {
+/* Cez okno (medziobrazovka, autopas, koniec hry) pečiatky nepadajú — zakrývali nadpis a dôvod (S-08). */
+body:has(:is(.medziobrazovka, .koniec-vrstva)) .moment-vrstva {
   visibility: hidden;
 }
 
@@ -8439,6 +8439,16 @@ body:has(.medziobrazovka) .moment-vrstva {
   overflow: hidden;
 }
 
+/* Na počítači prepínač v toku tabuľky, v riadku nad hlavičkou stĺpcov — v rohu ležal na „TY“
+   (kontrola opráv S-21). Telefón má vlastné rozloženie (mobil-sirka.css). */
+html:not(.stol-na-sirku) .rk-hlava > .rk-rezim {
+  position: static;
+  grid-column: 1 / -1;
+  justify-self: start;
+  order: -1;
+  margin-bottom: 6px;
+}
+
 /* Ciele aspoň 26 px vysoké — pri 17 px sa do nich na notebooku zle triafalo (S-21). */
 .rk-rezim > button {
   min-height: 26px;
@@ -8820,11 +8830,6 @@ body:has(.medziobrazovka) .moment-vrstva {
 
 .rekap-pitky .rk-hlava > span {
   font-size: 0.85rem;
-}
-
-/* Mená sú už len v hlavičke tabuľky (Z-03) — prepínač režimu nad rohom tabuľky ich nezakryje. */
-.rekap-pitky:not(.rk-telefon) .rk-hlava > span[role="columnheader"] {
-  padding-top: 24px;
 }
 
 .rekap-pitky .rk-stred {
