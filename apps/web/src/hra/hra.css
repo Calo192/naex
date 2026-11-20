@@ -5461,13 +5461,6 @@ button.auto-hotovo-odkaz {
   pointer-events: none;
 }
 
-.vykricniky-peciatky {
-  display: block;
-  width: 1.4em;
-  height: 1.6em;
-  fill: currentColor;
-}
-
 .ls-peciatka.moja {
   --farba-hraca: var(--ja);
 }

@@ -3,10 +3,11 @@
 
 import { useId } from "react";
 import type { AkciaDef } from "@naex/tvorba";
-import { IKONY } from "./ikony.ts";
+import { IKONY, type IkonaCesta } from "./ikony.ts";
 import { mediaUrl } from "../lib/api.ts";
 
-const VSTAVANE = IKONY as Readonly<Record<string, readonly { d: string; evenOdd: boolean }[]>>;
+// Kľúč je aj vlastná akcia tvorcu — tá vo vstavaných nie je (undefined).
+const VSTAVANE: Readonly<Partial<Record<string, readonly IkonaCesta[]>>> = IKONY;
 
 /**
  * `zar`: akcia posilnená Nástrojom (žeravá ikona) — piktogram dostane žeravý

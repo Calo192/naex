@@ -48,21 +48,21 @@ export function UkazkaAchievementov() {
   };
   return (
     <>
-    <HlavaStranky
-      nadpis="Achievementy — ukážka"
-      uvod="Vymyslené dáta na snímky a UI inšpekciu."
-      akcia={
-        <button className="tlacidlo-hlavne" onClick={ukaz} data-ukazka-oznam="">
-          Ukázať oznam v partii (2 zisky po sebe)
-        </button>
-      }
-    />
-    <div className="panel" style={{ display: "grid", gap: 20 }}>
-      <Vitrina polozky={polozky} kategorie={KATEGORIE} vlastna />
-      <h2>Verejný profil (cudzí hráč)</h2>
-      <Vitrina polozky={polozky} kategorie={KATEGORIE} vlastna={false} />
-      <OznamAchievementu zisky={zisky} />
-    </div>
+      <HlavaStranky
+        nadpis="Achievementy — ukážka"
+        uvod="Vymyslené dáta na snímky a UI inšpekciu."
+        akcia={
+          <button className="tlacidlo-hlavne" onClick={ukaz} data-ukazka-oznam="">
+            Ukázať oznam v partii (2 zisky po sebe)
+          </button>
+        }
+      />
+      <div className="panel" style={{ display: "grid", gap: 20 }}>
+        <Vitrina polozky={polozky} kategorie={KATEGORIE} vlastna />
+        <h2>Verejný profil (cudzí hráč)</h2>
+        <Vitrina polozky={polozky} kategorie={KATEGORIE} vlastna={false} />
+        <OznamAchievementu zisky={zisky} />
+      </div>
     </>
   );
 }

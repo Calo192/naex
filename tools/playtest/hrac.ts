@@ -14,7 +14,7 @@
 import { appendFileSync, existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import WebSocket from "ws";
-import type { ActionSums, CardInstance, CenyKliatob, ClientState, DopadyNahladu, Command, DruhMarkera, Event, GameData, PlacedCard, PlayerId, Pohlavie, Rod, Slot, StarsiVerejne, Stupen, VerejnyStav, Zdvih } from "@naex/core";
+import type { ActionSums, CardInstance, CenyKliatob, ClientState, DopadyNahladu, Command, DruhMarkera, Event, GameData, PlacedCard, PlayerId, Pohlavie, Rod, Slot, StarsiVerejne, VerejnyStav, Zdvih } from "@naex/core";
 import {
   cigaretyZaPas,
   dalsieZhromazdenieOtvara,
@@ -66,7 +66,6 @@ import {
   rozlozRod,
   nahladNaexNaKartu,
   najhorsiaOdpovedNaNaex,
-  dopadyNahladu,
   nahladPitky,
   sMojimiSkrytymiNaex,
   krokStavby,
