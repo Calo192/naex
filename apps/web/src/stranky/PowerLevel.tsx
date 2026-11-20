@@ -284,8 +284,8 @@ export function PowerLevel() {
 
   const hlava = (
     <HlavaStranky
-      nadpis="Karty"
-      uvod="Power level — sila karty z akcií na oboch stranách a z jej efektu."
+      nadpis="Power level"
+      uvod="Sila karty z akcií na oboch stranách a z jej efektu."
       zalozky={<KartyZalozky aktivna="power-level" />}
       viac={
         <p>

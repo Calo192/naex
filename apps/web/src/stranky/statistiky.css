@@ -10,12 +10,9 @@
 
 /* ---- profil ---------------------------------------------------------------- */
 
+/* Nastavenia majú šírku kostry ako ostatné stránky — hlava stránky pri prechode neskáče (W-12). */
 .profil.profil-siroky {
-  max-width: 1180px;
-}
-
-.profil-nastavenia-nadpis {
-  margin: 20px 0 -8px;
+  max-width: none;
 }
 
 .profil-nastavenia {
@@ -533,6 +530,13 @@ td.cislo {
   font-size: 0.92rem;
 }
 
+/* Pod 1440 px vysvetlenie Frajeriny pod tabuľku — sem sa chodí pre poradie hráčov (W-16). */
+@media (max-width: 1439.98px) {
+  .mriezka > .st-bok.rebricek-bok {
+    order: 0;
+  }
+}
+
 /* ---- spätná väzba ------------------------------------------------------------- */
 
 /* Stĺpec na čítanie zľava v šírke stránky (#21 B). */
@@ -910,9 +914,10 @@ button.cigareta-tlacidlo {
   border-bottom-color: var(--akcent);
 }
 
+/* Počty o stupeň svetlejšie ako --slaby-text — na podklade prepínača mali 4,45 : 1 (W-23). */
 .nazory-zalozky small,
 .nazory-ai small {
-  color: var(--slaby-text);
+  color: var(--tlmeny);
   font-weight: 500;
   font-variant-numeric: tabular-nums;
 }
@@ -933,6 +938,10 @@ button.cigareta-tlacidlo {
 
 .nazory-filtre select {
   width: auto;
+}
+
+.nazory-filtre[hidden] {
+  display: none;
 }
 
 .nazory-ai {
@@ -1144,6 +1153,20 @@ button.cigareta-tlacidlo {
 
 .hodnotenie-kompakt p {
   margin: 0;
+}
+
+/* Pod 1440 px je bok nad názormi — dlaždica v jednom riadku, aby prvé názory ostali nad zlomom (W-17). */
+@media (min-width: 700px) and (max-width: 1439.98px) {
+  .hodnotenie-kompakt {
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    align-items: center;
+    column-gap: 18px;
+    padding-block: 14px;
+  }
+
+  .hodnotenie-kompakt > :nth-child(n + 4) {
+    grid-column: 1 / -1;
+  }
 }
 
 .hodnotenie-dialog {

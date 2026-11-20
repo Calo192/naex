@@ -160,9 +160,10 @@ button.hm-bunka {
   font-size: 1.35rem;
 }
 
+/* Drobné čísla tou istou farbou ako hlavné číslo bunky (svetlá, na sýtej bunke --na-akcente) —
+   priehľadnosť a svetlé písmo na jantári mali kontrast 1,9 : 1 (W-23). */
 .hm-bunka span {
   font-size: 0.8rem;
-  opacity: 0.85;
 }
 
 /* Blokovaná pozícia aspoň na jednej karte: šrafovaný roh s počtom. */
@@ -171,10 +172,9 @@ button.hm-bunka {
   right: 4px;
   bottom: 3px;
   padding: 0 4px;
-  border-radius: 6px;
-  background: var(--tma);
-  color: var(--text);
+  color: inherit;
   font-size: 0.7rem;
+  font-weight: 600;
 }
 
 .hm-bunka.s-blokom {

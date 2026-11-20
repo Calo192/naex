@@ -15,7 +15,7 @@ import { Glosar } from "./stranky/Glosar.tsx";
 import { Heatmapa } from "./stranky/Heatmapa.tsx";
 import { PowerLevel } from "./stranky/PowerLevel.tsx";
 import { Pravidla } from "./stranky/Pravidla.tsx";
-import { Prihlasenie, Profil, Registracia } from "./stranky/Ucet.tsx";
+import { Prihlasenie, Profil, Registracia, jeCestaNastaveni } from "./stranky/Ucet.tsx";
 import { NoveHeslo, ZabudnuteHeslo } from "./stranky/ObnovaHesla.tsx";
 import { Hra } from "./hra/Hra.tsx";
 import { HracProfil } from "./stranky/profil/Profil.tsx";
@@ -112,7 +112,7 @@ export function App() {
   if (partia !== null) return <Layout>{chranene(<DetailPartie id={Number(partia[1])} />)}</Layout>;
   const prehravac = /^\/partia\/(\d+)\/prehravac$/.exec(cesta);
   if (prehravac !== null) return <Layout stol>{chranene(<Prehravac id={Number(prehravac[1])} />)}</Layout>;
-  if (cesta === "/profil") return <Layout>{chranene(<Profil />)}</Layout>;
+  if (jeCestaNastaveni(cesta)) return <Layout>{chranene(<Profil cesta={cesta} />)}</Layout>;
   // Ukážka UI achievementov na snímky a inšpekciu bez partie (len správca).
   if (cesta === "/achievementy/ukazka") return <Layout>{chranene(<UkazkaAchievementov />, true)}</Layout>;
   // Rekapitulácia bitky a Pitky na skutočnej partii botov — snímky a inšpekcia bez živej partie.

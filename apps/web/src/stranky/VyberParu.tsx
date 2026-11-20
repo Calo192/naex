@@ -81,7 +81,7 @@ export function VyberParu({ chyba }: { readonly chyba: (err: unknown) => void })
       </div>
       {vybrany !== undefined && (
         <p className="par-vybrany" aria-live="polite">
-          <b>{vybrany.nazov}</b> · {popisParu(vybrany, volba.prehod)}. Ukladá sa samo.
+          <b>{vybrany.nazov}</b> · {popisParu(vybrany, volba.prehod)}.
         </p>
       )}
     </div>

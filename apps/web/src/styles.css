@@ -803,6 +803,11 @@ button.sprava-tlacidlo {
   white-space: nowrap;
 }
 
+/* Herné meno smie mať 24 znakov — v hlavičke sa zmestí celé (W-32). */
+.ucet-tlacidlo .ucet-meno {
+  max-width: 240px;
+}
+
 .ucet-menu {
   position: absolute;
   right: 0;
@@ -1534,7 +1539,7 @@ button.sprava-tlacidlo {
 /* Výber farebnej schémy v profile (Michal 2026-10-21) — náhľad má farby schémy natvrdo,
    aby bolo vidno, ako bude vyzerať, ešte kým ju hráč nezvolí. */
 .vzhlad-webu {
-  margin: 24px 0;
+  margin: 0;
 }
 
 /* Dve skupiny schém s nadpisom: Tmavé a Svetlé (Michal 2026-10-23). */
@@ -1632,10 +1637,19 @@ button.sprava-tlacidlo {
   color: var(--akcent);
 }
 
-.schema-popis {
-  font-size: var(--t-xs);
-  line-height: 1.35;
-  color: var(--slaby-text);
+/* Záložky nastavení (W-06) sú odkazy s adresou — vzhľad ako záložky profilu hráča. */
+.nastavenia-zalozky .zalozka {
+  text-decoration: none;
+}
+
+/* Výber páru farieb je vo Vzhľade vo vlastnom paneli — oddeľovač nad ním patril hlave účtu. */
+.farba-hraca .vyber-paru {
+  padding-top: 0;
+  border-top: 0;
+}
+
+.farba-hraca h3 {
+  margin-top: 0;
 }
 
 /* Posuvník zväčšenia kariet v profile. */
@@ -1655,7 +1669,7 @@ button.sprava-tlacidlo {
 
 /* Preferencie v profile (Michal 2026-10-22): voľby s popisom (pohlavie hlášok). */
 .preferencie {
-  margin: 0 0 24px;
+  margin: 0;
 }
 
 .skore-volby {
@@ -1671,6 +1685,12 @@ button.sprava-tlacidlo {
   margin-bottom: 10px;
   color: var(--tlmeny);
   font-size: 0.9rem;
+}
+
+/* Popis volieb cez celú šírku mriežky — v prvej bunke by natiahol voľby a zvyšok zalomil (W-34). */
+.skore-volby-popis {
+  grid-column: 1 / -1;
+  margin: 0;
 }
 
 .skore-volba {

@@ -3,7 +3,7 @@
 
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import type { Action, StatistikyHraca } from "@naex/core";
-import { rozlozRod } from "@naex/core";
+import { dovodPartie } from "./profil/dovod.ts";
 import { datum } from "../lib/datum.ts";
 import { tvar } from "../lib/jazyk.ts";
 import { Odkaz } from "../lib/router.tsx";
@@ -284,7 +284,7 @@ function PoslednePartie({ partie }: { readonly partie: readonly PartiaVProfile[]
           {partie.map((p) => {
             const d = p.frajerina.po - p.frajerina.pred;
             return (
-              <tr key={p.id} title={rozlozRod(p.dovod, [null, null])}>
+              <tr key={p.id} title={dovodPartie(p.dovod)}>
                 <td>
                   <span className={`vysledok ${p.vysledok}`}>{TEXT_VYSLEDKU[p.vysledok]}</span>
                 </td>
@@ -294,7 +294,7 @@ function PoslednePartie({ partie }: { readonly partie: readonly PartiaVProfile[]
                     {p.super.id === null ? p.super.meno : <Odkaz href={`/hrac/${p.super.id}`}>{p.super.meno}</Odkaz>}
                     <span className="tlmene frajerina-mala">({p.super.frajerina})</span>
                   </span>
-                  <span className="dovod">{rozlozRod(p.dovod, [null, null])}</span>
+                  <span className="dovod">{dovodPartie(p.dovod)}</span>
                 </td>
                 <td className="cislo">{p.body === null ? <span className="tlmene">—</span> : `${p.body[0]} : ${p.body[1]}`}</td>
                 <td className="cislo">

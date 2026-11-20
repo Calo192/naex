@@ -4,12 +4,20 @@
 // (štatistiky hráča ako JSON z @naex/core). Profil je súčet týchto riadkov —
 // pri desiatkach či stovkách partií na hráča to zvládne aj prostý JS.
 
-import type { DvojicaStatistik, Semienko, StatistikyHraca, StatistikyKariet } from "@naex/core";
-import { normalizujStatistiky, normalizujStatistikyKariet, prazdneStatistiky, scitajStatistiky, scitajStatistikyKariet } from "@naex/core";
+import type { DvojicaStatistik, Rod, Semienko, StatistikyHraca, StatistikyKariet } from "@naex/core";
+import { normalizujStatistiky, rozlozRod, normalizujStatistikyKariet, prazdneStatistiky, scitajStatistiky, scitajStatistikyKariet } from "@naex/core";
 import type { Db } from "./db.ts";
 import { transakcia } from "./db.ts";
 import type { Vysledok } from "./frajerina.ts";
 import { FRAJERINA_START, PROVIZORNE_PARTIE, novaFrajerina, titul } from "./frajerina.ts";
+
+/**
+ * Dôvod konca partie do archívu: mená namiesto „Hráč N“ a tvar slovesa podľa rodu hráča.
+ * Archív sa číta bez stavu partie — značka rodu {N:…} by ostala v detaile partie surová.
+ */
+export function dovodDoArchivu(dovod: string, mena: readonly [string, string], rody: readonly [Rod, Rod]): string {
+  return rozlozRod(dovod, rody).replace(/Hráč ([12])/g, (_, n: string) => (n === "1" ? mena[0] : mena[1]));
+}
 
 export interface StavFrajeriny {
   readonly hodnota: number;

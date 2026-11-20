@@ -21,22 +21,30 @@ import type { DetailNavrhu, NavrhDielne, ObsahNavrhu, Pozicie, StavZobrazeny, Zo
 import { STAVY, kartaZNavrhu, kedy, poziciZoStrany, stranaZPozicii } from "./typy.ts";
 import "./dielna.css";
 
-/** Záložky stránky Karty: glosár, Dielňa (Michal 2026-10-22: nie nová položka navigácie), heatmapa akcií (2026-11-02) a power level (2026-11-08). */
+/**
+ * Záložky stránky Karty: glosár, Dielňa (Michal 2026-10-22: nie nová položka navigácie), heatmapa akcií (2026-11-02) a power level (2026-11-08).
+ * Heatmapa a power level sú nástroje na vyvažovanie sady — vpravo ako „Rozbor sady“, nie s váhou hlavných záložiek (W-22).
+ */
 const ZALOZKY_KARIET = [
-  { id: "karty", href: "/karty", nazov: "Karty v hre" },
-  { id: "dielna", href: "/karty/dielna", nazov: "Dielňa" },
-  { id: "heatmapa", href: "/karty/heatmapa", nazov: "Heatmapa" },
-  { id: "power-level", href: "/karty/power-level", nazov: "Power level" },
+  { id: "karty", href: "/karty", nazov: "Karty v hre", rozbor: false },
+  { id: "dielna", href: "/karty/dielna", nazov: "Dielňa", rozbor: false },
+  { id: "heatmapa", href: "/karty/heatmapa", nazov: "Heatmapa", rozbor: true },
+  { id: "power-level", href: "/karty/power-level", nazov: "Power level", rozbor: true },
 ] as const;
 
 export function KartyZalozky({ aktivna }: { readonly aktivna: (typeof ZALOZKY_KARIET)[number]["id"] }) {
+  const odkaz = (z: (typeof ZALOZKY_KARIET)[number]) => (
+    <Odkaz key={z.id} href={z.href} className={aktivna === z.id ? "aktivna" : undefined} aria-current={aktivna === z.id ? "page" : undefined}>
+      {z.nazov}
+    </Odkaz>
+  );
   return (
     <nav className="karty-zalozky" aria-label="Karty">
-      {ZALOZKY_KARIET.map((z) => (
-        <Odkaz key={z.id} href={z.href} className={aktivna === z.id ? "aktivna" : undefined} aria-current={aktivna === z.id ? "page" : undefined}>
-          {z.nazov}
-        </Odkaz>
-      ))}
+      {ZALOZKY_KARIET.filter((z) => !z.rozbor).map(odkaz)}
+      <span className="karty-rozbor">
+        <span className="karty-rozbor-nazov">Rozbor sady:</span>
+        {ZALOZKY_KARIET.filter((z) => z.rozbor).map(odkaz)}
+      </span>
     </nav>
   );
 }
@@ -173,6 +181,8 @@ function Zoznam({ sada }: { readonly sada: Sada }) {
       />
 
       <div className="mriezka">
+        {/* Filtre a triedenie až s prvým návrhom — nad prázdnou Dielňou by ukazovali samé nuly (W-31). */}
+        {data !== null && data.navrhy.length > 0 && (
         <aside className="st-bok dielna-bok">
           <div className="dielna-filtre">
             <div className="cipy" role="group" aria-label="Filter stavu">
@@ -191,6 +201,7 @@ function Zoznam({ sada }: { readonly sada: Sada }) {
             </label>
           </div>
         </aside>
+        )}
         <div className="st-obsah">
           {chyba !== null && <Hlaska>{chyba}</Hlaska>}
           {data !== null && data.noveRozhodnutia > 0 && (
