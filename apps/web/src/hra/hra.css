@@ -8753,6 +8753,11 @@ button.auto-hotovo-odkaz {
   font-size: 0.85rem;
 }
 
+/* Mená sú už len v hlavičke tabuľky (Z-03) — prepínač režimu nad rohom tabuľky ich nezakryje. */
+.rekap-pitky:not(.rk-telefon) .rk-hlava > span[role="columnheader"] {
+  padding-top: 24px;
+}
+
 .rekap-pitky .rk-stred {
   min-width: 84px;
 }

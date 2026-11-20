@@ -4,6 +4,7 @@
 
 import type { StavkaBitky as Stavka } from "@naex/core";
 import { t } from "../i18n/jazyk.tsx";
+import { spakov } from "../i18n/pocty.ts";
 import { HODNOTA_POLA } from "./textyStarsich.ts";
 import { IkonaSpaku } from "./Spaky.tsx";
 
@@ -21,7 +22,7 @@ export function StavkaBitky({ stavka, kratko = false }: { readonly stavka: Stavk
     stavka.porazenemu[0] + stavka.porazenemu[1] > 0
       ? t("stavka.kulturak", { ja: stavka.porazenemu[0], su: stavka.porazenemu[1] })
       : "";
-  const titul = t("stavka.titul", { karty: t("spaky.kartVLinii", { n: stavka.karty }), vyhra: stavka.vyhra, sekera, prehra: -stavka.prehra, kd, vysvetlenie: vysvetlenie() });
+  const titul = t("stavka.titul", { karty: t("spaky.kartVLinii", { n: stavka.karty }), vyhra: spakov(stavka.vyhra), sekera, prehra: -stavka.prehra, kd, vysvetlenie: vysvetlenie() });
   // Hlavička stola: len „o +3 / +3“ s ohorkom — celé znenie v nápovede.
   if (kratko)
     return (
@@ -33,7 +34,7 @@ export function StavkaBitky({ stavka, kratko = false }: { readonly stavka: Stavk
   return (
     <span className="stavka-bitky" title={titul}>
       <span className="stavka-dlhe">
-        <span className="stavka-nazov">{t("stavka.tatoBitka")}</span> {t("stavka.vyhra")} <b className="stavka-plus">+{t("stavka.nSpakov", { n: stavka.vyhra })}</b>
+        <span className="stavka-nazov">{t("stavka.tatoBitka")}</span> {t("stavka.vyhra")} <b className="stavka-plus">+{spakov(stavka.vyhra)}</b>
         {sekera}, {t("stavka.superovaVyhra")} <b className="stavka-minus">+{-stavka.prehra}</b>
       </span>
       <span className="stavka-kratke">
