@@ -142,7 +142,7 @@ export interface StranyTextu {
  * stranu. vyska(od, po) je výška kusov [od, po) vysádzaných na jednej strane — meria ju
  * prehliadač, lebo zalomenie riadkov závisí od šírky aj piktogramov.
  */
-export function rozdelNaStrany(pocet: number, vyska: (od: number, po: number) => number, dostupne: number): StranyTextu {
+export function rozdelNaStrany(pocet: number, vyska: (od: number, po: number) => number, dostupne: number, zlomy: ReadonlySet<number> = new Set()): StranyTextu {
   const zaciatky: number[] = [];
   const pretecie: number[] = [];
   let od = 0;
@@ -150,10 +150,20 @@ export function rozdelNaStrany(pocet: number, vyska: (od: number, po: number) =>
     zaciatky.push(od);
     let po = od + 1;
     if (vyska(od, po) > dostupne) pretecie.push(od);
-    else while (po < pocet && vyska(od, po + 1) <= dostupne) po++;
+    else while (po < pocet && !zlomy.has(po) && vyska(od, po + 1) <= dostupne) po++;
     od = po;
   }
   return { zaciatky: zaciatky.length === 0 ? [0] : zaciatky, pretecie };
+}
+
+/**
+ * Kusy [od, po) strany č. strana. Strany sa delia raz na text a šírku baru — keby sa hranice
+ * počítali pri každej strane znova (iná výška strany so štítkom, od 2. strany tlačidlo ‹), veta
+ * by ostala medzi stranami alebo by bola na dvoch (UI inšpekcia 20261120-1324, V-01).
+ */
+export function kusyStrany(zaciatky: readonly number[], pocet: number, strana: number): readonly [number, number] {
+  const i = Math.max(0, Math.min(strana, zaciatky.length - 1));
+  return [zaciatky[i] ?? 0, zaciatky[i + 1] ?? pocet];
 }
 
 /**

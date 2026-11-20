@@ -17,7 +17,7 @@ import { api } from "../lib/api.ts";
 import { useUcet, type Pouzivatel } from "../lib/ucet.tsx";
 import type { Sada } from "@naex/tvorba";
 import { rezimMelichara } from "./bar.ts";
-import { CisloStrany, MelicharVBare, NaJednomMieste, StrankovanaVeta, kusyVety, useStrany } from "./MelicharBar.tsx";
+import { CisloStrany, MelicharVBare, NaJednomMieste, PredoslaStrana, StrankovanaVeta, kusyVety, useStrany } from "./MelicharBar.tsx";
 import { prvkyKluca } from "./Vyucba.tsx";
 import "./vyucba.css";
 import { t, textOblasti } from "../i18n/jazyk.tsx";
@@ -263,11 +263,7 @@ export function NapovedaMelichara({
       pocitadlo={<CisloStrany strany={strany} />}
       vpravo={
         <>
-          {strany.strana > 0 && (
-            <button type="button" className="tlacidlo-jemne mel-spat" onClick={strany.predosla} title={t("vyucba.predoslaStrana")} aria-label={t("vyucba.predoslaStrana")}>
-              ‹
-            </button>
-          )}
+          <PredoslaStrana strany={strany} popis={t("vyucba.predoslaStrana")} />
           {/* „ďalej“ aj „rozumiem“ na jednom mieste — šírka vety sa so stranou nemení, strany sa neprepínajú dookola. */}
           <NaJednomMieste
             ukaz={strany.dalsiaJe ? "a" : "b"}

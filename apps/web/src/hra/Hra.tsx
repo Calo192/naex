@@ -676,6 +676,8 @@ export function Hra() {
     )}
     {hra.view.pata !== undefined && <RozhodnutiePata view={hra.view} data={hra.data} sada={m.sada} cmd={cmd} />}
     <HernaPlocha
+      // Stav plochy (pauzy, vrstvy vyhodnotenia, momenty) patrí jednej partii (V-03).
+      key={m.code}
       naSirku={naSirku}
       onPocitadlo={setPocitadloBezi}
       view={hra.view}

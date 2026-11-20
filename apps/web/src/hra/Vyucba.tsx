@@ -29,7 +29,7 @@ import { stitokTahu, zmenyStola } from "./zmenyVyucby.ts";
 import type { Sada } from "@naex/tvorba";
 import { moznostiKvizu, rezimMelichara } from "./bar.ts";
 import { aktualnyJazyk, prelozHlasku, t, textOblasti } from "../i18n/jazyk.tsx";
-import { CisloStrany, MelicharVBare, NaJednomMieste, StrankovanaVeta, VetaMelichara, kusyVety, useStrany, type KusVety } from "./MelicharBar.tsx";
+import { CisloStrany, MelicharVBare, NaJednomMieste, PredoslaStrana, StrankovanaVeta, VetaMelichara, kusyVety, useStrany, type KusVety } from "./MelicharBar.tsx";
 import "./vyucba.css";
 
 /**
@@ -427,7 +427,7 @@ export function VyucbaStol({
   // Pruhy udalostí a priazne na stole počas výučby nie — komentuje Melichar (playtest: ležali cez karty).
   useEffect(() => {
     document.body.classList.add("vyucba-bezi");
-    return () => document.body.classList.remove("vyucba-bezi", "vyucba-odhad", "vyucba-vydesenie", "vyucba-body", "vyucba-stavka");
+    return () => document.body.classList.remove("vyucba-bezi", "vyucba-odhad", "vyucba-vydesenie", "vyucba-body", "vyucba-stavka", "vyucba-hovori");
   }, []);
   // Odhad bitky, stávka a vydesení sa ukážu od kroku, ktorý o nich hovorí (alebo o bitke), a potom ostanú.
   useEffect(() => {
@@ -673,6 +673,10 @@ export function VyucbaStol({
     krok === null || stitokText !== null || chyba !== null || radaText !== null || krok.melichar.trim() !== "" || moznosti.length > 0 || jeInfo || (krok.kto === "auto" && tahaIny);
   const hovori = maText && !pocitadloBezi;
   const spatHlavne = zlaOdpoved && !strany.dalsiaJe;
+  // Kým hovorí Melichar, pás pokynov stola mlčí (vyucba.css) — dva pokyny naraz si protirečili (V-04).
+  useEffect(() => {
+    document.body.classList.toggle("vyucba-hovori", hovori);
+  }, [hovori]);
 
   // Hláška Melichara zaznie len pri chybe hráča (Michal 2026-10-28): zlý ťah, rada, zlá odpoveď
   // kvízu. Ktorú, vyberie server; nový krok ju neutne — nadávka dohrá aj po opravenom ťahu.
@@ -728,11 +732,10 @@ export function VyucbaStol({
   );
   // Úvod: „Dať cigaretu“ alebo „Preskočiť výučbu“ — dve tlačidlá, prerušenie by bolo tretie (Michal 2026-10-25).
   const preskocenie = krok !== null && krok.preskocenie && !vOdpovedi;
-  const predoslaStrana = strany.strana > 0 && (
-    <button type="button" className="tlacidlo-jemne mel-spat" onClick={strany.predosla} title={t("vyucba.predoslaStrana")} aria-label={t("vyucba.predoslaStrana")}>
-      ‹
-    </button>
-  );
+  const predoslaStrana = <PredoslaStrana strany={strany} popis={t("vyucba.predoslaStrana")} />;
+  // „ďalej“ drží miesto na všetkých stranách textu — keby na poslednej zmizlo, veta by sa rozšírila
+  // a strany rozdelili inak (V-01: pokyn ťahu zmizol, iná veta bola na dvoch stranách).
+  const ukazDalej = strany.dalsiaJe || (jeInfo && !spatHlavne);
 
   return (
     <>
@@ -819,7 +822,7 @@ export function VyucbaStol({
                     {spatHlavne && <kbd>Enter</kbd>}
                   </button>
                 )}
-                {(strany.dalsiaJe || (jeInfo && !spatHlavne)) && tlacidloDalej(true)}
+                {ukazDalej ? tlacidloDalej(true) : strany.pocet > 1 && <span className="mel-rezerva" aria-hidden="true" inert>{tlacidloDalej(false)}</span>}
                 {preskocenie ? (
                   <button type="button" className="mel-dalej vyucba-preskocit" onClick={preskocit} data-vyucba-preskocit="" title={t("vyucba.preskocitTitul")}>
                     {t("vyucba.preskocit")}

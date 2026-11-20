@@ -1146,6 +1146,11 @@ button.jbar-odhad::before {
   font-weight: 700;
 }
 
+/* Tlačidlo, ktoré na tejto strane textu nie je, drží miesto — šírka vety sa so stranou nemení (V-01). */
+.mel-rezerva {
+  visibility: hidden;
+}
+
 .kviz-spat {
   white-space: nowrap;
 }
@@ -1410,10 +1415,11 @@ button.jbar-odhad::before {
   color: var(--tlmeny);
 }
 
+/* Piktogram v riadku menovky nesmie riadok zvýšiť — vete by v nízkom bare neostal ani riadok (V-16). */
 .mel-tvoja .mel-ikona {
-  width: 1.2em;
-  height: 1.2em;
-  vertical-align: -0.3em;
+  width: 1em;
+  height: 1em;
+  vertical-align: -0.14em;
 }
 
 /* Odhad v bubline Melichara na užšom okne bez riadku „ešte môže“ — inak by Melicharovi ostal

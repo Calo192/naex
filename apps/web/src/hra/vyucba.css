@@ -159,6 +159,13 @@ body.vyucba-bezi .ucet-bitky {
   display: none;
 }
 
+/* Kým hovorí Melichar, pokyn je jeden — pás stola mlčí (V-04): opakoval ho inými slovami, s pojmami,
+   ktoré výučba ešte nepovedala, a niekedy mu protirečil. Ostane, keď nesie ovládanie (výber Zberateľa,
+   Vízia, žetóny delenia) alebo naň krok sám ukazuje. Miesto drží — stôl neposkočí. */
+body.vyucba-hovori .linia-stav:not(:has(button, input, .zberatel-ponuka, .vizia-karta, [data-vyucba-zvyraznene])) {
+  visibility: hidden;
+}
+
 /* Čo sa po ťahu Štamgasta či hry zmenilo: prerušovaný obrys bez pulzu — nie je to pokyn klikni. */
 .vyucba-obrys.zmena {
   stroke: var(--akcent-svetly);

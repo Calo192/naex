@@ -403,6 +403,9 @@ export function useHra(aktivne: boolean): HraHook {
           setAchievementy({ n: 0, zisky: [] });
           setSuhrnAchievementov(null);
           setLokality([]);
+          // Udalosti predošlej partie nesmie nová plocha prehrať — po výučbe začala partia proti
+          // počítaču oknom „Pitka 3 skončila“ a tabuľkou z výučby (V-03).
+          setUdalosti((u) => ({ id: u.id + 1, events: [] }));
           // Krok výučby príde hneď po privítaní — iná miestnosť výučbu nemá.
           setVyucba(null);
           localStorage.setItem(KLUC, msg.code);
@@ -592,6 +595,7 @@ export function useHra(aktivne: boolean): HraHook {
       setView(null);
       setLog([]);
       setLokality([]);
+      setUdalosti((u) => ({ id: u.id + 1, events: [] }));
       setHraci([null, null]);
       setFrajerina(null);
       setVyucba(null);
