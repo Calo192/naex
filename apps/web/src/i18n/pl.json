@@ -1194,7 +1194,7 @@
   "panel.tuhePoskodenie": "Twarde obrażenia {n}",
   "panel.rozhodujeTuhe": "Decydują o zwycięzcy bójki. Strzał 1, Bomba 2, Sierpowy 3.",
   "panel.zAkcii": "z akcji:",
-  "panel.rozdielTuheho": "Różnica twardych to Łomot, trzyma go zwycięzca (Zgorszenia i Zabobony są miękkie — rozstrzygają tylko kłótnię, v10). Przy równych twardych wygrywa ten, kto ma mniej Długów; inaczej pety idą na krechę.",
+  "panel.rozdielTuheho": "Różnica twardych to Łomot, trzyma go zwycięzca (Zgorszenia i Zabobony są miękkie — rozstrzygają tylko kłótnię, v10). Przy równych twardych wygrywa zwycięzca kłótni, potem ten, kto ma mniej Długów; inaczej pety idą na krechę.",
   "panel.zaverecnaSkryta": "Ostatnia kolejka rewersem do góry — jej wkładu nie widzisz, może być i więcej.",
   "panel.esteMoze": "może jeszcze: ",
   "panel.remizaFinale": "wygrywa zwycięzca kłótni, bez niego mniej Długów; inaczej pety przepadają (finał)",

@@ -2168,7 +2168,7 @@
       "prikaz": {
         "type": "pass"
       },
-      "melichar": "Druhé Zhromaždenie: v ruke máš len Kocovníkov z pasov, tých si nechaj. Pasuj (P) – za plný [Poldeci] poldeci si doberieš kartu.",
+      "melichar": "Druhé Zhromaždenie: v ruke máš len Kočovníkov z pasov, tých si nechaj. Pasuj (P) – za plný [Poldeci] poldeci si doberieš kartu.",
       "zvyraznit": [
         "tlacidlo:pas",
         "bar:poldeci",

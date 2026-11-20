@@ -1163,7 +1163,7 @@
   "panel.tuhePoskodenie": "Hard damage {n}",
   "panel.rozhodujeTuhe": "Decides who wins the brawl. Punch 1, Wallop 2, Haymaker 3.",
   "panel.zAkcii": "from actions:",
-  "panel.rozdielTuheho": "The difference in hard is the Thrashing, held by the winner (Scandals and Superstitions are soft — they only decide the argument, v10). On equal hard, whoever has fewer Debts wins; otherwise the butts go on the Tab.",
+  "panel.rozdielTuheho": "The difference in hard is the Thrashing, held by the winner (Scandals and Superstitions are soft — they only decide the argument, v10). On equal hard, the winner of the argument wins, then whoever has fewer Debts; otherwise the butts go on the Tab.",
   "panel.zaverecnaSkryta": "Last Orders face down — you can't see what it adds; it could be more.",
   "panel.esteMoze": "could still: ",
   "panel.remizaFinale": "the winner of the argument wins, without one fewer Debts; otherwise the butts are forfeited (finale)",

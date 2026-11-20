@@ -1197,7 +1197,7 @@
   "panel.tuhePoskodenie": "Tuhé poškodenie {n}",
   "panel.rozhodujeTuhe": "Rozhoduje o víťazovi bitky. Rana 1, Pecka 2, Petelica 3.",
   "panel.zAkcii": "z akcií:",
-  "panel.rozdielTuheho": "Rozdiel tuhého je Nakladačka, drží ju víťaz (Pohoršenia a Povery sú mäkké — rozhodujú len hádku, v10). Pri rovnakom tuhom vyhrá, kto má menej Dlhov; inak idú špaky na sekeru.",
+  "panel.rozdielTuheho": "Rozdiel tuhého je Nakladačka, drží ju víťaz (Pohoršenia a Povery sú mäkké — rozhodujú len hádku, v10). Pri rovnakom tuhom vyhrá víťaz hádky, potom kto má menej Dlhov; inak idú špaky na sekeru.",
   "panel.zaverecnaSkryta": "Záverečná lícom dole — jej príspevok nevidíš, môže byť aj viac.",
   "panel.esteMoze": "ešte môže: ",
   "panel.remizaFinale": "vyhrá víťaz hádky, bez neho menej Dlhov; inak špaky prepadnú (finále)",

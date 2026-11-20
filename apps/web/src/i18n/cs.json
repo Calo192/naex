@@ -1194,7 +1194,7 @@
   "panel.tuhePoskodenie": "Tvrdé poškození {n}",
   "panel.rozhodujeTuhe": "Rozhoduje o vítězi rvačky. Rána 1, Pecka 2, Herda 3.",
   "panel.zAkcii": "z akcí:",
-  "panel.rozdielTuheho": "Rozdíl tvrdého je Nakládačka, drží ji vítěz (Pohoršení a Pověry jsou měkké — rozhodují jen hádku, v10). Při stejném tvrdém vyhraje, kdo má méně Dluhů; jinak jdou vajgly na sekyru.",
+  "panel.rozdielTuheho": "Rozdíl tvrdého je Nakládačka, drží ji vítěz (Pohoršení a Pověry jsou měkké — rozhodují jen hádku, v10). Při stejném tvrdém vyhraje vítěz hádky, pak kdo má méně Dluhů; jinak jdou vajgly na sekyru.",
   "panel.zaverecnaSkryta": "Zavíračka lícem dolů — její příspěvek nevidíš, může být i víc.",
   "panel.esteMoze": "ještě může: ",
   "panel.remizaFinale": "vyhraje vítěz hádky, bez něj méně Dluhů; jinak vajgly propadnou (finále)",

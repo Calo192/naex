@@ -1163,7 +1163,7 @@
   "panel.tuhePoskodenie": "Kemény sebzés {n}",
   "panel.rozhodujeTuhe": "Ez dönti el, ki nyeri a verekedést. Pofon 1, Gyomros 2, Fejes 3.",
   "panel.zAkcii": "akciókból:",
-  "panel.rozdielTuheho": "A kemény különbsége az Elpáholás, a győztes tartja (a Botrányok és a Babonák puhák — csak a veszekedést döntik el, v10). Egyenlő keménynél az nyer, akinek kevesebb Adóssága van; különben a csikkek krétára mennek.",
+  "panel.rozdielTuheho": "A kemény különbsége az Elpáholás, a győztes tartja (a Botrányok és a Babonák puhák — csak a veszekedést döntik el, v10). Egyenlő keménynél a veszekedés győztese nyer, utána az, akinek kevesebb Adóssága van; különben a csikkek krétára mennek.",
   "panel.zaverecnaSkryta": "Záróra képpel lefelé — a hozzájárulását nem látod, lehet több is.",
   "panel.esteMoze": "még jöhet: ",
   "panel.remizaFinale": "a veszekedés győztese nyer, ha nincs, a kevesebb Adósság; különben a csikkek elvesznek (döntő)",
