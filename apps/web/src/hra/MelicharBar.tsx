@@ -11,7 +11,7 @@ import { createPortal } from "react-dom";
 import type { Sada } from "@naex/tvorba";
 import { IkonaAkcie } from "../karta/IkonaAkcie.tsx";
 import { IKONY } from "../karta/ikony.ts";
-import { castiVety, rozdelNaStrany, usekyVety, vetyTextu, type RezimMelichara } from "./bar.ts";
+import { castiVety, kusyStrany, rozdelNaStrany, usekyVety, vetyTextu, type RezimMelichara } from "./bar.ts";
 import { MELICHAR_PRIBEH } from "./melicharPribeh.ts";
 import { PojemVBubline } from "../stranky/pravidla/Pojem.tsx";
 import { castiSPojmami, prvePojmy } from "../stranky/pravidla/slovnik.ts";
@@ -122,6 +122,8 @@ export interface KusVety {
   readonly obsah: ReactNode;
   /** Ten istý kus po menších častiach, keď sa nezmestí do baru ani sám. */
   readonly jemne?: readonly KusVety[];
+  /** Kus začne novú stranu a text sa otvorí na nej (rada po chybe; pokyn ostane o stranu späť). */
+  readonly novaStrana?: boolean;
 }
 
 /**
@@ -155,7 +157,8 @@ export interface Strany {
   readonly dalsiaJe: boolean;
   readonly dalsia: () => void;
   readonly predosla: () => void;
-  readonly setPocet: (n: number) => void;
+  /** Počet strán a strana, na ktorej sa text otvorí (kus s novaStrana, inak prvá). */
+  readonly setPocet: (n: number, start?: number) => void;
 }
 
 const SKRYTA_PODOBA = { inert: true, "aria-hidden": true } as const;
@@ -184,14 +187,37 @@ export function NaJednomMieste({
   );
 }
 
-/** Ktorá strana textu sa ukazuje; nový text (kľúč) začne od prvej. */
+/** Ktorá strana textu sa ukazuje; nový text (kľúč) začne od prvej, alebo od strany s novaStrana. */
 export function useStrany(kluc: string): Strany {
   const [s, setS] = useState({ kluc, strana: 0 });
-  const [pocet, setPocet] = useState(1);
-  const strana = s.kluc === kluc ? Math.min(s.strana, pocet - 1) : 0;
+  const [rozdelenie, setRozdelenie] = useState({ pocet: 1, start: 0 });
+  const { pocet } = rozdelenie;
+  const strana = s.kluc === kluc ? Math.min(s.strana, pocet - 1) : Math.min(rozdelenie.start, pocet - 1);
   const dalsia = useCallback(() => setS({ kluc, strana: strana + 1 }), [kluc, strana]);
   const predosla = useCallback(() => setS({ kluc, strana: Math.max(0, strana - 1) }), [kluc, strana]);
+  const setPocet = useCallback((n: number, start = 0) => setRozdelenie((r) => (r.pocet === n && r.start === start ? r : { pocet: n, start })), []);
   return { strana, pocet, dalsiaJe: strana < pocet - 1, dalsia, predosla, setPocet };
+}
+
+/**
+ * Tlačidlo ‹ na predošlú stranu. Kým má text viac strán, miesto drží aj na prvej (neviditeľné) —
+ * keby pribudlo až na druhej, zúžilo by vetu a strany by sa rozdelili inak (V-01).
+ */
+export function PredoslaStrana({ strany, popis }: { readonly strany: Strany; readonly popis: string }) {
+  if (strany.pocet <= 1) return null;
+  const ziva = strany.strana > 0;
+  return (
+    <button
+      type="button"
+      className={`tlacidlo-jemne mel-spat${ziva ? "" : " mel-rezerva"}`}
+      onClick={ziva ? strany.predosla : undefined}
+      title={popis}
+      aria-label={popis}
+      {...(ziva ? {} : { tabIndex: -1, "aria-hidden": true, inert: true })}
+    >
+      ‹
+    </button>
+  );
 }
 
 const ZIADNE_KLUCE: readonly string[] = [];
@@ -216,27 +242,31 @@ export function StrankovanaVeta({
   // Kusy, ktoré sa nezmestili ani samy, idú po menších častiach; nový text začína odznova.
   const [rozbite, setRozbite] = useState<{ readonly podpis: string; readonly kluce: readonly string[] }>({ podpis, kluce: [] });
   const rozbiteKluce = rozbite.podpis === podpis ? rozbite.kluce : ZIADNE_KLUCE;
-  const naStrany = kusy.flatMap((k) => (rozbiteKluce.includes(k.kluc) ? (k.jemne ?? [k]) : [k]));
+  const naStrany = kusy.flatMap((k) =>
+    rozbiteKluce.includes(k.kluc) ? (k.jemne ?? [k]).map((j, i) => (i === 0 && k.novaStrana === true ? { ...j, novaStrana: true } : j)) : [k],
+  );
   const { setPocet } = strany;
   const zmeraj = useCallback(() => {
     const m = merac.current;
     const veta = m?.closest<HTMLElement>(".mel-veta") ?? null;
     const telo = veta?.closest<HTMLElement>(".mel-telo") ?? null;
     if (m === null || veta === null || telo === null) return;
-    // Voľná výška = výška vety + čo v tele ostáva voľné (kratší text je v ňom vycentrovaný).
+    // Výška pre vetu = vnútro tela bez menovky — z baru, nie z práve ukázanej strany. Predtým sa
+    // brala z výšky vety: strana s piktogramom či štítkom dala viac, krátka strana a skrytá menovka
+    // (os kola) menej, a hranice strán sa so stranou posúvali (V-01, V-17).
     const cs = getComputedStyle(telo);
-    const prvy = telo.firstElementChild?.getBoundingClientRect();
-    const posledny = telo.lastElementChild?.getBoundingClientRect();
+    const medzera = parseFloat(cs.rowGap) || 0;
     const vnutro = telo.clientHeight - parseFloat(cs.paddingTop) - parseFloat(cs.paddingBottom);
-    const volne = prvy === undefined || posledny === undefined ? 0 : Math.max(0, vnutro - (posledny.bottom - prvy.top));
-    const dostupne = veta.clientHeight + volne;
+    const ostatne = [...telo.children].filter((el): el is HTMLElement => el !== veta && el instanceof HTMLElement && getComputedStyle(el).display !== "none");
+    const dostupne = Math.max(0, vnutro - ostatne.reduce((s, el) => s + el.getBoundingClientRect().height + medzera, 0));
     const spany = [...m.children] as HTMLElement[];
     m.style.display = "block";
     const vyska = (od: number, po: number): number => {
       spany.forEach((el, i) => (el.style.display = i >= od && i < po ? "" : "none"));
       return m.getBoundingClientRect().height;
     };
-    const r = rozdelNaStrany(spany.length, vyska, dostupne + 0.5);
+    const zlomy = new Set(spany.flatMap((el, i) => (el.dataset.novaStrana === undefined ? [] : [i])));
+    const r = rozdelNaStrany(spany.length, vyska, dostupne + 0.5, zlomy);
     m.style.display = "";
     for (const el of spany) el.style.display = "";
     const naRozbitie = r.pretecie.map((p) => spany[p]).flatMap((el) => (el?.dataset.jemne === undefined || el.dataset.kluc === undefined ? [] : [el.dataset.kluc]));
@@ -246,7 +276,8 @@ export function StrankovanaVeta({
     }
     if (r.pretecie.length > 0) console.warn(`Melichar: veta sa do baru nezmestí ani po častiach — text treba skrátiť: „${podpis.slice(0, 90)}…“`);
     setZaciatky((z) => (z.length === r.zaciatky.length && z.every((x, i) => x === r.zaciatky[i]) ? z : r.zaciatky));
-    setPocet(r.zaciatky.length);
+    const prvyZlom = Math.min(...zlomy);
+    setPocet(r.zaciatky.length, Number.isFinite(prvyZlom) ? Math.max(0, r.zaciatky.findIndex((z) => z >= prvyZlom)) : 0);
   }, [podpis, setPocet, rozbiteKluce]);
   useLayoutEffect(zmeraj, [zmeraj]);
   useEffect(() => {
@@ -258,9 +289,7 @@ export function StrankovanaVeta({
     void document.fonts.ready.then(() => zmeraj());
     return () => ro.disconnect();
   }, [zmeraj]);
-  const i = Math.min(strany.strana, zaciatky.length - 1);
-  const od = zaciatky[i] ?? 0;
-  const po = zaciatky[i + 1] ?? naStrany.length;
+  const [od, po] = kusyStrany(zaciatky, naStrany.length, strany.strana);
   return (
     <>
       <div className="mel-strana">
@@ -270,7 +299,7 @@ export function StrankovanaVeta({
       </div>
       <div className="mel-merac" ref={merac} aria-hidden="true">
         {naStrany.map((k) => (
-          <span key={k.kluc} data-kluc={k.kluc} data-jemne={k.jemne === undefined ? undefined : ""}>
+          <span key={k.kluc} data-kluc={k.kluc} data-jemne={k.jemne === undefined ? undefined : ""} data-nova-strana={k.novaStrana === true ? "" : undefined}>
             {k.obsah}
           </span>
         ))}
@@ -315,7 +344,7 @@ export function MelicharVBare({ rezim, children, pocitadlo, moznosti, vpravo, tr
       <AvatarMelichara />
       <div className="mel-telo">
         <span className="mel-kto">
-          {MELICHAR_PRIBEH.meno}
+          <span className="mel-meno">{MELICHAR_PRIBEH.meno}</span>
           {pocitadlo}
         </span>
         <div className="mel-veta">{children}</div>

@@ -384,6 +384,8 @@
 .partia-super > span {
   display: flex;
   flex-direction: column;
+  /* Štítok „bot“ len na šírku slova, nie celého stĺpca (W-25). */
+  align-items: flex-start;
   min-width: 0;
 }
 

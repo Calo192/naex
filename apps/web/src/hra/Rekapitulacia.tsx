@@ -590,6 +590,8 @@ export interface RekapBitkyProps {
   readonly priazne?: PriazneBitky | undefined;
   /** Bitka skončila hru výhrou strachom — pod špakmi riadok, že exekúcia nebola. */
   readonly vyhraStrachom?: VyhraStrachom | null | undefined;
+  /** Meno súpera v hlavičke stĺpca ako na pulte, bez „Bot“ (S-12); vo vetách ostáva meno z mena. */
+  readonly menoSuperaNaPulte?: string | undefined;
 }
 
 /**
@@ -664,7 +666,7 @@ export function riadkovRekapitulacieBitky(r: RekapitulaciaBitky, bezSpakov = fal
   return bezSpakov ? n : n + riadkovSpakovBitky(r, vyhraStrachom);
 }
 
-export function RekapBitky({ r, ja, menoSupera, menoKarty, piktogramy, vlna, hotovo, vlnaKarty, vlnaRusenia, vlnaUcinku, mena, odpovede = [], telefon = false, priazne, vyhraStrachom = null }: RekapBitkyProps) {
+export function RekapBitky({ r, ja, menoSupera, menoKarty, piktogramy, vlna, hotovo, vlnaKarty, vlnaRusenia, vlnaUcinku, mena, odpovede = [], telefon = false, priazne, vyhraStrachom = null, menoSuperaNaPulte }: RekapBitkyProps) {
   const su = opponentOf(ja);
   const { ikona, nazov } = piktogramy;
   const [rezim, setRezim] = useRezim(telefon);
@@ -715,7 +717,7 @@ export function RekapBitky({ r, ja, menoSupera, menoKarty, piktogramy, vlna, hot
 
   const tabulkaEl = (
       <div className={`rekap rz-${rezim}${rezim === "podrobne" ? " podrobne" : ""}`} role="table" aria-label={t("rekap.bitky")} style={{ "--rk-riadkov": riadkovRekapitulacieBitky(r, true) } as CSSProperties}>
-        <HlavickaRekapitulacie menoSupera={menoSupera} rezim={rezim} onRezim={setRezim} bezPrepinaca={telefon} />
+        <HlavickaRekapitulacie menoSupera={menoSuperaNaPulte ?? menoSupera} rezim={rezim} onRezim={setRezim} bezPrepinaca={telefon} />
         {rezim === "text" && !hotovo && (
           <div className="rk-text-caka" role="row">
             {t("rekap.pocitaSa")}
@@ -752,12 +754,16 @@ export function RekapBitky({ r, ja, menoSupera, menoKarty, piktogramy, vlna, hot
                 ["pecen", "PoškodeniePečene", t("tabula.pecenMale"), t("rekap.poskodenie"), pitky.pecen, pitky.cirhozy, t("rekap.cirhoz")],
               ] as const
             ).map(([kluc, akcia, meno, pod, hodnoty, karty, coKarty]) => {
+              // Riadok bez hodnoty a čipy „→ 0“ sa nekreslia (Z-09).
+              if (hodnoty[0] + hodnoty[1] + karty[0] + karty[1] === 0) return null;
               const m = Math.max(1, hodnoty[0], hodnoty[1]);
               const strana = (s: Strana, kto: PlayerId): ReactNode => (
                 <Hodnota strana={s} n={hodnoty[kto]} max={m}>
-                  <Cip trieda={karty[kto] > 0 ? "zisk" : "nic"} title={t("rekap.zaKolo", { n: karty[kto], co: coKarty })}>
-                    → {karty[kto]} <KartaKliatby ikona={ikona(akcia)} />
-                  </Cip>
+                  {karty[kto] > 0 && (
+                    <Cip trieda="zisk" title={t("rekap.zaKolo", { n: karty[kto], co: coKarty })}>
+                      → {karty[kto]} <KartaKliatby ikona={ikona(akcia)} />
+                    </Cip>
+                  )}
                 </Hodnota>
               );
               return (
@@ -781,7 +787,7 @@ export function RekapBitky({ r, ja, menoSupera, menoKarty, piktogramy, vlna, hot
         {/* Špaky bitky (v6): za bitku, za starších, Exekútor; prebytok vo finále dopíše až nástenka. */}
         {hotovo && r.spaky !== undefined && (
           <div className="rk-spaky">
-            <SpakyBitky b={r.spaky} ja={ja} mena={ja === 0 ? [t("stol.ty"), menoSupera] : [menoSupera, t("stol.ty")]} menoKarty={menoKarty} vyhraStrachom={vyhraStrachom} />
+            <SpakyBitky b={r.spaky} ja={ja} mena={ja === 0 ? [t("stol.ty"), menoSuperaNaPulte ?? menoSupera] : [menoSuperaNaPulte ?? menoSupera, t("stol.ty")]} menoKarty={menoKarty} vyhraStrachom={vyhraStrachom} />
           </div>
         )}
         {telefon && !hotovo && <div className="rk-text-caka">{t("rekap.pocitaSa")}</div>}
@@ -883,15 +889,9 @@ export function VysledokBitky({ r, ja, mena, vyhraStrachom = null }: { readonly 
 
 /** Tuhé poškodenie a komu ide Nakladačka (PRAVIDLA §9.4; od v8.3 Povery poškodenie nedávajú). */
 function SucetBitky({ r, ja, menoSupera }: { readonly r: RekapitulaciaBitky; readonly ja: PlayerId; readonly menoSupera: string }) {
-  const su = opponentOf(ja);
-  const cast = (kto: PlayerId): ReactNode => (
-    <span className={kto === ja ? "ja" : "su"}>
-      <b>{r.tuheSpolu[kto]}</b>
-    </span>
-  );
   return (
     <div className="rk-sucet">
-      {t("rekap.tuhe")} {cast(ja)} : {cast(su)}
+      {/* Skóre je v hlavičke počítadla (Z-09) — tu len komu ide Nakladačka. */}
       <span>
         {r.prebytokDrzi === null ? t("rekap.sucetNikto") : t("rekap.sucetNakladacka", { n: r.prebytok, kto: r.prebytokDrzi === ja ? t("stol.ty") : menoSupera })}
       </span>
@@ -1144,6 +1144,8 @@ export interface RekapitulaciaPitkyProps {
   readonly momenty?: readonly Moment[] | undefined;
   /** Tuhé bitky pred Pitkou a po nej (telefón: „bitka 0:5 → 2:5“). */
   readonly skore?: { readonly pred: readonly [number, number]; readonly po: readonly [number, number] } | null;
+  /** Meno súpera v hlavičke stĺpca ako na pulte, bez „Bot“ (S-12); vo vetách ostáva meno z mena. */
+  readonly menoSuperaNaPulte?: string | undefined;
 }
 
 /** Stred riadku Pitky: len ikona; názov a vysvetlenie v tooltipe (Michal 2026-10-30: popisy spod ikon preč). */
@@ -1155,7 +1157,19 @@ function StredPitky({ ikona, title }: { readonly ikona: ReactNode; readonly titl
   );
 }
 
-export function RekapitulaciaPitkyVrstva({ r, ja, mena, nadpis, menoKarty, piktogramy, onKoniec, odpovede = [], naSirku = false, momenty = [], skore = null }: RekapitulaciaPitkyProps) {
+/**
+ * Pitka, v ktorej sa nič nezmenilo: bez NA EX, Záverečných, Dlhu, pečene, cigariet a Vízie.
+ * Taká sa oknom nevyhodnocuje (Z-05, variant B) — tabuľka samých „+0“ by sa tvárila, že sa niečo stalo.
+ */
+export function pitkaBezZmeny(r: RekapitulaciaPitky): boolean {
+  return (
+    r.naex.karty.length === 0 &&
+    (r.zaverecne ?? []).length === 0 &&
+    ([0, 1] as const).every((p) => zadlzeniePitky(r, p) === 0 && pecenPitky(r, p) === 0 && r.cigarety.akcie[p] === 0 && r.cigarety.zisk[p] === 0 && r.vizia[p] === 0)
+  );
+}
+
+export function RekapitulaciaPitkyVrstva({ r, ja, mena, nadpis, menoKarty, piktogramy, onKoniec, odpovede = [], naSirku = false, momenty = [], skore = null, menoSuperaNaPulte }: RekapitulaciaPitkyProps) {
   const su = opponentOf(ja);
   const { ikona, nazov } = piktogramy;
   const [rezim, setRezim] = useRezim(naSirku);
@@ -1254,9 +1268,12 @@ export function RekapitulaciaPitkyVrstva({ r, ja, mena, nadpis, menoKarty, pikto
           {ikony("Poldeci", kto)}
         </>
       ),
-      <Cip trieda={cir > 0 ? "zisk" : "nic"} title={cir > 0 ? t("rekap.cirhozaDoBalicka", { n: cir }) : t("rekap.prepadne", { a: n, b: p.prah[kto] })}>
-        +{cir} <KartaKliatby ikona={ikona("PoškodeniePečene")} />
-      </Cip>,
+      // Čip „+0“ sa nekreslí (Z-03) — čo prepadne, povie titulok bunky.
+      cir > 0 && (
+        <Cip trieda="zisk" title={t("rekap.cirhozaDoBalicka", { n: cir })}>
+          +{cir} <KartaKliatby ikona={ikona("PoškodeniePečene")} />
+        </Cip>
+      ),
       t("rekap.vypite", { pitie: p.zPitia[kto], naex: p.zNaex[kto] }) + (zOdpovede > 0 ? t("rekap.odpoved", { n: zOdpovede }) : "") + ` · ${nazov("PoškodeniePečene")} ${p.poskodenie[kto]} · ${nazov("Poldeci")} ${p.poldeci[kto]}`,
     );
   };
@@ -1287,19 +1304,25 @@ export function RekapitulaciaPitkyVrstva({ r, ja, mena, nadpis, menoKarty, pikto
           )}
         </>
       ),
-      <Cip trieda={c.zisk[kto] > 0 ? "zisk" : "nic"}>
-        +{c.zisk[kto]} {ikona("Cigareta")}
-      </Cip>,
+      c.zisk[kto] > 0 && (
+        <Cip trieda="zisk">
+          +{c.zisk[kto]} {ikona("Cigareta")}
+        </Cip>
+      ),
       t("rekap.cigaretyRiadok", { a, cig: nazov("Cigareta"), obm, x: nazov("Obmedzenie") }) + (c.cigorky[kto] > 0 ? ` ${t("rekap.cigorky", { n: c.cigorky[kto] })}` : "") + (urad > 0 ? ` ${t("rekap.urad", { n: urad })}` : ""),
     );
   };
   const vizia = r.vizia[0] + r.vizia[1] > 0;
   const prah = (x: readonly [number, number]): string => (x[ja] === x[su] ? `${x[ja]}` : `${x[ja]} : ${x[su]}`);
   const prahDlhu: readonly [number, number] = [prahDlhuPitky(r, 0), prahDlhuPitky(r, 1)];
+  // Len riadky, v ktorých má aspoň jeden hráč nenulovú hodnotu (Z-03, „nezmenené skryť“).
+  const sDlhom = zadlzeniePitky(r, 0) + zadlzeniePitky(r, 1) > 0;
+  const sPecenou = pecenPitky(r, 0) + pecenPitky(r, 1) + r.pecen.cirhozy[0] + r.pecen.cirhozy[1] > 0;
+  const sCigaretami = r.cigarety.akcie[0] + r.cigarety.akcie[1] + r.cigarety.zisk[0] + r.cigarety.zisk[1] > 0;
 
   const tabulkaEl = (
         <div className={`rekap rz-${rezim}${rezim === "podrobne" ? " podrobne" : ""}`} role="table" aria-label={t("rekap.pitky")}>
-          <HlavickaRekapitulacie menoSupera={mena[su]} rezim={rezim} onRezim={setRezim} bezPrepinaca={naSirku} />
+          <HlavickaRekapitulacie menoSupera={menoSuperaNaPulte ?? mena[su]} rezim={rezim} onRezim={setRezim} bezPrepinaca={naSirku} />
           {!tabulka && <TextRekapitulacie riadky={riadkyTextuPitky(r, odpovede, ja).filter((x) => vid(x.krok))} ja={ja} mena={mena} menoKarty={menoKarty} piktogramy={piktogramy} />}
           {tabulka && naex && vid(0) && (
             <>
@@ -1317,21 +1340,21 @@ export function RekapitulaciaPitkyVrstva({ r, ja, mena, nadpis, menoKarty, pikto
               ))}
             </>
           )}
-          {tabulka && vid(1) && (
+          {tabulka && vid(1) && sDlhom && (
             <div className={`rk-riadok${naex ? " nova-skupina" : ""}`} role="row">
               {dlh("l", ja)}
               <StredPitky ikona={ikona("Dlh")} title={prahDlhu[0] > 1 || prahDlhu[1] > 1 ? t("rekap.dlhPrah", { dlh: nazov("Dlh"), prah: prah(prahDlhu) }) : t("rekap.dlhKazda", { dlh: nazov("Dlh") })} />
               {dlh("r", su)}
             </div>
           )}
-          {tabulka && vid(2) && (
-            <div className="rk-riadok" role="row">
+          {tabulka && vid(2) && sPecenou && (
+            <div className={`rk-riadok${naex && !sDlhom ? " nova-skupina" : ""}`} role="row">
               {pecen("l", ja)}
               <StredPitky ikona={ikona("PoškodeniePečene")} title={t("rekap.pecenPrah", { prah: prah(r.pecen.prah) })} />
               {pecen("r", su)}
             </div>
           )}
-          {tabulka && vid(3) && (
+          {tabulka && vid(3) && sCigaretami && (
             <div className="rk-riadok nova-skupina" role="row">
               {cigarety("l", ja)}
               <StredPitky ikona={ikona("Cigareta")} title={t("rekap.cigaretyMinus", { cig: nazov("Cigareta"), x: nazov("Obmedzenie") })} />
@@ -1348,25 +1371,43 @@ export function RekapitulaciaPitkyVrstva({ r, ja, mena, nadpis, menoKarty, pikto
           {tabulka && vid(4) && zaverecne.length > 0 && <ZaverecneRiadky zaverecne={zaverecne} ja={ja} mena={mena} menoKarty={menoKarty} piktogramy={piktogramy} bezTextu={rezim === "podrobne"} />}
         </div>
   );
-  const legendaEl = (
+  // Legenda len k značkám, ktoré na obrazovke naozaj sú (Z-03).
+  const zPitiaSpolu = ([0, 1] as const).reduce<number>((s, p) => s + r.pecen.zPitia[p] + r.pecen.zNaex[p] + (r.pecen.zOdpovede?.[p] ?? 0), 0);
+  const legenda = {
+    zPitia: sPecenou && zPitiaSpolu > 0,
+    zPoldeci: sPecenou && r.pecen.poldeci[0] + r.pecen.poldeci[1] > 0,
+    obm: sCigaretami && r.cigarety.obmedzenie[0] + r.cigarety.obmedzenie[1] > 0,
+    plny: sDlhom || sPecenou,
+    ostava: sDlhom && (prahDlhu[0] > 1 || prahDlhu[1] > 1),
+    prepadne: sPecenou,
+  };
+  const legendaEl = !Object.values(legenda).some((x) => x) ? null : (
         <div className={`rk-legenda${rezim === "text" ? " skryta" : ""}`} aria-hidden="true">
-          <span>
-            <span className="rk-bk z-pitia" /> {t("rekap.pitieANaex")}
-          </span>
-          <span>
-            <span className="rk-bk z-poldeci" /> {t("rekap.zAkcie", { x: nazov("Poldeci") })}
-          </span>
-          <span>
-            <span className="rk-bk obm" /> {t("rekap.zrusiloSuperovo", { x: nazov("Obmedzenie") })}
-          </span>
-          <span>
-            <span className="rk-prah plny">
-              <span className="rk-bk" />
-              <span className="rk-bk" />
-            </span>{" "}
-            {t("rekap.plnyPrahKarta")}
-          </span>
-          {(prahDlhu[0] > 1 || prahDlhu[1] > 1) && (
+          {legenda.zPitia && (
+            <span>
+              <span className="rk-bk z-pitia" /> {t("rekap.pitieANaex")}
+            </span>
+          )}
+          {legenda.zPoldeci && (
+            <span>
+              <span className="rk-bk z-poldeci" /> {t("rekap.zAkcie", { x: nazov("Poldeci") })}
+            </span>
+          )}
+          {legenda.obm && (
+            <span>
+              <span className="rk-bk obm" /> {t("rekap.zrusiloSuperovo", { x: nazov("Obmedzenie") })}
+            </span>
+          )}
+          {legenda.plny && (
+            <span>
+              <span className="rk-prah plny">
+                <span className="rk-bk" />
+                <span className="rk-bk" />
+              </span>{" "}
+              {t("rekap.plnyPrahKarta")}
+            </span>
+          )}
+          {legenda.ostava && (
             <span>
               <span className="rk-prah ostava">
                 <span className="rk-bk" />
@@ -1374,12 +1415,14 @@ export function RekapitulaciaPitkyVrstva({ r, ja, mena, nadpis, menoKarty, pikto
               {t("rekap.zadlzenieOstava")}
             </span>
           )}
-          <span>
-            <span className="rk-prah prepadne">
-              <span className="rk-bk" />
-            </span>{" "}
-            {t("rekap.pecenPrepadne")}
-          </span>
+          {legenda.prepadne && (
+            <span>
+              <span className="rk-prah prepadne">
+                <span className="rk-bk" />
+              </span>{" "}
+              {t("rekap.pecenPrepadne")}
+            </span>
+          )}
         </div>
   );
   // Hráč s čítačkou počuje aj to, kto čo dostal — nielen pruhy.
@@ -1413,10 +1456,7 @@ export function RekapitulaciaPitkyVrstva({ r, ja, mena, nadpis, menoKarty, pikto
     );
   };
   // Pitka bez NA EX, Dlhu, pečene a cigariet — tabuľka samých „+0“ by sa tvárila, že sa niečo stalo.
-  const prazdna =
-    r.naex.karty.length === 0 &&
-    zaverecne.length === 0 &&
-    ([0, 1] as const).every((p) => zadlzeniePitky(r, p) === 0 && pecenPitky(r, p) === 0 && r.cigarety.akcie[p] === 0 && r.vizia[p] === 0);
+  const prazdna = pitkaBezZmeny(r);
   const zmenaSkore = skore !== null && (skore.pred[0] !== skore.po[0] || skore.pred[1] !== skore.po[1]);
   if (naSirku) {
     return (
@@ -1493,7 +1533,7 @@ export function RekapitulaciaPitkyVrstva({ r, ja, mena, nadpis, menoKarty, pikto
         <div className="pocitadlo-panel hotovo">
           <span className="pocitadlo-nadpis">{nadpis}</span>
           <span className="pocitadlo-vyhodnotena">{t("rekap.vyhodnotena")}</span>
-          <span className="pocitadlo-mena">{t("stol.ty")} · {mena[su]}</span>
+          {/* Mená sú v hlavičke tabuľky (Z-03). */}
         </div>
         {tabulkaEl}
         {legendaEl}
@@ -1505,7 +1545,8 @@ export function RekapitulaciaPitkyVrstva({ r, ja, mena, nadpis, menoKarty, pikto
               </button>
             )}
           </div>
-          <span className="pocitadlo-tip">{hotovo ? t("pocitadlo.tipZavrie") : t("pocitadlo.tipDobehne")}</span>
+          {/* „Enter alebo Ďalej zavrie“ je na tlačidle (Z-03); kým sa odkrýva, tip ostáva. */}
+          {!hotovo && <span className="pocitadlo-tip">{t("pocitadlo.tipDobehne")}</span>}
         </div>
       </div>
       {/* Hráč s čítačkou počuje aj to, kto čo dostal — nielen pruhy. */}

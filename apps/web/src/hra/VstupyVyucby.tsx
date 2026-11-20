@@ -5,8 +5,14 @@
 import { useEffect, useRef } from "react";
 import { Odkaz } from "../lib/router.tsx";
 import { useUcet } from "../lib/ucet.tsx";
-import { t, tr } from "../i18n/jazyk.tsx";
+import { t } from "../i18n/jazyk.tsx";
 import { adresaVyucby, bezPrvejCasti, rozpracovana, useVyucbaUctu, type VyucbaUctu } from "./Vyucba.tsx";
+// Dĺžka z casti[].minuty scenára — ten istý sľub ako na titulke (Vite JSON: len časti, bez krokov).
+import { casti as CASTI_VYUCBY } from "@naex/core/data/vyucba/prva-hra.json";
+import { dlzkaVyucby } from "../stranky/dlzkaVyucby.ts";
+
+/** Sľub dĺžky ako na titulke — zo scenára, nie číslo v texte (inšpekcia 20261120-1324, V-21). */
+const dlzka = (): string => dlzkaVyucby(CASTI_VYUCBY);
 
 /** Banner hore na Pravidlách pre toho, kto ešte nemá 1. časť výučby (#104) — Pravidlá ostanú príručkou. */
 export function VyzvaVyucby() {
@@ -17,7 +23,7 @@ export function VyzvaVyucby() {
     <aside className="panel vyucba-vyzva" aria-label={t("vstup.aria")}>
       <img className="vyucba-avatar" src="/melichar.jpg" alt="" width={56} height={56} />
       <div>
-        <strong>{t("vstup.naucSa")}</strong>
+        <strong>{t("vstup.naucSa", { dlzka: dlzka() })}</strong>
         <span className="tlmene">{t("vstup.pravidlaText")}</span>
       </div>
       <Odkaz href={adresaVyucby(ja !== null)} className="tlacidlo tlacidlo-hlavne" data-vyucba-vstup="pravidla">
@@ -42,30 +48,27 @@ export function popisVyucbyVLobby(vyucba: VyucbaUctu): string {
 /**
  * Vstup do výučby v lobby (/hra): „Prvá hra — nauč sa hrať“ alebo „Pokračovať vo výučbe“
  * (rozohraná časť, alebo ďalšia časť od jej začiatku). Nováčikovi bez 1. časti je to
- * najväčšia výzva stránky (#104), Pravidlá len odkaz.
+ * zlatá výzva stránky (#104); Pravidlá sú v navigácii.
  */
 export function VyucbaVLobby({ vyucba, zacni }: { readonly vyucba: VyucbaUctu; readonly zacni: (odznova: boolean) => void }) {
   const pokracuj = rozpracovana(vyucba);
   const novacik = bezPrvejCasti(true, vyucba);
+  // Jeden riadok (UI inšpekcia W-05): založenie hry má byť nad zlomom aj pri 1366×650. Nováčikovi
+  // stačí názov a dĺžka zo scenára; kto už začal, vidí, kde stojí.
   return (
     <section className={`panel vyucba-vstup${novacik ? " vyzva" : ""}`}>
-      <img className="vyucba-avatar" src="/melichar.jpg" alt="" width={novacik ? 88 : 64} height={novacik ? 88 : 64} />
+      <img className="vyucba-avatar" src="/melichar.jpg" alt="" width={48} height={48} />
       <div>
-        <h2>{novacik ? t("vstup.naucSa") : t("vstup.prvaHra")}</h2>
-        <p className="tlmene">{popisVyucbyVLobby(vyucba)}</p>
-        {novacik && (
-          <p className="tlmene vyucba-vstup-pravidla">
-            {tr("vstup.radsejCitas", { odkaz: <Odkaz href="/pravidla">{t("nav.pravidla")}</Odkaz> })}
-          </p>
-        )}
+        <h2>{novacik ? t("vyucba.naucSaHrat") : t("vstup.prvaHra")}</h2>
+        <p className="tlmene">{novacik ? dlzka() : popisVyucbyVLobby(vyucba)}</p>
       </div>
       <div className="riadok-tlacidiel">
         {pokracuj ? (
           <>
+            <button onClick={() => zacni(true)}>{t("vstup.zacatOdznova")}</button>
             <button className="tlacidlo-hlavne" onClick={() => zacni(false)} data-vyucba-vstup="pokracovat">
               {vyucba.dalsiaCast !== null ? t("vstup.pokracovatCast", { cast: vyucba.dalsiaCast.cast }) : t("vstup.pokracovat")}
             </button>
-            <button onClick={() => zacni(true)}>{t("vstup.zacatOdznova")}</button>
           </>
         ) : (
           <button className="tlacidlo-hlavne" onClick={() => zacni(vyucba.stav !== null)} data-vyucba-vstup="zacat">
@@ -90,13 +93,14 @@ export function PonukaVyucby({ vyucba, zacni, preskoc }: { readonly vyucba: Vyuc
       <div className="vyucba-ponuka panel">
         <img className="vyucba-avatar" src="/melichar.jpg" alt="" width={96} height={96} />
         <h2 id="vyucba-ponuka-nadpis">{t("vstup.najprv")}</h2>
-        <p>{t("vstup.najprvText")}</p>
+        <p>{t("vstup.najprvText", { dlzka: dlzka() })}</p>
+        {/* Hlavné tlačidlo vpravo ako vo všetkých dialógoch (UI inšpekcia W-20). */}
         <div className="riadok-tlacidiel">
-          <button ref={hlavne} className="tlacidlo-hlavne" onClick={zacni} data-vyucba-vstup="ponuka">
-            {pokracuj ? t("vstup.pokracovat") : t("vstup.naucMa")}
-          </button>
           <button onClick={preskoc} data-vyucba-vstup="preskocit">
             {t("vstup.preskocit")}
+          </button>
+          <button ref={hlavne} className="tlacidlo-hlavne" onClick={zacni} data-vyucba-vstup="ponuka">
+            {pokracuj ? t("vstup.pokracovat") : t("vstup.naucMa")}
           </button>
         </div>
         <p className="tlmene vyucba-ponuka-pozn">{t("vstup.kedykolvek")}</p>

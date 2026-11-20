@@ -28,7 +28,7 @@ import { naStoleVysvetlenie, poldeciNaStole } from "./tabula.ts";
 import { titulBezExekucie, hroziVyhraStrachom } from "./vyhraStrachom.ts";
 import type { SpakyTeraz } from "@naex/core";
 import { t, tr, tRod } from "../i18n/jazyk.tsx";
-import { spakov } from "../i18n/pocty.ts";
+import { kariet, spakov } from "../i18n/pocty.ts";
 
 // Ikony zdrojov a výmena „cena → zisk“ sú v ikonyZdrojov.tsx — bez ťažkých závislostí Panelov,
 // aby ich mohli použiť aj malé komponenty testované bez prehliadača (KseftPodKartou).
@@ -101,10 +101,13 @@ function ZdrojChut({ z, ja }: { readonly z: StavZavislosti; readonly ja: boolean
         </>
       }
       pod={
-        <>
-          <span className="neresti-pocet">{t("panel.dnes", { n: z.teraz })}</span>
-          <span className={`abstak-vyhlad ${vyhlad.trieda}`}>{vyhlad.naDlazdici}</span>
-        </>
+        // Nulové stavy („dnes 0“, „po kole Chuť 0“) sa na dlaždici nevypisujú (Z-04); výstraha áno.
+        z.teraz > 0 || z.vyhlad === "ziska" || z.chutPo > 0 ? (
+          <>
+            {(z.teraz > 0 || z.vyhlad === "ziska") && <span className="neresti-pocet">{t("panel.dnes", { n: z.teraz })}</span>}
+            {(z.vyhlad === "ziska" || z.chutPo > 0) && <span className={`abstak-vyhlad ${vyhlad.trieda}`}>{vyhlad.naDlazdici}</span>}
+          </>
+        ) : undefined
       }
       tip={{
         nadpis: t("panel.chutAAbstak"),
@@ -115,7 +118,10 @@ function ZdrojChut({ z, ja }: { readonly z: StavZavislosti; readonly ja: boolean
               {z.abstaky > 0 &&
                 ` · ${ja ? t("panel.abstakyJa", { n: z.abstaky, ubera: z.ubera }) : t("panel.abstakySu", { n: z.abstaky, ubera: z.ubera })}`}
             </span>
-            {t("panel.chutPravidlo", { naex: KONSTANTY.NEREST_NAEX, ubytok: KONSTANTY.CHUT_UBYTOK })}
+            {/* Stav tučne a pod ním tri krátke riadky (Z-16); okrajové prípady sú v Pravidlách. */}
+            <span className="tip-riadok">{t("panel.chutNerest", { naex: KONSTANTY.NEREST_NAEX })}</span>
+            <span className="tip-riadok">{t("panel.chutKoniecKola")}</span>
+            <span className="tip-riadok">{t("panel.chutAbstak")}</span>
           </>
         ),
       }}
@@ -194,7 +200,8 @@ function vyhladPitky(x: VstupVyhladu): { readonly kratke: readonly { readonly te
     x.bitka === undefined || vsetky === 0
       ? null
       : (x.bitka.pali > 0 ? t("panel.bitkaSpali", { n: x.bitka.pali, k: x.bitka.ostane }) : t("panel.poBitkeOstanu", { k: x.bitka.ostane })) + bodov(x.bitka.ostane * x.cena);
-  const kratke = [{ text: pitka, zly: x.kliatby > 0 }];
+  // „v Pitke: nič“ sa na dlaždici nevypisuje (Z-04) — ostáva v nápovede.
+  const kratke = x.kliatby > 0 ? [{ text: pitka, zly: true }] : [];
   // Druhý riadok: Dlh — čo ostane po bitke (zahŕňa aj ďalšie Pitky); Cirhóza — ďalšie Pitky.
   if (x.bitka !== undefined && poBitke !== null) kratke.push({ text: t("panel.poBitkeKrat", { k: x.bitka.ostane }) + bodov(x.bitka.ostane * x.cena), zly: x.bitka.ostane > 0 });
   else if (dalsie !== null) kratke.push({ text: `${pitkyKratko(x.dalsiePitky)}: ×${x.opakovane}`, zly: true });
@@ -331,13 +338,15 @@ function DlazdicaKariet({ hrac, ja, karty }: { readonly hrac: ClientState["hraci
             <span>
               <b>{hrac.rukaPocet}</b> {t("panel.ruka")}
             </span>
-            <span>
-              <b>
-                {hrac.priznane.length}
-                {karty.navrhy > 0 && `+${karty.navrhy}`}
-              </b>{" "}
-              {t("panel.priznane")}
-            </span>
+            {(hrac.priznane.length > 0 || karty.navrhy > 0) && (
+              <span>
+                <b>
+                  {hrac.priznane.length}
+                  {karty.navrhy > 0 && `+${karty.navrhy}`}
+                </b>{" "}
+                {t("panel.priznane")}
+              </span>
+            )}
           </span>
         </span>
       ) : (
@@ -579,24 +588,32 @@ export function HracDoska({
           />
           {spojenie !== undefined && !spojenie.pripojeny && <span className="doska-odpojeny">○ {t("panel.odpojeny")} {minSek(odpojenyMs)}</span>}
           {/* Nepriznané kliatby pod menom; priznané a Dedičstvo sú v dlaždici KARTY (Michal 2026-10-23, #76). */}
-          {((view.pata === undefined && kliatby.cirhoza > 0) || zavislost.abstaky > 0) && (
-            <span className="doska-oblast">
-              <span
-                className="cip kliatba"
-                title={
-                  view.pata !== undefined
-                    ? t("panel.abstakNepriznat")
-                    : (ja
-                    ? t("panel.nepriznaneJa", { spaky: spakov(KONSTANTY.SPAKY_ZA_CIRHOZU) })
-                    : t("panel.nepriznaneSu", { spaky: spakov(KONSTANTY.SPAKY_ZA_CIRHOZU) })) +
-                  (zavislost.abstaky > 0 ? ` ${t("panel.abstakNepriznat")}` : "")
-                }
-              >
-                {t("panel.nepriznane")}{view.pata === undefined && kliatby.cirhoza > 0 && ` · ${t("panel.cirhozaKrat", { n: kliatby.cirhoza })}`}
-                {zavislost.abstaky > 0 && ` · ${t("panel.abstakKrat", { n: zavislost.abstaky })}`}
+          {((view.pata === undefined && kliatby.cirhoza > 0) || zavislost.abstaky > 0) && (() => {
+            const casti = [
+              ...(view.pata === undefined && kliatby.cirhoza > 0 ? [t("panel.cirhozaKrat", { n: kliatby.cirhoza })] : []),
+              ...(zavislost.abstaky > 0 ? [t("panel.abstakKrat", { n: zavislost.abstaky })] : []),
+            ];
+            const cely = [t("panel.nepriznane"), ...casti].join(" · ");
+            return (
+              <span className="doska-oblast">
+                <span
+                  className="cip kliatba"
+                  title={
+                    `${cely}. ` +
+                    (view.pata !== undefined
+                      ? t("panel.abstakNepriznat")
+                      : (ja
+                      ? t("panel.nepriznaneJa", { spaky: spakov(KONSTANTY.SPAKY_ZA_CIRHOZU) })
+                      : t("panel.nepriznaneSu", { spaky: spakov(KONSTANTY.SPAKY_ZA_CIRHOZU) })) +
+                    (zavislost.abstaky > 0 ? ` ${t("panel.abstakNepriznat")}` : ""))
+                  }
+                >
+                  {/* Obe kliatby naraz sa s „nepriznané“ nezmestili a počet zjedla trojbodka — slovo je v titulku. */}
+                  {casti.length > 1 ? casti.join(" · ") : cely}
+                </span>
               </span>
-            </span>
-          )}
+            );
+          })()}
         </div>
       </div>
 
@@ -615,16 +632,17 @@ export function HracDoska({
             </>
           }
           pod={
-            <>
-              {/* Každý riadok vo vlastnom prvku — v úzkej dlaždici sa skráti trojbodkou, nezalomí (malý notebook).
-                  Na stole sa ráta k vypitým; v nízkom okne „plné ·“ ustúpi, aby trojbodka nezrezala „na stole“
-                  (UI inšpekcia 2026-10-24). */}
-              <span className={naexNaStole > 0 ? "s-naex" : undefined}>
-                <span className="pod-plne">{t("panel.plneBodka")}</span>
-                {t("panel.vypite", { n: vypiteSoStolom })}{naexNaStole > 0 && t("panel.naStoleZatvorka", { n: naexNaStole })}
-              </span>
-              <b>{t("panel.limitKariet", { n: limit })}</b>
-            </>
+            // Bez vypitých nič — „na N kariet“ opakovalo dlaždicu Karty (Z-04); limit je v nápovede.
+            vypiteSoStolom > 0 ? (
+              <>
+                {/* Na stole sa ráta k vypitým; v nízkom okne „plné ·“ ustúpi, aby trojbodka nezrezala „na stole“
+                    (UI inšpekcia 2026-10-24). */}
+                <span className={naexNaStole > 0 ? "s-naex" : undefined}>
+                  <span className="pod-plne">{t("panel.plneBodka")}</span>
+                  {t("panel.vypite", { n: vypiteSoStolom })}{naexNaStole > 0 && t("panel.naStoleZatvorka", { n: naexNaStole })}
+                </span>
+              </>
+            ) : undefined
           }
           tip={{
             nadpis: t("pult.poldeci"),
@@ -634,11 +652,13 @@ export function HracDoska({
                 <span className="tip-stav">
                   {t("panel.poldeciStav", { kto, plne, vypite: vypiteSoStolom })}
                   {naexNaStole > 0 && t("panel.zTohoNaStole", { n: naexNaStole, skryte: skryteNaex > 0 ? kSkrytemu : "" })}
-                  {t("panel.limitKarietBodka", { n: limit })}
+                  {t("panel.limitKarietBodka", { karty: kariet(limit) })}
                   {jeCielLokalita(view, "zastavka") && t("panel.zastavka")}
                   {t("panel.dalsieKolo", { n: buduci })}
                 </span>
-                {t("panel.poldeciPravidlo", { dolieva: KONSTANTY.POLDECI_PO_PITKE, spaky: KONSTANTY.SPAKY_ZA_POLDECI })}
+                <span className="tip-riadok">{t("panel.poldeciLimit")}</span>
+                <span className="tip-riadok">{t("panel.poldeciPas")}</span>
+                <span className="tip-riadok">{t("panel.poldeciDoliatie", { dolieva: KONSTANTY.POLDECI_PO_PITKE })}</span>
                 {naexNaStole > 0 && ` ${naStoleVysvetlenie()}`}
               </>
             ),
@@ -721,9 +741,7 @@ export function HracDoska({
                 </span>
               ) : prahy.priznaneDlhy > 0 ? (
                 <span>{t("panel.zahradkar")}</span>
-              ) : (
-                <span>{t("panel.bezDlhov")}</span>
-              )}
+              ) : null}
             </>
           }
           tip={{
@@ -977,7 +995,8 @@ export function AkcieStrany({ sums, zdroje, rozpis, sada, menoKarty, sNazvom = f
       />,
     );
   }
-  return dlazdice.length > 0 ? <>{dlazdice}</> : <span className="efekty-ziadne">{t("panel.ziadneAkcie")}</span>;
+  // Bez aktívnych akcií nič — „žiadne aktívne akcie“ bolo na stole dvakrát (Z-04).
+  return dlazdice.length > 0 ? <>{dlazdice}</> : null;
 }
 
 function StranaBitky({
@@ -1367,7 +1386,7 @@ export function tipOdhadu(props: BitkaPanelProps, stavka: StavkaBitkyCisla | nul
         {!vysledok && props.spaky != null && <RozpisSpakovKola spaky={props.spaky} ja={ja} menoSupera={mena[su]} />}
         {!vysledok && props.spaky == null && stavka !== null && (
           <span className="tip-riadok">
-            {tr("panel.taBitka", { karty: t("spaky.kartVLinii", { n: stavka.karty }), vyhra: stavka.vyhra, prehra: -stavka.prehra })}
+            {tr("panel.taBitka", { karty: t("spaky.kartVLinii", { n: stavka.karty }), vyhra: spakov(stavka.vyhra), prehra: spakov(-stavka.prehra) })}
             {stavka.naSekere > 0 && <> · {t("panel.naSekere", { n: stavka.naSekere })}</>}
           </span>
         )}
@@ -1687,7 +1706,7 @@ export function PriebehKola({
     );
   }
   return (
-    <ol className="priebeh-kola" aria-label={t("faza.kolo", { n: view.kolo })} data-vyucba="os-kola">
+    <ol className={`priebeh-kola${polozky.length >= 8 ? " mnoho-krokov" : ""}`} aria-label={t("faza.kolo", { n: view.kolo })} data-vyucba="os-kola">
       <KrokOsi
         krok={{
           id: "hlava",

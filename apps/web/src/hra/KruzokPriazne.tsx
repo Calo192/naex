@@ -134,11 +134,12 @@ export function ObsahNapovedyStarsieho({ o, obrazok = null }: { readonly o: Obsa
   return (
     <div className="np-r3" style={FARBY_NAPOVEDY}>
       <div className="np-a">
+        {/* Len stav, špaky po bitke a priazeň teraz (Z-10); legenda teplomera, bodovanie stupňov
+            a to, čo priazeň ráta, sú v Pravidlách (Starší a priazeň). */}
         <span className="np-hlava">
           {obrazok !== null && <img src={obrazok} alt="" draggable={false} />}
           <span>
             <b className="np-meno">{o.meno}</b>
-            <small className="np-nazov">{t("napoveda.legenda")}</small>
           </span>
           <KruzokPriazne fav={o.favour} p={o.priazen} velkost={34} />
         </span>
@@ -176,23 +177,23 @@ export function ObsahNapovedyStarsieho({ o, obrazok = null }: { readonly o: Obsa
             </li>
           ))}
         </ul>
-        <span className="np-pozn">{t("napoveda.stupenDa", { hodnota: HODNOTA_POLA })}</span>
       </div>
       <div className="np-b">
         <span className="np-h4">
           <IkonaPriazneKruzku fav={o.favour} /> {t("linia.priazen")} {o.nazovPriazne} · {o.kedyPriazne}
         </span>
         <span className={`np-komu ${trieda(o.priazen.komu)}`}>{vetaPriazne(o)}</span>
-        <span className="np-pozn">{t("napoveda.podlaSily")}</span>
+        {/* Kto priazeň má, vidí len silu, ktorá platí teraz; kým ju nemá nikto, všetky tri — o čo sa hrá. */}
         <ol className="np-sily">
-          {o.sily.map((sila, i) => (
-            <li key={i} className={o.priazen.sila === i + 1 ? `on ${trieda(o.priazen.komu)}` : undefined}>
-              <b>{t("napoveda.sila", { n: i + 1 })}</b>
-              <span>{sila}</span>
-            </li>
-          ))}
+          {o.sily.map((sila, i) =>
+            o.priazen.komu !== null && o.priazen.sila !== i + 1 ? null : (
+              <li key={i} className={o.priazen.sila === i + 1 ? `on ${trieda(o.priazen.komu)}` : undefined}>
+                <b>{t("napoveda.sila", { n: i + 1 })}</b>
+                <span>{sila}</span>
+              </li>
+            ),
+          )}
         </ol>
-        <span className="np-pozn">{t("napoveda.priazenRata")}</span>
         {o.zajatie.map((z) => (
           <span key={z.hrac} className={`np-zajatie ${z.komu}`}>
             ⛓ {vetaZajatia(z, o.rod)}
@@ -274,10 +275,27 @@ export interface NapovedaStarsieho {
  * Nápoveda nad staršom: myš (prejdenie), klávesnica (fokus) a dotyk (podržanie → zväčšenina
  * s nápovedou pod ňou, zavrie ju ťuk). Obsah sa skladá až pri otvorení.
  */
-export function useNapovedaStarsieho(obsah: () => ObsahNapovedy | ObsahNapovedyVazna | null, moznosti: { readonly obrazok?: string | null; readonly zvacsenina?: () => ReactNode } = {}): NapovedaStarsieho {
+export function useNapovedaStarsieho(
+  obsah: () => ObsahNapovedy | ObsahNapovedyVazna | null,
+  moznosti: {
+    readonly obrazok?: string | null;
+    readonly zvacsenina?: () => ReactNode;
+    /**
+     * Myš musí na staršom zotrvať, kým sa nápoveda ukáže — keď sa na starších kliká (rozdeľovanie,
+     * kroky výučby), inak by vyskočila cez susedov, na ktorých chce hráč klikať (Z-10, V-10).
+     */
+    readonly oneskorenieMs?: number;
+  } = {},
+): NapovedaStarsieho {
   const [stav, setStav] = useState<StavNapovedy | null>(null);
   const kotvaStarsieho = useRef<HTMLElement | null>(null);
   const casovac = useRef<number | null>(null);
+  const odklad = useRef<number | null>(null);
+  const zrusOdklad = (): void => {
+    if (odklad.current !== null) window.clearTimeout(odklad.current);
+    odklad.current = null;
+  };
+  useEffect(() => zrusOdklad, []);
   const podrzane = useRef(false);
   const mys = (e: ReactPointerEvent): boolean => e.pointerType !== "touch";
   const zrusPodrzanie = (): void => {
@@ -300,10 +318,15 @@ export function useNapovedaStarsieho(obsah: () => ObsahNapovedy | ObsahNapovedyV
     onPointerEnter: (e) => {
       if (!mys(e)) return;
       kotvaStarsieho.current = e.currentTarget;
-      setStav({ druh: "starsi", kotva: e.currentTarget });
+      const kotva = e.currentTarget;
+      zrusOdklad();
+      if ((moznosti.oneskorenieMs ?? 0) > 0) odklad.current = window.setTimeout(() => setStav({ druh: "starsi", kotva }), moznosti.oneskorenieMs);
+      else setStav({ druh: "starsi", kotva });
     },
     onPointerLeave: (e) => {
-      if (mys(e)) setStav((s) => (s?.druh === "zoom" ? s : null));
+      if (!mys(e)) return;
+      zrusOdklad();
+      setStav((s) => (s?.druh === "zoom" ? s : null));
     },
     onFocus: (e: FocusEvent<HTMLElement>) => {
       if (e.target !== e.currentTarget || !e.currentTarget.matches(":focus-visible")) return;

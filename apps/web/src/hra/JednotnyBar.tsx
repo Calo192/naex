@@ -101,6 +101,12 @@ export function JednotnyBar({ os, desi, nastroje, rezim, stred, tip, ja, su, chy
     mo.observe(el, { childList: true, subtree: true, attributes: true, attributeFilter: ["data-mel-rezim"] });
     return () => mo.disconnect();
   }, []);
+  // Keď Melichar začne či prestane hovoriť, tlačidlo odhadu (aj jeho kópia v bubline) zmizne či sa
+  // vymení — otvorený či pripnutý tip by visel cez stôl so starým odhadom (V-02).
+  useEffect(() => {
+    skry();
+    setPripnuty(false);
+  }, [mel, skry]);
   const sOsou = os !== null || desi !== null || nastroje !== null;
   return (
     <header

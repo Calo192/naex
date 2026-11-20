@@ -16,6 +16,7 @@ import {
   SKRATKA_VYSLEDKU,
   TEXT_VYSLEDKU,
   hodnotaMetriky,
+  predvolenyFilter,
   trvanie,
   znamienko,
   type Bilancia,
@@ -285,12 +286,17 @@ function PostupRankuOdznak({ p }: { readonly p: PostupRanku }) {
 export function HracProfil({ id }: { readonly id: number }) {
   const { nastav } = useUcet();
   const [filter, setFilter] = useState<FilterPartii>("ludia");
+  const [zvolilFilter, setZvolilFilter] = useState(false);
   const [zalozka, setZalozka] = useState<Zalozka>("prehlad");
   const [obnov, setObnov] = useState(0);
   const { profil, chyba } = useProfilApi(id, filter, obnov);
   useTitulok(profil?.hrac.meno ?? t("hrac.hrac"));
   const plny = profil !== null && profil.pohlad !== "cudzi";
   const forma20 = usePartie(id, filter, 20, plny);
+  const predvoleny = profil === null ? null : predvolenyFilter(profil.bilancia);
+  useEffect(() => {
+    if (!zvolilFilter && predvoleny !== null) setFilter(predvoleny);
+  }, [zvolilFilter, predvoleny]);
 
   if (chyba !== null) {
     return (
@@ -332,16 +338,15 @@ export function HracProfil({ id }: { readonly id: number }) {
         <div className="profil-hlavicka-texty">
           <strong className="profil-meno">{profil.hrac.meno}</strong>
           <div className="profil-odznaky">
-            <span className="odznak">{f.titul}</span>
             {profil.hrac.rola === "admin" && <span className="odznak odznak-admin">{t("hrac.tvorca")}</span>}
             {profil.hrac.rola === "subadmin" && <span className="odznak">subadmin</span>}
-            {RANKY_HRACOV.includes(profil.hrac.rola as Rola) && <span className="odznak">{nazovUrovne(profil.hrac.rola as Rola)}</span>}
+            {RANKY_HRACOV.includes(profil.hrac.rola as Rola) && <span className="odznak">{t("hrac.rankOdznak", { rank: nazovUrovne(profil.hrac.rola as Rola) })}</span>}
             {profil.postupRanku != null && <PostupRankuOdznak p={profil.postupRanku} />}
             <span className="tlmene">{t("hrac.vKrcmeOd", { datum: datum(profil.hrac.vytvoreny) })}</span>
           </div>
           {vlastny && (
             <div className="profil-vlastne">
-              <Odkaz href="/profil">{t("hrac.upravit")}</Odkaz>
+              <Odkaz href="/profil">{t("nav.nastavenia")}</Odkaz>
               <label className="profil-prepinac" title={t("hrac.ostatniUvidia")}>
                 <input type="checkbox" checked={profil.suhrnSkryty} onChange={(e) => skrySuhrn(e.target.checked)} /> {t("hrac.skrytSuhrn")}
               </label>
@@ -351,6 +356,8 @@ export function HracProfil({ id }: { readonly id: number }) {
         <div className="profil-frajerina">
           <span className="profil-frajerina-nazov">{t("lobby.frajerina")}</span>
           <CisloFrajeriny f={f} velke />
+          {/* Titul patrí k Frajerine, nie k ranku účtu pri mene (W-27). */}
+          <span className="odznak">{f.titul}</span>
           <span className="tlmene">
             {f.poradie !== null && (
               <>
@@ -378,6 +385,7 @@ export function HracProfil({ id }: { readonly id: number }) {
           ))}
         </nav>
         {plny ? (
+          !nova && (
           <div className="segment" role="group" aria-label={t("hrac.partie")}>
             {(
               [
@@ -386,11 +394,20 @@ export function HracProfil({ id }: { readonly id: number }) {
                 ["spolu", t("linia.spolu"), profil.bilancia.ludia.partie + profil.bilancia.boti.partie],
               ] as const
             ).map(([k, nazov, n]) => (
-              <button key={k} type="button" aria-pressed={filter === k} onClick={() => setFilter(k)}>
+              <button
+                key={k}
+                type="button"
+                aria-pressed={filter === k}
+                onClick={() => {
+                  setZvolilFilter(true);
+                  setFilter(k);
+                }}
+              >
                 {nazov} <small>{n}</small>
               </button>
             ))}
           </div>
+          )
         ) : (
           <span className="tlmene">
             {profil.bilancia.boti.partie > 0 && t("hrac.sBotmiPlus", { n: profil.bilancia.boti.partie })}
@@ -416,7 +433,7 @@ export function HracProfil({ id }: { readonly id: number }) {
               )}
             </section>
           )}
-          {plny ? (
+          {nova ? null : plny ? (
             <Forma
               vysledky={(forma20.data?.partie ?? []).map((p) => p.vysledok)}
               nadpis={t("hrac.formaPoslednych", { n: Math.min(20, forma20.data?.partie.length ?? 0) })}
@@ -431,7 +448,7 @@ export function HracProfil({ id }: { readonly id: number }) {
               <BilanciaRiadok b={profil.vyDvaja} nazov={t("hrac.tvojePartieSNim")} />
             </section>
           )}
-          {profil.suhrnSkryty && profil.pohlad === "cudzi" ? (
+          {nova ? null : profil.suhrnSkryty && profil.pohlad === "cudzi" ? (
             <section className="panel profil-karta">
               <p className="tlmene">{t("hrac.suhrnSkryty")}</p>
             </section>
@@ -450,15 +467,17 @@ export function HracProfil({ id }: { readonly id: number }) {
               </section>
             )
           )}
-          {vitrina != null && <PoslednePodtacky vitrina={vitrina} vlastna={vlastny} vsetky={() => setZalozka("achievementy")} />}
-          <SilneSlabe profil={profil} />
+          {vitrina != null && <PoslednePodtacky vitrina={vitrina} vlastna={vlastny} vsetky={() => setZalozka("achievementy")} skrytPrazdnu={nova} />}
+          {!nova && <SilneSlabe profil={profil} />}
+          {!nova && (
           <section className="panel profil-karta">
             <h2>{t("hrac.bilancia")}</h2>
             <BilanciaRiadok b={profil.bilancia.ludia} nazov={t("hrac.sLudmiMale")} />
             <BilanciaRiadok b={profil.bilancia.boti} nazov={t("hrac.sBotmiMale")} />
           </section>
+          )}
           {profil.ligy !== undefined && <Ligy ligy={profil.ligy} vlastny={vlastny} />}
-          {plny && (
+          {plny && !nova && (
             <div className="profil-dva-stlpce">
               <section className="panel profil-karta">
                 <header className="profil-karta-hlava">

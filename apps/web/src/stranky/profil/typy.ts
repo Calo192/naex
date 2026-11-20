@@ -142,3 +142,11 @@ export function hodnotaMetriky(m: Pick<Metrika, "jednotka">, v: number | null): 
   const c = v.toLocaleString("sk-SK", { maximumFractionDigits: 1 });
   return m.jednotka === "%" ? `${c} %` : m.jednotka === "b" ? `${c} š` : c;
 }
+
+/**
+ * Filter partií, kým si hráč nevybral sám: nový hráč hrá najprv s botmi a pod „S ľuďmi“
+ * by po prvej partii videl prázdny profil (UI inšpekcia W-08).
+ */
+export function predvolenyFilter(b: { readonly ludia: Bilancia; readonly boti: Bilancia }): FilterPartii {
+  return b.ludia.partie === 0 && b.boti.partie > 0 ? "spolu" : "ludia";
+}

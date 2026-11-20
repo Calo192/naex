@@ -23,8 +23,9 @@ export function krokPartie(view: Pick<ClientState, "nastenka" | "lokalitCelkom" 
   // Päta, Lakeť, Otočka: lokality sa neminú, kôl je, koľko treba.
   if (view.pata !== undefined) return { text: t("faza.kolo", { n: view.kolo }), kratko: t("faza.kolo", { n: view.kolo }), finale: false };
   const celkom = view.lokalitCelkom + 1;
-  // Kým sa vyberá cieľ, ciel je null — ráta sa najbližšia bitka.
-  const cislo = Math.min(celkom, view.nastenka.length + 1);
+  // Bitka kola, ktoré sa práve hrá (S-10): číslo sa zvýši až s ďalším kolom (Voľba cieľa), nie
+  // hneď, ako bitka padne na nástenku — pri rozdeľovaní hádky a Nakladačky to predbiehalo.
+  const cislo = Math.min(celkom, view.kolo);
   if (view.ciel?.typ === "finale" || cislo >= celkom) return { text: t("faza.finale"), kratko: t("faza.finale"), finale: true };
   return { text: t("stitok.bitkaZ", { i: cislo, n: celkom }), kratko: t("stitok.bitkaKratko", { i: cislo, n: celkom }), finale: false };
 }

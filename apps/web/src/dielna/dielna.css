@@ -26,6 +26,30 @@
   border-bottom-color: var(--akcent);
 }
 
+/* Rozbor sady (Heatmapa, Power level) vpravo a menším písmom — nástroje na vyvažovanie (W-22). */
+.karty-rozbor {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  margin-left: auto;
+  font-size: 0.88rem;
+}
+
+.karty-rozbor-nazov {
+  color: var(--tlmeny);
+  margin-right: 4px;
+}
+
+@media (max-width: 760px) {
+  .karty-zalozky {
+    flex-wrap: wrap;
+  }
+
+  .karty-rozbor-nazov {
+    display: none;
+  }
+}
+
 /* Šírku dáva stránka (Layout, #21 B) — Dielňa je záložka Kariet a sedí na ich hrane. */
 .dielna {
   max-width: none;

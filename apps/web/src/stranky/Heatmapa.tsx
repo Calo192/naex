@@ -139,8 +139,8 @@ export function Heatmapa() {
 
   const hlava = (
     <HlavaStranky
-      nadpis="Karty"
-      uvod="Heatmapa akcií — ktoré pozície na kartách sady obsadzujú akcie, podľa typu karty aj podľa akcie."
+      nadpis="Heatmapa akcií"
+      uvod="Ktoré pozície na kartách sady obsadzujú akcie, podľa typu karty aj podľa akcie."
       zalozky={<KartyZalozky aktivna="heatmapa" />}
       viac={
         <p>

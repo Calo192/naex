@@ -113,7 +113,7 @@ describe("línia starších", () => {
       }),
     );
 
-  it("Teplomery R3: tvoj pás vľavo, súperov vpravo; strach plný, reči šrafované na súperovom teplomere; hladiny s menom; zátvorka priazne", () => {
+  it("Teplomery R3: tvoj pás vľavo, súperov vpravo; strach plný, reči šrafované na súperovom teplomere; hladiny bez mena (Z-11); zátvorka priazne", () => {
     const html = linia("teplomery");
     expect(html).toContain('data-vyucba="starsi-stupnica"');
     expect(html).toContain(`data-vyucba="strach:${starsi[0]!.elderId}"`);
@@ -123,9 +123,10 @@ describe("línia starších", () => {
     expect(moj).not.toContain("srafa");
     expect(html.match(/r3-vypln srafa/g)).toHaveLength(1);
     expect(html.match(/r3-vypln plna/g)).toHaveLength(4);
-    // Hladiny s menom hráča (nie „ty“), zátvorka priazne +2 pre mňa (Fero sa bojí viac).
-    expect(html).toMatch(/r3-hladina ja" style="--h:1[^"]*"><b class="r3-meno">Jano</);
-    expect(html).toMatch(/r3-hladina su" style="--h:3[^"]*"><b class="r3-meno">Fero</);
+    // Hladiny bez mena — farba a poloha stačia, mená sú v legende (Z-11); zátvorka priazne +2 pre mňa (Fero sa bojí viac).
+    expect(html).toMatch(/r3-hladina ja" style="--h:1[^"]*"><\/span>/);
+    expect(html).toMatch(/r3-hladina su" style="--h:3[^"]*"><\/span>/);
+    expect(html).not.toContain("r3-meno");
     expect(html).toMatch(/r3-zatvorka ja" style="--a:1;--b:3"><b>\+2</);
     // Pri teplomeroch slová stupňov nie sú — sú pod menom staršieho, menom hráča.
     for (const cast of html.split('class="ls-stav').slice(0, -1)) expect(cast.slice(cast.lastIndexOf('class="r3"'))).not.toMatch(/znepokojen|vystrašen|vydesen/);

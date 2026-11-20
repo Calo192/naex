@@ -659,8 +659,12 @@ export interface RozpisSpakov {
   readonly zaStarsich: number;
   /** Prebytok zmenený na špaky (len archívne partie do v7). */
   readonly prebytok: number;
+  /** Hádka vo finále zmenená na špaky (v11). */
+  readonly hadka: number;
   /** Zhorené pri exekúcii (záporné). */
   readonly exekutor: number;
+  /** Krádež pri zajatí (v11): kladné zlodejovi, záporné okradnutému. */
+  readonly zajatie: number;
   /** Nepriznané Cirhózy na konci hry (záporné). */
   readonly cirhoza: number;
   /** Výkupné plných poldeci a cigariet na konci hry. */
@@ -677,7 +681,9 @@ export function rozpisSpakov(view: Pick<ClientState, "nastenka" | "koniec" | "sp
       zaBitky: sucet((b) => b.zaBitku[p] + (b.robota?.[p] ?? 0)),
       zaStarsich: sucet((b) => b.zaStarsich[p]),
       prebytok: sucet((b) => b.prebytok[p]),
+      hadka: sucet((b) => b.hadkaSpaky?.[p] ?? 0),
       exekutor: -sucet((b) => b.exekutor[p]),
+      zajatie: sucet((b) => b.kradez?.[p] ?? 0),
       cirhoza: -(view.koniec?.cirhozy?.[p] ?? 0) * KONSTANTY.SPAKY_ZA_CIRHOZU,
       vykupne: view.koniec?.vykupne?.[p]?.spaky ?? 0,
       vazni: view.koniec?.vazni?.[p] ?? 0,

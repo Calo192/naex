@@ -8,13 +8,14 @@ import { Layout } from "./Layout.tsx";
 import { HlavaStranky } from "./HlavaStranky.tsx";
 import { Nacitavanie } from "./komponenty.tsx";
 import { Odkaz, useCesta } from "./lib/router.tsx";
+import { sNavratom } from "./lib/navrat.ts";
 import { jeSpravca, jeZrejuca, maPravo, useUcet } from "./lib/ucet.tsx";
 import { Domov } from "./stranky/Domov.tsx";
 import { Glosar } from "./stranky/Glosar.tsx";
 import { Heatmapa } from "./stranky/Heatmapa.tsx";
 import { PowerLevel } from "./stranky/PowerLevel.tsx";
 import { Pravidla } from "./stranky/Pravidla.tsx";
-import { Prihlasenie, Profil, Registracia } from "./stranky/Ucet.tsx";
+import { Prihlasenie, Profil, Registracia, jeCestaNastaveni } from "./stranky/Ucet.tsx";
 import { NoveHeslo, ZabudnuteHeslo } from "./stranky/ObnovaHesla.tsx";
 import { Hra } from "./hra/Hra.tsx";
 import { HracProfil } from "./stranky/profil/Profil.tsx";
@@ -31,15 +32,22 @@ import { Hraci } from "./stranky/Hraci.tsx";
 import { Playtest } from "./playtest/Playtest.tsx";
 import { t, useJazyk } from "./i18n/jazyk.tsx";
 
-function Neprihlaseny() {
+/** Stránka pre prihlásených: povie, čo za ňou je, a ponúkne obe cesty, nie slepú uličku (UI inšpekcia W-15). */
+function Neprihlaseny({ nadpis, uvod }: { readonly nadpis?: string; readonly uvod?: string }) {
+  const spat = location.pathname + location.search;
   return (
     <HlavaStranky
-      nadpis={t("app.najprvPrihlas")}
-      uvod={t("app.najprvPrihlasUvod")}
+      nadpis={nadpis ?? t("app.najprvPrihlas")}
+      uvod={uvod ?? t("app.najprvPrihlasUvod")}
       akcia={
-        <Odkaz href={`/prihlasenie?spat=${encodeURIComponent(location.pathname)}`} className="tlacidlo tlacidlo-hlavne">
-          {t("app.prihlasitSa")}
-        </Odkaz>
+        <>
+          <Odkaz href={sNavratom("/prihlasenie", spat)} className="tlacidlo">
+            {t("ucet.prihlasitSa")}
+          </Odkaz>
+          <Odkaz href={sNavratom("/registracia", spat)} className="tlacidlo tlacidlo-hlavne">
+            {t("ucet.vytvoritUcet")}
+          </Odkaz>
+        </>
       }
     />
   );
@@ -69,9 +77,9 @@ export function App() {
   const cesta = useCesta();
   const { ja, nacitane, instancia } = useUcet();
 
-  const chranene = (obsah: ReactNode, admin = false): ReactNode => {
+  const chranene = (obsah: ReactNode, admin = false, neprihlaseny?: { readonly nadpis: string; readonly uvod: string }): ReactNode => {
     if (!nacitane) return <Nacitavanie />;
-    if (ja === null) return <Neprihlaseny />;
+    if (ja === null) return <Neprihlaseny {...neprihlaseny} />;
     if (admin && !jeSpravca(ja.rola)) return <Nenajdene />;
     return obsah;
   };
@@ -104,7 +112,7 @@ export function App() {
   if (partia !== null) return <Layout>{chranene(<DetailPartie id={Number(partia[1])} />)}</Layout>;
   const prehravac = /^\/partia\/(\d+)\/prehravac$/.exec(cesta);
   if (prehravac !== null) return <Layout stol>{chranene(<Prehravac id={Number(prehravac[1])} />)}</Layout>;
-  if (cesta === "/profil") return <Layout>{chranene(<Profil />)}</Layout>;
+  if (jeCestaNastaveni(cesta)) return <Layout>{chranene(<Profil cesta={cesta} />)}</Layout>;
   // Ukážka UI achievementov na snímky a inšpekciu bez partie (len správca).
   if (cesta === "/achievementy/ukazka") return <Layout>{chranene(<UkazkaAchievementov />, true)}</Layout>;
   // Rekapitulácia bitky a Pitky na skutočnej partii botov — snímky a inšpekcia bez živej partie.
@@ -124,8 +132,8 @@ export function App() {
     : cesta === "/registracia" ? <Registracia />
     : cesta === "/zabudnute-heslo" ? <ZabudnuteHeslo />
     : cesta === "/obnova-hesla" ? <NoveHeslo />
-    : cesta === "/rebricek" ? chranene(<Rebricek />)
-    : cesta === "/spatna-vazba" ? chranene(<SpatnaVazba />)
+    : cesta === "/rebricek" ? chranene(<Rebricek />, false, { nadpis: t("nav.rebricek"), uvod: t("app.rebricekNeprihlaseny") })
+    : cesta === "/spatna-vazba" ? chranene(<SpatnaVazba />, false, { nadpis: t("nav.spatnaVazba"), uvod: t("app.spatnaVazbaNeprihlaseny") })
     : <Nenajdene />;
   return <Layout>{stranka}</Layout>;
 }

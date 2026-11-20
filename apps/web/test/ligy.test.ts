@@ -36,12 +36,15 @@ describe("ligy v lobby", () => {
     expect(zvolenaLiga(VSETKO, true, ["kratka", "stredna"], "dlha")).toBe("stredna");
   });
 
-  it("profil: odomknutá, voľná pre všetkých s budúcou podmienkou, zamknutá s podmienkou", () => {
+  it("profil: odomknutá, voľná s podmienkou ako budúcnosťou (W-28), zamknutá s podmienkou", () => {
     expect(stavLigyVProfile({ liga: "kratka", smie: true, pristup: "odomknuta", podmienka: null, postup: null, vyhry: 2 })).toEqual({ stav: "odomknutá", detail: null });
-    expect(stavLigyVProfile({ liga: "stredna", smie: true, pristup: "vsetci", podmienka: "Vyhraj 1 partiu Tretej ligy proti človeku (máš 0/1).", postup: { ma: 0, treba: 1 } })).toEqual({
-      stav: "zatiaľ voľná pre všetkých",
-      detail: "Na odomknutie: Vyhraj 1 partiu Tretej ligy proti človeku (máš 0/1).",
+    const volna = stavLigyVProfile({ liga: "stredna", smie: true, pristup: "vsetci", podmienka: "Vyhraj 1 partiu Tretej ligy proti človeku (máš 0/1).", postup: { ma: 0, treba: 1 } });
+    expect(volna).toEqual({
+      stav: "voľná",
+      detail: "neskôr sa zamkne — potom platí: Vyhraj 1 partiu Tretej ligy proti človeku (máš 0/1).",
     });
+    // Voľná liga nehovorí o odomykaní — hráč nesmie nadobudnúť dojem, že ju hrať nesmie.
+    expect(`${volna.stav} ${volna.detail ?? ""}`).not.toMatch(/odomkn/i);
     expect(stavLigyVProfile(NOVY[2] as StavLigy)).toEqual({ stav: "zamknutá", detail: "Vyhraj 3 partie Druhej ligy proti človeku (máš 1/3) alebo získaj achievement „Maratón“ ★2." });
     expect(stavLigyVProfile({ liga: "dlha", smie: true, pristup: "vzdy", podmienka: "x", postup: null }).detail).toBeNull();
   });

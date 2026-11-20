@@ -1,8 +1,9 @@
 // Medziobrazovka pri prechode fázy (Michal 2026-10-27): veľký názov fázy a 1–2 vety, čo sa
-// ide diať. Ostane, kým hráč neklikne „Rozumiem“; vypína sa v profile. Hra medzitým beží
+// ide diať. Ostane, kým hráč neklikne „Rozumiem“; vypína sa v nastaveniach. Hra medzitým beží
 // (súper ani bot nečakajú) — zakrýva len stôl tohto hráča.
 
 import { useEffect, useState, type CSSProperties, type ReactNode } from "react";
+import { t } from "../i18n/jazyk.tsx";
 import type { Medziobrazovka as Obsah } from "./prechodFazy.ts";
 
 export interface MedziobrazovkaProps {
@@ -53,7 +54,7 @@ export function Medziobrazovka({ obsah, onRozumiem, children, tlacidloPoMs = 0, 
         {children}
         {tlacidloPre === obsah.kluc ? (
           <button type="button" className="tlacidlo-hlavne" onClick={onRozumiem} autoFocus>
-            Rozumiem
+            {t("prechod.rozumiem")}
           </button>
         ) : (
           // Miesto tlačidla drží ubúdajúci pásik — okno neposkočí, keď tlačidlo príde.
@@ -61,7 +62,7 @@ export function Medziobrazovka({ obsah, onRozumiem, children, tlacidloPoMs = 0, 
             <span />
           </span>
         )}
-        {vypinac && <span className="medziobrazovka-pozn">Vypnúť ich môžeš v profile.</span>}
+        {vypinac && <span className="medziobrazovka-pozn">{t("prechod.vypnut")}</span>}
       </div>
     </div>
   );

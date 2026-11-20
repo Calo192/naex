@@ -1,7 +1,7 @@
 // Plávajúci popis (tooltip) — portál do <body>, aby ho neorezal okraj karty
 // ani posúvaný panel. Funguje na hover aj na fokus z klávesnice.
 
-import { useCallback, useLayoutEffect, useRef, useState, type CSSProperties, type ReactNode } from "react";
+import { useCallback, useEffect, useLayoutEffect, useRef, useState, type CSSProperties, type ReactNode } from "react";
 import { createPortal } from "react-dom";
 
 export interface TipObsah {
@@ -27,13 +27,29 @@ export function useTip(): {
 } {
   const [stav, setStav] = useState<TipStav | null>(null);
   const ref = useRef<HTMLDivElement>(null);
+  const kotva = useRef<Element | null>(null);
   const ukaz = useCallback((el: Element, obsah: TipObsah) => {
     const r = el.getBoundingClientRect();
     const x = Math.min(Math.max(r.left + r.width / 2, 160), document.documentElement.clientWidth - 160);
+    kotva.current = el;
     // Predvolene nad prvkom; či sa tam zmestí, sa overí po vykreslení.
     setStav({ ...obsah, x, hore: r.top, dole: r.bottom, pod: r.top < 120 });
   }, []);
-  const skry = useCallback(() => setStav(null), []);
+  const skry = useCallback(() => {
+    kotva.current = null;
+    setStav(null);
+  }, []);
+
+  // Prvok, ku ktorému tip patrí, zmizol či sa skryl — mouseleave už nepríde a tip by visel (V-02).
+  const otvoreny = stav !== null;
+  useEffect(() => {
+    if (!otvoreny) return;
+    const t = setInterval(() => {
+      const el = kotva.current;
+      if (el === null || !el.isConnected || el.getClientRects().length === 0 || el.closest("[hidden], [inert]") !== null) skry();
+    }, 300);
+    return () => clearInterval(t);
+  }, [otvoreny, skry]);
 
   // Vysoký popis nad prvkom by vyliezol z okna — vtedy ho otoč pod prvok.
   useLayoutEffect(() => {

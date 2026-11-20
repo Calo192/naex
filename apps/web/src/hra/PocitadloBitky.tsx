@@ -59,9 +59,11 @@ export interface PocitadloBitkyProps {
   readonly priazne?: PriazneBitky | undefined;
   /** Bitka skončila hru výhrou strachom (vyhraStrachomBitky). */
   readonly vyhraStrachom?: VyhraStrachom | null | undefined;
+  /** Meno súpera v hlavičke stĺpca ako na pulte, bez „Bot“ (S-12); vo vetách ostáva meno z mena. */
+  readonly menoSuperaNaPulte?: string | undefined;
 }
 
-export function PocitadloBitky({ p, ja, mena, menoKarty, rad, onKoniec, vysledokHned = false, rekap = null, vlnyKariet, piktogramy, odpovede = [], naSirku = false, momenty = [], priazne, vyhraStrachom = null }: PocitadloBitkyProps) {
+export function PocitadloBitky({ p, ja, mena, menoKarty, rad, onKoniec, vysledokHned = false, rekap = null, vlnyKariet, piktogramy, odpovede = [], naSirku = false, momenty = [], priazne, vyhraStrachom = null, menoSuperaNaPulte }: PocitadloBitkyProps) {
   const su = opponentOf(ja);
   const posledna = p.vln - 1;
   const tlmene = typeof matchMedia === "function" && matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -143,6 +145,7 @@ export function PocitadloBitky({ p, ja, mena, menoKarty, rad, onKoniec, vysledok
             r={rekap}
             ja={ja}
             menoSupera={mena[su]}
+            menoSuperaNaPulte={menoSuperaNaPulte}
             menoKarty={menoKarty}
             piktogramy={piktogramy}
             vlna={vlna}
@@ -183,7 +186,7 @@ export function PocitadloBitky({ p, ja, mena, menoKarty, rad, onKoniec, vysledok
             <span className="pocitadlo-dvojbodka">:</span>
             <b className={`su${(hotovo || vysledokHned) && vitaz === su ? " vyhra" : ""}`}>{cislo[su]}</b>
           </span>
-          <span className="pocitadlo-mena">ty · {mena[su]}</span>
+          {/* Mená sú v hlavičke tabuľky (Z-09). */}
         </div>
         <div className="pocitadlo-rad">
           {rad.map(({ uid, karta, poVysledku }) => {
@@ -207,6 +210,7 @@ export function PocitadloBitky({ p, ja, mena, menoKarty, rad, onKoniec, vysledok
             r={rekap}
             ja={ja}
             menoSupera={mena[su]}
+            menoSuperaNaPulte={menoSuperaNaPulte}
             menoKarty={menoKarty}
             piktogramy={piktogramy}
             vlna={vlna}
@@ -239,8 +243,9 @@ export function PocitadloBitky({ p, ja, mena, menoKarty, rad, onKoniec, vysledok
               ))}
             </span>
           )}
+          {/* Výsledok je v skóre hlavičky — verdikt „Prehrávaš o N“ ho len opakoval (Z-09); bez tabuľky ostáva. */}
           <div className="pocitadlo-koniec">
-            {(hotovo || vysledokHned) && (
+            {(hotovo || vysledokHned) && (rekap === null || piktogramy === undefined) && (
               <span className="pocitadlo-verdikt">
                 {verdikt}
               </span>
@@ -251,7 +256,7 @@ export function PocitadloBitky({ p, ja, mena, menoKarty, rad, onKoniec, vysledok
               </button>
             )}
           </div>
-          <span className="pocitadlo-tip">{hotovo ? t("pocitadlo.tipZavrie") : t("pocitadlo.tipDobehne")}</span>
+          {!hotovo && <span className="pocitadlo-tip">{t("pocitadlo.tipDobehne")}</span>}
         </div>
       </div>
     </div>
@@ -293,6 +298,8 @@ export interface PocitadloSLiniouProps {
   readonly naSirku?: boolean;
   readonly priazne?: PriazneBitky | undefined;
   readonly vyhraStrachom?: VyhraStrachom | null | undefined;
+  /** Meno súpera v hlavičke stĺpca ako na pulte, bez „Bot“ (S-12); vo vetách ostáva meno z mena. */
+  readonly menoSuperaNaPulte?: string | undefined;
 }
 
 /**
@@ -305,7 +312,7 @@ function rozmeryVrstvy(vyska: number, sirka: number): { readonly pevne: number; 
 }
 
 /** Počítadlo s líniou z okamihu bitky: tvoja strana od lokality doľava, súperova doprava. */
-export function PocitadloSLiniou({ vrstva, ja, mena, karta, menoKarty, piktogramy, onKoniec, vysledokHned = false, naSirku = false, priazne, vyhraStrachom = null }: PocitadloSLiniouProps) {
+export function PocitadloSLiniou({ vrstva, ja, mena, karta, menoKarty, piktogramy, onKoniec, vysledokHned = false, naSirku = false, priazne, vyhraStrachom = null, menoSuperaNaPulte }: PocitadloSLiniouProps) {
   const { stol, linia, rekap } = vrstva;
   const su = opponentOf(ja);
   const lok = stol.ciel?.lokalita ?? null;
@@ -360,6 +367,7 @@ export function PocitadloSLiniou({ vrstva, ja, mena, karta, menoKarty, piktogram
       momenty={vrstva.momenty ?? []}
       priazne={priazne}
       vyhraStrachom={vyhraStrachom}
+      menoSuperaNaPulte={menoSuperaNaPulte}
     />
   );
 }

@@ -17,6 +17,7 @@ import { Nastenka } from "../../hra/Spaky.tsx";
 import { datum } from "../../lib/datum.ts";
 import { nazovKarty, prelozHlasku, t } from "../../i18n/jazyk.tsx";
 import { TEXT_VYSLEDKU, trvanie, type DetailPartieApi } from "./typy.ts";
+import { dovodPartie } from "./dovod.ts";
 import "./profil.css";
 
 /** Body oboch po kolách ako dve čiary (ty a súper). */
@@ -65,6 +66,8 @@ export function DetailPartie({ id }: { readonly id: number }) {
     };
   }, [id]);
   // Prehrávač ponúkne len partia, ktorú server vie prehrať (rovnaká verzia jadra a sady).
+  // Pas, ponuka a kliatby sú čísla bez vysvetlenia — v tabuľke kôl až na požiadanie (W-26).
+  const [viacStlpcov, setViacStlpcov] = useState(false);
   const [prehratelna, setPrehratelna] = useState<{ readonly dostupny: boolean; readonly dovod: string | null } | null>(null);
   useEffect(() => {
     let zive = true;
@@ -123,7 +126,7 @@ export function DetailPartie({ id }: { readonly id: number }) {
           {d.dlzka !== null && ` · ${d.dlzka in NAZOV_DLZKY ? t(`liga.${d.dlzka}`) : d.dlzka}`}
           {!d.dohrata && t("detailPartie.nedohrana")}
           {d.verziaPravidiel !== null && t("detailPartie.pravidla", { verzia: d.verziaPravidiel })}
-          {` · ${prelozHlasku(d.dovod)}`}
+          {` · ${dovodPartie(d.dovod, [d.hraci[0].bot === undefined ? null : "bot", d.hraci[1].bot === undefined ? null : "bot"])}`}
         </p>
         {prehratelna !== null && (
           <div className="detail-prehrat">
@@ -153,7 +156,12 @@ export function DetailPartie({ id }: { readonly id: number }) {
 
       {d.kola.length > 0 ? (
         <section className="panel profil-karta">
-          <h2>{t("detailPartie.kola")}</h2>
+          <header className="profil-karta-hlava">
+            <h2>{t("detailPartie.kola")}</h2>
+            <button type="button" className="tlacidlo-male tlacidlo-jemne" aria-expanded={viacStlpcov} onClick={() => setViacStlpcov((v) => !v)}>
+              {t("detailPartie.viacStlpcov")} {viacStlpcov ? "▾" : "▸"}
+            </button>
+          </header>
           <div className="tabulka-obal">
             <table className="suhrn-tabulka kola-tabulka">
               <thead>
@@ -165,9 +173,13 @@ export function DetailPartie({ id }: { readonly id: number }) {
                   <th>{t("detailPartie.st.vitaz")}</th>
                   <th>{t("detailPartie.st.nakladacka")}</th>
                   <th>{t("detailPartie.st.naex")}</th>
-                  <th>{t("detailPartie.st.pas")}</th>
-                  <th>{t("detailPartie.st.ponuka")}</th>
-                  <th>{t("detailPartie.st.kliatby")}</th>
+                  {viacStlpcov && (
+                    <>
+                      <th>{t("detailPartie.st.pas")}</th>
+                      <th>{t("detailPartie.st.ponuka")}</th>
+                      <th>{t("detailPartie.st.kliatby")}</th>
+                    </>
+                  )}
                   <th>{v6 ? t("detailPartie.st.spaky") : t("detailPartie.st.body")}</th>
                 </tr>
               </thead>
@@ -195,13 +207,17 @@ export function DetailPartie({ id }: { readonly id: number }) {
                             </span>
                           ))}
                     </td>
-                    <td>{k.pasy.length === 0 ? "—" : k.pasy.map((x) => `${ty(x.kto)} +${x.cigarety}`).join(", ")}</td>
-                    <td className="cislo">
-                      {k.senok[ja]} : {k.senok[su]}
-                    </td>
-                    <td className="cislo" title={t("detailPartie.kliatbyTitul")}>
-                      {k.dlhy[ja] + k.cirhozy[ja]} : {k.dlhy[su] + k.cirhozy[su]}
-                    </td>
+                    {viacStlpcov && (
+                      <>
+                        <td>{k.pasy.length === 0 ? "—" : k.pasy.map((x) => `${ty(x.kto)} +${x.cigarety}`).join(", ")}</td>
+                        <td className="cislo">
+                          {k.senok[ja]} : {k.senok[su]}
+                        </td>
+                        <td className="cislo" title={t("detailPartie.kliatbyTitul")}>
+                          {k.dlhy[ja] + k.cirhozy[ja]} : {k.dlhy[su] + k.cirhozy[su]}
+                        </td>
+                      </>
+                    )}
                     <td className="cislo">{k.bodyPo === null ? "—" : `${k.bodyPo[ja]} : ${k.bodyPo[su]}`}</td>
                   </tr>
                 ))}

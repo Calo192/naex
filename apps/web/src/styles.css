@@ -803,6 +803,11 @@ button.sprava-tlacidlo {
   white-space: nowrap;
 }
 
+/* Herné meno smie mať 24 znakov — v hlavičke sa zmestí celé (W-32). */
+.ucet-tlacidlo .ucet-meno {
+  max-width: 240px;
+}
+
 .ucet-menu {
   position: absolute;
   right: 0;
@@ -1118,6 +1123,52 @@ button.sprava-tlacidlo {
   font-size: 0.92rem;
 }
 
+/* Registrácia v dvoch stĺpcoch (UI inšpekcia W-01): pri 1366×650 je celá nad zlomom a chyba pri tlačidle. */
+.formular-siroky {
+  max-width: 760px;
+}
+
+.registracia {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  column-gap: 24px;
+}
+
+/* Tlačidlo v rade s poľom e-mailu a pod ním „Už máš účet?“ (v rade s pomocou poľa) — aj pri 1366×650
+   nad zlomom. Chyba nad tlačidlom rastie nahor, kde je miesto po nadpise poľa. */
+.registracia-odoslat {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding-bottom: 1rem;
+}
+
+.registracia-odoslat .hlaska {
+  margin: 0;
+}
+
+.registracia-prihlas {
+  margin: 0.35rem 0 0;
+  text-align: center;
+  font-size: 0.82rem;
+  line-height: 1.5;
+  color: var(--tlmeny);
+}
+
+.registracia input[aria-invalid="true"] {
+  border-color: color-mix(in oklab, var(--cervena-svetla) 70%, var(--plocha-2));
+}
+
+@media (max-width: 700px) {
+  .registracia {
+    grid-template-columns: 1fr;
+  }
+
+  .registracia-odoslat {
+    padding-bottom: 0;
+  }
+}
+
 .prihlasenie-zabudol {
   margin: 0.8rem 0 0;
   text-align: center;
@@ -1359,9 +1410,11 @@ button.sprava-tlacidlo {
   margin-bottom: 1.6rem;
 }
 
+/* Nižší než karty (≈ 360 px): vejár presahuje rámik nahor do medzery pod hlavou a celý je nad zlomom
+   aj pri 1366×650 (UI inšpekcia W-13). */
 .hero-vejar {
   position: relative;
-  height: 470px;
+  height: 340px;
 }
 
 /* Nováčik bez 1. časti výučby (#104): výučba je najväčšia výzva, Pravidlá len odkaz. */
@@ -1416,53 +1469,6 @@ button.sprava-tlacidlo {
   --uhol: 15deg;
 }
 
-.tri-casti {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 20px;
-  margin-top: 40px;
-}
-
-.cast {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  text-decoration: none;
-  color: var(--text);
-  padding: 26px;
-  border-radius: 16px;
-  background: linear-gradient(180deg, var(--plocha-2), var(--plocha));
-  border: 1px solid var(--okraj);
-  transition:
-    transform 0.2s ease,
-    border-color 0.2s ease;
-}
-
-.cast:hover {
-  transform: translateY(-4px);
-  border-color: var(--akcent-tmavy);
-}
-
-/* Poldeci ako piktogram z karty — rovnaký ako v hre. */
-.cast-znak .ikona-poldeci {
-  width: 1em;
-  height: 1em;
-  fill: var(--akcent);
-}
-
-.cast h2 {
-  margin: 0;
-}
-
-.cast p {
-  color: var(--tlmeny);
-  margin: 0;
-}
-
-.cast-znak {
-  font-size: 2rem;
-}
-
 @media (max-width: 900px) {
   .hero {
     grid-template-columns: 1fr;
@@ -1471,10 +1477,6 @@ button.sprava-tlacidlo {
 
   .hero-vejar {
     height: 380px;
-  }
-
-  .tri-casti {
-    grid-template-columns: 1fr;
   }
 }
 
@@ -1537,7 +1539,7 @@ button.sprava-tlacidlo {
 /* Výber farebnej schémy v profile (Michal 2026-10-21) — náhľad má farby schémy natvrdo,
    aby bolo vidno, ako bude vyzerať, ešte kým ju hráč nezvolí. */
 .vzhlad-webu {
-  margin: 24px 0;
+  margin: 0;
 }
 
 /* Dve skupiny schém s nadpisom: Tmavé a Svetlé (Michal 2026-10-23). */
@@ -1635,10 +1637,19 @@ button.sprava-tlacidlo {
   color: var(--akcent);
 }
 
-.schema-popis {
-  font-size: var(--t-xs);
-  line-height: 1.35;
-  color: var(--slaby-text);
+/* Záložky nastavení (W-06) sú odkazy s adresou — vzhľad ako záložky profilu hráča. */
+.nastavenia-zalozky .zalozka {
+  text-decoration: none;
+}
+
+/* Výber páru farieb je vo Vzhľade vo vlastnom paneli — oddeľovač nad ním patril hlave účtu. */
+.farba-hraca .vyber-paru {
+  padding-top: 0;
+  border-top: 0;
+}
+
+.farba-hraca h3 {
+  margin-top: 0;
 }
 
 /* Posuvník zväčšenia kariet v profile. */
@@ -1658,7 +1669,7 @@ button.sprava-tlacidlo {
 
 /* Preferencie v profile (Michal 2026-10-22): voľby s popisom (pohlavie hlášok). */
 .preferencie {
-  margin: 0 0 24px;
+  margin: 0;
 }
 
 .skore-volby {
@@ -1674,6 +1685,12 @@ button.sprava-tlacidlo {
   margin-bottom: 10px;
   color: var(--tlmeny);
   font-size: 0.9rem;
+}
+
+/* Popis volieb cez celú šírku mriežky — v prvej bunke by natiahol voľby a zvyšok zalomil (W-34). */
+.skore-volby-popis {
+  grid-column: 1 / -1;
+  margin: 0;
 }
 
 .skore-volba {

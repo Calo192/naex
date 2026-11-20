@@ -32,6 +32,10 @@ const UKAZKA_MS = 60_000;
 /** Súhrn bitky či Pitky (PocitadloBitky, RekapitulaciaPitkyVrstva). */
 const SUHRN = ".pocitadlo-bitky";
 const PANEL_SUHRNU = ".pocitadlo-bitky .pocitadlo-panel";
+/** Okno cez celý stôl (medziobrazovka, autopas, koniec hry) — pečiatka počká, kým ho hráč zavrie (S-08). */
+const OKNO = ".medziobrazovka, .koniec-vrstva";
+/** Zmenšenie pečiatky v rohu súhrnu (.moment-roh v hra.css). */
+const MIERKA_ROH = 0.36;
 
 /** Ukážkový moment z adresy (?ukazka-momentu=typ), inak null. */
 function ukazkaZAdresy(): Moment | null {
@@ -88,7 +92,7 @@ export function Momenty({ udalosti, ja, mena, hovor, pocitadloBezi = false, port
     let t: ReturnType<typeof setTimeout>;
     const skus = (): void => {
       const dopocitany = document.querySelector(`${SUHRN}.hotova`) !== null;
-      if (beziRef.current && !dopocitany) {
+      if ((beziRef.current && !dopocitany) || document.querySelector(OKNO) !== null) {
         t = setTimeout(skus, KONTROLA_MS);
         return;
       }
@@ -108,13 +112,17 @@ export function Momenty({ udalosti, ja, mena, hovor, pocitadloBezi = false, port
     return () => clearTimeout(t);
   }, [cakajuce]);
 
-  // Po veľkej fáze: do rohu súhrnu, ak je otvorený; inak preč.
+  // Po veľkej fáze: nad roh súhrnu, ak je otvorený; inak preč. Malá pečiatka sedí nad hornou
+  // hranou panela — v rohu panela zakrývala skóre bitky (S-08); keď nad panelom nie je miesto, odíde.
+  const stohRef = useRef<HTMLDivElement>(null);
   useEffect(() => {
     if (aktivne === null || aktivne.faza !== "velka" || aktivne.id === -1) return;
     const t = setTimeout(() => {
       const panel = document.querySelector(PANEL_SUHRNU)?.getBoundingClientRect();
+      const polVysky = ((stohRef.current?.getBoundingClientRect().height ?? 0) * MIERKA_ROH) / 2;
+      const y = panel === undefined ? 0 : panel.top - polVysky - 4;
       setAktivne((a) =>
-        a?.id !== aktivne.id ? a : panel === undefined ? { ...a, faza: "odchod" } : { ...a, faza: "roh", roh: { x: panel.right - 6, y: panel.top + 6 } },
+        a?.id !== aktivne.id ? a : panel === undefined || y - polVysky < 4 ? { ...a, faza: "odchod" } : { ...a, faza: "roh", roh: { x: panel.right - 6, y } },
       );
     }, VELKA_MS);
     return () => clearTimeout(t);
@@ -141,7 +149,7 @@ export function Momenty({ udalosti, ja, mena, hovor, pocitadloBezi = false, port
   const poloha: CSSProperties = aktivne.roh === null ? {} : { left: aktivne.roh.x, top: aktivne.roh.y };
   return (
     <div className="moment-vrstva" aria-live="polite" role="status">
-      <div className={`moment-stoh moment-${aktivne.faza}`} style={poloha}>
+      <div ref={stohRef} className={`moment-stoh moment-${aktivne.faza}`} style={poloha}>
         {aktivne.momenty.map((moment, i) => {
           const obrazok = moment.elderId === undefined ? null : (portret?.(moment.elderId) ?? null);
           // Schopnosť väzňa: farba hráča, ktorý ju použil (moja / superova), a portrét staršieho.

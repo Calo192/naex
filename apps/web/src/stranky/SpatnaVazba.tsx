@@ -744,7 +744,8 @@ export function SpatnaVazba() {
   const pocet = (z: Zalozka): number | null => (pocty === null ? null : pocty[z].ludia + (ukazAi ? pocty[z].ai : 0));
   const ludiaTu = pocty?.[zalozka].ludia ?? 0;
   const aiTu = pocty?.[zalozka].ai ?? 0;
-  const spolu = pocty === null ? null : (Object.keys(ZALOZKY) as Zalozka[]).reduce((s, z) => s + (pocet(z) ?? 0), 0);
+  // Filtre nad prázdnou záložkou nič neriadia (W-17) — ukážu sa s prvým názorom.
+  const bezNazorov = pocty !== null && ludiaTu + aiTu === 0;
 
   const prepniAi = (v: boolean): void => {
     setUkazAi(v);
@@ -778,11 +779,6 @@ export function SpatnaVazba() {
         uvod={t("spatnaVazba.uvod")}
         akcia={
           <>
-            {spolu !== null && (
-              <span>
-                {t("spatnaVazba.nazorov", { n: spolu })} · {t("spatnaVazba.hotovych", { n: pocet("hotove") ?? 0 })}
-              </span>
-            )}
             {smiePisat ? (
               <button ref={tlacidloPisat} type="button" className="tlacidlo-hlavne" onClick={otvorPisanie} aria-expanded={pise}>
                 {t("spatnaVazba.napisatNazorTlacidlo")}
@@ -835,7 +831,7 @@ export function SpatnaVazba() {
 
           {archiv && <ArchivSkrytych zmena={obnov} chyba={ukazChybu} />}
 
-          <div className="nazory-filtre" hidden={archiv}>
+          <div className="nazory-filtre" hidden={archiv || bezNazorov}>
             <label>
               <span className="tlmene">{t("spatnaVazba.kategoriaPopis")}</span>
               <select value={filter ?? ""} onChange={(e) => setFilter(e.target.value === "" ? null : (e.target.value as Kategoria))}>

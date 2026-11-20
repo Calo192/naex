@@ -77,13 +77,13 @@ export function spravaWebu(ja: Pouzivatel | null, instancia?: Instancia): Polozk
 }
 
 /**
- * Menu účtu: profil, štatistiky a odhlásenie. Rank s právom na reporty playtestov,
+ * Menu účtu: Môj profil (štatistiky, partie), Nastavenia a odhlásenie. Rank s právom na reporty playtestov,
  * ktorý nie je správca, tu má Playtest — inde by ho nenašiel.
  */
 export function menuUctu(ja: Pouzivatel): { readonly href: string; readonly text: string }[] {
   const polozky = [
-    { href: "/profil", text: t("nav.mojProfil") },
-    { href: `/hrac/${ja.id}`, text: t("nav.mojeStatistiky") },
+    { href: `/hrac/${ja.id}`, text: t("nav.mojProfil") },
+    { href: "/profil", text: t("nav.nastavenia") },
   ];
   if (!jeSpravca(ja.rola) && maPravo(ja, "reporty_playtestov")) polozky.push({ href: "/playtest", text: t("nav.reportyPlaytestov") });
   return polozky;

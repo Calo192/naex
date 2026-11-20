@@ -133,6 +133,16 @@
   color: var(--na-akcente);
 }
 
+/* Skupiny vitríny: Rozpracované hore, pod nimi Ostatné (W-35). */
+.vitrina-skupina {
+  margin: 0 0 10px;
+  font-size: 1rem;
+}
+
+.vitrina-mriezka + .vitrina-skupina {
+  margin-top: 24px;
+}
+
 .vitrina-mriezka {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));

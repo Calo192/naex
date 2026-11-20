@@ -98,4 +98,9 @@ describe("štítok ťahu bez textu", () => {
   it("bez vety nič", () => {
     expect(stitokTahu([], "bot")).toBeNull();
   });
+
+  it("ťah bota bez hráčových vlastných riadkov (V-14)", () => {
+    expect(stitokTahu(["Dodo Skipper končí svoju časť Pitky. Čaká sa na hráča 2.", "Štamgast pasuje do Pitky."], "bot", "Dodo Skipper")).toBe("Štamgast pasuje do Pitky.");
+    expect(stitokTahu(["Dodo Skipper končí svoju časť Pitky."], "bot", "Dodo Skipper")).toBeNull();
+  });
 });

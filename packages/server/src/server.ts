@@ -82,7 +82,7 @@ import { Obsah, nacitajElders, nacitajScorecards } from "./obsah.ts";
 import type { OtvorenaHra, PostupVyucby, RozohranaPartia, StavServera, StavZrejucej, Uzavierka } from "./api.ts";
 import { OZNAM_UZAVIERKY, spracujApi } from "./api.ts";
 import type { ZmenaFrajeriny } from "./archiv.ts";
-import { Archiv } from "./archiv.ts";
+import { Archiv, dovodDoArchivu } from "./archiv.ts";
 import type { StavTempa } from "./tempo.ts";
 import { TempoPartii, fazaPrikazu, noveTempo, zapisPrikaz } from "./tempo.ts";
 import type { Pravo } from "./prava.ts";
@@ -410,7 +410,7 @@ export function createGameServer(opts: ServerOpts): Promise<GameServer> {
    * je predošlá dokončená — „Pokračovať vo výučbe“ spustí ďalšiu, ak ju hráč smie hrať.
    */
   const postupVyucby = (ja: Pick<Pouzivatel, "id" | "rola">): PostupVyucby => {
-    const ulozene = ucty.vyucba(ja.id, scenarVyucby.verzia ?? null, idKrokovVyucby);
+    const ulozene = ucty.vyucba(ja.id, scenarVyucby.verzia ?? null, idKrokovVyucby, scenarVyucby.zruseneKroky);
     const cast = castKroku(scenarVyucby, ulozene.krok);
     const naZaciatku = cast !== null && ulozene.krok === cast.od;
     const dalsia = naZaciatku && cast.cast > 1 ? cast : null;
@@ -1600,7 +1600,7 @@ export function createGameServer(opts: ServerOpts): Promise<GameServer> {
         zaciatok: room.zaciatok,
         koniec: teraz(),
         vitaz: koniec.koniec.vitaz,
-        dovod: koniec.koniec.dovod.replace(/Hráč ([12])/g, (_, n: string) => (n === "1" ? h0.meno : h1.meno)),
+        dovod: dovodDoArchivu(koniec.koniec.dovod, [h0.meno, h1.meno], [room.bot === 0 ? "bot" : h0.pohlavie, room.bot === 1 ? "bot" : h1.pohlavie]),
         kola: koniec.kolo,
         verziaSady: room.sada.verzia,
         dohrata,

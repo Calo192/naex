@@ -8,6 +8,14 @@ export function navratZ(search: string): string | null {
   return spat !== null && spat.startsWith("/") && !spat.startsWith("//") ? spat : null;
 }
 
+/**
+ * Kam po registrácii: s návratom (výučba, pozvánka) rovno späť, inak na Hrať, kde je hore výučba
+ * a hláška o nastaveniach (UI inšpekcia W-02) — nie do nastavení.
+ */
+export function poRegistracii(search: string): string {
+  return navratZ(search) ?? "/hra?novy=1";
+}
+
 /** Odkaz na prihlásenie či registráciu, ktorý sa vráti na `cesta` aj s parametrami. */
 export function sNavratom(stranka: "/prihlasenie" | "/registracia", cesta: string): string {
   return `${stranka}?spat=${encodeURIComponent(cesta)}`;

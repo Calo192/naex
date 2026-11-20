@@ -56,7 +56,7 @@ describe("navigácia webu", () => {
       const ja = ucet(rola);
       const inde = [...hrefy(hlavneMenu(ja, null)), ...hrefy(spravaWebu(ja))];
       const vUcte = hrefy(menuUctu(ja));
-      expect(vUcte.slice(0, 2)).toEqual(["/profil", "/hrac/7"]);
+      expect(vUcte.slice(0, 2)).toEqual(["/hrac/7", "/profil"]);
       expect(vUcte.filter((h) => inde.includes(h))).toEqual([]);
       expect(new Set(inde).size).toBe(inde.length);
     }
@@ -74,20 +74,28 @@ describe("navigácia webu", () => {
 });
 
 describe("štítok partie", () => {
-  const stav = (odohrane: number, lokalit: number, finale = false, koniec = false) =>
+  const stav = (kolo: number, lokalit: number, finale = false, koniec = false, odohrane = kolo - 1) =>
     ({
       nastenka: Array.from({ length: odohrane }, () => ({})),
+      kolo,
       lokalitCelkom: lokalit,
       ciel: finale ? { typ: "finale" } : null,
       koniec: koniec ? {} : null,
     }) as unknown as Parameters<typeof krokPartie>[0];
 
   it("krok: bitka n z (lokality + finále), posledná je Finále", () => {
-    expect(krokPartie(stav(0, 3)).text).toBe("Bitka 1 z 4");
-    expect(krokPartie(stav(2, 3)).kratko).toBe("Bitka 3/4");
-    expect(krokPartie(stav(3, 3))).toMatchObject({ text: "Finále", finale: true });
-    expect(krokPartie(stav(1, 3, true)).finale).toBe(true);
+    expect(krokPartie(stav(1, 3)).text).toBe("Bitka 1 z 4");
+    expect(krokPartie(stav(3, 3)).kratko).toBe("Bitka 3/4");
+    expect(krokPartie(stav(4, 3))).toMatchObject({ text: "Finále", finale: true });
+    expect(krokPartie(stav(2, 3, true)).finale).toBe(true);
     expect(krokPartie(stav(4, 3, false, true)).text).toBe("Koniec partie");
+  });
+
+  it("číslo bitky z kola, ktoré sa hrá — nie z nástenky (S-10)", () => {
+    // Bitka 1 je už na nástenke, hráči ešte rozdeľujú hádku a Nakladačku.
+    expect(krokPartie(stav(1, 3, false, false, 1)).text).toBe("Bitka 1 z 4");
+    // Po poslednej Pitke 3. bitky ešte nie je finále.
+    expect(krokPartie(stav(3, 3, false, false, 3))).toMatchObject({ text: "Bitka 3 z 4", finale: false });
   });
 
   it("zmena špakov: „+2“, „−1“", () => {

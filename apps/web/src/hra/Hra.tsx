@@ -17,13 +17,13 @@ import { HudbaPartie } from "./Hudba.tsx";
 import { useMelichar } from "./Melichar.tsx";
 import { MelicharVBare } from "./MelicharBar.tsx";
 import { Momenty } from "./Momenty.tsx";
-import { NapovedaMelichara } from "./Napovedy.tsx";
+import { NapovedaMelichara, VideneNapovedyPoVyucbe } from "./Napovedy.tsx";
 import { Soundboard } from "./Soundboard.tsx";
 import { useHra } from "./useHra.ts";
 import { OznamZiskov } from "../achievementy/VPartii.tsx";
 import { t, tr } from "../i18n/jazyk.tsx";
 import { TitulokMelichara } from "./TitulokMelichara.tsx";
-import { bezPrvejCasti, rozpracovana, ukazStarsichVoVyucbe, useVyucbaUctu, VyucbaStol, type VyucbaUctu } from "./Vyucba.tsx";
+import { rozpracovana, ukazStarsichVoVyucbe, useVyucbaUctu, VyucbaStol, type VyucbaUctu } from "./Vyucba.tsx";
 import { PonukaVyucby, VyucbaVLobby } from "./VstupyVyucby.tsx";
 import { smieTelefon, useNepodporovaneZariadenie, useStolNaSirku, type DovodNepodporovania } from "./zariadenie.ts";
 import { OtocTelefon } from "./OtocTelefon.tsx";
@@ -111,8 +111,14 @@ function Lobby({
   const zavrete = uzavierka !== null;
   // Vypnuté tlačidlo pri uzávierke povie prečo; hlavné nesmie ostať zlaté, akoby išlo (UI inšpekcia).
   const preco = zavrete ? uzavierka : undefined;
-  // Nováčikovi bez 1. časti je hlavnou výzvou výučba (#104) — založenie hry je druhoradé.
-  const hlavneZalozenie = !zavrete && !(vyucba !== null && !vyucbaNaPocitaci && bezPrvejCasti(true, vyucba));
+  // Rovno z registrácie (W-02): raz povie, kde sú nastavenia; po obnovení stránky už nie.
+  const [novyUcet] = useState(() => new URLSearchParams(location.search).get("novy") === "1");
+  useEffect(() => {
+    if (!novyUcet) return;
+    const zvysok = new URLSearchParams(location.search);
+    zvysok.delete("novy");
+    history.replaceState(null, "", zvysok.size > 0 ? `/hra?${zvysok}` : "/hra");
+  }, [novyUcet]);
 
   useEffect(() => {
     let zive = true;
@@ -142,6 +148,7 @@ function Lobby({
   return (
     <>
       <HlavaStranky nadpis={t("lobby.nadpis")} uvod={t("lobby.uvod")} />
+      {novyUcet && <Hlaska druh="ok">{tr("lobby.novyUcet", { odkaz: <Odkaz href="/profil">{t("lobby.novyUcetOdkaz")}</Odkaz> })}</Hlaska>}
       <VolbaZrejucej tvar="panel" />
       {uzavierka !== null && <Hlaska druh="info">{uzavierka}</Hlaska>}
       {chyba !== null && chyba !== uzavierka && <Hlaska>{chyba}</Hlaska>}
@@ -149,11 +156,12 @@ function Lobby({
       {vyucba !== null && vyucba.dostupna && vyucbaNaPocitaci && (
         <Hlaska druh="info">{t("lobby.vyucbaNaPocitaci")}</Hlaska>
       )}
+      {/* Variant B (UI inšpekcia W-05): založenie je jedna otázka — liga a s kým; pripojenie vpravo. */}
       <div className="lobby">
         <section className="panel">
           <h2>{t("lobby.novaHra")}</h2>
-          <p className="tlmene">{t("lobby.novaHraPopis")}</p>
-          <div className="dlzka-hry" role="radiogroup" aria-label={t("lobby.liga")}>
+          <h3 className="lobby-stitok" id="lobby-liga">{t("lobby.liga")}</h3>
+          <div className="dlzka-hry" role="radiogroup" aria-labelledby="lobby-liga">
             {ALL_DLZKY.map((d) => {
               const ide = dostupne.includes(d);
               const zamok = popisZamku(ligy, d);
@@ -181,38 +189,46 @@ function Lobby({
               );
             })}
           </div>
-          {maPravo(ja, "hrat_ludia") ? (
-            <div className="riadok-tlacidiel">
-              {maPravo(ja, "sukromne_miestnosti") && (
-                <button
-                  className={hlavneZalozenie && zamokZvolenej === null ? "tlacidlo-hlavne" : undefined}
-                  onClick={() => zaloz(false, dlzka)}
-                  disabled={zavrete || zamokZvolenej !== null}
-                  title={preco ?? zamokZvolenej ?? undefined}
-                >
-                  {t("lobby.sukromna")}
-                </button>
-              )}
-              <button onClick={() => zaloz(true, dlzka)} disabled={zavrete || zamokZvolenej !== null} title={preco ?? zamokZvolenej ?? undefined}>
-                {t("lobby.verejna")}
-              </button>
-            </div>
-          ) : (
-            <p className="tlmene">{t("lobby.bezLudi")}</p>
-          )}
-          <h2 style={{ marginTop: 28 }}>{t("lobby.protiPocitacu")}</h2>
-          <p className="tlmene">{t("lobby.protiPocitacuPopis")}</p>
-          <div className="riadok-tlacidiel">
+          <h3 className="lobby-stitok" id="lobby-s-kym">{t("lobby.sKym")}</h3>
+          <div className="s-kym" role="group" aria-labelledby="lobby-s-kym">
             {/* Bez zoznamu (starší server) sa niet na čo pýtať: rovno náhodný súper. */}
             <button
+              type="button"
+              className="s-kym-volba"
               onClick={() => (boti.length > 0 ? setVyberBotaOtvoreny(true) : zaloz(false, dlzka, true))}
               disabled={!maPravo(ja, "hrat_bot") || zavrete}
               title={preco}
               data-hrat-bot=""
             >
-              {t("lobby.hratProtiPocitacu")}
+              <strong>{t("lobby.pocitac")}</strong>
+              <span>{t("lobby.pocitacPopis")}</span>
             </button>
+            {maPravo(ja, "hrat_ludia") && maPravo(ja, "sukromne_miestnosti") && (
+              <button
+                type="button"
+                className="s-kym-volba"
+                onClick={() => zaloz(false, dlzka)}
+                disabled={zavrete || zamokZvolenej !== null}
+                title={preco ?? zamokZvolenej ?? undefined}
+              >
+                <strong>{t("lobby.kamarat")}</strong>
+                <span>{t("lobby.kamaratPopis")}</span>
+              </button>
+            )}
+            {maPravo(ja, "hrat_ludia") && (
+              <button
+                type="button"
+                className="s-kym-volba"
+                onClick={() => zaloz(true, dlzka)}
+                disabled={zavrete || zamokZvolenej !== null}
+                title={preco ?? zamokZvolenej ?? undefined}
+              >
+                <strong>{t("lobby.ktokolvek")}</strong>
+                <span>{t("lobby.ktokolvekPopis")}</span>
+              </button>
+            )}
           </div>
+          {!maPravo(ja, "hrat_ludia") && <p className="tlmene">{t("lobby.bezLudi")}</p>}
           {vyberBotaOtvoreny && (
             <VyberBota
               boti={boti}
@@ -224,7 +240,10 @@ function Lobby({
               zavri={() => setVyberBotaOtvoreny(false)}
             />
           )}
-          <h2 style={{ marginTop: 28 }}>{t("lobby.mamKod")}</h2>
+        </section>
+        <section className="panel">
+          <h2>{t("lobby.pripojitSa")}</h2>
+          <h3 className="lobby-stitok">{t("lobby.mamKod")}</h3>
           <form
             className="lobby-kod"
             onSubmit={(e) => {
@@ -237,13 +256,11 @@ function Lobby({
               {t("lobby.pripojitSa")}
             </button>
           </form>
-        </section>
-        <section className="panel">
-          <h2>{t("lobby.cakaju")}</h2>
+          <h3 className="lobby-stitok">{t("lobby.cakaju")}</h3>
           {hry === null ? (
             <Nacitavanie />
           ) : hry.length === 0 ? (
-            <p className="tlmene">{zavrete ? t("lobby.nikto") : t("lobby.niktoZaloz")}</p>
+            <p className="tlmene">{t("lobby.nikto")}</p>
           ) : (
             <ul className="otvorene-hry">
               {hry.map((h) => {
@@ -280,6 +297,29 @@ function Lobby({
         </section>
       </div>
     </>
+  );
+}
+
+/**
+ * Jediné, čo hostiteľ v čakárni robí, je poslať pozvánku — kopírovanie je hlavné tlačidlo a povie,
+ * že sa podarilo (UI inšpekcia W-18). Bez schránky (nezabezpečená adresa) ostane kód na očiach.
+ */
+function KopirovatOdkaz({ kod }: { readonly kod: string }) {
+  const [skopirovane, setSkopirovane] = useState(false);
+  useEffect(() => {
+    if (!skopirovane) return;
+    const casovac = setTimeout(() => setSkopirovane(false), 4000);
+    return () => clearTimeout(casovac);
+  }, [skopirovane]);
+  return (
+    <button
+      type="button"
+      className="tlacidlo-hlavne"
+      aria-live="polite"
+      onClick={() => void navigator.clipboard?.writeText(`${location.origin}/hra?kod=${kod}`).then(() => setSkopirovane(true), () => undefined)}
+    >
+      {skopirovane ? t("cakaren.skopirovane") : t("cakaren.kopirovat")}
+    </button>
   );
 }
 
@@ -496,20 +536,21 @@ export function Hra() {
   if (nepodporovane !== null && !(nepodporovane === "rank" && ja === null)) return <NepodporovaneZariadenie dovod={nepodporovane} />;
   if (ja === null) {
     // Pozvánka /hra?kod=ABCD: po prihlásení aj registrácii späť s kódom — efekt vyššie hráča pripojí.
-    // Bez pozvánky začína nový účet profilom ako doteraz.
+    // Pozvaný účet spravidla nemá — stránka povie, že ide o pozvánku, a hlavné je vytvoriť účet (W-04).
     const cesta = location.pathname + location.search;
-    const pozvanka = new URLSearchParams(location.search).get("kod") !== null;
+    const kod = new URLSearchParams(location.search).get("kod");
     return (
       <HlavaStranky
-        nadpis={t("lobby.prihlaseni")}
-        uvod={t("lobby.prihlaseniUvod")}
+        nadpis={kod !== null ? t("lobby.pozvanka", { kod: kod.toUpperCase().slice(0, 8) }) : t("lobby.prihlaseni")}
+        uvod={kod !== null ? t("lobby.pozvankaUvod") : t("lobby.prihlaseniUvod")}
         akcia={
           <>
-            <Odkaz href={pozvanka ? sNavratom("/registracia", cesta) : "/registracia"} className="tlacidlo">
-              {t("lobby.vytvoritUcet")}
+            <Odkaz href={sNavratom("/prihlasenie", cesta)} className="tlacidlo">
+              {t("ucet.prihlasitSa")}
             </Odkaz>
-            <Odkaz href={sNavratom("/prihlasenie", cesta)} className="tlacidlo tlacidlo-hlavne">
-              {t("lobby.prihlasitSa")}
+            {/* S parametrami (pozvánka, výučba) späť na ne; holé /hra = Hrať s hláškou nového účtu (poRegistracii). */}
+            <Odkaz href={location.search !== "" ? sNavratom("/registracia", cesta) : "/registracia"} className="tlacidlo tlacidlo-hlavne">
+              {t("ucet.vytvoritUcet")}
             </Odkaz>
           </>
         }
@@ -561,12 +602,7 @@ export function Hra() {
       <div className="cakaren panel">
         <div className="cakaren-kod">{m.code}</div>
         <p className="tlmene" style={{ margin: 0 }}>{popisDlzky(m.dlzka)}</p>
-        <button
-          className="tlacidlo-male"
-          onClick={() => void navigator.clipboard?.writeText(`${location.origin}/hra?kod=${m.code}`)}
-        >
-          {t("cakaren.kopirovat")}
-        </button>
+        <KopirovatOdkaz kod={m.code} />
         <div className="cakaren-hraci">
           {[h0, h1].map((h, i) =>
             h === null ? (
@@ -676,6 +712,8 @@ export function Hra() {
     )}
     {hra.view.pata !== undefined && <RozhodnutiePata view={hra.view} data={hra.data} sada={m.sada} cmd={cmd} />}
     <HernaPlocha
+      // Stav plochy (pauzy, vrstvy vyhodnotenia, momenty) patrí jednej partii (V-03).
+      key={m.code}
       naSirku={naSirku}
       onPocitadlo={setPocitadloBezi}
       view={hra.view}
@@ -736,6 +774,7 @@ export function Hra() {
         )
       }
     />
+    {hra.vyucba !== null && hra.vyucba.krok === null && hra.vyucba.koniecCasti !== null && <VideneNapovedyPoVyucbe cast={hra.vyucba.koniecCasti} />}
     {hra.vyucba !== null && (
       <VyucbaStol
         stav={hra.vyucba}

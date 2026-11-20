@@ -17,7 +17,7 @@ import { api } from "../lib/api.ts";
 import { useUcet, type Pouzivatel } from "../lib/ucet.tsx";
 import type { Sada } from "@naex/tvorba";
 import { rezimMelichara } from "./bar.ts";
-import { CisloStrany, MelicharVBare, NaJednomMieste, StrankovanaVeta, kusyVety, useStrany } from "./MelicharBar.tsx";
+import { CisloStrany, MelicharVBare, NaJednomMieste, PredoslaStrana, StrankovanaVeta, kusyVety, useStrany } from "./MelicharBar.tsx";
 import { prvkyKluca } from "./Vyucba.tsx";
 import "./vyucba.css";
 import { t, textOblasti } from "../i18n/jazyk.tsx";
@@ -131,6 +131,27 @@ export function useVypinacNapoved(): { readonly zapnute: boolean; readonly prepn
       .catch(() => undefined);
   }, [ja, zapnute, nastav]);
   return { zapnute, prepni };
+}
+
+/**
+ * Nápovedy, ktorých látku časť výučby naučila (V-19): po jej dokončení sa označia za videné — prvá
+ * partia po výučbe inak vysvetľovala znova to isté (19 z 21 nápovied). 1. časť učí len začiatok
+ * kola; nápovedy o NA EX a pase hovoria aj o tom, čo príde až v 2. časti.
+ */
+export const NAPOVEDY_CASTI_VYUCBY: Readonly<Record<number, readonly string[]>> = {
+  2: ["stavba-senku", "rola", "odpoved-naex", "prve-naex", "pocet-pitiek", "zadlzenie", "dlh", "pas-cigarety", "body", "pohorsenie", "cirhoza", "priazen", "prevaha", "vydesenie", "exekutor", "zaverecna"],
+  3: ["patronat", "presvedcenie", "dedicstvo"],
+};
+
+/** Po dokončení časti výučby označí za videné nápovedy s jej látkou (aj predošlých častí). */
+export function VideneNapovedyPoVyucbe({ cast }: { readonly cast: number }) {
+  const { videne, oznac } = useNapovedyUctu();
+  useEffect(() => {
+    if (videne === null) return;
+    const ids = Object.entries(NAPOVEDY_CASTI_VYUCBY).flatMap(([c, x]) => (Number(c) <= cast ? x : []));
+    for (const id of ids) if (!videne.has(id)) oznac(id);
+  }, [cast, videne, oznac]);
+  return null;
 }
 
 /** Ukážka z adresy (?ukazka-napovedy=id): text z pohľadu, ak situácia platí, inak prvý variant. */
@@ -263,11 +284,7 @@ export function NapovedaMelichara({
       pocitadlo={<CisloStrany strany={strany} />}
       vpravo={
         <>
-          {strany.strana > 0 && (
-            <button type="button" className="tlacidlo-jemne mel-spat" onClick={strany.predosla} title={t("vyucba.predoslaStrana")} aria-label={t("vyucba.predoslaStrana")}>
-              ‹
-            </button>
-          )}
+          <PredoslaStrana strany={strany} popis={t("vyucba.predoslaStrana")} />
           {/* „ďalej“ aj „rozumiem“ na jednom mieste — šírka vety sa so stranou nemení, strany sa neprepínajú dookola. */}
           <NaJednomMieste
             ukaz={strany.dalsiaJe ? "a" : "b"}

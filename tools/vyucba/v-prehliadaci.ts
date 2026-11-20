@@ -52,6 +52,8 @@ const pockaj = (ms: number): Promise<void> => new Promise((ok) => setTimeout(ok,
 
 /** Zachytí WebSocket stránky: posledný krok výučby, chyby a hlášky pri chybe. */
 const SPION = `(() => {
+  // Snímky po slovensky — headless Chrome inak štartuje v jazyku systému.
+  if (!localStorage.getItem("naex_jazyk")) localStorage.setItem("naex_jazyk", "sk");
   const W = window.WebSocket;
   window.__naex = { ws: null, vyucba: null, chyby: [], hlasky: [], rady: [] };
   window.WebSocket = class extends W {
@@ -273,6 +275,9 @@ try {
       const px = await pretecie();
       if (px > 0) zaznam.pretecie = px;
     }
+    // Počet strán bubliny („1/3“) — pokyn ťahu má byť na jednej strane (inšpekcia 20261120-1324, V-06).
+    const strany = await js<string | null>("document.querySelector('[data-vyucba-bublina] .mel-cislo-strany')?.textContent ?? null");
+    if (strany !== null) zaznam.strany = Number(strany.split("/")[1] ?? 1);
     priebeh.push(zaznam);
     if (kontrola && fotoKrokov.has(krok.id)) await foto(`krok-${krok.id}`);
 
@@ -324,15 +329,19 @@ try {
         await klik("[data-vyucba-spat]");
         await pockaj(250);
       }
+      let dalej = 0;
       for (let k = 0; k < 20 && (await sprava())?.krok?.index === krok.index; k++) {
-        await klik("[data-vyucba-dalej]");
+        if (await klik("[data-vyucba-dalej]")) dalej++;
         await pockaj(350);
       }
+      zaznam.dalej = dalej;
     } else if (krok.kto === "info" || krok.vykonany) {
+      let dalej = 0;
       for (let k = 0; k < 20 && (await sprava())?.krok?.index === krok.index && (await sprava())?.krok?.vykonany === krok.vykonany; k++) {
-        await klik("[data-vyucba-dalej]");
+        if (await klik("[data-vyucba-dalej]")) dalej++;
         await pockaj(350);
       }
+      zaznam.dalej = dalej;
     } else if (krok.melichar.trim() === "") {
       // Tichý ťah bota či hry za hráča: musí prejsť sám, bez kliku.
       zaznam.ticho = true;
@@ -350,6 +359,9 @@ try {
   writeFileSync(join(vystup, "priebeh.json"), JSON.stringify({ priebeh, snimky, chybyStranky, chybyServera, hlasky }, null, 2));
   const nesvieti = priebeh.filter((p) => p.nesvieti !== undefined || p.nezname !== undefined);
   const zaseknute = priebeh.filter((p) => p.zaseknute === true);
+  const dalejSpolu = priebeh.reduce((n, p) => n + (typeof p.dalej === "number" ? p.dalej : 0), 0);
+  const tahyNaStranach = priebeh.filter((p) => p.kto === "hrac" && typeof p.strany === "number" && p.strany > 1).map((p) => `${String(p.id)} ${String(p.strany)}`);
+  console.log(`Kliky „ďalej“: ${dalejSpolu}. Ťah hráča na viac stranách: ${tahyNaStranach.length} ${JSON.stringify(tahyNaStranach)}.`);
   console.log(`Krokov ${priebeh.filter((p) => p.i !== undefined).length}, tichých ${priebeh.filter((p) => p.ticho === true).length}, zaseknutých ${zaseknute.length}, s nesvietiacim kľúčom ${nesvieti.length}.`);
   for (const p of nesvieti) console.log(`  ${String(p.id)}: ${p.nezname === undefined ? "" : `NEZNÁME ${JSON.stringify(p.nezname)} `}${p.nesvieti === undefined ? "" : `nesvieti ${JSON.stringify(p.nesvieti)}`}`);
   for (const p of zaseknute) console.log(`  ZASEKNUTÉ ${String(p.id)}`);

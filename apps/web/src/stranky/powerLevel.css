@@ -270,8 +270,9 @@
   font-variant-numeric: tabular-nums;
 }
 
+/* O stupeň svetlejšie — na podklade efektu mal --slaby-text kontrast 4,4 : 1 (W-23). */
 .pl-efekt-vaha span {
-  color: var(--slaby-text);
+  color: var(--tlmeny);
 }
 
 .pl-efekt-vaha input[type="range"] {

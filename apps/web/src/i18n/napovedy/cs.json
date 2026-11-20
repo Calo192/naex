@@ -42,15 +42,15 @@
     }
   },
   "dlh": {
-    "melichar": "První Dluh! Upřímně, nedivím se. Není to karta, počítá se dole u tebe a je hned přiznaný. V každé rvačce si pro něj přijde Exekutor i s tvými vajgly, a při remíze v rvačce rozhodují i Dluhy: kdo jich má víc, prohraje.",
+    "melichar": "První Dluh! Upřímně, nedivím se. Není to karta, počítá se dole u tebe a je hned přiznaný. V každé rvačce si pro něj přijde Exekutor i s tvými vajgly, a při remíze v rvačce rozhodují po hádce i Dluhy: kdo jich má víc, prohraje.",
     "sk": {
-      "melichar": "Prvý Dlh! Úprimne, nečudujem sa. Nie je to karta, počíta sa dole pri tebe a je hneď priznaný. V každej bitke po neho príde Exekútor aj s tvojimi špakmi, a pri remíze v bitke rozhodujú aj Dlhy: kto ich má viac, prehrá."
+      "melichar": "Prvý Dlh! Úprimne, nečudujem sa. Nie je to karta, počíta sa dole pri tebe a je hneď priznaný. V každej bitke po neho príde Exekútor aj s tvojimi špakmi, a pri remíze v bitke rozhodujú po hádke aj Dlhy: kto ich má viac, prehrá."
     }
   },
   "pas-cigarety": {
-    "melichar": "Za každou kartu vypiješ jednoho [Poldeci] panáka: kolik máš plných, tolik karet vyložíš. Víc karet naráz smíš, ale každá navíc stojí [Cigareta] cigaretu. Za pas nedostaneš nic – plné panáky ti jen zůstanou, na NA EX i na další Shromáždění. Já bych je nenechal stát.",
+    "melichar": "Za každou kartu vypiješ jednoho [Poldeci] panáka: kolik máš plných, tolik karet vyložíš. Víc karet naráz smíš, ale každá navíc stojí [Cigareta] cigaretu. Když pasneš, dobereš si kartu za každého plného panáka a ten ti zůstane plný – na NA EX i na další Shromáždění. Šetřit se vyplatí, jen tak zmiňuju.",
     "sk": {
-      "melichar": "Za každú kartu vypiješ jeden [Poldeci] poldeci: koľko máš plných, toľko kariet vyložíš. Viac kariet naraz smieš, ale každá navyše stojí [Cigareta] cigaretu. Za pas nedostaneš nič – plné poldeci ti len ostanú, na NA EX aj na ďalšie Zhromaždenie. Ja by som ich nenechal stáť."
+      "melichar": "Za každú kartu vypiješ jeden [Poldeci] poldeci: koľko máš plných, toľko kariet vyložíš. Viac kariet naraz smieš, ale každá navyše stojí [Cigareta] cigaretu. Keď pasneš, doberieš si kartu za každý plný poldeci a ten ti ostane plný – na NA EX aj na ďalšie Zhromaždenie. Šetriť sa oplatí, len tak spomínam."
     }
   },
   "lokalita-pravidlo": {
@@ -66,10 +66,10 @@
     }
   },
   "pohorsenie": {
-    "melichar.moje": "Hádku jsi vyhrál: máš víc měkkého poškození, [Pohoršenie] Pohoršení 2, [Povera] Pověra 1. Rozdíl utratíš za své řeči u starších – vždy nad tvým strachem, stupeň do žluté 1, do oranžové 2, do červené 3. Co na další stupeň nestačí, propadne. Řeči ti platí po každé rvačce, i prohrané, a potom slábnou. Užívej si, dokud můžeš.",
+    "melichar.moje": "Hádku jsi vyhrál: máš víc měkkého poškození, [Pohoršenie] Pohoršení 2, [Povera] Pověra 1. Rozdíl utratíš za své řeči u starších – na soupeřově teploměru, od vrchu jeho strachu dolů, stupeň do žluté 1, do oranžové 2, do červené 3. Co na další stupeň nestačí, propadne. Řeči ti platí po každé rvačce, i prohrané; klesnou ti, jen když hádku prohraješ. Užívej si, dokud můžeš.",
     "melichar.superove": "Hádku vyhrál soupeř: má víc měkkého poškození, [Pohoršenie] Pohoršení 2, [Povera] Pověra 1, a rozdíl utratí za své řeči u starších. Ty mu platí po každé rvačce, i prohrané. Příště si nech Víru na jeho Pověry. Nekoukej tak na mě, já ho nevyložil.",
     "sk": {
-      "melichar.moje": "Hádku si vyhral: máš viac mäkkého poškodenia, [Pohoršenie] Pohoršenie 2, [Povera] Povera 1. Rozdiel minieš na svoje reči pri starších – vždy nad tvojím strachom, stupeň do žltej 1, do oranžovej 2, do červenej 3. Čo na ďalší stupeň nestačí, prepadne. Reči ti platia po každej bitke, aj prehratej, a potom slabnú. Užívaj, kým môžeš.",
+      "melichar.moje": "Hádku si vyhral: máš viac mäkkého poškodenia, [Pohoršenie] Pohoršenie 2, [Povera] Povera 1. Rozdiel minieš na svoje reči pri starších – na súperovom teplomere, od vrchu jeho strachu nadol, stupeň do žltej 1, do oranžovej 2, do červenej 3. Čo na ďalší stupeň nestačí, prepadne. Reči ti platia po každej bitke, aj prehratej; klesnú ti, len keď hádku prehráš. Užívaj, kým môžeš.",
       "melichar.superove": "Hádku vyhral súper: má viac mäkkého poškodenia, [Pohoršenie] Pohoršenie 2, [Povera] Povera 1, a rozdiel minie na svoje reči pri starších. Tie mu platia po každej bitke, aj prehratej. Nabudúce si nechaj Vieru na jeho Povery. Nepozeraj tak na mňa, ja som ho nevyložil."
     }
   },
@@ -98,15 +98,15 @@
     }
   },
   "patronat": {
-    "melichar": "Tenhle starší se tě bojí na červené. Za pět z Nakládačky ho zajmeš – jde do tvého sklepa a soupeř ti dá vajgly za svůj marker u něj. Nemusíš, ale proč bys nechtěl.",
+    "melichar": "Tenhle starší se tě bojí na červené už od minulého kola. Za pět z Nakládačky ho zajmeš – jde do tvého sklepa a soupeř ti dá tolik vajglů, kolik mají cenu jeho řeči u něj. Nemusíš, ale proč bys nechtěl.",
     "sk": {
-      "melichar": "Tento starší sa ťa bojí na červenej. Za päť z Nakladačky ho zajmeš – ide do tvojej pivnice a súper ti dá špaky za svoj marker pri ňom. Nemusíš, ale prečo by si nechcel."
+      "melichar": "Tento starší sa ťa bojí na červenej už od minulého kola. Za päť z Nakladačky ho zajmeš – ide do tvojej pivnice a súper ti dá toľko špakov, koľko sú hodné jeho reči pri ňom. Nemusíš, ale prečo by si nechcel."
     }
   },
   "presvedcenie": {
-    "melichar": "Tenhle starší se bojí soupeře víc než tebe. Řeči na červenou a pět navrch – a je přesvědčený: jeho karta jde tobě do ruky a zůstává ve tvém balíčku. Tvoje řeči u něj shoří, přízeň ti zůstane.",
+    "melichar": "Tohohle staršího smíš přesvědčit: dotáhni své řeči na celý soupeřův teploměr u něj a přidej tři body z hádky. Jeho karta jde tobě do ruky a zůstává ve tvém balíčku. Řeči u něj i přízeň ti zůstanou. Konečně tě někdo poslouchá.",
     "sk": {
-      "melichar": "Tento starší sa súpera bojí viac než teba. Reči na červenú a päť navrch – a je presvedčený: jeho karta ide tebe do ruky a ostáva v tvojom balíčku. Tvoje reči pri ňom zhoria, priazeň ti ostane."
+      "melichar": "Tohto staršieho smieš presvedčiť: dotiahni svoje reči na celý súperov teplomer pri ňom a pridaj tri body z hádky. Jeho karta ide tebe do ruky a ostáva v tvojom balíčku. Reči pri ňom aj priazeň ti ostanú. Konečne ťa niekto počúva."
     }
   },
   "vydesenie": {
@@ -124,9 +124,9 @@
     }
   },
   "exekutor": {
-    "melichar": "Máš přiznaný Dluh, nechci nic říkat. V každé rvačce přijde Exekutor: shoří ti polovina Dluhů, zaokrouhleno nahoru, a stejně vajglů. Znám ho, nedoporučuju.",
+    "melichar": "Máš Dluh, nechci nic říkat. V každé rvačce přijde Exekutor: shoří ti polovina Dluhů, zaokrouhleno nahoru, a stejně vajglů. Znám ho, nedoporučuju.",
     "sk": {
-      "melichar": "Máš priznaný Dlh, nechcem nič hovoriť. V každej bitke príde Exekútor: zhorí ti polovica Dlhov, zaokrúhlene nahor, a rovnako veľa špakov. Poznám ho, neodporúčam."
+      "melichar": "Máš Dlh, nechcem nič hovoriť. V každej bitke príde Exekútor: zhorí ti polovica Dlhov, zaokrúhlene nahor, a rovnako veľa špakov. Poznám ho, neodporúčam."
     }
   },
   "zaverecna": {

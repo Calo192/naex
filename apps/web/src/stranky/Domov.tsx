@@ -1,10 +1,11 @@
-// Úvodná stránka — vejár kariet a rozcestník na tri časti webu.
+// Úvodná stránka — text, výzvy a vejár kariet. Rozcestník na časti webu je navigácia hore
+// (tri dlaždice ju len opakovali a tlačili vejár pod zlom — UI inšpekcia W-13).
 
 import type { CSSProperties } from "react";
 import { variant, variantyKarty } from "@naex/tvorba";
 import { KartaLico } from "../karta/KartaLico.tsx";
-import { IkonaPoldeci } from "../hra/Panely.tsx";
 import { Odkaz, useTitulok } from "../lib/router.tsx";
+import { sNavratom } from "../lib/navrat.ts";
 import { useSada, vzhladSady } from "../lib/sada.tsx";
 import { useUcet } from "../lib/ucet.tsx";
 import { VolbaZrejucej } from "../VolbaZrejucej.tsx";
@@ -51,8 +52,9 @@ export function Domov() {
                   <small>{t("domov.priStole", { dlzka: dlzkaVyucby(CASTI_VYUCBY) })}</small>
                 </span>
               </Odkaz>
-              <Odkaz href="/hra" className="tlacidlo">
-                {ja === null ? t("domov.prihlasSaAHraj") : t("domov.hratTeraz")}
+              {/* Kto už účet má, prihlási sa a vráti na Hrať; nový hráč ide výzvou výučby cez registráciu (W-03, W-14). */}
+              <Odkaz href={ja === null ? sNavratom("/prihlasenie", "/hra") : "/hra"} className="tlacidlo">
+                {ja === null ? t("ucet.prihlasitSa") : t("domov.hratTeraz")}
               </Odkaz>
               <Odkaz href="/pravidla" className="hero-pravidla">
                 {t("domov.pravidlaNaCitanie")}
@@ -60,8 +62,9 @@ export function Domov() {
             </div>
           ) : (
             <div className="riadok-tlacidiel">
+              {/* Sem príde len prihlásený — odhlásený je vždy nováčik (bezPrvejCasti). */}
               <Odkaz href="/hra" className="tlacidlo tlacidlo-hlavne">
-                {ja === null ? t("domov.prihlasSaAHraj") : t("domov.hratTeraz")}
+                {t("domov.hratTeraz")}
               </Odkaz>
               {/* Pokusná verzia pre hráčov s oprávnením (Michal 2026-11-02). */}
               <VolbaZrejucej tvar="tlacidlo" />
@@ -89,26 +92,6 @@ export function Domov() {
               );
             })}
         </div>
-      </section>
-
-      <section className="tri-casti">
-        <Odkaz href="/pravidla" className="cast">
-          <span className="cast-znak" aria-hidden="true">📖</span>
-          <h2>{t("domov.naucSaHrat")}</h2>
-          <p>{t("domov.naucSaHratText")}</p>
-        </Odkaz>
-        <Odkaz href="/karty" className="cast">
-          <span className="cast-znak" aria-hidden="true">🃏</span>
-          <h2>{t("domov.glosar")}</h2>
-          <p>{t("domov.glosarText")}</p>
-        </Odkaz>
-        <Odkaz href="/hra" className="cast">
-          <span className="cast-znak" aria-hidden="true">
-            <IkonaPoldeci />
-          </span>
-          <h2>{t("domov.hrajProti")}</h2>
-          <p>{t("domov.hrajProtiText")}</p>
-        </Odkaz>
       </section>
     </>
   );

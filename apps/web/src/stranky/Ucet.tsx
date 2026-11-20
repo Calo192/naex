@@ -4,7 +4,7 @@ import { useEffect, useRef, useState, type FormEvent } from "react";
 import { api, mediaUrl, textChyby } from "../lib/api.ts";
 import { nacitajObrazok, stvorec } from "../lib/obrazky.ts";
 import { Odkaz, chod, useTitulok } from "../lib/router.tsx";
-import { navratZ } from "../lib/navrat.ts";
+import { navratZ, poRegistracii } from "../lib/navrat.ts";
 import { prepniInstanciu } from "../lib/instancia.ts";
 import {
   HUDBA_PREDVOLENA,
@@ -20,6 +20,7 @@ import {
 } from "../lib/ucet.tsx";
 import { Avatar, Hlaska, Pole, type SpravaHlasky } from "../komponenty.tsx";
 import { HlavaStranky } from "../HlavaStranky.tsx";
+import { ADRESA_VYUCBY } from "../hra/Vyucba.tsx";
 import type { Pohlavie } from "@naex/core";
 import { hlasitostZvuku, nacitajSkladby, urlSkladby } from "../hra/Hudba.tsx";
 import { nacitajHlasky, urlHlasky } from "../hra/Melichar.tsx";
@@ -42,7 +43,7 @@ const volbyPohlavia = (meno: string): readonly { readonly id: Pohlavie | null; r
  * bezPrava = prihlásený vo Vypálenej, ale Zrejúcu hrať nesmie — formulár netreba.
  */
 export function Prihlasenie({ zrejuca = null }: { readonly zrejuca?: { readonly bezPrava: boolean } | null } = {}) {
-  useTitulok(zrejuca === null ? t("ucet.prihlasenie") : t("ucet.zrejuca"));
+  useTitulok(zrejuca === null ? t("ucet.prihlasitSa") : t("ucet.zrejuca"));
   const { nastav } = useUcet();
   const [login, setLogin] = useState("");
   const [heslo, setHeslo] = useState("");
@@ -113,7 +114,7 @@ export function Prihlasenie({ zrejuca = null }: { readonly zrejuca?: { readonly 
       </form>
       {zrejuca === null ? (
         <p className="formular-paticka">
-          {tr("ucet.nemasUcet", { odkaz: <Odkaz href={`/registracia${location.search}`}>{t("ucet.zaregistrujSa")}</Odkaz> })}
+          {tr("ucet.nemasUcet", { odkaz: <Odkaz href={`/registracia${location.search}`}>{t("ucet.vytvoritUcet")}</Odkaz> })}
         </p>
       ) : (
         <p className="formular-paticka">
@@ -132,14 +133,19 @@ export function Prihlasenie({ zrejuca = null }: { readonly zrejuca?: { readonly 
 }
 
 export function Registracia() {
-  useTitulok(t("ucet.registracia"));
+  useTitulok(t("ucet.vytvoritUcet"));
   const { nastav } = useUcet();
   const [login, setLogin] = useState("");
   const [meno, setMeno] = useState("");
   const [heslo, setHeslo] = useState("");
   const [heslo2, setHeslo2] = useState("");
+  const [email, setEmail] = useState("");
   const [chyba, setChyba] = useState<string | null>(null);
   const [caka, setCaka] = useState(false);
+  // Účet vznikol, ale e-mail (ukladá ho až profil) server odmietol — hráč to musí vidieť, kým pokračuje.
+  const [chybaEmailu, setChybaEmailu] = useState<string | null>(null);
+  const navrat = navratZ(location.search);
+  const dalej = poRegistracii(location.search);
 
   const odosli = async (e: FormEvent) => {
     e.preventDefault();
@@ -152,8 +158,16 @@ export function Registracia() {
     try {
       const r = await api.post<{ pouzivatel: Pouzivatel }>("/registracia", { login, heslo, meno: meno.trim() || login });
       nastav(r.pouzivatel);
-      // S návratom (pozvánka do miestnosti) rovno späť, inak nováčik začína profilom.
-      chod(navratZ(location.search) ?? "/profil?novy=1", true);
+      if (email.trim() !== "") {
+        try {
+          const p = await api.patch<{ pouzivatel: Pouzivatel }>("/profil", { email: email.trim() });
+          nastav(p.pouzivatel);
+        } catch (err) {
+          setChybaEmailu(textChyby(err));
+          return;
+        }
+      }
+      chod(dalej, true);
     } catch (err) {
       setChyba(textChyby(err));
     } finally {
@@ -161,12 +175,27 @@ export function Registracia() {
     }
   };
 
+  if (chybaEmailu !== null) {
+    return (
+      <>
+        <HlavaStranky nadpis={t("ucet.vytvoritUcet")} />
+        <div className="formular-stred panel">
+          <Hlaska>{t("ucet.emailNeulozeny", { chyba: chybaEmailu })}</Hlaska>
+          <button type="button" className="tlacidlo-hlavne" onClick={() => chod(dalej, true)}>
+            {t("ucet.pokracovat")}
+          </button>
+        </div>
+      </>
+    );
+  }
+
+  const nezhoda = chyba !== null && heslo !== heslo2;
   return (
     <>
-    <HlavaStranky nadpis={t("ucet.novyUcet")} uvod={t("ucet.novyUcetUvod")} />
-    <div className="formular-stred">
-      <form className="panel" onSubmit={(e) => void odosli(e)}>
-        {chyba !== null && <Hlaska>{chyba}</Hlaska>}
+    <HlavaStranky nadpis={t("ucet.vytvoritUcet")} uvod={navrat === ADRESA_VYUCBY ? t("ucet.novyUcetVyucba") : t("ucet.novyUcetUvod")} />
+    {/* Dva stĺpce: celý formulár aj s tlačidlom je nad zlomom aj pri 1366×650 a hláška stojí pri tlačidle (W-01). */}
+    <div className="formular-stred formular-siroky">
+      <form className="panel registracia" onSubmit={(e) => void odosli(e)}>
         <Pole label={t("ucet.login")} pomoc={t("ucet.loginPomoc")}>
           <input
             autoComplete="username"
@@ -184,22 +213,61 @@ export function Registracia() {
           <input type="password" autoComplete="new-password" value={heslo} onChange={(e) => setHeslo(e.target.value)} minLength={8} required />
         </Pole>
         <Pole label={t("ucet.hesloZnova")}>
-          <input type="password" autoComplete="new-password" value={heslo2} onChange={(e) => setHeslo2(e.target.value)} minLength={8} required />
+          <input
+            type="password"
+            autoComplete="new-password"
+            value={heslo2}
+            onChange={(e) => setHeslo2(e.target.value)}
+            minLength={8}
+            required
+            aria-invalid={nezhoda || undefined}
+          />
         </Pole>
-        <button type="submit" className="tlacidlo-hlavne" disabled={caka}>
-          {caka ? t("ucet.vytvaram") : t("ucet.vytvoritUcet")}
-        </button>
+        {/* Bez e-mailu sa zabudnuté heslo neobnoví (W-24); nepovinné, uloží ho profil hneď po registrácii. */}
+        <Pole label={t("ucet.emailNepovinny")} pomoc={t("ucet.emailPomoc")}>
+          <input
+            type="email"
+            autoComplete="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            maxLength={254}
+            pattern="[^\s@]+@[^\s@]+\.[^\s@]{2,}"
+            placeholder={t("ucet.emailPriklad")}
+          />
+        </Pole>
+        <div className="registracia-odoslat">
+          {chyba !== null && <Hlaska>{chyba}</Hlaska>}
+          <button type="submit" className="tlacidlo-hlavne" disabled={caka}>
+            {caka ? t("ucet.vytvaram") : t("ucet.vytvoritUcet")}
+          </button>
+          <p className="registracia-prihlas">
+            {tr("ucet.uzMasUcet", { odkaz: <Odkaz href={`/prihlasenie${location.search}`}>{t("ucet.prihlasitSa")}</Odkaz> })}
+          </p>
+        </div>
       </form>
-      <p className="formular-paticka">
-        {tr("ucet.uzMasUcet", { odkaz: <Odkaz href={`/prihlasenie${location.search}`}>{t("ucet.prihlasSa")}</Odkaz> })}
-      </p>
     </div>
     </>
   );
 }
 
-export function Profil() {
-  useTitulok(t("profil.mojProfil"));
+/**
+ * Záložky nastavení (UI inšpekcia W-06, variant B): každá má vlastnú adresu, aby sa dalo
+ * odkazovať a fungovalo Späť. /profil ostáva Účtom — staré odkazy vedú tam, kam viedli.
+ */
+const ZALOZKY_NASTAVENI = [
+  { id: "ucet", href: "/profil", kluc: "profil.zalozkaUcet" },
+  { id: "vzhlad", href: "/profil/vzhlad", kluc: "profil.zalozkaVzhlad" },
+  { id: "hra", href: "/profil/hra", kluc: "profil.zalozkaHra" },
+] as const;
+type ZalozkaNastaveni = (typeof ZALOZKY_NASTAVENI)[number]["id"];
+
+export const jeCestaNastaveni = (cesta: string): boolean => ZALOZKY_NASTAVENI.some((z) => z.href === cesta);
+
+export function Profil({ cesta = "/profil" }: { readonly cesta?: string }) {
+  // Staré odkazy na výber farby (/profil#farba) vedú do Vzhľadu, kam sa výber presunul.
+  const zalozka: ZalozkaNastaveni =
+    cesta === "/profil" && location.hash === "#farba" ? "vzhlad" : (ZALOZKY_NASTAVENI.find((z) => z.href === cesta)?.id ?? "ucet");
+  useTitulok(t("nav.nastavenia"));
   const { ja, nastav, instancia } = useUcet();
   const jazyk = useJazyk();
   const [meno, setMeno] = useState(ja?.meno ?? "");
@@ -208,7 +276,6 @@ export function Profil() {
   const [stare, setStare] = useState("");
   const [nove, setNove] = useState("");
   const subor = useRef<HTMLInputElement>(null);
-  const novy = new URLSearchParams(location.search).get("novy") === "1";
   const obnovene = new URLSearchParams(location.search).get("obnovene") === "1";
   const [email, setEmail] = useState(ja?.email ?? "");
 
@@ -451,21 +518,28 @@ export function Profil() {
   return (
     <div className="profil profil-siroky">
       <HlavaStranky
-        nadpis={t("profil.mojProfil")}
+        nadpis={t("nav.nastavenia")}
         uvod={t("profil.uvod")}
         akcia={
           <Odkaz href={`/hrac/${ja.id}`} className="tlacidlo">
-            {t("profil.statistikyAPartie")}
+            {t("nav.mojProfil")}
           </Odkaz>
         }
       />
-      {novy && <Hlaska druh="ok">{t("profil.novy")}</Hlaska>}
+      <nav className="zalozky nastavenia-zalozky" aria-label={t("profil.zalozky")}>
+        {ZALOZKY_NASTAVENI.map((z) => (
+          <Odkaz key={z.id} href={z.href} className={zalozka === z.id ? "zalozka aktivna" : "zalozka"} aria-current={zalozka === z.id ? "page" : undefined}>
+            {t(z.kluc)}
+          </Odkaz>
+        ))}
+      </nav>
       {obnovene && <Hlaska druh="ok">{t("profil.obnovene")}</Hlaska>}
       {sprava !== null && <Hlaska druh={sprava.druh}>{sprava.text}</Hlaska>}
 
+      {zalozka === "ucet" && (
       <section className="panel profil-hlava">
         <div className="profil-avatar">
-          {/* Jediný avatar mimo partie vo farbe hráča — hneď pod ním sa pár volí. */}
+          {/* Jediný avatar mimo partie vo farbe hráča (pár sa volí vo Vzhľade). */}
           <Avatar meno={ja.meno} avatar={ja.avatar} velkost={112} farba="ja" />
         </div>
         <div>
@@ -478,9 +552,6 @@ export function Profil() {
               {t("profil.rankPoldeci")}
             </p>
           )}
-          <p style={{ margin: "6px 0 0" }}>
-            <Odkaz href={`/hrac/${ja.id}`}>{t("profil.statistikyAPartie")}</Odkaz>
-          </p>
           <div className="profil-avatar-akcie">
             <input
               ref={subor}
@@ -512,10 +583,10 @@ export function Profil() {
             )}
           </div>
         </div>
-        <VyberParu chyba={chyba} />
       </section>
+      )}
 
-      {galeriaOtvorena && (
+      {zalozka === "ucet" && galeriaOtvorena && (
         <section className="panel galeria-avatarov" aria-label={t("profil.vyberAvatara")}>
           <h3>{t("profil.vyberTrosku")}</h3>
           {galeria === null ? (
@@ -541,18 +612,11 @@ export function Profil() {
         </section>
       )}
 
-      {/* Štatistiky sú na profile hráča (/hrac/:id) — tu len odkaz, nech nie sú na dvoch miestach. */}
-      <section className="panel profil-odkaz-statistiky">
-        <div>
-          <h2>{t("profil.statistiky")}</h2>
-          <p className="tlmene">{t("profil.statistikyPopis")}</p>
-        </div>
-        <Odkaz href={`/hrac/${ja.id}`} className="tlacidlo tlacidlo-hlavne">
-          {t("profil.otvoritProfil")}
-        </Odkaz>
+      {zalozka === "vzhlad" && (
+      <>
+      <section className="panel farba-hraca">
+        <VyberParu chyba={chyba} />
       </section>
-
-      <h2 className="profil-nastavenia-nadpis">{t("profil.nastavenia")}</h2>
       <section className="panel vzhlad-webu" aria-labelledby="vzhlad-webu-nadpis">
         <h3 id="vzhlad-webu-nadpis">{t("profil.vzhlad")}</h3>
         <p className="tlmene">
@@ -573,7 +637,7 @@ export function Profil() {
                   className={s.id === schema ? "schema-volba zvolena" : "schema-volba"}
                   onClick={() => vyberSchemu(s.id)}
                   aria-pressed={s.id === schema}
-                  title={s.wada}
+                  title={`${s.popis} · ${s.wada}`}
                 >
                   <span className="schema-nahlad" style={{ background: s.nahlad[0] }} aria-hidden="true">
                     <span className="schema-nahlad-plocha" style={{ background: s.nahlad[1] }}>
@@ -583,19 +647,21 @@ export function Profil() {
                     </span>
                   </span>
                   <span className="schema-nazov">{s.nazov}</span>
-                  <span className="schema-popis">{s.popis}</span>
                 </button>
               ))}
             </div>
           </div>
         ))}
       </section>
+      </>
+      )}
+      {zalozka === "hra" && (
       <section className="panel preferencie" aria-labelledby="preferencie-nadpis">
         <h3 id="preferencie-nadpis">{t("profil.preferencie")}</h3>
         {instancia.jazyky === true && (
         <fieldset className="skore-volby">
           <legend>{t("profil.jazyk")}</legend>
-          <p className="tlmene">{t("profil.jazykPomoc")}</p>
+          <p className="tlmene skore-volby-popis">{t("profil.jazykPomoc")}</p>
           {JAZYKY.map((j) => (
             <label key={j} lang={j} className={j === jazyk ? "skore-volba zvolena" : "skore-volba"}>
               <input type="radio" name="jazyk" checked={j === jazyk} onChange={() => zvolJazyk(j, ja, nastav)} />
@@ -638,6 +704,8 @@ export function Profil() {
           ))}
         </fieldset>
       </section>
+      )}
+      {zalozka === "ucet" && (
       <div className="profil-nastavenia">
       <form className="panel" onSubmit={(e) => void ulozMeno(e)}>
         <h3>{t("ucet.hernemeno")}</h3>
@@ -682,12 +750,16 @@ export function Profil() {
         </Pole>
         <button type="submit">{t("profil.zmenitHeslo")}</button>
       </form>
+      </div>
+      )}
 
+      {zalozka === "hra" && (
+      <div className="profil-nastavenia">
       <div className="panel">
         <h3>{t("profil.zvacsenie")}</h3>
         <Pole
           label={t("profil.zvacsenaKarta", { n: lupa })}
-          pomoc={t("profil.lupaPomoc", { n: lupa, od: LUPA_OD, do: LUPA_DO })}
+          pomoc={t("profil.lupaPomoc")}
         >
           <input
             type="range"
@@ -766,6 +838,7 @@ export function Profil() {
         </div>
       </div>
       </div>
+      )}
     </div>
   );
 }
