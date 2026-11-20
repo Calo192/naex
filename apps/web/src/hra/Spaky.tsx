@@ -326,9 +326,7 @@ function NastenkaObsah({ nastenka, zostava, ciel, ja, mena, avatary, karta, meno
           kartovy={sirkaKonca}
           title={t("spaky.koniecTitul", { zaPoldeci: KONSTANTY.SPAKY_ZA_POLDECI, zaCigarety: KONSTANTY.CIGARIET_ZA_SPAK, poldeci: dvojica(ucet.body.vykupne.map((v) => v.poldeci) as [number, number], (n) => t("spaky.nPoldeci", { n })), cigarety: dvojica(ucet.body.vykupne.map((v) => v.cigarety) as [number, number], (n) => t("tabula.cig", { n })), cirhoza: spakov(KONSTANTY.SPAKY_ZA_CIRHOZU) })}
         >
-          <span className="nastenka-vitaz">
-            <span className="nastenka-otaznik">{t("spaky.koniec")}</span>
-          </span>
+          {/* „koniec“ nad „Koniec · po finále“ bolo dvakrát to isté (Z-17). */}
           <span className="nastenka-nazov">{t("spaky.koniecPoFinale")}</span>
           {/* Komu čo, menami (Michal 2026-10-30: „výkupné +2 : +2“ nebolo jasné komu). */}
           <span className="nastenka-uctenka nastenka-koniec">
