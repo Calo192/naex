@@ -1,0 +1,84 @@
+diff --git a/packages/core/src/engine.ts b/packages/core/src/engine.ts
+index 52f31bb..b127b9a 100644
+--- a/packages/core/src/engine.ts
++++ b/packages/core/src/engine.ts
+@@ -557,6 +557,10 @@ export interface GameState {
+   readonly naexVKole: readonly [boolean, boolean];
+   /** Partia bez Chuti a Absťáku (výučba Prvá hra, v9.1) — koniec kola ich nerieši. */
+   readonly bezChuti?: true;
++  /** POKUS Štrng: trojitý spoj pri vyložení vráti plný poldeci. */
++  readonly strng?: true;
++  /** POKUS Štrng: koľko Štrngov padlo každému hráčovi (telemetria). */
++  readonly strngy?: readonly [number, number];
+   readonly starsi: readonly ElderState[];
+   readonly ciel: CielKola | null;
+   readonly lokalitaOtocena: boolean;
+@@ -1131,6 +1135,43 @@ function najdiVLinii(s: MutState, uid: number): { strana: PlayerId; index: numbe
+   return null;
+ }
+ 
++/** Hrany karty v ráme línie (pohľad hráča 0): karta hráča 1 je otočená o 180°. */
++function hranyVLinii(data: GameData, card: CardInstance, otocena: boolean): { left: readonly Slot[]; right: readonly Slot[] } {
++  const t = printedSides(data, card);
++  if (!otocena) return { left: t.left, right: t.right };
++  return { left: [...t.right].reverse(), right: [...t.left].reverse() };
++}
++
++/** Počet párov (dve neprázdne akcie na rovnakom indexe) na vnútornom spoji karty — so susedom bližšie k lokalite či s lokalitou. */
++export function paryVnutornehoSpoja(data: GameData, s: Pick<GameState, "strany">, strana: PlayerId, index: number): number {
++  const pl = s.strany[strana][index];
++  if (pl === undefined) return 0;
++  const moja = hranyVLinii(data, pl.card, pl.playedBy === 1);
++  const sused = s.strany[strana][index - 1];
++  // Štrngajú si len dve karty — spoj s lokalitou sa neráta.
++  if (sused === undefined) return 0;
++  const jeho = hranyVLinii(data, sused.card, sused.playedBy === 1);
++  const a = strana === 0 ? moja.right : moja.left;
++  const b = strana === 0 ? jeho.left : jeho.right;
++  let n = 0;
++  for (let i = 0; i < 4; i++) if (a[i] !== null && a[i] !== undefined && b[i] !== null && b[i] !== undefined) n++;
++  return n;
++}
++
++/** POKUS Štrng: karta vyložená lícom hore, ktorej vnútorný spoj má aspoň 3 páry, vráti hráčovi vypitý poldeci. */
++function strng(s: MutState, data: GameData, p: PlayerId, uid: number, events: Event[]): void {
++  if (s.strng !== true) return;
++  const kde = najdiVLinii(s, uid);
++  if (kde === null) return;
++  if (paryVnutornehoSpoja(data, s as GameState, kde.strana, kde.index) < 3) return;
++  const h = hrac(s, p);
++  if (s.strngy !== undefined) (s.strngy as [number, number])[p] += 1;
++  if (h.poldeciVypite <= 0) return;
++  h.poldeciVypite -= 1;
++  zmenPoldeci(s, p, "akcie", 1, events);
++  events.push({ type: "log", text: `Štrng! Trojitý spoj — hráčovi ${p + 1} sa dolieva poldeci.` });
++}
++
+ function vezmiZRuky(s: MutState, kto: Miesto, uid: number): CardInstance {
+   const ruka = rukaMiestaMut(s, kto);
+   const idx = ruka.findIndex((k) => k.uid === uid);
+@@ -1604,6 +1645,8 @@ export interface SetupOptions {
+   readonly lokalit?: number;
+   /** Bez Chuti a Absťáku (výučba Prvá hra, v9.1). */
+   readonly bezChuti?: boolean;
++  /** POKUS (návrh Štrng, 2026-11-20): trojitý spoj pri vyložení vráti plný poldeci. */
++  readonly strng?: boolean;
+   /** Formát partie; predvolene 1 na 1. */
+   readonly format?: Format;
+   /** 2 na 2: miesta ľudí. V tíme človek + bot je kapitánom vždy človek (Michal 2026-11-02). */
+@@ -1666,6 +1709,7 @@ export function setupGame(data: GameData, seed: Semienko, opts?: SetupOptions):
+     pitkyKola: [],
+     zaciatokPitky: null,
+     ...(opts?.bezChuti === true ? { bezChuti: true as const } : {}),
++    ...(opts?.strng === true ? { strng: true as const, strngy: [0, 0] as [number, number] } : {}),
+     ...(format === "2na2" ? { format: "2na2" as const } : {}),
+   };
+ 
+@@ -2930,6 +2974,7 @@ function cmdPlace(
+       vypiPlny(s, p, 1, events);
+     }
+     vylozDoLinie(s, data, kto, cmd.uid, cmd.target, events);
++    strng(s, data, p, cmd.uid, events);
+   }
+ 
+   ukonciVykladanie(s, data, p, events);

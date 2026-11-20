@@ -1,0 +1,501 @@
+<meta charset="utf-8">
+<title>NA EX! Kombo dielňa</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bitter:wght@600;800&family=Roboto:ital,wght@0,400;0,500;0,700;1,400&display=swap">
+<style>
+/* Layout: one reading column on the pub's dark wood; every mock sits on the game's own felt "stôl",
+   which breaks the column to full width. Tokens are the game's Krčma scheme (dark) and Lístok scheme (light). */
+:root {
+  --pozadie: #14110e; --plocha: #1e1914; --plocha-2: #28211a; --okraj: #3d3229; --okraj-svetly: #57483a;
+  --text: #f1e8d8; --tlmeny: #b6a790; --akcent: #e9ad45; --na-akcente: #2b1b03;
+  --cervena: #e5735c; --zelena: #7fe39a; --ja: #5cc0cf; --su: #e0805f; --fialova: #c9a3ee;
+  /* the table and the cards are physical objects: same in both themes */
+  --stol: #16241a; --stol-okraj: #6fd088; --stol-svetlo: rgba(127, 227, 154, 0.12); --stol-text: #dff3e2; --stol-tlmeny: #9fbfa6;
+  --papier: #fbf7ee; --atrament: #2a2018; --zlato: #f0bf4c; --zlato-tma: #2b1b03;
+  --stol-ja: #6fd3e2; --stol-su: #f0916e;
+  --nadpis: "Bitter", Georgia, "Times New Roman", serif;
+  --pismo: "Roboto", system-ui, -apple-system, "Segoe UI", Arial, sans-serif;
+  color-scheme: dark;
+}
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme="dark"]) {
+    --pozadie: #f5ecd9; --plocha: #fef9ee; --plocha-2: #f0e5cf; --okraj: #d9ccb4; --okraj-svetly: #bdb093;
+    --text: #312317; --tlmeny: #624e3f; --akcent: #723f00; --na-akcente: #fff9f3;
+    --cervena: #a8321f; --zelena: #256d2f; --ja: #006a77; --su: #a3401d; --fialova: #5b3a8c;
+    color-scheme: light;
+  }
+}
+:root[data-theme="light"] {
+  --pozadie: #f5ecd9; --plocha: #fef9ee; --plocha-2: #f0e5cf; --okraj: #d9ccb4; --okraj-svetly: #bdb093;
+  --text: #312317; --tlmeny: #624e3f; --akcent: #723f00; --na-akcente: #fff9f3;
+  --cervena: #a8321f; --zelena: #256d2f; --ja: #006a77; --su: #a3401d; --fialova: #5b3a8c;
+  color-scheme: light;
+}
+* { box-sizing: border-box; }
+body { background: var(--pozadie); color: var(--text); font: 16px/1.6 var(--pismo); }
+body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 10; background: var(--pozadie); }
+.obal { max-width: 1120px; margin: 0 auto; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); padding-block: 0 80px; }
+h1, h2, h3, h4 { font-family: var(--nadpis); text-wrap: balance; margin: 0; }
+h1 { font-size: clamp(2.1rem, 5.2vw, 3.4rem); font-weight: 800; line-height: 1.05; letter-spacing: -0.01em; }
+h2 { font-size: clamp(1.45rem, 3vw, 1.9rem); font-weight: 800; line-height: 1.15; margin-top: 64px; }
+h3 { font-size: 1.15rem; font-weight: 800; }
+h4 { font-size: 0.78rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.08em; }
+p, li { max-width: 68ch; }
+p { margin: 12px 0 0; }
+a { color: var(--akcent); }
+code { font: 0.86em ui-monospace, "Cascadia Mono", Consolas, monospace; background: var(--plocha-2); padding: 1px 5px; border-radius: 4px; overflow-wrap: anywhere; }
+.tlmene { color: var(--tlmeny); font-size: 0.86rem; }
+.oko { font: 800 0.74rem var(--nadpis); text-transform: uppercase; letter-spacing: 0.12em; color: var(--akcent); margin: 0; }
+:focus-visible { outline: 2px solid var(--akcent); outline-offset: 2px; }
+
+/* navigácia */
+.nav { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 9; background: var(--pozadie); border-bottom: 1px solid var(--okraj); margin-inline: calc(-1 * max(16px, env(safe-area-inset-left, 0px))); padding-inline: max(16px, env(safe-area-inset-left, 0px)); }
+.nav ul { list-style: none; margin: 0; padding: 8px 0; display: flex; gap: 4px 14px; flex-wrap: wrap; align-items: baseline; }
+.nav li { max-width: none; }
+.nav a { color: var(--tlmeny); text-decoration: none; font-size: 0.86rem; font-weight: 500; padding: 4px 0; display: inline-block; }
+.nav a:hover { color: var(--text); }
+.nav .znacka { font: 800 1rem var(--nadpis); color: var(--akcent); margin-right: 6px; white-space: nowrap; }
+@media (max-width: 760px) { .nav ul { flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; } .nav a { white-space: nowrap; } }
+
+/* úvod */
+.uvod { padding-top: 40px; }
+.uvod h1 { margin-top: 10px; }
+section { scroll-margin-top: 56px; }
+.uvod .perex { font-size: 1.14rem; line-height: 1.55; max-width: 62ch; margin-top: 18px; }
+.cisla { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0; margin-top: 28px; border-block: 1px solid var(--okraj); }
+.cisla div { padding: 16px 16px 16px 0; min-width: 0; }
+.cisla div + div { border-left: 1px solid var(--okraj); padding-left: 16px; }
+.cisla b { display: block; font: 800 2.1rem/1 var(--nadpis); color: var(--akcent); font-variant-numeric: tabular-nums; }
+.cisla span { display: block; font-size: 0.86rem; color: var(--tlmeny); margin-top: 6px; line-height: 1.35; }
+@media (max-width: 760px) { .cisla { grid-template-columns: 1fr 1fr; } .cisla div:nth-child(3) { border-left: 0; padding-left: 0; } .cisla div:nth-child(n+3) { border-top: 1px solid var(--okraj); } }
+
+/* stôl a línia — vzhľad hry */
+.stol { margin-top: 18px; background: radial-gradient(ellipse at center, var(--stol-svetlo), transparent 70%), var(--stol); border: 2px solid var(--stol-okraj); border-radius: 14px; padding: 16px 14px; overflow-x: auto; color: var(--stol-text); }
+.linia { --kw: 122px; --kh: 122px; --chvost: 92px; --sl: 24px; display: flex; align-items: stretch; width: max-content; margin-inline: auto; }
+.k { display: grid; grid-template-rows: var(--chvost) var(--kh) var(--chvost); width: var(--kw); position: relative; font-family: var(--pismo); }
+.k[tabindex] { cursor: pointer; }
+.k--vybrana .k-art { outline: 3px solid var(--zlato); outline-offset: -3px; }
+.k-hore, .k-dole { display: flex; flex-direction: column; min-height: 0; overflow: hidden; }
+.k-hore { justify-content: flex-end; border-radius: 9px 9px 0 0; }
+.k-dole { border-radius: 0 0 9px 9px; }
+.k-text { background: var(--papier); color: var(--atrament); font-size: 9.5px; line-height: 1.25; padding: 5px 6px; flex: 1 1 auto; min-height: 0; overflow: hidden; text-align: center; display: flex; align-items: center; justify-content: center; }
+.k-text .pik, .efekt-vybranej .pik, .vk .pik { display: inline-block; width: 1.25em; height: 1.25em; vertical-align: -0.28em; background: var(--atrament); border-radius: 3px; padding: 1px; }
+.k-text .pik svg, .efekt-vybranej .pik svg, .vk .pik svg { display: block; width: 100%; height: 100%; fill: var(--papier); }
+.k-meno { background: var(--pas); color: #fff; text-align: center; padding: 3px 4px 4px; position: relative; flex: 0 0 auto; text-shadow: 0 1px 0 rgba(0, 0, 0, 0.35); }
+.k-meno strong { display: block; font: 800 11.5px/1.15 var(--nadpis); }
+.k-meno small { display: block; font-size: 8px; line-height: 1.2; opacity: 0.95; }
+.pec { position: absolute; right: 2px; top: -9px; display: inline-flex; align-items: center; gap: 1px; background: var(--zlato); color: var(--zlato-tma); border-radius: 999px; padding: 1px 4px; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.5); z-index: 2; }
+.pec svg { width: 11px; height: 11px; fill: var(--zlato-tma); }
+.pec b { font: 800 9px var(--nadpis); }
+.k-art { position: relative; background-color: #2a2420; background-repeat: no-repeat; box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.55); }
+.k--su .k-art { transform: none; }
+.k-art--navrh { background-image: repeating-linear-gradient(135deg, #3a322a 0 8px, #2e2721 8px 16px); }
+.navrh-stitok { position: absolute; bottom: 4px; left: 50%; transform: translateX(-50%); font: 800 8.5px var(--nadpis); text-transform: uppercase; letter-spacing: 0.1em; color: var(--zlato); background: rgba(0, 0, 0, 0.6); padding: 1px 6px; border-radius: 999px; }
+.sl { position: absolute; width: var(--sl); height: var(--sl); top: calc(5px + var(--i) * (var(--sl) + 5px)); border-radius: 6px; display: grid; place-items: center; background: rgba(12, 10, 8, 0.82); border: 2px solid var(--farba); --farba: #d9d2c3; }
+.sl--L { left: 3px; } .sl--R { right: 3px; }
+.sl--ja { --farba: var(--stol-ja); } .sl--su { --farba: var(--stol-su); } .sl--lok { --farba: #e8dfb8; }
+.sl svg { width: 70%; height: 70%; fill: var(--farba); }
+.sl--prazdny { background: none; border: 0; }
+.sl--on { box-shadow: 0 0 0 2px rgba(240, 191, 76, 0.55), 0 0 9px rgba(240, 191, 76, 0.5); background: rgba(12, 10, 8, 0.92); }
+.sl--off { border-style: dashed; border-width: 1.5px; opacity: 0.5; }
+.sl--zr { border-color: #e5735c; opacity: 0.8; }
+.sl--zr svg { fill: #e5735c; opacity: 0.6; }
+.sl--zr::after { content: ""; position: absolute; inset: 2px; background: linear-gradient(to top right, transparent 44%, #e5735c 44% 56%, transparent 56%); border-radius: 4px; }
+.krat { position: absolute; top: -8px; font: 800 9.5px/1 var(--nadpis); background: var(--zlato); color: var(--zlato-tma); padding: 2px 3px; border-radius: 5px; z-index: 2; box-shadow: 0 1px 2px rgba(0, 0, 0, 0.6); }
+.sl--L .krat { right: -9px; } .sl--R .krat { left: -9px; }
+.krat--4, .krat--8 { background: #fff3c4; box-shadow: 0 0 0 2px var(--zlato), 0 0 10px var(--zlato); }
+.zmena { position: absolute; bottom: -3px; right: -3px; width: 7px; height: 7px; border-radius: 50%; background: var(--fialova, #c9a3ee); border: 1px solid #000; }
+.odznaky { position: absolute; top: 4px; left: 50%; transform: translateX(-50%); display: flex; gap: 3px; z-index: 2; white-space: nowrap; }
+.odz { font: 800 11px/1 var(--nadpis); padding: 3px 6px; border-radius: 999px; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.6); }
+.odz--naopak { background: #c9a3ee; color: #23103d; }
+.odz--krat { background: var(--zlato); color: var(--zlato-tma); }
+.naex-peciatka { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%) rotate(-8deg); font: 800 10px/1 var(--nadpis); letter-spacing: 0.04em; color: #fff; background: #b93b25; border: 1.5px solid #ffd9cf; border-radius: 4px; padding: 4px 6px; white-space: nowrap; box-shadow: 0 2px 5px rgba(0, 0, 0, 0.6); z-index: 2; }
+.pody { position: absolute; bottom: 4px; left: 50%; transform: translateX(-50%); display: grid; gap: 2px; justify-items: center; z-index: 2; }
+.pod { font: 700 8.5px/1.2 var(--pismo); color: #10230f; background: #8fd69b; padding: 1px 7px; border-radius: 999px; white-space: nowrap; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.6); }
+.sev { width: 0; position: relative; z-index: 3; }
+.most { position: absolute; left: -8px; width: 16px; height: 5px; border-radius: 3px; background: var(--zlato); box-shadow: 0 0 6px rgba(240, 191, 76, 0.8); top: calc(var(--chvost) + 5px + var(--i) * (var(--sl) + 5px) + (var(--sl) - 5px) / 2); }
+.strng { position: absolute; top: calc(var(--chvost) - 13px); left: 0; transform: translateX(-50%) rotate(-7deg); background: var(--zlato); color: var(--zlato-tma); font: 800 11px/1 var(--nadpis); letter-spacing: 0.04em; padding: 4px 7px; border-radius: 4px; white-space: nowrap; box-shadow: 0 2px 6px rgba(0, 0, 0, 0.6), 0 0 0 2px var(--zlato-tma) inset; }
+.stol--oslava .strng { animation: strng 0.7s cubic-bezier(0.2, 1.6, 0.4, 1) both; }
+.stol--oslava .most { animation: most 0.45s ease-out both; animation-delay: calc(var(--i) * 90ms); }
+@keyframes strng { from { transform: translateX(-50%) rotate(-25deg) scale(0.2); opacity: 0; } to { transform: translateX(-50%) rotate(-7deg) scale(1); opacity: 1; } }
+@keyframes most { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+@media (prefers-reduced-motion: reduce) { .stol--oslava .strng, .stol--oslava .most, .pohar--doliaty::after { animation: none !important; } }
+
+/* účet línie */
+.ucet { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0; margin-top: 10px; border: 1px solid var(--okraj); border-radius: 10px; background: var(--plocha); overflow: hidden; }
+.ucet > div { padding: 10px 14px; min-width: 0; }
+.ucet > div + div { border-left: 1px solid var(--okraj); }
+.ucet h4 { color: var(--tlmeny); }
+.ucet h4 small { text-transform: none; letter-spacing: 0; font: 400 0.72rem var(--pismo); margin-left: 6px; }
+.ucet-hrac--ja h4 { color: var(--ja); } .ucet-hrac--su h4 { color: var(--su); }
+.ucet dl { margin: 6px 0 0; display: grid; gap: 2px; }
+.ucet dl div { display: flex; justify-content: space-between; gap: 10px; font-size: 0.86rem; }
+.ucet dt { color: var(--tlmeny); } .ucet dd { margin: 0; font-weight: 700; font-variant-numeric: tabular-nums; text-align: right; }
+.u-tuhe dd, .u-makke dd { font: 800 1.15rem/1.1 var(--nadpis); }
+.u-zle dd { color: var(--cervena); } .u-zlato { color: var(--akcent); font: 800 1.15rem/1.1 var(--nadpis) !important; }
+.ucet-navrh { grid-column: 1 / -1; border-left: 0 !important; border-top: 1px dashed var(--okraj-svetly); background: var(--plocha-2); }
+@media (max-width: 640px) { .ucet { grid-template-columns: 1fr 1fr; } .ucet-stred { grid-column: 1 / -1; border-left: 0 !important; border-top: 1px solid var(--okraj); } }
+
+/* grafy */
+.grafy { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 28px 36px; margin-top: 22px; }
+@media (max-width: 760px) { .grafy { grid-template-columns: 1fr; } }
+.graf h3 { font-size: 1rem; } .graf p { margin-top: 4px; }
+.stlpce { margin: 12px 0 0; padding: 0; list-style: none; display: grid; gap: 7px; }
+.stlpce li { display: grid; grid-template-columns: 7.5em 1fr 4.2em; gap: 10px; align-items: center; font-size: 0.86rem; max-width: none; }
+.stlpce .draha { height: 14px; background: var(--plocha-2); border-radius: 3px; overflow: hidden; }
+.stlpce i { display: block; height: 100%; background: var(--akcent); border-radius: 3px; min-width: 2px; }
+.stlpce li.slabe i { background: var(--okraj-svetly); }
+.stlpce b { font-variant-numeric: tabular-nums; text-align: right; }
+
+/* návrh ako karta rozhodnutia */
+.navrh { margin-top: 28px; }
+.navrh > header { display: flex; gap: 12px; align-items: baseline; flex-wrap: wrap; }
+.kod { font: 800 0.8rem var(--nadpis); color: var(--na-akcente); background: var(--akcent); border-radius: 5px; padding: 2px 8px; }
+.typ { font-size: 0.78rem; color: var(--tlmeny); text-transform: uppercase; letter-spacing: 0.08em; font-weight: 700; }
+.pravidlo { margin: 16px 0 0; padding: 14px 18px; background: var(--plocha); border: 1px solid var(--okraj); border-radius: 10px; max-width: 76ch; }
+.pravidlo h4 { color: var(--akcent); }
+.pravidlo p { font: 600 1.05rem/1.5 var(--nadpis); margin-top: 6px; }
+.dva { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px 36px; margin-top: 8px; }
+@media (max-width: 760px) { .dva { grid-template-columns: 1fr; } }
+.dva > div { min-width: 0; }
+.dva h4 { margin-top: 18px; color: var(--tlmeny); }
+.dva ul { margin: 8px 0 0; padding-left: 1.1em; } .dva li { margin-top: 5px; }
+.tabulka { overflow-x: auto; margin-top: 14px; }
+table { border-collapse: collapse; font-size: 0.9rem; min-width: 520px; }
+th, td { text-align: left; padding: 7px 14px 7px 0; border-bottom: 1px solid var(--okraj); vertical-align: top; }
+th { font: 800 0.74rem var(--nadpis); text-transform: uppercase; letter-spacing: 0.08em; color: var(--tlmeny); }
+td.c, th.c { text-align: right; font-variant-numeric: tabular-nums; padding-right: 22px; }
+td .odz { box-shadow: none; display: inline-block; }
+.ovladanie { display: flex; gap: 8px 18px; flex-wrap: wrap; align-items: center; margin-top: 16px; }
+.zask { display: inline-flex; gap: 6px; align-items: center; font-size: 0.9rem; }
+.k1-pozn { margin-top: 10px; min-height: 3.2em; }
+.k1-vzorec { font: 800 1rem var(--nadpis); color: var(--na-akcente); background: var(--akcent); padding: 1px 8px; border-radius: 5px; margin-right: 6px; white-space: nowrap; }
+.tl { font: 700 0.86rem var(--pismo); color: var(--na-akcente); background: var(--akcent); border: 0; border-radius: 7px; padding: 8px 14px; cursor: pointer; }
+.tl--tichy { background: transparent; color: var(--text); border: 1px solid var(--okraj-svetly); }
+.tl--zly { background: transparent; color: var(--cervena); border: 1px solid var(--cervena); margin-top: 8px; }
+.pohare { display: flex; gap: 8px; align-items: flex-end; margin-top: 12px; }
+.pohare small { color: var(--tlmeny); margin-left: 6px; }
+.pohar { width: 22px; height: 30px; border: 2px solid var(--text); border-top-width: 0; border-radius: 2px 2px 6px 6px; position: relative; overflow: hidden; }
+.pohar::after { content: ""; position: absolute; inset: auto 0 0 0; height: 0; background: var(--akcent); }
+.pohar--plny::after { height: 78%; }
+.pohar--doliaty { box-shadow: 0 0 0 3px color-mix(in srgb, var(--akcent) 35%, transparent); }
+.pohar--doliaty::after { height: 78%; animation: dolej 0.9s 0.35s ease-out both; }
+@keyframes dolej { from { height: 0; } to { height: 78%; } }
+
+/* nové karty */
+.nove { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 26px 28px; margin-top: 22px; }
+.vk { margin: 0; display: grid; grid-template-columns: 148px minmax(0, 1fr); gap: 14px; align-items: start; }
+.vk-karta { width: 148px; border-radius: 9px; overflow: hidden; box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35); }
+.vk .k-text { font-size: 10.5px; min-height: 62px; }
+.vk .k-art { height: 148px; --sl: 28px; }
+.vk .sl { top: calc(8px + var(--i) * (var(--sl) + 6px)); }
+.brief { position: absolute; inset: 22px 36px; display: grid; place-items: center; text-align: center; font: italic 9.5px/1.3 var(--pismo); color: #cfc4b0; }
+.vk figcaption p { font-size: 0.88rem; line-height: 1.45; margin: 0; }
+.vk .kombuje { margin-top: 8px; color: var(--tlmeny); }
+
+/* kombá */
+.kombo { margin-top: 34px; }
+.kombo-hlava { display: flex; gap: 10px 14px; align-items: center; flex-wrap: wrap; }
+.stitok { font-size: 0.74rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--tlmeny); border: 1px solid var(--okraj-svetly); border-radius: 999px; padding: 2px 10px; }
+.kroky { display: flex; gap: 4px; margin-left: auto; }
+.kroky button { font: 800 0.86rem var(--nadpis); width: 32px; height: 32px; border-radius: 50%; border: 1px solid var(--okraj-svetly); background: transparent; color: var(--text); cursor: pointer; }
+.kroky button[aria-pressed="true"] { background: var(--akcent); color: var(--na-akcente); border-color: var(--akcent); }
+.kombo-text { min-height: 3.2em; }
+
+/* škrty */
+.skrty { list-style: none; margin: 18px 0 0; padding: 0; display: grid; gap: 0; border-top: 1px solid var(--okraj); }
+.skrty li { display: grid; grid-template-columns: 9.5em minmax(0, 1fr); gap: 6px 24px; padding: 16px 0; border-bottom: 1px solid var(--okraj); max-width: none; }
+.skrty .co { font: 800 0.8rem var(--nadpis); text-transform: uppercase; letter-spacing: 0.08em; color: var(--akcent); }
+.skrty p { margin: 0; } .skrty p + p { margin-top: 6px; }
+@media (max-width: 640px) { .skrty li { grid-template-columns: 1fr; } }
+.fazy { display: flex; gap: 4px; flex-wrap: wrap; margin-top: 8px; font-size: 0.78rem; }
+.fazy span { padding: 3px 9px; border-radius: 4px; background: var(--plocha-2); border: 1px solid var(--okraj); }
+.fazy .prazdna { opacity: 0.55; text-decoration: line-through; }
+.fazy .nova { background: var(--akcent); color: var(--na-akcente); border-color: var(--akcent); font-weight: 700; }
+.fazy .sipka { background: none; border: 0; padding: 3px 2px; color: var(--tlmeny); }
+
+/* laboratórium */
+.lab { display: grid; grid-template-columns: 300px minmax(0, 1fr); gap: 20px; margin-top: 18px; align-items: start; }
+@media (max-width: 900px) { .lab { grid-template-columns: 1fr; } }
+.lab-ovl { display: grid; gap: 12px; min-width: 0; }
+.lab-plocha { min-width: 0; } .lab-plocha .stol { margin-top: 0; }
+fieldset { border: 1px solid var(--okraj); border-radius: 10px; padding: 10px 12px 12px; margin: 0; min-width: 0; background: var(--plocha); }
+legend { font: 800 0.74rem var(--nadpis); text-transform: uppercase; letter-spacing: 0.08em; color: var(--tlmeny); padding: 0 6px; }
+select { font: 0.9rem var(--pismo); max-width: 100%; padding: 6px 8px; border-radius: 6px; border: 1px solid var(--okraj-svetly); background: var(--pozadie); color: var(--text); }
+.riadok { display: flex; gap: 8px 12px; flex-wrap: wrap; align-items: center; margin-top: 8px; }
+.riadok label { font-size: 0.86rem; }
+.cipy { display: flex; flex-wrap: wrap; gap: 6px; }
+.cip { font-size: 0.82rem; display: inline-flex; gap: 5px; align-items: center; border: 1px solid var(--okraj-svetly); border-radius: 999px; padding: 3px 10px 3px 6px; cursor: pointer; }
+.efekt-vybranej { font-size: 0.86rem; background: var(--papier); color: var(--atrament); border-radius: 6px; padding: 8px 10px; }
+.lab-pozn { margin-top: 10px; max-width: none; }
+.chyba { color: var(--cervena); }
+
+/* záver */
+.poradie { counter-reset: krok; list-style: none; padding: 0; margin: 18px 0 0; display: grid; gap: 14px; }
+.poradie li { counter-increment: krok; display: grid; grid-template-columns: 2.4em minmax(0, 1fr); gap: 0 10px; }
+.poradie li::before { content: counter(krok); font: 800 1.5rem/1.1 var(--nadpis); color: var(--akcent); }
+.poradie p { margin: 0; }
+</style>
+
+<div class="obal">
+<nav class="nav" aria-label="Sekcie">
+  <ul>
+    <li><span class="znacka">NA EX! Kombo dielňa</span></li>
+    <li><a href="#meranie">Meranie</a></li>
+    <li><a href="#odznaky">K1 Otoč a zdvoj</a></li>
+    <li><a href="#strng">K2 Štrng</a></li>
+    <li><a href="#sada">K3–K4 Sada</a></li>
+    <li><a href="#karty">Nové karty</a></li>
+    <li><a href="#komba">Kombá</a></li>
+    <li><a href="#skrty">Škrty</a></li>
+    <li><a href="#lab">Laboratórium</a></li>
+    <li><a href="#dalej">Ďalší krok</a></li>
+  </ul>
+</nav>
+
+<header class="uvod">
+  <p class="oko">Design proposal · pravidlá v12.7 · 20 Nov 2026</p>
+  <h1>Väčšie kombá, menej účtovníctva</h1>
+  <p class="perex">NA EX! already has a combo engine most card games would envy: the spoj, NA EX that turns a card inside out, and Nástroje slid under cards. It can put ×8 on a single card today. In 358 battles played by your bots it never did. The game does not need a second combo system. It needs the one it has to be visible on the table, reachable on purpose, and free of the exceptions that make players stop calculating.</p>
+  <div class="stol" id="uvod-stol" data-potrebuje-jadro></div>
+  <p class="tlmene">Legal under v12.7 and evaluated by your own <code>evaluateLine</code>: Veterán, Silná nezávislá žena, NA EX and Energeťák. Four actions at ×8, 32 tuhé and 8 cigarettes per Pitka from one card. Step through it under <a href="#komba">Kombá</a>.</p>
+  <div class="cisla">
+    <div><b>×8</b><span>is the legal ceiling on one card today</span></div>
+    <div><b>84 %</b><span>of active actions in bot battles fire at plain ×1</span></div>
+    <div><b>6.7 %</b><span>of battles contain a Forsáž; your band is 15–20 %</span></div>
+    <div><b>34 %</b><span>of the actions printed on cards in the line never fire</span></div>
+  </div>
+</header>
+
+<section id="meranie">
+  <h2>What 60 bot games say</h2>
+  <p>I added a telemetry tool, <code>tools/bot/komba.ts</code>, that plays bot against bot (stredná, all four povahy, fixed seeds) and measures the line at every battle: 60 games, 358 battles, 9,955 action slots. Bots do not plan combos, so read these numbers as the floor a player gets without trying. Your AI playtesters report bigger ones (Hasič with Recidivista, Výtržník with Vidly for 12 tuhé), but they also say they cannot compute them without the náhľad.</p>
+  <div class="grafy">
+    <div class="graf"><h3>How hard an active action hits</h3><p class="tlmene">Share of active slots by multiplier.</p>
+      <ul class="stlpce"><li><span>×1</span><span class="draha"><i style="width:84%"></i></span><b>84.0 %</b></li><li><span>×2</span><span class="draha"><i style="width:15.3%"></i></span><b>15.3 %</b></li><li><span>×4</span><span class="draha"><i style="width:0.6%"></i></span><b>0.6 %</b></li><li class="slabe"><span>×8</span><span class="draha"><i style="width:0%"></i></span><b>never</b></li></ul></div>
+    <div class="graf"><h3>What happens to an action printed on a card</h3><p class="tlmene">All action slots on cards lying in the line at battle.</p>
+      <ul class="stlpce"><li><span>active</span><span class="draha"><i style="width:59.1%"></i></span><b>59.1 %</b></li><li class="slabe"><span>asleep</span><span class="draha"><i style="width:33.9%"></i></span><b>33.9 %</b></li><li class="slabe"><span>cancelled</span><span class="draha"><i style="width:7%"></i></span><b>7.0 %</b></li></ul></div>
+    <div class="graf"><h3>Pairs on a card-to-card spoj</h3><p class="tlmene">1,923 joints. No joint in the set can reach four pairs.</p>
+      <ul class="stlpce"><li class="slabe"><span>0 pairs</span><span class="draha"><i style="width:6.7%"></i></span><b>6.7 %</b></li><li><span>1 pair</span><span class="draha"><i style="width:43.1%"></i></span><b>43.1 %</b></li><li><span>2 pairs</span><span class="draha"><i style="width:45.6%"></i></span><b>45.6 %</b></li><li><span>3 pairs</span><span class="draha"><i style="width:4.7%"></i></span><b>4.7 %</b></li></ul></div>
+    <div class="graf"><h3>How many of your cards sit in a row</h3><p class="tlmene">Runs of one owner's cards inside a kraj.</p>
+      <ul class="stlpce"><li><span>1 card</span><span class="draha"><i style="width:60%"></i></span><b>60.0 %</b></li><li><span>2 cards</span><span class="draha"><i style="width:26%"></i></span><b>26.0 %</b></li><li><span>3 cards</span><span class="draha"><i style="width:9.5%"></i></span><b>9.5 %</b></li><li><span>4 or more</span><span class="draha"><i style="width:4.5%"></i></span><b>4.5 %</b></li></ul></div>
+  </div>
+  <div class="dva">
+    <div><h4>Where combos die</h4><ul>
+      <li><b>Modifiers meet by accident.</b> Take two random cards of one owner: Posilnenie faces Posilnenie on 0.2 % of joints, Odpor faces Odpor on 0.9 %. Posilnenie is printed on the left edge of 8 of the 10 cards that carry it, so two of your own cards almost never line it up.</li>
+      <li><b>Lines are short.</b> Seven cards lie in the line at battle, three and a half per player, and 60 % of runs are a single card. A three-card combo is the practical maximum.</li>
+      <li><b>Factions are thin.</b> In 75 % of battles a player's largest faction is two cards or fewer. Spoločník finds no partner or one partner 90 % of the time, and Influencer, Pracujúci and Závislý are read by no card at all.</li>
+    </ul></div>
+    <div><h4>What limits the fix</h4><ul>
+      <li><b>The engine persists little.</b> 0.3 Nástroje per player in Dedičstvo at battle; a Nástroj under a card in 17 % of battles.</li>
+      <li><b>The leader already runs away.</b> Bots finish 41 : 16 on average; the playtests score Rovnováha 5.3 and name snowball first. More power cannot simply mean more tuhé for whoever is ahead.</li>
+      <li><b>Nobody can read a spoj.</b> Nine of fourteen November ratings complain that the result of a joint cannot be worked out without the náhľad. Hĺbka vs. zložitosť fell from 7.0 to 6.2.</li>
+    </ul></div>
+  </div>
+  <h3 style="margin-top:30px">Four rules I held myself to</h3>
+  <div class="dva">
+    <div><ul>
+      <li><b>A combo must be visible before it is counted.</b> If it does not show as a badge on a card, it does not exist for the player.</li>
+      <li><b>Combos pay in tempo and options first.</b> Poldeci, cards and cigarettes spread out; raw tuhé feeds the snowball.</li>
+    </ul></div>
+    <div><ul>
+      <li><b>One exception out for every rule in.</b> The package below adds one rule (Štrng) and two card keywords (Repete, Vsuvka) and removes two exceptions and seven evaluation steps.</li>
+      <li><b>No caps, and the opponent can always answer on the line.</b> Podstrčenie, NA EX and Dopiť za teba stay the counterplay. Interakcia is your 8.7.</li>
+    </ul></div>
+  </div>
+</section>
+
+<section id="odznaky">
+  <h2>K1 · Otoč a zdvoj</h2>
+  <div class="navrh">
+    <header><span class="kod">K1</span><span class="typ">Streamline · no change to results</span></header>
+    <p>Vzbura, Forsáž, posilnená Vzbura, NA EX, the NA EX state from Vínko: these are five names for combinations of two things a card can be. Flipped, or doubled. Teach and draw the modifier system as two badges and the outcome of a spoj becomes something a player reads off the card.</p>
+    <div class="pravidlo"><h4>Rule text</h4>
+      <p>Karta môže niesť dva odznaky. <span class="odz odz--naopak">↻</span> Naopak: nespojené akcie sú aktívne, spojené nie. <span class="odz odz--krat">×2</span> Zdvoj: aktívne akcie sa rátajú dvakrát. Odznaky sa skladajú: dva ↻ sa zrušia, dve ×2 dajú ×4.</p></div>
+    <div class="tabulka"><table>
+      <thead><tr><th>What happens</th><th>Today's name</th><th>Badges</th></tr></thead>
+      <tbody>
+        <tr><td>Odpor meets Odpor</td><td>Vzbura</td><td><span class="odz odz--naopak">↻</span> on both cards</td></tr>
+        <tr><td>Odpor meets Posilnenie</td><td>Vzbura posilnená</td><td><span class="odz odz--naopak">↻</span> <span class="odz odz--krat">×2</span> on the card with Odpor</td></tr>
+        <tr><td>Posilnenie meets Posilnenie</td><td>Forsáž</td><td><span class="odz odz--krat">×2</span> on both cards</td></tr>
+        <tr><td>NA EX on a card</td><td>NA EX</td><td><span class="odz odz--naopak">↻</span> <span class="odz odz--krat">×2</span></td></tr>
+        <tr><td>Vidly, Energeťák, Vínko under a card</td><td>Vzbura, Forsáž, NA EX</td><td><span class="odz odz--naopak">↻</span> · <span class="odz odz--krat">×2</span> · <span class="odz odz--naopak">↻</span> <span class="odz odz--krat">×2</span></td></tr>
+        <tr><td>Silná nezávislá žena beside, Liberál in balance</td><td>card effect</td><td><span class="odz odz--krat">×2</span></td></tr>
+      </tbody></table></div>
+    <h3 style="margin-top:26px">Try it on a real line</h3>
+    <p>Recidivista lies on Snúbenica at the Krčma. His two Hazardy are joined, his Petelica and Rana face the open end. Add badges and watch what the engine computes.</p>
+    <div class="ovladanie" id="k1-ovladanie">
+      <label class="zask"><input type="checkbox" id="k1-naex"> NA EX on Recidivista</label>
+      <label class="zask"><input type="radio" name="k1-nastroj" id="k1-n0" value="nic" checked> no Nástroj</label>
+      <label class="zask"><input type="radio" name="k1-nastroj" id="k1-n1" value="energetak"> Energeťák under him (×2)</label>
+      <label class="zask"><input type="radio" name="k1-nastroj" id="k1-n2" value="vidly"> Vidly under him (↻)</label>
+    </div>
+    <div class="stol" id="k1-stol" data-potrebuje-jadro></div>
+    <p class="k1-pozn" id="k1-pozn" aria-live="polite"></p>
+    <div id="k1-ucet"></div>
+    <div class="dva">
+      <div><h4>Evidence</h4><ul>
+        <li>I wrote the two-badge model as 80 lines of code and compared it with <code>evaluateLine</code> on 4,870 random lines: 77,902 action slots, <b>98.35 % identical</b>. On lines without NA EX the match is 100 %.</li>
+        <li>Every remaining difference is one of three NA EX special cases, listed on the right. Nothing else in §6 is needed to predict a line.</li>
+        <li>Playtest 20261117: “Počet výnimiek (Odpor a Posilnenie pod NA EX, posun rečí, reťaz premien) je na hranici; bez náhľadu sa nedá hrať.”</li>
+      </ul></div>
+      <div><h4>The three exceptions</h4><ul>
+        <li><b>Keep:</b> an unjoined Odpor shields the card from NA EX. It is your decision of 11 Nov, it is one sentence, and it creates play.</li>
+        <li><b>Drop:</b> an unjoined Posilnenie “podrží” NA EX. It touched 214 of 77,902 slots and no player predicts it.</li>
+        <li><b>Replace:</b> “NA EX cannot go on a card with Vzbura” becomes the composition rule. Two ↻ cancel, ×2 stays. The engine already evaluates it that way, as the Vidly-plus-NA EX case above shows.</li>
+      </ul></div>
+    </div>
+    <div class="dva">
+      <div><h4>What it buys</h4><ul>
+        <li>The ten-step evaluation order of §6 becomes three: Premeň, Spoj, Odznaky.</li>
+        <li>Stacking becomes legible. ×4 and ×8 are a number on the card, visible to both players before the Pitka.</li>
+        <li>Nine card texts get shorter (see Škrty).</li>
+      </ul></div>
+      <div><h4>Cost and risk</h4><ul>
+        <li>Client: two badges on the card and in the náhľad. Pravidlá §6 rewritten around them. Engine untouched if both exceptions stay.</li>
+        <li>Dropping “podrží” and the Vzbura ban changes a handful of outcomes; a rozhodca pass over §6–§7 tests covers it.</li>
+        <li>Vzbura and Forsáž keep their names as flavour for ↻ and ×2 from a spoj.</li>
+      </ul></div>
+    </div>
+  </div>
+</section>
+
+<section id="strng">
+  <h2>K2 · Štrng</h2>
+  <div class="navrh">
+    <header><span class="kod">K2</span><span class="typ">New rule · one sentence</span></header>
+    <p>Today nothing rewards a beautiful joint except the actions on it, and a third icon lining up is worth the same as the second. Štrng makes the perfect fit an event and pays for it in tempo: the card that clinks costs you nothing.</p>
+    <div class="pravidlo"><h4>Rule text</h4><p>Štrng: keď karta, ktorú vyložíš lícom hore, vytvorí so susednou kartou tri páry, dolej si jeden vypitý poldeci.</p></div>
+    <div class="stol" id="k2-stol" data-potrebuje-jadro></div>
+    <div class="ovladanie"><button type="button" class="tl" id="k2-dalej">Prilož Milujúcu manželku</button><div class="pohare" id="k2-pohare" aria-label="Poldeci"></div></div>
+    <p id="k2-text" aria-live="polite"></p>
+    <h3 style="margin-top:26px">Measured in the engine</h3>
+    <p>I patched the rule into a throwaway worktree and replayed the same 60 seeds twice: once with the bots unaware of it, once with a wrapper that takes a Štrng whenever one is on offer. The patch and the script are in <code>docs/napady/kombo-20261120/</code>.</p>
+    <div class="tabulka"><table>
+      <thead><tr><th>60 games each</th><th class="c">v12.7</th><th class="c">Štrng, bots ignore it</th><th class="c">Štrng, bots chase it</th></tr></thead>
+      <tbody>
+        <tr><td>Štrngy per game</td><td class="c">–</td><td class="c">2.4</td><td class="c">4.6</td></tr>
+        <tr><td>Cards in the line at battle</td><td class="c">7.00</td><td class="c">7.22</td><td class="c">7.45</td></tr>
+        <tr><td>Cards laid per game</td><td class="c">42.5</td><td class="c">44.5</td><td class="c">45.0</td></tr>
+        <tr><td>Engine steps per game (length)</td><td class="c">150</td><td class="c">153</td><td class="c">153</td></tr>
+        <tr><td>Tuhé per player per battle</td><td class="c">4.51</td><td class="c">4.82</td><td class="c">4.95</td></tr>
+        <tr><td>Median final gap in špaky</td><td class="c">23</td><td class="c">23</td><td class="c">22</td></tr>
+        <tr><td>Games with a ×4 or bigger</td><td class="c">30 %</td><td class="c">28 %</td><td class="c">33 %</td></tr>
+      </tbody></table></div>
+    <div class="dva">
+      <div><h4>How to read that</h4><ul>
+        <li>It is safe. Five percent more cards, two percent longer, no movement in the score gap.</li>
+        <li>It is small on its own. Štrng does not create fireworks; it gives every placement a second question (can I make the third pair?) and gives cards a hook to hang effects on. The fireworks come from <a href="#karty">Družba, Harmonikár and Štamperlík</a>, which the bots cannot play yet.</li>
+        <li>Three pairs is the right bar. 4.7 % of card-to-card joints reach it. Two pairs or more is half of all joints: every other card free.</li>
+        <li>Cards only. 18.5 % of card-to-location joints are already triple, because level-3 and pinnacle edges carry three or four actions; the first card to the lokalita would often be free.</li>
+      </ul></div>
+      <div><h4>Alternatives</h4><ul>
+        <li><b>A · poldeci back (recommended).</b> Poldeci is every resource at once: another card, a NA EX, or a card at the pas.</li>
+        <li><b>B · draw a card.</b> Weaker tempo, more luck of the draw, and it stacks with pas za karty.</li>
+        <li><b>C · a cigarette.</b> Feeds the economy that already wins: Ekonóm went 3 : 0 in the last styles playtest.</li>
+      </ul>
+      <h4>Risk</h4><ul>
+        <li>A face-down card (Záverečná, odpoveď na NA EX) must not Štrng, or the refund leaks what it is.</li>
+        <li>The variant lottery matters more. That is the point, but the ponuka should show the layout clearly.</li>
+      </ul></div>
+    </div>
+  </div>
+</section>
+
+<section id="sada">
+  <h2>K3 and K4 · Two changes in the card set, no new rules</h2>
+  <div class="navrh">
+    <header><span class="kod">K3</span><span class="typ">Parta · Spoločník counts everyone</span></header>
+    <div class="pravidlo"><h4>Rule text</h4><p>Spoločník: Tag — akcie z pečate máš za každú inú svoju odkrytú kartu s tým tagom.</p></div>
+    <p>Today Spoločník pays once, however many tag-mates you field, so a second Pamätník is worth nothing to Veštica. Counting each one gives every faction tag a reason to be drafted and gives the deck an identity that survives from round to round, which the line itself cannot. In bot lines Spoločník is active 70 % of the time but averages 0.8 partners, so the cards would be re-priced rather than doubled: Veštica one Povera per Pamätník instead of two once.</p>
+    <div class="dva">
+      <div><h4>Why this one</h4><ul>
+        <li>It is the cheapest way to make a combo span more than two cards: the payoff no longer needs adjacency.</li>
+        <li>It feeds Klebetník, your weakest style (2 : 13 over all style playtests), through Veštica and Šarlatán.</li>
+        <li>Nepriateľ stays binary. Counting the opponent's cards would punish them for playing.</li>
+      </ul></div>
+      <div><h4>What it needs</h4><ul>
+        <li>The ponuka must show how many cards of each faction you own, or nobody drafts for it.</li>
+        <li>Two or three cards with two faction tags (Brigádnik below) to raise density.</li>
+        <li>A check against stomp: Kočovník at three Pecky is 6 tuhé from one pečať.</li>
+      </ul></div>
+    </div>
+  </div>
+  <div class="navrh" style="margin-top:44px">
+    <header><span class="kod">K4</span><span class="typ">Posilnenie doprava · data only</span></header>
+    <p>Forsáž is the signature combo and you want it in 15–20 % of battles. It shows up in 6.7 % because eight of the ten cards with Posilnenie carry it on the left edge; two of your own cards can form Forsáž almost only through Kapybara, Dohadzovačka or a Pakt. I mirrored four cards (Hasič, Sypač, Snúbenica, Profesionálny tipér: left and right edges swapped) and replayed the same 60 seeds.</p>
+    <div class="tabulka"><table>
+      <thead><tr><th>60 games each</th><th class="c">v12.7 set</th><th class="c">Four cards mirrored</th></tr></thead>
+      <tbody>
+        <tr><td>Battles with Forsáž</td><td class="c">6.7 %</td><td class="c">10.3 %</td></tr>
+        <tr><td>Games with at least one Forsáž</td><td class="c">30 %</td><td class="c">52 %</td></tr>
+        <tr><td>Tuhé per player per battle</td><td class="c">4.51</td><td class="c">4.39</td></tr>
+        <tr><td>Median final gap in špaky</td><td class="c">23</td><td class="c">26</td></tr>
+      </tbody></table></div>
+    <p>Four cards get halfway there with bots that are not looking for it, and without raising damage. Six to eight mirrored cards, chosen so that every faction has one Posilnenie on each edge, should land in your band; the same tool measures it. I read your 15–20 % as per battle. If you meant per game, the current set is already above it.</p>
+  </div>
+</section>
+
+<section id="karty">
+  <h2>Seven cards that make the engine turn</h2>
+  <p>Six Občania and one Nástroj, each a single job in a combo. One new keyword, Repete, and one new placement, Vsuvka; everything else uses triggers you already have. Edges are fixed layouts so the examples are exact; variants would be generated as usual. The hatched panel is a brief for the ilustrátor.</p>
+  <div class="nove" id="nove-karty" data-potrebuje-jadro></div>
+</section>
+
+<section id="komba">
+  <h2>Four combos, step by step</h2>
+  <p>Each line below is evaluated live by the game's own core. The first is legal today. The other three show what the proposals add; numbers the core does not know are computed by the page and marked as proposals.</p>
+  <div class="kombo" data-kombo="veteran" data-potrebuje-jadro></div>
+  <div class="kombo" data-kombo="strng" data-potrebuje-jadro></div>
+  <div class="kombo" data-kombo="parta" data-potrebuje-jadro></div>
+  <div class="kombo" data-kombo="svadba" data-potrebuje-jadro></div>
+</section>
+
+<section id="skrty">
+  <h2>Škrty: what gets shorter</h2>
+  <p>Your own agents have already audited dead rules and rule density, and v12.5 acted on it. These five are what this proposal adds to that list.</p>
+  <ul class="skrty">
+    <li><span class="co">10 steps to 3</span><div><p><b>Evaluation order of a line.</b> Preškolenie, spoje, Vzbura, Výherné žreby, Forsáž, NA EX, Energeťák, Puška, card effects, Výtržník becomes Premeň, Spoj, Odznaky. Badges commute, so their order stops being a rule.</p></div></li>
+    <li><span class="co">2 exceptions out</span><div><p><b>NA EX special cases.</b> “Posilnenie podrží NA EX” goes. “No NA EX on Vzbura” is replaced by two ↻ cancelling. The Odpor shield stays as the single exception.</p></div></li>
+    <li><span class="co">9 texts shorter</span><div><p><b>Cards written in badge language.</b> Vidly “Hore: ↻”. Energeťák “Hore: ×2”. Vínko “Hore: ↻ ×2”. Výherné žreby “Tvoje Hazardy sú ↻”. Silná nezávislá žena “Susední Občania a Starešinovia ×2”. Liberál, Pes, Zrkadlo and Veterán (“NA EX mu dá len ×2”) follow the same pattern.</p></div></li>
+    <li><span class="co">Empty Pitky at once</span><div><p><b>Rule:</b> keď ani jeden hráč nemá plný poldeci ani cigarety na fajčenie či barter, zvyšné Pitky kola sa vyhodnotia naraz jedným súhrnom.</p><p>Bots choose skipNaex 13.7 times a game against 5.8 real NA EX. The stratég counted about twenty Pitky without a choice in one turnus; Tempo sits at 5.8.</p>
+      <div class="fazy" aria-label="Phase strip before and after"><span>Zhromaždenie 2</span><span class="prazdna">Pitka 2</span><span class="prazdna">Zhromaždenie 3</span><span class="prazdna">Pitka 3</span><span>Bitka</span><span class="sipka">→</span><span>Zhromaždenie 2</span><span class="nova">Dopité ×2</span><span>Bitka</span></div></div></li>
+    <li><span class="co">Left alone</span><div><p><b>Strach and reči, Chuť and Absťák, the ponuka.</b> The elder layer changed in v12.5, v12.6 and v12.7; it needs playtests, not a fourth redesign in a month. It is still the heaviest part of the rules and the part least connected to the line. If a later pass wants a big cut, that is where it is.</p></div></li>
+  </ul>
+</section>
+
+<section id="lab">
+  <h2>Laboratórium</h2>
+  <p>Build any line from the published set and the seven proposed cards. Click a card to change its variant, give it NA EX or slide a Nástroj under it. The line is evaluated by the real core on every change.</p>
+  <div class="lab" id="lab-telo" data-potrebuje-jadro></div>
+</section>
+
+<section id="dalej">
+  <h2>What I would do first</h2>
+  <ol class="poradie">
+    <li><p><b>K1 in the client only.</b> Two badges on cards and in the náhľad, no rule change. One AI turnus tells you whether Zrozumiteľnosť and Hĺbka vs. zložitosť move. This is the highest return for the least risk.</p></li>
+    <li><p><b>K4 and K3 as a rozpracovaná sada for Zrejúca.</b> Mirror six to eight Posilnenie cards, re-price the four Spoločník pečate. Run <code>tools/bot/komba.ts</code> before and after; watch Forsáž per battle and the score gap.</p></li>
+    <li><p><b>K2 with Družba and Harmonikár.</b> Štrng alone is safe but quiet; with two cards that key off it you can see whether players chase the third pair. Verdict by the next playtest, as with any návrh.</p></li>
+    <li><p><b>The rest of the cards and the two NA EX exceptions.</b> Only after the first three have a verdict.</p></li>
+  </ol>
+  <h3 style="margin-top:34px">What is in the branch</h3>
+  <ul>
+    <li><code>tools/bot/komba.ts</code> — combo telemetry on the unmodified core. <code>node --experimental-strip-types --no-warnings tools/bot/komba.ts 60 stredna</code></li>
+    <li><code>docs/napady/kombo-20261120.html</code> and its folder — this page, the bundled evaluator, the Štrng patch (<code>strng-pokus.patch</code>) and the experiment script (<code>komba-pokus.ts</code>).</li>
+    <li>Nothing in <code>packages/</code>, <code>apps/</code>, the rules or the card set is changed. Every proposal here is yours to decide.</li>
+  </ul>
+  <p class="tlmene">Limits of the evidence: bots, not people; 60 games per arm, so differences of a few points in the score gap are noise; the new cards' effects and Parta are not simulated, only counted on real lines.</p>
+</section>
+</div>
+
+<script src="kombo-20261120/jadro.js"></script>
+<script src="kombo-20261120/data.js"></script>
+<script src="kombo-20261120/dielna.js"></script>
+<script src="kombo-20261120/stranka.js"></script>
+<script>
+(function () {
+  var el = document.getElementById("uvod-stol");
+  if (!el || !window.KOMBO) return;
+  window.KOMBO.kresli(el, { lok: "vinna_pivnica", L: [{ id: "veteran", l: 1, r: 0, naex: 0, pod: [{ id: "energetak", h: "horna" }] }, { id: "silna_nezavisla_zena", l: 0, r: 0 }], R: [] }, { strng: false });
+})();
+</script>
