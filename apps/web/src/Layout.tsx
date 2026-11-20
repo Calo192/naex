@@ -50,56 +50,48 @@ function useNoveNovinky(cesta: string, nacitane: boolean, prihlaseny: boolean): 
   return pocet;
 }
 
-/** Koľko rozhodnutí o mojich návrhoch v Dielni som ešte nevidel — značka pri Kartách. */
-function useDielnaZnacka(cesta: string, prihlaseny: boolean): number {
-  const [pocet, setPocet] = useState(0);
+/**
+ * Počet pre značku v hlavičke zo servera, znova pri každom prechode na inú stránku;
+ * adresa null = značka nepatrí (0). `pocet` je len výber z odpovede.
+ */
+function usePocetZoServera<T>(cesta: string, adresa: string | null, pocet: (odpoved: T) => number): number {
+  const [n, setN] = useState(0);
   useEffect(() => {
-    if (!prihlaseny) {
-      setPocet(0);
+    if (adresa === null) {
+      setN(0);
       return;
     }
     let zive = true;
     api
-      .get<{ pocet: number }>("/dielna/znacka")
+      .get<T>(adresa)
       .then((r) => {
-        if (zive) setPocet(r.pocet);
+        if (zive) setN(pocet(r));
       })
       .catch(() => undefined);
     return () => {
       zive = false;
     };
-  }, [cesta, prihlaseny]);
-  return pocet;
+  }, [cesta, adresa]);
+  return n;
 }
 
+/** Koľko rozhodnutí o mojich návrhoch v Dielni som ešte nevidel — značka pri Kartách. */
+const useDielnaZnacka = (cesta: string, prihlaseny: boolean): number =>
+  usePocetZoServera(cesta, prihlaseny ? "/dielna/znacka" : null, (r: { pocet: number }) => r.pocet);
+
 /** Návrhy z Playtestu, ktoré čakajú na rozhodnutie — počet pri Playteste v menu Správa. */
-function usePocetNavrhov(cesta: string, spravca: boolean): number {
-  const [pocet, setPocet] = useState(0);
-  useEffect(() => {
-    if (!spravca) {
-      setPocet(0);
-      return;
-    }
-    let zive = true;
-    api
-      .get<{ naRozhodnutie: number }>("/admin/navrhy/pocet")
-      .then((r) => {
-        if (zive) setPocet(r.naRozhodnutie);
-      })
-      .catch(() => undefined);
-    return () => {
-      zive = false;
-    };
-  }, [cesta, spravca]);
-  return pocet;
-}
+const usePocetNavrhov = (cesta: string, spravca: boolean): number =>
+  usePocetZoServera(cesta, spravca ? "/admin/navrhy/pocet" : null, (r: { naRozhodnutie: number }) => r.naRozhodnutie);
+
+/** Značka s počtom má najviac dve znaky. */
+const doDevat = (n: number): string => (n > 9 ? "9+" : String(n));
 
 /**
  * Rozohraná partia, keď hráč nesedí pri stole (#22 A): kód je v prehliadači (useHra),
  * či partia ešte beží, povie server. Na /hra nie — tam sa hráč k stolu vráti sám.
  */
-function useRozohranaPartia(cesta: string, prihlaseny: boolean, priStole: boolean): { readonly kod: string; readonly vyucba: boolean } | null {
-  const [partia, setPartia] = useState<{ readonly kod: string; readonly vyucba: boolean } | null>(null);
+function useRozohranaPartia(cesta: string, prihlaseny: boolean, priStole: boolean): StrazenaPartia | null {
+  const [partia, setPartia] = useState<StrazenaPartia | null>(null);
   const ziadna = !prihlaseny || priStole || cesta === "/hra";
   useEffect(() => {
     if (ziadna) {
@@ -261,7 +253,7 @@ function PasZrejucej() {
 const pocetNovych = (n: number): string => t("hlavicka.noveNovinky", { n });
 
 /** Pilulka „● Partia HZ3T beží · Späť ku stolu“ — na mobile len jej tlačidlo. */
-function PilulkaPartie({ partia }: { readonly partia: { readonly kod: string; readonly vyucba: boolean } }) {
+function PilulkaPartie({ partia }: { readonly partia: StrazenaPartia }) {
   return (
     <Odkaz href="/hra" className="partia-pilulka" aria-label={partia.vyucba ? t("hlavicka.prvaHraBeziAria") : t("hlavicka.partiaBeziAria", { kod: partia.kod })}>
       <span className="pilulka-bodka" aria-hidden="true" />
@@ -274,14 +266,11 @@ function PilulkaPartie({ partia }: { readonly partia: { readonly kod: string; re
 export function Layout({
   children,
   stol = false,
-  plna = false,
   nastroj = false,
 }: {
   readonly children: ReactNode;
   /** Herný stôl mimo živej partie (prehrávač, ukážky) — celá šírka okna ako pri stole. */
   readonly stol?: boolean;
-  /** Celé okno pod hlavičkou bez posúvania stránky a bez pätičky. */
-  readonly plna?: boolean;
   /** Nástroj správcu (Tvorba, Playtest, Hráči) — obsah bez maxima doprava, hrana ako inde. */
   readonly nastroj?: boolean;
 }) {
@@ -308,7 +297,7 @@ export function Layout({
   const polozky = nacitane && !(zrejuca && ja === null) ? hlavneMenu(ja, pravaNavstevnika, instancia) : [];
   const sprava = spravaWebu(ja, instancia);
   const skryte = useViac(navRef, viacTlacidlo, pravaRef, `${priStole}|${polozky.map((p) => p.href).join()}|${noveNovinky}|${dielna}|${navrhy}|${rozohrana?.kod ?? ""}|${ja?.meno ?? ""}`);
-  const celaSirka = stol || priStole || plna;
+  const celaSirka = stol || priStole;
   const kostra = celaSirka ? "" : " kostra";
   const [odchod, setOdchod] = useState<{ readonly href: string | null; readonly nazov: string } | null>(null);
   // Klik na odkaz v hlavičke (logo, účet) počas partie zachytí dialóg — ovládanie
@@ -354,21 +343,21 @@ export function Layout({
   const znacka = (href: string): ReactNode =>
     href === "/novinky" && noveNovinky > 0 ? (
       <span className="nav-znacka" aria-label={pocetNovych(noveNovinky)}>
-        {noveNovinky > 9 ? "9+" : noveNovinky}
+        {doDevat(noveNovinky)}
       </span>
     ) : href === "/karty" && dielna > 0 ? (
       <span className="nav-znacka" title={t("hlavicka.dielnaZnacka")} aria-label={t("hlavicka.dielnaZnackaKratko")}>
-        {dielna > 9 ? "9+" : dielna}
+        {doDevat(dielna)}
       </span>
     ) : null;
 
-  const odkaz = (n: PolozkaNavigacie, trieda: string, sPrioritou: boolean): ReactNode => {
+  const odkaz = (n: PolozkaNavigacie, sPrioritou: boolean): ReactNode => {
     const aktivna = jeAktivna(cesta, n.href);
     return (
       <OdkazMenu
         key={n.href}
         href={n.href}
-        className={[trieda, n.hlavna === true ? "nav-hlavna" : "", aktivna ? "aktivna" : ""].filter((t) => t !== "").join(" ") || undefined}
+        className={[n.hlavna === true ? "nav-hlavna" : "", aktivna ? "aktivna" : ""].filter((t) => t !== "").join(" ") || undefined}
         aria-current={aktivna ? "page" : undefined}
         doVypalenej={n.doVypalenej === true}
         {...(sPrioritou && n.hlavna !== true ? { "data-priorita": n.priorita, "data-href": n.href, "data-skupina": n.skupina } : {})}
@@ -406,9 +395,9 @@ export function Layout({
           {!priStole && (
             <>
               <nav className="navigacia" ref={navRef} aria-label={t("hlavicka.hlavneMenu")}>
-                {hra.map((n) => odkaz(n, "", true))}
+                {hra.map((n) => odkaz(n, true))}
                 {komunita.length > 0 && <span className="nav-oddelovac" aria-hidden="true" />}
-                {komunita.map((n) => odkaz(n, "", true))}
+                {komunita.map((n) => odkaz(n, true))}
               </nav>
               <div className="nav-viac-obal" ref={viacRef}>
                 <button
@@ -426,7 +415,7 @@ export function Layout({
                 </button>
                 {otvoreneMenu === "viac" && skrytePolozky.length > 0 && (
                   <div className="ucet-menu menu-vlavo" role="menu">
-                    {skrytePolozky.map((n) => odkaz(n, "", false))}
+                    {skrytePolozky.map((n) => odkaz(n, false))}
                   </div>
                 )}
               </div>
@@ -446,11 +435,14 @@ export function Layout({
                 <button
                   type="button"
                   className={sprava.some((s) => jeAktivna(cesta, s.href)) ? "sprava-tlacidlo aktivna" : "sprava-tlacidlo"}
-                  aria-haspopup="menu" aria-expanded={otvoreneMenu === "sprava"} onClick={() => prepni("sprava")}>
+                  aria-haspopup="menu"
+                  aria-expanded={otvoreneMenu === "sprava"}
+                  onClick={() => prepni("sprava")}
+                >
                   Správa
                   {navrhy > 0 && (
                     <span className="nav-znacka" aria-label={`${navrhy} na rozhodnutie`}>
-                      {navrhy > 9 ? "9+" : navrhy}
+                      {doDevat(navrhy)}
                     </span>
                   )}
                   <span className="sipka" aria-hidden="true">▾</span>
@@ -539,9 +531,9 @@ export function Layout({
         {mobilne && !priStole && (
           <nav className="navigacia-mobil" aria-label={t("hlavicka.menu")}>
             <div className="nav-skupina">{t("hlavicka.skupinaHra")}</div>
-            {hra.map((n) => odkaz(n, "", false))}
+            {hra.map((n) => odkaz(n, false))}
             {komunita.length > 0 && <div className="nav-skupina">{t("hlavicka.skupinaKomunita")}</div>}
-            {komunita.map((n) => odkaz(n, "", false))}
+            {komunita.map((n) => odkaz(n, false))}
             {sprava.length > 0 && <div className="nav-skupina">Správa</div>}
             {sprava.map((s) => (
               <OdkazMenu
@@ -570,8 +562,8 @@ export function Layout({
           }}
         />
       )}
-      <main className={plna ? "obsah obsah-plna" : `obsah${kostra}`}>{children}</main>
-      <footer className={plna ? "paticka paticka-skryta" : "paticka"}>
+      <main className={`obsah${kostra}`}>{children}</main>
+      <footer className="paticka">
         <div className={`paticka-vnutro${kostra}`}>
           <span>{t("paticka.autor")}</span>
           <span>{t("paticka.varovanie")}</span>
