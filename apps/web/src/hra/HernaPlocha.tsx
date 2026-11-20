@@ -227,6 +227,11 @@ interface Pokyn {
   /** Bublina jedným písmom a jednou veľkosťou (rozdeľovanie, mock C · Pečať). */
   readonly jednotny?: boolean;
   readonly text?: ReactNode;
+  /**
+   * Výklad k pokynu pod myšou (UI inšpekcia 20261120, Z-01): pilulka nesie len krátku vetu „čo mám
+   * teraz urobiť“, ceny, poradie odpovedí a pravidlo sa ukážu pri prejdení myšou.
+   */
+  readonly vyklad?: string | undefined;
   /** Ovládač v riadku pokynu vedľa textu — text sa skracuje trojbodkou, ovládač nesmie (počítač, telefón ho má v texte). */
   readonly odkaz?: ReactNode;
   readonly tlacidla?: ReactNode;
@@ -238,6 +243,8 @@ interface Pokyn {
   /** Telefón: potvrdenie či varovanie — pruh ukáže celé znenie pod sebou, nie orezané trojbodkou. */
   readonly naliehavy?: boolean;
 }
+/** Text so značkami (<strong>…) do nápovedy pod myšou, kde sa značky nekreslia. */
+const bezZnaciek = (s: string): string => s.replace(/<[^>]+>/g, "");
 /** Hrana stola pre ťah s návrhom: pečiatka v strede, vedľajšie voľby vľavo či vpravo. */
 interface HranaTahu {
   readonly stred: ReactNode;
@@ -2669,13 +2676,9 @@ export function HernaPlocha({
   // ktoré tak nahradilo starý oznam) sa ukáže názov fázy a čo sa ide diať; ostane do „Rozumiem“. Vypínač v profile, výučba má vlastné
   // bubliny. Bitka čaká s počítadlom, kým hráč neklikne — inak by prebehlo pod medziobrazovkou.
   const medziZapnute = useUcet().ja?.medziobrazovky !== false && vyucba !== true && prehravanie === undefined;
-  const medziTeraz = medziobrazovka(view, ja, menoHraca(super_), pocitadlo !== null ? pocitadlo.stol.kolo : null);
-  // Pri načítaní stola sa za videnú berie fáza, ktorá už beží — okrem začiatku partie.
-  const [potvrdenaMedzi, setPotvrdenaMedzi] = useState<string | null>(() =>
-    view.kolo === 1 && view.faza === "volbaCiela" ? null : (medziTeraz?.kluc ?? null),
-  );
   // Telefón (oprava 5): úvodné okno fázy len prvýkrát v partii, nie v každom kole — v kole 1 to bolo
   // ≈ 7 ťukov na Rozumiem. Videné druhy (šenok, Pitka…) si pamätá karta prehliadača pre túto partiu.
+  // Na počítači sa okno ukáže znova, no už len s názvom fázy a jednou vetou (Z-07).
   const klucVidenychMedzi = `naex-medzi-${kod}`;
   const [videneDruhyMedzi, setVideneDruhyMedzi] = useState<ReadonlySet<string>>(() => {
     try {
@@ -2684,10 +2687,14 @@ export function HernaPlocha({
       return new Set();
     }
   });
+  const medziTeraz = medziobrazovka(view, ja, menoHraca(super_), pocitadlo !== null ? pocitadlo.stol.kolo : null, videneDruhyMedzi);
+  // Pri načítaní stola sa za videnú berie fáza, ktorá už beží — okrem začiatku partie.
+  const [potvrdenaMedzi, setPotvrdenaMedzi] = useState<string | null>(() =>
+    view.kolo === 1 && view.faza === "volbaCiela" ? null : (medziTeraz?.kluc ?? null),
+  );
   const druhMedzi = (kluc: string): string => kluc.split("|")[1] ?? kluc;
   const potvrdMedzi = (kluc: string): void => {
     setPotvrdenaMedzi(kluc);
-    if (!naSirku) return;
     setVideneDruhyMedzi((v) => {
       const nove = new Set([...v, druhMedzi(kluc)]);
       try {
@@ -3519,23 +3526,25 @@ export function HernaPlocha({
   // Rovnosť a prebitie (návrh 5 A): hráči čítali „majiteľ karty pri lokalite“
   // ako majiteľa lokality a nevedeli, koľko kariet treba na prebratie hrany.
   // Ako reťazec aj pre nápovedu kraja — na nízkom okne riadok skryje hra.css (UI inšpekcia).
-  const textRovnostiKraja = (p: PlayerId): string | null => {
+  const textRovnostiKraja = (p: PlayerId, naStole = false): string | null => {
     const s = stavKraja(data, stol.strany[p]);
     if (stredKarta === null || s.prevaha === null || s.naPrebitie === null) return null;
     const druhy = opponentOf(s.prevaha);
     const zs = view.faza === "zhromazdenie" ? view.zhromazdenieStav : null;
+    // Na stole len kým ten, kto by prebíjal, ešte vykladá, a bez počtov — tie sú v dlaždiciach Karty (Z-08).
+    if (naStole && (zs === null || zs.pasoval[druhy] || zs.zostavaLimit[druhy] === 0)) return null;
     const rovnost = !s.rovnost
       ? ""
       : s.prevaha === ja
         ? t("stol.rovnostTy", { a: s.pocet[ja], b: s.pocet[super_] })
         : t("stol.rovnostSuper", { a: s.pocet[ja], b: s.pocet[super_], meno: menoHraca(s.prevaha) });
     const limit =
-      zs === null ? "" : t("stol.vylozieEste", { ja: zs.pasoval[ja] ? 0 : zs.zostavaLimit[ja], meno: menoHraca(super_), su: zs.pasoval[super_] ? 0 : zs.zostavaLimit[super_] });
+      zs === null || naStole ? "" : t("stol.vylozieEste", { ja: zs.pasoval[ja] ? 0 : zs.zostavaLimit[ja], meno: menoHraca(super_), su: zs.pasoval[super_] ? 0 : zs.zostavaLimit[super_] });
     const karty = t("stol.kariet", { n: s.naPrebitie });
     return druhy === ja ? t("stol.naPrebitieTy", { rovnost, karty, limit }) : t("stol.naPrebitieSuper", { rovnost, meno: menoHraca(druhy), karty, limit });
   };
   const rovnostKraja = (p: PlayerId): ReactNode => {
-    const t = textRovnostiKraja(p);
+    const t = textRovnostiKraja(p, true);
     return t === null ? null : <span className="kraj-rovnost">{t}</span>;
   };
   const popisKraja = (p: PlayerId, smer: "vlavo" | "vpravo") => {
@@ -4371,17 +4380,10 @@ export function HernaPlocha({
           nadpis: t("plocha.branie"),
           text:
             zoSenku.length > 0 ? (
-              <>
-                {zoSenku.length === 1
-                  ? tr("plocha.beriesJednu", { karty: menoKarty(zoSenku[0]?.defId ?? ""), cig: cigariet(cenaBrania), vratit: mobil ? `„${t("plocha.vratit")}“` : "✕" })
-                  : tr("plocha.beriesViac", { karty: zoSenku.map((k) => menoKarty(k.defId)).join(t("plocha.a")), cig: cigariet(cenaBrania), vratit: mobil ? `„${t("plocha.vratit")}“` : "✕" })}
-                {komuCenaBrania(cenaBrania)}
-              </>
+              tr("plocha.beriesKratko", { karty: zoSenku.map((k) => menoKarty(k.defId)).join(t("plocha.a")) })
             ) : mozemBrat ? (
-              <>
-                {tr("plocha.tvojTahBranie", { co: kolkoMozemBrat === 2 ? t("plocha.jednuAleboDve") : t("plocha.kartu"), jedna: cigariet(KONSTANTY.CENA_SENKU[1] ?? 1), dve: cigariet(KONSTANTY.CENA_SENKU[2] ?? 3), limit: limitTeraz })}
-                {dovodJednejKarty !== null && <> {dovodJednejKarty}</>}
-              </>
+              // Pokyn je krátka veta (Z-01, S-02); cena brania a postup sú pod myšou (vyklad nižšie).
+              tr(kolkoMozemBrat === 2 ? "plocha.tvojTahBranieKratko" : "plocha.tvojTahBranieJedna")
             ) : view.senok.length === 0 ? (
               t("plocha.ponukaPrazdna")
             ) : (
@@ -4389,6 +4391,22 @@ export function HernaPlocha({
                 {t("plocha.nemasCigaretu", { limit: limitTeraz })}
               </>
             ),
+          ...(zoSenku.length > 0
+            ? {
+                vyklad: bezZnaciek(
+                  (zoSenku.length === 1
+                    ? t("plocha.beriesJednu", { karty: menoKarty(zoSenku[0]?.defId ?? ""), cig: cigariet(cenaBrania), vratit: mobil ? `„${t("plocha.vratit")}“` : "✕" })
+                    : t("plocha.beriesViac", { karty: zoSenku.map((k) => menoKarty(k.defId)).join(t("plocha.a")), cig: cigariet(cenaBrania), vratit: mobil ? `„${t("plocha.vratit")}“` : "✕" })) + komuCenaBrania(cenaBrania),
+                ),
+              }
+            : zoSenku.length === 0 && mozemBrat
+            ? {
+                vyklad: bezZnaciek(
+                  t("plocha.tvojTahBranie", { co: kolkoMozemBrat === 2 ? t("plocha.jednuAleboDve") : t("plocha.kartu"), jedna: cigariet(KONSTANTY.CENA_SENKU[1] ?? 1), dve: cigariet(KONSTANTY.CENA_SENKU[2] ?? 3), limit: limitTeraz }) +
+                    (dovodJednejKarty !== null ? ` ${dovodJednejKarty}` : ""),
+                ),
+              }
+            : {}),
           ...(mobil
             ? {}
             : {
@@ -4482,20 +4500,24 @@ export function HernaPlocha({
             nadpis,
             text: textNahladuTahania ?? textVolbyMiesta ?? (![...moznostiMiesta.values()].some((m) => m.karty.size > 0) ? (
               // Pri vyčerpanom limite pokyn „potiahni kartu“ zavádzal (playtest výučby 20261025, K11).
-              <>
-                {kartyPas > 0 ? tr("zhrom.nicNevylozisZaPasKarty", { karty: kariet(kartyPas) }) : zaPas > 0 ? tr("zhrom.nicNevylozisZaPas", { cigarety: cigariet(zaPas) }) : tr("zhrom.nicNevylozis")}{" "}
-                {otvoris && <span className="tlmene">{t("zhrom.pasomOtvoris")} </span>}
-                {pokynNaradia}
-                <span className="tlmene">{[...moznostiMiesta.values()].find((m) => m.dovod !== null)?.dovod ?? ""}</span>
-              </>
+              // Krátko čo urobiť (Z-01); otvorenie ďalšieho Zhromaždenia, Nástroj a dôvod sú pod myšou.
+              kartyPas > 0 ? tr("zhrom.nicNevylozisZaPasKarty", { karty: kariet(kartyPas) }) : zaPas > 0 ? tr("zhrom.nicNevylozisZaPas", { cigarety: cigariet(zaPas) }) : tr("zhrom.nicNevylozis")
             ) : (
-              <>
-                {/* Pokyn sa zmestí do jedného riadku aj pri 1366 px (UI inšpekcia 20261110-pojmy) — ďalšia karta v ťahu len pri plnom poldeci. */}
-                {tr("zhrom.pokyn")}{" "}
-                {pokynNaradia}
-                {plne > 0 && <span className="tlmene">{t("zhrom.dalsiaKarta")}</span>}
-              </>
+              tr("zhrom.pokynKratko")
             )),
+            ...(textNahladuTahania === null && textVolbyMiesta === null
+              ? {
+                  vyklad: [
+                    [...moznostiMiesta.values()].some((m) => m.karty.size > 0) ? bezZnaciek(t("zhrom.pokyn")) : null,
+                    otvoris ? t("zhrom.pasomOtvoris") : null,
+                    pokynNaradia !== null ? t("zhrom.nastroj", { cigarety: cigariet(KONSTANTY.CENA_PODLOZENIA) }) : null,
+                    plne > 0 && [...moznostiMiesta.values()].some((m) => m.karty.size > 0) ? t("zhrom.dalsiaKarta") : null,
+                    [...moznostiMiesta.values()].some((m) => m.karty.size > 0) ? null : ([...moznostiMiesta.values()].find((m) => m.dovod !== null)?.dovod ?? null),
+                  ]
+                    .filter((x): x is string => x !== null && x !== "")
+                    .join(" "),
+                }
+              : {}),
             ...(() => {
               const pas = (
                 <button
@@ -4540,16 +4562,18 @@ export function HernaPlocha({
               {vystrahaNavrhu !== null && poslednaVLinii !== undefined && (
                 <strong className="pecen-varovanie">{textVystrahy(vystrahaNavrhu, poslednaVLinii.karta)} · </strong>
               )}
+              {/* Kam karta ide, vidno na stole (Z-08) — šípka len pri cieľoch mimo línie (priznanie, Dedičstvo). */}
               {vylozenia.map((x, i) => (
                 <span key={x.karta.uid} className="tah-polozka">
                   {i > 0 && " · "}
-                  <strong>{menoKarty(x.karta.defId)}</strong> → {POPIS_CIELA[x.ciel]}
+                  <strong>{menoKarty(x.karta.defId)}</strong>
+                  {x.ciel !== "vlastna" && x.ciel !== "superova" && <> → {POPIS_CIELA[x.ciel]}</>}
                   {poradieVTahu(x.karta.uid) >= 1 && <b className="poldeci-text"> ({t("plocha.minusPoldeci")})</b>}
                 </span>
               ))}
-              {plan.poldeci > 0 && (
+              {/* Bežná cena (plný poldeci za kartu) je na pečiatke; v pokyne len to, čo stojí navyše. */}
+              {plan.poldeci > 0 && (plan.navyse > 0 || (mojVyhlad !== null && mojVyhlad.cirhozy > 0 && (vystrahaNavrhu?.cirhozy[ja] ?? 0) === 0)) && (
                 <strong className="poldeci-varovanie">
-                  {" "}
                   {t("plocha.tahStoji", { n: plan.poldeci, z: zostava, na: plan.zostava })}
                   {plan.navyse > 0 && t("plocha.tahStojiNavyse", { cigarety: cigariet(plan.navyse * KONSTANTY.CENA_KARTY_NAVYSE), n: plan.navyse })}
                   {mojVyhlad !== null && mojVyhlad.cirhozy > 0 && (vystrahaNavrhu?.cirhozy[ja] ?? 0) === 0
@@ -4559,15 +4583,24 @@ export function HernaPlocha({
                 </strong>
               )}
               {plan.chyba !== null && <strong className="chyba-tahu"> {prelozHlasku(plan.chyba)}</strong>}
+              {/* Len dôsledok ťahu (Z-08): spoj svieti na kartách, nezmenená strana sa nevypisuje. */}
               {nahladSpojov !== null && (
                 <span className="nahlad-spojov">
-                  {" "}· {nahladSpojov.spoj} · {t("stol.ty")}: {nahladSpojov.ja} · {menoHraca(super_)}: {nahladSpojov.su}
+                  {nahladSpojov.ja !== t("plocha.bezZmeny") && <> · {t("stol.ty")}: {nahladSpojov.ja}</>}
+                  {nahladSpojov.su !== t("plocha.bezZmeny") && <> · {menoHraca(super_)}: {nahladSpojov.su}</>}
                 </span>
               )}
               {textNahladuTahania !== null && <> · {textNahladuTahania}</>}
               {textVolbyMiesta !== null && <> · {textVolbyMiesta}</>}
             </>
           ),
+          vyklad: [
+            vylozenia.map((x) => `${menoKarty(x.karta.defId)} → ${POPIS_CIELA[x.ciel]}`).join(" · "),
+            plan.poldeci > 0 ? `${t("plocha.tahStoji", { n: plan.poldeci, z: zostava, na: plan.zostava })}.` : null,
+            nahladSpojov !== null ? `${nahladSpojov.spoj} · ${t("stol.ty")}: ${nahladSpojov.ja} · ${menoHraca(super_)}: ${nahladSpojov.su}` : null,
+          ]
+            .filter((x): x is string => x !== null && x !== "")
+            .join(" · "),
         };
       }
 
@@ -4610,20 +4643,22 @@ export function HernaPlocha({
           return vylozene === null
             ? {
                 nadpis: t("plocha.odpovedNaNaex"),
-                text: textNahladuTahania ?? textVolbyMiesta ?? (
-                  <>
-                    {tr("plocha.naexOdkryte", { meno: menoHraca(super_), dal: tRod("plocha.dal", rodHracaP(super_)), na: superoveNaex.length > 0 ? ` ${t("plocha.naexNaKarty", { karty: superoveNaex.join(t("plocha.a")) })}` : "", ikona: <IkonaPoldeci /> })}{" "}
-                    {poMneSuper ? (
-                      <strong>{t("plocha.odpovedasPrvy", { meno: menoHraca(super_) })}</strong>
-                    ) : krajSupera !== null ? (
-                      <strong>{t("plocha.uzOdpovedalLicom", { meno: menoHraca(super_) })}</strong>
-                    ) : obranca === ja ? (
-                      <strong>{t("plocha.neodpovedal", { meno: menoHraca(super_) })}</strong>
-                    ) : null}{" "}
-                    {t("plocha.obeOdpovede")}{" "}
-                    {tr("plocha.potiahniJu")}
-                  </>
-                ),
+                // Krátko čo urobiť (Z-01); výklad odpovede a poradie krajov pod myšou.
+                text: textNahladuTahania ?? textVolbyMiesta ?? tr("plocha.odpovedKratko"),
+                vyklad: [
+                  bezZnaciek(t("plocha.naexOdkryte", { meno: menoHraca(super_), dal: tRod("plocha.dal", rodHracaP(super_)), na: superoveNaex.length > 0 ? ` ${t("plocha.naexNaKarty", { karty: superoveNaex.join(t("plocha.a")) })}` : "", ikona: "" })),
+                  poMneSuper
+                    ? t("plocha.odpovedasPrvy", { meno: menoHraca(super_) })
+                    : krajSupera !== null
+                      ? t("plocha.uzOdpovedalLicom", { meno: menoHraca(super_) })
+                      : obranca === ja
+                        ? t("plocha.neodpovedal", { meno: menoHraca(super_) })
+                        : null,
+                  t("plocha.obeOdpovede"),
+                  bezZnaciek(t("plocha.potiahniJu")),
+                ]
+                  .filter((x): x is string => x !== null)
+                  .join(" "),
                 stred: pecatTahu({
                   text: t("plocha.bezOdpovede"),
                   druh: "pas",
@@ -4676,27 +4711,9 @@ export function HernaPlocha({
         // Pitka naraz (Michal 2026-10-27): obaja hrajú súčasne; poradie platí len pre odpovede na NA EX.
         const superSkoncil = pitkaSt?.hotovy[super_] === true;
         const superCakaSBzdochou = pitkaSt != null && cakaSBzdochou(pitkaSt, super_);
-        // NA EX naraz (v5): či súper NA EX dal, sa ukáže až pri odkrytí — tu len že už vybral.
-        const kontext = superSkoncil ? (
-          <>
-            <strong>
-              {menoHraca(super_)} {tRod("plocha.uzVybral", rodHracaP(super_))}
-            </strong>{" "}
-            {vidimVolbuSupera
-              ? superoveSkryteNaex.size > 0
-                ? t("plocha.jehoNaexVidis")
-                : t("plocha.naexNedal")
-              : t("plocha.ciAKam")}{" "}
-            {obranca === ja ? t("plocha.odpovedaOn") : t("plocha.odpovedasTy")}{" "}
-          </>
-        ) : (
-          <>
-            <strong>{t("plocha.hrateNaraz")}</strong>{" "}
-            {superCakaSBzdochou
-              ? t("plocha.superMaBzdochu", { meno: menoHraca(super_) })
-              : t("plocha.vyberateSkryto")}{" "}
-          </>
-        );
+        const mojeSkryteNaexMena = [...mojeSkryteNaex]
+          .map((uid) => (view.zaverecne.some((z) => z.uid === uid) ? t("plocha.superovejZaverecnej") : menoKarty(view.strany.flat().find((pl) => pl.card.uid === uid)?.card.defId ?? "")))
+          .join(t("plocha.a"));
         // v12.2: NA EX vezme plný poldeci do bitky — chýba v ďalšom Zhromaždení kola; po bitke sa obnoví.
         // Po finále nie: plné po poslednej Pitke idú do výkupného (§9.5, §14b).
         const dalsieZhrom = view.pitkaCislo < view.pitkyCelkom || view.ciel?.typ === "finale";
@@ -4809,26 +4826,29 @@ export function HernaPlocha({
                 </span>
               )}
               {kratkaCena(vybrana.kliatby, vybrana.dopady) !== null && <>· {t("plocha.cena")} <b>{kratkaCena(vybrana.kliatby, vybrana.dopady)}</b> </>}
-              · {t("stol.ty")}: {vybrana.zmeny[ja].length > 0 ? vybrana.zmeny[ja].join(", ") : t("plocha.bezZmeny")} · {menoHraca(super_)}:{" "}
-              {vybrana.zmeny[super_].length > 0 ? vybrana.zmeny[super_].join(", ") : t("plocha.bezZmeny")}
-              <span className="tlmene">
-                {" "}
-                · {t("plocha.kliatbyTy")} {textKliatob(vybrana.kliatby[ja])} · {menoHraca(super_)}: {textKliatob(vybrana.kliatby[super_])}
-                {textDopadov(vybrana.dopady) !== null && <> · {textDopadov(vybrana.dopady)}</>}
-                {textPrebytku(vybrana.prebytokPred, vybrana.prebytokPo) !== null && <> · {textPrebytku(vybrana.prebytokPred, vybrana.prebytokPo)}</>} · {t("plocha.pecenPlus")}
-                {vybrana.odkrytie.svokra > 0 && (
-                  <>
-                    {" "}
-                    · {t("plocha.svokra", { meno: menoHraca(super_), n: vybrana.odkrytie.svokra })}
-                  </>
-                )}
-                {vybrana.odkrytie.kar && <> · {t("plocha.kar", { meno: menoHraca(super_) })}</>}
-                {poBitkeNaex(vybrana.odkrytie.view, vybranaUid) !== null && <> · {t("panel.poBitkePrehra")} {poBitkeNaex(vybrana.odkrytie.view, vybranaUid)}</>}
-                {view.zaverecne.some((z) => z.majitel === super_) && <> · {t("plocha.bezZaverecnej")}</>} ·{" "}
-                {t("plocha.naexDetail", { limit: limitPoVybranej === limitBez ? t("plocha.ostane", { n: limitBez }) : t("plocha.namiesto", { a: limitPoVybranej, b: limitBez }), meno: menoHraca(super_), ruka: kariet(view.hraci[super_].rukaPocet) })}
-              </span>
+              · {t("plocha.pecenPlus")}
             </span>
           );
+        // Zvyšok náhľadu NA EX pod myšou (Z-01): zmeny akcií, kliatby, dopady, limit a riziká — nulové časti vynechané.
+        const vykladVyberu =
+          naRub || vybrana === undefined || odhad === null || vybranaUid === null
+            ? undefined
+            : [
+                vybrana.zmeny[ja].length > 0 ? `${t("stol.ty")}: ${vybrana.zmeny[ja].join(", ")}` : null,
+                vybrana.zmeny[super_].length > 0 ? `${menoHraca(super_)}: ${vybrana.zmeny[super_].join(", ")}` : null,
+                textKliatob(vybrana.kliatby[ja]) !== t("starsi.nic") || textKliatob(vybrana.kliatby[super_]) !== t("starsi.nic")
+                  ? `${t("plocha.kliatbyTy")} ${textKliatob(vybrana.kliatby[ja])} · ${menoHraca(super_)}: ${textKliatob(vybrana.kliatby[super_])}`
+                  : null,
+                textDopadov(vybrana.dopady),
+                textPrebytku(vybrana.prebytokPred, vybrana.prebytokPo),
+                vybrana.odkrytie.svokra > 0 ? t("plocha.svokra", { meno: menoHraca(super_), n: vybrana.odkrytie.svokra }) : null,
+                vybrana.odkrytie.kar ? t("plocha.kar", { meno: menoHraca(super_) }) : null,
+                poBitkeNaex(vybrana.odkrytie.view, vybranaUid) !== null ? `${t("panel.poBitkePrehra")} ${poBitkeNaex(vybrana.odkrytie.view, vybranaUid)}` : null,
+                view.zaverecne.some((z) => z.majitel === super_) ? t("plocha.bezZaverecnej") : null,
+                t("plocha.naexDetail", { limit: limitPoVybranej === limitBez ? t("plocha.ostane", { n: limitBez }) : t("plocha.namiesto", { a: limitPoVybranej, b: limitBez }), meno: menoHraca(super_), ruka: kariet(view.hraci[super_].rukaPocet) }),
+              ]
+                .filter((x): x is string => x !== null && x !== "")
+                .join(" · ");
         // Tlačidlo NA EX je v Pitke stále (Michal 2026-10-27) — bez vybranej karty neaktívne a v tooltipe povie prečo.
         const naexStred =
           vybranaUid === null || dovodBezNaex !== null ? (
@@ -4866,8 +4886,9 @@ export function HernaPlocha({
           );
         // Voľba až na konci ako celá veta — na začiatku sa čítala ako odtrhnutý kus vety pred
         // „Začínaš Pitku“ (playtest výučby 20261025). Výučba ju nevysvetľuje, tam nie je.
+        // S-16: odkaz len keď bitku čaká ešte aspoň jedna Pitka — v poslednej by klik nič nezmenil.
         const odkazBezNaex =
-          !potvrdzujem && !krcma && textVyberu === null && !bezNaex.zapnute && vyucba !== true ? (
+          !potvrdzujem && !krcma && textVyberu === null && !bezNaex.zapnute && vyucba !== true && view.pitkaCislo < view.pitkyCelkom ? (
             <button
               className="auto-hotovo-odkaz"
               title={t("plocha.bezNaexTitul")}
@@ -4876,9 +4897,23 @@ export function HernaPlocha({
               {t("plocha.dalsiePitkyBezNaex")}
             </button>
           ) : null;
+        const vykladPitky = [
+          superSkoncil
+            ? `${menoHraca(super_)} ${tRod("plocha.uzVybral", rodHracaP(super_))} ${vidimVolbuSupera ? (superoveSkryteNaex.size > 0 ? t("plocha.jehoNaexVidis") : t("plocha.naexNedal")) : t("plocha.ciAKam")} ${obranca === ja ? t("plocha.odpovedaOn") : t("plocha.odpovedasTy")}`
+            : `${t("plocha.hrateNaraz")} ${superCakaSBzdochou ? t("plocha.superMaBzdochu", { meno: menoHraca(super_) }) : t("plocha.vyberateSkryto")}`,
+          mojeSkryteNaex.size > 0 ? `${t("plocha.naexLeziNa", { karty: mojeSkryteNaexMena })} ${t("plocha.nevidiKym", { meno: menoHraca(super_) })}` : null,
+          dovodBezNaex !== null
+            ? mojeSkryteNaex.size > 0
+              ? null
+              : dovodBezNaex
+            : t("plocha.naexSaVypije", { limit: limitPo === limitBez ? t("plocha.ostane", { n: limitBez }) : t("plocha.namiesto", { a: limitPo, b: limitBez }) }),
+        ]
+          .filter((x): x is string => x !== null)
+          .join(" ");
         return {
           nadpis,
           naliehavy: potvrdzujem,
+          vyklad: textVyberu === null ? vykladPitky : vykladVyberu,
           ...(naSirku ? {} : { odkaz: odkazBezNaex }),
           text: potvrdzujem ? (
             <strong>{t("plocha.skoncitBezNaex")}</strong>
@@ -4896,29 +4931,18 @@ export function HernaPlocha({
                     </button>{" "}
                   </>
                 )}
-                {kontext}
-                {mojeSkryteNaex.size > 0 && (
-                  <>
-                    <strong>
-                      {t("plocha.naexLeziNa", { karty: [...mojeSkryteNaex]
-                        .map((uid) =>
-                          view.zaverecne.some((z) => z.uid === uid) ? t("plocha.superovejZaverecnej") : menoKarty(view.strany.flat().find((pl) => pl.card.uid === uid)?.card.defId ?? ""),
-                        )
-                        .join(t("plocha.a")) })}
-                    </strong>{" "}
-                    {t("plocha.nevidiKym", { meno: menoHraca(super_) })}{" "}
-                  </>
-                )}
-                {dovodBezNaex !== null ? (
-                  <>
-                    {t("plocha.fajciDoliat")} <span className="tlmene">{dovodBezNaex}</span>
-                  </>
+                {/* Najprv čo mám urobiť (Z-01, S-02); poradie odpovedí, Bzdocha a limit sú pod myšou (vyklad). */}
+                {mojeSkryteNaex.size > 0 ? (
+                  tr("plocha.naexLeziKratko", { karty: mojeSkryteNaexMena })
+                ) : dovodBezNaex !== null ? (
+                  t("plocha.fajciDoliat")
                 ) : (
+                  tr("plocha.klikniNaexKratko")
+                )}
+                {superSkoncil && (
                   <>
-                    {t("plocha.klikniNaexAlebo")}{" "}
-                    <span className="tlmene">
-                      {t("plocha.naexSaVypije", { limit: limitPo === limitBez ? t("plocha.ostane", { n: limitBez }) : t("plocha.namiesto", { a: limitPo, b: limitBez }) })}
-                    </span>
+                    {" "}
+                    {menoHraca(super_)} {tRod("plocha.uzVybral", rodHracaP(super_))}.
                   </>
                 )}
                 {naSirku && odkazBezNaex !== null && <> {odkazBezNaex}</>}
@@ -6145,15 +6169,18 @@ export function HernaPlocha({
     akcie: <AkcieStrany sums={lineEval.sums[p]} zdroje={lineEval.zdroje[p]} rozpis={rozpis[p]} sada={sada} menoKarty={menoKarty} sNazvom />,
     karty: kartyBaru(p),
   });
+  // Prázdny bar nechať prázdny (Z-04): bez kariet v línii by stred hlásil dvakrát „0 : 0 Remíza“
+  // a pred výberom lokality „cieľ: vyberá sa lokalita“.
+  const prazdnaLinia = view.strany[0].length + view.strany[1].length === 0;
   const stredBaru: ReactNode =
-    bitkaProps !== null && !mobil && !naSirku ? (
+    bitkaProps !== null && prazdnaLinia && !mobil && !naSirku && view.spakyNaSekere === 0 ? null : bitkaProps !== null && !mobil && !naSirku ? (
       <OdhadKola {...bitkaProps} />
     ) : bitkaProps !== null ? (
       <>
         <OdhadBaru {...bitkaProps} />
         {stavka !== null && <StavkaBitky stavka={stavka} kratko />}
       </>
-    ) : (
+    ) : view.koniec === null && lokalita === null && view.spakyNaSekere === 0 ? null : (
       <>
         <span className="jbar-nadpis">{view.koniec !== null ? t("spaky.koniec") : t("plocha.ciel")}</span>
         <b className="jbar-verdikt">
@@ -6296,7 +6323,14 @@ export function HernaPlocha({
       jednotny={pokyn?.jednotny === true}
       naliehavy={pokyn?.naliehavy === true}
       nadpis={pokyn === null || pokyn.nadpis !== null ? (pokyn?.nadpis ?? (view.koniec !== null ? t("faza.koniecHry") : somNaTahu ? t("plocha.tvojTah") : t("plocha.naTahuJeText", { meno: menoHraca(super_) }))) : null}
-      text={pokyn?.text === undefined ? null : preDotykUzol(pokyn.text)}
+      // Na dotyku myš nie je — výklad ide za pokyn; v jednom riadku ho oreže trojbodka, ťuk ho rozbalí.
+      text={
+        pokyn?.text === undefined ? null : pokyn.vyklad === undefined ? preDotykUzol(pokyn.text) : (
+          <>
+            {preDotykUzol(pokyn.text)} <span className="tlmene">{pokyn.vyklad}</span>
+          </>
+        )
+      }
       hlavna={hranaStred ?? hranaVpravo}
       druha={stolTlacidla?.druha ?? pokyn?.druha}
       odhad={odhadVPruhu}
@@ -6589,7 +6623,7 @@ export function HernaPlocha({
               </div>
             )}
             {!ukazStarsich && !naSirku && (
-              <div ref={pilulkaRef} className={`linia-stav${pokyn?.jednotny === true ? " jednotna" : ""}`} role="status" aria-live="polite" tabIndex={0}>
+              <div ref={pilulkaRef} className={`linia-stav${pokyn?.jednotny === true ? " jednotna" : ""}`} role="status" aria-live="polite" tabIndex={0} title={pokyn?.vyklad}>
                 {(pokyn === null || pokyn.nadpis !== null) && (
                   <strong className="pilulka-nadpis">
                     {pokyn?.nadpis ?? (view.koniec !== null ? t("faza.koniecHry") : somNaTahu ? t("plocha.tvojTah") : t("plocha.naTahuJeText", { meno: menoHraca(super_) }))}
@@ -7147,7 +7181,8 @@ export function HernaPlocha({
           </div>
         </div>
       )}
-      {medziViditelna && medziTeraz !== null && <Medziobrazovka obsah={medziTeraz} onRozumiem={() => potvrdMedzi(medziTeraz.kluc)} />}
+      {/* Poznámka o vypínači v profile len pri prvom okne partie (Z-07). */}
+      {medziViditelna && medziTeraz !== null && <Medziobrazovka obsah={medziTeraz} onRozumiem={() => potvrdMedzi(medziTeraz.kluc)} vypinac={videneDruhyMedzi.size === 0} />}
       {autoPas !== null && (
         <Medziobrazovka
           obsah={{

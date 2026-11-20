@@ -2,7 +2,7 @@
 // aktuálna, a pri prechode do novej fázy sa ukáže medziobrazovka (nadpis a 1–2 vety).
 
 import { KONSTANTY, opponentOf } from "@naex/core";
-import { cigariet } from "../i18n/pocty.ts";
+import { cigariet, kariet } from "../i18n/pocty.ts";
 import type { ClientState, PlayerId } from "@naex/core";
 import { cenaPola } from "./textyStarsich.ts";
 import { t } from "../i18n/jazyk.tsx";
@@ -31,6 +31,8 @@ export interface Medziobrazovka {
  * starý oznam finále.
  * `bitkaKola` = kolo bitky, ktorej počítadlo čaká na stole — bitka sa často vyhodnotí
  * naraz s koncom kola a stôl je už v ďalšom kole, kým počítadlo len začína.
+ * `videne` = druhy medziobrazoviek (druhMedzi), ktoré hráč v tejto partii už potvrdil: plné znenie
+ * je len pri prvom výskyte, potom názov fázy a jedna veta o tom, čo je teraz inak (Z-07).
  */
 export function medziobrazovka(
   view: Pick<ClientState, "kolo" | "faza" | "utocnik" | "pitkaCislo" | "pitkyCelkom" | "lokalitCelkom" | "rozpis" | "bitkaStav" | "koniec" | "ciel" | "spaky" | "vitazPoslednejHadky"> & {
@@ -41,6 +43,7 @@ export function medziobrazovka(
   ja: PlayerId,
   menoSupera: string,
   bitkaKola: number | null,
+  videne: ReadonlySet<string> = new Set(),
 ): Medziobrazovka | null {
   if (view.koniec !== null) return null;
   const S = menoSupera;
@@ -63,11 +66,13 @@ export function medziobrazovka(
     };
   }
   if (bitkaKola !== null || (view.faza === "bitka" && view.bitkaStav?.krok !== "prebytok")) {
+    // Vo finále sa hádka ani Nakladačka nerozdeľujú — všeobecný text bitky by tvrdil opak.
+    const finale = view.rozpis !== undefined && (bitkaKola ?? view.kolo) > view.lokalitCelkom;
     return {
       kluc: `${bitkaKola ?? view.kolo}|bitka`,
-      nadnadpis: t("faza.kolo", { n: bitkaKola ?? view.kolo }),
+      nadnadpis: finale ? t("faza.finale") : t("faza.kolo", { n: bitkaKola ?? view.kolo }),
       nadpis: t("faza.bitka"),
-      text: t("prechod.bitka"),
+      text: finale ? t("prechod.bitkaFinale") : videne.has("bitka") ? "" : t("prechod.bitka"),
     };
   }
   const obranca = view.utocnik !== ja;
@@ -131,7 +136,11 @@ export function medziobrazovka(
         kluc: `${view.kolo}|senok`,
         nadnadpis: kolo,
         nadpis: t("faza.draft"),
-        text:
+        text: videne.has("senok")
+          ? obranca
+            ? t("prechod.ponukaKratkoTy", { karty: kariet((KONSTANTY.STAVBA_NARADIE + KONSTANTY.STAVBA_OBCANIA) / 2) })
+            : t("prechod.ponukaKratkoSu", { karty: kariet((KONSTANTY.STAVBA_NARADIE + KONSTANTY.STAVBA_OBCANIA) / 2), meno: S })
+          :
           t("prechod.ponuka", { naradie: KONSTANTY.STAVBA_NARADIE, obcania: KONSTANTY.STAVBA_OBCANIA, jedna: cigariet(KONSTANTY.CENA_SENKU[1] ?? 1), dve: cigariet(KONSTANTY.CENA_SENKU[2] ?? 3) }),
       };
     case "zhromazdenie": {
@@ -143,7 +152,7 @@ export function medziobrazovka(
         // v12.6 (#73): ďalšie Zhromaždenie kola otvára, kto v predošlom skončil vykladanie prvý.
         text:
           ((view.zhromazdenieStav?.zacal ?? view.utocnik) !== ja ? t("prechod.superVykladaPrvy", { meno: S }) : t("prechod.vykladasPrvy")) +
-          t("prechod.kladies"),
+          (videne.has("zhromazdenie") ? "" : t("prechod.kladies")),
       };
     }
     case "pitka":
@@ -155,6 +164,10 @@ export function medziobrazovka(
         text:
           view.pitkaStav?.bzdocha === ja
             ? t("prechod.masBzdochu", { meno: S })
+            : videne.has("pitka") && view.pitkaStav?.bzdocha == null
+              ? obranca
+                ? t("prechod.pitkaKratkoSu", { meno: S })
+                : t("prechod.pitkaKratkoTy")
             : `${t("prechod.hrateNaraz")} ${
                 view.pitkaStav?.bzdocha != null ? t("prechod.superMaBzdochu", { meno: S }) : t("prechod.odkryjuSa")
               }${view.pitkaStav?.bzdocha != null ? "" : obranca ? t("prechod.superOdpovie", { meno: S }) : t("prechod.odpoviesPrvy")}`,
@@ -166,7 +179,9 @@ export function medziobrazovka(
       const text =
         drzi === ja
           ? vyberam
-            ? t("prechod.rozdelNakladacku", { cena: cenaPola(), zajatie: KONSTANTY.CENA_ZAJATIA })
+            ? videne.has("Nakladačka")
+              ? t("prechod.rozdelNakladackuKratko")
+              : t("prechod.rozdelNakladacku", { cena: cenaPola(), zajatie: KONSTANTY.CENA_ZAJATIA })
             : t("prechod.nakladackaTvoja")
           : t("prechod.superRozdeluje", { meno: S });
       return { kluc: `${view.kolo}|Nakladačka`, nadnadpis: kolo, nadpis: t("delenie.nakladacka"), text };

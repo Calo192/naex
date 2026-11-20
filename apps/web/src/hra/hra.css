@@ -3164,6 +3164,9 @@ button.bot-volba.aktivna {
   font-weight: 800;
   animation: treba 1.6s ease-in-out infinite;
   border-radius: 6px;
+  /* Rámik sa nesmie lepiť na predošlé slovo ani na bodku za sebou (S-14). */
+  padding: 1px 7px;
+  margin: 0 8px;
 }
 
 .nm-poldeci {
