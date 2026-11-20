@@ -4879,7 +4879,8 @@ export function HernaPlocha({
           ) : null;
         const vykladPitky = [
           superSkoncil
-            ? `${menoHraca(super_)} ${tRod("plocha.uzVybral", rodHracaP(super_))} ${vidimVolbuSupera ? (superoveSkryteNaex.size > 0 ? t("plocha.jehoNaexVidis") : t("plocha.naexNedal")) : t("plocha.ciAKam")} ${obranca === ja ? t("plocha.odpovedaOn") : t("plocha.odpovedasTy")}`
+            ? // „{meno} už vybral“ je v pokyne — výklad pokračuje za ním (na telefóne idú za sebou).
+              `${(vidimVolbuSupera ? (superoveSkryteNaex.size > 0 ? t("plocha.jehoNaexVidis") : t("plocha.naexNedal")) : t("plocha.ciAKam")).replace(/^— /, "")} ${obranca === ja ? t("plocha.odpovedaOn") : t("plocha.odpovedasTy")}`
             : `${t("plocha.hrateNaraz")} ${superCakaSBzdochou ? t("plocha.superMaBzdochu", { meno: menoHraca(super_) }) : t("plocha.vyberateSkryto")}`,
           mojeSkryteNaex.size > 0 ? `${t("plocha.naexLeziNa", { karty: mojeSkryteNaexMena })} ${t("plocha.nevidiKym", { meno: menoHraca(super_) })}` : null,
           dovodBezNaex !== null
