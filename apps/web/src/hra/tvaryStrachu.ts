@@ -80,12 +80,6 @@ export function cestyStrachu(stupen: StupenStrachu, mierka = 1): readonly CestaS
   return [{ d: peciatka(sikmo) + vyrez, evenOdd: true, podklad: false }];
 }
 
-/** Tri výkričníky pečiatky vydesenia bez rámu (ten kreslí CSS pečiatky na portréte). */
-export function cestaVykricnikovPeciatky(): string {
-  const rovno = zobrazenie(1, 0);
-  return [7, 12, 17].map((x) => vykricnik(rovno, x, 4.4, 0.86)).join("");
-}
-
 export const NAZOV_STUPNA: Readonly<Record<StupenStrachu, string>> = { 1: "Znepokojenie", 2: "Strach", 3: "Vydesenie" };
 
 /** Stupeň z úrovne zóny alebo počtu špakov za strach (1–3); 0 a menej = žiadny strach. */

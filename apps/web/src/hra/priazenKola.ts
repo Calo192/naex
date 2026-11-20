@@ -9,7 +9,7 @@
 import type { BitkaNaNastenke, ElderState, Favour, GameData, PlayerId, StavVyhier, Stupen, Vazen, ZmenaMarkera } from "@naex/core";
 import { spakov } from "../i18n/pocty.ts";
 import { KONSTANTY, NAZVY_ZON, favourStarsieho, blokReci, kradezZaZajatie, opponentOf, priazenHraca, priazenSila, spakyOdStarsieho as spakyOdStarsiehoJadra, vrchBodujucichReci, vydesil } from "@naex/core";
-import { UCINOK_KRATKO, UCINOK_PRIAZNE } from "./Scorecard.tsx";
+import { UCINOK_PRIAZNE } from "./Scorecard.tsx";
 import { rodStarsieho, slovoStupna, type Rod } from "./textyStarsich.ts";
 import { t, tZoServera } from "../i18n/jazyk.tsx";
 
@@ -29,12 +29,6 @@ const komuZ = (hrac: PlayerId | null, ja: PlayerId): KomuPriazen => (hrac === nu
 export function priazenKola(elder: Pick<ElderState, "strach">, ja: PlayerId): PriazenKola {
   const hrac = priazenHraca(elder);
   return { komu: komuZ(hrac, ja), hrac, sila: priazenSila(elder) };
-}
-
-/** Krátky účinok priazne pre riadok nápovedy („ty: +1 tuhé v bitke“, „nikomu · pri +1: …“). */
-export function ucinokKola(fav: Favour, p: PriazenKola, mena: { readonly ja: string; readonly su: string }): { readonly komu: KomuPriazen; readonly kto: string | null; readonly text: string } {
-  if (p.komu === null || p.sila <= 0) return { komu: null, kto: null, text: t("priazen.nikomu", { ucinok: UCINOK_KRATKO[fav](1) }) };
-  return { komu: p.komu, kto: p.komu === "ja" ? mena.ja : mena.su, text: UCINOK_KRATKO[fav](p.sila) };
 }
 
 /** „ty +2“, „Fero +1“, „nikto“. */
