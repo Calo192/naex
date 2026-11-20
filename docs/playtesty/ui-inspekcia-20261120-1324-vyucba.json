@@ -1,0 +1,525 @@
+{
+  "oblast": "vyucba",
+  "commit": "b5775de2",
+  "suhrn": {
+    "nalezov": 28,
+    "vyradeneAkoZamer": 32,
+    "akceptovaneVynimky": 0
+  },
+  "top": [
+    "V-01",
+    "V-03",
+    "V-28",
+    "V-02",
+    "V-04",
+    "V-06",
+    "V-07",
+    "V-24",
+    "V-05",
+    "V-10"
+  ],
+  "nalezy": [
+    {
+      "id": "V-01",
+      "nazov": "Stránkovanie bubliny stráca a zdvojuje vety — pokyn ťahu zmizne",
+      "typ": "chyba",
+      "dopad": "vysoky",
+      "narocnost": "stredna",
+      "kde": [
+        "#119, #129, #136, #161, #166 (ťah hráča), #47, #86, #148, #159 — 1366×650",
+        "#56, #108, #159 — 1600×1000",
+        "zdvojené: #20, #30, #31, #44, #97, #101, #132 (1600), #10, #81, #95, #104 (1366)"
+      ],
+      "zdroj": "apps/web/src/hra/MelicharBar.tsx:221 (dostupná výška sa meria z práve zobrazenej strany), apps/web/src/hra/Vyucba.tsx:731 (tlačidlo ‹ zúži vetu)",
+      "popis": "Hranice strán sa prepočítajú na každej strane inak (strana so štítkom či piktogramom je vyššia, od 2. strany pribudne ‹). Veta tak ostane medzi stranami: pri 1366×650 hráč v ťahu #119 uvidí len „Bot Štamgast už neberie z ponuky (spolu 1).“ a „Cigarety budeš potrebovať.“ — pokyn „Dosť nákupov, klikni už neťahám (P).“ sa neukáže nikdy. Zistené na 11 krokoch (stratený text) a 11 krokoch (tá istá veta na dvoch stranách).",
+      "navrh": "Strany rozdeliť raz na krok pri pevnej šírke a výške (miesto pre ‹ a číslo strany rezervovať od 1. strany, výšku brať z baru, nie z obsahu). Po oprave sa krátky text ako #119 zmestí na jednu stranu.",
+      "teraz": "ui-inspekcia-20261120-1324-vyucba/V-01-teraz-1.png",
+      "mock": [
+        "ui-inspekcia-20261120-1324-vyucba/V-01-navrh.png",
+        "ui-inspekcia-20261120-1324-vyucba/V-01-navrh-108.png"
+      ]
+    },
+    {
+      "id": "V-02",
+      "nazov": "Biely tip „Odhad bitky“ ostane visieť cez stôl desiatky krokov",
+      "typ": "chyba",
+      "dopad": "vysoky",
+      "narocnost": "mala",
+      "kde": [
+        "2. časť, #88–#100, 1600×1000 (visel najmenej 13 krokov)",
+        "reprodukované na #53"
+      ],
+      "zdroj": "apps/web/src/hra/JednotnyBar.tsx:120 (bar sa skryje atribútom hidden, tip ostane), :140; apps/web/src/karta/Tip.tsx:28",
+      "popis": "Myš býva v bare — tam je „ďalej“ aj kvíz. Keď bublina na chvíľu zmizne (tichý ťah Štamgasta), pod myšou sa otvorí odhad s tipom; bublina sa vráti, tlačidlo odhadu sa skryje a tip už nič nezavrie. Nezošednutý panel 300×508 px so starým obsahom („Vyhrávaš o 7“ po bitke 5 : 0) zakrýval starších, pás stola aj pečiatku POTVRDIŤ.",
+      "navrh": "Keď v bare začne hovoriť Melichar, tip odhadu skryť a odopnúť (jeden efekt v JednotnyBar); Tip všeobecne zavrieť, keď jeho kotva zmizne z DOM alebo je skrytá.",
+      "teraz": "ui-inspekcia-20261120-1324-vyucba/V-02-teraz.jpg",
+      "mock": [
+        "ui-inspekcia-20261120-1324-vyucba/V-02-navrh.jpg"
+      ]
+    },
+    {
+      "id": "V-03",
+      "nazov": "Prvá partia po výučbe začne starou „Pitka 3 skončila“ a tabuľkou z výučby",
+      "typ": "chyba",
+      "dopad": "vysoky",
+      "narocnost": "stredna",
+      "kde": [
+        "koniec 3. časti → „Hrať proti počítaču“, 1600×1000"
+      ],
+      "zdroj": "apps/web/src/hra/Vyucba.tsx:721 (hratProtiPocitacu), apps/web/src/hra/HernaPlocha.tsx:4084 (pauza „Pitka skončila“ a vrstva vyhodnotenia prežijú novú partiu)",
+      "popis": "Nová partia proti Božene (Bitka 1 z 6, voľba lokality) ukáže pás „PITKA 3 SKONČILA — pozri si stôl — kam padli NA EX“ s tlačidlami PRESKOČIŤ / ĎALEJ a po kliku okno „Pitka 3 / 3 vyhodnotená · TY · BOT BOŽENA“ s pečiatkou VÝPRASK — údaje finále výučby pod menom nového súpera. Kým hráč neklikne, partia stojí.",
+      "navrh": "Pri založení novej partie zahodiť čakajúce pauzy, vrstvy vyhodnotenia a momenty predošlej partie (stav hernej plochy viazať na id partie).",
+      "teraz": "ui-inspekcia-20261120-1324-vyucba/V-03-teraz-1.jpg",
+      "mock": [
+        "ui-inspekcia-20261120-1324-vyucba/V-03-navrh.jpg"
+      ]
+    },
+    {
+      "id": "V-04",
+      "nazov": "Pás pokynov stola beží popri Melicharovi a protirečí mu",
+      "typ": "zataz",
+      "dopad": "vysoky",
+      "narocnost": "mala",
+      "kde": [
+        "každý ťah hráča (50 krokov) a ťahy Štamgasta; príklady #12, #13, #19, #28, #29, #36, #56"
+      ],
+      "zdroj": "apps/web/src/hra/HernaPlocha.tsx:977 (.linia-stav), apps/web/src/hra/vyucba.css:142 (vzor: čo výučba skrýva)",
+      "popis": "Hráč má dva pokyny naraz: bublinu a pás stola, často dvojriadkový („…(1 karta = 1 cigaretu, 2 karty = 3 cigarety)… Plné poldeci: 3. Berieš z ponuky prvý…“). Pás používa pojmy, ktoré výučba ešte nepovedala (Výtržník, Cirhóza, Nakladačka), a protirečí: #29 Melichar „Viac netreba“, pás „Fajči či kúp poldeci“; #13 pás „Tvoj ťah — klikni na 1 alebo 2 karty“, hoci sa čaká na „ďalej“ a kliky sú zamknuté.",
+      "navrh": "Vo výučbe pás stola skryť (body.vyucba-bezi .linia-stav), kým hovorí Melichar; nechať ho len pri kroku, ktorý naň sám ukáže.",
+      "teraz": "ui-inspekcia-20261120-1324-vyucba/V-04-teraz.jpg",
+      "mock": [
+        "ui-inspekcia-20261120-1324-vyucba/V-04-navrh.jpg"
+      ]
+    },
+    {
+      "id": "V-05",
+      "nazov": "Objem: 178 krokov, 5 070 slov, 205× „ďalej“ — čo škrtnúť a presunúť",
+      "typ": "zataz",
+      "dopad": "vysoky",
+      "narocnost": "stredna",
+      "kde": [
+        "scenár prva-hra.json; najhustejšia 2. časť (2 434 slov, 101× ďalej, sľub 15 min)",
+        "séria bez ťahu hráča #86–#99: 14 krokov, 564 slov, 32 klikov"
+      ],
+      "zdroj": "packages/core/data/vyucba/prva-hra.json:1841 (i-zajatie, 101 slov), :846 (i-fazy), :1989 (i-spustace), :1252 (k-hotovo3) a ďalšie v tabuľke",
+      "popis": "Výučba vysvetľuje vopred (zajatie a presviedčanie v #111, nový poldeci v #70 s „Dnes nie“, slovník spúšťačov v #121), opakuje povedané (#67 po #27, #75 po #62) a hneď sa pýta na vetu, ktorá práve zaznela. Pri pozornom čítaní (170 slov/min) vychádza na asi 50 minút, sľub je 34.",
+      "navrh": "15 škrtov a presunov viet v Michalovom znení (tabuľka nižšie): −285 slov Melichara, 6 kvízov preč, 3× zlúčený koniec časti. Škrtá sa len to, čo povie iný krok, tabuľa alebo nápoveda v partii; vtipy ostávajú.",
+      "teraz": "ui-inspekcia-20261120-1324-vyucba/V-05-teraz-111-1.png",
+      "mock": [
+        "ui-inspekcia-20261120-1324-vyucba/V-05-navrh-html.png",
+        "ui-inspekcia-20261120-1324-vyucba/V-05-navrh-111-1.png",
+        "ui-inspekcia-20261120-1324-vyucba/V-05-navrh-111-2.png",
+        "ui-inspekcia-20261120-1324-vyucba/V-05-navrh-70.png",
+        "ui-inspekcia-20261120-1324-vyucba/V-05-navrh-121.png"
+      ]
+    },
+    {
+      "id": "V-06",
+      "nazov": "Ťah hráča s výkladom na 2–3 strany: pokyn nie je na strane, ktorú hráč vidí",
+      "typ": "ux",
+      "dopad": "vysoky",
+      "narocnost": "stredna",
+      "kde": [
+        "17 ťahov pri 1600×1000, 19 pri 1366×650: #43, #56, #75, #82, #100, #115, #126, #129, #131, #141, #148, #153, #155, #159, #166, #167…"
+      ],
+      "zdroj": "apps/web/src/hra/Vyucba.tsx:619 (veta kroku ide celá do stránkovania), packages/core/data/vyucba/prva-hra.json:1312 (k-prevaha)",
+      "popis": "V kroku hráča je pokyn zmiešaný s výkladom. Kto dolistuje, vidí poslednú stranu — napr. #82 „Viery máš potom šesť – ty vieš, na čo sú.“, #75 „Na trávniku bude 3 : 3…“ — a pokyn (čo položiť a kam) je o stranu či dve späť. V bare sú vtedy vedľa seba „Tvoj ťah“ aj „ďalej“.",
+      "navrh": "Ťah hráča = jedna strana s pokynom. Výklad dať do kroku pred ťahom (ďalej) alebo za ťah, keď je výsledok vidno na stole; texty sa len rozdelia na dva kroky.",
+      "teraz": "ui-inspekcia-20261120-1324-vyucba/V-06-teraz-1.png",
+      "mock": [
+        "ui-inspekcia-20261120-1324-vyucba/V-06-navrh-1.png",
+        "ui-inspekcia-20261120-1324-vyucba/V-06-navrh-1b.png",
+        "ui-inspekcia-20261120-1324-vyucba/V-06-navrh-2.png"
+      ]
+    },
+    {
+      "id": "V-07",
+      "nazov": "Po chybe svieti zasa POTVRDIŤ; cieľ ťahu a cesta späť nesvietia",
+      "typ": "ux",
+      "dopad": "vysoky",
+      "narocnost": "stredna",
+      "kde": [
+        "#19 (karta na opačnom konci), #56 (druhá karta ťahu), #82 (svieti 6 kariet), 1366×650 aj 1600×1000"
+      ],
+      "zdroj": "apps/web/src/hra/Vyucba.tsx:450–466 (po chybe: chybné karty + POTVRDIŤ; pri voľbe všetci kandidáti)",
+      "popis": "Melichar povie „na svietiace +“, ale obe „+“ vyzerajú rovnako a správne nesvieti. Po zlom ťahu ostane návrh na stole, svieti len POTVRDIŤ (zlyhá znova) a rada „Mäsiar k Lesnej ceste. Pomaly…“ nepovie, čo bolo zle; „×“ na vrátenie kariet nesvieti. V #56 druhá karta (Miňištrant) nesvieti nikdy a POTVRDIŤ sa rozsvieti už po prvej.",
+      "navrh": "Zvýrazniť aj cieľ (koniec línie, druhú kartu). Po odmietnutom ťahu zhasnúť POTVRDIŤ a rozsvietiť „×“ a správny cieľ; POTVRDIŤ rozsvietiť, až keď návrh sedí s krokom.",
+      "teraz": "ui-inspekcia-20261120-1324-vyucba/V-07-teraz-a.jpg",
+      "mock": [
+        "ui-inspekcia-20261120-1324-vyucba/V-07-navrh-a.jpg",
+        "ui-inspekcia-20261120-1324-vyucba/V-07-navrh-b.jpg"
+      ]
+    },
+    {
+      "id": "V-08",
+      "nazov": "Kroky #88–#93 komentujú odpovede a hádku, keď už je na stole niečo iné",
+      "typ": "ux",
+      "dopad": "vysoky",
+      "narocnost": "velka",
+      "kde": [
+        "2. časť, koniec druhej Pitky: #87 → okno Pitka 2/2 → okno Bitka 5 : 0 → #88–#93"
+      ],
+      "zdroj": "packages/core/data/vyucba/prva-hra.json:1514 (i-odpovede) až :1575 (i-remiza2); apps/web/src/hra/Vyucba.tsx:674 (text čaká na okno vyhodnotenia)",
+      "popis": "Hra po Pitke naraz otočí odpovede, vyhodnotí hádku aj bitku. Hráč najprv odklikne dve okná s výsledkom 5 : 0 a stôl sa prepne na starších. Až potom Melichar vysvetľuje Čiernu mačku v línii (#88), hádku (#90–#91) a oznámi „5 : 0, bitka je tvoja“ (#93) — línia, o ktorej hovorí, nie je na stole a výsledok už hráč videl.",
+      "navrh": "Vo výučbe držať stôl v stave, o ktorom je reč: najprv odpovede na línii (#88), potom hádka (#90–#92), až potom účet bitky a starší. Okno Pitky v tomto mieste vynechať (V-09).",
+      "teraz": "ui-inspekcia-20261120-1324-vyucba/V-08-teraz.jpg",
+      "mock": [
+        "ui-inspekcia-20261120-1324-vyucba/V-08-navrh-html.png"
+      ]
+    },
+    {
+      "id": "V-09",
+      "nazov": "V 1. časti dve modálne tabuľky s pojmami, ktoré ešte nezazneli",
+      "typ": "zataz",
+      "dopad": "stredny",
+      "narocnost": "stredna",
+      "kde": [
+        "1. časť, #30–#31: okno Pitka 1/1 vyhodnotená a účet bitky; 1366×650 aj 1600×1000"
+      ],
+      "zdroj": "packages/core/data/vyucba/prva-hra.json:636 (k-hotovo-bot: „Čo ukáže tabuľka Pitky, dnes nechaj tak.“), apps/web/src/hra/vyucba.css:155 (vzor: účet minulej bitky je vo výučbe skrytý)",
+      "popis": "Melichar hráčovi povie, aby tabuľku Pitky nechal tak — a hneď ju musí odkliknúť. Účet bitky potom ukáže TUHÉ (Melichar hovorí údery), NA EX zdvojilo/zrušilo, Hazard, pečeň, Nakladačku a „v popolníku“. Výsledok bitky hráč vidí trikrát: animácia, účet, Melichar #31; špaky tiež trikrát (účet, #33, kvíz #34).",
+      "navrh": "V 1. časti okno Pitky neukázať a vetu o ňom škrtnúť. Účet bitky zúžiť na to, čo zaznelo: údery a špaky za karty; ostatné riadky od 2. časti.",
+      "teraz": "ui-inspekcia-20261120-1324-vyucba/V-09-teraz-0.png",
+      "mock": [
+        "ui-inspekcia-20261120-1324-vyucba/V-09-navrh-b.jpg"
+      ]
+    },
+    {
+      "id": "V-10",
+      "nazov": "Lupa staršieho pri delení strachu: 130–170 slov cez susedov aj cez POTVRDIŤ",
+      "typ": "zataz",
+      "dopad": "vysoky",
+      "narocnost": "mala",
+      "kde": [
+        "#36 (1. časť), #100, #141; pri 1366×650 zakryje štyroch starších, pečiatku POTVRDIŤ a pol baru"
+      ],
+      "zdroj": "apps/web/src/hra/KruzokPriazne.tsx:460 (.np-tip)",
+      "popis": "Hráč má na Farára kliknúť, takže lupa sa otvorí vždy. V 1. časti vie len „kto sa ťa bojí, platí ti“, a dostane reči, priazeň Advokát, exekúciu, silu 1–3 a sekeru. Lupa leží presne na pečiatke POTVRDIŤ — hráč musí myš odsunúť, aby ju našiel. (Texty o staršom pod myšou sú Michalovo rozhodnutie — ostávajú; ide len o kroky výučby s klikaním na staršieho.)",
+      "navrh": "V krokoch výučby, kde sa na staršieho kliká, lupu neotvárať (alebo až po 1,5 s pokoja myši) a nikdy ju neklásť cez pečiatku potvrdenia.",
+      "teraz": "ui-inspekcia-20261120-1324-vyucba/V-10-teraz.jpg",
+      "mock": [
+        "ui-inspekcia-20261120-1324-vyucba/V-10-navrh.jpg"
+      ]
+    },
+    {
+      "id": "V-11",
+      "nazov": "Šedý stôl ukazuje od prvého kroku všetko — aj čo 1. časť neučí",
+      "typ": "zataz",
+      "dopad": "stredny",
+      "narocnost": "mala",
+      "kde": [
+        "1. časť: dlaždice Pečeň, Dlhy, Starší (červené 0/4 · väzni 0/2), lístok „Koniec · po finále“, v Pitke FAJČIŤ a NOVÝ POLDECI, v odhade riadok HÁDKA"
+      ],
+      "zdroj": "apps/web/src/hra/vyucba.css:142–153 (odhad, stávka a vydesenie sa už dnes ukážu až s krokom, ktorý o nich hovorí)",
+      "popis": "Výučba už postupné odkrývanie pozná (odhad, stávka, vydesení). Ostatok je na stole od kroku 1: pečeň a Dlhy sa v 1. časti neučia vôbec, hádka až v #90, fajčenie a nový poldeci v #69–#70 — v Pitke 1. časti pritom svietia ako aktívne tlačidlá.",
+      "navrh": "Rozšíriť existujúci mechanizmus: prvok sa na stole objaví s krokom, ktorý ho prvý raz zvýrazní alebo pomenuje (zoznam v scenári), a potom ostane.",
+      "teraz": "ui-inspekcia-20261120-1324-vyucba/V-11-teraz.jpg",
+      "mock": [
+        "ui-inspekcia-20261120-1324-vyucba/V-11-navrh.jpg",
+        "ui-inspekcia-20261120-1324-vyucba/V-11-navrh-c.jpg",
+        "ui-inspekcia-20261120-1324-vyucba/V-11-navrh-b.png"
+      ]
+    },
+    {
+      "id": "V-12",
+      "nazov": "Melichar volá tlačidlá a fázy inak, než sú na stole",
+      "typ": "nekonzistencia",
+      "dopad": "stredny",
+      "narocnost": "mala",
+      "kde": [
+        "„klikni končím (K)“ × tlačidlo SKONČIŤ PITKU: #29, #70, #84, #132, #137, #156, #163, #168",
+        "„Voľba cieľa“ × os kola „O čo sa bijeme“: #44",
+        "„údery“ × účet bitky „TUHÉ“: 1. časť",
+        "„pole Dedičstvo“ × PUSTI SEM Dedičstvo / ODKAZUJEM: #126"
+      ],
+      "zdroj": "packages/core/data/vyucba/prva-hra.json:625 (k-hotovo), :846 (i-fazy), :2057 (k-dedicstvo); apps/web/src/i18n/sk.json:1581 (plocha.skoncitPitku), :189 (faza.volbaCiela)",
+      "popis": "Hráč hľadá tlačidlo „končím“, na stole je SKONČIŤ PITKU. V #44 Melichar ukazuje na os kola a menuje „Voľba cieľa“, na osi je „O čo sa bijeme“. Pri Dedičstve sú na stole tri názvy jednej akcie.",
+      "navrh": "V texte použiť názov zo stola: „Klikni Skončiť Pitku (K)“ (8 krokov), v #44 názov fázy z osi (alebo premenovať os — rozhodne Michal). Skratku (K), (P) ukázať aj na tlačidle.",
+      "teraz": "ui-inspekcia-20261120-1324-vyucba/V-12-teraz.jpg",
+      "mock": [
+        "ui-inspekcia-20261120-1324-vyucba/V-12-navrh.jpg",
+        "ui-inspekcia-20261120-1324-vyucba/V-12-navrh-44.png"
+      ]
+    },
+    {
+      "id": "V-13",
+      "nazov": "„ubudla mu dole pri ňom“ — Štamgastov bar je hore",
+      "typ": "chyba",
+      "dopad": "nizky",
+      "narocnost": "mala",
+      "kde": [
+        "#13 k-kupa-bot, všetky rozlíšenia"
+      ],
+      "zdroj": "packages/core/data/vyucba/prva-hra.json:385",
+      "popis": "Zvýraznenie ukáže Štamgastove cigarety hore, text hovorí „dole pri ňom“.",
+      "navrh": "„…ubudla mu hore pri ňom.“ (jedno slovo).",
+      "teraz": "ui-inspekcia-20261120-1324-vyucba/V-13-teraz.png",
+      "mock": [
+        "ui-inspekcia-20261120-1324-vyucba/V-13-navrh.png"
+      ]
+    },
+    {
+      "id": "V-14",
+      "nazov": "Štítok ťahu pred vetou Melichara mení jej zmysel („Čaká sa na hráča 2.“)",
+      "typ": "nekonzistencia",
+      "dopad": "stredny",
+      "narocnost": "mala",
+      "kde": [
+        "#86: „Dodo Skipper končí svoju časť Pitky. Čaká sa na hráča 2.“ + „Obaja ste skončili…“",
+        "#47: „Bot Štamgast vybral karty do ponuky.“ + „Prečo tak?“",
+        "#53, #119, #129, #136, #148, #152, #155, #161, #166: „ťahá 2 karty“ = pas, „(spolu 1)“"
+      ],
+      "zdroj": "apps/web/src/hra/zmenyVyucby.ts (stitokTahu), apps/web/src/hra/Vyucba.tsx:479–484",
+      "popis": "Štítok je riadok z logu vložený pred vetu: hovorí o hráčovi v tretej osobe, súpera volá „hráč 2“ a „Bot Štamgast“ (Melichar „Štamgast“), pas opisuje ako „ťahá 2 karty“ a v #86 protirečí vete za sebou. V #47 „Prečo tak?“ vyzerá ako otázka na Štamgastov výber, hoci ide o hráčov.",
+      "navrh": "Štítok neukazovať, keď má krok vlastnú vetu Melichara; pri tichom ťahu ho písať menom „Štamgast“ a bez vlastných ťahov hráča.",
+      "teraz": "ui-inspekcia-20261120-1324-vyucba/V-14-teraz-1.png",
+      "mock": [
+        "ui-inspekcia-20261120-1324-vyucba/V-14-navrh.png",
+        "ui-inspekcia-20261120-1324-vyucba/V-14-navrh-47.png"
+      ]
+    },
+    {
+      "id": "V-15",
+      "nazov": "Po chybe rada a za ňou znova celý pôvodný text",
+      "typ": "zataz",
+      "dopad": "stredny",
+      "narocnost": "mala",
+      "kde": [
+        "#6 (2 strany), #19, #56 (3 strany)"
+      ],
+      "zdroj": "apps/web/src/hra/Vyucba.tsx:609–619",
+      "popis": "Rada už povie, čo treba („Lesná cesta má Pecku, to sú 2“), a za ňou sa zopakuje celý pokyn — text ide na 2–3 strany a pri „Tvoj ťah“ pribudne „ďalej“.",
+      "navrh": "Po chybe ukázať len radu; pôvodný pokyn nechať o stranu späť (‹).",
+      "teraz": "ui-inspekcia-20261120-1324-vyucba/V-15-teraz-1.png",
+      "mock": [
+        "ui-inspekcia-20261120-1324-vyucba/V-15-navrh.png"
+      ]
+    },
+    {
+      "id": "V-16",
+      "nazov": "1366×650: odpoveď kvízu rozsekaná na 3–5 strán uprostred vety",
+      "typ": "chyba",
+      "dopad": "stredny",
+      "narocnost": "mala",
+      "kde": [
+        "zlá odpoveď: #32, #48, #57 (5 strán), #63, #74, #80, #89, #92, #94, #140; správna: #57, #68, #74, #80, #89, #92, #94, #140 — len 1366×650"
+      ],
+      "zdroj": "apps/web/src/hra/MelicharBar.tsx:226 (dostupná výška), apps/web/src/hra/Vyucba.tsx:764 (riadok „tvoja odpoveď“ s piktogramom)",
+      "popis": "Piktogram v riadku „tvoja odpoveď“ zvýši hlavičku bubliny, na vetu ostane menej než riadok a text sa láme po kúskoch: „Ale dve Rany sú pekné,“ / „to áno. Skús inú možnosť.“ Bar je pritom takmer prázdny; zlá odpoveď stojí tri kliky navyše.",
+      "navrh": "Piktogram v riadku „tvoja odpoveď“ obmedziť na výšku riadku (alebo riadok vynechať — otázka je o krok späť). Opraví sa spolu s V-01.",
+      "teraz": "ui-inspekcia-20261120-1324-vyucba/V-16-teraz-1.png",
+      "mock": [
+        "ui-inspekcia-20261120-1324-vyucba/V-16-navrh.png"
+      ]
+    },
+    {
+      "id": "V-17",
+      "nazov": "Pri 1600 px a viac má bar jeden riadok — viac listovania než na notebooku",
+      "typ": "vylepsenie",
+      "dopad": "stredny",
+      "narocnost": "mala",
+      "kde": [
+        "1600×1000 a 1920×1080: bar 52 px, jeden riadok písmom 16 px; 1366×650: bar 34 px, jeden riadok 13 px",
+        "#59: 3 strany pri 1600×1000, prvá má 7 slov"
+      ],
+      "zdroj": "apps/web/src/hra/jbar.css:1049 (.mel-veta 1rem / 1,32), :1292 (užšie okno 0,94rem)",
+      "popis": "Text v bare má vždy jeden riadok. Pri 1600 px a viac je bar vysoký 52 px a riadok textu z neho berie 21 px — miesto na druhý riadok je, len písmo je veľké. Dlhšia veta sa preto láme po vetných úsekoch a prvá strana máva pár slov (#59: 7 slov, zvyšok baru prázdny).",
+      "navrh": "Pri ≥ 1600 px dovoliť dva riadky po 14 px (výška baru ostáva). Hrubý odhad pri 44 slovách na stranu: 225 → asi 158 strán textu.",
+      "teraz": "ui-inspekcia-20261120-1324-vyucba/V-17-teraz-1.png",
+      "mock": [
+        "ui-inspekcia-20261120-1324-vyucba/V-17-navrh.png"
+      ]
+    },
+    {
+      "id": "V-18",
+      "nazov": "Koniec časti = štyri obrazovky rozlúčky, dve hovoria to isté",
+      "typ": "zataz",
+      "dopad": "stredny",
+      "narocnost": "mala",
+      "kde": [
+        "koniec 1., 2. aj 3. časti (#38–#39, #107, #178 + text klienta na 2 strany)"
+      ],
+      "zdroj": "apps/web/src/hra/Vyucba.tsx:871–889 (textNaKonci), apps/web/src/i18n/sk.json:2147–2149, packages/core/data/vyucba/prva-hra.json:753 (i-dovidenia)",
+      "popis": "Melichar sa rozlúči a pozve na 2. časť („NA EX naplno a zopár podlostí“), hráč klikne „Dokončiť 1. časť“ — a klient to povie znova („Druhá časť, NA EX a podlosti, trvá asi 15 minút“), o hviezdičke (ukazuje ju aj oznámenie achievementu) a o nápovedách. Tlačidlá kam ďalej sú až na štvrtej obrazovke.",
+      "navrh": "Zlúčiť: rozlúčka Melichara a hneď tri tlačidlá, minúty ďalšej časti na tlačidle. Text klienta vypustiť.",
+      "teraz": "ui-inspekcia-20261120-1324-vyucba/V-18-teraz-1.png",
+      "mock": [
+        "ui-inspekcia-20261120-1324-vyucba/V-18-navrh.png"
+      ]
+    },
+    {
+      "id": "V-19",
+      "nazov": "Po celej výučbe prvá partia vysvetľuje to isté: medziobrazovka, nápoveda aj pás",
+      "typ": "zataz",
+      "dopad": "stredny",
+      "narocnost": "mala",
+      "kde": [
+        "prvá partia po 3. časti, hneď prvý ťah; 19 z 21 nápovied partie pokrýva látku výučby"
+      ],
+      "zdroj": "apps/web/src/hra/Napovedy.tsx:203 (videné nápovedy nezávisia od výučby), packages/core/data/vyucba/napovedy.json",
+      "popis": "Absolvent troch častí dostane pri prvom ťahu naraz medziobrazovku „O čo sa bijeme“, nápovedu Melichara o obrancovi (učil #41) a pás stola s tým istým pokynom. Z 21 nápovied partie sú pre neho nové len Absťák a pravidlo lokality.",
+      "navrh": "Po dokončení časti označiť nápovedy s jej látkou za videné (zoznam id pri časti v scenári). Medziobrazovky fáz ostávajú podľa Michalovho rozhodnutia; pri absolventovi ich ponúknuť vypnúť na konci výučby.",
+      "teraz": "ui-inspekcia-20261120-1324-vyucba/V-19-teraz-1.jpg",
+      "mock": [
+        "ui-inspekcia-20261120-1324-vyucba/V-19-navrh.jpg"
+      ]
+    },
+    {
+      "id": "V-20",
+      "nazov": "30 kvízov: šesť zbytočných, 29 bez zvýraznenia toho, na čo sa pýtajú",
+      "typ": "zataz",
+      "dopad": "stredny",
+      "narocnost": "stredna",
+      "kde": [
+        "duplicitné: #80 = #74, #34 = veta #33; hneď za definíciou: #55; dva za sebou: #102 + #103; #68 má obe odpovede správne",
+        "bez zvýraznenia: všetky okrem #37"
+      ],
+      "zdroj": "packages/core/data/vyucba/prva-hra.json:683 (q-lokality), :1003 (q-prevaha), :1392 (q-dlh-karta), :1696 (q-prebytok); apps/web/src/hra/Vyucba.tsx:740 (kvíz zošedí celý stôl)",
+      "popis": "Kvíz stojí najmenej dva kliky a čítanie dvoch možností a verdiktu (972 slov spolu); zlá odpoveď ďalšie tri kliky. Pri otázke je celý stôl šedý — aj spoj, prevaha či starší, na ktorých sa Melichar pýta.",
+      "navrh": "Vypustiť 6 kvízov (zoznam vo V-05). Pri kvíze nechať farebné a orámované to, o čom je otázka (kľúč zvyraznit v kroku kvízu) — šedý stôl ostáva.",
+      "teraz": "ui-inspekcia-20261120-1324-vyucba/V-20-teraz.png",
+      "mock": [
+        "ui-inspekcia-20261120-1324-vyucba/V-20-navrh.png"
+      ]
+    },
+    {
+      "id": "V-21",
+      "nazov": "Tri rôzne sľuby dĺžky: 34 minút, 35 minút, „každá asi desať“",
+      "typ": "nekonzistencia",
+      "dopad": "nizky",
+      "narocnost": "mala",
+      "kde": [
+        "Domov: „spolu asi 34 minút“",
+        "Hrať a banner v Pravidlách: „spolu asi 35 minút“",
+        "ponuka „Najprv výučba?“: „každá trvá asi desať minút“ (časti majú 7, 15 a 12)"
+      ],
+      "zdroj": "apps/web/src/i18n/sk.json:423 (vstup.naucSa), :438 (vstup.najprvText), apps/web/src/stranky/dlzkaVyucby.ts:5",
+      "popis": "Domov počíta minúty zo scenára, ostatné dve miesta majú číslo napísané v texte. Vstup zároveň žiada naraz 35 minút, hoci stačí prvá časť.",
+      "navrh": "Všade brať čas zo scenára a sľubovať prvú časť: „1. časť: prvé kolo proti Štamgastovi, asi 7 minút“; ďalšie dve časti spomenúť drobným.",
+      "teraz": "ui-inspekcia-20261120-1324-vyucba/V-21-teraz-1.png",
+      "mock": [
+        "ui-inspekcia-20261120-1324-vyucba/V-21-navrh.png"
+      ]
+    },
+    {
+      "id": "V-22",
+      "nazov": "Postup: „1. ČASŤ · 3 %“ nepovie, koľko častí je a koľko ostáva",
+      "typ": "ux",
+      "dopad": "stredny",
+      "narocnost": "mala",
+      "kde": [
+        "hlavička bubliny, všetky kroky; v režime „os“ (#44, #59) menovka aj percentá zmiznú"
+      ],
+      "zdroj": "apps/web/src/hra/Vyucba.tsx:668, :752–761",
+      "popis": "Percento je z časti, nie z výučby, písmom 11 px. Nevidno, že časti sú tri ani koľko minút ostáva; v krokoch, kde bublina ukazuje na os kola, ukazovateľ aj číslo strany zmiznú.",
+      "navrh": "Tri úseky (dĺžka podľa minút častí) a „1. časť z 3 · ešte asi 6 min“; ukazovať aj v režime „os“. Percentá namiesto čísla kroku ostávajú (číslo by skákalo).",
+      "teraz": "ui-inspekcia-20261120-1324-vyucba/V-22-teraz.png",
+      "mock": [
+        "ui-inspekcia-20261120-1324-vyucba/V-22-navrh.png"
+      ]
+    },
+    {
+      "id": "V-23",
+      "nazov": "Rám zvýraznenia pretína popisok „klik na kartu = otočiť“",
+      "typ": "chyba",
+      "dopad": "nizky",
+      "narocnost": "mala",
+      "kde": [
+        "voľba lokality s návrhom: #6, #43, #109, #145; 1366×650 aj 1600×1000"
+      ],
+      "zdroj": "apps/web/src/hra/hra.css:1571 (.linia-skupina.lokalita.navrh .otocit-tip), apps/web/src/hra/HernaPlocha.tsx:6634",
+      "popis": "Popisok je širší než zvýraznená skupina lokality, takže ho rám pretína (pri 1600 px je prečiarknutý spodnou hranou) a dotýka sa štítkov „prevaha: nikto“.",
+      "navrh": "Vo výučbe popisok skryť (pokyn dáva Melichar a tlačidlo „otočiť“ svieti) alebo ho zahrnúť do obdĺžnika zvýraznenia.",
+      "teraz": "ui-inspekcia-20261120-1324-vyucba/V-23-teraz.png",
+      "mock": [
+        "ui-inspekcia-20261120-1324-vyucba/V-23-navrh.png"
+      ]
+    },
+    {
+      "id": "V-24",
+      "nazov": "Návštevník klikne „Nauč sa hrať“ a pristane na „Vitaj späť“ — prihlásenie",
+      "typ": "ux",
+      "dopad": "vysoky",
+      "narocnost": "stredna",
+      "kde": [
+        "Domov → hlavné tlačidlo výučby, neprihlásený, 1366×650"
+      ],
+      "zdroj": "apps/web/src/hra/Vyucba.tsx:91 (adresaVyucby → /prihlasenie?spat=…)",
+      "popis": "Nový človek nemá účet, ale dostane prihlasovací formulár s nadpisom „Vitaj späť — pokračuj tam, kde si prestal“. O výučbe ani slovo; registrácia je drobný odkaz pod formulárom.",
+      "navrh": "Z tlačidla výučby viesť na stránku, ktorá povie, že ide o krok k výučbe, a ako prvé ponúkne registráciu. (Samotná stránka prihlásenia patrí oblasti web.)",
+      "teraz": "ui-inspekcia-20261120-1324-vyucba/V-24-teraz.png",
+      "mock": [
+        "ui-inspekcia-20261120-1324-vyucba/V-24-navrh.png"
+      ]
+    },
+    {
+      "id": "V-25",
+      "nazov": "„na tvojej strane“, „línia – tvoja vľavo, jeho vpravo“",
+      "typ": "nekonzistencia",
+      "dopad": "nizky",
+      "narocnost": "mala",
+      "kde": [
+        "#6 k-ciel, #17 k-zh-bot1; v 2. časti to #61–#63 sám vyvracia („Strana nie je partia“)"
+      ],
+      "zdroj": "packages/core/data/vyucba/prva-hra.json:252, :427",
+      "popis": "Michal 2026-11-08: „moja / súperova strana línie“ neexistuje. Výučba ju v 1. časti zavedie a v 2. časti ju ako „podlosť“ zruší — hráč sa učí pravidlo, ktoré neplatí.",
+      "navrh": "Škrtnúť „, na tvojej strane“ (#6) a „– tvoja vľavo, jeho vpravo“ (#17).",
+      "teraz": "ui-inspekcia-20261120-1324-vyucba/V-25-teraz-6.png",
+      "mock": [
+        "ui-inspekcia-20261120-1324-vyucba/V-25-navrh-6.png",
+        "ui-inspekcia-20261120-1324-vyucba/V-25-navrh-17.png"
+      ]
+    },
+    {
+      "id": "V-26",
+      "nazov": "#7: stavba ponuky „nanečisto“ v 1. časti nič neučí",
+      "typ": "zataz",
+      "dopad": "stredny",
+      "narocnost": "mala",
+      "kde": [
+        "#7 i-senok: 8 kariet, „nástroje 23 · dedinčania 45“, pás „Skús si, ktoré karty by išli do ponuky…“"
+      ],
+      "zdroj": "packages/core/data/vyucba/prva-hra.json:302",
+      "popis": "Hráč vidí osem kariet a počítadlá, smie klikať, ale „rozhodnem aj tak ja“. Stavbu učí až #45 v 2. časti.",
+      "navrh": "Krok vypustiť: stavbu spraví hra potichu a výučba pokračuje krokom #10 (ponuka).",
+      "teraz": "ui-inspekcia-20261120-1324-vyucba/V-26-teraz.jpg",
+      "mock": [
+        "ui-inspekcia-20261120-1324-vyucba/V-26-navrh.png"
+      ]
+    },
+    {
+      "id": "V-27",
+      "nazov": "„Klikni na neho a potvrď“ — treba kliknúť dvakrát",
+      "typ": "ux",
+      "dopad": "nizky",
+      "narocnost": "mala",
+      "kde": [
+        "#141 k-reci3 (reči na žltú a oranžovú za 1 + 2)"
+      ],
+      "zdroj": "packages/core/data/vyucba/prva-hra.json:2270",
+      "popis": "Po jednom kliku ostane POTVRDIŤ neaktívne (minutá len žltá). V #36 je to napísané presne („Klikni dvakrát na Farára“).",
+      "navrh": "„Klikni na neho dvakrát a potvrď.“",
+      "teraz": "ui-inspekcia-20261120-1324-vyucba/V-27-teraz.png",
+      "mock": [
+        "ui-inspekcia-20261120-1324-vyucba/V-27-navrh.png"
+      ]
+    },
+    {
+      "id": "V-28",
+      "nazov": "Výučba učí staré pravidlo remízy: „rozhodujú Dlhy“ (od v12.6 najprv hádka)",
+      "typ": "chyba",
+      "dopad": "vysoky",
+      "narocnost": "mala",
+      "kde": [
+        "#93 i-remiza2 a kvíz #94 q-remiza2"
+      ],
+      "zdroj": "packages/core/data/vyucba/prva-hra.json:1575, :1585; docs/PRAVIDLA.md:23 (v12.6: remízu v tuhom rozhodne najprv hádka, potom Dlhy)",
+      "popis": "Melichar: „Keby bolo tuhé rovnako, vyhrá, kto má menej Dlhov“ a kvíz uzná „Ja, Štamgast mal viac Dlhov“. Podľa v12.6 by pri rovnosti vyhral víťaz hádky — v tom kole Štamgast. Hra aj jej odhad („pri remíze: vyhrá víťaz hádky“) hovoria opak výučby.",
+      "navrh": "Vetu aj kvíz #94 škrtnúť (hypotetická situácia, v partii nenastane); remízu nech vysvetlí hra, keď nastane. Ak ju Michal vo výučbe chce, treba nový text.",
+      "teraz": "ui-inspekcia-20261120-1324-vyucba/V-28-teraz-1.png",
+      "mock": [
+        "ui-inspekcia-20261120-1324-vyucba/V-28-navrh.png"
+      ]
+    }
+  ]
+}

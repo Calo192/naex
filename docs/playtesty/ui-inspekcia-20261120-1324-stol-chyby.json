@@ -1,0 +1,415 @@
+{
+  "oblast": "stol-chyby",
+  "commit": "b5775de2",
+  "suhrn": {
+    "nalezov": 22,
+    "vyradeneAkoZamer": 128,
+    "akceptovaneVynimky": 64
+  },
+  "top": [
+    "S-01",
+    "S-02",
+    "S-03",
+    "S-04",
+    "S-08",
+    "S-07",
+    "S-05",
+    "S-10",
+    "S-06",
+    "S-18"
+  ],
+  "nalezy": [
+    {
+      "id": "S-01",
+      "nazov": "Účet špakov na konci hry nesedí — chýba riadok „Hádka vo finále“",
+      "typ": "chyba",
+      "dopad": "vysoky",
+      "narocnost": "mala",
+      "kde": [
+        "Dohraná partia proti botovi: Bot Igor 31 + 4 + 21 + 5 − 9 = 52, spolu 58 — chýba 6 za hádku vo finále",
+        "Koniec hry (okno Výhra / Prehra), všetky rozlíšenia",
+        "Detail partie — ten istý účet"
+      ],
+      "zdroj": "packages/core/src/view.ts:670 (rozpisSpakov nesčíta nastenka.hadkaSpaky z engine.ts:6317) · apps/web/src/hra/UcetSpakov.tsx:10",
+      "popis": "Riadky účtu nedajú „spolu“: v dohranej partii má Bot Igor 31 + 4 + 21 + 5 − 9 = 52, spolu je 58; v ukážkovej má Jano 17, spolu 18. Chýbajú špaky za hádku vo finále — jadro ich pripíše, do rozpisu nejdú. V simulácii 24 partií botov v jadre rozpis nesedel v 22.",
+      "navrh": "Do rozpisSpakov pridať súčet nastenka.hadkaSpaky a do účtu riadok „Hádka vo finále“ pod „Nakladačka vo finále“. Test: súčet riadkov = spolu.",
+      "teraz": "ui-inspekcia-20261120-1324-stol-chyby/S-01-teraz.png",
+      "mock": [
+        "ui-inspekcia-20261120-1324-stol-chyby/S-01-navrh.png"
+      ]
+    },
+    {
+      "id": "S-02",
+      "nazov": "Pokyn nad stolom sa nezmestí ani pri 1920 px — čo mám urobiť, je za trojbodkou",
+      "typ": "ux",
+      "dopad": "vysoky",
+      "narocnost": "mala",
+      "kde": [
+        "Pitka, čakám s NA EX — obsah 1938 px, miesto 930–1330 px, všetkých 5 rozlíšení",
+        "Pitka naraz od 2. kola (1665 px)",
+        "Branie z ponuky, prvý ťah (1598 px)",
+        "Náhľad NA EX na kartu"
+      ],
+      "zdroj": "apps/web/src/i18n/sk.json:1516 (plocha.tvojTahBranie), :1278 (plocha.jednaKarta), :1555 (plocha.uzVybral) · apps/web/src/hra/HernaPlocha.tsx:4376",
+      "popis": "Pokyn má dve až tri vety a pri každom rozlíšení končí trojbodkou. V Pitke je orezané práve „Klikni na kartu…“ — pred ním stojí, čo urobil súper a ako sa odpovedá. Celé znenie ukáže až klik na pokyn, čo nič nenaznačuje.",
+      "navrh": "Najprv čo mám urobiť, pravidlo pod myš. Pitka: „Klikni na svoju kartu a daj NA EX!, alebo skonči Pitku. Darina už vybrala — odkryje sa, keď skončíš.“ Branie: „Tvoj ťah — vezmi kartu z ponuky (1 = 1, 2 = 3 — cigareta piktogramom) alebo už neťahaj.“ Na prvom ťahu: „… vezmi 1 kartu alebo už neťahaj. Dve karty až v ďalšom ťahu.“",
+      "teraz": "ui-inspekcia-20261120-1324-stol-chyby/S-02-teraz.png",
+      "mock": [
+        "ui-inspekcia-20261120-1324-stol-chyby/S-02-navrh.png",
+        "ui-inspekcia-20261120-1324-stol-chyby/S-02-navrh-b.png"
+      ]
+    },
+    {
+      "id": "S-03",
+      "nazov": "Pri troch Pitkách zmizne z hlavičky „Bitka 3 z 4“",
+      "typ": "chyba",
+      "dopad": "vysoky",
+      "narocnost": "mala",
+      "kde": [
+        "Hlavička partie, bitka s 3 Pitkami (9 krokov), 1440×800 a 1600×1000, účet s dlhším menom",
+        "1920, 1512 a 1366 px sú v poriadku"
+      ],
+      "zdroj": "apps/web/src/hra/hra.css:153 (@container os-kola, max-width: 900px) · apps/web/src/hra/hlavicka.css:24",
+      "popis": "Názvy krokov sa skracujú až pod 900 px šírky osi. Pri deviatich krokoch sa dlhé názvy nezmestia skôr a odznak „Bitka 3 z 4“ skončí pod logom — hráč nevidí, koľká bitka sa hrá.",
+      "navrh": "Skracovať aj podľa počtu krokov: od 8 krokov stredné názvy („Zhrom. 1“). Odznak bitky nesmie ustúpiť krokom (flex: none pred osou).",
+      "teraz": "ui-inspekcia-20261120-1324-stol-chyby/S-03-teraz.png",
+      "mock": [
+        "ui-inspekcia-20261120-1324-stol-chyby/S-03-navrh.png"
+      ]
+    },
+    {
+      "id": "S-04",
+      "nazov": "Koniec hry na 1366×650: tlačidlá sú pod okrajom okna",
+      "typ": "ux",
+      "dopad": "vysoky",
+      "narocnost": "mala",
+      "kde": [
+        "Koniec hry, 1366×650 — obsah okna 721 px, vidno 613 px, tlačidlá od y = 679",
+        "Potvrdené v dohranej partii (okno Prehra, 1366×650): riadok „spolu“ je napoly za okrajom, tlačidlá pod ním"
+      ],
+      "zdroj": "apps/web/src/hra/hra.css:2430 (.koniec-okno: max-height + overflow-y) · apps/web/src/hra/KoniecHry.tsx:124",
+      "popis": "Okno sa posúva vo vlastnom kontajneri, ale „pozrieť stôl“, „ohodnotiť hru“ a „späť do lobby“ sú až za zlomom a nič nenaznačuje, že treba rolovať.",
+      "navrh": "Riadok tlačidiel prilepiť na spodok okna (position: sticky), rolovať len obsah nad ním.",
+      "teraz": "ui-inspekcia-20261120-1324-stol-chyby/S-04-teraz.png",
+      "mock": [
+        "ui-inspekcia-20261120-1324-stol-chyby/S-04-navrh.png"
+      ]
+    },
+    {
+      "id": "S-08",
+      "nazov": "Pečiatka momentu leží cez okno a rekapituláciu — zakryje aj skóre bitky",
+      "typ": "chyba",
+      "dopad": "vysoky",
+      "narocnost": "mala",
+      "kde": [
+        "Rekapitulácia bitky v partii: „BOMBA ×4“ zakrýva súperovo skóre pri 1366×650, pás kariet pri 1920×1080",
+        "Okno „Pasuješ“ po autopase — 1600×1000 aj 1366×650",
+        "Rekapitulácia Pitky (ukážka): „PRESVEDČENIE“ cez nadpis, aj cez medziobrazovku Bitka"
+      ],
+      "zdroj": "apps/web/src/hra/hra.css:7208 (.moment-vrstva z-index 890) nad :9606 (.medziobrazovka z-index 870)",
+      "popis": "Pečiatka momentu sa kreslí nad oknami a ostáva, kým je okno otvorené. V rekapitulácii bitky pri 1366×650 zakryje súperovo číslo v „2 : 3“, pri autopase nadpis a prvý riadok dôvodu.",
+      "navrh": "Kým je otvorené okno, rekapitulácia alebo medziobrazovka, pečiatky momentov nekresliť — ukázať ich až po zavretí.",
+      "teraz": "ui-inspekcia-20261120-1324-stol-chyby/S-08-teraz.png",
+      "mock": [
+        "ui-inspekcia-20261120-1324-stol-chyby/S-08-navrh.png"
+      ]
+    },
+    {
+      "id": "S-05",
+      "nazov": "Pečiatka „PASOVAŤ → +3“ nemá ikonu karty",
+      "typ": "chyba",
+      "dopad": "stredny",
+      "narocnost": "mala",
+      "kde": [
+        "Zhromaždenie, pečiatka pasu (v12.6: pas doberie karty), všetkých 5 rozlíšení"
+      ],
+      "zdroj": "apps/web/src/hra/hra.css:3569 (rozmer a farba .ikona-karty len v .pecat-nakup) · apps/web/src/hra/ikonyZdrojov.tsx:57 (ZiskKariet)",
+      "popis": "SVG karty v pečiatke má 0 × 0 px a čiernu výplň (zmerané v stránke), takže hráč vidí len „+3“ bez toho, čoho. Pravidlo pre ikonu platí len v pečiatkach nákupu.",
+      "navrh": "Rozmer a farbu .ikona-karty dať aj do .pecat-koncim (18 px, farba textu pečiatky).",
+      "teraz": "ui-inspekcia-20261120-1324-stol-chyby/S-05-teraz.png",
+      "mock": [
+        "ui-inspekcia-20261120-1324-stol-chyby/S-05-navrh.png"
+      ]
+    },
+    {
+      "id": "S-06",
+      "nazov": "Popis koncov línie pod lokalitou sa rozpadne na dva riadky",
+      "typ": "chyba",
+      "dopad": "stredny",
+      "narocnost": "mala",
+      "kde": [
+        "Zhromaždenie s kartou v línii, Pitka, zastavený stôl po Pitke — 1440 až 1920 px (pri 1366×650 sa popis neukazuje)"
+      ],
+      "zdroj": "apps/web/src/hra/hra.css:1370 (.linia-skupina.lokalita > .strany-stredu: flex-wrap) · apps/web/src/hra/HernaPlocha.tsx:3556",
+      "popis": "Keď sa karta lokality zúži, „◀ v húštine“ a „pri kríži ▶“ sa zalomia a druhý visí o 50 px nižšie vpravo. Vyzerá to ako rozsypané rozloženie.",
+      "navrh": "Popis držať v jednom riadku vystredenom pod kartou (nowrap, justify-content: center); stĺpec lokality to nerozšíri, lebo má contain: inline-size.",
+      "teraz": "ui-inspekcia-20261120-1324-stol-chyby/S-06-teraz.png",
+      "mock": [
+        "ui-inspekcia-20261120-1324-stol-chyby/S-06-navrh.png"
+      ]
+    },
+    {
+      "id": "S-07",
+      "nazov": "Štítok pôvodu v ponuke zakrýva efekt karty, na Nástrojoch ho nevidno",
+      "typ": "chyba",
+      "dopad": "stredny",
+      "narocnost": "mala",
+      "kde": [
+        "Branie z ponuky, všetkých 5 rozlíšení"
+      ],
+      "zdroj": "apps/web/src/hra/HernaPlocha.tsx:3708 · apps/web/src/hra/hra.css:9436 (.senok-povod-stitok)",
+      "popis": "„tvoja“ a „od Bot Darina“ ležia cez text efektu Občanov. Na Nástrojoch štítok zakryje spodná hrana karty, takže nevidno, komu cigareta za kartu pôjde. Pár „tvoja / od Bot Darina“ je nesúrodý.",
+      "navrh": "Štítok pod kartu (mimo líca), na všetkých kartách rovnako; znenie „tvoja / súperova“.",
+      "teraz": "ui-inspekcia-20261120-1324-stol-chyby/S-07-teraz.png",
+      "mock": [
+        "ui-inspekcia-20261120-1324-stol-chyby/S-07-navrh.png"
+      ]
+    },
+    {
+      "id": "S-09",
+      "nazov": "Dlaždica Špaky orezáva ikonu a odznak odhadu pri dvojcifernom počte",
+      "typ": "chyba",
+      "dopad": "stredny",
+      "narocnost": "mala",
+      "kde": [
+        "Pult hráča aj súpera, špaky ≥ 10 s odznakom „+15“ / „−1“ — 1366×650 aj 1600×1000"
+      ],
+      "zdroj": "apps/web/src/hra/hra.css:316 (.doska-zdroje > *: overflow: hidden) · :9487 (.spaky-zmena)",
+      "popis": "Ikona špaku je odrezaná ľavým okrajom dlaždice a odznak odhadu pravým — z „+15“ ostane „+1“. Odhad po kole je práve číslo, podľa ktorého sa hráč rozhoduje.",
+      "navrh": "Odznak odhadu do pravého horného rohu dlaždice, mimo riadku s číslom.",
+      "teraz": "ui-inspekcia-20261120-1324-stol-chyby/S-09-teraz.png",
+      "mock": [
+        "ui-inspekcia-20261120-1324-stol-chyby/S-09-navrh.png"
+      ]
+    },
+    {
+      "id": "S-10",
+      "nazov": "Hlavička predbieha: „Bitka 2 z 4“ a „Finále“ už počas vyhodnotenia predošlej bitky",
+      "typ": "chyba",
+      "dopad": "stredny",
+      "narocnost": "mala",
+      "kde": [
+        "Rozdeľovanie hádky a Nakladačky po 1. bitke: „Bitka 2 z 4“ — všetkých 5 rozlíšení",
+        "Zastavený stôl po poslednej Pitke 3. bitky: odznak už hlási „Finále“",
+        "Súhrn po bitke 1"
+      ],
+      "zdroj": "apps/web/src/hra/stitokPartie.ts:27 (nastenka.length + 1)",
+      "popis": "Číslo bitky skočí hneď, ako sa bitka zapíše na nástenku. Hráč ešte rozdeľuje výsledok prvej bitky, krok „Bitka“ svieti a vedľa stojí „Bitka 2 z 4“.",
+      "navrh": "Číslo brať z kola, ktoré sa práve hrá (view.kolo); zvýšiť ho až pri výbere ďalšej lokality.",
+      "teraz": "ui-inspekcia-20261120-1324-stol-chyby/S-10-teraz.png",
+      "mock": [
+        "ui-inspekcia-20261120-1324-stol-chyby/S-10-navrh.png"
+      ]
+    },
+    {
+      "id": "S-11",
+      "nazov": "Cena na pečiatke: raz slovo, raz piktogram, tri rôzne poradia",
+      "typ": "nekonzistencia",
+      "dopad": "stredny",
+      "narocnost": "mala",
+      "kde": [
+        "Zhromaždenie: „POTVRDIŤ −1 POLDECI“",
+        "Branie: „−1 [cigareta] → HOTOVO“; Zhromaždenie: „−1 [cigareta] → záverečná“, „PASOVAŤ → +3“; Pitka: dvojriadkové „−1 → karta / FAJČIŤ“"
+      ],
+      "zdroj": "apps/web/src/hra/HernaPlocha.tsx:3889 (text „−N poldeci“) · :5769 · apps/web/src/hra/ikonyZdrojov.tsx:66 (CenaPoldeci už existuje)",
+      "popis": "Potvrdenie vyloženia píše cenu slovom POLDECI a za názvom, ostatné pečiatky piktogramom a pred šípkou. Rozhodnutie „cigareta a poldeci všade len piktogram“ tu neplatí.",
+      "navrh": "Jeden tvar „dáš → dostaneš“ (komponent Vymena): „−1 [poldeci] → POTVRDIŤ“.",
+      "teraz": "ui-inspekcia-20261120-1324-stol-chyby/S-11-teraz.png",
+      "mock": [
+        "ui-inspekcia-20261120-1324-stol-chyby/S-11-navrh.png"
+      ]
+    },
+    {
+      "id": "S-12",
+      "nazov": "Súper je raz „Bot Darina“, raz „Darina“; ja raz „ty“, raz „inšpektor“",
+      "typ": "nekonzistencia",
+      "dopad": "stredny",
+      "narocnost": "stredna",
+      "kde": [
+        "„Bot Darina“: horný bar, nástenka, štítky ponuky, pokyny, okno Koniec hry",
+        "„Darina“: pult súpera, teplomery, súhrn po bitke",
+        "„ty“ / „Jano“ / „inšpektor“: bar a nástenka / tabuľka konca hry / teplomery (pri 1366 px „inšpek…“)",
+        "Náhľad NA EX: v jednej vete „súper mäkké +2“ aj „Bot Igor: Hazard +2“"
+      ],
+      "zdroj": "apps/web/src/hra/HernaPlocha.tsx:604 (menoHraca → menoVoVete) · apps/web/src/hra/LiniaStarsich.tsx:631 · apps/web/src/hra/UcetSpakov.tsx:29",
+      "popis": "Ten istý hráč má na jednej obrazovke dve mená. V tabuľke konca hry stojí „Jano“ pod riadkom „ty … Bot Igor“; na teplomeroch je vlastné meno, ktoré sa pri 1366 px nezmestí.",
+      "navrh": "Súper všade menom z pultu („Darina“; že je bot, vidno v pulte), ja všade „ty“. Po odstránení slova Bot treba pri Darine a Božene ženský rod — tvary .z v sk.json už sú.",
+      "teraz": "ui-inspekcia-20261120-1324-stol-chyby/S-12-teraz.png",
+      "mock": [
+        "ui-inspekcia-20261120-1324-stol-chyby/S-12-navrh.png"
+      ]
+    },
+    {
+      "id": "S-13",
+      "nazov": "Vrstva Starší nemá „← Späť na stôl“, rozpis bodov ho má",
+      "typ": "nekonzistencia",
+      "dopad": "stredny",
+      "narocnost": "mala",
+      "kde": [
+        "Vrstva Starší (dlaždica Starší ▾) oproti nástenke (dlaždica Špaky ▾), všetky rozlíšenia"
+      ],
+      "zdroj": "apps/web/src/hra/LiniaStarsich.tsx:215 (.ls-hlava bez tlačidla) · apps/web/src/hra/HernaPlocha.tsx:6720 (.nastenka-spat)",
+      "popis": "Dve sesterské vrstvy sa otvárajú z vedľajších dlaždíc na tom istom mieste. Z nástenky vedie späť viditeľné tlačidlo, zo starších len Esc alebo opätovný klik na dlaždicu.",
+      "navrh": "To isté tlačidlo „← Späť na stôl Esc“ vľavo v hlavičke vrstvy Starší. (V mocku sú aj mená na teplomeroch ako „ty“, viď S-12.)",
+      "teraz": "ui-inspekcia-20261120-1324-stol-chyby/S-13-teraz.png",
+      "mock": [
+        "ui-inspekcia-20261120-1324-stol-chyby/S-13-navrh.png"
+      ]
+    },
+    {
+      "id": "S-16",
+      "nazov": "„Ďalšie Pitky tejto bitky bez NA EX“ sa ponúka aj v poslednej Pitke",
+      "typ": "ux",
+      "dopad": "stredny",
+      "narocnost": "mala",
+      "kde": [
+        "Pitka 1/1 (kolo 1) a Pitka 3 z 3 (kolo 3) — všetkých 5 rozlíšení"
+      ],
+      "zdroj": "apps/web/src/hra/HernaPlocha.tsx:4861 (podmienka odkazBezNaex nepozná počet zostávajúcich Pitiek)",
+      "popis": "Odkaz v pokyne sľubuje preskočiť NA EX v ďalších Pitkách bitky, aj keď už žiadna nebude. Zaberá tretinu pokynu, ktorý sa aj tak nezmestí (S-02), a klik naň nič nezmení.",
+      "navrh": "Odkaz ukázať len vtedy, keď bitku čaká ešte aspoň jedna Pitka.",
+      "teraz": "ui-inspekcia-20261120-1324-stol-chyby/S-16-teraz.png",
+      "mock": [
+        "ui-inspekcia-20261120-1324-stol-chyby/S-16-navrh.png"
+      ]
+    },
+    {
+      "id": "S-18",
+      "nazov": "Klik na „+“ zdvihne ruku a celý stôl skočí o 38 px",
+      "typ": "ux",
+      "dopad": "stredny",
+      "narocnost": "mala",
+      "kde": [
+        "Zhromaždenie, výber miesta klikom na „+“ — všetkých 5 rozlíšení"
+      ],
+      "zdroj": "apps/web/src/hra/hra.css:3298 (.ruka.volba-miesta: výška ruky + 38 px)",
+      "popis": "Ruka narastie o 38 px, takže pult, pečiatky aj línia sa posunú nahor pod myšou; po zrušení výberu skočia späť. Kto mieri na pečiatku alebo dlaždicu, klikne vedľa.",
+      "navrh": "Výšku ruky nemeniť: karty, ktoré sa spoja, ostanú na mieste a ostatné klesnú o 34 px pod okraj okna.",
+      "teraz": "ui-inspekcia-20261120-1324-stol-chyby/S-18-teraz.png",
+      "mock": [
+        "ui-inspekcia-20261120-1324-stol-chyby/S-18-navrh.png"
+      ]
+    },
+    {
+      "id": "S-20",
+      "nazov": "Ukončenie fázy je na dvoch miestach hrany",
+      "typ": "nekonzistencia",
+      "dopad": "stredny",
+      "narocnost": "mala",
+      "kde": [
+        "Branie z ponuky: „UŽ NEŤAHÁM“ v strede hrany",
+        "Zhromaždenie: „PASOVAŤ“ a Pitka: „SKONČIŤ PITKU“ v pravom rohu"
+      ],
+      "zdroj": "apps/web/src/hra/HernaPlocha.tsx:3662 (pecatTahu: „na tom istom mieste je ťah bez návrhu“) · :4514 (pas vpravo)",
+      "popis": "Tri pečiatky s významom „končím túto fázu“ (skratka P) sú raz v strede, dvakrát v rohu. V strede je inak potvrdenie ťahu a NA EX!, takže „UŽ NEŤAHÁM“ sedí tam, kde hráč čaká potvrdenie.",
+      "navrh": "Pravidlo: stred = potvrdenie ťahu a NA EX!, pravý roh = koniec fázy. „UŽ NEŤAHÁM“ presunúť do pravého rohu. Rozhodnutie o potvrdení v strede hrany ostáva.",
+      "teraz": "ui-inspekcia-20261120-1324-stol-chyby/S-20-teraz.png",
+      "mock": [
+        "ui-inspekcia-20261120-1324-stol-chyby/S-20-navrh.png"
+      ]
+    },
+    {
+      "id": "S-14",
+      "nazov": "V pokyne návrhu je zvýraznená cena nalepená na predošlé slovo",
+      "typ": "chyba",
+      "dopad": "nizky",
+      "narocnost": "mala",
+      "kde": [
+        "Zhromaždenie s navrhnutou kartou, všetky rozlíšenia"
+      ],
+      "zdroj": "apps/web/src/hra/HernaPlocha.tsx:4543 (medzera vnútri <strong>) · apps/web/src/hra/hra.css:3161 (.poldeci-varovanie bez odsadenia)",
+      "popis": "Rámik „Ťah ťa stojí 1 plný poldeci — plné 3 → 2.“ začína hneď za slovom „vľavo“ a končí na bodke pred „· spoj“.",
+      "navrh": "Medzeru dať pred rámik a rámiku pridať vnútorný okraj (padding 1px 7px, margin 0 8px).",
+      "teraz": "ui-inspekcia-20261120-1324-stol-chyby/S-14-teraz.png",
+      "mock": [
+        "ui-inspekcia-20261120-1324-stol-chyby/S-14-navrh.png"
+      ]
+    },
+    {
+      "id": "S-15",
+      "nazov": "Čip „nepriznané · Cirhóza ×1“ stráca počet za trojbodkou",
+      "typ": "chyba",
+      "dopad": "nizky",
+      "narocnost": "mala",
+      "kde": [
+        "Pult hráča, 1600×1000 a 1920×1080 (obsah 142 px, miesto 139 px); pri 1366–1512 px sa zmestí"
+      ],
+      "zdroj": "apps/web/src/hra/hra.css:757 (.doska-oblast .cip) · :785 (.cip.kliatba)",
+      "popis": "Na väčších obrazovkách je čip o 3 px užší než text, takže práve počet kliatob (×1) nahradí trojbodka.",
+      "navrh": "Čip nechať narásť podľa obsahu (bez max-width), prípadne skrátiť na „Cirhóza ×1“.",
+      "teraz": "ui-inspekcia-20261120-1324-stol-chyby/S-15-teraz.png",
+      "mock": [
+        "ui-inspekcia-20261120-1324-stol-chyby/S-15-navrh.png"
+      ]
+    },
+    {
+      "id": "S-17",
+      "nazov": "Štítok „✓ VYBRANÁ“ leží na karte cez jej akcie",
+      "typ": "chyba",
+      "dopad": "nizky",
+      "narocnost": "mala",
+      "kde": [
+        "Pitka, karta vybraná na NA EX — všetky rozlíšenia; štítok je hore alebo dole podľa natočenia karty"
+      ],
+      "zdroj": "apps/web/src/hra/HernaPlocha.tsx:3192, :3447 · apps/web/src/hra/hra.css:4023 (.vybrana-pod)",
+      "popis": "Štítok zakryje okraj karty s akciami práve vtedy, keď pokyn vymenúva, čo NA EX s jej akciami urobí. Výber už ukazuje červený rámik.",
+      "navrh": "Štítok vysunúť nad kartu, mimo líca.",
+      "teraz": "ui-inspekcia-20261120-1324-stol-chyby/S-17-teraz.png",
+      "mock": [
+        "ui-inspekcia-20261120-1324-stol-chyby/S-17-navrh.png"
+      ]
+    },
+    {
+      "id": "S-19",
+      "nazov": "„spoj: 3“ na voľnom mieste sa číta ako tri spoje",
+      "typ": "ux",
+      "dopad": "nizky",
+      "narocnost": "mala",
+      "kde": [
+        "Zhromaždenie, voľné miesta na koncoch línie — všetky rozlíšenia"
+      ],
+      "zdroj": "apps/web/src/i18n/sk.json:1312 (plocha.spoj) · apps/web/src/hra/HernaPlocha.tsx:3398",
+      "popis": "Číslo je počet kariet z ruky, ktoré sa na tom mieste spoja, nie počet spojov — tie má až štítok „2 spoje“ na karte v ruke. Dve rôzne veci nesú to isté slovo.",
+      "navrh": "Staré → nové: „spoj: 3“ → „spoja sa 3 karty“, „spoj: 1“ → „spojí sa 1 karta“.",
+      "teraz": "ui-inspekcia-20261120-1324-stol-chyby/S-19-teraz.png",
+      "mock": [
+        "ui-inspekcia-20261120-1324-stol-chyby/S-19-navrh.png"
+      ]
+    },
+    {
+      "id": "S-21",
+      "nazov": "Prepínač Súhrn / Podrobne / Text v rekapitulácii má ciele vysoké 17 px",
+      "typ": "chyba",
+      "dopad": "nizky",
+      "narocnost": "mala",
+      "kde": [
+        "Rekapitulácia Pitky a bitky, všetkých 5 rozlíšení (53×17, 75×17, 44×17 px)"
+      ],
+      "zdroj": "apps/web/src/hra/hra.css:8353 (.rk-rezim > button: padding 1px 8px, písmo 0.64rem)",
+      "popis": "Tri tlačidlá prepínača sú pod hranicou 24 px a písmo má 10 px; na notebooku sa do nich zle triafa.",
+      "navrh": "Výška aspoň 26 px (padding 4px 12px).",
+      "teraz": "ui-inspekcia-20261120-1324-stol-chyby/S-21-teraz.png",
+      "mock": [
+        "ui-inspekcia-20261120-1324-stol-chyby/S-21-navrh.png"
+      ]
+    },
+    {
+      "id": "S-22",
+      "nazov": "Obyčajné tlačidlá okien začínajú raz malým, raz veľkým písmenom",
+      "typ": "nekonzistencia",
+      "dopad": "nizky",
+      "narocnost": "mala",
+      "kde": [
+        "Koniec hry: „pozrieť stôl“, „ohodnotiť hru“, „späť do lobby“",
+        "Medziobrazovky „Rozumiem“, rekapitulácia „Ďalej“, nápoveda Melichara „ďalej“"
+      ],
+      "zdroj": "apps/web/src/i18n/sk.json:304 (koniec.spatDoLobby) · :1444 (plocha.dalej) · :2118 (vyucba.dalej)",
+      "popis": "Verzálky pečiatok sú ich štýl, ale bežné tlačidlá okien nie sú jednotné — v tej istej partii „Ďalej“ aj „ďalej“.",
+      "navrh": "Veľké začiatočné písmeno všade: „Pozrieť stôl“, „Ohodnotiť hru“, „Späť do lobby“, „Ďalej“.",
+      "teraz": "ui-inspekcia-20261120-1324-stol-chyby/S-22-teraz.png",
+      "mock": [
+        "ui-inspekcia-20261120-1324-stol-chyby/S-22-navrh.png"
+      ]
+    }
+  ]
+}
