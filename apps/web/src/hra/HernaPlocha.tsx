@@ -70,7 +70,7 @@ import { LetiacaKarta, type Obdlznik, type Prelet } from "./LetiacaKarta.tsx";
 import { radSenku } from "./tieneSenku.ts";
 import { PocitadloSLiniou } from "./PocitadloBitky.tsx";
 import { vyhraStrachomBitky } from "./vyhraStrachom.ts";
-import { RekapitulaciaPitkyVrstva, type OdpovedNaNaex, type PiktogramyRekapitulacie } from "./Rekapitulacia.tsx";
+import { pitkaBezZmeny, RekapitulaciaPitkyVrstva, type OdpovedNaNaex, type PiktogramyRekapitulacie } from "./Rekapitulacia.tsx";
 import { mediaUrl } from "../lib/api.ts";
 import { useStolVHlavicke, useStrazOdchodu } from "../lib/odchod.ts";
 import { HlavickaPartie } from "./HlavickaPartie.tsx";
@@ -2045,7 +2045,9 @@ export function HernaPlocha({
         if (i === zastavenie) nove.push({ druh: "stol", pitka: e.rekap.pitka });
         const odpovede = odpovedePitky.current;
         odpovedePitky.current = [];
-        if (!pitkaPredBitkou(events, i) || e.rekap.naex.karty.length > 0 || odpovede.length > 0) {
+        // Pitka, v ktorej sa nič nezmenilo, sa oknom nevyhodnocuje (Z-05 B); výučba má vlastný scenár.
+        const bezZmeny = vyucba !== true && odpovede.length === 0 && pitkaBezZmeny(e.rekap);
+        if (!bezZmeny && (!pitkaPredBitkou(events, i) || e.rekap.naex.karty.length > 0 || odpovede.length > 0)) {
           const ciel = view.ciel ?? predoslyView.current?.ciel ?? null;
           const lok = ciel?.lokalita ?? null;
           // Skóre bitky pred Pitkou a po nej z verejnej línie (to isté, čo ráta odhad na stole).
