@@ -131,7 +131,7 @@ import { cieleSuperovhoNaex, vystrahaCela, vystrahaKratko, vystrahaVRuke } from 
 import { StavkaBitky } from "./StavkaBitky.tsx";
 import { UCINOK_KRATKO, UCINOK_PRIAZNE } from "./Scorecard.tsx";
 import type { HracInfo, SuhrnAchievementov, ZmenyFrajeriny } from "./useHra.ts";
-import { menoVoVete, rodHraca, textHlasky } from "./useHra.ts";
+import { menoNaPulte, menoVoVete, rodHraca, textHlasky } from "./useHra.ts";
 import { NAHRADIT, textNepolozenejKarty } from "./nepolozenaKarta.ts";
 import { useBezNaexVBitke, useOdlozenyPrikaz } from "./usePohodlie.ts";
 import { useTahanie, type Tahanie } from "./useTahanie.ts";
@@ -603,6 +603,8 @@ export function HernaPlocha({
   const ja = view.ja;
   // Bot je vo vete „Bot Božena“; tvary podľa rodu hráča (Michal 2026-10-22).
   const menoHraca = (p: PlayerId): string => menoVoVete(hraci[p], p);
+  // V nadpisoch, štítkoch a tabuľkách súper menom z pultu, ja „ty“ (S-12).
+  const menoNaStole = (p: PlayerId): string => (p === view.ja ? t("stol.ty") : menoNaPulte(hraci[p], p));
   const rodHracaP = (p: PlayerId): Rod => rodHraca(hraci[p]);
   const karta = (props: Omit<HernaKartaProps, "sada" | "data"> & { readonly key?: number }) => {
     const { key, ...rest } = props;
@@ -2941,7 +2943,7 @@ export function HernaPlocha({
       zostava={view.lokalityVHre}
       ciel={view.ciel}
       ja={ja}
-      mena={[menoHraca(0), menoHraca(1)]}
+      mena={[menoNaPulte(hraci[0], 0), menoNaPulte(hraci[1], 1)]}
       avatary={[hraci[0]?.avatar ?? null, hraci[1]?.avatar ?? null]}
       karta={sKartami ? (k, sirka, stavy) => karta({ karta: k, sirka, ...(stavy === undefined ? {} : { stavy }) }) : undefined}
       menoKarty={menoKarty}
@@ -3403,7 +3405,7 @@ export function HernaPlocha({
             V úzkom mieste (malé karty na nízkom notebooku) by sa text lámal po písmenách — ostáva v title. */}
         {(moze || m.kratko !== undefined ? sirkaMiesta >= 36 : sirkaMiesta >= 72) && (
           <span className={`mv-text ${moze ? "" : "mv-dovod"} ${!moze && m.kratko !== undefined ? "mv-kratko" : ""}`}>
-            {!moze ? (m.kratko ?? m.dovod ?? t("plocha.nedaSa")) : vybrane ? t("plocha.vyberZRukyKratko") : sSpojom > 0 ? t("plocha.spoj", { pary: sSpojom }) : t("plocha.bezSpoja")}
+            {!moze ? (m.kratko ?? m.dovod ?? t("plocha.nedaSa")) : vybrane ? t("plocha.vyberZRukyKratko") : sSpojom > 0 ? t("plocha.spojaSaKarty", { n: sSpojom }) : t("plocha.bezSpoja")}
           </span>
         )}
       </button>
@@ -3669,7 +3671,8 @@ export function HernaPlocha({
   // ---- potvrdenie ťahu ako pečiatka (Michal 2026-10-25) ---------------------
   // Hlavné potvrdenie ťahu leží v strede spodnej hrany stola, na mieste pečiatky NA EX! —
   // nie v paneloch či v rohu. ✕ v rohu návrh vráti (ako zrušenie výberu pri NA EX!);
-  // keď nie je čo potvrdiť, na tom istom mieste je ťah bez návrhu („už neťahám“, „neberiem“).
+  // keď nie je čo potvrdiť, na tom istom mieste je ťah bez návrhu („bez odpovede“); „už neťahám“ končí fázu,
+  // preto je v pravom rohu pri Pasovať (S-20).
   const pecatTahu = (p: {
     readonly text: ReactNode;
     readonly akcia: () => void;
@@ -3729,7 +3732,7 @@ export function HernaPlocha({
       <span className="hrana-skore" title={t("plocha.noveKartyTitul")}>
         <span className="moje">{t("stol.ty")} {draft.noveKarty[ja]}</span>
         <span className="superove">
-          {menoHraca(super_)} {draft.noveKarty[super_]}
+          {menoNaStole(super_)} {draft.noveKarty[super_]}
           {draft.hotovo[super_] ? t("plocha.uzNeberie") : ""}
         </span>
       </span>
@@ -3894,7 +3897,21 @@ export function HernaPlocha({
     if (view.faza === "zhromazdenie" && plan !== null && vylozenia.length > 0) {
       return {
         stred: pecatTahu({
-          text: <>{t("plocha.potvrdit")}{plan.poldeci > 0 && <span className="cena">−{t("spaky.nPoldeci", { n: plan.poldeci })}{plan.navyse > 0 && ` · −${cigariet(plan.navyse * KONSTANTY.CENA_KARTY_NAVYSE)}`}</span>}</>,
+          // Cena piktogramom a v poradí „dáš → dostaneš“ ako ostatné pečiatky (S-11).
+          text:
+            plan.poldeci > 0 ? (
+              <Vymena
+                das={
+                  <>
+                    <CenaPoldeci n={plan.poldeci} />
+                    {plan.navyse > 0 && <CenaCigariet n={plan.navyse * KONSTANTY.CENA_KARTY_NAVYSE} />}
+                  </>
+                }
+                dostanes={t("plocha.potvrdit")}
+              />
+            ) : (
+              t("plocha.potvrdit")
+            ),
           skratka: "k",
           dovod: plan.chyba === null ? chybaVoVyucbe : prelozHlasku(plan.chyba),
           akcia: () => posli({ type: "tah", kroky: plan.kroky }),
@@ -3915,9 +3932,7 @@ export function HernaPlocha({
       return {
         stred: pecatTahu({
           text: (
-            <>
-              {t("plocha.potvrdit")} <CenaPoldeci n={KONSTANTY.CENA_ODPOVEDE_POLDECI} />
-            </>
+            <Vymena das={<CenaPoldeci n={KONSTANTY.CENA_ODPOVEDE_POLDECI} />} dostanes={t("plocha.potvrdit")} />
           ),
           skratka: "k",
           tip: t("plocha.odpovedStoji"),
@@ -4393,8 +4408,19 @@ export function HernaPlocha({
             ),
           ...(mobil
             ? {}
-            : {
+            : (() => {
+                const uzNetaham = pecatTahu({
+                  text: t("plocha.uzNetaham"),
+                  druh: "pas",
+                  skratka: "p",
+                  vyucba: "tlacidlo:pas",
+                  tip: t("plocha.prestanesBrat", { n: limitTeraz, pravidlo: pravidloBrania }),
+                  akcia: () => posli({ type: "draftStop" }),
+                });
+                return {
                 // Počet cigariet je na bare hráča — ľavý kraj hrany patrí Pivnici (Michal 2026-11-02).
+                // Stred hrany = potvrdenie ťahu, pravý roh = koniec fázy ako Pasovať a Skončiť Pitku (S-20);
+                // na telefóne je „už neťahám“ hlavná akcia pruhu pokynu.
                 stred:
                   zoSenku.length > 0
                     ? pecatTahu({
@@ -4408,16 +4434,17 @@ export function HernaPlocha({
                         akcia: potvrdBranie,
                         zrus: { akcia: () => setNavrh(null), popis: zoSenku.length === 1 ? t("plocha.vratitKartuDoPonuky") : t("plocha.vratitKartyDoPonuky") },
                       })
-                    : pecatTahu({
-                        text: t("plocha.uzNetaham"),
-                        druh: "pas",
-                        skratka: "p",
-                        vyucba: "tlacidlo:pas",
-                        tip: t("plocha.prestanesBrat", { n: limitTeraz, pravidlo: pravidloBrania }),
-                        akcia: () => posli({ type: "draftStop" }),
-                      }),
-                vpravo: skoreBrania,
-              }),
+                    : naSirku
+                      ? uzNetaham
+                      : undefined,
+                vpravo: (
+                  <>
+                    {skoreBrania}
+                    {zoSenku.length === 0 && !naSirku && uzNetaham}
+                  </>
+                ),
+                };
+              })()),
         };
       }
 
@@ -5271,6 +5298,11 @@ export function HernaPlocha({
           {t("koniec.pozrietStol")}
         </button>
       )
+    ) : pohladStarsich !== null && !naSirku && !mobil ? (
+      // To isté „← Späť na stôl“ ako na nástenke — sesterská vrstva z vedľajšej dlaždice (S-13).
+      <button type="button" className="ls-tlacidlo" onClick={zavriStarsich}>
+        ← {t("plocha.spatNaStolVelke")} <kbd>Esc</kbd>
+      </button>
     ) : null;
   // Súhrn po bitke na línii (návrh c): krok drží stôl, Ďalej na hrane (pokyn) ide na ďalší krok, po
   // poslednom hra pokračuje; Preskočiť súhrn zavrie hneď.
@@ -6141,7 +6173,7 @@ export function HernaPlocha({
     return view.naTahu === p;
   };
   const stranaBaru = (p: PlayerId): StranaBaru => ({
-    meno: p === ja ? "ty" : menoHraca(p),
+    meno: menoNaStole(p),
     naTahu: naTahuStrana(p),
     stav: stavStrany(p),
     akcie: <AkcieStrany sums={lineEval.sums[p]} zdroje={lineEval.zdroje[p]} rozpis={rozpis[p]} sada={sada} menoKarty={menoKarty} sNazvom />,
@@ -6501,6 +6533,7 @@ export function HernaPlocha({
           rody={[rodHracaP(0), rodHracaP(1)]}
           view={view}
           mena={[menoHraca(0), menoHraca(1)]}
+          menaNaStole={[menoNaPulte(hraci[0], 0), menoNaPulte(hraci[1], 1)]}
           avatary={[hraci[0]?.avatar ?? null, hraci[1]?.avatar ?? null]}
           menoKarty={menoKarty}
           starsi={{

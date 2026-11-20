@@ -181,7 +181,10 @@
 }
 
 @container os-kola (max-width: 720px) {
-  .priebeh-kola .krok-stredne,
+  .priebeh-kola .krok-stredne {
+    display: none;
+  }
+
   .partia-os .priebeh-kola.mnoho-krokov .krok-stredne {
     display: none;
   }
@@ -775,6 +778,8 @@ button.zdroj-starsi[aria-pressed="true"] {
 .doska-oblast .cip {
   flex: 0 1 auto;
   min-width: 0;
+  /* Užší okraj čipu: na 1600–1920 px o 3 px chýbalo a trojbodka zjedla práve počet „×1“ (S-15). */
+  padding-inline: 6px;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -3318,19 +3323,11 @@ button.bot-volba.aktivna {
   overflow-wrap: anywhere;
 }
 
-/* Karty v ruke pri vybranom mieste. Pás pokynov sa posunie o --vysun vyššie,
-   aby ho vysunuté karty neprekryli; `translate` sa skladá s posunom pri hoveri. */
-.ruka.volba-miesta {
-  --vysun: 38px;
-  height: calc(var(--ruka-h) + var(--vysun));
-}
-
-.ruka.volba-miesta .ruka-rad {
-  margin-top: var(--vysun);
-}
-
-.ruka-rad > .tahatelna.vysunuta {
-  translate: 0 calc(-1 * var(--vysun, 38px));
+/* Karty v ruke pri vybranom mieste (S-18): výška ruky sa nemení — zdvihnutá ruka posúvala
+   celý stôl pod myšou. Karty, ktoré sa spoja, ostanú na mieste, ostatné klesnú pod okraj okna;
+   `translate` sa skladá s posunom pri hoveri. Telefón má vlastné (mobil-sirka.css). */
+.hra:not(.mobil-sirka) .ruka.volba-miesta .ruka-rad > .tahatelna:not(.vysunuta) {
+  translate: 0 34px;
 }
 
 .ruka-rad > .tahatelna.vysunuta > .kl {
@@ -3668,6 +3665,17 @@ button.pecat-koncim[aria-disabled="true"] {
 
 button.pecat-koncim .cena-cig {
   font-size: 0.85rem;
+}
+
+/* Pas doberie karty (v12.6): „+3“ a karta vo farbe pečiatky — bez rozmeru mala 0 × 0 px (S-05). */
+button.pecat-koncim .ikona-karty {
+  width: 18px;
+  height: 18px;
+  fill: currentColor;
+}
+
+button.pecat-koncim .ikona-karty .ilustracia {
+  fill: var(--pozadie);
 }
 
 /* Odkazujem (Michal 2026-10-27): Nástroj do Dedičstva vedľa pasovať — tá istá pečiatka, opačný sklon. */
@@ -6750,6 +6758,13 @@ button.auto-hotovo-odkaz {
     bottom: auto;
   }
 
+  /* Na počítači „vybraná“ nad kartou, mimo líca — na líci zakrývala akcie, ktoré NA EX práve
+     rozoberá (S-17); výber ukazuje aj rámik. Telefón po starom (mobil-sirka.css). */
+  .hra:not(.mobil-sirka) .stol-plst .s-lupou > .vybrana-pod {
+    top: -14px;
+    bottom: auto;
+  }
+
   .stol-plst .s-lupou.naex-mozny:has(.kl-otocena)::before {
     top: auto;
     bottom: 4px;
@@ -8373,10 +8388,12 @@ body:has(.medziobrazovka) .moment-vrstva {
   overflow: hidden;
 }
 
+/* Ciele aspoň 26 px vysoké — pri 17 px sa do nich na notebooku zle triafalo (S-21). */
 .rk-rezim > button {
-  padding: 1px 8px;
+  min-height: 26px;
+  padding: 4px 12px;
   font-family: inherit;
-  font-size: 0.64rem;
+  font-size: 0.7rem;
   font-weight: 700;
   line-height: 1.5;
   letter-spacing: 0.06em;
@@ -9519,6 +9536,19 @@ body:has(.medziobrazovka) .moment-vrstva {
   animation:
     spaky-zmena-in 0.2s ease-out,
     spaky-zmena-out 0.4s ease-in 2.1s forwards;
+}
+
+/* Odznak v pravom hornom rohu dlaždice, mimo riadku s číslom — pri dvojcifernom počte
+   orezal ikonu špaku aj seba (S-09). */
+.zdroj-body {
+  position: relative;
+}
+
+.zdroj-body .spaky-zmena {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  margin-left: 0;
 }
 
 .spaky-zmena.minus {

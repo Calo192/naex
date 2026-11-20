@@ -20,6 +20,8 @@ import { vyhraStrachomBitky } from "./vyhraStrachom.ts";
 export interface KoniecHryProps {
   readonly view: ClientState;
   readonly mena: readonly [string, string];
+  /** Mená v skóre, na nástenke a v účte (S-12): ako na pulte, bez „Bot“; chýba = mena. */
+  readonly menaNaStole?: readonly [string, string];
   readonly menoKarty: (defId: string) => string;
   readonly frajerina: ZmenyFrajeriny | null;
   /** Získané achievementy a „chýbalo málo“ (príde zo servera po konci). */
@@ -42,7 +44,7 @@ function vykupneText(v: Vykupne | undefined): string {
   return t("koniec.vykupne", { poldeci: t("koniec.plnychPoldeci", { n: v.poldeci }), cigarety: t("koniec.cigariet", { n: v.cigarety }), n: v.spaky });
 }
 
-export function KoniecHry({ view, mena, menoKarty, frajerina, achievementy = null, onZavri, opustit, rodJa = null, rody = [null, null], avatary = [null, null], starsi }: KoniecHryProps) {
+export function KoniecHry({ view, mena, menaNaStole = mena, menoKarty, frajerina, achievementy = null, onZavri, opustit, rodJa = null, rody = [null, null], avatary = [null, null], starsi }: KoniecHryProps) {
   const koniec = view.koniec;
   // Fokus na „späť do lobby“ bez posunu — autoFocus vyroloval vysoké okno nadol a výsledok
   // hore hráč nevidel (UI inšpekcia 2026-10-24).
@@ -81,7 +83,7 @@ export function KoniecHry({ view, mena, menoKarty, frajerina, achievementy = nul
           <span className="dvojbodka">:</span>
           <span className="superove">
             <PocetSpakov n={koniec.body?.[su] ?? view.spaky[su]} kto="superov" velky />
-            {mena[su]}
+            {menaNaStole[su]}
           </span>
         </p>}
         {view.pata === undefined && view.nastenka.length > 0 && (
@@ -90,7 +92,7 @@ export function KoniecHry({ view, mena, menoKarty, frajerina, achievementy = nul
             zostava={[]}
             ciel={null}
             ja={ja}
-            mena={mena}
+            mena={menaNaStole}
             avatary={avatary}
             menoKarty={menoKarty}
             favour={starsi === undefined ? undefined : (id) => favourPodlaId(starsi.data, view, id)}
@@ -103,7 +105,7 @@ export function KoniecHry({ view, mena, menoKarty, frajerina, achievementy = nul
         {view.pata === undefined && starsi !== undefined && <PasStarsich view={view} data={starsi.data} mena={mena} menoKarty={menoKarty} obrazok={starsi.obrazok} />}
         {rozpis !== null && (
           <div className="koniec-rozpis">
-            <UcetSpakov rozpis={rozpis} ja={ja} mena={mena} popisy={popisy} />
+            <UcetSpakov rozpis={rozpis} ja={ja} mena={menaNaStole} popisy={popisy} />
             {(koniec.vazni?.[0] ?? 0) + (koniec.vazni?.[1] ?? 0) > 0 && (
               <p className="koniec-cirhozy">{t("koniec.vazni", { ja: koniec.vazni?.[ja] ?? 0, meno: mena[su], su: koniec.vazni?.[su] ?? 0 })}</p>
             )}
