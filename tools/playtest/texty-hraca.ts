@@ -5,12 +5,14 @@
 
 import type { CardInstance, ClientState, ElderState, GameData, PlayerId } from "@naex/core";
 import {
+  KONSTANTY,
   dalsiePitkyKola,
   efektyPrehry,
   opponentOf,
   poOdkrytiNaex,
   cenaDalsiehoStupna,
   sMojimiSkrytymiNaex,
+  sPecenou,
   sPrilozenou,
   spakov,
   stavkaBitky,
@@ -103,13 +105,15 @@ function kartaPodNaex(data: GameData, v: ClientState, uid: number): string {
  * Výstraha pečene pri možnosti „vylož“ (Michal 2026-11-06, playtest 20261106: Sabotér a Ekonóm ju
  * videli až po vyložení, vo VÝHĽADE PITKY). Ten istý výpočet ako web (vystrahaPecene), z pohľadu
  * hráča — súperovu ruku ani jeho skryté NA EX nepozná. Null, keď karta žiadnu Cirhózu nehrozí.
+ * Odpoveď na NA EX vypije plný poldeci: pečeň +1 hneď (§7) — výstraha ju ráta ako web (playtest
+ * štýlov 20261117-174752: Agresor dostal Cirhózu bez výstrahy).
  */
-export function vystrahaPeceneText(data: GameData, v: ClientState, k: CardInstance, kam: "vlastna" | "superova"): string | null {
+export function vystrahaPeceneText(data: GameData, v: ClientState, k: CardInstance, kam: "vlastna" | "superova", odpoved = false): string | null {
   if (v.ciel === null) return null;
   const su = opponentOf(v.ja);
   const pred = sMojimiSkrytymiNaex(data, v);
   const po = sPrilozenou(data, pred, kam === "vlastna" ? v.ja : su, k, v.ja);
-  const x = vystrahaPecene(data, pred, po);
+  const x = vystrahaPecene(data, pred, odpoved ? sPecenou(po, v.ja, KONSTANTY.CENA_ODPOVEDE_POLDECI) : po);
   if (x === null) return null;
   const cirhozy = (p: PlayerId): string => textHrozbyKliatob({ cirhozy: x.cirhozy[p], dlhy: 0, spaky: x.spaky[p] });
   const naKartu = x.naex === null ? undefined : po.strany.flat().find((pl) => pl.card.uid === x.naex?.uid);

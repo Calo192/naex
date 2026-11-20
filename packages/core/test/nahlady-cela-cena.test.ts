@@ -10,6 +10,10 @@ import type { CardInstance, ClientState, Event, GameState, PlacedCard, PlayerId 
 import {
   apply,
   buildGameData,
+  mozeHrat,
+  rngInt,
+  rngSeed,
+  tahBota,
   dopadyNahladu,
   loadGameData,
   moznostiNaex,
@@ -30,8 +34,12 @@ const V4: Layout4 = ["Povera", "Povera", "Povera", "Povera"];
 const fajciar = makeDef("fajciar_test", C4, C4, { tags: ["Občan"] });
 const pohorsujuci = makeDef("pohorsujuci_test", P4, P4, { tags: ["Občan"] });
 const poverciva = makeDef("poverciva_test", V4, V4, { tags: ["Občan"] });
+const PL2: Layout4 = ["Poldeci", null, "Poldeci", null];
+const RB2: Layout4 = ["Robota", null, "Robota", null];
+const dolievac = makeDef("dolievac_test", PL2, PL2, { tags: ["Občan"] });
+const robotnik = makeDef("robotnik_test", RB2, RB2, { tags: ["Občan"] });
 const cards = new Map(zaklad.cards);
-for (const d of [fajciar, pohorsujuci, poverciva]) cards.set(d.id, d);
+for (const d of [fajciar, pohorsujuci, poverciva, dolievac, robotnik]) cards.set(d.id, d);
 const data = buildGameData(cards, zaklad.elders, parseScorecards(scorecardsJson));
 
 const lezi = (card: CardInstance, playedBy: PlayerId): PlacedCard => ({ card, playedBy });
@@ -206,4 +214,93 @@ describe("náhľad NA EX nemlčí o tom, čo hra zúčtuje navyše (návrh #49)"
 
 
 
+});
+
+// Playtest 20261117-140948, nezrovnalosť 4 (Vilo): NA EX na kartu s neaktívnymi Poldeci či Robotou ich zdvojí —
+// doliatie po Pitke (od v12.6 posledné slovo) a špaky z Roboty sa v náhľade neukázali, hoci ich hra zúčtovala.
+describe("náhľad NA EX: doliatie po Pitke a Robota sedia s motorom", () => {
+  const ceny = [
+    { cirhoza: 3, dlh: 1 },
+    { cirhoza: 3, dlh: 1 },
+  ] as const;
+
+  /** Posledná Pitka kola s kartou hráča 0 na konci línie; vypitých poldeci dosť, aby doliatie nič nestropovalo. */
+  function stol(defId: string, layout: Layout4, pitkyCelkom: number): GameState {
+    const s = vPitke([lezi(instanceFor(data, "pohorsujuci_test", P4, P4), 0), lezi(instanceFor(data, defId, layout, layout), 0)]);
+    return {
+      ...s,
+      pitkyCelkom,
+      hraci: [
+        { ...s.hraci[0], poldeciPlne: 0, poldeciVypite: 6, dlhy: 0 },
+        { ...s.hraci[1], poldeciVypite: 2, dlhy: 0 },
+      ],
+    };
+  }
+
+  // Finále: po ňom sa poldeci neobnovia (§9.5), doliatie po poslednej Pitke ide do výkupného — rovnako ako pred
+  // ďalším Zhromaždením; motor ho ráta tým istým doliatiePoPitke.
+  it("doliatie: o koľko poldeci viac či menej sa po Pitke doleje (finále, pred výkupným)", () => {
+    const s: GameState = { ...stol("dolievac_test", PL2, 1), ciel: { typ: "finale", lokalita: { uid: 990001, defId: "polovnicka_chata", leftLayout: 0, rightLayout: 0 } } };
+    /** Doliatie oboch hráčov podľa motora (zmenaPoldeci zo zdrojov doliatia), keď Pitku dohrajú bez ďalšieho NA EX. */
+    const doliatie = (t0: GameState): readonly [number, number] => {
+      let t = t0;
+      const out: [number, number] = [0, 0];
+      for (let i = 0; i < 4 && t.faza === "pitka"; i++) {
+        const r = apply(data, t, { type: "skipNaex" }, naTahu(t)!);
+        for (const e of r.events) {
+          const m = e.type === "log" ? /^Hráčovi (\d) sa po Pitke dolieva (\d+)/u.exec(e.text) : null;
+          if (m !== null) out[Number(m[1]) - 1 as PlayerId] += Number(m[2]);
+        }
+        t = r.state;
+      }
+      return out;
+    };
+    const bez = doliatie(s);
+    let zmeny = 0;
+    for (const uid of ciele(s)) {
+      const n = nahladNaexNaKartu(data, viewFor(data, s, 1), uid, ceny)!;
+      const t = doliatie(naex(s, 1, uid));
+      for (const p of [0, 1] as const) expect(n.dopady[p].doliatie, `uid ${uid}, hráč ${p}`).toBe(t[p] - bez[p]);
+      if (n.dopady[0].doliatie !== 0) zmeny++;
+    }
+    expect(zmeny).toBeGreaterThan(0);
+  });
+
+  it("doliatie po poslednej Pitke kola mimo finále náhľad nehlási — bitka obnoví všetky poldeci", () => {
+    const s = stol("dolievac_test", PL2, 1);
+    for (const uid of ciele(s)) expect(nahladNaexNaKartu(data, viewFor(data, s, 1), uid, ceny)!.dopady.map((d) => d.doliatie)).toEqual([0, 0]);
+  });
+
+  it("Robota: špaky za Dlhy, ktoré nemá čo spáliť, ako ich bitka zúčtuje", () => {
+    const s = { ...stol("robotnik_test", RB2, 1), ciel: { typ: "lokalita" as const, lokalita: null } };
+    /** Dohrá Pitku a bitku botmi (ruky sú prázdne, líniu nezmenia) — špaky z Roboty hráča 0 podľa logu motora. */
+    const robota = (t0: GameState): number => {
+      let t = t0;
+      let rng = rngSeed(7);
+      let spaky: number | null = null;
+      for (let i = 0; i < 300 && t.koniec === null && spaky === null; i++) {
+        const p = ([0, 1] as const).find((q) => mozeHrat(t, q)) ?? naTahu(t);
+        if (p === null) break;
+        const [seed, r] = rngInt(rng, 2 ** 31);
+        rng = r;
+        const vysledok = apply(data, t, t.faza === "pitka" ? { type: "skipNaex" } : tahBota(data, t, p, seed), p);
+        for (const e of vysledok.events) {
+          const m = e.type === "log" ? /^Robota: hráč 1 nemá čo spáliť — dostáva (\d+)/u.exec(e.text) : null;
+          if (m !== null) spaky = Number(m[1]);
+          if (e.type === "log" && e.text.startsWith("Robota: hráč 1 páli")) spaky ??= 0;
+        }
+        t = vysledok.state;
+        if (t.faza !== "bitka" && t.faza !== "pitka") spaky ??= 0;
+      }
+      return spaky ?? 0;
+    };
+    const bez = robota(s);
+    let zmeny = 0;
+    for (const uid of ciele(s)) {
+      const n = nahladNaexNaKartu(data, viewFor(data, s, 1), uid, ceny)!;
+      expect(n.dopady[0].robota, `uid ${uid}`).toBe(robota(naex(s, 1, uid)) - bez);
+      if (n.dopady[0].robota !== 0) zmeny++;
+    }
+    expect(zmeny).toBeGreaterThan(0);
+  });
 });

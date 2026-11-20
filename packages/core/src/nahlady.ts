@@ -12,6 +12,7 @@ import {
   cielLokalitaId,
   cieleVykladania,
   cigaretyZPitky,
+  doliatiePoPitke,
   lineState,
   naexCieleVLinii,
   nahladPitky,
@@ -152,6 +153,14 @@ export interface DopadyNahladu {
   /** Mäkké poškodenie navyše v najbližšej bitke a koľko ho bude spolu (v10). */
   readonly makke: number;
   readonly makkeSpolu: number;
+  /**
+   * Poldeci navyše, ktoré sa dolejú po tejto Pitke (§7: zadarmo a aktívne akcie Poldeci, doliatiePoPitke) —
+   * od v12.6 rozhodujú o poslednom slove v ďalšom Zhromaždení (playtest 20261117-140948, nezrovnalosť 4).
+   * Po poslednej Pitke kola mimo finále 0: bitka obnoví všetky poldeci.
+   */
+  readonly doliatie: number;
+  /** Špaky navyše od Roboty v najbližšej bitke — za každý Dlh, ktorý nemá čo spáliť (§11). */
+  readonly robota: number;
 }
 
 export function dopadyNahladu(
@@ -161,23 +170,36 @@ export function dopadyNahladu(
   dalsiePitky: number | DalsiePitky,
 ): readonly [DopadyNahladu, DopadyNahladu] {
   const [dPred, dPo] = typeof dalsiePitky === "number" ? [dalsiePitky, dalsiePitky] : dalsiePitky;
-  const stav = (s: ClientState, p: PlayerId, dalsie: number) => {
+  // Línia, bitka a Dlhy sa skladajú raz za stôl — náhľad NA EX sa ráta pre každú kartu v línii.
+  const stav = (s: ClientState, dalsie: number) => {
     const sums = evaluateLine(data, lineState(s)).sums;
-    // Vo Vízii je táto Pitka už vyhodnotená — ako nahladPitky.
-    const tato = s.vizia === null ? cigaretyZPitky(sums, nasobokPitky(s))[p] : 0;
-    const dalej = cigaretyZPitky(sums, nasobokPitky(s))[p] * dalsie;
-    return {
-      cigarety: s.hraci[p].cigarety + tato + dalej,
-      makke: poskodenieBitky(data, stolPriPoskodeni(data, s, dalsie), sums).makke[p],
+    const makke = poskodenieBitky(data, stolPriPoskodeni(data, s, dalsie), sums).makke;
+    const dlhy = vyhladDlhov(data, s, dalsie);
+    const naDoliatiZalezi = (s.faza === "pitka" || s.faza === "zhromazdenie") && (dalsie > 0 || s.ciel?.typ === "finale");
+    return (p: PlayerId) => {
+      // Vo Vízii je táto Pitka už vyhodnotená — ako nahladPitky.
+      const tato = s.vizia === null ? cigaretyZPitky(sums, nasobokPitky(s))[p] : 0;
+      const dalej = cigaretyZPitky(sums, nasobokPitky(s))[p] * dalsie;
+      return {
+        cigarety: s.hraci[p].cigarety + tato + dalej,
+        makke: makke[p],
+        doliatie: naDoliatiZalezi ? doliatiePoPitke(s, sums, p).zisk : 0,
+        // Robota v kroku exekúcie páli Dlhy, ktoré budú pri poškodení; za každý chýbajúci dá špak (exekucieBitky).
+        robota: Math.max(0, dlhy[p].kapacita - dlhy[p].priPoskodeni),
+      };
     };
   };
+  const sPred = stav(pred, dPred);
+  const sPo = stav(po, dPo);
   const pre = (p: PlayerId): DopadyNahladu => {
-    const a = stav(pred, p, dPred);
-    const b = stav(po, p, dPo);
+    const a = sPred(p);
+    const b = sPo(p);
     return {
       cigarety: b.cigarety - a.cigarety,
       makke: b.makke - a.makke,
       makkeSpolu: b.makke,
+      doliatie: b.doliatie - a.doliatie,
+      robota: b.robota - a.robota,
     };
   };
   return [pre(0), pre(1)];
@@ -567,6 +589,16 @@ export interface VystrahaPecene {
    * ho vyloženie zhorší — hrozbu, ktorá platí aj bez karty, by si hráč pripísal na jej vrub.
    */
   readonly naex: HrozbaKliatob | null;
+}
+
+/**
+ * Pohľad s pečeňou hráča `p` vyššie o `n` — pre výstrahu pečene pri karte, ktorá sa pije: Vypiť (§13) a odpoveď
+ * na NA EX (§7, pečeň +1 hneď; playtest štýlov 20261117-174752 — Cirhóza z odpovede prišla bez výstrahy).
+ */
+export function sPecenou(v: ClientState, p: PlayerId, n: number): ClientState {
+  if (n === 0) return v;
+  const h = v.hraci;
+  return { ...v, hraci: p === 0 ? [{ ...h[0], pecen: h[0].pecen + n }, h[1]] : [h[0], { ...h[1], pecen: h[1].pecen + n }] };
 }
 
 /**

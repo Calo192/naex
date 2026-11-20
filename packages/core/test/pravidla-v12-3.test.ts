@@ -58,6 +58,27 @@ describe("§6 pas dáva kartu za každý plný poldeci (v12.6, návrh #71; v12.3
     expect(log).toContain(plne > 0 ? `Hráč 1 pasuje do Pitky a za ${plne === 1 ? "1 plný poldeci" : `${plne} plné poldeci`} doberá ${plne === 1 ? "1 kartu" : `${plne} karty`}.` : "Hráč 1 pasuje do Pitky.");
   });
 
+  // Playtest 20261117-140948 (nezrovnalosť 1, všetci šiesti): v K1 sú oba balíčky prázdne a náhľad sľuboval
+  // 3 karty, hoci motor nedal nič (§4). Náhľad = najviac toľko, koľko je v doberacom a odhadzovacom.
+  it.each([
+    [0, 0, 0],
+    [0, 1, 1],
+    [1, 1, 2],
+    [2, 4, 3],
+  ])("doberací %i a odhadzovací %i, 3 plné poldeci: náhľad %i kariet, motor dá toľko isto", (doberaci, odhadzovaci, kariet) => {
+    const s0 = vZhromazdeni([inst("pijan")], { plne: 3 });
+    const h = s0.hraci[0];
+    const s: GameState = {
+      ...s0,
+      hraci: [{ ...h, doberaci: h.doberaci.slice(0, doberaci), odhadzovaci: Array.from({ length: odhadzovaci }, () => inst("pijan")) }, s0.hraci[1]],
+    };
+    expect(kartyZaPas(viewFor(data, s, 0), 0)).toBe(kariet);
+    expect(kartyZaPas(s, 0)).toBe(kariet);
+    const { state: po, events } = apply(data, s, { type: "pass" }, 0);
+    expect(po.hraci[0].ruka).toHaveLength(1 + kariet);
+    expect(dobral(events, 0)).toBe(kariet);
+  });
+
   it("súper vidí len počet dobratých kariet, nie ktoré to sú", () => {
     const s = vZhromazdeni([inst("pijan")], { plne: 3 });
     const { state: po, events } = apply(data, s, { type: "pass" }, 0);

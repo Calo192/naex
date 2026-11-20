@@ -23,7 +23,7 @@ export const AKCIE_20261019: readonly { readonly kluc: string; readonly nazov: s
     popis:
       "V Pitke získaš 1 Dlh (počítadlo, nie karta). " +
       "Za Dlhy príde v každej bitke Exekútor: spáli ti polovicu Dlhov (zaokrúhlene nahor) a rovnako veľa špakov " +
-      "(tvoja priazeň Advokáta špaky uberie). Pri remíze v tuhom prehráva, kto má viac Dlhov.",
+      "(tvoja priazeň Advokáta špaky uberie). Pri remíze v tuhom, keď hádku nevyhral nikto, prehráva, kto má viac Dlhov.",
   },
   {
     kluc: "PoškodeniePečene",
@@ -96,9 +96,9 @@ export const PREDVOLENE_KLUCOVE_SLOVA: readonly KlucoveSlovo[] = [
     "Dedičstvo",
     "Pasívny bonus Nástroja, kým leží v tvojej hracej oblasti. Vyloženie do Dedičstva stojí cigarety — cena rastie spoločne pre oboch: prvý Nástroj v hre 1 cigaretu, druhý 2, tretí 3…",
   ),
-  // Remízu v tuhom rozhodujú Dlhy (battleOutcome, §9.4); sekera až keď nerozhodne nič.
-  S("Výhra", "Uplatní sa, keď vyhráš bitku o lokalitu: máš vyššie tuhé poškodenie, pri rovnakom tuhom menej Dlhov. Keď nerozhodne ani to, nevyhrá nikto — špaky kola idú na sekeru."),
-  S("Prehra", "Uplatní sa, keď prehráš bitku o lokalitu: máš nižšie tuhé poškodenie, pri rovnakom tuhom viac Dlhov. Keď nerozhodne ani to, neprehrá nikto — špaky kola idú na sekeru."),
+  // Remízu v tuhom rozhoduje víťaz hádky, bez neho Dlhy (v12.6, battleOutcome, §9.4); sekera až keď nerozhodne nič.
+  S("Výhra", "Uplatní sa, keď vyhráš bitku o lokalitu: máš vyššie tuhé poškodenie, pri rovnakom tuhom si vyhral hádku, a keď ju nevyhral nikto, máš menej Dlhov. Keď nerozhodne ani to, nevyhrá nikto — špaky kola idú na sekeru."),
+  S("Prehra", "Uplatní sa, keď prehráš bitku o lokalitu: máš nižšie tuhé poškodenie, pri rovnakom tuhom súper vyhral hádku, a keď ju nevyhral nikto, máš viac Dlhov. Keď nerozhodne ani to, neprehrá nikto — špaky kola idú na sekeru."),
   // Kšeft zanikol (frakcie, Michal 2026-11-08); Kšeft väzňa nahradila v11.2 schopnosť väzňa (PRAVIDLA §10).
   // Spoločník a Nepriateľ (frakcie): akcie navyše, kým je v partii karta s tagom; zápis v texte
   // efektu „Spoločník: Tag {Akcia}.“ — piktogram v zložených zátvorkách (@naex/core navyse.ts).

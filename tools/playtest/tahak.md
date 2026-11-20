@@ -69,6 +69,7 @@ rozpore s `docs/PRAVIDLA.md` platí `docs/PRAVIDLA.md` a rozpor zapíš do
   poldeci**, ktorý máš v okamihu pasu — aj keď pasuje hra za teba (cigarety za pas od v12.6 nie sú; v 2 na 2 dostane
   tím cigaretu za každý plný poldeci ako vo v12.3). Poldeci sa tým **nevypijú**: ostanú ti plné na NA EX
   a ďalšie Zhromaždenie kola; keď pasuješ aj v ňom, dobereš karty znova. Šetriť poldeci sa teda oplatí.
+  Ťahá sa ako vždy: kým nemáš doberací ani odhadzovací balíček (prvé kolo), pas nedá nič (§4).
   Súper vidí len počet dobratých kariet. **Záverečná** ukončí vykladanie ako pas, ale **nič nedá**. Obecný úrad nič
   nezdvojuje.
   **Kto skončí vykladanie prvý, otvorí ďalšie Zhromaždenie kola (v12.6)** — kto otvára, nemá posledné slovo:

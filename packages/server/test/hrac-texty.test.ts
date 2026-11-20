@@ -151,6 +151,25 @@ describe("klient AI hráčov: výstraha pečene pri „vylož“ (playtest 20261
   });
 });
 
+describe("klient AI hráčov: výstraha pečene pri odpovedi na NA EX (playtest štýlov 20261117-174752)", () => {
+  it("ráta pečeň +1 z vypitého poldeca odpovede — Cirhózu, ktorú motor naozaj dá", () => {
+    const { s: s0, lavy } = doPitky(311, []);
+    const karta = instanceFor(sada, "ht_pol", R1, R1);
+    const prah = nahladPitky(sada, viewFor(sada, s0, 1))[1].prahPecene;
+    let s: GameState = { ...s0, hraci: [s0.hraci[0], { ...s0.hraci[1], ruka: [karta], pecen: prah - 1 }] };
+    s = apply(sada, s, { type: "naex", uid: lavy }, 0).state;
+    for (let i = 0; i < 4 && s.pitkaStav?.reakcia !== 1; i++) s = apply(sada, s, { type: "skipNaex" }, naTahu(s)!).state;
+    expect(s.pitkaStav?.reakcia).toBe(1);
+    const v = viewFor(sada, s, 1);
+    // Karta sama pečeň nedá — bez pečene z odpovede by výstraha mlčala.
+    expect(vystrahaPeceneText(sada, v, karta, "vlastna")).toBeNull();
+    expect(vystrahaPeceneText(sada, v, karta, "vlastna", true)).toContain("VÝSTRAHA PEČENE: tebe do konca kola Cirhóza +1");
+    const cirhozy = (t: GameState): number => viewFor(sada, t, 0).nepriznaneKliatby[1].cirhoza;
+    const po = apply(sada, s, { type: "place", uid: karta.uid, target: "vlastna" }, 1).state;
+    expect(cirhozy(po) - cirhozy(s)).toBe(1);
+  });
+});
+
 describe("klient AI hráčov: Bzdocha (playtest 20261028-090549, nezrovnalosť 2)", () => {
   it("majiteľ Bzdochy vidí, na čo dal súper skryto NA EX, a stôl ho ráta", () => {
     const { s, lavy } = doPitky(301, [1]);
