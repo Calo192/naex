@@ -198,8 +198,24 @@ export function Registracia() {
   );
 }
 
-export function Profil() {
-  useTitulok(t("profil.mojProfil"));
+/**
+ * Záložky nastavení (UI inšpekcia W-06, variant B): každá má vlastnú adresu, aby sa dalo
+ * odkazovať a fungovalo Späť. /profil ostáva Účtom — staré odkazy vedú tam, kam viedli.
+ */
+const ZALOZKY_NASTAVENI = [
+  { id: "ucet", href: "/profil", kluc: "profil.zalozkaUcet" },
+  { id: "vzhlad", href: "/profil/vzhlad", kluc: "profil.zalozkaVzhlad" },
+  { id: "hra", href: "/profil/hra", kluc: "profil.zalozkaHra" },
+] as const;
+type ZalozkaNastaveni = (typeof ZALOZKY_NASTAVENI)[number]["id"];
+
+export const jeCestaNastaveni = (cesta: string): boolean => ZALOZKY_NASTAVENI.some((z) => z.href === cesta);
+
+export function Profil({ cesta = "/profil" }: { readonly cesta?: string }) {
+  // Staré odkazy na výber farby (/profil#farba) vedú do Vzhľadu, kam sa výber presunul.
+  const zalozka: ZalozkaNastaveni =
+    cesta === "/profil" && location.hash === "#farba" ? "vzhlad" : (ZALOZKY_NASTAVENI.find((z) => z.href === cesta)?.id ?? "ucet");
+  useTitulok(t("nav.nastavenia"));
   const { ja, nastav, instancia } = useUcet();
   const jazyk = useJazyk();
   const [meno, setMeno] = useState(ja?.meno ?? "");
@@ -451,21 +467,29 @@ export function Profil() {
   return (
     <div className="profil profil-siroky">
       <HlavaStranky
-        nadpis={t("profil.mojProfil")}
+        nadpis={t("nav.nastavenia")}
         uvod={t("profil.uvod")}
         akcia={
           <Odkaz href={`/hrac/${ja.id}`} className="tlacidlo">
-            {t("profil.statistikyAPartie")}
+            {t("nav.mojProfil")}
           </Odkaz>
         }
       />
+      <nav className="zalozky nastavenia-zalozky" aria-label={t("profil.zalozky")}>
+        {ZALOZKY_NASTAVENI.map((z) => (
+          <Odkaz key={z.id} href={z.href} className={zalozka === z.id ? "zalozka aktivna" : "zalozka"} aria-current={zalozka === z.id ? "page" : undefined}>
+            {t(z.kluc)}
+          </Odkaz>
+        ))}
+      </nav>
       {novy && <Hlaska druh="ok">{t("profil.novy")}</Hlaska>}
       {obnovene && <Hlaska druh="ok">{t("profil.obnovene")}</Hlaska>}
       {sprava !== null && <Hlaska druh={sprava.druh}>{sprava.text}</Hlaska>}
 
+      {zalozka === "ucet" && (
       <section className="panel profil-hlava">
         <div className="profil-avatar">
-          {/* Jediný avatar mimo partie vo farbe hráča — hneď pod ním sa pár volí. */}
+          {/* Jediný avatar mimo partie vo farbe hráča (pár sa volí vo Vzhľade). */}
           <Avatar meno={ja.meno} avatar={ja.avatar} velkost={112} farba="ja" />
         </div>
         <div>
@@ -478,9 +502,6 @@ export function Profil() {
               {t("profil.rankPoldeci")}
             </p>
           )}
-          <p style={{ margin: "6px 0 0" }}>
-            <Odkaz href={`/hrac/${ja.id}`}>{t("profil.statistikyAPartie")}</Odkaz>
-          </p>
           <div className="profil-avatar-akcie">
             <input
               ref={subor}
@@ -512,10 +533,10 @@ export function Profil() {
             )}
           </div>
         </div>
-        <VyberParu chyba={chyba} />
       </section>
+      )}
 
-      {galeriaOtvorena && (
+      {zalozka === "ucet" && galeriaOtvorena && (
         <section className="panel galeria-avatarov" aria-label={t("profil.vyberAvatara")}>
           <h3>{t("profil.vyberTrosku")}</h3>
           {galeria === null ? (
@@ -541,18 +562,11 @@ export function Profil() {
         </section>
       )}
 
-      {/* Štatistiky sú na profile hráča (/hrac/:id) — tu len odkaz, nech nie sú na dvoch miestach. */}
-      <section className="panel profil-odkaz-statistiky">
-        <div>
-          <h2>{t("profil.statistiky")}</h2>
-          <p className="tlmene">{t("profil.statistikyPopis")}</p>
-        </div>
-        <Odkaz href={`/hrac/${ja.id}`} className="tlacidlo tlacidlo-hlavne">
-          {t("profil.otvoritProfil")}
-        </Odkaz>
+      {zalozka === "vzhlad" && (
+      <>
+      <section className="panel farba-hraca">
+        <VyberParu chyba={chyba} />
       </section>
-
-      <h2 className="profil-nastavenia-nadpis">{t("profil.nastavenia")}</h2>
       <section className="panel vzhlad-webu" aria-labelledby="vzhlad-webu-nadpis">
         <h3 id="vzhlad-webu-nadpis">{t("profil.vzhlad")}</h3>
         <p className="tlmene">
@@ -573,7 +587,7 @@ export function Profil() {
                   className={s.id === schema ? "schema-volba zvolena" : "schema-volba"}
                   onClick={() => vyberSchemu(s.id)}
                   aria-pressed={s.id === schema}
-                  title={s.wada}
+                  title={`${s.popis} · ${s.wada}`}
                 >
                   <span className="schema-nahlad" style={{ background: s.nahlad[0] }} aria-hidden="true">
                     <span className="schema-nahlad-plocha" style={{ background: s.nahlad[1] }}>
@@ -583,19 +597,21 @@ export function Profil() {
                     </span>
                   </span>
                   <span className="schema-nazov">{s.nazov}</span>
-                  <span className="schema-popis">{s.popis}</span>
                 </button>
               ))}
             </div>
           </div>
         ))}
       </section>
+      </>
+      )}
+      {zalozka === "hra" && (
       <section className="panel preferencie" aria-labelledby="preferencie-nadpis">
         <h3 id="preferencie-nadpis">{t("profil.preferencie")}</h3>
         {instancia.jazyky === true && (
         <fieldset className="skore-volby">
           <legend>{t("profil.jazyk")}</legend>
-          <p className="tlmene">{t("profil.jazykPomoc")}</p>
+          <p className="tlmene skore-volby-popis">{t("profil.jazykPomoc")}</p>
           {JAZYKY.map((j) => (
             <label key={j} lang={j} className={j === jazyk ? "skore-volba zvolena" : "skore-volba"}>
               <input type="radio" name="jazyk" checked={j === jazyk} onChange={() => zvolJazyk(j, ja, nastav)} />
@@ -638,6 +654,8 @@ export function Profil() {
           ))}
         </fieldset>
       </section>
+      )}
+      {zalozka === "ucet" && (
       <div className="profil-nastavenia">
       <form className="panel" onSubmit={(e) => void ulozMeno(e)}>
         <h3>{t("ucet.hernemeno")}</h3>
@@ -682,12 +700,16 @@ export function Profil() {
         </Pole>
         <button type="submit">{t("profil.zmenitHeslo")}</button>
       </form>
+      </div>
+      )}
 
+      {zalozka === "hra" && (
+      <div className="profil-nastavenia">
       <div className="panel">
         <h3>{t("profil.zvacsenie")}</h3>
         <Pole
           label={t("profil.zvacsenaKarta", { n: lupa })}
-          pomoc={t("profil.lupaPomoc", { n: lupa, od: LUPA_OD, do: LUPA_DO })}
+          pomoc={t("profil.lupaPomoc")}
         >
           <input
             type="range"
@@ -766,6 +788,7 @@ export function Profil() {
         </div>
       </div>
       </div>
+      )}
     </div>
   );
 }

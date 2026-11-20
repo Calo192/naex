@@ -10,12 +10,9 @@
 
 /* ---- profil ---------------------------------------------------------------- */
 
+/* Nastavenia majú šírku kostry ako ostatné stránky — hlava stránky pri prechode neskáče (W-12). */
 .profil.profil-siroky {
-  max-width: 1180px;
-}
-
-.profil-nastavenia-nadpis {
-  margin: 20px 0 -8px;
+  max-width: none;
 }
 
 .profil-nastavenia {

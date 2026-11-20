@@ -338,16 +338,15 @@ export function HracProfil({ id }: { readonly id: number }) {
         <div className="profil-hlavicka-texty">
           <strong className="profil-meno">{profil.hrac.meno}</strong>
           <div className="profil-odznaky">
-            <span className="odznak">{f.titul}</span>
             {profil.hrac.rola === "admin" && <span className="odznak odznak-admin">{t("hrac.tvorca")}</span>}
             {profil.hrac.rola === "subadmin" && <span className="odznak">subadmin</span>}
-            {RANKY_HRACOV.includes(profil.hrac.rola as Rola) && <span className="odznak">{nazovUrovne(profil.hrac.rola as Rola)}</span>}
+            {RANKY_HRACOV.includes(profil.hrac.rola as Rola) && <span className="odznak">{t("hrac.rankOdznak", { rank: nazovUrovne(profil.hrac.rola as Rola) })}</span>}
             {profil.postupRanku != null && <PostupRankuOdznak p={profil.postupRanku} />}
             <span className="tlmene">{t("hrac.vKrcmeOd", { datum: datum(profil.hrac.vytvoreny) })}</span>
           </div>
           {vlastny && (
             <div className="profil-vlastne">
-              <Odkaz href="/profil">{t("hrac.upravit")}</Odkaz>
+              <Odkaz href="/profil">{t("nav.nastavenia")}</Odkaz>
               <label className="profil-prepinac" title={t("hrac.ostatniUvidia")}>
                 <input type="checkbox" checked={profil.suhrnSkryty} onChange={(e) => skrySuhrn(e.target.checked)} /> {t("hrac.skrytSuhrn")}
               </label>
@@ -357,6 +356,8 @@ export function HracProfil({ id }: { readonly id: number }) {
         <div className="profil-frajerina">
           <span className="profil-frajerina-nazov">{t("lobby.frajerina")}</span>
           <CisloFrajeriny f={f} velke />
+          {/* Titul patrí k Frajerine, nie k ranku účtu pri mene (W-27). */}
+          <span className="odznak">{f.titul}</span>
           <span className="tlmene">
             {f.poradie !== null && (
               <>

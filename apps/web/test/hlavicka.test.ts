@@ -56,7 +56,7 @@ describe("navigácia webu", () => {
       const ja = ucet(rola);
       const inde = [...hrefy(hlavneMenu(ja, null)), ...hrefy(spravaWebu(ja))];
       const vUcte = hrefy(menuUctu(ja));
-      expect(vUcte.slice(0, 2)).toEqual(["/profil", "/hrac/7"]);
+      expect(vUcte.slice(0, 2)).toEqual(["/hrac/7", "/profil"]);
       expect(vUcte.filter((h) => inde.includes(h))).toEqual([]);
       expect(new Set(inde).size).toBe(inde.length);
     }

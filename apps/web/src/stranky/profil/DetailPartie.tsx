@@ -66,6 +66,8 @@ export function DetailPartie({ id }: { readonly id: number }) {
     };
   }, [id]);
   // Prehrávač ponúkne len partia, ktorú server vie prehrať (rovnaká verzia jadra a sady).
+  // Pas, ponuka a kliatby sú čísla bez vysvetlenia — v tabuľke kôl až na požiadanie (W-26).
+  const [viacStlpcov, setViacStlpcov] = useState(false);
   const [prehratelna, setPrehratelna] = useState<{ readonly dostupny: boolean; readonly dovod: string | null } | null>(null);
   useEffect(() => {
     let zive = true;
@@ -154,7 +156,12 @@ export function DetailPartie({ id }: { readonly id: number }) {
 
       {d.kola.length > 0 ? (
         <section className="panel profil-karta">
-          <h2>{t("detailPartie.kola")}</h2>
+          <header className="profil-karta-hlava">
+            <h2>{t("detailPartie.kola")}</h2>
+            <button type="button" className="tlacidlo-male tlacidlo-jemne" aria-expanded={viacStlpcov} onClick={() => setViacStlpcov((v) => !v)}>
+              {t("detailPartie.viacStlpcov")} {viacStlpcov ? "▾" : "▸"}
+            </button>
+          </header>
           <div className="tabulka-obal">
             <table className="suhrn-tabulka kola-tabulka">
               <thead>
@@ -166,9 +173,13 @@ export function DetailPartie({ id }: { readonly id: number }) {
                   <th>{t("detailPartie.st.vitaz")}</th>
                   <th>{t("detailPartie.st.nakladacka")}</th>
                   <th>{t("detailPartie.st.naex")}</th>
-                  <th>{t("detailPartie.st.pas")}</th>
-                  <th>{t("detailPartie.st.ponuka")}</th>
-                  <th>{t("detailPartie.st.kliatby")}</th>
+                  {viacStlpcov && (
+                    <>
+                      <th>{t("detailPartie.st.pas")}</th>
+                      <th>{t("detailPartie.st.ponuka")}</th>
+                      <th>{t("detailPartie.st.kliatby")}</th>
+                    </>
+                  )}
                   <th>{v6 ? t("detailPartie.st.spaky") : t("detailPartie.st.body")}</th>
                 </tr>
               </thead>
@@ -196,13 +207,17 @@ export function DetailPartie({ id }: { readonly id: number }) {
                             </span>
                           ))}
                     </td>
-                    <td>{k.pasy.length === 0 ? "—" : k.pasy.map((x) => `${ty(x.kto)} +${x.cigarety}`).join(", ")}</td>
-                    <td className="cislo">
-                      {k.senok[ja]} : {k.senok[su]}
-                    </td>
-                    <td className="cislo" title={t("detailPartie.kliatbyTitul")}>
-                      {k.dlhy[ja] + k.cirhozy[ja]} : {k.dlhy[su] + k.cirhozy[su]}
-                    </td>
+                    {viacStlpcov && (
+                      <>
+                        <td>{k.pasy.length === 0 ? "—" : k.pasy.map((x) => `${ty(x.kto)} +${x.cigarety}`).join(", ")}</td>
+                        <td className="cislo">
+                          {k.senok[ja]} : {k.senok[su]}
+                        </td>
+                        <td className="cislo" title={t("detailPartie.kliatbyTitul")}>
+                          {k.dlhy[ja] + k.cirhozy[ja]} : {k.dlhy[su] + k.cirhozy[su]}
+                        </td>
+                      </>
+                    )}
                     <td className="cislo">{k.bodyPo === null ? "—" : `${k.bodyPo[ja]} : ${k.bodyPo[su]}`}</td>
                   </tr>
                 ))}
