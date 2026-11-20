@@ -47,6 +47,7 @@ import type { Command, GameState } from "./engine.ts";
 import type { PlayerState } from "./player.ts";
 import {
   apply,
+  barterCena,
   cieleVykladania,
   cielLokalitaId,
   krcmaVyzaduje,
@@ -1656,7 +1657,7 @@ function pitka(v: Volba): Command | null {
   const ziskPoldeci = zdroje * (uzitokPoldeci(state, max + 1) - uzitokPoldeci(state, max) + PLNY_V_KOLE) + k.povaha.body * vahaVykupneho(state) * KONSTANTY.SPAKY_ZA_POLDECI + (h.ruka.length > max ? ZA_LIMIT_NAVYSE : 0);
   // Páka poldeci (Rudo: nalieva): barter pridá poldeci navyše.
   const nalievac = k.povaha.poldeci ?? 0;
-  if (barter !== undefined && (finale ? vykladaniPotom(state) > 0 : true) && ziskPoldeci + nalievac > cenaCigariet(k, state, ja, KONSTANTY.BARTER_CENA)) return barter;
+  if (barter !== undefined && (finale ? vykladaniPotom(state) > 0 : true) && ziskPoldeci + nalievac > cenaCigariet(k, state, ja, barterCena(k.data, state, ja))) return barter;
   // Fajčenie: karta v ruke proti cigaretám (cena v jednej Pitke rastie 1, 2, 3…). Vo finále po
   // poslednom vykladaní už karta nič nedá, a cigareta môže byť špak z výkupného.
   const cenaFajc = cenaFajceniaHraca(state, ja);

@@ -80,6 +80,8 @@ export interface HracVerejne {
   readonly nerestiTotoKolo: number;
   /** Absťáky získané za hru — verejné, karta Absťák pribúda pred očami oboch. */
   readonly abstakyZiskane: number;
+  /** Stokárske bartery za partiu (v12.7) — verejné, cena ďalšieho rastie o 1 za každý. */
+  readonly bartery: number;
 }
 
 export interface BitkaVerejne {
@@ -375,6 +377,7 @@ export function viewFor(data: GameData, state: GameState, miesto: Miesto): Clien
       pecen: hrac.pecen,
       nerestiTotoKolo: hrac.nerestiTotoKolo,
       abstakyZiskane: hrac.abstakyZiskane ?? 0,
+      bartery: hrac.bartery ?? 0,
     };
   };
 

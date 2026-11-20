@@ -52,6 +52,8 @@ export type VerejnyHrac = {
   /** Priznané Dlhy — počítadlo (v8.2), nie karty. */
   readonly dlhy: number;
   readonly dedicstvo: readonly CardInstance[];
+  /** Stokárske bartery za partiu (v12.7) — cena ďalšieho; chýba v syntetických stavoch testov. */
+  readonly bartery?: number;
 } & (
   /** Pohľad klienta: počet kariet Absťák v balíčku — poloha je skrytá (v9.1). */
   | { readonly abstaky: number }

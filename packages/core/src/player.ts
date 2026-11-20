@@ -47,6 +47,11 @@ export interface PlayerState {
   readonly abstakyZiskane?: number;
   /** Dlhy získané za celú hru (štatistika, v8.2) — presun ani pálenie ich neubera. */
   readonly dlhyZiskane?: number;
+  /**
+   * Stokárske bartery za celú partiu (v12.7) — od nich rastie cena ďalšieho. Verejné. Chýba v stavoch
+   * spred v12.7 (= 0).
+   */
+  readonly bartery?: number;
 }
 
 /** „1 nerest“, „3 neresti“, „5 nerestí“ — pre log a rozhranie. */
@@ -71,6 +76,7 @@ export function freshPlayer(format: Format = "1na1"): PlayerState {
     pecen: 0,
     nerestiTotoKolo: 0,
     abstakyZiskane: 0,
+    bartery: 0,
   };
 }
 
@@ -125,7 +131,10 @@ export function hodnotaViery(): number {
   return KONSTANTY.HODNOTA_VIERY_ZAKLAD;
 }
 
-/** Stokársky barter (§7): pevná cena, Lakomec ju vo v5 už nezlacňuje. */
-export function cenaBarteru(): number {
-  return KONSTANTY.BARTER_CENA;
+/**
+ * Stokársky barter (§7, v12.7): prvý v partii 5 cigariet, každý ďalší o 1 viac. Počítajú sa len vlastné
+ * bartery hráča (v 2 na 2 tímu) za celú partiu. Lakomec ju vo v5 už nezlacňuje.
+ */
+export function cenaBarteru(bartery = 0): number {
+  return KONSTANTY.BARTER_CENA + bartery * KONSTANTY.BARTER_PRIRASTOK;
 }

@@ -602,10 +602,16 @@
     {
       "id": "7.doplnenie.barter",
       "paragraf": "7. Pitka › Fajčenie, doliatie a barter",
-      "pravidlo": "Stokársky barter: 5 cigariet = nový plný poldeci, maximum +1 natrvalo; Jednota ho zakáže tomu s viac Dlhmi (v12.2).",
+      "pravidlo": "Stokársky barter: nový plný poldeci, maximum +1 natrvalo; Jednota ho zakáže tomu s viac Dlhmi (v12.2). Cena (v12.7): prvý barter hráča v partii 5 cigariet, každý ďalší o 1 viac, bez stropu; len vlastné bartery, za celú partiu; v 2 na 2 za tím.",
       "stav": "pokryte",
       "testy": [
-        "packages/core/test/pravidla-v12-2.test.ts › barter: nový plný poldeci, maximum +1 natrvalo; Jednota ho tomu s viac Dlhmi zakáže"
+        "packages/core/test/pravidla-v12-2.test.ts › barter: nový plný poldeci, maximum +1 natrvalo; Jednota ho tomu s viac Dlhmi zakáže",
+        "packages/core/test/pravidla-v12-7.test.ts › §7 Stokársky barter zdražie (v12.7) › prvý barter v partii 5 cigariet, potom 6, 7, 8 — každý pridá plný poldeci",
+        "packages/core/test/pravidla-v12-7.test.ts › §7 Stokársky barter zdražie (v12.7) › bez stropu: aj desiaty barter sa dá, keď má hráč cigarety",
+        "packages/core/test/pravidla-v12-7.test.ts › §7 Stokársky barter zdražie (v12.7) › cena rastie každému hráčovi zvlášť — súperove bartery ju nemenia",
+        "packages/core/test/pravidla-v12-7.test.ts › §7 Stokársky barter zdražie (v12.7) › počíta sa za celú partiu, nie za Pitku či kolo: bartery z minulých kôl cenu držia",
+        "packages/core/test/pravidla-v12-7.test.ts › §7 Stokársky barter zdražie (v12.7) › počet barterov je verejný — klient ráta cenu rovnako ako server, obaja vidia oboch",
+        "packages/core/test/pravidla-v12-7.test.ts › §18.7 2 na 2: cena barteru rastie za tím (tímové cigarety a poldeci) › barter kapitána zdraží aj barter spoluhráča; druhý tím platí od 5"
       ],
       "poznamka": "v5 (2026-10-25): pravidlo sa zmenilo — rozhodca ho prejde znova a doplní testy (jadro v5: packages/core/test/pravidla-v5.test.ts). Testy v4: packages/core/test/revizia-kariet.test.ts › Lakomec: barter za 5 / 4 / 3 / 2 cigarety podľa sily priazne; packages/core/test/pravidla-bitka.test.ts › §8 nerest: doliatie poldeci 2, barter za každú cigaretu, fajčenie 1; Dedičstvo ani šenok nie."
     },
@@ -2623,15 +2629,16 @@
     {
       "id": "10.bodovanie.strach-najvyssi-stupen",
       "paragraf": "10. Starší › Bodovanie po bitke (krok 4b)",
-      "pravidlo": "v12.6 (#70 A): víťaz bitky dostane za strach pri staršom hodnotu svojho najvyššieho stupňa strachu (žltá 1, oranžová 2, červená 3); keď ten stupeň drží súper rečami, za strach pri tom staršom nič.",
+      "pravidlo": "v12.7 (#76 A): víťaz bitky dostane za strach pri staršom hodnotu svojho najvyššieho stupňa strachu, ktorý nedrží súper rečami (žltá 1, oranžová 2, červená 3); keď súper drží rečami všetky stupne jeho strachu, nič.",
       "stav": "pokryte",
       "testy": [
         "packages/core/test/reci-teplomer.test.ts › §10 bodovanie: stupne 1 / 2 / 3 (v11.20) dostane, kto ich drží › §10 (v12.6, #70 A): víťaz dostane za strach hodnotu najvyššieho stupňa — žltá 1, oranžová 2, červená 3 — nie súčet",
-        "packages/core/test/reci-teplomer.test.ts › §10 bodovanie: stupne 1 / 2 / 3 (v11.20) dostane, kto ich drží › príklad Michala: červený strach, reči na červenej a oranžovej — on 0 (v12.6, #70 A; v11.20–v12.5 1), ja 5",
+        "packages/core/test/reci-teplomer.test.ts › §10 bodovanie: stupne 1 / 2 / 3 (v11.20) dostane, kto ich drží › §10 (v12.7, #76 A): víťaz dostane najvyšší stupeň, ktorý nedrží súper rečami — príklady z návrhu",
+        "packages/core/test/reci-teplomer.test.ts › §10 bodovanie: stupne 1 / 2 / 3 (v11.20) dostane, kto ich drží › príklad Michala: červený strach, reči na červenej a oranžovej — on 1 (v12.7, #76 A; v12.6 0, v11.20–v12.5 1), ja 5",
         "packages/core/test/reci-teplomer.test.ts › §10 bodovanie: stupne 1 / 2 / 3 (v11.20) dostane, kto ich drží › tabuľka z mocku: strach a reči, špaky jemu a mne",
         "packages/core/test/strach-reci.test.ts › §9 bodovanie, sekera, finále a cigareta (v11) › log bodovania rozpíše špaky víťaza za strach a za reči, nulové časti vynechá (playtest 20261108-165501)"
       ],
-      "poznamka": "v12.6 (Michal 2026-11-17); v11.20–v12.5 súčet 1 / 3 / 6."
+      "poznamka": "v12.7 (Michal 2026-11-20, #76 A); v12.6 vrch pod súperovými rečami = 0; v11.20–v12.5 súčet 1 / 3 / 6."
     },
     {
       "id": "5.branie.platba-povodu",

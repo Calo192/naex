@@ -4078,3 +4078,26 @@ Staré znenie §6 Pas (v12.3–v12.5):
 
 §16 Vychovávateľka: „… za tento pas **nedostane cigarety** (v12.3 …). Ďalšie Zhromaždenie … — pas v ňom cigarety dáva.“
 §13 Záverečná: „(ako pas, ale **bez cigariet za pas**, v12.3)“. Achievement Pas za groš sa vo v12.3–v12.5 ponúkal.
+
+## v12.7 — Strach boduje najvyšším stupňom, ktorý nedrží súper rečami (Michal 2026-11-20, návrh #76 A)
+
+Návrh `reci-na-vrchu-nulu-strach` z playtestu 20261117-140948 (= N51 z playtestu štýlov): jeden stupeň súperových rečí
+na vrchu víťazovho strachu vypol za 1 bod hádky celé bodovanie strachu pri tom staršom. Staré znenie §10 Bodovanie
+po bitke (v12.6):
+
+> - **Víťaz bitky** dostane za strach pri staršom **hodnotu svojho najvyššieho stupňa strachu: žltá 1, oranžová 2,
+>   červená 3. Keď ten stupeň drží súper rečami, za strach pri tom staršom nedostane nič** (v12.6, návrh #70 A, …).
+>   Príklady: červený strach bez rečí súpera 3; červený strach, súperove reči na žltej: víťaz 3, súper 1; súperove reči
+>   na červenej a oranžovej: víťaz 0, súper 5.
+
+Tabuľka krokov 4b a tabuľka špakov: „víťaz za strach len hodnotu najvyššieho stupňa, ak ho nedrží súper rečami“.
+Slovník: „Stupeň — … víťazovi za strach len najvyšší stupeň, reči súčtom“.
+
+## v12.7 — Stokársky barter zdražie (Michal 2026-11-20, N38 z playtestu štýlov)
+
+Staré znenie §7 Fajčenie, barter a doliatie po Pitke (v12.2–v12.6):
+
+> - **Stokársky barter, 5 cigariet** (počas Pitky) → nový plný poldeci navyše — **maximum +1 natrvalo**,
+>   po každej bitke sa obnoví aj ten (v12.2).
+
+§18.7 (2 na 2) o cene barteru nehovoril — platila pevná cena 5 pre tím.

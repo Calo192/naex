@@ -4423,9 +4423,9 @@ function cmdSmoke(s: MutState, data: GameData, cmd: { pocet?: number }, kto: Mie
   }
 }
 
-/** Cena stokárskeho barteru hráča p. */
-export function barterCena(_data: GameData, _s: VerejnyStav, _p: PlayerId): number {
-  return cenaBarteru();
+/** Cena ďalšieho stokárskeho barteru hráča p (v 2 na 2 tímu) — rastie s jeho barterami v partii (v12.7). */
+export function barterCena(_data: GameData, s: VerejnyStav, p: PlayerId): number {
+  return cenaBarteru(s.hraci[p].bartery ?? 0);
 }
 
 function cmdBarter(s: MutState, data: GameData, p: PlayerId, events: Event[]): void {
@@ -4436,6 +4436,7 @@ function cmdBarter(s: MutState, data: GameData, p: PlayerId, events: Event[]): v
   const cena = barterCena(data, s as GameState, p);
   need(s.hraci[p].cigarety >= cena, `Na barter treba ${cigariet(cena)}.`);
   zmenCigarety(s, p, "platba", -cena, events);
+  hrac(s, p).bartery = (s.hraci[p].bartery ?? 0) + 1;
   zmenPoldeci(s, p, "barter", 1, events);
   events.push({ type: "log", text: `Hráč ${p + 1} robí stokársky barter za ${cigariet(cena)} — nový plný poldeci.` });
 }

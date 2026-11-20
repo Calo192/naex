@@ -19,7 +19,7 @@
   },
   "barter": {
     "pojem": "Stokársky barter",
-    "popis": "Počas Pitky za 5 cigariet nový plný poldeci — natrvalo, po bitke sa obnoví s ostatnými."
+    "popis": "Počas Pitky nový plný poldeci za cigarety — prvý barter v partii 5, každý ďalší o 1 viac. Natrvalo, po bitke sa obnoví s ostatnými."
   },
   "bitka": {
     "pojem": "Bitka",
@@ -299,7 +299,7 @@
   },
   "stupen": {
     "pojem": "Stupeň",
-    "popis": "Poloha na stupnici staršieho: 0 pokojný, 1 znepokojený, 2 vystrašený, 3 vydesený. Stupeň staršieho pre hráča je jeho strach; reči súpera ležia na tej istej stupnici. Vstup stojí 1 / 2 / 3; víťazovi dá po bitke za strach hodnotu najvyššieho stupňa (1 / 2 / 3), reči bodujú súčtom stupňov; stupne môže držať súper."
+    "popis": "Poloha na stupnici staršieho: 0 pokojný, 1 znepokojený, 2 vystrašený, 3 vydesený. Stupeň staršieho pre hráča je jeho strach; reči súpera ležia na tej istej stupnici. Vstup stojí 1 / 2 / 3; víťazovi dá po bitke za strach hodnotu najvyššieho stupňa, ktorý nedrží súper rečami (1 / 2 / 3), reči bodujú súčtom stupňov; stupne môže držať súper."
   },
   "strach": {
     "pojem": "Strach",

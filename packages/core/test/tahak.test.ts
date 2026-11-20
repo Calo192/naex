@@ -21,6 +21,7 @@ describe("ťahák AI hráčov sedí s constants.ts", () => {
     ["štart", `${KONSTANTY.START_POLDECI} plné poldeci, ${KONSTANTY.START_CIGARETY} cigarety`],
     ["špaky za bitku (v8)", "1 špak za každú kartu v línii"],
     ["starší po bitke (v11.12, v11.20)", `**žltá ${KONSTANTY.HODNOTA_STUPNA[1]}, oranžová ${KONSTANTY.HODNOTA_STUPNA[2]}, červená ${KONSTANTY.HODNOTA_STUPNA[3]}** a dostane ich ten,`],
+    ["strach pod súperovými rečami (v12.7, #76 A)", `**spomedzi stupňov, ktoré nedrží súper rečami** (v12.7): tvoj červený strach a jeho reči na červenej → ${KONSTANTY.SPAKY_ZA_STUPEN[2]}, na červenej a oranžovej → ${KONSTANTY.SPAKY_ZA_STUPEN[1]}`],
     ["strach najvyšším stupňom (v12.6, #70 A)", `**len hodnotu svojho najvyššieho stupňa** (žltá ${KONSTANTY.SPAKY_ZA_STUPEN[1]}, oranžová ${KONSTANTY.SPAKY_ZA_STUPEN[2]},`],
     [
       "finále bez dvíhania (v11)",
@@ -97,6 +98,7 @@ describe("ťahák AI hráčov sedí s constants.ts", () => {
       `prvé fajčenie v Pitke ${cenaFajcenia(0)} cigareta, druhé ${cenaFajcenia(1)}, tretie ${cenaFajcenia(2)}…`,
     ],
     ["barter", `${KONSTANTY.BARTER_CENA} cigariet → nový plný poldeci`],
+    ["barter zdražie (v12.7)", `**každý tvoj ďalší barter v partii o ${pocet(KONSTANTY.BARTER_PRIRASTOK, "cigaretu", "cigarety", "cigariet")} drahší**`],
     [
       "cena stupňa (v11)",
       `stupeň stojí **do žltej ${cenaDvihnutia(0, 1)}, do oranžovej ${cenaDvihnutia(1, 2)}, do červenej ${cenaDvihnutia(2, 3)}** (strach zo žltej na červenú ${cenaDvihnutia(1, 2)} + ${cenaDvihnutia(2, 3)} = ${cenaDvihnutia(1, 3)}`,

@@ -188,8 +188,9 @@ export const KONSTANTY = {
   /**
    * Strach a reči (v11, Michal 2026-11-02, docs/napady/strach-reci.html): vstup na stupeň
    * 1 / 2 / 3 (žltá, oranžová, červená) stojí pri dvíhaní toľko bodov Nakladačky či hádky,
-   * koľko je číslo stupňa. Víťaz bitky dostane za strach SPAKY_ZA_STUPEN jeho najvyššieho stupňa —
-   * hodnotu toho stupňa (1 / 2 / 3, v12.6 návrh #70 A; v11.20–v12.5 súčet 1 / 3 / 6). Reči bodujú
+   * koľko je číslo stupňa. Víťaz bitky dostane za strach SPAKY_ZA_STUPEN jeho najvyššieho stupňa,
+   * ktorý nedrží súper rečami — hodnotu toho stupňa (1 / 2 / 3, v12.6 návrh #70 A, v12.7 #76 A; v11.20–v12.5
+   * súčet 1 / 3 / 6). Reči bodujú
    * súčtom hodnôt stupňov (spakyZaReci). Kto vyhrá bitku a má červený strach u CERVENYCH_NA_VYHRU
    * starších (väzni sa rátajú), vyhráva hneď.
    */
@@ -222,8 +223,12 @@ export const KONSTANTY = {
   CENA_DOPITIA_POLDECI: 1,
   NEREST_DOPITIA: 1,
 
-  /** Stokársky barter: cigarety → nový plný poldeci, maximum +1 natrvalo (PRAVIDLA §7). */
+  /**
+   * Stokársky barter: cigarety → nový plný poldeci, maximum +1 natrvalo (PRAVIDLA §7). Prvý barter hráča
+   * v partii stojí BARTER_CENA, každý ďalší o BARTER_PRIRASTOK viac — 5, 6, 7… (v12.7, N38); bez stropu.
+   */
   BARTER_CENA: 5,
+  BARTER_PRIRASTOK: 1,
   /**
    * Fajčenie v Pitke (Michal 2026-10-27, PRAVIDLA §7): k-te fajčenie hráča v tej
    * istej Pitke stojí ZAKLAD + (k − 1) × PRIRASTOK cigariet — 1, 2, 3…; každá Pitka
@@ -347,15 +352,17 @@ export function vazniNaVyhru(lokalitCelkom: number): number {
 // skončil vykladanie prvý (návrh #73 A); remízu v tuhom rozhodne víťaz hádky, až potom menej Dlhov;
 // strach víťaza boduje len najvyšším stupňom 1 / 2 / 3 (návrh #70 A); pas dá kartu za každý plný poldeci
 // namiesto cigarety (návrh #71, vlastné riešenie Michala).
+// v12.7 (Michal 2026-11-20, Zrejúca) bez novej značky: víťaz bitky dostane za strach najvyšší stupeň, ktorý
+// nedrží súper rečami (návrh #76 A); stokársky barter 5, 6, 7… cigariet — každý ďalší v partii o 1 drahší (N38).
 export const VERZIA_PRAVIDIEL = "v12";
 /**
  * Presná verzia pravidiel vrátane dávky — hráč ju vidí na stránke Pravidlá, ktorá má
  * vždy odzrkadľovať správanie nasadenej hry (Michal 2026-10-31). Značka partií
  * (VERZIA_PRAVIDIEL) sa pri dávke nemení, táto áno.
  */
-export const VERZIA_PRAVIDIEL_PRESNA = "v12.6";
+export const VERZIA_PRAVIDIEL_PRESNA = "v12.7";
 /** Odkedy platí VERZIA_PRAVIDIEL_PRESNA — hráč ho vidí na stránke Pravidlá. */
-export const PRAVIDLA_PLATNE_OD = "2026-11-17";
+export const PRAVIDLA_PLATNE_OD = "2026-11-20";
 export type DlzkaHry = keyof typeof DLZKY_HRY;
 export const ALL_DLZKY: readonly DlzkaHry[] = ["kratka", "stredna", "dlha"];
 export const PREDVOLENA_DLZKA: DlzkaHry = "stredna";

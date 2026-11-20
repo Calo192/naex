@@ -175,15 +175,24 @@ export function spakyZaReci(e: Markery, p: PlayerId): number {
 }
 
 /**
- * Špaky víťaza bitky za strach (v12.6, návrh #70 A): hodnota jeho najvyššieho stupňa strachu — žltá 1,
- * oranžová 2, červená 3. Keď ten stupeň drží súper rečami, nič. Do v12.5 súčet stupňov bez tých so
- * súperovými rečami (1 / 3 / 6) — raz kúpená červená bola renta, ktorá rozhodla partiu.
+ * Stupeň strachu, za ktorý víťaz bitky boduje (v12.7, návrh #76 A): jeho najvyšší stupeň, ktorý nedrží
+ * súper rečami — keď blok súperových rečí siaha na vrch strachu, stupeň tesne pod blokom. 0 = súper
+ * drží všetky. V v12.6 vrch pod rečami vynuloval celý strach, takže 1 bod hádky vypol staršieho.
  */
-export function spakyZaStrach(e: Markery, p: PlayerId): number {
+export function stupenZaStrach(e: Markery, p: PlayerId): Stupen {
   const vrch = e.strach[p];
   const b = blokReci(e, opponentOf(p));
-  if (b !== null && b.od <= vrch && vrch <= b.vrch) return 0;
-  return spakyZaStupen(vrch);
+  if (b !== null && b.od <= vrch && vrch <= b.vrch) return (b.od - 1) as Stupen;
+  return vrch;
+}
+
+/**
+ * Špaky víťaza bitky za strach (v12.6, návrh #70 A; v12.7, #76 A): hodnota najvyššieho stupňa, ktorý
+ * nedrží súper rečami — žltá 1, oranžová 2, červená 3. Do v12.5 súčet stupňov bez tých so súperovými
+ * rečami (1 / 3 / 6) — raz kúpená červená bola renta, ktorá rozhodla partiu.
+ */
+export function spakyZaStrach(e: Markery, p: PlayerId): number {
+  return spakyZaStupen(stupenZaStrach(e, p));
 }
 
 /** Koľko bodov hádky je v rečiach hráča p pri staršom — krádež pri zajatí (v11.12). */
@@ -244,11 +253,11 @@ export function najvyssiMarker(elder: Markery, p: PlayerId): Stupen {
 
 /**
  * Stupeň, za ktorý starší po bitke boduje hráčovi p (v11.12): vrch rečí, ktoré bodujú (R1, v12.5),
- * inak víťazov strach (popis v súhrne, špaky ráta spakyOdStarsieho).
+ * inak stupeň víťazovho strachu, ktorý boduje (v12.7; popis v súhrne, špaky ráta spakyOdStarsieho).
  */
 export function stupenNaBodovanie(elder: Markery, p: PlayerId, vyhral: boolean): Stupen {
   const reci = vrchBodujucichReci(elder, p);
-  return reci > 0 ? reci : vyhral ? elder.strach[p] : 0;
+  return reci > 0 ? reci : vyhral ? stupenZaStrach(elder, p) : 0;
 }
 
 /** Špaky víťaza za strach na stupni (žltá 1, oranžová 2, červená 3 — v12.6; v11.20–v12.5 1 / 3 / 6). */
@@ -258,8 +267,8 @@ export function spakyZaStupen(stupen: number): number {
 
 /**
  * Špaky, ktoré starší dá hráčovi p po bitke, ktorú p vyhral (vyhral = true), alebo nie.
- * v11.12: reči bodujú vždy (od v12.5 len na súperovom strachu), strach len víťazovi a bez stupňov,
- * ktoré drží súper rečami.
+ * v11.12: reči bodujú vždy (od v12.5 len na súperovom strachu), strach len víťazovi — najvyšší
+ * stupeň, ktorý nedrží súper rečami (v12.7).
  * Nahrádza krátenie z v11.11.
  */
 export function spakyOdStarsieho(elder: Markery, p: PlayerId, vyhral: boolean): number {
