@@ -5,10 +5,10 @@
   },
   "abstak": {
     "pojem": "The Shakes",
-    "popis": "A card tagged Curse that you get for fewer vices in a round than your Thirst: it goes to your discard pile and can't be confessed; each one in your deck takes 1 hard off you in the brawl. It breaks a tie on hard. Vision burns it.",
+    "popis": "A card tagged Curse that you get for fewer vices in a round than your Thirst: it goes to your discard pile and can't be confessed; each one in your deck takes 1 hard off you in the brawl. Vision burns it.",
     "sk": {
       "pojem": "Absťák",
-      "popis": "Karta s tagom Kliatba za menej nerestí v kole, než je tvoja Chuť: ide do odhadzovacieho balíčka, nedá sa priznať; každý v tvojom balíčku ti v bitke uberie 1 tuhé. Rozhoduje remízu v tuhom. Spáli ho Vízia."
+      "popis": "Karta s tagom Kliatba za menej nerestí v kole, než je tvoja Chuť: ide do odhadzovacieho balíčka, nedá sa priznať; každý v tvojom balíčku ti v bitke uberie 1 tuhé. Spáli ho Vízia."
     }
   },
   "chut": {
@@ -41,25 +41,25 @@
   },
   "bitka": {
     "pojem": "Brawl",
-    "popis": "End of the round: more hard damage wins and gets butts, the elders score, the winner splits the Thrashing onto their fear, and the winner of the argument splits the argument onto their rumours on the opponent's thermometers.",
+    "popis": "End of the round: more hard damage wins and gets butts, the elders score, the winner of the argument splits the argument onto their rumours on the opponent's thermometers, and then the winner of the brawl splits the Thrashing onto their fear.",
     "kratko": "End of the round: the hits from the cards around the location are added up. Whoever has more has won and takes a butt for every card in the line.",
     "tvary": "brawl, brawls",
     "sk": {
       "pojem": "Bitka",
-      "popis": "Koniec kola: viac tuhého poškodenia vyhráva a dostane špaky, starší bodujú, víťaz rozdelí Nakladačku na svoj strach a víťaz hádky hádku na svoje reči na teplomeroch súpera.",
+      "popis": "Koniec kola: viac tuhého poškodenia vyhráva a dostane špaky, starší bodujú, víťaz hádky rozdelí hádku na svoje reči na teplomeroch súpera a potom víťaz bitky Nakladačku na svoj strach.",
       "kratko": "Koniec kola: sčítajú sa údery z kariet pri lokalite. Kto má viac, vyhral a berie špak za každú kartu v línii.",
       "tvary": "bitka, bitky, bitke, bitku, bitkou, bitiek, bitkách"
     }
   },
   "cigareta": {
     "pojem": "Cigarette",
-    "popis": "The game's currency: it pays for cards from the Market, the Heirloom, tucking a Tool, refills, barter and Last Orders; smoking in the Booze-up gets you an extra card at once (1, 2, 3… cigarettes; at the Petrol Station the first is free). After the brawl the loser gets 1 and the opponent pays protection money. At the end of the game every 5 cigarettes make 1 butt.",
-    "kratko": "This game's small change. You pay for cards from the Market and for smoking in the Booze-up; you get them for cards you don't play.",
+    "popis": "The game's currency: it pays for cards from the Market, the Heirloom, tucking a Tool, barter, Last Orders and every further card in the same turn; smoking in the Booze-up gets you an extra card at once (1, 2, 3… cigarettes; at the Petrol Station the first is free). After the brawl the loser gets 1 and the opponent pays protection money. At the end of the game every 5 cigarettes make 1 butt.",
+    "kratko": "This game's small change. You pay for cards from the Market, smoking in the Booze-up and every further card in the same turn.",
     "tvary": "cigarette, cigarettes, cigs",
     "sk": {
       "pojem": "Cigareta",
-      "popis": "Mena hry: platí karty z ponuky, Dedičstvo, podloženie Nástroja, doliatie, barter a Záverečnú; fajčením v Pitke hneď karta navyše (1, 2, 3… cigarety; na Benzínke prvá zadarmo). Po bitke dostane porazený 1 a súper platí výpalné. Na konci hry každých 5 cigariet 1 špak.",
-      "kratko": "Drobné tejto hry. Platíš nimi karty z ponuky a fajčenie v Pitke; za karty, ktoré nevyložíš, ich dostaneš.",
+      "popis": "Mena hry: platí karty z ponuky, Dedičstvo, podloženie Nástroja, barter, Záverečnú a každú ďalšiu kartu v tom istom ťahu; fajčením v Pitke hneď karta navyše (1, 2, 3… cigarety; na Benzínke prvá zadarmo). Po bitke dostane porazený 1 a súper platí výpalné. Na konci hry každých 5 cigariet 1 špak.",
+      "kratko": "Drobné tejto hry. Platíš nimi karty z ponuky, fajčenie v Pitke a každú ďalšiu kartu v tom istom ťahu.",
       "tvary": "cigareta, cigarety, cigarete, cigaretu, cigaretou, cigariet, cigaretám, cigaretami"
     }
   },
@@ -81,10 +81,10 @@
   },
   "dlh": {
     "pojem": "Debt",
-    "popis": "A Curse from Gamble — a counter, not a card: each Gamble action in the Booze-up = 1 Debt, confessed at once; for confessed Debts the Bailiff turns up in every brawl, and on a tied brawl whoever has more of them loses.",
+    "popis": "A Curse from Gamble — a counter, not a card: each Gamble action in the Booze-up = 1 Debt; for Debts the Bailiff turns up in every brawl, and on a tie on hard, when nobody won the argument, whoever has more of them loses.",
     "sk": {
       "pojem": "Dlh",
-      "popis": "Kliatba z Hazardu — počítadlo, nie karta: každá akcia Hazard v Pitke = 1 Dlh, hneď priznaný; za priznané Dlhy príde v každej bitke Exekútor a pri remíze v bitke prehrá, kto ich má viac."
+      "popis": "Kliatba z Hazardu — počítadlo, nie karta: každá akcia Hazard v Pitke = 1 Dlh; za Dlhy príde v každej bitke Exekútor a pri remíze v tuhom, keď hádku nevyhral nikto, prehrá, kto ich má viac."
     }
   },
   "dobratie": {
@@ -129,10 +129,10 @@
   },
   "exekutor": {
     "pojem": "Bailiff",
-    "popis": "Turns up in every brawl while you have a confessed Debt: half your Debts burn (rounded up) and as many butts with them; your favour with the Lawyer cuts that by 1 / 2 / 3. The Allotment Man in your crew protects you that round.",
+    "popis": "Turns up in every brawl while you have a Debt: half your Debts burn (rounded up) and as many butts with them; your favour with the Lawyer cuts that by 1 / 2 / 3. The Allotment Man in your crew protects you that round.",
     "sk": {
       "pojem": "Exekútor",
-      "popis": "Príde v každej bitke, kým máš priznaný Dlh: zhorí ti polovica Dlhov (zaokrúhlene nahor) a rovnako veľa špakov; tvoja priazeň Advokáta ich uberie o 1 / 2 / 3. Záhradkár v tvojej partii ťa v tom kole ochráni."
+      "popis": "Príde v každej bitke, kým máš Dlh: zhorí ti polovica Dlhov (zaokrúhlene nahor) a rovnako veľa špakov; tvoja priazeň Advokáta ich uberie o 1 / 2 / 3. Záhradkár v tvojej partii ťa v tom kole ochráni."
     }
   },
   "finale": {
@@ -217,10 +217,10 @@
   },
   "kliatba": {
     "pojem": "Curse",
-    "popis": "Whatever hurts its owner: the Cirrhosis and Shakes cards and the Debt counter (confessed at once). Only Cirrhosis can be confessed.",
+    "popis": "Whatever hurts its owner: the Cirrhosis and Shakes cards and the Debt counter. Only Cirrhosis can be confessed.",
     "sk": {
       "pojem": "Kliatba",
-      "popis": "Čo škodí majiteľovi: karty Cirhóza a Absťák a počítadlo Dlh (hneď priznaný). Priznať sa dá len Cirhóza."
+      "popis": "Čo škodí majiteľovi: karty Cirhóza a Absťák a počítadlo Dlh. Priznať sa dá len Cirhóza."
     }
   },
   "kolo": {
@@ -273,18 +273,18 @@
   },
   "reci": {
     "pojem": "Rumours",
-    "popis": "A block of notches on the opponent's thermometer (hatching in your colour on the table); the argument raises them, from the top of their fear downwards, then above it. Notches 1 / 2 / 3 score for you instead of the opponent in every brawl, and they drop from the bottom only after a lost argument. They don't change the opponent's favour, victory by fear or capture.",
+    "popis": "A block of notches on the opponent's thermometer (hatching in your colour on the table); the argument raises them, from the top of their fear downwards, then above it. Notches 1 / 2 / 3 score for you instead of the opponent in every brawl — only those where the opponent has fear; above it they wait. They drop from the bottom only after a lost argument. They don't change the opponent's favour, victory by fear or capture.",
     "sk": {
       "pojem": "Reči",
-      "popis": "Blok stupňov na teplomere súpera (na stole šrafa v tvojej farbe); dvíha ich hádka, od vrchu jeho strachu nadol, potom nad neho. Stupne 1 / 2 / 3 bodujú tebe pri každej bitke namiesto súpera, klesajú zospodu len po prehratej hádke. Súperovu priazeň, výhru strachom ani zajatie nemenia."
+      "popis": "Blok stupňov na teplomere súpera (na stole šrafa v tvojej farbe); dvíha ich hádka, od vrchu jeho strachu nadol, potom nad neho. Stupne 1 / 2 / 3 bodujú tebe pri každej bitke namiesto súpera — len tie, na ktorých má súper strach; nad ním čakajú. Klesajú zospodu len po prehratej hádke. Súperovu priazeň, výhru strachom ani zajatie nemenia."
     }
   },
   "hadka": {
     "pojem": "Argument",
-    "popis": "A step of the brawl: whoever has more soft damage has won the argument by the difference (“Ana won the argument by 3”) and after scoring splits it onto their rumours on the opponent's thermometers — a notch costs 1 / 2 / 3, the rest is forfeited. On a tie, nobody; in the finale the argument goes to butts.",
+    "popis": "A step of the brawl: whoever has more soft damage has won the argument by the difference (“Ana won the argument by 3”) and after scoring splits it onto their rumours on the opponent's thermometers, before the Thrashing — a notch costs 1 / 2 / 3, the rest is forfeited. On a tie, nobody; in the finale the argument goes to butts.",
     "sk": {
       "pojem": "Hádka",
-      "popis": "Krok bitky: kto má viac mäkkého poškodenia, vyhral hádku o rozdiel („Ana vyhrala hádku o 3“) a po bodovaní ho rozdelí na svoje reči na teplomeroch súpera — stupeň stojí 1 / 2 / 3, zvyšok prepadne. Pri rovnosti nikto; vo finále ide hádka na špaky."
+      "popis": "Krok bitky: kto má viac mäkkého poškodenia, vyhral hádku o rozdiel („Ana vyhrala hádku o 3“) a po bodovaní ho rozdelí na svoje reči na teplomeroch súpera, ešte pred Nakladačkou — stupeň stojí 1 / 2 / 3, zvyšok prepadne. Pri rovnosti nikto; vo finále ide hádka na špaky."
     }
   },
   "makke": {
@@ -381,10 +381,10 @@
   },
   "pas": {
     "pojem": "Pass",
-    "popis": "You stop playing in the Assembly; you get nothing for it, and the full shots you didn't play stay yours.",
+    "popis": "You stop playing in the Assembly and draw a card from your deck for every full shot; your shots stay full. Whoever stops first opens the round's next Assembly.",
     "sk": {
       "pojem": "Pas",
-      "popis": "Skončíš vykladanie v Zhromaždení; nič zaň nedostaneš, nevyložené plné poldeci ti ostanú."
+      "popis": "Skončíš vykladanie v Zhromaždení a za každý plný poldeci si doberieš kartu z balíčka; poldeci ti ostanú plné. Kto skončí prvý, otvára ďalšie Zhromaždenie kola."
     }
   },
   "podlozenie": {
@@ -413,10 +413,10 @@
   },
   "vazen": {
     "pojem": "Prisoner",
-    "popis": "A captured elder among your confessed cards (“in the cellar”): gives no favour, counts as your red fear, and you have their ability (once per game). On capture your opponent hands you as many butts as they have argument points in rumours on them; prisoners needed to win depend on the division (2 / 3 / 4).",
+    "popis": "A captured elder among your confessed cards (“in the cellar”): gives no favour, counts as your red fear, and you have their ability (once per game). On capture your opponent hands you as many butts as they have argument points in rumours on them. With the prisoners needed to win in your division (2 / 3 / 4) you have a full cellar — the next brawl you win wins you the game.",
     "sk": {
       "pojem": "Väzeň",
-      "popis": "Zajatý starší medzi tvojimi priznanými kartami („v pivnici“): nedáva priazeň, ráta sa ako tvoj červený strach, máš jeho schopnosť (raz za hru). Pri zajatí ti súper odovzdá toľko špakov, koľko bodov hádky má pri ňom v rečiach; väzni na výhru podľa ligy (2 / 3 / 4)."
+      "popis": "Zajatý starší medzi tvojimi priznanými kartami („v pivnici“): nedáva priazeň, ráta sa ako tvoj červený strach, máš jeho schopnosť (raz za hru). Pri zajatí ti súper odovzdá toľko špakov, koľko bodov hádky má pri ňom v rečiach. S väzňami na výhru podľa ligy (2 / 3 / 4) máš plnú pivnicu — vyhráš ďalšiu bitku, ktorú vyhráš."
     }
   },
   "schopnost-vazna": {
@@ -473,13 +473,13 @@
   },
   "poldeci": {
     "pojem": "Shot",
-    "popis": "A glass of fruit brandy; every card you play costs a full one, and it also pays for a NA EX and an answer. After the brawl they're all restored, after the Booze-up one gets refilled. A full one at the end of the game is 1 butt.",
-    "kratko": "A glass of fruit brandy. As many full ones as you have, that many cards you play, plus one. A full shot also pays for a NA EX.",
+    "popis": "A glass of fruit brandy; every card you play costs a full one, and it also pays for a NA EX and an answer. When you pass, you draw a card for every full one and it stays full. After the brawl they're all restored, after the Booze-up one gets refilled. A full one at the end of the game is 1 butt.",
+    "kratko": "A glass of fruit brandy. As many full ones as you have, that many cards you play. A full shot also pays for a NA EX.",
     "tvary": "shot, shots",
     "sk": {
       "pojem": "Poldeci",
-      "popis": "Pohárik pálenky; každá karta, ktorú vyložíš, stojí plný, a platí ním aj NA EX a odpoveď. Po bitke sa všetky obnovia, po Pitke sa jeden doleje. Plný na konci hry je 1 špak.",
-      "kratko": "Pohárik pálenky. Koľko máš plných, toľko kariet vyložíš, a ešte jednu. Za plný poldeci dáš aj NA EX.",
+      "popis": "Pohárik pálenky; každá karta, ktorú vyložíš, stojí plný, a platí ním aj NA EX a odpoveď. Pri pase si za každý plný doberieš kartu a ostane plný. Po bitke sa všetky obnovia, po Pitke sa jeden doleje. Plný na konci hry je 1 špak.",
+      "kratko": "Pohárik pálenky. Koľko máš plných, toľko kariet vyložíš. Za plný poldeci dáš aj NA EX.",
       "tvary": "poldeci"
     }
   },
@@ -533,18 +533,18 @@
   },
   "priznanie": {
     "pojem": "Confession",
-    "popis": "You lay a Curse outside the line in your play area — out of your deck for good.",
+    "popis": "You lay a Cirrhosis from your hand outside the line for good — it costs no shot and no turn; once confessed, it gives your opponent +1 hard in every brawl.",
     "sk": {
       "pojem": "Priznanie",
-      "popis": "Kliatbu vyložíš mimo línie do svojej hracej oblasti — natrvalo z balíčka."
+      "popis": "Cirhózu z ruky vyložíš mimo línie natrvalo — nestojí poldeci ani ťah; priznaná dá súperovi v každej bitke +1 tuhé."
     }
   },
   "sekera": {
     "pojem": "On the Tab",
-    "popis": "A brawl with no winner (tied on hard, Shakes and Debts): its butts go to the winner of the next brawl; in the finale they're forfeited.",
+    "popis": "A brawl with no winner (tied on hard, nobody won the argument and equal Debts): its butts go to the winner of the next brawl; in the finale they're forfeited.",
     "sk": {
       "pojem": "Na sekeru",
-      "popis": "Bitka bez víťaza (remíza v tuhom, Absťákoch aj Dlhoch): jej špaky vezme víťaz najbližšej bitky, vo finále prepadnú."
+      "popis": "Bitka bez víťaza (remíza v tuhom, hádku nevyhral nikto a Dlhov rovnako): jej špaky vezme víťaz najbližšej bitky, vo finále prepadnú."
     }
   },
   "senok": {
@@ -593,10 +593,10 @@
   },
   "stupen": {
     "pojem": "Notch",
-    "popis": "A position on an elder's scale: 0 calm, 1 uneasy, 2 scared, 3 terrified. An elder's notch for a player is that player's fear; the opponent's rumours lie on the same scale. Getting in costs 1 / 2 / 3; after the brawl it gives 1 / 3 / 6 butts; notches can be held by the opponent.",
+    "popis": "A position on an elder's scale: 0 calm, 1 uneasy, 2 scared, 3 terrified. An elder's notch for a player is that player's fear; the opponent's rumours lie on the same scale. Getting in costs 1 / 2 / 3; after the brawl it gives the winner the value of the highest notch of fear (1 / 2 / 3), rumours score the sum of their notches; notches can be held by the opponent.",
     "sk": {
       "pojem": "Stupeň",
-      "popis": "Poloha na stupnici staršieho: 0 pokojný, 1 znepokojený, 2 vystrašený, 3 vydesený. Stupeň staršieho pre hráča je jeho strach; reči súpera ležia na tej istej stupnici. Vstup stojí 1 / 2 / 3, po bitke dá 1 / 3 / 6 špakov, stupne môže držať súper."
+      "popis": "Poloha na stupnici staršieho: 0 pokojný, 1 znepokojený, 2 vystrašený, 3 vydesený. Stupeň staršieho pre hráča je jeho strach; reči súpera ležia na tej istej stupnici. Vstup stojí 1 / 2 / 3; víťazovi dá po bitke za strach hodnotu najvyššieho stupňa (1 / 2 / 3), reči bodujú súčtom stupňov; stupne môže držať súper."
     }
   },
   "strach": {
@@ -653,10 +653,10 @@
   },
   "utocnik": {
     "pojem": "Attacker and defender",
-    "popis": "The attacker lost the last brawl: plays first and answers a NA EX first; the defender chooses the target and takes from the Market first (1 card on the first go); both play the Booze-up at the same time; in the finale whoever has fewer butts attacks, and the leader chooses the pinnacle.",
+    "popis": "The attacker lost the last brawl: starts the round's first Assembly and answers a NA EX first; the defender chooses the target and takes from the Market first (1 card on the first go); both play the Booze-up at the same time; in the finale whoever has fewer butts attacks, and the leader chooses the pinnacle.",
     "sk": {
       "pojem": "Útočník a obranca",
-      "popis": "Útočník prehral poslednú bitku: vykladá prvý a na NA EX odpovedá prvý; obranca vyberá cieľ a berie z ponuky prvý (na prvom ťahu 1 kartu); Pitku hrajú obaja naraz; vo finále útočí, kto má menej špakov, a pinnacle vyberá vedúci."
+      "popis": "Útočník prehral poslednú bitku: začína prvé Zhromaždenie kola a na NA EX odpovedá prvý; obranca vyberá cieľ a berie z ponuky prvý (na prvom ťahu 1 kartu); Pitku hrajú obaja naraz; vo finále útočí, kto má menej špakov, a pinnacle vyberá vedúci."
     }
   },
   "viera": {
@@ -709,10 +709,10 @@
   },
   "vypalne": {
     "pojem": "Protection money",
-    "popis": "Straight after the brawl your opponent gives you 1 cigarette for every elder with your red fear (a prisoner counts, rumours don't), as many as they have. Not after the finale.",
+    "popis": "Straight after the brawl the bank gives you 1 cigarette for every elder with your red fear (a prisoner counts, rumours don't). Your opponent pays nothing. Not after the finale.",
     "sk": {
       "pojem": "Výpalné",
-      "popis": "Hneď po bitke ti súper dá 1 cigaretu za každého staršieho s tvojím červeným strachom (väzeň sa ráta, reči nie), koľko má. Po finále nie."
+      "popis": "Hneď po bitke ti banka dá 1 cigaretu za každého staršieho s tvojím červeným strachom (väzeň sa ráta, reči nie). Súper nič neplatí. Po finále nie."
     }
   },
   "vzbura": {
@@ -733,12 +733,12 @@
   },
   "zhromazdenie": {
     "pojem": "Assembly",
-    "popis": "The phase in which players take turns playing cards into the line; the attacker starts.",
+    "popis": "The phase in which players take turns playing cards into the line; the attacker starts the round's first one, and each further one is started by whoever finished playing first in the previous one.",
     "kratko": "The phase in which you take turns laying cards from your hand by the location in a single row — the line.",
     "tvary": "Assembly, Assemblies",
     "sk": {
       "pojem": "Zhromaždenie",
-      "popis": "Fáza, v ktorej hráči striedavo vykladajú karty do línie; začína útočník.",
+      "popis": "Fáza, v ktorej hráči striedavo vykladajú karty do línie; prvú v kole začína útočník, ďalšiu ten, kto v predošlej skončil vykladanie prvý.",
       "kratko": "Fáza, v ktorej striedavo kladiete karty z ruky k lokalite do jedného radu — línie.",
       "tvary": "Zhromaždenie, Zhromaždenia, Zhromaždení, Zhromaždením"
     }

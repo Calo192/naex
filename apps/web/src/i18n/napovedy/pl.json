@@ -48,9 +48,9 @@
     }
   },
   "pas-cigarety": {
-    "melichar": "Za każdą kartę wypijasz jeden [Poldeci] kieliszek: ile masz pełnych, tyle kart wyłożysz. Więcej kart naraz możesz, ale każda dodatkowa kosztuje [Cigareta] papierosa. Za pas nic nie dostaniesz – pełne kieliszki po prostu ci zostaną, na NA EX i na kolejne Zebranie. Ja bym im nie dał się zagrzać.",
+    "melichar": "Za każdą kartę wypijasz jeden [Poldeci] kieliszek: ile masz pełnych, tyle kart wyłożysz. Więcej kart naraz możesz, ale każda dodatkowa kosztuje [Cigareta] papierosa. Jak spasujesz, dobierasz kartę za każdy pełny kieliszek, a ten zostaje ci pełny – na NA EX i na kolejne Zebranie. Oszczędzanie się opłaca, tak tylko wspominam.",
     "sk": {
-      "melichar": "Za každú kartu vypiješ jeden [Poldeci] poldeci: koľko máš plných, toľko kariet vyložíš. Viac kariet naraz smieš, ale každá navyše stojí [Cigareta] cigaretu. Za pas nedostaneš nič – plné poldeci ti len ostanú, na NA EX aj na ďalšie Zhromaždenie. Ja by som ich nenechal stáť."
+      "melichar": "Za každú kartu vypiješ jeden [Poldeci] poldeci: koľko máš plných, toľko kariet vyložíš. Viac kariet naraz smieš, ale každá navyše stojí [Cigareta] cigaretu. Keď pasneš, doberieš si kartu za každý plný poldeci a ten ti ostane plný – na NA EX aj na ďalšie Zhromaždenie. Šetriť sa oplatí, len tak spomínam."
     }
   },
   "lokalita-pravidlo": {
@@ -66,10 +66,10 @@
     }
   },
   "pohorsenie": {
-    "melichar.moje": "Kłótnię wygrałeś: masz więcej miękkich obrażeń, [Pohoršenie] Zgorszenie 2, [Povera] Zabobon 1. Różnicę wydasz na swoje plotki u starszych – zawsze nad twoim strachem, stopień do żółtego 1, do pomarańczowego 2, do czerwonego 3. Co na kolejny stopień nie wystarczy, przepada. Plotki płacą ci po każdej bójce, także przegranej, a potem słabną. Korzystaj, póki możesz.",
+    "melichar.moje": "Kłótnię wygrałeś: masz więcej miękkich obrażeń, [Pohoršenie] Zgorszenie 2, [Povera] Zabobon 1. Różnicę wydasz na swoje plotki u starszych – na termometrze przeciwnika, od szczytu jego strachu w dół, stopień do żółtego 1, do pomarańczowego 2, do czerwonego 3. Co na kolejny stopień nie wystarczy, przepada. Plotki płacą ci po każdej bójce, także przegranej; opadają ci tylko wtedy, gdy przegrasz kłótnię. Korzystaj, póki możesz.",
     "melichar.superove": "Kłótnię wygrał przeciwnik: ma więcej miękkich obrażeń, [Pohoršenie] Zgorszenie 2, [Povera] Zabobon 1, a różnicę wyda na swoje plotki u starszych. Te płacą mu po każdej bójce, także przegranej. Następnym razem zostaw sobie Wiarę na jego Zabobony. Nie patrz tak na mnie, to nie ja go wyłożyłem.",
     "sk": {
-      "melichar.moje": "Hádku si vyhral: máš viac mäkkého poškodenia, [Pohoršenie] Pohoršenie 2, [Povera] Povera 1. Rozdiel minieš na svoje reči pri starších – vždy nad tvojím strachom, stupeň do žltej 1, do oranžovej 2, do červenej 3. Čo na ďalší stupeň nestačí, prepadne. Reči ti platia po každej bitke, aj prehratej, a potom slabnú. Užívaj, kým môžeš.",
+      "melichar.moje": "Hádku si vyhral: máš viac mäkkého poškodenia, [Pohoršenie] Pohoršenie 2, [Povera] Povera 1. Rozdiel minieš na svoje reči pri starších – na súperovom teplomere, od vrchu jeho strachu nadol, stupeň do žltej 1, do oranžovej 2, do červenej 3. Čo na ďalší stupeň nestačí, prepadne. Reči ti platia po každej bitke, aj prehratej; klesnú ti, len keď hádku prehráš. Užívaj, kým môžeš.",
       "melichar.superove": "Hádku vyhral súper: má viac mäkkého poškodenia, [Pohoršenie] Pohoršenie 2, [Povera] Povera 1, a rozdiel minie na svoje reči pri starších. Tie mu platia po každej bitke, aj prehratej. Nabudúce si nechaj Vieru na jeho Povery. Nepozeraj tak na mňa, ja som ho nevyložil."
     }
   },
@@ -98,15 +98,15 @@
     }
   },
   "patronat": {
-    "melichar": "Ten starszy boi się ciebie na czerwonym. Za pięć z Łomotu go pojmiesz – idzie do twojej piwnicy, a przeciwnik da ci pety za swój znacznik przy nim. Nie musisz, ale czemu miałbyś nie chcieć.",
+    "melichar": "Ten starszy boi się ciebie na czerwonym już od poprzedniej rundy. Za pięć z Łomotu go pojmiesz – idzie do twojej piwnicy, a przeciwnik da ci tyle petów, ile są warte jego plotki przy nim. Nie musisz, ale czemu miałbyś nie chcieć.",
     "sk": {
-      "melichar": "Tento starší sa ťa bojí na červenej. Za päť z Nakladačky ho zajmeš – ide do tvojej pivnice a súper ti dá špaky za svoj marker pri ňom. Nemusíš, ale prečo by si nechcel."
+      "melichar": "Tento starší sa ťa bojí na červenej už od minulého kola. Za päť z Nakladačky ho zajmeš – ide do tvojej pivnice a súper ti dá toľko špakov, koľko sú hodné jeho reči pri ňom. Nemusíš, ale prečo by si nechcel."
     }
   },
   "presvedcenie": {
-    "melichar": "Ten starszy boi się przeciwnika bardziej niż ciebie. Plotki na czerwony i pięć na wierzch – i jest przekonany: jego karta idzie do twojej ręki i zostaje w twojej talii. Twoje plotki przy nim spłoną, przychylność ci zostanie.",
+    "melichar": "Tego starszego możesz przekonać: doprowadź swoje plotki na cały termometr przeciwnika przy nim i dołóż trzy punkty z kłótni. Jego karta idzie do twojej ręki i zostaje w twojej talii. Plotki przy nim i przychylność ci zostają. Wreszcie ktoś cię słucha.",
     "sk": {
-      "melichar": "Tento starší sa súpera bojí viac než teba. Reči na červenú a päť navrch – a je presvedčený: jeho karta ide tebe do ruky a ostáva v tvojom balíčku. Tvoje reči pri ňom zhoria, priazeň ti ostane."
+      "melichar": "Tohto staršieho smieš presvedčiť: dotiahni svoje reči na celý súperov teplomer pri ňom a pridaj tri body z hádky. Jeho karta ide tebe do ruky a ostáva v tvojom balíčku. Reči pri ňom aj priazeň ti ostanú. Konečne ťa niekto počúva."
     }
   },
   "vydesenie": {
@@ -124,9 +124,9 @@
     }
   },
   "exekutor": {
-    "melichar": "Masz przyznany Dług, nic nie chcę mówić. W każdej bójce przyjdzie Komornik: spali ci połowę Długów, zaokrąglając w górę, i tyle samo petów. Znam go, nie polecam.",
+    "melichar": "Masz Dług, nic nie chcę mówić. W każdej bójce przyjdzie Komornik: spali ci połowę Długów, zaokrąglając w górę, i tyle samo petów. Znam go, nie polecam.",
     "sk": {
-      "melichar": "Máš priznaný Dlh, nechcem nič hovoriť. V každej bitke príde Exekútor: zhorí ti polovica Dlhov, zaokrúhlene nahor, a rovnako veľa špakov. Poznám ho, neodporúčam."
+      "melichar": "Máš Dlh, nechcem nič hovoriť. V každej bitke príde Exekútor: zhorí ti polovica Dlhov, zaokrúhlene nahor, a rovnako veľa špakov. Poznám ho, neodporúčam."
     }
   },
   "zaverecna": {

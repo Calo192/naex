@@ -132,7 +132,7 @@
     "popis": "Have at least {prah} Superstitions in a single game that your opponent's Faith didn't cancel.",
     "sk": {
       "nazov": "Zlé oko",
-      "popis": "Maj v jednej partii aspoň {prah} Povier, ktoré neprerušila súperova Viera."
+      "popis": "Maj v jednej partii aspoň {prah} Povier, ktoré nezrušila súperova Viera."
     }
   },
   "svatuskar": {
@@ -185,10 +185,10 @@
   },
   "do-dna": {
     "nazov": "Bottoms Up",
-    "popis": "Down at least {prah} shots in a single round.",
+    "popis": "Down at least {prah} shots in a single round — only shots for an extra card in a turn count, not the one for the first card.",
     "sk": {
       "nazov": "Do dna",
-      "popis": "Vypi do dna za jedno kolo aspoň {prah} poldeci."
+      "popis": "Vypi do dna za jedno kolo aspoň {prah} poldeci — ráta sa len poldeci za kartu navyše v ťahu, za prvú kartu nie."
     }
   },
   "pecen-z-ocele": {
@@ -297,10 +297,10 @@
   },
   "eso-v-rukave": {
     "nazov": "Ace up the Sleeve",
-    "popis": "Turn a brawl round with Last Orders (the LAST ORDERS! stamp) — {prah}× in total.",
+    "popis": "Turn a brawl round with Last Orders — {prah}× in total.",
     "sk": {
       "nazov": "Eso v rukáve",
-      "popis": "Otoč bitku Záverečnou (pečiatka ZÁVEREČNÁ!) — spolu {prah}×."
+      "popis": "Otoč bitku Záverečnou — spolu {prah}×."
     }
   },
   "plny-stol": {
@@ -761,11 +761,11 @@
   },
   "abstinent": {
     "nazov": "Teetotaller",
-    "popis": "Finish a game without a single vice: no drinking, no smoking, no NA EX, no refills, no barter — {prah}× in total.",
+    "popis": "Finish a game without a single vice: no extra card in a turn, no smoking, no NA EX, no barter — {prah}× in total.",
     "tajnyText": "Somebody here only drinks water…",
     "sk": {
       "nazov": "Abstinent",
-      "popis": "Dohraj partiu bez jedinej neresti: nevypi, nefajči, nedaj NA EX, nedolievaj, nebarteruj — spolu {prah}×.",
+      "popis": "Dohraj partiu bez jedinej neresti: žiadna karta navyše v ťahu, nefajči, nedaj NA EX, nebarteruj — spolu {prah}×.",
       "tajnyText": "Niekto tu pije len vodu…"
     }
   },

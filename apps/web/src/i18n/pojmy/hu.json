@@ -5,10 +5,10 @@
   },
   "abstak": {
     "pojem": "Remegés",
-    "popis": "Átok címkéjű kártya, ha a körben kevesebb a bűnöd, mint a Szomjad: a dobópakliba kerül, nem lehet bevallani; mindegyik a paklidban 1 kemény sebzést vesz el tőled a verekedésben. Eldönti a döntetlent keményben. A Látomás égeti el.",
+    "popis": "Átok címkéjű kártya, ha a körben kevesebb a bűnöd, mint a Szomjad: a dobópakliba kerül, nem lehet bevallani; mindegyik a paklidban 1 kemény sebzést vesz el tőled a verekedésben. A Látomás égeti el.",
     "sk": {
       "pojem": "Absťák",
-      "popis": "Karta s tagom Kliatba za menej nerestí v kole, než je tvoja Chuť: ide do odhadzovacieho balíčka, nedá sa priznať; každý v tvojom balíčku ti v bitke uberie 1 tuhé. Rozhoduje remízu v tuhom. Spáli ho Vízia."
+      "popis": "Karta s tagom Kliatba za menej nerestí v kole, než je tvoja Chuť: ide do odhadzovacieho balíčka, nedá sa priznať; každý v tvojom balíčku ti v bitke uberie 1 tuhé. Spáli ho Vízia."
     }
   },
   "chut": {
@@ -41,25 +41,25 @@
   },
   "bitka": {
     "pojem": "Verekedés",
-    "popis": "A kör vége: a több kemény sebzés nyer és csikkeket kap, az elöljárók pontoznak, a győztes az Elpáholást a félelmére osztja el, a veszekedés győztese pedig a veszekedést a pletykájára az ellenfél hőmérőin.",
+    "popis": "A kör vége: a több kemény sebzés nyer és csikkeket kap, az elöljárók pontoznak, a veszekedés győztese a veszekedést a pletykájára osztja el az ellenfél hőmérőin, aztán a verekedés győztese az Elpáholást a félelmére.",
     "kratko": "A kör vége: összeadják a helyszín melletti kártyák ütéseit. Akinek több van, nyert, és minden kártyáért a sorban kap egy csikket.",
     "tvary": "verekedés, verekedést, verekedések, verekedéseket, verekedésben, verekedésre, verekedésért, verekedésnél, verekedéssel, verekedésből, verekedésig, verekedései, verekedése, verekedésekben",
     "sk": {
       "pojem": "Bitka",
-      "popis": "Koniec kola: viac tuhého poškodenia vyhráva a dostane špaky, starší bodujú, víťaz rozdelí Nakladačku na svoj strach a víťaz hádky hádku na svoje reči na teplomeroch súpera.",
+      "popis": "Koniec kola: viac tuhého poškodenia vyhráva a dostane špaky, starší bodujú, víťaz hádky rozdelí hádku na svoje reči na teplomeroch súpera a potom víťaz bitky Nakladačku na svoj strach.",
       "kratko": "Koniec kola: sčítajú sa údery z kariet pri lokalite. Kto má viac, vyhral a berie špak za každú kartu v línii.",
       "tvary": "bitka, bitky, bitke, bitku, bitkou, bitiek, bitkách"
     }
   },
   "cigareta": {
     "pojem": "Cigaretta",
-    "popis": "A játék pénze: ezzel fizetsz a kínálat kártyáiért, az Örökségért, a Szerszám alárakásáért, az újratöltésért, a csereberéért és a Záróráért; rágyújtással az Ivászaton rögtön egy extra kártya (1, 2, 3… cigaretta; a Benzinkúton az első ingyen). Verekedés után a vesztes 1-et kap, az ellenfél pedig sarcot fizet. A játék végén minden 5 cigaretta 1 csikk.",
-    "kratko": "A játék aprópénze. Ezzel fizetsz a kínálat kártyáiért és a rágyújtásért az Ivászaton; a ki nem játszott kártyáidért kapsz belőle.",
+    "popis": "A játék pénze: ezzel fizetsz a kínálat kártyáiért, az Örökségért, a Szerszám alárakásáért, a csereberéért, a Záróráért és minden további kártyáért ugyanabban a lépésben; rágyújtással az Ivászaton rögtön egy extra kártya (1, 2, 3… cigaretta; a Benzinkúton az első ingyen). Verekedés után a vesztes 1-et kap, az ellenfél pedig sarcot fizet. A játék végén minden 5 cigaretta 1 csikk.",
+    "kratko": "A játék aprópénze. Ezzel fizetsz a kínálat kártyáiért, a rágyújtásért az Ivászaton és minden további kártyáért ugyanabban a lépésben.",
     "tvary": "cigaretta, cigarettát, cigaretták, cigarettákat, cigarettáért, cigarettákért, cigarettával, cigarettákkal, cigarettád, cigarettádat, cigarettája, cigarettáid, cigarettánként, cigarettám, cigarettába, cigarettákra, cigarettáidra, cigarettájához, cigarettáról",
     "sk": {
       "pojem": "Cigareta",
-      "popis": "Mena hry: platí karty z ponuky, Dedičstvo, podloženie Nástroja, doliatie, barter a Záverečnú; fajčením v Pitke hneď karta navyše (1, 2, 3… cigarety; na Benzínke prvá zadarmo). Po bitke dostane porazený 1 a súper platí výpalné. Na konci hry každých 5 cigariet 1 špak.",
-      "kratko": "Drobné tejto hry. Platíš nimi karty z ponuky a fajčenie v Pitke; za karty, ktoré nevyložíš, ich dostaneš.",
+      "popis": "Mena hry: platí karty z ponuky, Dedičstvo, podloženie Nástroja, barter, Záverečnú a každú ďalšiu kartu v tom istom ťahu; fajčením v Pitke hneď karta navyše (1, 2, 3… cigarety; na Benzínke prvá zadarmo). Po bitke dostane porazený 1 a súper platí výpalné. Na konci hry každých 5 cigariet 1 špak.",
+      "kratko": "Drobné tejto hry. Platíš nimi karty z ponuky, fajčenie v Pitke a každú ďalšiu kartu v tom istom ťahu.",
       "tvary": "cigareta, cigarety, cigarete, cigaretu, cigaretou, cigariet, cigaretám, cigaretami"
     }
   },
@@ -81,10 +81,10 @@
   },
   "dlh": {
     "pojem": "Adósság",
-    "popis": "A Hazárd átka — számláló, nem kártya: minden Hazárd akció az Ivászaton = 1 Adósság, azonnal bevallva; a bevallott Adósságokért minden verekedésben jön a Végrehajtó, és döntetlen verekedésnél az veszít, akinek több van.",
+    "popis": "A Hazárd átka — számláló, nem kártya: minden Hazárd akció az Ivászaton = 1 Adósság; az Adósságokért minden verekedésben jön a Végrehajtó, és döntetlen keménynél, ha a veszekedést senki sem nyerte, az veszít, akinek több van.",
     "sk": {
       "pojem": "Dlh",
-      "popis": "Kliatba z Hazardu — počítadlo, nie karta: každá akcia Hazard v Pitke = 1 Dlh, hneď priznaný; za priznané Dlhy príde v každej bitke Exekútor a pri remíze v bitke prehrá, kto ich má viac."
+      "popis": "Kliatba z Hazardu — počítadlo, nie karta: každá akcia Hazard v Pitke = 1 Dlh; za Dlhy príde v každej bitke Exekútor a pri remíze v tuhom, keď hádku nevyhral nikto, prehrá, kto ich má viac."
     }
   },
   "dobratie": {
@@ -129,10 +129,10 @@
   },
   "exekutor": {
     "pojem": "Végrehajtó",
-    "popis": "Minden verekedésben eljön, amíg van bevallott Adósságod: elég az Adósságaid fele (felfelé kerekítve) és ugyanannyi csikk; az Ügyvéd kegye 1 / 2 / 3-mal csökkenti. A bandádban lévő Hobbikertész abban a körben megvéd tőle.",
+    "popis": "Minden verekedésben eljön, amíg van Adósságod: elég az Adósságaid fele (felfelé kerekítve) és ugyanannyi csikk; az Ügyvéd kegye 1 / 2 / 3-mal csökkenti. A bandádban lévő Hobbikertész abban a körben megvéd tőle.",
     "sk": {
       "pojem": "Exekútor",
-      "popis": "Príde v každej bitke, kým máš priznaný Dlh: zhorí ti polovica Dlhov (zaokrúhlene nahor) a rovnako veľa špakov; tvoja priazeň Advokáta ich uberie o 1 / 2 / 3. Záhradkár v tvojej partii ťa v tom kole ochráni."
+      "popis": "Príde v každej bitke, kým máš Dlh: zhorí ti polovica Dlhov (zaokrúhlene nahor) a rovnako veľa špakov; tvoja priazeň Advokáta ich uberie o 1 / 2 / 3. Záhradkár v tvojej partii ťa v tom kole ochráni."
     }
   },
   "finale": {
@@ -217,10 +217,10 @@
   },
   "kliatba": {
     "pojem": "Átok",
-    "popis": "Ami a gazdájának árt: a Májzsugor és a Remegés kártya, meg az Adósság számláló (azonnal bevallva). Bevallani csak a Májzsugort lehet.",
+    "popis": "Ami a gazdájának árt: a Májzsugor és a Remegés kártya, meg az Adósság számláló. Bevallani csak a Májzsugort lehet.",
     "sk": {
       "pojem": "Kliatba",
-      "popis": "Čo škodí majiteľovi: karty Cirhóza a Absťák a počítadlo Dlh (hneď priznaný). Priznať sa dá len Cirhóza."
+      "popis": "Čo škodí majiteľovi: karty Cirhóza a Absťák a počítadlo Dlh. Priznať sa dá len Cirhóza."
     }
   },
   "kolo": {
@@ -273,18 +273,18 @@
   },
   "reci": {
     "pojem": "Pletyka",
-    "popis": "Fokok blokkja az ellenfél hőmérőjén (az asztalon a te színedben sraffozva); a veszekedés emeli, az ő félelmének tetejétől lefelé, aztán fölé. Az 1 / 2 / 3. fok minden verekedésnél neked pontoz az ellenfél helyett, és alulról csak elvesztett veszekedés után csökken. Az ellenfél kegyén, a félelemmel nyert győzelmen és az elfogáson nem változtat.",
+    "popis": "Fokok blokkja az ellenfél hőmérőjén (az asztalon a te színedben sraffozva); a veszekedés emeli, az ő félelmének tetejétől lefelé, aztán fölé. Az 1 / 2 / 3. fok minden verekedésnél neked pontoz az ellenfél helyett — csak azok, ahol az ellenfélnek félelme van; fölötte várnak. Alulról csak elvesztett veszekedés után csökkennek. Az ellenfél kegyén, a félelemmel nyert győzelmen és az elfogáson nem változtat.",
     "sk": {
       "pojem": "Reči",
-      "popis": "Blok stupňov na teplomere súpera (na stole šrafa v tvojej farbe); dvíha ich hádka, od vrchu jeho strachu nadol, potom nad neho. Stupne 1 / 2 / 3 bodujú tebe pri každej bitke namiesto súpera, klesajú zospodu len po prehratej hádke. Súperovu priazeň, výhru strachom ani zajatie nemenia."
+      "popis": "Blok stupňov na teplomere súpera (na stole šrafa v tvojej farbe); dvíha ich hádka, od vrchu jeho strachu nadol, potom nad neho. Stupne 1 / 2 / 3 bodujú tebe pri každej bitke namiesto súpera — len tie, na ktorých má súper strach; nad ním čakajú. Klesajú zospodu len po prehratej hádke. Súperovu priazeň, výhru strachom ani zajatie nemenia."
     }
   },
   "hadka": {
     "pojem": "Veszekedés",
-    "popis": "A verekedés lépése: akinek több puha sebzése van, a különbséggel megnyerte a veszekedést („Anna 3-mal nyerte a veszekedést”), és a pontozás után ezt a pletykájára osztja el az ellenfél hőmérőin — egy fok ára 1 / 2 / 3, a maradék elvész. Egyenlőségnél senki; a döntőben a veszekedés csikkre megy.",
+    "popis": "A verekedés lépése: akinek több puha sebzése van, a különbséggel megnyerte a veszekedést („Anna 3-mal nyerte a veszekedést”), és a pontozás után ezt a pletykájára osztja el az ellenfél hőmérőin, még az Elpáholás előtt — egy fok ára 1 / 2 / 3, a maradék elvész. Egyenlőségnél senki; a döntőben a veszekedés csikkre megy.",
     "sk": {
       "pojem": "Hádka",
-      "popis": "Krok bitky: kto má viac mäkkého poškodenia, vyhral hádku o rozdiel („Ana vyhrala hádku o 3“) a po bodovaní ho rozdelí na svoje reči na teplomeroch súpera — stupeň stojí 1 / 2 / 3, zvyšok prepadne. Pri rovnosti nikto; vo finále ide hádka na špaky."
+      "popis": "Krok bitky: kto má viac mäkkého poškodenia, vyhral hádku o rozdiel („Ana vyhrala hádku o 3“) a po bodovaní ho rozdelí na svoje reči na teplomeroch súpera, ešte pred Nakladačkou — stupeň stojí 1 / 2 / 3, zvyšok prepadne. Pri rovnosti nikto; vo finále ide hádka na špaky."
     }
   },
   "makke": {
@@ -381,10 +381,10 @@
   },
   "pas": {
     "pojem": "Passz",
-    "popis": "Befejezed a kijátszást a Gyűlésen; semmit sem kapsz érte, a fel nem használt teli feleseid megmaradnak.",
+    "popis": "Befejezed a kijátszást a Gyűlésen, és minden teli felesért húzol egy kártyát a paklidból; a feleseid teli maradnak. Aki elsőként fejezi be, az nyitja a kör következő Gyűlését.",
     "sk": {
       "pojem": "Pas",
-      "popis": "Skončíš vykladanie v Zhromaždení; nič zaň nedostaneš, nevyložené plné poldeci ti ostanú."
+      "popis": "Skončíš vykladanie v Zhromaždení a za každý plný poldeci si doberieš kartu z balíčka; poldeci ti ostanú plné. Kto skončí prvý, otvára ďalšie Zhromaždenie kola."
     }
   },
   "podlozenie": {
@@ -413,10 +413,10 @@
   },
   "vazen": {
     "pojem": "Fogoly",
-    "popis": "Elfogott elöljáró a bevallott kártyáid között („a pincében”): nem ad kegyet, piros félelmednek számít, és tiéd a képessége (játékonként egyszer). Elfogáskor az ellenfél annyi csikket ad át neked, ahány veszekedéspontja pletykában van nála; a győzelemhez szükséges foglyok a liga szerint (2 / 3 / 4).",
+    "popis": "Elfogott elöljáró a bevallott kártyáid között („a pincében”): nem ad kegyet, piros félelmednek számít, és tiéd a képessége (játékonként egyszer). Elfogáskor az ellenfél annyi csikket ad át neked, ahány veszekedéspontja pletykában van nála. A ligában a győzelemhez szükséges foglyokkal (2 / 3 / 4) tele a pincéd — a következő megnyert verekedéssel megnyered a játékot.",
     "sk": {
       "pojem": "Väzeň",
-      "popis": "Zajatý starší medzi tvojimi priznanými kartami („v pivnici“): nedáva priazeň, ráta sa ako tvoj červený strach, máš jeho schopnosť (raz za hru). Pri zajatí ti súper odovzdá toľko špakov, koľko bodov hádky má pri ňom v rečiach; väzni na výhru podľa ligy (2 / 3 / 4)."
+      "popis": "Zajatý starší medzi tvojimi priznanými kartami („v pivnici“): nedáva priazeň, ráta sa ako tvoj červený strach, máš jeho schopnosť (raz za hru). Pri zajatí ti súper odovzdá toľko špakov, koľko bodov hádky má pri ňom v rečiach. S väzňami na výhru podľa ligy (2 / 3 / 4) máš plnú pivnicu — vyhráš ďalšiu bitku, ktorú vyhráš."
     }
   },
   "schopnost-vazna": {
@@ -473,13 +473,13 @@
   },
   "poldeci": {
     "pojem": "Feles",
-    "popis": "Egy kupica pálinka; minden kártya, amelyet kijátszol, egy telibe kerül, és ezzel fizetsz a NA EX-ért és a válaszért is. Verekedés után mind újratöltődik, az Ivászat után egy. A játék végén minden teli feles 1 csikk.",
-    "kratko": "Egy kupica pálinka. Ahány teli feles van nálad, annyi kártyát játszol ki, plusz egyet. Egy teli felesért NA EX-et is adhatsz.",
+    "popis": "Egy kupica pálinka; minden kártya, amelyet kijátszol, egy telibe kerül, és ezzel fizetsz a NA EX-ért és a válaszért is. Passzkor minden teliért húzol egy kártyát, és az teli marad. Verekedés után mind újratöltődik, az Ivászat után egy. A játék végén minden teli feles 1 csikk.",
+    "kratko": "Egy kupica pálinka. Ahány teli feles van nálad, annyi kártyát játszol ki. Egy teli felesért NA EX-et is adhatsz.",
     "tvary": "feles, felest, felesek, feleseket, felessel, felesért, felesed, feleseid, felese, felesét, felesbe",
     "sk": {
       "pojem": "Poldeci",
-      "popis": "Pohárik pálenky; každá karta, ktorú vyložíš, stojí plný, a platí ním aj NA EX a odpoveď. Po bitke sa všetky obnovia, po Pitke sa jeden doleje. Plný na konci hry je 1 špak.",
-      "kratko": "Pohárik pálenky. Koľko máš plných, toľko kariet vyložíš, a ešte jednu. Za plný poldeci dáš aj NA EX.",
+      "popis": "Pohárik pálenky; každá karta, ktorú vyložíš, stojí plný, a platí ním aj NA EX a odpoveď. Pri pase si za každý plný doberieš kartu a ostane plný. Po bitke sa všetky obnovia, po Pitke sa jeden doleje. Plný na konci hry je 1 špak.",
+      "kratko": "Pohárik pálenky. Koľko máš plných, toľko kariet vyložíš. Za plný poldeci dáš aj NA EX.",
       "tvary": "poldeci"
     }
   },
@@ -533,18 +533,18 @@
   },
   "priznanie": {
     "pojem": "Bevallás",
-    "popis": "Az átkot a soron kívül, a saját játékterületedre teszed ki — végleg kikerül a pakliból.",
+    "popis": "A kezedből a Májzsugort végleg a soron kívülre teszed — nem kerül sem felesbe, sem lépésbe; bevallva minden verekedésben +1 keményet ad az ellenfélnek.",
     "sk": {
       "pojem": "Priznanie",
-      "popis": "Kliatbu vyložíš mimo línie do svojej hracej oblasti — natrvalo z balíčka."
+      "popis": "Cirhózu z ruky vyložíš mimo línie natrvalo — nestojí poldeci ani ťah; priznaná dá súperovi v každej bitke +1 tuhé."
     }
   },
   "sekera": {
     "pojem": "Krétára",
-    "popis": "Győztes nélküli verekedés (döntetlen keményben, Remegésben és Adósságban is): a csikkjeit a következő verekedés győztese viszi, a döntőben elvesznek.",
+    "popis": "Győztes nélküli verekedés (döntetlen keményben, a veszekedést senki sem nyerte, és ugyanannyi Adósság): a csikkjeit a következő verekedés győztese viszi, a döntőben elvesznek.",
     "sk": {
       "pojem": "Na sekeru",
-      "popis": "Bitka bez víťaza (remíza v tuhom, Absťákoch aj Dlhoch): jej špaky vezme víťaz najbližšej bitky, vo finále prepadnú."
+      "popis": "Bitka bez víťaza (remíza v tuhom, hádku nevyhral nikto a Dlhov rovnako): jej špaky vezme víťaz najbližšej bitky, vo finále prepadnú."
     }
   },
   "senok": {
@@ -593,10 +593,10 @@
   },
   "stupen": {
     "pojem": "Fok",
-    "popis": "Helyzet az elöljáró skáláján: 0 nyugodt, 1 nyugtalan, 2 ijedt, 3 rémült. Az elöljáró foka egy játékos számára az ő félelme; az ellenfél pletykája ugyanazon a skálán fekszik. A belépés 1 / 2 / 3-ba kerül, verekedés után 1 / 3 / 6 csikket ad, a fokokat az ellenfél is tarthatja.",
+    "popis": "Helyzet az elöljáró skáláján: 0 nyugodt, 1 nyugtalan, 2 ijedt, 3 rémült. Az elöljáró foka egy játékos számára az ő félelme; az ellenfél pletykája ugyanazon a skálán fekszik. A belépés 1 / 2 / 3-ba kerül; verekedés után a győztesnek a félelemért a legmagasabb fok értékét adja (1 / 2 / 3), a pletyka a fokok összegével pontoz; a fokokat az ellenfél is tarthatja.",
     "sk": {
       "pojem": "Stupeň",
-      "popis": "Poloha na stupnici staršieho: 0 pokojný, 1 znepokojený, 2 vystrašený, 3 vydesený. Stupeň staršieho pre hráča je jeho strach; reči súpera ležia na tej istej stupnici. Vstup stojí 1 / 2 / 3, po bitke dá 1 / 3 / 6 špakov, stupne môže držať súper."
+      "popis": "Poloha na stupnici staršieho: 0 pokojný, 1 znepokojený, 2 vystrašený, 3 vydesený. Stupeň staršieho pre hráča je jeho strach; reči súpera ležia na tej istej stupnici. Vstup stojí 1 / 2 / 3; víťazovi dá po bitke za strach hodnotu najvyššieho stupňa (1 / 2 / 3), reči bodujú súčtom stupňov; stupne môže držať súper."
     }
   },
   "strach": {
@@ -653,10 +653,10 @@
   },
   "utocnik": {
     "pojem": "Támadó és védő",
-    "popis": "A támadó elvesztette az utolsó verekedést: elsőként játszik ki, és elsőként válaszol a NA EX-re; a védő választja a célt, és elsőként vesz a kínálatból (az első lépésben 1 kártyát); az Ivászatot mindketten egyszerre játsszák; a döntőben az támad, akinek kevesebb csikkje van, a csúcshelyszínt pedig a vezető választja.",
+    "popis": "A támadó elvesztette az utolsó verekedést: ő kezdi a kör első Gyűlését, és elsőként válaszol a NA EX-re; a védő választja a célt, és elsőként vesz a kínálatból (az első lépésben 1 kártyát); az Ivászatot mindketten egyszerre játsszák; a döntőben az támad, akinek kevesebb csikkje van, a csúcshelyszínt pedig a vezető választja.",
     "sk": {
       "pojem": "Útočník a obranca",
-      "popis": "Útočník prehral poslednú bitku: vykladá prvý a na NA EX odpovedá prvý; obranca vyberá cieľ a berie z ponuky prvý (na prvom ťahu 1 kartu); Pitku hrajú obaja naraz; vo finále útočí, kto má menej špakov, a pinnacle vyberá vedúci."
+      "popis": "Útočník prehral poslednú bitku: začína prvé Zhromaždenie kola a na NA EX odpovedá prvý; obranca vyberá cieľ a berie z ponuky prvý (na prvom ťahu 1 kartu); Pitku hrajú obaja naraz; vo finále útočí, kto má menej špakov, a pinnacle vyberá vedúci."
     }
   },
   "viera": {
@@ -709,10 +709,10 @@
   },
   "vypalne": {
     "pojem": "Sarc",
-    "popis": "Közvetlenül a verekedés után az ellenfél 1 cigarettát ad neked minden elöljáróért, akinél piros a félelmed (a fogoly számít, a pletyka nem), amennyi van neki. A döntő után nem.",
+    "popis": "Közvetlenül a verekedés után a bank 1 cigarettát ad neked minden elöljáróért, akinél piros a félelmed (a fogoly számít, a pletyka nem). Az ellenfél semmit sem fizet. A döntő után nem.",
     "sk": {
       "pojem": "Výpalné",
-      "popis": "Hneď po bitke ti súper dá 1 cigaretu za každého staršieho s tvojím červeným strachom (väzeň sa ráta, reči nie), koľko má. Po finále nie."
+      "popis": "Hneď po bitke ti banka dá 1 cigaretu za každého staršieho s tvojím červeným strachom (väzeň sa ráta, reči nie). Súper nič neplatí. Po finále nie."
     }
   },
   "vzbura": {
@@ -733,12 +733,12 @@
   },
   "zhromazdenie": {
     "pojem": "Gyűlés",
-    "popis": "Szakasz, amelyben a játékosok felváltva játszanak ki kártyákat a sorba; a támadó kezd.",
+    "popis": "Szakasz, amelyben a játékosok felváltva játszanak ki kártyákat a sorba; a kör elsőjét a támadó kezdi, a továbbiakat az, aki az előzőben elsőként fejezte be a kijátszást.",
     "kratko": "Szakasz, amelyben felváltva teszitek a kártyákat a kézből a helyszín mellé, egyetlen sorba.",
     "tvary": "Gyűlés, Gyűlést, Gyűlésen, Gyűlésre, Gyűlések, Gyűlésben, Gyűlésből, Gyűléssel, Gyűlésig",
     "sk": {
       "pojem": "Zhromaždenie",
-      "popis": "Fáza, v ktorej hráči striedavo vykladajú karty do línie; začína útočník.",
+      "popis": "Fáza, v ktorej hráči striedavo vykladajú karty do línie; prvú v kole začína útočník, ďalšiu ten, kto v predošlej skončil vykladanie prvý.",
       "kratko": "Fáza, v ktorej striedavo kladiete karty z ruky k lokalite do jedného radu — línie.",
       "tvary": "Zhromaždenie, Zhromaždenia, Zhromaždení, Zhromaždením"
     }
