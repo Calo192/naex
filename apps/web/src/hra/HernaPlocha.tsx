@@ -5026,34 +5026,24 @@ export function HernaPlocha({
                 </span>
               </>
             ),
-            text: (
-              <>
-                <span className="pil-sep">·</span>
-                <span title={cenaPola()}>{t("plocha.stupen123")}</span>
-                <span className="pil-sep">·</span>
-                {zvysok === 0 ? (
-                  <span>{t("plocha.vsetkoRozdane")}</span>
-                ) : m > 0 ? (
-                  <span>
-                    {tr("plocha.staciEste", { n: m, cislo: <b className="cislo">{m}</b> })}
-                  </span>
-                ) : (
+            // Pilulka: čo sa rozdeľuje a koľko zostáva (Z-11); cena stupňa je na teplomeroch, pokyn
+            // práve povedala medziobrazovka — výklad pod myšou. Čo prepadne, ostáva na očiach.
+            text:
+              zvysok > 0 && m === 0 ? (
+                <>
+                  <span className="pil-sep">·</span>
                   <span className="prepadne">
                     {tr("plocha.prepadneB", { n: <b className="cislo">{planDelenia.prepadne}</b> })}
                   </span>
-                )}
-                {ide === 0 && m > 0 && (
-                  <>
-                    <span className="pil-sep">·</span>{" "}
-                    {/* Medzera: na telefóne je oddeľovač skrytý a vety by sa zliali. */}
-                    <span>
-                      <span className="len-mys">{t("plocha.klikni")}</span>
-                      <span className="len-dotyk">{t("plocha.tukni")}</span> {t("plocha.naStupen")}
-                    </span>
-                  </>
-                )}
-              </>
-            ),
+                </>
+              ) : undefined,
+            vyklad: [
+              `${t("plocha.stupen123")} (${cenaPola()})`,
+              zvysok === 0 ? t("plocha.vsetkoRozdane") : m > 0 ? t("plocha.staciEste", { n: m, cislo: m }) : null,
+              m > 0 ? `${naSirku ? t("plocha.tukni") : t("plocha.klikni")} ${t("plocha.naStupen")}` : null,
+            ]
+              .filter((x): x is string => x !== null)
+              .join(" · "),
           };
         }
         return null;

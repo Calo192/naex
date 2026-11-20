@@ -42,6 +42,9 @@ import "./teplomery.css";
 
 export { IKONA_PRIAZNE } from "./KruzokPriazne.tsx";
 
+/** Ako dlho musí myš zotrvať na staršom, na ktorého sa kliká, kým sa ukáže nápoveda (V-10: 1,5 s). */
+const ONESKORENIE_NAPOVEDY_MS = 1500;
+
 /** Rozdeľovanie pri staršom v mojom kroku — stupne a čo s nimi urobí klik (teplomery.ts). */
 export interface RozdelenieStarsieho {
   /** Marker, ktorý krok dvíha: strach (Nakladačka) alebo reči (hádka). */
@@ -392,7 +395,8 @@ function TeplomerStarsieho({
         akcia: klik?.akcia ?? null,
         dalsi: s.presvedcil === null ? null : { nazov: t("linia.presvedceny"), text: t("linia.presvedcilHo", { kto: kratke[s.presvedcil.kto] }) },
       }),
-    { obrazok: s.obrazok, zvacsenina: () => <Zvacsenina s={s} fav={fav} pk={pk} /> },
+    // Kým sa na starších kliká (rozdeľovanie, zajatie, kroky výučby), nápoveda až po zotrvaní myši.
+    { obrazok: s.obrazok, zvacsenina: () => <Zvacsenina s={s} fav={fav} pk={pk} />, oneskorenieMs: r !== undefined || klik != null ? ONESKORENIE_NAPOVEDY_MS : 0 },
   );
 
   // Rozdeľovanie: klik na portrét pridá stupeň nad najvyšší vybraný (veľký cieľ pre prst).
@@ -627,9 +631,8 @@ function TeplomerR3({
     return (
       <span key={strana}>
         {posun && duch && <span className={`r3-hladina ${strana} duch`} style={{ "--h": pred.strach[h] } as CSSProperties} />}
-        <span className={`r3-hladina ${strana}${posun && suhrn ? " posun" : ""}`} style={{ "--h": v.strach[h], "--h-od": pred?.strach[h] ?? v.strach[h] } as CSSProperties}>
-          <b className="r3-meno">{mena[h]}</b>
-        </span>
+        {/* Bez mena pri hladine (Z-11): teplomer je vo farbe hráča, môj vľavo, súperov vpravo, mená v legende. */}
+        <span className={`r3-hladina ${strana}${posun && suhrn ? " posun" : ""}`} style={{ "--h": v.strach[h], "--h-od": pred?.strach[h] ?? v.strach[h] } as CSSProperties} />
       </span>
     );
   };
