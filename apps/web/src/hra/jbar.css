@@ -1048,15 +1048,18 @@ button.jbar-odhad::before {
 }
 
 /* Postup výučby (V-22): tri úseky dlhé podľa minút častí a text „1. časť z 3 · ešte asi 6 min“. */
+/* Riadok menovky nesmie byť vyšší než text — o každý pixel menej má veta (V-01). Úseky sa preto
+   na základnú čiaru nerovnajú, len sú v strede. */
 .mel-postup {
   display: inline-flex;
-  align-items: center;
+  align-items: baseline;
   gap: 8px;
   white-space: nowrap;
 }
 
 .mel-useky {
   display: inline-flex;
+  align-self: center;
   gap: 3px;
   width: 84px;
   height: 4px;
