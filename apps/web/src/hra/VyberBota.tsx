@@ -1,10 +1,49 @@
 // Výber súpera proti počítaču (Michal 2026-11-06): ponúkne sa až po voľbe hry proti počítaču.
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, type Ref } from "react";
 import { Avatar } from "../komponenty.tsx";
 import { t, tZoServera } from "../i18n/jazyk.tsx";
-import { platnaVolbaBota, prepniVolbuBota, type BotNaVyber } from "./boti.ts";
+import type { BotNaVyber } from "./boti.ts";
 
-/** Na výber sú len boti; kto nikoho neoznačí, hrá proti náhodnému. Okno sa otvára vždy bez označenia. */
+/** Dlaždice povah a na konci Náhodný súper; klik = hraj. Bez hookov — test ich volá priamo. */
+export function DlazdiceBotov({
+  boti,
+  vypnute,
+  hraj,
+  prvy,
+}: {
+  readonly boti: readonly BotNaVyber[];
+  readonly vypnute: boolean;
+  readonly hraj: (povaha: string | null) => void;
+  readonly prvy: Ref<HTMLButtonElement> | null;
+}) {
+  return (
+    <>
+      {boti.map((b, i) => (
+        <button key={b.id} ref={i === 0 ? prvy : undefined} type="button" className="bot-volba" disabled={vypnute} onClick={() => hraj(b.id)}>
+          <Avatar meno={b.meno} avatar={b.avatar} velkost={40} />
+          <span className="bot-volba-text">
+            <strong>{b.meno}</strong>
+            {b.popis !== null && <span>{tZoServera(`bot.${b.id}`, b.popis)}</span>}
+          </span>
+        </button>
+      ))}
+      <button type="button" className="bot-volba bot-nahodny" disabled={vypnute} onClick={() => hraj(null)} data-hrat-bot-start="">
+        <span className="bot-nahodny-znak" aria-hidden="true">
+          ?
+        </span>
+        <span className="bot-volba-text">
+          <strong>{t("bot.nahodnySuper")}</strong>
+          <span>{t("bot.nahodnyPopis")}</span>
+        </span>
+      </button>
+    </>
+  );
+}
+
+/**
+ * Klik na dlaždicu rovno začne partiu (UI inšpekcia W-19); náhodný súper je posledná dlaždica,
+ * nie veta pod nimi. Id povahy je zo zoznamu servera, ktorý ho pri založení overí.
+ */
 export function VyberBota({
   boti,
   vypnute,
@@ -17,10 +56,8 @@ export function VyberBota({
   readonly hraj: (povaha: string | null) => void;
   readonly zavri: () => void;
 }) {
-  const [volba, setVolba] = useState<string | null>(null);
-  const zvoleny = platnaVolbaBota(boti, volba);
-  const hlavne = useRef<HTMLButtonElement>(null);
-  useEffect(() => hlavne.current?.focus(), []);
+  const prvy = useRef<HTMLButtonElement>(null);
+  useEffect(() => prvy.current?.focus(), []);
   return (
     <div
       className="vyber-bota-zaves"
@@ -37,27 +74,9 @@ export function VyberBota({
       <div className="vyber-bota-okno panel">
         <h2 id="vyber-bota-nadpis">{t("bot.nadpis")}</h2>
         <div className="vyber-bota" role="group" aria-label={t("bot.skupina")}>
-          {boti.map((b) => (
-            <button
-              key={b.id}
-              type="button"
-              aria-pressed={zvoleny === b.id}
-              className={`bot-volba ${zvoleny === b.id ? "aktivna" : ""}`}
-              onClick={() => setVolba(prepniVolbuBota(zvoleny, b.id))}
-            >
-              <Avatar meno={b.meno} avatar={b.avatar} velkost={40} />
-              <span className="bot-volba-text">
-                <strong>{b.meno}</strong>
-                {b.popis !== null && <span>{tZoServera(`bot.${b.id}`, b.popis)}</span>}
-              </span>
-            </button>
-          ))}
+          <DlazdiceBotov boti={boti} vypnute={vypnute} hraj={hraj} prvy={prvy} />
         </div>
-        <p className="tlmene vyber-bota-pozn">{t("bot.nahodny")}</p>
         <div className="riadok-tlacidiel">
-          <button ref={hlavne} type="button" className="tlacidlo-hlavne" disabled={vypnute} onClick={() => hraj(zvoleny)} data-hrat-bot-start="">
-            {t("bot.hrat")}
-          </button>
           <button type="button" onClick={zavri}>
             {t("bot.spat")}
           </button>

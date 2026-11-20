@@ -23,7 +23,7 @@ import { useHra } from "./useHra.ts";
 import { OznamZiskov } from "../achievementy/VPartii.tsx";
 import { t, tr } from "../i18n/jazyk.tsx";
 import { TitulokMelichara } from "./TitulokMelichara.tsx";
-import { bezPrvejCasti, rozpracovana, ukazStarsichVoVyucbe, useVyucbaUctu, VyucbaStol, type VyucbaUctu } from "./Vyucba.tsx";
+import { rozpracovana, ukazStarsichVoVyucbe, useVyucbaUctu, VyucbaStol, type VyucbaUctu } from "./Vyucba.tsx";
 import { PonukaVyucby, VyucbaVLobby } from "./VstupyVyucby.tsx";
 import { smieTelefon, useNepodporovaneZariadenie, useStolNaSirku, type DovodNepodporovania } from "./zariadenie.ts";
 import { OtocTelefon } from "./OtocTelefon.tsx";
@@ -111,8 +111,6 @@ function Lobby({
   const zavrete = uzavierka !== null;
   // Vypnuté tlačidlo pri uzávierke povie prečo; hlavné nesmie ostať zlaté, akoby išlo (UI inšpekcia).
   const preco = zavrete ? uzavierka : undefined;
-  // Nováčikovi bez 1. časti je hlavnou výzvou výučba (#104) — založenie hry je druhoradé.
-  const hlavneZalozenie = !zavrete && !(vyucba !== null && !vyucbaNaPocitaci && bezPrvejCasti(true, vyucba));
   // Rovno z registrácie (W-02): raz povie, kde sú nastavenia; po obnovení stránky už nie.
   const [novyUcet] = useState(() => new URLSearchParams(location.search).get("novy") === "1");
   useEffect(() => {
@@ -158,11 +156,12 @@ function Lobby({
       {vyucba !== null && vyucba.dostupna && vyucbaNaPocitaci && (
         <Hlaska druh="info">{t("lobby.vyucbaNaPocitaci")}</Hlaska>
       )}
+      {/* Variant B (UI inšpekcia W-05): založenie je jedna otázka — liga a s kým; pripojenie vpravo. */}
       <div className="lobby">
         <section className="panel">
           <h2>{t("lobby.novaHra")}</h2>
-          <p className="tlmene">{t("lobby.novaHraPopis")}</p>
-          <div className="dlzka-hry" role="radiogroup" aria-label={t("lobby.liga")}>
+          <h3 className="lobby-stitok" id="lobby-liga">{t("lobby.liga")}</h3>
+          <div className="dlzka-hry" role="radiogroup" aria-labelledby="lobby-liga">
             {ALL_DLZKY.map((d) => {
               const ide = dostupne.includes(d);
               const zamok = popisZamku(ligy, d);
@@ -190,38 +189,46 @@ function Lobby({
               );
             })}
           </div>
-          {maPravo(ja, "hrat_ludia") ? (
-            <div className="riadok-tlacidiel">
-              {maPravo(ja, "sukromne_miestnosti") && (
-                <button
-                  className={hlavneZalozenie && zamokZvolenej === null ? "tlacidlo-hlavne" : undefined}
-                  onClick={() => zaloz(false, dlzka)}
-                  disabled={zavrete || zamokZvolenej !== null}
-                  title={preco ?? zamokZvolenej ?? undefined}
-                >
-                  {t("lobby.sukromna")}
-                </button>
-              )}
-              <button onClick={() => zaloz(true, dlzka)} disabled={zavrete || zamokZvolenej !== null} title={preco ?? zamokZvolenej ?? undefined}>
-                {t("lobby.verejna")}
-              </button>
-            </div>
-          ) : (
-            <p className="tlmene">{t("lobby.bezLudi")}</p>
-          )}
-          <h2 style={{ marginTop: 28 }}>{t("lobby.protiPocitacu")}</h2>
-          <p className="tlmene">{t("lobby.protiPocitacuPopis")}</p>
-          <div className="riadok-tlacidiel">
+          <h3 className="lobby-stitok" id="lobby-s-kym">{t("lobby.sKym")}</h3>
+          <div className="s-kym" role="group" aria-labelledby="lobby-s-kym">
             {/* Bez zoznamu (starší server) sa niet na čo pýtať: rovno náhodný súper. */}
             <button
+              type="button"
+              className="s-kym-volba"
               onClick={() => (boti.length > 0 ? setVyberBotaOtvoreny(true) : zaloz(false, dlzka, true))}
               disabled={!maPravo(ja, "hrat_bot") || zavrete}
               title={preco}
               data-hrat-bot=""
             >
-              {t("lobby.hratProtiPocitacu")}
+              <strong>{t("lobby.pocitac")}</strong>
+              <span>{t("lobby.pocitacPopis")}</span>
             </button>
+            {maPravo(ja, "hrat_ludia") && maPravo(ja, "sukromne_miestnosti") && (
+              <button
+                type="button"
+                className="s-kym-volba"
+                onClick={() => zaloz(false, dlzka)}
+                disabled={zavrete || zamokZvolenej !== null}
+                title={preco ?? zamokZvolenej ?? undefined}
+              >
+                <strong>{t("lobby.kamarat")}</strong>
+                <span>{t("lobby.kamaratPopis")}</span>
+              </button>
+            )}
+            {maPravo(ja, "hrat_ludia") && (
+              <button
+                type="button"
+                className="s-kym-volba"
+                onClick={() => zaloz(true, dlzka)}
+                disabled={zavrete || zamokZvolenej !== null}
+                title={preco ?? zamokZvolenej ?? undefined}
+              >
+                <strong>{t("lobby.ktokolvek")}</strong>
+                <span>{t("lobby.ktokolvekPopis")}</span>
+              </button>
+            )}
           </div>
+          {!maPravo(ja, "hrat_ludia") && <p className="tlmene">{t("lobby.bezLudi")}</p>}
           {vyberBotaOtvoreny && (
             <VyberBota
               boti={boti}
@@ -233,7 +240,10 @@ function Lobby({
               zavri={() => setVyberBotaOtvoreny(false)}
             />
           )}
-          <h2 style={{ marginTop: 28 }}>{t("lobby.mamKod")}</h2>
+        </section>
+        <section className="panel">
+          <h2>{t("lobby.pripojitSa")}</h2>
+          <h3 className="lobby-stitok">{t("lobby.mamKod")}</h3>
           <form
             className="lobby-kod"
             onSubmit={(e) => {
@@ -246,13 +256,11 @@ function Lobby({
               {t("lobby.pripojitSa")}
             </button>
           </form>
-        </section>
-        <section className="panel">
-          <h2>{t("lobby.cakaju")}</h2>
+          <h3 className="lobby-stitok">{t("lobby.cakaju")}</h3>
           {hry === null ? (
             <Nacitavanie />
           ) : hry.length === 0 ? (
-            <p className="tlmene">{zavrete ? t("lobby.nikto") : t("lobby.niktoZaloz")}</p>
+            <p className="tlmene">{t("lobby.nikto")}</p>
           ) : (
             <ul className="otvorene-hry">
               {hry.map((h) => {

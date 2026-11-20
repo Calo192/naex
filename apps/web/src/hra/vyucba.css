@@ -261,37 +261,33 @@ body.vyucba-bezi .ucet-bitky {
   border-color: var(--akcent);
 }
 
+/* Názov a dĺžka (či stav častí) v jednom riadku vedľa seba (UI inšpekcia W-05). */
 .vyucba-vstup > div {
   flex: 1 1 320px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 2px 14px;
 }
 
 .vyucba-vstup h2 {
-  margin: 0 0 4px;
+  margin: 0;
+  font-size: 1.15rem;
 }
 
 .vyucba-vstup p {
   margin: 0;
 }
 
-/* Nováčik bez 1. časti (#104): výučba je najväčšia výzva lobby. */
+/* Nováčik bez 1. časti (#104): výučba je zlatá výzva lobby, ale len na jeden riadok. */
 .vyucba-vstup.vyzva {
-  padding: 1.6rem 1.8rem;
+  padding: 0.9rem 1.4rem;
   border-width: 2px;
   background: linear-gradient(180deg, color-mix(in oklab, var(--akcent) 14%, var(--plocha-2)), var(--plocha));
 }
 
 .vyucba-vstup.vyzva h2 {
-  font-size: 1.5rem;
-}
-
-.vyucba-vstup.vyzva .tlacidlo-hlavne {
-  padding: 0.8rem 1.5rem;
-  font-size: 1.05rem;
-}
-
-.vyucba-vstup p.vyucba-vstup-pravidla {
-  margin-top: 6px;
-  font-size: 0.85rem;
+  font-size: 1.3rem;
 }
 
 /* ---- banner na Pravidlách pre toho, kto ešte nemá 1. časť (#104) ---- */

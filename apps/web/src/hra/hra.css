@@ -2072,14 +2072,31 @@ button.tlacidlo-naex.neaktivne:active {
 
 /* ---- lobby ---- */
 
+/* Nová hra vľavo (liga a s kým), Pripojiť sa vpravo — UI inšpekcia W-05, variant B. */
 .lobby {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
   gap: 22px;
 }
 
 .lobby .panel h2 {
   font-size: 1.3rem;
+  margin: 0 0 4px;
+}
+
+/* Otázky „Liga“, „S kým“, „Mám kód“ — malé popisky nad voľbami. */
+.lobby-stitok {
+  margin: 14px 0 8px;
+  font: 600 0.78rem/1.2 var(--pismo);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--tlmeny);
+}
+
+.s-kym {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
 }
 
 .lobby-kod {
@@ -2181,12 +2198,14 @@ button.tlacidlo-naex.neaktivne:active {
 }
 
 .dlzka-volba,
-button.dlzka-volba {
+button.dlzka-volba,
+button.s-kym-volba {
   flex-direction: column;
   gap: 2px;
   padding: 0.6rem 0.5rem;
 }
 
+.s-kym-volba span,
 .dlzka-volba span {
   font-size: 0.8rem;
   font-weight: 400;
@@ -2261,9 +2280,18 @@ button.dlzka-volba.aktivna {
   margin: 0 0 10px;
 }
 
-.vyber-bota-pozn {
-  margin: 0 0 14px;
-  font-size: 0.85rem;
+/* Náhodný súper ako piata dlaždica (UI inšpekcia W-19): otáznik v kruhu veľkosti avatara. */
+.bot-nahodny-znak {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 2px solid var(--akcent);
+  background: var(--akcent-podklad);
+  color: var(--akcent);
+  font: 800 1.1rem/1 var(--nadpis);
 }
 
 /* Text od kraja — mená a vety majú pod sebou rovnakú os. */
@@ -2294,13 +2322,6 @@ button.bot-volba {
   font-weight: 400;
   line-height: 1.25;
   color: var(--tlmeny);
-}
-
-.bot-volba.aktivna,
-button.bot-volba.aktivna {
-  border-color: var(--akcent);
-  background: var(--akcent-podklad);
-  color: var(--akcent);
 }
 
 .znacka.body {
