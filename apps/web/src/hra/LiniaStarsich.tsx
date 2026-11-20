@@ -168,9 +168,8 @@ export function LiniaStarsich({ rad, data, ja, pohlad, mena, krok, zmenene, vyhr
   const rozdeluje = rad.some((m) => m.typ === "starsi" && m.s.rozdelenie !== undefined);
   // Pri rozdeľovaní hlavička nič nehovorí — zvyšok a pokyn sú v bubline na hrane stola.
   const stred =
-    suhrn !== undefined ? (
-      <span className="ls-tlmene">po bitke {suhrn.bitka.kolo}</span>
-    ) : krok === null || rozdeluje ? null : (
+    // V súhrne nič — číslo bitky je v pilulke aj v páse súhrnu (Z-14).
+    suhrn !== undefined ? null : krok === null || rozdeluje ? null : (
       <span className="ls-nahlad" aria-live="polite">
         {nahladovany !== undefined && akciaNahladu !== undefined ? (
           <>
@@ -289,7 +288,8 @@ function PasSuhrnu({ suhrn, krok }: { readonly suhrn: SuhrnNaLinii; readonly kro
           </span>
         ))}
       </span>
-      <span className="r3-ps-opis" aria-live="polite">
+      {/* Legenda kresby (zátvorka, prerušovaná čiara) je pod myšou, nie vo vete kroku (Z-14). */}
+      <span className="r3-ps-opis" aria-live="polite" title={t("suhrn.opisKonca")}>
         <b>
           {suhrn.krok + 1}. {NAZOV_KROKU[krok]}:
         </b>{" "}

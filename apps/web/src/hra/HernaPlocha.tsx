@@ -4058,8 +4058,8 @@ export function HernaPlocha({
         akcia: dalejSuhrnu,
       });
       return {
+        // Bez dovetku „čo bitka urobila… krok po kroku“ — kroky sú v páse súhrnu (Z-14).
         nadpis: t("linia.suhrnPoBitke", { n: suhrn.bitka.kolo }),
-        text: t("plocha.coBitkaUrobila"),
         ...(naSirku
           ? { stred: dalej, ...(preskocit === null ? {} : { druha: preskocit }) }
           : {
