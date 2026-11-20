@@ -103,8 +103,11 @@ describe("súhrn po bitke: fázy teplomerov", () => {
     expect(riadkyKroku(ea!, "hadka", K)).toEqual(["▲ Jano reči → vydesený · za 5"]);
     expect(riadkyKroku(ec!, "koniec", K)).toEqual(["⛓ v pivnici u Fero"]);
     expect(opisKroku(x, "bodovanie", K)).toContain("Spolu Jano +7, Fero +5.");
-    expect(opisKroku(x, "nakladacka", K)).toBe(`Fero dvíha Nakladačkou (5) svoj strach: ${a.karta.defId} (5). Plná časť rastie a hladina ide hore.`);
+    // Veta kroku bez legendy kresby (Z-14); posledný krok povie, komu sa priazeň presunula.
+    expect(opisKroku(x, "nakladacka", K)).toBe(`Fero dvíha Nakladačkou (5) svoj strach: ${a.karta.defId} (5).`);
     expect(opisKroku(x, "koniec", K)).toContain(`${c.karta.defId} je v pivnici u Fero.`);
+    expect(opisKroku(x, "koniec", K)).toMatch(/^Priazeň: .*→ Jano \+2/);
+    expect(opisKroku(x, "koniec", K)).not.toMatch(/Zátvorka|prerušovaná/);
   });
 });
 

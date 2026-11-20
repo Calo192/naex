@@ -51,7 +51,3 @@ export function natacamNavrh(view: Pick<ClientState, "faza" | "pata" | "utocnik"
   return view.faza === "volbaCiela" && ktoNatacaLokalitu(view) === ja;
 }
 
-/** Tip pod navrhnutou lokalitou: ako ju otočiť, alebo kto ju natočí. */
-export function tipNavrhuLokality(natacam: boolean, tuk: boolean, natoci: string): string {
-  return natacam ? `${tuk ? "ťuk" : "klik"} na kartu = otočiť ↻` : `natočí ju ${natoci}`;
-}

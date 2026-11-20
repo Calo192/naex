@@ -88,21 +88,21 @@ export function DlazdicaStarsich({ view, p, zaStarsich, zaStarsichPrehra, starsi
         </span>
       </span>
       <span className="zdroj-pod">
-        <span>
-          {strach > 0 && <ZnackaStrachu uroven={najStrach} trieda={ja ? "moje" : "superove"} />}
-          {/* Ikona špakov hneď za číslom — na 1366–1440 sa riadok oreže na konci a ikona by odpadla. */}
-          {strach === 0 && zaStarsich === 0 ? (
-            ja ? t("starsi.niktoTa") : t("starsi.niktoHo")
-          ) : (
-            <>
-              +{zaStarsich}
-              <IkonaSpaku /> {t("starsi.poVyhre")}
-            </>
-          )}
-        </span>
-        <span className={`starsi-desi-riadok${hrozi ? " hrozi" : ""}`} title={titulVyhier}>
-          {t("starsi.cervene")} {tc.kratko} · {vazni > 0 ? "⛓" : t("starsi.vazni")} {vazni}/{v.vazniNaVyhru}
-        </span>
+        {/* Nulové stavy sa nevypisujú (UI inšpekcia 20261120, Z-04) — celé znenie je v nápovede. */}
+        {(strach > 0 || zaStarsich > 0) && (
+          <span>
+            {strach > 0 && <ZnackaStrachu uroven={najStrach} trieda={ja ? "moje" : "superove"} />}
+            {/* Ikona špakov hneď za číslom — na 1366–1440 sa riadok oreže na konci a ikona by odpadla. */}
+            +{zaStarsich}
+            <IkonaSpaku /> {t("starsi.poVyhre")}
+          </span>
+        )}
+        {(cervene > 0 || vazni > 0) && (
+          <span className={`starsi-desi-riadok${hrozi ? " hrozi" : ""}`} title={titulVyhier}>
+            {t("starsi.cervene")} {tc.kratko}
+            {vazni > 0 && ` · ⛓ ${vazni}/${v.vazniNaVyhru}`}
+          </span>
+        )}
       </span>
     </button>
   );

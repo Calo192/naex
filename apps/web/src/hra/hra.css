@@ -2076,6 +2076,32 @@ button.tlacidlo-naex.neaktivne:active {
   color: var(--akcent-svetly);
 }
 
+/* Najnovšie hore (Z-12): zoznam je už obrátený v poradí, otvorí sa na vrchu. */
+.log.log-najnovsie {
+  flex-direction: column;
+}
+
+.log .log-nadpis {
+  margin: 8px 0 2px;
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text);
+}
+
+.log .log-skupina:first-child .log-nadpis {
+  margin-top: 0;
+}
+
+.log .log-meno.ja {
+  color: var(--ja);
+}
+
+.log .log-meno.su {
+  color: var(--su);
+}
+
 @media (max-width: 1250px) {
   .dosky {
     grid-template-columns: 1fr;
@@ -3216,6 +3242,9 @@ button.bot-volba {
   font-weight: 800;
   animation: treba 1.6s ease-in-out infinite;
   border-radius: 6px;
+  /* Rámik sa nesmie lepiť na predošlé slovo ani na bodku za sebou (S-14). */
+  padding: 1px 7px;
+  margin: 0 8px;
 }
 
 .nm-poldeci {
@@ -8793,6 +8822,11 @@ body:has(.medziobrazovka) .moment-vrstva {
   font-size: 0.85rem;
 }
 
+/* Mená sú už len v hlavičke tabuľky (Z-03) — prepínač režimu nad rohom tabuľky ich nezakryje. */
+.rekap-pitky:not(.rk-telefon) .rk-hlava > span[role="columnheader"] {
+  padding-top: 24px;
+}
+
 .rekap-pitky .rk-stred {
   min-width: 84px;
 }
@@ -9513,8 +9547,28 @@ body:has(.medziobrazovka) .moment-vrstva {
   box-shadow: 0 1px 5px rgba(0, 0, 0, 0.45);
 }
 
+/* Súperova karta: avatar a „+1 cigareta“ nad horným okrajom — text efektu ostane čitateľný (Z-13, S-07). */
 .senok-povod-stitok.superova {
   background: var(--su);
+  bottom: auto;
+  top: 0;
+  transform: translate(-50%, -55%);
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  padding: 1px 7px 1px 2px;
+  z-index: 2;
+}
+
+.senok-povod-stitok.superova .avatar {
+  flex: none;
+  font-size: 0.6rem;
+  box-shadow: 0 0 0 1.5px var(--pozadie);
+}
+
+.senok-povod-stitok.superova .ikona-cigareta {
+  height: 0.9em;
+  width: auto;
 }
 
 .senok-povod-stitok.moja {

@@ -3,7 +3,7 @@
 
 import { describe, expect, it } from "vitest";
 import type { NaexRekapitulacie, RekapitulaciaPitky } from "@naex/core";
-import { akcieNaex, rezimZoZaznamu, riadkyTextuPitky, type CastTextu } from "../src/hra/Rekapitulacia.tsx";
+import { akcieNaex, pitkaBezZmeny, rezimZoZaznamu, riadkyTextuPitky, type CastTextu } from "../src/hra/Rekapitulacia.tsx";
 
 const NAEX: NaexRekapitulacie = {
   karty: [
@@ -93,5 +93,26 @@ describe("textový režim Pitky", () => {
       { t: "b", s: "+3" },
       { t: "kliatba", akcia: "Dlh" },
     ]);
+  });
+});
+
+describe("Pitka bez zmeny sa oknom nevyhodnocuje (UI inšpekcia 20261120, Z-05 B)", () => {
+  const prazdna: RekapitulaciaPitky = {
+    pitka: 2,
+    pitkyCelkom: 3,
+    naex: { karty: [], zdvojilo: [0, 0], zrusilo: [0, 0] },
+    zadlzenie: { pred: [0, 0], zoStola: [0, 0], prah: [2, 2], dlhy: [0, 0] },
+    pecen: { zPitia: [0, 0], zNaex: [0, 0], poskodenie: [0, 0], poldeci: [0, 0], prah: [3, 3], cirhozy: [0, 0] },
+    cigarety: { akcie: [0, 0], obmedzenie: [0, 0], cigorky: [0, 0], zisk: [0, 0] },
+    vizia: [0, 0],
+  };
+
+  it("bez NA EX, kliatob, pečene, cigariet a Vízie je bez zmeny; ktorákoľvek z nich to zmení", () => {
+    expect(pitkaBezZmeny(prazdna)).toBe(true);
+    expect(pitkaBezZmeny({ ...prazdna, cigarety: { ...prazdna.cigarety, akcie: [0, 1], zisk: [0, 1] } })).toBe(false);
+    expect(pitkaBezZmeny({ ...prazdna, pecen: { ...prazdna.pecen, poskodenie: [1, 0] } })).toBe(false);
+    expect(pitkaBezZmeny({ ...prazdna, zadlzenie: { ...prazdna.zadlzenie, zoStola: [0, 2] } })).toBe(false);
+    expect(pitkaBezZmeny({ ...prazdna, vizia: [1, 0] })).toBe(false);
+    expect(pitkaBezZmeny({ ...prazdna, naex: NAEX })).toBe(false);
   });
 });

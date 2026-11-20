@@ -13,6 +13,7 @@ import scorecardsJson from "@naex/core/data/scorecards.json";
 import type { Sada } from "@naex/tvorba";
 import { KLUC_MIESTNOSTI } from "../lib/odchod.ts";
 import { reakciaNaChybu, TEXT_ZANIKLEJ_PARTIE } from "./chybaMiestnosti.ts";
+import { NADPIS_LOGU } from "./logStola.ts";
 
 export interface HracInfo {
   readonly id?: number;
@@ -328,6 +329,34 @@ export function textUdalosti(e: Event, mena: readonly string[], rody: readonly [
   }
 }
 
+const FAZY_LOGU: Readonly<Partial<Record<string, string>>> = {
+  volbaCiela: "faza.volbaCiela",
+  natocenieCiela: "faza.natocenieCiela",
+  draft: "faza.draft",
+  zhromazdenie: "faza.zhromazdenie",
+  pitka: "faza.pitka",
+  bitka: "faza.bitka",
+};
+
+/**
+ * Riadky logu z udalostí s nadpismi fáz (Z-12). Kolo sa ráta po bitkách — `kolo` drží stav medzi
+ * dávkami (história ho začína od 1); log jadra sa nemení, nadpis pribudne len v klientovi.
+ */
+export function riadkyLogu(events: readonly Event[], mena: readonly string[], rody: readonly [Rod, Rod], kolo: { n: number }): string[] {
+  const out: string[] = [];
+  for (const e of events) {
+    if (e.type === "faza") {
+      const k = FAZY_LOGU[e.faza];
+      if (k !== undefined) out.push(`${NADPIS_LOGU}${t("faza.kolo", { n: kolo.n })} · ${t(k)}`);
+      continue;
+    }
+    if (e.type === "bitkaVysledok") kolo.n += 1;
+    const x = textUdalosti(e, mena, rody);
+    if (x !== null) out.push(x);
+  }
+  return out;
+}
+
 export function useHra(aktivne: boolean): HraHook {
   const [pripojene, setPripojene] = useState(false);
   const [miestnost, setMiestnost] = useState<Miestnost | null>(null);
@@ -362,6 +391,8 @@ export function useHra(aktivne: boolean): HraHook {
   const menaRef = useRef<string[]>([]);
   menaRef.current = hraci.map((h, i) => menoVoVete(h, i));
   const rodyRef = useRef<[Rod, Rod]>([null, null]);
+  /** Kolo pre nadpisy logu (riadkyLogu). */
+  const koloLoguRef = useRef({ n: 1 });
   rodyRef.current = [rodHraca(hraci[0]), rodHraca(hraci[1])];
 
   const connect = useCallback(() => {
@@ -431,7 +462,8 @@ export function useHra(aktivne: boolean): HraHook {
           setLokality(msg.lokality);
           break;
         case "historia":
-          setLog(msg.events.map((e) => textUdalosti(e, menaRef.current, rodyRef.current)).filter((t): t is string => t !== null).slice(-250));
+          koloLoguRef.current = { n: 1 };
+          setLog(riadkyLogu(msg.events, menaRef.current, rodyRef.current, koloLoguRef.current).slice(-250));
           break;
         case "state":
           setView(msg.view);
@@ -439,7 +471,7 @@ export function useHra(aktivne: boolean): HraHook {
           setRadaVyucby(null);
           setMiestnost((m) => (m === null || m.started ? m : { ...m, started: true }));
           setLog((stary) => {
-            const nove = msg.events.map((e) => textUdalosti(e, menaRef.current, rodyRef.current)).filter((t): t is string => t !== null);
+            const nove = riadkyLogu(msg.events, menaRef.current, rodyRef.current, koloLoguRef.current);
             return [...stary, ...nove].slice(-250);
           });
           if (msg.events.length > 0) setUdalosti((u) => ({ id: u.id + 1, events: msg.events }));
@@ -495,6 +527,7 @@ export function useHra(aktivne: boolean): HraHook {
             setMiestnost(null);
             setView(null);
             setLog([]);
+            koloLoguRef.current = { n: 1 };
             setLokality([]);
             setHraci([null, null]);
             setVyucba(null);
@@ -602,6 +635,7 @@ export function useHra(aktivne: boolean): HraHook {
       setMiestnost(null);
       setView(null);
       setLog([]);
+      koloLoguRef.current = { n: 1 };
       setLokality([]);
       setUdalosti((u) => ({ id: u.id + 1, events: [] }));
       setHraci([null, null]);

@@ -73,13 +73,14 @@ describe("medziobrazovka — prechody fáz (výber lokality, šenok, Zhromažden
     expect(m?.text).not.toMatch(/bez lokality|vždy 3|stredu/i);
   });
 
-  it("Zhromaždenie: každé zvlášť; útočník vykladá prvý, pas dá cigaretu za každý plný poldeci (v12.3)", () => {
+  it("Zhromaždenie: každé zvlášť; útočník vykladá prvý, pas dá kartu za každý plný poldeci (v12.6)", () => {
     const prve = medziobrazovka(p({ faza: "zhromazdenie", pitkaCislo: 0 }), 1, "Eva", null);
     expect(prve).toMatchObject({ kluc: "2|zhromazdenie|1", nadpis: "Zhromaždenie — kladenie kariet", nadnadpis: "Kolo 2 · 1 z 2" });
     expect(medziobrazovka(p({ kolo: 4, faza: "zhromazdenie", pitkaCislo: 0 }), 1, "Eva", null)?.nadnadpis).toBe("Finále · 1 z 2");
     expect(prve?.text).toMatch(/^Vykladáš prvý/);
     expect(prve?.text).toMatch(/každá stojí plný poldeci/);
-    expect(prve?.text).toMatch(/pasuj — za každý plný poldeci dostaneš cigaretu a poldeci ti ostanú/);
+    expect(prve?.text).toMatch(/Keď pasuješ, doberieš si kartu za každý plný poldeci/);
+    expect(prve?.text).not.toMatch(/cigaret/);
     expect(medziobrazovka(p({ faza: "zhromazdenie", pitkaCislo: 1 }), 0, "Eva", null)).toMatchObject({ kluc: "2|zhromazdenie|2", text: expect.stringMatching(/^Eva vykladá prvý/) });
   });
 
@@ -117,6 +118,30 @@ describe("medziobrazovka — prechody fáz (výber lokality, šenok, Zhromažden
     const cakam = medziobrazovka(p({ faza: "bitka", bitkaStav: bitka("prebytok", 1, 1) }), 0, "Eva", null)?.text;
     expect(cakam).toMatch(/^Eva vyhral bitku a rozdeľuje Nakladačku/);
     expect(cakam).toMatch(/priazeň sa posunie k tebe/);
+  });
+
+  it("bitka vo finále má vlastný text — hádka ani Nakladačka sa nerozdeľujú (Z-02)", () => {
+    const finale = medziobrazovka(p({ kolo: 4 }), 0, "Eva", 4);
+    expect(finale).toMatchObject({ nadnadpis: "Finále", nadpis: "Bitka" });
+    expect(finale?.text).toMatch(/nerozdeľujú — víťaz ich dostane v špakoch/);
+    expect(finale?.text).not.toMatch(/reči|strach víťaza/);
+    // Aj keď už hráč bitku videl — vo finále je inak.
+    expect(medziobrazovka(p({ kolo: 4 }), 0, "Eva", 4, new Set(["bitka"]))?.text).toMatch(/nerozdeľujú/);
+  });
+
+  it("pri opakovaní v partii len názov fázy a jedna veta o tom, čo je teraz inak (Z-07)", () => {
+    const videne = new Set(["senok", "zhromazdenie", "pitka", "bitka", "Nakladačka"]);
+    expect(medziobrazovka(p({ faza: "draft" }), 0, "Eva", null, videne)?.text).toBe("Vyber 4 karty do ponuky. Potom beriete striedavo — začínaš ty.");
+    expect(medziobrazovka(p({ faza: "draft" }), 1, "Eva", null, videne)?.text).toMatch(/začína Eva\.$/);
+    expect(medziobrazovka(p({ faza: "zhromazdenie", pitkaCislo: 0 }), 1, "Eva", null, videne)?.text).toBe("Vykladáš prvý, potom sa so súperom striedate.");
+    expect(medziobrazovka(p({ faza: "pitka" }), 0, "Eva", null, videne)?.text).toMatch(/Na NA EX odpovie prvý Eva\.$/);
+    expect(medziobrazovka(p({ faza: "pitka" }), 1, "Eva", null, videne)?.text).toMatch(/Na NA EX odpovieš prvý ty\.$/);
+    // Bzdocha mení poradie — okno ostáva celé.
+    expect(medziobrazovka({ ...p({ faza: "pitka" }), pitkaStav: { bzdocha: 1 } }, 0, "Eva", null, videne)?.text).toMatch(/Eva má Bzdochu/);
+    expect(medziobrazovka(p({ kolo: 3 }), 0, "Eva", 2, videne)).toMatchObject({ nadpis: "Bitka", text: "" });
+    expect(medziobrazovka(p({ faza: "bitka", bitkaStav: bitka("prebytok", 1, 1) }), 1, "Eva", null, videne)?.text).toBe("Vyhral si bitku — rozdeľ Nakladačku na svoj strach.");
+    // Prvý výskyt má plné znenie.
+    expect(medziobrazovka(p({ faza: "draft" }), 0, "Eva", null, new Set(["pitka"]))?.text).toMatch(/^Každý dostane/);
   });
 
   it("okno šenku (v11.4 bez pokusu o zajatie) začína stavbou; koniec hry ho nemá", () => {

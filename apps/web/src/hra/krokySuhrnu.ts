@@ -333,7 +333,10 @@ export function opisKroku(s: SuhrnBitky, k: KrokSuhrnu, c: KontextSuhrnu): strin
     return t("suhrn.opisNakladacky", { meno: m[s.nakladacka.hrac], cena: s.nakladacka.cena, zoznam: zoznam((e) => e.nakladacka?.cena ?? null) });
   if (k === "hadka" && s.hadka !== null)
     return t("suhrn.opisHadky", { meno: m[s.hadka.hrac], cena: s.hadka.cena, zoznam: zoznam((e) => e.hadka?.cena ?? null) });
-  const vety = [t("suhrn.opisKonca")];
+  // Komu sa priazeň presunula — legenda kresby (zátvorka, prerušovaná čiara) patrí do Pravidiel (Z-14).
+  const pr = (p: PriazenSuhrnu): string => (p.hrac === null ? t("stol.nikto") : `${m[p.hrac]} +${p.sila}`);
+  const presuny = s.starsi.filter((e) => e.priazen.zmena).map((e) => `${c.menoStarsieho(e.defId)} → ${pr(e.priazen.na)}`);
+  const vety = [presuny.length > 0 ? t("suhrn.opisPriazne", { zoznam: presuny.join(", ") }) : t("suhrn.priazenBezZmeny")];
   for (const e of s.starsi) if (e.vazen !== null) vety.push(t("suhrn.jeVPivnici", { starsi: c.menoStarsieho(e.defId), meno: m[e.vazen] }));
   const ohr = [0, 1].flatMap((p) => {
     const kto = s.starsi.filter((e) => e.ohrozenie.some((z) => z.hrac === p)).map((e) => c.menoStarsieho(e.defId));
