@@ -282,6 +282,12 @@ body.vyucba-hovori .linia-stav:not(:has(button, input, .zberatel-ponuka, .vizia-
   gap: 2px 14px;
 }
 
+/* Tlačidlá pri pravom okraji pásu — na širokom okne inak viseli v strede riadku. */
+.vyucba-vstup > .riadok-tlacidiel {
+  flex: 0 1 auto;
+  margin-left: auto;
+}
+
 .vyucba-vstup h2 {
   margin: 0;
   font-size: 1.15rem;
