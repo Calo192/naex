@@ -332,10 +332,11 @@ export function Navrhy() {
   const aktivny = FILTRE.find((f) => f.kluc === filter) ?? FILTRE[0];
   // Archív (zaniknuté karty a mechaniky) len na požiadanie — inak by staré návrhy zavadzali v rozhodovaní.
   const vZozname = navrhy.filter((n) => ajArchiv || n.archiv === null);
-  const vArchive = navrhy.length - navrhy.filter((n) => n.archiv === null).length;
-  const zobrazene = vZozname.filter((n) => aktivny.stavy === null || (aktivny.stavy as readonly Stav[]).includes(n.stav));
+  const vArchive = navrhy.filter((n) => n.archiv !== null).length;
+  const vStavoch = (stavy: readonly Stav[] | null) => (n: Navrh) => stavy === null || stavy.includes(n.stav);
+  const zobrazene = vZozname.filter(vStavoch(aktivny.stavy));
   const davky = [...new Set(zobrazene.map((n) => n.davka))];
-  const pocet = (stavy: readonly Stav[] | null) => vZozname.filter((n) => stavy === null || stavy.includes(n.stav)).length;
+  const pocet = (stavy: readonly Stav[] | null) => vZozname.filter(vStavoch(stavy)).length;
 
   return (
     <div>
