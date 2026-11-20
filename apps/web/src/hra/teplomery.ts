@@ -7,7 +7,7 @@
 // zdvihy a nikdy nepustí rozdelenie drahšie, než sú body.
 
 import type { ClientState, DruhMarkera, ElderState, PlayerId, StarsiVerejne, Stupen, Vazen, Zdvih } from "@naex/core";
-import { KONSTANTY, bodyRozdelenia, cenaAkcieRozdelenia, cenaZdvihu, krokRozdelenia, krokyZdvihu, markerRozdelenia, planRozdelenia, stupenOdkial } from "@naex/core";
+import { bodyRozdelenia, cenaAkcieRozdelenia, cenaZdvihu, krokRozdelenia, krokyZdvihu, markerRozdelenia, planRozdelenia, stupenOdkial } from "@naex/core";
 
 /** Miesto v rade starších: starší na stupnici, alebo väzeň na mieste svojho ukazovateľa. */
 export type MiestoVRade = { readonly typ: "starsi"; readonly elder: StarsiVerejne } | { readonly typ: "vazen"; readonly vazen: Vazen };
@@ -27,9 +27,6 @@ export function radStarsich(starsi: readonly StarsiVerejne[], vazni: readonly Va
   for (const v of vazni) if (!out.some((x) => x.typ === "vazen" && x.vazen.elderId === v.elderId)) out.push({ typ: "vazen", vazen: v });
   return out;
 }
-
-/** Špaky víťaza za strach na stupni (najvyšší stupeň: žltá 1, oranžová 2, červená 3 — v12.6). */
-export const spakyStupna = (s: number): number => KONSTANTY.SPAKY_ZA_STUPEN[s] ?? 0;
 
 // ---------------------------------------------------------------------------
 // Rozdeľovanie klikom na stupeň

@@ -20,16 +20,16 @@ export function Playtest({ cesta }: { readonly cesta: string }) {
         nadpis="Playtest"
         uvod={spravca ? "Návrhy z playtestov na rozhodnutie a reporty z partií AI playtesterov." : "Reporty z partií AI playtesterov."}
         zalozky={
-        <nav className="cipy" aria-label="Playtest">
-          {spravca && (
-            <Odkaz href="/playtest" className={`cip ${reporty ? "" : "aktivny"}`}>
-              Návrhy
+          <nav className="cipy" aria-label="Playtest">
+            {spravca && (
+              <Odkaz href="/playtest" className={`cip ${reporty ? "" : "aktivny"}`}>
+                Návrhy
+              </Odkaz>
+            )}
+            <Odkaz href="/playtest/reporty" className={`cip ${reporty ? "aktivny" : ""}`}>
+              Reporty
             </Odkaz>
-          )}
-          <Odkaz href="/playtest/reporty" className={`cip ${reporty ? "aktivny" : ""}`}>
-            Reporty
-          </Odkaz>
-        </nav>
+          </nav>
         }
       />
       {reporty ? <Reporty subor={casti[2] !== undefined ? decodeURIComponent(casti[2]) : null} /> : <Navrhy />}

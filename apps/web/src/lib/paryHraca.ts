@@ -32,7 +32,7 @@ const KLUC_PREHOD = "naex-prehod";
 const PRIPONA_PREHOD = "-prehod";
 
 function platnyPar(id: string | null | undefined): string {
-  return PARY.some((p) => p.id === id) ? (id as string) : PAR_PREDVOLENY;
+  return id != null && PARY.some((p) => p.id === id) ? id : PAR_PREDVOLENY;
 }
 
 /** Voľba z účtu ("w20", "w20-prehod"); neznámy pár = predvolený. */

@@ -91,9 +91,7 @@ export function Reporty({ subor }: { readonly subor: string | null }) {
           <h2>Prehľady</h2>
           <ul className="playtest-zoznam">
             {prehlady.map((r) => (
-              <li key={r.subor}>
-                {bunka(r)}
-              </li>
+              <li key={r.subor}>{bunka(r)}</li>
             ))}
           </ul>
         </>

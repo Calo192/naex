@@ -3,7 +3,7 @@
 // o pár sekúnd odíde a nič neblokuje (pointer-events: none). Viac ziskov ide po sebe.
 
 import { useEffect, useRef, useState } from "react";
-import { NAZOV_RANKU, Podtacok, type RankPodtacka } from "./Podtacok.tsx";
+import { HVIEZDY_RANKU, NAZOV_RANKU, Podtacok, type RankPodtacka } from "./Podtacok.tsx";
 import "./podtacok.css";
 
 /** Ako dlho je jeden oznam na stole. */
@@ -46,7 +46,7 @@ export function OznamAchievementu({ zisky }: { readonly zisky: readonly ZiskVOzn
     return () => clearTimeout(t);
   }, [teraz?.kluc]);
   if (teraz === undefined) return null;
-  const hviezdy = teraz.rank === "zlato" ? "★★★" : teraz.rank === "striebro" ? "★★" : "★";
+  const hviezdy = "★".repeat(HVIEZDY_RANKU[teraz.rank]);
   return (
     <div className="oznam-achievementu" role="status" aria-live="polite" key={teraz.kluc}>
       <Podtacok rank={teraz.rank} ikona={teraz.ikona} obrazok={teraz.obrazok} nazov={teraz.nazov} ziskany tajny={false} velkost={48} />

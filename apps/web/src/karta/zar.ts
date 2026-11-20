@@ -4,9 +4,9 @@
 
 import type { VplyvNaAkciu } from "@naex/core";
 
-/** Zmena akcie v slote karty — KartaLico ju kreslí ako žeravú či vyhasnutú ikonu. */
+/** Zmena akcie v slote karty — KartaLico ju kreslí ako žeravú ikonu (trieda kl-zar-plus). */
 export interface ZarSlotu {
-  readonly smer: "plus" | "minus";
+  readonly smer: "plus";
   /** Krátky štítok vedľa ikony v lupe („Puška +1“). */
   readonly stitok: string;
   /** Veta do popisu akcie. */

@@ -495,15 +495,6 @@
   filter: sepia(1) saturate(7) hue-rotate(-20deg) brightness(1.05);
 }
 
-/* Znížená akcia: len vyhasnutá (Michal 2026-10-30: bez dymu; dával ju Úplatok, zanikol vo v10.3). */
-.kl-slot.kl-zar-minus .ikona-akcie {
-  fill: #5e554c;
-}
-
-.kl-slot.kl-zar-minus .ikona-svg {
-  filter: grayscale(1) brightness(0.45);
-}
-
 .kl-iskra {
   position: absolute;
   z-index: 3;
@@ -632,14 +623,6 @@ body:not(.tahanie-aktivne) .ruka-rad > .tahatelna:is(:hover, :focus-visible) .kl
   right: calc(118% + 2 * var(--pt));
 }
 
-.kl-zar-minus .kl-zar-stitok {
-  color: #e3ddd4;
-  background: linear-gradient(180deg, #4a4540, #26231f);
-  box-shadow:
-    0 0 0 max(0.6px, calc(0.45 * var(--pt))) #8e8479,
-    0 1px 3px rgba(0, 0, 0, 0.6);
-}
-
 .kl-otocena .kl-zar-stitok {
   transform: translateY(-50%) rotate(180deg);
 }
@@ -650,10 +633,6 @@ body:not(.tahanie-aktivne) .ruka-rad > .tahatelna:is(:hover, :focus-visible) .kl
   font-weight: 700;
   font-size: 13px;
   color: #b23a0a;
-}
-
-.tip-zar-minus {
-  color: #5e554c;
 }
 
 @media (prefers-reduced-motion: reduce) {

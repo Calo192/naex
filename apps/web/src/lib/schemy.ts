@@ -360,16 +360,18 @@ export const SCHEMY: readonly Schema[] = [
 
 const KLUC = "naex-schema";
 
+function platnaSchema(id: string | null): string {
+  return id !== null && SCHEMY.some((s) => s.id === id) ? id : SCHEMA_PREDVOLENA;
+}
 
 /** Aktuálna schéma na stránke (nastavuje ju public/schema.js a pouziSchemu). */
 export function aktualnaSchema(): string {
-  const id = document.documentElement.getAttribute("data-schema");
-  return SCHEMY.some((s) => s.id === id) ? (id as string) : SCHEMA_PREDVOLENA;
+  return platnaSchema(document.documentElement.getAttribute("data-schema"));
 }
 
 /** Prefarbí web hneď a zapamätá si schému v prehliadači (pre ďalšie načítanie bez bliknutia). */
 export function pouziSchemu(id: string): void {
-  const platna = SCHEMY.some((s) => s.id === id) ? id : SCHEMA_PREDVOLENA;
+  const platna = platnaSchema(id);
   document.documentElement.setAttribute("data-schema", platna);
   try {
     localStorage.setItem(KLUC, platna);

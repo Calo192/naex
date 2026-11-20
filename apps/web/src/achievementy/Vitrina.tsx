@@ -3,9 +3,9 @@
 
 import { useMemo, useState } from "react";
 import { datum } from "../lib/datum.ts";
+import { nazovKategorie } from "./data.ts";
 import { HVIEZDY_RANKU, NAZOV_RANKU, Podtacok, type RankPodtacka } from "./Podtacok.tsx";
 import "./podtacok.css";
-import { nazovKategorie } from "./data.ts";
 
 export interface PolozkaVitriny {
   readonly id: string;

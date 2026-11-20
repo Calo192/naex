@@ -3,7 +3,7 @@
 
 import "./ikona-strachu.css";
 import type { StupenStrachu } from "./tvaryStrachu.ts";
-import { PRIESVITNOST_PODKLADU, cestaVykricnikovPeciatky, cestyStrachu, stupenStrachu } from "./tvaryStrachu.ts";
+import { PRIESVITNOST_PODKLADU, cestyStrachu, stupenStrachu } from "./tvaryStrachu.ts";
 
 export type { StupenStrachu } from "./tvaryStrachu.ts";
 export { NAZOV_STUPNA, PRIESVITNOST_PODKLADU, cestyStrachu, stupenStrachu } from "./tvaryStrachu.ts";
@@ -32,13 +32,4 @@ export function ZnackaStrachu({ uroven, trieda, titul }: { readonly uroven: numb
   const stupen = stupenStrachu(uroven);
   if (stupen === null) return null;
   return <IkonaStrachu stupen={stupen} {...(trieda === undefined ? {} : { trieda })} {...(titul === undefined ? {} : { titul })} />;
-}
-
-/** !!! do pečiatky vydesenia na portréte — rám a atrament vo farbe obávaného dá CSS pečiatky. */
-export function VykricnikyPeciatky() {
-  return (
-    <svg className="vykricniky-peciatky" viewBox="4.6 3.6 14.8 16.8" aria-hidden="true">
-      <path d={cestaVykricnikovPeciatky()} />
-    </svg>
-  );
 }

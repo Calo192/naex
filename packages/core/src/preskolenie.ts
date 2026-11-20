@@ -47,11 +47,6 @@ export function rozborPreskolenia(text: string): RozborPreskolenia | null {
   return preskolenieZTokenov(m[1] ?? "", m[2] ?? "");
 }
 
-/** Všetky preškolenia „{X}→{Y}“ v texte, v poradí výskytu. */
-export function preskoleniaVTexte(text: string): RozborPreskolenia[] {
-  return [...text.matchAll(ZAPIS_PRESKOLENIA)].map((m) => preskolenieZTokenov(m[1] ?? "", m[2] ?? ""));
-}
-
 function preskolenieZTokenov(x: string, y: string): RozborPreskolenia {
   const z = akciaZTokenu(x);
   const na = akciaZTokenu(y);

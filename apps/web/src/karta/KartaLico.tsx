@@ -18,18 +18,18 @@ import type { ZarSlotu } from "./zar.ts";
 import { POPIS_UCINKU, hranyZTextu, preskoleniaZTextu, textBezPreskolenia, type PreskolenieVTexte } from "./preskolenie.ts";
 import "./karta.css";
 
-/** Stav slotu v hre (živé vyhodnotenie línie). */
 /** Piktogramy v pečati, ktoré nie sú akcie tvorcu (Krokodíl {Spálenie}, Michal 2026-11-09). */
 const POPIS_PIKTOGRAMU: Readonly<Record<string, () => string>> = {
   Spálenie: () => t("karta.spaleniePopis"),
 };
 
+/** Stav slotu v hre (živé vyhodnotenie línie). */
 export interface SlotStav {
   readonly stav: "aktivna" | "zrusena" | "neaktivna";
   readonly nasobok: number;
 }
 
-/** Žeravá či vyhasnutá ikona v slote; nova = prvé zobrazenie (odletí iskra). */
+/** Žeravá ikona v slote; nova = prvé zobrazenie (odletí iskra). */
 export interface ZarNaKarte extends ZarSlotu {
   readonly nova: boolean;
 }
@@ -239,8 +239,8 @@ export function KartaLico(props: KartaLicoProps) {
           ),
         })}
       >
-        <IkonaAkcie kluc={kluc} akcia={akcia} zar={zar?.smer === "plus"} />
-        {zar?.smer === "plus" && <Iskra nova={zar.nova} />}
+        <IkonaAkcie kluc={kluc} akcia={akcia} zar={zar !== null} />
+        {zar !== null && <Iskra nova={zar.nova} />}
         {zar !== null && !bezPopisov && <span className="kl-zar-stitok">{zar.stitok}</span>}
         {roh !== null && (
           <span className="kl-roh" aria-hidden="true">
@@ -286,23 +286,24 @@ export function KartaLico(props: KartaLicoProps) {
       ikon * w + pilulkyTextu.length * sirkaPilulky + Math.max(0, poloziek - 1) * medzera + (sipkovych + pilulkySoSipkami) * 2 * (sipkaW + medzera * 0.5);
     let x = (g.sirka - sirkaRadu) / 2;
     const y = g.pas.y - posunN - w - 5;
+    /** Šípka k susedovi na rade x; posunie rad za seba. */
+    const sipkaKSusedovi = (key: string, strana: "lava" | "prava", sviti: boolean) => {
+      const el = (
+        <span
+          key={key}
+          className={`kl-navyse-sipka kl-navyse-sipka-${strana}${sviti ? " kl-navyse-sipka-sviti" : ""}`}
+          style={{ "--x": x, "--y": y + w / 2, "--s": sipkaW } as CSSProperties}
+          aria-hidden="true"
+        />
+      );
+      x += sipkaW + medzera * 0.5;
+      return el;
+    };
     const navyse = efektyNavyse.flatMap((e, ei) => {
       const stav = props.navyse?.[ei];
       const podmienka = popisPodmienky(e);
       const sSipkami = e.spustac === "Podpora" || e.spustac === "Konflikt";
-      const sipka = (strana: "lava" | "prava") => {
-        const sviti = stav?.sipky?.[strana] === true;
-        const el = (
-          <span
-            key={`navyse${ei}-sipka-${strana}`}
-            className={`kl-navyse-sipka kl-navyse-sipka-${strana}${sviti ? " kl-navyse-sipka-sviti" : ""}`}
-            style={{ "--x": x, "--y": y + w / 2, "--s": sipkaW } as CSSProperties}
-            aria-hidden="true"
-          />
-        );
-        x += sipkaW + medzera * 0.5;
-        return el;
-      };
+      const sipka = (strana: "lava" | "prava") => sipkaKSusedovi(`navyse${ei}-sipka-${strana}`, strana, stav?.sipky?.[strana] === true);
       const lava = sSipkami ? [sipka("lava")] : [];
       const ikony = (skupiny[ei] ?? []).map(({ a, kusov, prva }, gi, vsetky) => {
         const r = { x, y, w };
@@ -326,18 +327,7 @@ export function KartaLico(props: KartaLicoProps) {
     });
     const pilulky = pilulkyTextu.flatMap((p, pi) => {
       const { stav, sSipkami } = p;
-      const sipka = (strana: "lava" | "prava") => {
-        const el = (
-          <span
-            key={`presk${pi}-sipka-${strana}`}
-            className={`kl-navyse-sipka kl-navyse-sipka-${strana}${stav?.sipky?.[strana] === true ? " kl-navyse-sipka-sviti" : ""}`}
-            style={{ "--x": x, "--y": y + w / 2, "--s": sipkaW } as CSSProperties}
-            aria-hidden="true"
-          />
-        );
-        x += sipkaW + medzera * 0.5;
-        return el;
-      };
+      const sipka = (strana: "lava" | "prava") => sipkaKSusedovi(`presk${pi}-sipka-${strana}`, strana, stav?.sipky?.[strana] === true);
       const lava = sSipkami ? [sipka("lava")] : [];
       const tip: TipObsah = {
         nadpis: t("karta.preskolenie"),
@@ -522,7 +512,7 @@ export function KartaLico(props: KartaLicoProps) {
 
 /**
  * Iskra pri žeravej ikone (ostáva, aby ju nezlial žiar aktívnej akcie), pri prvom
- * zobrazení navyše jedna odletí. Vyhasnutá ikona nemá nič (Michal 2026-10-30: bez dymu).
+ * zobrazení navyše jedna odletí.
  */
 function Iskra({ nova }: { readonly nova: boolean }) {
   const hviezda = <path d="M10 0L12 8L20 10L12 12L10 20L8 12L0 10L8 8Z" />;

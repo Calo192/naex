@@ -4,6 +4,7 @@
 
 import type { KartaNavrh, StranaNavrhu } from "@naex/tvorba";
 import { PREDVOLENE_NASTAVENIA } from "@naex/tvorba";
+import { datum } from "../lib/datum.ts";
 
 export type StavZobrazeny = "koncept" | "hlasovanie" | "vratene" | "zamietnute" | "v_tvorcovi" | "v_hre" | "archiv";
 export type Pozicie = readonly (string | null)[];
@@ -114,7 +115,7 @@ export function kartaZNavrhu(o: ObsahNavrhu, zaklad: KartaNavrh | null): KartaNa
     lava: o.lava,
     prava: o.prava,
     upravene: 0,
-  } as KartaNavrh;
+  };
 }
 
 export const kedy = (cas: number): string => {
@@ -122,5 +123,5 @@ export const kedy = (cas: number): string => {
   if (dni <= 0) return "dnes";
   if (dni === 1) return "včera";
   if (dni < 7) return `pred ${dni} dňami`;
-  return new Date(cas).toLocaleDateString("sk-SK", { day: "numeric", month: "numeric", year: "numeric" });
+  return datum(cas);
 };
