@@ -50,6 +50,7 @@ import type {
   Zdvih,
 } from "@naex/core";
 import { BEZ_PECIATKY, cigaretyZaPas, kartyZaPas, pasomOtvoriZhromazdenie, prveFajcenieZadarmo, sRadom, odhadSpakovKola, type StavOdhadu, riadkyCakajuceho, riadkyCakajucichPoldeci, KONSTANTY, jeCoTahat, jeFinaleNaNastenke, efektyPrehry, hrozbaKliatob, mozeEsteNaex, textHrozbyKliatob, textyEfektovPrehry, cenaKliatby, battleOutcome, prebytokNaRozdelenie, platbaZaSenok, povodKartySenku, nahladPitky, vyhladDlhov, evaluateLine, efektyNavyse, pocitadloBitky, pitkaPredBitkou, hrozbaNaex, krokStavby, planVykladania, barterCena, plneBuduceKolo, plnePoPitke, plneVZhromazdeni, lineState, nahladZajatia, prevahaStran, krajeStran, dovodZakazuFajcit, defOf, ponukaSenku, cenaFajceniaHraca, naexLimitMinuty as naexLimitMinutyHraca, sMojimiSkrytymiNaex, sPecenou, sPrilozenou, vystrahaPecene, nahladNaexNaKartu, najhorsiaOdpovedNaNaex, cenaTahu, nahladVylozenia, moznostiNaexVPohlade, zablokovaneStrany, NASTROJ_DO_LINIE, favourStarsieho, krokRozdelenia, cieleOdpovede, maxZoSenku, bodyRozdelenia, printedSides, poskodenieBitky, rozpisPoskodenia, prahyHraca, scorecardStarsieho, stavKraja, stavkaBitky, stavZavislosti, stranyLokality, vidiVolbuSupera, hraVPitke, cakaSBzdochou, opponentOf, majitelPresvedcenej, moznostiAkcie, cenaAkcieUplna, zdvihyPreAkcie, navrhRozdelenia, pohladPoRozdeleni, priazenHraca, priazenSila, pultStarsich, spakyTeraz, vazniNaVyhru } from "@naex/core";
+import { UROVEN_FINALE, urovenNaVyber } from "@naex/core";
 import type { Moment, ActionSums, DopadyNahladu, KliatbyNahladu, NahladNaexNaKartu, PrebytokNahladu, NahladVylozenia, PolozkaVykladania, Rod, Slot, StranaLinie, VystrahaPecene } from "@naex/core";
 import type { KtoraHrana, MoznostPodlozenia, PodlozenyNastroj } from "@naex/core";
 import { aktivnaHrana, dovodNepodlozenia, hranyNastroja, ponukaPodlozenia } from "@naex/core";
@@ -2936,6 +2937,7 @@ export function HernaPlocha({
     <Nastenka
       nastenka={view.pata === undefined ? view.nastenka : []}
       bezFinale={view.pata !== undefined}
+      sKoncom={view.faza === "volbaCiela" && urovenNaVyber(view) === UROVEN_FINALE}
       zostava={view.lokalityVHre}
       ciel={view.ciel}
       ja={ja}

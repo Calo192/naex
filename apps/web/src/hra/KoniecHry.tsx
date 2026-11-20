@@ -58,12 +58,19 @@ export function KoniecHry({ view, mena, menoKarty, frajerina, achievementy = nul
   // Pri vzdaní či vydesení sa nebodovalo — rozpis by mýlil.
   const rozpis = koniec.body === null ? null : rozpisSpakov(view);
   const zmena = frajerina?.[ja];
+  const obycajnyKoniec = koniec.body !== null && view.pata === undefined;
+  // Rozpis výkupného a Cirhózy pod myšou na riadku účtu — pod tabuľkou opakoval jej čísla (Z-15).
+  const popisy = {
+    vykupne: t("koniec.vykupneRiadok", { zaPoldeci: KONSTANTY.SPAKY_ZA_POLDECI, zaCigarety: KONSTANTY.CIGARIET_ZA_SPAK, ja: vykupneText(koniec.vykupne?.[ja]), meno: mena[su], su: vykupneText(koniec.vykupne?.[su]) }),
+    cirhoza: t("koniec.cirhozy", { spaky: t("koniec.spakov", { n: KONSTANTY.SPAKY_ZA_CIRHOZU }), ja: koniec.cirhozy?.[ja] ?? 0, meno: mena[su], su: koniec.cirhozy?.[su] ?? 0 }),
+  };
 
   return (
     <div className="koniec-vrstva" role="dialog" aria-modal="true" aria-labelledby="koniec-nadpis">
       <div className={`koniec-okno ${koniec.vitaz === null ? "" : koniec.vitaz === ja ? "vyhra" : "prehra"}`}>
         <h2 id="koniec-nadpis">{nadpis}</h2>
-        <p className="koniec-dovod">{dovod}</p>
+        {/* Obyčajný koniec po finále hovorí skóre pod nadpisom; dôvod len pri inom konci (Z-15). */}
+        {!obycajnyKoniec && <p className="koniec-dovod">{dovod}</p>}
         {/* Špaky (v6): konečné špaky po finále, inak to, čo hráči nazbierali do konca. */}
         {view.pata !== undefined && starsi !== undefined && <RadyNaKonci view={view} data={starsi.data} mena={mena} obrazok={starsi.obrazok} />}
         {view.pata === undefined && <p className="koniec-skore koniec-spaky">
@@ -89,29 +96,16 @@ export function KoniecHry({ view, mena, menoKarty, frajerina, achievementy = nul
             favour={starsi === undefined ? undefined : (id) => favourPodlaId(starsi.data, view, id)}
             kompaktna
             koniec
+            bezZisku
             vyhraStrachom={(b) => vyhraStrachomBitky(view, b.kolo)}
           />
         )}
         {view.pata === undefined && starsi !== undefined && <PasStarsich view={view} data={starsi.data} mena={mena} menoKarty={menoKarty} obrazok={starsi.obrazok} />}
-        {view.pata === undefined && view.nastenka.length > 0 && rozpis !== null && (
-          // Súčet čísel pri lokalitách nie je celkové skóre — playtest 20261031-191322 v tom hľadal chybu.
-          <p className="koniec-cirhozy koniec-pozn-lokalit">{t("koniec.poznLokalit")}</p>
-        )}
         {rozpis !== null && (
           <div className="koniec-rozpis">
-            <UcetSpakov rozpis={rozpis} ja={ja} mena={mena} />
-            {(koniec.vykupne?.[0]?.spaky ?? 0) + (koniec.vykupne?.[1]?.spaky ?? 0) > 0 && (
-              <p className="koniec-cirhozy">
-                {t("koniec.vykupneRiadok", { zaPoldeci: KONSTANTY.SPAKY_ZA_POLDECI, zaCigarety: KONSTANTY.CIGARIET_ZA_SPAK, ja: vykupneText(koniec.vykupne?.[ja]), meno: mena[su], su: vykupneText(koniec.vykupne?.[su]) })}
-              </p>
-            )}
+            <UcetSpakov rozpis={rozpis} ja={ja} mena={mena} popisy={popisy} />
             {(koniec.vazni?.[0] ?? 0) + (koniec.vazni?.[1] ?? 0) > 0 && (
               <p className="koniec-cirhozy">{t("koniec.vazni", { ja: koniec.vazni?.[ja] ?? 0, meno: mena[su], su: koniec.vazni?.[su] ?? 0 })}</p>
-            )}
-            {(koniec.cirhozy?.[0] ?? 0) + (koniec.cirhozy?.[1] ?? 0) > 0 && (
-              <p className="koniec-cirhozy">
-                {t("koniec.cirhozy", { spaky: t("koniec.spakov", { n: KONSTANTY.SPAKY_ZA_CIRHOZU }), ja: koniec.cirhozy?.[ja] ?? 0, meno: mena[su], su: koniec.cirhozy?.[su] ?? 0 })}
-              </p>
             )}
           </div>
         )}

@@ -12,28 +12,30 @@ const RIADKY: readonly { readonly kluc: keyof RozpisSpakov; readonly nazov: stri
   { kluc: "zaBitky", get nazov() { return t("ucetSpakov.zaBitky"); } },
   { kluc: "zaStarsich", get nazov() { return t("ucetSpakov.zaStarsich"); } },
   { kluc: "prebytok", get nazov() { return t("ucetSpakov.prebytok"); } },
+  { kluc: "hadka", get nazov() { return t("ucetSpakov.hadka"); } },
   { kluc: "exekutor", get nazov() { return t("ucetSpakov.exekutor"); } },
+  { kluc: "zajatie", get nazov() { return t("ucetSpakov.zajatie"); } },
   { kluc: "vykupne", get nazov() { return t("ucetSpakov.vykupne"); } },
   { kluc: "cirhoza", get nazov() { return t("ucetSpakov.cirhoza"); } },
 ];
 
 const zn = (n: number): string => (n > 0 ? `+${n}` : n < 0 ? `−${-n}` : "0");
 
-export function UcetSpakov({ rozpis, ja, mena }: { readonly rozpis: readonly [RozpisSpakov, RozpisSpakov]; readonly ja: PlayerId; readonly mena: readonly [string, string] }) {
+export function UcetSpakov({ rozpis, ja, mena, popisy = {} }: { readonly rozpis: readonly [RozpisSpakov, RozpisSpakov]; readonly ja: PlayerId; readonly mena: readonly [string, string]; readonly popisy?: Partial<Record<keyof RozpisSpakov, string>> }) {
   const su = opponentOf(ja);
   return (
     <div className="spaky-bitky ucet-spakov" role="table" aria-label={t("ucetSpakov.nadpis")}>
       <span className="sb-hlava" role="row">
         <span role="columnheader">{t("ucetSpakov.spaky")}</span>
         <span role="columnheader" className="moje">
-          {mena[ja]}
+          {t("stol.ty")}
         </span>
         <span role="columnheader" className="superove">
           {mena[su]}
         </span>
       </span>
       {RIADKY.filter((r) => rozpis[0][r.kluc] !== 0 || rozpis[1][r.kluc] !== 0).map((r) => (
-        <span key={r.kluc} className="sb-riadok" role="row">
+        <span key={r.kluc} className="sb-riadok" role="row" title={popisy[r.kluc]}>
           <span role="rowheader">{r.nazov}</span>
           {([ja, su] as const).map((p) => (
             <span key={p} role="cell" className={rozpis[p][r.kluc] > 0 ? "plus" : rozpis[p][r.kluc] < 0 ? "minus" : "nic"}>
