@@ -63,9 +63,12 @@ export function zmenyStola(pred: ClientState, po: ClientState): string[] {
 /**
  * Štítok ťahu bez textu Melichara: prvá veta z logu ťahu (bez varovaní a momentov).
  * Za hráča ťahala hra — povie to, inak by hráč nevedel, prečo sa pohla jeho karta.
+ * Pri ťahu bota len jeho riadky — hráčove vlastné („… končí svoju časť Pitky“) hráč pozná (V-14).
  */
-export function stitokTahu(riadky: readonly string[], kto: "bot" | "auto"): string | null {
-  const veta = riadky.find((r) => r.trim() !== "" && !r.startsWith("⚠") && !r.startsWith("★"));
+export function stitokTahu(riadky: readonly string[], kto: "bot" | "auto", menoHraca: string | null = null): string | null {
+  const veta = riadky.find(
+    (r) => r.trim() !== "" && !r.startsWith("⚠") && !r.startsWith("★") && !(kto === "bot" && menoHraca !== null && menoHraca !== "" && r.startsWith(menoHraca)),
+  );
   if (veta === undefined) return null;
   return kto === "auto" ? `Hra za teba: ${veta}` : veta;
 }

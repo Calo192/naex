@@ -17,7 +17,7 @@ import { HudbaPartie } from "./Hudba.tsx";
 import { useMelichar } from "./Melichar.tsx";
 import { MelicharVBare } from "./MelicharBar.tsx";
 import { Momenty } from "./Momenty.tsx";
-import { NapovedaMelichara } from "./Napovedy.tsx";
+import { NapovedaMelichara, VideneNapovedyPoVyucbe } from "./Napovedy.tsx";
 import { Soundboard } from "./Soundboard.tsx";
 import { useHra } from "./useHra.ts";
 import { OznamZiskov } from "../achievementy/VPartii.tsx";
@@ -712,6 +712,8 @@ export function Hra() {
     )}
     {hra.view.pata !== undefined && <RozhodnutiePata view={hra.view} data={hra.data} sada={m.sada} cmd={cmd} />}
     <HernaPlocha
+      // Stav plochy (pauzy, vrstvy vyhodnotenia, momenty) patrí jednej partii (V-03).
+      key={m.code}
       naSirku={naSirku}
       onPocitadlo={setPocitadloBezi}
       view={hra.view}
@@ -772,6 +774,7 @@ export function Hra() {
         )
       }
     />
+    {hra.vyucba !== null && hra.vyucba.krok === null && hra.vyucba.koniecCasti !== null && <VideneNapovedyPoVyucbe cast={hra.vyucba.koniecCasti} />}
     {hra.vyucba !== null && (
       <VyucbaStol
         stav={hra.vyucba}

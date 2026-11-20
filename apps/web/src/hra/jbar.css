@@ -922,8 +922,10 @@ button.jbar-odhad::before {
   padding-block: 0;
 }
 
-/* Nad osou je Melichar len v hornom riadku — menovka by vzala riadok vete (kto hovorí, povie fotka). */
-.jbar.mel-hore .mel-kto {
+/* Nad osou je Melichar len v hornom riadku — menovka by vzala riadok vete (kto hovorí, povie fotka).
+   Výučba nechá riadok s postupom (V-22), skryje len meno. */
+.jbar.mel-hore .mel:not(.vyucba-bublina) .mel-kto,
+.jbar.mel-hore .vyucba-bublina .mel-meno {
   display: none;
 }
 
@@ -1045,6 +1047,37 @@ button.jbar-odhad::before {
   font-variant-numeric: tabular-nums;
 }
 
+/* Postup výučby (V-22): tri úseky dlhé podľa minút častí a text „1. časť z 3 · ešte asi 6 min“. */
+/* Riadok menovky nesmie byť vyšší než text — o každý pixel menej má veta (V-01). Úseky sa preto
+   na základnú čiaru nerovnajú, len sú v strede. */
+.mel-postup {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 8px;
+  white-space: nowrap;
+}
+
+.mel-useky {
+  display: inline-flex;
+  align-self: center;
+  gap: 3px;
+  width: 84px;
+  height: 4px;
+}
+
+.mel-usek {
+  flex-basis: 0;
+  overflow: hidden;
+  border-radius: 2px;
+  background: color-mix(in srgb, var(--tlmeny) 30%, transparent);
+}
+
+.mel-usek > span {
+  display: block;
+  height: 100%;
+  background: var(--akcent);
+}
+
 /* Veta sa nikdy neposúva (Michal 2026-10-25) — čo sa nezmestí, ide na ďalšiu stranu (StrankovanaVeta). */
 .mel-veta {
   flex: 0 1 auto;
@@ -1144,6 +1177,11 @@ button.jbar-odhad::before {
   min-width: 0;
   padding-inline: 10px;
   font-weight: 700;
+}
+
+/* Tlačidlo, ktoré na tejto strane textu nie je, drží miesto — šírka vety sa so stranou nemení (V-01). */
+.mel-rezerva {
+  visibility: hidden;
 }
 
 .kviz-spat {
@@ -1301,6 +1339,26 @@ button.jbar-odhad::before {
   }
 }
 
+/* Vysoké okno (1600 × 1000, 1920 × 1080): bar má 52 px — pod menovkou sú dva riadky vety po 14 px
+   namiesto jedného po 16 px; dlhší text mal viac strán než na notebooku (V-17). Piktogram nesmie
+   riadok zvýšiť, inak by sa druhý riadok nezmestil. */
+@media (min-width: 761px) and (min-height: 920px) {
+  .mel-telo {
+    padding-block: 1px;
+  }
+
+  .mel-veta {
+    font-size: 0.875rem;
+    line-height: 1.2;
+  }
+
+  .mel-veta .mel-ikona {
+    width: 1.1em;
+    height: 1.1em;
+    vertical-align: -0.2em;
+  }
+}
+
 /* 1366 × 650: bar má 34 px — veta menším písmom, aby sa zmestil jeden riadok s menovkou. */
 @media (min-width: 761px) and (max-height: 719px) {
   .mel {
@@ -1410,10 +1468,11 @@ button.jbar-odhad::before {
   color: var(--tlmeny);
 }
 
+/* Piktogram v riadku menovky nesmie riadok zvýšiť — vete by v nízkom bare neostal ani riadok (V-16). */
 .mel-tvoja .mel-ikona {
-  width: 1.2em;
-  height: 1.2em;
-  vertical-align: -0.3em;
+  width: 1em;
+  height: 1em;
+  vertical-align: -0.14em;
 }
 
 /* Odhad v bubline Melichara na užšom okne bez riadku „ešte môže“ — inak by Melicharovi ostal
