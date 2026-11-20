@@ -5366,17 +5366,6 @@ function nastavSumy(s: MutState, data: GameData): void {
   b.sums = sRadom(data, s as GameState, evaluateLine(data, lineState(s as GameState))).sums as DeepMutable<BitkaStav["sums"]>;
 }
 
-/** Stav, z ktorého sa ráta, čo smie víťaz hádky (GameState aj ClientState). */
-export interface StavHadkyBitky {
-  readonly bitkaStav: { readonly krok?: BitkaKrok | null; readonly hadka?: Pick<StavHadky, "vitaz" | "zostava"> } | null;
-}
-
-/** Zvyšok hádky, ktorý hráč p ešte rozdeľuje na reči (0, keď hádku nevyhral alebo je rozdelená). */
-export function zvysokHadky(state: StavHadkyBitky, p: PlayerId): number {
-  const h = state.bitkaStav?.hadka;
-  return h === undefined || h.vitaz !== p ? 0 : h.zostava;
-}
-
 /**
  * Noviny (Dedičstvo: Hádka, v11.5): víťaz hádky s Novinami v Dedičstve — súper odhodí za každé
  * 1 náhodnú kartu z ruky do svojho odhadzovacieho balíčka. Prázdna ruka = nič.

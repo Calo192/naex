@@ -8,7 +8,7 @@ import { spakyOdStarsieho } from "./elders.ts";
 import type { GameData } from "./data.ts";
 import type { VerejnyStav } from "./effects.ts";
 import { vysledokHadkyStola } from "./effects.ts";
-import { jeFinale, kartyBitky, paleneDlhyVBitke, silaPriazne, spakyZaVyhru, verejneAbstaky, zahradkarChrani } from "./engine.ts";
+import { jeFinale, kartyBitky, paleneDlhyVBitke, silaPriazne, spakyZaVyhru, zahradkarChrani } from "./engine.ts";
 import type { LineEval } from "./partia.ts";
 import { KONSTANTY } from "./constants.ts";
 import { opponentOf, type PlayerId } from "./types.ts";
