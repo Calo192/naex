@@ -13,18 +13,32 @@ export const ZAVES_ODCHODU = "odchod-zaves";
 let strazena: StrazenaPartia | null = null;
 const POSLUCHACI = new Set<() => void>();
 
-function oznam(): void {
-  for (const f of POSLUCHACI) f();
+function oznam(posluchaci: ReadonlySet<() => void>): void {
+  for (const f of posluchaci) f();
+}
+
+/** Hodnota modulu ako stav komponentu — prekreslí sa pri každom oznámení posluchačom. */
+function useOdber<T>(citaj: () => T, posluchaci: Set<() => void>): T {
+  const [hodnota, setHodnota] = useState(citaj);
+  useEffect(() => {
+    const f = (): void => setHodnota(citaj());
+    posluchaci.add(f);
+    f();
+    return () => {
+      posluchaci.delete(f);
+    };
+  }, [citaj, posluchaci]);
+  return hodnota;
 }
 
 /** Zapne stráženie partie; vráti jeho vypnutie. */
 export function strazOdchod(partia: StrazenaPartia): () => void {
   strazena = partia;
-  oznam();
+  oznam(POSLUCHACI);
   return () => {
     if (strazena !== partia) return;
     strazena = null;
-    oznam();
+    oznam(POSLUCHACI);
   };
 }
 
@@ -40,16 +54,7 @@ export function useStrazOdchodu(aktivna: boolean, kodMiestnosti: string, vyucba 
 
 /** Layout: rozohraná partia, alebo null, keď sa nič nestráži. */
 export function useStrazenaPartia(): StrazenaPartia | null {
-  const [hodnota, setHodnota] = useState(strazena);
-  useEffect(() => {
-    const f = (): void => setHodnota(strazena);
-    POSLUCHACI.add(f);
-    f();
-    return () => {
-      POSLUCHACI.delete(f);
-    };
-  }, []);
-  return hodnota;
+  return useOdber(strazenaPartia, POSLUCHACI);
 }
 
 /** Kód rozohranej miestnosti v prehliadači (useHra) — Layout podľa neho ukáže „Späť ku stolu“. */
@@ -66,24 +71,17 @@ export function useStolVHlavicke(aktivny: boolean): void {
   useEffect(() => {
     if (!aktivny) return;
     stol = true;
-    for (const f of POSLUCHACI_STOLA) f();
+    oznam(POSLUCHACI_STOLA);
     return () => {
       stol = false;
-      for (const f of POSLUCHACI_STOLA) f();
+      oznam(POSLUCHACI_STOLA);
     };
   }, [aktivny]);
 }
 
 /** Layout: sedí hráč pri stole? */
+const jeStol = (): boolean => stol;
+
 export function useJeStolVHlavicke(): boolean {
-  const [hodnota, setHodnota] = useState(stol);
-  useEffect(() => {
-    const f = (): void => setHodnota(stol);
-    POSLUCHACI_STOLA.add(f);
-    f();
-    return () => {
-      POSLUCHACI_STOLA.delete(f);
-    };
-  }, []);
-  return hodnota;
+  return useOdber(jeStol, POSLUCHACI_STOLA);
 }
