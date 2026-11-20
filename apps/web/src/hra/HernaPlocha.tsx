@@ -71,6 +71,7 @@ import { radSenku } from "./tieneSenku.ts";
 import { PocitadloSLiniou } from "./PocitadloBitky.tsx";
 import { vyhraStrachomBitky } from "./vyhraStrachom.ts";
 import { pitkaBezZmeny, RekapitulaciaPitkyVrstva, type OdpovedNaNaex, type PiktogramyRekapitulacie } from "./Rekapitulacia.tsx";
+import { skupinyLogu, usekyMien } from "./logStola.ts";
 import { mediaUrl } from "../lib/api.ts";
 import { useStolVHlavicke, useStrazOdchodu } from "../lib/odchod.ts";
 import { HlavickaPartie } from "./HlavickaPartie.tsx";
@@ -6161,6 +6162,17 @@ export function HernaPlocha({
 
   // ---- účty a posledné udalosti (UX N3) ---------------------------------------
   const zn = (x: number): string => (x > 0 ? `+${x}` : x < 0 ? `−${-x}` : "±0");
+  /** Riadok logu s menami hráčov vo farbe hráča (Z-12). */
+  const sMenami = (riadok: string): ReactNode =>
+    usekyMien(riadok, [menoHraca(0), menoHraca(1)]).map((u, k) =>
+      u.hrac === null ? (
+        u.text
+      ) : (
+        <b key={k} className={`log-meno ${u.hrac === ja ? "ja" : "su"}`}>
+          {u.text}
+        </b>
+      ),
+    );
   const ucetBitkyEl =
     !ukazUcetBitky || ucetBitky === null ? null : (
       <button
@@ -6957,20 +6969,26 @@ export function HernaPlocha({
 
       {vrstva === "log" && (
         <VrstvaPanel nazov="Log" skryta={tahanie !== null} onZavri={() => setVrstva(null)}>
-          <div className="log">
+          {/* Najnovšie hore, skupiny „Kolo · fáza“, mená vo farbe hráča (Z-12). */}
+          <div className="log log-najnovsie">
             {log.length === 0 && <span className="popis">{t("plocha.logPrazdny")}</span>}
-            {log.map((riadok, i) => {
-              const priazen = riadokPriazneLogu(riadok);
-              return (
-                <div key={i} className={riadok.startsWith("⚠") ? "manual" : priazen !== null ? "log-priazen" : ""}>
-                  {priazen === null ? riadok : (
-                    <>
-                      <IkonaPriazne /> {priazen}
-                    </>
-                  )}
-                </div>
-              );
-            })}
+            {skupinyLogu(log).map((s, j) => (
+              <section key={j} className="log-skupina">
+                {s.nadpis !== null && <h4 className="log-nadpis">{s.nadpis}</h4>}
+                {s.riadky.map(({ riadok, i }) => {
+                  const priazen = riadokPriazneLogu(riadok);
+                  return (
+                    <div key={i} className={riadok.startsWith("⚠") ? "manual" : priazen !== null ? "log-priazen" : ""}>
+                      {priazen === null ? sMenami(riadok) : (
+                        <>
+                          <IkonaPriazne /> {sMenami(priazen)}
+                        </>
+                      )}
+                    </div>
+                  );
+                })}
+              </section>
+            ))}
           </div>
         </VrstvaPanel>
       )}

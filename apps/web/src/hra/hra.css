@@ -2053,6 +2053,32 @@ button.tlacidlo-naex.neaktivne:active {
   color: var(--akcent-svetly);
 }
 
+/* Najnovšie hore (Z-12): zoznam je už obrátený v poradí, otvorí sa na vrchu. */
+.log.log-najnovsie {
+  flex-direction: column;
+}
+
+.log .log-nadpis {
+  margin: 8px 0 2px;
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text);
+}
+
+.log .log-skupina:first-child .log-nadpis {
+  margin-top: 0;
+}
+
+.log .log-meno.ja {
+  color: var(--ja);
+}
+
+.log .log-meno.su {
+  color: var(--su);
+}
+
 @media (max-width: 1250px) {
   .dosky {
     grid-template-columns: 1fr;
