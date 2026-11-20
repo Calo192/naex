@@ -220,6 +220,21 @@ describe("výučba po častiach — hviezdička za každú časť (Michal 2026-1
       zmaz();
     }
   });
+
+  it("postup na zrušenom kroku pokračuje krokom zo zruseneKroky, nie podľa starého indexu", () => {
+    const { db, zmaz } = docasnaDb();
+    try {
+      const ucty = new Ucty(db, { login: "Admin", heslo: null });
+      const a = ucty.registruj("jano", "tajneheslo", "Jano", 1);
+      ucty.ulozVyucbu(a.id, 3, undefined, "v1", "q-zruseny");
+      const kroky = ["a", "b", "c", "d", "e"];
+      expect(ucty.vyucba(a.id, "v1", kroky, { "q-zruseny": "b" })).toEqual({ krok: 1, stav: null });
+      // Bez náhrady ostáva doterajšie správanie: index pri tej istej verzii.
+      expect(ucty.vyucba(a.id, "v1", kroky)).toEqual({ krok: 3, stav: null });
+    } finally {
+      zmaz();
+    }
+  });
 });
 
 describe("práva — matica rank × právo", () => {

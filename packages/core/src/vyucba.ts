@@ -185,6 +185,12 @@ export interface ScenarVyucby {
    */
   readonly verzia?: string;
   /**
+   * Zrušený krok → id kroku, ktorým pokračuje postup uložený na zrušenom (inšpekcia
+   * 20261120-1324): hráč, ktorý výučbu prerušil práve na ňom, nezačne odznova ani
+   * neskočí podľa indexu inam.
+   */
+  readonly zruseneKroky?: Readonly<Record<string, string>>;
+  /**
    * Vypínač (Michal 2026-10-23): kým nie je true, výučbu hráčom server
    * neponúkne ani nespustí — len správcom na skúšanie. Zapne sa až s hotovým
    * scenárom a UI.
@@ -412,6 +418,10 @@ export function overScenar(data: GameData, scenar: ScenarVyucby): string | null 
     } catch (e) {
       return `Krok ${i} (${krok.id}): ${(e as Error).message}`;
     }
+  }
+  for (const [zruseny, na] of Object.entries(scenar.zruseneKroky ?? {})) {
+    if (scenar.kroky.some((k) => k.id === zruseny)) return `Zrušený krok ${zruseny} je v scenári.`;
+    if (!scenar.kroky.some((k) => k.id === na)) return `Zrušený krok ${zruseny}: krok ${na} neexistuje.`;
   }
   // Hranice častí až po krokoch — chyba v kroku je pre autora scenára dôležitejšia.
   return chybaCastiScenara(scenar);

@@ -243,14 +243,21 @@ export class Ucty {
    * Krok sa hľadá podľa uloženého id kroku (`idKrokov` = id krokov scenára v poradí) —
    * scenár môže pribudnúť či zmeniť poradie a postup ostane. Bez id (uložené pred
    * 2026-10-28) platí index pri tej istej verzii scenára (`verzia` = ScenarVyucby.verzia),
-   * inak výučba začne od prvého kroku; stav ostáva.
+   * inak výučba začne od prvého kroku; stav ostáva. Id zrušeného kroku sa preloží cez
+   * `zrusene` (ScenarVyucby.zruseneKroky) na krok, ktorým postup pokračuje.
    */
-  vyucba(id: number, verzia: string | null, idKrokov: readonly string[] = []): { krok: number; stav: "hotova" | "preskocena" | null } {
+  vyucba(
+    id: number,
+    verzia: string | null,
+    idKrokov: readonly string[] = [],
+    zrusene: Readonly<Record<string, string>> = {},
+  ): { krok: number; stav: "hotova" | "preskocena" | null } {
     const r = this.db.prepare("SELECT vyucba_krok, vyucba_krok_id, vyucba_stav, vyucba_verzia FROM pouzivatelia WHERE id = ?").get(id) as
       | { vyucba_krok: number; vyucba_krok_id: string | null; vyucba_stav: string | null; vyucba_verzia: string | null }
       | undefined;
     const stav = r?.vyucba_stav === "hotova" || r?.vyucba_stav === "preskocena" ? r.vyucba_stav : null;
-    const podlaId = r?.vyucba_krok_id == null ? -1 : idKrokov.indexOf(r.vyucba_krok_id);
+    const idUlozene = r?.vyucba_krok_id == null ? null : idKrokov.includes(r.vyucba_krok_id) ? r.vyucba_krok_id : (zrusene[r.vyucba_krok_id] ?? null);
+    const podlaId = idUlozene === null ? -1 : idKrokov.indexOf(idUlozene);
     if (podlaId >= 0) return { krok: podlaId, stav };
     const krok = Number(r?.vyucba_krok ?? 0);
     return { krok: (r?.vyucba_verzia ?? null) === verzia ? krok : 0, stav };

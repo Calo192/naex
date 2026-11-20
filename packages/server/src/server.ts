@@ -410,7 +410,7 @@ export function createGameServer(opts: ServerOpts): Promise<GameServer> {
    * je predošlá dokončená — „Pokračovať vo výučbe“ spustí ďalšiu, ak ju hráč smie hrať.
    */
   const postupVyucby = (ja: Pick<Pouzivatel, "id" | "rola">): PostupVyucby => {
-    const ulozene = ucty.vyucba(ja.id, scenarVyucby.verzia ?? null, idKrokovVyucby);
+    const ulozene = ucty.vyucba(ja.id, scenarVyucby.verzia ?? null, idKrokovVyucby, scenarVyucby.zruseneKroky);
     const cast = castKroku(scenarVyucby, ulozene.krok);
     const naZaciatku = cast !== null && ulozene.krok === cast.od;
     const dalsia = naZaciatku && cast.cast > 1 ? cast : null;
