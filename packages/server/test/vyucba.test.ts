@@ -362,19 +362,20 @@ describe("výučba — cigareta pre Melichara (Michal 2026-10-25)", () => {
     znova.k.zavri();
   });
 
-  it("starší už cigaretu nepýtajú — Melichar ju chce len v úvode (prerobenie 2026-10-30); i-senok je nanečisto", async () => {
+  it("starší už cigaretu nepýtajú — Melichar ju chce len v úvode (prerobenie 2026-10-30); ponuku 1. časti postaví potichu", async () => {
     const { cookie } = await registruj(server.port);
     const { k, prvy } = await zacni(cookie);
     let msg = prvy;
-    let senok: KrokMsg | null = null;
+    let naneisto = false;
     while ((msg.krok as KrokMsg & { id: string }).id !== "i-starsi") {
       const krok = msg.krok as KrokMsg & { id: string };
-      if (krok.id === "i-senok") senok = krok;
+      if ((krok as { naneisto?: boolean }).naneisto === true) naneisto = true;
       if (krok.kto === "hrac") k.posli({ type: "cmd", cmd: krok.ocakava });
       else potvrd(k, krok);
       msg = await k.cakaj("vyucba");
     }
-    expect(senok).toMatchObject({ kto: "info", naneisto: true });
+    // Inšpekcia 20261120-1324 (V-26): stavba ponuky nanečisto (i-senok) nič neučila a vypadla.
+    expect(naneisto).toBe(false);
     expect(msg.krok).toMatchObject({ kto: "info", tlacidlo: null, odovzdaCigaretu: false });
     // Posledný stav pri starších: z fronty po jednom, kým tam niečo je.
     let pred: StavMsg | null = null;

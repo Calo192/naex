@@ -54,23 +54,17 @@
     }
   },
   "k-ciel": {
-    "melichar": "The Forest Track has a [Pecka] Wallop on its edge – 2 hits. Click it and confirm so that the Wallop is on the left, on your side.",
+    "melichar": "The Forest Track has a [Pecka] Wallop on its edge – 2 hits. Click it and confirm so that the Wallop is on the left.",
     "zle.1": "Like this the [Pecka] Wallop would be facing the Regular and you wouldn't have a single hit. Turn it back, click it once more.",
     "zle.2": "The Co-op is for shopping, not fighting: no hits. The Forest Track has a [Pecka] Wallop, that's 2. You can count, can't you?",
     "zle.3": "There are no hits at the Graveyard. People go there to cry, not to fight.",
     "inak": "The Forest Track, Wallop to the left. That's all I want from you.",
     "sk": {
-      "melichar": "Lesná cesta má na okraji [Pecka] Pecku – 2 údery. Klikni na ňu a potvrď tak, aby Pecka bola vľavo, na tvojej strane.",
+      "melichar": "Lesná cesta má na okraji [Pecka] Pecku – 2 údery. Klikni na ňu a potvrď tak, aby Pecka bola vľavo.",
       "zle.1": "Takto by [Pecka] Pecka hľadela na Štamgasta a ty by si nemal ani jeden úder. Otoč ju späť, klikni na ňu ešte raz.",
       "zle.2": "Na Jednote sa nakupuje, nie bije: žiadny úder. Lesná cesta má [Pecka] Pecku, to sú 2. Počítať vieš, nie?",
       "zle.3": "Na Cintoríne nie je žiadny úder. Tam sa chodí plakať, nie biť.",
       "inak": "Lesná cesta, Peckou doľava. Viac od teba nechcem."
-    }
-  },
-  "i-senok": {
-    "melichar": "Now we buy cards. First we have to pick what goes up for sale – today I'll do it. You can click away; I'll decide anyway.",
-    "sk": {
-      "melichar": "Teraz sa nakupujú karty. Najprv treba vybrať, čo pôjde na predaj – dnes to spravím ja. Klikať môžeš, rozhodnem aj tak ja."
     }
   },
   "i-ponuka": {
@@ -92,9 +86,9 @@
     }
   },
   "k-kupa-bot": {
-    "melichar": "The Regular bought the Tractor Driver. For a cigarette – there's one fewer down by him.",
+    "melichar": "The Regular bought the Tractor Driver. For a cigarette – there's one fewer up by him.",
     "sk": {
-      "melichar": "Štamgast kúpil Traktoristu. Za cigaretu, ubudla mu dole pri ňom."
+      "melichar": "Štamgast kúpil Traktoristu. Za cigaretu, ubudla mu hore pri ňom."
     }
   },
   "k-stop": {
@@ -116,9 +110,9 @@
     }
   },
   "k-zh-bot1": {
-    "melichar": "The Regular starts: Hunter against the Forest Track. The row of cards by the location is the line – yours on the left, his on the right.",
+    "melichar": "The Regular starts: Hunter against the Forest Track. The row of cards by the location is the line.",
     "sk": {
-      "melichar": "Štamgast začína: Poľovník k Lesnej ceste. Rad kariet pri lokalite je línia – tvoja vľavo, jeho vpravo."
+      "melichar": "Štamgast začína: Poľovník k Lesnej ceste. Rad kariet pri lokalite je línia."
     }
   },
   "i-poldeci": {
@@ -212,7 +206,7 @@
   "k-hotovo": {
     "melichar": "That's enough. Click End the Booze-up (K).",
     "sk": {
-      "melichar": "Viac netreba. Klikni končím (K)."
+      "melichar": "Viac netreba. Klikni Skončiť Pitku (K)."
     }
   },
   "k-hotovo-bot": {
@@ -245,20 +239,6 @@
     "melichar": "The winner takes a butt for every card in the line, the opponent's too: five cards, five butts. Dog-ends – I've been collecting them all my life.",
     "sk": {
       "melichar": "Víťaz berie špak za každú kartu v línii, aj za súperove: päť kariet, päť špakov. Ohorky, tie ja zbieram celý život."
-    }
-  },
-  "q-lokality": {
-    "melichar": "How many butts did the brawl for the Forest Track get you?",
-    "moznost.1": "Five, one for every card in the line.",
-    "vysvetlenie.1": "Yes. That's why you fight.",
-    "moznost.2": "Nine, for my hits.",
-    "vysvetlenie.2": "The hits decided who won. The butts for the brawl are for the cards in the line.",
-    "sk": {
-      "melichar": "Koľko špakov ti dala bitka o Lesnú cestu?",
-      "moznost.1": "Päť, za každú kartu v línii jeden.",
-      "vysvetlenie.1": "Áno. Preto sa biješ.",
-      "moznost.2": "Deväť, za moje údery.",
-      "vysvetlenie.2": "Údery rozhodli, kto vyhral. Špaky za bitku sú za karty v línii."
     }
   },
   "i-starsi": {
@@ -308,9 +288,9 @@
     }
   },
   "i-rola": {
-    "melichar": "The last brawl was yours, so you're the defender: you choose the location, turn it and buy from the Market first. The Regular lost, so he's the attacker: he plays first and answers a NA EX first – whoever loses gets perks. Nobody ever gave me any. And second round, second level: there are two actions on the location's edge, more links, more booze-ups.",
+    "melichar": "The last brawl was yours, so you're the defender: you choose the location, turn it and buy from the Market first. The Regular lost, so he's the attacker: he plays first and answers a NA EX first – whoever loses gets perks. Nobody ever gave me any.",
     "sk": {
-      "melichar": "Minulá bitka je tvoja, si obranca: vyberáš lokalitu, natáčaš ju a z ponuky kupuješ prvý. Štamgast prehral, je útočník: vykladá prvý a na NA EX odpovedá prvý – kto prehrá, dostane výhody. Mne ich nikto nedal. A druhé kolo, druhá úroveň: na hrane lokality sú dve akcie, viac spojov, viac Pitiek."
+      "melichar": "Minulá bitka je tvoja, si obranca: vyberáš lokalitu, natáčaš ju a z ponuky kupuješ prvý. Štamgast prehral, je útočník: vykladá prvý a na NA EX odpovedá prvý – kto prehrá, dostane výhody. Mne ich nikto nedal."
     }
   },
   "q-rola": {
@@ -328,23 +308,29 @@
     }
   },
   "k-ciel2": {
-    "melichar": "Choose the Football Pitch the way it lies, [Pecka] Wallop and [Rana] Punch to the left, and confirm. From now on hits are called hard damage, hard for short – soft comes in the brawl. The Football Pitch has an effect too: whoever has more people in a wing than the opponent gets 2 extra hard.",
+    "melichar": "Choose the Football Pitch the way it lies, [Pecka] Wallop and [Rana] Punch to the left, and confirm.",
     "zle.1": "Like this the [Pecka] Wallop and the [Rana] Punch would both be facing the Regular. Turn it back, click it once more.",
     "zle.2": "At the Petrol Station the first smoke in a Booze-up is free, but you won't find a [Pecka] Wallop there. The Football Pitch.",
     "zle.3": "The Scrapyard has a [Petelica] Haymaker, but a [Dlh] Gamble too. You'll have plenty of Debts without it. The Football Pitch.",
     "inak": "The Football Pitch, Wallop to the left. That's all I want from you.",
     "sk": {
-      "melichar": "Vyber Ihrisko tak, ako leží, [Pecka] Peckou a [Rana] Ranou doľava, a potvrď. Údery sa odteraz volajú tuhé poškodenie, skrátka tuhé – mäkké príde v bitke. Aj Ihrisko má efekt: kto má v kraji viac ľudí ako súper, dostane 2 tuhé navyše.",
+      "melichar": "Vyber Ihrisko tak, ako leží, [Pecka] Peckou a [Rana] Ranou doľava, a potvrď.",
       "zle.1": "Takto by [Pecka] Pecka aj [Rana] Rana hľadeli na Štamgasta. Otoč ho späť, klikni naň ešte raz.",
       "zle.2": "Na Benzínke je prvé fajčenie v Pitke zadarmo, ale [Pecka] Pecku tam nenájdeš. Ihrisko.",
       "zle.3": "Zberný dvor má [Petelica] Petelicu, ale aj [Dlh] Hazard. Dlhov budeš mať dosť aj bez neho. Ihrisko.",
       "inak": "Ihrisko, Peckou doľava. Viac od teba nechcem."
     }
   },
-  "i-fazy": {
-    "melichar": "A round goes from left to right: Choosing the target, Market, Assembly, Booze-up, Brawl. Choosing the target is behind you, congratulations. In the Market you buy cards, in the Assembly you play them against the Football Pitch, in the Booze-up there's drinking and smoking, and in the Brawl you argue first – gossip and scandal ([Povera] [Pohoršenie]) – and then the Damage gets counted ([Rana] [Pecka] [Petelica]).",
+  "i-tuhe2": {
+    "melichar": "From now on hits are called hard damage, hard for short – soft comes in the brawl. The Football Pitch has an effect too: whoever has more people in a wing than the opponent gets 2 extra hard.",
     "sk": {
-      "melichar": "Kolo ide zľava doprava: Voľba cieľa, Ponuka, Zhromaždenie, Pitka, Bitka. Voľbu cieľa máš za sebou, gratulujem. V Ponuke si kúpiš karty, v Zhromaždení ich hráš k Ihrisku, v Pitke sa pije a fajčí a v Bitke sa najprv hádate – ohovára sa a pohoršuje ([Povera] [Pohoršenie]) – a potom sa ráta Poškodenie ([Rana] [Pecka] [Petelica])."
+      "melichar": "Údery sa odteraz volajú tuhé poškodenie, skrátka tuhé – mäkké príde v bitke. Aj Ihrisko má efekt: kto má v kraji viac ľudí ako súper, dostane 2 tuhé navyše."
+    }
+  },
+  "i-fazy": {
+    "melichar": "A round goes from left to right: What's at stake, Market, Assembly, Booze-up, Brawl. The first is behind you, congratulations.",
+    "sk": {
+      "melichar": "Kolo ide zľava doprava: O čo sa bijeme, Ponuka, Zhromaždenie, Pitka, Bitka. Prvé máš za sebou, gratulujem."
     }
   },
   "k-stavba2": {
@@ -403,26 +389,12 @@
       "melichar": "Lokalita delí líniu na dva kraje, podľa hrán: trávnik a tribúnu. Kto má v kraji viac svojich Občanov, Zvierat a Starešinov, má tam prevahu a berie akcie hrany. Na tribúne má Štamgast Pijana, ty nikoho – a kto má pri Ihrisku viac ľudí, má aj jeho 2 tuhé."
     }
   },
-  "q-prevaha": {
-    "melichar": "Who has the upper hand in a wing?",
-    "moznost.1": "Whoever has more of their own Citizens, Animals and Elders there.",
-    "vysvetlenie.1": "Yes. What counts is whose cards they are, not which end they lie on. You'll need that in a minute.",
-    "moznost.2": "Whoever has more hard there.",
-    "vysvetlenie.2": "Hard decides the brawl. The upper hand is decided by the people in the wing.",
-    "sk": {
-      "melichar": "Kto má v kraji prevahu?",
-      "moznost.1": "Kto tam má viac svojich Občanov, Zvierat a Starešinov.",
-      "vysvetlenie.1": "Áno. Ráta sa, koho sú karty, nie na ktorom konci ležia. O chvíľu sa ti to zíde.",
-      "moznost.2": "Kto tam má viac tuhého.",
-      "vysvetlenie.2": "Tuhé rozhoduje bitku. Prevahu rozhodujú ľudia v kraji."
-    }
-  },
   "k-vypit": {
-    "melichar": "Now two cards in one turn: the Drunk against the Football Pitch – the one whose [Poldeci] Shot meets the [Pecka] Wallop and whose [Rana] Punch meets the [Rana] Punch – and the Altar Boy after him, then confirm. Every card downs its own [Poldeci] shot, and for each extra one in the same turn you pay a [Cigareta] cigarette and your liver goes up by one.",
+    "melichar": "Now two cards in one turn: the Drunk against the Football Pitch – the one whose [Poldeci] Shot meets the [Pecka] Wallop and whose [Rana] Punch meets the [Rana] Punch – and the Altar Boy after him, then confirm.",
     "zle.1": "This Drunk would link a [Rana] Punch with the [Pecka] Wallop, and a [Poldeci] Shot below. It'd come out the same, but save that one for the third round. Take the other one.",
     "inak": "The Drunk against the Football Pitch, the Altar Boy after him. Two cards, one turn.",
     "sk": {
-      "melichar": "Teraz dve karty v jednom ťahu: Pijana k Ihrisku – toho, ktorého [Poldeci] Poldeci sa stretne s [Pecka] Peckou a [Rana] Rana s [Rana] Ranou – a za neho Miňištranta, potom potvrď. Každá karta vypije svoj [Poldeci] poldeci a za každú navyše v tom istom ťahu dáš [Cigareta] cigaretu a pečeň stúpne o jedna.",
+      "melichar": "Teraz dve karty v jednom ťahu: Pijana k Ihrisku – toho, ktorého [Poldeci] Poldeci sa stretne s [Pecka] Peckou a [Rana] Rana s [Rana] Ranou – a za neho Miňištranta, potom potvrď.",
       "zle.1": "Tento Pijan by spojil s [Pecka] Peckou [Rana] Ranu a dole [Poldeci] Poldeci. Vyšlo by to nastejno, ale toho si odlož na tretie kolo. Zober toho druhého.",
       "inak": "Pijan k Ihrisku, Miňištrant za neho. Dve karty, jeden ťah."
     }
@@ -520,9 +492,9 @@
     }
   },
   "i-pitka-ucet": {
-    "melichar": "Booze-up! No more playing cards; now we drink – both at once, each stops when they like. Linked [Dlh] Gambles and [PoškodeniePečene] Liver Damage on the table now add Debts and liver, and each linked [Cigareta] Cigarette a cigarette. That's why the Booze-up comes after the Assembly. You've got a talent for this, I'll give you that.",
+    "melichar": "Booze-up! Linked [Dlh] Gambles and [PoškodeniePečene] Liver Damage on the table now add Debts and liver, and each linked [Cigareta] Cigarette a cigarette. That's why the Booze-up comes after the Assembly. You've got a talent for this, I'll give you that.",
     "sk": {
-      "melichar": "Pitka! Karty sa už nehrajú, pije sa – obaja naraz, každý skončí, keď chce. Spojené [Dlh] Hazardy a [PoškodeniePečene] Poškodenia pečene na stole ti teraz pridajú Dlhy a pečeň, každá spojená [Cigareta] Cigareta cigaretu. Preto ide Pitka až po Zhromaždení. Na toto máš talent, to ti uznám."
+      "melichar": "Pitka! Spojené [Dlh] Hazardy a [PoškodeniePečene] Poškodenia pečene na stole ti teraz pridajú Dlhy a pečeň, každá spojená [Cigareta] Cigareta cigaretu. Preto ide Pitka až po Zhromaždení. Na toto máš talent, to ti uznám."
     }
   },
   "q-fazy": {
@@ -539,16 +511,22 @@
       "vysvetlenie.2": "Aj to. Dve správne odpovede, nech ti nie je ľúto."
     }
   },
-  "k-fajcit2": {
-    "melichar": "Smoke: click smoke. In the Booze-up you smoke too: for a [Cigareta] cigarette you draw a card straight away, and every further smoke costs a cigarette more. Your liver doesn't care; your wallet does.",
+  "i-fajcit2": {
+    "melichar": "In the Booze-up you smoke too: for a [Cigareta] cigarette you draw a card straight away, and every further smoke costs a cigarette more. Your liver doesn't care; your wallet does.",
     "sk": {
-      "melichar": "Fajči: klikni na fajčiť. V Pitke sa aj fajčí: za [Cigareta] cigaretu si hneď doberieš kartu, každé ďalšie fajčenie je o cigaretu drahšie. Pečeni je to jedno, peňaženke nie."
+      "melichar": "V Pitke sa aj fajčí: za [Cigareta] cigaretu si hneď doberieš kartu, každé ďalšie fajčenie je o cigaretu drahšie. Pečeni je to jedno, peňaženke nie."
+    }
+  },
+  "k-fajcit2": {
+    "melichar": "Smoke: click smoke.",
+    "sk": {
+      "melichar": "Fajči: klikni na fajčiť."
     }
   },
   "k-hotovo3": {
     "melichar": "In came the Troof Teller. For five [Cigareta] cigarettes you could buy a new [Poldeci] shot in the Booze-up, full and for good – more cards in every Assembly. Not today: click End the Booze-up (K).",
     "sk": {
-      "melichar": "Prišiel Praudovravec. Za päť [Cigareta] cigariet by si si v Pitke kúpil nový [Poldeci] poldeci, plný a natrvalo – viac kariet v každom Zhromaždení. Dnes nie: klikni končím (K)."
+      "melichar": "Prišiel Praudovravec. Za päť [Cigareta] cigariet by si si v Pitke kúpil nový [Poldeci] poldeci, plný a natrvalo – viac kariet v každom Zhromaždení. Dnes nie: klikni Skončiť Pitku (K)."
     }
   },
   "k-hotovo3-bot": {
@@ -583,10 +561,16 @@
       "vysvetlenie.2": "Nevynuluje. Pečeň áno, Dlh čaká na exekútora."
     }
   },
-  "k-prevaha": {
-    "melichar": "Take the grass back: put the Troof Teller on the end of the line, after the Liberal, and confirm. On the grass it'll be 3 : 3, and on a tie the card next to the location decides – your Drunk.",
+  "i-dolievanie2": {
+    "melichar": "After the Booze-up one [Poldeci] shot gets refilled, plus one more for each of your linked Shots – thanks to the Drunk you've got three full again. You start the second Assembly: in the first one you passed before the Regular.",
     "sk": {
-      "melichar": "Vráť si trávnik: polož Praudovravca na koniec línie, za Liberála, a potvrď. Na trávniku bude 3 : 3 a pri rovnosti rozhoduje karta pri lokalite – tvoj Pijan."
+      "melichar": "Po Pitke sa doleje jeden [Poldeci] poldeci a ďalší za každé tvoje spojené Poldeci – vďaka Pijanovi máš zas tri plné. Druhé Zhromaždenie začínaš ty: v prvom si pasoval skôr ako Štamgast."
+    }
+  },
+  "k-prevaha": {
+    "melichar": "Take the grass back: put the Troof Teller on the end of the line, after the Liberal, and confirm.",
+    "sk": {
+      "melichar": "Vráť si trávnik: polož Praudovravca na koniec línie, za Liberála, a potvrď."
     }
   },
   "k-zh2-bot3": {
@@ -613,20 +597,6 @@
       "melichar": "Pijana si nechaj a pasuj (P). Posledný plný [Poldeci] poldeci je na NA EX."
     }
   },
-  "q-dlh-karta": {
-    "melichar": "The Regular already has one Debt, and on the table he's got a linked Gamble. How many Debts will he have after the second Booze-up?",
-    "moznost.1": "Two: the first one stays and a second gets added.",
-    "vysvetlenie.1": "Yes. Whatever's on the table catches up with you in every Booze-up, and a Debt doesn't go anywhere.",
-    "moznost.2": "One: the Debt resets after the Booze-up.",
-    "vysvetlenie.2": "The liver resets, not the Debt. The first one stayed and a second gets added.",
-    "sk": {
-      "melichar": "Štamgast už jeden Dlh má a na stole mu leží spojený Hazard. Koľko Dlhov bude mať po druhej Pitke?",
-      "moznost.1": "Dva: ten prvý ostane a pribudne druhý.",
-      "vysvetlenie.1": "Áno. Čo leží na stole, ťa dobehne v každej Pitke, a Dlh sa nikam nestratí.",
-      "moznost.2": "Jeden: Dlh sa po Pitke vynuluje.",
-      "vysvetlenie.2": "Vynuluje sa pečeň, nie Dlh. Ten prvý ostal a druhý pribudne."
-    }
-  },
   "i-naex2": {
     "melichar": "Last Booze-up and NA EX, in full this time: it may go on a Citizen or an Elder in the line, yours or your opponent's. It cancels that card's linked actions – you know that already – and doubles the lonely ones. And your opponent can't see where your NA EX is going until you've both finished – then they're all revealed at once.",
     "sk": {
@@ -634,13 +604,19 @@
     }
   },
   "k-naex1": {
-    "melichar": "Pour a NA EX on the Anonymous Alcoholic: select him and press the NA EX button. It cancels his linked [Dlh] Gamble and [Viera] Faith and doubles the two lonely [Viera] Faiths at the bottom. Then you've got six Faiths – you know what they're for.",
+    "melichar": "Pour a NA EX on the Anonymous Alcoholic: select him and press the NA EX button.",
     "zle.1": "On the Twins, the NA EX would cancel the Regular's linked [Dlh] Gamble but double two lonely [Rana] Punches. His hard would shoot up. Congratulations.",
     "inak": "NA EX on the Anonymous Alcoholic. He's on the left, at the end of the line.",
     "sk": {
-      "melichar": "Daj NA EX na Anonymného alkoholika: vyber ho a stlač tlačidlo NA EX. Zruší jeho spojený [Dlh] Hazard aj [Viera] Vieru a zdvojí dve osamotené [Viera] Viery dole. Viery máš potom šesť – ty vieš, na čo sú.",
+      "melichar": "Daj NA EX na Anonymného alkoholika: vyber ho a stlač tlačidlo NA EX.",
       "zle.1": "Na Dvojčatách by NA EX Štamgastovi zrušilo spojený [Dlh] Hazard, ale zdvojilo dve osamotené [Rana] Rany. Tuhé by mu skočilo nahor. Gratulujem.",
       "inak": "NA EX na Anonymného alkoholika. Leží vľavo, na konci línie."
+    }
+  },
+  "i-naex1": {
+    "melichar": "It cancels his linked [Dlh] Gamble and [Viera] Faith and doubles the two lonely [Viera] Faiths at the bottom. Then you've got six Faiths – you know what they're for.",
+    "sk": {
+      "melichar": "Zruší jeho spojený [Dlh] Hazard aj [Viera] Vieru a zdvojí dve osamotené [Viera] Viery dole. Viery máš potom šesť – ty vieš, na čo sú."
     }
   },
   "q-naex": {
@@ -660,7 +636,7 @@
   "k-hotovo4": {
     "melichar": "Click End the Booze-up (K). Until the Regular's done too, he can't see your NA EX.",
     "sk": {
-      "melichar": "Klikni končím (K). Kým neskončí aj Štamgast, tvoje NA EX nevidí."
+      "melichar": "Klikni Skončiť Pitku (K). Kým neskončí aj Štamgast, tvoje NA EX nevidí."
     }
   },
   "k-hotovo4-bot": {
@@ -670,9 +646,9 @@
     }
   },
   "k-odpoved-bot": {
-    "melichar": "Now the answers: for each of the opponent's NA EX a player may lay one card from their hand face down – but for a full [Poldeci] shot, which they down while doing it. The attacker answers first – the Regular laid a card face down after your Alcoholic; that's what he was saving his shots for. You've got no full shot – it's under the NA EX – so you don't answer. What it is, you'll see when the answers flip over.",
+    "melichar": "Now the answers: for each of the opponent's NA EX a player may lay one card from their hand face down – but for a full [Poldeci] shot, which they down while doing it. The attacker answers first – the Regular laid a card face down after your Alcoholic; that's what he was saving his shots for. You've got no full shot – it's under the NA EX – so you don't answer.",
     "sk": {
-      "melichar": "Teraz odpovede: za každé súperovo NA EX smie hráč vyložiť jednu kartu z ruky lícom dole – ale za plný [Poldeci] poldeci, ten pri tom vypije. Prvý odpovedá útočník – Štamgast dal kartu lícom dole za tvojho Alkoholika, na to si šetril poldeci. Ty plný poldeci nemáš, ten ti leží pod NA EX, tak neodpovedáš. Čo to je, uvidíš, až sa odpovede otočia."
+      "melichar": "Teraz odpovede: za každé súperovo NA EX smie hráč vyložiť jednu kartu z ruky lícom dole – ale za plný [Poldeci] poldeci, ten pri tom vypije. Prvý odpovedá útočník – Štamgast dal kartu lícom dole za tvojho Alkoholika, na to si šetril poldeci. Ty plný poldeci nemáš, ten ti leží pod NA EX, tak neodpovedáš."
     }
   },
   "i-odpovede": {
@@ -722,23 +698,9 @@
     }
   },
   "i-remiza2": {
-    "melichar": "But your Faiths had nothing to cancel, so they took all his hard away: 5 : 0, the brawl is yours. Had the hard been equal, whoever has fewer confessed Debts wins – the Regular had two, you none.",
+    "melichar": "But your Faiths had nothing to cancel, so they took all his hard away: 5 : 0, the brawl is yours.",
     "sk": {
-      "melichar": "Zato tvoje Viery nemali čo rušiť, tak mu zobrali všetko tuhé: 5 : 0, bitka je tvoja. Keby bolo tuhé rovnako, vyhrá, kto má menej priznaných Dlhov – Štamgast mal dva, ty žiadny."
-    }
-  },
-  "q-remiza2": {
-    "melichar": "Had the hard been equal, who'd have won the brawl?",
-    "moznost.1": "Me, the Regular had more confessed Debts.",
-    "vysvetlenie.1": "Yes. A tie on hard is decided by Debts. Whoever's in debt loses even a tie.",
-    "moznost.2": "I've got more Superstitions.",
-    "vysvetlenie.2": "Superstitions don't do hard. Debts would have decided it.",
-    "sk": {
-      "melichar": "Keby bolo tuhé rovnako, kto by bitku vyhral?",
-      "moznost.1": "Ja, Štamgast mal viac priznaných Dlhov.",
-      "vysvetlenie.1": "Áno. Remízu v tuhom rozhodujú Dlhy. Kto je zadĺžený, prehrá aj remízu.",
-      "moznost.2": "Mám viac Povier.",
-      "vysvetlenie.2": "Povery tuhé nerobia. Rozhodli by Dlhy."
+      "melichar": "Zato tvoje Viery nemali čo rušiť, tak mu zobrali všetko tuhé: 5 : 0, bitka je tvoja."
     }
   },
   "i-stupne": {
@@ -771,30 +733,22 @@
       "melichar": "Hádku vyhral Štamgast a minul ju na reči – ohováranie. Reči obsadzujú stupne na tvojom teplomere a stoja rovnako ako strach: pri Krčmárke aj pri Autobusárovi obsadil tvoju žltú, za 1 + 1. Ten stupeň je teraz jeho: za žltú mu každý z nich dá po každej bitke 1, nech vyhrá, či nie, a tebe nedajú nič."
     }
   },
-  "k-nakladacka2": {
-    "melichar": "A win by 5. The difference is called the Thrashing and you spend it on fear, like last time. The Priest fears you in the orange, and it's exactly 3 to red: raise his fear to red. Give the remaining 2 to the Landlady and the Bus Driver, each one up to yellow – you have to split everything you can – and confirm.",
+  "i-nakladacka2": {
+    "melichar": "A win by 5. The difference is called the Thrashing and you spend it on fear, like last time.",
     "sk": {
-      "melichar": "Výhra o 5. Rozdiel sa volá Nakladačka a minieš ju na strach, ako minule. Farár sa ťa bojí na oranžovej a do červenej je to presne 3: zdvihni mu strach na červenú. Zvyšné 2 daj Krčmárke a Autobusárovi, každému na žltú – rozdeliť treba všetko, čo sa dá – a potvrď."
+      "melichar": "Výhra o 5. Rozdiel sa volá Nakladačka a minieš ju na strach, ako minule."
+    }
+  },
+  "k-nakladacka2": {
+    "melichar": "The Priest fears you in the orange, and it's exactly 3 to red: raise his fear to red. Give the remaining 2 to the Landlady, up to yellow, and confirm.",
+    "sk": {
+      "melichar": "Farár sa ťa bojí na oranžovej a do červenej je to presne 3: zdvihni mu strach na červenú. Zvyšné 2 daj Krčmárke na žltú a potvrď."
     }
   },
   "i-cena-posunu": {
     "melichar": "Why like that? Every notch costs something: into yellow 1, into orange 2, into red 3. Last time the Priest cost 1 + 2; today the Priest 3, the Landlady 1 and the Bus Driver 1. You have to split what you can; whatever isn't enough for the next notch is forfeited.",
     "sk": {
       "melichar": "Prečo práve tak? Každý stupeň niečo stojí: do žltej 1, do oranžovej 2, do červenej 3. Minule stál Farár 1 + 2, dnes Farár 3, Krčmárka 1 a Autobusár 1. Rozdeliť sa musí, čo sa dá; čo na ďalší stupeň nestačí, prepadne."
-    }
-  },
-  "q-prebytok": {
-    "melichar": "Who spends the Thrashing, and on what?",
-    "moznost.1": "The winner of the brawl, on their fear.",
-    "vysvetlenie.1": "Yes. Fear pays you, but it gives your opponent favour. Nothing's free.",
-    "moznost.2": "The loser, on their favours.",
-    "vysvetlenie.2": "The loser splits nothing. Your fear gives them favour all by itself.",
-    "sk": {
-      "melichar": "Kto minie Nakladačku a na čo?",
-      "moznost.1": "Víťaz bitky, na svoj strach.",
-      "vysvetlenie.1": "Áno. Strach ti platí, ale súperovi dáva priazeň. Nič nie je zadarmo.",
-      "moznost.2": "Porazený, na svoje priazne.",
-      "vysvetlenie.2": "Porazený nedelí nič. Priazeň mu dá tvoj strach sám."
     }
   },
   "q-makke": {
@@ -812,9 +766,9 @@
     }
   },
   "i-strach-starosta": {
-    "melichar": "Look at the Landlady: she fears you in the yellow, even though the Regular is holding that yellow with rumours. Fear stays; rumours fade. And the Priest fears you in the red – he's terrified: you may capture him after a won brawl – I'll show you in part three. And whoever wins a brawl while four elders fear them in the red has won on the spot.",
+    "melichar": "Look at the Landlady: she fears you in the yellow, even though the Regular is holding that yellow with rumours. Fear stays; rumours fade. At the Bus Driver his rumours are waiting – the Bus Driver doesn't fear you, so he gives him nothing for them. And the Priest fears you in the red – he's terrified. And whoever wins a brawl while four elders fear them in the red has won on the spot.",
     "sk": {
-      "melichar": "Pozri na Krčmárku: bojí sa ťa na žltej, aj keď tú žltú drží Štamgast rečami. Strach ostáva, reči slabnú. A Farár sa ťa bojí na červenej – je vydesený: toho smieš po vyhratej bitke zajať, ukážem ti v tretej časti. A kto vyhrá bitku, keď sa ho na červenej bojí štvorica starších, vyhral hneď."
+      "melichar": "Pozri na Krčmárku: bojí sa ťa na žltej, aj keď tú žltú drží Štamgast rečami. Strach ostáva, reči slabnú. Pri Autobusárovi jeho reči čakajú – nebojí sa ťa, tak mu za ne nedá nič. A Farár sa ťa bojí na červenej – je vydesený. A kto vyhrá bitku, keď sa ho na červenej bojí štvorica starších, vyhral hneď."
     }
   },
   "q-vydesenie": {
@@ -870,9 +824,9 @@
     }
   },
   "i-zajatie": {
-    "melichar": "Capture: whoever wins the brawl and is splitting the Thrashing may capture an elder who has feared them in the red since the last round, for five of it. They're your prisoner – you may use their ability once per game, whenever you like, and your opponent gives you as many butts as they put of the argument into their rumours on them. And the winner of the argument may, for three, persuade an elder where they have rumours over the opponent's whole thermometer: that elder's card is then yours. Two prisoners in a short game like today's – and you've won on the spot. The Priest fears you in the red – we'll see whether the Thrashing works out for you today.",
+    "melichar": "Capture: whoever wins the brawl and is splitting the Thrashing may capture an elder who has feared them in the red since the last round, for five of it. They're your prisoner – you may use their ability once per game, whenever you like. The Priest fears you in the red – we'll see whether the Thrashing works out for you today.",
     "sk": {
-      "melichar": "Zajatie: kto vyhrá bitku a rozdeľuje Nakladačku, smie staršieho, ktorý sa ho bojí na červenej už od minulého kola, zajať za päť z nej. Je to tvoj väzeň – jeho schopnosť smieš raz za hru použiť, kedy chceš, a súper ti dá toľko špakov, koľko hádky vložil do svojich rečí pri ňom. A víťaz hádky smie za tri presvedčiť staršieho, pri ktorom má reči na celom súperovom teplomere: jeho karta je potom tvoja. Dvaja väzni v krátkej hre ako dnešná – a vyhral si hneď. Farár sa ťa bojí na červenej – uvidíme, či ti dnes Nakladačka vyjde."
+      "melichar": "Zajatie: kto vyhrá bitku a rozdeľuje Nakladačku, smie staršieho, ktorý sa ho bojí na červenej už od minulého kola, zajať za päť z nej. Je to tvoj väzeň – jeho schopnosť smieš raz za hru použiť, kedy chceš. Farár sa ťa bojí na červenej – uvidíme, či ti dnes Nakladačka vyjde."
     }
   },
   "q-zajatie": {
@@ -896,9 +850,15 @@
     }
   },
   "k-kup3": {
-    "melichar": "You buy first, the first time just one card: the Pitchfork for a [Cigareta] cigarette. The Pitchfork is a Tool: it doesn't get played into the line. It has its effect in the Heirloom – in a moment.",
+    "melichar": "You buy first, the first time just one card: the Pitchfork for a [Cigareta] cigarette.",
     "sk": {
-      "melichar": "Kupuješ prvý, prvý raz jednu kartu: Vidly za [Cigareta] cigaretu. Vidly sú Nástroj: do línie sa nevykladá. Svoj efekt má v Dedičstve – o chvíľu."
+      "melichar": "Kupuješ prvý, prvý raz jednu kartu: Vidly za [Cigareta] cigaretu."
+    }
+  },
+  "i-vidly": {
+    "melichar": "The Regular put it in the Market, so the cigarette goes to him – for a card you put there yourself, you pay the bank.",
+    "sk": {
+      "melichar": "Do ponuky ich dal Štamgast, tak cigareta ide jemu – za kartu, ktorú si tam dal sám, platíš banke."
     }
   },
   "k-kup3-bot": {
@@ -926,23 +886,9 @@
     }
   },
   "i-spustace": {
-    "melichar": "The word before the colon on a card is the trigger – you know Always already. Arrival applies when it's played, Booze-up and Brawl in their phase, Win and Loss after the brawl, Clash when your card, through placing, ends up next to your opponent's – no matter who did the placing – and Support when two of yours meet like that. The rest I'll tell you when they turn up.",
+    "melichar": "The word before the colon on a card is the trigger – you know Always already. The rest I'll tell you when they turn up.",
     "sk": {
-      "melichar": "Slovo pred dvojbodkou na karte je spúšťač – Furt už poznáš. Nástup platí pri vyložení, Pitka a Bitka vo svojej fáze, Výhra a Prehra po bitke, Konflikt, keď sa tvoja karta priložením ocitne vedľa súperovej – jedno, kto prikladal, a Podpora, keď sa tak stretnú dve tvoje. Ostatné ti poviem, keď prídu."
-    }
-  },
-  "q-spustace": {
-    "melichar": "When does a Clash on your card trigger?",
-    "moznost.1": "When through placing it ends up next to an opponent's card – no matter whether I place it or my opponent does.",
-    "vysvetlenie.1": "Yes. A Clash wants an opponent's card next to it; no opponent, nothing.",
-    "moznost.2": "When I place it against my own card.",
-    "vysvetlenie.2": "That's Support. A Clash wants an opponent's card next to it.",
-    "sk": {
-      "melichar": "Kedy sa spustí Konflikt na tvojej karte?",
-      "moznost.1": "Keď sa priložením ocitne vedľa súperovej karty – jedno, či prikladám ja, alebo súper.",
-      "vysvetlenie.1": "Áno. Konflikt chce súperovu kartu vedľa, bez súpera nič.",
-      "moznost.2": "Keď ju priložím k svojej karte.",
-      "vysvetlenie.2": "To je Podpora. Konflikt chce vedľa súperovu kartu."
+      "melichar": "Slovo pred dvojbodkou na karte je spúšťač – Furt už poznáš. Ostatné ti poviem, keď prídu."
     }
   },
   "k-priznaj": {
@@ -972,9 +918,15 @@
     }
   },
   "k-dedicstvo": {
-    "melichar": "Put the Pitchfork in your Heirloom: click it in your hand and then the Heirloom field that appears. In the Heirloom a Tool's effect applies till the end of the game – from now on each of your linked [Rana] Punches hits 1 harder. It costs a [Cigareta] cigarette: the first Tool in the game one, the second two, the third three, for both players together.",
+    "melichar": "Put the Pitchfork in your Heirloom: click it in your hand and then the Heirloom field that appears.",
     "sk": {
-      "melichar": "Vidly daj do Dedičstva: klikni na ne v ruke a potom na pole Dedičstvo, ktoré sa ukáže. V Dedičstve platí efekt Nástroja do konca hry – odteraz každá tvoja spojená [Rana] Rana udrie o 1 viac. Stojí to [Cigareta] cigaretu: prvý Nástroj v hre jednu, druhý dve, tretí tri, pre oboch spolu."
+      "melichar": "Vidly daj do Dedičstva: klikni na ne v ruke a potom na pole Dedičstvo, ktoré sa ukáže."
+    }
+  },
+  "i-dedicstvo": {
+    "melichar": "In the Heirloom a Tool's effect applies till the end of the game – from now on each of your linked [Rana] Punches hits 1 harder. It costs a [Cigareta] cigarette: the first Tool in the game one, the second two, the third three, for both players together.",
+    "sk": {
+      "melichar": "V Dedičstve platí efekt Nástroja do konca hry – odteraz každá tvoja spojená [Rana] Rana udrie o 1 viac. Stojí to [Cigareta] cigaretu: prvý Nástroj v hre jednu, druhý dve, tretí tri, pre oboch spolu."
     }
   },
   "q-dedicstvo": {
@@ -992,27 +944,45 @@
     }
   },
   "k-zh3-1": {
-    "melichar": "Put the Altar Boy against the House of Culture. His [Viera] Faith links with the house's [Pohoršenie] Scandal, so you'll have something to win the argument with; below, his [Povera] Superstition with the house's liver – you'll pay for that one.",
+    "melichar": "Put the Altar Boy against the House of Culture.",
     "sk": {
-      "melichar": "Polož Miňištranta ku Kultúrnemu domu. Jeho [Viera] Viera sa spojí s [Pohoršenie] Pohoršením domu, tak budeš mať čím vyhrať hádku; dole jeho [Povera] Povera s pečeňou domu, tú zaplatíš."
+      "melichar": "Polož Miňištranta ku Kultúrnemu domu."
+    }
+  },
+  "i-zh3-1": {
+    "melichar": "His [Viera] Faith links with the house's [Pohoršenie] Scandal, so you'll have something to win the argument with; below, his [Povera] Superstition with the house's liver – you'll pay for that one.",
+    "sk": {
+      "melichar": "Jeho [Viera] Viera sa spojí s [Pohoršenie] Pohoršením domu, tak budeš mať čím vyhrať hádku; dole jeho [Povera] Povera s pečeňou domu, tú zaplatíš."
     }
   },
   "k-nastroj": {
-    "melichar": "Now the Repeat Offender after the Altar Boy. His [Petelica] Haymaker and [Rana] Punch link with the Altar Boy and they're yours, because the Repeat Offender is yours; with the Pitchfork the Punch hits for two. 5 : 0.",
+    "melichar": "Now the Repeat Offender after the Altar Boy.",
     "sk": {
-      "melichar": "Teraz Recidivistu za Miňištranta. Jeho [Petelica] Petelica a [Rana] Rana sa spoja s Miňištrantom a sú tvoje, lebo Recidivista je tvoj; Rana s Vidlami udrie za dve. 5 : 0."
+      "melichar": "Teraz Recidivistu za Miňištranta."
+    }
+  },
+  "i-nastroj": {
+    "melichar": "His [Petelica] Haymaker and [Rana] Punch link with the Altar Boy and they're yours, because the Repeat Offender is yours; with the Pitchfork the Punch hits for two. 5 : 0.",
+    "sk": {
+      "melichar": "Jeho [Petelica] Petelica a [Rana] Rana sa spoja s Miňištrantom a sú tvoje, lebo Recidivista je tvoj; Rana s Vidlami udrie za dve. 5 : 0."
     }
   },
   "k-zh3-2": {
-    "melichar": "Now the Drunk after the Repeat Offender. His [Rana] Punch links with the Repeat Offender and you get it, because the Drunk is yours. With the Pitchfork it's two: forecast 7 : 0. Your hand's empty and your shots are downed; from here on the game passes for you – and you'd get nothing for passing anyway.",
+    "melichar": "Now the Drunk after the Repeat Offender.",
     "sk": {
-      "melichar": "Teraz Pijana za Recidivistu. Jeho [Rana] Rana sa spojí s Recidivistom a dostaneš ju ty, lebo Pijan je tvoj. S Vidlami za dve: odhad 7 : 0. Ruku máš prázdnu a poldeci vypité, ďalej za teba pasuje hra – a za pas aj tak nič nedostaneš."
+      "melichar": "Teraz Pijana za Recidivistu."
+    }
+  },
+  "i-zh3-2": {
+    "melichar": "His [Rana] Punch links with the Repeat Offender and you get it, because the Drunk is yours. With the Pitchfork it's two: forecast 7 : 0. Your shots are downed; from here on the game passes for you – and without a full shot you get nothing for passing.",
+    "sk": {
+      "melichar": "Jeho [Rana] Rana sa spojí s Recidivistom a dostaneš ju ty, lebo Pijan je tvoj. S Vidlami za dve: odhad 7 : 0. Poldeci máš vypité, ďalej za teba pasuje hra – a bez plného poldeci za pas nič nedostaneš."
     }
   },
   "k-hotovo5": {
     "melichar": "Booze-up – there'll be two: you've linked two of the house's actions, the Regular one. No NA EX today – your shots are downed – and no smoking; save your cigarettes. Click End the Booze-up (K).",
     "sk": {
-      "melichar": "Pitka, budú dve: s domom máš spojené dve jeho akcie, Štamgast jednu. NA EX dnes nedáš, poldeci máš vypité, a nefajči, cigarety šetri. Klikni končím (K)."
+      "melichar": "Pitka, budú dve: s domom máš spojené dve jeho akcie, Štamgast jednu. NA EX dnes nedáš, poldeci máš vypité, a nefajči, cigarety šetri. Klikni Skončiť Pitku (K)."
     }
   },
   "k-fajcit3-bot": {
@@ -1034,9 +1004,9 @@
     }
   },
   "k-hotovo6": {
-    "melichar": "The game passed the second Assembly for you; you've got no hand – and you get nothing for passing. Second Booze-up, the last: End the Booze-up (K).",
+    "melichar": "Second Booze-up, the last: End the Booze-up (K).",
     "sk": {
-      "melichar": "Druhé Zhromaždenie za teba odpasovala hra, ruku nemáš – a za pas nič nedostaneš. Druhá Pitka, posledná: končím (K)."
+      "melichar": "Druhá Pitka, posledná: Skončiť Pitku (K)."
     }
   },
   "k-hotovo6-bot": {
@@ -1065,20 +1035,26 @@
       "vysvetlenie.2": "Exekútor príde vždy, keď máš aspoň jeden Dlh. Neskrývaj sa, nájde ťa."
     }
   },
+  "i-reci3": {
+    "melichar": "You spend the argument of 3 yourself, before the Thrashing, on the Regular's thermometer. He's not feared anywhere, so the rumours go in from the bottom: the Vet, yellow and orange, for 1 + 2. They'll bring you butts only once the Vet starts fearing the Regular – until then they wait and make his fear there more expensive.",
+    "sk": {
+      "melichar": "Hádku 3 minieš ty, ešte pred Nakladačkou, na Štamgastov teplomer. Ten sa nebojí nikde, tak reči idú odspodu: Veterinárovi žltú a oranžovú, za 1 + 2. Bodovať ti budú, až keď sa Veterinár začne báť Štamgasta – dovtedy čakajú a strach mu tam predražia."
+    }
+  },
   "k-reci3": {
-    "melichar": "You spend the argument of 3 on the Regular's thermometer. He's not feared anywhere, so the rumours go in from the bottom: the Vet, yellow and orange, for 1 + 2. The Vet will then give you 3, win or lose, until you lose an argument. Click him and confirm.",
+    "melichar": "Click the Vet twice and confirm.",
     "zle.1": "The Bus Driver already fears you in the orange; gossip somewhere else. The Vet, yellow and orange, for 3.",
     "inak": "The Vet, rumours to yellow and orange, for 1 + 2.",
     "sk": {
-      "melichar": "Hádku 3 minieš ty, na Štamgastov teplomer. Ten sa nebojí nikde, tak reči idú odspodu: Veterinárovi žltú a oranžovú, za 1 + 2. Veterinár ti potom dá 3, vyhráš či prehráš, kým neprehráš hádku. Klikni na neho a potvrď.",
+      "melichar": "Klikni dvakrát na Veterinára a potvrď.",
       "zle.1": "Autobusár sa ťa už bojí na oranžovej, ohováraj inde. Veterinár, žltá a oranžová, za 3.",
       "inak": "Veterinár, reči na žltú a oranžovú, za 1 + 2."
     }
   },
   "k-nakladacka3": {
-    "melichar": "I split the Thrashing of 7 for you, so we're not sitting here till morning. The Priest has feared you in the red since last round, so I captured him for 5 – he's your prisoner and he's sitting in the cellar. The Regular had no rumours at him, so he had nothing to hand over to you; his rumours at the Landlady and the Bus Driver dropped from the bottom after the lost argument and vanished. The Priest's ability – knocking one of your opponent's NA EX off a card – you may use once per game, whenever you like. The remaining 2: the Bus Driver from yellow to orange.",
+    "melichar": "I split the Thrashing of 7 for you, so we're not sitting here till morning. The Priest has feared you in the red since last round, so I captured him for 5 – he's your prisoner and he's sitting in the cellar. The Regular had no rumours at him, so he had nothing to hand over to you; his rumours at the Landlady and the Bus Driver dropped from the bottom after the lost argument and vanished. The Priest's ability – knocking one of your opponent's NA EX off a card – you may use once per game, whenever you like. The remaining 2: the Landlady from yellow to orange. Two prisoners in a short game like today's – and the next brawl you win is yours along with the whole game.",
     "sk": {
-      "melichar": "Nakladačku 7 som ti rozdelil ja, nech tu nesedíme do rána. Farár sa ťa bojí na červenej od minulého kola, tak som ho za 5 zajal – je tvoj väzeň a sedí v pivnici. Reči pri ňom Štamgast nemal, tak ti nemal čo dať; jeho reči pri Krčmárke a Autobusárovi po prehratej hádke klesli zospodu a zanikli. Farárovu schopnosť – zhodiť jedno súperovo NA EX z karty – smieš raz za hru použiť, kedy chceš. Zvyšné 2: Autobusár zo žltej na oranžovú."
+      "melichar": "Nakladačku 7 som ti rozdelil ja, nech tu nesedíme do rána. Farár sa ťa bojí na červenej od minulého kola, tak som ho za 5 zajal – je tvoj väzeň a sedí v pivnici. Reči pri ňom Štamgast nemal, tak ti nemal čo dať; jeho reči pri Krčmárke a Autobusárovi po prehratej hádke klesli zospodu a zanikli. Farárovu schopnosť – zhodiť jedno súperovo NA EX z karty – smieš raz za hru použiť, kedy chceš. Zvyšné 2: Krčmárka zo žltej na oranžovú. Dvaja väzni v krátkej hre ako dnešná – a ďalšia vyhratá bitka je tvoja aj s celou hrou."
     }
   },
   "i-po-bitke3": {
@@ -1116,9 +1092,15 @@
     }
   },
   "k-kup-finale": {
-    "melichar": "You start, one card: the Policewoman for a [Cigareta] cigarette. She has a [Obmedzenie] Restriction: when it's linked, your opponent gets one cigarette fewer in the Booze-up. Stinginess as a weapon. That I understand.",
+    "melichar": "You start, one card: the Policewoman for a [Cigareta] cigarette.",
     "sk": {
-      "melichar": "Začínaš ty, jednu kartu: Policajtku za [Cigareta] cigaretu. Má [Obmedzenie] Obmedzenie: keď je spojené, súper dostane v Pitke o jednu cigaretu menej. Lakomstvo ako zbraň. Tomu rozumiem."
+      "melichar": "Začínaš ty, jednu kartu: Policajtku za [Cigareta] cigaretu."
+    }
+  },
+  "i-policajtka": {
+    "melichar": "She has a [Obmedzenie] Restriction: when it's linked, your opponent gets one cigarette fewer in the Booze-up. Stinginess as a weapon. That I understand.",
+    "sk": {
+      "melichar": "Má [Obmedzenie] Obmedzenie: keď je spojené, súper dostane v Pitke o jednu cigaretu menej. Lakomstvo ako zbraň. Tomu rozumiem."
     }
   },
   "k-kup-finale-bot": {
@@ -1140,21 +1122,33 @@
     }
   },
   "k-pijan-finale": {
-    "melichar": "Put the Drunk against the villa. He links three of its actions: [Posilnenie] Boost, which doubles his [Poldeci] Shot, [Rana] Punch and [Dlh] Gamble. For the doubled Shot you get up to two extra shots refilled after every Booze-up. There'll be three booze-ups. 6 : 5, for now.",
+    "melichar": "Put the Drunk against the villa.",
     "sk": {
-      "melichar": "Polož Pijana k vile. Spojí tri jej akcie: [Posilnenie] Posilnenie, ktoré mu zdvojí [Poldeci] Poldeci, [Rana] Ranu a [Dlh] Hazard. Za zdvojené Poldeci sa ti po každej Pitke dolejú až dva poldeci navyše. Pitky budú tri. 6 : 5, zatiaľ."
+      "melichar": "Polož Pijana k vile."
+    }
+  },
+  "i-pijan-finale": {
+    "melichar": "He links three of its actions: [Posilnenie] Boost, which doubles his [Poldeci] Shot, [Rana] Punch and [Dlh] Gamble. For the doubled Shot you get up to two extra shots refilled after every Booze-up. There'll be three booze-ups. 6 : 5, for now.",
+    "sk": {
+      "melichar": "Spojí tri jej akcie: [Posilnenie] Posilnenie, ktoré mu zdvojí [Poldeci] Poldeci, [Rana] Ranu a [Dlh] Hazard. Za zdvojené Poldeci sa ti po každej Pitke dolejú až dva poldeci navyše. Pitky budú tri. 6 : 5, zatiaľ."
     }
   },
   "k-zh-finale-pas": {
-    "melichar": "Now pass (P), even though you're allowed two more cards. You get nothing for passing, but the Policewoman has a [Dlh] Gamble, and whatever lies on the table catches up with you in every Booze-up. You'll play the Butcher and the Policewoman in the next Assembly.",
+    "melichar": "Now pass (P), even though you're allowed two more cards: for two full [Poldeci] shots you draw two cards, and the shots stay.",
     "sk": {
-      "melichar": "Teraz pasuj (P), hoci smieš ešte dve karty. Za pas nič nedostaneš, ale Policajtka má [Dlh] Hazard, a čo leží na stole, ťa dobehne v každej Pitke. Mäsiara a Policajtku vyložíš v ďalšom Zhromaždení."
+      "melichar": "Teraz pasuj (P), hoci smieš ešte dve karty: za dva plné [Poldeci] poldeci si doberieš dve karty a poldeci ti ostanú."
+    }
+  },
+  "i-pas-finale": {
+    "melichar": "And the Policewoman has a [Dlh] Gamble, and whatever lies on the table catches up with you in every Booze-up. You'll play the Butcher and the Policewoman in the next Assembly.",
+    "sk": {
+      "melichar": "A Policajtka má [Dlh] Hazard, a čo leží na stole, ťa dobehne v každej Pitke. Mäsiara a Policajtku vyložíš v ďalšom Zhromaždení."
     }
   },
   "k-finale-p1": {
     "melichar": "Click End the Booze-up (K).",
     "sk": {
-      "melichar": "Klikni končím (K)."
+      "melichar": "Klikni Skončiť Pitku (K)."
     }
   },
   "k-finale-p1-bot": {
@@ -1170,11 +1164,17 @@
     }
   },
   "k-vypit-finale": {
-    "melichar": "Down one and put the Butcher after the Drunk and the Policewoman after him, in one turn. The Policewoman has Enemy: as long as the Regular's Crook – the Repeat Offender – lies in the line, she has an extra [Petelica] Haymaker. 13 : 5, for now. The Regular has no idea what's coming.",
+    "melichar": "Down one and put the Butcher after the Drunk and the Policewoman after him, in one turn.",
     "inak": "Down one, the Butcher after the Drunk, the Policewoman after him. One turn.",
     "sk": {
-      "melichar": "Vypi a polož Mäsiara za Pijana a Policajtku za neho, v jednom ťahu. Policajtka má Nepriateľa: kým leží v línii Štamgastov Kriminál – Recidivista –, má navyše [Petelica] Petelicu. 13 : 5, zatiaľ. Štamgast ešte nevie, čo ho čaká.",
+      "melichar": "Vypi a polož Mäsiara za Pijana a Policajtku za neho, v jednom ťahu.",
       "inak": "Vypi, Mäsiar za Pijana, Policajtka za neho. Jeden ťah."
+    }
+  },
+  "i-vypit-finale": {
+    "melichar": "The Policewoman has Enemy: as long as the Regular's Crook – the Repeat Offender – lies in the line, she has an extra [Petelica] Haymaker. 13 : 5, for now. The Regular has no idea what's coming.",
+    "sk": {
+      "melichar": "Policajtka má Nepriateľa: kým leží v línii Štamgastov Kriminál – Recidivista –, má navyše [Petelica] Petelicu. 13 : 5, zatiaľ. Štamgast ešte nevie, čo ho čaká."
     }
   },
   "k-finale-pas2": {
@@ -1190,9 +1190,9 @@
     }
   },
   "k-finale-p2": {
-    "melichar": "In came the Troof Teller; keep him. End the Booze-up (K).",
+    "melichar": "In came a Cirrhosis – it can't be confessed in the Booze-up, it stays in your hand. End the Booze-up (K).",
     "sk": {
-      "melichar": "Prišiel Praudovravec, toho si nechaj. Končím (K)."
+      "melichar": "Prišla Cirhóza – v Pitke sa nepriznáva, ostane ti v ruke. Skončiť Pitku (K)."
     }
   },
   "k-finale-p2-bot": {
@@ -1208,15 +1208,21 @@
     }
   },
   "k-naex-vytrznik": {
-    "melichar": "Pour your last NA EX on your own Drunk, the one by the villa. The Regular's aiming at him, I know him, and if he pours there too, it's a collision: the Drunk becomes a Hooligan and all his actions become your Punches.",
+    "melichar": "Pour your last NA EX on your own Drunk, the one by the villa.",
     "sk": {
-      "melichar": "Posledné NA EX daj na svojho Pijana, toho pri vile. Štamgast naň mieri, poznám ho, a keď tam dá aj on, je to zrážka: z Pijana bude Výtržník a všetky jeho akcie budú tvoje Rany."
+      "melichar": "Posledné NA EX daj na svojho Pijana, toho pri vile."
+    }
+  },
+  "i-vytrznik": {
+    "melichar": "The Regular's aiming at him, I know him, and if he pours there too, it's a collision: the Drunk becomes a Hooligan and all his actions become your Punches.",
+    "sk": {
+      "melichar": "Štamgast naň mieri, poznám ho, a keď tam dá aj on, je to zrážka: z Pijana bude Výtržník a všetky jeho akcie budú tvoje Rany."
     }
   },
   "k-finale-p3": {
     "melichar": "End the Booze-up (K). Keep your leftover full [Poldeci] shots; each one is a butt at the end of the game.",
     "sk": {
-      "melichar": "Končím (K). Zvyšné plné [Poldeci] poldeci si nechaj, každý je na konci hry špak."
+      "melichar": "Skončiť Pitku (K). Zvyšné plné [Poldeci] poldeci si nechaj, každý je na konci hry špak."
     }
   },
   "k-finale-p3-bot": {
@@ -1244,9 +1250,9 @@
     }
   },
   "i-bitka-finale": {
-    "melichar": "The finale is yours, 21 : 5. Butts: five for the cards in the line, and in the finale the Thrashing of 16 turns into butts one for one. The elders: the Vet 3 for rumours up to orange, the Bus Driver 3 for orange fear, the Landlady 1 for yellow; the bailiff took three off you, one off the Regular. In the finale there's no capturing and no persuading.",
+    "melichar": "The finale is yours, 21 : 5. Butts: five for the cards in the line, and in the finale the Thrashing of 16 turns into butts one for one. The elders: the Landlady 2 for orange fear; the Vet nothing for your rumours – he doesn't fear the Regular, so they wait. The bailiff took three off you, one off the Regular. In the finale there's no capturing.",
     "sk": {
-      "melichar": "Finále je tvoje, 21 : 5. Špaky: päť za karty v línii a Nakladačka 16 sa vo finále mení na špaky jedna ku jednej. Starší: Veterinár 3 za reči po oranžovú, Autobusár 3 za oranžový strach, Krčmárka 1 za žltý; exekútor ti zobral tri, Štamgastovi jeden. Vo finále sa nezajíma ani nepresviedča."
+      "melichar": "Finále je tvoje, 21 : 5. Špaky: päť za karty v línii a Nakladačka 16 sa vo finále mení na špaky jedna ku jednej. Starší: Krčmárka 2 za oranžový strach; Veterinár za tvoje reči nič – Štamgasta sa nebojí, tak čakajú. Exekútor ti zobral tri, Štamgastovi jeden. Vo finále sa nezajíma."
     }
   },
   "i-koniec": {
