@@ -3,10 +3,15 @@
 // prehliadača a router potrebuje window.
 
 import { useEffect, useRef } from "react";
+import { casti as CASTI_VYUCBY } from "@naex/core/data/vyucba/prva-hra.json";
 import { Odkaz } from "../lib/router.tsx";
 import { useUcet } from "../lib/ucet.tsx";
 import { t, tr } from "../i18n/jazyk.tsx";
+import { dlzkaVyucby } from "../stranky/dlzkaVyucby.ts";
 import { adresaVyucby, bezPrvejCasti, rozpracovana, useVyucbaUctu, type VyucbaUctu } from "./Vyucba.tsx";
+
+/** Sľub dĺžky ako na titulke — zo scenára, nie číslo v texte (inšpekcia 20261120-1324, V-21). */
+const dlzka = (): string => dlzkaVyucby(CASTI_VYUCBY);
 
 /** Banner hore na Pravidlách pre toho, kto ešte nemá 1. časť výučby (#104) — Pravidlá ostanú príručkou. */
 export function VyzvaVyucby() {
@@ -17,7 +22,7 @@ export function VyzvaVyucby() {
     <aside className="panel vyucba-vyzva" aria-label={t("vstup.aria")}>
       <img className="vyucba-avatar" src="/melichar.jpg" alt="" width={56} height={56} />
       <div>
-        <strong>{t("vstup.naucSa")}</strong>
+        <strong>{t("vstup.naucSa", { dlzka: dlzka() })}</strong>
         <span className="tlmene">{t("vstup.pravidlaText")}</span>
       </div>
       <Odkaz href={adresaVyucby(ja !== null)} className="tlacidlo tlacidlo-hlavne" data-vyucba-vstup="pravidla">
@@ -51,7 +56,7 @@ export function VyucbaVLobby({ vyucba, zacni }: { readonly vyucba: VyucbaUctu; r
     <section className={`panel vyucba-vstup${novacik ? " vyzva" : ""}`}>
       <img className="vyucba-avatar" src="/melichar.jpg" alt="" width={novacik ? 88 : 64} height={novacik ? 88 : 64} />
       <div>
-        <h2>{novacik ? t("vstup.naucSa") : t("vstup.prvaHra")}</h2>
+        <h2>{novacik ? t("vstup.naucSa", { dlzka: dlzka() }) : t("vstup.prvaHra")}</h2>
         <p className="tlmene">{popisVyucbyVLobby(vyucba)}</p>
         {novacik && (
           <p className="tlmene vyucba-vstup-pravidla">
@@ -90,7 +95,7 @@ export function PonukaVyucby({ vyucba, zacni, preskoc }: { readonly vyucba: Vyuc
       <div className="vyucba-ponuka panel">
         <img className="vyucba-avatar" src="/melichar.jpg" alt="" width={96} height={96} />
         <h2 id="vyucba-ponuka-nadpis">{t("vstup.najprv")}</h2>
-        <p>{t("vstup.najprvText")}</p>
+        <p>{t("vstup.najprvText", { dlzka: dlzka() })}</p>
         <div className="riadok-tlacidiel">
           <button ref={hlavne} className="tlacidlo-hlavne" onClick={zacni} data-vyucba-vstup="ponuka">
             {pokracuj ? t("vstup.pokracovat") : t("vstup.naucMa")}

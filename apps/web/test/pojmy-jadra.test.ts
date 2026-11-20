@@ -73,3 +73,18 @@ describe("titulka sľubuje dĺžku výučby zo scenára", () => {
     expect(dlzkaVyucby([{ minuty: 7 }, { minuty: 15 }, { minuty: 12 }])).toBe("tri časti, spolu asi 34 minút");
   });
 });
+
+describe("jeden sľub dĺžky výučby (inšpekcia 20261120-1324, V-21)", () => {
+  it("vstupy do výučby nemajú minúty v texte — dosadí sa dĺžka zo scenára ako na titulke, vo všetkých jazykoch", () => {
+    for (const j of ["sk", "en", "pl", "cs", "hu"]) {
+      const slovnik = JSON.parse(readFileSync(new URL(`../src/i18n/${j}.json`, import.meta.url), "utf8")) as Record<string, unknown>;
+      for (const k of ["vstup.naucSa", "vstup.najprvText"]) {
+        const text = String(slovnik[k]);
+        expect(text, `${j} ${k}`).toContain("{dlzka}");
+        expect(text, `${j} ${k}`).not.toMatch(/\d/);
+      }
+    }
+    const kod = readFileSync(new URL("../src/hra/VstupyVyucby.tsx", import.meta.url), "utf8");
+    expect(kod.match(/t\("vstup\.(naucSa|najprvText)"\)/g)).toBeNull();
+  });
+});
