@@ -183,7 +183,7 @@ export function Novinky() {
       <HlavaStranky
         nadpis={t("nav.novinky")}
         uvod={t("novinky.uvod")}
-        akcia={<Odkaz href="/vyvoj#roadmapa">{t("novinky.kamSmeruje")}</Odkaz>}
+        akcia={<Odkaz href="/vyvoj#roadmapa" className="tlacidlo">{t("novinky.kamSmeruje")}</Odkaz>}
       />
       <p className="len-citacka" aria-live="polite">
         {oznam}

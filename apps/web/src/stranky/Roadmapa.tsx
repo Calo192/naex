@@ -114,9 +114,12 @@ function Karta({
           <i aria-hidden="true" />
           {OBLASTI[p.oblast]}
         </span>
-        <span className="rm-narocnost" title={`náročnosť ${NAROCNOSTI[p.narocnost]}`}>
-          {p.narocnost}
-        </span>
+        {/* Náročnosť, zdroj a závislosti sú údaje pre správcu roadmapy — hráč ich nájde v detaile (W-21). */}
+        {upravuje && (
+          <span className="rm-narocnost" title={`náročnosť ${NAROCNOSTI[p.narocnost]}`}>
+            {p.narocnost}
+          </span>
+        )}
       </div>
       <h4>{p.nazov}</h4>
       {/* Text je skrátený na dva riadky — celý ukáže nápoveda (UI inšpekcia 20261026-1800, UI-5). */}
@@ -126,13 +129,13 @@ function Karta({
         </p>
       )}
       <div className="rm-stitky">
-        {p.zdroj !== null && (
+        {upravuje && p.zdroj !== null && (
           <span className={`rm-stitok zdroj-${p.zdroj.typ}`} title={p.zdroj.text}>
             {ZDROJE[p.zdroj.typ] ?? "Zdroj"}
           </span>
         )}
         {!hotova && <span className={`rm-stitok stav-${p.stav}`}>{STAVY[p.stav]}</span>}
-        {p.zavisi.length > 0 && !hotova && <span className="rm-stitok zavisi">↳ po {p.zavisi.length}</span>}
+        {upravuje && p.zavisi.length > 0 && !hotova && <span className="rm-stitok zavisi">↳ po {p.zavisi.length}</span>}
         {hotova && p.dokoncena !== null && <span className="rm-stitok">{datum(p.dokoncena)}</span>}
         {!p.verejna && <span className="rm-stitok">skrytá</span>}
       </div>
@@ -730,7 +733,7 @@ export function Roadmapa({ onPocty }: { readonly onPocty?: (p: PoctyRoadmapy) =>
                 <header className="rm-stlpec-hlava">
                   <h3 id={`rm-stlpec-${s.kluc}`}>
                     {s.nazov} <span className="rm-pocet">{vsetky.length}</span>
-                    {s.horizont !== "" && <span className="rm-horizont">{s.horizont}</span>}
+                    {data.upravuje && s.horizont !== "" && <span className="rm-horizont">{s.horizont}</span>}
                   </h3>
                   <p>{s.zamer}</p>
                 </header>

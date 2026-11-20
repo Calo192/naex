@@ -2616,7 +2616,7 @@
   "novinky.oznacene": "The news is marked as read.",
   "novinky.nicSaNezmenilo": "Nothing in the rules or the cards has changed since your last visit. You can go straight to playing.",
   "novinky.uvod": "What's changed in the game and on the website — rules, cards, looks and fixes. Newest at the top.",
-  "novinky.kamSmeruje": "Where the game is heading → Roadmap",
+  "novinky.kamSmeruje": "Roadmap →",
   "novinky.zatialNic": "Nothing here yet. The first news will turn up with the next change to the game.",
   "novinky.odkedy": "Since you were last here ({datum}) — know this before your next game:",
   "novinky.meniHru": "Changes the game · {n}",
@@ -2705,12 +2705,12 @@
   "vyvoj.splnene": " ✓ reached",
   "vyvoj.hodnotyStratega": "The strategist's values are from bot tournaments as of 21/10/2026; ratings and the number of people are counted live.",
   "vyvoj.titul": "Game development",
-  "vyvoj.nadpis": "Where the game is heading",
+  "vyvoj.nadpis": "Game development",
   "vyvoj.lenPrihlaseni": "Only logged-in players can see the Development page.",
   "vyvoj.prihlasitSa": "Log in",
   "vyvoj.rankNevidi": "Your rank can't see the Development page yet. What's changed in the game is in the {odkaz}.",
   "vyvoj.novinkach": "News",
-  "vyvoj.uvod": "NA EX! is still being tuned. Here you can see how players and AI playtesters rate the game over time, what's being worked on, what's done and what decisions are based on.",
+  "vyvoj.uvod": "How players rate the game, what's being worked on and what's done.",
   "vyvoj.casti": "Sections of the Development page",
   "vyvoj.sekcia.znamky": "Ratings",
   "vyvoj.sekcia.roadmapa": "Roadmap",
@@ -2811,14 +2811,6 @@
   "spatnaVazba.zverejneny": "Your opinion is published. Thanks — the creator will see it among the new ones.",
   "spatnaVazba.prvyNazor": "Write the first opinion",
   "spatnaVazba.uvod": "What works, what doesn't and what you'd change. The creator marks what he'll do with each opinion.",
-  "spatnaVazba.nazorov": {
-    "1": "{n} opinion",
-    "5": "{n} opinions"
-  },
-  "spatnaVazba.hotovych": {
-    "1": "{n} done",
-    "5": "{n} done"
-  },
   "spatnaVazba.napisatNazorTlacidlo": "✎ Write your opinion",
   "spatnaVazba.rankCita": "Your rank can only read the feedback for now — you can write after your first finished game.",
   "spatnaVazba.stavNazorov": "Status of opinions",

@@ -2616,7 +2616,7 @@
   "novinky.oznacene": "Az újdonságok olvasottnak jelölve.",
   "novinky.nicSaNezmenilo": "Legutóbbi látogatásod óta sem a szabályok, sem a kártyák nem változtak. Mehetsz egyenesen játszani.",
   "novinky.uvod": "Mi változott a játékban és a weben — szabályok, kártyák, kinézet és javítások. A legfrissebb felül.",
-  "novinky.kamSmeruje": "Merre tart a játék → Ütemterv",
+  "novinky.kamSmeruje": "Ütemterv →",
   "novinky.zatialNic": "Itt még nincs semmi. Az első újdonságok a játék legközelebbi változásával érkeznek.",
   "novinky.odkedy": "Amióta nem jártál itt ({datum}) — a következő játszma előtt tudd:",
   "novinky.meniHru": "Játékot érint · {n}",
@@ -2705,12 +2705,12 @@
   "vyvoj.splnene": " ✓ teljesült",
   "vyvoj.hodnotyStratega": "A stratéga értékei a 2026. 10. 21-i botversenyekből származnak; az osztályzatokat és az emberek számát élőben számoljuk.",
   "vyvoj.titul": "Fejlesztés",
-  "vyvoj.nadpis": "Merre tart a játék",
+  "vyvoj.nadpis": "A játék fejlesztése",
   "vyvoj.lenPrihlaseni": "A Fejlesztés oldalt csak bejelentkezett játékosok látják.",
   "vyvoj.prihlasitSa": "Bejelentkezés",
   "vyvoj.rankNevidi": "A Fejlesztés oldalt a rangoddal még nem láthatod. Hogy mi változott a játékban, azt az {odkaz} találod.",
   "vyvoj.novinkach": "Újdonságokban",
-  "vyvoj.uvod": "A NA EX! még csiszolódik. Itt látszik, hogyan értékelik a játékot a játékosok és az AI playtesterek időben, min dolgozunk, mi van kész, és mi alapján döntünk.",
+  "vyvoj.uvod": "Hogyan értékelik a játékosok a játékot, min dolgozunk és mi van kész.",
   "vyvoj.casti": "A Fejlesztés oldal részei",
   "vyvoj.sekcia.znamky": "Osztályzatok",
   "vyvoj.sekcia.roadmapa": "Ütemterv",
@@ -2811,14 +2811,6 @@
   "spatnaVazba.zverejneny": "A vélemény megjelent. Köszönjük — az alkotó látni fogja az újak között.",
   "spatnaVazba.prvyNazor": "Az első vélemény megírása",
   "spatnaVazba.uvod": "Mi működik, mi nem, és min változtatnál. Az alkotó minden véleménynél jelzi, mit kezd vele.",
-  "spatnaVazba.nazorov": {
-    "1": "{n} vélemény",
-    "5": "{n} vélemény"
-  },
-  "spatnaVazba.hotovych": {
-    "1": "{n} kész",
-    "5": "{n} kész"
-  },
   "spatnaVazba.napisatNazorTlacidlo": "✎ Vélemény írása",
   "spatnaVazba.rankCita": "A rangoddal a visszajelzéseket egyelőre csak olvashatod — írni az első befejezett játszma után tudsz.",
   "spatnaVazba.stavNazorov": "A vélemények állapota",
