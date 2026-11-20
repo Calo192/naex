@@ -1118,6 +1118,52 @@ button.sprava-tlacidlo {
   font-size: 0.92rem;
 }
 
+/* Registrácia v dvoch stĺpcoch (UI inšpekcia W-01): pri 1366×650 je celá nad zlomom a chyba pri tlačidle. */
+.formular-siroky {
+  max-width: 760px;
+}
+
+.registracia {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  column-gap: 24px;
+}
+
+/* Tlačidlo v rade s poľom e-mailu a pod ním „Už máš účet?“ (v rade s pomocou poľa) — aj pri 1366×650
+   nad zlomom. Chyba nad tlačidlom rastie nahor, kde je miesto po nadpise poľa. */
+.registracia-odoslat {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding-bottom: 1rem;
+}
+
+.registracia-odoslat .hlaska {
+  margin: 0;
+}
+
+.registracia-prihlas {
+  margin: 0.35rem 0 0;
+  text-align: center;
+  font-size: 0.82rem;
+  line-height: 1.5;
+  color: var(--tlmeny);
+}
+
+.registracia input[aria-invalid="true"] {
+  border-color: color-mix(in oklab, var(--cervena-svetla) 70%, var(--plocha-2));
+}
+
+@media (max-width: 700px) {
+  .registracia {
+    grid-template-columns: 1fr;
+  }
+
+  .registracia-odoslat {
+    padding-bottom: 0;
+  }
+}
+
 .prihlasenie-zabudol {
   margin: 0.8rem 0 0;
   text-align: center;

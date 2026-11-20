@@ -113,6 +113,14 @@ function Lobby({
   const preco = zavrete ? uzavierka : undefined;
   // Nováčikovi bez 1. časti je hlavnou výzvou výučba (#104) — založenie hry je druhoradé.
   const hlavneZalozenie = !zavrete && !(vyucba !== null && !vyucbaNaPocitaci && bezPrvejCasti(true, vyucba));
+  // Rovno z registrácie (W-02): raz povie, kde sú nastavenia; po obnovení stránky už nie.
+  const [novyUcet] = useState(() => new URLSearchParams(location.search).get("novy") === "1");
+  useEffect(() => {
+    if (!novyUcet) return;
+    const zvysok = new URLSearchParams(location.search);
+    zvysok.delete("novy");
+    history.replaceState(null, "", zvysok.size > 0 ? `/hra?${zvysok}` : "/hra");
+  }, [novyUcet]);
 
   useEffect(() => {
     let zive = true;
@@ -142,6 +150,7 @@ function Lobby({
   return (
     <>
       <HlavaStranky nadpis={t("lobby.nadpis")} uvod={t("lobby.uvod")} />
+      {novyUcet && <Hlaska druh="ok">{tr("lobby.novyUcet", { odkaz: <Odkaz href="/profil">{t("lobby.novyUcetOdkaz")}</Odkaz> })}</Hlaska>}
       <VolbaZrejucej tvar="panel" />
       {uzavierka !== null && <Hlaska druh="info">{uzavierka}</Hlaska>}
       {chyba !== null && chyba !== uzavierka && <Hlaska>{chyba}</Hlaska>}

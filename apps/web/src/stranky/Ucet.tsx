@@ -4,7 +4,7 @@ import { useEffect, useRef, useState, type FormEvent } from "react";
 import { api, mediaUrl, textChyby } from "../lib/api.ts";
 import { nacitajObrazok, stvorec } from "../lib/obrazky.ts";
 import { Odkaz, chod, useTitulok } from "../lib/router.tsx";
-import { navratZ } from "../lib/navrat.ts";
+import { navratZ, poRegistracii } from "../lib/navrat.ts";
 import { prepniInstanciu } from "../lib/instancia.ts";
 import {
   HUDBA_PREDVOLENA,
@@ -20,6 +20,7 @@ import {
 } from "../lib/ucet.tsx";
 import { Avatar, Hlaska, Pole, type SpravaHlasky } from "../komponenty.tsx";
 import { HlavaStranky } from "../HlavaStranky.tsx";
+import { ADRESA_VYUCBY } from "../hra/Vyucba.tsx";
 import type { Pohlavie } from "@naex/core";
 import { hlasitostZvuku, nacitajSkladby, urlSkladby } from "../hra/Hudba.tsx";
 import { nacitajHlasky, urlHlasky } from "../hra/Melichar.tsx";
@@ -42,7 +43,7 @@ const volbyPohlavia = (meno: string): readonly { readonly id: Pohlavie | null; r
  * bezPrava = prihlásený vo Vypálenej, ale Zrejúcu hrať nesmie — formulár netreba.
  */
 export function Prihlasenie({ zrejuca = null }: { readonly zrejuca?: { readonly bezPrava: boolean } | null } = {}) {
-  useTitulok(zrejuca === null ? t("ucet.prihlasenie") : t("ucet.zrejuca"));
+  useTitulok(zrejuca === null ? t("ucet.prihlasitSa") : t("ucet.zrejuca"));
   const { nastav } = useUcet();
   const [login, setLogin] = useState("");
   const [heslo, setHeslo] = useState("");
@@ -113,7 +114,7 @@ export function Prihlasenie({ zrejuca = null }: { readonly zrejuca?: { readonly 
       </form>
       {zrejuca === null ? (
         <p className="formular-paticka">
-          {tr("ucet.nemasUcet", { odkaz: <Odkaz href={`/registracia${location.search}`}>{t("ucet.zaregistrujSa")}</Odkaz> })}
+          {tr("ucet.nemasUcet", { odkaz: <Odkaz href={`/registracia${location.search}`}>{t("ucet.vytvoritUcet")}</Odkaz> })}
         </p>
       ) : (
         <p className="formular-paticka">
@@ -132,14 +133,19 @@ export function Prihlasenie({ zrejuca = null }: { readonly zrejuca?: { readonly 
 }
 
 export function Registracia() {
-  useTitulok(t("ucet.registracia"));
+  useTitulok(t("ucet.vytvoritUcet"));
   const { nastav } = useUcet();
   const [login, setLogin] = useState("");
   const [meno, setMeno] = useState("");
   const [heslo, setHeslo] = useState("");
   const [heslo2, setHeslo2] = useState("");
+  const [email, setEmail] = useState("");
   const [chyba, setChyba] = useState<string | null>(null);
   const [caka, setCaka] = useState(false);
+  // Účet vznikol, ale e-mail (ukladá ho až profil) server odmietol — hráč to musí vidieť, kým pokračuje.
+  const [chybaEmailu, setChybaEmailu] = useState<string | null>(null);
+  const navrat = navratZ(location.search);
+  const dalej = poRegistracii(location.search);
 
   const odosli = async (e: FormEvent) => {
     e.preventDefault();
@@ -152,8 +158,16 @@ export function Registracia() {
     try {
       const r = await api.post<{ pouzivatel: Pouzivatel }>("/registracia", { login, heslo, meno: meno.trim() || login });
       nastav(r.pouzivatel);
-      // S návratom (pozvánka do miestnosti) rovno späť, inak nováčik začína profilom.
-      chod(navratZ(location.search) ?? "/profil?novy=1", true);
+      if (email.trim() !== "") {
+        try {
+          const p = await api.patch<{ pouzivatel: Pouzivatel }>("/profil", { email: email.trim() });
+          nastav(p.pouzivatel);
+        } catch (err) {
+          setChybaEmailu(textChyby(err));
+          return;
+        }
+      }
+      chod(dalej, true);
     } catch (err) {
       setChyba(textChyby(err));
     } finally {
@@ -161,12 +175,27 @@ export function Registracia() {
     }
   };
 
+  if (chybaEmailu !== null) {
+    return (
+      <>
+        <HlavaStranky nadpis={t("ucet.vytvoritUcet")} />
+        <div className="formular-stred panel">
+          <Hlaska>{t("ucet.emailNeulozeny", { chyba: chybaEmailu })}</Hlaska>
+          <button type="button" className="tlacidlo-hlavne" onClick={() => chod(dalej, true)}>
+            {t("ucet.pokracovat")}
+          </button>
+        </div>
+      </>
+    );
+  }
+
+  const nezhoda = chyba !== null && heslo !== heslo2;
   return (
     <>
-    <HlavaStranky nadpis={t("ucet.novyUcet")} uvod={t("ucet.novyUcetUvod")} />
-    <div className="formular-stred">
-      <form className="panel" onSubmit={(e) => void odosli(e)}>
-        {chyba !== null && <Hlaska>{chyba}</Hlaska>}
+    <HlavaStranky nadpis={t("ucet.vytvoritUcet")} uvod={navrat === ADRESA_VYUCBY ? t("ucet.novyUcetVyucba") : t("ucet.novyUcetUvod")} />
+    {/* Dva stĺpce: celý formulár aj s tlačidlom je nad zlomom aj pri 1366×650 a hláška stojí pri tlačidle (W-01). */}
+    <div className="formular-stred formular-siroky">
+      <form className="panel registracia" onSubmit={(e) => void odosli(e)}>
         <Pole label={t("ucet.login")} pomoc={t("ucet.loginPomoc")}>
           <input
             autoComplete="username"
@@ -184,15 +213,38 @@ export function Registracia() {
           <input type="password" autoComplete="new-password" value={heslo} onChange={(e) => setHeslo(e.target.value)} minLength={8} required />
         </Pole>
         <Pole label={t("ucet.hesloZnova")}>
-          <input type="password" autoComplete="new-password" value={heslo2} onChange={(e) => setHeslo2(e.target.value)} minLength={8} required />
+          <input
+            type="password"
+            autoComplete="new-password"
+            value={heslo2}
+            onChange={(e) => setHeslo2(e.target.value)}
+            minLength={8}
+            required
+            aria-invalid={nezhoda || undefined}
+          />
         </Pole>
-        <button type="submit" className="tlacidlo-hlavne" disabled={caka}>
-          {caka ? t("ucet.vytvaram") : t("ucet.vytvoritUcet")}
-        </button>
+        {/* Bez e-mailu sa zabudnuté heslo neobnoví (W-24); nepovinné, uloží ho profil hneď po registrácii. */}
+        <Pole label={t("ucet.emailNepovinny")} pomoc={t("ucet.emailPomoc")}>
+          <input
+            type="email"
+            autoComplete="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            maxLength={254}
+            pattern="[^\s@]+@[^\s@]+\.[^\s@]{2,}"
+            placeholder={t("ucet.emailPriklad")}
+          />
+        </Pole>
+        <div className="registracia-odoslat">
+          {chyba !== null && <Hlaska>{chyba}</Hlaska>}
+          <button type="submit" className="tlacidlo-hlavne" disabled={caka}>
+            {caka ? t("ucet.vytvaram") : t("ucet.vytvoritUcet")}
+          </button>
+          <p className="registracia-prihlas">
+            {tr("ucet.uzMasUcet", { odkaz: <Odkaz href={`/prihlasenie${location.search}`}>{t("ucet.prihlasitSa")}</Odkaz> })}
+          </p>
+        </div>
       </form>
-      <p className="formular-paticka">
-        {tr("ucet.uzMasUcet", { odkaz: <Odkaz href={`/prihlasenie${location.search}`}>{t("ucet.prihlasSa")}</Odkaz> })}
-      </p>
     </div>
     </>
   );

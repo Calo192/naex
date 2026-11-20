@@ -86,9 +86,12 @@ export function bezPrvejCasti(prihlaseny: boolean, v: VyucbaUctu | null): boolea
   return v !== null && v.dostupna && v.castiHotove === 0;
 }
 
-const ADRESA_VYUCBY = "/hra?vyucba=1";
-/** Odkaz, ktorý výučbu rovno spustí — odhláseného najprv prihlási a vráti k nej. */
-export const adresaVyucby = (prihlaseny: boolean): string => (prihlaseny ? ADRESA_VYUCBY : `/prihlasenie?spat=${encodeURIComponent(ADRESA_VYUCBY)}`);
+export const ADRESA_VYUCBY = "/hra?vyucba=1";
+/**
+ * Odkaz, ktorý výučbu rovno spustí. Odhlásený je nováčik (bezPrvejCasti), preto ide na registráciu,
+ * nie na „Vitaj späť“ (UI inšpekcia W-03), a po nej rovno k výučbe; kto účet má, prihlási sa odtiaľ.
+ */
+export const adresaVyucby = (prihlaseny: boolean): string => (prihlaseny ? ADRESA_VYUCBY : `/registracia?spat=${encodeURIComponent(ADRESA_VYUCBY)}`);
 
 /** Nápis hlavného tlačidla výučby pre nováčika. */
 export const napisVyucby = (v: VyucbaUctu | null): string => (v !== null && rozpracovana(v) ? t("vyucba.pokracovatVoVyucbe") : t("vyucba.naucSaHrat"));
