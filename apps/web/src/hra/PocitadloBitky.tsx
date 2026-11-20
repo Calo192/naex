@@ -183,7 +183,7 @@ export function PocitadloBitky({ p, ja, mena, menoKarty, rad, onKoniec, vysledok
             <span className="pocitadlo-dvojbodka">:</span>
             <b className={`su${(hotovo || vysledokHned) && vitaz === su ? " vyhra" : ""}`}>{cislo[su]}</b>
           </span>
-          <span className="pocitadlo-mena">ty · {mena[su]}</span>
+          {/* Mená sú v hlavičke tabuľky (Z-09). */}
         </div>
         <div className="pocitadlo-rad">
           {rad.map(({ uid, karta, poVysledku }) => {
@@ -239,8 +239,9 @@ export function PocitadloBitky({ p, ja, mena, menoKarty, rad, onKoniec, vysledok
               ))}
             </span>
           )}
+          {/* Výsledok je v skóre hlavičky — verdikt „Prehrávaš o N“ ho len opakoval (Z-09); bez tabuľky ostáva. */}
           <div className="pocitadlo-koniec">
-            {(hotovo || vysledokHned) && (
+            {(hotovo || vysledokHned) && (rekap === null || piktogramy === undefined) && (
               <span className="pocitadlo-verdikt">
                 {verdikt}
               </span>
@@ -251,7 +252,7 @@ export function PocitadloBitky({ p, ja, mena, menoKarty, rad, onKoniec, vysledok
               </button>
             )}
           </div>
-          <span className="pocitadlo-tip">{hotovo ? t("pocitadlo.tipZavrie") : t("pocitadlo.tipDobehne")}</span>
+          {!hotovo && <span className="pocitadlo-tip">{t("pocitadlo.tipDobehne")}</span>}
         </div>
       </div>
     </div>

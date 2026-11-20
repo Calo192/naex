@@ -752,12 +752,16 @@ export function RekapBitky({ r, ja, menoSupera, menoKarty, piktogramy, vlna, hot
                 ["pecen", "PoškodeniePečene", t("tabula.pecenMale"), t("rekap.poskodenie"), pitky.pecen, pitky.cirhozy, t("rekap.cirhoz")],
               ] as const
             ).map(([kluc, akcia, meno, pod, hodnoty, karty, coKarty]) => {
+              // Riadok bez hodnoty a čipy „→ 0“ sa nekreslia (Z-09).
+              if (hodnoty[0] + hodnoty[1] + karty[0] + karty[1] === 0) return null;
               const m = Math.max(1, hodnoty[0], hodnoty[1]);
               const strana = (s: Strana, kto: PlayerId): ReactNode => (
                 <Hodnota strana={s} n={hodnoty[kto]} max={m}>
-                  <Cip trieda={karty[kto] > 0 ? "zisk" : "nic"} title={t("rekap.zaKolo", { n: karty[kto], co: coKarty })}>
-                    → {karty[kto]} <KartaKliatby ikona={ikona(akcia)} />
-                  </Cip>
+                  {karty[kto] > 0 && (
+                    <Cip trieda="zisk" title={t("rekap.zaKolo", { n: karty[kto], co: coKarty })}>
+                      → {karty[kto]} <KartaKliatby ikona={ikona(akcia)} />
+                    </Cip>
+                  )}
                 </Hodnota>
               );
               return (
@@ -883,15 +887,9 @@ export function VysledokBitky({ r, ja, mena, vyhraStrachom = null }: { readonly 
 
 /** Tuhé poškodenie a komu ide Nakladačka (PRAVIDLA §9.4; od v8.3 Povery poškodenie nedávajú). */
 function SucetBitky({ r, ja, menoSupera }: { readonly r: RekapitulaciaBitky; readonly ja: PlayerId; readonly menoSupera: string }) {
-  const su = opponentOf(ja);
-  const cast = (kto: PlayerId): ReactNode => (
-    <span className={kto === ja ? "ja" : "su"}>
-      <b>{r.tuheSpolu[kto]}</b>
-    </span>
-  );
   return (
     <div className="rk-sucet">
-      {t("rekap.tuhe")} {cast(ja)} : {cast(su)}
+      {/* Skóre je v hlavičke počítadla (Z-09) — tu len komu ide Nakladačka. */}
       <span>
         {r.prebytokDrzi === null ? t("rekap.sucetNikto") : t("rekap.sucetNakladacka", { n: r.prebytok, kto: r.prebytokDrzi === ja ? t("stol.ty") : menoSupera })}
       </span>
