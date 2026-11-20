@@ -5548,7 +5548,9 @@ export function HernaPlocha({
   const tieneSenku = zobrateZoSenku.filter((z) => z.hrac === super_);
   const tienSenku = (z: ZobrataVerejne, sirka: number): ReactNode => {
     const uid = UID_TIENA - z.miesto;
-    const kto = `${tRod("plocha.vzal", rodHracaP(super_))} ${menoHraca(super_)}`;
+    // Štítok menom z pultu (S-12); bot bez slova „Bot“ nemá v dátach rod — neutrálny tvar („má Darina“).
+    const rodStitku = rodHracaP(super_);
+    const kto = `${tRod("plocha.vzal", rodStitku === "bot" ? null : rodStitku)} ${menoNaPulte(hraci[super_], super_)}`;
     return sLupou(
       { karta: { uid, ...z.karta }, sirka },
       {
@@ -7172,6 +7174,7 @@ export function HernaPlocha({
           r={vrstvaVyhodnotenia.r}
           ja={ja}
           mena={[menoHraca(0), menoHraca(1)]}
+          menoSuperaNaPulte={menoNaPulte(hraci[super_], super_)}
           nadpis={vrstvaVyhodnotenia.nadpis}
           menoKarty={menoKarty}
           piktogramy={piktogramyRekapitulacie}
@@ -7226,6 +7229,7 @@ export function HernaPlocha({
           vrstva={pocitadlo}
           ja={ja}
           mena={[menoHraca(0), menoHraca(1)]}
+          menoSuperaNaPulte={menoNaPulte(hraci[super_], super_)}
           karta={karta}
           menoKarty={menoKarty}
           piktogramy={piktogramyRekapitulacie}

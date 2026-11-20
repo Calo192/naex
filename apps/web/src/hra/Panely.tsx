@@ -588,24 +588,32 @@ export function HracDoska({
           />
           {spojenie !== undefined && !spojenie.pripojeny && <span className="doska-odpojeny">○ {t("panel.odpojeny")} {minSek(odpojenyMs)}</span>}
           {/* Nepriznané kliatby pod menom; priznané a Dedičstvo sú v dlaždici KARTY (Michal 2026-10-23, #76). */}
-          {((view.pata === undefined && kliatby.cirhoza > 0) || zavislost.abstaky > 0) && (
-            <span className="doska-oblast">
-              <span
-                className="cip kliatba"
-                title={
-                  view.pata !== undefined
-                    ? t("panel.abstakNepriznat")
-                    : (ja
-                    ? t("panel.nepriznaneJa", { spaky: spakov(KONSTANTY.SPAKY_ZA_CIRHOZU) })
-                    : t("panel.nepriznaneSu", { spaky: spakov(KONSTANTY.SPAKY_ZA_CIRHOZU) })) +
-                  (zavislost.abstaky > 0 ? ` ${t("panel.abstakNepriznat")}` : "")
-                }
-              >
-                {t("panel.nepriznane")}{view.pata === undefined && kliatby.cirhoza > 0 && ` · ${t("panel.cirhozaKrat", { n: kliatby.cirhoza })}`}
-                {zavislost.abstaky > 0 && ` · ${t("panel.abstakKrat", { n: zavislost.abstaky })}`}
+          {((view.pata === undefined && kliatby.cirhoza > 0) || zavislost.abstaky > 0) && (() => {
+            const casti = [
+              ...(view.pata === undefined && kliatby.cirhoza > 0 ? [t("panel.cirhozaKrat", { n: kliatby.cirhoza })] : []),
+              ...(zavislost.abstaky > 0 ? [t("panel.abstakKrat", { n: zavislost.abstaky })] : []),
+            ];
+            const cely = [t("panel.nepriznane"), ...casti].join(" · ");
+            return (
+              <span className="doska-oblast">
+                <span
+                  className="cip kliatba"
+                  title={
+                    `${cely}. ` +
+                    (view.pata !== undefined
+                      ? t("panel.abstakNepriznat")
+                      : (ja
+                      ? t("panel.nepriznaneJa", { spaky: spakov(KONSTANTY.SPAKY_ZA_CIRHOZU) })
+                      : t("panel.nepriznaneSu", { spaky: spakov(KONSTANTY.SPAKY_ZA_CIRHOZU) })) +
+                    (zavislost.abstaky > 0 ? ` ${t("panel.abstakNepriznat")}` : ""))
+                  }
+                >
+                  {/* Obe kliatby naraz sa s „nepriznané“ nezmestili a počet zjedla trojbodka — slovo je v titulku. */}
+                  {casti.length > 1 ? casti.join(" · ") : cely}
+                </span>
               </span>
-            </span>
-          )}
+            );
+          })()}
         </div>
       </div>
 
