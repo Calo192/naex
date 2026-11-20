@@ -73,13 +73,13 @@ describe("medziobrazovka s lokalitou súpera", () => {
     expect(h).toContain("medziobrazovka-caka");
     expect(h).toContain("ls-lokalita");
     // Profil vypína len medziobrazovky fáz, lokalitu súpera nie.
-    expect(h).not.toContain("Vypnúť ich môžeš v profile");
+    expect(h).not.toContain("Vypnúť ich môžeš v nastaveniach");
   });
 
   it("medziobrazovka fázy bez oneskorenia má „Rozumiem“ hneď", () => {
     const h = html();
     expect(h).toContain("Rozumiem");
     expect(h).not.toContain("medziobrazovka-caka");
-    expect(h).toContain("Vypnúť ich môžeš v profile");
+    expect(h).toContain("Vypnúť ich môžeš v nastaveniach");
   });
 });

@@ -276,7 +276,6 @@ export function Profil({ cesta = "/profil" }: { readonly cesta?: string }) {
   const [stare, setStare] = useState("");
   const [nove, setNove] = useState("");
   const subor = useRef<HTMLInputElement>(null);
-  const novy = new URLSearchParams(location.search).get("novy") === "1";
   const obnovene = new URLSearchParams(location.search).get("obnovene") === "1";
   const [email, setEmail] = useState(ja?.email ?? "");
 
@@ -534,7 +533,6 @@ export function Profil({ cesta = "/profil" }: { readonly cesta?: string }) {
           </Odkaz>
         ))}
       </nav>
-      {novy && <Hlaska druh="ok">{t("profil.novy")}</Hlaska>}
       {obnovene && <Hlaska druh="ok">{t("profil.obnovene")}</Hlaska>}
       {sprava !== null && <Hlaska druh={sprava.druh}>{sprava.text}</Hlaska>}
 

@@ -1449,7 +1449,7 @@ export function HernaPlocha({
    */
   const textDopadov = (d: readonly [DopadyNahladu, DopadyNahladu]): string | null => {
     const znak = (n: number): string => `${n > 0 ? "+" : "−"}${Math.abs(n)}`;
-    const kto = (p: PlayerId): string => (p === ja ? t("stol.ty") : menoHraca(super_));
+    const kto = (p: PlayerId): string => menoNaStole(p);
     const hraci = [ja, super_] as const;
     const casti: string[] = [];
     const cig = hraci.filter((p) => d[p].cigarety !== 0).map((p) => `${kto(p)} ${znak(d[p].cigarety)}`);
@@ -3111,7 +3111,7 @@ export function HernaPlocha({
       <span className="nahlad-spojov">
         {tahanie !== null && vystrahaTahania !== null && <strong className="pecen-varovanie">{textVystrahy(vystrahaTahania, tahanie.zdroj.karta)} · </strong>}
         <strong>{menoKarty(tahanie?.zdroj.karta.defId ?? "")}</strong> → {POPIS_CIELA[nahladTahania.ciel]} · {textSpoja(nahladTahania.n)} · ty:{" "}
-        {textZmienVylozenia(nahladTahania.n, ja)} · {menoHraca(super_)}: {textZmienVylozenia(nahladTahania.n, super_)}
+        {textZmienVylozenia(nahladTahania.n, ja)} · {menoNaStole(super_)}: {textZmienVylozenia(nahladTahania.n, super_)}
       </span>
     );
 
@@ -3368,7 +3368,7 @@ export function HernaPlocha({
           <span className={n.pary.length > 0 ? "nm-spoj" : "nm-bez"}>{textSpoja(n)}</span>
           <span>{t("stol.ty")}: {textZmienVylozenia(n, ja)}</span>
           <span className="nm-super">
-            {menoHraca(super_)}: {textZmienVylozenia(n, super_)}
+            {menoNaStole(super_)}: {textZmienVylozenia(n, super_)}
           </span>
           {varovaniePoldeci}
         </span>
@@ -3527,7 +3527,7 @@ export function HernaPlocha({
   const krajStrany = (p: PlayerId): string | null => kraje[p];
   // Prevaha: akcie hrany dostane, kto má v kraji viac svojich Občanov, Zvierat a Starešinov.
   const prevaha = prevahaStran(data, stol.strany);
-  const kto = (p: PlayerId | null): string => (p === null ? t("stol.nikto") : p === ja ? t("stol.ty") : menoHraca(p));
+  const kto = (p: PlayerId | null): string => (p === null ? t("stol.nikto") : menoNaStole(p));
   const tipKraja = (p: PlayerId): string => t("stol.tipKraja", { kto: kto(prevaha[p]) });
   // Rovnosť a prebitie (návrh 5 A): hráči čítali „majiteľ karty pri lokalite“
   // ako majiteľa lokality a nevedeli, koľko kariet treba na prebratie hrany.
@@ -4593,7 +4593,7 @@ export function HernaPlocha({
               {nahladSpojov !== null && (
                 <span className="nahlad-spojov">
                   {nahladSpojov.ja !== t("plocha.bezZmeny") && <> · {t("stol.ty")}: {nahladSpojov.ja}</>}
-                  {nahladSpojov.su !== t("plocha.bezZmeny") && <> · {menoHraca(super_)}: {nahladSpojov.su}</>}
+                  {nahladSpojov.su !== t("plocha.bezZmeny") && <> · {menoNaStole(super_)}: {nahladSpojov.su}</>}
                 </span>
               )}
               {textNahladuTahania !== null && <> · {textNahladuTahania}</>}
@@ -4603,7 +4603,7 @@ export function HernaPlocha({
           vyklad: [
             vylozenia.map((x) => `${menoKarty(x.karta.defId)} → ${POPIS_CIELA[x.ciel]}`).join(" · "),
             plan.poldeci > 0 ? `${t("plocha.tahStoji", { n: plan.poldeci, z: zostava, na: plan.zostava })}.` : null,
-            nahladSpojov !== null ? `${nahladSpojov.spoj} · ${t("stol.ty")}: ${nahladSpojov.ja} · ${menoHraca(super_)}: ${nahladSpojov.su}` : null,
+            nahladSpojov !== null ? `${nahladSpojov.spoj} · ${t("stol.ty")}: ${nahladSpojov.ja} · ${menoNaStole(super_)}: ${nahladSpojov.su}` : null,
           ]
             .filter((x): x is string => x !== null && x !== "")
             .join(" · "),
