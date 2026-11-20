@@ -505,20 +505,20 @@ export function Hra() {
   if (nepodporovane !== null && !(nepodporovane === "rank" && ja === null)) return <NepodporovaneZariadenie dovod={nepodporovane} />;
   if (ja === null) {
     // Pozvánka /hra?kod=ABCD: po prihlásení aj registrácii späť s kódom — efekt vyššie hráča pripojí.
-    // Bez pozvánky začína nový účet profilom ako doteraz.
+    // Pozvaný účet spravidla nemá — stránka povie, že ide o pozvánku, a hlavné je vytvoriť účet (W-04).
     const cesta = location.pathname + location.search;
-    const pozvanka = new URLSearchParams(location.search).get("kod") !== null;
+    const kod = new URLSearchParams(location.search).get("kod");
     return (
       <HlavaStranky
-        nadpis={t("lobby.prihlaseni")}
-        uvod={t("lobby.prihlaseniUvod")}
+        nadpis={kod !== null ? t("lobby.pozvanka", { kod: kod.toUpperCase().slice(0, 8) }) : t("lobby.prihlaseni")}
+        uvod={kod !== null ? t("lobby.pozvankaUvod") : t("lobby.prihlaseniUvod")}
         akcia={
           <>
-            <Odkaz href={pozvanka ? sNavratom("/registracia", cesta) : "/registracia"} className="tlacidlo">
-              {t("lobby.vytvoritUcet")}
+            <Odkaz href={sNavratom("/prihlasenie", cesta)} className="tlacidlo">
+              {t("ucet.prihlasitSa")}
             </Odkaz>
-            <Odkaz href={sNavratom("/prihlasenie", cesta)} className="tlacidlo tlacidlo-hlavne">
-              {t("lobby.prihlasitSa")}
+            <Odkaz href={kod !== null ? sNavratom("/registracia", cesta) : "/registracia"} className="tlacidlo tlacidlo-hlavne">
+              {t("ucet.vytvoritUcet")}
             </Odkaz>
           </>
         }
