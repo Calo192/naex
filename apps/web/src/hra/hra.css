@@ -72,8 +72,8 @@
   padding: 0;
   overflow-x: auto;
   scrollbar-width: none;
-  /* Okraje osi jemne miznú — vidno, že pokračuje (UI N1c). */
-  mask-image: linear-gradient(90deg, transparent 0, #000 14px, #000 calc(100% - 14px), transparent 100%);
+  /* Pravý okraj osi jemne mizne — vidno, že pokračuje (UI N1c); vľavo stojí hlava osi (S-03). */
+  mask-image: linear-gradient(90deg, #000 calc(100% - 14px), transparent 100%);
 }
 
 .priebeh-kola li {
@@ -97,7 +97,11 @@
   background: var(--plocha-3);
 }
 
+/* Hlava osi „Bitka 3 z 4“ ostáva na mieste, keď os doroluje k aktuálnemu kroku (S-03). */
 .priebeh-kola li.priebeh-kolo {
+  position: sticky;
+  left: 0;
+  z-index: 1;
   flex: none;
   cursor: default;
   padding-left: 12px;
@@ -163,8 +167,25 @@
   }
 }
 
+/* Od 8 krokov (tri Pitky) sa dlhé názvy nezmestia ani na širokej osi (S-03). */
+.partia-os .priebeh-kola.mnoho-krokov .krok-dlhe {
+  display: none;
+}
+
+.partia-os .priebeh-kola.mnoho-krokov .krok-stredne {
+  display: inline;
+}
+
+.partia-os .priebeh-kola.mnoho-krokov li {
+  padding-inline: 14px 8px;
+}
+
 @container os-kola (max-width: 720px) {
   .priebeh-kola .krok-stredne {
+    display: none;
+  }
+
+  .partia-os .priebeh-kola.mnoho-krokov .krok-stredne {
     display: none;
   }
 
@@ -757,6 +778,8 @@ button.zdroj-starsi[aria-pressed="true"] {
 .doska-oblast .cip {
   flex: 0 1 auto;
   min-width: 0;
+  /* Užší okraj čipu: na 1600–1920 px o 3 px chýbalo a trojbodka zjedla práve počet „×1“ (S-15). */
+  padding-inline: 6px;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -2453,7 +2476,7 @@ button.bot-volba {
   width: min(640px, 100%);
   max-height: calc(100vh - 32px);
   overflow-y: auto;
-  padding: 22px 24px;
+  padding: 22px 24px 0;
   border-radius: 16px;
   background: var(--plocha-2);
   border: 1px solid var(--okraj);
@@ -2510,11 +2533,18 @@ button.bot-volba {
   margin: 14px 0 0;
 }
 
+/* Tlačidlá prilepené na spodku okna (S-04): na nízkom notebooku sa roluje len obsah nad nimi. */
 .koniec-tlacidla {
+  position: sticky;
+  bottom: 0;
+  z-index: 1;
   display: flex;
   justify-content: flex-end;
   gap: 8px;
-  margin-top: 18px;
+  margin: 18px -24px 0;
+  padding: 12px 24px 22px;
+  background: var(--plocha-2);
+  border-top: 1px solid var(--okraj);
 }
 
 .koniec-verzia {
@@ -3315,19 +3345,11 @@ button.bot-volba {
   overflow-wrap: anywhere;
 }
 
-/* Karty v ruke pri vybranom mieste. Pás pokynov sa posunie o --vysun vyššie,
-   aby ho vysunuté karty neprekryli; `translate` sa skladá s posunom pri hoveri. */
-.ruka.volba-miesta {
-  --vysun: 38px;
-  height: calc(var(--ruka-h) + var(--vysun));
-}
-
-.ruka.volba-miesta .ruka-rad {
-  margin-top: var(--vysun);
-}
-
-.ruka-rad > .tahatelna.vysunuta {
-  translate: 0 calc(-1 * var(--vysun, 38px));
+/* Karty v ruke pri vybranom mieste (S-18): výška ruky sa nemení — zdvihnutá ruka posúvala
+   celý stôl pod myšou. Karty, ktoré sa spoja, ostanú na mieste, ostatné klesnú pod okraj okna;
+   `translate` sa skladá s posunom pri hoveri. Telefón má vlastné (mobil-sirka.css). */
+.hra:not(.mobil-sirka) .ruka.volba-miesta .ruka-rad > .tahatelna:not(.vysunuta) {
+  translate: 0 34px;
 }
 
 .ruka-rad > .tahatelna.vysunuta > .kl {
@@ -3665,6 +3687,17 @@ button.pecat-koncim[aria-disabled="true"] {
 
 button.pecat-koncim .cena-cig {
   font-size: 0.85rem;
+}
+
+/* Pas doberie karty (v12.6): „+3“ a karta vo farbe pečiatky — bez rozmeru mala 0 × 0 px (S-05). */
+button.pecat-koncim .ikona-karty {
+  width: 18px;
+  height: 18px;
+  fill: currentColor;
+}
+
+button.pecat-koncim .ikona-karty .ilustracia {
+  fill: var(--pozadie);
 }
 
 /* Odkazujem (Michal 2026-10-27): Nástroj do Dedičstva vedľa pasovať — tá istá pečiatka, opačný sklon. */
@@ -6747,6 +6780,13 @@ button.auto-hotovo-odkaz {
     bottom: auto;
   }
 
+  /* Na počítači „vybraná“ nad kartou, mimo líca — na líci zakrývala akcie, ktoré NA EX práve
+     rozoberá (S-17); výber ukazuje aj rámik. Telefón po starom (mobil-sirka.css). */
+  .hra:not(.mobil-sirka) .stol-plst .s-lupou > .vybrana-pod {
+    top: -14px;
+    bottom: auto;
+  }
+
   .stol-plst .s-lupou.naex-mozny:has(.kl-otocena)::before {
     top: auto;
     bottom: 4px;
@@ -7225,6 +7265,11 @@ button.auto-hotovo-odkaz {
   inset: 0;
   pointer-events: none;
   z-index: 890;
+}
+
+/* Cez okno (medziobrazovka, autopas) pečiatky nepadajú — zakrývali nadpis a dôvod (S-08). */
+body:has(.medziobrazovka) .moment-vrstva {
+  visibility: hidden;
 }
 
 .moment-stoh {
@@ -8365,10 +8410,12 @@ button.auto-hotovo-odkaz {
   overflow: hidden;
 }
 
+/* Ciele aspoň 26 px vysoké — pri 17 px sa do nich na notebooku zle triafalo (S-21). */
 .rk-rezim > button {
-  padding: 1px 8px;
+  min-height: 26px;
+  padding: 4px 12px;
   font-family: inherit;
-  font-size: 0.64rem;
+  font-size: 0.7rem;
   font-weight: 700;
   line-height: 1.5;
   letter-spacing: 0.06em;
@@ -9511,6 +9558,19 @@ button.auto-hotovo-odkaz {
   animation:
     spaky-zmena-in 0.2s ease-out,
     spaky-zmena-out 0.4s ease-in 2.1s forwards;
+}
+
+/* Odznak v pravom hornom rohu dlaždice, mimo riadku s číslom — pri dvojcifernom počte
+   orezal ikonu špaku aj seba (S-09). */
+.zdroj-body {
+  position: relative;
+}
+
+.zdroj-body .spaky-zmena {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  margin-left: 0;
 }
 
 .spaky-zmena.minus {

@@ -39,6 +39,14 @@ export function menoVoVete(h: HracInfo | null | undefined, p: number): string {
   return h.bot === true ? `Bot ${h.meno}` : h.meno;
 }
 
+/**
+ * Meno v nadpise, štítku či tabuľke (inšpekcia UI, S-12): ako na pulte hráča, bez slova „Bot“ —
+ * že je to bot, vidno v pulte. Vo vetách ostáva menoVoVete: rod bota sa z dát povahy nedá vziať.
+ */
+export function menoNaPulte(h: HracInfo | null | undefined, p: number): string {
+  return h === null || h === undefined ? `Hráč ${p + 1}` : h.meno;
+}
+
 /** Hláška motora pre človeka: tvary rodu podľa hráčov a mená namiesto „Hráč N“. */
 export function textHlasky(text: string, mena: readonly string[], rody: readonly [Rod, Rod]): string {
   // Aj „hráč 2“ uprostred vety (Hrobár, Svokra…) — inak ostalo „hráč 2 si berie 1 cigaretu“.

@@ -1,12 +1,12 @@
 // Špaky na stole (pravidlá v6, Michal 2026-10-26, docs/napady/spaky.html bod 12):
 // víťazné body sa zbierajú ako špaky (dlaždica pri mene hráča) a krčmová
 // nástenka ukazuje nad každou lokalitou fotku víťaza a koľko špakov za ňu získal
-// (aj finále). Čísla ráta jadro (nástenka, rozpisSpakov), tu sa len kreslia.
+// (aj finále). Čísla ráta jadro (nástenka), tu sa len kreslia.
 
 import { useContext, useId, useLayoutEffect, useRef, useState, type CSSProperties, type KeyboardEvent, type ReactNode } from "react";
 import { createPortal } from "react-dom";
 import type { BitkaNaNastenke, CardInstance, CielKola, Favour, PlayerId } from "@naex/core";
-import { KONSTANTY, jeFinaleNaNastenke, rozpisSpakov, opponentOf } from "@naex/core";
+import { KONSTANTY, jeFinaleNaNastenke, opponentOf } from "@naex/core";
 import { spakov } from "../i18n/pocty.ts";
 import { Avatar } from "../komponenty.tsx";
 import { IkonaSpaku } from "./IkonaSpaku.tsx";
@@ -127,6 +127,13 @@ export interface NastenkaProps {
   readonly sirkaVyberu?: number;
   /** Režim bez finále (Päta, Lakeť, Otočka): nástenka len ponúka lokality. */
   readonly bezFinale?: boolean;
+  /**
+   * Lístok „Koniec“ s výkupným a Cirhózou len pri voľbe vrcholovej lokality (inšpekcia UI, Z-17) —
+   * skôr o ničom nerozhoduje a rozpis konca hry je po kliku na Špaky.
+   */
+  readonly sKoncom?: boolean;
+  /** Bez špakov pri víťazovi lístka (koniec hry, Z-15) — celé ich rozpisuje účet, čiastkové čísla mýlili; rozpis na myš ostáva. */
+  readonly bezZisku?: boolean;
   /** Rozmer kariet na výber v jednom rade (rozmerNastenky); `vyber` dostane ich šírku. */
   readonly listokVyberu?: ListokNaVyber | null | undefined;
   /**
@@ -163,7 +170,7 @@ export function Nastenka(props: NastenkaProps) {
   return props.favour === undefined ? obsah : <FavourStarsich.Provider value={props.favour}>{obsah}</FavourStarsich.Provider>;
 }
 
-function NastenkaObsah({ nastenka, zostava, ciel, ja, mena, avatary, karta, menoKarty, sirkaKarty = 90, kompaktna = false, koniec = false, bezFinale = false, ucet, vyber, mierka = 1, sirkaVyberu = sirkaKarty, listokVyberu = null, suhrn, poStarom = false, vyhraStrachom }: NastenkaProps) {
+function NastenkaObsah({ nastenka, zostava, ciel, ja, mena, avatary, karta, menoKarty, sirkaKarty = 90, kompaktna = false, koniec = false, bezFinale = false, sKoncom = false, bezZisku = false, ucet, vyber, mierka = 1, sirkaVyberu = sirkaKarty, listokVyberu = null, suhrn, poStarom = false, vyhraStrachom }: NastenkaProps) {
   const kto = (p: PlayerId): string => (p === ja ? "ty" : mena[p]);
   // Rozpis na myš aj na fokus klávesnicou: ktorý lístok a jeho prvok (poloha okienka).
   const [naMys, setNaMys] = useState<{ readonly i: number; readonly el: HTMLElement } | null>(null);
@@ -279,7 +286,7 @@ function NastenkaObsah({ nastenka, zostava, ciel, ja, mena, avatary, karta, meno
           ) : (
             <>
               <Avatar meno={mena[vitaz]} avatar={avatary[vitaz]} velkost={Math.round((kompaktna || kratky(l) ? 24 : vStlpci ? 40 : 34) * mierka)} farba={vitaz === ja ? "ja" : "su"} />
-              {!vStlpci && (
+              {!vStlpci && !bezZisku && (
                 <b className="nastenka-zisk">
                   {zn(zisk)}
                   <IkonaSpaku />
@@ -314,14 +321,12 @@ function NastenkaObsah({ nastenka, zostava, ciel, ja, mena, avatary, karta, meno
         </li>
       )}
       {listky.map((l, i) => (kratky(l) ? null : listokEl(l, i)))}
-      {ucet !== undefined && !koniec && (
+      {ucet !== undefined && !koniec && sKoncom && (
         <ListokKonca
           kartovy={sirkaKonca}
           title={t("spaky.koniecTitul", { zaPoldeci: KONSTANTY.SPAKY_ZA_POLDECI, zaCigarety: KONSTANTY.CIGARIET_ZA_SPAK, poldeci: dvojica(ucet.body.vykupne.map((v) => v.poldeci) as [number, number], (n) => t("spaky.nPoldeci", { n })), cigarety: dvojica(ucet.body.vykupne.map((v) => v.cigarety) as [number, number], (n) => t("tabula.cig", { n })), cirhoza: spakov(KONSTANTY.SPAKY_ZA_CIRHOZU) })}
         >
-          <span className="nastenka-vitaz">
-            <span className="nastenka-otaznik">{t("spaky.koniec")}</span>
-          </span>
+          {/* „koniec“ nad „Koniec · po finále“ bolo dvakrát to isté (Z-17). */}
           <span className="nastenka-nazov">{t("spaky.koniecPoFinale")}</span>
           {/* Komu čo, menami (Michal 2026-10-30: „výkupné +2 : +2“ nebolo jasné komu). */}
           <span className="nastenka-uctenka nastenka-koniec">
@@ -357,7 +362,6 @@ function NastenkaObsah({ nastenka, zostava, ciel, ja, mena, avatary, karta, meno
         {okienko}
       </>
     );
-  const rozpis = rozpisSpakov({ nastenka, koniec: null, spaky: ucet.body.spaky });
   const { body } = ucet;
   // Nízky stôl pri voľbe cieľa (Michal 2026-10-31): popolníky vedľa radu, karty dostanú celú výšku.
   const popolnikyVedla = vyber !== undefined && listokVyberu?.popolnikyVedla === true;
@@ -365,19 +369,12 @@ function NastenkaObsah({ nastenka, zostava, ciel, ja, mena, avatary, karta, meno
     <div className={`nastenka-ucet${popolnikyVedla ? " vedla" : ""}`}>
       <div className="nastenka-popolniky">
         {poradie.map((p) => {
-          const r = rozpis[p];
-          const casti = [
-            t("spaky.bitkyN", { n: zn(r.zaBitky) }),
-            t("spaky.starsiN", { n: zn(r.zaStarsich) }),
-            ...(r.prebytok > 0 ? [t("spaky.nakladackaN", { n: `+${r.prebytok}` })] : []),
-            ...(r.exekutor < 0 ? [t("spaky.exekutorN", { n: zn(r.exekutor) })] : []),
-          ];
+          // Rozpis je na dlaždici Špaky a po kliku na ňu (Z-17) — tu len kto má koľko.
           return (
             <div key={p} className={`nastenka-popolnik ${p === ja ? "moj" : "superov"}${p === ucet.zvyraznit ? " zvyrazneny" : ""}`}>
               <Avatar meno={mena[p]} avatar={avatary[p]} velkost={Math.round(30 * mierka)} farba={p === ja ? "ja" : "su"} />
               <span className="np-meno">{p === ja ? t("stol.ty") : mena[p]}</span>
               <PocetSpakov n={body.spaky[p]} kto={p === ja ? "moj" : "superov"} />
-              <span className="np-rozpis">{casti.join(" · ")}</span>
             </div>
           );
         })}

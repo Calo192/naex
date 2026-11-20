@@ -262,6 +262,7 @@
 }
 
 .np-meno {
+  grid-row: 1 / span 2;
   font-weight: 700;
   font-size: 0.82rem;
 }
@@ -269,13 +270,6 @@
 .nastenka-popolnik .pocet-spakov {
   grid-column: 3;
   grid-row: 1 / span 2;
-}
-
-.np-rozpis {
-  grid-column: 2;
-  font-size: 0.72rem;
-  color: var(--tlmeny);
-  white-space: nowrap;
 }
 
 .nastenka-uctenka {
@@ -675,10 +669,6 @@
   font-size: calc(0.82rem * var(--nk, 1));
 }
 
-.vrstva-nastenky .np-rozpis {
-  font-size: calc(0.72rem * var(--nk, 1));
-}
-
 .vrstva-nastenky .nastenka-popolnik .velke-cislo {
   font-size: calc(1.9rem * var(--nk, 1));
 }
@@ -787,6 +777,7 @@
 
 /* Dlhé meno (Bot Rapavý Fero) sa zalomí, neskráti. */
 .nastenka-ucet.vedla .np-meno {
+  grid-row: 1;
   line-height: 1.15;
   overflow-wrap: anywhere;
 }
@@ -795,14 +786,6 @@
   grid-column: 1 / -1;
   grid-row: 2;
   justify-self: center;
-}
-
-.nastenka-ucet.vedla .np-rozpis {
-  grid-column: 1 / -1;
-  grid-row: 3;
-  white-space: normal;
-  text-align: center;
-  line-height: 1.2;
 }
 
 .nastenka-ucet.vedla > .nastenka {

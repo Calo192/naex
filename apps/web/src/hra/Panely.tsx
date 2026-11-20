@@ -1687,7 +1687,7 @@ export function PriebehKola({
     );
   }
   return (
-    <ol className="priebeh-kola" aria-label={t("faza.kolo", { n: view.kolo })} data-vyucba="os-kola">
+    <ol className={`priebeh-kola${polozky.length >= 8 ? " mnoho-krokov" : ""}`} aria-label={t("faza.kolo", { n: view.kolo })} data-vyucba="os-kola">
       <KrokOsi
         krok={{
           id: "hlava",
