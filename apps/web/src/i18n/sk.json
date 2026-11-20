@@ -1064,6 +1064,9 @@
   "panel.dnes": "dnes {n}",
   "panel.chutAAbstak": "Chuť a Absťák",
   "panel.chutStav": "Chuť {chut} · dnes {dnes} · {vyhlad}",
+  "panel.chutNerest": "Nerest: NA EX {naex} · cigareta 1 · karta navyše 1",
+  "panel.chutKoniecKola": "Koniec kola: nerestí menej než Chuť → Absťák",
+  "panel.chutAbstak": "Absťák v balíčku: v bitke −1 tuhé",
   "panel.abstakyJa": {
     "1": "máš {n} Absťák v balíčku, v bitke −{ubera} tuhé",
     "2": "máš {n} Absťáky v balíčku, v bitke −{ubera} tuhé",
@@ -1074,7 +1077,6 @@
     "2": "má {n} Absťáky v balíčku, v bitke −{ubera} tuhé",
     "5": "má {n} Absťákov v balíčku, v bitke −{ubera} tuhé"
   },
-  "panel.chutPravidlo": "Nerest je len to, čo vypiješ a vyfajčíš: karta navyše v ťahu 1, odpoveď na NA EX 1, NA EX {naex}, každá vyfajčená cigareta 1 (poldeci za prvú kartu ťahu, doliatie, barter ani platby nie). Na konci kola: menej nerestí než Chuť = karta Absťák do odhadzovacieho balíčka; potom Chuť = väčšie z (Chuť, neresti) − {ubytok}. Absťák sa nedá priznať, po bitke ide z ruky späť do odhadzovacieho a každý v balíčku ti v bitke uberie 1 tuhé. Spáliť ho smie Vízia. Po finále sa nič nerieši.",
   "panel.dalsiePitky": {
     "1": "ďalšia Pitka",
     "2": "ďalšie {n} Pitky",
@@ -1132,9 +1134,11 @@
   "panel.poldeciStav": "{kto} {plne} plné, {vypite} vypité",
   "panel.zTohoNaStole": " (z toho {n} na stole cez NA EX{skryte})",
   "panel.limitKarietBodka": " · na {karty}",
+  "panel.poldeciLimit": "Limit vykladania = plné poldeci; karta otočí jeden na vypitý",
+  "panel.poldeciPas": "Pas: karta za každý plný, ten ostane plný",
+  "panel.poldeciDoliatie": "Po Pitke sa {dolieva} doleje, po bitke všetky",
   "panel.zastavka": " (Zastávka: spoločný pre oboch)",
   "panel.dalsieKolo": " · po bitke {n}",
-  "panel.poldeciPravidlo": "Limit vykladania = plné poldeci; každá karta jeden otočí na vypitý, ďalšia karta v ťahu stojí aj cigaretu. Pas dá kartu za každý plný a ten ostane plný. Po Pitke sa {dolieva} vypitý doleje zadarmo (a za akcie Poldeci), po bitke sa obnovia všetky. Na konci hry je každý plný {spaky} špak (výkupné).",
   "panel.cigaretyPravidlo": "Platíš nimi karty z ponuky a Dedičstvo; v Pitke na svojom ťahu fajčíš: karta za 1 cigaretu, ďalšia v tej istej Pitke za 2, potom 3…",
   "panel.benzinka": " (Benzínka: každé o 1 lacnejšie — 0, 1, 2…)",
   "panel.zaN": "za {n}",
@@ -1401,7 +1405,6 @@
   "plocha.zaverecnaTlacidlo": "Záverečná: posledná karta návrhu pôjde lícom dole za {cig}. Súper ju nevidí do konca Pitky a za ňu nepriloží; ty už v tomto Zhromaždení nevykladáš (bez kariet za pas).",
   "plocha.zaverecnaMale": "záverečná",
   "plocha.pravidloBrania": "Beriete striedavo, kým obaja neprestanete; kto nemá cigaretu, prestane sám. Pitiek v bitke bude 1 + menší počet aktivovaných akcií lokality z dvoch krajov.",
-  "plocha.noveKartyTitul": "Nové karty z ponuky v tomto kole.",
   "plocha.uzNeberie": " · už neberie",
   "plocha.semJuNesmies": "Sem ju teraz vyložiť nesmieš.",
   "plocha.nezasuva": "Pod túto kartu sa teraz nezasúva.",

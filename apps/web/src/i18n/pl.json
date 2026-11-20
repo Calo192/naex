@@ -1060,6 +1060,9 @@
   "panel.dnes": "dziś {n}",
   "panel.chutAAbstak": "Pragnienie i Głód",
   "panel.chutStav": "Pragnienie {chut} · dziś {dnes} · {vyhlad}",
+  "panel.chutNerest": "Grzech: NA EX {naex} · papieros 1 · dodatkowa karta 1",
+  "panel.chutKoniecKola": "Koniec rundy: mniej grzechów niż Pragnienie → Głód",
+  "panel.chutAbstak": "Głód w talii: w bójce −1 twarde",
   "panel.abstakyJa": {
     "1": "masz {n} Głód w talii, w bójce −{ubera} twarde",
     "2": "masz {n} Głody w talii, w bójce −{ubera} twarde",
@@ -1070,7 +1073,6 @@
     "2": "ma {n} Głody w talii, w bójce −{ubera} twarde",
     "5": "ma {n} Głodów w talii, w bójce −{ubera} twarde"
   },
-  "panel.chutPravidlo": "",
   "panel.dalsiePitky": {
     "1": "kolejna Popijawa",
     "2": "kolejne {n} Popijawy",
@@ -1128,9 +1130,11 @@
   "panel.poldeciStav": "{kto} {plne} pełne, {vypite} wypite",
   "panel.zTohoNaStole": " (w tym {n} na stole przez NA EX{skryte})",
   "panel.limitKarietBodka": " · na {karty}",
+  "panel.poldeciLimit": "Limit wykładania = pełne kieliszki; karta odwraca jeden na wypity",
+  "panel.poldeciPas": "Pas: karta za każdy pełny, a ten zostaje pełny",
+  "panel.poldeciDoliatie": "Po Popijawie dolewa się {dolieva}, po bójce wszystkie",
   "panel.zastavka": " (Przystanek: wspólny dla obu)",
   "panel.dalsieKolo": " · po bójce {n}",
-  "panel.poldeciPravidlo": "Limit wykładania = pełne kieliszki; każda karta odwraca jeden na wypity, a każda kolejna karta w ruchu kosztuje też papierosa. Pas daje kartę za każdy pełny, a ten zostaje pełny. Po Popijawie {dolieva} wypity dolewa się za darmo (i za akcje Kieliszek), po bójce odnawiają się wszystkie. Na koniec gry każdy pełny to {spaky} pet (wykup).",
   "panel.cigaretyPravidlo": "Płacisz nimi za karty z oferty i Dziedzictwo; w Popijawie w swoim ruchu palisz: karta za 1 papierosa, kolejna w tej samej Popijawie za 2, potem 3…",
   "panel.benzinka": " (Stacja paliw: każdy o 1 taniej — 0, 1, 2…)",
   "panel.zaN": "za {n}",
@@ -1395,7 +1399,6 @@
   "plocha.zaverecnaTlacidlo": "Ostatnia kolejka: ostatnia karta propozycji pójdzie rewersem do góry za {cig}. Przeciwnik nie widzi jej do końca Popijawy i do niej nie dołoży; ty na tym Zebraniu już nie wykładasz (bez kart za pas).",
   "plocha.zaverecnaMale": "ostatnia kolejka",
   "plocha.pravidloBrania": "Bierzecie na zmianę, dopóki obaj nie przestaniecie; kto nie ma papierosa, przestaje sam. Popijaw w bójce będzie 1 + mniejsza liczba aktywowanych akcji lokacji z dwóch skrzydeł.",
-  "plocha.noveKartyTitul": "Nowe karty z oferty w tej rundzie.",
   "plocha.uzNeberie": " · już nie bierze",
   "plocha.semJuNesmies": "Tutaj nie możesz jej teraz wyłożyć.",
   "plocha.nezasuva": "Pod tę kartę teraz się nie podkłada.",

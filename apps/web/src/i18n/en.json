@@ -1034,6 +1034,9 @@
   "panel.dnes": "today {n}",
   "panel.chutAAbstak": "Thirst and The Shakes",
   "panel.chutStav": "Thirst {chut} · today {dnes} · {vyhlad}",
+  "panel.chutNerest": "Vice: NA EX {naex} · cigarette 1 · extra card 1",
+  "panel.chutKoniecKola": "End of round: fewer vices than Thirst → the Shakes",
+  "panel.chutAbstak": "The Shakes in your deck: −1 hard in the brawl",
   "panel.abstakyJa": {
     "1": "you have {n} Shakes card in your deck, −{ubera} hard in the brawl",
     "5": "you have {n} Shakes cards in your deck, −{ubera} hard in the brawl"
@@ -1042,7 +1045,6 @@
     "1": "has {n} Shakes card in their deck, −{ubera} hard in the brawl",
     "5": "has {n} Shakes cards in their deck, −{ubera} hard in the brawl"
   },
-  "panel.chutPravidlo": "",
   "panel.dalsiePitky": {
     "1": "next Booze-up",
     "5": "next {n} Booze-ups"
@@ -1098,9 +1100,11 @@
   "panel.poldeciStav": "{kto} {plne} full, {vypite} empty",
   "panel.zTohoNaStole": " (of which {n} on the table through NA EX{skryte})",
   "panel.limitKarietBodka": " · for {karty}",
+  "panel.poldeciLimit": "Laying limit = full shots; a card turns one to empty",
+  "panel.poldeciPas": "Pass: a card for every full one, and it stays full",
+  "panel.poldeciDoliatie": "After a Booze-up {dolieva} is refilled, after the brawl all",
   "panel.zastavka": " (Bus Stop: shared by both)",
   "panel.dalsieKolo": " · after the brawl {n}",
-  "panel.poldeciPravidlo": "Laying limit = full shots; each card turns one to empty, and every further card in a turn also costs a cigarette. A pass gives a card for every full one, and it stays full. After a Booze-up {dolieva} empty one is refilled for free (and more for Shot actions); after the brawl all are restored. At the end of the game every full one is {spaky} butt (buyout).",
   "panel.cigaretyPravidlo": "You pay with them for cards from the Market and for the Heirloom; in the Booze-up you smoke on your turn: a card for 1 cigarette, the next in the same Booze-up for 2, then 3…",
   "panel.benzinka": " (Petrol Station: each one 1 cheaper — 0, 1, 2…)",
   "panel.zaN": "for {n}",
@@ -1361,7 +1365,6 @@
   "plocha.zaverecnaTlacidlo": "Last Orders: the last card of the proposal goes face down for {cig}. Your opponent can't see it until the end of the Booze-up and can't play behind it; you play no more cards in this Assembly (no cards for passing).",
   "plocha.zaverecnaMale": "last orders",
   "plocha.pravidloBrania": "You take in turns until you've both stopped; whoever has no cigarette stops on their own. The brawl will have 1 + the smaller number of the location's activated actions on the two wings in Booze-ups.",
-  "plocha.noveKartyTitul": "New cards from the Market this round.",
   "plocha.uzNeberie": " · not taking any more",
   "plocha.semJuNesmies": "You may not play it here now.",
   "plocha.nezasuva": "Nothing can be tucked under this card now.",

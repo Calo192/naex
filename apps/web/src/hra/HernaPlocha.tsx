@@ -3722,17 +3722,6 @@ export function HernaPlocha({
     posli({ type: "draftBer", uids });
   };
   /** Koľko kariet si kto v tomto kole vzal zo šenku — na stole vpravo na hrane (predtým v hlavičke panelu). */
-  const skoreBrania: ReactNode =
-    draft === null ? null : (
-      <span className="hrana-skore" title={t("plocha.noveKartyTitul")}>
-        <span className="moje">{t("stol.ty")} {draft.noveKarty[ja]}</span>
-        <span className="superove">
-          {menoHraca(super_)} {draft.noveKarty[super_]}
-          {draft.hotovo[super_] ? t("plocha.uzNeberie") : ""}
-        </span>
-      </span>
-    );
-
   // ---- dlaždica KARTY ako cieľ priznania a Dedičstva (Michal 2026-10-23, #76) ----
   // Pri ťahaní kliatby sa dlaždica KARTY v tvojom bare zmení na cieľ „Priznať“, pri Nástroji
   // na „Dedičstvo“ s cenou; karta sa pustí na ňu (do návrhu ťahu), stôl sa neprepína. Klik na
@@ -4005,7 +3994,8 @@ export function HernaPlocha({
       className={`pecat pecat-nakup${p.dovod !== null ? " ne" : ""}`}
       data-vyucba={`tlacidlo:${p.kluc}`}
       aria-disabled={p.dovod !== null}
-      title={p.dovod ?? p.tip}
+      aria-label={p.nazov}
+      title={`${p.nazov}: ${p.dovod ?? p.tip}`}
       onClick={(e) => {
         if (p.dovod === null) p.akcia();
         // Nedostupný nákup povie prečo — tichý klik na DOLIAŤ mýlil (playtest výučby 20261025).
@@ -4017,7 +4007,8 @@ export function HernaPlocha({
           {p.cena > 0 ? <Vymena das={<CenaCigariet n={p.cena} znamienko={p.znamienko ?? "−"} />} dostanes={p.zisk} /> : p.zisk}
         </span>
       )}
-      <span className="pecat-nazov">{p.nazov}</span>
+      {/* Pod piktogramovým vzorcom bez názvu — názov je v titulku (Z-19); „zadarmo“ ostáva slovom. */}
+      {(p.cena === 0 || p.zisk === undefined) && <span className="pecat-nazov">{p.nazov}</span>}
     </button>
   );
   const pokyn: Pokyn | null = (() => {
@@ -4111,7 +4102,6 @@ export function HernaPlocha({
             <span className="bodky" aria-hidden="true" />
           </span>
         ),
-        ...(mobil ? {} : { vpravo: skoreBrania }),
       };
     }
     if (zaHracaHra && stavim && draft?.mojVyber === null) {
@@ -4422,7 +4412,6 @@ export function HernaPlocha({
                         tip: t("plocha.prestanesBrat", { n: limitTeraz, pravidlo: pravidloBrania }),
                         akcia: () => posli({ type: "draftStop" }),
                       }),
-                vpravo: skoreBrania,
               }),
         };
       }
@@ -6225,7 +6214,10 @@ export function HernaPlocha({
     );
   // Pivnica (Michal 2026-11-02) na mieste, kde bol počet cigariet: väzni a ich schopnosti v okne. Bez väzňa
   // ostane tlmená, aby kraj hrany neposkakoval; svieti, keď schopnosť väzňa teraz ide (v11.2).
-  const pivnicaNaHrane = view.pata !== undefined ? null : (
+  // Prázdna Pivnica nie je na stole od prvého ťahu (Z-19) — príde s prvým väzňom, so schopnosťou väzňa
+  // alebo keď hráč rozdeľuje Nakladačku (vtedy sa dá zajať).
+  const zajatieTeraz = view.faza === "bitka" && view.bitkaStav?.krok === "prebytok" && view.bitkaStav.caka === ja;
+  const pivnicaNaHrane = view.pata !== undefined || (mojiVazni.length === 0 && !schopnostTeraz && !zajatieTeraz && vrstva !== "pivnica") ? null : (
     <button
       type="button"
       className={["hrana-pivnica", mojiVazni.length === 0 ? "prazdna" : "", schopnostTeraz ? "dostupna" : "", vrstva === "pivnica" ? "otvorena" : ""].filter((x) => x !== "").join(" ")}

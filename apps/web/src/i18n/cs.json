@@ -1060,6 +1060,9 @@
   "panel.dnes": "dnes {n}",
   "panel.chutAAbstak": "Chuť a Absťák",
   "panel.chutStav": "Chuť {chut} · dnes {dnes} · {vyhlad}",
+  "panel.chutNerest": "Neřest: NA EX {naex} · cigareta 1 · karta navíc 1",
+  "panel.chutKoniecKola": "Konec kola: neřestí méně než Chuť → Absťák",
+  "panel.chutAbstak": "Absťák v balíčku: v rvačce −1 tvrdé",
   "panel.abstakyJa": {
     "1": "máš {n} Absťák v balíčku, v rvačce −{ubera} tvrdé",
     "2": "máš {n} Absťáky v balíčku, v rvačce −{ubera} tvrdé",
@@ -1070,7 +1073,6 @@
     "2": "má {n} Absťáky v balíčku, v rvačce −{ubera} tvrdé",
     "5": "má {n} Absťáků v balíčku, v rvačce −{ubera} tvrdé"
   },
-  "panel.chutPravidlo": "",
   "panel.dalsiePitky": {
     "1": "další Pitka",
     "2": "další {n} Pitky",
@@ -1128,9 +1130,11 @@
   "panel.poldeciStav": "{kto} {plne} plné, {vypite} vypité",
   "panel.zTohoNaStole": " (z toho {n} na stole přes NA EX{skryte})",
   "panel.limitKarietBodka": " · na {karty}",
+  "panel.poldeciLimit": "Limit vykládání = plní panáci; karta jednoho otočí na vypitého",
+  "panel.poldeciPas": "Pas: karta za každého plného, ten zůstane plný",
+  "panel.poldeciDoliatie": "Po Pitce se dolije {dolieva}, po rvačce všichni",
   "panel.zastavka": " (Zastávka: společný pro oba)",
   "panel.dalsieKolo": " · po rvačce {n}",
-  "panel.poldeciPravidlo": "Limit vykládání = plní panáci; každá karta jednoho otočí na vypitého, další karta v tahu stojí i cigaretu. Pas dá kartu za každého plného a ten zůstane plný. Po Pitce se {dolieva} vypitý dolije zdarma (a za akce Panák), po rvačce se obnoví všichni. Na konci hry je každý plný {spaky} vajgl (výkupné).",
   "panel.cigaretyPravidlo": "Platíš jimi karty z Nabídky a Dědictví; v Pitce na svém tahu kouříš: karta za 1 cigaretu, další v téže Pitce za 2, pak 3…",
   "panel.benzinka": " (Benzínka: každé o 1 levnější — 0, 1, 2…)",
   "panel.zaN": "za {n}",
@@ -1395,7 +1399,6 @@
   "plocha.zaverecnaTlacidlo": "Zavíračka: poslední karta návrhu půjde lícem dolů za {cig}. Soupeř ji do konce Pitky nevidí a za ni nepřiloží; ty už v tomto Shromáždění nevykládáš (bez karet za pas).",
   "plocha.zaverecnaMale": "zavíračka",
   "plocha.pravidloBrania": "Berete střídavě, dokud oba nepřestanete; kdo nemá cigaretu, přestane sám. Pitek v rvačce bude 1 + menší počet aktivovaných akcí lokality ze dvou krajů.",
-  "plocha.noveKartyTitul": "Nové karty z Nabídky v tomto kole.",
   "plocha.uzNeberie": " · už nebere",
   "plocha.semJuNesmies": "Sem ji teď vyložit nesmíš.",
   "plocha.nezasuva": "Pod tuhle kartu se teď nezasouvá.",

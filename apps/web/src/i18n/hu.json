@@ -1034,6 +1034,9 @@
   "panel.dnes": "ma {n}",
   "panel.chutAAbstak": "Szomj és Remegés",
   "panel.chutStav": "Szomj {chut} · ma {dnes} · {vyhlad}",
+  "panel.chutNerest": "Bűn: NA EX {naex} · cigaretta 1 · extra kártya 1",
+  "panel.chutKoniecKola": "Kör vége: kevesebb bűn, mint a Szomj → Remegés",
+  "panel.chutAbstak": "Remegés a pakliban: a verekedésben −1 kemény",
   "panel.abstakyJa": {
     "1": "{n} Remegés van a paklidban, a verekedésben −{ubera} kemény",
     "5": "{n} Remegés van a paklidban, a verekedésben −{ubera} kemény"
@@ -1042,7 +1045,6 @@
     "1": "{n} Remegés van a paklijában, a verekedésben −{ubera} kemény",
     "5": "{n} Remegés van a paklijában, a verekedésben −{ubera} kemény"
   },
-  "panel.chutPravidlo": "",
   "panel.dalsiePitky": {
     "1": "a következő Ivászat",
     "5": "a következő {n} Ivászat"
@@ -1098,9 +1100,11 @@
   "panel.poldeciStav": "{kto} {plne} teli, {vypite} üres",
   "panel.zTohoNaStole": " (ebből {n} az asztalon NA EX-szel{skryte})",
   "panel.limitKarietBodka": " · {karty} rakhatsz ki",
+  "panel.poldeciLimit": "Kijátszási korlát = teli felesek; egy kártya egyet üresre fordít",
+  "panel.poldeciPas": "Passz: minden teliért egy kártya, és az teli marad",
+  "panel.poldeciDoliatie": "Ivászat után {dolieva} újratöltődik, verekedés után mind",
   "panel.zastavka": " (Megálló: közös mindkettőtöknek)",
   "panel.dalsieKolo": " · verekedés után {n}",
-  "panel.poldeciPravidlo": "Kijátszási korlát = teli felesek; minden kártya egyet üresre fordít, és a lépés minden további kártyája egy cigarettába is kerül. A passz minden teli felesért egy kártyát ad, és az teli marad. Ivászat után {dolieva} üres ingyen újratöltődik (és a Feles akciókért is), verekedés után mind visszaáll. A játék végén minden teli feles {spaky} csikk (váltságdíj).",
   "panel.cigaretyPravidlo": "Ezzel fizeted a kínálat kártyáit és az Örökséget; az Ivászaton a saját lépésedben rágyújtasz: egy kártya 1 cigarettába kerül, a következő ugyanazon az Ivászaton 2-be, aztán 3…",
   "panel.benzinka": " (Benzinkút: mindegyik 1-gyel olcsóbb — 0, 1, 2…)",
   "panel.zaN": "{n} cigarettáért",
@@ -1361,7 +1365,6 @@
   "plocha.zaverecnaTlacidlo": "Záróra: a javaslat utolsó kártyája képpel lefelé megy, {cig} fizetsz érte. Az ellenfél az Ivászat végéig nem látja, és nem rakhat mögé; te ezen a Gyűlésen már nem játszol ki (a passzért nem jár kártya).",
   "plocha.zaverecnaMale": "záróra",
   "plocha.pravidloBrania": "Felváltva vesztek, amíg mindketten abba nem hagyjátok; akinek nincs cigarettája, magától abbahagyja. A verekedésben az Ivászatok száma 1 + a helyszín két szárnyán aktivált akciók közül a kisebbik szám lesz.",
-  "plocha.noveKartyTitul": "Új kártyák a kínálatból ebben a körben.",
   "plocha.uzNeberie": " · már nem vesz",
   "plocha.semJuNesmies": "Ide most nem rakhatod ki.",
   "plocha.nezasuva": "Ez alá a kártya alá most nem lehet rakni.",

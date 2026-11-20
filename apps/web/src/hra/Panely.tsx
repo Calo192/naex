@@ -118,7 +118,10 @@ function ZdrojChut({ z, ja }: { readonly z: StavZavislosti; readonly ja: boolean
               {z.abstaky > 0 &&
                 ` · ${ja ? t("panel.abstakyJa", { n: z.abstaky, ubera: z.ubera }) : t("panel.abstakySu", { n: z.abstaky, ubera: z.ubera })}`}
             </span>
-            {t("panel.chutPravidlo", { naex: KONSTANTY.NEREST_NAEX, ubytok: KONSTANTY.CHUT_UBYTOK })}
+            {/* Stav tučne a pod ním tri krátke riadky (Z-16); okrajové prípady sú v Pravidlách. */}
+            <span className="tip-riadok">{t("panel.chutNerest", { naex: KONSTANTY.NEREST_NAEX })}</span>
+            <span className="tip-riadok">{t("panel.chutKoniecKola")}</span>
+            <span className="tip-riadok">{t("panel.chutAbstak")}</span>
           </>
         ),
       }}
@@ -645,7 +648,9 @@ export function HracDoska({
                   {jeCielLokalita(view, "zastavka") && t("panel.zastavka")}
                   {t("panel.dalsieKolo", { n: buduci })}
                 </span>
-                {t("panel.poldeciPravidlo", { dolieva: KONSTANTY.POLDECI_PO_PITKE, spaky: KONSTANTY.SPAKY_ZA_POLDECI })}
+                <span className="tip-riadok">{t("panel.poldeciLimit")}</span>
+                <span className="tip-riadok">{t("panel.poldeciPas")}</span>
+                <span className="tip-riadok">{t("panel.poldeciDoliatie", { dolieva: KONSTANTY.POLDECI_PO_PITKE })}</span>
                 {naexNaStole > 0 && ` ${naStoleVysvetlenie()}`}
               </>
             ),
