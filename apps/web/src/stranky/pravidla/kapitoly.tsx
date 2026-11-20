@@ -78,7 +78,6 @@ export const KAPITOLY: readonly Kapitola[] = [
       <>
         <p>{tp("co-je-naex.p1")}</p>
         <p>{tp("co-je-naex.p2")}</p>
-        <p className="tlmene upozornenie">{tp("co-je-naex.p3")}</p>
       </>
     ),
   }),

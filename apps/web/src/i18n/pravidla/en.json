@@ -20,15 +20,13 @@
     "skratka.3": "The game is a deliberately overblown caricature.",
     "p1": "<strong>NA EX!</strong> is a card game for two players set in a rough village. Every round you fight over one <p k=\"lokalita\">location</p> — the pub, the church, the petrol station. Whoever wins the <p k=\"bitka\">brawl</p> collects <p k=\"spak\">butts</p>, the dog-ends that keep the score round here. And the <p k=\"starsi\">elders</p>, the village big shots who watched the brawl, start to fear them.",
     "p2": "You play cards into a shared <p k=\"linia\">line</p>, buy them with <p k=\"cigareta\">cigarettes</p> and drink <p k=\"poldeci\">shots</p> as you go. The game is named after one move: <p k=\"naex\">NA EX</p> — you pour a shot over your opponent's card, down in one.",
-    "p3": "The game is fiction and a deliberately exaggerated caricature. We don't recommend alcohol, smoking, gambling or debt to anyone in real life.",
     "sk": {
       "nazov": "Čo je NA EX!",
       "skratka.1": "Dvaja hráči, jedna dedina.",
       "skratka.2": "Každé kolo bitka o jednu lokalitu.",
       "skratka.3": "Hra je zámerne prehnaná karikatúra.",
       "p1": "<strong>NA EX!</strong> je kartová hra pre dvoch hráčov zasadená do drsnej dediny. Každé kolo sa bijete o jednu <p k=\"lokalita\">lokalitu</p> — krčmu, kostol, benzínku. Kto vyhrá <p k=\"bitka\">bitku</p>, zbiera <p k=\"spak\">špaky</p>, ohorky, ktorými sa tu ráta. A <p k=\"starsi\">starší</p>, dedinské autority, ktorí bitku videli, sa ho začnú báť.",
-      "p2": "Karty hráte do spoločnej <p k=\"linia\">línie</p>, kupujete ich za <p k=\"cigareta\">cigarety</p> a pijete pri tom <p k=\"poldeci\">poldeci</p>. Podľa jedného ťahu sa hra volá: <p k=\"naex\">NA EX</p> — vyleješ poldeci na súperovu kartu, na ex.",
-      "p3": "Hra je fikcia a zámerne zveličená karikatúra. Alkohol, fajčenie, hazard ani dlhy v skutočnom živote nikomu neodporúčame."
+      "p2": "Karty hráte do spoločnej <p k=\"linia\">línie</p>, kupujete ich za <p k=\"cigareta\">cigarety</p> a pijete pri tom <p k=\"poldeci\">poldeci</p>. Podľa jedného ťahu sa hra volá: <p k=\"naex\">NA EX</p> — vyleješ poldeci na súperovu kartu, na ex."
     }
   },
   "ako-sa-vyhrava": {

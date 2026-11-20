@@ -803,6 +803,11 @@ button.sprava-tlacidlo {
   white-space: nowrap;
 }
 
+/* Herné meno smie mať 24 znakov — v hlavičke sa zmestí celé (W-32). */
+.ucet-tlacidlo .ucet-meno {
+  max-width: 240px;
+}
+
 .ucet-menu {
   position: absolute;
   right: 0;
