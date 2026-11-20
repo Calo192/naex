@@ -5,7 +5,7 @@
 
 import { useId } from "react";
 import { PRIESVITNOST_PODKLADU, cestyStrachu } from "../hra/tvaryStrachu.ts";
-import { IKONY } from "../karta/ikony.ts";
+import { IKONY, type IkonaCesta } from "../karta/ikony.ts";
 import "./podtacok.css";
 
 export type RankPodtacka = "bronz" | "striebro" | "zlato";
@@ -17,8 +17,14 @@ const FARBY: Readonly<Record<RankPodtacka | "tajny", { readonly okraj: string; r
   tajny: { okraj: "#6b6359", svetly: "#9a9086", tmavy: "#3f3933" },
 };
 
+/** Cesta piktogramu; podklad = priesvitný tieň výkričníka strachu. */
+type CestaPiktogramu = IkonaCesta & { readonly podklad?: boolean };
+
+/** Piktogramy akcií podľa kľúča — vlastná akcia či podmienka v nich nie je (undefined). */
+const IKONY_AKCII: Readonly<Partial<Record<string, readonly CestaPiktogramu[]>>> = IKONY;
+
 /** Zónové podmienky kreslí podtácok výkričníkmi z hry (mriežka 100 ako piktogramy akcií), nie nahratou ikonou. */
-const IKONY_STRACHU: Readonly<Record<string, readonly { d: string; evenOdd: boolean; podklad?: boolean }[]>> = {
+const IKONY_STRACHU: Readonly<Partial<Record<string, readonly CestaPiktogramu[]>>> = {
   "podmienka:znepokojenie": cestyStrachu(1, 100 / 24),
   "podmienka:strach": cestyStrachu(2, 100 / 24),
   "podmienka:vydesenie": cestyStrachu(3, 100 / 24),
@@ -80,7 +86,7 @@ export function Podtacok({ rank, ikona, obrazok = null, nazov, ziskany, tajny = 
   const skryty = tajny && !ziskany;
   const f = FARBY[skryty ? "tajny" : rank];
   const kluc = ikona?.startsWith("akcia:") ? ikona.slice(6) : ikona;
-  const cesty = kluc === null ? undefined : (IKONY_STRACHU[kluc] ?? (IKONY as Readonly<Record<string, readonly { d: string; evenOdd: boolean; podklad?: boolean }[]>>)[kluc]);
+  const cesty = kluc === null ? undefined : (IKONY_STRACHU[kluc] ?? IKONY_AKCII[kluc]);
   const napis = velkost >= NAPIS_OD;
   const textNapisu = skryty ? "TAJNÝ" : nazov;
   const rozmer = rozmerNapisu(textNapisu);
