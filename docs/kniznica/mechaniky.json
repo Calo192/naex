@@ -1577,5 +1577,231 @@
       "trojuholnik-cielov"
     ],
     "pridane": "2026-11-01"
+  },
+  {
+    "id": "rozpocet-zlozitosti",
+    "nazov": "Rozpočet zložitosti: najprv zrušiť alebo zlúčiť, až potom pridať (New World Order, complexity creep)",
+    "problem": "Každá oprava z playtestu pridáva výnimku a pravidlá rastú: telo PRAVIDLA.md má 25 870 slov a hlavička so zoznamom zmien ďalších 10 951. Zrozumiteľnosť v posledných turnusoch je 5,3–6 a všetci šiesti hráči 11. 11. spomínajú hustotu pravidiel (docs/napady/mrtve-pravidla-20261116.html). Hra nemá pravidlo, ktoré by rastu bránilo.",
+    "ako": "1. Zložitosť sa delí na druhy: povrchová (koľko textu treba prečítať), zložitosť stola (koľko vecí naraz treba sledovať) a strategická (koľko treba premýšľať). 2. Povrchová zložitosť a zložitosť stola majú strop pre vrstvu, ktorú vidí nováčik. Strategická zložitosť sa vadí najmenej. 3. Väčšina obsahu (u Magicu asi 80 % commonov) musí byť pod čiarou a len menšina ju smie prekročiť, keď má dôvod. 4. Pri každom probléme sa najprv skúsi pravidlo zrušiť alebo zlúčiť dva prvky do jedného. Nové pravidlo prichádza až potom. 5. Zložitosť sa nemaže, presúva sa do vrstvy, kde jej čitateľ rozumie (rare, rozšírenie, pokročilé ťahy).",
+    "hry": [
+      {
+        "nazov": "Magic: The Gathering — New World Order (od 2008)",
+        "preco": "R&D od roku 2008 dáva menej zložitosti do common slotu, aby zastavili complexity creep. Zložitosť neodstránili, presunuli ju do vyšších vzácností. Rosewater rozlišuje povrchovú zložitosť, zložitosť stola a strategickú zložitosť. Strategická sa vadí najmenej, lebo nováčikov neodpudzuje.",
+        "zdroj": "https://mtg.wiki/page/New_World_Order"
+      },
+      {
+        "nazov": "Magic — pravidlo 80/20 pri commonoch",
+        "preco": "Rosewater v podcaste: väčšina commonov drží čiaru a asi 20 % ju smie prekročiť. Zložitosť je teda rozpočet, nie zákaz.",
+        "zdroj": "https://dtwtranscripts.blogspot.com/2014/06/62014-episode-133-designing-commons.html?m=1"
+      },
+      {
+        "nazov": "Magic — druhy zložitosti (rozbor)",
+        "preco": "Povrchová zložitosť, zložitosť stola a strategická zložitosť. Strategickú zložitosť pokladajú za najmenej problémovú.",
+        "zdroj": "https://www.coolstuffinc.com/a/natasha-lewis-harrington-editorial-psychology-03282013-understanding-complexity"
+      },
+      {
+        "nazov": "Magic — complexity creep dnes",
+        "preco": "Play Boostery (2024) zložitosť commonov znova zdvihli. Rosewater o Magicu hovorí, že ostáva jednou z najzložitejších hier na trhu. Rozpočet treba strážiť stále, inak sa rozpustí.",
+        "zdroj": "https://draftsim.com/mtg-complexity-creep/"
+      },
+      {
+        "nazov": "Justin Gary (Ascension) — Designing for Elegance",
+        "preco": "Test elegancie: zruš pravidlo, zlúč dva komponenty a pozri, čo sa stratí. Z výsledku vyhľadávania, článok sa v cloude nedal otvoriť.",
+        "zdroj": "https://justingarydesign.substack.com/p/designing-for-elegance"
+      },
+      {
+        "nazov": "GameTek — Take It Away",
+        "preco": "Pri probléme v hre skús najprv pravidlá zrušiť alebo zlúčiť, nie pridať záplatu: „Removing rules is how you achieve elegance.“ Z výsledku vyhľadávania. Autor Geoff Engelstein je z vlastných vedomostí, neoverené.",
+        "zdroj": "https://gametek.substack.com/p/take-it-away"
+      }
+    ],
+    "kritika": "Prísny strop robí karty plochými. Hráči Magicu sa sťažovali, že commony sú nudné, a Play Boostery strop povolili (mtg.wiki). Niektorí dizajnéri tvrdia, že malé výnimky sa oplatia, keď skrátia cestu k zábave (pandaqi.pages.dev, Why rules should be less strict). Rozpočet sám nepovie, ktorá výnimka je dôležitá. Na to treba meranie.",
+    "prevod": "Pravidlo pre Leadera a Navrhára: každá nová výnimka v PRAVIDLA.md musí mať v tej istej zmene aspoň jedno zrušenie alebo zlúčenie (v12.5 to už spravila: limit vykladania, „priznaný“ Dlh, zadĺženie). Vrstvy NA EX!: (a) jadro, ktoré učí výučba Prvá hra, (b) pokročilé ťahy §13 (Vypiť, Záverečná, Podstrčenie), (c) výnimky na kartách §16. Rozpočet platí hlavne pre (a): napríklad najviac N verejných počítadiel na hráča (dnes poldeci, cigarety, pečeň, Dlh, Chuť…) a najviac M krokov v poradí vyhodnotenia. Návrhy z Playtestu by mali mať riadok „čo ubudne“.",
+    "rizika": "Strop môže zabiť satiru, ktorú nesú práve špeciálne karty. Rozpočet patrí jadru, nie kartám. Rušenie môže zmeniť balans, čo stráži odtlačok hry a turnaje botov. Michal môže výnimku chcieť pre tému (napríklad parkovanie Cirhózy) a vtedy má prednosť.",
+    "merat": "Pri každej verzii slová tela PRAVIDLA.md bez hlavičky, počet verejných počítadiel na hráča, počet krokov vyhodnotenia bitky a Pitky. K tomu ako často sa každé pravidlo spustí v 36 partiách botov (metodika Vymyselníka 2026-11-16) a Zrozumiteľnosť z playtestu. Cieľ: slová klesajú a Hĺbka neklesá.",
+    "temy": [
+      "hustota-pravidiel"
+    ],
+    "pridane": "2026-11-17"
+  },
+  {
+    "id": "klucove-slovo-s-pripomienkou",
+    "nazov": "Jedno slovo na jeden pojem: kľúčové slovo s pripomienkovým textom (keyword + reminder text)",
+    "problem": "Ten istý pojem mal v NA EX! dve mená (limit vykladania a plné poldeci, priznaný Dlh a Dlh). Hráči potom prepočítavali, či ide o to isté (Jano 13. 11., N2). Karty pritom nesú dlhé vety, ktoré sa opakujú (Furt…, Pitka: …).",
+    "ako": "1. Opakovaný účinok dostane meno, jedno až tri slová. 2. Pravidlá ho definujú raz. 3. Na karte stojí meno a za ním kurzívou v zátvorke krátka pripomienka, čo robí. Pripomienka je zrozumiteľnejšia, aj keď menej presná, a pravidlo nedefinuje. 4. Na kartách pre nováčikov (základná sada) pripomienka je, na kartách pre skúsených chýba alebo sa skráti. 5. Meno je zároveň pojem, na ktorý sa odvolávajú iné karty („karta s Výtržníkom“).",
+    "hry": [
+      {
+        "nazov": "Magic: The Gathering — reminder text",
+        "preco": "Pripomienka je kurzíva v zátvorke za kľúčovým slovom a zhŕňa jeho funkciu. Kvôli zrozumiteľnosti obetuje technickú presnosť a pravidlo nedefinuje. Prvý raz bola v Mirage, v základnej sade od Fifth Edition. Expertné sady ju často vynechávajú.",
+        "zdroj": "https://mtg.wiki/page/Reminder_text"
+      },
+      {
+        "nazov": "Magic — prečo pomenúvať mechaniky (Drive to Work #1252)",
+        "preco": "Kľúčové slovo nahradí dlhý text jedným až tromi slovami. Keď ho hráč pozná, pripomienku nepotrebuje a text karty sa skráti. Rosewater priznáva, že hodnotu mien na začiatku podcenili.",
+        "zdroj": "https://podscripts.co/podcasts/magic-the-gathering-drive-to-work-podcast/1252-why-we-name-mechanics"
+      },
+      {
+        "nazov": "Magic — kedy dať kľúčové slovo (Drive to Work #552)",
+        "preco": "Kľúčové slovo sa oplatí, keď sa účinok opakuje na viacerých kartách. Pri jednej karte je to len ďalší pojem na naučenie. Obsah epizódy je z názvu a výsledku vyhľadávania.",
+        "zdroj": "https://podscripts.co/podcasts/magic-the-gathering-drive-to-work-podcast/552-when-to-keyword"
+      },
+      {
+        "nazov": "Magic — rules baggage",
+        "preco": "Každé kľúčové slovo a pojem nesie „batožinu pravidiel“: hráč si musí pamätať aj jeho okrajové prípady. Obsah stránky je z výsledku vyhľadávania, nedá sa otvoriť.",
+        "zdroj": "https://mtg.wiki/page/Rules_baggage"
+      }
+    ],
+    "kritika": "Časť hráčov pripomienky v Magicu vnímala ako „zhlúpnutie“ hry (mtg.wiki). Kritika na Substacku: ak kľúčové slovo slúži na skrátenie textu, pripomienka ho znova predĺži. Pri zložitých slovách (trample) pripomienka zamlčí okrajové prípady (21stcenturymurkdweller.substack.com, Decoding Keywords). Pri malom počte opakovaní je kľúčové slovo len slovo navyše.",
+    "prevod": "Slovník §17 by mal byť zoznam kľúčových slov: každé jedno meno, jedna veta a odkaz na paragraf. Na kartách v tvorcovi pripomienka v zátvorke kurzívou za opakovaným pojmom (Furt, Výtržník, Odpor, Posilnenie, Robota, Hazard…), kým hráč nemá napríklad 5 partií. Neskôr ju klient skryje a ukáže v nápovede (napovedy.json). V digitálnej hre to môže riešiť prepínač v profile, takže karta v cards.json ostáva jedna. Pravidlo pre Korektora: pojem má jedno meno v pravidlách, na karte, v UI aj vo výučbe (otvorený návrh 4 z docs/napady/zjednodusenie.html).",
+    "rizika": "Pripomienka zaberá miesto na karte, ktoré patrí ilustrácii a satire. Dlhá pripomienka zakryje vtip v názve. Kľúčové slová môžu znieť ako „technický“ jazyk a zabiť tón krčmy. Mená preto majú byť z krčmy (Furt, Výtržník), nie z manuálu. Pri prekladoch (EN, PL, CS, HU) treba glosár, ktorý už Prekladateľ vedie.",
+    "merat": "Koľko pojmov v PRAVIDLA.md má viac než jedno meno (Korektor). Koľko otázok v nezrovnalostiach playtesterov je „je X to isté ako Y“. Pri nováčikoch (naex-novacik) test pochopenia pred zavedením pripomienok a po ňom.",
+    "temy": [
+      "hustota-pravidiel"
+    ],
+    "pridane": "2026-11-17"
+  },
+  {
+    "id": "vynimka-na-karte",
+    "nazov": "Výnimka patrí na kartu: krátke základné pravidlá, karta má prednosť (exception-based design)",
+    "problem": "Pravidlá NA EX! nesú mechaniky, ktoré existujú kvôli jedinej karte alebo už žiadnej: zadĺženie kvôli Výhernému automatu, „priznanie dá kartu“, ktoré nespustí žiadna karta, Kohút, Veštica 5b (docs/napady/mrtve-pravidla-20261116.html, nálezy 3 a 7). Hráč si ich musí pamätať, aj keď kartu v partii neuvidí.",
+    "ako": "1. Základné pravidlá opisujú len to, čo platí v každej partii. 2. Čo platí len pre jednu kartu, je celé na karte. Pravidlá k tomu pridajú jedinú vetu: „Keď text karty odporuje pravidlám, má prednosť karta.“ 3. Karta, ktorá pravidlo porušuje, musí byť viditeľná v chvíli, keď sa porušenie deje (na stole, nie v balíčku). 4. Výklad nejednoznačných kariet je samostatná príloha (FAQ), nie súčasť pravidiel, ktoré sa učia.",
+    "hry": [
+      {
+        "nazov": "Cosmic Encounter",
+        "preco": "Každý hráč má mimozemskú moc, ktorá mu dovolí porušiť základné pravidlá. Že je základný postup krátky a rozmanitosť nesú moci, je z vlastných vedomostí, neoverené. Rozšírenie Cosmic Dominion pridáva kartu odmien, ktorá ruší jedno štandardné pravidlo.",
+        "zdroj": "https://images-cdn.fantasyflightgames.com/filer_public/11/c6/11c61988-bb60-428f-b614-9c3a952f070b/cosmic-encounter-rulebook.pdf"
+      },
+      {
+        "nazov": "Dominion",
+        "preco": "Základné pravidlá sú krátke (akcia, nákup, upratanie; z vlastných vedomostí, neoverené) a karty ich menia. Niektoré karty z rozšírení menia základné pravidlá. Errata jednej karty zakazuje kombináciu s inou kartou, lebo porušenia sa navzájom bijú. To je cena výnimiek na kartách.",
+        "zdroj": "https://wiki.dominionstrategy.com/index.php/Buy"
+      },
+      {
+        "nazov": "Grand Archive TCG",
+        "preco": "Pravidlá to hovoria formálne: keď text karty odporuje pravidlám hry, má prednosť karta.",
+        "zdroj": "https://rules.gatcg.com/game-mechanics/game-mechanics-miscellaneous-topics/player-action-legality"
+      },
+      {
+        "nazov": "Trampoline Tales — Making rules and breaking rules (blog)",
+        "preco": "Porušiť pravidlo sa dá bez zmätku len vtedy, keď si hráč pravidlo vie ľahko pozrieť v chvíli, keď je dôležité.",
+        "zdroj": "https://blog.trampolinetales.com/making-rules-and-breaking-rules/"
+      }
+    ],
+    "kritika": "Výnimky na kartách sa navzájom bijú a treba ich rozhodovať (errata Dominionu). Výnimky, aj keď sú tematické, hráčov zahltia a zabúdajú sa na ne (bgdf.com, Simplifying game design). V hre s veľa kartami na stole sa celková zložitosť len presunie z knihy na stôl.",
+    "prevod": "§16 Výklad kariet už je takáto príloha a engine karty vyhodnocuje sám (PRAVIDLA §16). Krok navyše: z §1–§15 vytiahnuť každú vetu, ktorá platí len pre jednu kartu (Opatrovateľka v Chuti, Výherný automat, Veterán, Kočovník, Degustátorka, Predsedova vila…), a nechať ju len v texte karty a v §16. Do §2 pridať vetu „karta má prednosť pred pravidlami“. Výučba potom učí len §1–§15. V digitálnej hre to funguje lepšie ako na papieri, lebo server výnimku vyhodnotí sám a klient ju ukáže pri karte (náhľad).",
+    "rizika": "Hráč nevidí súperovu ruku ani balíček a výnimka sa ho môže týkať bez varovania, napríklad súperova karta v Pitke lícom dole. Taká výnimka musí byť verejná aspoň v Ponuke a v Knižnici kariet. Rozpory medzi kartami musí niekto rozhodnúť (naex-rozhodca). Satira na kartách sa môže stratiť, keď ich text narastie výnimkami.",
+    "merat": "Počet viet v §1–§15, ktoré menujú konkrétnu kartu. Pri každej takej vete, koľkokrát sa karta v 36 partiách botov hrala. Či sa nezrovnalostí v playteste po presune do §16 ubudne.",
+    "temy": [
+      "hustota-pravidiel"
+    ],
+    "pridane": "2026-11-17"
+  },
+  {
+    "id": "jedna-vec-viac-uloh",
+    "nazov": "Jedna vec, viac úloh: menej druhov zdrojov a počítadiel (karta = peniaze = tovar)",
+    "problem": "Hráč NA EX! sleduje veľa verejných čísel: plné a vypité poldeci, maximum poldeci, cigarety, pečeň, Dlh, Chuť, neresti v kole, k tomu strach a reči. Chuť hráči chvália ako tému, ale robia ťahy „len kvôli počítadlu“ (docs/playtesty/navrhy-zjednodusenie-20261116.json, bod Chuť). Každé ďalšie počítadlo je povrchová zložitosť a zložitosť stola.",
+    "ako": "1. Jeden fyzický prvok plní dve až tri úlohy: karta v ruke je stavba, platidlo aj tovar. 2. Rozhodnutie vzniká z toho, na čo prvok minieš, takže nové počítadlo netreba. 3. Druhy zdrojov sa zlučujú, kým každý ešte nesie vlastné rozhodnutie. 4. Stav, ktorý treba sledovať, leží na stole ako predmet, nie ako číslo na pamätanie.",
+    "hry": [
+      {
+        "nazov": "San Juan",
+        "preco": "Karta v ruke je budova aj peniaze na budovy. Tovar sa označuje kartou zastrčenou pod výrobnú budovu: „Cards = Goods = Money.“ Recenzent hru vraj naučí takmer každého za päť minút.",
+        "zdroj": "https://en.wikipedia.org/wiki/San_Juan_(card_game)"
+      },
+      {
+        "nazov": "Race for the Galaxy",
+        "preco": "Tom Lehmann prevzal jadro svojho návrhu San Juanu a karta má tie isté tri úlohy. Je hlbšia, ale ikony niektorých hráčov odrádzajú. Lehmann na GDC hovoril o kartách ako zdrojoch a o ikonách.",
+        "zdroj": "https://martinfowler.com/articles/race-san-juan.html"
+      },
+      {
+        "nazov": "Glory to Rome (Carl Chudyk)",
+        "preco": "Myšlienky San Juanu vyhnala do krajnosti („dialed to 11“): karta je rola, budova, materiál aj klient.",
+        "zdroj": "https://therewillbe.games/articles-analysis/672-cards-as-swiss-army-knives"
+      },
+      {
+        "nazov": "Multi-use cards (prehľad)",
+        "preco": "Prehľad hier, v ktorých má karta viac použití, a prečo z toho vzniká ťažké rozhodnutie bez ďalších pravidiel.",
+        "zdroj": "https://www.meeplemountain.com/top-six/top-6-games-with-multi-use-cards/"
+      }
+    ],
+    "kritika": "Viac úloh na jednej karte znamená viac textu alebo ikon na karte. Race for the Galaxy kritici vyčítajú ikony, ktoré nováčika odradia (therewillbe.games, meeplelikeus). Zlúčenie dvoch zdrojov môže zrušiť napätie medzi nimi. Ak cigareta aj poldeci znamenajú to isté, zmizne voľba „fajčiť alebo vyložiť“.",
+    "prevod": "NA EX! to už urobil dvakrát: limit vykladania = plné poldeci (v12.2) a Dlh je len počítadlo (v8.2). Kandidáti na ďalšie zlúčenie (len na posúdenie, nenavrhujem): (a) Chuť ako predmet na stole namiesto čísla, napríklad vypité poldeci z minulého kola ostávajú prevrátené, takže Chuť vidno bez počítania; (b) neresti kola sa netreba počítať, keď zostávajú viditeľné ako vyfajčené špaky a vypité poldeci; (c) maximum poldeci = počet pohárov na stole (už to tak je, len pravidlá to opisujú číslom). Výučba potom ukazuje predmety, nie čísla.",
+    "rizika": "Fyzická metafora v digitálnej hre funguje len vtedy, keď ju UI naozaj kreslí. Inak je to len premenovanie. Zlúčenie mení balans ekonomiky, ktorá je dnes najcitlivejšou časťou (docs/kniznica/2026-11-10-ekonomicka-lavina.html). Absťák je satira závislosti a nesmie sa stratiť.",
+    "merat": "Koľko verejných počítadiel hráč sleduje (zoznam z viewFor). V partiách playtesterov podiel ťahov, ktoré hráč sám opisuje ako „kvôli počítadlu“. Pri navrhnutom zlúčení turnaj botov so starým a novým pravidlom (rovnaké semienka): či sa zmení podiel víťazstiev a rozptyl.",
+    "temy": [
+      "hustota-pravidiel"
+    ],
+    "pridane": "2026-11-17"
+  },
+  {
+    "id": "kazdy-tah-je-rozhodnutie",
+    "nazov": "Každý ťah je rozhodnutie: štruktúra bez prázdnych krokov a automatický pas s pozorom na skryté informácie",
+    "problem": "Kolo má 1–5 Pitiek a pred každou je Zhromaždenie (PRAVIDLA §7 Počet Pitiek). Hráč bez plného poldeci, s prázdnou rukou alebo pri rozhodnutom finále ich preklikáva „hotovo“ a „pas“. Hra ťah odohrá sama, len keď je jediný možný. Jedna cigareta na fajčenie už znamená klikanie (docs/playtesty/navrhy-zjednodusenie-20261116.json, bod Pitky; Tempo 5,5).",
+    "ako": "A, štruktúra: 1. Ťah je výber z malého počtu akcií, z ktorých každú smieš použiť raz za kolo, takže ťahy sa nedajú zahodiť. 2. Ťah má len dve možnosti, ktoré sa vylučujú (vezmi, alebo predaj). B, digitálny automat: 3. Klient sa zastaví len vtedy, keď má hráč legálnu hru. Ostatné kroky preskočí. 4. Hráč si smie zapnúť plnú kontrolu a zastaviť sa všade.",
+    "hry": [
+      {
+        "nazov": "Hanamikoji (2 hráči)",
+        "preco": "Každé kolo má hráč štyri akcie a každú použije práve raz, v ľubovoľnom poradí. Každý krok je ťažké rozhodnutie. Recenzent ju radí do školy, ktorá dáva prednosť malému počtu ťažkých rozhodnutí pred veľkým počtom jednoduchých (z výsledku vyhľadávania, stránka sa v cloude nedala otvoriť).",
+        "zdroj": "https://thethoughtfulgamer.com/2019/02/13/hanamikoji-review/"
+      },
+      {
+        "nazov": "Jaipur (2 hráči)",
+        "preco": "V ťahu hráč buď berie, alebo predáva, nikdy oboje. Recenzie hru chvália ako jednoduchú a pritom dosť hlbokú. Napätie vzniká z načasovania predaja a z toho, čo nechá súperovi na trhu.",
+        "zdroj": "https://en.wikipedia.org/wiki/Jaipur_(card_game)"
+      },
+      {
+        "nazov": "MTG Arena — automatické zastavenia",
+        "preco": "Arena sa zastaví len vtedy, keď má hráč dostupnú hru, aby partia plynula. Cena: blafovanie je ťažšie, lebo zastavenie prezradí, že hráč niečo má. Hráč to obíde ručnými zastaveniami alebo plnou kontrolou (Ctrl na jeden ťah, Shift+Ctrl natrvalo).",
+        "zdroj": "https://mtgazone.com/playing-a-match/"
+      },
+      {
+        "nazov": "MTG Arena — kritika automatu",
+        "preco": "Spúšťač sa vyhodnotí sám, keď hráč nemá legálnu hru, a hra skočí rovno do boja. Spúšťače na konci súperovho ťahu sú „zadarmo“ proti tým, čo nepoužívajú plnú kontrolu. Hráči hlásia aj to, že plná kontrola sa sama vypína.",
+        "zdroj": "https://devtrackers.gg/magic-arena/p/1be966ed-they-really-need-to-fix-legion-warboss-and-other-at-the-beginning-of-attack-triggers"
+      }
+    ],
+    "kritika": "Automat prezrádza skryté informácie: keď sa hra zastaví len hráčovi s možnosťou, súper z rýchlosti vyčíta, či niečo má (MTG Arena, blafovanie). Plná kontrola je pre expertov a nováčik o ňu príde. Pri štruktúre „každá akcia raz“ sú posledné ťahy kola vynútené (Hanamikoji: štvrtá akcia je tá, čo ostala).",
+    "prevod": "(a) Automat: hra už ťah odohrá sama, keď je jediný možný. Rozšírenie by bolo „ťah bez rozhodnutia“: keď hráč smie len fajčiť a fajčenie mu nič nedá, alebo keď je finále matematicky rozhodnuté. To rozhoduje server, nie klient (nemenné pravidlo 3). (b) Pozor na pravidlo 2: Pitka je naraz a odpovede sú lícom dole. Keď server preskočí hráča bez možnosti okamžite, súper z času vyčíta, že nemá NA EX ani odpoveď. Riešenie z Areny je obrátené: pri skrytej voľbe preskočiť vždy po rovnakom čase alebo naraz za oboch, nikdy hneď. (c) Štruktúra: Zhromaždenie pred každou Pitkou môže byť jedno spoločné „okno“ s pasom za oboch, keď ani jeden nemá plný poldeci. Patrí Navrhárovi ako možnosť k bodu o tempe.",
+    "rizika": "Rýchlejší automat zmaže chvíle napätia, keď hráč čaká na súpera (krčmová dráma). Automatický pas za hráča, ktorý mal skrytú možnosť (Nástroj, priznanie), je chyba v hre, nie zjednodušenie. Únik informácie časovaním je bezpečnostná diera, ktorú má overiť naex-strazca.",
+    "merat": "Z logov partií (boti aj playtesteri): podiel krokov Zhromaždenia a Pitky, v ktorých mal hráč len jeden alebo nula zmysluplných ťahov, a ich čas u ľudí (naex-analytik). Po zmene: dĺžka partie a známka Tempo. Strážca: či čas odpovede servera v Pitke nezávisí od toho, či hráč má NA EX.",
+    "temy": [
+      "hustota-pravidiel"
+    ],
+    "pridane": "2026-11-17"
+  },
+  {
+    "id": "dve-knihy-uc-a-hladaj",
+    "nazov": "Dve knihy: krátke „Nauč sa hrať“ v poradí hry a úplná príručka na hľadanie (Learn to Play + Rules Reference)",
+    "problem": "PRAVIDLA.md je zároveň špecifikácia pre kód, učebnica aj história: 10 951 slov hlavičky so zoznamom zmien je pred prvým pravidlom (§1 začína na riadku 623). AI hráči sa učia z ťaháka (tools/playtest/tahak.md, 393 riadkov) a ľudia z výučby a stránky Pravidlá. Hráči sa sťažujú na dĺžku („ťahák má viac než 300 riadkov“, Hela; docs/napady/mrtve-pravidla-20261116.html).",
+    "ako": "1. Kniha na učenie (Learn to Play) ide v poradí hry, je zámerne neúplná a ukáže tok kola. 2. Príručka (Rules Reference) je úplná a usporiadaná podľa pojmov na hľadanie počas hry. 3. Kniha na učenie ju výslovne posiela k otázkam, ktoré vzniknú pri hre. 4. Po prvých partiách sa kniha na učenie už neotvára.",
+    "hry": [
+      {
+        "nazov": "Fantasy Flight Games — X-Wing 2.0 a ďalšie",
+        "preco": "Krátky Learn to Play uvádza do štruktúry ťahu. Rules Reference je úplný a abecedný.",
+        "zdroj": "https://www.belloflostsouls.net/?p=94188"
+      },
+      {
+        "nazov": "Mansions of Madness 2. vydanie",
+        "preco": "Learn to Play výslovne vynecháva veľa pravidiel a interakcií, aby hru naučil rýchlo. Otázky z hry odkazuje do Rules Reference.",
+        "zdroj": "https://m102.nthu.edu.tw/~s102061202/mansions_of_madness_second_edition_learn_to_play.pdf"
+      },
+      {
+        "nazov": "Warhammer Quest: The Adventure Card Game",
+        "preco": "FFG pri ohlásení napísali, že pravidlá rozdelili do dvoch dokumentov kvôli pohodliu.",
+        "zdroj": "https://www.fantasyflightgames.com/en/news/2015/11/23/your-map-and-torch/"
+      },
+      {
+        "nazov": "FFG fórum — skúsenosti hráčov",
+        "preco": "Zástanca: Learn to Play ukáže tok hry a počas hry Rules Reference zodpovie všetko. Po jednej-dvoch partiách sa Learn to Play nepotrebuje. Odporca: abecedná príručka sa zle učí a niektoré pravidlá sú len v Learn to Play.",
+        "zdroj": "https://ffg-forum-archive.entropicdreams.com/topic/174519-rules-reference-guide"
+      }
+    ],
+    "kritika": "Abecedné usporiadanie sa zle číta od začiatku. Pravidlo, ktoré je len v knihe na učenie, v príručke chýba. Výnimky, ktoré na sebe závisia, sa medzi dvoma knihami trhajú (FFG fórum). Oficiálne zdôvodnenie FFG vyhľadávanie nenašlo, je len opis formátu.",
+    "prevod": "NA EX! má tri vrstvy, len nie sú takto oddelené. (a) Učebnica: výučba Prvá hra a stránka Pravidlá na webe, v poradí kola. (b) Príručka: PRAVIDLA.md §1–§17 ako úplná špecifikácia, ktorú číta kód, rozhodca aj AI. (c) História: zoznam zmien v hlavičke patrí do docs/pravidla-historia.md (tam už sú staré znenia) a v hlavičke stačí verzia a odkaz. Hlavička by sa tým skrátila asi o 11 000 slov, bez zmeny jediného pravidla. Ťahák AI je tretia učebnica a mal by sa odvolávať na paragrafy, nie ich opakovať (stráži ho test čísel). Pravidlo z kritiky: čo je v učebnici, musí byť aj v príručke.",
+    "rizika": "Tri dokumenty sa rozídu. Dnes to sčasti stráži test ťaháka a mapa rozhodcu (tools/rozhodca/mapa.json). Hlavička so zmenami slúži Leaderovi a agentom ako rýchly prehľad „čo je nové“, preto ju treba nahradiť odkazom, nie zmazať. Presun nie je zmena pravidiel, ale o PRAVIDLA.md rozhoduje Leader a Michal.",
+    "merat": "Slová od §1 do konca a slová hlavičky. Koľko tokenov číta AI playtester pred partiou (ťahák + pravidlá). Či sa po skrátení zmení počet nezrovnalostí typu „nenašiel som pravidlo“ v playtestoch a Zrozumiteľnosť.",
+    "temy": [
+      "hustota-pravidiel"
+    ],
+    "pridane": "2026-11-17"
   }
 ]
