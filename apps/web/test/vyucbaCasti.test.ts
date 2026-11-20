@@ -3,7 +3,7 @@
 
 import { describe, expect, it } from "vitest";
 import { vetyTextu } from "../src/hra/bar.ts";
-import { rozpracovana, textNaKonci, ukazStarsichVoVyucbe, type VyucbaUctu } from "../src/hra/Vyucba.tsx";
+import { postupVyucby, rozpracovana, textNaKonci, ukazStarsichVoVyucbe, type VyucbaUctu } from "../src/hra/Vyucba.tsx";
 import type { KrokVyucby } from "../src/hra/useHra.ts";
 
 const UCET: VyucbaUctu = { krok: 0, spolu: 210, stav: null, dostupna: true, ponuknut: false, castiHotove: 0, cast: null, rozpracovana: false, dalsiaCast: null, pripravujeme: null };
@@ -12,18 +12,40 @@ const DRUHA = { cast: 2, nazov: "NA EX a podlosti", minuty: 16 };
 describe("koniec časti výučby", () => {
   const view = { ja: 0 as const, koniec: null };
 
-  it("ponúkne ďalšiu časť, alebo povie, že ju pripravujeme; číslo časti slovom (bar delí vety bodkou)", () => {
-    const dalsia = textNaKonci({ koniecCasti: 1, dalsiaCast: DRUHA, pripravujeme: null }, view);
-    expect(dalsia).toMatch(/^Prvú časť máš za sebou/);
-    expect(dalsia).toContain("Druhá časť, NA EX a podlosti, trvá asi 16 minút");
-    expect(textNaKonci({ koniecCasti: 1, dalsiaCast: null, pripravujeme: DRUHA }, view)).toContain("Druhú časť (NA EX a podlosti) pripravujeme.");
-    // „1. časť“ by sa v bare zlomila za číslom na samostatnú stranu.
-    for (const veta of vetyTextu(dalsia)) expect(veta.trim()).not.toMatch(/^\d+\.$/);
+  const ROZLUCKA = "To je prvé kolo. Na zdravie!";
+
+  it("len rozlúčka Melichara — kam ďalej povedia tlačidlá, text klienta ju neopakuje (V-18)", () => {
+    expect(textNaKonci({ dalsiaCast: DRUHA, pripravujeme: null }, view, ROZLUCKA)).toBe(ROZLUCKA);
+    expect(textNaKonci({ dalsiaCast: null, pripravujeme: DRUHA }, view, ROZLUCKA)).toBe(ROZLUCKA);
+    expect(vetyTextu(textNaKonci({ dalsiaCast: DRUHA, pripravujeme: null }, view, ROZLUCKA))).toHaveLength(2);
   });
 
-  it("po poslednej časti výsledok partie", () => {
+  it("po poslednej časti rozlúčka a výsledok partie", () => {
     const koniec = { vitaz: 0 as const, dovod: "", body: [27, 10] as const };
-    expect(textNaKonci({ koniecCasti: 3, dalsiaCast: null, pripravujeme: null }, { ja: 0, koniec })).toContain("Partia skončila 27 : 10 na špaky — vyhral si.");
+    const text = textNaKonci({ dalsiaCast: null, pripravujeme: null }, { ja: 0, koniec }, ROZLUCKA);
+    expect(text).toMatch(/^To je prvé kolo\./);
+    expect(text).toContain("Partia skončila 27 : 10 na špaky — vyhral si.");
+  });
+});
+
+describe("postup výučby (V-22)", () => {
+  const CASTI = [
+    { cast: 1, minuty: 7 },
+    { cast: 2, minuty: 15 },
+    { cast: 3, minuty: 12 },
+  ];
+
+  it("úseky podľa minút, hotové časti plné, zostávajúce minúty z rozohranej časti", () => {
+    const p = postupVyucby(CASTI, 2, 0.5);
+    expect(p.useky.map((u) => [u.minuty, u.plne])).toEqual([
+      [7, 1],
+      [15, 0.5],
+      [12, 0],
+    ]);
+    expect(p.zostava).toBe(8);
+    expect(postupVyucby(CASTI, 1, 0.05).zostava).toBe(7);
+    expect(postupVyucby(CASTI, 1, 0.99).zostava).toBe(1);
+    expect(postupVyucby(CASTI, 3, 1).zostava).toBe(0);
   });
 });
 

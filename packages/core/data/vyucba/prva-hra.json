@@ -635,7 +635,7 @@
     {
       "id": "k-hotovo-bot",
       "kto": "bot",
-      "melichar": "Štamgast skončil a NA EX sa ukázalo: Traktoristovi zhasli obe [Rana] Rany. Čo ukáže tabuľka Pitky, dnes nechaj tak. Ide bitka.",
+      "melichar": "Štamgast skončil a NA EX sa ukázalo: Traktoristovi zhasli obe [Rana] Rany. Ide bitka.",
       "prikaz": {
         "type": "skipNaex"
       },

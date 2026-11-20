@@ -28,7 +28,8 @@ import { useHlaskyVyucby } from "./Melichar.tsx";
 import { stitokTahu, zmenyStola } from "./zmenyVyucby.ts";
 import type { Sada } from "@naex/tvorba";
 import { moznostiKvizu, rezimMelichara } from "./bar.ts";
-import { aktualnyJazyk, prelozHlasku, t, textOblasti } from "../i18n/jazyk.tsx";
+import { prelozHlasku, t, textOblasti } from "../i18n/jazyk.tsx";
+import { casti as CASTI_VYUCBY } from "@naex/core/data/vyucba/prva-hra.json";
 import { CisloStrany, MelicharVBare, NaJednomMieste, PredoslaStrana, StrankovanaVeta, VetaMelichara, kusyVety, useStrany, type KusVety } from "./MelicharBar.tsx";
 import "./vyucba.css";
 
@@ -117,12 +118,62 @@ const ZMENA_MS = 2_500;
  * na stole, inak by hráč po výbere karty nevidel, čím ťah dokončí.
  */
 const POTVRDIT = "potvrdit";
+/** „×“ pri pečiatke potvrdenia — vráti návrh do ruky. Svieti po odmietnutom ťahu (V-07). */
+const ZRUSIT_NAVRH = "zrusit-navrh";
+
+/** Kam karta z ruky ide: koniec línie v skupine kariet stola (vlastna = .moja, superova = .superova). */
+const SKUPINA_CIELA: Readonly<Record<string, string>> = { vlastna: "moja", superova: "superova" };
+
+/** Karta uid už leží (aj ako návrh) na tom konci línie, kam ju krok chce. */
+const kartaNaCieli = (uid: string, ciel: string): boolean =>
+  document.querySelector(`.linia .linia-skupina.${SKUPINA_CIELA[ciel] ?? "-"} [data-vyucba-uid="${Number(uid)}"]`) !== null;
+
+/**
+ * Cieľ ťahu a podmienené potvrdenie z očakávaného príkazu (V-07): „ciel:<kam>:<uid>“ rozsvieti
+ * „+“ na konci línie, kým tam karta neleží; „potvrdit-ak:<uid>@<kam>,…“ rozsvieti POTVRDIŤ, až keď
+ * návrh sedí s krokom. Ťah bez vykladania do línie potvrdzuje ako doteraz.
+ */
+export function cieleZOcakavania(c: Command | null): { readonly ciele: readonly string[]; readonly potvrdit: string } {
+  const kroky = c === null ? [] : c.type === "tah" ? (c.kroky as readonly Command[]) : [c];
+  const vykladanie = kroky.flatMap((k) => (k.type === "place" && SKUPINA_CIELA[k.target] !== undefined ? [`${k.uid}@${k.target}`] : []));
+  if (vykladanie.length === 0) return { ciele: [], potvrdit: POTVRDIT };
+  return {
+    ciele: [...vykladanie.map((v) => `ciel:${v.split("@")[1] ?? ""}:${v.split("@")[0] ?? ""}`), `zrusit-ak-zle:${vykladanie.join(",")}`],
+    potvrdit: `potvrdit-ak:${vykladanie.join(",")}`,
+  };
+}
 
 /** Prvky stola ku kľúču zo scenára — priamo, alebo cez zónu (ruka, linia, bar…). */
 export function prvkyKluca(kluc: string): HTMLElement[] {
   // Potvrdenie ťahu: tlačidlá so skratkou K (potvrdiť, hotovo) a tie, ktoré si to označia (vziať do ruky).
   if (kluc === POTVRDIT) {
     return [...document.querySelectorAll<HTMLElement>('.hra button:is(.tlacidlo-hlavne, .pecat-potvrd):is([data-skratka="k"], [data-vyucba="potvrdit"]):not(:disabled)')];
+  }
+  if (kluc.startsWith("potvrdit-ak:")) {
+    const sedi = kluc
+      .slice("potvrdit-ak:".length)
+      .split(",")
+      .every((v) => kartaNaCieli(v.split("@")[0] ?? "", v.split("@")[1] ?? ""));
+    return sedi ? prvkyKluca(POTVRDIT) : [];
+  }
+  if (kluc === ZRUSIT_NAVRH) return [...document.querySelectorAll<HTMLElement>(".hra .pecat-tahu-obal .pecat-zrusit")];
+  // Karta z ťahu leží ako návrh na opačnom konci línie — cesta späť je „×“ (POTVRDIŤ je vtedy zamknuté).
+  if (kluc.startsWith("zrusit-ak-zle:")) {
+    const zle = kluc
+      .slice("zrusit-ak-zle:".length)
+      .split(",")
+      .some((v) => {
+        const [uid = "", ciel = ""] = v.split("@");
+        return kartaNaCieli(uid, ciel === "vlastna" ? "superova" : "vlastna");
+      });
+    return zle ? prvkyKluca(ZRUSIT_NAVRH) : [];
+  }
+  if (kluc.startsWith("ciel:")) {
+    const [, ciel = "", uid = ""] = kluc.split(":");
+    if (kartaNaCieli(uid, ciel)) return [];
+    return [
+      ...document.querySelectorAll<HTMLElement>(`.linia .linia-skupina.${SKUPINA_CIELA[ciel] ?? "-"} :is(.miesto-volby:not(:disabled), .ciel-miesto[data-ciel="${ciel}"])`),
+    ];
   }
   // Karta z očakávaného ťahu (uid:N) — mimo zväčšenej kópie v lupe.
   if (kluc.startsWith("uid:")) {
@@ -227,10 +278,20 @@ function useZvyraznenie(kluce: readonly string[], zmeny: readonly string[]): rea
       const najdene = new Map<HTMLElement, string>();
       // Karty z očakávaného ťahu: „ruka:pijan“ pri dvoch Pijanoch zvýrazní len toho, ktorého ťah čaká.
       const ocakavane = new Set(zoznam.filter((k) => k.startsWith("uid:")).map((k) => k.slice(4)));
+      // Karty, ktorých konkrétnu inštanciu krok čaká — len pri nich sa ostatné inštancie zhasnú.
+      // Inak zhasla aj jediná karta inej karty z toho istého ťahu (Miňištrant za Pijanom, V-07).
+      const kartyOcakavane = new Set(
+        [...ocakavane].flatMap((u) => [...document.querySelectorAll<HTMLElement>(`[data-vyucba-uid="${Number(u)}"]`)].map((el) => el.getAttribute("data-vyucba-karta") ?? "")),
+      );
       for (const k of zoznam) {
         // Karta inej inštancie (druhý Pijan v ruke, keď prvý už leží na stole ako návrh) nesvieti.
         const prvky = prvkyKluca(k).filter(
-          (el) => viditelny(el) && (ocakavane.size === 0 || !el.hasAttribute("data-vyucba-uid") || ocakavane.has(el.getAttribute("data-vyucba-uid") ?? "")),
+          (el) =>
+            viditelny(el) &&
+            (ocakavane.size === 0 ||
+              !el.hasAttribute("data-vyucba-uid") ||
+              ocakavane.has(el.getAttribute("data-vyucba-uid") ?? "") ||
+              !kartyOcakavane.has(el.getAttribute("data-vyucba-karta") ?? "")),
         );
         for (const el of prvky) najdene.set(el, k);
       }
@@ -390,6 +451,24 @@ export function VyucbaStol({
   const radaText = rada === null ? null : krok === null ? rada.text : textKroku(krok.id, rada.text);
   const vetaKroku = krok === null ? "" : textKroku(krok.id, krok.melichar);
   const { prehraj: prehrajHlasku } = useHlaskyVyucby();
+
+  // Rozlúčka (posledný krok časti) a koniec časti sú jedna obrazovka (V-18): „ďalej“ rozlúčky pošle
+  // klient sám, Melichar dohovorí a vedľa sú hneď tlačidlá kam ďalej. Predtým prišla rozlúčka,
+  // „Dokončiť časť“ a ten istý obsah ešte raz textom klienta.
+  const rozlucka = krok !== null && krok.kto === "info" && krok.cast.poradie === krok.cast.krokov - 1;
+  const [textRozlucky, setTextRozlucky] = useState<{ readonly cast: number; readonly text: string } | null>(null);
+  const odoslanaRozlucka = useRef<string | null>(null);
+  useEffect(() => {
+    if (!rozlucka || krok === null || pocitadloBezi || odoslanaRozlucka.current === krok.id) return;
+    odoslanaRozlucka.current = krok.id;
+    setTextRozlucky({ cast: krok.cast.cast, text: vetaKroku });
+    dalej();
+    // Raz na krok rozlúčky; text a dalej sa čítajú z toho istého prekreslenia.
+  }, [rozlucka, krok?.id, pocitadloBezi]);
+  const koniec = krok === null || rozlucka;
+  const vetaKonca = !koniec
+    ? ""
+    : textNaKonci(stav, view, rozlucka ? vetaKroku : textRozlucky !== null && textRozlucky.cast === stav.koniecCasti ? textRozlucky.text : "");
   useEffect(() => {
     zrusChybu();
     // Len pri zmene kroku — zrusChybu je stabilný (useCallback v useHra).
@@ -427,8 +506,22 @@ export function VyucbaStol({
   // Pruhy udalostí a priazne na stole počas výučby nie — komentuje Melichar (playtest: ležali cez karty).
   useEffect(() => {
     document.body.classList.add("vyucba-bezi");
-    return () => document.body.classList.remove("vyucba-bezi", "vyucba-odhad", "vyucba-vydesenie", "vyucba-body", "vyucba-stavka", "vyucba-hovori");
+    return () => document.body.classList.remove("vyucba-bezi", "vyucba-odhad", "vyucba-vydesenie", "vyucba-body", "vyucba-stavka", "vyucba-hovori", "vyucba-cast-1");
   }, []);
+  // 1. časť tabuľku Pitky nevysvetľuje — jej okno sa samo dobehne a zavrie (V-09). Hráč ho musel
+  // odkliknúť a čítal pojmy, ktoré ešte nezazneli. Skryté je cez vyucba.css, kým sa nezavrie.
+  const castJedna = (krok?.cast.cast ?? stav.koniecCasti) === 1;
+  useEffect(() => {
+    document.body.classList.toggle("vyucba-cast-1", castJedna);
+    if (!castJedna) return;
+    const t = setInterval(() => {
+      const okno = document.querySelector<HTMLElement>(".pocitadlo-bitky.rekap-pitky");
+      if (okno === null) return;
+      if (okno.classList.contains("hotova")) okno.querySelector<HTMLElement>(".rk-dalej")?.click();
+      else okno.click();
+    }, 150);
+    return () => clearInterval(t);
+  }, [castJedna]);
   // Odhad bitky, stávka a vydesení sa ukážu od kroku, ktorý o nich hovorí (alebo o bitke), a potom ostanú.
   useEffect(() => {
     if (krok === null) return;
@@ -451,6 +544,10 @@ export function VyucbaStol({
     chyba === null || chybaVyucby === null
       ? []
       : [...chybaVyucby.chybajuce, ...chybaVyucby.navyse].flatMap((x) => (x.uid === null ? [] : [`uid:${x.uid}`]));
+  // Svieti aj cieľ ťahu (koniec línie); POTVRDIŤ až keď návrh sedí s krokom. Po odmietnutom ťahu
+  // „×“ na vrátenie návrhu a správny cieľ — predtým svietilo znova POTVRDIŤ, ktoré zlyhalo zas (V-07).
+  const { ciele, potvrdit } = krok?.kto === "hrac" ? cieleZOcakavania(krok.ocakava) : { ciele: [], potvrdit: POTVRDIT };
+  const poChybe = chyba !== null || radaText !== null ? [ZRUSIT_NAVRH] : [];
   const kluce =
     krok === null
       ? []
@@ -460,10 +557,10 @@ export function VyucbaStol({
           ? ["bar-supera"]
           : krok.zvyraznit
         : zleKarty.length > 0
-          ? [...zleKarty, POTVRDIT]
+          ? [...new Set([...zleKarty, ZRUSIT_NAVRH, ...ciele, potvrdit])]
           : krok.volba !== null
-            ? [...new Set([...krok.zvyraznit, ...krok.volba.kandidati, POTVRDIT])]
-            : [...new Set([...krok.zvyraznit, ...kluceZOcakavania(krok.ocakava), POTVRDIT])];
+            ? [...new Set([...krok.zvyraznit, ...krok.volba.kandidati, ...ciele, ...poChybe, potvrdit])]
+            : [...new Set([...krok.zvyraznit, ...kluceZOcakavania(krok.ocakava), ...ciele, ...poChybe, potvrdit])];
   // Ťah bota či hry za hráča (playtest výučby kolo 4, U2): krok bez textu ubehol a hráč nevidel,
   // čo sa stalo. Čo sa na stole zmenilo, svieti, kým krok s textom čaká na „ďalej“, a ešte
   // ZMENA_MS po ňom; krok bez textu nechá v ďalšom kroku štítok z logu („Bot Štamgast pasuje…“).
@@ -476,10 +573,11 @@ export function VyucbaStol({
     predView.current = view;
     if (pred === view || krok === null || (krok.kto !== "bot" && krok.kto !== "auto")) return;
     setZmena({ krokId: krok.id, kluce: [...new Set([...(krok.kto === "auto" ? krok.zvyraznit : []), ...zmenyStola(pred, view)])], sTextom: krok.melichar.trim() !== "" });
-    const mena = hraci.map((h, i) => menoVoVete(h, i));
+    // Súper menom, ako ho volá Melichar („Štamgast“, nie „Bot Štamgast“), V-14.
+    const mena = hraci.map((h, i) => (h?.bot === true ? h.meno : menoVoVete(h, i)));
     const rody = [rodHraca(hraci[0]), rodHraca(hraci[1])] as const;
     const riadky = udalosti.events.map((e) => textUdalosti(e, mena, rody)).filter((t): t is string => t !== null);
-    const text = krok.melichar.trim() === "" ? stitokTahu(riadky, krok.kto) : null;
+    const text = krok.melichar.trim() === "" ? stitokTahu(riadky, krok.kto, mena[view.ja] ?? null) : null;
     // Ťah s textom štítok nepíše; štítok predošlého ťahu, ktorý práve ukazuje, nechá tak.
     setStitok((s) => (text !== null ? { krokId: krok.id, text, ukazany: null } : s !== null && s.ukazany === krok.id ? s : null));
     // Len nový stav — krok a mená sa čítajú z toho istého prekreslenia.
@@ -496,7 +594,9 @@ export function VyucbaStol({
   useEffect(() => {
     setStitok((s) => (s === null || krok?.id === s.krokId ? s : s.ukazany === null ? { ...s, ukazany: krok?.id ?? "" } : s.ukazany === krok?.id ? s : null));
   }, [krok?.id]);
-  const stitokText = stitok !== null && stitok.ukazany === krok?.id ? stitok.text : null;
+  // Krok s vlastnou vetou Melichara štítok neukazuje — riadok z logu pred ňou menil jej zmysel
+  // („Čaká sa na hráča 2.“ + „Obaja ste skončili…“, V-14).
+  const stitokText = stitok !== null && stitok.ukazany === krok?.id && krok.melichar.trim() === "" ? stitok.text : null;
   const zvyraznene = useZvyraznenie(kluce, zmena?.kluce ?? []);
 
   // Krok bez ťahu: klik mimo bubliny nič neurobí (playtest: klik na okraj otvoril Karty).
@@ -588,8 +688,8 @@ export function VyucbaStol({
 
   // Text v bare po stranách — nescrolluje sa (Michal 2026-10-25); „ďalej“ najprv listuje.
   const kusy: KusVety[] = [];
-  if (krok === null) {
-    kusy.push(...kusyVety("hotovo", textNaKonci(stav, view), sada));
+  if (koniec) {
+    kusy.push(...kusyVety("hotovo", vetaKonca, sada));
   } else if (vOdpovedi) {
     kusy.push({ kluc: "verdikt", obsah: <strong className="mel-verdikt">{vybrana.spravna === true ? t("vyucba.spravne") : t("vyucba.nieCelkom")}</strong> });
     kusy.push(...kusyVety("vysvetlenie", textKroku(krok.id, vybrana.vysvetlenie), sada));
@@ -605,9 +705,13 @@ export function VyucbaStol({
         ),
       );
     }
-    if (chyba !== null) kusy.push(kusOddeleny("chyba", <span className="vyucba-chyba">{prelozHlasku(chyba)}</span>));
+    kusy.push(...kusyVety("veta", vetaKroku, sada));
+    // Po chybe len rada na vlastnej strane; pokyn kroku ostane o stranu späť (‹). Za radou ho
+    // celý zopakovať dalo 2–3 strany a pri ťahu hráča „ďalej“ navyše (V-15).
+    const poChybe: KusVety[] = [];
+    if (chyba !== null) poChybe.push(kusOddeleny("chyba", <span className="vyucba-chyba">{prelozHlasku(chyba)}</span>));
     if (radaText !== null) {
-      kusy.push(
+      poChybe.push(
         kusOddeleny(
           "rada",
           <span className="vyucba-rada">
@@ -616,11 +720,12 @@ export function VyucbaStol({
         ),
       );
     }
-    kusy.push(...kusyVety("veta", vetaKroku, sada));
+    const [prva, ...dalsie] = poChybe;
+    if (prva !== undefined) kusy.push({ ...prva, novaStrana: kusy.length > 0 }, ...dalsie);
     // Ťah hry za hráča bez textu: bar nesmie zmiznúť — stôl by ostal bez slova (playtest výučby 20261025, krok 6).
     if (krok.melichar.trim() === "" && stitokText === null && krok.kto === "auto" && tahaIny) kusy.push({ kluc: "auto", obsah: t("vyucba.tahZaTeba") });
   }
-  const podpis = [krok?.id ?? "hotovo", pohlad, odpoved ?? "", stitokText ?? "", chyba ?? "", radaText ?? "", vOdpovedi ? vybrana.vysvetlenie : vetaKroku].join("|");
+  const podpis = koniec ? `hotovo|${vetaKonca}` : [krok?.id ?? "hotovo", pohlad, odpoved ?? "", stitokText ?? "", chyba ?? "", radaText ?? "", vOdpovedi ? vybrana.vysvetlenie : vetaKroku].join("|");
   const strany = useStrany(podpis);
 
   // Enter = „ďalej“ v kroku bez ťahu, aj keď fokus ostal na karte či tlačidle po kliku myšou
@@ -634,7 +739,8 @@ export function VyucbaStol({
   // Otázka kvízu: Enter odpoveď nevyberie (prvá odpoveď sa ráta), ale možnosti bliknú a povedia,
   // čím sa vyberajú — Enter v kvíze ticho nerobil nič (playtest výučby 20261030, krok 27).
   const otazkaKvizu = moznosti.length > 0 && !vOdpovedi;
-  const enter: (() => void) | null = pocitadloBezi
+  // Rozlúčka už „ďalej“ poslala sama — Enter čaká na tlačidlá konca časti.
+  const enter: (() => void) | null = pocitadloBezi || (rozlucka && !strany.dalsiaJe)
     ? null
     : strany.dalsiaJe
       ? strany.dalsia
@@ -666,6 +772,8 @@ export function VyucbaStol({
 
   // Percentá časti, nie celej výučby — v 1. časti by inak skončili na tretine.
   const percento = krok === null ? 100 : Math.round(((krok.cast.poradie + 1) / krok.cast.krokov) * 100);
+  const castTeraz = krok?.cast.cast ?? stav.koniecCasti ?? 1;
+  const postup = postupVyucby(CASTI_VYUCBY, castTeraz, koniec ? 1 : percento / 100);
   // Melichar hovorí v bare (Michal 2026-10-25), kým má čo povedať alebo čaká na „ďalej“; ťah bez
   // textu nechá bar hráčovi. Počas Počítadla bitky text čaká (playtest výučby kolo 4, U3) — stmavený
   // pod animáciou hovoril o výsledku skôr, než ho bolo vidno.
@@ -710,7 +818,8 @@ export function VyucbaStol({
           {...(ziva ? { onClick: pokracovat, "data-vyucba-dalsia-cast": "" } : { type: "button" as const, tabIndex: -1 })}
           title={t("vyucba.castTitul", { cast: stav.dalsiaCast.cast, nazov: nazovCasti(stav.dalsiaCast), minuty: stav.dalsiaCast.minuty })}
         >
-          {t("vyucba.pokracovatCastou", { cast: stav.dalsiaCast.cast })} <kbd>Enter</kbd>
+          {t("vyucba.pokracovatCastou", { cast: stav.dalsiaCast.cast })}
+          {t("pravidla.minut", { n: stav.dalsiaCast.minuty })} <kbd>Enter</kbd>
         </button>
       )}
       {/* Ďalšia časť ešte nie je hotová — ponuka ostáva viditeľná, nech hráč vie, že príde. */}
@@ -754,13 +863,23 @@ export function VyucbaStol({
           // Percentá, nie „krok n / 70“ — ťahy Štamgasta sa spájajú a číslo by preskakovalo (playtest).
           pocitadlo={
             <>
+              {/* Úseky častí podľa minút a „1. časť z 3 · ešte asi 6 min“ — percento časti nepovedalo,
+                  koľko častí je ani koľko ostáva (V-22). */}
               <span
-                className="mel-pocitadlo"
-                aria-label={t("vyucba.pocitadlo", { cast: krok?.cast.cast ?? stav.koniecCasti ?? 1, percento })}
+                className="mel-pocitadlo mel-postup"
+                aria-label={t("vyucba.pocitadlo", { cast: castTeraz, percento })}
                 title={krok === null ? undefined : t("vyucba.castNazov", { cast: krok.cast.cast, nazov: nazovCasti(krok.cast) })}
               >
-                {krok !== null && <span className="mel-cast">{t("vyucba.castBodka", { cast: krok.cast.cast })}</span>}
-                {percento} %
+                <span className="mel-useky" aria-hidden="true">
+                  {postup.useky.map((u) => (
+                    <span key={u.cast} className="mel-usek" style={{ flexGrow: u.minuty }}>
+                      <span style={{ width: `${Math.round(u.plne * 100)}%` }} />
+                    </span>
+                  ))}
+                </span>
+                {koniec
+                  ? t("vyucba.postupHotovo", { cast: castTeraz, spolu: postup.useky.length })
+                  : t("vyucba.postup", { cast: castTeraz, spolu: postup.useky.length, minuty: postup.zostava })}
               </span>
               <CisloStrany strany={strany} />
               {/* Okno odpovede nahradilo otázku — nech hráč vie, na čo Melichar odpovedá. */}
@@ -798,10 +917,11 @@ export function VyucbaStol({
             ) : undefined
           }
           vpravo={
-            krok === null ? (
+            koniec ? (
               <>
                 {predoslaStrana}
-                <NaJednomMieste ukaz={strany.dalsiaJe ? "a" : "b"} a={tlacidloDalej} b={ponukaKonca} />
+                {/* Kým server potvrdí koniec časti, ponuka ešte nie je — rozlúčka čaká chvíľu bez tlačidiel. */}
+                {krok === null && <NaJednomMieste ukaz={strany.dalsiaJe ? "a" : "b"} a={tlacidloDalej} b={ponukaKonca} />}
               </>
             ) : (
               <>
@@ -868,29 +988,32 @@ export function enterNaKonciCasti(stav: Pick<StavVyucby, "dalsiaCast">): "pokrac
 }
 
 /**
- * Na konci časti sa už rozlúčil posledný krok scenára — tu len kam ďalej. Po poslednej časti
- * aj výsledok partie (okno konca hry výučba neukazuje, zakrylo by bar).
+ * Text na konci časti: rozlúčka Melichara (posledný krok časti) — kam ďalej povedia tlačidlá s minútami
+ * (V-18; text klienta to opakoval). Po poslednej časti aj výsledok partie (okno konca hry výučba
+ * neukazuje, zakrylo by bar).
  */
-export function textNaKonci(stav: Pick<StavVyucby, "koniecCasti" | "dalsiaCast" | "pripravujeme">, view: Pick<ClientState, "koniec" | "ja">): string {
-  const cast = stav.koniecCasti ?? 1;
-  const napoveda = t("vyucba.napoveda");
-  const dalsia = stav.dalsiaCast ?? stav.pripravujeme;
-  if (dalsia === null) {
-    const k = view.koniec;
-    const su = opponentOf(view.ja);
-    const vysledok =
-      k === null || k.body === null
-        ? ""
-        : t("vyucba.vysledok", { ja: k.body[view.ja], su: k.body[su], kto: k.vitaz === view.ja ? t("vyucba.vyhralSi") : k.vitaz === null ? t("vyucba.remiza") : t("vyucba.vyhralStamgast") });
-    return t("vyucba.koniecVyucby", { cast: radovaCast(cast, "akuzativ"), vysledok, napoveda });
-  }
-  const co =
-    stav.dalsiaCast !== null
-      ? t("vyucba.dalsiaCastText", { Cast: velke(radovaCast(dalsia.cast, "nominativ")), nazov: nazovCasti(dalsia), minuty: dalsia.minuty })
-      : t("vyucba.pripravujemeText", { Cast: velke(radovaCast(dalsia.cast, "akuzativ")), nazov: nazovCasti(dalsia) });
-  return t("vyucba.koniecCastiText", { Cast: velke(radovaCast(cast, "akuzativ")), co, napoveda });
+export function textNaKonci(stav: Pick<StavVyucby, "dalsiaCast" | "pripravujeme">, view: Pick<ClientState, "koniec" | "ja">, rozlucka: string): string {
+  if (stav.dalsiaCast !== null || stav.pripravujeme !== null) return rozlucka;
+  const k = view.koniec;
+  const su = opponentOf(view.ja);
+  const vysledok =
+    k === null || k.body === null
+      ? ""
+      : t("vyucba.vysledok", { ja: k.body[view.ja], su: k.body[su], kto: k.vitaz === view.ja ? t("vyucba.vyhralSi") : k.vitaz === null ? t("vyucba.remiza") : t("vyucba.vyhralStamgast") });
+  return `${rozlucka}${vysledok}`.trim();
 }
 
-// Bar delí text na vety podľa bodky — „1. časť“ by sa zlomila za číslom, preto slovom.
-const radovaCast = (n: number, pad: "nominativ" | "akuzativ"): string => (n >= 1 && n <= 4 ? t(`vyucba.radova.${pad}.${n}`) : `${n}`);
-const velke = (s: string): string => s.charAt(0).toLocaleUpperCase(aktualnyJazyk()) + s.slice(1);
+/**
+ * Postup výučby (V-22): úseky častí dlhé podľa minút scenára (casti[].minuty), plnosť každého a koľko
+ * minút ešte asi ostáva z rozohranej časti.
+ */
+export function postupVyucby(
+  casti: readonly { readonly cast: number; readonly minuty: number }[],
+  cast: number,
+  podiel: number,
+): { readonly useky: readonly { readonly cast: number; readonly minuty: number; readonly plne: number }[]; readonly zostava: number } {
+  const p = Math.min(1, Math.max(0, podiel));
+  const useky = casti.map((c) => ({ cast: c.cast, minuty: c.minuty, plne: c.cast < cast ? 1 : c.cast === cast ? p : 0 }));
+  const minuty = casti.find((c) => c.cast === cast)?.minuty ?? 0;
+  return { useky, zostava: p >= 1 ? 0 : Math.max(1, Math.round(minuty * (1 - p))) };
+}

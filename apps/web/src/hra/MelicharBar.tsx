@@ -344,7 +344,7 @@ export function MelicharVBare({ rezim, children, pocitadlo, moznosti, vpravo, tr
       <AvatarMelichara />
       <div className="mel-telo">
         <span className="mel-kto">
-          {MELICHAR_PRIBEH.meno}
+          <span className="mel-meno">{MELICHAR_PRIBEH.meno}</span>
           {pocitadlo}
         </span>
         <div className="mel-veta">{children}</div>

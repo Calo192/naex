@@ -159,6 +159,11 @@ body.vyucba-bezi .ucet-bitky {
   display: none;
 }
 
+/* 1. časť tabuľku Pitky nevysvetľuje — okno sa zavrie samo (Vyucba.tsx), dovtedy ho nevidno (V-09). */
+body.vyucba-cast-1 .rekap-pitky {
+  visibility: hidden;
+}
+
 /* Kým hovorí Melichar, pokyn je jeden — pás stola mlčí (V-04): opakoval ho inými slovami, s pojmami,
    ktoré výučba ešte nepovedala, a niekedy mu protirečil. Ostane, keď nesie ovládanie (výber Zberateľa,
    Vízia, žetóny delenia) alebo naň krok sám ukazuje. Miesto drží — stôl neposkočí. */

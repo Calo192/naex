@@ -922,8 +922,10 @@ button.jbar-odhad::before {
   padding-block: 0;
 }
 
-/* Nad osou je Melichar len v hornom riadku — menovka by vzala riadok vete (kto hovorí, povie fotka). */
-.jbar.mel-hore .mel-kto {
+/* Nad osou je Melichar len v hornom riadku — menovka by vzala riadok vete (kto hovorí, povie fotka).
+   Výučba nechá riadok s postupom (V-22), skryje len meno. */
+.jbar.mel-hore .mel:not(.vyucba-bublina) .mel-kto,
+.jbar.mel-hore .vyucba-bublina .mel-meno {
   display: none;
 }
 
@@ -1043,6 +1045,34 @@ button.jbar-odhad::before {
   letter-spacing: 0;
   color: var(--tlmeny);
   font-variant-numeric: tabular-nums;
+}
+
+/* Postup výučby (V-22): tri úseky dlhé podľa minút častí a text „1. časť z 3 · ešte asi 6 min“. */
+.mel-postup {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  white-space: nowrap;
+}
+
+.mel-useky {
+  display: inline-flex;
+  gap: 3px;
+  width: 84px;
+  height: 4px;
+}
+
+.mel-usek {
+  flex-basis: 0;
+  overflow: hidden;
+  border-radius: 2px;
+  background: color-mix(in srgb, var(--tlmeny) 30%, transparent);
+}
+
+.mel-usek > span {
+  display: block;
+  height: 100%;
+  background: var(--akcent);
 }
 
 /* Veta sa nikdy neposúva (Michal 2026-10-25) — čo sa nezmestí, ide na ďalšiu stranu (StrankovanaVeta). */
@@ -1303,6 +1333,26 @@ button.jbar-odhad::before {
      s tenším okrajom, pri 4 px ostalo 17 px na 19 px riadok a každá veta sa orezala. */
   .mel-telo {
     padding-block: 2px;
+  }
+}
+
+/* Vysoké okno (1600 × 1000, 1920 × 1080): bar má 52 px — pod menovkou sú dva riadky vety po 14 px
+   namiesto jedného po 16 px; dlhší text mal viac strán než na notebooku (V-17). Piktogram nesmie
+   riadok zvýšiť, inak by sa druhý riadok nezmestil. */
+@media (min-width: 761px) and (min-height: 920px) {
+  .mel-telo {
+    padding-block: 1px;
+  }
+
+  .mel-veta {
+    font-size: 0.875rem;
+    line-height: 1.2;
+  }
+
+  .mel-veta .mel-ikona {
+    width: 1.1em;
+    height: 1.1em;
+    vertical-align: -0.2em;
   }
 }
 
