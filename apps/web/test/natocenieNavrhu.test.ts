@@ -10,7 +10,7 @@ import eldersJson from "../../../packages/core/data/elders.json";
 import scorecardsJson from "../../../packages/core/data/scorecards.json";
 import type { GameState, PlayerId } from "@naex/core";
 import { apply, loadGameData, lokalityNaVyber, setupGame, viewFor } from "@naex/core";
-import { lokalitaVStrede, lokalitaZNavrhu, natacamNavrh, tipNavrhuLokality } from "../src/hra/natocenieNavrhu.ts";
+import { lokalitaVStrede, lokalitaZNavrhu, natacamNavrh } from "../src/hra/natocenieNavrhu.ts";
 
 const data = loadGameData(cardsJson, eldersJson, scorecardsJson);
 
@@ -74,19 +74,14 @@ describe("voľba cieľa: kto natáča", () => {
   });
 });
 
-describe("tipNavrhuLokality", () => {
-  it("otočenie sľubuje len tomu, kto natáča; inak povie, kto natočí", () => {
-    expect(tipNavrhuLokality(true, false, "Igor")).toBe("klik na kartu = otočiť ↻");
-    expect(tipNavrhuLokality(true, true, "Igor")).toBe("ťuk na kartu = otočiť ↻");
-    expect(tipNavrhuLokality(false, false, "Bot Igor")).toBe("natočí ju Bot Igor");
-  });
-
-  it("HernaPlocha kreslí stred podľa lokalitaVStrede a tip aj klik riadi to isté natociSuper", () => {
+describe("navrhnutá lokalita na stole", () => {
+  // Tip „klik na kartu = otočiť“ pod lokalitou zanikol (UI inšpekcia 20261120, Z-06) — otočenie povie pokyn.
+  it("HernaPlocha kreslí stred podľa lokalitaVStrede a klik riadi natociSuper", () => {
     const zdroj = readFileSync(new URL("../src/hra/HernaPlocha.tsx", import.meta.url), "utf8");
     expect(zdroj).not.toMatch(/na kartu = otočiť/);
     expect(zdroj).toContain("const stred = lokalitaVStrede(lokalita, view.lokalitaOtocena, lokalitaNavrh);");
     expect(zdroj).toContain("if (stred !== null && !stred.navrh) {");
-    expect(zdroj).toContain("tipNavrhuLokality(!natociSuper,");
+    expect(zdroj).not.toContain("otocit-tip");
     expect(zdroj).toContain("...(natociSuper ? {} : { onClick:");
   });
 });

@@ -89,7 +89,7 @@ import { SuhrnLokality } from "./SuhrnLokality.tsx";
 import { dalsiPohladSuhrnu, type KontextSuhrnu, type SuhrnBitky, type ZaciatokKola } from "./krokySuhrnu.ts";
 import { PAUZA_CIELA_MS, pauzaPoVolbeCiela, type PauzaCiela } from "./pauzaCiela.ts";
 import { poslednaPitkaVDavke, stolZastavenia } from "./zastaveniePitky.ts";
-import { lokalitaVStrede, lokalitaZNavrhu, natacamNavrh, tipNavrhuLokality } from "./natocenieNavrhu.ts";
+import { lokalitaVStrede, lokalitaZNavrhu, natacamNavrh } from "./natocenieNavrhu.ts";
 import { naexNaKarte, PeciatkaNaex, peciatkyNaex, type NaexNaKarte } from "./PeciatkaNaex.tsx";
 import { farbaKarty, type Sada } from "@naex/tvorba";
 import { HernaKarta, ZarStolaKontext, vzhladKarty, type HernaKartaProps } from "./HernaKarta.tsx";
@@ -123,7 +123,7 @@ import {
   type VyhladPitky,
 } from "./Panely.tsx";
 import { KseftPodKartou } from "./KseftPodKartou.tsx";
-import { IkonaMrezi } from "./ikonyZdrojov.tsx";
+import { IkonaCigareta, IkonaMrezi } from "./ikonyZdrojov.tsx";
 import { kseftyNaStole } from "./kseftyNaStole.ts";
 import { moznostiVily } from "./volbaVily.ts";
 import { cieleSuperovhoNaex, vystrahaCela, vystrahaKratko, vystrahaVRuke } from "./vystrahyStola.ts";
@@ -3471,9 +3471,8 @@ export function HernaPlocha({
     // Prázdna strana má veľkosť karty v línii — pevných 198 px pretieklo nízky stôl (posuvník línie).
     if (koniec === null && karty === null && rub === null) {
       return vLinii(
-        <span className="prazdna" style={{ width: sirkaVLinii, minHeight: Math.round(sirkaVLinii * POMER_KARTY) }}>
-          {t("plocha.prazdna")}
-        </span>,
+        // Bez slova „prázdna“ (Z-06) — prázdne miesto ukáže rám.
+        <span className="prazdna" style={{ width: sirkaVLinii, minHeight: Math.round(sirkaVLinii * POMER_KARTY) }} aria-label={t("plocha.prazdna")} />,
       );
     }
     // Tvoja partia vedie od lokality doľava, jej koniec je teda vľavo; skrytá Záverečná leží na konci.
@@ -3567,20 +3566,6 @@ export function HernaPlocha({
       </span>
     );
   };
-  // Pod kartou len krátke štítky — akcie hrán vidno na karte samej.
-  const popisStranStredu =
-    stranyStredu === null ? null : (
-      <span className="strany-stredu">
-        <span title={tipKraja(ja)}>◀ {krajStrany(ja) ?? t("stol.vlavo")}</span>
-        <span title={tipKraja(super_)}>{krajStrany(super_) ?? t("stol.vpravo")} ▶</span>
-      </span>
-    );
-  const ikonyStranStredu =
-    stranyStredu === null ? null : (
-      <span className="strany-stredu-ikony">
-        {t("stol.vlavo")} {hranaIkony(stranyStredu.kTebe)} · {t("stol.vpravo")} {hranaIkony(stranyStredu.kSuperovi)}
-      </span>
-    );
   const stredLinie = ((): ReactNode => {
     if (stred !== null && !stred.navrh) {
       // Lokalita po bitke (Nakladačka, Reči) už nesie výsledok — VYHRAL! / REMÍZA (Michal 2026-11-11).
@@ -3719,11 +3704,15 @@ export function HernaPlocha({
   };
   /** Štítok pôvodu karty v ponuke (v12.5, E2): od koho prišla — tomu ide jej cena. */
   const stitokPovodu = (k: CardInstance): ReactNode => {
+    // Vlastné karty bez štítku; pri súperovej jeho avatar a cigareta, ktorá mu za ňu pôjde — nad horným
+    // okrajom, nie cez text efektu (Z-13, S-07). Veta ostáva v titulku.
     const p = povodKartySenku(view, k.uid);
-    if (p === null) return undefined;
+    if (p === null || p === ja) return undefined;
     return (
-      <span className={`senok-povod-stitok ${p === ja ? "moja" : "superova"}`} title={p === ja ? t("plocha.povodMojaTitul") : t("plocha.povodSuperaTitul", { meno: menoHraca(super_) })}>
-        {p === ja ? t("plocha.povodMoja") : t("plocha.povodSupera", { meno: menoHraca(super_) })}
+      <span className="senok-povod-stitok superova" title={t("plocha.povodSuperaTitul", { meno: menoHraca(super_) })} aria-label={t("plocha.povodSupera", { meno: menoHraca(super_) })}>
+        <Avatar meno={hraci[super_]?.meno ?? menoHraca(super_)} avatar={hraci[super_]?.avatar ?? null} velkost={18} farba="su" />
+        +{KONSTANTY.SENOK_SUPEROVI_ZA_KARTU}
+        <IkonaCigareta />
       </span>
     );
   };
@@ -3827,8 +3816,9 @@ export function HernaPlocha({
   const stolTlacidla = ((): HranaTahu | null => {
     // Súhrn po bitke a zastavenie po poslednej Pitke držia hranu pre Ďalej a Preskočiť (pokyn).
     if (!somNaTahu || view.koniec !== null || zastavenieBezi || suhrnBezi) return null;
+    // Otočenie lokality je klik na kartu (Z-06); tlačidlo „otočiť“ ostáva len vo výučbe, ktorá naň ukazuje.
     if (view.faza === "natocenieCiela" && lokalitaNavrh !== null) {
-      const otocit = (
+      const otocit = vyucba !== true ? null : (
         <button onClick={() => setNavrh({ typ: "lokalita", uid: lokalitaNavrh.karta.uid, otocena: !lokalitaNavrh.otocena })} data-vyucba="tlacidlo:otocit">
           {t("plocha.otocit")} ↻
         </button>
@@ -3855,7 +3845,7 @@ export function HernaPlocha({
       };
     }
     if (view.faza === "volbaCiela" && lokalitaNavrh !== null) {
-      const otocit = (
+      const otocit = vyucba !== true ? null : (
         <button onClick={() => setNavrh({ typ: "lokalita", uid: lokalitaNavrh.karta.uid, otocena: !lokalitaNavrh.otocena })} data-vyucba="tlacidlo:otocit">
           {t("plocha.otocit")} ↻
         </button>
@@ -4317,30 +4307,28 @@ export function HernaPlocha({
       case "natocenieCiela":
         return somNaTahu && lokalitaNavrh !== null
           ? {
-              nadpis: t("faza.natocenieCiela"),
-              text: (
-                <>
-                  {tr("plocha.natacas", { karta: menoKarty(lokalitaNavrh.karta.defId) })} {ikonyStranStredu}
-                </>
-              ),
+              // Fáza je v osi hlavičky, hrany na karte (Z-06) — v pilulke len pokyn.
+              nadpis: null,
+              text: tr("plocha.natacas", { karta: menoKarty(lokalitaNavrh.karta.defId) }),
             }
           : null;
       case "volbaCiela":
         return lokalitaNavrh === null
           ? {
-              nadpis: t("faza.volbaCiela"),
+              nadpis: null,
               text: (mobil ? t("plocha.klikniPanel") : t("plocha.klikniNastenka")) + (natociSuper ? t("plocha.natociSuper", { meno: menoHraca(super_) }) : ""),
             }
           : natociSuper
-            ? { nadpis: t("faza.volbaCiela"), text: t("plocha.natociJu", { karta: menoKarty(lokalitaNavrh.karta.defId), meno: menoHraca(super_) }) }
+            ? { nadpis: null, text: t("plocha.natociJu", { karta: menoKarty(lokalitaNavrh.karta.defId), meno: menoHraca(super_) }) }
             : {
-              nadpis: t("faza.volbaCiela"),
+              nadpis: null,
               text: (
                 <>
                   <strong>{menoKarty(lokalitaNavrh.karta.defId)}</strong>
-                  {lokalitaNavrhOtocena ? t("plocha.otocena") : ""} {t("plocha.klikomOtocis")} {ikonyStranStredu} {t("plocha.akcieHrany")}
+                  {lokalitaNavrhOtocena ? t("plocha.otocena") : ""} {t("plocha.klikomOtocis")}
                 </>
               ),
+              vyklad: t("plocha.akcieHrany"),
             };
 
       case "draft": {
@@ -6479,9 +6467,8 @@ export function HernaPlocha({
       kluc: `${view.kolo}|lokalita-supera`,
       nadnadpis: finale ? t("plocha.finaleVrcholova") : t("plocha.koloLokalita", { n: view.kolo }),
       nadpis: menoKarty(lokalita.defId),
-      text:
-        t("plocha.superVybralLokalitu", { meno: menoHraca(super_), vybral: tRod("plocha.vybralLok", rodHracaP(super_)), co: finale ? t("plocha.vrcholovuLokalitu") : t("plocha.lokalituKola") }) +
-        (kTebe !== null && kSuperovi !== null ? t("plocha.vlavoHrana", { lavy: kTebe, pravy: kSuperovi }) : t("plocha.hranyLezia")),
+      // Hrany sú na karte a ich mená pod ňou — veta o nich a riadok ikon by ich opakovali (Z-18).
+      text: t("plocha.superVybralLokalitu", { meno: menoHraca(super_), vybral: tRod("plocha.vybralLok", rodHracaP(super_)), co: finale ? t("plocha.vrcholovuLokalitu") : t("plocha.lokalituKola") }).trim(),
     };
     return (
       <Medziobrazovka obsah={obsah} onRozumiem={zrusPauzuCiela} tlacidloPoMs={PAUZA_CIELA_MS} vypinac={false} trieda="lokalita-supera">
@@ -6491,7 +6478,6 @@ export function HernaPlocha({
             <span>◀ {t("stol.vlavo")}{kTebe !== null && <b> {kTebe}</b>}</span>
             <span>{kSuperovi !== null && <b>{kSuperovi} </b>}{t("stol.vpravo")} ▶</span>
           </span>
-          {ikonyStranStredu}
         </div>
       </Medziobrazovka>
     );
@@ -6671,15 +6657,11 @@ export function HernaPlocha({
                   }
                 >
                   {/* Úzka lokalita (nízky notebook): dlhý nadpis by vošiel do nadpisu kraja vedľa. */}
-                  {jeFinaleStola && lokalita !== null ? (naSirku || sirkaVLinii < SIRKA_NADPISU_FINALE ? t("stol.finale") : t("stol.finaleLokalita")) : lokalita !== null || lokalitaNavrh !== null ? t("stol.lokalita") : t("stol.cielKola")}
+                  {/* Štítok „lokalita“ nad lokalitou opakoval kartu (Z-06) — ostáva finále a prázdny cieľ. */}
+                  {jeFinaleStola && lokalita !== null ? (naSirku || sirkaVLinii < SIRKA_NADPISU_FINALE ? t("stol.finale") : t("stol.finaleLokalita")) : lokalita !== null || lokalitaNavrh !== null ? " " : t("stol.cielKola")}
                 </span>
                 <div className="partia-rad harmonika">{stredLinie}</div>
-                {popisStranStredu}
-                {lokalitaNavrh !== null && tahanie === null && (
-                  <span className="otocit-tip" data-vyucba={natociSuper ? undefined : "otocenie"}>
-                    {tipNavrhuLokality(!natociSuper, naSirku, menoHraca(super_))}
-                  </span>
-                )}
+                {/* Názvy krajov sú nad líniou, otočenie povie pokyn (Z-06, S-06, V-23) — pod kartou nič. */}
               </div>
               <div className="linia-skupina superova">
                 {popisKraja(super_, "vpravo")}
@@ -6756,8 +6738,7 @@ export function HernaPlocha({
               >
                 {volbaNaStole ? (
                   <span className="nastenka-pokyn">
-                    <strong>{t("faza.volbaCiela")}</strong>
-                    {/* Pokyn na ťah je v pilulke nad stolom — tu len to, čo v nej nie je. */}
+                    {/* Fáza je v osi hlavičky, pokyn na ťah v pilulke nad stolom (Z-06) — tu len to, čo v nich nie je. */}
                     {!volimLokalitu && t("plocha.superVybera", { meno: menoHraca(super_) })}
                     {view.spakyNaSekere > 0 && <small>{t("plocha.naSekereVezme", { spaky: spakov(view.spakyNaSekere) })}</small>}
                   </span>

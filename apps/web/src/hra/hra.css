@@ -9447,8 +9447,28 @@ button.auto-hotovo-odkaz {
   box-shadow: 0 1px 5px rgba(0, 0, 0, 0.45);
 }
 
+/* Súperova karta: avatar a „+1 cigareta“ nad horným okrajom — text efektu ostane čitateľný (Z-13, S-07). */
 .senok-povod-stitok.superova {
   background: var(--su);
+  bottom: auto;
+  top: 0;
+  transform: translate(-50%, -55%);
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  padding: 1px 7px 1px 2px;
+  z-index: 2;
+}
+
+.senok-povod-stitok.superova .avatar {
+  flex: none;
+  font-size: 0.6rem;
+  box-shadow: 0 0 0 1.5px var(--pozadie);
+}
+
+.senok-povod-stitok.superova .ikona-cigareta {
+  height: 0.9em;
+  width: auto;
 }
 
 .senok-povod-stitok.moja {
