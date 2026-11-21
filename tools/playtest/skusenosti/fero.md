@@ -70,10 +70,10 @@ vo feedback.md.
 ### fero-9 · Keď mám v ruke Injekciu (Výtržník), podložím ju za 1 cigaretu pod vlastnú kartu s najviac akciami (Dvojčatá 6), lebo všetky jej akcie sú potom Rany a NA EX sa na ňu dať nedá.
 - stav: overená
 - pravidlá: v12
-- potvrdenia: 3
+- potvrdenia: 4
 - vyvrátenia: 0
-- dátum: 2026-11-16
-- partie: 20261109-115955-3, 20261113-084431-3, 20261116-173731-2
+- dátum: 2026-11-21
+- partie: 20261109-115955-3, 20261113-084431-3, 20261116-173731-2, 20261121-003915-1
 - prečo: §12 Podloženie (Injekcia — Výtržník), §7. 20261109-115955-3 K4 Kostol: Injekcia pod Dvojčatá za 1 cig. dala 3 → 7 tuhých a karta vypadla z hrozieb NA EX; spolu s Energeťákom pod Vymáhača (Forsáž) ~+9 tuhých za 2 cigarety, bitka 24 : 3. Vilo to potvrdil z druhej strany (Injekcia pod Dvojčatá = 6 Rán a imunita). 20261113-084431-3 K3 (v12.4): Šimon podložil Injekciu pod Recidivistu za 1 cigaretu (log „podkladá Injekcia (Výtržník) pod kartu Recidivista“), s Vidlami v Dedičstve bitka 13 : 4; Vilo potvrdil, že NA EX na kartu s Injekciou sa dať nedá. 20261116-173731-2: Injekcia pod Miňištranta (K1), Pijana (K2, s Vidlami 12 tuhých), Manželku (K3, 10), Mäsiara (K5), zakaždým za 1 cigaretu a karta mimo NA EX.
 
 ### fero-10 · Keď chcem dať NA EX na súperovu kartu kvôli zdvojeným Dlhom a súper má cigaretu a Nástroj s Robotou (Fúrik), počítam, že po odkrytí ho podloží pod tú kartu a zdvojené Hazardy v ďalších Pitkách sa zmenia na jeho Roboty; Dlhy z Pitky, v ktorej NA EX padlo, ale už vznikli.
@@ -96,12 +96,12 @@ vo feedback.md.
 - prečo: §13 Záverečná, §6 Prevaha. 20261111-221937-2 K3 Z2: Podvodník ako Záverečná vľavo (log „Záverečná hráča 2 sa otáča: Podvodník“) — ľavý kraj 3 : 3 ostal Ferov (prvá karta pri lokalite), tuhé 3 : 9 → 6 : 6; potvrdil aj Vilo („v tajnosti vyrovnala prevahu“). Bitku Fero aj tak prehral 6 : 15 (Energeťák + NA EX), Záverečná však kraj udržala. Záverečná nedáva cigarety za pas (v12.3). Obmedzenie 20261114-003916-1 finále Z1: Záverečná (Predavačka) zamkla pravý koniec len do konca Pitky 1, v Z2 Vilo pridal Sypača a Krokodíla — pri viacerých Pitkách zámok drží len jednu Pitku (zodpovedá §13; skúsenosť sa nevyvrátila).
 
 ### fero-12 · Keď mi do Chuti chýbajú neresti a v kole nemám plánované NA EX, Vypiť ani odpoveď, nechám si na Pitku toľko cigariet, koľko nerestí chýba (každá zaplatená cigareta pri fajčení je nerest), lebo Absťák berie 1 tuhé v každej bitke do konca hry.
-- stav: neoverená
+- stav: overená
 - pravidlá: v12
-- potvrdenia: 2
+- potvrdenia: 3
 - vyvrátenia: 0
-- dátum: 2026-11-16
-- partie: 20261111-221937-2, 20261113-084431-1
+- dátum: 2026-11-21
+- partie: 20261111-221937-2, 20261113-084431-1, 20261121-003915-1
 - prečo: §8 Nerest, Chuť a Absťák, §9.4. 20261111-221937-2 K3: Chuť 2, Fero bez cigariet → log „Hráč 2 dostáva Absťák: Chuť 2, v kole vypije a vyfajčí 0 nerestí“ → K4 remíza 5 : 5 prehratá na Absťáky 1 : 0; v K5 si fajčenie zaplatil a Absťák neprišiel. Fero navrhoval „1 cigaretu pri Chuti ≥ 1“ — pri Chuti 2 jedna nestačí, preto počet podľa chýbajúcich nerestí.
 - oprava: 2026-11-16 20261116-173731-2: vypustené „Absťák rozhoduje remízu v tuhom ako prvý“ — od v12.5 remízu rozhodujú len Dlhy (§9.4); Absťák ďalej berie 1 tuhé za kus (§8). V K5 prišiel Absťák pri Chuti 11 po 12 nerestiach v K4 — takú Chuť cigarety nedoženú.
 
@@ -114,21 +114,39 @@ vo feedback.md.
 - partie: 20261114-003916-1
 - prečo: §6 limit = plné poldeci, §13 Vypiť. 20261114-003916-1 finále: Fero po Záverečnej, barteri a odpovedi mal v Z2–Z3 0 poldeci a 0 cigariet, Vilo (7 poldeci, 13 cigariet) položil jedným ťahom Snúbenicu + Krokodíla, 16 : 18 → 23 : 16; bitka 23 : 21. Potvrdil Vilo aj Fero.
 
-### fero-14 · Keď mám v Pitke aspoň 5 cigariet a kolo či partia má ešte viac Zhromaždení, urobím stokársky barter (5 cigariet → plný poldeci natrvalo), lebo každý plný poldeci navyše je karta navyše v každom Zhromaždení, karta pri každom pase a posledné telo v kraji, takže sa vráti za dve Zhromaždenia.
-- stav: neoverená
+### fero-14 · Keď mám v Pitke aspoň 5 cigariet a kolo či partia má ešte viac Zhromaždení, urobím stokársky barter (5 cigariet → plný poldeci natrvalo; od v12.7 každý ďalší tvoj barter o cigaretu drahší: 5, 6, 7…), lebo každý plný poldeci navyše je karta navyše v každom Zhromaždení, karta pri každom pase a posledné telo v kraji, takže sa vráti za dve Zhromaždenia.
+- stav: overená
 - pravidlá: v12
-- potvrdenia: 2
+- potvrdenia: 3
 - vyvrátenia: 0
-- dátum: 2026-11-17
-- partie: 20261113-084431-1, 20261116-173731-2
+- dátum: 2026-11-21
+- partie: 20261113-084431-1, 20261116-173731-2, 20261121-003915-1
 - prečo: §7 Stokársky barter (maximum +1 natrvalo), §6 limit = plné poldeci (v12.2), pas za plné poldeci (v12.3). 20261113-084431-1: barter v K2 a K4 (log „robí stokársky barter za 5 cigariet — nový plný poldeci“ 2×), s Vínkom maximum 3 → 6 proti Janovým 3; pasy po barteri dali 2 + 2 a 1 + 2 cigarety, v K4 mal Fero 10 kariet v ruke a v každom Zhromaždení vyložil o 2–3 karty viac. 20261116-173731-2: 10 barterov (K4 2×, K5 3×, finále 5×), maximum 3 → 14; každý pas potom dal o cigaretu viac (finále 8 / 10 / 13).
 - oprava: 2026-11-17 20261117-140948-2: v12.6 pas dáva kartu, nie cigaretu (§6) — opravené; Fero barter nerobil (5 cigariet mal len v K4), Janov barter v K3 (4. plný poldeci → telo 5 : 4 v kraji, bitka 15 : 3) logiku podporil; stav neoverená.
 
 ### fero-16 · Keď ako obranca vyberám cieľ, nevolím lokalitu, ktorej celý zisk leží na jednej hrane (Benzínka: Cigareta ×2), lebo útočník vykladá v prvom Zhromaždení prvý a tú hranu si vezme prvou kartou.
 - stav: overená
 - pravidlá: v12
+- potvrdenia: 2
+- vyvrátenia: 0
+- dátum: 2026-11-21
+- partie: 20261117-140948-2, 20261121-003915-1
+- prečo: §4 (útočník vykladá v prvom Zhromaždení kola prvý), §6 Prevaha (pri rovnosti karta pri lokalite). 20261117-140948-2 K2 Benzínka: Jano dal Miňištranta k cigaretovej hrane a bral 3–4 cigarety za Pitku; na začiatku K3 mal 8 cigariet, Fero 1; bitka 0 : 12 a dve červené pre Jana.
+
+### fero-17 · Keď mi „HROZBA NA STOLE“ ukáže, že súper môže NA EX na vlastnú kartu s neaktívnymi Vierami či Dlhmi (Miňištrant) otočiť bitku na remízu alebo prehru, nechám si plný poldeci na odpoveď a NA EX na jeho kartu nedám, lebo moje NA EX mu zdvojí neaktívne akcie jeho karty a bez poldeci nemám ako odpovedať.
+- stav: overená
+- pravidlá: v12
 - potvrdenia: 1
 - vyvrátenia: 0
-- dátum: 2026-11-17
-- partie: 20261117-140948-2
-- prečo: §4 (útočník vykladá v prvom Zhromaždení kola prvý), §6 Prevaha (pri rovnosti karta pri lokalite). 20261117-140948-2 K2 Benzínka: Jano dal Miňištranta k cigaretovej hrane a bral 3–4 cigarety za Pitku; na začiatku K3 mal 8 cigariet, Fero 1; bitka 0 : 12 a dve červené pre Jana.
+- dátum: 2026-11-21
+- partie: 20261121-003915-1
+- prečo: §7 NA EX a odpoveď stoja plný poldeci, NA EX zdvojí neaktívne akcie karty jej majiteľovi. 20261121-003915-1 K2 Pitka 2: Fero viedol 6 : 0, HROZBA ukazovala „NA EX na Miňištrant → remíza“, no poldeci dal na NA EX na Vilovho Traktoristu; Vilo dal NA EX na vlastného Miňištranta (Viera ×2), bitka 1 : 2, hádka 2 : 0 pre Vila, +7 špakov, Ferovi −3 za Exekútora (denník Fera: „poldeci v Pitke použil na útok namiesto obrany“; Vilov denník potvrdil trik).
+
+### fero-18 · Keď má súper v Pitke len 1 plný poldeci a naň mierim NA EX na jeho kartu, dám ho už v predposlednej Pitke kola, lebo ak ho dopije, minie posledný poldeci a v poslednej Pitke nedá NA EX ani neodpovie (doplnok k spolocne-38).
+- stav: overená
+- pravidlá: v12
+- potvrdenia: 1
+- vyvrátenia: 0
+- dátum: 2026-11-21
+- partie: 20261121-003915-1
+- prečo: §6 Dopiť za teba (plný poldeci + nerest), §7. 20261121-003915-1 K4 Pitka 2: Fero dal NA EX na Vilovho Traktoristu (Cirhóza), Vilo ho dopil v Zhromaždení 3 za svoj posledný poldeci a v Pitke 3 nemohol dať NA EX ani odpovedať; bitka 29 : 11 (denník Fera aj feedback Vila).

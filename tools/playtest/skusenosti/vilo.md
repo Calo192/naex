@@ -21,10 +21,10 @@ vo feedback.md.
 ### vilo-2 · Keď mám priznané Dlhy, počítam s Exekútorom v každej bitke (polovica Dlhov nahor a rovnako špakov, aj pri jedinom Dlhu; Advokát špaky ušetrí, Záhradkár exekúciu obíde), preto Dlhy nenarábam (NA EX zdvojujúci moje neaktívne Dlhy, Silná vedľa Dlhu), držím Záhradkára a pri remíze v tuhom aj v hádke si Dlhy spočítam, lebo vtedy vyhrá ten s menej Dlhmi.
 - stav: overená
 - pravidlá: v12
-- potvrdenia: 9
+- potvrdenia: 10
 - vyvrátenia: 0
-- dátum: 2026-11-17
-- partie: 20261028-090549-1, 20261030-115654-1, 20261031-004030-2, 20261109-115955-3, 20261111-221937-2, 20261114-003916-1, 20261113-084431-3, 20261116-173731-3, 20261117-140948-3
+- dátum: 2026-11-21
+- partie: 20261028-090549-1, 20261030-115654-1, 20261031-004030-2, 20261109-115955-3, 20261111-221937-2, 20261114-003916-1, 20261113-084431-3, 20261116-173731-3, 20261117-140948-3, 20261121-003915-1
 - prečo: PRAVIDLA §11 v8 (Exekútor bez prahu, pred poškodením), §9.4. P1 K2 Exekútor spálil Vilov jediný Dlh a 1 špak pred poškodením a Ferove 2 Povery nič neurobili; finále Ferov Exekútor sily 2 (Hrobár) zhorel Vilovi 1 Dlh a 1 špak; Vilo sa kvôli tomu vyhýbal Silnej, Snúbenici a Kulturistovi. 115654-1 K1: Exekútor spálil presne ceil(2/2) + 1 (Ferova Povera na Hrobára) = 2 Dlhy a 2 špaky hneď v prvom kole; Vilo potom Dlhy celé kolo odmietal a Ferov trik s Poradkyňou (4 zadĺženia) zrazil odpoveďou Vdovou na 1. 004030-2 K2 Exekútor Vilovi zjedol 6 špakov (12 Dlhov po Evinom NA EX), K3 3 Dlhy + 1 špak (Advokát ušetril 2); K5 Eva s Dlhmi si prisadla Robotu. 20261109-115955-3: Exekútor Vilovi s Advokátom 2–3 zobral 1–3 špaky za kolo (log „Exekútor: hráčovi 2 zhorí 2 priznané Dlhy a 0 špakov (Advokát ušetril 2 špaky)“). 20261111-221937-2: Exekútor stál Vila −3, −4, −2, −2, −1; v K3 vedome prijal Dlh ×4 za Nakladačku 9 (zajatie Krčmárky). 20261114-003916-1 finále: 12 Dlhov, Exekútor zhorel 5 priznaných Dlhov a 5 špakov (log), Robota 3 spálila. 20261116-173731-3: K2 Exekútor −2 špaky za Dlhy zo Šimonovej Vzbury, K5 7 Dlhov → −4; Roboty v K3 spálili 2 Dlhy (bez exekúcie).
 - oprava: 2026-10-28 20261028-090549-1: pôvodné znenie (prah Exekútora 7 − priazeň, Poštárka tesne pod prahom) odporovalo §11 v8 — prah zrušený (Michal 2026-10-28), Exekútor príde ku každému s priznaným Dlhom; prepísané.
 - oprava: 2026-11-09 20261109-115955-3: vypustená „súperova priazeň Exekútora“ (zanikla, dnes je to Advokát, §10, §11) a veta o Poverách proti jedinému Dlhu (Povery nepôsobia proti Dlhom od v10, §9.1).
@@ -42,10 +42,10 @@ vo feedback.md.
 ### vilo-7 · Keď dávam NA EX (aj zadarmo s Alkoholikom), najprv skontrolujem, či nemám v línii Šoféra (bez NA EX dá Pecku navyše, s ním nič) a či pečeň NA EX 1 + zdvojené Poldeci/Pečeň cieľa nedosiahne prah 3, lebo Cirhóza z vlastného NA EX stojí −3 alebo +1 tuhé súperovi v každej bitke.
 - stav: overená
 - pravidlá: v12
-- potvrdenia: 7
+- potvrdenia: 8
 - vyvrátenia: 0
-- dátum: 2026-11-17
-- partie: 20261030-115654-1, 20261031-004030-2, 20261111-221937-2, 20261114-003916-1, 20261113-084431-3, 20261116-173731-3, 20261117-140948-3
+- dátum: 2026-11-21
+- partie: 20261030-115654-1, 20261031-004030-2, 20261111-221937-2, 20261114-003916-1, 20261113-084431-3, 20261116-173731-3, 20261117-140948-3, 20261121-003915-1
 - prečo: PRAVIDLA §7 (pečeň NA EX pri odkrytí), §8 prah 3, §16 Šofér. 115654-1 K5: Vilov NA EX zrušil Šoférov bonus +2 (a Fero zrážkou získal 6 Rán); K3 NA EX na vlastnú Vychovávateľku: pečeň 1 + Poldeci ×2 = 3 → log „Hráč 2 dosahuje prah pečene (3) — Cirhóza“, zahodená až Víziou. 004030-2 K5: Vypiť 1 + NA EX 1 + Živnostník ✓ 1 = prah pečene 3 → Cirhóza (rátané, nie z vlastného NA EX náhľadu). 20261111-221937-2: K2 Pitka 3 Vilo pred NA EX na Miňištranta spároval jeho Pečeň Psom (NA EX ju zrušilo, Cirhóza nebola); K5 NA EX nedal pri pečeni 2 + 1 = 3. Šofér a „Alkoholik“ sa v partii nevyskytli. 20261114-003916-1: K2 Pijan (pečeň 3) a K5 NA EX +1 pečeň → Cirhóza; 3 Cirhózy z nespočítaného súčtu Vypiť + hrana + karta. 20261116-173731-3 K5: VÝHĽAD 4/3 → Noviny pod Pijana a Manželka → 2/3, bez Cirhózy; NA EX na Vdovu nedal kvôli Cirhóze.
 
 ### vilo-9 · Keď má súper silnú kartu s Odporom na hrane (Recidivista, Vdova) alebo mám kartu s Odporom, ktorú môžem priložiť, podstrčím ju na ten istý index (Odpor + Odpor = Vzbura: spojené akcie oboch kariet sa vypnú, nespojené zapnú) a kladiem ju až v poslednom Zhromaždení pred Pitkou, lebo súper Vzburu zhasne priložením karty k jej vonkajšej hrane; na kartu s Injekciou alebo Výtržníka to neplatí, jeho Odpor je Rana a Vzburu nevyvolá.
@@ -117,10 +117,10 @@ vo feedback.md.
 ### vilo-17 · Keď môže mať súper kartu s Odporom (Praudovravec, Policajtka, Vdova, Kočovník), nevykladám na koniec línie kartu s nespárovaným vonkajším Odporom a Dlhmi (Recidivista), alebo jej koniec hneď zakryjem vlastnou kartou, lebo jeho Odpor na tej istej pozícii spraví Vzburu: moje spárované akcie zhasnú a nespárované Dlhy sa zapnú.
 - stav: overená
 - pravidlá: v12
-- potvrdenia: 2
+- potvrdenia: 3
 - vyvrátenia: 0
-- dátum: 2026-11-17
-- partie: 20261116-173731-3, 20261117-140948-3
+- dátum: 2026-11-21
+- partie: 20261116-173731-3, 20261117-140948-3, 20261121-003915-1
 - prečo: §6 Vzbura (Odpor + Odpor). 20261116-173731-3: K2 a K5 Šimonov Praudovravec k Vilovmu Recidivistovi — Petelica zhasla, Dlhy sa zapli, v K5 7 Dlhov a Exekútor −4 špaky.
 
 ### vilo-18 · Keď dávam NA EX na súperovu kartu s neaktívnym Poldeci, rátam, že sa mu po Pitke doleje o poldeci viac za každé zdvojené Poldeci, preto také NA EX nedávam pred Zhromaždením, kde ide o posledné slovo, lebo doliatie je 1 + aktívne akcie Poldeci (§7) a viac plných poldeci dá súperovi posledné telo v kraji.
@@ -140,3 +140,12 @@ vo feedback.md.
 - dátum: 2026-11-17
 - partie: 20261117-140948-3
 - prečo: §10 Schopnosť väzňa, §7 Počet Pitiek. 20261117-140948-3 K5 Vínna pivnica: Šimon 1 karta (8 v ruke), Vilo Stryná + Kapybara → prevaha a hrana Pecka/Rana, bitka 4 : 2 a +13 špakov (log „Vychovávateľka: hráč 2 — hráč 1 v tomto Zhromaždení hneď pasuje a za pas nič nedostane“). Navrhol ako spoločnú; spoločný zošit je plný.
+
+### vilo-20 · Keď plánujem fajčiť (Chuť 3 a viac, vila vo finále) alebo mám v balíčkoch málo kariet, pred pasom spočítam, či pas (karta za každý plný poldeci) nevyprázdni doberací aj odhadzovací balíček, lebo potom sa fajčiť nedá a nerest musím vyrobiť NA EX alebo Vypiť.
+- stav: overená
+- pravidlá: v12
+- potvrdenia: 2
+- vyvrátenia: 0
+- dátum: 2026-11-21
+- partie: 20261121-003915-1, 20261121-003915-2
+- prečo: §6 Pas, §7 Fajčenie (pri prázdnych balíčkoch sa fajčiť nedá), §8 Chuť. 20261121-003915-1 K3: po pase mal Vilo prázdne balíčky, `smoke` odmietnutý, Chuť 3 splnil len 2× NA EX; 20261121-003915-2 K6 finále: po prvom fajčení prázdne balíčky (16 kariet v ruke), Šimon so 7 cigaretami nemohol fajčiť ani zdvíhať reči na vile (priebeh.log, `smoke` odmietnutý).
