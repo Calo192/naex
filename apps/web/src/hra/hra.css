@@ -2128,9 +2128,22 @@ button.tlacidlo-naex.neaktivne:active {
   gap: 22px;
 }
 
-.lobby .panel h2 {
+.lobby .panel h2,
+.lobby-rezimy .panel h2 {
   font-size: 1.3rem;
   margin: 0 0 4px;
+}
+
+/* Režimy Zrejúcej pod lobby — tá istá medzera ako medzi panelmi lobby, nie nalepené na seba. */
+.lobby-rezimy {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 22px;
+  margin-top: 22px;
+}
+
+.lobby-rezimy .riadok-tlacidiel {
+  margin-top: 14px;
 }
 
 /* Otázky „Liga“, „S kým“, „Mám kód“ — malé popisky nad voľbami. */
@@ -2233,7 +2246,8 @@ button.tlacidlo-naex.neaktivne:active {
 }
 
 @media (max-width: 760px) {
-  .lobby {
+  .lobby,
+  .lobby-rezimy {
     grid-template-columns: 1fr;
   }
 }

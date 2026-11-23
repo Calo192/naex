@@ -40,7 +40,7 @@ export function Lobby2na2({
         </button>
       </div>
       <form
-        className="riadok-tlacidiel"
+        className="lobby-kod"
         style={{ marginTop: 12 }}
         onSubmit={(e) => {
           e.preventDefault();

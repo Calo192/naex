@@ -565,7 +565,7 @@ export function Hra() {
       <>
         <Lobby zaloz={zalozSPonukou} pripoj={hra.pripoj} chyba={hra.chyba} vyucba={vyucbaUctu} zacniVyucbu={zacniVyucbu} vyucbaNaPocitaci={vyucbaNaPocitaci} />
         {maRezimyZrejucej(instancia) && (
-          <>
+          <div className="lobby-rezimy">
             <Lobby2na2 zaloz={hra.zalozStol2na2} nahodne={hra.nahodne2na2} pripoj={hra.pripojStol2na2} />
             <section className="panel">
               <h2>{t("lobby.pata")}</h2>
@@ -579,7 +579,7 @@ export function Hra() {
                 </button>
               </div>
             </section>
-          </>
+          </div>
         )}
         {zalozPoPonuke !== null && vyucbaUctu !== null && !ponukaZavreta && (
           <PonukaVyucby vyucba={vyucbaUctu} zacni={() => zacniVyucbu(false)} preskoc={preskocPonuku} />
